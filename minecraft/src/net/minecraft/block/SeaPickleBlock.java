@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -135,7 +136,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 						if (blockPos != pos && random.nextInt(6) == 0 && world.getBlockState(blockPos).isOf(Blocks.WATER)) {
 							BlockState blockState = world.getBlockState(blockPos.down());
 							if (blockState.isIn(BlockTags.CORAL_BLOCKS)) {
-								world.setBlockState(blockPos, Blocks.SEA_PICKLE.getDefaultState().with(PICKLES, Integer.valueOf(random.nextInt(4) + 1)), 3);
+								world.setBlockState(blockPos, Blocks.SEA_PICKLE.getDefaultState().with(PICKLES, Integer.valueOf(random.nextInt(4) + 1)), SetBlockStateFlags.DEFAULT);
 							}
 						}
 					}
@@ -152,7 +153,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 				l++;
 			}
 
-			world.setBlockState(pos, state.with(PICKLES, Integer.valueOf(4)), 2);
+			world.setBlockState(pos, state.with(PICKLES, Integer.valueOf(4)), SetBlockStateFlags.NOTIFY_LISTENERS);
 		}
 	}
 

@@ -6,6 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormat;
@@ -34,6 +35,7 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 		RenderSystem.disableBlend();
 		RenderSystem.disableTexture();
 		RenderSystem.enableDepthTest();
+		RenderSystem.setShader(GameRenderer::getPositionColorShader);
 		BlockPos blockPos = new BlockPos(cameraX, 0.0, cameraZ);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();

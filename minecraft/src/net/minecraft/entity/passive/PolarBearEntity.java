@@ -37,7 +37,7 @@ import net.minecraft.entity.mob.Angerable;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -108,13 +108,13 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
 		this.readAngerFromNbt(this.world, tag);
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
 		this.writeAngerToNbt(tag);
 	}
@@ -243,7 +243,7 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
 	) {
 		if (entityData == null) {
 			entityData = new PassiveEntity.PassiveData(1.0F);

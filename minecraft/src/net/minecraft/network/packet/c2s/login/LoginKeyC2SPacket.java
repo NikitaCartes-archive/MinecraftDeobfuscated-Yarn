@@ -5,10 +5,10 @@ import java.security.PublicKey;
 import javax.crypto.SecretKey;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.encryption.NetworkEncryptionException;
+import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.listener.ServerLoginPacketListener;
 
 public class LoginKeyC2SPacket implements Packet<ServerLoginPacketListener> {

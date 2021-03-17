@@ -10,6 +10,7 @@ import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class RealmsSettingsScreen extends RealmsScreen {
@@ -79,7 +80,7 @@ public class RealmsSettingsScreen extends RealmsScreen {
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == 256) {
+		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
 			this.client.openScreen(this.parent);
 			return true;
 		} else {

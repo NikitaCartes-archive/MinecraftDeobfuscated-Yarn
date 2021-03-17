@@ -2956,7 +2956,6 @@ public class Blocks {
 			3,
 			AbstractBlock.Settings.of(Material.AMETHYST)
 				.nonOpaque()
-				.requiresTool()
 				.ticksRandomly()
 				.sounds(BlockSoundGroup.AMETHYST_CLUSTER)
 				.strength(1.5F)
@@ -2987,7 +2986,18 @@ public class Blocks {
 	public static final Block CALCITE = register(
 		"calcite", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.TERRACOTTA_WHITE).sounds(BlockSoundGroup.CALCITE).requiresTool().strength(0.75F))
 	);
-	public static final Block TINTED_GLASS = register("tinted_glass", new TintedGlassBlock(AbstractBlock.Settings.copy(GLASS).mapColor(MapColor.GRAY)));
+	public static final Block TINTED_GLASS = register(
+		"tinted_glass",
+		new TintedGlassBlock(
+			AbstractBlock.Settings.copy(GLASS)
+				.mapColor(MapColor.GRAY)
+				.nonOpaque()
+				.allowsSpawning(Blocks::never)
+				.solidBlock(Blocks::never)
+				.suffocates(Blocks::never)
+				.blockVision(Blocks::never)
+		)
+	);
 	public static final Block POWDER_SNOW = register(
 		"powder_snow", new PowderSnowBlock(AbstractBlock.Settings.of(Material.POWDER_SNOW).strength(0.1F).sounds(BlockSoundGroup.POWDER_SNOW).dynamicBounds())
 	);
@@ -3004,81 +3014,75 @@ public class Blocks {
 	);
 	public static final Block OXIDIZED_COPPER = register(
 		"oxidized_copper",
-		new OxidizableBlock(AbstractBlock.Settings.of(Material.METAL, MapColor.TEAL).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER))
+		new OxidizableBlock(
+			Oxidizable.OxidizationLevel.OXIDIZED,
+			AbstractBlock.Settings.of(Material.METAL, MapColor.TEAL).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER)
+		)
 	);
 	public static final Block WEATHERED_COPPER = register(
 		"weathered_copper",
 		new OxidizableBlock(
-			AbstractBlock.Settings.of(Material.METAL, MapColor.DARK_AQUA).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER),
 			Oxidizable.OxidizationLevel.WEATHERED,
-			OXIDIZED_COPPER
+			AbstractBlock.Settings.of(Material.METAL, MapColor.DARK_AQUA).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER)
 		)
 	);
 	public static final Block EXPOSED_COPPER = register(
 		"exposed_copper",
 		new OxidizableBlock(
-			AbstractBlock.Settings.of(Material.METAL, MapColor.TERRACOTTA_LIGHT_GRAY).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER),
 			Oxidizable.OxidizationLevel.EXPOSED,
-			WEATHERED_COPPER
+			AbstractBlock.Settings.of(Material.METAL, MapColor.TERRACOTTA_LIGHT_GRAY).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER)
 		)
 	);
 	public static final Block COPPER_BLOCK = register(
 		"copper_block",
 		new OxidizableBlock(
-			AbstractBlock.Settings.of(Material.METAL, MapColor.ORANGE).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER),
 			Oxidizable.OxidizationLevel.UNAFFECTED,
-			EXPOSED_COPPER
+			AbstractBlock.Settings.of(Material.METAL, MapColor.ORANGE).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER)
 		)
 	);
 	public static final Block COPPER_ORE = register("copper_ore", new OreBlock(AbstractBlock.Settings.copy(IRON_ORE)));
 	public static final Block DEEPSLATE_COPPER_ORE = register(
 		"deepslate_copper_ore", new OreBlock(AbstractBlock.Settings.copy(COPPER_ORE).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE))
 	);
-	public static final Block OXIDIZED_CUT_COPPER = register("oxidized_cut_copper", new OxidizableBlock(AbstractBlock.Settings.copy(OXIDIZED_COPPER)));
+	public static final Block OXIDIZED_CUT_COPPER = register(
+		"oxidized_cut_copper", new OxidizableBlock(Oxidizable.OxidizationLevel.OXIDIZED, AbstractBlock.Settings.copy(OXIDIZED_COPPER))
+	);
 	public static final Block WEATHERED_CUT_COPPER = register(
-		"weathered_cut_copper", new OxidizableBlock(AbstractBlock.Settings.copy(WEATHERED_COPPER), Oxidizable.OxidizationLevel.WEATHERED, OXIDIZED_CUT_COPPER)
+		"weathered_cut_copper", new OxidizableBlock(Oxidizable.OxidizationLevel.WEATHERED, AbstractBlock.Settings.copy(WEATHERED_COPPER))
 	);
 	public static final Block EXPOSED_CUT_COPPER = register(
-		"exposed_cut_copper", new OxidizableBlock(AbstractBlock.Settings.copy(EXPOSED_COPPER), Oxidizable.OxidizationLevel.EXPOSED, WEATHERED_CUT_COPPER)
+		"exposed_cut_copper", new OxidizableBlock(Oxidizable.OxidizationLevel.EXPOSED, AbstractBlock.Settings.copy(EXPOSED_COPPER))
 	);
 	public static final Block CUT_COPPER = register(
-		"cut_copper", new OxidizableBlock(AbstractBlock.Settings.copy(COPPER_BLOCK), Oxidizable.OxidizationLevel.UNAFFECTED, EXPOSED_CUT_COPPER)
+		"cut_copper", new OxidizableBlock(Oxidizable.OxidizationLevel.UNAFFECTED, AbstractBlock.Settings.copy(COPPER_BLOCK))
 	);
 	public static final Block OXIDIZED_CUT_COPPER_STAIRS = register(
-		"oxidized_cut_copper_stairs", new OxidizableStairsBlock(OXIDIZED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(OXIDIZED_CUT_COPPER))
+		"oxidized_cut_copper_stairs",
+		new OxidizableStairsBlock(Oxidizable.OxidizationLevel.OXIDIZED, OXIDIZED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(OXIDIZED_CUT_COPPER))
 	);
 	public static final Block WEATHERED_CUT_COPPER_STAIRS = register(
 		"weathered_cut_copper_stairs",
-		new OxidizableStairsBlock(
-			WEATHERED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(WEATHERED_COPPER), Oxidizable.OxidizationLevel.WEATHERED, OXIDIZED_CUT_COPPER_STAIRS
-		)
+		new OxidizableStairsBlock(Oxidizable.OxidizationLevel.WEATHERED, WEATHERED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(WEATHERED_COPPER))
 	);
 	public static final Block EXPOSED_CUT_COPPER_STAIRS = register(
 		"exposed_cut_copper_stairs",
-		new OxidizableStairsBlock(
-			EXPOSED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(EXPOSED_COPPER), Oxidizable.OxidizationLevel.EXPOSED, WEATHERED_CUT_COPPER_STAIRS
-		)
+		new OxidizableStairsBlock(Oxidizable.OxidizationLevel.EXPOSED, EXPOSED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(EXPOSED_COPPER))
 	);
 	public static final Block CUT_COPPER_STAIRS = register(
 		"cut_copper_stairs",
-		new OxidizableStairsBlock(
-			CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(COPPER_BLOCK), Oxidizable.OxidizationLevel.UNAFFECTED, EXPOSED_CUT_COPPER_STAIRS
-		)
+		new OxidizableStairsBlock(Oxidizable.OxidizationLevel.UNAFFECTED, CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(COPPER_BLOCK))
 	);
 	public static final Block OXIDIZED_CUT_COPPER_SLAB = register(
-		"oxidized_cut_copper_slab", new OxidizableSlabBlock(AbstractBlock.Settings.copy(OXIDIZED_CUT_COPPER).requiresTool())
+		"oxidized_cut_copper_slab", new OxidizableSlabBlock(Oxidizable.OxidizationLevel.OXIDIZED, AbstractBlock.Settings.copy(OXIDIZED_CUT_COPPER).requiresTool())
 	);
 	public static final Block WEATHERED_CUT_COPPER_SLAB = register(
-		"weathered_cut_copper_slab",
-		new OxidizableSlabBlock(AbstractBlock.Settings.copy(WEATHERED_CUT_COPPER).requiresTool(), Oxidizable.OxidizationLevel.WEATHERED, OXIDIZED_CUT_COPPER_SLAB)
+		"weathered_cut_copper_slab", new OxidizableSlabBlock(Oxidizable.OxidizationLevel.WEATHERED, AbstractBlock.Settings.copy(WEATHERED_CUT_COPPER).requiresTool())
 	);
 	public static final Block EXPOSED_CUT_COPPER_SLAB = register(
-		"exposed_cut_copper_slab",
-		new OxidizableSlabBlock(AbstractBlock.Settings.copy(EXPOSED_CUT_COPPER).requiresTool(), Oxidizable.OxidizationLevel.EXPOSED, WEATHERED_CUT_COPPER_SLAB)
+		"exposed_cut_copper_slab", new OxidizableSlabBlock(Oxidizable.OxidizationLevel.EXPOSED, AbstractBlock.Settings.copy(EXPOSED_CUT_COPPER).requiresTool())
 	);
 	public static final Block CUT_COPPER_SLAB = register(
-		"cut_copper_slab",
-		new OxidizableSlabBlock(AbstractBlock.Settings.copy(CUT_COPPER).requiresTool(), Oxidizable.OxidizationLevel.UNAFFECTED, EXPOSED_CUT_COPPER_SLAB)
+		"cut_copper_slab", new OxidizableSlabBlock(Oxidizable.OxidizationLevel.UNAFFECTED, AbstractBlock.Settings.copy(CUT_COPPER).requiresTool())
 	);
 	public static final Block WAXED_COPPER_BLOCK = register("waxed_copper_block", new Block(AbstractBlock.Settings.copy(COPPER_BLOCK)));
 	public static final Block WAXED_WEATHERED_COPPER = register("waxed_weathered_copper", new Block(AbstractBlock.Settings.copy(WEATHERED_COPPER)));
@@ -3124,19 +3128,19 @@ public class Blocks {
 		"dripstone_block",
 		new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.TERRACOTTA_BROWN).sounds(BlockSoundGroup.DRIPSTONE_BLOCK).requiresTool().strength(1.5F, 1.0F))
 	);
-	public static final Block CAVE_VINES_HEAD = register(
-		"cave_vines_head",
+	public static final Block CAVE_VINES = register(
+		"cave_vines",
 		new CaveVinesHeadBlock(
 			AbstractBlock.Settings.of(Material.PLANT)
 				.ticksRandomly()
 				.noCollision()
-				.luminance(createLightLevelFromBerriesBlockState(10))
+				.luminance(createLightLevelFromBerriesBlockState(14))
 				.breakInstantly()
 				.sounds(BlockSoundGroup.CAVE_VINES)
 		)
 	);
-	public static final Block CAVE_VINES_BODY = register(
-		"cave_vines_body",
+	public static final Block CAVE_VINES_PLANT = register(
+		"cave_vines_plant",
 		new CaveVinesBodyBlock(
 			AbstractBlock.Settings.of(Material.PLANT)
 				.noCollision()
@@ -3168,14 +3172,14 @@ public class Blocks {
 		"small_dripleaf",
 		new SmallDripleafBlock(AbstractBlock.Settings.of(Material.PLANT).strength(0.1F).noCollision().breakInstantly().sounds(BlockSoundGroup.SMALL_DRIPLEAF))
 	);
-	public static final Block ROOTED_DIRT = register(
-		"rooted_dirt", new Block(AbstractBlock.Settings.of(Material.SOIL, MapColor.DIRT_BROWN).strength(0.1F).sounds(BlockSoundGroup.ROOTED_DIRT))
-	);
 	public static final Block HANGING_ROOTS = register(
 		"hanging_roots",
 		new HangingRootsBlock(
-			AbstractBlock.Settings.of(Material.SOIL, MapColor.DIRT_BROWN).noCollision().breakInstantly().strength(0.1F).sounds(BlockSoundGroup.HANGING_ROOTS)
+			AbstractBlock.Settings.of(Material.PLANT, MapColor.DIRT_BROWN).noCollision().breakInstantly().strength(0.1F).sounds(BlockSoundGroup.HANGING_ROOTS)
 		)
+	);
+	public static final Block ROOTED_DIRT = register(
+		"rooted_dirt", new RootedDirtBlock(AbstractBlock.Settings.of(Material.SOIL, MapColor.DIRT_BROWN).strength(0.1F).sounds(BlockSoundGroup.ROOTED_DIRT))
 	);
 	public static final Block DEEPSLATE = register(
 		"deepslate",

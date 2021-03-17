@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
@@ -38,14 +39,14 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig> {
 				mutable.set(integer, 0, integer2);
 				BlockPos blockPos = structureWorldAccess.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable);
 				if (structureWorldAccess.isAir(blockPos) || structureWorldAccess.getBlockState(blockPos).getCollisionShape(structureWorldAccess, blockPos).isEmpty()) {
-					structureWorldAccess.setBlockState(blockPos, Blocks.CHEST.getDefaultState(), 2);
+					structureWorldAccess.setBlockState(blockPos, Blocks.CHEST.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
 					LootableContainerBlockEntity.setLootTable(structureWorldAccess, random, blockPos, LootTables.SPAWN_BONUS_CHEST);
 					BlockState blockState = Blocks.TORCH.getDefaultState();
 
 					for (Direction direction : Direction.Type.HORIZONTAL) {
 						BlockPos blockPos2 = blockPos.offset(direction);
 						if (blockState.canPlaceAt(structureWorldAccess, blockPos2)) {
-							structureWorldAccess.setBlockState(blockPos2, blockState, 2);
+							structureWorldAccess.setBlockState(blockPos2, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
 						}
 					}
 

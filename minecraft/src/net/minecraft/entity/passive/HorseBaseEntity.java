@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -45,7 +46,7 @@ import net.minecraft.inventory.InventoryChangedListener;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
@@ -753,7 +754,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
 		tag.putBoolean("EatingHaystack", this.isEatingGrass());
 		tag.putBoolean("Bred", this.isBred());
@@ -764,12 +765,12 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		}
 
 		if (!this.items.getStack(0).isEmpty()) {
-			tag.put("SaddleItem", this.items.getStack(0).writeNbt(new CompoundTag()));
+			tag.put("SaddleItem", this.items.getStack(0).writeNbt(new NbtCompound()));
 		}
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
 		this.setEatingGrass(tag.getBoolean("EatingHaystack"));
 		this.setBred(tag.getBoolean("Bred"));
@@ -787,7 +788,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 			this.setOwnerUuid(uUID);
 		}
 
-		if (tag.contains("SaddleItem", 10)) {
+		if (tag.contains("SaddleItem", NbtTypeIds.COMPOUND)) {
 			ItemStack itemStack = ItemStack.fromNbt(tag.getCompound("SaddleItem"));
 			if (itemStack.isOf(Items.SADDLE)) {
 				this.items.setStack(0, itemStack);
@@ -1086,7 +1087,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
 	) {
 		if (entityData == null) {
 			entityData = new PassiveEntity.PassiveData(0.2F);

@@ -173,9 +173,9 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 			instance -> instance.group(
 						Identifier.CODEC
 							.flatXmap(
-								identifier -> (DataResult)Optional.ofNullable(MultiNoiseBiomeSource.Preset.BY_IDENTIFIER.get(identifier))
+								id -> (DataResult)Optional.ofNullable(MultiNoiseBiomeSource.Preset.BY_IDENTIFIER.get(id))
 										.map(DataResult::success)
-										.orElseGet(() -> DataResult.error("Unknown preset: " + identifier)),
+										.orElseGet(() -> DataResult.error("Unknown preset: " + id)),
 								preset -> DataResult.success(preset.id)
 							)
 							.fieldOf("preset")
@@ -242,16 +242,16 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 		private static final Map<Identifier, MultiNoiseBiomeSource.Preset> BY_IDENTIFIER = Maps.<Identifier, MultiNoiseBiomeSource.Preset>newHashMap();
 		public static final MultiNoiseBiomeSource.Preset NETHER = new MultiNoiseBiomeSource.Preset(
 			new Identifier("nether"),
-			(preset, registry, long_) -> new MultiNoiseBiomeSource(
-					long_,
+			(preset, biomeRegistry, seed) -> new MultiNoiseBiomeSource(
+					seed,
 					ImmutableList.of(
-						Pair.of(new Biome.MixedNoisePoint(0.0F, 0.0F, 0.0F, 0.0F, 0.0F), () -> registry.getOrThrow(BiomeKeys.NETHER_WASTES)),
-						Pair.of(new Biome.MixedNoisePoint(0.0F, -0.5F, 0.0F, 0.0F, 0.0F), () -> registry.getOrThrow(BiomeKeys.SOUL_SAND_VALLEY)),
-						Pair.of(new Biome.MixedNoisePoint(0.4F, 0.0F, 0.0F, 0.0F, 0.0F), () -> registry.getOrThrow(BiomeKeys.CRIMSON_FOREST)),
-						Pair.of(new Biome.MixedNoisePoint(0.0F, 0.5F, 0.0F, 0.0F, 0.375F), () -> registry.getOrThrow(BiomeKeys.WARPED_FOREST)),
-						Pair.of(new Biome.MixedNoisePoint(-0.5F, 0.0F, 0.0F, 0.0F, 0.175F), () -> registry.getOrThrow(BiomeKeys.BASALT_DELTAS))
+						Pair.of(new Biome.MixedNoisePoint(0.0F, 0.0F, 0.0F, 0.0F, 0.0F), () -> biomeRegistry.getOrThrow(BiomeKeys.NETHER_WASTES)),
+						Pair.of(new Biome.MixedNoisePoint(0.0F, -0.5F, 0.0F, 0.0F, 0.0F), () -> biomeRegistry.getOrThrow(BiomeKeys.SOUL_SAND_VALLEY)),
+						Pair.of(new Biome.MixedNoisePoint(0.4F, 0.0F, 0.0F, 0.0F, 0.0F), () -> biomeRegistry.getOrThrow(BiomeKeys.CRIMSON_FOREST)),
+						Pair.of(new Biome.MixedNoisePoint(0.0F, 0.5F, 0.0F, 0.0F, 0.375F), () -> biomeRegistry.getOrThrow(BiomeKeys.WARPED_FOREST)),
+						Pair.of(new Biome.MixedNoisePoint(-0.5F, 0.0F, 0.0F, 0.0F, 0.175F), () -> biomeRegistry.getOrThrow(BiomeKeys.BASALT_DELTAS))
 					),
-					Optional.of(Pair.of(registry, preset))
+					Optional.of(Pair.of(biomeRegistry, preset))
 				)
 		);
 		private final Identifier id;

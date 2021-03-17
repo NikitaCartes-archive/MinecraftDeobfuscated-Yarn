@@ -20,8 +20,8 @@ import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.WeightedPicker;
@@ -39,13 +39,13 @@ public class EnchantmentHelper {
 			return 0;
 		} else {
 			Identifier identifier = Registry.ENCHANTMENT.getId(enchantment);
-			ListTag listTag = stack.getEnchantments();
+			NbtList nbtList = stack.getEnchantments();
 
-			for (int i = 0; i < listTag.size(); i++) {
-				CompoundTag compoundTag = listTag.getCompound(i);
-				Identifier identifier2 = Identifier.tryParse(compoundTag.getString("id"));
+			for (int i = 0; i < nbtList.size(); i++) {
+				NbtCompound nbtCompound = nbtList.getCompound(i);
+				Identifier identifier2 = Identifier.tryParse(nbtCompound.getString("id"));
 				if (identifier2 != null && identifier2.equals(identifier)) {
-					return MathHelper.clamp(compoundTag.getInt("lvl"), 0, 255);
+					return MathHelper.clamp(nbtCompound.getInt("lvl"), 0, 255);
 				}
 			}
 
@@ -63,20 +63,20 @@ public class EnchantmentHelper {
 	 * @see net.minecraft.item.EnchantedBookItem#getEnchantmentNbt(ItemStack)
 	 */
 	public static Map<Enchantment, Integer> get(ItemStack stack) {
-		ListTag listTag = stack.isOf(Items.ENCHANTED_BOOK) ? EnchantedBookItem.getEnchantmentNbt(stack) : stack.getEnchantments();
-		return fromNbt(listTag);
+		NbtList nbtList = stack.isOf(Items.ENCHANTED_BOOK) ? EnchantedBookItem.getEnchantmentNbt(stack) : stack.getEnchantments();
+		return fromNbt(nbtList);
 	}
 
 	/**
 	 * Loads enchantments from an NBT list.
 	 */
-	public static Map<Enchantment, Integer> fromNbt(ListTag tag) {
+	public static Map<Enchantment, Integer> fromNbt(NbtList tag) {
 		Map<Enchantment, Integer> map = Maps.<Enchantment, Integer>newLinkedHashMap();
 
 		for (int i = 0; i < tag.size(); i++) {
-			CompoundTag compoundTag = tag.getCompound(i);
-			Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(compoundTag.getString("id"))).ifPresent(enchantment -> {
-				Integer var10000 = (Integer)map.put(enchantment, compoundTag.getInt("lvl"));
+			NbtCompound nbtCompound = tag.getCompound(i);
+			Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(nbtCompound.getString("id"))).ifPresent(enchantment -> {
+				Integer var10000 = (Integer)map.put(enchantment, nbtCompound.getInt("lvl"));
 			});
 		}
 
@@ -93,36 +93,36 @@ public class EnchantmentHelper {
 	 * @see net.minecraft.item.EnchantedBookItem#getEnchantmentNbt(ItemStack)
 	 */
 	public static void set(Map<Enchantment, Integer> enchantments, ItemStack stack) {
-		ListTag listTag = new ListTag();
+		NbtList nbtList = new NbtList();
 
 		for (Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
 			Enchantment enchantment = (Enchantment)entry.getKey();
 			if (enchantment != null) {
 				int i = (Integer)entry.getValue();
-				CompoundTag compoundTag = new CompoundTag();
-				compoundTag.putString("id", String.valueOf(Registry.ENCHANTMENT.getId(enchantment)));
-				compoundTag.putShort("lvl", (short)i);
-				listTag.add(compoundTag);
+				NbtCompound nbtCompound = new NbtCompound();
+				nbtCompound.putString("id", String.valueOf(Registry.ENCHANTMENT.getId(enchantment)));
+				nbtCompound.putShort("lvl", (short)i);
+				nbtList.add(nbtCompound);
 				if (stack.isOf(Items.ENCHANTED_BOOK)) {
 					EnchantedBookItem.addEnchantment(stack, new EnchantmentLevelEntry(enchantment, i));
 				}
 			}
 		}
 
-		if (listTag.isEmpty()) {
+		if (nbtList.isEmpty()) {
 			stack.removeSubTag("Enchantments");
 		} else if (!stack.isOf(Items.ENCHANTED_BOOK)) {
-			stack.putSubTag("Enchantments", listTag);
+			stack.putSubTag("Enchantments", nbtList);
 		}
 	}
 
 	private static void forEachEnchantment(EnchantmentHelper.Consumer consumer, ItemStack stack) {
 		if (!stack.isEmpty()) {
-			ListTag listTag = stack.getEnchantments();
+			NbtList nbtList = stack.getEnchantments();
 
-			for (int i = 0; i < listTag.size(); i++) {
-				String string = listTag.getCompound(i).getString("id");
-				int j = listTag.getCompound(i).getInt("lvl");
+			for (int i = 0; i < nbtList.size(); i++) {
+				String string = nbtList.getCompound(i).getString("id");
+				int j = nbtList.getCompound(i).getInt("lvl");
 				Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(string)).ifPresent(enchantment -> consumer.accept(enchantment, j));
 			}
 		}

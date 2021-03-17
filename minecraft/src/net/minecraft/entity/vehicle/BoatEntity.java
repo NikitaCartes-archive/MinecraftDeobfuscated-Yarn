@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -27,7 +28,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -727,13 +728,13 @@ public class BoatEntity extends Entity {
 	}
 
 	@Override
-	protected void writeCustomDataToNbt(CompoundTag tag) {
+	protected void writeCustomDataToNbt(NbtCompound tag) {
 		tag.putString("Type", this.getBoatType().getName());
 	}
 
 	@Override
-	protected void readCustomDataFromNbt(CompoundTag tag) {
-		if (tag.contains("Type", 8)) {
+	protected void readCustomDataFromNbt(NbtCompound tag) {
+		if (tag.contains("Type", NbtTypeIds.STRING)) {
 			this.setBoatType(BoatEntity.Type.getType(tag.getString("Type")));
 		}
 	}

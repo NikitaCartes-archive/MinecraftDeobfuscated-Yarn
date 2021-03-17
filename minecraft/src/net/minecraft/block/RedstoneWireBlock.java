@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.enums.WireConnection;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -276,7 +277,7 @@ public class RedstoneWireBlock extends Block {
 		int i = this.getReceivedRedstonePower(world, pos);
 		if ((Integer)state.get(POWER) != i) {
 			if (world.getBlockState(pos) == state) {
-				world.setBlockState(pos, state.with(POWER, Integer.valueOf(i)), 2);
+				world.setBlockState(pos, state.with(POWER, Integer.valueOf(i)), SetBlockStateFlags.NOTIFY_LISTENERS);
 			}
 
 			Set<BlockPos> set = Sets.<BlockPos>newHashSet();
@@ -516,7 +517,7 @@ public class RedstoneWireBlock extends Block {
 				blockState = blockState.with(POWER, state.get(POWER));
 				blockState = this.getPlacementState(world, blockState, pos);
 				if (blockState != state) {
-					world.setBlockState(pos, blockState, 3);
+					world.setBlockState(pos, blockState, SetBlockStateFlags.DEFAULT);
 					this.updateForNewState(world, pos, state, blockState);
 					return ActionResult.SUCCESS;
 				}

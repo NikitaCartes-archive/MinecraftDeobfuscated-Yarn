@@ -27,10 +27,10 @@ public class RandomFeatureConfig implements FeatureConfig {
 	}
 
 	@Override
-	public Stream<ConfiguredFeature<?, ?>> method_30649() {
+	public Stream<ConfiguredFeature<?, ?>> getDecoratedFeatures() {
 		return Stream.concat(
-			this.features.stream().flatMap(randomFeatureEntry -> ((ConfiguredFeature)randomFeatureEntry.feature.get()).method_30648()),
-			((ConfiguredFeature)this.defaultFeature.get()).method_30648()
+			this.features.stream().flatMap(randomFeatureEntry -> ((ConfiguredFeature)randomFeatureEntry.feature.get()).getDecoratedFeatures()),
+			((ConfiguredFeature)this.defaultFeature.get()).getDecoratedFeatures()
 		);
 	}
 }

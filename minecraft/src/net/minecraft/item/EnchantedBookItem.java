@@ -4,11 +4,12 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
@@ -30,9 +31,9 @@ public class EnchantedBookItem extends Item {
 		return false;
 	}
 
-	public static ListTag getEnchantmentNbt(ItemStack stack) {
-		CompoundTag compoundTag = stack.getTag();
-		return compoundTag != null ? compoundTag.getList("StoredEnchantments", 10) : new ListTag();
+	public static NbtList getEnchantmentNbt(ItemStack stack) {
+		NbtCompound nbtCompound = stack.getTag();
+		return nbtCompound != null ? nbtCompound.getList("StoredEnchantments", NbtTypeIds.COMPOUND) : new NbtList();
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -43,16 +44,16 @@ public class EnchantedBookItem extends Item {
 	}
 
 	public static void addEnchantment(ItemStack stack, EnchantmentLevelEntry entry) {
-		ListTag listTag = getEnchantmentNbt(stack);
+		NbtList nbtList = getEnchantmentNbt(stack);
 		boolean bl = true;
 		Identifier identifier = Registry.ENCHANTMENT.getId(entry.enchantment);
 
-		for (int i = 0; i < listTag.size(); i++) {
-			CompoundTag compoundTag = listTag.getCompound(i);
-			Identifier identifier2 = Identifier.tryParse(compoundTag.getString("id"));
+		for (int i = 0; i < nbtList.size(); i++) {
+			NbtCompound nbtCompound = nbtList.getCompound(i);
+			Identifier identifier2 = Identifier.tryParse(nbtCompound.getString("id"));
 			if (identifier2 != null && identifier2.equals(identifier)) {
-				if (compoundTag.getInt("lvl") < entry.level) {
-					compoundTag.putShort("lvl", (short)entry.level);
+				if (nbtCompound.getInt("lvl") < entry.level) {
+					nbtCompound.putShort("lvl", (short)entry.level);
 				}
 
 				bl = false;
@@ -61,13 +62,13 @@ public class EnchantedBookItem extends Item {
 		}
 
 		if (bl) {
-			CompoundTag compoundTag2 = new CompoundTag();
-			compoundTag2.putString("id", String.valueOf(identifier));
-			compoundTag2.putShort("lvl", (short)entry.level);
-			listTag.add(compoundTag2);
+			NbtCompound nbtCompound2 = new NbtCompound();
+			nbtCompound2.putString("id", String.valueOf(identifier));
+			nbtCompound2.putShort("lvl", (short)entry.level);
+			nbtList.add(nbtCompound2);
 		}
 
-		stack.getOrCreateTag().put("StoredEnchantments", listTag);
+		stack.getOrCreateTag().put("StoredEnchantments", nbtList);
 	}
 
 	public static ItemStack forEnchantment(EnchantmentLevelEntry info) {

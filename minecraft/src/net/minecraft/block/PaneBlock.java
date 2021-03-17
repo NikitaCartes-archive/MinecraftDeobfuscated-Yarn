@@ -67,7 +67,7 @@ public class PaneBlock extends HorizontalConnectingBlock {
 	}
 
 	@Override
-	public VoxelShape getVisualShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	public VoxelShape getCameraCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return VoxelShapes.empty();
 	}
 

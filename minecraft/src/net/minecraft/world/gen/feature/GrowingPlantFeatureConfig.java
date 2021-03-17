@@ -13,7 +13,7 @@ public class GrowingPlantFeatureConfig implements FeatureConfig {
 					WeightedList.createCodec(UniformIntDistribution.CODEC)
 						.fieldOf("height_distribution")
 						.forGetter(growingPlantFeatureConfig -> growingPlantFeatureConfig.heightDistribution),
-					Direction.field_29502.fieldOf("direction").forGetter(growingPlantFeatureConfig -> growingPlantFeatureConfig.direction),
+					Direction.CODEC.fieldOf("direction").forGetter(growingPlantFeatureConfig -> growingPlantFeatureConfig.direction),
 					BlockStateProvider.TYPE_CODEC.fieldOf("body_provider").forGetter(growingPlantFeatureConfig -> growingPlantFeatureConfig.bodyProvider),
 					BlockStateProvider.TYPE_CODEC.fieldOf("head_provider").forGetter(growingPlantFeatureConfig -> growingPlantFeatureConfig.headProvider),
 					Codec.BOOL.fieldOf("allow_water").forGetter(growingPlantFeatureConfig -> growingPlantFeatureConfig.allowWater)

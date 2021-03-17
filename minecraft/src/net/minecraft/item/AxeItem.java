@@ -1,13 +1,18 @@
 package net.minecraft.item;
 
+import com.google.common.collect.BiMap;
 import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableMap.Builder;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
+import net.minecraft.block.Oxidizable;
 import net.minecraft.block.PillarBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -65,21 +70,39 @@ public class AxeItem extends MiningToolItem {
 	public ActionResult useOnBlock(ItemUsageContext context) {
 		World world = context.getWorld();
 		BlockPos blockPos = context.getBlockPos();
+		PlayerEntity playerEntity = context.getPlayer();
 		BlockState blockState = world.getBlockState(blockPos);
-		Block block = (Block)STRIPPED_BLOCKS.get(blockState.getBlock());
-		if (block != null) {
-			PlayerEntity playerEntity = context.getPlayer();
+		Optional<BlockState> optional = this.getStrippedState(blockState);
+		Optional<BlockState> optional2 = Oxidizable.getDecreasedOxidationState(blockState);
+		Optional<BlockState> optional3 = Optional.ofNullable(((BiMap)HoneycombItem.WAXED_TO_UNWAXED_BLOCKS.get()).get(blockState.getBlock()))
+			.map(block -> block.getStateWithProperties(blockState));
+		Optional<BlockState> optional4 = Optional.empty();
+		if (optional.isPresent()) {
 			world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
-			if (!world.isClient) {
-				world.setBlockState(blockPos, block.getDefaultState().with(PillarBlock.AXIS, blockState.get(PillarBlock.AXIS)), 11);
-				if (playerEntity != null) {
-					context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
-				}
+			optional4 = optional;
+		} else if (optional2.isPresent()) {
+			world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_SCRAPE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+			world.syncWorldEvent(playerEntity, WorldEvents.BLOCK_SCRAPED, blockPos, 0);
+			optional4 = optional2;
+		} else if (optional3.isPresent()) {
+			world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_WAX_OFF, SoundCategory.BLOCKS, 1.0F, 1.0F);
+			world.syncWorldEvent(playerEntity, WorldEvents.WAX_REMOVED, blockPos, 0);
+			optional4 = optional3;
+		}
+
+		if (optional4.isPresent()) {
+			world.setBlockState(blockPos, (BlockState)optional4.get(), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
+			if (playerEntity != null) {
+				context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
 			}
 
 			return ActionResult.success(world.isClient);
 		} else {
 			return ActionResult.PASS;
 		}
+	}
+
+	private Optional<BlockState> getStrippedState(BlockState state) {
+		return Optional.ofNullable(STRIPPED_BLOCKS.get(state.getBlock())).map(block -> block.getDefaultState().with(PillarBlock.AXIS, state.get(PillarBlock.AXIS)));
 	}
 }

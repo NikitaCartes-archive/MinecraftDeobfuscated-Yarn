@@ -18,6 +18,7 @@ import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.util.RealmsTextureManager;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
@@ -29,6 +30,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class RealmsPlayerScreen extends RealmsScreen {
@@ -131,7 +133,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == 256) {
+		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
 			this.backButtonClicked();
 			return true;
 		} else {
@@ -221,6 +223,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		int i = row(12) + 20;
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 		RenderSystem.setShaderTexture(0, OPTIONS_BACKGROUND);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;

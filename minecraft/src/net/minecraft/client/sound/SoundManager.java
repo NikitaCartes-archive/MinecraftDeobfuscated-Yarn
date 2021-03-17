@@ -20,7 +20,7 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SinglePreparationResourceReloadListener;
+import net.minecraft.resource.SinglePreparationResourceReloader;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -32,7 +32,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class SoundManager extends SinglePreparationResourceReloadListener<SoundManager.SoundList> {
+public class SoundManager extends SinglePreparationResourceReloader<SoundManager.SoundList> {
 	public static final Sound MISSING_SOUND = new Sound("meta:missing_sound", 1.0F, 1.0F, 1, Sound.RegistrationType.FILE, false, false, 16);
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Gson GSON = new GsonBuilder()

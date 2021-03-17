@@ -8,8 +8,8 @@ import org.apache.logging.log4j.Logger;
 
 public class ChargingPlayerPhase extends AbstractPhase {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private Vec3d target;
-	private int field_7037;
+	private Vec3d pathTarget;
+	private int chargingTicks;
 
 	public ChargingPlayerPhase(EnderDragonEntity enderDragonEntity) {
 		super(enderDragonEntity);
@@ -17,27 +17,27 @@ public class ChargingPlayerPhase extends AbstractPhase {
 
 	@Override
 	public void serverTick() {
-		if (this.target == null) {
+		if (this.pathTarget == null) {
 			LOGGER.warn("Aborting charge player as no target was set.");
 			this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
-		} else if (this.field_7037 > 0 && this.field_7037++ >= 10) {
+		} else if (this.chargingTicks > 0 && this.chargingTicks++ >= 10) {
 			this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
 		} else {
-			double d = this.target.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
+			double d = this.pathTarget.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
 			if (d < 100.0 || d > 22500.0 || this.dragon.horizontalCollision || this.dragon.verticalCollision) {
-				this.field_7037++;
+				this.chargingTicks++;
 			}
 		}
 	}
 
 	@Override
 	public void beginPhase() {
-		this.target = null;
-		this.field_7037 = 0;
+		this.pathTarget = null;
+		this.chargingTicks = 0;
 	}
 
-	public void setTarget(Vec3d target) {
-		this.target = target;
+	public void setPathTarget(Vec3d pathTarget) {
+		this.pathTarget = pathTarget;
 	}
 
 	@Override
@@ -47,8 +47,8 @@ public class ChargingPlayerPhase extends AbstractPhase {
 
 	@Nullable
 	@Override
-	public Vec3d getTarget() {
-		return this.target;
+	public Vec3d getPathTarget() {
+		return this.pathTarget;
 	}
 
 	@Override

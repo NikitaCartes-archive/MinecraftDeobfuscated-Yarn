@@ -46,7 +46,7 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public static TeamS2CPacket changePlayerTeam(Team team, String playerName, TeamS2CPacket.Operation operation) {
-		return new TeamS2CPacket(team.getName(), operation == TeamS2CPacket.Operation.ADD ? 3 : 1, Optional.empty(), ImmutableList.<String>of(playerName));
+		return new TeamS2CPacket(team.getName(), operation == TeamS2CPacket.Operation.ADD ? 3 : 4, Optional.empty(), ImmutableList.<String>of(playerName));
 	}
 
 	public TeamS2CPacket(PacketByteBuf buf) {

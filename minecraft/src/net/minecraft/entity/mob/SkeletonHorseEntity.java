@@ -12,7 +12,7 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -118,14 +118,14 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
 		tag.putBoolean("SkeletonTrap", this.isTrapped());
 		tag.putInt("SkeletonTrapTime", this.trapTime);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
 		this.setTrapped(tag.getBoolean("SkeletonTrap"));
 		this.trapTime = tag.getInt("SkeletonTrapTime");

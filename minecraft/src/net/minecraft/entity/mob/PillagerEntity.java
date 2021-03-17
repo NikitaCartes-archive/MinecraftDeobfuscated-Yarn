@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
@@ -42,8 +43,8 @@ import net.minecraft.item.BannerItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -112,18 +113,18 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
-		ListTag listTag = new ListTag();
+		NbtList nbtList = new NbtList();
 
 		for (int i = 0; i < this.inventory.size(); i++) {
 			ItemStack itemStack = this.inventory.getStack(i);
 			if (!itemStack.isEmpty()) {
-				listTag.add(itemStack.writeNbt(new CompoundTag()));
+				nbtList.add(itemStack.writeNbt(new NbtCompound()));
 			}
 		}
 
-		tag.put("Inventory", listTag);
+		tag.put("Inventory", nbtList);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -139,12 +140,12 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
-		ListTag listTag = tag.getList("Inventory", 10);
+		NbtList nbtList = tag.getList("Inventory", NbtTypeIds.COMPOUND);
 
-		for (int i = 0; i < listTag.size(); i++) {
-			ItemStack itemStack = ItemStack.fromNbt(listTag.getCompound(i));
+		for (int i = 0; i < nbtList.size(); i++) {
+			ItemStack itemStack = ItemStack.fromNbt(nbtList.getCompound(i));
 			if (!itemStack.isEmpty()) {
 				this.inventory.addStack(itemStack);
 			}
@@ -167,7 +168,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
 	) {
 		this.initEquipment(difficulty);
 		this.updateEnchantments(difficulty);

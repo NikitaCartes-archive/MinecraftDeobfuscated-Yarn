@@ -5,8 +5,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
@@ -47,8 +47,8 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 
 	public ItemStack craft(CraftingInventory craftingInventory) {
 		ItemStack itemStack = new ItemStack(Items.FIREWORK_ROCKET, 3);
-		CompoundTag compoundTag = itemStack.getOrCreateSubTag("Fireworks");
-		ListTag listTag = new ListTag();
+		NbtCompound nbtCompound = itemStack.getOrCreateSubTag("Fireworks");
+		NbtList nbtList = new NbtList();
 		int i = 0;
 
 		for (int j = 0; j < craftingInventory.size(); j++) {
@@ -57,17 +57,17 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 				if (DURATION_MODIFIER.test(itemStack2)) {
 					i++;
 				} else if (FIREWORK_STAR.test(itemStack2)) {
-					CompoundTag compoundTag2 = itemStack2.getSubTag("Explosion");
-					if (compoundTag2 != null) {
-						listTag.add(compoundTag2);
+					NbtCompound nbtCompound2 = itemStack2.getSubTag("Explosion");
+					if (nbtCompound2 != null) {
+						nbtList.add(nbtCompound2);
 					}
 				}
 			}
 		}
 
-		compoundTag.putByte("Flight", (byte)i);
-		if (!listTag.isEmpty()) {
-			compoundTag.put("Explosions", listTag);
+		nbtCompound.putByte("Flight", (byte)i);
+		if (!nbtList.isEmpty()) {
+			nbtCompound.put("Explosions", nbtList);
 		}
 
 		return itemStack;

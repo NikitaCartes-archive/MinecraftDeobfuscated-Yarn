@@ -2,6 +2,8 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LecternBlockEntity;
 import net.minecraft.entity.ItemEntity;
@@ -9,7 +11,7 @@ import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -93,12 +95,12 @@ public class LecternBlock extends BlockWithEntity {
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		World world = ctx.getWorld();
 		ItemStack itemStack = ctx.getStack();
-		CompoundTag compoundTag = itemStack.getTag();
+		NbtCompound nbtCompound = itemStack.getTag();
 		PlayerEntity playerEntity = ctx.getPlayer();
 		boolean bl = false;
-		if (!world.isClient && playerEntity != null && compoundTag != null && playerEntity.isCreativeLevelTwoOp() && compoundTag.contains("BlockEntityTag")) {
-			CompoundTag compoundTag2 = compoundTag.getCompound("BlockEntityTag");
-			if (compoundTag2.contains("Book")) {
+		if (!world.isClient && playerEntity != null && nbtCompound != null && playerEntity.isCreativeLevelTwoOp() && nbtCompound.contains("BlockEntityTag")) {
+			NbtCompound nbtCompound2 = nbtCompound.getCompound("BlockEntityTag");
+			if (nbtCompound2.contains("Book")) {
 				bl = true;
 			}
 		}
@@ -171,18 +173,18 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	public static void setHasBook(World world, BlockPos pos, BlockState state, boolean hasBook) {
-		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)).with(HAS_BOOK, Boolean.valueOf(hasBook)), 3);
+		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)).with(HAS_BOOK, Boolean.valueOf(hasBook)), SetBlockStateFlags.DEFAULT);
 		updateNeighborAlways(world, pos, state);
 	}
 
 	public static void setPowered(World world, BlockPos pos, BlockState state) {
 		setPowered(world, pos, state, true);
 		world.getBlockTickScheduler().schedule(pos, state.getBlock(), 2);
-		world.syncWorldEvent(1043, pos, 0);
+		world.syncWorldEvent(WorldEvents.LECTERN_BOOK_PAGE_TURNED, pos, 0);
 	}
 
 	private static void setPowered(World world, BlockPos pos, BlockState state, boolean powered) {
-		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(powered)), 3);
+		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(powered)), SetBlockStateFlags.DEFAULT);
 		updateNeighborAlways(world, pos, state);
 	}
 

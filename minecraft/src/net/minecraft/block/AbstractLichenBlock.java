@@ -3,14 +3,18 @@ package net.minecraft.block;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.datafixers.util.Pair;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.Function;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
@@ -37,15 +41,15 @@ public class AbstractLichenBlock extends Block {
 	private static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 1.0);
 	private static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 15.0, 16.0, 16.0, 16.0);
 	private static final Map<Direction, BooleanProperty> FACING_PROPERTIES = ConnectingBlock.FACING_PROPERTIES;
-	private static final Map<Direction, VoxelShape> SHAPES_FOR_DIRECTIONS = Util.make(Maps.newEnumMap(Direction.class), enumMap -> {
-		enumMap.put(Direction.NORTH, SOUTH_SHAPE);
-		enumMap.put(Direction.EAST, WEST_SHAPE);
-		enumMap.put(Direction.SOUTH, NORTH_SHAPE);
-		enumMap.put(Direction.WEST, EAST_SHAPE);
-		enumMap.put(Direction.UP, UP_SHAPE);
-		enumMap.put(Direction.DOWN, DOWN_SHAPE);
+	private static final Map<Direction, VoxelShape> SHAPES_FOR_DIRECTIONS = Util.make(Maps.newEnumMap(Direction.class), shapes -> {
+		shapes.put(Direction.NORTH, SOUTH_SHAPE);
+		shapes.put(Direction.EAST, WEST_SHAPE);
+		shapes.put(Direction.SOUTH, NORTH_SHAPE);
+		shapes.put(Direction.WEST, EAST_SHAPE);
+		shapes.put(Direction.UP, UP_SHAPE);
+		shapes.put(Direction.DOWN, DOWN_SHAPE);
 	});
-	private static final Direction[] DIRECTIONS = Direction.values();
+	protected static final Direction[] DIRECTIONS = Direction.values();
 	private final ImmutableMap<BlockState, VoxelShape> SHAPES;
 	private final boolean hasAllHorizontalDirections;
 	private final boolean canMirrorX;
@@ -115,14 +119,14 @@ public class AbstractLichenBlock extends Block {
 		BlockPos blockPos = ctx.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
 		return (BlockState)Arrays.stream(ctx.getPlacementDirections())
-			.map(direction -> this.addDirection(blockState, world, blockPos, direction))
+			.map(direction -> this.withDirection(blockState, world, blockPos, direction))
 			.filter(Objects::nonNull)
 			.findFirst()
 			.orElse(null);
 	}
 
 	@Nullable
-	public BlockState addDirection(BlockState state, WorldAccess world, BlockPos pos, Direction direction) {
+	public BlockState withDirection(BlockState state, BlockView world, BlockPos pos, Direction direction) {
 		if (!this.canHaveDirection(direction)) {
 			return null;
 		} else {
@@ -170,36 +174,63 @@ public class AbstractLichenBlock extends Block {
 		return blockState;
 	}
 
-	public boolean canSpreadRandomly(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public boolean trySpreadRandomly(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		List<Direction> list = Lists.<Direction>newArrayList(DIRECTIONS);
 		Collections.shuffle(list);
-		return list.stream().filter(from -> hasDirection(state, from)).anyMatch(to -> this.canSpreadRandomly(state, world, pos, to, random));
+		return list.stream().filter(from -> hasDirection(state, from)).anyMatch(to -> this.trySpreadRandomly(state, world, pos, to, random));
 	}
 
-	public boolean canSpreadRandomly(BlockState state, WorldAccess world, BlockPos pos, Direction from, Random random) {
+	public boolean trySpreadRandomly(BlockState state, WorldAccess world, BlockPos pos, Direction from, Random random) {
 		List<Direction> list = Arrays.asList(DIRECTIONS);
 		Collections.shuffle(list, random);
-		return list.stream().anyMatch(to -> this.canSpreadTo(state, world, pos, from, to));
+		return list.stream().anyMatch(to -> this.trySpreadTo(state, world, pos, from, to));
 	}
 
-	public boolean canSpreadTo(BlockState state, WorldAccess world, BlockPos pos, Direction from, Direction to) {
-		if (to.getAxis() == from.getAxis() || !hasDirection(state, from) || hasDirection(state, to)) {
-			return false;
-		} else if (this.addDirection(world, pos, to)) {
-			return true;
+	public boolean trySpreadTo(BlockState state, WorldAccess world, BlockPos pos, Direction from, Direction to) {
+		Optional<Pair<BlockPos, Direction>> optional = this.getSpreadLocation(state, world, pos, from, to);
+		if (optional.isPresent()) {
+			Pair<BlockPos, Direction> pair = (Pair<BlockPos, Direction>)optional.get();
+			return this.addDirection(world, pair.getFirst(), pair.getSecond());
 		} else {
-			return this.addDirection(world, pos.offset(to), from) ? true : this.addDirection(world, pos.offset(to).offset(from), to.getOpposite());
+			return false;
+		}
+	}
+
+	protected boolean canSpread(BlockState state, BlockView world, BlockPos pos, Direction from) {
+		return Stream.of(DIRECTIONS).anyMatch(to -> this.getSpreadLocation(state, world, pos, from, to).isPresent());
+	}
+
+	private Optional<Pair<BlockPos, Direction>> getSpreadLocation(BlockState state, BlockView world, BlockPos pos, Direction from, Direction to) {
+		if (to.getAxis() == from.getAxis() || !hasDirection(state, from) || hasDirection(state, to)) {
+			return Optional.empty();
+		} else if (this.canSpreadTo(world, pos, to)) {
+			return Optional.of(Pair.of(pos, to));
+		} else {
+			BlockPos blockPos = pos.offset(to);
+			if (this.canSpreadTo(world, blockPos, from)) {
+				return Optional.of(Pair.of(blockPos, from));
+			} else {
+				BlockPos blockPos2 = blockPos.offset(from);
+				Direction direction = to.getOpposite();
+				return this.canSpreadTo(world, blockPos2, direction) ? Optional.of(Pair.of(blockPos2, direction)) : Optional.empty();
+			}
+		}
+	}
+
+	private boolean canSpreadTo(BlockView world, BlockPos pos, Direction direction) {
+		BlockState blockState = world.getBlockState(pos);
+		if (!this.canGrowIn(blockState)) {
+			return false;
+		} else {
+			BlockState blockState2 = this.withDirection(blockState, world, pos, direction);
+			return blockState2 != null;
 		}
 	}
 
 	private boolean addDirection(WorldAccess world, BlockPos pos, Direction direction) {
 		BlockState blockState = world.getBlockState(pos);
-		if (!this.canGrowIn(blockState)) {
-			return false;
-		} else {
-			BlockState blockState2 = this.addDirection(blockState, world, pos, direction);
-			return blockState2 != null ? world.setBlockState(pos, blockState2, 2) : false;
-		}
+		BlockState blockState2 = this.withDirection(blockState, world, pos, direction);
+		return blockState2 != null ? world.setBlockState(pos, blockState2, SetBlockStateFlags.NOTIFY_LISTENERS) : false;
 	}
 
 	private boolean canGrowIn(BlockState state) {

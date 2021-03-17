@@ -4,7 +4,10 @@ import com.google.common.annotations.VisibleForTesting;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntStack;
+import java.util.Optional;
 import java.util.function.Predicate;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
@@ -140,6 +143,18 @@ public class PortalUtil {
 		}
 
 		return new Pair<>(new PortalUtil.IntBounds(i, j - 1), k);
+	}
+
+	public static Optional<BlockPos> method_34851(BlockView blockView, BlockPos blockPos, Block block, Direction direction, Block block2) {
+		BlockPos.Mutable mutable = blockPos.mutableCopy();
+
+		BlockState blockState;
+		do {
+			mutable.move(direction);
+			blockState = blockView.getBlockState(mutable);
+		} while (blockState.isOf(block));
+
+		return blockState.isOf(block2) ? Optional.of(mutable) : Optional.empty();
 	}
 
 	public static class IntBounds {

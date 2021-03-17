@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.VineBlock;
 import net.minecraft.util.math.BlockPos;
@@ -23,7 +24,9 @@ public class VinesFeature extends Feature<DefaultFeatureConfig> {
 		} else {
 			for (Direction direction : Direction.values()) {
 				if (direction != Direction.DOWN && VineBlock.shouldConnectTo(structureWorldAccess, blockPos.offset(direction), direction)) {
-					structureWorldAccess.setBlockState(blockPos, Blocks.VINE.getDefaultState().with(VineBlock.getFacingProperty(direction), Boolean.valueOf(true)), 2);
+					structureWorldAccess.setBlockState(
+						blockPos, Blocks.VINE.getDefaultState().with(VineBlock.getFacingProperty(direction), Boolean.valueOf(true)), SetBlockStateFlags.NOTIFY_LISTENERS
+					);
 					return true;
 				}
 			}

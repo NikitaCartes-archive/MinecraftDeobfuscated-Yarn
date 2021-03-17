@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoField;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -19,7 +20,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.AmbientEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -138,13 +139,13 @@ public class BatEntity extends AmbientEntity {
 				if (this.world.getClosestPlayer(CLOSE_PLAYER_PREDICATE, this) != null) {
 					this.setRoosting(false);
 					if (!bl) {
-						this.world.syncWorldEvent(null, 1025, blockPos, 0);
+						this.world.syncWorldEvent(null, WorldEvents.BAT_TAKES_OFF, blockPos, 0);
 					}
 				}
 			} else {
 				this.setRoosting(false);
 				if (!bl) {
-					this.world.syncWorldEvent(null, 1025, blockPos, 0);
+					this.world.syncWorldEvent(null, WorldEvents.BAT_TAKES_OFF, blockPos, 0);
 				}
 			}
 		} else {
@@ -209,13 +210,13 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
 		this.dataTracker.set(BAT_FLAGS, tag.getByte("BatFlags"));
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
 		tag.putByte("BatFlags", this.dataTracker.get(BAT_FLAGS));
 	}

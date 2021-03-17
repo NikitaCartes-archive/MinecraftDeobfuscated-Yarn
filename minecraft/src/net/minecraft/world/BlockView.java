@@ -47,7 +47,7 @@ public interface BlockView extends HeightLimitView {
 			(contextx, pos) -> {
 				BlockState blockState = this.getBlockState(pos);
 				Vec3d vec3d = contextx.getStart().subtract(contextx.getEnd());
-				return contextx.getState().test(blockState)
+				return contextx.getStatePredicate().test(blockState)
 					? new BlockHitResult(contextx.getEnd(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), new BlockPos(contextx.getEnd()), false)
 					: null;
 			},

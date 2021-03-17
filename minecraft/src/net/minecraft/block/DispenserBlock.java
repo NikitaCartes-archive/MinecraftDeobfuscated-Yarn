@@ -3,6 +3,8 @@ package net.minecraft.block;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.Map;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.block.entity.BlockEntity;
@@ -77,7 +79,7 @@ public class DispenserBlock extends BlockWithEntity {
 		DispenserBlockEntity dispenserBlockEntity = blockPointerImpl.getBlockEntity();
 		int i = dispenserBlockEntity.chooseNonEmptySlot();
 		if (i < 0) {
-			world.syncWorldEvent(1001, pos, 0);
+			world.syncWorldEvent(WorldEvents.DISPENSER_FAILS, pos, 0);
 			world.emitGameEvent(GameEvent.DISPENSE_FAIL, pos);
 		} else {
 			ItemStack itemStack = dispenserBlockEntity.getStack(i);
@@ -98,9 +100,9 @@ public class DispenserBlock extends BlockWithEntity {
 		boolean bl2 = (Boolean)state.get(TRIGGERED);
 		if (bl && !bl2) {
 			world.getBlockTickScheduler().schedule(pos, this, 4);
-			world.setBlockState(pos, state.with(TRIGGERED, Boolean.valueOf(true)), 4);
+			world.setBlockState(pos, state.with(TRIGGERED, Boolean.valueOf(true)), SetBlockStateFlags.NO_REDRAW);
 		} else if (!bl && bl2) {
-			world.setBlockState(pos, state.with(TRIGGERED, Boolean.valueOf(false)), 4);
+			world.setBlockState(pos, state.with(TRIGGERED, Boolean.valueOf(false)), SetBlockStateFlags.NO_REDRAW);
 		}
 	}
 

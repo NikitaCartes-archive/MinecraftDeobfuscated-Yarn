@@ -3,11 +3,13 @@ package net.minecraft.structure;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.command.argument.BlockArgumentParser;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -30,9 +32,9 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 		super(structurePieceType, i);
 	}
 
-	public SimpleStructurePiece(StructurePieceType structurePieceType, CompoundTag compoundTag) {
-		super(structurePieceType, compoundTag);
-		this.pos = new BlockPos(compoundTag.getInt("TPX"), compoundTag.getInt("TPY"), compoundTag.getInt("TPZ"));
+	public SimpleStructurePiece(StructurePieceType structurePieceType, NbtCompound nbtCompound) {
+		super(structurePieceType, nbtCompound);
+		this.pos = new BlockPos(nbtCompound.getInt("TPX"), nbtCompound.getInt("TPY"), nbtCompound.getInt("TPZ"));
 	}
 
 	protected void setStructureData(Structure structure, BlockPos pos, StructurePlacementData placementData) {
@@ -44,10 +46,10 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 	}
 
 	@Override
-	protected void writeNbt(CompoundTag tag) {
-		tag.putInt("TPX", this.pos.getX());
-		tag.putInt("TPY", this.pos.getY());
-		tag.putInt("TPZ", this.pos.getZ());
+	protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+		nbt.putInt("TPX", this.pos.getX());
+		nbt.putInt("TPY", this.pos.getY());
+		nbt.putInt("TPZ", this.pos.getZ());
 	}
 
 	@Override
@@ -62,7 +64,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 	) {
 		this.placementData.setBoundingBox(boundingBox);
 		this.boundingBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
-		if (this.structure.place(world, this.pos, pos, this.placementData, random, 2)) {
+		if (this.structure.place(world, this.pos, pos, this.placementData, random, SetBlockStateFlags.NOTIFY_LISTENERS)) {
 			for (Structure.StructureBlockInfo structureBlockInfo : this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.STRUCTURE_BLOCK)) {
 				if (structureBlockInfo.tag != null) {
 					StructureBlockMode structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.tag.getString("mode"));
@@ -90,7 +92,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 						LOGGER.error("Error while parsing blockstate {} in jigsaw block @ {}", string, structureBlockInfo2.pos);
 					}
 
-					world.setBlockState(structureBlockInfo2.pos, blockState, 3);
+					world.setBlockState(structureBlockInfo2.pos, blockState, SetBlockStateFlags.DEFAULT);
 				}
 			}
 		}

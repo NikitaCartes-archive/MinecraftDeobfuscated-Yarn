@@ -7,6 +7,8 @@ import java.util.Queue;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 public interface TaskQueue<T, F> {
 	@Nullable
@@ -15,6 +17,9 @@ public interface TaskQueue<T, F> {
 	boolean add(T message);
 
 	boolean isEmpty();
+
+	@Environment(EnvType.CLIENT)
+	int method_34706();
 
 	public static final class Prioritized implements TaskQueue<TaskQueue.PrioritizedTask, Runnable> {
 		private final List<Queue<Runnable>> queues;
@@ -44,6 +49,18 @@ public interface TaskQueue<T, F> {
 		@Override
 		public boolean isEmpty() {
 			return this.queues.stream().allMatch(Collection::isEmpty);
+		}
+
+		@Environment(EnvType.CLIENT)
+		@Override
+		public int method_34706() {
+			int i = 0;
+
+			for (Queue<Runnable> queue : this.queues) {
+				i += queue.size();
+			}
+
+			return i;
 		}
 	}
 
@@ -86,6 +103,12 @@ public interface TaskQueue<T, F> {
 		@Override
 		public boolean isEmpty() {
 			return this.queue.isEmpty();
+		}
+
+		@Environment(EnvType.CLIENT)
+		@Override
+		public int method_34706() {
+			return this.queue.size();
 		}
 	}
 }

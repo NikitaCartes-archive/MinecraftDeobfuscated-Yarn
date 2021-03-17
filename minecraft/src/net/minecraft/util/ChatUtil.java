@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class ChatUtil {
 	private static final Pattern PATTERN = Pattern.compile("(?i)\\u00A7[0-9A-FK-OR]");
-	private static final Pattern field_29204 = Pattern.compile("\r\n|[\n\r\u2028\u2029\u0085]");
+	private static final Pattern LINE_BREAK = Pattern.compile("\r\n|[\n\r\u2028\u2029\u0085]");
 
 	@Environment(EnvType.CLIENT)
 	public static String ticksToString(int ticks) {
@@ -24,16 +24,16 @@ public class ChatUtil {
 		return PATTERN.matcher(text).replaceAll("");
 	}
 
-	public static boolean isEmpty(@Nullable String string) {
-		return StringUtils.isEmpty(string);
+	public static boolean isEmpty(@Nullable String text) {
+		return StringUtils.isEmpty(text);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static int method_34238(String string) {
-		if (string.isEmpty()) {
+	public static int countLines(String text) {
+		if (text.isEmpty()) {
 			return 0;
 		} else {
-			Matcher matcher = field_29204.matcher(string);
+			Matcher matcher = LINE_BREAK.matcher(text);
 			int i = 1;
 
 			while (matcher.find()) {

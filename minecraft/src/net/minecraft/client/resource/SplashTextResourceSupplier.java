@@ -19,12 +19,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.Session;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SinglePreparationResourceReloadListener;
+import net.minecraft.resource.SinglePreparationResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
 @Environment(EnvType.CLIENT)
-public class SplashTextResourceSupplier extends SinglePreparationResourceReloadListener<List<String>> {
+public class SplashTextResourceSupplier extends SinglePreparationResourceReloader<List<String>> {
 	private static final Identifier RESOURCE_ID = new Identifier("texts/splashes.txt");
 	private static final Random RANDOM = new Random();
 	private final List<String> splashTexts = Lists.<String>newArrayList();

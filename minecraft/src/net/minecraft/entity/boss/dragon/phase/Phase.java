@@ -22,12 +22,12 @@ public interface Phase {
 
 	float getMaxYAcceleration();
 
-	float method_6847();
+	float getYawAcceleration();
 
 	PhaseType<? extends Phase> getType();
 
 	@Nullable
-	Vec3d getTarget();
+	Vec3d getPathTarget();
 
 	float modifyDamageTaken(DamageSource damageSource, float damage);
 }

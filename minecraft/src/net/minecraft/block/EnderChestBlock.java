@@ -89,7 +89,7 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 				enderChestInventory.setActiveBlockEntity(enderChestBlockEntity);
 				player.openHandledScreen(
 					new SimpleNamedScreenHandlerFactory(
-						(i, playerInventory, playerEntity) -> GenericContainerScreenHandler.createGeneric9x3(i, playerInventory, enderChestInventory), CONTAINER_NAME
+						(syncId, inventory, playerx) -> GenericContainerScreenHandler.createGeneric9x3(syncId, inventory, enderChestInventory), CONTAINER_NAME
 					)
 				);
 				player.incrementStat(Stats.OPEN_ENDERCHEST);

@@ -12,7 +12,7 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -179,7 +179,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		BlockPos blockPos = this.getDecorationBlockPos();
 		tag.putInt("TileX", blockPos.getX());
 		tag.putInt("TileY", blockPos.getY());
@@ -187,7 +187,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		this.attachmentPos = new BlockPos(tag.getInt("TileX"), tag.getInt("TileY"), tag.getInt("TileZ"));
 	}
 

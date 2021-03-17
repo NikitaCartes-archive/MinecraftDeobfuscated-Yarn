@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.command.CommandSource;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
@@ -58,7 +58,7 @@ public class BlockArgumentParser {
 	private StateManager<Block, BlockState> stateFactory;
 	private BlockState blockState;
 	@Nullable
-	private CompoundTag data;
+	private NbtCompound data;
 	private Identifier tagId = new Identifier("");
 	private int cursorPos;
 	private BiFunction<SuggestionsBuilder, TagGroup<Block>, CompletableFuture<Suggestions>> suggestions = SUGGEST_DEFAULT;
@@ -78,7 +78,7 @@ public class BlockArgumentParser {
 	}
 
 	@Nullable
-	public CompoundTag getNbtData() {
+	public NbtCompound getNbtData() {
 		return this.data;
 	}
 
@@ -433,7 +433,7 @@ public class BlockArgumentParser {
 	}
 
 	public void parseSnbt() throws CommandSyntaxException {
-		this.data = new StringNbtReader(this.reader).parseCompoundTag();
+		this.data = new StringNbtReader(this.reader).parseCompound();
 	}
 
 	private <T extends Comparable<T>> void parsePropertyValue(Property<T> property, String string, int i) throws CommandSyntaxException {

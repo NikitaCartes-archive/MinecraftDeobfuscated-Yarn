@@ -19,6 +19,7 @@ import net.minecraft.client.realms.Realms;
 import net.minecraft.client.realms.SizeUnit;
 import net.minecraft.client.realms.dto.WorldDownload;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
@@ -29,6 +30,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
@@ -122,7 +124,7 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == 256) {
+		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
 			this.cancelled = true;
 			this.backButtonClicked();
 			return true;
@@ -172,6 +174,7 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 	private void drawProgressBar(MatrixStack matrices) {
 		double d = Math.min((double)this.downloadStatus.bytesWritten / (double)this.downloadStatus.totalBytes, 1.0);
 		this.progress = String.format(Locale.ROOT, "%.1f", d * 100.0);
+		RenderSystem.setShader(GameRenderer::getPositionColorShader);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.disableTexture();
 		Tessellator tessellator = Tessellator.getInstance();

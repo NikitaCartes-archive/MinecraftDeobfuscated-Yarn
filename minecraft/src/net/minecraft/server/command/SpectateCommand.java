@@ -14,26 +14,20 @@ import net.minecraft.world.GameMode;
 public class SpectateCommand {
 	private static final SimpleCommandExceptionType SPECTATE_SELF_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.spectate.self"));
 	private static final DynamicCommandExceptionType NOT_SPECTATOR_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableText("commands.spectate.not_spectator", object)
+		playerName -> new TranslatableText("commands.spectate.not_spectator", playerName)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("spectate")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
-				.executes(commandContext -> execute(commandContext.getSource(), null, commandContext.getSource().getPlayer()))
+				.requires(source -> source.hasPermissionLevel(2))
+				.executes(context -> execute(context.getSource(), null, context.getSource().getPlayer()))
 				.then(
 					CommandManager.argument("target", EntityArgumentType.entity())
-						.executes(
-							commandContext -> execute(commandContext.getSource(), EntityArgumentType.getEntity(commandContext, "target"), commandContext.getSource().getPlayer())
-						)
+						.executes(context -> execute(context.getSource(), EntityArgumentType.getEntity(context, "target"), context.getSource().getPlayer()))
 						.then(
 							CommandManager.argument("player", EntityArgumentType.player())
-								.executes(
-									commandContext -> execute(
-											commandContext.getSource(), EntityArgumentType.getEntity(commandContext, "target"), EntityArgumentType.getPlayer(commandContext, "player")
-										)
-								)
+								.executes(context -> execute(context.getSource(), EntityArgumentType.getEntity(context, "target"), EntityArgumentType.getPlayer(context, "player")))
 						)
 				)
 		);

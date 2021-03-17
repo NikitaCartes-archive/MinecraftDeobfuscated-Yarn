@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 public interface FeatureConfig {
 	DefaultFeatureConfig DEFAULT = DefaultFeatureConfig.INSTANCE;
 
-	default Stream<ConfiguredFeature<?, ?>> method_30649() {
+	default Stream<ConfiguredFeature<?, ?>> getDecoratedFeatures() {
 		return Stream.empty();
 	}
 }

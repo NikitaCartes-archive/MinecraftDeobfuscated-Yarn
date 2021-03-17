@@ -176,6 +176,8 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 		this.getOrCreateTagBuilder(ItemTags.STONE_CRAFTING_MATERIALS).add(Items.COBBLESTONE, Items.BLACKSTONE, Items.COBBLED_DEEPSLATE);
 		this.getOrCreateTagBuilder(ItemTags.FREEZE_IMMUNE_WEARABLES).add(Items.LEATHER_BOOTS, Items.LEATHER_LEGGINGS, Items.LEATHER_CHESTPLATE, Items.LEATHER_HELMET);
 		this.getOrCreateTagBuilder(ItemTags.AXOLOTL_TEMPT_ITEMS).add(Items.TROPICAL_FISH, Items.TROPICAL_FISH_BUCKET);
+		this.getOrCreateTagBuilder(ItemTags.CLUSTER_MAX_HARVESTABLES)
+			.add(Items.DIAMOND_PICKAXE, Items.GOLDEN_PICKAXE, Items.IRON_PICKAXE, Items.NETHERITE_PICKAXE, Items.STONE_PICKAXE, Items.WOODEN_PICKAXE);
 	}
 
 	protected void copy(Tag.Identified<Block> blockTag, Tag.Identified<Item> itemTag) {

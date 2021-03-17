@@ -2,6 +2,8 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -68,8 +70,8 @@ public class TurtleEggBlock extends Block {
 		if (i <= 1) {
 			world.breakBlock(pos, false);
 		} else {
-			world.setBlockState(pos, state.with(EGGS, Integer.valueOf(i - 1)), 2);
-			world.syncWorldEvent(2001, pos, Block.getRawIdFromState(state));
+			world.setBlockState(pos, state.with(EGGS, Integer.valueOf(i - 1)), SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
 		}
 	}
 
@@ -79,13 +81,13 @@ public class TurtleEggBlock extends Block {
 			int i = (Integer)state.get(HATCH);
 			if (i < 2) {
 				world.playSound(null, pos, SoundEvents.ENTITY_TURTLE_EGG_CRACK, SoundCategory.BLOCKS, 0.7F, 0.9F + random.nextFloat() * 0.2F);
-				world.setBlockState(pos, state.with(HATCH, Integer.valueOf(i + 1)), 2);
+				world.setBlockState(pos, state.with(HATCH, Integer.valueOf(i + 1)), SetBlockStateFlags.NOTIFY_LISTENERS);
 			} else {
 				world.playSound(null, pos, SoundEvents.ENTITY_TURTLE_EGG_HATCH, SoundCategory.BLOCKS, 0.7F, 0.9F + random.nextFloat() * 0.2F);
 				world.removeBlock(pos, false);
 
 				for (int j = 0; j < state.get(EGGS); j++) {
-					world.syncWorldEvent(2001, pos, Block.getRawIdFromState(state));
+					world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
 					TurtleEntity turtleEntity = EntityType.TURTLE.create(world);
 					turtleEntity.setBreedingAge(-24000);
 					turtleEntity.setHomePos(pos);
@@ -107,7 +109,7 @@ public class TurtleEggBlock extends Block {
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (isSandBelow(world, pos) && !world.isClient) {
-			world.syncWorldEvent(2005, pos, 0);
+			world.syncWorldEvent(WorldEvents.PLANT_FERTILIZED, pos, 0);
 		}
 	}
 

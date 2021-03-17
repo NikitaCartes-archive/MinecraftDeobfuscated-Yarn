@@ -14,7 +14,7 @@ public class VertexFormats {
 	public static final VertexFormatElement NORMAL_ELEMENT = new VertexFormatElement(0, VertexFormatElement.Format.BYTE, VertexFormatElement.Type.NORMAL, 3);
 	public static final VertexFormatElement PADDING_ELEMENT = new VertexFormatElement(0, VertexFormatElement.Format.BYTE, VertexFormatElement.Type.PADDING, 1);
 	public static final VertexFormatElement field_29335 = TEXTURE_ELEMENT;
-	public static final VertexFormat field_29336 = new VertexFormat(
+	public static final VertexFormat BLIT_SCREEN = new VertexFormat(
 		ImmutableMap.<String, VertexFormatElement>builder().put("Position", POSITION_ELEMENT).put("UV", field_29335).put("Color", COLOR_ELEMENT).build()
 	);
 	public static final VertexFormat POSITION_COLOR_TEXTURE_LIGHT_NORMAL = new VertexFormat(
@@ -50,7 +50,7 @@ public class VertexFormats {
 	public static final VertexFormat POSITION_COLOR = new VertexFormat(
 		ImmutableMap.<String, VertexFormatElement>builder().put("Position", POSITION_ELEMENT).put("Color", COLOR_ELEMENT).build()
 	);
-	public static final VertexFormat field_29337 = new VertexFormat(
+	public static final VertexFormat LINES = new VertexFormat(
 		ImmutableMap.<String, VertexFormatElement>builder()
 			.put("Position", POSITION_ELEMENT)
 			.put("Color", COLOR_ELEMENT)

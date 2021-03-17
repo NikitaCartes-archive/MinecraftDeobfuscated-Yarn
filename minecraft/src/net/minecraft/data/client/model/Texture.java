@@ -155,7 +155,7 @@ public class Texture {
 			.put(TextureKey.BOTTOM, getSubId(block, "_bottom"));
 	}
 
-	public static Texture method_27168(Block block) {
+	public static Texture wallSideEnd(Block block) {
 		Identifier identifier = getId(block);
 		return new Texture().put(TextureKey.WALL, identifier).put(TextureKey.SIDE, identifier).put(TextureKey.END, getSubId(block, "_top"));
 	}

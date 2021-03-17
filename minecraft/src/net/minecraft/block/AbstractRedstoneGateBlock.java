@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -40,9 +41,9 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 			boolean bl = (Boolean)state.get(POWERED);
 			boolean bl2 = this.hasPower(world, pos, state);
 			if (bl && !bl2) {
-				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), 2);
+				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), SetBlockStateFlags.NOTIFY_LISTENERS);
 			} else if (!bl) {
-				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), 2);
+				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), SetBlockStateFlags.NOTIFY_LISTENERS);
 				if (!bl2) {
 					world.getBlockTickScheduler().schedule(pos, this, this.getUpdateDelayInternal(state), TickPriority.VERY_HIGH);
 				}

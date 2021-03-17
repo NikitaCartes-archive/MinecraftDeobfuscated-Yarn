@@ -14,9 +14,9 @@ public class SaveAllCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("save-all")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
-				.executes(commandContext -> saveAll(commandContext.getSource(), false))
-				.then(CommandManager.literal("flush").executes(commandContext -> saveAll(commandContext.getSource(), true)))
+				.requires(source -> source.hasPermissionLevel(4))
+				.executes(context -> saveAll(context.getSource(), false))
+				.then(CommandManager.literal("flush").executes(context -> saveAll(context.getSource(), true)))
 		);
 	}
 

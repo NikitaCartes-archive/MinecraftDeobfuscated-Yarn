@@ -1,7 +1,8 @@
 package net.minecraft.village;
 
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.MathHelper;
 
@@ -17,26 +18,26 @@ public class TradeOffer {
 	private float priceMultiplier;
 	private int merchantExperience = 1;
 
-	public TradeOffer(CompoundTag tag) {
+	public TradeOffer(NbtCompound tag) {
 		this.firstBuyItem = ItemStack.fromNbt(tag.getCompound("buy"));
 		this.secondBuyItem = ItemStack.fromNbt(tag.getCompound("buyB"));
 		this.sellItem = ItemStack.fromNbt(tag.getCompound("sell"));
 		this.uses = tag.getInt("uses");
-		if (tag.contains("maxUses", 99)) {
+		if (tag.contains("maxUses", NbtTypeIds.NUMBER)) {
 			this.maxUses = tag.getInt("maxUses");
 		} else {
 			this.maxUses = 4;
 		}
 
-		if (tag.contains("rewardExp", 1)) {
+		if (tag.contains("rewardExp", NbtTypeIds.BYTE)) {
 			this.rewardingPlayerExperience = tag.getBoolean("rewardExp");
 		}
 
-		if (tag.contains("xp", 3)) {
+		if (tag.contains("xp", NbtTypeIds.INT)) {
 			this.merchantExperience = tag.getInt("xp");
 		}
 
-		if (tag.contains("priceMultiplier", 5)) {
+		if (tag.contains("priceMultiplier", NbtTypeIds.FLOAT)) {
 			this.priceMultiplier = tag.getFloat("priceMultiplier");
 		}
 
@@ -249,19 +250,19 @@ public class TradeOffer {
 		return this.rewardingPlayerExperience;
 	}
 
-	public CompoundTag toNbt() {
-		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.put("buy", this.firstBuyItem.writeNbt(new CompoundTag()));
-		compoundTag.put("sell", this.sellItem.writeNbt(new CompoundTag()));
-		compoundTag.put("buyB", this.secondBuyItem.writeNbt(new CompoundTag()));
-		compoundTag.putInt("uses", this.uses);
-		compoundTag.putInt("maxUses", this.maxUses);
-		compoundTag.putBoolean("rewardExp", this.rewardingPlayerExperience);
-		compoundTag.putInt("xp", this.merchantExperience);
-		compoundTag.putFloat("priceMultiplier", this.priceMultiplier);
-		compoundTag.putInt("specialPrice", this.specialPrice);
-		compoundTag.putInt("demand", this.demandBonus);
-		return compoundTag;
+	public NbtCompound toNbt() {
+		NbtCompound nbtCompound = new NbtCompound();
+		nbtCompound.put("buy", this.firstBuyItem.writeNbt(new NbtCompound()));
+		nbtCompound.put("sell", this.sellItem.writeNbt(new NbtCompound()));
+		nbtCompound.put("buyB", this.secondBuyItem.writeNbt(new NbtCompound()));
+		nbtCompound.putInt("uses", this.uses);
+		nbtCompound.putInt("maxUses", this.maxUses);
+		nbtCompound.putBoolean("rewardExp", this.rewardingPlayerExperience);
+		nbtCompound.putInt("xp", this.merchantExperience);
+		nbtCompound.putFloat("priceMultiplier", this.priceMultiplier);
+		nbtCompound.putInt("specialPrice", this.specialPrice);
+		nbtCompound.putInt("demand", this.demandBonus);
+		return nbtCompound;
 	}
 
 	public boolean matchesBuyItems(ItemStack first, ItemStack second) {

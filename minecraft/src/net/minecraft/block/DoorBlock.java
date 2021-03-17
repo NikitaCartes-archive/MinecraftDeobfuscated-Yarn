@@ -3,6 +3,8 @@ package net.minecraft.block;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.enums.DoorHinge;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.piston.PistonBehavior;
@@ -118,11 +120,11 @@ public class DoorBlock extends Block {
 	}
 
 	private int getOpenSoundEventId() {
-		return this.material == Material.METAL ? 1011 : 1012;
+		return this.material == Material.METAL ? WorldEvents.IRON_DOOR_CLOSES : WorldEvents.WOODEN_DOOR_CLOSES;
 	}
 
 	private int getCloseSoundEventId() {
-		return this.material == Material.METAL ? 1005 : 1006;
+		return this.material == Material.METAL ? WorldEvents.IRON_DOOR_OPENS : WorldEvents.WOODEN_DOOR_OPENS;
 	}
 
 	@Nullable
@@ -145,7 +147,7 @@ public class DoorBlock extends Block {
 
 	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-		world.setBlockState(pos.up(), state.with(HALF, DoubleBlockHalf.UPPER), 3);
+		world.setBlockState(pos.up(), state.with(HALF, DoubleBlockHalf.UPPER), SetBlockStateFlags.DEFAULT);
 	}
 
 	private DoorHinge getHinge(ItemPlacementContext ctx) {
@@ -191,7 +193,7 @@ public class DoorBlock extends Block {
 			return ActionResult.PASS;
 		} else {
 			state = state.cycle(OPEN);
-			world.setBlockState(pos, state, 10);
+			world.setBlockState(pos, state, SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
 			world.syncWorldEvent(player, state.get(OPEN) ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos, 0);
 			world.emitGameEvent(player, this.isOpen(state) ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
 			return ActionResult.success(world.isClient);
@@ -204,7 +206,7 @@ public class DoorBlock extends Block {
 
 	public void setOpen(@Nullable Entity entity, World world, BlockState state, BlockPos pos, boolean open) {
 		if (state.isOf(this) && (Boolean)state.get(OPEN) != open) {
-			world.setBlockState(pos, state.with(OPEN, Boolean.valueOf(open)), 10);
+			world.setBlockState(pos, state.with(OPEN, Boolean.valueOf(open)), SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
 			this.playOpenCloseSound(world, pos, open);
 			world.emitGameEvent(entity, open ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
 		}
@@ -220,7 +222,7 @@ public class DoorBlock extends Block {
 				world.emitGameEvent(bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
 			}
 
-			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)).with(OPEN, Boolean.valueOf(bl)), 2);
+			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)).with(OPEN, Boolean.valueOf(bl)), SetBlockStateFlags.NOTIFY_LISTENERS);
 		}
 	}
 

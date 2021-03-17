@@ -61,12 +61,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.loot.LootManager;
 import net.minecraft.loot.condition.LootConditionManager;
 import net.minecraft.loot.function.LootFunctionManager;
-import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.network.encryption.NetworkEncryptionException;
+import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.resource.DataPackSettings;
+import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ServerResourceManager;
@@ -151,6 +152,24 @@ import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Represents a logical Minecraft server.
+ * 
+ * <p>Since Minecraft uses a Client-Server architecture for the game, the server processes all logical game functions.
+ * A few of the actions a Minecraft server will handle includes processing player actions, handling damage to entities, advancing the world time and executing commands.
+ * 
+ * <p>There are two primary implementations for a Minecraft server: a dedicated and an integrated server.
+ * 
+ * <p>A dedicated server is a Minecraft server not attached to a Minecraft game client and may be run remotely from any connected players.
+ * A dedicated server has a few exclusive features such as a whitelist/blacklist, remote rcon connections, and a terminal to input commands.
+ * 
+ * <p>An integrated server is functionally equivalent to a dedicated server except that is hosted by a Minecraft game client and is typically used in a single player world.
+ * An integrated server differs from a dedicated server by allowing connections within the local area network (LAN) and the host client.
+ * Generally, you will always want to treat connection to an integrated server like you would to a dedicated server since the concept of an integrated server is an implementation detail in Minecraft.
+ * 
+ * @see net.minecraft.server.dedicated.MinecraftDedicatedServer
+ * @see net.minecraft.server.integrated.IntegratedServer
+ */
 public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask> implements SnooperListener, CommandOutput, AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final File USER_CACHE_FILE = new File("usercache.json");
@@ -269,6 +288,12 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		persistentStateManager.getOrCreate(this.getScoreboard()::stateFromNbt, this.getScoreboard()::createState, "scoreboard");
 	}
 
+	/**
+	 * Setups a Minecraft server to be ready for players to connect.
+	 * This method does several things including loading server properties and loading worlds.
+	 * 
+	 * @return true if the Minecraft server was successfully setup, false if the server failed to be setup.
+	 */
 	protected abstract boolean setupServer() throws IOException;
 
 	public static void convertLevel(LevelStorage.Session session) {
@@ -278,19 +303,19 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				private long lastProgressUpdate = Util.getMeasuringTimeMs();
 
 				@Override
-				public void method_15412(Text text) {
+				public void setTitle(Text title) {
 				}
 
 				@Environment(EnvType.CLIENT)
 				@Override
-				public void method_15413(Text text) {
+				public void setTitleAndTask(Text title) {
 				}
 
 				@Override
-				public void progressStagePercentage(int i) {
+				public void progressStagePercentage(int percentage) {
 					if (Util.getMeasuringTimeMs() - this.lastProgressUpdate >= 1000L) {
 						this.lastProgressUpdate = Util.getMeasuringTimeMs();
-						MinecraftServer.LOGGER.info("Converting... {}%", i);
+						MinecraftServer.LOGGER.info("Converting... {}%", percentage);
 					}
 				}
 
@@ -300,7 +325,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				}
 
 				@Override
-				public void method_15414(Text text) {
+				public void setTask(Text task) {
 				}
 			});
 		}
@@ -436,7 +461,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				}
 			}
 
-			int i = chunkGenerator.getSpawnHeight();
+			int i = chunkGenerator.getSpawnHeight(world);
 			if (i < world.getBottomY()) {
 				BlockPos blockPos2 = chunkPos.getStartPos();
 				i = world.getTopY(Heightmap.Type.WORLD_SURFACE, blockPos2.getX() + 8, blockPos2.getZ() + 8);
@@ -1127,10 +1152,19 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		snooper.addInfo("worlds", i);
 	}
 
+	/**
+	 * Checks whether this server is a dedicated server.
+	 * 
+	 * <p>A dedicated server refers to a Minecraft server implementation which is detached from a parent Minecraft client process.
+	 * A dedicated Minecraft server only accepts remote connections.
+	 */
 	public abstract boolean isDedicated();
 
 	public abstract int getRateLimit();
 
+	/**
+	 * Checks whether this Minecraft server should require all connected players are using a licensed Minecraft account when connecting to this server.
+	 */
 	public boolean isOnlineMode() {
 		return this.onlineMode;
 	}
@@ -1771,5 +1805,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	@Nullable
 	public GameMode getForcedGameMode() {
 		return null;
+	}
+
+	public ResourceManager method_34864() {
+		return this.serverResourceManager.getResourceManager();
 	}
 }

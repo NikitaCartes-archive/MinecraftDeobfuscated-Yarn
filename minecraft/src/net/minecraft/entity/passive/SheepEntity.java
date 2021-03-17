@@ -40,7 +40,7 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootTables;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.screen.ScreenHandler;
@@ -263,14 +263,14 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
 		tag.putBoolean("Sheared", this.isSheared());
 		tag.putByte("Color", (byte)this.getColor().getId());
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
 		this.setSheared(tag.getBoolean("Sheared"));
 		this.setColor(DyeColor.byId(tag.getByte("Color")));
@@ -351,7 +351,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
 	) {
 		this.setColor(generateDefaultColor(world.getRandom()));
 		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);

@@ -9,6 +9,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.OperatorBlock;
@@ -31,6 +32,7 @@ import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.screen.slot.Slot;
@@ -79,9 +81,9 @@ public class ClientPlayerInteractionManager {
 		this.gameMode.setAbilities(player.getAbilities());
 	}
 
-	public void method_32790(GameMode gameMode, @Nullable GameMode gameMode2) {
+	public void setGameModes(GameMode gameMode, @Nullable GameMode previousGameMode) {
 		this.gameMode = gameMode;
-		this.previousGameMode = gameMode2;
+		this.previousGameMode = previousGameMode;
 		this.gameMode.setAbilities(this.client.player.getAbilities());
 	}
 
@@ -115,7 +117,7 @@ public class ClientPlayerInteractionManager {
 				} else {
 					block.onBreak(world, pos, blockState, this.client.player);
 					FluidState fluidState = world.getFluidState(pos);
-					boolean bl = world.setBlockState(pos, fluidState.getBlockState(), 11);
+					boolean bl = world.setBlockState(pos, fluidState.getBlockState(), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
 					if (bl) {
 						block.onBroken(world, pos, blockState);
 					}
@@ -307,12 +309,12 @@ public class ClientPlayerInteractionManager {
 			return ActionResult.PASS;
 		} else {
 			this.syncSelectedSlot();
+			this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Full(player.getX(), player.getY(), player.getZ(), player.yaw, player.pitch, player.isOnGround()));
 			this.networkHandler.sendPacket(new PlayerInteractItemC2SPacket(hand));
 			ItemStack itemStack = player.getStackInHand(hand);
 			if (player.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
 				return ActionResult.PASS;
 			} else {
-				int i = itemStack.getCount();
 				TypedActionResult<ItemStack> typedActionResult = itemStack.use(world, player, hand);
 				ItemStack itemStack2 = typedActionResult.getValue();
 				if (itemStack2 != itemStack) {

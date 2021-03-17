@@ -1,5 +1,7 @@
 package net.minecraft.item;
 
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -40,21 +42,21 @@ public class EnderEyeItem extends Item {
 		} else {
 			BlockState blockState2 = blockState.with(EndPortalFrameBlock.EYE, Boolean.valueOf(true));
 			Block.pushEntitiesUpBeforeBlockChange(blockState, blockState2, world, blockPos);
-			world.setBlockState(blockPos, blockState2, 2);
+			world.setBlockState(blockPos, blockState2, SetBlockStateFlags.NOTIFY_LISTENERS);
 			world.updateComparators(blockPos, Blocks.END_PORTAL_FRAME);
 			context.getStack().decrement(1);
-			world.syncWorldEvent(1503, blockPos, 0);
+			world.syncWorldEvent(WorldEvents.END_PORTAL_FRAME_FILLED, blockPos, 0);
 			BlockPattern.Result result = EndPortalFrameBlock.getCompletedFramePattern().searchAround(world, blockPos);
 			if (result != null) {
 				BlockPos blockPos2 = result.getFrontTopLeft().add(-3, 0, -3);
 
 				for (int i = 0; i < 3; i++) {
 					for (int j = 0; j < 3; j++) {
-						world.setBlockState(blockPos2.add(i, 0, j), Blocks.END_PORTAL.getDefaultState(), 2);
+						world.setBlockState(blockPos2.add(i, 0, j), Blocks.END_PORTAL.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
 					}
 				}
 
-				world.syncGlobalEvent(1038, blockPos2.add(1, 0, 1), 0);
+				world.syncGlobalEvent(WorldEvents.END_PORTAL_OPENED, blockPos2.add(1, 0, 1), 0);
 			}
 
 			return ActionResult.CONSUME;
@@ -93,7 +95,7 @@ public class EnderEyeItem extends Item {
 						0.5F,
 						0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F)
 					);
-					world.syncWorldEvent(null, 1003, user.getBlockPos(), 0);
+					world.syncWorldEvent(null, WorldEvents.EYE_OF_ENDER_LAUNCHES, user.getBlockPos(), 0);
 					if (!user.getAbilities().creativeMode) {
 						itemStack.decrement(1);
 					}

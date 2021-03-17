@@ -3,6 +3,7 @@ package net.minecraft.screen;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -63,7 +64,7 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 						ExperienceOrbEntity.spawn((ServerWorld)world, Vec3d.ofCenter(blockPos), this.getExperience(world));
 					}
 
-					world.syncWorldEvent(1042, blockPos, 0);
+					world.syncWorldEvent(WorldEvents.GRINDSTONE_USED, blockPos, 0);
 				});
 				GrindstoneScreenHandler.this.input.setStack(0, ItemStack.EMPTY);
 				GrindstoneScreenHandler.this.input.setStack(1, ItemStack.EMPTY);

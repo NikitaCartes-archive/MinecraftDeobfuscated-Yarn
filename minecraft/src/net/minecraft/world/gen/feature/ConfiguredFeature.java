@@ -49,7 +49,7 @@ public class ConfiguredFeature<FC extends FeatureConfig, F extends Feature<FC>> 
 		return this.feature.generate(new FeatureContext<>(world, chunkGenerator, random, origin, this.config));
 	}
 
-	public Stream<ConfiguredFeature<?, ?>> method_30648() {
-		return Stream.concat(Stream.of(this), this.config.method_30649());
+	public Stream<ConfiguredFeature<?, ?>> getDecoratedFeatures() {
+		return Stream.concat(Stream.of(this), this.config.getDecoratedFeatures());
 	}
 }

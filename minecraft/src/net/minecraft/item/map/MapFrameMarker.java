@@ -1,6 +1,6 @@
 package net.minecraft.item.map;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.BlockPos;
 
@@ -15,19 +15,19 @@ public class MapFrameMarker {
 		this.entityId = entityId;
 	}
 
-	public static MapFrameMarker fromNbt(CompoundTag tag) {
+	public static MapFrameMarker fromNbt(NbtCompound tag) {
 		BlockPos blockPos = NbtHelper.toBlockPos(tag.getCompound("Pos"));
 		int i = tag.getInt("Rotation");
 		int j = tag.getInt("EntityId");
 		return new MapFrameMarker(blockPos, i, j);
 	}
 
-	public CompoundTag toNbt() {
-		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.put("Pos", NbtHelper.fromBlockPos(this.pos));
-		compoundTag.putInt("Rotation", this.rotation);
-		compoundTag.putInt("EntityId", this.entityId);
-		return compoundTag;
+	public NbtCompound toNbt() {
+		NbtCompound nbtCompound = new NbtCompound();
+		nbtCompound.put("Pos", NbtHelper.fromBlockPos(this.pos));
+		nbtCompound.putInt("Rotation", this.rotation);
+		nbtCompound.putInt("EntityId", this.entityId);
+		return nbtCompound;
 	}
 
 	public BlockPos getPos() {

@@ -6,10 +6,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeManager;
@@ -63,35 +64,35 @@ public class ServerRecipeBook extends RecipeBook {
 		player.networkHandler.sendPacket(new UnlockRecipesS2CPacket(action, recipeIds, Collections.emptyList(), this.getOptions()));
 	}
 
-	public CompoundTag toNbt() {
-		CompoundTag compoundTag = new CompoundTag();
-		this.getOptions().writeNbt(compoundTag);
-		ListTag listTag = new ListTag();
+	public NbtCompound toNbt() {
+		NbtCompound nbtCompound = new NbtCompound();
+		this.getOptions().writeNbt(nbtCompound);
+		NbtList nbtList = new NbtList();
 
 		for (Identifier identifier : this.recipes) {
-			listTag.add(StringTag.of(identifier.toString()));
+			nbtList.add(NbtString.of(identifier.toString()));
 		}
 
-		compoundTag.put("recipes", listTag);
-		ListTag listTag2 = new ListTag();
+		nbtCompound.put("recipes", nbtList);
+		NbtList nbtList2 = new NbtList();
 
 		for (Identifier identifier2 : this.toBeDisplayed) {
-			listTag2.add(StringTag.of(identifier2.toString()));
+			nbtList2.add(NbtString.of(identifier2.toString()));
 		}
 
-		compoundTag.put("toBeDisplayed", listTag2);
-		return compoundTag;
+		nbtCompound.put("toBeDisplayed", nbtList2);
+		return nbtCompound;
 	}
 
-	public void readNbt(CompoundTag tag, RecipeManager recipeManager) {
+	public void readNbt(NbtCompound tag, RecipeManager recipeManager) {
 		this.setOptions(RecipeBookOptions.fromNbt(tag));
-		ListTag listTag = tag.getList("recipes", 8);
-		this.handleList(listTag, this::add, recipeManager);
-		ListTag listTag2 = tag.getList("toBeDisplayed", 8);
-		this.handleList(listTag2, this::display, recipeManager);
+		NbtList nbtList = tag.getList("recipes", NbtTypeIds.STRING);
+		this.handleList(nbtList, this::add, recipeManager);
+		NbtList nbtList2 = tag.getList("toBeDisplayed", NbtTypeIds.STRING);
+		this.handleList(nbtList2, this::display, recipeManager);
 	}
 
-	private void handleList(ListTag list, Consumer<Recipe<?>> handler, RecipeManager recipeManager) {
+	private void handleList(NbtList list, Consumer<Recipe<?>> handler, RecipeManager recipeManager) {
 		for (int i = 0; i < list.size(); i++) {
 			String string = list.getString(i);
 

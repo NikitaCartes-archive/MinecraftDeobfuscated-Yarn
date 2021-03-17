@@ -7,7 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public interface FluidModificationItem {
-	default void onEmptied(@Nullable PlayerEntity playerEntity, World world, ItemStack itemStack, BlockPos blockPos) {
+	default void onEmptied(@Nullable PlayerEntity player, World world, ItemStack stack, BlockPos pos) {
 	}
 
 	boolean placeFluid(@Nullable PlayerEntity player, World world, BlockPos pos, @Nullable BlockHitResult hitResult);

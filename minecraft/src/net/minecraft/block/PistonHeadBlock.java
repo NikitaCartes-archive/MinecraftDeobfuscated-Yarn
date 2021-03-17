@@ -83,16 +83,16 @@ public class PistonHeadBlock extends FacingBlock {
 		return (state.get(SHORT) ? SHORT_HEAD_SHAPES : HEAD_SHAPES)[((Direction)state.get(FACING)).ordinal()];
 	}
 
-	private boolean method_26980(BlockState state, BlockState blockState) {
-		Block block = state.get(TYPE) == PistonType.DEFAULT ? Blocks.PISTON : Blocks.STICKY_PISTON;
-		return blockState.isOf(block) && (Boolean)blockState.get(PistonBlock.EXTENDED) && blockState.get(FACING) == state.get(FACING);
+	private boolean isAttached(BlockState headState, BlockState pistonState) {
+		Block block = headState.get(TYPE) == PistonType.DEFAULT ? Blocks.PISTON : Blocks.STICKY_PISTON;
+		return pistonState.isOf(block) && (Boolean)pistonState.get(PistonBlock.EXTENDED) && pistonState.get(FACING) == headState.get(FACING);
 	}
 
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		if (!world.isClient && player.getAbilities().creativeMode) {
 			BlockPos blockPos = pos.offset(((Direction)state.get(FACING)).getOpposite());
-			if (this.method_26980(state, world.getBlockState(blockPos))) {
+			if (this.isAttached(state, world.getBlockState(blockPos))) {
 				world.breakBlock(blockPos, false);
 			}
 		}
@@ -105,7 +105,7 @@ public class PistonHeadBlock extends FacingBlock {
 		if (!state.isOf(newState.getBlock())) {
 			super.onStateReplaced(state, world, pos, newState, moved);
 			BlockPos blockPos = pos.offset(((Direction)state.get(FACING)).getOpposite());
-			if (this.method_26980(state, world.getBlockState(blockPos))) {
+			if (this.isAttached(state, world.getBlockState(blockPos))) {
 				world.breakBlock(blockPos, true);
 			}
 		}
@@ -123,7 +123,7 @@ public class PistonHeadBlock extends FacingBlock {
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos.offset(((Direction)state.get(FACING)).getOpposite()));
-		return this.method_26980(state, blockState) || blockState.isOf(Blocks.MOVING_PISTON) && blockState.get(FACING) == state.get(FACING);
+		return this.isAttached(state, blockState) || blockState.isOf(Blocks.MOVING_PISTON) && blockState.get(FACING) == state.get(FACING);
 	}
 
 	@Override

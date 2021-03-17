@@ -1,6 +1,7 @@
 package net.minecraft.entity.vehicle;
 
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -16,7 +17,7 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -137,7 +138,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	protected void writeCustomDataToNbt(CompoundTag tag) {
+	protected void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
 		if (this.lootTableId != null) {
 			tag.putString("LootTable", this.lootTableId.toString());
@@ -150,10 +151,10 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	protected void readCustomDataFromNbt(CompoundTag tag) {
+	protected void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-		if (tag.contains("LootTable", 8)) {
+		if (tag.contains("LootTable", NbtTypeIds.STRING)) {
 			this.lootTableId = new Identifier(tag.getString("LootTable"));
 			this.lootSeed = tag.getLong("LootTableSeed");
 		} else {

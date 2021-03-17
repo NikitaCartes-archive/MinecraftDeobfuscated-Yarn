@@ -75,7 +75,7 @@ public class GenerationSettings {
 		this.flowerFeatures = (List<ConfiguredFeature<?, ?>>)features.stream()
 			.flatMap(Collection::stream)
 			.map(Supplier::get)
-			.flatMap(ConfiguredFeature::method_30648)
+			.flatMap(ConfiguredFeature::getDecoratedFeatures)
 			.filter(configuredFeature -> configuredFeature.feature == Feature.FLOWER)
 			.collect(ImmutableList.toImmutableList());
 	}

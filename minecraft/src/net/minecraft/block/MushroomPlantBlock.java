@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import java.util.Random;
 import java.util.function.Supplier;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -50,7 +51,7 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 			}
 
 			if (world.isAir(blockPos2) && state.canPlaceAt(world, blockPos2)) {
-				world.setBlockState(blockPos2, state, 2);
+				world.setBlockState(blockPos2, state, SetBlockStateFlags.NOTIFY_LISTENERS);
 			}
 		}
 	}
@@ -72,7 +73,7 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 		if (((ConfiguredFeature)this.feature.get()).generate(world, world.getChunkManager().getChunkGenerator(), random, pos)) {
 			return true;
 		} else {
-			world.setBlockState(pos, state, 3);
+			world.setBlockState(pos, state, SetBlockStateFlags.DEFAULT);
 			return false;
 		}
 	}

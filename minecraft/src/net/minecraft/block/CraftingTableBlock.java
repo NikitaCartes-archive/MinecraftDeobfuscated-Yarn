@@ -35,7 +35,7 @@ public class CraftingTableBlock extends Block {
 	@Override
 	public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
 		return new SimpleNamedScreenHandlerFactory(
-			(i, playerInventory, playerEntity) -> new CraftingScreenHandler(i, playerInventory, ScreenHandlerContext.create(world, pos)), TITLE
+			(syncId, inventory, player) -> new CraftingScreenHandler(syncId, inventory, ScreenHandlerContext.create(world, pos)), TITLE
 		);
 	}
 }

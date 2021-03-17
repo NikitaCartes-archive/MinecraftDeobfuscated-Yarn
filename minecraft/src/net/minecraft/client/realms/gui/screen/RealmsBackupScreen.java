@@ -30,6 +30,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class RealmsBackupScreen extends RealmsScreen {
@@ -156,7 +157,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == 256) {
+		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
 			this.client.openScreen(this.parent);
 			return true;
 		} else {

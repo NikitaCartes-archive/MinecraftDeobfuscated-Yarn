@@ -3,6 +3,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
@@ -47,7 +48,7 @@ public class NetherWartBlock extends PlantBlock {
 		int i = (Integer)state.get(AGE);
 		if (i < 3 && random.nextInt(10) == 0) {
 			state = state.with(AGE, Integer.valueOf(i + 1));
-			world.setBlockState(pos, state, 2);
+			world.setBlockState(pos, state, SetBlockStateFlags.NOTIFY_LISTENERS);
 		}
 	}
 

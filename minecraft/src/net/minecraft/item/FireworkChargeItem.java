@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -22,14 +22,14 @@ public class FireworkChargeItem extends Item {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		CompoundTag compoundTag = stack.getSubTag("Explosion");
-		if (compoundTag != null) {
-			appendFireworkTooltip(compoundTag, tooltip);
+		NbtCompound nbtCompound = stack.getSubTag("Explosion");
+		if (nbtCompound != null) {
+			appendFireworkTooltip(nbtCompound, tooltip);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void appendFireworkTooltip(CompoundTag tag, List<Text> tooltip) {
+	public static void appendFireworkTooltip(NbtCompound tag, List<Text> tooltip) {
 		FireworkItem.Type type = FireworkItem.Type.byId(tag.getByte("Type"));
 		tooltip.add(new TranslatableText("item.minecraft.firework_star.shape." + type.getName()).formatted(Formatting.GRAY));
 		int[] is = tag.getIntArray("Colors");

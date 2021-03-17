@@ -2,7 +2,7 @@ package net.minecraft.world;
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 
 public class ChunkUpdateState extends PersistentState {
 	private final LongSet all;
@@ -17,12 +17,12 @@ public class ChunkUpdateState extends PersistentState {
 		this(new LongOpenHashSet(), new LongOpenHashSet());
 	}
 
-	public static ChunkUpdateState fromNbt(CompoundTag tag) {
+	public static ChunkUpdateState fromNbt(NbtCompound tag) {
 		return new ChunkUpdateState(new LongOpenHashSet(tag.getLongArray("All")), new LongOpenHashSet(tag.getLongArray("Remaining")));
 	}
 
 	@Override
-	public CompoundTag writeNbt(CompoundTag tag) {
+	public NbtCompound writeNbt(NbtCompound tag) {
 		tag.putLongArray("All", this.all.toLongArray());
 		tag.putLongArray("Remaining", this.remaining.toLongArray());
 		return tag;

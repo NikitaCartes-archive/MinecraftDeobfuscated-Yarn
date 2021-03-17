@@ -8,7 +8,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.JsonSerializer;
@@ -27,7 +27,7 @@ public class StorageLootNbtProvider implements LootNbtProvider {
 
 	@Nullable
 	@Override
-	public Tag getNbtTag(LootContext context) {
+	public NbtElement getNbtTag(LootContext context) {
 		return context.getWorld().getServer().getDataCommandStorage().get(this.source);
 	}
 

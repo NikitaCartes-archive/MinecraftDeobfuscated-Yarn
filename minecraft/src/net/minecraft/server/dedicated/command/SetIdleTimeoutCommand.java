@@ -10,10 +10,10 @@ public class SetIdleTimeoutCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("setidletimeout")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
+				.requires(source -> source.hasPermissionLevel(3))
 				.then(
 					CommandManager.argument("minutes", IntegerArgumentType.integer(0))
-						.executes(commandContext -> execute(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "minutes")))
+						.executes(context -> execute(context.getSource(), IntegerArgumentType.getInteger(context, "minutes")))
 				)
 		);
 	}

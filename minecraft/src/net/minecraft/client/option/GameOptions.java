@@ -33,7 +33,7 @@ import net.minecraft.client.tutorial.TutorialStep;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.VideoMode;
 import net.minecraft.datafixer.DataFixTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.resource.ResourcePackManager;
@@ -46,6 +46,7 @@ import net.minecraft.world.Difficulty;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class GameOptions {
@@ -117,42 +118,42 @@ public class GameOptions {
 	public boolean sprintToggled;
 	public boolean skipMultiplayerWarning;
 	public boolean hideMatchedNames = true;
-	public final KeyBinding keyForward = new KeyBinding("key.forward", 87, "key.categories.movement");
-	public final KeyBinding keyLeft = new KeyBinding("key.left", 65, "key.categories.movement");
-	public final KeyBinding keyBack = new KeyBinding("key.back", 83, "key.categories.movement");
-	public final KeyBinding keyRight = new KeyBinding("key.right", 68, "key.categories.movement");
-	public final KeyBinding keyJump = new KeyBinding("key.jump", 32, "key.categories.movement");
-	public final KeyBinding keySneak = new StickyKeyBinding("key.sneak", 340, "key.categories.movement", () -> this.sneakToggled);
-	public final KeyBinding keySprint = new StickyKeyBinding("key.sprint", 341, "key.categories.movement", () -> this.sprintToggled);
-	public final KeyBinding keyInventory = new KeyBinding("key.inventory", 69, "key.categories.inventory");
-	public final KeyBinding keySwapHands = new KeyBinding("key.swapOffhand", 70, "key.categories.inventory");
-	public final KeyBinding keyDrop = new KeyBinding("key.drop", 81, "key.categories.inventory");
-	public final KeyBinding keyUse = new KeyBinding("key.use", InputUtil.Type.MOUSE, 1, "key.categories.gameplay");
-	public final KeyBinding keyAttack = new KeyBinding("key.attack", InputUtil.Type.MOUSE, 0, "key.categories.gameplay");
-	public final KeyBinding keyPickItem = new KeyBinding("key.pickItem", InputUtil.Type.MOUSE, 2, "key.categories.gameplay");
-	public final KeyBinding keyChat = new KeyBinding("key.chat", 84, "key.categories.multiplayer");
-	public final KeyBinding keyPlayerList = new KeyBinding("key.playerlist", 258, "key.categories.multiplayer");
-	public final KeyBinding keyCommand = new KeyBinding("key.command", 47, "key.categories.multiplayer");
-	public final KeyBinding keySocialInteractions = new KeyBinding("key.socialInteractions", 80, "key.categories.multiplayer");
-	public final KeyBinding keyScreenshot = new KeyBinding("key.screenshot", 291, "key.categories.misc");
-	public final KeyBinding keyTogglePerspective = new KeyBinding("key.togglePerspective", 294, "key.categories.misc");
+	public final KeyBinding keyForward = new KeyBinding("key.forward", GLFW.GLFW_KEY_W, "key.categories.movement");
+	public final KeyBinding keyLeft = new KeyBinding("key.left", GLFW.GLFW_KEY_A, "key.categories.movement");
+	public final KeyBinding keyBack = new KeyBinding("key.back", GLFW.GLFW_KEY_S, "key.categories.movement");
+	public final KeyBinding keyRight = new KeyBinding("key.right", GLFW.GLFW_KEY_D, "key.categories.movement");
+	public final KeyBinding keyJump = new KeyBinding("key.jump", GLFW.GLFW_KEY_SPACE, "key.categories.movement");
+	public final KeyBinding keySneak = new StickyKeyBinding("key.sneak", GLFW.GLFW_KEY_LEFT_SHIFT, "key.categories.movement", () -> this.sneakToggled);
+	public final KeyBinding keySprint = new StickyKeyBinding("key.sprint", GLFW.GLFW_KEY_LEFT_CONTROL, "key.categories.movement", () -> this.sprintToggled);
+	public final KeyBinding keyInventory = new KeyBinding("key.inventory", GLFW.GLFW_KEY_E, "key.categories.inventory");
+	public final KeyBinding keySwapHands = new KeyBinding("key.swapOffhand", GLFW.GLFW_KEY_F, "key.categories.inventory");
+	public final KeyBinding keyDrop = new KeyBinding("key.drop", GLFW.GLFW_KEY_Q, "key.categories.inventory");
+	public final KeyBinding keyUse = new KeyBinding("key.use", InputUtil.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_RIGHT, "key.categories.gameplay");
+	public final KeyBinding keyAttack = new KeyBinding("key.attack", InputUtil.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_LEFT, "key.categories.gameplay");
+	public final KeyBinding keyPickItem = new KeyBinding("key.pickItem", InputUtil.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_MIDDLE, "key.categories.gameplay");
+	public final KeyBinding keyChat = new KeyBinding("key.chat", GLFW.GLFW_KEY_T, "key.categories.multiplayer");
+	public final KeyBinding keyPlayerList = new KeyBinding("key.playerlist", GLFW.GLFW_KEY_TAB, "key.categories.multiplayer");
+	public final KeyBinding keyCommand = new KeyBinding("key.command", GLFW.GLFW_KEY_SLASH, "key.categories.multiplayer");
+	public final KeyBinding keySocialInteractions = new KeyBinding("key.socialInteractions", GLFW.GLFW_KEY_P, "key.categories.multiplayer");
+	public final KeyBinding keyScreenshot = new KeyBinding("key.screenshot", GLFW.GLFW_KEY_F2, "key.categories.misc");
+	public final KeyBinding keyTogglePerspective = new KeyBinding("key.togglePerspective", GLFW.GLFW_KEY_F5, "key.categories.misc");
 	public final KeyBinding keySmoothCamera = new KeyBinding("key.smoothCamera", InputUtil.UNKNOWN_KEY.getCode(), "key.categories.misc");
-	public final KeyBinding keyFullscreen = new KeyBinding("key.fullscreen", 300, "key.categories.misc");
+	public final KeyBinding keyFullscreen = new KeyBinding("key.fullscreen", GLFW.GLFW_KEY_F11, "key.categories.misc");
 	public final KeyBinding keySpectatorOutlines = new KeyBinding("key.spectatorOutlines", InputUtil.UNKNOWN_KEY.getCode(), "key.categories.misc");
-	public final KeyBinding keyAdvancements = new KeyBinding("key.advancements", 76, "key.categories.misc");
+	public final KeyBinding keyAdvancements = new KeyBinding("key.advancements", GLFW.GLFW_KEY_L, "key.categories.misc");
 	public final KeyBinding[] keysHotbar = new KeyBinding[]{
-		new KeyBinding("key.hotbar.1", 49, "key.categories.inventory"),
-		new KeyBinding("key.hotbar.2", 50, "key.categories.inventory"),
-		new KeyBinding("key.hotbar.3", 51, "key.categories.inventory"),
-		new KeyBinding("key.hotbar.4", 52, "key.categories.inventory"),
-		new KeyBinding("key.hotbar.5", 53, "key.categories.inventory"),
-		new KeyBinding("key.hotbar.6", 54, "key.categories.inventory"),
-		new KeyBinding("key.hotbar.7", 55, "key.categories.inventory"),
-		new KeyBinding("key.hotbar.8", 56, "key.categories.inventory"),
-		new KeyBinding("key.hotbar.9", 57, "key.categories.inventory")
+		new KeyBinding("key.hotbar.1", GLFW.GLFW_KEY_1, "key.categories.inventory"),
+		new KeyBinding("key.hotbar.2", GLFW.GLFW_KEY_2, "key.categories.inventory"),
+		new KeyBinding("key.hotbar.3", GLFW.GLFW_KEY_3, "key.categories.inventory"),
+		new KeyBinding("key.hotbar.4", GLFW.GLFW_KEY_4, "key.categories.inventory"),
+		new KeyBinding("key.hotbar.5", GLFW.GLFW_KEY_5, "key.categories.inventory"),
+		new KeyBinding("key.hotbar.6", GLFW.GLFW_KEY_6, "key.categories.inventory"),
+		new KeyBinding("key.hotbar.7", GLFW.GLFW_KEY_7, "key.categories.inventory"),
+		new KeyBinding("key.hotbar.8", GLFW.GLFW_KEY_8, "key.categories.inventory"),
+		new KeyBinding("key.hotbar.9", GLFW.GLFW_KEY_9, "key.categories.inventory")
 	};
-	public final KeyBinding keySaveToolbarActivator = new KeyBinding("key.saveToolbarActivator", 67, "key.categories.creative");
-	public final KeyBinding keyLoadToolbarActivator = new KeyBinding("key.loadToolbarActivator", 88, "key.categories.creative");
+	public final KeyBinding keySaveToolbarActivator = new KeyBinding("key.saveToolbarActivator", GLFW.GLFW_KEY_C, "key.categories.creative");
+	public final KeyBinding keyLoadToolbarActivator = new KeyBinding("key.loadToolbarActivator", GLFW.GLFW_KEY_X, "key.categories.creative");
 	public final KeyBinding[] keysAll = ArrayUtils.addAll(
 		new KeyBinding[]{
 			this.keyAttack,
@@ -335,7 +336,7 @@ public class GameOptions {
 			}
 
 			this.soundVolumeLevels.clear();
-			CompoundTag compoundTag = new CompoundTag();
+			NbtCompound nbtCompound = new NbtCompound();
 			BufferedReader bufferedReader = Files.newReader(this.optionsFile, Charsets.UTF_8);
 			Throwable var3 = null;
 
@@ -343,7 +344,7 @@ public class GameOptions {
 				bufferedReader.lines().forEach(line -> {
 					try {
 						Iterator<String> iterator = COLON_SPLITTER.split(line).iterator();
-						compoundTag.putString((String)iterator.next(), (String)iterator.next());
+						nbtCompound.putString((String)iterator.next(), (String)iterator.next());
 					} catch (Exception var3x) {
 						LOGGER.warn("Skipping bad option: {}", line);
 					}
@@ -365,9 +366,9 @@ public class GameOptions {
 				}
 			}
 
-			final CompoundTag compoundTag2 = this.update(compoundTag);
-			if (!compoundTag2.contains("graphicsMode") && compoundTag2.contains("fancyGraphics")) {
-				if (isTrue(compoundTag2.getString("fancyGraphics"))) {
+			final NbtCompound nbtCompound2 = this.update(nbtCompound);
+			if (!nbtCompound2.contains("graphicsMode") && nbtCompound2.contains("fancyGraphics")) {
+				if (isTrue(nbtCompound2.getString("fancyGraphics"))) {
 					this.graphicsMode = GraphicsMode.FANCY;
 				} else {
 					this.graphicsMode = GraphicsMode.FAST;
@@ -377,7 +378,7 @@ public class GameOptions {
 			this.accept(new GameOptions.Visitor() {
 				@Nullable
 				private String find(String key) {
-					return compoundTag2.contains(key) ? compoundTag2.getString(key) : null;
+					return nbtCompound2.contains(key) ? nbtCompound2.getString(key) : null;
 				}
 
 				@Override
@@ -463,8 +464,8 @@ public class GameOptions {
 					return current;
 				}
 			});
-			if (compoundTag2.contains("fullscreenResolution")) {
-				this.fullscreenResolution = compoundTag2.getString("fullscreenResolution");
+			if (nbtCompound2.contains("fullscreenResolution")) {
+				this.fullscreenResolution = nbtCompound2.getString("fullscreenResolution");
 			}
 
 			if (this.client.getWindow() != null) {
@@ -485,7 +486,7 @@ public class GameOptions {
 		return "false".equals(value);
 	}
 
-	private CompoundTag update(CompoundTag tag) {
+	private NbtCompound update(NbtCompound tag) {
 		int i = 0;
 
 		try {

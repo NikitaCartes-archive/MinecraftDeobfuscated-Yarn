@@ -26,7 +26,7 @@ public final class RegistryLookupCodec<E> extends MapCodec<Registry<E>> {
 
 	@Override
 	public <T> DataResult<Registry<E>> decode(DynamicOps<T> dynamicOps, MapLike<T> mapLike) {
-		return dynamicOps instanceof RegistryOps ? ((RegistryOps)dynamicOps).method_31152(this.registryKey) : DataResult.error("Not a registry ops");
+		return dynamicOps instanceof RegistryOps ? ((RegistryOps)dynamicOps).getRegistry(this.registryKey) : DataResult.error("Not a registry ops");
 	}
 
 	public String toString() {

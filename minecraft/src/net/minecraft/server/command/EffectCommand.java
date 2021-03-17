@@ -28,20 +28,18 @@ public class EffectCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("effect")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
+				.requires(source -> source.hasPermissionLevel(2))
 				.then(
 					CommandManager.literal("clear")
-						.executes(commandContext -> executeClear(commandContext.getSource(), ImmutableList.of(commandContext.getSource().getEntityOrThrow())))
+						.executes(context -> executeClear(context.getSource(), ImmutableList.of(context.getSource().getEntityOrThrow())))
 						.then(
 							CommandManager.argument("targets", EntityArgumentType.entities())
-								.executes(commandContext -> executeClear(commandContext.getSource(), EntityArgumentType.getEntities(commandContext, "targets")))
+								.executes(context -> executeClear(context.getSource(), EntityArgumentType.getEntities(context, "targets")))
 								.then(
 									CommandManager.argument("effect", StatusEffectArgumentType.statusEffect())
 										.executes(
-											commandContext -> executeClear(
-													commandContext.getSource(),
-													EntityArgumentType.getEntities(commandContext, "targets"),
-													StatusEffectArgumentType.getStatusEffect(commandContext, "effect")
+											context -> executeClear(
+													context.getSource(), EntityArgumentType.getEntities(context, "targets"), StatusEffectArgumentType.getStatusEffect(context, "effect")
 												)
 										)
 								)
@@ -54,10 +52,10 @@ public class EffectCommand {
 								.then(
 									CommandManager.argument("effect", StatusEffectArgumentType.statusEffect())
 										.executes(
-											commandContext -> executeGive(
-													commandContext.getSource(),
-													EntityArgumentType.getEntities(commandContext, "targets"),
-													StatusEffectArgumentType.getStatusEffect(commandContext, "effect"),
+											context -> executeGive(
+													context.getSource(),
+													EntityArgumentType.getEntities(context, "targets"),
+													StatusEffectArgumentType.getStatusEffect(context, "effect"),
 													null,
 													0,
 													true
@@ -66,11 +64,11 @@ public class EffectCommand {
 										.then(
 											CommandManager.argument("seconds", IntegerArgumentType.integer(1, 1000000))
 												.executes(
-													commandContext -> executeGive(
-															commandContext.getSource(),
-															EntityArgumentType.getEntities(commandContext, "targets"),
-															StatusEffectArgumentType.getStatusEffect(commandContext, "effect"),
-															IntegerArgumentType.getInteger(commandContext, "seconds"),
+													context -> executeGive(
+															context.getSource(),
+															EntityArgumentType.getEntities(context, "targets"),
+															StatusEffectArgumentType.getStatusEffect(context, "effect"),
+															IntegerArgumentType.getInteger(context, "seconds"),
 															0,
 															true
 														)
@@ -78,25 +76,25 @@ public class EffectCommand {
 												.then(
 													CommandManager.argument("amplifier", IntegerArgumentType.integer(0, 255))
 														.executes(
-															commandContext -> executeGive(
-																	commandContext.getSource(),
-																	EntityArgumentType.getEntities(commandContext, "targets"),
-																	StatusEffectArgumentType.getStatusEffect(commandContext, "effect"),
-																	IntegerArgumentType.getInteger(commandContext, "seconds"),
-																	IntegerArgumentType.getInteger(commandContext, "amplifier"),
+															context -> executeGive(
+																	context.getSource(),
+																	EntityArgumentType.getEntities(context, "targets"),
+																	StatusEffectArgumentType.getStatusEffect(context, "effect"),
+																	IntegerArgumentType.getInteger(context, "seconds"),
+																	IntegerArgumentType.getInteger(context, "amplifier"),
 																	true
 																)
 														)
 														.then(
 															CommandManager.argument("hideParticles", BoolArgumentType.bool())
 																.executes(
-																	commandContext -> executeGive(
-																			commandContext.getSource(),
-																			EntityArgumentType.getEntities(commandContext, "targets"),
-																			StatusEffectArgumentType.getStatusEffect(commandContext, "effect"),
-																			IntegerArgumentType.getInteger(commandContext, "seconds"),
-																			IntegerArgumentType.getInteger(commandContext, "amplifier"),
-																			!BoolArgumentType.getBool(commandContext, "hideParticles")
+																	context -> executeGive(
+																			context.getSource(),
+																			EntityArgumentType.getEntities(context, "targets"),
+																			StatusEffectArgumentType.getStatusEffect(context, "effect"),
+																			IntegerArgumentType.getInteger(context, "seconds"),
+																			IntegerArgumentType.getInteger(context, "amplifier"),
+																			!BoolArgumentType.getBool(context, "hideParticles")
 																		)
 																)
 														)

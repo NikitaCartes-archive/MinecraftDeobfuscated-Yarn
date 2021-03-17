@@ -12,6 +12,8 @@ import java.util.OptionalInt;
 import java.util.Random;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.NbtTypeIds;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
@@ -42,7 +44,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.NetworkSyncedItem;
 import net.minecraft.item.WrittenBookItem;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
@@ -165,7 +167,15 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private boolean disconnected;
 	@Nullable
 	private Vec3d enteredNetherPos;
-	private ChunkSectionPos cameraPosition = ChunkSectionPos.from(0, 0, 0);
+	/**
+	 * A chunk section position indicating where the player's client is currently
+	 * watching chunks from. Used referentially for the game to update the chunks
+	 * watched by this player.
+	 * 
+	 * @see #getWatchedSection()
+	 * @see #setWatchedSection(ChunkSectionPos)
+	 */
+	private ChunkSectionPos watchedSection = ChunkSectionPos.from(0, 0, 0);
 	private RegistryKey<World> spawnPointDimension = World.OVERWORLD;
 	@Nullable
 	private BlockPos spawnPointPosition;
@@ -281,15 +291,15 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
-		if (tag.contains("enteredNetherPosition", 10)) {
-			CompoundTag compoundTag = tag.getCompound("enteredNetherPosition");
-			this.enteredNetherPos = new Vec3d(compoundTag.getDouble("x"), compoundTag.getDouble("y"), compoundTag.getDouble("z"));
+		if (tag.contains("enteredNetherPosition", NbtTypeIds.COMPOUND)) {
+			NbtCompound nbtCompound = tag.getCompound("enteredNetherPosition");
+			this.enteredNetherPos = new Vec3d(nbtCompound.getDouble("x"), nbtCompound.getDouble("y"), nbtCompound.getDouble("z"));
 		}
 
 		this.seenCredits = tag.getBoolean("seenCredits");
-		if (tag.contains("recipeBook", 10)) {
+		if (tag.contains("recipeBook", NbtTypeIds.COMPOUND)) {
 			this.recipeBook.readNbt(tag.getCompound("recipeBook"), this.server.getRecipeManager());
 		}
 
@@ -297,7 +307,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			this.wakeUp();
 		}
 
-		if (tag.contains("SpawnX", 99) && tag.contains("SpawnY", 99) && tag.contains("SpawnZ", 99)) {
+		if (tag.contains("SpawnX", NbtTypeIds.NUMBER) && tag.contains("SpawnY", NbtTypeIds.NUMBER) && tag.contains("SpawnZ", NbtTypeIds.NUMBER)) {
 			this.spawnPointPosition = new BlockPos(tag.getInt("SpawnX"), tag.getInt("SpawnY"), tag.getInt("SpawnZ"));
 			this.spawnPointSet = tag.getBoolean("SpawnForced");
 			this.spawnAngle = tag.getFloat("SpawnAngle");
@@ -311,27 +321,27 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
 		this.writeGameModeToNbt(tag);
 		tag.putBoolean("seenCredits", this.seenCredits);
 		if (this.enteredNetherPos != null) {
-			CompoundTag compoundTag = new CompoundTag();
-			compoundTag.putDouble("x", this.enteredNetherPos.x);
-			compoundTag.putDouble("y", this.enteredNetherPos.y);
-			compoundTag.putDouble("z", this.enteredNetherPos.z);
-			tag.put("enteredNetherPosition", compoundTag);
+			NbtCompound nbtCompound = new NbtCompound();
+			nbtCompound.putDouble("x", this.enteredNetherPos.x);
+			nbtCompound.putDouble("y", this.enteredNetherPos.y);
+			nbtCompound.putDouble("z", this.enteredNetherPos.z);
+			tag.put("enteredNetherPosition", nbtCompound);
 		}
 
 		Entity entity = this.getRootVehicle();
 		Entity entity2 = this.getVehicle();
 		if (entity2 != null && entity != this && entity.hasPlayerRider()) {
-			CompoundTag compoundTag2 = new CompoundTag();
-			CompoundTag compoundTag3 = new CompoundTag();
-			entity.saveToTag(compoundTag3);
-			compoundTag2.putUuid("Attach", entity2.getUuid());
-			compoundTag2.put("Entity", compoundTag3);
-			tag.put("RootVehicle", compoundTag2);
+			NbtCompound nbtCompound2 = new NbtCompound();
+			NbtCompound nbtCompound3 = new NbtCompound();
+			entity.saveToTag(nbtCompound3);
+			nbtCompound2.putUuid("Attach", entity2.getUuid());
+			nbtCompound2.put("Entity", nbtCompound3);
+			tag.put("RootVehicle", nbtCompound2);
 		}
 
 		tag.put("recipeBook", this.recipeBook.toNbt());
@@ -345,7 +355,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			Identifier.CODEC
 				.encodeStart(NbtOps.INSTANCE, this.spawnPointDimension.getValue())
 				.resultOrPartial(LOGGER::error)
-				.ifPresent(tagx -> tag.put("SpawnDimension", tagx));
+				.ifPresent(nbtElement -> tag.put("SpawnDimension", nbtElement));
 		}
 	}
 
@@ -427,7 +437,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		if (entity != this) {
 			if (entity.isAlive()) {
 				this.updatePositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.yaw, entity.pitch);
-				this.getServerWorld().getChunkManager().updateCameraPosition(this);
+				this.getServerWorld().getChunkManager().updatePosition(this);
 				if (this.shouldDismount()) {
 					this.setCameraEntity(this);
 				}
@@ -727,7 +737,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 					this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getId(), statusEffectInstance));
 				}
 
-				this.networkHandler.sendPacket(new WorldEventS2CPacket(1032, BlockPos.ORIGIN, 0, false));
+				this.networkHandler.sendPacket(new WorldEventS2CPacket(WorldEvents.TRAVEL_THROUGH_PORTAL, BlockPos.ORIGIN, 0, false));
 				this.syncedExperience = -1;
 				this.syncedHealth = -1.0F;
 				this.syncedFoodLevel = -1;
@@ -991,7 +1001,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	public void openEditBookScreen(ItemStack book, Hand hand) {
+	public void useBook(ItemStack book, Hand hand) {
 		if (book.isOf(Items.WRITTEN_BOOK)) {
 			if (WrittenBookItem.resolve(book, this.getCommandSource(), this)) {
 				this.currentScreenHandler.sendContentUpdates();
@@ -1479,12 +1489,31 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 	}
 
-	public ChunkSectionPos getCameraPosition() {
-		return this.cameraPosition;
+	/**
+	 * Returns the chunk section position the player's client is currently watching
+	 * from. This may differ from the chunk section the player is currently in.
+	 * 
+	 * <p>This is only for chunk loading (watching) purpose. This is updated together
+	 * with entity tracking, but they are separate mechanisms.
+	 * 
+	 * @see #watchedSection
+	 * @see #setWatchedSection(ChunkSectionPos)
+	 */
+	public ChunkSectionPos getWatchedSection() {
+		return this.watchedSection;
 	}
 
-	public void setCameraPosition(ChunkSectionPos cameraPosition) {
-		this.cameraPosition = cameraPosition;
+	/**
+	 * Sets the chunk section position the player's client is currently watching
+	 * from. This is usually called when the player moves to a new chunk section.
+	 * 
+	 * @see #watchedSection
+	 * @see #getWatchedSection()
+	 * 
+	 * @param section the updated section position
+	 */
+	public void setWatchedSection(ChunkSectionPos section) {
+		this.watchedSection = section;
 	}
 
 	@Override
@@ -1527,8 +1556,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Nullable
-	private static GameMode gameModeFromNbt(@Nullable CompoundTag tag, String key) {
-		return tag != null && tag.contains(key, 99) ? GameMode.byId(tag.getInt(key)) : null;
+	private static GameMode gameModeFromNbt(@Nullable NbtCompound tag, String key) {
+		return tag != null && tag.contains(key, NbtTypeIds.NUMBER) ? GameMode.byId(tag.getInt(key)) : null;
 	}
 
 	/**
@@ -1548,11 +1577,11 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 	}
 
-	public void setGameMode(@Nullable CompoundTag tag) {
+	public void setGameMode(@Nullable NbtCompound tag) {
 		this.interactionManager.setGameMode(this.getServerGameMode(gameModeFromNbt(tag, "playerGameType")), gameModeFromNbt(tag, "previousPlayerGameType"));
 	}
 
-	private void writeGameModeToNbt(CompoundTag tag) {
+	private void writeGameModeToNbt(NbtCompound tag) {
 		tag.putInt("playerGameType", this.interactionManager.getGameMode().getId());
 		GameMode gameMode = this.interactionManager.getPreviousGameMode();
 		if (gameMode != null) {

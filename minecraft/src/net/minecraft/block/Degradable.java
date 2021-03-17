@@ -1,11 +1,12 @@
 package net.minecraft.block;
 
+import java.util.Optional;
 import java.util.Random;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
 public interface Degradable<T extends Enum<T>> {
-	BlockState getDegradationResult(BlockState state);
+	Optional<BlockState> getDegradationResult(BlockState state);
 
 	float getDegradationChanceMultiplier();
 
@@ -53,7 +54,7 @@ public interface Degradable<T extends Enum<T>> {
 		float f = (float)(k + 1) / (float)(k + j + 1);
 		float g = f * f * this.getDegradationChanceMultiplier();
 		if (random.nextFloat() < g) {
-			world.setBlockState(pos, this.getDegradationResult(state));
+			this.getDegradationResult(state).ifPresent(statex -> world.setBlockState(pos, statex));
 		}
 	}
 }

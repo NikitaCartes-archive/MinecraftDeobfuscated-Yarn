@@ -19,12 +19,11 @@ public class LocateCommand {
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.locate.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("locate")
-			.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2));
+		LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("locate").requires(source -> source.hasPermissionLevel(2));
 
 		for (Entry<String, StructureFeature<?>> entry : StructureFeature.STRUCTURES.entrySet()) {
 			literalArgumentBuilder = literalArgumentBuilder.then(
-				CommandManager.literal((String)entry.getKey()).executes(commandContext -> execute(commandContext.getSource(), (StructureFeature<?>)entry.getValue()))
+				CommandManager.literal((String)entry.getKey()).executes(context -> execute(context.getSource(), (StructureFeature<?>)entry.getValue()))
 			);
 		}
 

@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
@@ -148,7 +149,7 @@ public class HopperBlock extends BlockWithEntity {
 	private void updateEnabled(World world, BlockPos pos, BlockState state) {
 		boolean bl = !world.isReceivingRedstonePower(pos);
 		if (bl != (Boolean)state.get(ENABLED)) {
-			world.setBlockState(pos, state.with(ENABLED, Boolean.valueOf(bl)), 4);
+			world.setBlockState(pos, state.with(ENABLED, Boolean.valueOf(bl)), SetBlockStateFlags.NO_REDRAW);
 		}
 	}
 

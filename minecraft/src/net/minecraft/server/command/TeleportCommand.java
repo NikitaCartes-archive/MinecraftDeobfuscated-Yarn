@@ -38,17 +38,17 @@ public class TeleportCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register(
 			CommandManager.literal("teleport")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
+				.requires(source -> source.hasPermissionLevel(2))
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.entities())
 						.then(
 							CommandManager.argument("location", Vec3ArgumentType.vec3())
 								.executes(
-									commandContext -> execute(
-											commandContext.getSource(),
-											EntityArgumentType.getEntities(commandContext, "targets"),
-											commandContext.getSource().getWorld(),
-											Vec3ArgumentType.getPosArgument(commandContext, "location"),
+									context -> execute(
+											context.getSource(),
+											EntityArgumentType.getEntities(context, "targets"),
+											context.getSource().getWorld(),
+											Vec3ArgumentType.getPosArgument(context, "location"),
 											null,
 											null
 										)
@@ -56,12 +56,12 @@ public class TeleportCommand {
 								.then(
 									CommandManager.argument("rotation", RotationArgumentType.rotation())
 										.executes(
-											commandContext -> execute(
-													commandContext.getSource(),
-													EntityArgumentType.getEntities(commandContext, "targets"),
-													commandContext.getSource().getWorld(),
-													Vec3ArgumentType.getPosArgument(commandContext, "location"),
-													RotationArgumentType.getRotation(commandContext, "rotation"),
+											context -> execute(
+													context.getSource(),
+													EntityArgumentType.getEntities(context, "targets"),
+													context.getSource().getWorld(),
+													Vec3ArgumentType.getPosArgument(context, "location"),
+													RotationArgumentType.getRotation(context, "rotation"),
 													null
 												)
 										)
@@ -73,26 +73,26 @@ public class TeleportCommand {
 												.then(
 													CommandManager.argument("facingEntity", EntityArgumentType.entity())
 														.executes(
-															commandContext -> execute(
-																	commandContext.getSource(),
-																	EntityArgumentType.getEntities(commandContext, "targets"),
-																	commandContext.getSource().getWorld(),
-																	Vec3ArgumentType.getPosArgument(commandContext, "location"),
+															context -> execute(
+																	context.getSource(),
+																	EntityArgumentType.getEntities(context, "targets"),
+																	context.getSource().getWorld(),
+																	Vec3ArgumentType.getPosArgument(context, "location"),
 																	null,
-																	new TeleportCommand.LookTarget(EntityArgumentType.getEntity(commandContext, "facingEntity"), EntityAnchorArgumentType.EntityAnchor.FEET)
+																	new TeleportCommand.LookTarget(EntityArgumentType.getEntity(context, "facingEntity"), EntityAnchorArgumentType.EntityAnchor.FEET)
 																)
 														)
 														.then(
 															CommandManager.argument("facingAnchor", EntityAnchorArgumentType.entityAnchor())
 																.executes(
-																	commandContext -> execute(
-																			commandContext.getSource(),
-																			EntityArgumentType.getEntities(commandContext, "targets"),
-																			commandContext.getSource().getWorld(),
-																			Vec3ArgumentType.getPosArgument(commandContext, "location"),
+																	context -> execute(
+																			context.getSource(),
+																			EntityArgumentType.getEntities(context, "targets"),
+																			context.getSource().getWorld(),
+																			Vec3ArgumentType.getPosArgument(context, "location"),
 																			null,
 																			new TeleportCommand.LookTarget(
-																				EntityArgumentType.getEntity(commandContext, "facingEntity"), EntityAnchorArgumentType.getEntityAnchor(commandContext, "facingAnchor")
+																				EntityArgumentType.getEntity(context, "facingEntity"), EntityAnchorArgumentType.getEntityAnchor(context, "facingAnchor")
 																			)
 																		)
 																)
@@ -102,13 +102,13 @@ public class TeleportCommand {
 										.then(
 											CommandManager.argument("facingLocation", Vec3ArgumentType.vec3())
 												.executes(
-													commandContext -> execute(
-															commandContext.getSource(),
-															EntityArgumentType.getEntities(commandContext, "targets"),
-															commandContext.getSource().getWorld(),
-															Vec3ArgumentType.getPosArgument(commandContext, "location"),
+													context -> execute(
+															context.getSource(),
+															EntityArgumentType.getEntities(context, "targets"),
+															context.getSource().getWorld(),
+															Vec3ArgumentType.getPosArgument(context, "location"),
 															null,
-															new TeleportCommand.LookTarget(Vec3ArgumentType.getVec3(commandContext, "facingLocation"))
+															new TeleportCommand.LookTarget(Vec3ArgumentType.getVec3(context, "facingLocation"))
 														)
 												)
 										)
@@ -117,20 +117,18 @@ public class TeleportCommand {
 						.then(
 							CommandManager.argument("destination", EntityArgumentType.entity())
 								.executes(
-									commandContext -> execute(
-											commandContext.getSource(), EntityArgumentType.getEntities(commandContext, "targets"), EntityArgumentType.getEntity(commandContext, "destination")
-										)
+									context -> execute(context.getSource(), EntityArgumentType.getEntities(context, "targets"), EntityArgumentType.getEntity(context, "destination"))
 								)
 						)
 				)
 				.then(
 					CommandManager.argument("location", Vec3ArgumentType.vec3())
 						.executes(
-							commandContext -> execute(
-									commandContext.getSource(),
-									Collections.singleton(commandContext.getSource().getEntityOrThrow()),
-									commandContext.getSource().getWorld(),
-									Vec3ArgumentType.getPosArgument(commandContext, "location"),
+							context -> execute(
+									context.getSource(),
+									Collections.singleton(context.getSource().getEntityOrThrow()),
+									context.getSource().getWorld(),
+									Vec3ArgumentType.getPosArgument(context, "location"),
 									DefaultPosArgument.zero(),
 									null
 								)
@@ -139,15 +137,13 @@ public class TeleportCommand {
 				.then(
 					CommandManager.argument("destination", EntityArgumentType.entity())
 						.executes(
-							commandContext -> execute(
-									commandContext.getSource(),
-									Collections.singleton(commandContext.getSource().getEntityOrThrow()),
-									EntityArgumentType.getEntity(commandContext, "destination")
+							context -> execute(
+									context.getSource(), Collections.singleton(context.getSource().getEntityOrThrow()), EntityArgumentType.getEntity(context, "destination")
 								)
 						)
 				)
 		);
-		dispatcher.register(CommandManager.literal("tp").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2)).redirect(literalCommandNode));
+		dispatcher.register(CommandManager.literal("tp").requires(source -> source.hasPermissionLevel(2)).redirect(literalCommandNode));
 	}
 
 	private static int execute(ServerCommandSource source, Collection<? extends Entity> targets, Entity destination) throws CommandSyntaxException {

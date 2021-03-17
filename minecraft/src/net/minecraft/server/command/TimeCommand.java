@@ -10,40 +10,34 @@ public class TimeCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("time")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
+				.requires(source -> source.hasPermissionLevel(2))
 				.then(
 					CommandManager.literal("set")
-						.then(CommandManager.literal("day").executes(commandContext -> executeSet(commandContext.getSource(), 1000)))
-						.then(CommandManager.literal("noon").executes(commandContext -> executeSet(commandContext.getSource(), 6000)))
-						.then(CommandManager.literal("night").executes(commandContext -> executeSet(commandContext.getSource(), 13000)))
-						.then(CommandManager.literal("midnight").executes(commandContext -> executeSet(commandContext.getSource(), 18000)))
+						.then(CommandManager.literal("day").executes(context -> executeSet(context.getSource(), 1000)))
+						.then(CommandManager.literal("noon").executes(context -> executeSet(context.getSource(), 6000)))
+						.then(CommandManager.literal("night").executes(context -> executeSet(context.getSource(), 13000)))
+						.then(CommandManager.literal("midnight").executes(context -> executeSet(context.getSource(), 18000)))
 						.then(
 							CommandManager.argument("time", TimeArgumentType.time())
-								.executes(commandContext -> executeSet(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "time")))
+								.executes(context -> executeSet(context.getSource(), IntegerArgumentType.getInteger(context, "time")))
 						)
 				)
 				.then(
 					CommandManager.literal("add")
 						.then(
 							CommandManager.argument("time", TimeArgumentType.time())
-								.executes(commandContext -> executeAdd(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "time")))
+								.executes(context -> executeAdd(context.getSource(), IntegerArgumentType.getInteger(context, "time")))
 						)
 				)
 				.then(
 					CommandManager.literal("query")
+						.then(CommandManager.literal("daytime").executes(context -> executeQuery(context.getSource(), getDayTime(context.getSource().getWorld()))))
 						.then(
-							CommandManager.literal("daytime")
-								.executes(commandContext -> executeQuery(commandContext.getSource(), getDayTime(commandContext.getSource().getWorld())))
-						)
-						.then(
-							CommandManager.literal("gametime")
-								.executes(commandContext -> executeQuery(commandContext.getSource(), (int)(commandContext.getSource().getWorld().getTime() % 2147483647L)))
+							CommandManager.literal("gametime").executes(context -> executeQuery(context.getSource(), (int)(context.getSource().getWorld().getTime() % 2147483647L)))
 						)
 						.then(
 							CommandManager.literal("day")
-								.executes(
-									commandContext -> executeQuery(commandContext.getSource(), (int)(commandContext.getSource().getWorld().getTimeOfDay() / 24000L % 2147483647L))
-								)
+								.executes(context -> executeQuery(context.getSource(), (int)(context.getSource().getWorld().getTimeOfDay() / 24000L % 2147483647L)))
 						)
 				)
 		);

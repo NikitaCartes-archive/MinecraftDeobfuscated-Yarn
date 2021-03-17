@@ -9,13 +9,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.VineBlock;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.structure.processor.BlackstoneReplacementStructureProcessor;
 import net.minecraft.structure.processor.BlockAgeStructureProcessor;
@@ -70,7 +72,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		this.processProperties(structure, center);
 	}
 
-	public RuinedPortalStructurePiece(StructureManager manager, CompoundTag tag) {
+	public RuinedPortalStructurePiece(ServerWorld serverWorld, NbtCompound tag) {
 		super(StructurePieceType.RUINED_PORTAL, tag);
 		this.template = new Identifier(tag.getString("Template"));
 		this.rotation = BlockRotation.valueOf(tag.getString("Rotation"));
@@ -79,21 +81,21 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		this.properties = RuinedPortalStructurePiece.Properties.CODEC
 			.parse(new Dynamic<>(NbtOps.INSTANCE, tag.get("Properties")))
 			.getOrThrow(true, field_24992::error);
-		Structure structure = manager.getStructureOrBlank(this.template);
+		Structure structure = serverWorld.getStructureManager().getStructureOrBlank(this.template);
 		this.processProperties(structure, new BlockPos(structure.getSize().getX() / 2, 0, structure.getSize().getZ() / 2));
 	}
 
 	@Override
-	protected void writeNbt(CompoundTag tag) {
-		super.writeNbt(tag);
-		tag.putString("Template", this.template.toString());
-		tag.putString("Rotation", this.rotation.name());
-		tag.putString("Mirror", this.mirror.name());
-		tag.putString("VerticalPlacement", this.verticalPlacement.getId());
+	protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+		super.writeNbt(world, nbt);
+		nbt.putString("Template", this.template.toString());
+		nbt.putString("Rotation", this.rotation.name());
+		nbt.putString("Mirror", this.mirror.name());
+		nbt.putString("VerticalPlacement", this.verticalPlacement.getId());
 		RuinedPortalStructurePiece.Properties.CODEC
 			.encodeStart(NbtOps.INSTANCE, this.properties)
 			.resultOrPartial(field_24992::error)
-			.ifPresent(tagx -> tag.put("Properties", tagx));
+			.ifPresent(nbtElement -> nbt.put("Properties", nbtElement));
 	}
 
 	private void processProperties(Structure structure, BlockPos center) {
@@ -176,7 +178,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 			if (blockState2.isAir()) {
 				if (Block.isFaceFullSquare(blockState.getCollisionShape(world, pos), direction)) {
 					BooleanProperty booleanProperty = VineBlock.getFacingProperty(direction.getOpposite());
-					world.setBlockState(blockPos, Blocks.VINE.getDefaultState().with(booleanProperty, Boolean.valueOf(true)), 3);
+					world.setBlockState(blockPos, Blocks.VINE.getDefaultState().with(booleanProperty, Boolean.valueOf(true)), SetBlockStateFlags.DEFAULT);
 				}
 			}
 		}
@@ -184,7 +186,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 
 	private void generateOvergrownLeaves(Random random, WorldAccess world, BlockPos pos) {
 		if (random.nextFloat() < 0.5F && world.getBlockState(pos).isOf(Blocks.NETHERRACK) && world.getBlockState(pos.up()).isAir()) {
-			world.setBlockState(pos.up(), Blocks.JUNGLE_LEAVES.getDefaultState().with(LeavesBlock.PERSISTENT, Boolean.valueOf(true)), 3);
+			world.setBlockState(pos.up(), Blocks.JUNGLE_LEAVES.getDefaultState().with(LeavesBlock.PERSISTENT, Boolean.valueOf(true)), SetBlockStateFlags.DEFAULT);
 		}
 	}
 
@@ -258,9 +260,9 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 
 	private void placeNetherrackBottom(Random random, WorldAccess world, BlockPos pos) {
 		if (!this.properties.cold && random.nextFloat() < 0.07F) {
-			world.setBlockState(pos, Blocks.MAGMA_BLOCK.getDefaultState(), 3);
+			world.setBlockState(pos, Blocks.MAGMA_BLOCK.getDefaultState(), SetBlockStateFlags.DEFAULT);
 		} else {
-			world.setBlockState(pos, Blocks.NETHERRACK.getDefaultState(), 3);
+			world.setBlockState(pos, Blocks.NETHERRACK.getDefaultState(), SetBlockStateFlags.DEFAULT);
 		}
 	}
 

@@ -12,6 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.PortalUtil;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
@@ -52,7 +53,7 @@ public abstract class AbstractPlantBlock extends AbstractPlantPartBlock implemen
 
 	@Override
 	public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
-		Optional<BlockPos> optional = this.getStemHeadPos(world, pos, state);
+		Optional<BlockPos> optional = this.getStemHeadPos(world, pos, state.getBlock());
 		return optional.isPresent() && this.getStem().chooseStemState(world.getBlockState(((BlockPos)optional.get()).offset(this.growthDirection)));
 	}
 
@@ -63,23 +64,15 @@ public abstract class AbstractPlantBlock extends AbstractPlantPartBlock implemen
 
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-		Optional<BlockPos> optional = this.getStemHeadPos(world, pos, state);
+		Optional<BlockPos> optional = this.getStemHeadPos(world, pos, state.getBlock());
 		if (optional.isPresent()) {
 			BlockState blockState = world.getBlockState((BlockPos)optional.get());
 			((AbstractPlantStemBlock)blockState.getBlock()).grow(world, random, (BlockPos)optional.get(), blockState);
 		}
 	}
 
-	private Optional<BlockPos> getStemHeadPos(BlockView world, BlockPos pos, BlockState state) {
-		BlockPos blockPos = pos;
-
-		BlockState blockState;
-		do {
-			blockPos = blockPos.offset(this.growthDirection);
-			blockState = world.getBlockState(blockPos);
-		} while (blockState.isOf(state.getBlock()));
-
-		return blockState.isOf(this.getStem()) ? Optional.of(blockPos) : Optional.empty();
+	private Optional<BlockPos> getStemHeadPos(BlockView world, BlockPos pos, Block block) {
+		return PortalUtil.method_34851(world, pos, block, this.growthDirection, this.getStem());
 	}
 
 	@Override

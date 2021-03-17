@@ -18,15 +18,11 @@ public class DeOpCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("deop")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
+				.requires(source -> source.hasPermissionLevel(3))
 				.then(
 					CommandManager.argument("targets", GameProfileArgumentType.gameProfile())
-						.suggests(
-							(commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(
-									commandContext.getSource().getMinecraftServer().getPlayerManager().getOpNames(), suggestionsBuilder
-								)
-						)
-						.executes(commandContext -> deop(commandContext.getSource(), GameProfileArgumentType.getProfileArgument(commandContext, "targets")))
+						.suggests((context, builder) -> CommandSource.suggestMatching(context.getSource().getMinecraftServer().getPlayerManager().getOpNames(), builder))
+						.executes(context -> deop(context.getSource(), GameProfileArgumentType.getProfileArgument(context, "targets")))
 				)
 		);
 	}

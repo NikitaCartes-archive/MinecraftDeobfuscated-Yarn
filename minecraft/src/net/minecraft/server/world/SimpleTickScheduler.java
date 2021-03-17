@@ -4,8 +4,8 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ScheduledTick;
@@ -47,32 +47,32 @@ public class SimpleTickScheduler<T> implements TickScheduler<T> {
 		return false;
 	}
 
-	public ListTag toNbt() {
-		ListTag listTag = new ListTag();
+	public NbtList toNbt() {
+		NbtList nbtList = new NbtList();
 
 		for (SimpleTickScheduler.Tick<T> tick : this.scheduledTicks) {
-			CompoundTag compoundTag = new CompoundTag();
-			compoundTag.putString("i", ((Identifier)this.identifierProvider.apply(tick.object)).toString());
-			compoundTag.putInt("x", tick.pos.getX());
-			compoundTag.putInt("y", tick.pos.getY());
-			compoundTag.putInt("z", tick.pos.getZ());
-			compoundTag.putInt("t", tick.delay);
-			compoundTag.putInt("p", tick.priority.getIndex());
-			listTag.add(compoundTag);
+			NbtCompound nbtCompound = new NbtCompound();
+			nbtCompound.putString("i", ((Identifier)this.identifierProvider.apply(tick.object)).toString());
+			nbtCompound.putInt("x", tick.pos.getX());
+			nbtCompound.putInt("y", tick.pos.getY());
+			nbtCompound.putInt("z", tick.pos.getZ());
+			nbtCompound.putInt("t", tick.delay);
+			nbtCompound.putInt("p", tick.priority.getIndex());
+			nbtList.add(nbtCompound);
 		}
 
-		return listTag;
+		return nbtList;
 	}
 
-	public static <T> SimpleTickScheduler<T> fromNbt(ListTag ticks, Function<T, Identifier> function, Function<Identifier, T> function2) {
+	public static <T> SimpleTickScheduler<T> fromNbt(NbtList ticks, Function<T, Identifier> function, Function<Identifier, T> function2) {
 		List<SimpleTickScheduler.Tick<T>> list = Lists.<SimpleTickScheduler.Tick<T>>newArrayList();
 
 		for (int i = 0; i < ticks.size(); i++) {
-			CompoundTag compoundTag = ticks.getCompound(i);
-			T object = (T)function2.apply(new Identifier(compoundTag.getString("i")));
+			NbtCompound nbtCompound = ticks.getCompound(i);
+			T object = (T)function2.apply(new Identifier(nbtCompound.getString("i")));
 			if (object != null) {
-				BlockPos blockPos = new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z"));
-				list.add(new SimpleTickScheduler.Tick(object, blockPos, compoundTag.getInt("t"), TickPriority.byIndex(compoundTag.getInt("p"))));
+				BlockPos blockPos = new BlockPos(nbtCompound.getInt("x"), nbtCompound.getInt("y"), nbtCompound.getInt("z"));
+				list.add(new SimpleTickScheduler.Tick(object, blockPos, nbtCompound.getInt("t"), TickPriority.byIndex(nbtCompound.getInt("p"))));
 			}
 		}
 

@@ -11,9 +11,9 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.nbt.Tag;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.DataCommand;
@@ -46,7 +46,7 @@ public class EntityDataObject implements DataCommandObject {
 	}
 
 	@Override
-	public void setTag(CompoundTag tag) throws CommandSyntaxException {
+	public void setTag(NbtCompound tag) throws CommandSyntaxException {
 		if (this.entity instanceof PlayerEntity) {
 			throw INVALID_ENTITY_EXCEPTION.create();
 		} else {
@@ -57,7 +57,7 @@ public class EntityDataObject implements DataCommandObject {
 	}
 
 	@Override
-	public CompoundTag getTag() {
+	public NbtCompound getTag() {
 		return NbtPredicate.entityToNbt(this.entity);
 	}
 
@@ -67,7 +67,7 @@ public class EntityDataObject implements DataCommandObject {
 	}
 
 	@Override
-	public Text feedbackQuery(Tag tag) {
+	public Text feedbackQuery(NbtElement tag) {
 		return new TranslatableText("commands.data.entity.query", this.entity.getDisplayName(), NbtHelper.toPrettyPrintedText(tag));
 	}
 

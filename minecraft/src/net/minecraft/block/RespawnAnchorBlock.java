@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -130,7 +131,7 @@ public class RespawnAnchorBlock extends Block {
 
 	private void explode(BlockState state, World world, BlockPos explodedPos) {
 		world.removeBlock(explodedPos, false);
-		boolean bl = Direction.Type.HORIZONTAL.stream().map(explodedPos::offset).anyMatch(blockPos -> hasStillWater(blockPos, world));
+		boolean bl = Direction.Type.HORIZONTAL.stream().map(explodedPos::offset).anyMatch(pos -> hasStillWater(pos, world));
 		final boolean bl2 = bl || world.getFluidState(explodedPos.up()).isIn(FluidTags.WATER);
 		ExplosionBehavior explosionBehavior = new ExplosionBehavior() {
 			@Override
@@ -158,7 +159,7 @@ public class RespawnAnchorBlock extends Block {
 	}
 
 	public static void charge(World world, BlockPos pos, BlockState state) {
-		world.setBlockState(pos, state.with(CHARGES, Integer.valueOf((Integer)state.get(CHARGES) + 1)), 3);
+		world.setBlockState(pos, state.with(CHARGES, Integer.valueOf((Integer)state.get(CHARGES) + 1)), SetBlockStateFlags.DEFAULT);
 		world.playSound(
 			null,
 			(double)pos.getX() + 0.5,

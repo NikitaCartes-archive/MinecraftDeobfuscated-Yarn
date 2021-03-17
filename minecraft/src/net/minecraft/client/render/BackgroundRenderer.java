@@ -182,21 +182,26 @@ public class BackgroundRenderer {
 		CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
 		Entity entity = camera.getFocusedEntity();
 		if (cameraSubmersionType == CameraSubmersionType.WATER) {
-			float f = 1.0F;
-			f = 0.05F;
+			float f = viewDistance;
+			ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)entity;
 			if (entity instanceof ClientPlayerEntity) {
-				ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)entity;
-				f -= clientPlayerEntity.getUnderwaterVisibility() * clientPlayerEntity.getUnderwaterVisibility() * 0.03F;
+				f = viewDistance * Math.max(0.25F, clientPlayerEntity.getUnderwaterVisibility());
 				Biome biome = clientPlayerEntity.world.getBiome(clientPlayerEntity.getBlockPos());
 				if (biome.getCategory() == Biome.Category.SWAMP) {
-					f += 0.005F;
+					f *= 0.85F;
 				}
 			}
+
+			RenderSystem.setShaderFogStart(-8.0F);
+			RenderSystem.setShaderFogEnd(f * 0.5F);
 		} else {
 			float f;
 			float g;
 			if (cameraSubmersionType == CameraSubmersionType.LAVA) {
-				if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
+				if (entity.isSpectator()) {
+					f = -8.0F;
+					g = viewDistance * 0.5F;
+				} else if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
 					f = 0.0F;
 					g = 3.0F;
 				} else {
@@ -214,8 +219,13 @@ public class BackgroundRenderer {
 					g = h;
 				}
 			} else if (cameraSubmersionType == CameraSubmersionType.POWDER_SNOW) {
-				f = 0.0F;
-				g = 2.0F;
+				if (entity.isSpectator()) {
+					f = -8.0F;
+					g = viewDistance * 0.5F;
+				} else {
+					f = 0.0F;
+					g = 2.0F;
+				}
 			} else if (thickFog) {
 				f = viewDistance * 0.05F;
 				g = Math.min(viewDistance, 192.0F) * 0.5F;

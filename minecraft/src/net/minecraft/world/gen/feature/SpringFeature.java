@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
@@ -70,7 +71,7 @@ public class SpringFeature extends Feature<SpringFeatureConfig> {
 				}
 
 				if (j == springFeatureConfig.rockCount && k == springFeatureConfig.holeCount) {
-					structureWorldAccess.setBlockState(blockPos, springFeatureConfig.state.getBlockState(), 2);
+					structureWorldAccess.setBlockState(blockPos, springFeatureConfig.state.getBlockState(), SetBlockStateFlags.NOTIFY_LISTENERS);
 					structureWorldAccess.getFluidTickScheduler().schedule(blockPos, springFeatureConfig.state.getFluid(), 0);
 					i++;
 				}

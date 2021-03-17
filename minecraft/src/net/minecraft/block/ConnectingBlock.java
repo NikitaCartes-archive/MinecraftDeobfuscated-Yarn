@@ -21,13 +21,13 @@ public class ConnectingBlock extends Block {
 	public static final BooleanProperty WEST = Properties.WEST;
 	public static final BooleanProperty UP = Properties.UP;
 	public static final BooleanProperty DOWN = Properties.DOWN;
-	public static final Map<Direction, BooleanProperty> FACING_PROPERTIES = ImmutableMap.copyOf(Util.make(Maps.newEnumMap(Direction.class), enumMap -> {
-		enumMap.put(Direction.NORTH, NORTH);
-		enumMap.put(Direction.EAST, EAST);
-		enumMap.put(Direction.SOUTH, SOUTH);
-		enumMap.put(Direction.WEST, WEST);
-		enumMap.put(Direction.UP, UP);
-		enumMap.put(Direction.DOWN, DOWN);
+	public static final Map<Direction, BooleanProperty> FACING_PROPERTIES = ImmutableMap.copyOf(Util.make(Maps.newEnumMap(Direction.class), directions -> {
+		directions.put(Direction.NORTH, NORTH);
+		directions.put(Direction.EAST, EAST);
+		directions.put(Direction.SOUTH, SOUTH);
+		directions.put(Direction.WEST, WEST);
+		directions.put(Direction.UP, UP);
+		directions.put(Direction.DOWN, DOWN);
 	}));
 	protected final VoxelShape[] CONNECTIONS_TO_SHAPE;
 

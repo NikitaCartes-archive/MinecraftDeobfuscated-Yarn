@@ -1,6 +1,7 @@
 package net.minecraft.entity.mob;
 
 import java.util.Random;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -69,7 +70,7 @@ public class HuskEntity extends ZombieEntity {
 	protected void convertInWater() {
 		this.convertTo(EntityType.ZOMBIE);
 		if (!this.isSilent()) {
-			this.world.syncWorldEvent(null, 1041, this.getBlockPos(), 0);
+			this.world.syncWorldEvent(null, WorldEvents.HUSK_CONVERTS_TO_ZOMBIE, this.getBlockPos(), 0);
 		}
 	}
 

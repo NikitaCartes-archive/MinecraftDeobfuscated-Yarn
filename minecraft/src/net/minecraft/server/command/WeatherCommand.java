@@ -8,29 +8,29 @@ public class WeatherCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("weather")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
+				.requires(source -> source.hasPermissionLevel(2))
 				.then(
 					CommandManager.literal("clear")
-						.executes(commandContext -> executeClear(commandContext.getSource(), 6000))
+						.executes(context -> executeClear(context.getSource(), 6000))
 						.then(
 							CommandManager.argument("duration", IntegerArgumentType.integer(0, 1000000))
-								.executes(commandContext -> executeClear(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "duration") * 20))
+								.executes(context -> executeClear(context.getSource(), IntegerArgumentType.getInteger(context, "duration") * 20))
 						)
 				)
 				.then(
 					CommandManager.literal("rain")
-						.executes(commandContext -> executeRain(commandContext.getSource(), 6000))
+						.executes(context -> executeRain(context.getSource(), 6000))
 						.then(
 							CommandManager.argument("duration", IntegerArgumentType.integer(0, 1000000))
-								.executes(commandContext -> executeRain(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "duration") * 20))
+								.executes(context -> executeRain(context.getSource(), IntegerArgumentType.getInteger(context, "duration") * 20))
 						)
 				)
 				.then(
 					CommandManager.literal("thunder")
-						.executes(commandContext -> executeThunder(commandContext.getSource(), 6000))
+						.executes(context -> executeThunder(context.getSource(), 6000))
 						.then(
 							CommandManager.argument("duration", IntegerArgumentType.integer(0, 1000000))
-								.executes(commandContext -> executeThunder(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "duration") * 20))
+								.executes(context -> executeThunder(context.getSource(), IntegerArgumentType.getInteger(context, "duration") * 20))
 						)
 				)
 		);

@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.structure.Structure;
@@ -117,7 +118,7 @@ public class SinglePoolElement extends StructurePoolElement {
 	) {
 		Structure structure = this.method_27233(structureManager);
 		StructurePlacementData structurePlacementData = this.createPlacementData(rotation, box, keepJigsaws);
-		if (!structure.place(world, pos, blockPos, structurePlacementData, random, 18)) {
+		if (!structure.place(world, pos, blockPos, structurePlacementData, random, SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.FORCE_STATE)) {
 			return false;
 		} else {
 			for (Structure.StructureBlockInfo structureBlockInfo : Structure.process(

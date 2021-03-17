@@ -12,7 +12,7 @@ import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.PaintingSpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
@@ -71,14 +71,14 @@ public class PaintingEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		tag.putString("Motive", Registry.PAINTING_MOTIVE.getId(this.motive).toString());
 		tag.putByte("Facing", (byte)this.facing.getHorizontal());
 		super.writeCustomDataToNbt(tag);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		this.motive = Registry.PAINTING_MOTIVE.get(Identifier.tryParse(tag.getString("Motive")));
 		this.facing = Direction.fromHorizontal(tag.getByte("Facing"));
 		super.readCustomDataFromNbt(tag);

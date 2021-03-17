@@ -9,7 +9,7 @@ import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloadListener;
+import net.minecraft.resource.ResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.DynamicRegistryManager;
@@ -18,7 +18,7 @@ import net.minecraft.util.registry.RegistryKey;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class TagManagerLoader implements ResourceReloadListener {
+public class TagManagerLoader implements ResourceReloader {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final DynamicRegistryManager registryManager;
 	private TagManager tagManager = TagManager.EMPTY;
@@ -33,7 +33,7 @@ public class TagManagerLoader implements ResourceReloadListener {
 
 	@Override
 	public CompletableFuture<Void> reload(
-		ResourceReloadListener.Synchronizer synchronizer,
+		ResourceReloader.Synchronizer synchronizer,
 		ResourceManager manager,
 		Profiler prepareProfiler,
 		Profiler applyProfiler,

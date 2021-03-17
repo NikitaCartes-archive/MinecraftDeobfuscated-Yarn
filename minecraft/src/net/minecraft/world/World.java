@@ -12,6 +12,8 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -26,7 +28,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.map.MapState;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.recipe.RecipeManager;
@@ -188,12 +190,12 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		} else {
 			WorldChunk worldChunk = this.getWorldChunk(pos);
 			Block block = state.getBlock();
-			BlockState blockState = worldChunk.setBlockState(pos, state, (flags & 64) != 0);
+			BlockState blockState = worldChunk.setBlockState(pos, state, (flags & SetBlockStateFlags.MOVED) != 0);
 			if (blockState == null) {
 				return false;
 			} else {
 				BlockState blockState2 = this.getBlockState(pos);
-				if ((flags & 128) == 0
+				if ((flags & SetBlockStateFlags.SKIP_LIGHTING_UPDATES) == 0
 					&& blockState2 != blockState
 					&& (
 						blockState2.getOpacity(this, pos) != blockState.getOpacity(this, pos)
@@ -211,21 +213,21 @@ public abstract class World implements WorldAccess, AutoCloseable {
 						this.scheduleBlockRerenderIfNeeded(pos, blockState, blockState2);
 					}
 
-					if ((flags & 2) != 0
-						&& (!this.isClient || (flags & 4) == 0)
+					if ((flags & SetBlockStateFlags.NOTIFY_LISTENERS) != 0
+						&& (!this.isClient || (flags & SetBlockStateFlags.NO_REDRAW) == 0)
 						&& (this.isClient || worldChunk.getLevelType() != null && worldChunk.getLevelType().isAfter(ChunkHolder.LevelType.TICKING))) {
 						this.updateListeners(pos, blockState, state, flags);
 					}
 
-					if ((flags & 1) != 0) {
+					if ((flags & SetBlockStateFlags.PROPAGATE_CHANGE) != 0) {
 						this.updateNeighbors(pos, blockState.getBlock());
 						if (!this.isClient && state.hasComparatorOutput()) {
 							this.updateComparators(pos, block);
 						}
 					}
 
-					if ((flags & 16) == 0 && maxUpdateDepth > 0) {
-						int i = flags & -34;
+					if ((flags & SetBlockStateFlags.FORCE_STATE) == 0 && maxUpdateDepth > 0) {
+						int i = flags & ~(SetBlockStateFlags.PROPAGATE_CHANGE | SetBlockStateFlags.SKIP_DROPS);
 						blockState.prepare(this, pos, i, maxUpdateDepth - 1);
 						state.updateNeighbors(this, pos, i, maxUpdateDepth - 1);
 						state.prepare(this, pos, i, maxUpdateDepth - 1);
@@ -245,7 +247,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	@Override
 	public boolean removeBlock(BlockPos pos, boolean move) {
 		FluidState fluidState = this.getFluidState(pos);
-		return this.setBlockState(pos, fluidState.getBlockState(), 3 | (move ? 64 : 0));
+		return this.setBlockState(pos, fluidState.getBlockState(), SetBlockStateFlags.DEFAULT | (move ? SetBlockStateFlags.MOVED : 0));
 	}
 
 	@Override
@@ -256,7 +258,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		} else {
 			FluidState fluidState = this.getFluidState(pos);
 			if (!(blockState.getBlock() instanceof AbstractFireBlock)) {
-				this.syncWorldEvent(2001, pos, Block.getRawIdFromState(blockState));
+				this.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(blockState));
 			}
 
 			if (drop) {
@@ -264,7 +266,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 				Block.dropStacks(blockState, this, pos, blockEntity, breakingEntity, ItemStack.EMPTY);
 			}
 
-			boolean bl = this.setBlockState(pos, fluidState.getBlockState(), 3, maxUpdateDepth);
+			boolean bl = this.setBlockState(pos, fluidState.getBlockState(), SetBlockStateFlags.DEFAULT, maxUpdateDepth);
 			if (bl) {
 				this.emitGameEvent(breakingEntity, GameEvent.BLOCK_DESTROY, pos);
 			}
@@ -277,7 +279,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	public boolean setBlockState(BlockPos pos, BlockState state) {
-		return this.setBlockState(pos, state, 3);
+		return this.setBlockState(pos, state, SetBlockStateFlags.DEFAULT);
 	}
 
 	public abstract void updateListeners(BlockPos pos, BlockState oldState, BlockState newState, int flags);
@@ -797,7 +799,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public abstract void setBlockBreakingInfo(int entityId, BlockPos pos, int progress);
 
 	@Environment(EnvType.CLIENT)
-	public void addFireworkParticle(double x, double y, double z, double velocityX, double velocityY, double velocityZ, @Nullable CompoundTag tag) {
+	public void addFireworkParticle(double x, double y, double z, double velocityX, double velocityY, double velocityZ, @Nullable NbtCompound tag) {
 	}
 
 	public abstract Scoreboard getScoreboard();

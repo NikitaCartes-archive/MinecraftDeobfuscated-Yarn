@@ -51,6 +51,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class RealmsMainScreen extends RealmsScreen {
@@ -669,7 +670,7 @@ public class RealmsMainScreen extends RealmsScreen {
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == 256) {
+		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
 			this.keyCombos.forEach(KeyCombo::reset);
 			this.onClosePopup();
 			return true;
@@ -753,7 +754,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	}
 
 	private void drawRealmsLogo(MatrixStack matrices, int x, int y) {
-		RenderSystem.setShader(GameRenderer::method_34542);
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderTexture(0, REALMS);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		matrices.push();
@@ -1212,7 +1213,7 @@ public class RealmsMainScreen extends RealmsScreen {
 
 		@Override
 		public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-			if (keyCode != 257 && keyCode != 32 && keyCode != 335) {
+			if (keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_SPACE && keyCode != GLFW.GLFW_KEY_KP_ENTER) {
 				return super.keyPressed(keyCode, scanCode, modifiers);
 			} else {
 				RealmsMainScreen.Entry entry = this.getSelected();

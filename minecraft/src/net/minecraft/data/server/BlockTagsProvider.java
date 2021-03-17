@@ -411,7 +411,8 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.BROWN_STAINED_GLASS,
 				Blocks.GREEN_STAINED_GLASS,
 				Blocks.RED_STAINED_GLASS,
-				Blocks.BLACK_STAINED_GLASS
+				Blocks.BLACK_STAINED_GLASS,
+				Blocks.TINTED_GLASS
 			);
 		this.getOrCreateTagBuilder(BlockTags.WOODEN_TRAPDOORS)
 			.add(
@@ -544,7 +545,17 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 			.addTag(BlockTags.BANNERS)
 			.addTag(BlockTags.PRESSURE_PLATES);
 		this.getOrCreateTagBuilder(BlockTags.CLIMBABLE)
-			.add(Blocks.LADDER, Blocks.VINE, Blocks.SCAFFOLDING, Blocks.WEEPING_VINES, Blocks.WEEPING_VINES_PLANT, Blocks.TWISTING_VINES, Blocks.TWISTING_VINES_PLANT);
+			.add(
+				Blocks.LADDER,
+				Blocks.VINE,
+				Blocks.SCAFFOLDING,
+				Blocks.WEEPING_VINES,
+				Blocks.WEEPING_VINES_PLANT,
+				Blocks.TWISTING_VINES,
+				Blocks.TWISTING_VINES_PLANT,
+				Blocks.CAVE_VINES,
+				Blocks.CAVE_VINES_PLANT
+			);
 		this.getOrCreateTagBuilder(BlockTags.PIGLIN_REPELLENTS)
 			.add(Blocks.SOUL_FIRE)
 			.add(Blocks.SOUL_TORCH)
@@ -621,8 +632,8 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.INFINIBURN_OVERWORLD).add(Blocks.NETHERRACK, Blocks.MAGMA_BLOCK);
 		this.getOrCreateTagBuilder(BlockTags.INFINIBURN_NETHER).addTag(BlockTags.INFINIBURN_OVERWORLD);
 		this.getOrCreateTagBuilder(BlockTags.INFINIBURN_END).addTag(BlockTags.INFINIBURN_OVERWORLD).add(Blocks.BEDROCK);
-		this.getOrCreateTagBuilder(BlockTags.STONE_ORE_REPLACEABLES).add(Blocks.STONE).add(Blocks.GRANITE).add(Blocks.DIORITE).add(Blocks.ANDESITE).add(Blocks.TUFF);
-		this.getOrCreateTagBuilder(BlockTags.DEEPSLATE_ORE_REPLACEABLES).add(Blocks.DEEPSLATE);
+		this.getOrCreateTagBuilder(BlockTags.STONE_ORE_REPLACEABLES).add(Blocks.STONE).add(Blocks.GRANITE).add(Blocks.DIORITE).add(Blocks.ANDESITE);
+		this.getOrCreateTagBuilder(BlockTags.DEEPSLATE_ORE_REPLACEABLES).add(Blocks.DEEPSLATE).add(Blocks.TUFF);
 		this.getOrCreateTagBuilder(BlockTags.BASE_STONE_OVERWORLD)
 			.add(Blocks.STONE)
 			.add(Blocks.GRANITE)
@@ -675,7 +686,7 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.CAULDRONS).add(Blocks.CAULDRON, Blocks.WATER_CAULDRON, Blocks.LAVA_CAULDRON, Blocks.POWDER_SNOW_CAULDRON);
 		this.getOrCreateTagBuilder(BlockTags.INSIDE_STEP_SOUND_BLOCKS).add(Blocks.SNOW, Blocks.POWDER_SNOW);
 		this.getOrCreateTagBuilder(BlockTags.DRIPSTONE_REPLACEABLE_BLOCKS).addTag(BlockTags.BASE_STONE_OVERWORLD).add(Blocks.DIRT);
-		this.getOrCreateTagBuilder(BlockTags.CAVE_VINES).add(Blocks.CAVE_VINES_BODY).add(Blocks.CAVE_VINES_HEAD);
+		this.getOrCreateTagBuilder(BlockTags.CAVE_VINES).add(Blocks.CAVE_VINES_PLANT).add(Blocks.CAVE_VINES);
 		this.getOrCreateTagBuilder(BlockTags.LUSH_PLANTS_REPLACEABLE)
 			.addTag(BlockTags.BASE_STONE_OVERWORLD)
 			.addTag(BlockTags.CAVE_VINES)

@@ -31,7 +31,7 @@ import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.function.SetNbtLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.EntityFlagsPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
@@ -789,7 +789,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 							ItemEntry.builder(Items.TIPPED_ARROW)
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
 								.apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)).withLimit(1))
-								.apply(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:slowness"))))
+								.apply(SetNbtLootFunction.builder(Util.make(new NbtCompound(), nbtCompound -> nbtCompound.putString("Potion", "minecraft:slowness"))))
 						)
 						.conditionally(KilledByPlayerLootCondition.builder())
 				)

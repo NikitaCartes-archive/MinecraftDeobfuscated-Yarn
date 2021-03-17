@@ -37,7 +37,7 @@ public class LoomBlock extends HorizontalFacingBlock {
 	@Override
 	public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
 		return new SimpleNamedScreenHandlerFactory(
-			(i, playerInventory, playerEntity) -> new LoomScreenHandler(i, playerInventory, ScreenHandlerContext.create(world, pos)), TITLE
+			(syncId, inventory, player) -> new LoomScreenHandler(syncId, inventory, ScreenHandlerContext.create(world, pos)), TITLE
 		);
 	}
 

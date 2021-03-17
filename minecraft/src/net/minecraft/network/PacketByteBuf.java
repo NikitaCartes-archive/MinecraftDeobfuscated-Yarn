@@ -38,11 +38,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtTagSizeTracker;
-import net.minecraft.nbt.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
@@ -104,7 +104,7 @@ import net.minecraft.util.math.Vec3d;
  *  <td>{@link UUID}</td><td>{@link #readUuid()}</td><td>{@link #writeUuid(UUID)}</td>
  * </tr>
  * <tr>
- *  <td>{@link CompoundTag}</td><td>{@link #readCompoundTag()}</td><td>{@link #writeCompoundTag(CompoundTag)}</td>
+ *  <td>{@link NbtCompound}</td><td>{@link #readCompound()}</td><td>{@link #writeCompound(NbtCompound)}</td>
  * </tr>
  * <tr>
  *  <td>{@link ItemStack}</td><td>{@link #readItemStack()}</td><td>{@link #writeItemStack(ItemStack)}</td>
@@ -174,10 +174,10 @@ public class PacketByteBuf extends ByteBuf {
 	 * @param codec the codec to decode the object
 	 */
 	public <T> T decode(Codec<T> codec) {
-		CompoundTag compoundTag = this.readUnlimitedCompoundTag();
-		DataResult<T> dataResult = codec.parse(NbtOps.INSTANCE, compoundTag);
+		NbtCompound nbtCompound = this.readUnlimitedCompound();
+		DataResult<T> dataResult = codec.parse(NbtOps.INSTANCE, nbtCompound);
 		dataResult.error().ifPresent(partialResult -> {
-			throw new EncoderException("Failed to decode: " + partialResult.message() + " " + compoundTag);
+			throw new EncoderException("Failed to decode: " + partialResult.message() + " " + nbtCompound);
 		});
 		return (T)dataResult.result().get();
 	}
@@ -194,11 +194,11 @@ public class PacketByteBuf extends ByteBuf {
 	 * @param object the object to write to this buf
 	 */
 	public <T> void encode(Codec<T> codec, T object) {
-		DataResult<Tag> dataResult = codec.encodeStart(NbtOps.INSTANCE, object);
+		DataResult<NbtElement> dataResult = codec.encodeStart(NbtOps.INSTANCE, object);
 		dataResult.error().ifPresent(partialResult -> {
 			throw new EncoderException("Failed to encode: " + partialResult.message() + " " + object);
 		});
-		this.writeCompoundTag((CompoundTag)dataResult.result().get());
+		this.writeCompound((NbtCompound)dataResult.result().get());
 	}
 
 	/**
@@ -808,13 +808,13 @@ public class PacketByteBuf extends ByteBuf {
 	 * @return this buf, for chaining
 	 * @throws io.netty.handler.codec.EncoderException if the NBT cannot be
 	 * written
-	 * @see #readCompoundTag()
-	 * @see #readUnlimitedCompoundTag()
-	 * @see #readCompoundTag(PositionTracker)
+	 * @see #readCompound()
+	 * @see #readUnlimitedCompound()
+	 * @see #readCompound(NbtTagSizeTracker)
 	 * 
 	 * @param compound the compound to write
 	 */
-	public PacketByteBuf writeCompoundTag(@Nullable CompoundTag compound) {
+	public PacketByteBuf writeCompound(@Nullable NbtCompound compound) {
 		if (compound == null) {
 			this.writeByte(0);
 		} else {
@@ -837,13 +837,13 @@ public class PacketByteBuf extends ByteBuf {
 	 * @return the read compound, may be {@code null}
 	 * @throws io.netty.handler.codec.EncoderException if the NBT cannot be read
 	 * @throws RuntimeException if the compound exceeds the allowed maximum size
-	 * @see #writeCompoundTag(CompoundTag)
-	 * @see #readUnlimitedCompoundTag()
-	 * @see #readCompoundTag(PositionTracker)
+	 * @see #writeCompound(NbtCompound)
+	 * @see #readUnlimitedCompound()
+	 * @see #readCompound(NbtTagSizeTracker)
 	 */
 	@Nullable
-	public CompoundTag readCompoundTag() {
-		return this.readCompoundTag(new NbtTagSizeTracker(2097152L));
+	public NbtCompound readCompound() {
+		return this.readCompound(new NbtTagSizeTracker(2097152L));
 	}
 
 	/**
@@ -856,13 +856,13 @@ public class PacketByteBuf extends ByteBuf {
 	 * 
 	 * @return the read compound, may be {@code null}
 	 * @throws io.netty.handler.codec.EncoderException if the NBT cannot be read
-	 * @see #writeCompoundTag(CompoundTag)
-	 * @see #readCompoundTag()
-	 * @see #readCompoundTag(PositionTracker)
+	 * @see #writeCompound(NbtCompound)
+	 * @see #readCompound()
+	 * @see #readCompound(NbtTagSizeTracker)
 	 */
 	@Nullable
-	public CompoundTag readUnlimitedCompoundTag() {
-		return this.readCompoundTag(NbtTagSizeTracker.EMPTY);
+	public NbtCompound readUnlimitedCompound() {
+		return this.readCompound(NbtTagSizeTracker.EMPTY);
 	}
 
 	/**
@@ -874,12 +874,12 @@ public class PacketByteBuf extends ByteBuf {
 	 * @return the read compound, may be {@code null}
 	 * @throws io.netty.handler.codec.EncoderException if the NBT cannot be read
 	 * @throws RuntimeException if the compound exceeds the allowed maximum size
-	 * @see #writeCompoundTag(CompoundTag)
-	 * @see #readCompoundTag()
-	 * @see #readUnlimitedCompoundTag()
+	 * @see #writeCompound(NbtCompound)
+	 * @see #readCompound()
+	 * @see #readUnlimitedCompound()
 	 */
 	@Nullable
-	public CompoundTag readCompoundTag(NbtTagSizeTracker sizeTracker) {
+	public NbtCompound readCompound(NbtTagSizeTracker sizeTracker) {
 		int i = this.readerIndex();
 		byte b = this.readByte();
 		if (b == 0) {
@@ -914,12 +914,12 @@ public class PacketByteBuf extends ByteBuf {
 			Item item = stack.getItem();
 			this.writeVarInt(Item.getRawId(item));
 			this.writeByte(stack.getCount());
-			CompoundTag compoundTag = null;
+			NbtCompound nbtCompound = null;
 			if (item.isDamageable() || item.shouldSyncTagToClient()) {
-				compoundTag = stack.getTag();
+				nbtCompound = stack.getTag();
 			}
 
-			this.writeCompoundTag(compoundTag);
+			this.writeCompound(nbtCompound);
 		}
 
 		return this;
@@ -941,7 +941,7 @@ public class PacketByteBuf extends ByteBuf {
 			int i = this.readVarInt();
 			int j = this.readByte();
 			ItemStack itemStack = new ItemStack(Item.byRawId(i), j);
-			itemStack.setTag(this.readCompoundTag());
+			itemStack.setTag(this.readCompound());
 			return itemStack;
 		}
 	}

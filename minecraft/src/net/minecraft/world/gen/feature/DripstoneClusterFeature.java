@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.tag.BlockTags;
@@ -75,7 +76,7 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 				if (bl && optionalInt2.isPresent() && this.canWaterSpawn(world, pos.withY(optionalInt2.getAsInt()))) {
 					int i = optionalInt2.getAsInt();
 					caveSurface = ((CaveSurface)optional.get()).withFloor(OptionalInt.of(i - 1));
-					world.setBlockState(pos.withY(i), Blocks.WATER.getDefaultState(), 2);
+					world.setBlockState(pos.withY(i), Blocks.WATER.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
 				} else {
 					caveSurface = (CaveSurface)optional.get();
 				}

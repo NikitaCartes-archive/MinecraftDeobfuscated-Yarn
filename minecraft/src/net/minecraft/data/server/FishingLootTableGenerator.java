@@ -19,7 +19,7 @@ import net.minecraft.loot.function.SetDamageLootFunction;
 import net.minecraft.loot.function.SetNbtLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.FishingHookPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
@@ -90,7 +90,7 @@ public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier
 						.with(
 							ItemEntry.builder(Items.POTION)
 								.weight(10)
-								.apply(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:water"))))
+								.apply(SetNbtLootFunction.builder(Util.make(new NbtCompound(), nbtCompound -> nbtCompound.putString("Potion", "minecraft:water"))))
 						)
 						.with(ItemEntry.builder(Items.STRING).weight(5))
 						.with(ItemEntry.builder(Items.FISHING_ROD).weight(2).apply(SetDamageLootFunction.builder(UniformLootNumberProvider.create(0.0F, 0.9F))))

@@ -26,27 +26,27 @@ public class WhitelistCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("whitelist")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
-				.then(CommandManager.literal("on").executes(commandContext -> executeOn(commandContext.getSource())))
-				.then(CommandManager.literal("off").executes(commandContext -> executeOff(commandContext.getSource())))
-				.then(CommandManager.literal("list").executes(commandContext -> executeList(commandContext.getSource())))
+				.requires(source -> source.hasPermissionLevel(3))
+				.then(CommandManager.literal("on").executes(context -> executeOn(context.getSource())))
+				.then(CommandManager.literal("off").executes(context -> executeOff(context.getSource())))
+				.then(CommandManager.literal("list").executes(context -> executeList(context.getSource())))
 				.then(
 					CommandManager.literal("add")
 						.then(
 							CommandManager.argument("targets", GameProfileArgumentType.gameProfile())
 								.suggests(
-									(commandContext, suggestionsBuilder) -> {
-										PlayerManager playerManager = commandContext.getSource().getMinecraftServer().getPlayerManager();
+									(context, builder) -> {
+										PlayerManager playerManager = context.getSource().getMinecraftServer().getPlayerManager();
 										return CommandSource.suggestMatching(
 											playerManager.getPlayerList()
 												.stream()
-												.filter(serverPlayerEntity -> !playerManager.getWhitelist().isAllowed(serverPlayerEntity.getGameProfile()))
-												.map(serverPlayerEntity -> serverPlayerEntity.getGameProfile().getName()),
-											suggestionsBuilder
+												.filter(player -> !playerManager.getWhitelist().isAllowed(player.getGameProfile()))
+												.map(player -> player.getGameProfile().getName()),
+											builder
 										);
 									}
 								)
-								.executes(commandContext -> executeAdd(commandContext.getSource(), GameProfileArgumentType.getProfileArgument(commandContext, "targets")))
+								.executes(context -> executeAdd(context.getSource(), GameProfileArgumentType.getProfileArgument(context, "targets")))
 						)
 				)
 				.then(
@@ -54,14 +54,12 @@ public class WhitelistCommand {
 						.then(
 							CommandManager.argument("targets", GameProfileArgumentType.gameProfile())
 								.suggests(
-									(commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(
-											commandContext.getSource().getMinecraftServer().getPlayerManager().getWhitelistedNames(), suggestionsBuilder
-										)
+									(context, builder) -> CommandSource.suggestMatching(context.getSource().getMinecraftServer().getPlayerManager().getWhitelistedNames(), builder)
 								)
-								.executes(commandContext -> executeRemove(commandContext.getSource(), GameProfileArgumentType.getProfileArgument(commandContext, "targets")))
+								.executes(context -> executeRemove(context.getSource(), GameProfileArgumentType.getProfileArgument(context, "targets")))
 						)
 				)
-				.then(CommandManager.literal("reload").executes(commandContext -> executeReload(commandContext.getSource())))
+				.then(CommandManager.literal("reload").executes(context -> executeReload(context.getSource())))
 		);
 	}
 

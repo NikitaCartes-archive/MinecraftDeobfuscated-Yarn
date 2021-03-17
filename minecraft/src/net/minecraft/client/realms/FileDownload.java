@@ -21,7 +21,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.realms.dto.WorldDownload;
 import net.minecraft.client.realms.exception.RealmsDefaultUncaughtExceptionHandler;
 import net.minecraft.client.realms.gui.screen.RealmsDownloadLatestWorldScreen;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -346,10 +346,10 @@ public class FileDownload {
 	private static void readNbtFile(File file) {
 		if (file.exists()) {
 			try {
-				CompoundTag compoundTag = NbtIo.readCompressed(file);
-				CompoundTag compoundTag2 = compoundTag.getCompound("Data");
-				compoundTag2.remove("Player");
-				NbtIo.writeCompressed(compoundTag, file);
+				NbtCompound nbtCompound = NbtIo.readCompressed(file);
+				NbtCompound nbtCompound2 = nbtCompound.getCompound("Data");
+				nbtCompound2.remove("Player");
+				NbtIo.writeCompressed(nbtCompound, file);
 			} catch (Exception var3) {
 				var3.printStackTrace();
 			}

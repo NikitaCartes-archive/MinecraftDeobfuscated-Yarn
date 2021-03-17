@@ -5,8 +5,8 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.collection.IdList;
 
@@ -14,11 +14,11 @@ public class ArrayPalette<T> implements Palette<T> {
 	private final IdList<T> idList;
 	private final T[] array;
 	private final PaletteResizeListener<T> resizeListener;
-	private final Function<CompoundTag, T> valueDeserializer;
+	private final Function<NbtCompound, T> valueDeserializer;
 	private final int indexBits;
 	private int size;
 
-	public ArrayPalette(IdList<T> idList, int integer, PaletteResizeListener<T> resizeListener, Function<CompoundTag, T> valueDeserializer) {
+	public ArrayPalette(IdList<T> idList, int integer, PaletteResizeListener<T> resizeListener, Function<NbtCompound, T> valueDeserializer) {
 		this.idList = idList;
 		this.array = (T[])(new Object[1 << integer]);
 		this.indexBits = integer;
@@ -96,7 +96,7 @@ public class ArrayPalette<T> implements Palette<T> {
 	}
 
 	@Override
-	public void readNbt(ListTag tag) {
+	public void readNbt(NbtList tag) {
 		for (int i = 0; i < tag.size(); i++) {
 			this.array[i] = (T)this.valueDeserializer.apply(tag.getCompound(i));
 		}

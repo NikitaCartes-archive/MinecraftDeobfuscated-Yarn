@@ -54,12 +54,12 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	}
 
 	public static <T> MapCodec<SimpleRegistry.RegistryManagerEntry<T>> createRegistryManagerEntryCodec(
-		RegistryKey<? extends Registry<T>> registryKey, MapCodec<T> entryCodec
+		RegistryKey<? extends Registry<T>> key, MapCodec<T> entryCodec
 	) {
 		return RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
 						Identifier.CODEC
-							.xmap(RegistryKey.createKeyFactory(registryKey), RegistryKey::getValue)
+							.xmap(RegistryKey.createKeyFactory(key), RegistryKey::getValue)
 							.fieldOf("name")
 							.forGetter(registryManagerEntry -> registryManagerEntry.key),
 						Codec.INT.fieldOf("id").forGetter(registryManagerEntry -> registryManagerEntry.rawId),
@@ -203,9 +203,9 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 		return this.idToEntry.containsKey(id);
 	}
 
-	public static <T> Codec<SimpleRegistry<T>> createRegistryManagerCodec(RegistryKey<? extends Registry<T>> registryKey, Lifecycle lifecycle, Codec<T> entryCodec) {
-		return createRegistryManagerEntryCodec(registryKey, entryCodec.fieldOf("element")).codec().listOf().xmap(list -> {
-			SimpleRegistry<T> simpleRegistry = new SimpleRegistry<>(registryKey, lifecycle);
+	public static <T> Codec<SimpleRegistry<T>> createRegistryManagerCodec(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, Codec<T> entryCodec) {
+		return createRegistryManagerEntryCodec(key, entryCodec.fieldOf("element")).codec().listOf().xmap(list -> {
+			SimpleRegistry<T> simpleRegistry = new SimpleRegistry<>(key, lifecycle);
 
 			for (SimpleRegistry.RegistryManagerEntry<T> registryManagerEntry : list) {
 				simpleRegistry.set(registryManagerEntry.rawId, registryManagerEntry.key, registryManagerEntry.entry, lifecycle);
@@ -227,10 +227,10 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 		return RegistryCodec.of(registryRef, lifecycle, entryCodec);
 	}
 
-	public static <T> Codec<SimpleRegistry<T>> createCodec(RegistryKey<? extends Registry<T>> registryKey, Lifecycle lifecycle, Codec<T> entryCodec) {
-		return Codec.unboundedMap(Identifier.CODEC.xmap(RegistryKey.createKeyFactory(registryKey), RegistryKey::getValue), entryCodec).xmap(map -> {
-			SimpleRegistry<T> simpleRegistry = new SimpleRegistry<>(registryKey, lifecycle);
-			map.forEach((registryKeyxx, object) -> simpleRegistry.add(registryKeyxx, object, lifecycle));
+	public static <T> Codec<SimpleRegistry<T>> createCodec(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, Codec<T> entryCodec) {
+		return Codec.unboundedMap(Identifier.CODEC.xmap(RegistryKey.createKeyFactory(key), RegistryKey::getValue), entryCodec).xmap(map -> {
+			SimpleRegistry<T> simpleRegistry = new SimpleRegistry<>(key, lifecycle);
+			map.forEach((registryKeyx, object) -> simpleRegistry.add(registryKeyx, object, lifecycle));
 			return simpleRegistry;
 		}, simpleRegistry -> ImmutableMap.copyOf(simpleRegistry.keyToEntry));
 	}

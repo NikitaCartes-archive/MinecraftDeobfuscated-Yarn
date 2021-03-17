@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.entity.BellBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -65,7 +66,7 @@ public class BellBlock extends BlockWithEntity {
 				this.ring(world, pos, null);
 			}
 
-			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)), 3);
+			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)), SetBlockStateFlags.DEFAULT);
 		}
 	}
 

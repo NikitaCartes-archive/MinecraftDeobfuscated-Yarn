@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
@@ -34,7 +34,7 @@ public class StorageIoWorker implements AutoCloseable {
 		this.executor = new TaskExecutor<>(new TaskQueue.Prioritized(StorageIoWorker.Priority.values().length), Util.getIoWorkerExecutor(), "IOWorker-" + name);
 	}
 
-	public CompletableFuture<Void> setResult(ChunkPos pos, @Nullable CompoundTag nbt) {
+	public CompletableFuture<Void> setResult(ChunkPos pos, @Nullable NbtCompound nbt) {
 		return this.run(() -> {
 			StorageIoWorker.Result result = (StorageIoWorker.Result)this.results.computeIfAbsent(pos, chunkPosx -> new StorageIoWorker.Result(nbt));
 			result.nbt = nbt;
@@ -43,11 +43,11 @@ public class StorageIoWorker implements AutoCloseable {
 	}
 
 	@Nullable
-	public CompoundTag getNbt(ChunkPos pos) throws IOException {
-		CompletableFuture<CompoundTag> completableFuture = this.readChunkData(pos);
+	public NbtCompound getNbt(ChunkPos pos) throws IOException {
+		CompletableFuture<NbtCompound> completableFuture = this.readChunkData(pos);
 
 		try {
-			return (CompoundTag)completableFuture.join();
+			return (NbtCompound)completableFuture.join();
 		} catch (CompletionException var4) {
 			if (var4.getCause() instanceof IOException) {
 				throw (IOException)var4.getCause();
@@ -57,15 +57,15 @@ public class StorageIoWorker implements AutoCloseable {
 		}
 	}
 
-	protected CompletableFuture<CompoundTag> readChunkData(ChunkPos pos) {
+	protected CompletableFuture<NbtCompound> readChunkData(ChunkPos pos) {
 		return this.run(() -> {
 			StorageIoWorker.Result result = (StorageIoWorker.Result)this.results.get(pos);
 			if (result != null) {
 				return Either.left(result.nbt);
 			} else {
 				try {
-					CompoundTag compoundTag = this.storage.getTagAt(pos);
-					return Either.left(compoundTag);
+					NbtCompound nbtCompound = this.storage.getTagAt(pos);
+					return Either.left(nbtCompound);
 				} catch (Exception var4) {
 					LOGGER.warn("Failed to read chunk {}", pos, var4);
 					return Either.right(var4);
@@ -83,7 +83,7 @@ public class StorageIoWorker implements AutoCloseable {
 			.thenCompose(Function.identity());
 		return completableFuture.thenCompose(void_ -> this.run(() -> {
 				try {
-					this.storage.method_26982();
+					this.storage.sync();
 					return Either.left(null);
 				} catch (Exception var2) {
 					LOGGER.warn("Failed to synchronized chunks", (Throwable)var2);
@@ -149,10 +149,10 @@ public class StorageIoWorker implements AutoCloseable {
 
 	static class Result {
 		@Nullable
-		private CompoundTag nbt;
+		private NbtCompound nbt;
 		private final CompletableFuture<Void> future = new CompletableFuture();
 
-		public Result(@Nullable CompoundTag nbt) {
+		public Result(@Nullable NbtCompound nbt) {
 			this.nbt = nbt;
 		}
 	}

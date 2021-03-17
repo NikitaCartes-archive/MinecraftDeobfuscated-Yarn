@@ -2,7 +2,7 @@ package net.minecraft.block.entity;
 
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashCallable;
@@ -41,14 +41,14 @@ public abstract class BlockEntity {
 		return this.world != null;
 	}
 
-	public void readNbt(CompoundTag tag) {
+	public void readNbt(NbtCompound tag) {
 	}
 
-	public CompoundTag writeNbt(CompoundTag tag) {
+	public NbtCompound writeNbt(NbtCompound tag) {
 		return this.writeIdentifyingData(tag);
 	}
 
-	private CompoundTag writeIdentifyingData(CompoundTag tag) {
+	private NbtCompound writeIdentifyingData(NbtCompound tag) {
 		Identifier identifier = BlockEntityType.getId(this.getType());
 		if (identifier == null) {
 			throw new RuntimeException(this.getClass() + " is missing a mapping! This is a bug!");
@@ -62,7 +62,7 @@ public abstract class BlockEntity {
 	}
 
 	@Nullable
-	public static BlockEntity createFromNbt(BlockPos pos, BlockState state, CompoundTag tag) {
+	public static BlockEntity createFromNbt(BlockPos pos, BlockState state, NbtCompound tag) {
 		String string = tag.getString("id");
 		return (BlockEntity)Registry.BLOCK_ENTITY_TYPE.getOrEmpty(new Identifier(string)).map(blockEntityType -> {
 			try {
@@ -111,8 +111,8 @@ public abstract class BlockEntity {
 		return null;
 	}
 
-	public CompoundTag toInitialChunkDataNbt() {
-		return this.writeIdentifyingData(new CompoundTag());
+	public NbtCompound toInitialChunkDataNbt() {
+		return this.writeIdentifyingData(new NbtCompound());
 	}
 
 	public boolean isRemoved() {

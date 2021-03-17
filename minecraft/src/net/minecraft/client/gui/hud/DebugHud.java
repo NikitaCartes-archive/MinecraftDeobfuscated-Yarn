@@ -30,6 +30,7 @@ import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
@@ -486,6 +487,7 @@ public class DebugHud extends DrawableHelper {
 
 		int r = this.client.getWindow().getScaledHeight();
 		fill(matrices, x, r - 60, x + n, r, -1873784752);
+		RenderSystem.setShader(GameRenderer::getPositionColorShader);
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 		RenderSystem.enableBlend();
 		RenderSystem.disableTexture();

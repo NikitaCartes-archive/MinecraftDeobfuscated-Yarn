@@ -29,25 +29,25 @@ public class ProgressScreen extends Screen implements ProgressListener {
 	}
 
 	@Override
-	public void method_15412(Text text) {
-		this.method_15413(text);
+	public void setTitle(Text title) {
+		this.setTitleAndTask(title);
 	}
 
 	@Override
-	public void method_15413(Text text) {
-		this.title = text;
-		this.method_15414(new TranslatableText("progress.working"));
+	public void setTitleAndTask(Text title) {
+		this.title = title;
+		this.setTask(new TranslatableText("progress.working"));
 	}
 
 	@Override
-	public void method_15414(Text text) {
-		this.task = text;
+	public void setTask(Text task) {
+		this.task = task;
 		this.progressStagePercentage(0);
 	}
 
 	@Override
-	public void progressStagePercentage(int i) {
-		this.progress = i;
+	public void progressStagePercentage(int percentage) {
+		this.progress = percentage;
 	}
 
 	@Override

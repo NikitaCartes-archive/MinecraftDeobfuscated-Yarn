@@ -1,18 +1,27 @@
 package net.minecraft.util.thread;
 
+import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.ints.Int2BooleanFunction;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.class_5948;
+import net.minecraft.class_5949;
+import net.minecraft.class_5950;
+import net.minecraft.class_5951;
+import net.minecraft.class_5952;
 import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class TaskExecutor<T> implements MessageListener<T>, AutoCloseable, Runnable {
+public class TaskExecutor<T> implements class_5952, MessageListener<T>, AutoCloseable, Runnable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final AtomicInteger stateFlags = new AtomicInteger(0);
-	public final TaskQueue<? super T, ? extends Runnable> queue;
+	private final TaskQueue<? super T, ? extends Runnable> queue;
 	private final Executor executor;
 	private final String name;
 
@@ -24,6 +33,7 @@ public class TaskExecutor<T> implements MessageListener<T>, AutoCloseable, Runna
 		this.executor = executor;
 		this.queue = queue;
 		this.name = name;
+		class_5950.field_29555.method_34702(this);
 	}
 
 	private boolean unpause() {
@@ -121,5 +131,11 @@ public class TaskExecutor<T> implements MessageListener<T>, AutoCloseable, Runna
 	@Override
 	public String getName() {
 		return this.name;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public List<class_5948> method_34705() {
+		return ImmutableList.of(new class_5948(new class_5951(this.name + "-queuesize"), this.queue::method_34706, class_5949.field_29552));
 	}
 }

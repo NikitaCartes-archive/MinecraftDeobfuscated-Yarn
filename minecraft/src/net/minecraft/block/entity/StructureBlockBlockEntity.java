@@ -8,13 +8,14 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.StructureBlock;
 import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.Structure;
@@ -54,7 +55,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag writeNbt(CompoundTag tag) {
+	public NbtCompound writeNbt(NbtCompound tag) {
 		super.writeNbt(tag);
 		tag.putString("name", this.getStructureName());
 		tag.putString("author", this.author);
@@ -78,7 +79,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void readNbt(CompoundTag tag) {
+	public void readNbt(NbtCompound tag) {
 		super.readNbt(tag);
 		this.setStructureName(tag.getString("name"));
 		this.author = tag.getString("author");
@@ -129,7 +130,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 			BlockPos blockPos = this.getPos();
 			BlockState blockState = this.world.getBlockState(blockPos);
 			if (blockState.isOf(Blocks.STRUCTURE_BLOCK)) {
-				this.world.setBlockState(blockPos, blockState.with(StructureBlock.MODE, this.mode), 2);
+				this.world.setBlockState(blockPos, blockState.with(StructureBlock.MODE, this.mode), SetBlockStateFlags.NOTIFY_LISTENERS);
 			}
 		}
 	}
@@ -141,8 +142,8 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag toInitialChunkDataNbt() {
-		return this.writeNbt(new CompoundTag());
+	public NbtCompound toInitialChunkDataNbt() {
+		return this.writeNbt(new NbtCompound());
 	}
 
 	public boolean openScreen(PlayerEntity player) {
@@ -232,7 +233,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		this.mode = mode;
 		BlockState blockState = this.world.getBlockState(this.getPos());
 		if (blockState.isOf(Blocks.STRUCTURE_BLOCK)) {
-			this.world.setBlockState(this.getPos(), blockState.with(StructureBlock.MODE, mode), 2);
+			this.world.setBlockState(this.getPos(), blockState.with(StructureBlock.MODE, mode), SetBlockStateFlags.NOTIFY_LISTENERS);
 		}
 	}
 
@@ -281,7 +282,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 					this.size = new Vec3i(ix - 1, j - 1, k - 1);
 					this.markDirty();
 					BlockState blockState = this.world.getBlockState(blockPos);
-					this.world.updateListeners(blockPos, blockState, blockState, 3);
+					this.world.updateListeners(blockPos, blockState, blockState, SetBlockStateFlags.DEFAULT);
 					return true;
 				} else {
 					return false;
@@ -390,7 +391,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 			this.size = vec3i;
 			this.markDirty();
 			BlockState blockState = world.getBlockState(blockPos);
-			world.updateListeners(blockPos, blockState, blockState, 3);
+			world.updateListeners(blockPos, blockState, blockState, SetBlockStateFlags.DEFAULT);
 		}
 
 		if (bl && !bl2) {
@@ -407,7 +408,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 			}
 
 			BlockPos blockPos2 = blockPos.add(this.offset);
-			structure.place(world, blockPos2, blockPos2, structurePlacementData, createRandom(this.seed), 2);
+			structure.place(world, blockPos2, blockPos2, structurePlacementData, createRandom(this.seed), SetBlockStateFlags.NOTIFY_LISTENERS);
 			return true;
 		}
 	}

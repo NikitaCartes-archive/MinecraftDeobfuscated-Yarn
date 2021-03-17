@@ -7,6 +7,8 @@ import java.util.Random;
 import java.util.WeakHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -62,14 +64,14 @@ public class RedstoneTorchBlock extends TorchBlock {
 
 		if ((Boolean)state.get(LIT)) {
 			if (bl) {
-				world.setBlockState(pos, state.with(LIT, Boolean.valueOf(false)), 3);
+				world.setBlockState(pos, state.with(LIT, Boolean.valueOf(false)), SetBlockStateFlags.DEFAULT);
 				if (isBurnedOut(world, pos, true)) {
-					world.syncWorldEvent(1502, pos, 0);
+					world.syncWorldEvent(WorldEvents.REDSTONE_TORCH_BURNS_OUT, pos, 0);
 					world.getBlockTickScheduler().schedule(pos, world.getBlockState(pos).getBlock(), 160);
 				}
 			}
 		} else if (!bl && !isBurnedOut(world, pos, false)) {
-			world.setBlockState(pos, state.with(LIT, Boolean.valueOf(true)), 3);
+			world.setBlockState(pos, state.with(LIT, Boolean.valueOf(true)), SetBlockStateFlags.DEFAULT);
 		}
 	}
 
@@ -107,7 +109,7 @@ public class RedstoneTorchBlock extends TorchBlock {
 	}
 
 	private static boolean isBurnedOut(World world, BlockPos pos, boolean addNew) {
-		List<RedstoneTorchBlock.BurnoutEntry> list = (List<RedstoneTorchBlock.BurnoutEntry>)BURNOUT_MAP.computeIfAbsent(world, blockView -> Lists.newArrayList());
+		List<RedstoneTorchBlock.BurnoutEntry> list = (List<RedstoneTorchBlock.BurnoutEntry>)BURNOUT_MAP.computeIfAbsent(world, worldx -> Lists.newArrayList());
 		if (addNew) {
 			list.add(new RedstoneTorchBlock.BurnoutEntry(pos.toImmutable(), world.getTime()));
 		}

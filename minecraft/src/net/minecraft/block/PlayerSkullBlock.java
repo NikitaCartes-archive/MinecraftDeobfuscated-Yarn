@@ -2,11 +2,12 @@ package net.minecraft.block;
 
 import com.mojang.authlib.GameProfile;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -25,11 +26,11 @@ public class PlayerSkullBlock extends SkullBlock {
 			SkullBlockEntity skullBlockEntity = (SkullBlockEntity)blockEntity;
 			GameProfile gameProfile = null;
 			if (itemStack.hasTag()) {
-				CompoundTag compoundTag = itemStack.getTag();
-				if (compoundTag.contains("SkullOwner", 10)) {
-					gameProfile = NbtHelper.toGameProfile(compoundTag.getCompound("SkullOwner"));
-				} else if (compoundTag.contains("SkullOwner", 8) && !StringUtils.isBlank(compoundTag.getString("SkullOwner"))) {
-					gameProfile = new GameProfile(null, compoundTag.getString("SkullOwner"));
+				NbtCompound nbtCompound = itemStack.getTag();
+				if (nbtCompound.contains("SkullOwner", NbtTypeIds.COMPOUND)) {
+					gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
+				} else if (nbtCompound.contains("SkullOwner", NbtTypeIds.STRING) && !StringUtils.isBlank(nbtCompound.getString("SkullOwner"))) {
+					gameProfile = new GameProfile(null, nbtCompound.getString("SkullOwner"));
 				}
 			}
 

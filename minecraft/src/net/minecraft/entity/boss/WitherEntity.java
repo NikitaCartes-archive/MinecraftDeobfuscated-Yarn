@@ -9,6 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvironmentInterface;
 import net.fabricmc.api.EnvironmentInterfaces;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.entity.feature.SkinOverlayOwner;
 import net.minecraft.entity.Entity;
@@ -39,7 +40,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
@@ -104,13 +105,13 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
 		tag.putInt("Invul", this.getInvulnerableTimer());
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
 		this.setInvulTimer(tag.getInt("Invul"));
 		if (this.hasCustomName()) {
@@ -247,7 +248,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 					: Explosion.DestructionType.NONE;
 				this.world.createExplosion(this, this.getX(), this.getEyeY(), this.getZ(), 7.0F, false, destructionType);
 				if (!this.isSilent()) {
-					this.world.syncGlobalEvent(1023, this.getBlockPos(), 0);
+					this.world.syncGlobalEvent(WorldEvents.WITHER_SPAWNS, this.getBlockPos(), 0);
 				}
 			}
 
@@ -335,7 +336,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 					}
 
 					if (bl) {
-						this.world.syncWorldEvent(null, 1022, this.getBlockPos(), 0);
+						this.world.syncWorldEvent(null, WorldEvents.WITHER_BREAKS_BLOCK, this.getBlockPos(), 0);
 					}
 				}
 			}
@@ -419,7 +420,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 
 	private void shootSkullAt(int headIndex, double targetX, double targetY, double targetZ, boolean charged) {
 		if (!this.isSilent()) {
-			this.world.syncWorldEvent(null, 1024, this.getBlockPos(), 0);
+			this.world.syncWorldEvent(null, WorldEvents.WITHER_SHOOTS, this.getBlockPos(), 0);
 		}
 
 		double d = this.getHeadX(headIndex);

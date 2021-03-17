@@ -1,15 +1,18 @@
 package net.minecraft.entity;
 
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LightningRodBlock;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.block.Oxidizable;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -18,6 +21,8 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
@@ -63,13 +68,14 @@ public class LightningEntity extends Entity {
 	@Override
 	public void tick() {
 		super.tick();
-		if (this.ambientTick == 2) {
+		if (this.ambientTick == 2 && !this.world.isClient) {
 			Difficulty difficulty = this.world.getDifficulty();
 			if (difficulty == Difficulty.NORMAL || difficulty == Difficulty.HARD) {
 				this.spawnFire(4);
 			}
 
 			this.powerLightningRod();
+			cleanOxidization(this.world, this.getBlockPos().down());
 			this.world
 				.playSound(
 					null,
@@ -139,6 +145,56 @@ public class LightningEntity extends Entity {
 		}
 	}
 
+	private static void cleanOxidization(World world, BlockPos pos) {
+		BlockState blockState = world.getBlockState(pos);
+		BlockPos blockPos;
+		BlockState blockState2;
+		if (blockState.isOf(Blocks.LIGHTNING_ROD)) {
+			blockPos = pos.offset(((Direction)blockState.get(LightningRodBlock.FACING)).getOpposite());
+			blockState2 = world.getBlockState(blockPos);
+		} else {
+			blockPos = pos;
+			blockState2 = blockState;
+		}
+
+		if (blockState2.getBlock() instanceof Oxidizable) {
+			world.setBlockState(blockPos, Oxidizable.getUnaffectedOxidationState(world.getBlockState(blockPos)));
+			BlockPos.Mutable mutable = pos.mutableCopy();
+			int i = world.random.nextInt(3) + 3;
+
+			for (int j = 0; j < i; j++) {
+				int k = world.random.nextInt(8) + 1;
+				cleanOxidizationAround(world, blockPos, mutable, k);
+			}
+		}
+	}
+
+	private static void cleanOxidizationAround(World world, BlockPos pos, BlockPos.Mutable mutablePos, int count) {
+		mutablePos.set(pos);
+
+		for (int i = 0; i < count; i++) {
+			Optional<BlockPos> optional = cleanOxidizationAround(world, mutablePos);
+			if (!optional.isPresent()) {
+				break;
+			}
+
+			mutablePos.set((Vec3i)optional.get());
+		}
+	}
+
+	private static Optional<BlockPos> cleanOxidizationAround(World world, BlockPos pos) {
+		for (BlockPos blockPos : BlockPos.iterateRandomly(world.random, 10, pos, 1)) {
+			BlockState blockState = world.getBlockState(blockPos);
+			if (blockState.getBlock() instanceof Oxidizable) {
+				Oxidizable.getDecreasedOxidationState(blockState).ifPresent(state -> world.setBlockState(blockPos, state));
+				world.syncWorldEvent(WorldEvents.ELECTRICITY_SPARKS, blockPos, -1);
+				return Optional.of(blockPos);
+			}
+		}
+
+		return Optional.empty();
+	}
+
 	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean shouldRender(double distance) {
@@ -151,11 +207,11 @@ public class LightningEntity extends Entity {
 	}
 
 	@Override
-	protected void readCustomDataFromNbt(CompoundTag tag) {
+	protected void readCustomDataFromNbt(NbtCompound tag) {
 	}
 
 	@Override
-	protected void writeCustomDataToNbt(CompoundTag tag) {
+	protected void writeCustomDataToNbt(NbtCompound tag) {
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -11,11 +10,6 @@ import net.minecraft.world.World;
 public class AmethystBlock extends Block {
 	public AmethystBlock(AbstractBlock.Settings settings) {
 		super(settings);
-	}
-
-	@Override
-	public PistonBehavior getPistonBehavior(BlockState state) {
-		return PistonBehavior.NORMAL;
 	}
 
 	@Override

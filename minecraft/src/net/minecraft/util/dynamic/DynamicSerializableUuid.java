@@ -7,7 +7,7 @@ import net.minecraft.util.Util;
 
 public final class DynamicSerializableUuid {
 	public static final Codec<UUID> CODEC = Codec.INT_STREAM
-		.comapFlatMap(intStream -> Util.toArray(intStream, 4).map(DynamicSerializableUuid::toUuid), uUID -> Arrays.stream(toIntArray(uUID)));
+		.comapFlatMap(uuidStream -> Util.toArray(uuidStream, 4).map(DynamicSerializableUuid::toUuid), uuid -> Arrays.stream(toIntArray(uuid)));
 
 	public static UUID toUuid(int[] array) {
 		return new UUID((long)array[0] << 32 | (long)array[1] & 4294967295L, (long)array[2] << 32 | (long)array[3] & 4294967295L);

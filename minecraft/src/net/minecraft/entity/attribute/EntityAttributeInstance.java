@@ -14,8 +14,9 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.fabricmc.yarn.constants.NbtTypeIds;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.registry.Registry;
 
 /**
@@ -192,30 +193,30 @@ public class EntityAttributeInstance {
 		this.onUpdate();
 	}
 
-	public CompoundTag toNbt() {
-		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.putString("Name", Registry.ATTRIBUTE.getId(this.type).toString());
-		compoundTag.putDouble("Base", this.baseValue);
+	public NbtCompound toNbt() {
+		NbtCompound nbtCompound = new NbtCompound();
+		nbtCompound.putString("Name", Registry.ATTRIBUTE.getId(this.type).toString());
+		nbtCompound.putDouble("Base", this.baseValue);
 		if (!this.persistentModifiers.isEmpty()) {
-			ListTag listTag = new ListTag();
+			NbtList nbtList = new NbtList();
 
 			for (EntityAttributeModifier entityAttributeModifier : this.persistentModifiers) {
-				listTag.add(entityAttributeModifier.toNbt());
+				nbtList.add(entityAttributeModifier.toNbt());
 			}
 
-			compoundTag.put("Modifiers", listTag);
+			nbtCompound.put("Modifiers", nbtList);
 		}
 
-		return compoundTag;
+		return nbtCompound;
 	}
 
-	public void readNbt(CompoundTag tag) {
+	public void readNbt(NbtCompound tag) {
 		this.baseValue = tag.getDouble("Base");
-		if (tag.contains("Modifiers", 9)) {
-			ListTag listTag = tag.getList("Modifiers", 10);
+		if (tag.contains("Modifiers", NbtTypeIds.LIST)) {
+			NbtList nbtList = tag.getList("Modifiers", NbtTypeIds.COMPOUND);
 
-			for (int i = 0; i < listTag.size(); i++) {
-				EntityAttributeModifier entityAttributeModifier = EntityAttributeModifier.fromNbt(listTag.getCompound(i));
+			for (int i = 0; i < nbtList.size(); i++) {
+				EntityAttributeModifier entityAttributeModifier = EntityAttributeModifier.fromNbt(nbtList.getCompound(i));
 				if (entityAttributeModifier != null) {
 					this.idToModifiers.put(entityAttributeModifier.getId(), entityAttributeModifier);
 					this.getModifiers(entityAttributeModifier.getOperation()).add(entityAttributeModifier);

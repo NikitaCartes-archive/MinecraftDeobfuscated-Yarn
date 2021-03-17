@@ -13,6 +13,9 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -57,9 +60,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -293,7 +296,7 @@ public class FoxEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
 	) {
 		Optional<RegistryKey<Biome>> optional = world.getBiomeKey(this.getBlockPos());
 		FoxEntity.Type type = FoxEntity.Type.fromBiome(optional);
@@ -370,18 +373,18 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
 		List<UUID> list = this.getTrustedUuids();
-		ListTag listTag = new ListTag();
+		NbtList nbtList = new NbtList();
 
 		for (UUID uUID : list) {
 			if (uUID != null) {
-				listTag.add(NbtHelper.fromUuid(uUID));
+				nbtList.add(NbtHelper.fromUuid(uUID));
 			}
 		}
 
-		tag.put("Trusted", listTag);
+		tag.put("Trusted", nbtList);
 		tag.putBoolean("Sleeping", this.isSleeping());
 		tag.putString("Type", this.getFoxType().getKey());
 		tag.putBoolean("Sitting", this.isSitting());
@@ -389,12 +392,12 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
-		ListTag listTag = tag.getList("Trusted", 11);
+		NbtList nbtList = tag.getList("Trusted", NbtTypeIds.INT_ARRAY);
 
-		for (int i = 0; i < listTag.size(); i++) {
-			this.addTrustedUuid(NbtHelper.toUuid(listTag.get(i)));
+		for (int i = 0; i < nbtList.size(); i++) {
+			this.addTrustedUuid(NbtHelper.toUuid(nbtList.get(i)));
 		}
 
 		this.setSleeping(tag.getBoolean("Sleeping"));
@@ -516,7 +519,7 @@ public class FoxEntity extends AnimalEntity {
 			if (this.isWalking() && this.world.random.nextFloat() < 0.2F) {
 				BlockPos blockPos = this.getBlockPos();
 				BlockState blockState = this.world.getBlockState(blockPos);
-				this.world.syncWorldEvent(2001, blockPos, Block.getRawIdFromState(blockState));
+				this.world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, blockPos, Block.getRawIdFromState(blockState));
 			}
 		}
 
@@ -943,7 +946,7 @@ public class FoxEntity extends AnimalEntity {
 			}
 
 			FoxEntity.this.playSound(SoundEvents.ITEM_SWEET_BERRIES_PICK_FROM_BUSH, 1.0F, 1.0F);
-			FoxEntity.this.world.setBlockState(this.targetPos, blockState.with(SweetBerryBushBlock.AGE, Integer.valueOf(1)), 2);
+			FoxEntity.this.world.setBlockState(this.targetPos, blockState.with(SweetBerryBushBlock.AGE, Integer.valueOf(1)), SetBlockStateFlags.NOTIFY_LISTENERS);
 		}
 
 		@Override

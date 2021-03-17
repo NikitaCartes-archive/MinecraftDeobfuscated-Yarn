@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Mu;
 import java.util.Random;
 import java.util.Set;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -126,7 +127,7 @@ public abstract class FoliagePlacer {
 		ModifiableTestableWorld world, Random random, TreeFeatureConfig config, Set<BlockPos> positions, BlockBox box, BlockPos.Mutable mutablePos
 	) {
 		if (TreeFeature.canReplace(world, mutablePos)) {
-			world.setBlockState(mutablePos, config.foliageProvider.getBlockState(random, mutablePos), 19);
+			world.setBlockState(mutablePos, config.foliageProvider.getBlockState(random, mutablePos), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.FORCE_STATE);
 			box.encompass(new BlockBox(mutablePos));
 			positions.add(mutablePos.toImmutable());
 		}

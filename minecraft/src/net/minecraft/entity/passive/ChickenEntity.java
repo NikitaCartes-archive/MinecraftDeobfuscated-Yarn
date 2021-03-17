@@ -22,7 +22,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -139,12 +139,12 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected int getCurrentExperience(PlayerEntity player) {
-		return this.hasJockey() ? 10 : super.getCurrentExperience(player);
+	protected int getXpToDrop(PlayerEntity player) {
+		return this.hasJockey() ? 10 : super.getXpToDrop(player);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
 		this.jockey = tag.getBoolean("IsChickenJockey");
 		if (tag.contains("EggLayTime")) {
@@ -153,7 +153,7 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
 		tag.putBoolean("IsChickenJockey", this.jockey);
 		tag.putInt("EggLayTime", this.eggLayTime);

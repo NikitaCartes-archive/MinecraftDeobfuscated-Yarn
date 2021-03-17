@@ -11,25 +11,23 @@ public class SaveOffCommand {
 	private static final SimpleCommandExceptionType ALREADY_OFF_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.save.alreadyOff"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		dispatcher.register(
-			CommandManager.literal("save-off").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4)).executes(commandContext -> {
-				ServerCommandSource serverCommandSource = commandContext.getSource();
-				boolean bl = false;
+		dispatcher.register(CommandManager.literal("save-off").requires(source -> source.hasPermissionLevel(4)).executes(context -> {
+			ServerCommandSource serverCommandSource = context.getSource();
+			boolean bl = false;
 
-				for (ServerWorld serverWorld : serverCommandSource.getMinecraftServer().getWorlds()) {
-					if (serverWorld != null && !serverWorld.savingDisabled) {
-						serverWorld.savingDisabled = true;
-						bl = true;
-					}
+			for (ServerWorld serverWorld : serverCommandSource.getMinecraftServer().getWorlds()) {
+				if (serverWorld != null && !serverWorld.savingDisabled) {
+					serverWorld.savingDisabled = true;
+					bl = true;
 				}
+			}
 
-				if (!bl) {
-					throw ALREADY_OFF_EXCEPTION.create();
-				} else {
-					serverCommandSource.sendFeedback(new TranslatableText("commands.save.disabled"), true);
-					return 1;
-				}
-			})
-		);
+			if (!bl) {
+				throw ALREADY_OFF_EXCEPTION.create();
+			} else {
+				serverCommandSource.sendFeedback(new TranslatableText("commands.save.disabled"), true);
+				return 1;
+			}
+		}));
 	}
 }

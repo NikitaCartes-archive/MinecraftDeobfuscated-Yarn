@@ -60,8 +60,8 @@ public class BuriedTreasureFeature extends StructureFeature<ProbabilityConfig> {
 		}
 
 		@Override
-		public BlockPos getPos() {
-			ChunkPos chunkPos = this.method_34000();
+		public BlockPos getBlockPos() {
+			ChunkPos chunkPos = this.getPos();
 			return new BlockPos(chunkPos.getOffsetX(9), 0, chunkPos.getOffsetZ(9));
 		}
 	}

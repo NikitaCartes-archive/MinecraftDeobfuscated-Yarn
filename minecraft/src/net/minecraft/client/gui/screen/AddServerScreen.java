@@ -71,16 +71,16 @@ public class AddServerScreen extends Screen {
 		this.addressField.setChangedListener(this::onClose);
 		this.children.add(this.addressField);
 		this.addButton(
-			CyclingButtonWidget.<ServerInfo.ResourcePackState>builder(ServerInfo.ResourcePackState::getName)
-				.values(ServerInfo.ResourcePackState.values())
-				.initially(this.server.getResourcePack())
+			CyclingButtonWidget.<ServerInfo.ResourcePackPolicy>builder(ServerInfo.ResourcePackPolicy::getName)
+				.values(ServerInfo.ResourcePackPolicy.values())
+				.initially(this.server.getResourcePackPolicy())
 				.build(
 					this.width / 2 - 100,
 					this.height / 4 + 72,
 					200,
 					20,
 					new TranslatableText("addServer.resourcePack"),
-					(cyclingButtonWidget, resourcePackState) -> this.server.setResourcePackState(resourcePackState)
+					(cyclingButtonWidget, resourcePackPolicy) -> this.server.setResourcePackPolicy(resourcePackPolicy)
 				)
 		);
 		this.buttonAdd = this.addButton(

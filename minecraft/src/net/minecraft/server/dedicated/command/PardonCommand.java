@@ -19,15 +19,13 @@ public class PardonCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("pardon")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
+				.requires(source -> source.hasPermissionLevel(3))
 				.then(
 					CommandManager.argument("targets", GameProfileArgumentType.gameProfile())
 						.suggests(
-							(commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(
-									commandContext.getSource().getMinecraftServer().getPlayerManager().getUserBanList().getNames(), suggestionsBuilder
-								)
+							(context, builder) -> CommandSource.suggestMatching(context.getSource().getMinecraftServer().getPlayerManager().getUserBanList().getNames(), builder)
 						)
-						.executes(commandContext -> pardon(commandContext.getSource(), GameProfileArgumentType.getProfileArgument(commandContext, "targets")))
+						.executes(context -> pardon(context.getSource(), GameProfileArgumentType.getProfileArgument(context, "targets")))
 				)
 		);
 	}

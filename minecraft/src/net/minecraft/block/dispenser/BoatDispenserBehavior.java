@@ -1,5 +1,6 @@
 package net.minecraft.block.dispenser;
 
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.ItemStack;
@@ -46,6 +47,6 @@ public class BoatDispenserBehavior extends ItemDispenserBehavior {
 
 	@Override
 	protected void playSound(BlockPointer pointer) {
-		pointer.getWorld().syncWorldEvent(1000, pointer.getBlockPos(), 0);
+		pointer.getWorld().syncWorldEvent(WorldEvents.DISPENSER_DISPENSES, pointer.getBlockPos(), 0);
 	}
 }

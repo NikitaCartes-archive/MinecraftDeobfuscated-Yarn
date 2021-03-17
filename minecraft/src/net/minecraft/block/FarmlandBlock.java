@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -73,12 +74,12 @@ public class FarmlandBlock extends Block {
 		int i = (Integer)state.get(MOISTURE);
 		if (!isWaterNearby(world, pos) && !world.hasRain(pos.up())) {
 			if (i > 0) {
-				world.setBlockState(pos, state.with(MOISTURE, Integer.valueOf(i - 1)), 2);
+				world.setBlockState(pos, state.with(MOISTURE, Integer.valueOf(i - 1)), SetBlockStateFlags.NOTIFY_LISTENERS);
 			} else if (!hasCrop(world, pos)) {
 				setToDirt(state, world, pos);
 			}
 		} else if (i < 7) {
-			world.setBlockState(pos, state.with(MOISTURE, Integer.valueOf(7)), 2);
+			world.setBlockState(pos, state.with(MOISTURE, Integer.valueOf(7)), SetBlockStateFlags.NOTIFY_LISTENERS);
 		}
 	}
 

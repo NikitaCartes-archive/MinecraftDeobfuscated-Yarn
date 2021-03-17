@@ -18,10 +18,10 @@ import net.minecraft.world.World;
 
 public class ForceLoadCommand {
 	private static final Dynamic2CommandExceptionType TOO_BIG_EXCEPTION = new Dynamic2CommandExceptionType(
-		(object, object2) -> new TranslatableText("commands.forceload.toobig", object, object2)
+		(maxCount, count) -> new TranslatableText("commands.forceload.toobig", maxCount, count)
 	);
 	private static final Dynamic2CommandExceptionType QUERY_FAILURE_EXCEPTION = new Dynamic2CommandExceptionType(
-		(object, object2) -> new TranslatableText("commands.forceload.query.failure", object, object2)
+		(chunkPos, registryKey) -> new TranslatableText("commands.forceload.query.failure", chunkPos, registryKey)
 	);
 	private static final SimpleCommandExceptionType ADDED_FAILURE_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.forceload.added.failure")
@@ -33,27 +33,21 @@ public class ForceLoadCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("forceload")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
+				.requires(source -> source.hasPermissionLevel(2))
 				.then(
 					CommandManager.literal("add")
 						.then(
 							CommandManager.argument("from", ColumnPosArgumentType.columnPos())
 								.executes(
-									commandContext -> executeChange(
-											commandContext.getSource(),
-											ColumnPosArgumentType.getColumnPos(commandContext, "from"),
-											ColumnPosArgumentType.getColumnPos(commandContext, "from"),
-											true
+									context -> executeChange(
+											context.getSource(), ColumnPosArgumentType.getColumnPos(context, "from"), ColumnPosArgumentType.getColumnPos(context, "from"), true
 										)
 								)
 								.then(
 									CommandManager.argument("to", ColumnPosArgumentType.columnPos())
 										.executes(
-											commandContext -> executeChange(
-													commandContext.getSource(),
-													ColumnPosArgumentType.getColumnPos(commandContext, "from"),
-													ColumnPosArgumentType.getColumnPos(commandContext, "to"),
-													true
+											context -> executeChange(
+													context.getSource(), ColumnPosArgumentType.getColumnPos(context, "from"), ColumnPosArgumentType.getColumnPos(context, "to"), true
 												)
 										)
 								)
@@ -64,33 +58,27 @@ public class ForceLoadCommand {
 						.then(
 							CommandManager.argument("from", ColumnPosArgumentType.columnPos())
 								.executes(
-									commandContext -> executeChange(
-											commandContext.getSource(),
-											ColumnPosArgumentType.getColumnPos(commandContext, "from"),
-											ColumnPosArgumentType.getColumnPos(commandContext, "from"),
-											false
+									context -> executeChange(
+											context.getSource(), ColumnPosArgumentType.getColumnPos(context, "from"), ColumnPosArgumentType.getColumnPos(context, "from"), false
 										)
 								)
 								.then(
 									CommandManager.argument("to", ColumnPosArgumentType.columnPos())
 										.executes(
-											commandContext -> executeChange(
-													commandContext.getSource(),
-													ColumnPosArgumentType.getColumnPos(commandContext, "from"),
-													ColumnPosArgumentType.getColumnPos(commandContext, "to"),
-													false
+											context -> executeChange(
+													context.getSource(), ColumnPosArgumentType.getColumnPos(context, "from"), ColumnPosArgumentType.getColumnPos(context, "to"), false
 												)
 										)
 								)
 						)
-						.then(CommandManager.literal("all").executes(commandContext -> executeRemoveAll(commandContext.getSource())))
+						.then(CommandManager.literal("all").executes(context -> executeRemoveAll(context.getSource())))
 				)
 				.then(
 					CommandManager.literal("query")
-						.executes(commandContext -> executeQuery(commandContext.getSource()))
+						.executes(context -> executeQuery(context.getSource()))
 						.then(
 							CommandManager.argument("pos", ColumnPosArgumentType.columnPos())
-								.executes(commandContext -> executeQuery(commandContext.getSource(), ColumnPosArgumentType.getColumnPos(commandContext, "pos")))
+								.executes(context -> executeQuery(context.getSource(), ColumnPosArgumentType.getColumnPos(context, "pos")))
 						)
 				)
 		);

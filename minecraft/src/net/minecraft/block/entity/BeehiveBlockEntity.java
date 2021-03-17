@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
@@ -12,9 +13,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -108,9 +109,9 @@ public class BeehiveBlockEntity extends BlockEntity {
 		if (this.bees.size() < 3) {
 			entity.stopRiding();
 			entity.removeAllPassengers();
-			CompoundTag compoundTag = new CompoundTag();
-			entity.saveToTag(compoundTag);
-			this.bees.add(new BeehiveBlockEntity.Bee(compoundTag, ticksInHive, hasNectar ? 2400 : 600));
+			NbtCompound nbtCompound = new NbtCompound();
+			entity.saveToTag(nbtCompound);
+			this.bees.add(new BeehiveBlockEntity.Bee(nbtCompound, ticksInHive, hasNectar ? 2400 : 600));
 			if (this.world != null) {
 				if (entity instanceof BeeEntity) {
 					BeeEntity beeEntity = (BeeEntity)entity;
@@ -142,17 +143,17 @@ public class BeehiveBlockEntity extends BlockEntity {
 		if ((world.isNight() || world.isRaining()) && beeState != BeehiveBlockEntity.BeeState.EMERGENCY) {
 			return false;
 		} else {
-			CompoundTag compoundTag = bee.entityData;
-			compoundTag.remove("Passengers");
-			compoundTag.remove("Leash");
-			compoundTag.remove("UUID");
+			NbtCompound nbtCompound = bee.entityData;
+			nbtCompound.remove("Passengers");
+			nbtCompound.remove("Leash");
+			nbtCompound.remove("UUID");
 			Direction direction = blockState.get(BeehiveBlock.FACING);
 			BlockPos blockPos3 = blockPos.offset(direction);
 			boolean bl = !world.getBlockState(blockPos3).getCollisionShape(world, blockPos3).isEmpty();
 			if (bl && beeState != BeehiveBlockEntity.BeeState.EMERGENCY) {
 				return false;
 			} else {
-				Entity entity = EntityType.loadEntityWithPassengers(compoundTag, world, entityx -> entityx);
+				Entity entity = EntityType.loadEntityWithPassengers(nbtCompound, world, entityx -> entityx);
 				if (entity != null) {
 					if (!entity.getType().isIn(EntityTypeTags.BEEHIVE_INHABITORS)) {
 						return false;
@@ -248,15 +249,15 @@ public class BeehiveBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void readNbt(CompoundTag tag) {
+	public void readNbt(NbtCompound tag) {
 		super.readNbt(tag);
 		this.bees.clear();
-		ListTag listTag = tag.getList("Bees", 10);
+		NbtList nbtList = tag.getList("Bees", NbtTypeIds.COMPOUND);
 
-		for (int i = 0; i < listTag.size(); i++) {
-			CompoundTag compoundTag = listTag.getCompound(i);
+		for (int i = 0; i < nbtList.size(); i++) {
+			NbtCompound nbtCompound = nbtList.getCompound(i);
 			BeehiveBlockEntity.Bee bee = new BeehiveBlockEntity.Bee(
-				compoundTag.getCompound("EntityData"), compoundTag.getInt("TicksInHive"), compoundTag.getInt("MinOccupationTicks")
+				nbtCompound.getCompound("EntityData"), nbtCompound.getInt("TicksInHive"), nbtCompound.getInt("MinOccupationTicks")
 			);
 			this.bees.add(bee);
 		}
@@ -268,7 +269,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag writeNbt(CompoundTag tag) {
+	public NbtCompound writeNbt(NbtCompound tag) {
 		super.writeNbt(tag);
 		tag.put("Bees", this.getBees());
 		if (this.hasFlowerPos()) {
@@ -278,27 +279,27 @@ public class BeehiveBlockEntity extends BlockEntity {
 		return tag;
 	}
 
-	public ListTag getBees() {
-		ListTag listTag = new ListTag();
+	public NbtList getBees() {
+		NbtList nbtList = new NbtList();
 
 		for (BeehiveBlockEntity.Bee bee : this.bees) {
 			bee.entityData.remove("UUID");
-			CompoundTag compoundTag = new CompoundTag();
-			compoundTag.put("EntityData", bee.entityData);
-			compoundTag.putInt("TicksInHive", bee.ticksInHive);
-			compoundTag.putInt("MinOccupationTicks", bee.minOccupationTicks);
-			listTag.add(compoundTag);
+			NbtCompound nbtCompound = new NbtCompound();
+			nbtCompound.put("EntityData", bee.entityData);
+			nbtCompound.putInt("TicksInHive", bee.ticksInHive);
+			nbtCompound.putInt("MinOccupationTicks", bee.minOccupationTicks);
+			nbtList.add(nbtCompound);
 		}
 
-		return listTag;
+		return nbtList;
 	}
 
 	static class Bee {
-		private final CompoundTag entityData;
+		private final NbtCompound entityData;
 		private int ticksInHive;
 		private final int minOccupationTicks;
 
-		private Bee(CompoundTag entityData, int ticksInHive, int minOccupationTicks) {
+		private Bee(NbtCompound entityData, int ticksInHive, int minOccupationTicks) {
 			entityData.remove("UUID");
 			this.entityData = entityData;
 			this.ticksInHive = ticksInHive;

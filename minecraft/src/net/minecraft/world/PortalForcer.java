@@ -2,6 +2,7 @@ package net.minecraft.world;
 
 import java.util.Comparator;
 import java.util.Optional;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.NetherPortalBlock;
@@ -127,7 +128,7 @@ public class PortalForcer {
 			for (int o = -1; o < 4; o++) {
 				if (p == -1 || p == 2 || o == -1 || o == 3) {
 					mutable.set(blockPos2, p * direction.getOffsetX(), o, p * direction.getOffsetZ());
-					this.world.setBlockState(mutable, Blocks.OBSIDIAN.getDefaultState(), 3);
+					this.world.setBlockState(mutable, Blocks.OBSIDIAN.getDefaultState(), SetBlockStateFlags.DEFAULT);
 				}
 			}
 		}
@@ -137,7 +138,7 @@ public class PortalForcer {
 		for (int ox = 0; ox < 2; ox++) {
 			for (int j = 0; j < 3; j++) {
 				mutable.set(blockPos2, ox * direction.getOffsetX(), j, ox * direction.getOffsetZ());
-				this.world.setBlockState(mutable, blockState2, 18);
+				this.world.setBlockState(mutable, blockState2, SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.FORCE_STATE);
 			}
 		}
 

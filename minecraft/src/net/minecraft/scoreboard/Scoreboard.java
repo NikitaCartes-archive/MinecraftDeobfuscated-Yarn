@@ -12,8 +12,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
@@ -332,36 +332,36 @@ public class Scoreboard {
 		}
 	}
 
-	protected ListTag toNbt() {
-		ListTag listTag = new ListTag();
+	protected NbtList toNbt() {
+		NbtList nbtList = new NbtList();
 		this.playerObjectives
 			.values()
 			.stream()
 			.map(Map::values)
 			.forEach(collection -> collection.stream().filter(score -> score.getObjective() != null).forEach(score -> {
-					CompoundTag compoundTag = new CompoundTag();
-					compoundTag.putString("Name", score.getPlayerName());
-					compoundTag.putString("Objective", score.getObjective().getName());
-					compoundTag.putInt("Score", score.getScore());
-					compoundTag.putBoolean("Locked", score.isLocked());
-					listTag.add(compoundTag);
+					NbtCompound nbtCompound = new NbtCompound();
+					nbtCompound.putString("Name", score.getPlayerName());
+					nbtCompound.putString("Objective", score.getObjective().getName());
+					nbtCompound.putInt("Score", score.getScore());
+					nbtCompound.putBoolean("Locked", score.isLocked());
+					nbtList.add(nbtCompound);
 				}));
-		return listTag;
+		return nbtList;
 	}
 
-	protected void readNbt(ListTag listTag) {
-		for (int i = 0; i < listTag.size(); i++) {
-			CompoundTag compoundTag = listTag.getCompound(i);
-			ScoreboardObjective scoreboardObjective = this.getObjective(compoundTag.getString("Objective"));
-			String string = compoundTag.getString("Name");
+	protected void readNbt(NbtList nbtList) {
+		for (int i = 0; i < nbtList.size(); i++) {
+			NbtCompound nbtCompound = nbtList.getCompound(i);
+			ScoreboardObjective scoreboardObjective = this.getObjective(nbtCompound.getString("Objective"));
+			String string = nbtCompound.getString("Name");
 			if (string.length() > 40) {
 				string = string.substring(0, 40);
 			}
 
 			ScoreboardPlayerScore scoreboardPlayerScore = this.getPlayerScore(string, scoreboardObjective);
-			scoreboardPlayerScore.setScore(compoundTag.getInt("Score"));
-			if (compoundTag.contains("Locked")) {
-				scoreboardPlayerScore.setLocked(compoundTag.getBoolean("Locked"));
+			scoreboardPlayerScore.setScore(nbtCompound.getInt("Score"));
+			if (nbtCompound.contains("Locked")) {
+				scoreboardPlayerScore.setLocked(nbtCompound.getBoolean("Locked"));
 			}
 		}
 	}

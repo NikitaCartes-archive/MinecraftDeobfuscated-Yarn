@@ -3,6 +3,7 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -82,8 +83,8 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DefaultFeatureConfig> TWISTING_VINES = register("twisting_vines", new TwistingVinesFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<BasaltColumnsFeatureConfig> BASALT_COLUMNS = register("basalt_columns", new BasaltColumnsFeature(BasaltColumnsFeatureConfig.CODEC));
 	public static final Feature<DeltaFeatureConfig> DELTA_FEATURE = register("delta_feature", new DeltaFeature(DeltaFeatureConfig.CODEC));
-	public static final Feature<NetherrackReplaceBlobsFeatureConfig> NETHERRACK_REPLACE_BLOBS = register(
-		"netherrack_replace_blobs", new NetherrackReplaceBlobsFeature(NetherrackReplaceBlobsFeatureConfig.CODEC)
+	public static final Feature<ReplaceBlobsFeatureConfig> NETHERRACK_REPLACE_BLOBS = register(
+		"netherrack_replace_blobs", new ReplaceBlobsFeature(ReplaceBlobsFeatureConfig.CODEC)
 	);
 	public static final Feature<FillLayerFeatureConfig> FILL_LAYER = register("fill_layer", new FillLayerFeature(FillLayerFeatureConfig.CODEC));
 	public static final BonusChestFeature BONUS_CHEST = register("bonus_chest", new BonusChestFeature(DefaultFeatureConfig.CODEC));
@@ -128,7 +129,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	}
 
 	protected void setBlockState(ModifiableWorld world, BlockPos pos, BlockState state) {
-		world.setBlockState(pos, state, 3);
+		world.setBlockState(pos, state, SetBlockStateFlags.DEFAULT);
 	}
 
 	public abstract boolean generate(FeatureContext<FC> context);

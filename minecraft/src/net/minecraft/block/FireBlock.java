@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -150,7 +151,7 @@ public class FireBlock extends AbstractFireBlock {
 				int j = Math.min(15, i + random.nextInt(3) / 2);
 				if (i != j) {
 					state = state.with(AGE, Integer.valueOf(j));
-					world.setBlockState(pos, state, 4);
+					world.setBlockState(pos, state, SetBlockStateFlags.NO_REDRAW);
 				}
 
 				if (!bl) {
@@ -198,7 +199,7 @@ public class FireBlock extends AbstractFireBlock {
 
 									if (q > 0 && random.nextInt(o) <= q && (!world.isRaining() || !this.isRainingAround(world, mutable))) {
 										int r = Math.min(15, i + random.nextInt(5) / 4);
-										world.setBlockState(mutable, this.getStateWithAge(world, mutable, r), 3);
+										world.setBlockState(mutable, this.getStateWithAge(world, mutable, r), SetBlockStateFlags.DEFAULT);
 									}
 								}
 							}
@@ -227,7 +228,7 @@ public class FireBlock extends AbstractFireBlock {
 			BlockState blockState = world.getBlockState(pos);
 			if (rand.nextInt(currentAge + 10) < 5 && !world.hasRain(pos)) {
 				int j = Math.min(currentAge + rand.nextInt(5) / 4, 15);
-				world.setBlockState(pos, this.getStateWithAge(world, pos, j), 3);
+				world.setBlockState(pos, this.getStateWithAge(world, pos, j), SetBlockStateFlags.DEFAULT);
 			} else {
 				world.removeBlock(pos, false);
 			}
@@ -426,8 +427,8 @@ public class FireBlock extends AbstractFireBlock {
 		fireBlock.registerFlammableBlock(Blocks.BEE_NEST, 30, 20);
 		fireBlock.registerFlammableBlock(Blocks.AZALEA_LEAVES, 30, 60);
 		fireBlock.registerFlammableBlock(Blocks.AZALEA_LEAVES_FLOWERS, 30, 60);
-		fireBlock.registerFlammableBlock(Blocks.CAVE_VINES_HEAD, 15, 60);
-		fireBlock.registerFlammableBlock(Blocks.CAVE_VINES_BODY, 15, 60);
+		fireBlock.registerFlammableBlock(Blocks.CAVE_VINES, 15, 60);
+		fireBlock.registerFlammableBlock(Blocks.CAVE_VINES_PLANT, 15, 60);
 		fireBlock.registerFlammableBlock(Blocks.SPORE_BLOSSOM, 60, 100);
 		fireBlock.registerFlammableBlock(Blocks.AZALEA, 30, 60);
 		fireBlock.registerFlammableBlock(Blocks.FLOWERING_AZALEA, 30, 60);
@@ -435,5 +436,6 @@ public class FireBlock extends AbstractFireBlock {
 		fireBlock.registerFlammableBlock(Blocks.BIG_DRIPLEAF_STEM, 60, 100);
 		fireBlock.registerFlammableBlock(Blocks.SMALL_DRIPLEAF, 60, 100);
 		fireBlock.registerFlammableBlock(Blocks.HANGING_ROOTS, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.GLOW_LICHEN, 15, 100);
 	}
 }

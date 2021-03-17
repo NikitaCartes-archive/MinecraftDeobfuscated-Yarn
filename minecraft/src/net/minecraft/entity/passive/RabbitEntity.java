@@ -4,6 +4,9 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.RabbitTypes;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -37,7 +40,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -169,7 +172,7 @@ public class RabbitEntity extends AnimalEntity {
 				this.scheduleJump();
 			}
 
-			if (this.getRabbitType() == 99 && this.ticksUntilJump == 0) {
+			if (this.getRabbitType() == RabbitTypes.KILLER_BUNNY && this.ticksUntilJump == 0) {
 				LivingEntity livingEntity = this.getTarget();
 				if (livingEntity != null && this.squaredDistanceTo(livingEntity) < 16.0) {
 					this.lookTowards(livingEntity.getX(), livingEntity.getZ());
@@ -246,14 +249,14 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
 		tag.putInt("RabbitType", this.getRabbitType());
 		tag.putInt("MoreCarrotTicks", this.moreCarrotTicks);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
 		this.setRabbitType(tag.getInt("RabbitType"));
 		this.moreCarrotTicks = tag.getInt("MoreCarrotTicks");
@@ -280,7 +283,7 @@ public class RabbitEntity extends AnimalEntity {
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		if (this.getRabbitType() == 99) {
+		if (this.getRabbitType() == RabbitTypes.KILLER_BUNNY) {
 			this.playSound(SoundEvents.ENTITY_RABBIT_ATTACK, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 			return target.damage(DamageSource.mob(this), 8.0F);
 		} else {
@@ -290,7 +293,7 @@ public class RabbitEntity extends AnimalEntity {
 
 	@Override
 	public SoundCategory getSoundCategory() {
-		return this.getRabbitType() == 99 ? SoundCategory.HOSTILE : SoundCategory.NEUTRAL;
+		return this.getRabbitType() == RabbitTypes.KILLER_BUNNY ? SoundCategory.HOSTILE : SoundCategory.NEUTRAL;
 	}
 
 	private static boolean isTempting(ItemStack stack) {
@@ -322,7 +325,7 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	public void setRabbitType(int rabbitType) {
-		if (rabbitType == 99) {
+		if (rabbitType == RabbitTypes.KILLER_BUNNY) {
 			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(8.0);
 			this.goalSelector.add(4, new RabbitEntity.RabbitAttackGoal(this));
 			this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge());
@@ -339,7 +342,7 @@ public class RabbitEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
 	) {
 		int i = this.chooseType(world);
 		if (entityData instanceof RabbitEntity.RabbitData) {
@@ -441,11 +444,11 @@ public class RabbitEntity extends AnimalEntity {
 				if (this.hasTarget && block instanceof CarrotsBlock) {
 					int i = (Integer)blockState.get(CarrotsBlock.AGE);
 					if (i == 0) {
-						world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 2);
+						world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
 						world.breakBlock(blockPos, true, this.rabbit);
 					} else {
-						world.setBlockState(blockPos, blockState.with(CarrotsBlock.AGE, Integer.valueOf(i - 1)), 2);
-						world.syncWorldEvent(2001, blockPos, Block.getRawIdFromState(blockState));
+						world.setBlockState(blockPos, blockState.with(CarrotsBlock.AGE, Integer.valueOf(i - 1)), SetBlockStateFlags.NOTIFY_LISTENERS);
+						world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, blockPos, Block.getRawIdFromState(blockState));
 					}
 
 					this.rabbit.moreCarrotTicks = 40;
@@ -496,7 +499,7 @@ public class RabbitEntity extends AnimalEntity {
 
 		@Override
 		public boolean canStart() {
-			return this.rabbit.getRabbitType() != 99 && super.canStart();
+			return this.rabbit.getRabbitType() != RabbitTypes.KILLER_BUNNY && super.canStart();
 		}
 	}
 

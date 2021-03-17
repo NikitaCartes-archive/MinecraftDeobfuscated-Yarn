@@ -3,9 +3,10 @@ package net.minecraft.item;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Optional;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.stat.Stats;
@@ -26,19 +27,19 @@ public class KnowledgeBookItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		CompoundTag compoundTag = itemStack.getTag();
+		NbtCompound nbtCompound = itemStack.getTag();
 		if (!user.getAbilities().creativeMode) {
 			user.setStackInHand(hand, ItemStack.EMPTY);
 		}
 
-		if (compoundTag != null && compoundTag.contains("Recipes", 9)) {
+		if (nbtCompound != null && nbtCompound.contains("Recipes", NbtTypeIds.LIST)) {
 			if (!world.isClient) {
-				ListTag listTag = compoundTag.getList("Recipes", 8);
+				NbtList nbtList = nbtCompound.getList("Recipes", NbtTypeIds.STRING);
 				List<Recipe<?>> list = Lists.<Recipe<?>>newArrayList();
 				RecipeManager recipeManager = world.getServer().getRecipeManager();
 
-				for (int i = 0; i < listTag.size(); i++) {
-					String string = listTag.getString(i);
+				for (int i = 0; i < nbtList.size(); i++) {
+					String string = nbtList.getString(i);
 					Optional<? extends Recipe<?>> optional = recipeManager.get(new Identifier(string));
 					if (!optional.isPresent()) {
 						LOGGER.error("Invalid recipe: {}", string);
@@ -54,7 +55,7 @@ public class KnowledgeBookItem extends Item {
 
 			return TypedActionResult.success(itemStack, world.isClient());
 		} else {
-			LOGGER.error("Tag not valid: {}", compoundTag);
+			LOGGER.error("Tag not valid: {}", nbtCompound);
 			return TypedActionResult.fail(itemStack);
 		}
 	}

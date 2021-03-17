@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.enums.BambooLeaves;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -131,7 +132,7 @@ public class BambooBlock extends Block implements Fertilizable {
 		}
 
 		if (direction == Direction.UP && neighborState.isOf(Blocks.BAMBOO) && (Integer)neighborState.get(AGE) > (Integer)state.get(AGE)) {
-			world.setBlockState(pos, state.cycle(AGE), 2);
+			world.setBlockState(pos, state.cycle(AGE), SetBlockStateFlags.NOTIFY_LISTENERS);
 		}
 
 		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
@@ -185,15 +186,17 @@ public class BambooBlock extends Block implements Fertilizable {
 			} else if (blockState.isOf(Blocks.BAMBOO) && blockState.get(LEAVES) != BambooLeaves.NONE) {
 				bambooLeaves = BambooLeaves.LARGE;
 				if (blockState2.isOf(Blocks.BAMBOO)) {
-					world.setBlockState(pos.down(), blockState.with(LEAVES, BambooLeaves.SMALL), 3);
-					world.setBlockState(blockPos, blockState2.with(LEAVES, BambooLeaves.NONE), 3);
+					world.setBlockState(pos.down(), blockState.with(LEAVES, BambooLeaves.SMALL), SetBlockStateFlags.DEFAULT);
+					world.setBlockState(blockPos, blockState2.with(LEAVES, BambooLeaves.NONE), SetBlockStateFlags.DEFAULT);
 				}
 			}
 		}
 
 		int i = state.get(AGE) != 1 && !blockState2.isOf(Blocks.BAMBOO) ? 0 : 1;
 		int j = (height < 11 || !(random.nextFloat() < 0.25F)) && height != 15 ? 0 : 1;
-		world.setBlockState(pos.up(), this.getDefaultState().with(AGE, Integer.valueOf(i)).with(LEAVES, bambooLeaves).with(STAGE, Integer.valueOf(j)), 3);
+		world.setBlockState(
+			pos.up(), this.getDefaultState().with(AGE, Integer.valueOf(i)).with(LEAVES, bambooLeaves).with(STAGE, Integer.valueOf(j)), SetBlockStateFlags.DEFAULT
+		);
 	}
 
 	protected int countBambooAbove(BlockView world, BlockPos pos) {

@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.tag.FluidTags;
@@ -22,7 +23,7 @@ public class ConcretePowderBlock extends FallingBlock {
 	@Override
 	public void onLanding(World world, BlockPos pos, BlockState fallingBlockState, BlockState currentStateInPos, FallingBlockEntity fallingBlockEntity) {
 		if (shouldHarden(world, pos, currentStateInPos)) {
-			world.setBlockState(pos, this.hardenedState, 3);
+			world.setBlockState(pos, this.hardenedState, SetBlockStateFlags.DEFAULT);
 		}
 	}
 

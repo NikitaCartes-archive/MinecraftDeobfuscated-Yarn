@@ -2,6 +2,7 @@ package net.minecraft.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.entity.player.PlayerEntity;
@@ -12,8 +13,8 @@ import net.minecraft.item.BannerItem;
 import net.minecraft.item.BannerPatternItem;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -141,8 +142,8 @@ public class LoomScreenHandler extends ScreenHandler {
 				&& this.selectedPattern.get() > 0
 				&& (this.selectedPattern.get() < BannerPattern.COUNT - BannerPattern.HAS_PATTERN_ITEM_COUNT || !itemStack3.isEmpty())) {
 			if (!itemStack3.isEmpty() && itemStack3.getItem() instanceof BannerPatternItem) {
-				CompoundTag compoundTag = itemStack.getOrCreateSubTag("BlockEntityTag");
-				boolean bl = compoundTag.contains("Patterns", 9) && !itemStack.isEmpty() && compoundTag.getList("Patterns", 10).size() >= 6;
+				NbtCompound nbtCompound = itemStack.getOrCreateSubTag("BlockEntityTag");
+				boolean bl = nbtCompound.contains("Patterns", NbtTypeIds.LIST) && !itemStack.isEmpty() && nbtCompound.getList("Patterns", NbtTypeIds.COMPOUND).size() >= 6;
 				if (bl) {
 					this.selectedPattern.set(0);
 				} else {
@@ -232,19 +233,19 @@ public class LoomScreenHandler extends ScreenHandler {
 				itemStack3.setCount(1);
 				BannerPattern bannerPattern = BannerPattern.values()[this.selectedPattern.get()];
 				DyeColor dyeColor = ((DyeItem)itemStack2.getItem()).getColor();
-				CompoundTag compoundTag = itemStack3.getOrCreateSubTag("BlockEntityTag");
-				ListTag listTag;
-				if (compoundTag.contains("Patterns", 9)) {
-					listTag = compoundTag.getList("Patterns", 10);
+				NbtCompound nbtCompound = itemStack3.getOrCreateSubTag("BlockEntityTag");
+				NbtList nbtList;
+				if (nbtCompound.contains("Patterns", NbtTypeIds.LIST)) {
+					nbtList = nbtCompound.getList("Patterns", NbtTypeIds.COMPOUND);
 				} else {
-					listTag = new ListTag();
-					compoundTag.put("Patterns", listTag);
+					nbtList = new NbtList();
+					nbtCompound.put("Patterns", nbtList);
 				}
 
-				CompoundTag compoundTag2 = new CompoundTag();
-				compoundTag2.putString("Pattern", bannerPattern.getId());
-				compoundTag2.putInt("Color", dyeColor.getId());
-				listTag.add(compoundTag2);
+				NbtCompound nbtCompound2 = new NbtCompound();
+				nbtCompound2.putString("Pattern", bannerPattern.getId());
+				nbtCompound2.putInt("Color", dyeColor.getId());
+				nbtList.add(nbtCompound2);
 			}
 
 			if (!ItemStack.areEqual(itemStack3, this.outputSlot.getStack())) {

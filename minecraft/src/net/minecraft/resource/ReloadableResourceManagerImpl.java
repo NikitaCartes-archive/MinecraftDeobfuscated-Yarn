@@ -25,7 +25,7 @@ import org.apache.logging.log4j.Logger;
 public class ReloadableResourceManagerImpl implements ReloadableResourceManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Map<String, NamespaceResourceManager> namespaceManagers = Maps.<String, NamespaceResourceManager>newHashMap();
-	private final List<ResourceReloadListener> listeners = Lists.<ResourceReloadListener>newArrayList();
+	private final List<ResourceReloader> reloaders = Lists.<ResourceReloader>newArrayList();
 	private final Set<String> namespaces = Sets.<String>newLinkedHashSet();
 	private final List<ResourcePack> packs = Lists.<ResourcePack>newArrayList();
 	private final ResourceType type;
@@ -108,14 +108,12 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 	}
 
 	@Override
-	public void registerListener(ResourceReloadListener listener) {
-		this.listeners.add(listener);
+	public void registerReloader(ResourceReloader reloader) {
+		this.reloaders.add(reloader);
 	}
 
 	@Override
-	public ResourceReloadMonitor beginMonitoredReload(
-		Executor prepareExecutor, Executor applyExecutor, CompletableFuture<Unit> initialStage, List<ResourcePack> packs
-	) {
+	public ResourceReload reload(Executor prepareExecutor, Executor applyExecutor, CompletableFuture<Unit> initialStage, List<ResourcePack> packs) {
 		LOGGER.info("Reloading ResourceManager: {}", () -> (String)packs.stream().map(ResourcePack::getName).collect(Collectors.joining(", ")));
 		this.clear();
 
@@ -124,13 +122,13 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 				this.addPack(resourcePack);
 			} catch (Exception var8) {
 				LOGGER.error("Failed to add resource pack {}", resourcePack.getName(), var8);
-				return new ReloadableResourceManagerImpl.FailedResourceReloadMonitor(new ReloadableResourceManagerImpl.PackAdditionFailedException(resourcePack, var8));
+				return new ReloadableResourceManagerImpl.FailedReload(new ReloadableResourceManagerImpl.PackAdditionFailedException(resourcePack, var8));
 			}
 		}
 
-		return (ResourceReloadMonitor)(LOGGER.isDebugEnabled()
-			? new ProfilingResourceReloader(this, Lists.<ResourceReloadListener>newArrayList(this.listeners), prepareExecutor, applyExecutor, initialStage)
-			: ResourceReloader.create(this, Lists.<ResourceReloadListener>newArrayList(this.listeners), prepareExecutor, applyExecutor, initialStage));
+		return (ResourceReload)(LOGGER.isDebugEnabled()
+			? new ProfiledResourceReload(this, Lists.<ResourceReloader>newArrayList(this.reloaders), prepareExecutor, applyExecutor, initialStage)
+			: SimpleResourceReload.create(this, Lists.<ResourceReloader>newArrayList(this.reloaders), prepareExecutor, applyExecutor, initialStage));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -139,11 +137,11 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 		return this.packs.stream();
 	}
 
-	static class FailedResourceReloadMonitor implements ResourceReloadMonitor {
+	static class FailedReload implements ResourceReload {
 		private final ReloadableResourceManagerImpl.PackAdditionFailedException exception;
 		private final CompletableFuture<Unit> future;
 
-		public FailedResourceReloadMonitor(ReloadableResourceManagerImpl.PackAdditionFailedException exception) {
+		public FailedReload(ReloadableResourceManagerImpl.PackAdditionFailedException exception) {
 			this.exception = exception;
 			this.future = new CompletableFuture();
 			this.future.completeExceptionally(exception);
@@ -162,19 +160,13 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 
 		@Environment(EnvType.CLIENT)
 		@Override
-		public boolean isPrepareStageComplete() {
-			return false;
-		}
-
-		@Environment(EnvType.CLIENT)
-		@Override
-		public boolean isApplyStageComplete() {
+		public boolean isComplete() {
 			return true;
 		}
 
 		@Environment(EnvType.CLIENT)
 		@Override
-		public void throwExceptions() {
+		public void throwException() {
 			throw this.exception;
 		}
 	}

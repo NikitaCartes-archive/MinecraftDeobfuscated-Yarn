@@ -161,11 +161,11 @@ public class PickaxeItem extends MiningToolItem {
 	);
 	private static final Object2IntMap<Block> BLOCK_MINING_LEVELS = Util.make(
 		new Object2IntOpenHashMap<>(),
-		object2IntOpenHashMap -> {
-			object2IntOpenHashMap.defaultReturnValue(-1);
+		miningLevels -> {
+			miningLevels.defaultReturnValue(-1);
 
 			for (Block block : ImmutableList.of(Blocks.OBSIDIAN, Blocks.CRYING_OBSIDIAN, Blocks.NETHERITE_BLOCK, Blocks.RESPAWN_ANCHOR, Blocks.ANCIENT_DEBRIS)) {
-				object2IntOpenHashMap.put(block, 3);
+				miningLevels.put(block, 3);
 			}
 
 			for (Block block : ImmutableList.of(
@@ -179,14 +179,9 @@ public class PickaxeItem extends MiningToolItem {
 				Blocks.GOLD_ORE,
 				Blocks.DEEPSLATE_GOLD_ORE,
 				Blocks.REDSTONE_ORE,
-				Blocks.DEEPSLATE_REDSTONE_ORE,
-				Blocks.AMETHYST_BLOCK,
-				Blocks.AMETHYST_CLUSTER,
-				Blocks.SMALL_AMETHYST_BUD,
-				Blocks.MEDIUM_AMETHYST_BUD,
-				Blocks.LARGE_AMETHYST_BUD
+				Blocks.DEEPSLATE_REDSTONE_ORE
 			)) {
-				object2IntOpenHashMap.put(block, 2);
+				miningLevels.put(block, 2);
 			}
 
 			for (Block block : ImmutableList.of(
@@ -227,11 +222,11 @@ public class PickaxeItem extends MiningToolItem {
 				Blocks.WAXED_EXPOSED_CUT_COPPER_STAIRS,
 				Blocks.WAXED_EXPOSED_CUT_COPPER
 			)) {
-				object2IntOpenHashMap.put(block, 1);
+				miningLevels.put(block, 1);
 			}
 
 			for (Block block : ImmutableList.of(Blocks.NETHER_GOLD_ORE)) {
-				object2IntOpenHashMap.put(block, 0);
+				miningLevels.put(block, 0);
 			}
 		}
 	);

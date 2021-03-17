@@ -14,7 +14,7 @@ public class RavineCarverConfig extends CarverConfig {
 					YOffset.OFFSET_CODEC.fieldOf("bottom_inclusive").forGetter(RavineCarverConfig::getBottom),
 					YOffset.OFFSET_CODEC.fieldOf("top_inclusive").forGetter(RavineCarverConfig::getTop),
 					UniformIntDistribution.CODEC.fieldOf("y_scale").forGetter(RavineCarverConfig::getYScale),
-					FloatProvider.createValidatedCodec(0.0F, 1.0F).fieldOf("distanceFactor").forGetter(RavineCarverConfig::getDistanceFactor),
+					FloatProvider.createValidatedCodec(0.0F, 1.0F).fieldOf("distance_factor").forGetter(RavineCarverConfig::getDistanceFactor),
 					FloatProvider.VALUE_CODEC.fieldOf("vertical_rotation").forGetter(RavineCarverConfig::getVerticalRotation),
 					FloatProvider.VALUE_CODEC.fieldOf("thickness").forGetter(RavineCarverConfig::getThickness),
 					Codec.intRange(0, Integer.MAX_VALUE).fieldOf("width_smoothness").forGetter(RavineCarverConfig::getWidthSmoothness),

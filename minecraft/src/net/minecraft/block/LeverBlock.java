@@ -3,6 +3,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.DustParticleEffect;
@@ -95,7 +96,7 @@ public class LeverBlock extends WallMountedBlock {
 
 	public BlockState togglePower(BlockState state, World world, BlockPos pos) {
 		state = state.cycle(POWERED);
-		world.setBlockState(pos, state, 3);
+		world.setBlockState(pos, state, SetBlockStateFlags.DEFAULT);
 		this.updateNeighbors(state, world, pos);
 		return state;
 	}

@@ -23,7 +23,7 @@ public class ExperienceCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register(
 			CommandManager.literal("experience")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
+				.requires(source -> source.hasPermissionLevel(2))
 				.then(
 					CommandManager.literal("add")
 						.then(
@@ -31,20 +31,20 @@ public class ExperienceCommand {
 								.then(
 									CommandManager.argument("amount", IntegerArgumentType.integer())
 										.executes(
-											commandContext -> executeAdd(
-													commandContext.getSource(),
-													EntityArgumentType.getPlayers(commandContext, "targets"),
-													IntegerArgumentType.getInteger(commandContext, "amount"),
+											context -> executeAdd(
+													context.getSource(),
+													EntityArgumentType.getPlayers(context, "targets"),
+													IntegerArgumentType.getInteger(context, "amount"),
 													ExperienceCommand.Component.POINTS
 												)
 										)
 										.then(
 											CommandManager.literal("points")
 												.executes(
-													commandContext -> executeAdd(
-															commandContext.getSource(),
-															EntityArgumentType.getPlayers(commandContext, "targets"),
-															IntegerArgumentType.getInteger(commandContext, "amount"),
+													context -> executeAdd(
+															context.getSource(),
+															EntityArgumentType.getPlayers(context, "targets"),
+															IntegerArgumentType.getInteger(context, "amount"),
 															ExperienceCommand.Component.POINTS
 														)
 												)
@@ -52,10 +52,10 @@ public class ExperienceCommand {
 										.then(
 											CommandManager.literal("levels")
 												.executes(
-													commandContext -> executeAdd(
-															commandContext.getSource(),
-															EntityArgumentType.getPlayers(commandContext, "targets"),
-															IntegerArgumentType.getInteger(commandContext, "amount"),
+													context -> executeAdd(
+															context.getSource(),
+															EntityArgumentType.getPlayers(context, "targets"),
+															IntegerArgumentType.getInteger(context, "amount"),
 															ExperienceCommand.Component.LEVELS
 														)
 												)
@@ -70,20 +70,20 @@ public class ExperienceCommand {
 								.then(
 									CommandManager.argument("amount", IntegerArgumentType.integer(0))
 										.executes(
-											commandContext -> executeSet(
-													commandContext.getSource(),
-													EntityArgumentType.getPlayers(commandContext, "targets"),
-													IntegerArgumentType.getInteger(commandContext, "amount"),
+											context -> executeSet(
+													context.getSource(),
+													EntityArgumentType.getPlayers(context, "targets"),
+													IntegerArgumentType.getInteger(context, "amount"),
 													ExperienceCommand.Component.POINTS
 												)
 										)
 										.then(
 											CommandManager.literal("points")
 												.executes(
-													commandContext -> executeSet(
-															commandContext.getSource(),
-															EntityArgumentType.getPlayers(commandContext, "targets"),
-															IntegerArgumentType.getInteger(commandContext, "amount"),
+													context -> executeSet(
+															context.getSource(),
+															EntityArgumentType.getPlayers(context, "targets"),
+															IntegerArgumentType.getInteger(context, "amount"),
 															ExperienceCommand.Component.POINTS
 														)
 												)
@@ -91,10 +91,10 @@ public class ExperienceCommand {
 										.then(
 											CommandManager.literal("levels")
 												.executes(
-													commandContext -> executeSet(
-															commandContext.getSource(),
-															EntityArgumentType.getPlayers(commandContext, "targets"),
-															IntegerArgumentType.getInteger(commandContext, "amount"),
+													context -> executeSet(
+															context.getSource(),
+															EntityArgumentType.getPlayers(context, "targets"),
+															IntegerArgumentType.getInteger(context, "amount"),
 															ExperienceCommand.Component.LEVELS
 														)
 												)
@@ -108,24 +108,16 @@ public class ExperienceCommand {
 							CommandManager.argument("targets", EntityArgumentType.player())
 								.then(
 									CommandManager.literal("points")
-										.executes(
-											commandContext -> executeQuery(
-													commandContext.getSource(), EntityArgumentType.getPlayer(commandContext, "targets"), ExperienceCommand.Component.POINTS
-												)
-										)
+										.executes(context -> executeQuery(context.getSource(), EntityArgumentType.getPlayer(context, "targets"), ExperienceCommand.Component.POINTS))
 								)
 								.then(
 									CommandManager.literal("levels")
-										.executes(
-											commandContext -> executeQuery(
-													commandContext.getSource(), EntityArgumentType.getPlayer(commandContext, "targets"), ExperienceCommand.Component.LEVELS
-												)
-										)
+										.executes(context -> executeQuery(context.getSource(), EntityArgumentType.getPlayer(context, "targets"), ExperienceCommand.Component.LEVELS))
 								)
 						)
 				)
 		);
-		dispatcher.register(CommandManager.literal("xp").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2)).redirect(literalCommandNode));
+		dispatcher.register(CommandManager.literal("xp").requires(source -> source.hasPermissionLevel(2)).redirect(literalCommandNode));
 	}
 
 	private static int executeQuery(ServerCommandSource source, ServerPlayerEntity player, ExperienceCommand.Component component) {
@@ -181,18 +173,18 @@ public class ExperienceCommand {
 	}
 
 	static enum Component {
-		POINTS("points", PlayerEntity::addExperience, (serverPlayerEntity, integer) -> {
-			if (integer >= serverPlayerEntity.getNextLevelExperience()) {
+		POINTS("points", PlayerEntity::addExperience, (player, xp) -> {
+			if (xp >= player.getNextLevelExperience()) {
 				return false;
 			} else {
-				serverPlayerEntity.setExperiencePoints(integer);
+				player.setExperiencePoints(xp);
 				return true;
 			}
-		}, serverPlayerEntity -> MathHelper.floor(serverPlayerEntity.experienceProgress * (float)serverPlayerEntity.getNextLevelExperience())),
-		LEVELS("levels", ServerPlayerEntity::addExperienceLevels, (serverPlayerEntity, integer) -> {
-			serverPlayerEntity.setExperienceLevel(integer);
+		}, player -> MathHelper.floor(player.experienceProgress * (float)player.getNextLevelExperience())),
+		LEVELS("levels", ServerPlayerEntity::addExperienceLevels, (player, level) -> {
+			player.setExperienceLevel(level);
 			return true;
-		}, serverPlayerEntity -> serverPlayerEntity.experienceLevel);
+		}, player -> player.experienceLevel);
 
 		public final BiConsumer<ServerPlayerEntity, Integer> adder;
 		public final BiPredicate<ServerPlayerEntity, Integer> setter;

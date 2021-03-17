@@ -13,8 +13,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -155,26 +155,26 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 		}
 	}
 
-	public ListTag toNbt(ChunkPos chunkPos) {
+	public NbtList toNbt(ChunkPos chunkPos) {
 		List<ScheduledTick<T>> list = this.getScheduledTicksInChunk(chunkPos, false, true);
 		return serializeScheduledTicks(this.idToName, list, this.world.getTime());
 	}
 
-	private static <T> ListTag serializeScheduledTicks(Function<T, Identifier> identifierProvider, Iterable<ScheduledTick<T>> scheduledTicks, long time) {
-		ListTag listTag = new ListTag();
+	private static <T> NbtList serializeScheduledTicks(Function<T, Identifier> identifierProvider, Iterable<ScheduledTick<T>> scheduledTicks, long time) {
+		NbtList nbtList = new NbtList();
 
 		for (ScheduledTick<T> scheduledTick : scheduledTicks) {
-			CompoundTag compoundTag = new CompoundTag();
-			compoundTag.putString("i", ((Identifier)identifierProvider.apply(scheduledTick.getObject())).toString());
-			compoundTag.putInt("x", scheduledTick.pos.getX());
-			compoundTag.putInt("y", scheduledTick.pos.getY());
-			compoundTag.putInt("z", scheduledTick.pos.getZ());
-			compoundTag.putInt("t", (int)(scheduledTick.time - time));
-			compoundTag.putInt("p", scheduledTick.priority.getIndex());
-			listTag.add(compoundTag);
+			NbtCompound nbtCompound = new NbtCompound();
+			nbtCompound.putString("i", ((Identifier)identifierProvider.apply(scheduledTick.getObject())).toString());
+			nbtCompound.putInt("x", scheduledTick.pos.getX());
+			nbtCompound.putInt("y", scheduledTick.pos.getY());
+			nbtCompound.putInt("z", scheduledTick.pos.getZ());
+			nbtCompound.putInt("t", (int)(scheduledTick.time - time));
+			nbtCompound.putInt("p", scheduledTick.priority.getIndex());
+			nbtList.add(nbtCompound);
 		}
 
-		return listTag;
+		return nbtList;
 	}
 
 	@Override

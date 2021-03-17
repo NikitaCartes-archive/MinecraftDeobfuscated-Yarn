@@ -582,7 +582,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void openEditBookScreen(ItemStack book, Hand hand) {
+	public void useBook(ItemStack book, Hand hand) {
 		if (book.isOf(Items.WRITABLE_BOOK)) {
 			this.client.openScreen(new BookEditScreen(this, book, hand));
 		}
@@ -630,7 +630,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		return this.client.getCameraEntity() == this;
 	}
 
-	public void method_33689() {
+	public void init() {
 		this.setPose(EntityPose.STANDING);
 		if (this.world != null) {
 			for (double d = this.getY(); d > (double)this.world.getBottomY() && d < (double)this.world.getTopY(); d++) {

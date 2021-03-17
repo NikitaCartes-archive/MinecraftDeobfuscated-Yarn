@@ -22,7 +22,7 @@ public class RandomBooleanFeatureConfig implements FeatureConfig {
 	}
 
 	@Override
-	public Stream<ConfiguredFeature<?, ?>> method_30649() {
-		return Stream.concat(((ConfiguredFeature)this.featureTrue.get()).method_30648(), ((ConfiguredFeature)this.featureFalse.get()).method_30648());
+	public Stream<ConfiguredFeature<?, ?>> getDecoratedFeatures() {
+		return Stream.concat(((ConfiguredFeature)this.featureTrue.get()).getDecoratedFeatures(), ((ConfiguredFeature)this.featureFalse.get()).getDecoratedFeatures());
 	}
 }

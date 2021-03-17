@@ -55,6 +55,7 @@ import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class CreateWorldScreen extends Screen {
@@ -362,7 +363,7 @@ public class CreateWorldScreen extends Screen {
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (super.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
-		} else if (keyCode != 257 && keyCode != 335) {
+		} else if (keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_KP_ENTER) {
 			return false;
 		} else {
 			this.createLevel();

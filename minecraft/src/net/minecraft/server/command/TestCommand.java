@@ -17,6 +17,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
@@ -57,32 +58,29 @@ public class TestCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("test")
-				.then(CommandManager.literal("runthis").executes(commandContext -> executeRunThis(commandContext.getSource())))
-				.then(CommandManager.literal("runthese").executes(commandContext -> executeRunThese(commandContext.getSource())))
+				.then(CommandManager.literal("runthis").executes(context -> executeRunThis(context.getSource())))
+				.then(CommandManager.literal("runthese").executes(context -> executeRunThese(context.getSource())))
 				.then(
 					CommandManager.literal("runfailed")
-						.executes(commandContext -> executeRerunFailed(commandContext.getSource(), false, 0, 8))
+						.executes(context -> executeRerunFailed(context.getSource(), false, 0, 8))
 						.then(
 							CommandManager.argument("onlyRequiredTests", BoolArgumentType.bool())
-								.executes(commandContext -> executeRerunFailed(commandContext.getSource(), BoolArgumentType.getBool(commandContext, "onlyRequiredTests"), 0, 8))
+								.executes(context -> executeRerunFailed(context.getSource(), BoolArgumentType.getBool(context, "onlyRequiredTests"), 0, 8))
 								.then(
 									CommandManager.argument("rotationSteps", IntegerArgumentType.integer())
 										.executes(
-											commandContext -> executeRerunFailed(
-													commandContext.getSource(),
-													BoolArgumentType.getBool(commandContext, "onlyRequiredTests"),
-													IntegerArgumentType.getInteger(commandContext, "rotationSteps"),
-													8
+											context -> executeRerunFailed(
+													context.getSource(), BoolArgumentType.getBool(context, "onlyRequiredTests"), IntegerArgumentType.getInteger(context, "rotationSteps"), 8
 												)
 										)
 										.then(
 											CommandManager.argument("testsPerRow", IntegerArgumentType.integer())
 												.executes(
-													commandContext -> executeRerunFailed(
-															commandContext.getSource(),
-															BoolArgumentType.getBool(commandContext, "onlyRequiredTests"),
-															IntegerArgumentType.getInteger(commandContext, "rotationSteps"),
-															IntegerArgumentType.getInteger(commandContext, "testsPerRow")
+													context -> executeRerunFailed(
+															context.getSource(),
+															BoolArgumentType.getBool(context, "onlyRequiredTests"),
+															IntegerArgumentType.getInteger(context, "rotationSteps"),
+															IntegerArgumentType.getInteger(context, "testsPerRow")
 														)
 												)
 										)
@@ -93,14 +91,12 @@ public class TestCommand {
 					CommandManager.literal("run")
 						.then(
 							CommandManager.argument("testName", TestFunctionArgumentType.testFunction())
-								.executes(commandContext -> executeRun(commandContext.getSource(), TestFunctionArgumentType.getFunction(commandContext, "testName"), 0))
+								.executes(context -> executeRun(context.getSource(), TestFunctionArgumentType.getFunction(context, "testName"), 0))
 								.then(
 									CommandManager.argument("rotationSteps", IntegerArgumentType.integer())
 										.executes(
-											commandContext -> executeRun(
-													commandContext.getSource(),
-													TestFunctionArgumentType.getFunction(commandContext, "testName"),
-													IntegerArgumentType.getInteger(commandContext, "rotationSteps")
+											context -> executeRun(
+													context.getSource(), TestFunctionArgumentType.getFunction(context, "testName"), IntegerArgumentType.getInteger(context, "rotationSteps")
 												)
 										)
 								)
@@ -108,28 +104,25 @@ public class TestCommand {
 				)
 				.then(
 					CommandManager.literal("runall")
-						.executes(commandContext -> executeRunAll(commandContext.getSource(), 0, 8))
+						.executes(context -> executeRunAll(context.getSource(), 0, 8))
 						.then(
 							CommandManager.argument("testClassName", TestClassArgumentType.testClass())
-								.executes(commandContext -> executeRunAll(commandContext.getSource(), TestClassArgumentType.getTestClass(commandContext, "testClassName"), 0, 8))
+								.executes(context -> executeRunAll(context.getSource(), TestClassArgumentType.getTestClass(context, "testClassName"), 0, 8))
 								.then(
 									CommandManager.argument("rotationSteps", IntegerArgumentType.integer())
 										.executes(
-											commandContext -> executeRunAll(
-													commandContext.getSource(),
-													TestClassArgumentType.getTestClass(commandContext, "testClassName"),
-													IntegerArgumentType.getInteger(commandContext, "rotationSteps"),
-													8
+											context -> executeRunAll(
+													context.getSource(), TestClassArgumentType.getTestClass(context, "testClassName"), IntegerArgumentType.getInteger(context, "rotationSteps"), 8
 												)
 										)
 										.then(
 											CommandManager.argument("testsPerRow", IntegerArgumentType.integer())
 												.executes(
-													commandContext -> executeRunAll(
-															commandContext.getSource(),
-															TestClassArgumentType.getTestClass(commandContext, "testClassName"),
-															IntegerArgumentType.getInteger(commandContext, "rotationSteps"),
-															IntegerArgumentType.getInteger(commandContext, "testsPerRow")
+													context -> executeRunAll(
+															context.getSource(),
+															TestClassArgumentType.getTestClass(context, "testClassName"),
+															IntegerArgumentType.getInteger(context, "rotationSteps"),
+															IntegerArgumentType.getInteger(context, "testsPerRow")
 														)
 												)
 										)
@@ -137,14 +130,12 @@ public class TestCommand {
 						)
 						.then(
 							CommandManager.argument("rotationSteps", IntegerArgumentType.integer())
-								.executes(commandContext -> executeRunAll(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "rotationSteps"), 8))
+								.executes(context -> executeRunAll(context.getSource(), IntegerArgumentType.getInteger(context, "rotationSteps"), 8))
 								.then(
 									CommandManager.argument("testsPerRow", IntegerArgumentType.integer())
 										.executes(
-											commandContext -> executeRunAll(
-													commandContext.getSource(),
-													IntegerArgumentType.getInteger(commandContext, "rotationSteps"),
-													IntegerArgumentType.getInteger(commandContext, "testsPerRow")
+											context -> executeRunAll(
+													context.getSource(), IntegerArgumentType.getInteger(context, "rotationSteps"), IntegerArgumentType.getInteger(context, "testsPerRow")
 												)
 										)
 								)
@@ -154,39 +145,39 @@ public class TestCommand {
 					CommandManager.literal("export")
 						.then(
 							CommandManager.argument("testName", StringArgumentType.word())
-								.executes(commandContext -> executeExport(commandContext.getSource(), StringArgumentType.getString(commandContext, "testName")))
+								.executes(context -> executeExport(context.getSource(), StringArgumentType.getString(context, "testName")))
 						)
 				)
-				.then(CommandManager.literal("exportthis").executes(commandContext -> executeExport(commandContext.getSource())))
+				.then(CommandManager.literal("exportthis").executes(context -> executeExport(context.getSource())))
 				.then(
 					CommandManager.literal("import")
 						.then(
 							CommandManager.argument("testName", StringArgumentType.word())
-								.executes(commandContext -> executeImport(commandContext.getSource(), StringArgumentType.getString(commandContext, "testName")))
+								.executes(context -> executeImport(context.getSource(), StringArgumentType.getString(context, "testName")))
 						)
 				)
 				.then(
 					CommandManager.literal("pos")
-						.executes(commandContext -> executePos(commandContext.getSource(), "pos"))
+						.executes(context -> executePos(context.getSource(), "pos"))
 						.then(
 							CommandManager.argument("var", StringArgumentType.word())
-								.executes(commandContext -> executePos(commandContext.getSource(), StringArgumentType.getString(commandContext, "var")))
+								.executes(context -> executePos(context.getSource(), StringArgumentType.getString(context, "var")))
 						)
 				)
 				.then(
 					CommandManager.literal("create")
 						.then(
 							CommandManager.argument("testName", StringArgumentType.word())
-								.executes(commandContext -> executeCreate(commandContext.getSource(), StringArgumentType.getString(commandContext, "testName"), 5, 5, 5))
+								.executes(context -> executeCreate(context.getSource(), StringArgumentType.getString(context, "testName"), 5, 5, 5))
 								.then(
 									CommandManager.argument("width", IntegerArgumentType.integer())
 										.executes(
-											commandContext -> executeCreate(
-													commandContext.getSource(),
-													StringArgumentType.getString(commandContext, "testName"),
-													IntegerArgumentType.getInteger(commandContext, "width"),
-													IntegerArgumentType.getInteger(commandContext, "width"),
-													IntegerArgumentType.getInteger(commandContext, "width")
+											context -> executeCreate(
+													context.getSource(),
+													StringArgumentType.getString(context, "testName"),
+													IntegerArgumentType.getInteger(context, "width"),
+													IntegerArgumentType.getInteger(context, "width"),
+													IntegerArgumentType.getInteger(context, "width")
 												)
 										)
 										.then(
@@ -194,12 +185,12 @@ public class TestCommand {
 												.then(
 													CommandManager.argument("depth", IntegerArgumentType.integer())
 														.executes(
-															commandContext -> executeCreate(
-																	commandContext.getSource(),
-																	StringArgumentType.getString(commandContext, "testName"),
-																	IntegerArgumentType.getInteger(commandContext, "width"),
-																	IntegerArgumentType.getInteger(commandContext, "height"),
-																	IntegerArgumentType.getInteger(commandContext, "depth")
+															context -> executeCreate(
+																	context.getSource(),
+																	StringArgumentType.getString(context, "testName"),
+																	IntegerArgumentType.getInteger(context, "width"),
+																	IntegerArgumentType.getInteger(context, "height"),
+																	IntegerArgumentType.getInteger(context, "depth")
 																)
 														)
 												)
@@ -209,10 +200,10 @@ public class TestCommand {
 				)
 				.then(
 					CommandManager.literal("clearall")
-						.executes(commandContext -> executeClearAll(commandContext.getSource(), 200))
+						.executes(context -> executeClearAll(context.getSource(), 200))
 						.then(
 							CommandManager.argument("radius", IntegerArgumentType.integer())
-								.executes(commandContext -> executeClearAll(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "radius")))
+								.executes(context -> executeClearAll(context.getSource(), IntegerArgumentType.getInteger(context, "radius")))
 						)
 				)
 		);
@@ -230,7 +221,7 @@ public class TestCommand {
 					BlockPos blockPos3 = new BlockPos(blockPos2.getX() + i, blockPos2.getY() + 1, blockPos2.getZ() + j);
 					Block block = Blocks.POLISHED_ANDESITE;
 					BlockStateArgument blockStateArgument = new BlockStateArgument(block.getDefaultState(), Collections.emptySet(), null);
-					blockStateArgument.setBlockState(serverWorld, blockPos3, 2);
+					blockStateArgument.setBlockState(serverWorld, blockPos3, SetBlockStateFlags.NOTIFY_LISTENERS);
 				}
 			}
 
@@ -345,14 +336,14 @@ public class TestCommand {
 		return 1;
 	}
 
-	private static int executeRun(ServerCommandSource source, TestFunction testFunction, int i) {
+	private static int executeRun(ServerCommandSource source, TestFunction testFunction, int rotationSteps) {
 		ServerWorld serverWorld = source.getWorld();
 		BlockPos blockPos = new BlockPos(source.getPosition());
-		int j = source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY();
-		BlockPos blockPos2 = new BlockPos(blockPos.getX(), j, blockPos.getZ() + 3);
+		int i = source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY();
+		BlockPos blockPos2 = new BlockPos(blockPos.getX(), i, blockPos.getZ() + 3);
 		TestUtil.clearDebugMarkers(serverWorld);
 		setWorld(testFunction, serverWorld);
-		BlockRotation blockRotation = StructureTestUtil.getRotation(i);
+		BlockRotation blockRotation = StructureTestUtil.getRotation(rotationSteps);
 		GameTest gameTest = new GameTest(testFunction, blockRotation, serverWorld);
 		TestUtil.startTest(gameTest, blockPos2, TestManager.INSTANCE);
 		return 1;
@@ -365,25 +356,25 @@ public class TestCommand {
 		}
 	}
 
-	private static int executeRunAll(ServerCommandSource source, int rotationSteps, int i) {
+	private static int executeRunAll(ServerCommandSource source, int rotationSteps, int sizeZ) {
 		TestUtil.clearDebugMarkers(source.getWorld());
 		Collection<TestFunction> collection = TestFunctions.getTestFunctions();
 		sendMessage(source, "Running all " + collection.size() + " tests...");
 		TestFunctions.clearFailedTestFunctions();
-		run(source, collection, rotationSteps, i);
+		run(source, collection, rotationSteps, sizeZ);
 		return 1;
 	}
 
-	private static int executeRunAll(ServerCommandSource source, String testClass, int rotationSteps, int i) {
+	private static int executeRunAll(ServerCommandSource source, String testClass, int rotationSteps, int sizeZ) {
 		Collection<TestFunction> collection = TestFunctions.getTestFunctions(testClass);
 		TestUtil.clearDebugMarkers(source.getWorld());
 		sendMessage(source, "Running " + collection.size() + " tests from " + testClass + "...");
 		TestFunctions.clearFailedTestFunctions();
-		run(source, collection, rotationSteps, i);
+		run(source, collection, rotationSteps, sizeZ);
 		return 1;
 	}
 
-	private static int executeRerunFailed(ServerCommandSource source, boolean requiredOnly, int rotationSteps, int i) {
+	private static int executeRerunFailed(ServerCommandSource source, boolean requiredOnly, int rotationSteps, int sizeZ) {
 		Collection<TestFunction> collection;
 		if (requiredOnly) {
 			collection = (Collection<TestFunction>)TestFunctions.getFailedTestFunctions().stream().filter(TestFunction::isRequired).collect(Collectors.toList());
@@ -397,7 +388,7 @@ public class TestCommand {
 		} else {
 			TestUtil.clearDebugMarkers(source.getWorld());
 			sendMessage(source, "Rerunning " + collection.size() + " failed tests (" + (requiredOnly ? "only required tests" : "including optional tests") + ")");
-			run(source, collection, rotationSteps, i);
+			run(source, collection, rotationSteps, sizeZ);
 			return 1;
 		}
 	}

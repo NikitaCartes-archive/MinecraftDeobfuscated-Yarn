@@ -11,11 +11,11 @@ public class KillCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("kill")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
-				.executes(commandContext -> execute(commandContext.getSource(), ImmutableList.of(commandContext.getSource().getEntityOrThrow())))
+				.requires(source -> source.hasPermissionLevel(2))
+				.executes(context -> execute(context.getSource(), ImmutableList.of(context.getSource().getEntityOrThrow())))
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.entities())
-						.executes(commandContext -> execute(commandContext.getSource(), EntityArgumentType.getEntities(commandContext, "targets")))
+						.executes(context -> execute(context.getSource(), EntityArgumentType.getEntities(context, "targets")))
 				)
 		);
 	}

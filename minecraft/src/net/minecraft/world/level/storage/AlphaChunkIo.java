@@ -1,7 +1,8 @@
 package net.minecraft.world.level.storage;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.fabricmc.yarn.constants.NbtTypeIds;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
@@ -23,7 +24,7 @@ public class AlphaChunkIo {
 		}
 	};
 
-	public static AlphaChunkIo.AlphaChunk readAlphaChunk(CompoundTag tag) {
+	public static AlphaChunkIo.AlphaChunk readAlphaChunk(NbtCompound tag) {
 		int i = tag.getInt("xPos");
 		int j = tag.getInt("zPos");
 		AlphaChunkIo.AlphaChunk alphaChunk = new AlphaChunkIo.AlphaChunk(i, j);
@@ -33,9 +34,9 @@ public class AlphaChunkIo {
 		alphaChunk.blockLight = new AlphaChunkDataArray(tag.getByteArray("BlockLight"), 7);
 		alphaChunk.heightMap = tag.getByteArray("HeightMap");
 		alphaChunk.terrainPopulated = tag.getBoolean("TerrainPopulated");
-		alphaChunk.entities = tag.getList("Entities", 10);
-		alphaChunk.blockEntities = tag.getList("TileEntities", 10);
-		alphaChunk.blockTicks = tag.getList("TileTicks", 10);
+		alphaChunk.entities = tag.getList("Entities", NbtTypeIds.COMPOUND);
+		alphaChunk.blockEntities = tag.getList("TileEntities", NbtTypeIds.COMPOUND);
+		alphaChunk.blockTicks = tag.getList("TileTicks", NbtTypeIds.COMPOUND);
 
 		try {
 			alphaChunk.lastUpdate = tag.getLong("LastUpdate");
@@ -46,7 +47,7 @@ public class AlphaChunkIo {
 		return alphaChunk;
 	}
 
-	public static void convertAlphaChunk(DynamicRegistryManager.Impl impl, AlphaChunkIo.AlphaChunk alphaChunk, CompoundTag tag, BiomeSource biomeSource) {
+	public static void convertAlphaChunk(DynamicRegistryManager.Impl impl, AlphaChunkIo.AlphaChunk alphaChunk, NbtCompound tag, BiomeSource biomeSource) {
 		tag.putInt("xPos", alphaChunk.x);
 		tag.putInt("zPos", alphaChunk.z);
 		tag.putLong("LastUpdate", alphaChunk.lastUpdate);
@@ -58,7 +59,7 @@ public class AlphaChunkIo {
 
 		tag.putIntArray("HeightMap", is);
 		tag.putBoolean("TerrainPopulated", alphaChunk.terrainPopulated);
-		ListTag listTag = new ListTag();
+		NbtList nbtList = new NbtList();
 
 		for (int j = 0; j < 8; j++) {
 			boolean bl = true;
@@ -95,17 +96,17 @@ public class AlphaChunkIo {
 					}
 				}
 
-				CompoundTag compoundTag = new CompoundTag();
-				compoundTag.putByte("Y", (byte)(j & 0xFF));
-				compoundTag.putByteArray("Blocks", bs);
-				compoundTag.putByteArray("Data", chunkNibbleArray.asByteArray());
-				compoundTag.putByteArray("SkyLight", chunkNibbleArray2.asByteArray());
-				compoundTag.putByteArray("BlockLight", chunkNibbleArray3.asByteArray());
-				listTag.add(compoundTag);
+				NbtCompound nbtCompound = new NbtCompound();
+				nbtCompound.putByte("Y", (byte)(j & 0xFF));
+				nbtCompound.putByteArray("Blocks", bs);
+				nbtCompound.putByteArray("Data", chunkNibbleArray.asByteArray());
+				nbtCompound.putByteArray("SkyLight", chunkNibbleArray2.asByteArray());
+				nbtCompound.putByteArray("BlockLight", chunkNibbleArray3.asByteArray());
+				nbtList.add(nbtCompound);
 			}
 		}
 
-		tag.put("Sections", listTag);
+		tag.put("Sections", nbtList);
 		tag.putIntArray("Biomes", new BiomeArray(impl.get(Registry.BIOME_KEY), world, new ChunkPos(alphaChunk.x, alphaChunk.z), biomeSource).toIntArray());
 		tag.put("Entities", alphaChunk.entities);
 		tag.put("TileEntities", alphaChunk.blockEntities);
@@ -124,9 +125,9 @@ public class AlphaChunkIo {
 		public AlphaChunkDataArray skyLight;
 		public AlphaChunkDataArray data;
 		public byte[] blocks;
-		public ListTag entities;
-		public ListTag blockEntities;
-		public ListTag blockTicks;
+		public NbtList entities;
+		public NbtList blockEntities;
+		public NbtList blockTicks;
 		public final int x;
 		public final int z;
 

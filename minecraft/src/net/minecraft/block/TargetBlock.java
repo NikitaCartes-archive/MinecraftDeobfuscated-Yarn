@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
@@ -68,14 +69,14 @@ public class TargetBlock extends Block {
 	}
 
 	private static void setPower(WorldAccess world, BlockState state, int power, BlockPos pos, int delay) {
-		world.setBlockState(pos, state.with(POWER, Integer.valueOf(power)), 3);
+		world.setBlockState(pos, state.with(POWER, Integer.valueOf(power)), SetBlockStateFlags.DEFAULT);
 		world.getBlockTickScheduler().schedule(pos, state.getBlock(), delay);
 	}
 
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if ((Integer)state.get(POWER) != 0) {
-			world.setBlockState(pos, state.with(POWER, Integer.valueOf(0)), 3);
+			world.setBlockState(pos, state.with(POWER, Integer.valueOf(0)), SetBlockStateFlags.DEFAULT);
 		}
 	}
 
@@ -98,7 +99,7 @@ public class TargetBlock extends Block {
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (!world.isClient() && !state.isOf(oldState.getBlock())) {
 			if ((Integer)state.get(POWER) > 0 && !world.getBlockTickScheduler().isScheduled(pos, this)) {
-				world.setBlockState(pos, state.with(POWER, Integer.valueOf(0)), 18);
+				world.setBlockState(pos, state.with(POWER, Integer.valueOf(0)), SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.FORCE_STATE);
 			}
 		}
 	}

@@ -155,7 +155,7 @@ public class StatsScreen extends Screen implements StatsListener {
 
 	private void renderIcon(MatrixStack matrices, int x, int y, int u, int v) {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		RenderSystem.setShader(GameRenderer::method_34542);
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderTexture(0, STATS_ICON_TEXTURE);
 		drawTexture(matrices, x, y, this.getZOffset(), (float)u, (float)v, 18, 18, 128, 128);
 	}

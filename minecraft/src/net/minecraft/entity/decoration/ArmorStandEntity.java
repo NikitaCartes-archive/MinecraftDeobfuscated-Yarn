@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.piston.PistonBehavior;
@@ -25,8 +26,8 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -156,32 +157,32 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
-		ListTag listTag = new ListTag();
+		NbtList nbtList = new NbtList();
 
 		for (ItemStack itemStack : this.armorItems) {
-			CompoundTag compoundTag = new CompoundTag();
+			NbtCompound nbtCompound = new NbtCompound();
 			if (!itemStack.isEmpty()) {
-				itemStack.writeNbt(compoundTag);
+				itemStack.writeNbt(nbtCompound);
 			}
 
-			listTag.add(compoundTag);
+			nbtList.add(nbtCompound);
 		}
 
-		tag.put("ArmorItems", listTag);
-		ListTag listTag2 = new ListTag();
+		tag.put("ArmorItems", nbtList);
+		NbtList nbtList2 = new NbtList();
 
 		for (ItemStack itemStack2 : this.heldItems) {
-			CompoundTag compoundTag2 = new CompoundTag();
+			NbtCompound nbtCompound2 = new NbtCompound();
 			if (!itemStack2.isEmpty()) {
-				itemStack2.writeNbt(compoundTag2);
+				itemStack2.writeNbt(nbtCompound2);
 			}
 
-			listTag2.add(compoundTag2);
+			nbtList2.add(nbtCompound2);
 		}
 
-		tag.put("HandItems", listTag2);
+		tag.put("HandItems", nbtList2);
 		tag.putBoolean("Invisible", this.isInvisible());
 		tag.putBoolean("Small", this.isSmall());
 		tag.putBoolean("ShowArms", this.shouldShowArms());
@@ -195,21 +196,21 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
-		if (tag.contains("ArmorItems", 9)) {
-			ListTag listTag = tag.getList("ArmorItems", 10);
+		if (tag.contains("ArmorItems", NbtTypeIds.LIST)) {
+			NbtList nbtList = tag.getList("ArmorItems", NbtTypeIds.COMPOUND);
 
 			for (int i = 0; i < this.armorItems.size(); i++) {
-				this.armorItems.set(i, ItemStack.fromNbt(listTag.getCompound(i)));
+				this.armorItems.set(i, ItemStack.fromNbt(nbtList.getCompound(i)));
 			}
 		}
 
-		if (tag.contains("HandItems", 9)) {
-			ListTag listTag = tag.getList("HandItems", 10);
+		if (tag.contains("HandItems", NbtTypeIds.LIST)) {
+			NbtList nbtList = tag.getList("HandItems", NbtTypeIds.COMPOUND);
 
 			for (int i = 0; i < this.heldItems.size(); i++) {
-				this.heldItems.set(i, ItemStack.fromNbt(listTag.getCompound(i)));
+				this.heldItems.set(i, ItemStack.fromNbt(nbtList.getCompound(i)));
 			}
 		}
 
@@ -220,52 +221,52 @@ public class ArmorStandEntity extends LivingEntity {
 		this.setHideBasePlate(tag.getBoolean("NoBasePlate"));
 		this.setMarker(tag.getBoolean("Marker"));
 		this.noClip = !this.canClip();
-		CompoundTag compoundTag = tag.getCompound("Pose");
-		this.deserializePose(compoundTag);
+		NbtCompound nbtCompound = tag.getCompound("Pose");
+		this.deserializePose(nbtCompound);
 	}
 
-	private void deserializePose(CompoundTag tag) {
-		ListTag listTag = tag.getList("Head", 5);
-		this.setHeadRotation(listTag.isEmpty() ? DEFAULT_HEAD_ROTATION : new EulerAngle(listTag));
-		ListTag listTag2 = tag.getList("Body", 5);
-		this.setBodyRotation(listTag2.isEmpty() ? DEFAULT_BODY_ROTATION : new EulerAngle(listTag2));
-		ListTag listTag3 = tag.getList("LeftArm", 5);
-		this.setLeftArmRotation(listTag3.isEmpty() ? DEFAULT_LEFT_ARM_ROTATION : new EulerAngle(listTag3));
-		ListTag listTag4 = tag.getList("RightArm", 5);
-		this.setRightArmRotation(listTag4.isEmpty() ? DEFAULT_RIGHT_ARM_ROTATION : new EulerAngle(listTag4));
-		ListTag listTag5 = tag.getList("LeftLeg", 5);
-		this.setLeftLegRotation(listTag5.isEmpty() ? DEFAULT_LEFT_LEG_ROTATION : new EulerAngle(listTag5));
-		ListTag listTag6 = tag.getList("RightLeg", 5);
-		this.setRightLegRotation(listTag6.isEmpty() ? DEFAULT_RIGHT_LEG_ROTATION : new EulerAngle(listTag6));
+	private void deserializePose(NbtCompound tag) {
+		NbtList nbtList = tag.getList("Head", NbtTypeIds.FLOAT);
+		this.setHeadRotation(nbtList.isEmpty() ? DEFAULT_HEAD_ROTATION : new EulerAngle(nbtList));
+		NbtList nbtList2 = tag.getList("Body", NbtTypeIds.FLOAT);
+		this.setBodyRotation(nbtList2.isEmpty() ? DEFAULT_BODY_ROTATION : new EulerAngle(nbtList2));
+		NbtList nbtList3 = tag.getList("LeftArm", NbtTypeIds.FLOAT);
+		this.setLeftArmRotation(nbtList3.isEmpty() ? DEFAULT_LEFT_ARM_ROTATION : new EulerAngle(nbtList3));
+		NbtList nbtList4 = tag.getList("RightArm", NbtTypeIds.FLOAT);
+		this.setRightArmRotation(nbtList4.isEmpty() ? DEFAULT_RIGHT_ARM_ROTATION : new EulerAngle(nbtList4));
+		NbtList nbtList5 = tag.getList("LeftLeg", NbtTypeIds.FLOAT);
+		this.setLeftLegRotation(nbtList5.isEmpty() ? DEFAULT_LEFT_LEG_ROTATION : new EulerAngle(nbtList5));
+		NbtList nbtList6 = tag.getList("RightLeg", NbtTypeIds.FLOAT);
+		this.setRightLegRotation(nbtList6.isEmpty() ? DEFAULT_RIGHT_LEG_ROTATION : new EulerAngle(nbtList6));
 	}
 
-	private CompoundTag serializePose() {
-		CompoundTag compoundTag = new CompoundTag();
+	private NbtCompound serializePose() {
+		NbtCompound nbtCompound = new NbtCompound();
 		if (!DEFAULT_HEAD_ROTATION.equals(this.headRotation)) {
-			compoundTag.put("Head", this.headRotation.serialize());
+			nbtCompound.put("Head", this.headRotation.serialize());
 		}
 
 		if (!DEFAULT_BODY_ROTATION.equals(this.bodyRotation)) {
-			compoundTag.put("Body", this.bodyRotation.serialize());
+			nbtCompound.put("Body", this.bodyRotation.serialize());
 		}
 
 		if (!DEFAULT_LEFT_ARM_ROTATION.equals(this.leftArmRotation)) {
-			compoundTag.put("LeftArm", this.leftArmRotation.serialize());
+			nbtCompound.put("LeftArm", this.leftArmRotation.serialize());
 		}
 
 		if (!DEFAULT_RIGHT_ARM_ROTATION.equals(this.rightArmRotation)) {
-			compoundTag.put("RightArm", this.rightArmRotation.serialize());
+			nbtCompound.put("RightArm", this.rightArmRotation.serialize());
 		}
 
 		if (!DEFAULT_LEFT_LEG_ROTATION.equals(this.leftLegRotation)) {
-			compoundTag.put("LeftLeg", this.leftLegRotation.serialize());
+			nbtCompound.put("LeftLeg", this.leftLegRotation.serialize());
 		}
 
 		if (!DEFAULT_RIGHT_LEG_ROTATION.equals(this.rightLegRotation)) {
-			compoundTag.put("RightLeg", this.rightLegRotation.serialize());
+			nbtCompound.put("RightLeg", this.rightLegRotation.serialize());
 		}
 
-		return compoundTag;
+		return nbtCompound;
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -24,7 +25,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.particle.ParticleTypes;
@@ -432,7 +433,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
 		tag.putShort("life", (short)this.life);
 		if (this.inBlockState != null) {
@@ -450,28 +451,23 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
 		this.life = tag.getShort("life");
-		if (tag.contains("inBlockState", 10)) {
+		if (tag.contains("inBlockState", NbtTypeIds.COMPOUND)) {
 			this.inBlockState = NbtHelper.toBlockState(tag.getCompound("inBlockState"));
 		}
 
 		this.shake = tag.getByte("shake") & 255;
 		this.inGround = tag.getBoolean("inGround");
-		if (tag.contains("damage", 99)) {
+		if (tag.contains("damage", NbtTypeIds.NUMBER)) {
 			this.damage = tag.getDouble("damage");
 		}
 
-		if (tag.contains("pickup", 99)) {
-			this.pickupType = PersistentProjectileEntity.PickupPermission.fromOrdinal(tag.getByte("pickup"));
-		} else if (tag.contains("player", 99)) {
-			this.pickupType = tag.getBoolean("player") ? PersistentProjectileEntity.PickupPermission.ALLOWED : PersistentProjectileEntity.PickupPermission.DISALLOWED;
-		}
-
+		this.pickupType = PersistentProjectileEntity.PickupPermission.fromOrdinal(tag.getByte("pickup"));
 		this.setCritical(tag.getBoolean("crit"));
 		this.setPierceLevel(tag.getByte("PierceLevel"));
-		if (tag.contains("SoundEvent", 8)) {
+		if (tag.contains("SoundEvent", NbtTypeIds.STRING)) {
 			this.sound = (SoundEvent)Registry.SOUND_EVENT.getOrEmpty(new Identifier(tag.getString("SoundEvent"))).orElse(this.getHitSound());
 		}
 
@@ -491,17 +487,21 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	@Override
 	public void onPlayerCollision(PlayerEntity player) {
 		if (!this.world.isClient && (this.inGround || this.isNoClip()) && this.shake <= 0) {
-			boolean bl = this.pickupType == PersistentProjectileEntity.PickupPermission.ALLOWED
-				|| this.pickupType == PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY && player.getAbilities().creativeMode
-				|| this.isNoClip() && this.getOwner().getUuid() == player.getUuid();
-			if (this.pickupType == PersistentProjectileEntity.PickupPermission.ALLOWED && !player.getInventory().insertStack(this.asItemStack())) {
-				bl = false;
-			}
-
-			if (bl) {
+			if (this.method_34713(player)) {
 				player.sendPickup(this, 1);
 				this.discard();
 			}
+		}
+	}
+
+	protected boolean method_34713(PlayerEntity playerEntity) {
+		switch (this.pickupType) {
+			case ALLOWED:
+				return playerEntity.getInventory().insertStack(this.asItemStack());
+			case CREATIVE_ONLY:
+				return playerEntity.getAbilities().creativeMode;
+			default:
+				return false;
 		}
 	}
 

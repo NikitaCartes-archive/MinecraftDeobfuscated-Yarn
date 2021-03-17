@@ -14,8 +14,8 @@ public class ListCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("list")
-				.executes(commandContext -> executeNames(commandContext.getSource()))
-				.then(CommandManager.literal("uuids").executes(commandContext -> executeUuids(commandContext.getSource())))
+				.executes(context -> executeNames(context.getSource()))
+				.then(CommandManager.literal("uuids").executes(context -> executeUuids(context.getSource())))
 		);
 	}
 

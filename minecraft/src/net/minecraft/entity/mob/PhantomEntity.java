@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -26,7 +27,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
@@ -159,7 +160,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
 	) {
 		this.circlingCenter = this.getBlockPos().up(5);
 		this.setPhantomSize(0);
@@ -167,7 +168,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
 		if (tag.contains("AX")) {
 			this.circlingCenter = new BlockPos(tag.getInt("AX"), tag.getInt("AY"), tag.getInt("AZ"));
@@ -177,7 +178,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
 		tag.putInt("AX", this.circlingCenter.getX());
 		tag.putInt("AY", this.circlingCenter.getY());
@@ -531,7 +532,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 				PhantomEntity.this.tryAttack(livingEntity);
 				PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.CIRCLE;
 				if (!PhantomEntity.this.isSilent()) {
-					PhantomEntity.this.world.syncWorldEvent(1039, PhantomEntity.this.getBlockPos(), 0);
+					PhantomEntity.this.world.syncWorldEvent(WorldEvents.PHANTOM_BITES, PhantomEntity.this.getBlockPos(), 0);
 				}
 			} else if (PhantomEntity.this.horizontalCollision || PhantomEntity.this.hurtTime > 0) {
 				PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.CIRCLE;

@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -13,7 +14,7 @@ import net.minecraft.block.enums.PistonType;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.property.Properties;
@@ -55,8 +56,8 @@ public class PistonBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag toInitialChunkDataNbt() {
-		return this.writeNbt(new CompoundTag());
+	public NbtCompound toInitialChunkDataNbt() {
+		return this.writeNbt(new NbtCompound());
 	}
 
 	public boolean isExtending() {
@@ -277,7 +278,7 @@ public class PistonBlockEntity extends BlockEntity {
 					blockState = Block.postProcessState(this.pushedBlock, this.world, this.pos);
 				}
 
-				this.world.setBlockState(this.pos, blockState, 3);
+				this.world.setBlockState(this.pos, blockState, SetBlockStateFlags.DEFAULT);
 				this.world.updateNeighbor(this.pos, blockState.getBlock(), this.pos);
 			}
 		}
@@ -295,14 +296,14 @@ public class PistonBlockEntity extends BlockEntity {
 				if (blockEntity.pushedBlock != null && world.getBlockState(pos).isOf(Blocks.MOVING_PISTON)) {
 					BlockState blockState = Block.postProcessState(blockEntity.pushedBlock, world, pos);
 					if (blockState.isAir()) {
-						world.setBlockState(pos, blockEntity.pushedBlock, 84);
+						world.setBlockState(pos, blockEntity.pushedBlock, SetBlockStateFlags.NO_REDRAW | SetBlockStateFlags.FORCE_STATE | SetBlockStateFlags.MOVED);
 						Block.replace(blockEntity.pushedBlock, blockState, world, pos, 3);
 					} else {
 						if (blockState.contains(Properties.WATERLOGGED) && (Boolean)blockState.get(Properties.WATERLOGGED)) {
 							blockState = blockState.with(Properties.WATERLOGGED, Boolean.valueOf(false));
 						}
 
-						world.setBlockState(pos, blockState, 67);
+						world.setBlockState(pos, blockState, SetBlockStateFlags.DEFAULT | SetBlockStateFlags.MOVED);
 						world.updateNeighbor(pos, blockState.getBlock(), pos);
 					}
 				}
@@ -319,7 +320,7 @@ public class PistonBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void readNbt(CompoundTag tag) {
+	public void readNbt(NbtCompound tag) {
 		super.readNbt(tag);
 		this.pushedBlock = NbtHelper.toBlockState(tag.getCompound("blockState"));
 		this.facing = Direction.byId(tag.getInt("facing"));
@@ -330,7 +331,7 @@ public class PistonBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag writeNbt(CompoundTag tag) {
+	public NbtCompound writeNbt(NbtCompound tag) {
 		super.writeNbt(tag);
 		tag.put("blockState", NbtHelper.fromBlockState(this.pushedBlock));
 		tag.putInt("facing", this.facing.getId());

@@ -13,12 +13,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Util;
@@ -56,7 +56,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	private final int dataVersion;
 	private boolean playerDataLoaded;
 	@Nullable
-	private CompoundTag playerData;
+	private NbtCompound playerData;
 	private final int version;
 	private int clearWeatherTime;
 	private boolean raining;
@@ -66,9 +66,9 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	private boolean initialized;
 	private boolean difficultyLocked;
 	private WorldBorder.Properties worldBorder;
-	private CompoundTag dragonFight;
+	private NbtCompound dragonFight;
 	@Nullable
-	private CompoundTag customBossEvents;
+	private NbtCompound customBossEvents;
 	private int wanderingTraderSpawnDelay;
 	private int wanderingTraderSpawnChance;
 	@Nullable
@@ -80,7 +80,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	private LevelProperties(
 		@Nullable DataFixer dataFixer,
 		int dataVersion,
-		@Nullable CompoundTag playerData,
+		@Nullable NbtCompound playerData,
 		boolean modded,
 		int spawnX,
 		int spawnY,
@@ -102,8 +102,8 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		@Nullable UUID wanderingTraderId,
 		Set<String> serverBrands,
 		Timer<MinecraftServer> scheduledEvents,
-		@Nullable CompoundTag customBossEvents,
-		CompoundTag dragonFight,
+		@Nullable NbtCompound customBossEvents,
+		NbtCompound dragonFight,
 		LevelInfo levelInfo,
 		GeneratorOptions generatorOptions,
 		Lifecycle lifecycle
@@ -166,7 +166,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 			Sets.<String>newLinkedHashSet(),
 			new Timer<>(TimerCallbackSerializer.INSTANCE),
 			null,
-			new CompoundTag(),
+			new NbtCompound(),
 			levelInfo.withCopiedGameRules(),
 			generatorOptions,
 			lifecycle
@@ -174,17 +174,17 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	public static LevelProperties readProperties(
-		Dynamic<Tag> dynamic,
+		Dynamic<NbtElement> dynamic,
 		DataFixer dataFixer,
 		int dataVersion,
-		@Nullable CompoundTag playerData,
+		@Nullable NbtCompound playerData,
 		LevelInfo levelInfo,
 		SaveVersionInfo saveVersionInfo,
 		GeneratorOptions generatorOptions,
 		Lifecycle lifecycle
 	) {
 		long l = dynamic.get("Time").asLong(0L);
-		CompoundTag compoundTag = (CompoundTag)dynamic.get("DragonFight")
+		NbtCompound nbtCompound = (NbtCompound)dynamic.get("DragonFight")
 			.result()
 			.map(Dynamic::getValue)
 			.orElseGet(() -> dynamic.get("DimensionData").get("1").get("DragonFight").orElseEmptyMap().getValue());
@@ -216,8 +216,8 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 				.flatMap(dynamicx -> Util.stream(dynamicx.asString().result()))
 				.collect(Collectors.toCollection(Sets::newLinkedHashSet)),
 			new Timer<>(TimerCallbackSerializer.INSTANCE, dynamic.get("ScheduledEvents").asStream()),
-			(CompoundTag)dynamic.get("CustomBossEvents").orElseEmptyMap().getValue(),
-			compoundTag,
+			(NbtCompound)dynamic.get("CustomBossEvents").orElseEmptyMap().getValue(),
+			nbtCompound,
 			levelInfo,
 			generatorOptions,
 			lifecycle
@@ -225,33 +225,33 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public CompoundTag cloneWorldNbt(DynamicRegistryManager registryManager, @Nullable CompoundTag playerTag) {
+	public NbtCompound cloneWorldNbt(DynamicRegistryManager registryManager, @Nullable NbtCompound playerTag) {
 		this.loadPlayerData();
 		if (playerTag == null) {
 			playerTag = this.playerData;
 		}
 
-		CompoundTag compoundTag = new CompoundTag();
-		this.updateProperties(registryManager, compoundTag, playerTag);
-		return compoundTag;
+		NbtCompound nbtCompound = new NbtCompound();
+		this.updateProperties(registryManager, nbtCompound, playerTag);
+		return nbtCompound;
 	}
 
-	private void updateProperties(DynamicRegistryManager registryManager, CompoundTag levelTag, @Nullable CompoundTag playerTag) {
-		ListTag listTag = new ListTag();
-		this.serverBrands.stream().map(StringTag::of).forEach(listTag::add);
-		levelTag.put("ServerBrands", listTag);
+	private void updateProperties(DynamicRegistryManager registryManager, NbtCompound levelTag, @Nullable NbtCompound playerTag) {
+		NbtList nbtList = new NbtList();
+		this.serverBrands.stream().map(NbtString::of).forEach(nbtList::add);
+		levelTag.put("ServerBrands", nbtList);
 		levelTag.putBoolean("WasModded", this.modded);
-		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.putString("Name", SharedConstants.getGameVersion().getName());
-		compoundTag.putInt("Id", SharedConstants.getGameVersion().getWorldVersion());
-		compoundTag.putBoolean("Snapshot", !SharedConstants.getGameVersion().isStable());
-		levelTag.put("Version", compoundTag);
+		NbtCompound nbtCompound = new NbtCompound();
+		nbtCompound.putString("Name", SharedConstants.getGameVersion().getName());
+		nbtCompound.putInt("Id", SharedConstants.getGameVersion().getWorldVersion());
+		nbtCompound.putBoolean("Snapshot", !SharedConstants.getGameVersion().isStable());
+		levelTag.put("Version", nbtCompound);
 		levelTag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
-		RegistryReadingOps<Tag> registryReadingOps = RegistryReadingOps.of(NbtOps.INSTANCE, registryManager);
+		RegistryReadingOps<NbtElement> registryReadingOps = RegistryReadingOps.of(NbtOps.INSTANCE, registryManager);
 		GeneratorOptions.CODEC
 			.encodeStart(registryReadingOps, this.generatorOptions)
 			.resultOrPartial(Util.addPrefix("WorldGenSettings: ", LOGGER::error))
-			.ifPresent(tag -> levelTag.put("WorldGenSettings", tag));
+			.ifPresent(nbtElement -> levelTag.put("WorldGenSettings", nbtElement));
 		levelTag.putInt("GameType", this.levelInfo.getGameMode().getId());
 		levelTag.putInt("SpawnX", this.spawnX);
 		levelTag.putInt("SpawnY", this.spawnY);
@@ -279,7 +279,10 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 			levelTag.put("Player", playerTag);
 		}
 
-		DataPackSettings.CODEC.encodeStart(NbtOps.INSTANCE, this.levelInfo.getDataPackSettings()).result().ifPresent(tag -> levelTag.put("DataPacks", tag));
+		DataPackSettings.CODEC
+			.encodeStart(NbtOps.INSTANCE, this.levelInfo.getDataPackSettings())
+			.result()
+			.ifPresent(nbtElement -> levelTag.put("DataPacks", nbtElement));
 		if (this.customBossEvents != null) {
 			levelTag.put("CustomBossEvents", this.customBossEvents);
 		}
@@ -337,7 +340,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public CompoundTag getPlayerData() {
+	public NbtCompound getPlayerData() {
 		this.loadPlayerData();
 		return this.playerData;
 	}
@@ -528,12 +531,12 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public CompoundTag getDragonFight() {
+	public NbtCompound getDragonFight() {
 		return this.dragonFight;
 	}
 
 	@Override
-	public void setDragonFight(CompoundTag tag) {
+	public void setDragonFight(NbtCompound tag) {
 		this.dragonFight = tag;
 	}
 
@@ -549,12 +552,12 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 
 	@Nullable
 	@Override
-	public CompoundTag getCustomBossEvents() {
+	public NbtCompound getCustomBossEvents() {
 		return this.customBossEvents;
 	}
 
 	@Override
-	public void setCustomBossEvents(@Nullable CompoundTag tag) {
+	public void setCustomBossEvents(@Nullable NbtCompound tag) {
 		this.customBossEvents = tag;
 	}
 

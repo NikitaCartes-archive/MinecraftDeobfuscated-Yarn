@@ -13,7 +13,7 @@ import net.minecraft.item.Items;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.JsonHelper;
 
@@ -41,7 +41,7 @@ public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
 			Entity entity = context.get(this.entity.getParameter());
 			if (entity instanceof PlayerEntity) {
 				GameProfile gameProfile = ((PlayerEntity)entity).getGameProfile();
-				stack.getOrCreateTag().put("SkullOwner", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));
+				stack.getOrCreateTag().put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile));
 			}
 		}
 

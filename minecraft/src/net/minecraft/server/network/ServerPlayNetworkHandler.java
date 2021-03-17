@@ -19,6 +19,8 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.NbtTypeIds;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.SharedConstants;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.criterion.Criteria;
@@ -49,9 +51,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WritableBookItem;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.NetworkThreadUtils;
@@ -183,7 +185,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	private int teleportRequestTick;
 	private boolean floating;
 	private int floatingTicks;
-	private boolean ridingEntity;
+	private boolean vehicleFloating;
 	private int vehicleFloatingTicks;
 	private int movePacketsCount;
 	private int lastTickMovePacketsCount;
@@ -225,19 +227,19 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			this.updatedRiddenX = this.topmostRiddenEntity.getX();
 			this.updatedRiddenY = this.topmostRiddenEntity.getY();
 			this.updatedRiddenZ = this.topmostRiddenEntity.getZ();
-			if (this.ridingEntity && this.player.getRootVehicle().getPrimaryPassenger() == this.player) {
+			if (this.vehicleFloating && this.player.getRootVehicle().getPrimaryPassenger() == this.player) {
 				if (++this.vehicleFloatingTicks > 80) {
 					LOGGER.warn("{} was kicked for floating a vehicle too long!", this.player.getName().getString());
 					this.disconnect(new TranslatableText("multiplayer.disconnect.flying"));
 					return;
 				}
 			} else {
-				this.ridingEntity = false;
+				this.vehicleFloating = false;
 				this.vehicleFloatingTicks = 0;
 			}
 		} else {
 			this.topmostRiddenEntity = null;
-			this.ridingEntity = false;
+			this.vehicleFloating = false;
 			this.vehicleFloatingTicks = 0;
 		}
 
@@ -393,9 +395,9 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 					return;
 				}
 
-				this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
+				this.player.getServerWorld().getChunkManager().updatePosition(this.player);
 				this.player.increaseTravelMotionStats(this.player.getX() - d, this.player.getY() - e, this.player.getZ() - f);
-				this.ridingEntity = m >= -0.03125 && !this.server.isFlightEnabled() && this.isEntityOnAir(entity);
+				this.vehicleFloating = m >= -0.03125 && !this.server.isFlightEnabled() && this.isEntityOnAir(entity);
 				this.updatedRiddenX = entity.getX();
 				this.updatedRiddenY = entity.getY();
 				this.updatedRiddenZ = entity.getZ();
@@ -502,13 +504,13 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 				BlockState blockState3 = blockState2.with(CommandBlock.FACING, direction).with(CommandBlock.CONDITIONAL, Boolean.valueOf(packet.isConditional()));
 				if (blockState3 != blockState) {
-					this.player.world.setBlockState(blockPos, blockState3, 2);
+					this.player.world.setBlockState(blockPos, blockState3, SetBlockStateFlags.NOTIFY_LISTENERS);
 					blockEntity.setCachedState(blockState3);
 					this.player.world.getWorldChunk(blockPos).setBlockEntity(blockEntity);
 				}
 
 				commandBlockExecutor.setCommand(string);
-				commandBlockExecutor.shouldTrackOutput(bl);
+				commandBlockExecutor.setTrackingOutput(bl);
 				if (!bl) {
 					commandBlockExecutor.setLastOutput(null);
 				}
@@ -537,7 +539,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			CommandBlockExecutor commandBlockExecutor = packet.getMinecartCommandExecutor(this.player.world);
 			if (commandBlockExecutor != null) {
 				commandBlockExecutor.setCommand(packet.getCommand());
-				commandBlockExecutor.shouldTrackOutput(packet.shouldTrackOutput());
+				commandBlockExecutor.setTrackingOutput(packet.shouldTrackOutput());
 				if (!packet.shouldTrackOutput()) {
 					commandBlockExecutor.setLastOutput(null);
 				}
@@ -632,7 +634,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 				}
 
 				structureBlockBlockEntity.markDirty();
-				this.player.world.updateListeners(blockPos, blockState, blockState, 3);
+				this.player.world.updateListeners(blockPos, blockState, blockState, SetBlockStateFlags.DEFAULT);
 			}
 		}
 	}
@@ -652,7 +654,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 				jigsawBlockEntity.setFinalState(packet.getFinalState());
 				jigsawBlockEntity.setJoint(packet.getJointType());
 				jigsawBlockEntity.markDirty();
-				this.player.world.updateListeners(blockPos, blockState, blockState, 3);
+				this.player.world.updateListeners(blockPos, blockState, blockState, SetBlockStateFlags.DEFAULT);
 			}
 		}
 	}
@@ -688,18 +690,18 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		if (PlayerInventory.isValidHotbarIndex(i) || i == 40) {
 			ItemStack itemStack = packet.getBook();
 			if (itemStack.isOf(Items.WRITABLE_BOOK)) {
-				CompoundTag compoundTag = itemStack.getTag();
-				if (WritableBookItem.isValid(compoundTag)) {
+				NbtCompound nbtCompound = itemStack.getTag();
+				if (WritableBookItem.isValid(nbtCompound)) {
 					List<String> list = Lists.<String>newArrayList();
 					boolean bl = packet.wasSigned();
 					if (bl) {
-						list.add(compoundTag.getString("title"));
+						list.add(nbtCompound.getString("title"));
 					}
 
-					ListTag listTag = compoundTag.getList("pages", 8);
+					NbtList nbtList = nbtCompound.getList("pages", NbtTypeIds.STRING);
 
-					for (int j = 0; j < listTag.size(); j++) {
-						list.add(listTag.getString(j));
+					for (int j = 0; j < nbtList.size(); j++) {
+						list.add(nbtList.getString(j));
 					}
 
 					this.filterTexts(
@@ -721,17 +723,17 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		ItemStack itemStack = this.player.getInventory().getStack(slotId);
 		if (itemStack.isOf(Items.WRITABLE_BOOK)) {
 			ItemStack itemStack2 = new ItemStack(Items.WRITTEN_BOOK);
-			CompoundTag compoundTag = itemStack.getTag();
-			if (compoundTag != null) {
-				itemStack2.setTag(compoundTag.copy());
+			NbtCompound nbtCompound = itemStack.getTag();
+			if (nbtCompound != null) {
+				itemStack2.setTag(nbtCompound.copy());
 			}
 
-			itemStack2.putSubTag("author", StringTag.of(this.player.getName().getString()));
+			itemStack2.putSubTag("author", NbtString.of(this.player.getName().getString()));
 			if (this.player.shouldFilterText()) {
-				itemStack2.putSubTag("title", StringTag.of(title.getFiltered()));
+				itemStack2.putSubTag("title", NbtString.of(title.getFiltered()));
 			} else {
-				itemStack2.putSubTag("filtered_title", StringTag.of(title.getFiltered()));
-				itemStack2.putSubTag("title", StringTag.of(title.getRaw()));
+				itemStack2.putSubTag("filtered_title", NbtString.of(title.getFiltered()));
+				itemStack2.putSubTag("title", NbtString.of(title.getRaw()));
 			}
 
 			this.setTextToBook(pages, string -> Text.Serializer.toJson(new LiteralText(string)), itemStack2);
@@ -740,29 +742,29 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	}
 
 	private void setTextToBook(List<TextStream.Message> messages, UnaryOperator<String> postProcessor, ItemStack book) {
-		ListTag listTag = new ListTag();
+		NbtList nbtList = new NbtList();
 		if (this.player.shouldFilterText()) {
-			messages.stream().map(messagex -> StringTag.of((String)postProcessor.apply(messagex.getFiltered()))).forEach(listTag::add);
+			messages.stream().map(messagex -> NbtString.of((String)postProcessor.apply(messagex.getFiltered()))).forEach(nbtList::add);
 		} else {
-			CompoundTag compoundTag = new CompoundTag();
+			NbtCompound nbtCompound = new NbtCompound();
 			int i = 0;
 
 			for (int j = messages.size(); i < j; i++) {
 				TextStream.Message message = (TextStream.Message)messages.get(i);
 				String string = message.getRaw();
-				listTag.add(StringTag.of((String)postProcessor.apply(string)));
+				nbtList.add(NbtString.of((String)postProcessor.apply(string)));
 				String string2 = message.getFiltered();
 				if (!string.equals(string2)) {
-					compoundTag.putString(String.valueOf(i), (String)postProcessor.apply(string2));
+					nbtCompound.putString(String.valueOf(i), (String)postProcessor.apply(string2));
 				}
 			}
 
-			if (!compoundTag.isEmpty()) {
-				book.putSubTag("filtered_pages", compoundTag);
+			if (!nbtCompound.isEmpty()) {
+				book.putSubTag("filtered_pages", nbtCompound);
 			}
 		}
 
-		book.putSubTag("pages", listTag);
+		book.putSubTag("pages", nbtList);
 	}
 
 	@Override
@@ -771,8 +773,8 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		if (this.player.hasPermissionLevel(2)) {
 			Entity entity = this.player.getServerWorld().getEntityById(packet.getEntityId());
 			if (entity != null) {
-				CompoundTag compoundTag = entity.writeNbt(new CompoundTag());
-				this.player.networkHandler.sendPacket(new TagQueryResponseS2CPacket(packet.getTransactionId(), compoundTag));
+				NbtCompound nbtCompound = entity.writeNbt(new NbtCompound());
+				this.player.networkHandler.sendPacket(new TagQueryResponseS2CPacket(packet.getTransactionId(), nbtCompound));
 			}
 		}
 	}
@@ -782,8 +784,8 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.hasPermissionLevel(2)) {
 			BlockEntity blockEntity = this.player.getServerWorld().getBlockEntity(packet.getPos());
-			CompoundTag compoundTag = blockEntity != null ? blockEntity.writeNbt(new CompoundTag()) : null;
-			this.player.networkHandler.sendPacket(new TagQueryResponseS2CPacket(packet.getTransactionId(), compoundTag));
+			NbtCompound nbtCompound = blockEntity != null ? blockEntity.writeNbt(new NbtCompound()) : null;
+			this.player.networkHandler.sendPacket(new TagQueryResponseS2CPacket(packet.getTransactionId(), nbtCompound));
 		}
 	}
 
@@ -809,7 +811,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 					if (this.player.hasVehicle()) {
 						this.player
 							.updatePositionAndAngles(this.player.getX(), this.player.getY(), this.player.getZ(), packet.getYaw(this.player.yaw), packet.getPitch(this.player.pitch));
-						this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
+						this.player.getServerWorld().getChunkManager().updatePosition(this.player);
 					} else {
 						double d = this.player.getX();
 						double e = this.player.getY();
@@ -886,7 +888,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 									&& !this.player.hasStatusEffect(StatusEffects.LEVITATION)
 									&& !this.player.isFallFlying()
 									&& this.isEntityOnAir(this.player);
-								this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
+								this.player.getServerWorld().getChunkManager().updatePosition(this.player);
 								this.player.handleFall(this.player.getY() - g, packet.isOnGround());
 								this.player.setOnGround(packet.isOnGround());
 								if (bl) {
@@ -1370,16 +1372,16 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		if (this.player.interactionManager.isCreative()) {
 			boolean bl = packet.getSlot() < 0;
 			ItemStack itemStack = packet.getItemStack();
-			CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
-			if (!itemStack.isEmpty() && compoundTag != null && compoundTag.contains("x") && compoundTag.contains("y") && compoundTag.contains("z")) {
-				BlockPos blockPos = new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z"));
+			NbtCompound nbtCompound = itemStack.getSubTag("BlockEntityTag");
+			if (!itemStack.isEmpty() && nbtCompound != null && nbtCompound.contains("x") && nbtCompound.contains("y") && nbtCompound.contains("z")) {
+				BlockPos blockPos = new BlockPos(nbtCompound.getInt("x"), nbtCompound.getInt("y"), nbtCompound.getInt("z"));
 				BlockEntity blockEntity = this.player.world.getBlockEntity(blockPos);
 				if (blockEntity != null) {
-					CompoundTag compoundTag2 = blockEntity.writeNbt(new CompoundTag());
-					compoundTag2.remove("x");
-					compoundTag2.remove("y");
-					compoundTag2.remove("z");
-					itemStack.putSubTag("BlockEntityTag", compoundTag2);
+					NbtCompound nbtCompound2 = blockEntity.writeNbt(new NbtCompound());
+					nbtCompound2.remove("x");
+					nbtCompound2.remove("y");
+					nbtCompound2.remove("z");
+					itemStack.putSubTag("BlockEntityTag", nbtCompound2);
 				}
 			}
 
@@ -1433,7 +1435,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			}
 
 			signBlockEntity.markDirty();
-			serverWorld.updateListeners(blockPos, blockState, blockState, 3);
+			serverWorld.updateListeners(blockPos, blockState, blockState, SetBlockStateFlags.DEFAULT);
 		}
 	}
 

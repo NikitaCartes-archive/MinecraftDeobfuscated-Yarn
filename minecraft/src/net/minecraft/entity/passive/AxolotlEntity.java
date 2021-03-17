@@ -46,7 +46,7 @@ import net.minecraft.item.BucketItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -111,14 +111,14 @@ public class AxolotlEntity extends AnimalEntity implements Bucketable {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
 		tag.putInt("Variant", this.getVariant().getId());
 		tag.putBoolean("FromBucket", this.isFromBucket());
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
 		this.setVariant(AxolotlEntity.Variant.VARIANTS[tag.getInt("Variant")]);
 		this.setFromBucket(tag.getBoolean("FromBucket"));
@@ -126,7 +126,7 @@ public class AxolotlEntity extends AnimalEntity implements Bucketable {
 
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
 	) {
 		boolean bl = false;
 		if (entityData instanceof AxolotlEntity.AxolotlData) {
@@ -194,7 +194,7 @@ public class AxolotlEntity extends AnimalEntity implements Bucketable {
 	}
 
 	@Override
-	public boolean canFly() {
+	public boolean isPushedByFluids() {
 		return false;
 	}
 

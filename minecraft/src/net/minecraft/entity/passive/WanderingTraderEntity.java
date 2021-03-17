@@ -2,6 +2,7 @@ package net.minecraft.entity.passive;
 
 import java.util.EnumSet;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
@@ -27,7 +28,7 @@ import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
@@ -144,7 +145,7 @@ public class WanderingTraderEntity extends MerchantEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
 		tag.putInt("DespawnDelay", this.despawnDelay);
 		if (this.wanderTarget != null) {
@@ -153,9 +154,9 @@ public class WanderingTraderEntity extends MerchantEntity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
-		if (tag.contains("DespawnDelay", 99)) {
+		if (tag.contains("DespawnDelay", NbtTypeIds.NUMBER)) {
 			this.despawnDelay = tag.getInt("DespawnDelay");
 		}
 

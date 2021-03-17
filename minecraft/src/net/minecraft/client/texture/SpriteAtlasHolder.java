@@ -4,12 +4,12 @@ import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SinglePreparationResourceReloadListener;
+import net.minecraft.resource.SinglePreparationResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
 @Environment(EnvType.CLIENT)
-public abstract class SpriteAtlasHolder extends SinglePreparationResourceReloadListener<SpriteAtlasTexture.Data> implements AutoCloseable {
+public abstract class SpriteAtlasHolder extends SinglePreparationResourceReloader<SpriteAtlasTexture.Data> implements AutoCloseable {
 	private final SpriteAtlasTexture atlas;
 	private final String pathPrefix;
 

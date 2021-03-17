@@ -30,16 +30,16 @@ import net.minecraft.world.BlockView;
 
 public class SpreadPlayersCommand {
 	private static final Dynamic4CommandExceptionType FAILED_TEAMS_EXCEPTION = new Dynamic4CommandExceptionType(
-		(object, object2, object3, object4) -> new TranslatableText("commands.spreadplayers.failed.teams", object, object2, object3, object4)
+		(pilesCount, x, z, maxSpreadDistance) -> new TranslatableText("commands.spreadplayers.failed.teams", pilesCount, x, z, maxSpreadDistance)
 	);
 	private static final Dynamic4CommandExceptionType FAILED_ENTITIES_EXCEPTION = new Dynamic4CommandExceptionType(
-		(object, object2, object3, object4) -> new TranslatableText("commands.spreadplayers.failed.entities", object, object2, object3, object4)
+		(pilesCount, x, z, maxSpreadDistance) -> new TranslatableText("commands.spreadplayers.failed.entities", pilesCount, x, z, maxSpreadDistance)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("spreadplayers")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
+				.requires(source -> source.hasPermissionLevel(2))
 				.then(
 					CommandManager.argument("center", Vec2ArgumentType.vec2())
 						.then(
@@ -51,14 +51,14 @@ public class SpreadPlayersCommand {
 												.then(
 													CommandManager.argument("targets", EntityArgumentType.entities())
 														.executes(
-															commandContext -> execute(
-																	commandContext.getSource(),
-																	Vec2ArgumentType.getVec2(commandContext, "center"),
-																	FloatArgumentType.getFloat(commandContext, "spreadDistance"),
-																	FloatArgumentType.getFloat(commandContext, "maxRange"),
-																	commandContext.getSource().getWorld().getTopY(),
-																	BoolArgumentType.getBool(commandContext, "respectTeams"),
-																	EntityArgumentType.getEntities(commandContext, "targets")
+															context -> execute(
+																	context.getSource(),
+																	Vec2ArgumentType.getVec2(context, "center"),
+																	FloatArgumentType.getFloat(context, "spreadDistance"),
+																	FloatArgumentType.getFloat(context, "maxRange"),
+																	context.getSource().getWorld().getTopY(),
+																	BoolArgumentType.getBool(context, "respectTeams"),
+																	EntityArgumentType.getEntities(context, "targets")
 																)
 														)
 												)
@@ -72,14 +72,14 @@ public class SpreadPlayersCommand {
 																.then(
 																	CommandManager.argument("targets", EntityArgumentType.entities())
 																		.executes(
-																			commandContext -> execute(
-																					commandContext.getSource(),
-																					Vec2ArgumentType.getVec2(commandContext, "center"),
-																					FloatArgumentType.getFloat(commandContext, "spreadDistance"),
-																					FloatArgumentType.getFloat(commandContext, "maxRange"),
-																					IntegerArgumentType.getInteger(commandContext, "maxHeight"),
-																					BoolArgumentType.getBool(commandContext, "respectTeams"),
-																					EntityArgumentType.getEntities(commandContext, "targets")
+																			context -> execute(
+																					context.getSource(),
+																					Vec2ArgumentType.getVec2(context, "center"),
+																					FloatArgumentType.getFloat(context, "spreadDistance"),
+																					FloatArgumentType.getFloat(context, "maxRange"),
+																					IntegerArgumentType.getInteger(context, "maxHeight"),
+																					BoolArgumentType.getBool(context, "respectTeams"),
+																					EntityArgumentType.getEntities(context, "targets")
 																				)
 																		)
 																)

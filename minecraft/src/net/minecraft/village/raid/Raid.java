@@ -15,6 +15,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
@@ -32,9 +33,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -94,7 +95,7 @@ public class Raid {
 		this.status = Raid.Status.ONGOING;
 	}
 
-	public Raid(ServerWorld world, CompoundTag tag) {
+	public Raid(ServerWorld world, NbtCompound tag) {
 		this.world = world;
 		this.id = tag.getInt("Id");
 		this.started = tag.getBoolean("Started");
@@ -109,11 +110,11 @@ public class Raid {
 		this.waveCount = tag.getInt("NumGroups");
 		this.status = Raid.Status.fromName(tag.getString("Status"));
 		this.heroesOfTheVillage.clear();
-		if (tag.contains("HeroesOfTheVillage", 9)) {
-			ListTag listTag = tag.getList("HeroesOfTheVillage", 11);
+		if (tag.contains("HeroesOfTheVillage", NbtTypeIds.LIST)) {
+			NbtList nbtList = tag.getList("HeroesOfTheVillage", NbtTypeIds.INT_ARRAY);
 
-			for (int i = 0; i < listTag.size(); i++) {
-				this.heroesOfTheVillage.add(NbtHelper.toUuid(listTag.get(i)));
+			for (int i = 0; i < nbtList.size(); i++) {
+				this.heroesOfTheVillage.add(NbtHelper.toUuid(nbtList.get(i)));
 			}
 		}
 	}
@@ -553,8 +554,8 @@ public class Raid {
 
 	public static ItemStack getOminousBanner() {
 		ItemStack itemStack = new ItemStack(Items.WHITE_BANNER);
-		CompoundTag compoundTag = itemStack.getOrCreateSubTag("BlockEntityTag");
-		ListTag listTag = new BannerPattern.Patterns()
+		NbtCompound nbtCompound = itemStack.getOrCreateSubTag("BlockEntityTag");
+		NbtList nbtList = new BannerPattern.Patterns()
 			.add(BannerPattern.RHOMBUS_MIDDLE, DyeColor.CYAN)
 			.add(BannerPattern.STRIPE_BOTTOM, DyeColor.LIGHT_GRAY)
 			.add(BannerPattern.STRIPE_CENTER, DyeColor.GRAY)
@@ -564,7 +565,7 @@ public class Raid {
 			.add(BannerPattern.CIRCLE_MIDDLE, DyeColor.LIGHT_GRAY)
 			.add(BannerPattern.BORDER, DyeColor.BLACK)
 			.toNbt();
-		compoundTag.put("Patterns", listTag);
+		nbtCompound.put("Patterns", nbtList);
 		itemStack.addHideFlag(ItemStack.TooltipSection.ADDITIONAL);
 		itemStack.setCustomName(new TranslatableText("block.minecraft.ominous_banner").formatted(Formatting.GOLD));
 		return itemStack;
@@ -696,7 +697,7 @@ public class Raid {
 		return this.active;
 	}
 
-	public CompoundTag writeNbt(CompoundTag tag) {
+	public NbtCompound writeNbt(NbtCompound tag) {
 		tag.putInt("Id", this.id);
 		tag.putBoolean("Started", this.started);
 		tag.putBoolean("Active", this.active);
@@ -711,13 +712,13 @@ public class Raid {
 		tag.putInt("CX", this.center.getX());
 		tag.putInt("CY", this.center.getY());
 		tag.putInt("CZ", this.center.getZ());
-		ListTag listTag = new ListTag();
+		NbtList nbtList = new NbtList();
 
 		for (UUID uUID : this.heroesOfTheVillage) {
-			listTag.add(NbtHelper.fromUuid(uUID));
+			nbtList.add(NbtHelper.fromUuid(uUID));
 		}
 
-		tag.put("HeroesOfTheVillage", listTag);
+		tag.put("HeroesOfTheVillage", nbtList);
 		return tag;
 	}
 

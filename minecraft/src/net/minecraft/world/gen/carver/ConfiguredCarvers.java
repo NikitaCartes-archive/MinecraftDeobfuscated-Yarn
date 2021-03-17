@@ -9,7 +9,7 @@ import net.minecraft.world.gen.YOffset;
 
 public class ConfiguredCarvers {
 	public static final ConfiguredCarver<CarverConfig> CAVE = register(
-		"cave", Carver.CAVE.configure(new CarverConfig(0.25F, CarverDebugConfig.create(false, Blocks.CRIMSON_BUTTON.getDefaultState())))
+		"cave", Carver.CAVE.configure(new CarverConfig(0.33333334F, CarverDebugConfig.create(false, Blocks.CRIMSON_BUTTON.getDefaultState())))
 	);
 	public static final ConfiguredCarver<RavineCarverConfig> CANYON = register(
 		"canyon",
@@ -32,7 +32,7 @@ public class ConfiguredCarvers {
 			)
 	);
 	public static final ConfiguredCarver<CarverConfig> OCEAN_CAVE = register(
-		"ocean_cave", Carver.CAVE.configure(new CarverConfig(0.125F, CarverDebugConfig.create(false, Blocks.CRIMSON_BUTTON.getDefaultState())))
+		"ocean_cave", Carver.CAVE.configure(new CarverConfig(0.14285715F, CarverDebugConfig.create(false, Blocks.CRIMSON_BUTTON.getDefaultState())))
 	);
 	public static final ConfiguredCarver<CarverConfig> NETHER_CAVE = register("nether_cave", Carver.NETHER_CAVE.configure(new CarverConfig(0.2F)));
 	public static final ConfiguredCarver<RavineCarverConfig> CRACK = register(

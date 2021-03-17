@@ -6,6 +6,8 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -40,14 +42,14 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	private static final VoxelShape RAY_TRACE_SHAPE = VoxelShapes.fullCube();
 	private static final VoxelShape[] LEVEL_TO_COLLISION_SHAPE = Util.make(
 		new VoxelShape[9],
-		voxelShapes -> {
+		shapes -> {
 			for (int i = 0; i < 8; i++) {
-				voxelShapes[i] = VoxelShapes.combineAndSimplify(
+				shapes[i] = VoxelShapes.combineAndSimplify(
 					RAY_TRACE_SHAPE, Block.createCuboidShape(2.0, (double)Math.max(2, 1 + i * 2), 2.0, 14.0, 16.0, 14.0), BooleanBiFunction.ONLY_FIRST
 				);
 			}
 
-			voxelShapes[8] = voxelShapes[7];
+			shapes[8] = shapes[7];
 		}
 	);
 
@@ -94,6 +96,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		registerCompostableItem(0.5F, Items.WEEPING_VINES);
 		registerCompostableItem(0.5F, Items.TWISTING_VINES);
 		registerCompostableItem(0.5F, Items.MELON_SLICE);
+		registerCompostableItem(0.5F, Items.GLOW_LICHEN);
 		registerCompostableItem(0.65F, Items.SEA_PICKLE);
 		registerCompostableItem(0.65F, Items.LILY_PAD);
 		registerCompostableItem(0.65F, Items.PUMPKIN);
@@ -222,7 +225,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		if (i < 8 && ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(itemStack.getItem())) {
 			if (i < 7 && !world.isClient) {
 				BlockState blockState = addToComposter(state, world, pos, itemStack);
-				world.syncWorldEvent(1500, pos, state != blockState ? 1 : 0);
+				world.syncWorldEvent(WorldEvents.COMPOSTER_USED, pos, state != blockState ? 1 : 0);
 				if (!player.getAbilities().creativeMode) {
 					itemStack.decrement(1);
 				}
@@ -266,7 +269,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 
 	private static BlockState emptyComposter(BlockState state, WorldAccess world, BlockPos pos) {
 		BlockState blockState = state.with(LEVEL, Integer.valueOf(0));
-		world.setBlockState(pos, blockState, 3);
+		world.setBlockState(pos, blockState, SetBlockStateFlags.DEFAULT);
 		return blockState;
 	}
 
@@ -278,7 +281,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		} else {
 			int j = i + 1;
 			BlockState blockState = state.with(LEVEL, Integer.valueOf(j));
-			world.setBlockState(pos, blockState, 3);
+			world.setBlockState(pos, blockState, SetBlockStateFlags.DEFAULT);
 			if (j == 7) {
 				world.getBlockTickScheduler().schedule(pos, state.getBlock(), 20);
 			}
@@ -290,7 +293,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if ((Integer)state.get(LEVEL) == 7) {
-			world.setBlockState(pos, state.cycle(LEVEL), 3);
+			world.setBlockState(pos, state.cycle(LEVEL), SetBlockStateFlags.DEFAULT);
 			world.playSound(null, pos, SoundEvents.BLOCK_COMPOSTER_READY, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		}
 	}
@@ -364,7 +367,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 			if (!itemStack.isEmpty()) {
 				this.dirty = true;
 				BlockState blockState = ComposterBlock.addToComposter(this.state, this.world, this.pos, itemStack);
-				this.world.syncWorldEvent(1500, this.pos, blockState != this.state ? 1 : 0);
+				this.world.syncWorldEvent(WorldEvents.COMPOSTER_USED, this.pos, blockState != this.state ? 1 : 0);
 				this.removeStack(0);
 			}
 		}

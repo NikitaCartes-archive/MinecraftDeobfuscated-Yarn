@@ -3,6 +3,8 @@ package net.minecraft.block;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.LivingEntity;
@@ -53,7 +55,7 @@ public class TallPlantBlock extends PlantBlock {
 
 	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-		world.setBlockState(pos.up(), this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER), 3);
+		world.setBlockState(pos.up(), this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER), SetBlockStateFlags.DEFAULT);
 	}
 
 	@Override
@@ -66,9 +68,9 @@ public class TallPlantBlock extends PlantBlock {
 		}
 	}
 
-	public void placeAt(WorldAccess world, BlockPos pos, int flags) {
-		world.setBlockState(pos, this.getDefaultState().with(HALF, DoubleBlockHalf.LOWER), flags);
-		world.setBlockState(pos.up(), this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER), flags);
+	public void placeAt(WorldAccess world, BlockState state, BlockPos pos, int flags) {
+		world.setBlockState(pos, state.with(HALF, DoubleBlockHalf.LOWER), flags);
+		world.setBlockState(pos.up(), state.with(HALF, DoubleBlockHalf.UPPER), flags);
 	}
 
 	@Override
@@ -101,8 +103,8 @@ public class TallPlantBlock extends PlantBlock {
 			BlockPos blockPos = pos.down();
 			BlockState blockState = world.getBlockState(blockPos);
 			if (blockState.isOf(state.getBlock()) && blockState.get(HALF) == DoubleBlockHalf.LOWER) {
-				world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 35);
-				world.syncWorldEvent(player, 2001, blockPos, Block.getRawIdFromState(blockState));
+				world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.SKIP_DROPS);
+				world.syncWorldEvent(player, WorldEvents.BLOCK_BROKEN, blockPos, Block.getRawIdFromState(blockState));
 			}
 		}
 	}

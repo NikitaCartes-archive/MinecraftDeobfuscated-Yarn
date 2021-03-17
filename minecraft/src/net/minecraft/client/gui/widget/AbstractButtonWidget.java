@@ -107,7 +107,7 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		TextRenderer textRenderer = minecraftClient.textRenderer;
-		RenderSystem.setShader(GameRenderer::method_34542);
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderTexture(0, WIDGETS_LOCATION);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
 		int i = this.getYImage(this.isHovered());

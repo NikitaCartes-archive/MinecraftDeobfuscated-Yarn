@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import java.util.Map;
 import java.util.function.Predicate;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
@@ -74,7 +75,7 @@ public class LeveledCauldronBlock extends AbstractCauldronBlock {
 	protected void fillFromDripstone(BlockState state, World world, BlockPos pos, Fluid fluid) {
 		if (!this.isFull(state)) {
 			world.setBlockState(pos, state.with(LEVEL, Integer.valueOf((Integer)state.get(LEVEL) + 1)));
-			world.syncWorldEvent(1047, pos, 0);
+			world.syncWorldEvent(WorldEvents.POINTED_DRIPSTONE_DRIPS_WATER_INTO_CAULDRON, pos, 0);
 		}
 	}
 }

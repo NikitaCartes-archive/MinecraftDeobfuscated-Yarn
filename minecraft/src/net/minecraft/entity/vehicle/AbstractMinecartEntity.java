@@ -31,7 +31,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -673,7 +673,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	@Override
-	protected void readCustomDataFromNbt(CompoundTag tag) {
+	protected void readCustomDataFromNbt(NbtCompound tag) {
 		if (tag.getBoolean("CustomDisplayTile")) {
 			this.setCustomBlock(NbtHelper.toBlockState(tag.getCompound("DisplayState")));
 			this.setCustomBlockOffset(tag.getInt("DisplayOffset"));
@@ -681,7 +681,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	@Override
-	protected void writeCustomDataToNbt(CompoundTag tag) {
+	protected void writeCustomDataToNbt(NbtCompound tag) {
 		if (this.hasCustomBlock()) {
 			tag.putBoolean("CustomDisplayTile", true);
 			tag.put("DisplayState", NbtHelper.fromBlockState(this.getContainedBlock()));
@@ -710,8 +710,6 @@ public abstract class AbstractMinecartEntity extends Entity {
 						e *= g;
 						d *= 0.1F;
 						e *= 0.1F;
-						d *= (double)(1.0F - this.pushSpeedReduction);
-						e *= (double)(1.0F - this.pushSpeedReduction);
 						d *= 0.5;
 						e *= 0.5;
 						if (entity instanceof AbstractMinecartEntity) {

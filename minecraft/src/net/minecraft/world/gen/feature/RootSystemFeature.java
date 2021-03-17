@@ -3,6 +3,7 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import java.util.Random;
 import java.util.function.Predicate;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.tag.BlockTags;
@@ -38,7 +39,7 @@ public class RootSystemFeature extends Feature<RootSystemFeatureConfig> {
 		}
 	}
 
-	private boolean hasEnoughSpaceForTree(StructureWorldAccess world, RootSystemFeatureConfig config, BlockPos pos) {
+	private boolean hasSpaceForTree(StructureWorldAccess world, RootSystemFeatureConfig config, BlockPos pos) {
 		BlockPos.Mutable mutable = pos.mutableCopy();
 
 		for (int i = 1; i <= config.requiredVerticalSpaceForTree; i++) {
@@ -60,7 +61,7 @@ public class RootSystemFeature extends Feature<RootSystemFeatureConfig> {
 		for (int k = 0; k < config.maxRootColumnHeight; k++) {
 			mutablePos.move(Direction.UP);
 			if (TreeFeature.canReplace(world, mutablePos)) {
-				if (this.hasEnoughSpaceForTree(world, config, mutablePos)) {
+				if (this.hasSpaceForTree(world, config, mutablePos)) {
 					BlockPos blockPos = mutablePos.down();
 					if (world.getFluidState(blockPos).isIn(FluidTags.LAVA) || !world.getBlockState(blockPos).getMaterial().isSolid()) {
 						return false;
@@ -71,7 +72,7 @@ public class RootSystemFeature extends Feature<RootSystemFeatureConfig> {
 					}
 				}
 			} else {
-				this.placeRoots(world, config, random, i, j, mutablePos);
+				this.generateRoots(world, config, random, i, j, mutablePos);
 			}
 		}
 
@@ -82,7 +83,7 @@ public class RootSystemFeature extends Feature<RootSystemFeatureConfig> {
 		return ((ConfiguredFeature)config.feature.get()).generate(world, generator, random, pos);
 	}
 
-	private void placeRoots(StructureWorldAccess world, RootSystemFeatureConfig config, Random random, int x, int z, BlockPos.Mutable mutablePos) {
+	private void generateRoots(StructureWorldAccess world, RootSystemFeatureConfig config, Random random, int x, int z, BlockPos.Mutable mutablePos) {
 		int i = config.rootRadius;
 		Tag<Block> tag = BlockTags.getTagGroup().getTag(config.rootReplaceable);
 		Predicate<BlockState> predicate = tag == null ? blockState -> true : blockState -> blockState.isIn(tag);
@@ -90,7 +91,7 @@ public class RootSystemFeature extends Feature<RootSystemFeatureConfig> {
 		for (int j = 0; j < config.rootPlacementAttempts; j++) {
 			mutablePos.set(mutablePos, random.nextInt(i) - random.nextInt(i), 0, random.nextInt(i) - random.nextInt(i));
 			if (predicate.test(world.getBlockState(mutablePos))) {
-				world.setBlockState(mutablePos, config.rootStateProvider.getBlockState(random, mutablePos), 2);
+				world.setBlockState(mutablePos, config.rootStateProvider.getBlockState(random, mutablePos), SetBlockStateFlags.NOTIFY_LISTENERS);
 			}
 
 			mutablePos.setX(x);
@@ -104,8 +105,11 @@ public class RootSystemFeature extends Feature<RootSystemFeatureConfig> {
 
 		for (int k = 0; k < config.hangingRootPlacementAttempts; k++) {
 			mutablePos.set(pos, random.nextInt(i) - random.nextInt(i), random.nextInt(j) - random.nextInt(j), random.nextInt(i) - random.nextInt(i));
-			if (world.isAir(mutablePos) && world.getBlockState(mutablePos.up()).getMaterial().isSolid()) {
-				world.setBlockState(mutablePos, config.hangingRootStateProvider.getBlockState(random, mutablePos), 2);
+			if (world.isAir(mutablePos)) {
+				BlockState blockState = config.hangingRootStateProvider.getBlockState(random, mutablePos);
+				if (blockState.canPlaceAt(world, mutablePos) && world.getBlockState(mutablePos.up()).isSideSolidFullSquare(world, mutablePos, Direction.DOWN)) {
+					world.setBlockState(mutablePos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
+				}
 			}
 		}
 	}

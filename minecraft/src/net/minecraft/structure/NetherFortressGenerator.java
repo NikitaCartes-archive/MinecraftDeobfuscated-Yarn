@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FenceBlock;
@@ -13,7 +14,8 @@ import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.loot.LootTables;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -84,7 +86,7 @@ public class NetherFortressGenerator {
 			this.boundingBox = boundingBox;
 		}
 
-		public Bridge(StructureManager structureManager, CompoundTag nbt) {
+		public Bridge(ServerWorld serverWorld, NbtCompound nbt) {
 			super(StructurePieceType.NETHER_FORTRESS_BRIDGE, nbt);
 		}
 
@@ -161,11 +163,11 @@ public class NetherFortressGenerator {
 			}
 		}
 
-		protected BridgeCrossing(StructurePieceType structurePieceType, CompoundTag compoundTag) {
-			super(structurePieceType, compoundTag);
+		protected BridgeCrossing(StructurePieceType structurePieceType, NbtCompound nbtCompound) {
+			super(structurePieceType, nbtCompound);
 		}
 
-		public BridgeCrossing(StructureManager structureManager, CompoundTag nbt) {
+		public BridgeCrossing(ServerWorld serverWorld, NbtCompound nbt) {
 			this(StructurePieceType.NETHER_FORTRESS_BRIDGE_CROSSING, nbt);
 		}
 
@@ -243,7 +245,7 @@ public class NetherFortressGenerator {
 			this.seed = random.nextInt();
 		}
 
-		public BridgeEnd(StructureManager structureManager, CompoundTag nbt) {
+		public BridgeEnd(ServerWorld serverWorld, NbtCompound nbt) {
 			super(StructurePieceType.NETHER_FORTRESS_BRIDGE_END, nbt);
 			this.seed = nbt.getInt("Seed");
 		}
@@ -258,9 +260,9 @@ public class NetherFortressGenerator {
 		}
 
 		@Override
-		protected void writeNbt(CompoundTag tag) {
-			super.writeNbt(tag);
-			tag.putInt("Seed", this.seed);
+		protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+			super.writeNbt(world, nbt);
+			nbt.putInt("Seed", this.seed);
 		}
 
 		@Override
@@ -312,15 +314,15 @@ public class NetherFortressGenerator {
 			this.boundingBox = boundingBox;
 		}
 
-		public BridgePlatform(StructureManager structureManager, CompoundTag nbt) {
+		public BridgePlatform(ServerWorld serverWorld, NbtCompound nbt) {
 			super(StructurePieceType.NETHER_FORTRESS_BRIDGE_PLATFORM, nbt);
 			this.hasBlazeSpawner = nbt.getBoolean("Mob");
 		}
 
 		@Override
-		protected void writeNbt(CompoundTag tag) {
-			super.writeNbt(tag);
-			tag.putBoolean("Mob", this.hasBlazeSpawner);
+		protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+			super.writeNbt(world, nbt);
+			nbt.putBoolean("Mob", this.hasBlazeSpawner);
 		}
 
 		public static NetherFortressGenerator.BridgePlatform create(List<StructurePiece> pieces, int x, int y, int z, int chainLength, Direction orientation) {
@@ -407,7 +409,7 @@ public class NetherFortressGenerator {
 				BlockPos blockPos = new BlockPos(this.applyXTransform(3, 5), this.applyYTransform(5), this.applyZTransform(3, 5));
 				if (boundingBox.contains(blockPos)) {
 					this.hasBlazeSpawner = true;
-					world.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), 2);
+					world.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
 					BlockEntity blockEntity = world.getBlockEntity(blockPos);
 					if (blockEntity instanceof MobSpawnerBlockEntity) {
 						((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(EntityType.BLAZE);
@@ -432,7 +434,7 @@ public class NetherFortressGenerator {
 			this.boundingBox = boundingBox;
 		}
 
-		public BridgeSmallCrossing(StructureManager structureManager, CompoundTag nbt) {
+		public BridgeSmallCrossing(ServerWorld serverWorld, NbtCompound nbt) {
 			super(StructurePieceType.NETHER_FORTRESS_BRIDGE_SMALL_CROSSING, nbt);
 		}
 
@@ -504,7 +506,7 @@ public class NetherFortressGenerator {
 			this.boundingBox = boundingBox;
 		}
 
-		public BridgeStairs(StructureManager structureManager, CompoundTag nbt) {
+		public BridgeStairs(ServerWorld serverWorld, NbtCompound nbt) {
 			super(StructurePieceType.NETHER_FORTRESS_BRIDGE_STAIRS, nbt);
 		}
 
@@ -575,7 +577,7 @@ public class NetherFortressGenerator {
 			this.boundingBox = boundingBox;
 		}
 
-		public CorridorBalcony(StructureManager structureManager, CompoundTag nbt) {
+		public CorridorBalcony(ServerWorld serverWorld, NbtCompound nbt) {
 			super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_BALCONY, nbt);
 		}
 
@@ -669,7 +671,7 @@ public class NetherFortressGenerator {
 			this.boundingBox = boundingBox;
 		}
 
-		public CorridorCrossing(StructureManager structureManager, CompoundTag nbt) {
+		public CorridorCrossing(ServerWorld serverWorld, NbtCompound nbt) {
 			super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_CROSSING, nbt);
 		}
 
@@ -722,7 +724,7 @@ public class NetherFortressGenerator {
 			this.boundingBox = boundingBox;
 		}
 
-		public CorridorExit(StructureManager structureManager, CompoundTag nbt) {
+		public CorridorExit(ServerWorld serverWorld, NbtCompound nbt) {
 			super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_EXIT, nbt);
 		}
 
@@ -894,15 +896,15 @@ public class NetherFortressGenerator {
 			this.containsChest = random.nextInt(3) == 0;
 		}
 
-		public CorridorLeftTurn(StructureManager structureManager, CompoundTag nbt) {
+		public CorridorLeftTurn(ServerWorld serverWorld, NbtCompound nbt) {
 			super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_LEFT_TURN, nbt);
 			this.containsChest = nbt.getBoolean("Chest");
 		}
 
 		@Override
-		protected void writeNbt(CompoundTag tag) {
-			super.writeNbt(tag);
-			tag.putBoolean("Chest", this.containsChest);
+		protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+			super.writeNbt(world, nbt);
+			nbt.putBoolean("Chest", this.containsChest);
 		}
 
 		@Override
@@ -970,7 +972,7 @@ public class NetherFortressGenerator {
 			this.boundingBox = boundingBox;
 		}
 
-		public CorridorNetherWartsRoom(StructureManager structureManager, CompoundTag nbt) {
+		public CorridorNetherWartsRoom(ServerWorld serverWorld, NbtCompound nbt) {
 			super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_NETHER_WARTS_ROOM, nbt);
 		}
 
@@ -1156,15 +1158,15 @@ public class NetherFortressGenerator {
 			this.containsChest = random.nextInt(3) == 0;
 		}
 
-		public CorridorRightTurn(StructureManager structureManager, CompoundTag nbt) {
+		public CorridorRightTurn(ServerWorld serverWorld, NbtCompound nbt) {
 			super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_RIGHT_TURN, nbt);
 			this.containsChest = nbt.getBoolean("Chest");
 		}
 
 		@Override
-		protected void writeNbt(CompoundTag tag) {
-			super.writeNbt(tag);
-			tag.putBoolean("Chest", this.containsChest);
+		protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+			super.writeNbt(world, nbt);
+			nbt.putBoolean("Chest", this.containsChest);
 		}
 
 		@Override
@@ -1232,7 +1234,7 @@ public class NetherFortressGenerator {
 			this.boundingBox = boundingBox;
 		}
 
-		public CorridorStairs(StructureManager structureManager, CompoundTag nbt) {
+		public CorridorStairs(ServerWorld serverWorld, NbtCompound nbt) {
 			super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_STAIRS, nbt);
 		}
 
@@ -1298,12 +1300,12 @@ public class NetherFortressGenerator {
 			super(structurePieceType, i);
 		}
 
-		public Piece(StructurePieceType structurePieceType, CompoundTag compoundTag) {
-			super(structurePieceType, compoundTag);
+		public Piece(StructurePieceType structurePieceType, NbtCompound nbtCompound) {
+			super(structurePieceType, nbtCompound);
 		}
 
 		@Override
-		protected void writeNbt(CompoundTag tag) {
+		protected void writeNbt(ServerWorld world, NbtCompound nbt) {
 		}
 
 		private int checkRemainingPieces(List<NetherFortressGenerator.PieceData> possiblePieces) {
@@ -1615,7 +1617,7 @@ public class NetherFortressGenerator {
 			this.boundingBox = boundingBox;
 		}
 
-		public SmallCorridor(StructureManager structureManager, CompoundTag nbt) {
+		public SmallCorridor(ServerWorld serverWorld, NbtCompound nbt) {
 			super(StructurePieceType.NETHER_FORTRESS_SMALL_CORRIDOR, nbt);
 		}
 
@@ -1688,8 +1690,8 @@ public class NetherFortressGenerator {
 			}
 		}
 
-		public Start(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.NETHER_FORTRESS_START, compoundTag);
+		public Start(ServerWorld serverWorld, NbtCompound nbtCompound) {
+			super(StructurePieceType.NETHER_FORTRESS_START, nbtCompound);
 		}
 	}
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
@@ -22,7 +23,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
@@ -86,7 +87,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof ShulkerBoxBlockEntity) {
 				ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
-				if (method_33383(state, world, pos, shulkerBoxBlockEntity)) {
+				if (canOpen(state, world, pos, shulkerBoxBlockEntity)) {
 					player.openHandledScreen(shulkerBoxBlockEntity);
 					player.incrementStat(Stats.OPEN_SHULKER_BOX);
 					PiglinBrain.onGuardedBlockInteracted(player, true);
@@ -99,11 +100,11 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 		}
 	}
 
-	private static boolean method_33383(BlockState blockState, World world, BlockPos blockPos, ShulkerBoxBlockEntity shulkerBoxBlockEntity) {
-		if (shulkerBoxBlockEntity.getAnimationStage() != ShulkerBoxBlockEntity.AnimationStage.CLOSED) {
+	private static boolean canOpen(BlockState state, World world, BlockPos pos, ShulkerBoxBlockEntity entity) {
+		if (entity.getAnimationStage() != ShulkerBoxBlockEntity.AnimationStage.CLOSED) {
 			return true;
 		} else {
-			Box box = ShulkerEntity.method_33347(blockState.get(FACING), 0.0F, 0.5F).offset(blockPos).contract(1.0E-6);
+			Box box = ShulkerEntity.method_33347(state.get(FACING), 0.0F, 0.5F).offset(pos).contract(1.0E-6);
 			return world.isSpaceEmpty(box);
 		}
 	}
@@ -125,9 +126,9 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 			ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
 			if (!world.isClient && player.isCreative() && !shulkerBoxBlockEntity.isEmpty()) {
 				ItemStack itemStack = getItemStack(this.getColor());
-				CompoundTag compoundTag = shulkerBoxBlockEntity.serializeInventory(new CompoundTag());
-				if (!compoundTag.isEmpty()) {
-					itemStack.putSubTag("BlockEntityTag", compoundTag);
+				NbtCompound nbtCompound = shulkerBoxBlockEntity.serializeInventory(new NbtCompound());
+				if (!nbtCompound.isEmpty()) {
+					itemStack.putSubTag("BlockEntityTag", nbtCompound);
 				}
 
 				if (shulkerBoxBlockEntity.hasCustomName()) {
@@ -186,15 +187,15 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
 		super.appendTooltip(stack, world, tooltip, options);
-		CompoundTag compoundTag = stack.getSubTag("BlockEntityTag");
-		if (compoundTag != null) {
-			if (compoundTag.contains("LootTable", 8)) {
+		NbtCompound nbtCompound = stack.getSubTag("BlockEntityTag");
+		if (nbtCompound != null) {
+			if (nbtCompound.contains("LootTable", NbtTypeIds.STRING)) {
 				tooltip.add(new LiteralText("???????"));
 			}
 
-			if (compoundTag.contains("Items", 9)) {
+			if (nbtCompound.contains("Items", NbtTypeIds.LIST)) {
 				DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(27, ItemStack.EMPTY);
-				Inventories.readNbt(compoundTag, defaultedList);
+				Inventories.readNbt(nbtCompound, defaultedList);
 				int i = 0;
 				int j = 0;
 
@@ -243,9 +244,9 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
 		ItemStack itemStack = super.getPickStack(world, pos, state);
 		ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)world.getBlockEntity(pos);
-		CompoundTag compoundTag = shulkerBoxBlockEntity.serializeInventory(new CompoundTag());
-		if (!compoundTag.isEmpty()) {
-			itemStack.putSubTag("BlockEntityTag", compoundTag);
+		NbtCompound nbtCompound = shulkerBoxBlockEntity.serializeInventory(new NbtCompound());
+		if (!nbtCompound.isEmpty()) {
+			itemStack.putSubTag("BlockEntityTag", nbtCompound);
 		}
 
 		return itemStack;

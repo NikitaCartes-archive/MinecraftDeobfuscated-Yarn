@@ -33,7 +33,7 @@ public class TickDurationMonitor {
 			this.profiler = DummyProfiler.INSTANCE;
 			if (profileResult.getTimeSpan() >= this.overtime) {
 				File file = new File(this.tickResultsDirectory, "tick-results-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + ".txt");
-				profileResult.save(file);
+				profileResult.save(file.toPath());
 				LOGGER.info("Recorded long tick -- wrote info to: {}", file.getAbsolutePath());
 			}
 		}

@@ -7,8 +7,8 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 
@@ -122,17 +122,17 @@ public enum BannerPattern {
 			return this;
 		}
 
-		public ListTag toNbt() {
-			ListTag listTag = new ListTag();
+		public NbtList toNbt() {
+			NbtList nbtList = new NbtList();
 
 			for (Pair<BannerPattern, DyeColor> pair : this.entries) {
-				CompoundTag compoundTag = new CompoundTag();
-				compoundTag.putString("Pattern", pair.getFirst().id);
-				compoundTag.putInt("Color", pair.getSecond().getId());
-				listTag.add(compoundTag);
+				NbtCompound nbtCompound = new NbtCompound();
+				nbtCompound.putString("Pattern", pair.getFirst().id);
+				nbtCompound.putInt("Color", pair.getSecond().getId());
+				nbtList.add(nbtCompound);
 			}
 
-			return listTag;
+			return nbtList;
 		}
 	}
 }

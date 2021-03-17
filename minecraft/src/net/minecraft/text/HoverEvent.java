@@ -18,7 +18,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -192,10 +192,10 @@ public class HoverEvent {
 		@Nullable
 		public static HoverEvent.EntityContent parse(Text text) {
 			try {
-				CompoundTag compoundTag = StringNbtReader.parse(text.getString());
-				Text text2 = Text.Serializer.fromJson(compoundTag.getString("name"));
-				EntityType<?> entityType = Registry.ENTITY_TYPE.get(new Identifier(compoundTag.getString("type")));
-				UUID uUID = UUID.fromString(compoundTag.getString("id"));
+				NbtCompound nbtCompound = StringNbtReader.parse(text.getString());
+				Text text2 = Text.Serializer.fromJson(nbtCompound.getString("name"));
+				EntityType<?> entityType = Registry.ENTITY_TYPE.get(new Identifier(nbtCompound.getString("type")));
+				UUID uUID = UUID.fromString(nbtCompound.getString("id"));
 				return new HoverEvent.EntityContent(entityType, uUID, text2);
 			} catch (CommandSyntaxException | JsonSyntaxException var5) {
 				return null;
@@ -250,12 +250,12 @@ public class HoverEvent {
 		private final Item item;
 		private final int count;
 		@Nullable
-		private final CompoundTag tag;
+		private final NbtCompound tag;
 		@Nullable
 		@Environment(EnvType.CLIENT)
 		private ItemStack stack;
 
-		ItemStackContent(Item item, int count, @Nullable CompoundTag tag) {
+		ItemStackContent(Item item, int count, @Nullable NbtCompound tag) {
 			this.item = item;
 			this.count = count;
 			this.tag = tag;
@@ -305,8 +305,8 @@ public class HoverEvent {
 					String string = JsonHelper.getString(jsonObject, "tag");
 
 					try {
-						CompoundTag compoundTag = StringNbtReader.parse(string);
-						return new HoverEvent.ItemStackContent(item, i, compoundTag);
+						NbtCompound nbtCompound = StringNbtReader.parse(string);
+						return new HoverEvent.ItemStackContent(item, i, nbtCompound);
 					} catch (CommandSyntaxException var6) {
 						HoverEvent.LOGGER.warn("Failed to parse tag: {}", string, var6);
 					}
@@ -319,8 +319,8 @@ public class HoverEvent {
 		@Nullable
 		private static HoverEvent.ItemStackContent parse(Text text) {
 			try {
-				CompoundTag compoundTag = StringNbtReader.parse(text.getString());
-				return new HoverEvent.ItemStackContent(ItemStack.fromNbt(compoundTag));
+				NbtCompound nbtCompound = StringNbtReader.parse(text.getString());
+				return new HoverEvent.ItemStackContent(ItemStack.fromNbt(nbtCompound));
 			} catch (CommandSyntaxException var2) {
 				HoverEvent.LOGGER.warn("Failed to parse item tag: {}", text, var2);
 				return null;

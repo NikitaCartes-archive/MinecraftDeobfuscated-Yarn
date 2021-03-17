@@ -12,21 +12,15 @@ public class KickCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("kick")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
+				.requires(source -> source.hasPermissionLevel(3))
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.players())
 						.executes(
-							commandContext -> execute(
-									commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), new TranslatableText("multiplayer.disconnect.kicked")
-								)
+							context -> execute(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), new TranslatableText("multiplayer.disconnect.kicked"))
 						)
 						.then(
 							CommandManager.argument("reason", MessageArgumentType.message())
-								.executes(
-									commandContext -> execute(
-											commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), MessageArgumentType.getMessage(commandContext, "reason")
-										)
-								)
+								.executes(context -> execute(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), MessageArgumentType.getMessage(context, "reason")))
 						)
 				)
 		);

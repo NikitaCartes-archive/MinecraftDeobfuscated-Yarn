@@ -6,6 +6,8 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.NbtTypeIds;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -37,7 +39,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -173,7 +175,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
 		BlockState blockState = this.getCarriedBlock();
 		if (blockState != null) {
@@ -184,10 +186,10 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
 		BlockState blockState = null;
-		if (tag.contains("carriedBlockState", 10)) {
+		if (tag.contains("carriedBlockState", NbtTypeIds.COMPOUND)) {
 			blockState = NbtHelper.toBlockState(tag.getCompound("carriedBlockState"));
 			if (blockState.isAir()) {
 				blockState = null;
@@ -477,7 +479,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			if (blockState3 != null) {
 				blockState3 = Block.postProcessState(blockState3, this.enderman.world, blockPos);
 				if (this.canPlaceOn(world, blockPos, blockState3, blockState, blockState2, blockPos2)) {
-					world.setBlockState(blockPos, blockState3, 3);
+					world.setBlockState(blockPos, blockState3, SetBlockStateFlags.DEFAULT);
 					world.emitGameEvent(this.enderman, GameEvent.BLOCK_PLACE, blockPos);
 					this.enderman.setCarriedBlock(null);
 				}

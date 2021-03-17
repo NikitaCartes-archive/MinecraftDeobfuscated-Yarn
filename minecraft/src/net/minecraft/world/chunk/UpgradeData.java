@@ -9,6 +9,8 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import net.fabricmc.yarn.constants.NbtTypeIds;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -19,7 +21,7 @@ import net.minecraft.block.StemBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.EightWayDirection;
 import net.minecraft.util.math.BlockPos;
@@ -46,15 +48,15 @@ public class UpgradeData {
 		this.centerIndicesToUpgrade = new int[world.countVerticalSections()][];
 	}
 
-	public UpgradeData(CompoundTag tag, HeightLimitView world) {
+	public UpgradeData(NbtCompound tag, HeightLimitView world) {
 		this(world);
-		if (tag.contains("Indices", 10)) {
-			CompoundTag compoundTag = tag.getCompound("Indices");
+		if (tag.contains("Indices", NbtTypeIds.COMPOUND)) {
+			NbtCompound nbtCompound = tag.getCompound("Indices");
 
 			for (int i = 0; i < this.centerIndicesToUpgrade.length; i++) {
 				String string = String.valueOf(i);
-				if (compoundTag.contains(string, 11)) {
-					this.centerIndicesToUpgrade[i] = compoundTag.getIntArray(string);
+				if (nbtCompound.contains(string, NbtTypeIds.INT_ARRAY)) {
+					this.centerIndicesToUpgrade[i] = nbtCompound.getIntArray(string);
 				}
 			}
 		}
@@ -170,19 +172,19 @@ public class UpgradeData {
 		return this.sidesToUpgrade.isEmpty();
 	}
 
-	public CompoundTag toNbt() {
-		CompoundTag compoundTag = new CompoundTag();
-		CompoundTag compoundTag2 = new CompoundTag();
+	public NbtCompound toNbt() {
+		NbtCompound nbtCompound = new NbtCompound();
+		NbtCompound nbtCompound2 = new NbtCompound();
 
 		for (int i = 0; i < this.centerIndicesToUpgrade.length; i++) {
 			String string = String.valueOf(i);
 			if (this.centerIndicesToUpgrade[i] != null && this.centerIndicesToUpgrade[i].length != 0) {
-				compoundTag2.putIntArray(string, this.centerIndicesToUpgrade[i]);
+				nbtCompound2.putIntArray(string, this.centerIndicesToUpgrade[i]);
 			}
 		}
 
-		if (!compoundTag2.isEmpty()) {
-			compoundTag.put("Indices", compoundTag2);
+		if (!nbtCompound2.isEmpty()) {
+			nbtCompound.put("Indices", nbtCompound2);
 		}
 
 		int ix = 0;
@@ -191,8 +193,8 @@ public class UpgradeData {
 			ix |= 1 << eightWayDirection.ordinal();
 		}
 
-		compoundTag.putByte("Sides", (byte)ix);
-		return compoundTag;
+		nbtCompound.putByte("Sides", (byte)ix);
+		return nbtCompound;
 	}
 
 	static enum BuiltinLogic implements UpgradeData.Logic {
@@ -262,7 +264,9 @@ public class UpgradeData {
 					Direction direction2 = blockState.get(ChestBlock.FACING);
 					if (direction.getAxis() != direction2.getAxis() && direction2 == blockState2.get(ChestBlock.FACING)) {
 						ChestType chestType = direction == direction2.rotateYClockwise() ? ChestType.LEFT : ChestType.RIGHT;
-						world.setBlockState(blockPos2, blockState2.with(ChestBlock.CHEST_TYPE, chestType.getOpposite()), 18);
+						world.setBlockState(
+							blockPos2, blockState2.with(ChestBlock.CHEST_TYPE, chestType.getOpposite()), SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.FORCE_STATE
+						);
 						if (direction2 == Direction.NORTH || direction2 == Direction.EAST) {
 							BlockEntity blockEntity = world.getBlockEntity(blockPos);
 							BlockEntity blockEntity2 = world.getBlockEntity(blockPos2);
@@ -314,7 +318,9 @@ public class UpgradeData {
 					for (BlockPos blockPos : objectSet) {
 						BlockState blockState = world.getBlockState(blockPos);
 						if ((Integer)blockState.get(Properties.DISTANCE_1_7) >= j) {
-							world.setBlockState(blockPos, blockState.with(Properties.DISTANCE_1_7, Integer.valueOf(j)), 18);
+							world.setBlockState(
+								blockPos, blockState.with(Properties.DISTANCE_1_7, Integer.valueOf(j)), SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.FORCE_STATE
+							);
 							if (i != 7) {
 								for (Direction direction : DIRECTIONS) {
 									mutable.set(blockPos, direction);

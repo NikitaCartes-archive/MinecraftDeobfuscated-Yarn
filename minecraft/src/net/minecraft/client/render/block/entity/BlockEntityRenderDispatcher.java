@@ -18,7 +18,7 @@ import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SynchronousResourceReloadListener;
+import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -26,7 +26,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class BlockEntityRenderDispatcher implements SynchronousResourceReloadListener {
+public class BlockEntityRenderDispatcher implements SynchronousResourceReloader {
 	private Map<BlockEntityType<?>, BlockEntityRenderer<?>> renderers = ImmutableMap.of();
 	private final BufferBuilder bufferBuilder = new BufferBuilder(256);
 	private final TextRenderer textRenderer;
@@ -110,7 +110,7 @@ public class BlockEntityRenderDispatcher implements SynchronousResourceReloadLis
 	}
 
 	@Override
-	public void apply(ResourceManager manager) {
+	public void reload(ResourceManager manager) {
 		BlockEntityRendererFactory.Context context = new BlockEntityRendererFactory.Context(
 			this, (BlockRenderManager)this.field_27747.get(), this.entityModelLoader, this.textRenderer
 		);

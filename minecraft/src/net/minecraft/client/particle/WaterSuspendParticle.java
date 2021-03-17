@@ -4,7 +4,6 @@ import java.util.Optional;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5878;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
@@ -70,8 +69,8 @@ public class WaterSuspendParticle extends SpriteBillboardParticle {
 		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, this.spriteProvider, d, e, f, 0.0, -0.8F, 0.0) {
 				@Override
-				public Optional<class_5878> method_34019() {
-					return Optional.of(class_5878.field_29077);
+				public Optional<ParticleGroup> getGroup() {
+					return Optional.of(ParticleGroup.SPORE_BLOSSOM_AIR);
 				}
 			};
 			waterSuspendParticle.maxAge = MathHelper.nextBetween(clientWorld.random, 500, 1000);

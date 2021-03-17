@@ -11,9 +11,9 @@ import net.minecraft.item.ItemStack;
 
 public class DamageEnchantment extends Enchantment {
 	private static final String[] typeNames = new String[]{"all", "undead", "arthropods"};
-	private static final int[] field_9063 = new int[]{1, 5, 5};
-	private static final int[] field_9066 = new int[]{11, 8, 8};
-	private static final int[] field_9064 = new int[]{20, 20, 20};
+	private static final int[] basePowers = new int[]{1, 5, 5};
+	private static final int[] powersPerLevel = new int[]{11, 8, 8};
+	private static final int[] minMaxPowerDifferences = new int[]{20, 20, 20};
 	public final int typeIndex;
 
 	public DamageEnchantment(Enchantment.Rarity weight, int typeIndex, EquipmentSlot... slots) {
@@ -23,12 +23,12 @@ public class DamageEnchantment extends Enchantment {
 
 	@Override
 	public int getMinPower(int level) {
-		return field_9063[this.typeIndex] + (level - 1) * field_9066[this.typeIndex];
+		return basePowers[this.typeIndex] + (level - 1) * powersPerLevel[this.typeIndex];
 	}
 
 	@Override
 	public int getMaxPower(int level) {
-		return this.getMinPower(level) + field_9064[this.typeIndex];
+		return this.getMinPower(level) + minMaxPowerDifferences[this.typeIndex];
 	}
 
 	@Override

@@ -15,7 +15,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -179,9 +179,9 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 					boolean bl = itemStack.isOf(Items.BOOK);
 					if (bl) {
 						itemStack3 = new ItemStack(Items.ENCHANTED_BOOK);
-						CompoundTag compoundTag = itemStack.getTag();
-						if (compoundTag != null) {
-							itemStack3.setTag(compoundTag.copy());
+						NbtCompound nbtCompound = itemStack.getTag();
+						if (nbtCompound != null) {
+							itemStack3.setTag(nbtCompound.copy());
 						}
 
 						this.inventory.setStack(0, itemStack3);

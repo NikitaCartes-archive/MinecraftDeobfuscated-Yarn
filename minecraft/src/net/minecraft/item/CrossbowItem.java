@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -17,8 +18,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -144,39 +145,39 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 	}
 
 	public static boolean isCharged(ItemStack stack) {
-		CompoundTag compoundTag = stack.getTag();
-		return compoundTag != null && compoundTag.getBoolean("Charged");
+		NbtCompound nbtCompound = stack.getTag();
+		return nbtCompound != null && nbtCompound.getBoolean("Charged");
 	}
 
 	public static void setCharged(ItemStack stack, boolean charged) {
-		CompoundTag compoundTag = stack.getOrCreateTag();
-		compoundTag.putBoolean("Charged", charged);
+		NbtCompound nbtCompound = stack.getOrCreateTag();
+		nbtCompound.putBoolean("Charged", charged);
 	}
 
 	private static void putProjectile(ItemStack crossbow, ItemStack projectile) {
-		CompoundTag compoundTag = crossbow.getOrCreateTag();
-		ListTag listTag;
-		if (compoundTag.contains("ChargedProjectiles", 9)) {
-			listTag = compoundTag.getList("ChargedProjectiles", 10);
+		NbtCompound nbtCompound = crossbow.getOrCreateTag();
+		NbtList nbtList;
+		if (nbtCompound.contains("ChargedProjectiles", NbtTypeIds.LIST)) {
+			nbtList = nbtCompound.getList("ChargedProjectiles", NbtTypeIds.COMPOUND);
 		} else {
-			listTag = new ListTag();
+			nbtList = new NbtList();
 		}
 
-		CompoundTag compoundTag2 = new CompoundTag();
-		projectile.writeNbt(compoundTag2);
-		listTag.add(compoundTag2);
-		compoundTag.put("ChargedProjectiles", listTag);
+		NbtCompound nbtCompound2 = new NbtCompound();
+		projectile.writeNbt(nbtCompound2);
+		nbtList.add(nbtCompound2);
+		nbtCompound.put("ChargedProjectiles", nbtList);
 	}
 
 	private static List<ItemStack> getProjectiles(ItemStack crossbow) {
 		List<ItemStack> list = Lists.<ItemStack>newArrayList();
-		CompoundTag compoundTag = crossbow.getTag();
-		if (compoundTag != null && compoundTag.contains("ChargedProjectiles", 9)) {
-			ListTag listTag = compoundTag.getList("ChargedProjectiles", 10);
-			if (listTag != null) {
-				for (int i = 0; i < listTag.size(); i++) {
-					CompoundTag compoundTag2 = listTag.getCompound(i);
-					list.add(ItemStack.fromNbt(compoundTag2));
+		NbtCompound nbtCompound = crossbow.getTag();
+		if (nbtCompound != null && nbtCompound.contains("ChargedProjectiles", NbtTypeIds.LIST)) {
+			NbtList nbtList = nbtCompound.getList("ChargedProjectiles", NbtTypeIds.COMPOUND);
+			if (nbtList != null) {
+				for (int i = 0; i < nbtList.size(); i++) {
+					NbtCompound nbtCompound2 = nbtList.getCompound(i);
+					list.add(ItemStack.fromNbt(nbtCompound2));
 				}
 			}
 		}
@@ -185,11 +186,11 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 	}
 
 	private static void clearProjectiles(ItemStack crossbow) {
-		CompoundTag compoundTag = crossbow.getTag();
-		if (compoundTag != null) {
-			ListTag listTag = compoundTag.getList("ChargedProjectiles", 9);
-			listTag.clear();
-			compoundTag.put("ChargedProjectiles", listTag);
+		NbtCompound nbtCompound = crossbow.getTag();
+		if (nbtCompound != null) {
+			NbtList nbtList = nbtCompound.getList("ChargedProjectiles", NbtTypeIds.LIST);
+			nbtList.clear();
+			nbtCompound.put("ChargedProjectiles", nbtList);
 		}
 	}
 

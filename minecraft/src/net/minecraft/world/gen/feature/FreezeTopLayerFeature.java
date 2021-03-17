@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SnowyBlock;
@@ -32,14 +33,14 @@ public class FreezeTopLayerFeature extends Feature<DefaultFeatureConfig> {
 				mutable2.set(mutable).move(Direction.DOWN, 1);
 				Biome biome = structureWorldAccess.getBiome(mutable);
 				if (biome.canSetIce(structureWorldAccess, mutable2, false)) {
-					structureWorldAccess.setBlockState(mutable2, Blocks.ICE.getDefaultState(), 2);
+					structureWorldAccess.setBlockState(mutable2, Blocks.ICE.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
 				}
 
 				if (biome.canSetSnow(structureWorldAccess, mutable)) {
-					structureWorldAccess.setBlockState(mutable, Blocks.SNOW.getDefaultState(), 2);
+					structureWorldAccess.setBlockState(mutable, Blocks.SNOW.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
 					BlockState blockState = structureWorldAccess.getBlockState(mutable2);
 					if (blockState.contains(SnowyBlock.SNOWY)) {
-						structureWorldAccess.setBlockState(mutable2, blockState.with(SnowyBlock.SNOWY, Boolean.valueOf(true)), 2);
+						structureWorldAccess.setBlockState(mutable2, blockState.with(SnowyBlock.SNOWY, Boolean.valueOf(true)), SetBlockStateFlags.NOTIFY_LISTENERS);
 					}
 				}
 			}

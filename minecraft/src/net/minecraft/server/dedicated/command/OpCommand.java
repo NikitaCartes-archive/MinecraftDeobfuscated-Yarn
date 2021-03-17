@@ -18,22 +18,22 @@ public class OpCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("op")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
+				.requires(source -> source.hasPermissionLevel(3))
 				.then(
 					CommandManager.argument("targets", GameProfileArgumentType.gameProfile())
 						.suggests(
-							(commandContext, suggestionsBuilder) -> {
-								PlayerManager playerManager = commandContext.getSource().getMinecraftServer().getPlayerManager();
+							(context, builder) -> {
+								PlayerManager playerManager = context.getSource().getMinecraftServer().getPlayerManager();
 								return CommandSource.suggestMatching(
 									playerManager.getPlayerList()
 										.stream()
-										.filter(serverPlayerEntity -> !playerManager.isOperator(serverPlayerEntity.getGameProfile()))
-										.map(serverPlayerEntity -> serverPlayerEntity.getGameProfile().getName()),
-									suggestionsBuilder
+										.filter(player -> !playerManager.isOperator(player.getGameProfile()))
+										.map(player -> player.getGameProfile().getName()),
+									builder
 								);
 							}
 						)
-						.executes(commandContext -> op(commandContext.getSource(), GameProfileArgumentType.getProfileArgument(commandContext, "targets")))
+						.executes(context -> op(context.getSource(), GameProfileArgumentType.getProfileArgument(context, "targets")))
 				)
 		);
 	}

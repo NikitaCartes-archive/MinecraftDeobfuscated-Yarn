@@ -3,6 +3,7 @@ package net.minecraft.block;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.damage.DamageSource;
@@ -66,7 +67,7 @@ public class AnvilBlock extends FallingBlock {
 	@Override
 	public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
 		return new SimpleNamedScreenHandlerFactory(
-			(i, playerInventory, playerEntity) -> new AnvilScreenHandler(i, playerInventory, ScreenHandlerContext.create(world, pos)), TITLE
+			(syncId, inventory, player) -> new AnvilScreenHandler(syncId, inventory, ScreenHandlerContext.create(world, pos)), TITLE
 		);
 	}
 
@@ -84,14 +85,14 @@ public class AnvilBlock extends FallingBlock {
 	@Override
 	public void onLanding(World world, BlockPos pos, BlockState fallingBlockState, BlockState currentStateInPos, FallingBlockEntity fallingBlockEntity) {
 		if (!fallingBlockEntity.isSilent()) {
-			world.syncWorldEvent(1031, pos, 0);
+			world.syncWorldEvent(WorldEvents.ANVIL_LANDS, pos, 0);
 		}
 	}
 
 	@Override
 	public void onDestroyedOnLanding(World world, BlockPos pos, FallingBlockEntity fallingBlockEntity) {
 		if (!fallingBlockEntity.isSilent()) {
-			world.syncWorldEvent(1029, pos, 0);
+			world.syncWorldEvent(WorldEvents.ANVIL_DESTROYED, pos, 0);
 		}
 	}
 

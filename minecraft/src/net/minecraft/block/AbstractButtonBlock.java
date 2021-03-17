@@ -3,6 +3,7 @@ package net.minecraft.block;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -102,7 +103,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 	}
 
 	public void powerOn(BlockState state, World world, BlockPos pos) {
-		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), 3);
+		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), SetBlockStateFlags.DEFAULT);
 		this.updateNeighbors(state, world, pos);
 		world.getBlockTickScheduler().schedule(pos, this, this.getPressTicks());
 	}
@@ -145,7 +146,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 			if (this.wooden) {
 				this.tryPowerWithProjectiles(state, world, pos);
 			} else {
-				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), 3);
+				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), SetBlockStateFlags.DEFAULT);
 				this.updateNeighbors(state, world, pos);
 				this.playClickSound(null, world, pos, false);
 				world.emitGameEvent(GameEvent.BLOCK_UNPRESS, pos);
@@ -165,7 +166,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 		boolean bl = !list.isEmpty();
 		boolean bl2 = (Boolean)state.get(POWERED);
 		if (bl != bl2) {
-			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)), 3);
+			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)), SetBlockStateFlags.DEFAULT);
 			this.updateNeighbors(state, world, pos);
 			this.playClickSound(null, world, pos, bl);
 			world.emitGameEvent((Entity)list.stream().findFirst().orElse(null), bl ? GameEvent.BLOCK_PRESS : GameEvent.BLOCK_UNPRESS, pos);

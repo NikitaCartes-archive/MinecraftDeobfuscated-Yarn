@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -34,9 +35,9 @@ public class VoidStartPlatformFeature extends Feature<DefaultFeatureConfig> {
 					if (getDistance(blockPos.getX(), blockPos.getZ(), j, i) <= 16) {
 						mutable.set(j, blockPos.getY(), i);
 						if (mutable.equals(blockPos)) {
-							structureWorldAccess.setBlockState(mutable, Blocks.COBBLESTONE.getDefaultState(), 2);
+							structureWorldAccess.setBlockState(mutable, Blocks.COBBLESTONE.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
 						} else {
-							structureWorldAccess.setBlockState(mutable, Blocks.STONE.getDefaultState(), 2);
+							structureWorldAccess.setBlockState(mutable, Blocks.STONE.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
 						}
 					}
 				}

@@ -10,11 +10,12 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
@@ -98,14 +99,14 @@ public class MapState extends PersistentState {
 		return new MapState(0, 0, scale, false, false, showIcons, dimension);
 	}
 
-	public static MapState fromNbt(CompoundTag tag) {
+	public static MapState fromNbt(NbtCompound tag) {
 		RegistryKey<World> registryKey = (RegistryKey<World>)DimensionType.worldFromDimensionTag(new Dynamic<>(NbtOps.INSTANCE, tag.get("dimension")))
 			.resultOrPartial(field_25019::error)
 			.orElseThrow(() -> new IllegalArgumentException("Invalid map dimension: " + tag.get("dimension")));
 		int i = tag.getInt("xCenter");
 		int j = tag.getInt("zCenter");
 		byte b = (byte)MathHelper.clamp(tag.getByte("scale"), 0, 4);
-		boolean bl = !tag.contains("trackingPosition", 1) || tag.getBoolean("trackingPosition");
+		boolean bl = !tag.contains("trackingPosition", NbtTypeIds.BYTE) || tag.getBoolean("trackingPosition");
 		boolean bl2 = tag.getBoolean("unlimitedTracking");
 		boolean bl3 = tag.getBoolean("locked");
 		MapState mapState = new MapState(i, j, b, bl, bl2, bl3, registryKey);
@@ -114,10 +115,10 @@ public class MapState extends PersistentState {
 			mapState.colors = bs;
 		}
 
-		ListTag listTag = tag.getList("banners", 10);
+		NbtList nbtList = tag.getList("banners", NbtTypeIds.COMPOUND);
 
-		for (int k = 0; k < listTag.size(); k++) {
-			MapBannerMarker mapBannerMarker = MapBannerMarker.fromNbt(listTag.getCompound(k));
+		for (int k = 0; k < nbtList.size(); k++) {
+			MapBannerMarker mapBannerMarker = MapBannerMarker.fromNbt(nbtList.getCompound(k));
 			mapState.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
 			mapState.addIcon(
 				mapBannerMarker.getIconType(),
@@ -130,10 +131,10 @@ public class MapState extends PersistentState {
 			);
 		}
 
-		ListTag listTag2 = tag.getList("frames", 10);
+		NbtList nbtList2 = tag.getList("frames", NbtTypeIds.COMPOUND);
 
-		for (int l = 0; l < listTag2.size(); l++) {
-			MapFrameMarker mapFrameMarker = MapFrameMarker.fromNbt(listTag2.getCompound(l));
+		for (int l = 0; l < nbtList2.size(); l++) {
+			MapFrameMarker mapFrameMarker = MapFrameMarker.fromNbt(nbtList2.getCompound(l));
 			mapState.frames.put(mapFrameMarker.getKey(), mapFrameMarker);
 			mapState.addIcon(
 				MapIcon.Type.FRAME,
@@ -150,8 +151,11 @@ public class MapState extends PersistentState {
 	}
 
 	@Override
-	public CompoundTag writeNbt(CompoundTag tag) {
-		Identifier.CODEC.encodeStart(NbtOps.INSTANCE, this.dimension.getValue()).resultOrPartial(field_25019::error).ifPresent(tagx -> tag.put("dimension", tagx));
+	public NbtCompound writeNbt(NbtCompound tag) {
+		Identifier.CODEC
+			.encodeStart(NbtOps.INSTANCE, this.dimension.getValue())
+			.resultOrPartial(field_25019::error)
+			.ifPresent(nbtElement -> tag.put("dimension", nbtElement));
 		tag.putInt("xCenter", this.xCenter);
 		tag.putInt("zCenter", this.zCenter);
 		tag.putByte("scale", this.scale);
@@ -159,20 +163,20 @@ public class MapState extends PersistentState {
 		tag.putBoolean("trackingPosition", this.showIcons);
 		tag.putBoolean("unlimitedTracking", this.unlimitedTracking);
 		tag.putBoolean("locked", this.locked);
-		ListTag listTag = new ListTag();
+		NbtList nbtList = new NbtList();
 
 		for (MapBannerMarker mapBannerMarker : this.banners.values()) {
-			listTag.add(mapBannerMarker.getNbt());
+			nbtList.add(mapBannerMarker.getNbt());
 		}
 
-		tag.put("banners", listTag);
-		ListTag listTag2 = new ListTag();
+		tag.put("banners", nbtList);
+		NbtList nbtList2 = new NbtList();
 
 		for (MapFrameMarker mapFrameMarker : this.frames.values()) {
-			listTag2.add(mapFrameMarker.toNbt());
+			nbtList2.add(mapFrameMarker.toNbt());
 		}
 
-		tag.put("frames", listTag2);
+		tag.put("frames", nbtList2);
 		return tag;
 	}
 
@@ -254,20 +258,20 @@ public class MapState extends PersistentState {
 			this.frames.put(mapFrameMarker2.getKey(), mapFrameMarker2);
 		}
 
-		CompoundTag compoundTag = stack.getTag();
-		if (compoundTag != null && compoundTag.contains("Decorations", 9)) {
-			ListTag listTag = compoundTag.getList("Decorations", 10);
+		NbtCompound nbtCompound = stack.getTag();
+		if (nbtCompound != null && nbtCompound.contains("Decorations", NbtTypeIds.LIST)) {
+			NbtList nbtList = nbtCompound.getList("Decorations", NbtTypeIds.COMPOUND);
 
-			for (int j = 0; j < listTag.size(); j++) {
-				CompoundTag compoundTag2 = listTag.getCompound(j);
-				if (!this.icons.containsKey(compoundTag2.getString("id"))) {
+			for (int j = 0; j < nbtList.size(); j++) {
+				NbtCompound nbtCompound2 = nbtList.getCompound(j);
+				if (!this.icons.containsKey(nbtCompound2.getString("id"))) {
 					this.addIcon(
-						MapIcon.Type.byId(compoundTag2.getByte("type")),
+						MapIcon.Type.byId(nbtCompound2.getByte("type")),
 						player.world,
-						compoundTag2.getString("id"),
-						compoundTag2.getDouble("x"),
-						compoundTag2.getDouble("z"),
-						compoundTag2.getDouble("rot"),
+						nbtCompound2.getString("id"),
+						nbtCompound2.getDouble("x"),
+						nbtCompound2.getDouble("z"),
+						nbtCompound2.getDouble("rot"),
 						null
 					);
 				}
@@ -281,24 +285,24 @@ public class MapState extends PersistentState {
 	}
 
 	public static void addDecorationsTag(ItemStack stack, BlockPos pos, String id, MapIcon.Type type) {
-		ListTag listTag;
-		if (stack.hasTag() && stack.getTag().contains("Decorations", 9)) {
-			listTag = stack.getTag().getList("Decorations", 10);
+		NbtList nbtList;
+		if (stack.hasTag() && stack.getTag().contains("Decorations", NbtTypeIds.LIST)) {
+			nbtList = stack.getTag().getList("Decorations", NbtTypeIds.COMPOUND);
 		} else {
-			listTag = new ListTag();
-			stack.putSubTag("Decorations", listTag);
+			nbtList = new NbtList();
+			stack.putSubTag("Decorations", nbtList);
 		}
 
-		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.putByte("type", type.getId());
-		compoundTag.putString("id", id);
-		compoundTag.putDouble("x", (double)pos.getX());
-		compoundTag.putDouble("z", (double)pos.getZ());
-		compoundTag.putDouble("rot", 180.0);
-		listTag.add(compoundTag);
+		NbtCompound nbtCompound = new NbtCompound();
+		nbtCompound.putByte("type", type.getId());
+		nbtCompound.putString("id", id);
+		nbtCompound.putDouble("x", (double)pos.getX());
+		nbtCompound.putDouble("z", (double)pos.getZ());
+		nbtCompound.putDouble("rot", 180.0);
+		nbtList.add(nbtCompound);
 		if (type.hasTintColor()) {
-			CompoundTag compoundTag2 = stack.getOrCreateSubTag("display");
-			compoundTag2.putInt("MapColor", type.getTintColor());
+			NbtCompound nbtCompound2 = stack.getOrCreateSubTag("display");
+			nbtCompound2.putInt("MapColor", type.getTintColor());
 		}
 	}
 

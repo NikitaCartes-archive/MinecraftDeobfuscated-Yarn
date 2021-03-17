@@ -7,6 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormat;
@@ -34,6 +35,7 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 		RenderSystem.lineWidth(2.0F);
 		RenderSystem.disableTexture();
 		RenderSystem.depthMask(false);
+		RenderSystem.setShader(GameRenderer::getPositionColorShader);
 		BlockPos blockPos = new BlockPos(cameraX, cameraY, cameraZ);
 
 		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-6, -6, -6), blockPos.add(6, 6, 6))) {

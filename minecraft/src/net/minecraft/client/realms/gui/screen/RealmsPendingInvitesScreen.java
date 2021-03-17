@@ -27,6 +27,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class RealmsPendingInvitesScreen extends RealmsScreen {
@@ -98,7 +99,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == 256) {
+		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
 			this.client.openScreen(new RealmsMainScreen(this.parent));
 			return true;
 		} else {

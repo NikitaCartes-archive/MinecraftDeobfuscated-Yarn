@@ -1,12 +1,13 @@
 package net.minecraft.item;
 
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LecternBlock;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -36,21 +37,21 @@ public class WritableBookItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		user.openEditBookScreen(itemStack, hand);
+		user.useBook(itemStack, hand);
 		user.incrementStat(Stats.USED.getOrCreateStat(this));
 		return TypedActionResult.success(itemStack, world.isClient());
 	}
 
-	public static boolean isValid(@Nullable CompoundTag tag) {
+	public static boolean isValid(@Nullable NbtCompound tag) {
 		if (tag == null) {
 			return false;
-		} else if (!tag.contains("pages", 9)) {
+		} else if (!tag.contains("pages", NbtTypeIds.LIST)) {
 			return false;
 		} else {
-			ListTag listTag = tag.getList("pages", 8);
+			NbtList nbtList = tag.getList("pages", NbtTypeIds.STRING);
 
-			for (int i = 0; i < listTag.size(); i++) {
-				String string = listTag.getString(i);
+			for (int i = 0; i < nbtList.size(); i++) {
+				String string = nbtList.getString(i);
 				if (string.length() > 32767) {
 					return false;
 				}

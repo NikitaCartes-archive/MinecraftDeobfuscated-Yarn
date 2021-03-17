@@ -42,22 +42,22 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class LootCommand {
-	public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> {
-		LootManager lootManager = commandContext.getSource().getMinecraftServer().getLootManager();
-		return CommandSource.suggestIdentifiers(lootManager.getTableIds(), suggestionsBuilder);
+	public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> {
+		LootManager lootManager = context.getSource().getMinecraftServer().getLootManager();
+		return CommandSource.suggestIdentifiers(lootManager.getTableIds(), builder);
 	};
 	private static final DynamicCommandExceptionType NO_HELD_ITEMS_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableText("commands.drop.no_held_items", object)
+		entityName -> new TranslatableText("commands.drop.no_held_items", entityName)
 	);
 	private static final DynamicCommandExceptionType NO_LOOT_TABLE_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableText("commands.drop.no_loot_table", object)
+		entityName -> new TranslatableText("commands.drop.no_loot_table", entityName)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			addTargetArguments(
-				CommandManager.literal("loot").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2)),
-				(argumentBuilder, target) -> argumentBuilder.then(
+				CommandManager.literal("loot").requires(source -> source.hasPermissionLevel(2)),
+				(builder, constructor) -> builder.then(
 							CommandManager.literal("fish")
 								.then(
 									CommandManager.argument("loot_table", IdentifierArgumentType.identifier())
@@ -65,47 +65,47 @@ public class LootCommand {
 										.then(
 											CommandManager.argument("pos", BlockPosArgumentType.blockPos())
 												.executes(
-													commandContext -> executeFish(
-															commandContext,
-															IdentifierArgumentType.getIdentifier(commandContext, "loot_table"),
-															BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
+													context -> executeFish(
+															context,
+															IdentifierArgumentType.getIdentifier(context, "loot_table"),
+															BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
 															ItemStack.EMPTY,
-															target
+															constructor
 														)
 												)
 												.then(
 													CommandManager.argument("tool", ItemStackArgumentType.itemStack())
 														.executes(
-															commandContext -> executeFish(
-																	commandContext,
-																	IdentifierArgumentType.getIdentifier(commandContext, "loot_table"),
-																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
-																	ItemStackArgumentType.getItemStackArgument(commandContext, "tool").createStack(1, false),
-																	target
+															context -> executeFish(
+																	context,
+																	IdentifierArgumentType.getIdentifier(context, "loot_table"),
+																	BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
+																	ItemStackArgumentType.getItemStackArgument(context, "tool").createStack(1, false),
+																	constructor
 																)
 														)
 												)
 												.then(
 													CommandManager.literal("mainhand")
 														.executes(
-															commandContext -> executeFish(
-																	commandContext,
-																	IdentifierArgumentType.getIdentifier(commandContext, "loot_table"),
-																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
-																	getHeldItem(commandContext.getSource(), EquipmentSlot.MAINHAND),
-																	target
+															context -> executeFish(
+																	context,
+																	IdentifierArgumentType.getIdentifier(context, "loot_table"),
+																	BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
+																	getHeldItem(context.getSource(), EquipmentSlot.MAINHAND),
+																	constructor
 																)
 														)
 												)
 												.then(
 													CommandManager.literal("offhand")
 														.executes(
-															commandContext -> executeFish(
-																	commandContext,
-																	IdentifierArgumentType.getIdentifier(commandContext, "loot_table"),
-																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
-																	getHeldItem(commandContext.getSource(), EquipmentSlot.OFFHAND),
-																	target
+															context -> executeFish(
+																	context,
+																	IdentifierArgumentType.getIdentifier(context, "loot_table"),
+																	BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
+																	getHeldItem(context.getSource(), EquipmentSlot.OFFHAND),
+																	constructor
 																)
 														)
 												)
@@ -117,51 +117,45 @@ public class LootCommand {
 								.then(
 									CommandManager.argument("loot_table", IdentifierArgumentType.identifier())
 										.suggests(SUGGESTION_PROVIDER)
-										.executes(commandContext -> executeLoot(commandContext, IdentifierArgumentType.getIdentifier(commandContext, "loot_table"), target))
+										.executes(context -> executeLoot(context, IdentifierArgumentType.getIdentifier(context, "loot_table"), constructor))
 								)
 						)
 						.then(
 							CommandManager.literal("kill")
 								.then(
 									CommandManager.argument("target", EntityArgumentType.entity())
-										.executes(commandContext -> executeKill(commandContext, EntityArgumentType.getEntity(commandContext, "target"), target))
+										.executes(context -> executeKill(context, EntityArgumentType.getEntity(context, "target"), constructor))
 								)
 						)
 						.then(
 							CommandManager.literal("mine")
 								.then(
 									CommandManager.argument("pos", BlockPosArgumentType.blockPos())
-										.executes(commandContext -> executeMine(commandContext, BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"), ItemStack.EMPTY, target))
+										.executes(context -> executeMine(context, BlockPosArgumentType.getLoadedBlockPos(context, "pos"), ItemStack.EMPTY, constructor))
 										.then(
 											CommandManager.argument("tool", ItemStackArgumentType.itemStack())
 												.executes(
-													commandContext -> executeMine(
-															commandContext,
-															BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
-															ItemStackArgumentType.getItemStackArgument(commandContext, "tool").createStack(1, false),
-															target
+													context -> executeMine(
+															context,
+															BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
+															ItemStackArgumentType.getItemStackArgument(context, "tool").createStack(1, false),
+															constructor
 														)
 												)
 										)
 										.then(
 											CommandManager.literal("mainhand")
 												.executes(
-													commandContext -> executeMine(
-															commandContext,
-															BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
-															getHeldItem(commandContext.getSource(), EquipmentSlot.MAINHAND),
-															target
+													context -> executeMine(
+															context, BlockPosArgumentType.getLoadedBlockPos(context, "pos"), getHeldItem(context.getSource(), EquipmentSlot.MAINHAND), constructor
 														)
 												)
 										)
 										.then(
 											CommandManager.literal("offhand")
 												.executes(
-													commandContext -> executeMine(
-															commandContext,
-															BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
-															getHeldItem(commandContext.getSource(), EquipmentSlot.OFFHAND),
-															target
+													context -> executeMine(
+															context, BlockPosArgumentType.getLoadedBlockPos(context, "pos"), getHeldItem(context.getSource(), EquipmentSlot.OFFHAND), constructor
 														)
 												)
 										)
@@ -181,23 +175,19 @@ public class LootCommand {
 									.then(
 										sourceConstructor.construct(
 												CommandManager.argument("slot", ItemSlotArgumentType.itemSlot()),
-												(commandContext, list, feedbackMessage) -> executeReplace(
-														EntityArgumentType.getEntities(commandContext, "entities"),
-														ItemSlotArgumentType.getItemSlot(commandContext, "slot"),
-														list.size(),
-														list,
-														feedbackMessage
+												(context, stacks, messageSender) -> executeReplace(
+														EntityArgumentType.getEntities(context, "entities"), ItemSlotArgumentType.getItemSlot(context, "slot"), stacks.size(), stacks, messageSender
 													)
 											)
 											.then(
 												sourceConstructor.construct(
 													CommandManager.argument("count", IntegerArgumentType.integer(0)),
-													(commandContext, list, feedbackMessage) -> executeReplace(
-															EntityArgumentType.getEntities(commandContext, "entities"),
-															ItemSlotArgumentType.getItemSlot(commandContext, "slot"),
-															IntegerArgumentType.getInteger(commandContext, "count"),
-															list,
-															feedbackMessage
+													(context, stacks, messageSender) -> executeReplace(
+															EntityArgumentType.getEntities(context, "entities"),
+															ItemSlotArgumentType.getItemSlot(context, "slot"),
+															IntegerArgumentType.getInteger(context, "count"),
+															stacks,
+															messageSender
 														)
 												)
 											)
@@ -211,25 +201,25 @@ public class LootCommand {
 									.then(
 										sourceConstructor.construct(
 												CommandManager.argument("slot", ItemSlotArgumentType.itemSlot()),
-												(commandContext, list, feedbackMessage) -> executeBlock(
-														commandContext.getSource(),
-														BlockPosArgumentType.getLoadedBlockPos(commandContext, "targetPos"),
-														ItemSlotArgumentType.getItemSlot(commandContext, "slot"),
-														list.size(),
-														list,
-														feedbackMessage
+												(context, stacks, messageSender) -> executeBlock(
+														context.getSource(),
+														BlockPosArgumentType.getLoadedBlockPos(context, "targetPos"),
+														ItemSlotArgumentType.getItemSlot(context, "slot"),
+														stacks.size(),
+														stacks,
+														messageSender
 													)
 											)
 											.then(
 												sourceConstructor.construct(
 													CommandManager.argument("count", IntegerArgumentType.integer(0)),
-													(commandContext, list, feedbackMessage) -> executeBlock(
-															commandContext.getSource(),
-															BlockPosArgumentType.getLoadedBlockPos(commandContext, "targetPos"),
-															IntegerArgumentType.getInteger(commandContext, "slot"),
-															IntegerArgumentType.getInteger(commandContext, "count"),
-															list,
-															feedbackMessage
+													(context, stacks, messageSender) -> executeBlock(
+															context.getSource(),
+															BlockPosArgumentType.getLoadedBlockPos(context, "targetPos"),
+															IntegerArgumentType.getInteger(context, "slot"),
+															IntegerArgumentType.getInteger(context, "count"),
+															stacks,
+															messageSender
 														)
 												)
 											)
@@ -242,8 +232,8 @@ public class LootCommand {
 					.then(
 						sourceConstructor.construct(
 							CommandManager.argument("targetPos", BlockPosArgumentType.blockPos()),
-							(commandContext, list, feedbackMessage) -> executeInsert(
-									commandContext.getSource(), BlockPosArgumentType.getLoadedBlockPos(commandContext, "targetPos"), list, feedbackMessage
+							(context, stacks, messageSender) -> executeInsert(
+									context.getSource(), BlockPosArgumentType.getLoadedBlockPos(context, "targetPos"), stacks, messageSender
 								)
 						)
 					)
@@ -253,7 +243,7 @@ public class LootCommand {
 					.then(
 						sourceConstructor.construct(
 							CommandManager.argument("players", EntityArgumentType.players()),
-							(commandContext, list, feedbackMessage) -> executeGive(EntityArgumentType.getPlayers(commandContext, "players"), list, feedbackMessage)
+							(context, stacks, messageSender) -> executeGive(EntityArgumentType.getPlayers(context, "players"), stacks, messageSender)
 						)
 					)
 			)
@@ -262,9 +252,7 @@ public class LootCommand {
 					.then(
 						sourceConstructor.construct(
 							CommandManager.argument("targetPos", Vec3ArgumentType.vec3()),
-							(commandContext, list, feedbackMessage) -> executeSpawn(
-									commandContext.getSource(), Vec3ArgumentType.getVec3(commandContext, "targetPos"), list, feedbackMessage
-								)
+							(context, stacks, messageSender) -> executeSpawn(context.getSource(), Vec3ArgumentType.getVec3(context, "targetPos"), stacks, messageSender)
 						)
 					)
 			);
@@ -396,8 +384,8 @@ public class LootCommand {
 
 	private static int executeSpawn(ServerCommandSource source, Vec3d pos, List<ItemStack> stacks, LootCommand.FeedbackMessage messageSender) throws CommandSyntaxException {
 		ServerWorld serverWorld = source.getWorld();
-		stacks.forEach(itemStack -> {
-			ItemEntity itemEntity = new ItemEntity(serverWorld, pos.x, pos.y, pos.z, itemStack.copy());
+		stacks.forEach(stack -> {
+			ItemEntity itemEntity = new ItemEntity(serverWorld, pos.x, pos.y, pos.z, stack.copy());
 			itemEntity.setToDefaultPickupDelay();
 			serverWorld.spawnEntity(itemEntity);
 		});
@@ -444,7 +432,7 @@ public class LootCommand {
 			.optionalParameter(LootContextParameters.THIS_ENTITY, serverCommandSource.getEntity())
 			.parameter(LootContextParameters.TOOL, stack);
 		List<ItemStack> list = blockState.getDroppedStacks(builder);
-		return constructor.accept(context, list, listx -> sendDroppedFeedback(serverCommandSource, listx, blockState.getBlock().getLootTableId()));
+		return constructor.accept(context, list, stacks -> sendDroppedFeedback(serverCommandSource, stacks, blockState.getBlock().getLootTableId()));
 	}
 
 	private static int executeKill(CommandContext<ServerCommandSource> context, Entity entity, LootCommand.Target constructor) throws CommandSyntaxException {
@@ -466,7 +454,7 @@ public class LootCommand {
 			builder.parameter(LootContextParameters.ORIGIN, serverCommandSource.getPosition());
 			LootTable lootTable = serverCommandSource.getMinecraftServer().getLootManager().getTable(identifier);
 			List<ItemStack> list = lootTable.generateLoot(builder.build(LootContextTypes.ENTITY));
-			return constructor.accept(context, list, listx -> sendDroppedFeedback(serverCommandSource, listx, identifier));
+			return constructor.accept(context, list, stacks -> sendDroppedFeedback(serverCommandSource, stacks, identifier));
 		}
 	}
 
@@ -496,7 +484,7 @@ public class LootCommand {
 		ServerCommandSource serverCommandSource = context.getSource();
 		LootTable lootTable2 = serverCommandSource.getMinecraftServer().getLootManager().getTable(lootTable);
 		List<ItemStack> list = lootTable2.generateLoot(lootContext);
-		return constructor.accept(context, list, listx -> sendDroppedFeedback(serverCommandSource, listx));
+		return constructor.accept(context, list, stacks -> sendDroppedFeedback(serverCommandSource, stacks));
 	}
 
 	@FunctionalInterface

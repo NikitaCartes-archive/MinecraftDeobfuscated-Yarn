@@ -1435,12 +1435,12 @@ public class Items {
 		"sweet_berries", new AliasedBlockItem(Blocks.SWEET_BERRY_BUSH, new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.SWEET_BERRIES))
 	);
 	public static final Item GLOW_BERRIES = register(
-		"glow_berries", new AliasedBlockItem(Blocks.CAVE_VINES_HEAD, new Item.Settings().food(FoodComponents.GLOW_BERRIES).group(ItemGroup.FOOD))
+		"glow_berries", new AliasedBlockItem(Blocks.CAVE_VINES, new Item.Settings().food(FoodComponents.GLOW_BERRIES).group(ItemGroup.FOOD))
 	);
 	public static final Item CAMPFIRE = register(Blocks.CAMPFIRE, ItemGroup.DECORATIONS);
 	public static final Item SOUL_CAMPFIRE = register(Blocks.SOUL_CAMPFIRE, ItemGroup.DECORATIONS);
 	public static final Item SHROOMLIGHT = register(Blocks.SHROOMLIGHT, ItemGroup.DECORATIONS);
-	public static final Item HONEYCOMB = register("honeycomb", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
+	public static final Item HONEYCOMB = register("honeycomb", new HoneycombItem(new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item BEE_NEST = register(Blocks.BEE_NEST, ItemGroup.DECORATIONS);
 	public static final Item BEEHIVE = register(Blocks.BEEHIVE, ItemGroup.DECORATIONS);
 	public static final Item HONEY_BOTTLE = register(
@@ -1490,33 +1490,33 @@ public class Items {
 	public static final Item AMETHYST_CLUSTER = register(Blocks.AMETHYST_CLUSTER, ItemGroup.DECORATIONS);
 	public static final Item SPYGLASS = register("spyglass", new SpyglassItem(new Item.Settings().group(ItemGroup.TOOLS).maxCount(1)));
 	public static final Item COPPER_BLOCK = register(Blocks.COPPER_BLOCK, ItemGroup.BUILDING_BLOCKS);
-	public static final Item LIGHTLY_WEATHERED_COPPER_BLOCK = register(Blocks.EXPOSED_COPPER, ItemGroup.BUILDING_BLOCKS);
-	public static final Item SEMI_WEATHERED_COPPER_BLOCK = register(Blocks.WEATHERED_COPPER, ItemGroup.BUILDING_BLOCKS);
-	public static final Item WEATHERED_COPPER_BLOCK = register(Blocks.OXIDIZED_COPPER, ItemGroup.BUILDING_BLOCKS);
+	public static final Item EXPOSED_COPPER = register(Blocks.EXPOSED_COPPER, ItemGroup.BUILDING_BLOCKS);
+	public static final Item WEATHERED_COPPER = register(Blocks.WEATHERED_COPPER, ItemGroup.BUILDING_BLOCKS);
+	public static final Item OXIDIZED_COPPER = register(Blocks.OXIDIZED_COPPER, ItemGroup.BUILDING_BLOCKS);
 	public static final Item CUT_COPPER = register(Blocks.CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
-	public static final Item LIGHTLY_WEATHERED_CUT_COPPER = register(Blocks.EXPOSED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
-	public static final Item SEMI_WEATHERED_CUT_COPPER = register(Blocks.WEATHERED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
-	public static final Item WEATHERED_CUT_COPPER = register(Blocks.OXIDIZED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
+	public static final Item EXPOSED_CUT_COPPER = register(Blocks.EXPOSED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
+	public static final Item WEATHERED_CUT_COPPER = register(Blocks.WEATHERED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
+	public static final Item OXIDIZED_CUT_COPPER = register(Blocks.OXIDIZED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
 	public static final Item CUT_COPPER_STAIRS = register(Blocks.CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
-	public static final Item LIGHTLY_WEATHERED_CUT_COPPER_STAIRS = register(Blocks.EXPOSED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
-	public static final Item SEMI_WEATHERED_CUT_COPPER_STAIRS = register(Blocks.WEATHERED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
-	public static final Item WEATHERED_CUT_COPPER_STAIRS = register(Blocks.OXIDIZED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
+	public static final Item EXPOSED_CUT_COPPER_STAIRS = register(Blocks.EXPOSED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
+	public static final Item WEATHERED_CUT_COPPER_STAIRS = register(Blocks.WEATHERED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
+	public static final Item OXIDIZED_CUT_COPPER_STAIRS = register(Blocks.OXIDIZED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item CUT_COPPER_SLAB = register(Blocks.CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
-	public static final Item LIGHTLY_WEATHERED_CUT_COPPER_SLAB = register(Blocks.EXPOSED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
-	public static final Item SEMI_WEATHERED_CUT_COPPER_SLAB = register(Blocks.WEATHERED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
-	public static final Item WEATHERED_CUT_COPPER_SLAB = register(Blocks.OXIDIZED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
+	public static final Item EXPOSED_CUT_COPPER_SLAB = register(Blocks.EXPOSED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
+	public static final Item WEATHERED_CUT_COPPER_SLAB = register(Blocks.WEATHERED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
+	public static final Item OXIDIZED_CUT_COPPER_SLAB = register(Blocks.OXIDIZED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WAXED_COPPER = register(Blocks.WAXED_COPPER_BLOCK, ItemGroup.BUILDING_BLOCKS);
-	public static final Item WAXED_LIGHTLY_WEATHERED_COPPER = register(Blocks.WAXED_EXPOSED_COPPER, ItemGroup.BUILDING_BLOCKS);
-	public static final Item WAXED_SEMI_WEATHERED_COPPER = register(Blocks.WAXED_WEATHERED_COPPER, ItemGroup.BUILDING_BLOCKS);
+	public static final Item WAXED_EXPOSED_COPPER = register(Blocks.WAXED_EXPOSED_COPPER, ItemGroup.BUILDING_BLOCKS);
+	public static final Item WAXED_WEATHERED_COPPER = register(Blocks.WAXED_WEATHERED_COPPER, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WAXED_CUT_COPPER = register(Blocks.WAXED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
-	public static final Item WAXED_LIGHTLY_WEATHERED_CUT_COPPER = register(Blocks.WAXED_EXPOSED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
-	public static final Item WAXED_SEMI_WEATHERED_CUT_COPPER = register(Blocks.WAXED_WEATHERED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
+	public static final Item WAXED_EXPOSED_CUT_COPPER = register(Blocks.WAXED_EXPOSED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
+	public static final Item WAXED_WEATHERED_CUT_COPPER = register(Blocks.WAXED_WEATHERED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WAXED_CUT_COPPER_STAIRS = register(Blocks.WAXED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
-	public static final Item WAXED_LIGHTLY_WEATHERED_CUT_COPPER_STAIRS = register(Blocks.WAXED_EXPOSED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
-	public static final Item WAXED_SEMI_WEATHERED_CUT_COPPER_STAIRS = register(Blocks.WAXED_WEATHERED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
+	public static final Item WAXED_EXPOSED_CUT_COPPER_STAIRS = register(Blocks.WAXED_EXPOSED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
+	public static final Item WAXED_WEATHERED_CUT_COPPER_STAIRS = register(Blocks.WAXED_WEATHERED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WAXED_CUT_COPPER_SLAB = register(Blocks.WAXED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
-	public static final Item WAXED_LIGHTLY_WEATHERED_CUT_COPPER_SLAB = register(Blocks.WAXED_EXPOSED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
-	public static final Item WAXED_SEMI_WEATHERED_CUT_COPPER_SLAB = register(Blocks.WAXED_WEATHERED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
+	public static final Item WAXED_EXPOSED_CUT_COPPER_SLAB = register(Blocks.WAXED_EXPOSED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
+	public static final Item WAXED_WEATHERED_CUT_COPPER_SLAB = register(Blocks.WAXED_WEATHERED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
 	public static final Item POWDER_SNOW_BUCKET = register(
 		"powder_snow_bucket",
 		new PowderSnowBucketItem(Blocks.POWDER_SNOW, SoundEvents.ITEM_BUCKET_EMPTY_POWDER_SNOW, new Item.Settings().maxCount(1).group(ItemGroup.MISC))

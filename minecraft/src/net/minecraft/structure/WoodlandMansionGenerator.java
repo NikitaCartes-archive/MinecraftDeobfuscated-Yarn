@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
@@ -12,7 +13,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.loot.LootTables;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -1011,12 +1013,12 @@ public class WoodlandMansionGenerator {
 			this.setupPlacement(structureManager);
 		}
 
-		public Piece(StructureManager structureManager, CompoundTag nbt) {
+		public Piece(ServerWorld serverWorld, NbtCompound nbt) {
 			super(StructurePieceType.WOODLAND_MANSION, nbt);
 			this.template = nbt.getString("Template");
 			this.rotation = BlockRotation.valueOf(nbt.getString("Rot"));
 			this.mirror = BlockMirror.valueOf(nbt.getString("Mi"));
-			this.setupPlacement(structureManager);
+			this.setupPlacement(serverWorld.getStructureManager());
 		}
 
 		private void setupPlacement(StructureManager structureManager) {
@@ -1030,11 +1032,11 @@ public class WoodlandMansionGenerator {
 		}
 
 		@Override
-		protected void writeNbt(CompoundTag tag) {
-			super.writeNbt(tag);
-			tag.putString("Template", this.template);
-			tag.putString("Rot", this.placementData.getRotation().name());
-			tag.putString("Mi", this.placementData.getMirror().name());
+		protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+			super.writeNbt(world, nbt);
+			nbt.putString("Template", this.template);
+			nbt.putString("Rot", this.placementData.getRotation().name());
+			nbt.putString("Mi", this.placementData.getMirror().name());
 		}
 
 		@Override
@@ -1070,7 +1072,7 @@ public class WoodlandMansionGenerator {
 				illagerEntity.refreshPositionAndAngles(pos, 0.0F, 0.0F);
 				illagerEntity.initialize(world, world.getLocalDifficulty(illagerEntity.getBlockPos()), SpawnReason.STRUCTURE, null, null);
 				world.spawnEntityAndPassengers(illagerEntity);
-				world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
+				world.setBlockState(pos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
 			}
 		}
 	}

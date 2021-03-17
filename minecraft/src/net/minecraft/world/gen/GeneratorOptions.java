@@ -102,7 +102,7 @@ public class GeneratorOptions {
 			(long)i,
 			true,
 			true,
-			method_28608(
+			getRegistryWithReplacedOverworldGenerator(
 				registry2, DimensionType.createDefaultDimensionOptions(registry2, registry, registry3, (long)i), createOverworldGenerator(registry, registry3, (long)i)
 			)
 		);
@@ -114,7 +114,9 @@ public class GeneratorOptions {
 			l,
 			true,
 			false,
-			method_28608(registry, DimensionType.createDefaultDimensionOptions(registry, registry2, registry3, l), createOverworldGenerator(registry2, registry3, l))
+			getRegistryWithReplacedOverworldGenerator(
+				registry, DimensionType.createDefaultDimensionOptions(registry, registry2, registry3, l), createOverworldGenerator(registry2, registry3, l)
+			)
 		);
 	}
 
@@ -138,30 +140,30 @@ public class GeneratorOptions {
 		return this.bonusChest;
 	}
 
-	public static SimpleRegistry<DimensionOptions> method_28608(
-		Registry<DimensionType> registry, SimpleRegistry<DimensionOptions> simpleRegistry, ChunkGenerator chunkGenerator
+	public static SimpleRegistry<DimensionOptions> getRegistryWithReplacedOverworldGenerator(
+		Registry<DimensionType> dimensionTypeRegistry, SimpleRegistry<DimensionOptions> optionsRegistry, ChunkGenerator overworldGenerator
 	) {
-		DimensionOptions dimensionOptions = simpleRegistry.get(DimensionOptions.OVERWORLD);
+		DimensionOptions dimensionOptions = optionsRegistry.get(DimensionOptions.OVERWORLD);
 		Supplier<DimensionType> supplier = () -> dimensionOptions == null
-				? registry.getOrThrow(DimensionType.OVERWORLD_REGISTRY_KEY)
+				? dimensionTypeRegistry.getOrThrow(DimensionType.OVERWORLD_REGISTRY_KEY)
 				: dimensionOptions.getDimensionType();
-		return method_29962(simpleRegistry, supplier, chunkGenerator);
+		return getRegistryWithReplacedOverworld(optionsRegistry, supplier, overworldGenerator);
 	}
 
-	public static SimpleRegistry<DimensionOptions> method_29962(
-		SimpleRegistry<DimensionOptions> simpleRegistry, Supplier<DimensionType> supplier, ChunkGenerator chunkGenerator
+	public static SimpleRegistry<DimensionOptions> getRegistryWithReplacedOverworld(
+		SimpleRegistry<DimensionOptions> optionsRegistry, Supplier<DimensionType> overworldDimensionType, ChunkGenerator overworldGenerator
 	) {
-		SimpleRegistry<DimensionOptions> simpleRegistry2 = new SimpleRegistry<>(Registry.DIMENSION_OPTIONS, Lifecycle.experimental());
-		simpleRegistry2.add(DimensionOptions.OVERWORLD, new DimensionOptions(supplier, chunkGenerator), Lifecycle.stable());
+		SimpleRegistry<DimensionOptions> simpleRegistry = new SimpleRegistry<>(Registry.DIMENSION_OPTIONS, Lifecycle.experimental());
+		simpleRegistry.add(DimensionOptions.OVERWORLD, new DimensionOptions(overworldDimensionType, overworldGenerator), Lifecycle.stable());
 
-		for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : simpleRegistry.getEntries()) {
+		for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : optionsRegistry.getEntries()) {
 			RegistryKey<DimensionOptions> registryKey = (RegistryKey<DimensionOptions>)entry.getKey();
 			if (registryKey != DimensionOptions.OVERWORLD) {
-				simpleRegistry2.add(registryKey, entry.getValue(), simpleRegistry.getEntryLifecycle((DimensionOptions)entry.getValue()));
+				simpleRegistry.add(registryKey, entry.getValue(), optionsRegistry.getEntryLifecycle((DimensionOptions)entry.getValue()));
 			}
 		}
 
-		return simpleRegistry2;
+		return simpleRegistry;
 	}
 
 	public SimpleRegistry<DimensionOptions> getDimensions() {
@@ -247,7 +249,7 @@ public class GeneratorOptions {
 					l,
 					bl,
 					false,
-					method_28608(
+					getRegistryWithReplacedOverworldGenerator(
 						registry,
 						simpleRegistry,
 						new FlatChunkGenerator(
@@ -259,13 +261,13 @@ public class GeneratorOptions {
 					)
 				);
 			case "debug_all_block_states":
-				return new GeneratorOptions(l, bl, false, method_28608(registry, simpleRegistry, new DebugChunkGenerator(registry2)));
+				return new GeneratorOptions(l, bl, false, getRegistryWithReplacedOverworldGenerator(registry, simpleRegistry, new DebugChunkGenerator(registry2)));
 			case "amplified":
 				return new GeneratorOptions(
 					l,
 					bl,
 					false,
-					method_28608(
+					getRegistryWithReplacedOverworldGenerator(
 						registry,
 						simpleRegistry,
 						new NoiseChunkGenerator(new VanillaLayeredBiomeSource(l, false, false, registry2), l, () -> registry3.getOrThrow(ChunkGeneratorSettings.AMPLIFIED))
@@ -276,14 +278,16 @@ public class GeneratorOptions {
 					l,
 					bl,
 					false,
-					method_28608(
+					getRegistryWithReplacedOverworldGenerator(
 						registry,
 						simpleRegistry,
 						new NoiseChunkGenerator(new VanillaLayeredBiomeSource(l, false, true, registry2), l, () -> registry3.getOrThrow(ChunkGeneratorSettings.OVERWORLD))
 					)
 				);
 			default:
-				return new GeneratorOptions(l, bl, false, method_28608(registry, simpleRegistry, createOverworldGenerator(registry2, registry3, l)));
+				return new GeneratorOptions(
+					l, bl, false, getRegistryWithReplacedOverworldGenerator(registry, simpleRegistry, createOverworldGenerator(registry2, registry3, l))
+				);
 		}
 	}
 

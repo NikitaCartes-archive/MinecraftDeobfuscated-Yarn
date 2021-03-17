@@ -22,7 +22,7 @@ public class SweepingEnchantment extends Enchantment {
 		return 3;
 	}
 
-	public static float getMultiplier(int i) {
-		return 1.0F - 1.0F / (float)(i + 1);
+	public static float getMultiplier(int level) {
+		return 1.0F - 1.0F / (float)(level + 1);
 	}
 }

@@ -63,13 +63,13 @@ public abstract class Property<T extends Comparable<T>> {
 		return MoreObjects.toStringHelper(this).add("name", this.name).add("clazz", this.type).add("values", this.getValues()).toString();
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (!(object instanceof Property)) {
+		} else if (!(o instanceof Property)) {
 			return false;
 		} else {
-			Property<?> property = (Property<?>)object;
+			Property<?> property = (Property<?>)o;
 			return this.type.equals(property.type) && this.name.equals(property.name);
 		}
 	}
@@ -111,13 +111,13 @@ public abstract class Property<T extends Comparable<T>> {
 			return this.property.getName() + "=" + this.property.name(this.value);
 		}
 
-		public boolean equals(Object object) {
-			if (this == object) {
+		public boolean equals(Object o) {
+			if (this == o) {
 				return true;
-			} else if (!(object instanceof Property.Value)) {
+			} else if (!(o instanceof Property.Value)) {
 				return false;
 			} else {
-				Property.Value<?> value = (Property.Value<?>)object;
+				Property.Value<?> value = (Property.Value<?>)o;
 				return this.property == value.property && this.value.equals(value.value);
 			}
 		}

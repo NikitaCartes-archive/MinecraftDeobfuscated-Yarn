@@ -14,6 +14,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -239,7 +240,10 @@ public class Explosion {
 		}
 	}
 
-	public void affectWorld(boolean bl) {
+	/**
+	 * @param particles whether this explosion should emit explosion or explosion emitter particles around the source of the explosion
+	 */
+	public void affectWorld(boolean particles) {
 		if (this.world.isClient) {
 			this.world
 				.playSound(
@@ -254,16 +258,16 @@ public class Explosion {
 				);
 		}
 
-		boolean bl2 = this.destructionType != Explosion.DestructionType.NONE;
-		if (bl) {
-			if (!(this.power < 2.0F) && bl2) {
+		boolean bl = this.destructionType != Explosion.DestructionType.NONE;
+		if (particles) {
+			if (!(this.power < 2.0F) && bl) {
 				this.world.addParticle(ParticleTypes.EXPLOSION_EMITTER, this.x, this.y, this.z, 1.0, 0.0, 0.0);
 			} else {
 				this.world.addParticle(ParticleTypes.EXPLOSION, this.x, this.y, this.z, 1.0, 0.0, 0.0);
 			}
 		}
 
-		if (bl2) {
+		if (bl) {
 			ObjectArrayList<Pair<ItemStack, BlockPos>> objectArrayList = new ObjectArrayList<>();
 			Collections.shuffle(this.affectedBlocks, this.world.random);
 
@@ -288,7 +292,7 @@ public class Explosion {
 						blockState.getDroppedStacks(builder).forEach(stack -> tryMergeStack(objectArrayList, stack, blockPos2));
 					}
 
-					this.world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
+					this.world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT);
 					block.onDestroyedByExplosion(this.world, blockPos, this);
 					this.world.getProfiler().pop();
 				}

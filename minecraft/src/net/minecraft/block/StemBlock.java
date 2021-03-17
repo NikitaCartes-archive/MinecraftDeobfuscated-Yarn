@@ -4,6 +4,7 @@ import java.util.Random;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
@@ -58,7 +59,7 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 				int i = (Integer)state.get(AGE);
 				if (i < 7) {
 					state = state.with(AGE, Integer.valueOf(i + 1));
-					world.setBlockState(pos, state, 2);
+					world.setBlockState(pos, state, SetBlockStateFlags.NOTIFY_LISTENERS);
 				} else {
 					Direction direction = Direction.Type.HORIZONTAL.random(random);
 					BlockPos blockPos = pos.offset(direction);
@@ -99,7 +100,7 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
 		int i = Math.min(7, (Integer)state.get(AGE) + MathHelper.nextInt(world.random, 2, 5));
 		BlockState blockState = state.with(AGE, Integer.valueOf(i));
-		world.setBlockState(pos, blockState, 2);
+		world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
 		if (i == 7) {
 			blockState.randomTick(world, pos, world.random);
 		}

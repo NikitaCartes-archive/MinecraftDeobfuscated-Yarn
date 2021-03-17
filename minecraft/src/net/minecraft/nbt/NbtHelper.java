@@ -18,6 +18,7 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -38,41 +39,41 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public final class NbtHelper {
-	private static final Comparator<ListTag> field_27816 = Comparator.comparingInt(listTag -> listTag.getInt(1))
-		.thenComparingInt(listTag -> listTag.getInt(0))
-		.thenComparingInt(listTag -> listTag.getInt(2));
-	private static final Comparator<ListTag> field_27817 = Comparator.comparingDouble(listTag -> listTag.getDouble(1))
-		.thenComparingDouble(listTag -> listTag.getDouble(0))
-		.thenComparingDouble(listTag -> listTag.getDouble(2));
-	private static final Splitter field_27818 = Splitter.on(",");
+	private static final Comparator<NbtList> field_27816 = Comparator.comparingInt(nbtList -> nbtList.getInt(1))
+		.thenComparingInt(nbtList -> nbtList.getInt(0))
+		.thenComparingInt(nbtList -> nbtList.getInt(2));
+	private static final Comparator<NbtList> field_27817 = Comparator.comparingDouble(nbtList -> nbtList.getDouble(1))
+		.thenComparingDouble(nbtList -> nbtList.getDouble(0))
+		.thenComparingDouble(nbtList -> nbtList.getDouble(2));
+	private static final Splitter COMMA_SPLITTER = Splitter.on(",");
 	private static final Splitter field_27819 = Splitter.on(':').limit(2);
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	@Nullable
-	public static GameProfile toGameProfile(CompoundTag tag) {
+	public static GameProfile toGameProfile(NbtCompound compound) {
 		String string = null;
 		UUID uUID = null;
-		if (tag.contains("Name", 8)) {
-			string = tag.getString("Name");
+		if (compound.contains("Name", NbtTypeIds.STRING)) {
+			string = compound.getString("Name");
 		}
 
-		if (tag.containsUuid("Id")) {
-			uUID = tag.getUuid("Id");
+		if (compound.containsUuid("Id")) {
+			uUID = compound.getUuid("Id");
 		}
 
 		try {
 			GameProfile gameProfile = new GameProfile(uUID, string);
-			if (tag.contains("Properties", 10)) {
-				CompoundTag compoundTag = tag.getCompound("Properties");
+			if (compound.contains("Properties", NbtTypeIds.COMPOUND)) {
+				NbtCompound nbtCompound = compound.getCompound("Properties");
 
-				for (String string2 : compoundTag.getKeys()) {
-					ListTag listTag = compoundTag.getList(string2, 10);
+				for (String string2 : nbtCompound.getKeys()) {
+					NbtList nbtList = nbtCompound.getList(string2, NbtTypeIds.COMPOUND);
 
-					for (int i = 0; i < listTag.size(); i++) {
-						CompoundTag compoundTag2 = listTag.getCompound(i);
-						String string3 = compoundTag2.getString("Value");
-						if (compoundTag2.contains("Signature", 8)) {
-							gameProfile.getProperties().put(string2, new com.mojang.authlib.properties.Property(string2, string3, compoundTag2.getString("Signature")));
+					for (int i = 0; i < nbtList.size(); i++) {
+						NbtCompound nbtCompound2 = nbtList.getCompound(i);
+						String string3 = nbtCompound2.getString("Value");
+						if (nbtCompound2.contains("Signature", NbtTypeIds.STRING)) {
+							gameProfile.getProperties().put(string2, new com.mojang.authlib.properties.Property(string2, string3, nbtCompound2.getString("Signature")));
 						} else {
 							gameProfile.getProperties().put(string2, new com.mojang.authlib.properties.Property(string2, string3));
 						}
@@ -86,42 +87,42 @@ public final class NbtHelper {
 		}
 	}
 
-	public static CompoundTag fromGameProfile(CompoundTag tag, GameProfile profile) {
+	public static NbtCompound writeGameProfile(NbtCompound compound, GameProfile profile) {
 		if (!ChatUtil.isEmpty(profile.getName())) {
-			tag.putString("Name", profile.getName());
+			compound.putString("Name", profile.getName());
 		}
 
 		if (profile.getId() != null) {
-			tag.putUuid("Id", profile.getId());
+			compound.putUuid("Id", profile.getId());
 		}
 
 		if (!profile.getProperties().isEmpty()) {
-			CompoundTag compoundTag = new CompoundTag();
+			NbtCompound nbtCompound = new NbtCompound();
 
 			for (String string : profile.getProperties().keySet()) {
-				ListTag listTag = new ListTag();
+				NbtList nbtList = new NbtList();
 
 				for (com.mojang.authlib.properties.Property property : profile.getProperties().get(string)) {
-					CompoundTag compoundTag2 = new CompoundTag();
-					compoundTag2.putString("Value", property.getValue());
+					NbtCompound nbtCompound2 = new NbtCompound();
+					nbtCompound2.putString("Value", property.getValue());
 					if (property.hasSignature()) {
-						compoundTag2.putString("Signature", property.getSignature());
+						nbtCompound2.putString("Signature", property.getSignature());
 					}
 
-					listTag.add(compoundTag2);
+					nbtList.add(nbtCompound2);
 				}
 
-				compoundTag.put(string, listTag);
+				nbtCompound.put(string, nbtList);
 			}
 
-			tag.put("Properties", compoundTag);
+			compound.put("Properties", nbtCompound);
 		}
 
-		return tag;
+		return compound;
 	}
 
 	@VisibleForTesting
-	public static boolean matches(@Nullable Tag standard, @Nullable Tag subject, boolean equalValue) {
+	public static boolean matches(@Nullable NbtElement standard, @Nullable NbtElement subject, boolean equalValue) {
 		if (standard == subject) {
 			return true;
 		} else if (standard == null) {
@@ -130,30 +131,30 @@ public final class NbtHelper {
 			return false;
 		} else if (!standard.getClass().equals(subject.getClass())) {
 			return false;
-		} else if (standard instanceof CompoundTag) {
-			CompoundTag compoundTag = (CompoundTag)standard;
-			CompoundTag compoundTag2 = (CompoundTag)subject;
+		} else if (standard instanceof NbtCompound) {
+			NbtCompound nbtCompound = (NbtCompound)standard;
+			NbtCompound nbtCompound2 = (NbtCompound)subject;
 
-			for (String string : compoundTag.getKeys()) {
-				Tag tag = compoundTag.get(string);
-				if (!matches(tag, compoundTag2.get(string), equalValue)) {
+			for (String string : nbtCompound.getKeys()) {
+				NbtElement nbtElement = nbtCompound.get(string);
+				if (!matches(nbtElement, nbtCompound2.get(string), equalValue)) {
 					return false;
 				}
 			}
 
 			return true;
-		} else if (standard instanceof ListTag && equalValue) {
-			ListTag listTag = (ListTag)standard;
-			ListTag listTag2 = (ListTag)subject;
-			if (listTag.isEmpty()) {
-				return listTag2.isEmpty();
+		} else if (standard instanceof NbtList && equalValue) {
+			NbtList nbtList = (NbtList)standard;
+			NbtList nbtList2 = (NbtList)subject;
+			if (nbtList.isEmpty()) {
+				return nbtList2.isEmpty();
 			} else {
-				for (int i = 0; i < listTag.size(); i++) {
-					Tag tag2 = listTag.get(i);
+				for (int i = 0; i < nbtList.size(); i++) {
+					NbtElement nbtElement2 = nbtList.get(i);
 					boolean bl = false;
 
-					for (int j = 0; j < listTag2.size(); j++) {
-						if (matches(tag2, listTag2.get(j), equalValue)) {
+					for (int j = 0; j < nbtList2.size(); j++) {
+						if (matches(nbtElement2, nbtList2.get(j), equalValue)) {
 							bl = true;
 							break;
 						}
@@ -176,24 +177,24 @@ public final class NbtHelper {
 	 * 
 	 * @since 20w10a
 	 */
-	public static IntArrayTag fromUuid(UUID uuid) {
-		return new IntArrayTag(DynamicSerializableUuid.toIntArray(uuid));
+	public static NbtIntArray fromUuid(UUID uuid) {
+		return new NbtIntArray(DynamicSerializableUuid.toIntArray(uuid));
 	}
 
 	/**
-	 * Deserializes a tag into a {@link UUID}.
-	 * The tag's data must have the same structure as the output of {@link #fromUuid}.
+	 * Deserializes an NBT element into a {@link UUID}.
+	 * The NBT element's data must have the same structure as the output of {@link #fromUuid}.
 	 * 
-	 * @throws IllegalArgumentException if {@code tag} is not a valid representation of a UUID
+	 * @throws IllegalArgumentException if {@code element} is not a valid representation of a UUID
 	 * @since 20w10a
 	 */
-	public static UUID toUuid(Tag tag) {
-		if (tag.getReader() != IntArrayTag.READER) {
+	public static UUID toUuid(NbtElement element) {
+		if (element.getNbtType() != NbtIntArray.TYPE) {
 			throw new IllegalArgumentException(
-				"Expected UUID-Tag to be of type " + IntArrayTag.READER.getCrashReportName() + ", but found " + tag.getReader().getCrashReportName() + "."
+				"Expected UUID-Tag to be of type " + NbtIntArray.TYPE.getCrashReportName() + ", but found " + element.getNbtType().getCrashReportName() + "."
 			);
 		} else {
-			int[] is = ((IntArrayTag)tag).getIntArray();
+			int[] is = ((NbtIntArray)element).getIntArray();
 			if (is.length != 4) {
 				throw new IllegalArgumentException("Expected UUID-Array to be of length 4, but found " + is.length + ".");
 			} else {
@@ -202,32 +203,32 @@ public final class NbtHelper {
 		}
 	}
 
-	public static BlockPos toBlockPos(CompoundTag tag) {
-		return new BlockPos(tag.getInt("X"), tag.getInt("Y"), tag.getInt("Z"));
+	public static BlockPos toBlockPos(NbtCompound compound) {
+		return new BlockPos(compound.getInt("X"), compound.getInt("Y"), compound.getInt("Z"));
 	}
 
-	public static CompoundTag fromBlockPos(BlockPos pos) {
-		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.putInt("X", pos.getX());
-		compoundTag.putInt("Y", pos.getY());
-		compoundTag.putInt("Z", pos.getZ());
-		return compoundTag;
+	public static NbtCompound fromBlockPos(BlockPos pos) {
+		NbtCompound nbtCompound = new NbtCompound();
+		nbtCompound.putInt("X", pos.getX());
+		nbtCompound.putInt("Y", pos.getY());
+		nbtCompound.putInt("Z", pos.getZ());
+		return nbtCompound;
 	}
 
-	public static BlockState toBlockState(CompoundTag tag) {
-		if (!tag.contains("Name", 8)) {
+	public static BlockState toBlockState(NbtCompound compound) {
+		if (!compound.contains("Name", NbtTypeIds.STRING)) {
 			return Blocks.AIR.getDefaultState();
 		} else {
-			Block block = Registry.BLOCK.get(new Identifier(tag.getString("Name")));
+			Block block = Registry.BLOCK.get(new Identifier(compound.getString("Name")));
 			BlockState blockState = block.getDefaultState();
-			if (tag.contains("Properties", 10)) {
-				CompoundTag compoundTag = tag.getCompound("Properties");
+			if (compound.contains("Properties", NbtTypeIds.COMPOUND)) {
+				NbtCompound nbtCompound = compound.getCompound("Properties");
 				StateManager<Block, BlockState> stateManager = block.getStateManager();
 
-				for (String string : compoundTag.getKeys()) {
+				for (String string : nbtCompound.getKeys()) {
 					Property<?> property = stateManager.getProperty(string);
 					if (property != null) {
-						blockState = withProperty(blockState, property, string, compoundTag, tag);
+						blockState = withProperty(blockState, property, string, nbtCompound, compound);
 					}
 				}
 			}
@@ -237,33 +238,33 @@ public final class NbtHelper {
 	}
 
 	private static <S extends State<?, S>, T extends Comparable<T>> S withProperty(
-		S state, Property<T> property, String key, CompoundTag propertiesTag, CompoundTag mainTag
+		S state, Property<T> property, String key, NbtCompound properties, NbtCompound root
 	) {
-		Optional<T> optional = property.parse(propertiesTag.getString(key));
+		Optional<T> optional = property.parse(properties.getString(key));
 		if (optional.isPresent()) {
 			return state.with(property, (Comparable)optional.get());
 		} else {
-			LOGGER.warn("Unable to read property: {} with value: {} for blockstate: {}", key, propertiesTag.getString(key), mainTag.toString());
+			LOGGER.warn("Unable to read property: {} with value: {} for blockstate: {}", key, properties.getString(key), root.toString());
 			return state;
 		}
 	}
 
-	public static CompoundTag fromBlockState(BlockState state) {
-		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.putString("Name", Registry.BLOCK.getId(state.getBlock()).toString());
+	public static NbtCompound fromBlockState(BlockState state) {
+		NbtCompound nbtCompound = new NbtCompound();
+		nbtCompound.putString("Name", Registry.BLOCK.getId(state.getBlock()).toString());
 		ImmutableMap<Property<?>, Comparable<?>> immutableMap = state.getEntries();
 		if (!immutableMap.isEmpty()) {
-			CompoundTag compoundTag2 = new CompoundTag();
+			NbtCompound nbtCompound2 = new NbtCompound();
 
 			for (Entry<Property<?>, Comparable<?>> entry : immutableMap.entrySet()) {
 				Property<?> property = (Property<?>)entry.getKey();
-				compoundTag2.putString(property.getName(), nameValue(property, (Comparable<?>)entry.getValue()));
+				nbtCompound2.putString(property.getName(), nameValue(property, (Comparable<?>)entry.getValue()));
 			}
 
-			compoundTag.put("Properties", compoundTag2);
+			nbtCompound.put("Properties", nbtCompound2);
 		}
 
-		return compoundTag;
+		return nbtCompound;
 	}
 
 	private static <T extends Comparable<T>> String nameValue(Property<T> property, Comparable<?> value) {
@@ -271,153 +272,153 @@ public final class NbtHelper {
 	}
 
 	/**
-	 * Uses the data fixer to update a tag to the latest data version.
+	 * Uses the data fixer to update an NBT compound object to the latest data version.
 	 * 
 	 * @param fixer the data fixer
 	 * @param fixTypes the fix types
-	 * @param tag the tag to fix
-	 * @param oldVersion the data version of the compound tag
+	 * @param compound the NBT compound object to fix
+	 * @param oldVersion the data version of the NBT compound object
 	 */
-	public static CompoundTag update(DataFixer fixer, DataFixTypes fixTypes, CompoundTag tag, int oldVersion) {
-		return update(fixer, fixTypes, tag, oldVersion, SharedConstants.getGameVersion().getWorldVersion());
+	public static NbtCompound update(DataFixer fixer, DataFixTypes fixTypes, NbtCompound compound, int oldVersion) {
+		return update(fixer, fixTypes, compound, oldVersion, SharedConstants.getGameVersion().getWorldVersion());
 	}
 
 	/**
-	 * Uses the data fixer to update a tag.
+	 * Uses the data fixer to update an NBT compound object.
 	 * 
 	 * @param fixer the data fixer
 	 * @param fixTypes the fix types
-	 * @param tag the tag to fix
-	 * @param oldVersion the data version of the compound tag
-	 * @param targetVersion the data version to update the tag to
+	 * @param compound the NBT compound object to fix
+	 * @param oldVersion the data version of the NBT compound object
+	 * @param targetVersion the data version to update the NBT compound object to
 	 */
-	public static CompoundTag update(DataFixer fixer, DataFixTypes fixTypes, CompoundTag tag, int oldVersion, int targetVersion) {
-		return (CompoundTag)fixer.update(fixTypes.getTypeReference(), new Dynamic<>(NbtOps.INSTANCE, tag), oldVersion, targetVersion).getValue();
+	public static NbtCompound update(DataFixer fixer, DataFixTypes fixTypes, NbtCompound compound, int oldVersion, int targetVersion) {
+		return (NbtCompound)fixer.update(fixTypes.getTypeReference(), new Dynamic<>(NbtOps.INSTANCE, compound), oldVersion, targetVersion).getValue();
 	}
 
-	public static Text toPrettyPrintedText(Tag tag) {
-		return new NbtTextFormatter("", 0).apply(tag);
+	public static Text toPrettyPrintedText(NbtElement element) {
+		return new NbtTextFormatter("", 0).apply(element);
 	}
 
-	public static String toPrettyPrintedString(CompoundTag tag) {
-		return new NbtOrderedStringFormatter().apply(method_32273(tag));
+	public static String toPrettyPrintedString(NbtCompound compound) {
+		return new NbtOrderedStringFormatter().apply(method_32273(compound));
 	}
 
-	public static CompoundTag method_32260(String string) throws CommandSyntaxException {
+	public static NbtCompound method_32260(String string) throws CommandSyntaxException {
 		return method_32275(StringNbtReader.parse(string));
 	}
 
 	@VisibleForTesting
-	static CompoundTag method_32273(CompoundTag tag) {
-		boolean bl = tag.contains("palettes", 9);
-		ListTag listTag;
+	static NbtCompound method_32273(NbtCompound compound) {
+		boolean bl = compound.contains("palettes", NbtTypeIds.LIST);
+		NbtList nbtList;
 		if (bl) {
-			listTag = tag.getList("palettes", 9).getList(0);
+			nbtList = compound.getList("palettes", NbtTypeIds.LIST).getList(0);
 		} else {
-			listTag = tag.getList("palette", 10);
+			nbtList = compound.getList("palette", NbtTypeIds.COMPOUND);
 		}
 
-		ListTag listTag2 = (ListTag)listTag.stream()
-			.map(CompoundTag.class::cast)
+		NbtList nbtList2 = (NbtList)nbtList.stream()
+			.map(NbtCompound.class::cast)
 			.map(NbtHelper::method_32277)
-			.map(StringTag::of)
-			.collect(Collectors.toCollection(ListTag::new));
-		tag.put("palette", listTag2);
+			.map(NbtString::of)
+			.collect(Collectors.toCollection(NbtList::new));
+		compound.put("palette", nbtList2);
 		if (bl) {
-			ListTag listTag3 = new ListTag();
-			ListTag listTag4 = tag.getList("palettes", 9);
-			listTag4.stream().map(ListTag.class::cast).forEach(listTag3x -> {
-				CompoundTag compoundTag = new CompoundTag();
+			NbtList nbtList3 = new NbtList();
+			NbtList nbtList4 = compound.getList("palettes", NbtTypeIds.LIST);
+			nbtList4.stream().map(NbtList.class::cast).forEach(nbtList3x -> {
+				NbtCompound nbtCompound = new NbtCompound();
 
-				for (int i = 0; i < listTag3x.size(); i++) {
-					compoundTag.putString(listTag2.getString(i), method_32277(listTag3x.getCompound(i)));
+				for (int i = 0; i < nbtList3x.size(); i++) {
+					nbtCompound.putString(nbtList2.getString(i), method_32277(nbtList3x.getCompound(i)));
 				}
 
-				listTag3.add(compoundTag);
+				nbtList3.add(nbtCompound);
 			});
-			tag.put("palettes", listTag3);
+			compound.put("palettes", nbtList3);
 		}
 
-		if (tag.contains("entities", 10)) {
-			ListTag listTag3 = tag.getList("entities", 10);
-			ListTag listTag4 = (ListTag)listTag3.stream()
-				.map(CompoundTag.class::cast)
-				.sorted(Comparator.comparing(compoundTag -> compoundTag.getList("pos", 6), field_27817))
-				.collect(Collectors.toCollection(ListTag::new));
-			tag.put("entities", listTag4);
+		if (compound.contains("entities", NbtTypeIds.COMPOUND)) {
+			NbtList nbtList3 = compound.getList("entities", NbtTypeIds.COMPOUND);
+			NbtList nbtList4 = (NbtList)nbtList3.stream()
+				.map(NbtCompound.class::cast)
+				.sorted(Comparator.comparing(nbtCompound -> nbtCompound.getList("pos", NbtTypeIds.DOUBLE), field_27817))
+				.collect(Collectors.toCollection(NbtList::new));
+			compound.put("entities", nbtList4);
 		}
 
-		ListTag listTag3 = (ListTag)tag.getList("blocks", 10)
+		NbtList nbtList3 = (NbtList)compound.getList("blocks", NbtTypeIds.COMPOUND)
 			.stream()
-			.map(CompoundTag.class::cast)
-			.sorted(Comparator.comparing(compoundTag -> compoundTag.getList("pos", 3), field_27816))
-			.peek(compoundTag -> compoundTag.putString("state", listTag2.getString(compoundTag.getInt("state"))))
-			.collect(Collectors.toCollection(ListTag::new));
-		tag.put("data", listTag3);
-		tag.remove("blocks");
-		return tag;
+			.map(NbtCompound.class::cast)
+			.sorted(Comparator.comparing(nbtCompound -> nbtCompound.getList("pos", NbtTypeIds.INT), field_27816))
+			.peek(nbtCompound -> nbtCompound.putString("state", nbtList2.getString(nbtCompound.getInt("state"))))
+			.collect(Collectors.toCollection(NbtList::new));
+		compound.put("data", nbtList3);
+		compound.remove("blocks");
+		return compound;
 	}
 
 	@VisibleForTesting
-	static CompoundTag method_32275(CompoundTag compoundTag) {
-		ListTag listTag = compoundTag.getList("palette", 8);
-		Map<String, Tag> map = (Map<String, Tag>)listTag.stream()
-			.map(StringTag.class::cast)
-			.map(StringTag::asString)
+	static NbtCompound method_32275(NbtCompound compound) {
+		NbtList nbtList = compound.getList("palette", NbtTypeIds.STRING);
+		Map<String, NbtElement> map = (Map<String, NbtElement>)nbtList.stream()
+			.map(NbtString.class::cast)
+			.map(NbtString::asString)
 			.collect(ImmutableMap.toImmutableMap(Function.identity(), NbtHelper::method_32267));
-		if (compoundTag.contains("palettes", 9)) {
-			compoundTag.put(
+		if (compound.contains("palettes", NbtTypeIds.LIST)) {
+			compound.put(
 				"palettes",
-				(Tag)compoundTag.getList("palettes", 10)
+				(NbtElement)compound.getList("palettes", NbtTypeIds.COMPOUND)
 					.stream()
-					.map(CompoundTag.class::cast)
+					.map(NbtCompound.class::cast)
 					.map(
-						compoundTagx -> (ListTag)map.keySet().stream().map(compoundTagx::getString).map(NbtHelper::method_32267).collect(Collectors.toCollection(ListTag::new))
+						nbtCompoundx -> (NbtList)map.keySet().stream().map(nbtCompoundx::getString).map(NbtHelper::method_32267).collect(Collectors.toCollection(NbtList::new))
 					)
-					.collect(Collectors.toCollection(ListTag::new))
+					.collect(Collectors.toCollection(NbtList::new))
 			);
-			compoundTag.remove("palette");
+			compound.remove("palette");
 		} else {
-			compoundTag.put("palette", (Tag)map.values().stream().collect(Collectors.toCollection(ListTag::new)));
+			compound.put("palette", (NbtElement)map.values().stream().collect(Collectors.toCollection(NbtList::new)));
 		}
 
-		if (compoundTag.contains("data", 9)) {
+		if (compound.contains("data", NbtTypeIds.LIST)) {
 			Object2IntMap<String> object2IntMap = new Object2IntOpenHashMap<>();
 			object2IntMap.defaultReturnValue(-1);
 
-			for (int i = 0; i < listTag.size(); i++) {
-				object2IntMap.put(listTag.getString(i), i);
+			for (int i = 0; i < nbtList.size(); i++) {
+				object2IntMap.put(nbtList.getString(i), i);
 			}
 
-			ListTag listTag2 = compoundTag.getList("data", 10);
+			NbtList nbtList2 = compound.getList("data", NbtTypeIds.COMPOUND);
 
-			for (int j = 0; j < listTag2.size(); j++) {
-				CompoundTag compoundTag2 = listTag2.getCompound(j);
-				String string = compoundTag2.getString("state");
+			for (int j = 0; j < nbtList2.size(); j++) {
+				NbtCompound nbtCompound = nbtList2.getCompound(j);
+				String string = nbtCompound.getString("state");
 				int k = object2IntMap.getInt(string);
 				if (k == -1) {
 					throw new IllegalStateException("Entry " + string + " missing from palette");
 				}
 
-				compoundTag2.putInt("state", k);
+				nbtCompound.putInt("state", k);
 			}
 
-			compoundTag.put("blocks", listTag2);
-			compoundTag.remove("data");
+			compound.put("blocks", nbtList2);
+			compound.remove("data");
 		}
 
-		return compoundTag;
+		return compound;
 	}
 
 	@VisibleForTesting
-	static String method_32277(CompoundTag compoundTag) {
-		StringBuilder stringBuilder = new StringBuilder(compoundTag.getString("Name"));
-		if (compoundTag.contains("Properties", 10)) {
-			CompoundTag compoundTag2 = compoundTag.getCompound("Properties");
-			String string = (String)compoundTag2.getKeys()
+	static String method_32277(NbtCompound compound) {
+		StringBuilder stringBuilder = new StringBuilder(compound.getString("Name"));
+		if (compound.contains("Properties", NbtTypeIds.COMPOUND)) {
+			NbtCompound nbtCompound = compound.getCompound("Properties");
+			String string = (String)nbtCompound.getKeys()
 				.stream()
 				.sorted()
-				.map(stringx -> stringx + ':' + compoundTag2.get(stringx).asString())
+				.map(stringx -> stringx + ':' + nbtCompound.get(stringx).asString())
 				.collect(Collectors.joining(","));
 			stringBuilder.append('{').append(string).append('}');
 		}
@@ -426,30 +427,30 @@ public final class NbtHelper {
 	}
 
 	@VisibleForTesting
-	static CompoundTag method_32267(String string) {
-		CompoundTag compoundTag = new CompoundTag();
+	static NbtCompound method_32267(String string) {
+		NbtCompound nbtCompound = new NbtCompound();
 		int i = string.indexOf(123);
 		String string2;
 		if (i >= 0) {
 			string2 = string.substring(0, i);
-			CompoundTag compoundTag2 = new CompoundTag();
+			NbtCompound nbtCompound2 = new NbtCompound();
 			if (i + 2 <= string.length()) {
 				String string3 = string.substring(i + 1, string.indexOf(125, i));
-				field_27818.split(string3).forEach(string2x -> {
+				COMMA_SPLITTER.split(string3).forEach(string2x -> {
 					List<String> list = field_27819.splitToList(string2x);
 					if (list.size() == 2) {
-						compoundTag2.putString((String)list.get(0), (String)list.get(1));
+						nbtCompound2.putString((String)list.get(0), (String)list.get(1));
 					} else {
 						LOGGER.error("Something went wrong parsing: '{}' -- incorrect gamedata!", string);
 					}
 				});
-				compoundTag.put("Properties", compoundTag2);
+				nbtCompound.put("Properties", nbtCompound2);
 			}
 		} else {
 			string2 = string;
 		}
 
-		compoundTag.putString("Name", string2);
-		return compoundTag;
+		nbtCompound.putString("Name", string2);
+		return nbtCompound;
 	}
 }

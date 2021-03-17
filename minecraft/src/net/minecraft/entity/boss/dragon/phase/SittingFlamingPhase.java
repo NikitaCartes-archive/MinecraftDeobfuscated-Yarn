@@ -11,7 +11,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class SittingFlamingPhase extends AbstractSittingPhase {
 	private int ticks;
-	private int field_7052;
+	private int timesRun;
 	private AreaEffectCloudEntity dragonBreathEntity;
 
 	public SittingFlamingPhase(EnderDragonEntity enderDragonEntity) {
@@ -22,7 +22,7 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 	public void clientTick() {
 		this.ticks++;
 		if (this.ticks % 2 == 0 && this.ticks < 10) {
-			Vec3d vec3d = this.dragon.method_6834(1.0F).normalize();
+			Vec3d vec3d = this.dragon.getRotationVectorFromPhase(1.0F).normalize();
 			vec3d.rotateY((float) (-Math.PI / 4));
 			double d = this.dragon.partHead.getX();
 			double e = this.dragon.partHead.getBodyY(0.5);
@@ -46,7 +46,7 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 	public void serverTick() {
 		this.ticks++;
 		if (this.ticks >= 200) {
-			if (this.field_7052 >= 4) {
+			if (this.timesRun >= 4) {
 				this.dragon.getPhaseManager().setPhase(PhaseType.TAKEOFF);
 			} else {
 				this.dragon.getPhaseManager().setPhase(PhaseType.SITTING_SCANNING);
@@ -83,7 +83,7 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 	@Override
 	public void beginPhase() {
 		this.ticks = 0;
-		this.field_7052++;
+		this.timesRun++;
 	}
 
 	@Override
@@ -99,7 +99,7 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 		return PhaseType.SITTING_FLAMING;
 	}
 
-	public void method_6857() {
-		this.field_7052 = 0;
+	public void reset() {
+		this.timesRun = 0;
 	}
 }

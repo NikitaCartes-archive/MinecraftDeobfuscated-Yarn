@@ -3,6 +3,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -59,7 +60,7 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		int i = (Integer)state.get(AGE);
 		if (i < 3 && random.nextInt(5) == 0 && world.getBaseLightLevel(pos.up(), 0) >= 9) {
-			world.setBlockState(pos, state.with(AGE, Integer.valueOf(i + 1)), 2);
+			world.setBlockState(pos, state.with(AGE, Integer.valueOf(i + 1)), SetBlockStateFlags.NOTIFY_LISTENERS);
 		}
 	}
 
@@ -87,7 +88,7 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 			int j = 1 + world.random.nextInt(2);
 			dropStack(world, pos, new ItemStack(Items.SWEET_BERRIES, j + (bl ? 1 : 0)));
 			world.playSound(null, pos, SoundEvents.ITEM_SWEET_BERRIES_PICK_FROM_BUSH, SoundCategory.BLOCKS, 1.0F, 0.8F + world.random.nextFloat() * 0.4F);
-			world.setBlockState(pos, state.with(AGE, Integer.valueOf(1)), 2);
+			world.setBlockState(pos, state.with(AGE, Integer.valueOf(1)), SetBlockStateFlags.NOTIFY_LISTENERS);
 			return ActionResult.success(world.isClient);
 		} else {
 			return super.onUse(state, world, pos, player, hand, hit);
@@ -112,6 +113,6 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
 		int i = Math.min(3, (Integer)state.get(AGE) + 1);
-		world.setBlockState(pos, state.with(AGE, Integer.valueOf(i)), 2);
+		world.setBlockState(pos, state.with(AGE, Integer.valueOf(i)), SetBlockStateFlags.NOTIFY_LISTENERS);
 	}
 }

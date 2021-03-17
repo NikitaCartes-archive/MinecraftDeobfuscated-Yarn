@@ -1,17 +1,14 @@
 package net.minecraft.client.render;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.function.Supplier;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5944;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
@@ -79,58 +76,62 @@ public abstract class RenderPhase {
 			RenderSystem.defaultBlendFunc();
 		}
 	);
-	protected static final RenderPhase.class_5942 field_29434 = new RenderPhase.class_5942();
-	protected static final RenderPhase.class_5942 field_29435 = new RenderPhase.class_5942(GameRenderer::method_34544);
-	protected static final RenderPhase.class_5942 field_29436 = new RenderPhase.class_5942(GameRenderer::method_34545);
-	protected static final RenderPhase.class_5942 field_29437 = new RenderPhase.class_5942(GameRenderer::method_34547);
-	protected static final RenderPhase.class_5942 field_29438 = new RenderPhase.class_5942(GameRenderer::method_34539);
-	protected static final RenderPhase.class_5942 field_29439 = new RenderPhase.class_5942(GameRenderer::method_34541);
-	protected static final RenderPhase.class_5942 field_29440 = new RenderPhase.class_5942(GameRenderer::method_34542);
-	protected static final RenderPhase.class_5942 field_29441 = new RenderPhase.class_5942(GameRenderer::method_34548);
-	protected static final RenderPhase.class_5942 field_29442 = new RenderPhase.class_5942(GameRenderer::method_34540);
-	protected static final RenderPhase.class_5942 field_29443 = new RenderPhase.class_5942(GameRenderer::method_34495);
-	protected static final RenderPhase.class_5942 field_29444 = new RenderPhase.class_5942(GameRenderer::method_34496);
-	protected static final RenderPhase.class_5942 field_29445 = new RenderPhase.class_5942(GameRenderer::method_34497);
-	protected static final RenderPhase.class_5942 field_29446 = new RenderPhase.class_5942(GameRenderer::method_34498);
-	protected static final RenderPhase.class_5942 field_29447 = new RenderPhase.class_5942(GameRenderer::method_34499);
-	protected static final RenderPhase.class_5942 field_29448 = new RenderPhase.class_5942(GameRenderer::method_34500);
-	protected static final RenderPhase.class_5942 field_29449 = new RenderPhase.class_5942(GameRenderer::method_34501);
-	protected static final RenderPhase.class_5942 field_29450 = new RenderPhase.class_5942(GameRenderer::method_34502);
-	protected static final RenderPhase.class_5942 field_29451 = new RenderPhase.class_5942(GameRenderer::method_34503);
-	protected static final RenderPhase.class_5942 field_29452 = new RenderPhase.class_5942(GameRenderer::method_34504);
-	protected static final RenderPhase.class_5942 field_29404 = new RenderPhase.class_5942(GameRenderer::method_34505);
-	protected static final RenderPhase.class_5942 field_29405 = new RenderPhase.class_5942(GameRenderer::method_34506);
-	protected static final RenderPhase.class_5942 field_29406 = new RenderPhase.class_5942(GameRenderer::method_34507);
-	protected static final RenderPhase.class_5942 field_29407 = new RenderPhase.class_5942(GameRenderer::method_34508);
-	protected static final RenderPhase.class_5942 field_29408 = new RenderPhase.class_5942(GameRenderer::method_34509);
-	protected static final RenderPhase.class_5942 field_29409 = new RenderPhase.class_5942(GameRenderer::method_34510);
-	protected static final RenderPhase.class_5942 field_29410 = new RenderPhase.class_5942(GameRenderer::method_34511);
-	protected static final RenderPhase.class_5942 field_29411 = new RenderPhase.class_5942(GameRenderer::method_34512);
-	protected static final RenderPhase.class_5942 field_29412 = new RenderPhase.class_5942(GameRenderer::method_34513);
-	protected static final RenderPhase.class_5942 field_29413 = new RenderPhase.class_5942(GameRenderer::method_34514);
-	protected static final RenderPhase.class_5942 field_29414 = new RenderPhase.class_5942(GameRenderer::method_34515);
-	protected static final RenderPhase.class_5942 field_29415 = new RenderPhase.class_5942(GameRenderer::method_34516);
-	protected static final RenderPhase.class_5942 field_29416 = new RenderPhase.class_5942(GameRenderer::method_34517);
-	protected static final RenderPhase.class_5942 field_29417 = new RenderPhase.class_5942(GameRenderer::method_34518);
-	protected static final RenderPhase.class_5942 field_29418 = new RenderPhase.class_5942(GameRenderer::method_34519);
-	protected static final RenderPhase.class_5942 field_29419 = new RenderPhase.class_5942(GameRenderer::method_34520);
-	protected static final RenderPhase.class_5942 field_29420 = new RenderPhase.class_5942(GameRenderer::method_34523);
-	protected static final RenderPhase.class_5942 field_29421 = new RenderPhase.class_5942(GameRenderer::method_34524);
-	protected static final RenderPhase.class_5942 field_29422 = new RenderPhase.class_5942(GameRenderer::method_34525);
-	protected static final RenderPhase.class_5942 field_29423 = new RenderPhase.class_5942(GameRenderer::method_34526);
-	protected static final RenderPhase.class_5942 field_29424 = new RenderPhase.class_5942(GameRenderer::method_34527);
-	protected static final RenderPhase.class_5942 field_29425 = new RenderPhase.class_5942(GameRenderer::method_34528);
-	protected static final RenderPhase.class_5942 field_29426 = new RenderPhase.class_5942(GameRenderer::method_34536);
-	protected static final RenderPhase.class_5942 field_29427 = new RenderPhase.class_5942(GameRenderer::method_34529);
-	protected static final RenderPhase.class_5942 field_29428 = new RenderPhase.class_5942(GameRenderer::method_34530);
-	protected static final RenderPhase.class_5942 field_29429 = new RenderPhase.class_5942(GameRenderer::method_34531);
-	protected static final RenderPhase.class_5942 field_29430 = new RenderPhase.class_5942(GameRenderer::method_34532);
-	protected static final RenderPhase.class_5942 field_29431 = new RenderPhase.class_5942(GameRenderer::method_34533);
-	protected static final RenderPhase.class_5942 field_29432 = new RenderPhase.class_5942(GameRenderer::method_34534);
-	protected static final RenderPhase.class_5942 field_29433 = new RenderPhase.class_5942(GameRenderer::method_34535);
+	protected static final RenderPhase.Shader NO_SHADER = new RenderPhase.Shader();
+	protected static final RenderPhase.Shader BLOCK_SHADER = new RenderPhase.Shader(GameRenderer::getBlockShader);
+	protected static final RenderPhase.Shader NEW_ENTITY_SHADER = new RenderPhase.Shader(GameRenderer::getNewEntityShader);
+	protected static final RenderPhase.Shader POSITION_COLOR_LIGHTMAP_SHADER = new RenderPhase.Shader(GameRenderer::getPositionColorLightmapShader);
+	protected static final RenderPhase.Shader POSITION_SHADER = new RenderPhase.Shader(GameRenderer::getPositionShader);
+	protected static final RenderPhase.Shader POSITION_COLOR_TEXTURE_SHADER = new RenderPhase.Shader(GameRenderer::getPositionColorTexShader);
+	protected static final RenderPhase.Shader POSITION_TEXTURE_SHADER = new RenderPhase.Shader(GameRenderer::getPositionTexShader);
+	protected static final RenderPhase.Shader POSITION_COLOR_TEXTURE_LIGHTMAP_SHADER = new RenderPhase.Shader(GameRenderer::getPositionColorTexLightmapShader);
+	protected static final RenderPhase.Shader COLOR_SHADER = new RenderPhase.Shader(GameRenderer::getPositionColorShader);
+	protected static final RenderPhase.Shader SOLID_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeSolidShader);
+	protected static final RenderPhase.Shader CUTOUT_MIPPED_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeCutoutMippedShader);
+	protected static final RenderPhase.Shader CUTOUT_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeCutoutShader);
+	protected static final RenderPhase.Shader TRANSLUCENT_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeTranslucentShader);
+	protected static final RenderPhase.Shader TRANSLUCENT_MOVING_BLOCK_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeTranslucentMovingBlockShader);
+	protected static final RenderPhase.Shader TRANSLUCENT_NO_CRUMBLING_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeTranslucentNoCrumblingShader);
+	protected static final RenderPhase.Shader ARMOR_CUTOUT_NO_CULL_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeArmorCutoutNoCullShader);
+	protected static final RenderPhase.Shader ENTITY_SOLID_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeEntitySolidShader);
+	protected static final RenderPhase.Shader ENTITY_CUTOUT_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeEntityCutoutShader);
+	protected static final RenderPhase.Shader ENTITY_CUTOUT_NONULL_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeEntityCutoutNoNullShader);
+	protected static final RenderPhase.Shader ENTITY_CUTOUT_NONULL_OFFSET_Z_SHADER = new RenderPhase.Shader(
+		GameRenderer::getRenderTypeEntityCutoutNoNullZOffsetShader
+	);
+	protected static final RenderPhase.Shader ITEM_ENTITY_TRANSLUCENT_CULL_SHADER = new RenderPhase.Shader(
+		GameRenderer::getRenderTypeItemEntityTranslucentCullShader
+	);
+	protected static final RenderPhase.Shader ENTITY_TRANSLUCENT_CULL_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeEntityTranslucentCullShader);
+	protected static final RenderPhase.Shader ENTITY_TRANSLUCENT_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeEntityTranslucentShader);
+	protected static final RenderPhase.Shader ENTITY_SMOOTH_CUTOUT_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeEntitySmoothCutoutShader);
+	protected static final RenderPhase.Shader BEACON_BEAM_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeBeaconBeamShader);
+	protected static final RenderPhase.Shader ENTITY_DECAL_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeEntityDecalShader);
+	protected static final RenderPhase.Shader ENTITY_NO_OUTLINE_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeEntityNoOutlineShader);
+	protected static final RenderPhase.Shader ENTITY_SHADOW_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeEntityShadowShader);
+	protected static final RenderPhase.Shader ENTITY_ALPHA_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeEntityAlphaShader);
+	protected static final RenderPhase.Shader EYES_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeEyesShader);
+	protected static final RenderPhase.Shader ENERGY_SWIRL_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeEnergySwirlShader);
+	protected static final RenderPhase.Shader LEASH_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeLeashShader);
+	protected static final RenderPhase.Shader WATER_MASK_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeWaterMaskShader);
+	protected static final RenderPhase.Shader OUTLINE_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeOutlineShader);
+	protected static final RenderPhase.Shader ARMOR_GLINT_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeArmorGlintShader);
+	protected static final RenderPhase.Shader ARMOR_ENTITY_GLINT_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeArmorEntityGlintShader);
+	protected static final RenderPhase.Shader TRANSLUCENT_GLINT_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeGlintTranslucentShader);
+	protected static final RenderPhase.Shader GLINT_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeGlintShader);
+	protected static final RenderPhase.Shader DIRECT_GLINT_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeGlintDirectShader);
+	protected static final RenderPhase.Shader ENTITY_GLINT_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeEntityGlintShader);
+	protected static final RenderPhase.Shader DIRECT_ENTITY_GLINT_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeEntityGlintDirectShader);
+	protected static final RenderPhase.Shader CRUMBLING_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeCrumblingShader);
+	protected static final RenderPhase.Shader TEXT_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeTextShader);
+	protected static final RenderPhase.Shader TRANSPARENT_TEXT_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeTextSeeThroughShader);
+	protected static final RenderPhase.Shader LIGHTNING_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeLightningShader);
+	protected static final RenderPhase.Shader TRIPWIRE_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeTripwireShader);
+	protected static final RenderPhase.Shader END_PORTAL_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeEndPortalShader);
+	protected static final RenderPhase.Shader END_GATEWAY_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeEndGatewayShader);
+	protected static final RenderPhase.Shader LINES_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeLinesShader);
 	protected static final RenderPhase.Texture MIPMAP_BLOCK_ATLAS_TEXTURE = new RenderPhase.Texture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, false, true);
 	protected static final RenderPhase.Texture BLOCK_ATLAS_TEXTURE = new RenderPhase.Texture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, false, false);
-	protected static final RenderPhase.class_5939 NO_TEXTURE = new RenderPhase.class_5939();
+	protected static final RenderPhase.TextureBase NO_TEXTURE = new RenderPhase.TextureBase();
 	protected static final RenderPhase.Texturing DEFAULT_TEXTURING = new RenderPhase.Texturing("default_texturing", () -> {
 	}, () -> {
 	});
@@ -241,25 +242,6 @@ public abstract class RenderPhase {
 		this.endAction.run();
 	}
 
-	public boolean equals(@Nullable Object object) {
-		if (this == object) {
-			return true;
-		} else if (object != null && this.getClass() == object.getClass()) {
-			RenderPhase renderPhase = (RenderPhase)object;
-			return this.name.equals(renderPhase.name);
-		} else {
-			return false;
-		}
-	}
-
-	protected boolean method_34551(RenderPhase renderPhase) {
-		return this.name.equals(renderPhase.name);
-	}
-
-	public int hashCode() {
-		return this.name.hashCode();
-	}
-
 	public String toString() {
 		return this.name;
 	}
@@ -295,45 +277,26 @@ public abstract class RenderPhase {
 		 * A string representation of the comparison function used by this {@code DepthTest} phase.
 		 * @see org.lwjgl.opengl.GL11#glDepthFunc(int)
 		 */
-		private final String depthFunction;
-		private final int func;
+		private final String depthFunctionName;
 
-		public DepthTest(String string, int i) {
+		public DepthTest(String depthFunctionName, int depthFunction) {
 			super("depth_test", () -> {
-				if (i != 519) {
+				if (depthFunction != 519) {
 					RenderSystem.enableDepthTest();
-					RenderSystem.depthFunc(i);
+					RenderSystem.depthFunc(depthFunction);
 				}
 			}, () -> {
-				if (i != 519) {
+				if (depthFunction != 519) {
 					RenderSystem.disableDepthTest();
 					RenderSystem.depthFunc(515);
 				}
 			});
-			this.depthFunction = string;
-			this.func = i;
-		}
-
-		@Override
-		public boolean equals(Object object) {
-			if (this == object) {
-				return true;
-			} else if (object != null && this.getClass() == object.getClass()) {
-				RenderPhase.DepthTest depthTest = (RenderPhase.DepthTest)object;
-				return this.func == depthTest.func;
-			} else {
-				return false;
-			}
-		}
-
-		@Override
-		public int hashCode() {
-			return Integer.hashCode(this.func);
+			this.depthFunctionName = depthFunctionName;
 		}
 
 		@Override
 		public String toString() {
-			return this.name + '[' + this.depthFunction + ']';
+			return this.name + '[' + this.depthFunctionName + ']';
 		}
 	}
 
@@ -363,37 +326,21 @@ public abstract class RenderPhase {
 	public static class LineWidth extends RenderPhase {
 		private final OptionalDouble width;
 
-		public LineWidth(OptionalDouble optionalDouble) {
+		public LineWidth(OptionalDouble width) {
 			super("line_width", () -> {
-				if (!Objects.equals(optionalDouble, OptionalDouble.of(1.0))) {
-					if (optionalDouble.isPresent()) {
-						RenderSystem.lineWidth((float)optionalDouble.getAsDouble());
+				if (!Objects.equals(width, OptionalDouble.of(1.0))) {
+					if (width.isPresent()) {
+						RenderSystem.lineWidth((float)width.getAsDouble());
 					} else {
 						RenderSystem.lineWidth(Math.max(2.5F, (float)MinecraftClient.getInstance().getWindow().getFramebufferWidth() / 1920.0F * 2.5F));
 					}
 				}
 			}, () -> {
-				if (!Objects.equals(optionalDouble, OptionalDouble.of(1.0))) {
+				if (!Objects.equals(width, OptionalDouble.of(1.0))) {
 					RenderSystem.lineWidth(1.0F);
 				}
 			});
-			this.width = optionalDouble;
-		}
-
-		@Override
-		public boolean equals(@Nullable Object object) {
-			if (this == object) {
-				return true;
-			} else if (object == null || this.getClass() != object.getClass()) {
-				return false;
-			} else {
-				return !super.equals(object) ? false : Objects.equals(this.width, ((RenderPhase.LineWidth)object).width);
-			}
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(new Object[]{super.hashCode(), this.width});
+			this.width = width;
 		}
 
 		@Override
@@ -404,30 +351,8 @@ public abstract class RenderPhase {
 
 	@Environment(EnvType.CLIENT)
 	public static final class OffsetTexturing extends RenderPhase.Texturing {
-		private final float x;
-		private final float y;
-
 		public OffsetTexturing(float x, float y) {
 			super("offset_texturing", () -> RenderSystem.setTextureMatrix(Matrix4f.translate(x, y, 0.0F)), () -> RenderSystem.resetTextureMatrix());
-			this.x = x;
-			this.y = y;
-		}
-
-		@Override
-		public boolean equals(Object object) {
-			if (this == object) {
-				return true;
-			} else if (object != null && this.getClass() == object.getClass()) {
-				RenderPhase.OffsetTexturing offsetTexturing = (RenderPhase.OffsetTexturing)object;
-				return Float.compare(offsetTexturing.x, this.x) == 0 && Float.compare(offsetTexturing.y, this.y) == 0;
-			} else {
-				return false;
-			}
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(new Object[]{this.x, this.y});
 		}
 	}
 
@@ -447,6 +372,28 @@ public abstract class RenderPhase {
 	}
 
 	@Environment(EnvType.CLIENT)
+	public static class Shader extends RenderPhase {
+		private final Optional<Supplier<net.minecraft.client.render.Shader>> supplier;
+
+		public Shader(Supplier<net.minecraft.client.render.Shader> supplier) {
+			super("shader", () -> RenderSystem.setShader(supplier), () -> {
+			});
+			this.supplier = Optional.of(supplier);
+		}
+
+		public Shader() {
+			super("shader", () -> RenderSystem.setShader(() -> null), () -> {
+			});
+			this.supplier = Optional.empty();
+		}
+
+		@Override
+		public String toString() {
+			return this.name + '[' + this.supplier + "]";
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
 	public static class Target extends RenderPhase {
 		public Target(String string, Runnable runnable, Runnable runnable2) {
 			super(string, runnable, runnable2);
@@ -454,49 +401,91 @@ public abstract class RenderPhase {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Texture extends RenderPhase.class_5939 {
+	public static class Texture extends RenderPhase.TextureBase {
 		private final Optional<Identifier> id;
-		private final boolean bilinear;
+		private final boolean blur;
 		private final boolean mipmap;
 
-		public Texture(Identifier identifier, boolean bl, boolean bl2) {
+		public Texture(Identifier id, boolean blur, boolean mipmap) {
 			super(() -> {
 				RenderSystem.enableTexture();
 				TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
-				textureManager.getTexture(identifier).setFilter(bl, bl2);
-				RenderSystem.setShaderTexture(0, identifier);
+				textureManager.getTexture(id).setFilter(blur, mipmap);
+				RenderSystem.setShaderTexture(0, id);
 			}, () -> {
 			});
-			this.id = Optional.of(identifier);
-			this.bilinear = bl;
-			this.mipmap = bl2;
-		}
-
-		@Override
-		public boolean equals(Object object) {
-			if (this == object) {
-				return true;
-			} else if (object != null && this.getClass() == object.getClass()) {
-				RenderPhase.Texture texture = (RenderPhase.Texture)object;
-				return this.id.equals(texture.id) && this.bilinear == texture.bilinear && this.mipmap == texture.mipmap;
-			} else {
-				return false;
-			}
-		}
-
-		@Override
-		public int hashCode() {
-			return this.id.hashCode();
+			this.id = Optional.of(id);
+			this.blur = blur;
+			this.mipmap = mipmap;
 		}
 
 		@Override
 		public String toString() {
-			return this.name + '[' + this.id + "(blur=" + this.bilinear + ", mipmap=" + this.mipmap + ")]";
+			return this.name + '[' + this.id + "(blur=" + this.blur + ", mipmap=" + this.mipmap + ")]";
 		}
 
 		@Override
 		protected Optional<Identifier> getId() {
 			return this.id;
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class TextureBase extends RenderPhase {
+		public TextureBase(Runnable apply, Runnable unapply) {
+			super("texture", apply, unapply);
+		}
+
+		private TextureBase() {
+			super("texture", () -> {
+			}, () -> {
+			});
+		}
+
+		protected Optional<Identifier> getId() {
+			return Optional.empty();
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class Textures extends RenderPhase.TextureBase {
+		private final Optional<Identifier> id;
+
+		private Textures(ImmutableList<Triple<Identifier, Boolean, Boolean>> textures) {
+			super(() -> {
+				int i = 0;
+
+				for (Triple<Identifier, Boolean, Boolean> triple : textures) {
+					TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
+					textureManager.getTexture(triple.getLeft()).setFilter(triple.getMiddle(), triple.getRight());
+					RenderSystem.setShaderTexture(i++, triple.getLeft());
+				}
+			}, () -> {
+			});
+			this.id = textures.stream().findFirst().map(Triple::getLeft);
+		}
+
+		@Override
+		protected Optional<Identifier> getId() {
+			return this.id;
+		}
+
+		public static RenderPhase.Textures.Builder create() {
+			return new RenderPhase.Textures.Builder();
+		}
+
+		@Environment(EnvType.CLIENT)
+		public static final class Builder {
+			private final ImmutableList.Builder<Triple<Identifier, Boolean, Boolean>> textures = new ImmutableList.Builder<>();
+
+			public RenderPhase.Textures.Builder add(Identifier id, boolean blur, boolean mipmap) {
+				this.textures.add(Triple.of(id, blur, mipmap));
+				return this;
+			}
+
+			public RenderPhase.Textures build() {
+				return new RenderPhase.Textures(this.textures.build());
+			}
 		}
 	}
 
@@ -511,26 +500,9 @@ public abstract class RenderPhase {
 	static class Toggleable extends RenderPhase {
 		private final boolean enabled;
 
-		public Toggleable(String string, Runnable runnable, Runnable runnable2, boolean bl) {
-			super(string, runnable, runnable2);
-			this.enabled = bl;
-		}
-
-		@Override
-		public boolean equals(Object object) {
-			if (this == object) {
-				return true;
-			} else if (object != null && this.getClass() == object.getClass()) {
-				RenderPhase.Toggleable toggleable = (RenderPhase.Toggleable)object;
-				return this.enabled == toggleable.enabled;
-			} else {
-				return false;
-			}
-		}
-
-		@Override
-		public int hashCode() {
-			return Boolean.hashCode(this.enabled);
+		public Toggleable(String name, Runnable apply, Runnable unapply, boolean enabled) {
+			super(name, apply, unapply);
+			this.enabled = enabled;
 		}
 
 		@Override
@@ -574,123 +546,8 @@ public abstract class RenderPhase {
 		}
 
 		@Override
-		public boolean equals(Object object) {
-			if (this == object) {
-				return true;
-			} else if (object != null && this.getClass() == object.getClass()) {
-				RenderPhase.WriteMaskState writeMaskState = (RenderPhase.WriteMaskState)object;
-				return this.color == writeMaskState.color && this.depth == writeMaskState.depth;
-			} else {
-				return false;
-			}
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(new Object[]{this.color, this.depth});
-		}
-
-		@Override
 		public String toString() {
 			return this.name + "[writeColor=" + this.color + ", writeDepth=" + this.depth + ']';
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static class class_5939 extends RenderPhase {
-		public class_5939(Runnable runnable, Runnable runnable2) {
-			super("texture", runnable, runnable2);
-		}
-
-		private class_5939() {
-			super("texture", () -> {
-			}, () -> {
-			});
-		}
-
-		protected Optional<Identifier> getId() {
-			return Optional.empty();
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static class class_5940 extends RenderPhase.class_5939 {
-		private final Optional<Identifier> field_29453;
-
-		private class_5940(ImmutableList<Triple<Identifier, Boolean, Boolean>> immutableList) {
-			super(() -> {
-				int i = 0;
-
-				for (Triple<Identifier, Boolean, Boolean> triple : immutableList) {
-					TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
-					textureManager.getTexture(triple.getLeft()).setFilter(triple.getMiddle(), triple.getRight());
-					RenderSystem.setShaderTexture(i++, triple.getLeft());
-				}
-			}, () -> {
-			});
-			this.field_29453 = immutableList.stream().findFirst().map(Triple::getLeft);
-		}
-
-		@Override
-		protected Optional<Identifier> getId() {
-			return this.field_29453;
-		}
-
-		public static RenderPhase.class_5940.class_5941 method_34560() {
-			return new RenderPhase.class_5940.class_5941();
-		}
-
-		@Environment(EnvType.CLIENT)
-		public static final class class_5941 {
-			private final Builder<Triple<Identifier, Boolean, Boolean>> field_29454 = new Builder<>();
-
-			public RenderPhase.class_5940.class_5941 method_34563(Identifier identifier, boolean bl, boolean bl2) {
-				this.field_29454.add(Triple.of(identifier, bl, bl2));
-				return this;
-			}
-
-			public RenderPhase.class_5940 method_34562() {
-				return new RenderPhase.class_5940(this.field_29454.build());
-			}
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static class class_5942 extends RenderPhase {
-		private final Optional<Supplier<class_5944>> field_29455;
-
-		public class_5942(Supplier<class_5944> supplier) {
-			super("shader", () -> RenderSystem.setShader(supplier), () -> {
-			});
-			this.field_29455 = Optional.of(supplier);
-		}
-
-		public class_5942() {
-			super("shader", () -> RenderSystem.setShader(() -> null), () -> {
-			});
-			this.field_29455 = Optional.empty();
-		}
-
-		@Override
-		public boolean equals(Object object) {
-			if (this == object) {
-				return true;
-			} else if (object != null && this.getClass() == object.getClass()) {
-				RenderPhase.class_5942 lv = (RenderPhase.class_5942)object;
-				return this.field_29455.equals(lv.field_29455);
-			} else {
-				return false;
-			}
-		}
-
-		@Override
-		public int hashCode() {
-			return this.field_29455.hashCode();
-		}
-
-		@Override
-		public String toString() {
-			return this.name + '[' + this.field_29455 + "]";
 		}
 	}
 }

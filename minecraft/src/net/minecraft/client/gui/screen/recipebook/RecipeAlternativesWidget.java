@@ -235,6 +235,7 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 			float f = 0.42F;
 			MatrixStack matrixStack = RenderSystem.getModelViewStack();
 			matrixStack.push();
+			matrixStack.translate(0.0, 0.0, 125.0);
 			matrixStack.scale(0.42F, 0.42F, 1.0F);
 			RenderSystem.applyModelViewMatrix();
 

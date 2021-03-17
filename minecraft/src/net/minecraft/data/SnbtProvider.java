@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.minecraft.data.dev.NbtProvider;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.util.Util;
@@ -37,14 +37,14 @@ public class SnbtProvider implements DataProvider {
 		return this;
 	}
 
-	private CompoundTag write(String string, CompoundTag compoundTag) {
-		CompoundTag compoundTag2 = compoundTag;
+	private NbtCompound write(String string, NbtCompound nbtCompound) {
+		NbtCompound nbtCompound2 = nbtCompound;
 
 		for (SnbtProvider.Tweaker tweaker : this.write) {
-			compoundTag2 = tweaker.write(string, compoundTag2);
+			nbtCompound2 = tweaker.write(string, nbtCompound2);
 		}
 
-		return compoundTag2;
+		return nbtCompound2;
 	}
 
 	@Override
@@ -94,14 +94,14 @@ public class SnbtProvider implements DataProvider {
 			SnbtProvider.CompressedData var11;
 			try {
 				String string = IOUtils.toString(bufferedReader);
-				CompoundTag compoundTag = this.write(name, NbtHelper.method_32260(string));
+				NbtCompound nbtCompound = this.write(name, NbtHelper.method_32260(string));
 				ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-				NbtIo.writeCompressed(compoundTag, byteArrayOutputStream);
+				NbtIo.writeCompressed(nbtCompound, byteArrayOutputStream);
 				byte[] bs = byteArrayOutputStream.toByteArray();
 				String string2 = SHA1.hashBytes(bs).toString();
 				String string3;
 				if (field_24615 != null) {
-					string3 = NbtHelper.toPrettyPrintedString(compoundTag);
+					string3 = NbtHelper.toPrettyPrintedString(nbtCompound);
 				} else {
 					string3 = null;
 				}
@@ -198,6 +198,6 @@ public class SnbtProvider implements DataProvider {
 
 	@FunctionalInterface
 	public interface Tweaker {
-		CompoundTag write(String name, CompoundTag nbt);
+		NbtCompound write(String name, NbtCompound nbt);
 	}
 }

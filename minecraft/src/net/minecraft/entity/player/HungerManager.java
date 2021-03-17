@@ -2,11 +2,12 @@ package net.minecraft.entity.player;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 
@@ -75,8 +76,8 @@ public class HungerManager {
 		}
 	}
 
-	public void readNbt(CompoundTag tag) {
-		if (tag.contains("foodLevel", 99)) {
+	public void readNbt(NbtCompound tag) {
+		if (tag.contains("foodLevel", NbtTypeIds.NUMBER)) {
 			this.foodLevel = tag.getInt("foodLevel");
 			this.foodStarvationTimer = tag.getInt("foodTickTimer");
 			this.foodSaturationLevel = tag.getFloat("foodSaturationLevel");
@@ -84,7 +85,7 @@ public class HungerManager {
 		}
 	}
 
-	public void writeNbt(CompoundTag tag) {
+	public void writeNbt(NbtCompound tag) {
 		tag.putInt("foodLevel", this.foodLevel);
 		tag.putInt("foodTickTimer", this.foodStarvationTimer);
 		tag.putFloat("foodSaturationLevel", this.foodSaturationLevel);

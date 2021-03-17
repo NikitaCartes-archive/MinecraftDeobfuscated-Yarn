@@ -13,6 +13,7 @@ import net.minecraft.client.util.GlfwUtil;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.SmoothUtil;
 import net.minecraft.util.math.MathHelper;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWDropCallback;
 
 @Environment(EnvType.CLIENT)
@@ -72,7 +73,7 @@ public class Mouse {
 			}
 
 			boolean[] bls = new boolean[]{false};
-			if (this.client.overlay == null) {
+			if (this.client.getOverlay() == null) {
 				if (this.client.currentScreen == null) {
 					if (!this.cursorLocked && bl) {
 						this.lockCursor();
@@ -92,18 +93,18 @@ public class Mouse {
 				}
 			}
 
-			if (!bls[0] && (this.client.currentScreen == null || this.client.currentScreen.passEvents) && this.client.overlay == null) {
+			if (!bls[0] && (this.client.currentScreen == null || this.client.currentScreen.passEvents) && this.client.getOverlay() == null) {
 				if (i == 0) {
 					this.leftButtonClicked = bl;
-				} else if (i == 2) {
+				} else if (i == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
 					this.middleButtonClicked = bl;
-				} else if (i == 1) {
+				} else if (i == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
 					this.rightButtonClicked = bl;
 				}
 
 				KeyBinding.setKeyPressed(InputUtil.Type.MOUSE.createFromCode(i), bl);
 				if (bl) {
-					if (this.client.player.isSpectator() && i == 2) {
+					if (this.client.player.isSpectator() && i == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
 						this.client.inGameHud.getSpectatorHud().useSelectedCommand();
 					} else {
 						KeyBinding.onKeyPressed(InputUtil.Type.MOUSE.createFromCode(i));
@@ -123,7 +124,7 @@ public class Mouse {
 	private void onMouseScroll(long window, double horizontal, double vertical) {
 		if (window == MinecraftClient.getInstance().getWindow().getHandle()) {
 			double d = (this.client.options.discreteMouseScroll ? Math.signum(vertical) : vertical) * this.client.options.mouseWheelSensitivity;
-			if (this.client.overlay == null) {
+			if (this.client.getOverlay() == null) {
 				if (this.client.currentScreen != null) {
 					double e = this.x * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth();
 					double f = this.y * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight();
@@ -188,7 +189,7 @@ public class Mouse {
 			}
 
 			Element element = this.client.currentScreen;
-			if (element != null && this.client.overlay == null) {
+			if (element != null && this.client.getOverlay() == null) {
 				double d = x * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth();
 				double e = y * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight();
 				Screen.wrapScreenError(() -> element.mouseMoved(d, e), "mouseMoved event handler", element.getClass().getCanonicalName());

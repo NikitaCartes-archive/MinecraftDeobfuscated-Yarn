@@ -2,20 +2,21 @@ package net.minecraft.village;
 
 import java.util.ArrayList;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
 
 public class TradeOfferList extends ArrayList<TradeOffer> {
 	public TradeOfferList() {
 	}
 
-	public TradeOfferList(CompoundTag nbt) {
-		ListTag listTag = nbt.getList("Recipes", 10);
+	public TradeOfferList(NbtCompound nbt) {
+		NbtList nbtList = nbt.getList("Recipes", NbtTypeIds.COMPOUND);
 
-		for (int i = 0; i < listTag.size(); i++) {
-			this.add(new TradeOffer(listTag.getCompound(i)));
+		for (int i = 0; i < nbtList.size(); i++) {
+			this.add(new TradeOffer(nbtList.getCompound(i)));
 		}
 	}
 
@@ -90,16 +91,16 @@ public class TradeOfferList extends ArrayList<TradeOffer> {
 		return tradeOfferList;
 	}
 
-	public CompoundTag toNbt() {
-		CompoundTag compoundTag = new CompoundTag();
-		ListTag listTag = new ListTag();
+	public NbtCompound toNbt() {
+		NbtCompound nbtCompound = new NbtCompound();
+		NbtList nbtList = new NbtList();
 
 		for (int i = 0; i < this.size(); i++) {
 			TradeOffer tradeOffer = (TradeOffer)this.get(i);
-			listTag.add(tradeOffer.toNbt());
+			nbtList.add(tradeOffer.toNbt());
 		}
 
-		compoundTag.put("Recipes", listTag);
-		return compoundTag;
+		nbtCompound.put("Recipes", nbtList);
+		return nbtCompound;
 	}
 }

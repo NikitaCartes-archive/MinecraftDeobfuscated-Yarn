@@ -48,7 +48,7 @@ public class StructurePoolBasedGenerator {
 		boolean bl2,
 		HeightLimitView heightLimitView
 	) {
-		StructureFeature.method_28664();
+		StructureFeature.init();
 		Registry<StructurePool> registry = dynamicRegistryManager.get(Registry.TEMPLATE_POOL_WORLDGEN);
 		BlockRotation blockRotation = BlockRotation.random(random);
 		StructurePool structurePool = (StructurePool)structurePoolFeatureConfig.getStartPool().get();

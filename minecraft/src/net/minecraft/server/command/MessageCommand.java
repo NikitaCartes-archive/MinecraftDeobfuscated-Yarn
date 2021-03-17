@@ -23,9 +23,7 @@ public class MessageCommand {
 						.then(
 							CommandManager.argument("message", MessageArgumentType.message())
 								.executes(
-									commandContext -> execute(
-											commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), MessageArgumentType.getMessage(commandContext, "message")
-										)
+									context -> execute(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), MessageArgumentType.getMessage(context, "message"))
 								)
 						)
 				)
@@ -40,13 +38,13 @@ public class MessageCommand {
 		Consumer<Text> consumer;
 		if (entity instanceof ServerPlayerEntity) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
-			consumer = text2 -> serverPlayerEntity.sendSystemMessage(
-					new TranslatableText("commands.message.display.outgoing", text2, message).formatted(new Formatting[]{Formatting.GRAY, Formatting.ITALIC}),
+			consumer = playerName -> serverPlayerEntity.sendSystemMessage(
+					new TranslatableText("commands.message.display.outgoing", playerName, message).formatted(new Formatting[]{Formatting.GRAY, Formatting.ITALIC}),
 					serverPlayerEntity.getUuid()
 				);
 		} else {
-			consumer = text2 -> source.sendFeedback(
-					new TranslatableText("commands.message.display.outgoing", text2, message).formatted(new Formatting[]{Formatting.GRAY, Formatting.ITALIC}), false
+			consumer = playerName -> source.sendFeedback(
+					new TranslatableText("commands.message.display.outgoing", playerName, message).formatted(new Formatting[]{Formatting.GRAY, Formatting.ITALIC}), false
 				);
 		}
 

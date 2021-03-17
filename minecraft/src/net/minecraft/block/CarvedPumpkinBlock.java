@@ -2,6 +2,8 @@ package net.minecraft.block;
 
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.pattern.BlockPatternBuilder;
@@ -55,8 +57,8 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock implements Wearabl
 		if (result != null) {
 			for (int i = 0; i < this.getSnowGolemPattern().getHeight(); i++) {
 				CachedBlockPosition cachedBlockPosition = result.translate(0, i, 0);
-				world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.AIR.getDefaultState(), 2);
-				world.syncWorldEvent(2001, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
+				world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.AIR.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+				world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
 			}
 
 			SnowGolemEntity snowGolemEntity = EntityType.SNOW_GOLEM.create(world);
@@ -78,8 +80,8 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock implements Wearabl
 				for (int i = 0; i < this.getIronGolemPattern().getWidth(); i++) {
 					for (int k = 0; k < this.getIronGolemPattern().getHeight(); k++) {
 						CachedBlockPosition cachedBlockPosition3 = result.translate(i, k, 0);
-						world.setBlockState(cachedBlockPosition3.getBlockPos(), Blocks.AIR.getDefaultState(), 2);
-						world.syncWorldEvent(2001, cachedBlockPosition3.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition3.getBlockState()));
+						world.setBlockState(cachedBlockPosition3.getBlockPos(), Blocks.AIR.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+						world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, cachedBlockPosition3.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition3.getBlockState()));
 					}
 				}
 

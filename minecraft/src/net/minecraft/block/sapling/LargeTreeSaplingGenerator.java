@@ -2,6 +2,7 @@ package net.minecraft.block.sapling;
 
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -29,23 +30,23 @@ public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 	@Nullable
 	protected abstract ConfiguredFeature<TreeFeatureConfig, ?> createLargeTreeFeature(Random random);
 
-	public boolean generateLargeTree(ServerWorld world, ChunkGenerator chunkGenerator, BlockPos pos, BlockState state, Random random, int i, int j) {
+	public boolean generateLargeTree(ServerWorld world, ChunkGenerator chunkGenerator, BlockPos pos, BlockState state, Random random, int x, int z) {
 		ConfiguredFeature<TreeFeatureConfig, ?> configuredFeature = this.createLargeTreeFeature(random);
 		if (configuredFeature == null) {
 			return false;
 		} else {
 			BlockState blockState = Blocks.AIR.getDefaultState();
-			world.setBlockState(pos.add(i, 0, j), blockState, 4);
-			world.setBlockState(pos.add(i + 1, 0, j), blockState, 4);
-			world.setBlockState(pos.add(i, 0, j + 1), blockState, 4);
-			world.setBlockState(pos.add(i + 1, 0, j + 1), blockState, 4);
-			if (configuredFeature.generate(world, chunkGenerator, random, pos.add(i, 0, j))) {
+			world.setBlockState(pos.add(x, 0, z), blockState, SetBlockStateFlags.NO_REDRAW);
+			world.setBlockState(pos.add(x + 1, 0, z), blockState, SetBlockStateFlags.NO_REDRAW);
+			world.setBlockState(pos.add(x, 0, z + 1), blockState, SetBlockStateFlags.NO_REDRAW);
+			world.setBlockState(pos.add(x + 1, 0, z + 1), blockState, SetBlockStateFlags.NO_REDRAW);
+			if (configuredFeature.generate(world, chunkGenerator, random, pos.add(x, 0, z))) {
 				return true;
 			} else {
-				world.setBlockState(pos.add(i, 0, j), state, 4);
-				world.setBlockState(pos.add(i + 1, 0, j), state, 4);
-				world.setBlockState(pos.add(i, 0, j + 1), state, 4);
-				world.setBlockState(pos.add(i + 1, 0, j + 1), state, 4);
+				world.setBlockState(pos.add(x, 0, z), state, SetBlockStateFlags.NO_REDRAW);
+				world.setBlockState(pos.add(x + 1, 0, z), state, SetBlockStateFlags.NO_REDRAW);
+				world.setBlockState(pos.add(x, 0, z + 1), state, SetBlockStateFlags.NO_REDRAW);
+				world.setBlockState(pos.add(x + 1, 0, z + 1), state, SetBlockStateFlags.NO_REDRAW);
 				return false;
 			}
 		}

@@ -28,7 +28,7 @@ public enum Direction implements StringIdentifiable {
 	WEST(4, 5, 1, "west", Direction.AxisDirection.NEGATIVE, Direction.Axis.X, new Vec3i(-1, 0, 0)),
 	EAST(5, 4, 3, "east", Direction.AxisDirection.POSITIVE, Direction.Axis.X, new Vec3i(1, 0, 0));
 
-	public static final Codec<Direction> field_29502 = StringIdentifiable.createCodec(Direction::values, Direction::byName);
+	public static final Codec<Direction> CODEC = StringIdentifiable.createCodec(Direction::values, Direction::byName);
 	private final int id;
 	private final int idOpposite;
 	private final int idHorizontal;
@@ -337,7 +337,7 @@ public enum Direction implements StringIdentifiable {
 			}
 		};
 
-		private static final Direction.Axis[] VALUES = values();
+		public static final Direction.Axis[] VALUES = values();
 		public static final Codec<Direction.Axis> CODEC = StringIdentifiable.createCodec(Direction.Axis::values, Direction.Axis::fromName);
 		private static final Map<String, Direction.Axis> BY_NAME = (Map<String, Direction.Axis>)Arrays.stream(VALUES)
 			.collect(Collectors.toMap(Direction.Axis::getName, axis -> axis));

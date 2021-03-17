@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -52,10 +53,10 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.DebugInfoSender;
@@ -467,9 +468,12 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
-		VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData()).resultOrPartial(LOGGER::error).ifPresent(tagx -> tag.put("VillagerData", tagx));
+		VillagerData.CODEC
+			.encodeStart(NbtOps.INSTANCE, this.getVillagerData())
+			.resultOrPartial(LOGGER::error)
+			.ifPresent(nbtElement -> tag.put("VillagerData", nbtElement));
 		tag.putByte("FoodLevel", this.foodLevel);
 		tag.put("Gossips", this.gossip.serialize(NbtOps.INSTANCE).getValue());
 		tag.putInt("Xp", this.experience);
@@ -482,24 +486,24 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
-		if (tag.contains("VillagerData", 10)) {
+		if (tag.contains("VillagerData", NbtTypeIds.COMPOUND)) {
 			DataResult<VillagerData> dataResult = VillagerData.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, tag.get("VillagerData")));
 			dataResult.resultOrPartial(LOGGER::error).ifPresent(this::setVillagerData);
 		}
 
-		if (tag.contains("Offers", 10)) {
+		if (tag.contains("Offers", NbtTypeIds.COMPOUND)) {
 			this.offers = new TradeOfferList(tag.getCompound("Offers"));
 		}
 
-		if (tag.contains("FoodLevel", 1)) {
+		if (tag.contains("FoodLevel", NbtTypeIds.BYTE)) {
 			this.foodLevel = tag.getByte("FoodLevel");
 		}
 
-		ListTag listTag = tag.getList("Gossips", 10);
-		this.gossip.deserialize(new Dynamic<>(NbtOps.INSTANCE, listTag));
-		if (tag.contains("Xp", 3)) {
+		NbtList nbtList = tag.getList("Gossips", NbtTypeIds.COMPOUND);
+		this.gossip.deserialize(new Dynamic<>(NbtOps.INSTANCE, nbtList));
+		if (tag.contains("Xp", NbtTypeIds.INT)) {
 			this.experience = tag.getInt("Xp");
 		}
 
@@ -722,7 +726,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
 	) {
 		if (spawnReason == SpawnReason.BREEDING) {
 			this.setVillagerData(this.getVillagerData().withProfession(VillagerProfession.NONE));
@@ -948,7 +952,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		return this.gossip;
 	}
 
-	public void setGossipDataFromNbt(Tag tag) {
+	public void setGossipDataFromNbt(NbtElement tag) {
 		this.gossip.deserialize(new Dynamic<>(NbtOps.INSTANCE, tag));
 	}
 

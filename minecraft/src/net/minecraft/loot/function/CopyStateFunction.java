@@ -7,6 +7,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import java.util.Set;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
@@ -14,7 +15,7 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
@@ -45,16 +46,16 @@ public class CopyStateFunction extends ConditionalLootFunction {
 	protected ItemStack process(ItemStack stack, LootContext context) {
 		BlockState blockState = context.get(LootContextParameters.BLOCK_STATE);
 		if (blockState != null) {
-			CompoundTag compoundTag = stack.getOrCreateTag();
-			CompoundTag compoundTag2;
-			if (compoundTag.contains("BlockStateTag", 10)) {
-				compoundTag2 = compoundTag.getCompound("BlockStateTag");
+			NbtCompound nbtCompound = stack.getOrCreateTag();
+			NbtCompound nbtCompound2;
+			if (nbtCompound.contains("BlockStateTag", NbtTypeIds.COMPOUND)) {
+				nbtCompound2 = nbtCompound.getCompound("BlockStateTag");
 			} else {
-				compoundTag2 = new CompoundTag();
-				compoundTag.put("BlockStateTag", compoundTag2);
+				nbtCompound2 = new NbtCompound();
+				nbtCompound.put("BlockStateTag", nbtCompound2);
 			}
 
-			this.properties.stream().filter(blockState::contains).forEach(property -> compoundTag2.putString(property.getName(), getPropertyName(blockState, property)));
+			this.properties.stream().filter(blockState::contains).forEach(property -> nbtCompound2.putString(property.getName(), getPropertyName(blockState, property)));
 		}
 
 		return stack;

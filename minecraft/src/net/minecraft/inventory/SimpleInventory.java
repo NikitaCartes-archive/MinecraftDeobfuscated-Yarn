@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeInputProvider;
 import net.minecraft.util.collection.DefaultedList;
@@ -215,7 +215,7 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 		}
 	}
 
-	public void readTags(ListTag tags) {
+	public void readTags(NbtList tags) {
 		for (int i = 0; i < tags.size(); i++) {
 			ItemStack itemStack = ItemStack.fromNbt(tags.getCompound(i));
 			if (!itemStack.isEmpty()) {
@@ -224,16 +224,16 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 		}
 	}
 
-	public ListTag getTags() {
-		ListTag listTag = new ListTag();
+	public NbtList getTags() {
+		NbtList nbtList = new NbtList();
 
 		for (int i = 0; i < this.size(); i++) {
 			ItemStack itemStack = this.getStack(i);
 			if (!itemStack.isEmpty()) {
-				listTag.add(itemStack.writeNbt(new CompoundTag()));
+				nbtList.add(itemStack.writeNbt(new NbtCompound()));
 			}
 		}
 
-		return listTag;
+		return nbtList;
 	}
 }

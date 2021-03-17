@@ -5,6 +5,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
@@ -217,7 +218,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 				extinguish(null, world, pos, state);
 			}
 
-			world.setBlockState(pos, state.with(WATERLOGGED, Boolean.valueOf(true)).with(LIT, Boolean.valueOf(false)), 3);
+			world.setBlockState(pos, state.with(WATERLOGGED, Boolean.valueOf(true)).with(LIT, Boolean.valueOf(false)), SetBlockStateFlags.DEFAULT);
 			world.getFluidTickScheduler().schedule(pos, fluidState.getFluid(), fluidState.getFluid().getTickRate(world));
 			return true;
 		} else {
@@ -232,7 +233,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 			boolean bl = entity == null || entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
 			if (bl && !(Boolean)state.get(LIT) && !(Boolean)state.get(WATERLOGGED)) {
 				BlockPos blockPos = hit.getBlockPos();
-				world.setBlockState(blockPos, state.with(Properties.LIT, Boolean.valueOf(true)), 11);
+				world.setBlockState(blockPos, state.with(Properties.LIT, Boolean.valueOf(true)), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
 			}
 		}
 	}
@@ -328,7 +329,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	public static boolean canBeLit(BlockState state) {
-		return state.isIn(BlockTags.CAMPFIRES, abstractBlockState -> abstractBlockState.contains(WATERLOGGED) && abstractBlockState.contains(LIT))
+		return state.isIn(BlockTags.CAMPFIRES, statex -> statex.contains(WATERLOGGED) && statex.contains(LIT))
 			&& !(Boolean)state.get(WATERLOGGED)
 			&& !(Boolean)state.get(LIT);
 	}

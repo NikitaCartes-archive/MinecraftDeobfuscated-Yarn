@@ -18,27 +18,24 @@ public class GiveCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("give")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
+				.requires(source -> source.hasPermissionLevel(2))
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.players())
 						.then(
 							CommandManager.argument("item", ItemStackArgumentType.itemStack())
 								.executes(
-									commandContext -> execute(
-											commandContext.getSource(),
-											ItemStackArgumentType.getItemStackArgument(commandContext, "item"),
-											EntityArgumentType.getPlayers(commandContext, "targets"),
-											1
+									context -> execute(
+											context.getSource(), ItemStackArgumentType.getItemStackArgument(context, "item"), EntityArgumentType.getPlayers(context, "targets"), 1
 										)
 								)
 								.then(
 									CommandManager.argument("count", IntegerArgumentType.integer(1))
 										.executes(
-											commandContext -> execute(
-													commandContext.getSource(),
-													ItemStackArgumentType.getItemStackArgument(commandContext, "item"),
-													EntityArgumentType.getPlayers(commandContext, "targets"),
-													IntegerArgumentType.getInteger(commandContext, "count")
+											context -> execute(
+													context.getSource(),
+													ItemStackArgumentType.getItemStackArgument(context, "item"),
+													EntityArgumentType.getPlayers(context, "targets"),
+													IntegerArgumentType.getInteger(context, "count")
 												)
 										)
 								)

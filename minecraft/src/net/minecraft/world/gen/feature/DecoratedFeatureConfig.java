@@ -30,7 +30,7 @@ public class DecoratedFeatureConfig implements FeatureConfig {
 	}
 
 	@Override
-	public Stream<ConfiguredFeature<?, ?>> method_30649() {
-		return ((ConfiguredFeature)this.feature.get()).method_30648();
+	public Stream<ConfiguredFeature<?, ?>> getDecoratedFeatures() {
+		return ((ConfiguredFeature)this.feature.get()).getDecoratedFeatures();
 	}
 }

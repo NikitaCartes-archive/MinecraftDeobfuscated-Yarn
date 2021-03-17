@@ -3,6 +3,7 @@ package net.minecraft.world.gen.placer;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -34,7 +35,7 @@ public class ColumnPlacer extends BlockPlacer {
 		int i = this.minSize + random.nextInt(random.nextInt(this.extraSize + 1) + 1);
 
 		for (int j = 0; j < i; j++) {
-			world.setBlockState(mutable, state, 2);
+			world.setBlockState(mutable, state, SetBlockStateFlags.NOTIFY_LISTENERS);
 			mutable.move(Direction.UP);
 		}
 	}

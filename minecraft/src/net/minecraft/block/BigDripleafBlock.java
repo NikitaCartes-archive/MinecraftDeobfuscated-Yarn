@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import java.util.Map;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.enums.Tilt;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -37,11 +38,11 @@ import net.minecraft.world.event.GameEvent;
 public class BigDripleafBlock extends HorizontalFacingBlock implements Fertilizable, Waterloggable {
 	private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	private static final EnumProperty<Tilt> TILT = Properties.TILT;
-	private static final Object2IntMap<Tilt> NEXT_TILT_DELAYS = Util.make(new Object2IntArrayMap<>(), object2IntArrayMap -> {
-		object2IntArrayMap.defaultReturnValue(-1);
-		object2IntArrayMap.put(Tilt.UNSTABLE, 10);
-		object2IntArrayMap.put(Tilt.PARTIAL, 10);
-		object2IntArrayMap.put(Tilt.FULL, 100);
+	private static final Object2IntMap<Tilt> NEXT_TILT_DELAYS = Util.make(new Object2IntArrayMap<>(), delays -> {
+		delays.defaultReturnValue(-1);
+		delays.put(Tilt.UNSTABLE, 10);
+		delays.put(Tilt.PARTIAL, 10);
+		delays.put(Tilt.FULL, 100);
 	});
 	private static final Map<Tilt, VoxelShape> SHAPES_FOR_TILT = ImmutableMap.of(
 		Tilt.NONE,
@@ -83,13 +84,12 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 		return (VoxelShape)SHAPES_FOR_TILT.get(state.get(TILT));
 	}
 
-	public static void grow(WorldAccess worldAccess, Random random, BlockPos pos) {
+	public static void grow(WorldAccess world, Random random, BlockPos pos, Direction direction) {
 		int i = 1 + random.nextInt(5);
-		Direction direction = Direction.Type.HORIZONTAL.random(random);
 		BlockPos.Mutable mutable = pos.mutableCopy();
 		int j = 0;
 
-		while (j < i && canGrowInto(worldAccess, mutable, worldAccess.getBlockState(mutable))) {
+		while (j < i && canGrowInto(world, mutable, world.getBlockState(mutable))) {
 			j++;
 			mutable.move(Direction.UP);
 		}
@@ -98,19 +98,19 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 		mutable.setY(pos.getY());
 
 		while (mutable.getY() < k) {
-			BigDripleafStemBlock.placeStemAt(worldAccess, mutable, worldAccess.getFluidState(mutable), direction);
+			BigDripleafStemBlock.placeStemAt(world, mutable, world.getFluidState(mutable), direction);
 			mutable.move(Direction.UP);
 		}
 
-		placeDripleafAt(worldAccess, mutable, worldAccess.getFluidState(mutable), direction);
+		placeDripleafAt(world, mutable, world.getFluidState(mutable), direction);
 	}
 
 	private static boolean canGrowInto(BlockState state) {
 		return state.isAir() || state.isOf(Blocks.WATER) || state.isOf(Blocks.SMALL_DRIPLEAF);
 	}
 
-	private static boolean canGrowInto(HeightLimitView heightLimitView, BlockPos pos, BlockState state) {
-		return !heightLimitView.isOutOfHeightLimit(pos) && canGrowInto(state);
+	protected static boolean canGrowInto(HeightLimitView world, BlockPos pos, BlockState state) {
+		return !world.isOutOfHeightLimit(pos) && canGrowInto(state);
 	}
 
 	protected static boolean placeDripleafAt(WorldAccess world, BlockPos pos, FluidState fluidState, Direction direction) {
@@ -118,7 +118,7 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 			.getDefaultState()
 			.with(WATERLOGGED, Boolean.valueOf(fluidState.isEqualAndStill(Fluids.WATER)))
 			.with(FACING, direction);
-		return world.setBlockState(pos, blockState, 2);
+		return world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
 	}
 
 	@Override
@@ -234,7 +234,7 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 	}
 
 	private static void changeTilt(BlockState state, World world, BlockPos pos, Tilt tilt) {
-		world.setBlockState(pos, state.with(TILT, tilt), 2);
+		world.setBlockState(pos, state.with(TILT, tilt), SetBlockStateFlags.NOTIFY_LISTENERS);
 		if (tilt.isStable()) {
 			world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos);
 		}

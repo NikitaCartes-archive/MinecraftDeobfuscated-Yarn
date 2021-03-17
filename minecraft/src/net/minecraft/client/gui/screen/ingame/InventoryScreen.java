@@ -7,6 +7,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -94,7 +95,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 
 	@Override
 	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-		RenderSystem.setShader(GameRenderer::method_34542);
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
 		int i = this.x;
@@ -128,6 +129,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 		entity.pitch = -g * 20.0F;
 		entity.headYaw = entity.yaw;
 		entity.prevHeadYaw = entity.yaw;
+		DiffuseLighting.method_34742();
 		EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
 		quaternion2.conjugate();
 		entityRenderDispatcher.setRotation(quaternion2);
@@ -143,6 +145,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 		entity.headYaw = l;
 		matrixStack.pop();
 		RenderSystem.applyModelViewMatrix();
+		DiffuseLighting.enableGuiDepthLighting();
 	}
 
 	@Override

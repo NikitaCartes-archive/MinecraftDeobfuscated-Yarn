@@ -5,6 +5,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
@@ -27,7 +28,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -167,7 +168,7 @@ public class BeehiveBlock extends BlockWithEntity {
 	}
 
 	public void takeHoney(World world, BlockState state, BlockPos pos) {
-		world.setBlockState(pos, state.with(HONEY_LEVEL, Integer.valueOf(0)), 3);
+		world.setBlockState(pos, state.with(HONEY_LEVEL, Integer.valueOf(0)), SetBlockStateFlags.DEFAULT);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -265,14 +266,14 @@ public class BeehiveBlock extends BlockWithEntity {
 				boolean bl = !beehiveBlockEntity.hasNoBees();
 				if (bl || i > 0) {
 					if (bl) {
-						CompoundTag compoundTag = new CompoundTag();
-						compoundTag.put("Bees", beehiveBlockEntity.getBees());
-						itemStack.putSubTag("BlockEntityTag", compoundTag);
+						NbtCompound nbtCompound = new NbtCompound();
+						nbtCompound.put("Bees", beehiveBlockEntity.getBees());
+						itemStack.putSubTag("BlockEntityTag", nbtCompound);
 					}
 
-					CompoundTag compoundTag = new CompoundTag();
-					compoundTag.putInt("honey_level", i);
-					itemStack.putSubTag("BlockStateTag", compoundTag);
+					NbtCompound nbtCompound = new NbtCompound();
+					nbtCompound.putInt("honey_level", i);
+					itemStack.putSubTag("BlockStateTag", nbtCompound);
 					ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), itemStack);
 					itemEntity.setToDefaultPickupDelay();
 					world.spawnEntity(itemEntity);

@@ -5,6 +5,8 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.entity.BedBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.BedPart;
@@ -108,9 +110,9 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 
 				return ActionResult.SUCCESS;
 			} else {
-				player.trySleep(pos).ifLeft(sleepFailureReason -> {
-					if (sleepFailureReason != null) {
-						player.sendMessage(sleepFailureReason.toText(), true);
+				player.trySleep(pos).ifLeft(reason -> {
+					if (reason != null) {
+						player.sendMessage(reason.toText(), true);
 					}
 				});
 				return ActionResult.SUCCESS;
@@ -179,8 +181,8 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 				BlockPos blockPos = pos.offset(getDirectionTowardsOtherPart(bedPart, state.get(FACING)));
 				BlockState blockState = world.getBlockState(blockPos);
 				if (blockState.isOf(this) && blockState.get(PART) == BedPart.HEAD) {
-					world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 35);
-					world.syncWorldEvent(player, 2001, blockPos, Block.getRawIdFromState(blockState));
+					world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.SKIP_DROPS);
+					world.syncWorldEvent(player, WorldEvents.BLOCK_BROKEN, blockPos, Block.getRawIdFromState(blockState));
 				}
 			}
 		}
@@ -307,9 +309,9 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		super.onPlaced(world, pos, state, placer, itemStack);
 		if (!world.isClient) {
 			BlockPos blockPos = pos.offset(state.get(FACING));
-			world.setBlockState(blockPos, state.with(PART, BedPart.HEAD), 3);
+			world.setBlockState(blockPos, state.with(PART, BedPart.HEAD), SetBlockStateFlags.DEFAULT);
 			world.updateNeighbors(pos, Blocks.AIR);
-			state.updateNeighbors(world, pos, 3);
+			state.updateNeighbors(world, pos, SetBlockStateFlags.DEFAULT);
 		}
 	}
 

@@ -11,7 +11,6 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5944;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.client.MinecraftClient;
@@ -36,7 +35,7 @@ import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourceFactory;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SynchronousResourceReloadListener;
+import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashCallable;
@@ -58,11 +57,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class GameRenderer implements SynchronousResourceReloadListener, AutoCloseable {
+public class GameRenderer implements SynchronousResourceReloader, AutoCloseable {
 	private static final Identifier NAUSEA_OVERLAY = new Identifier("textures/misc/nausea.png");
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final MinecraftClient client;
-	private final ResourceManager resourceContainer;
+	private final ResourceManager resourceManager;
 	private final Random random = new Random();
 	private float viewDistance;
 	public final HeldItemRenderer firstPersonRenderer;
@@ -120,120 +119,120 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 	private int forcedShaderIndex = SHADER_COUNT;
 	private boolean shadersEnabled;
 	private final Camera camera = new Camera();
-	public class_5944 field_29403;
-	private final Map<String, class_5944> field_29350 = Maps.<String, class_5944>newHashMap();
+	public Shader blitScreenShader;
+	private final Map<String, Shader> shaders = Maps.<String, Shader>newHashMap();
 	@Nullable
-	private static class_5944 field_29351;
+	private static Shader positionShader;
 	@Nullable
-	private static class_5944 field_29352;
+	private static Shader positionColorShader;
 	@Nullable
-	private static class_5944 field_29353;
+	private static Shader positionColorTexShader;
 	@Nullable
-	private static class_5944 field_29354;
+	private static Shader positionTexShader;
 	@Nullable
-	private static class_5944 field_29355;
+	private static Shader positionTexColorShader;
 	@Nullable
-	private static class_5944 field_29356;
+	private static Shader blockShader;
 	@Nullable
-	private static class_5944 field_29357;
+	private static Shader newEntityShader;
 	@Nullable
-	private static class_5944 field_29358;
+	private static Shader particleShader;
 	@Nullable
-	private static class_5944 field_29359;
+	private static Shader positionColorLightmapShader;
 	@Nullable
-	private static class_5944 field_29360;
+	private static Shader positionColorTexLightmapShader;
 	@Nullable
-	private static class_5944 field_29361;
+	private static Shader positionTexColorNormalShader;
 	@Nullable
-	private static class_5944 field_29362;
+	private static Shader positionTexLightmapColorShader;
 	@Nullable
-	private static class_5944 field_29363;
+	private static Shader renderTypeSolidShader;
 	@Nullable
-	private static class_5944 field_29364;
+	private static Shader renderTypeCutoutMippedShader;
 	@Nullable
-	private static class_5944 field_29365;
+	private static Shader renderTypeCutoutShader;
 	@Nullable
-	private static class_5944 field_29366;
+	private static Shader renderTypeTranslucentShader;
 	@Nullable
-	private static class_5944 field_29377;
+	private static Shader renderTypeTranslucentMovingBlockShader;
 	@Nullable
-	private static class_5944 field_29378;
+	private static Shader renderTypeTranslucentNoCrumblingShader;
 	@Nullable
-	private static class_5944 field_29379;
+	private static Shader renderTypeArmorCutoutNoCullShader;
 	@Nullable
-	private static class_5944 field_29380;
+	private static Shader renderTypeEntitySolidShader;
 	@Nullable
-	private static class_5944 field_29381;
+	private static Shader renderTypeEntityCutoutShader;
 	@Nullable
-	private static class_5944 field_29382;
+	private static Shader renderTypeEntityCutoutNoNullShader;
 	@Nullable
-	private static class_5944 field_29383;
+	private static Shader renderTypeEntityCutoutNoNullZOffsetShader;
 	@Nullable
-	private static class_5944 field_29384;
+	private static Shader renderTypeItemEntityTranslucentCullShader;
 	@Nullable
-	private static class_5944 field_29385;
+	private static Shader renderTypeEntityTranslucentCullShader;
 	@Nullable
-	private static class_5944 field_29386;
+	private static Shader renderTypeEntityTranslucentShader;
 	@Nullable
-	private static class_5944 field_29387;
+	private static Shader renderTypeEntitySmoothCutoutShader;
 	@Nullable
-	private static class_5944 field_29388;
+	private static Shader renderTypeBeaconBeamShader;
 	@Nullable
-	private static class_5944 field_29389;
+	private static Shader renderTypeEntityDecalShader;
 	@Nullable
-	private static class_5944 field_29390;
+	private static Shader renderTypeEntityNoOutlineShader;
 	@Nullable
-	private static class_5944 field_29391;
+	private static Shader renderTypeEntityShadowShader;
 	@Nullable
-	private static class_5944 field_29392;
+	private static Shader renderTypeEntityAlphaShader;
 	@Nullable
-	private static class_5944 field_29393;
+	private static Shader renderTypeEyesShader;
 	@Nullable
-	private static class_5944 field_29394;
+	private static Shader renderTypeEnergySwirlShader;
 	@Nullable
-	private static class_5944 field_29395;
+	private static Shader renderTypeLeashShader;
 	@Nullable
-	private static class_5944 field_29396;
+	private static Shader renderTypeWaterMaskShader;
 	@Nullable
-	private static class_5944 field_29397;
+	private static Shader renderTypeOutlineShader;
 	@Nullable
-	private static class_5944 field_29398;
+	private static Shader renderTypeArmorGlintShader;
 	@Nullable
-	private static class_5944 field_29399;
+	private static Shader renderTypeArmorEntityGlintShader;
 	@Nullable
-	private static class_5944 field_29400;
+	private static Shader renderTypeGlintTranslucentShader;
 	@Nullable
-	private static class_5944 field_29401;
+	private static Shader renderTypeGlintShader;
 	@Nullable
-	private static class_5944 field_29402;
+	private static Shader renderTypeGlintDirectShader;
 	@Nullable
-	private static class_5944 field_29367;
+	private static Shader renderTypeEntityGlintShader;
 	@Nullable
-	private static class_5944 field_29368;
+	private static Shader renderTypeEntityGlintDirectShader;
 	@Nullable
-	private static class_5944 field_29369;
+	private static Shader renderTypeTextShader;
 	@Nullable
-	private static class_5944 field_29370;
+	private static Shader renderTypeTextSeeThroughShader;
 	@Nullable
-	private static class_5944 field_29371;
+	private static Shader renderTypeLightningShader;
 	@Nullable
-	private static class_5944 field_29372;
+	private static Shader renderTypeTripwireShader;
 	@Nullable
-	private static class_5944 field_29373;
+	private static Shader renderTypeEndPortalShader;
 	@Nullable
-	private static class_5944 field_29374;
+	private static Shader renderTypeEndGatewayShader;
 	@Nullable
-	private static class_5944 field_29375;
+	private static Shader renderTypeLinesShader;
 	@Nullable
-	private static class_5944 field_29376;
+	private static Shader renderTypeCrumblingShader;
 
-	public GameRenderer(MinecraftClient minecraftClient, ResourceManager resourceManager, BufferBuilderStorage bufferBuilderStorage) {
-		this.client = minecraftClient;
-		this.resourceContainer = resourceManager;
-		this.firstPersonRenderer = minecraftClient.getHeldItemRenderer();
-		this.mapRenderer = new MapRenderer(minecraftClient.getTextureManager());
-		this.lightmapTextureManager = new LightmapTextureManager(this, minecraftClient);
-		this.buffers = bufferBuilderStorage;
+	public GameRenderer(MinecraftClient client, ResourceManager resourceManager, BufferBuilderStorage buffers) {
+		this.client = client;
+		this.resourceManager = resourceManager;
+		this.firstPersonRenderer = client.getHeldItemRenderer();
+		this.mapRenderer = new MapRenderer(client.getTextureManager());
+		this.lightmapTextureManager = new LightmapTextureManager(this, client);
+		this.buffers = buffers;
 		this.shader = null;
 	}
 
@@ -242,9 +241,9 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 		this.mapRenderer.close();
 		this.overlayTexture.close();
 		this.disableShader();
-		this.method_34537();
-		if (this.field_29403 != null) {
-			this.field_29403.close();
+		this.clearShaders();
+		if (this.blitScreenShader != null) {
+			this.blitScreenShader.close();
 		}
 	}
 
@@ -282,7 +281,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 		}
 
 		try {
-			this.shader = new ShaderEffect(this.client.getTextureManager(), this.resourceContainer, this.client.getFramebuffer(), id);
+			this.shader = new ShaderEffect(this.client.getTextureManager(), this.resourceManager, this.client.getFramebuffer(), id);
 			this.shader.setupDimensions(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
 			this.shadersEnabled = true;
 		} catch (IOException var3) {
@@ -297,8 +296,8 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 	}
 
 	@Override
-	public void apply(ResourceManager manager) {
-		this.method_34538(manager);
+	public void reload(ResourceManager manager) {
+		this.loadShaders(manager);
 		if (this.shader != null) {
 			this.shader.close();
 		}
@@ -311,95 +310,101 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 		}
 	}
 
-	public void method_34521(ResourceFactory factory) {
-		if (this.field_29403 != null) {
+	public void preloadShaders(ResourceFactory factory) {
+		if (this.blitScreenShader != null) {
 			throw new RuntimeException("Blit shader already preloaded");
 		} else {
 			try {
-				this.field_29403 = new class_5944(factory, "blit_screen", VertexFormats.field_29336);
-				field_29351 = this.method_34522(factory, "position", VertexFormats.POSITION);
-				field_29352 = this.method_34522(factory, "position_color", VertexFormats.POSITION_COLOR);
-				field_29353 = this.method_34522(factory, "position_color_tex", VertexFormats.POSITION_COLOR_TEXTURE);
-				field_29354 = this.method_34522(factory, "position_tex", VertexFormats.POSITION_TEXTURE);
-				field_29355 = this.method_34522(factory, "position_tex_color", VertexFormats.POSITION_TEXTURE_COLOR);
+				this.blitScreenShader = new Shader(factory, "blit_screen", VertexFormats.BLIT_SCREEN);
+				positionShader = this.loadShader(factory, "position", VertexFormats.POSITION);
+				positionColorShader = this.loadShader(factory, "position_color", VertexFormats.POSITION_COLOR);
+				positionColorTexShader = this.loadShader(factory, "position_color_tex", VertexFormats.POSITION_COLOR_TEXTURE);
+				positionTexShader = this.loadShader(factory, "position_tex", VertexFormats.POSITION_TEXTURE);
+				positionTexColorShader = this.loadShader(factory, "position_tex_color", VertexFormats.POSITION_TEXTURE_COLOR);
 			} catch (IOException var3) {
 				throw new RuntimeException("could not preload blit shader", var3);
 			}
 		}
 	}
 
-	private class_5944 method_34522(ResourceFactory resourceFactory, String string, VertexFormat vertexFormat) throws IOException {
-		class_5944 lv = new class_5944(resourceFactory, string, vertexFormat);
-		this.field_29350.put(string, lv);
-		return lv;
+	private Shader loadShader(ResourceFactory factory, String name, VertexFormat vertexFormat) throws IOException {
+		Shader shader = new Shader(factory, name, vertexFormat);
+		this.shaders.put(name, shader);
+		return shader;
 	}
 
-	public void method_34538(ResourceManager resourceManager) {
+	public void loadShaders(ResourceManager manager) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		this.method_34537();
+		this.clearShaders();
 
 		try {
-			field_29356 = this.method_34522(resourceManager, "block", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
-			field_29357 = this.method_34522(resourceManager, "new_entity", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			field_29358 = this.method_34522(resourceManager, "particle", VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
-			field_29351 = this.method_34522(resourceManager, "position", VertexFormats.POSITION);
-			field_29352 = this.method_34522(resourceManager, "position_color", VertexFormats.POSITION_COLOR);
-			field_29359 = this.method_34522(resourceManager, "position_color_lightmap", VertexFormats.POSITION_COLOR_LIGHT);
-			field_29353 = this.method_34522(resourceManager, "position_color_tex", VertexFormats.POSITION_COLOR_TEXTURE);
-			field_29360 = this.method_34522(resourceManager, "position_color_tex_lightmap", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
-			field_29354 = this.method_34522(resourceManager, "position_tex", VertexFormats.POSITION_TEXTURE);
-			field_29355 = this.method_34522(resourceManager, "position_tex_color", VertexFormats.POSITION_TEXTURE_COLOR);
-			field_29361 = this.method_34522(resourceManager, "position_tex_color_normal", VertexFormats.POSITION_TEXTURE_COLOR_NORMAL);
-			field_29362 = this.method_34522(resourceManager, "position_tex_lightmap_color", VertexFormats.POSITION_TEXTURE_LIGHT_COLOR);
-			field_29363 = this.method_34522(resourceManager, "rendertype_solid", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
-			field_29364 = this.method_34522(resourceManager, "rendertype_cutout_mipped", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
-			field_29365 = this.method_34522(resourceManager, "rendertype_cutout", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
-			field_29366 = this.method_34522(resourceManager, "rendertype_translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
-			field_29377 = this.method_34522(resourceManager, "rendertype_translucent_moving_block", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
-			field_29378 = this.method_34522(resourceManager, "rendertype_translucent_no_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
-			field_29379 = this.method_34522(resourceManager, "rendertype_armor_cutout_no_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			field_29380 = this.method_34522(resourceManager, "rendertype_entity_solid", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			field_29381 = this.method_34522(resourceManager, "rendertype_entity_cutout", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			field_29382 = this.method_34522(resourceManager, "rendertype_entity_cutout_no_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			field_29383 = this.method_34522(resourceManager, "rendertype_entity_cutout_no_cull_z_offset", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			field_29384 = this.method_34522(resourceManager, "rendertype_item_entity_translucent_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			field_29385 = this.method_34522(resourceManager, "rendertype_entity_translucent_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			field_29386 = this.method_34522(resourceManager, "rendertype_entity_translucent", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			field_29387 = this.method_34522(resourceManager, "rendertype_entity_smooth_cutout", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			field_29388 = this.method_34522(resourceManager, "rendertype_beacon_beam", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
-			field_29389 = this.method_34522(resourceManager, "rendertype_entity_decal", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			field_29390 = this.method_34522(resourceManager, "rendertype_entity_no_outline", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			field_29391 = this.method_34522(resourceManager, "rendertype_entity_shadow", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			field_29392 = this.method_34522(resourceManager, "rendertype_entity_alpha", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			field_29393 = this.method_34522(resourceManager, "rendertype_eyes", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			field_29394 = this.method_34522(resourceManager, "rendertype_energy_swirl", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			field_29395 = this.method_34522(resourceManager, "rendertype_leash", VertexFormats.POSITION_COLOR_LIGHT);
-			field_29396 = this.method_34522(resourceManager, "rendertype_water_mask", VertexFormats.POSITION);
-			field_29397 = this.method_34522(resourceManager, "rendertype_outline", VertexFormats.POSITION_COLOR_TEXTURE);
-			field_29398 = this.method_34522(resourceManager, "rendertype_armor_glint", VertexFormats.POSITION_TEXTURE);
-			field_29399 = this.method_34522(resourceManager, "rendertype_armor_entity_glint", VertexFormats.POSITION_TEXTURE);
-			field_29400 = this.method_34522(resourceManager, "rendertype_glint_translucent", VertexFormats.POSITION_TEXTURE);
-			field_29401 = this.method_34522(resourceManager, "rendertype_glint", VertexFormats.POSITION_TEXTURE);
-			field_29402 = this.method_34522(resourceManager, "rendertype_glint_direct", VertexFormats.POSITION_TEXTURE);
-			field_29367 = this.method_34522(resourceManager, "rendertype_entity_glint", VertexFormats.POSITION_TEXTURE);
-			field_29368 = this.method_34522(resourceManager, "rendertype_entity_glint_direct", VertexFormats.POSITION_TEXTURE);
-			field_29369 = this.method_34522(resourceManager, "rendertype_text", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
-			field_29370 = this.method_34522(resourceManager, "rendertype_text_see_through", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
-			field_29371 = this.method_34522(resourceManager, "rendertype_lightning", VertexFormats.POSITION_COLOR);
-			field_29372 = this.method_34522(resourceManager, "rendertype_tripwire", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
-			field_29373 = this.method_34522(resourceManager, "rendertype_end_portal", VertexFormats.POSITION);
-			field_29374 = this.method_34522(resourceManager, "rendertype_end_gateway", VertexFormats.POSITION);
-			field_29375 = this.method_34522(resourceManager, "rendertype_lines", VertexFormats.field_29337);
-			field_29376 = this.method_34522(resourceManager, "rendertype_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+			blockShader = this.loadShader(manager, "block", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+			newEntityShader = this.loadShader(manager, "new_entity", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			particleShader = this.loadShader(manager, "particle", VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+			positionShader = this.loadShader(manager, "position", VertexFormats.POSITION);
+			positionColorShader = this.loadShader(manager, "position_color", VertexFormats.POSITION_COLOR);
+			positionColorLightmapShader = this.loadShader(manager, "position_color_lightmap", VertexFormats.POSITION_COLOR_LIGHT);
+			positionColorTexShader = this.loadShader(manager, "position_color_tex", VertexFormats.POSITION_COLOR_TEXTURE);
+			positionColorTexLightmapShader = this.loadShader(manager, "position_color_tex_lightmap", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
+			positionTexShader = this.loadShader(manager, "position_tex", VertexFormats.POSITION_TEXTURE);
+			positionTexColorShader = this.loadShader(manager, "position_tex_color", VertexFormats.POSITION_TEXTURE_COLOR);
+			positionTexColorNormalShader = this.loadShader(manager, "position_tex_color_normal", VertexFormats.POSITION_TEXTURE_COLOR_NORMAL);
+			positionTexLightmapColorShader = this.loadShader(manager, "position_tex_lightmap_color", VertexFormats.POSITION_TEXTURE_LIGHT_COLOR);
+			renderTypeSolidShader = this.loadShader(manager, "rendertype_solid", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+			renderTypeCutoutMippedShader = this.loadShader(manager, "rendertype_cutout_mipped", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+			renderTypeCutoutShader = this.loadShader(manager, "rendertype_cutout", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+			renderTypeTranslucentShader = this.loadShader(manager, "rendertype_translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+			renderTypeTranslucentMovingBlockShader = this.loadShader(manager, "rendertype_translucent_moving_block", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+			renderTypeTranslucentNoCrumblingShader = this.loadShader(manager, "rendertype_translucent_no_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+			renderTypeArmorCutoutNoCullShader = this.loadShader(manager, "rendertype_armor_cutout_no_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			renderTypeEntitySolidShader = this.loadShader(manager, "rendertype_entity_solid", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			renderTypeEntityCutoutShader = this.loadShader(manager, "rendertype_entity_cutout", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			renderTypeEntityCutoutNoNullShader = this.loadShader(manager, "rendertype_entity_cutout_no_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			renderTypeEntityCutoutNoNullZOffsetShader = this.loadShader(
+				manager, "rendertype_entity_cutout_no_cull_z_offset", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL
+			);
+			renderTypeItemEntityTranslucentCullShader = this.loadShader(
+				manager, "rendertype_item_entity_translucent_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL
+			);
+			renderTypeEntityTranslucentCullShader = this.loadShader(
+				manager, "rendertype_entity_translucent_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL
+			);
+			renderTypeEntityTranslucentShader = this.loadShader(manager, "rendertype_entity_translucent", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			renderTypeEntitySmoothCutoutShader = this.loadShader(manager, "rendertype_entity_smooth_cutout", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			renderTypeBeaconBeamShader = this.loadShader(manager, "rendertype_beacon_beam", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+			renderTypeEntityDecalShader = this.loadShader(manager, "rendertype_entity_decal", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			renderTypeEntityNoOutlineShader = this.loadShader(manager, "rendertype_entity_no_outline", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			renderTypeEntityShadowShader = this.loadShader(manager, "rendertype_entity_shadow", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			renderTypeEntityAlphaShader = this.loadShader(manager, "rendertype_entity_alpha", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			renderTypeEyesShader = this.loadShader(manager, "rendertype_eyes", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			renderTypeEnergySwirlShader = this.loadShader(manager, "rendertype_energy_swirl", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			renderTypeLeashShader = this.loadShader(manager, "rendertype_leash", VertexFormats.POSITION_COLOR_LIGHT);
+			renderTypeWaterMaskShader = this.loadShader(manager, "rendertype_water_mask", VertexFormats.POSITION);
+			renderTypeOutlineShader = this.loadShader(manager, "rendertype_outline", VertexFormats.POSITION_COLOR_TEXTURE);
+			renderTypeArmorGlintShader = this.loadShader(manager, "rendertype_armor_glint", VertexFormats.POSITION_TEXTURE);
+			renderTypeArmorEntityGlintShader = this.loadShader(manager, "rendertype_armor_entity_glint", VertexFormats.POSITION_TEXTURE);
+			renderTypeGlintTranslucentShader = this.loadShader(manager, "rendertype_glint_translucent", VertexFormats.POSITION_TEXTURE);
+			renderTypeGlintShader = this.loadShader(manager, "rendertype_glint", VertexFormats.POSITION_TEXTURE);
+			renderTypeGlintDirectShader = this.loadShader(manager, "rendertype_glint_direct", VertexFormats.POSITION_TEXTURE);
+			renderTypeEntityGlintShader = this.loadShader(manager, "rendertype_entity_glint", VertexFormats.POSITION_TEXTURE);
+			renderTypeEntityGlintDirectShader = this.loadShader(manager, "rendertype_entity_glint_direct", VertexFormats.POSITION_TEXTURE);
+			renderTypeTextShader = this.loadShader(manager, "rendertype_text", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
+			renderTypeTextSeeThroughShader = this.loadShader(manager, "rendertype_text_see_through", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
+			renderTypeLightningShader = this.loadShader(manager, "rendertype_lightning", VertexFormats.POSITION_COLOR);
+			renderTypeTripwireShader = this.loadShader(manager, "rendertype_tripwire", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+			renderTypeEndPortalShader = this.loadShader(manager, "rendertype_end_portal", VertexFormats.POSITION);
+			renderTypeEndGatewayShader = this.loadShader(manager, "rendertype_end_gateway", VertexFormats.POSITION);
+			renderTypeLinesShader = this.loadShader(manager, "rendertype_lines", VertexFormats.LINES);
+			renderTypeCrumblingShader = this.loadShader(manager, "rendertype_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
 		} catch (IOException var3) {
 			throw new RuntimeException("could not reload shaders", var3);
 		}
 	}
 
-	private void method_34537() {
+	private void clearShaders() {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		this.field_29350.values().forEach(class_5944::close);
-		this.field_29350.clear();
+		this.shaders.values().forEach(Shader::close);
+		this.shaders.clear();
 	}
 
 	public void tick() {
@@ -436,12 +441,12 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 		return this.shader;
 	}
 
-	public void onResized(int i, int j) {
+	public void onResized(int width, int height) {
 		if (this.shader != null) {
-			this.shader.setupDimensions(i, j);
+			this.shader.setupDimensions(width, height);
 		}
 
-		this.client.worldRenderer.onResized(i, j);
+		this.client.worldRenderer.onResized(width, height);
 	}
 
 	public void updateTargetedEntity(float tickDelta) {
@@ -716,13 +721,13 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 				this.client.getProfiler().pop();
 			}
 
-			if (this.client.overlay != null) {
+			if (this.client.getOverlay() != null) {
 				try {
-					this.client.overlay.render(matrixStack2, i, j, this.client.getLastFrameDuration());
+					this.client.getOverlay().render(matrixStack2, i, j, this.client.getLastFrameDuration());
 				} catch (Throwable var15) {
 					CrashReport crashReport = CrashReport.create(var15, "Rendering overlay");
 					CrashReportSection crashReportSection = crashReport.addElement("Overlay render details");
-					crashReportSection.add("Overlay name", (CrashCallable<String>)(() -> this.client.overlay.getClass().getCanonicalName()));
+					crashReportSection.add("Overlay name", (CrashCallable<String>)(() -> this.client.getOverlay().getClass().getCanonicalName()));
 					throw new CrashException(crashReport);
 				}
 			} else if (this.client.currentScreen != null) {
@@ -935,6 +940,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 		RenderSystem.enableBlend();
 		RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
 		RenderSystem.setShaderColor(g, h, k, 1.0F);
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderTexture(0, NAUSEA_OVERLAY);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
@@ -972,257 +978,257 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 	}
 
 	@Nullable
-	public static class_5944 method_34539() {
-		return field_29351;
+	public static Shader getPositionShader() {
+		return positionShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34540() {
-		return field_29352;
+	public static Shader getPositionColorShader() {
+		return positionColorShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34541() {
-		return field_29353;
+	public static Shader getPositionColorTexShader() {
+		return positionColorTexShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34542() {
-		return field_29354;
+	public static Shader getPositionTexShader() {
+		return positionTexShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34543() {
-		return field_29355;
+	public static Shader getPositionTexColorShader() {
+		return positionTexColorShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34544() {
-		return field_29356;
+	public static Shader getBlockShader() {
+		return blockShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34545() {
-		return field_29357;
+	public static Shader getNewEntityShader() {
+		return newEntityShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34546() {
-		return field_29358;
+	public static Shader getParticleShader() {
+		return particleShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34547() {
-		return field_29359;
+	public static Shader getPositionColorLightmapShader() {
+		return positionColorLightmapShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34548() {
-		return field_29360;
+	public static Shader getPositionColorTexLightmapShader() {
+		return positionColorTexLightmapShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34549() {
-		return field_29361;
+	public static Shader getPositionTexColorNormalShader() {
+		return positionTexColorNormalShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34495() {
-		return field_29363;
+	public static Shader getRenderTypeSolidShader() {
+		return renderTypeSolidShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34496() {
-		return field_29364;
+	public static Shader getRenderTypeCutoutMippedShader() {
+		return renderTypeCutoutMippedShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34497() {
-		return field_29365;
+	public static Shader getRenderTypeCutoutShader() {
+		return renderTypeCutoutShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34498() {
-		return field_29366;
+	public static Shader getRenderTypeTranslucentShader() {
+		return renderTypeTranslucentShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34499() {
-		return field_29377;
+	public static Shader getRenderTypeTranslucentMovingBlockShader() {
+		return renderTypeTranslucentMovingBlockShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34500() {
-		return field_29378;
+	public static Shader getRenderTypeTranslucentNoCrumblingShader() {
+		return renderTypeTranslucentNoCrumblingShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34501() {
-		return field_29379;
+	public static Shader getRenderTypeArmorCutoutNoCullShader() {
+		return renderTypeArmorCutoutNoCullShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34502() {
-		return field_29380;
+	public static Shader getRenderTypeEntitySolidShader() {
+		return renderTypeEntitySolidShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34503() {
-		return field_29381;
+	public static Shader getRenderTypeEntityCutoutShader() {
+		return renderTypeEntityCutoutShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34504() {
-		return field_29382;
+	public static Shader getRenderTypeEntityCutoutNoNullShader() {
+		return renderTypeEntityCutoutNoNullShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34505() {
-		return field_29383;
+	public static Shader getRenderTypeEntityCutoutNoNullZOffsetShader() {
+		return renderTypeEntityCutoutNoNullZOffsetShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34506() {
-		return field_29384;
+	public static Shader getRenderTypeItemEntityTranslucentCullShader() {
+		return renderTypeItemEntityTranslucentCullShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34507() {
-		return field_29385;
+	public static Shader getRenderTypeEntityTranslucentCullShader() {
+		return renderTypeEntityTranslucentCullShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34508() {
-		return field_29386;
+	public static Shader getRenderTypeEntityTranslucentShader() {
+		return renderTypeEntityTranslucentShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34509() {
-		return field_29387;
+	public static Shader getRenderTypeEntitySmoothCutoutShader() {
+		return renderTypeEntitySmoothCutoutShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34510() {
-		return field_29388;
+	public static Shader getRenderTypeBeaconBeamShader() {
+		return renderTypeBeaconBeamShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34511() {
-		return field_29389;
+	public static Shader getRenderTypeEntityDecalShader() {
+		return renderTypeEntityDecalShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34512() {
-		return field_29390;
+	public static Shader getRenderTypeEntityNoOutlineShader() {
+		return renderTypeEntityNoOutlineShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34513() {
-		return field_29391;
+	public static Shader getRenderTypeEntityShadowShader() {
+		return renderTypeEntityShadowShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34514() {
-		return field_29392;
+	public static Shader getRenderTypeEntityAlphaShader() {
+		return renderTypeEntityAlphaShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34515() {
-		return field_29393;
+	public static Shader getRenderTypeEyesShader() {
+		return renderTypeEyesShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34516() {
-		return field_29394;
+	public static Shader getRenderTypeEnergySwirlShader() {
+		return renderTypeEnergySwirlShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34517() {
-		return field_29395;
+	public static Shader getRenderTypeLeashShader() {
+		return renderTypeLeashShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34518() {
-		return field_29396;
+	public static Shader getRenderTypeWaterMaskShader() {
+		return renderTypeWaterMaskShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34519() {
-		return field_29397;
+	public static Shader getRenderTypeOutlineShader() {
+		return renderTypeOutlineShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34520() {
-		return field_29398;
+	public static Shader getRenderTypeArmorGlintShader() {
+		return renderTypeArmorGlintShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34523() {
-		return field_29399;
+	public static Shader getRenderTypeArmorEntityGlintShader() {
+		return renderTypeArmorEntityGlintShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34524() {
-		return field_29400;
+	public static Shader getRenderTypeGlintTranslucentShader() {
+		return renderTypeGlintTranslucentShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34525() {
-		return field_29401;
+	public static Shader getRenderTypeGlintShader() {
+		return renderTypeGlintShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34526() {
-		return field_29402;
+	public static Shader getRenderTypeGlintDirectShader() {
+		return renderTypeGlintDirectShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34527() {
-		return field_29367;
+	public static Shader getRenderTypeEntityGlintShader() {
+		return renderTypeEntityGlintShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34528() {
-		return field_29368;
+	public static Shader getRenderTypeEntityGlintDirectShader() {
+		return renderTypeEntityGlintDirectShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34529() {
-		return field_29369;
+	public static Shader getRenderTypeTextShader() {
+		return renderTypeTextShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34530() {
-		return field_29370;
+	public static Shader getRenderTypeTextSeeThroughShader() {
+		return renderTypeTextSeeThroughShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34531() {
-		return field_29371;
+	public static Shader getRenderTypeLightningShader() {
+		return renderTypeLightningShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34532() {
-		return field_29372;
+	public static Shader getRenderTypeTripwireShader() {
+		return renderTypeTripwireShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34533() {
-		return field_29373;
+	public static Shader getRenderTypeEndPortalShader() {
+		return renderTypeEndPortalShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34534() {
-		return field_29374;
+	public static Shader getRenderTypeEndGatewayShader() {
+		return renderTypeEndGatewayShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34535() {
-		return field_29375;
+	public static Shader getRenderTypeLinesShader() {
+		return renderTypeLinesShader;
 	}
 
 	@Nullable
-	public static class_5944 method_34536() {
-		return field_29376;
+	public static Shader getRenderTypeCrumblingShader() {
+		return renderTypeCrumblingShader;
 	}
 }

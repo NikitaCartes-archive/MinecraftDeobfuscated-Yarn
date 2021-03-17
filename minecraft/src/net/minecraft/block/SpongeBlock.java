@@ -2,6 +2,8 @@ package net.minecraft.block;
 
 import com.google.common.collect.Lists;
 import java.util.Queue;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.tag.FluidTags;
@@ -30,8 +32,8 @@ public class SpongeBlock extends Block {
 
 	protected void update(World world, BlockPos pos) {
 		if (this.absorbWater(world, pos)) {
-			world.setBlockState(pos, Blocks.WET_SPONGE.getDefaultState(), 2);
-			world.syncWorldEvent(2001, pos, Block.getRawIdFromState(Blocks.WATER.getDefaultState()));
+			world.setBlockState(pos, Blocks.WET_SPONGE.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(Blocks.WATER.getDefaultState()));
 		}
 	}
 
@@ -57,7 +59,7 @@ public class SpongeBlock extends Block {
 							queue.add(new Pair<>(blockPos2, j + 1));
 						}
 					} else if (blockState.getBlock() instanceof FluidBlock) {
-						world.setBlockState(blockPos2, Blocks.AIR.getDefaultState(), 3);
+						world.setBlockState(blockPos2, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT);
 						i++;
 						if (j < 6) {
 							queue.add(new Pair<>(blockPos2, j + 1));
@@ -65,7 +67,7 @@ public class SpongeBlock extends Block {
 					} else if (material == Material.UNDERWATER_PLANT || material == Material.REPLACEABLE_UNDERWATER_PLANT) {
 						BlockEntity blockEntity = blockState.hasBlockEntity() ? world.getBlockEntity(blockPos2) : null;
 						dropStacks(blockState, world, blockPos2, blockEntity);
-						world.setBlockState(blockPos2, Blocks.AIR.getDefaultState(), 3);
+						world.setBlockState(blockPos2, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT);
 						i++;
 						if (j < 6) {
 							queue.add(new Pair<>(blockPos2, j + 1));

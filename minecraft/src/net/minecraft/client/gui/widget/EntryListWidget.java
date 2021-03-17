@@ -24,6 +24,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extends AbstractParentElement implements Drawable {
@@ -177,8 +178,8 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		int j = i + 6;
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 		if (this.field_26846) {
-			RenderSystem.setShader(GameRenderer::method_34543);
 			RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			float f = 32.0F;
@@ -210,7 +211,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 
 		this.renderList(matrices, k, l, mouseX, mouseY, delta);
 		if (this.field_26847) {
-			RenderSystem.setShader(GameRenderer::method_34543);
+			RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 			RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
 			RenderSystem.enableDepthTest();
 			RenderSystem.depthFunc(519);
@@ -242,24 +243,24 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 				GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE
 			);
 			RenderSystem.disableTexture();
-			RenderSystem.setShader(GameRenderer::method_34543);
-			RenderSystem.setShaderTexture(0, field_29346);
+			RenderSystem.setShader(GameRenderer::getPositionColorShader);
 			int n = 4;
-			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
-			bufferBuilder.vertex((double)this.left, (double)(this.top + 4), 0.0).texture(0.0F, 1.0F).color(0, 0, 0, 0).next();
-			bufferBuilder.vertex((double)this.right, (double)(this.top + 4), 0.0).texture(1.0F, 1.0F).color(0, 0, 0, 0).next();
-			bufferBuilder.vertex((double)this.right, (double)this.top, 0.0).texture(1.0F, 0.0F).color(0, 0, 0, 255).next();
-			bufferBuilder.vertex((double)this.left, (double)this.top, 0.0).texture(0.0F, 0.0F).color(0, 0, 0, 255).next();
-			bufferBuilder.vertex((double)this.left, (double)this.bottom, 0.0).texture(0.0F, 1.0F).color(0, 0, 0, 255).next();
-			bufferBuilder.vertex((double)this.right, (double)this.bottom, 0.0).texture(1.0F, 1.0F).color(0, 0, 0, 255).next();
-			bufferBuilder.vertex((double)this.right, (double)(this.bottom - 4), 0.0).texture(1.0F, 0.0F).color(0, 0, 0, 0).next();
-			bufferBuilder.vertex((double)this.left, (double)(this.bottom - 4), 0.0).texture(0.0F, 0.0F).color(0, 0, 0, 0).next();
+			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+			bufferBuilder.vertex((double)this.left, (double)(this.top + 4), 0.0).color(0, 0, 0, 0).next();
+			bufferBuilder.vertex((double)this.right, (double)(this.top + 4), 0.0).color(0, 0, 0, 0).next();
+			bufferBuilder.vertex((double)this.right, (double)this.top, 0.0).color(0, 0, 0, 255).next();
+			bufferBuilder.vertex((double)this.left, (double)this.top, 0.0).color(0, 0, 0, 255).next();
+			bufferBuilder.vertex((double)this.left, (double)this.bottom, 0.0).color(0, 0, 0, 255).next();
+			bufferBuilder.vertex((double)this.right, (double)this.bottom, 0.0).color(0, 0, 0, 255).next();
+			bufferBuilder.vertex((double)this.right, (double)(this.bottom - 4), 0.0).color(0, 0, 0, 0).next();
+			bufferBuilder.vertex((double)this.left, (double)(this.bottom - 4), 0.0).color(0, 0, 0, 0).next();
 			tessellator.draw();
 		}
 
 		int o = this.getMaxScroll();
 		if (o > 0) {
 			RenderSystem.disableTexture();
+			RenderSystem.setShader(GameRenderer::getPositionColorShader);
 			int m = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
 			m = MathHelper.clamp(m, 32, this.bottom - this.top - 8);
 			int n = (int)this.getScrollAmount() * (this.bottom - this.top - m) / o + this.top;
@@ -267,19 +268,19 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 				n = this.top;
 			}
 
-			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
-			bufferBuilder.vertex((double)i, (double)this.bottom, 0.0).texture(0.0F, 1.0F).color(0, 0, 0, 255).next();
-			bufferBuilder.vertex((double)j, (double)this.bottom, 0.0).texture(1.0F, 1.0F).color(0, 0, 0, 255).next();
-			bufferBuilder.vertex((double)j, (double)this.top, 0.0).texture(1.0F, 0.0F).color(0, 0, 0, 255).next();
-			bufferBuilder.vertex((double)i, (double)this.top, 0.0).texture(0.0F, 0.0F).color(0, 0, 0, 255).next();
-			bufferBuilder.vertex((double)i, (double)(n + m), 0.0).texture(0.0F, 1.0F).color(128, 128, 128, 255).next();
-			bufferBuilder.vertex((double)j, (double)(n + m), 0.0).texture(1.0F, 1.0F).color(128, 128, 128, 255).next();
-			bufferBuilder.vertex((double)j, (double)n, 0.0).texture(1.0F, 0.0F).color(128, 128, 128, 255).next();
-			bufferBuilder.vertex((double)i, (double)n, 0.0).texture(0.0F, 0.0F).color(128, 128, 128, 255).next();
-			bufferBuilder.vertex((double)i, (double)(n + m - 1), 0.0).texture(0.0F, 1.0F).color(192, 192, 192, 255).next();
-			bufferBuilder.vertex((double)(j - 1), (double)(n + m - 1), 0.0).texture(1.0F, 1.0F).color(192, 192, 192, 255).next();
-			bufferBuilder.vertex((double)(j - 1), (double)n, 0.0).texture(1.0F, 0.0F).color(192, 192, 192, 255).next();
-			bufferBuilder.vertex((double)i, (double)n, 0.0).texture(0.0F, 0.0F).color(192, 192, 192, 255).next();
+			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+			bufferBuilder.vertex((double)i, (double)this.bottom, 0.0).color(0, 0, 0, 255).next();
+			bufferBuilder.vertex((double)j, (double)this.bottom, 0.0).color(0, 0, 0, 255).next();
+			bufferBuilder.vertex((double)j, (double)this.top, 0.0).color(0, 0, 0, 255).next();
+			bufferBuilder.vertex((double)i, (double)this.top, 0.0).color(0, 0, 0, 255).next();
+			bufferBuilder.vertex((double)i, (double)(n + m), 0.0).color(128, 128, 128, 255).next();
+			bufferBuilder.vertex((double)j, (double)(n + m), 0.0).color(128, 128, 128, 255).next();
+			bufferBuilder.vertex((double)j, (double)n, 0.0).color(128, 128, 128, 255).next();
+			bufferBuilder.vertex((double)i, (double)n, 0.0).color(128, 128, 128, 255).next();
+			bufferBuilder.vertex((double)i, (double)(n + m - 1), 0.0).color(192, 192, 192, 255).next();
+			bufferBuilder.vertex((double)(j - 1), (double)(n + m - 1), 0.0).color(192, 192, 192, 255).next();
+			bufferBuilder.vertex((double)(j - 1), (double)n, 0.0).color(192, 192, 192, 255).next();
+			bufferBuilder.vertex((double)i, (double)n, 0.0).color(192, 192, 192, 255).next();
 			tessellator.draw();
 		}
 
@@ -395,10 +396,10 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (super.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
-		} else if (keyCode == 264) {
+		} else if (keyCode == GLFW.GLFW_KEY_DOWN) {
 			this.moveSelection(EntryListWidget.MoveDirection.DOWN);
 			return true;
-		} else if (keyCode == 265) {
+		} else if (keyCode == GLFW.GLFW_KEY_UP) {
 			this.moveSelection(EntryListWidget.MoveDirection.UP);
 			return true;
 		} else {
@@ -468,7 +469,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 					int p = this.left + this.width / 2 - o / 2;
 					int q = this.left + this.width / 2 + o / 2;
 					RenderSystem.disableTexture();
-					RenderSystem.setShader(GameRenderer::method_34539);
+					RenderSystem.setShader(GameRenderer::getPositionShader);
 					float f = this.isFocused() ? 1.0F : 0.5F;
 					RenderSystem.setShaderColor(f, f, f, 1.0F);
 					bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);

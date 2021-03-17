@@ -22,9 +22,9 @@ import net.minecraft.client.realms.gui.screen.DisconnectedRealmsScreen;
 import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.encryption.NetworkEncryptionException;
+import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.listener.ClientLoginPacketListener;
 import net.minecraft.network.packet.c2s.login.LoginKeyC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
@@ -43,7 +43,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final MinecraftClient client;
 	@Nullable
-	private final Screen parentGui;
+	private final Screen parentScreen;
 	private final Consumer<Text> statusConsumer;
 	private final ClientConnection connection;
 	private GameProfile profile;
@@ -51,7 +51,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	public ClientLoginNetworkHandler(ClientConnection connection, MinecraftClient client, @Nullable Screen parentGui, Consumer<Text> statusConsumer) {
 		this.connection = connection;
 		this.client = client;
-		this.parentGui = parentGui;
+		this.parentScreen = parentGui;
 		this.statusConsumer = statusConsumer;
 	}
 
@@ -73,7 +73,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 		}
 
 		this.statusConsumer.accept(new TranslatableText("connect.authorizing"));
-		NetworkUtils.downloadExecutor.submit((Runnable)(() -> {
+		NetworkUtils.EXECUTOR.submit((Runnable)(() -> {
 			Text text = this.joinServerSession(string);
 			if (text != null) {
 				if (this.client.getCurrentServerEntry() == null || !this.client.getCurrentServerEntry().isLocal()) {
@@ -114,15 +114,15 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 		this.statusConsumer.accept(new TranslatableText("connect.joining"));
 		this.profile = packet.getProfile();
 		this.connection.setState(NetworkState.PLAY);
-		this.connection.setPacketListener(new ClientPlayNetworkHandler(this.client, this.parentGui, this.connection, this.profile));
+		this.connection.setPacketListener(new ClientPlayNetworkHandler(this.client, this.parentScreen, this.connection, this.profile));
 	}
 
 	@Override
 	public void onDisconnected(Text reason) {
-		if (this.parentGui != null && this.parentGui instanceof RealmsScreen) {
-			this.client.openScreen(new DisconnectedRealmsScreen(this.parentGui, ScreenTexts.CONNECT_FAILED, reason));
+		if (this.parentScreen != null && this.parentScreen instanceof RealmsScreen) {
+			this.client.openScreen(new DisconnectedRealmsScreen(this.parentScreen, ScreenTexts.CONNECT_FAILED, reason));
 		} else {
-			this.client.openScreen(new DisconnectedScreen(this.parentGui, ScreenTexts.CONNECT_FAILED, reason));
+			this.client.openScreen(new DisconnectedScreen(this.parentScreen, ScreenTexts.CONNECT_FAILED, reason));
 		}
 	}
 

@@ -79,6 +79,7 @@ import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.state.property.Property;
+import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
@@ -1032,6 +1033,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.WATER_CAULDRON, Blocks.CAULDRON);
 		this.addDrop(Blocks.LAVA_CAULDRON, Blocks.CAULDRON);
 		this.addDrop(Blocks.POWDER_SNOW_CAULDRON, Blocks.CAULDRON);
+		this.addDrop(Blocks.BIG_DRIPLEAF_STEM, Blocks.BIG_DRIPLEAF);
 		this.addDrop(Blocks.STONE, blockx -> drops(blockx, Blocks.COBBLESTONE));
 		this.addDrop(Blocks.DEEPSLATE, blockx -> drops(blockx, Blocks.COBBLED_DEEPSLATE));
 		this.addDrop(Blocks.GRASS_BLOCK, blockx -> drops(blockx, Blocks.DIRT));
@@ -1227,8 +1229,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 							.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(ComposterBlock.LEVEL, 8)))
 					)
 		);
-		this.addDrop(Blocks.CAVE_VINES_HEAD, BlockLootTableGenerator::method_33709);
-		this.addDrop(Blocks.CAVE_VINES_BODY, BlockLootTableGenerator::method_33709);
+		this.addDrop(Blocks.CAVE_VINES, BlockLootTableGenerator::method_33709);
+		this.addDrop(Blocks.CAVE_VINES_PLANT, BlockLootTableGenerator::method_33709);
 		this.addDrop(Blocks.CANDLE, BlockLootTableGenerator::candleDrops);
 		this.addDrop(Blocks.WHITE_CANDLE, BlockLootTableGenerator::candleDrops);
 		this.addDrop(Blocks.ORANGE_CANDLE, BlockLootTableGenerator::candleDrops);
@@ -1616,12 +1618,15 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			Blocks.AMETHYST_CLUSTER,
 			blockx -> dropsWithSilkTouch(
 					blockx,
-					(LootPoolEntry.Builder<?>)applyExplosionDecay(
-						blockx,
-						ItemEntry.builder(Items.AMETHYST_SHARD)
-							.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(4.0F)))
-							.apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE))
-					)
+					ItemEntry.builder(Items.AMETHYST_SHARD)
+						.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(4.0F)))
+						.apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE))
+						.conditionally(MatchToolLootCondition.builder(ItemPredicate.Builder.create().tag(ItemTags.CLUSTER_MAX_HARVESTABLES)))
+						.alternatively(
+							(LootPoolEntry.Builder<?>)applyExplosionDecay(
+								blockx, ItemEntry.builder(Items.AMETHYST_SHARD).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F)))
+							)
+						)
 				)
 		);
 		this.addDropWithSilkTouch(Blocks.SMALL_AMETHYST_BUD);
@@ -1720,7 +1725,6 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.NETHER_PORTAL, dropsNothing());
 		this.addDrop(Blocks.BUDDING_AMETHYST, dropsNothing());
 		this.addDrop(Blocks.POWDER_SNOW, dropsNothing());
-		this.addDrop(Blocks.BIG_DRIPLEAF_STEM, dropsNothing());
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 
 		for (Block block : Registry.BLOCK) {

@@ -3,6 +3,8 @@ package net.minecraft.entity.passive;
 import java.util.Random;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -40,7 +42,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -138,7 +140,7 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
 		tag.putInt("HomePosX", this.getHomePos().getX());
 		tag.putInt("HomePosY", this.getHomePos().getY());
@@ -150,7 +152,7 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		int i = tag.getInt("HomePosX");
 		int j = tag.getInt("HomePosY");
 		int k = tag.getInt("HomePosZ");
@@ -166,7 +168,7 @@ public class TurtleEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
 	) {
 		this.setHomePos(this.getBlockPos());
 		this.setTravelPos(BlockPos.ORIGIN);
@@ -195,7 +197,7 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean canFly() {
+	public boolean isPushedByFluids() {
 		return false;
 	}
 
@@ -294,7 +296,7 @@ public class TurtleEntity extends AnimalEntity {
 		if (this.isAlive() && this.isDiggingSand() && this.sandDiggingCounter >= 1 && this.sandDiggingCounter % 5 == 0) {
 			BlockPos blockPos = this.getBlockPos();
 			if (TurtleEggBlock.isSandBelow(this.world, blockPos)) {
-				this.world.syncWorldEvent(2001, blockPos, Block.getRawIdFromState(Blocks.SAND.getDefaultState()));
+				this.world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, blockPos, Block.getRawIdFromState(Blocks.SAND.getDefaultState()));
 			}
 		}
 	}
@@ -428,7 +430,9 @@ public class TurtleEntity extends AnimalEntity {
 					World world = this.turtle.world;
 					world.playSound(null, blockPos, SoundEvents.ENTITY_TURTLE_LAY_EGG, SoundCategory.BLOCKS, 0.3F, 0.9F + world.random.nextFloat() * 0.2F);
 					world.setBlockState(
-						this.targetPos.up(), Blocks.TURTLE_EGG.getDefaultState().with(TurtleEggBlock.EGGS, Integer.valueOf(this.turtle.random.nextInt(4) + 1)), 3
+						this.targetPos.up(),
+						Blocks.TURTLE_EGG.getDefaultState().with(TurtleEggBlock.EGGS, Integer.valueOf(this.turtle.random.nextInt(4) + 1)),
+						SetBlockStateFlags.DEFAULT
 					);
 					this.turtle.setHasEgg(false);
 					this.turtle.setDiggingSand(false);

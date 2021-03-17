@@ -14,6 +14,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.fix.AddTrappedChestFix;
 import net.minecraft.datafixer.fix.AdvancementRenameFix;
 import net.minecraft.datafixer.fix.AdvancementsFix;
+import net.minecraft.datafixer.fix.ArrowPickupFix;
 import net.minecraft.datafixer.fix.BedBlockEntityFix;
 import net.minecraft.datafixer.fix.BedItemColorFix;
 import net.minecraft.datafixer.fix.BeehiveRenameFix;
@@ -127,6 +128,7 @@ import net.minecraft.datafixer.fix.RenameItemStackAttributesFix;
 import net.minecraft.datafixer.fix.SavedDataVillageCropFix;
 import net.minecraft.datafixer.fix.StatsCounterFix;
 import net.minecraft.datafixer.fix.StriderGravityFix;
+import net.minecraft.datafixer.fix.StructureFeatureChildrenPoolElementFix;
 import net.minecraft.datafixer.fix.StructureReferenceFix;
 import net.minecraft.datafixer.fix.StructureSeparationDataFix;
 import net.minecraft.datafixer.fix.SwimStatsRenameFix;
@@ -724,6 +726,18 @@ public class Schemas {
 			.build();
 		builder.addFixer(ItemNameFix.create(schema133, "Renamed grimstone block items to deepslate", replacing(immutableMap3)));
 		builder.addFixer(JigsawBlockNameFix.create(schema133, "Renamed grimstone blocks to deepslate", replacing(immutableMap3)));
+		Schema schema134 = builder.addSchema(2700, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(
+			JigsawBlockNameFix.create(
+				schema134,
+				"Renamed cave vines blocks",
+				replacing(ImmutableMap.of("minecraft:cave_vines_head", "minecraft:cave_vines", "minecraft:cave_vines_body", "minecraft:cave_vines_plant"))
+			)
+		);
+		Schema schema135 = builder.addSchema(2701, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new StructureFeatureChildrenPoolElementFix(schema135));
+		Schema schema136 = builder.addSchema(2702, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new ArrowPickupFix(schema136));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

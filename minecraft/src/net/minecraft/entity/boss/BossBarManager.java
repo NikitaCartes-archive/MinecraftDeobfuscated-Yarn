@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import java.util.Collection;
 import java.util.Map;
 import javax.annotation.Nullable;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -35,17 +35,17 @@ public class BossBarManager {
 		return this.commandBossBars.values();
 	}
 
-	public CompoundTag toNbt() {
-		CompoundTag compoundTag = new CompoundTag();
+	public NbtCompound toNbt() {
+		NbtCompound nbtCompound = new NbtCompound();
 
 		for (CommandBossBar commandBossBar : this.commandBossBars.values()) {
-			compoundTag.put(commandBossBar.getId().toString(), commandBossBar.toNbt());
+			nbtCompound.put(commandBossBar.getId().toString(), commandBossBar.toNbt());
 		}
 
-		return compoundTag;
+		return nbtCompound;
 	}
 
-	public void readNbt(CompoundTag tag) {
+	public void readNbt(NbtCompound tag) {
 		for (String string : tag.getKeys()) {
 			Identifier identifier = new Identifier(string);
 			this.commandBossBars.put(identifier, CommandBossBar.fromNbt(tag.getCompound(string), identifier));

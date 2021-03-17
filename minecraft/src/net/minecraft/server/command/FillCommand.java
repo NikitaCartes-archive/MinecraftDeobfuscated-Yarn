@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -25,7 +26,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class FillCommand {
 	private static final Dynamic2CommandExceptionType TOO_BIG_EXCEPTION = new Dynamic2CommandExceptionType(
-		(object, object2) -> new TranslatableText("commands.fill.toobig", object, object2)
+		(maxCount, count) -> new TranslatableText("commands.fill.toobig", maxCount, count)
 	);
 	private static final BlockStateArgument AIR_BLOCK_ARGUMENT = new BlockStateArgument(Blocks.AIR.getDefaultState(), Collections.emptySet(), null);
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.fill.failed"));
@@ -33,7 +34,7 @@ public class FillCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("fill")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
+				.requires(source -> source.hasPermissionLevel(2))
 				.then(
 					CommandManager.argument("from", BlockPosArgumentType.blockPos())
 						.then(
@@ -41,10 +42,10 @@ public class FillCommand {
 								.then(
 									CommandManager.argument("block", BlockStateArgumentType.blockState())
 										.executes(
-											commandContext -> execute(
-													commandContext.getSource(),
-													BlockBox.create(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")),
-													BlockStateArgumentType.getBlockState(commandContext, "block"),
+											context -> execute(
+													context.getSource(),
+													BlockBox.create(BlockPosArgumentType.getLoadedBlockPos(context, "from"), BlockPosArgumentType.getLoadedBlockPos(context, "to")),
+													BlockStateArgumentType.getBlockState(context, "block"),
 													FillCommand.Mode.REPLACE,
 													null
 												)
@@ -52,10 +53,10 @@ public class FillCommand {
 										.then(
 											CommandManager.literal("replace")
 												.executes(
-													commandContext -> execute(
-															commandContext.getSource(),
-															BlockBox.create(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")),
-															BlockStateArgumentType.getBlockState(commandContext, "block"),
+													context -> execute(
+															context.getSource(),
+															BlockBox.create(BlockPosArgumentType.getLoadedBlockPos(context, "from"), BlockPosArgumentType.getLoadedBlockPos(context, "to")),
+															BlockStateArgumentType.getBlockState(context, "block"),
 															FillCommand.Mode.REPLACE,
 															null
 														)
@@ -63,12 +64,12 @@ public class FillCommand {
 												.then(
 													CommandManager.argument("filter", BlockPredicateArgumentType.blockPredicate())
 														.executes(
-															commandContext -> execute(
-																	commandContext.getSource(),
-																	BlockBox.create(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")),
-																	BlockStateArgumentType.getBlockState(commandContext, "block"),
+															context -> execute(
+																	context.getSource(),
+																	BlockBox.create(BlockPosArgumentType.getLoadedBlockPos(context, "from"), BlockPosArgumentType.getLoadedBlockPos(context, "to")),
+																	BlockStateArgumentType.getBlockState(context, "block"),
 																	FillCommand.Mode.REPLACE,
-																	BlockPredicateArgumentType.getBlockPredicate(commandContext, "filter")
+																	BlockPredicateArgumentType.getBlockPredicate(context, "filter")
 																)
 														)
 												)
@@ -76,22 +77,22 @@ public class FillCommand {
 										.then(
 											CommandManager.literal("keep")
 												.executes(
-													commandContext -> execute(
-															commandContext.getSource(),
-															BlockBox.create(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")),
-															BlockStateArgumentType.getBlockState(commandContext, "block"),
+													context -> execute(
+															context.getSource(),
+															BlockBox.create(BlockPosArgumentType.getLoadedBlockPos(context, "from"), BlockPosArgumentType.getLoadedBlockPos(context, "to")),
+															BlockStateArgumentType.getBlockState(context, "block"),
 															FillCommand.Mode.REPLACE,
-															cachedBlockPosition -> cachedBlockPosition.getWorld().isAir(cachedBlockPosition.getBlockPos())
+															pos -> pos.getWorld().isAir(pos.getBlockPos())
 														)
 												)
 										)
 										.then(
 											CommandManager.literal("outline")
 												.executes(
-													commandContext -> execute(
-															commandContext.getSource(),
-															BlockBox.create(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")),
-															BlockStateArgumentType.getBlockState(commandContext, "block"),
+													context -> execute(
+															context.getSource(),
+															BlockBox.create(BlockPosArgumentType.getLoadedBlockPos(context, "from"), BlockPosArgumentType.getLoadedBlockPos(context, "to")),
+															BlockStateArgumentType.getBlockState(context, "block"),
 															FillCommand.Mode.OUTLINE,
 															null
 														)
@@ -100,10 +101,10 @@ public class FillCommand {
 										.then(
 											CommandManager.literal("hollow")
 												.executes(
-													commandContext -> execute(
-															commandContext.getSource(),
-															BlockBox.create(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")),
-															BlockStateArgumentType.getBlockState(commandContext, "block"),
+													context -> execute(
+															context.getSource(),
+															BlockBox.create(BlockPosArgumentType.getLoadedBlockPos(context, "from"), BlockPosArgumentType.getLoadedBlockPos(context, "to")),
+															BlockStateArgumentType.getBlockState(context, "block"),
 															FillCommand.Mode.HOLLOW,
 															null
 														)
@@ -112,10 +113,10 @@ public class FillCommand {
 										.then(
 											CommandManager.literal("destroy")
 												.executes(
-													commandContext -> execute(
-															commandContext.getSource(),
-															BlockBox.create(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")),
-															BlockStateArgumentType.getBlockState(commandContext, "block"),
+													context -> execute(
+															context.getSource(),
+															BlockBox.create(BlockPosArgumentType.getLoadedBlockPos(context, "from"), BlockPosArgumentType.getLoadedBlockPos(context, "to")),
+															BlockStateArgumentType.getBlockState(context, "block"),
 															FillCommand.Mode.DESTROY,
 															null
 														)
@@ -144,7 +145,7 @@ public class FillCommand {
 					if (blockStateArgument != null) {
 						BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
 						Clearable.clear(blockEntity);
-						if (blockStateArgument.setBlockState(serverWorld, blockPos, 2)) {
+						if (blockStateArgument.setBlockState(serverWorld, blockPos, SetBlockStateFlags.NOTIFY_LISTENERS)) {
 							list.add(blockPos.toImmutable());
 							j++;
 						}
@@ -167,30 +168,30 @@ public class FillCommand {
 	}
 
 	static enum Mode {
-		REPLACE((blockBox, blockPos, blockStateArgument, serverWorld) -> blockStateArgument),
+		REPLACE((range, pos, block, world) -> block),
 		OUTLINE(
-			(blockBox, blockPos, blockStateArgument, serverWorld) -> blockPos.getX() != blockBox.minX
-						&& blockPos.getX() != blockBox.maxX
-						&& blockPos.getY() != blockBox.minY
-						&& blockPos.getY() != blockBox.maxY
-						&& blockPos.getZ() != blockBox.minZ
-						&& blockPos.getZ() != blockBox.maxZ
+			(range, pos, block, world) -> pos.getX() != range.minX
+						&& pos.getX() != range.maxX
+						&& pos.getY() != range.minY
+						&& pos.getY() != range.maxY
+						&& pos.getZ() != range.minZ
+						&& pos.getZ() != range.maxZ
 					? null
-					: blockStateArgument
+					: block
 		),
 		HOLLOW(
-			(blockBox, blockPos, blockStateArgument, serverWorld) -> blockPos.getX() != blockBox.minX
-						&& blockPos.getX() != blockBox.maxX
-						&& blockPos.getY() != blockBox.minY
-						&& blockPos.getY() != blockBox.maxY
-						&& blockPos.getZ() != blockBox.minZ
-						&& blockPos.getZ() != blockBox.maxZ
+			(range, pos, block, world) -> pos.getX() != range.minX
+						&& pos.getX() != range.maxX
+						&& pos.getY() != range.minY
+						&& pos.getY() != range.maxY
+						&& pos.getZ() != range.minZ
+						&& pos.getZ() != range.maxZ
 					? FillCommand.AIR_BLOCK_ARGUMENT
-					: blockStateArgument
+					: block
 		),
-		DESTROY((blockBox, blockPos, blockStateArgument, serverWorld) -> {
-			serverWorld.breakBlock(blockPos, true);
-			return blockStateArgument;
+		DESTROY((range, pos, block, world) -> {
+			world.breakBlock(pos, true);
+			return block;
 		});
 
 		public final SetBlockCommand.Filter filter;

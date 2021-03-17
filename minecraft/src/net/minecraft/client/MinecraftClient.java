@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.net.Proxy;
 import java.net.SocketAddress;
 import java.nio.ByteOrder;
+import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -37,6 +38,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -45,6 +47,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5961;
+import net.minecraft.class_5962;
+import net.minecraft.class_5963;
+import net.minecraft.class_5971;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -160,11 +166,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SkullItem;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
@@ -407,7 +413,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	@Nullable
 	public Screen currentScreen;
 	@Nullable
-	public Overlay overlay;
+	private Overlay overlay;
 	private boolean connectedToRealms;
 	private Thread thread;
 	private volatile boolean running = true;
@@ -429,6 +435,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final TickTimeTracker tickTimeTracker = new TickTimeTracker(Util.nanoTimeSupplier, () -> this.trackingTick);
 	@Nullable
 	private ProfileResult tickProfilerResult;
+	private class_5962 field_29569 = class_5963.field_29594;
 	private String openProfilerSection = "root";
 
 	public MinecraftClient(RunArgs args) {
@@ -514,58 +521,58 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.resourcePackManager.scanPacks();
 		this.options.addResourcePackProfilesToManager(this.resourcePackManager);
 		this.languageManager = new LanguageManager(this.options.language);
-		this.resourceManager.registerListener(this.languageManager);
+		this.resourceManager.registerReloader(this.languageManager);
 		this.textureManager = new TextureManager(this.resourceManager);
-		this.resourceManager.registerListener(this.textureManager);
+		this.resourceManager.registerReloader(this.textureManager);
 		this.skinProvider = new PlayerSkinProvider(this.textureManager, new File(file, "skins"), this.sessionService);
 		this.levelStorage = new LevelStorage(this.runDirectory.toPath().resolve("saves"), this.runDirectory.toPath().resolve("backups"), this.dataFixer);
 		this.soundManager = new SoundManager(this.resourceManager, this.options);
-		this.resourceManager.registerListener(this.soundManager);
+		this.resourceManager.registerReloader(this.soundManager);
 		this.splashTextLoader = new SplashTextResourceSupplier(this.session);
-		this.resourceManager.registerListener(this.splashTextLoader);
+		this.resourceManager.registerReloader(this.splashTextLoader);
 		this.musicTracker = new MusicTracker(this);
 		this.fontManager = new FontManager(this.textureManager);
 		this.textRenderer = this.fontManager.createTextRenderer();
-		this.resourceManager.registerListener(this.fontManager.getResourceReloadListener());
+		this.resourceManager.registerReloader(this.fontManager.getResourceReloadListener());
 		this.initFont(this.forcesUnicodeFont());
-		this.resourceManager.registerListener(new GrassColormapResourceSupplier());
-		this.resourceManager.registerListener(new FoliageColormapResourceSupplier());
+		this.resourceManager.registerReloader(new GrassColormapResourceSupplier());
+		this.resourceManager.registerReloader(new FoliageColormapResourceSupplier());
 		this.window.setPhase("Startup");
 		RenderSystem.setupDefaultState(0, 0, this.window.getFramebufferWidth(), this.window.getFramebufferHeight());
 		this.window.setPhase("Post startup");
 		this.blockColors = BlockColors.create();
 		this.itemColors = ItemColors.create(this.blockColors);
 		this.bakedModelManager = new BakedModelManager(this.textureManager, this.blockColors, this.options.mipmapLevels);
-		this.resourceManager.registerListener(this.bakedModelManager);
+		this.resourceManager.registerReloader(this.bakedModelManager);
 		this.entityModelLoader = new EntityModelLoader();
-		this.resourceManager.registerListener(this.entityModelLoader);
+		this.resourceManager.registerReloader(this.entityModelLoader);
 		this.blockEntityRenderDispatcher = new BlockEntityRenderDispatcher(this.textRenderer, this.entityModelLoader, this::getBlockRenderManager);
-		this.resourceManager.registerListener(this.blockEntityRenderDispatcher);
+		this.resourceManager.registerReloader(this.blockEntityRenderDispatcher);
 		BuiltinModelItemRenderer builtinModelItemRenderer = new BuiltinModelItemRenderer(this.blockEntityRenderDispatcher, this.entityModelLoader);
-		this.resourceManager.registerListener(builtinModelItemRenderer);
+		this.resourceManager.registerReloader(builtinModelItemRenderer);
 		this.itemRenderer = new ItemRenderer(this.textureManager, this.bakedModelManager, this.itemColors, builtinModelItemRenderer);
 		this.entityRenderDispatcher = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.textRenderer, this.options, this.entityModelLoader);
-		this.resourceManager.registerListener(this.entityRenderDispatcher);
+		this.resourceManager.registerReloader(this.entityRenderDispatcher);
 		this.heldItemRenderer = new HeldItemRenderer(this);
-		this.resourceManager.registerListener(this.itemRenderer);
+		this.resourceManager.registerReloader(this.itemRenderer);
 		this.bufferBuilders = new BufferBuilderStorage();
 		this.gameRenderer = new GameRenderer(this, this.resourceManager, this.bufferBuilders);
-		this.resourceManager.registerListener(this.gameRenderer);
+		this.resourceManager.registerReloader(this.gameRenderer);
 		this.socialInteractionsManager = new SocialInteractionsManager(this, this.socialInteractionsService);
 		this.blockRenderManager = new BlockRenderManager(this.bakedModelManager.getBlockModels(), builtinModelItemRenderer, this.blockColors);
-		this.resourceManager.registerListener(this.blockRenderManager);
+		this.resourceManager.registerReloader(this.blockRenderManager);
 		this.worldRenderer = new WorldRenderer(this, this.bufferBuilders);
-		this.resourceManager.registerListener(this.worldRenderer);
+		this.resourceManager.registerReloader(this.worldRenderer);
 		this.initializeSearchableContainers();
-		this.resourceManager.registerListener(this.searchManager);
+		this.resourceManager.registerReloader(this.searchManager);
 		this.particleManager = new ParticleManager(this.world, this.textureManager);
-		this.resourceManager.registerListener(this.particleManager);
+		this.resourceManager.registerReloader(this.particleManager);
 		this.paintingManager = new PaintingManager(this.textureManager);
-		this.resourceManager.registerListener(this.paintingManager);
+		this.resourceManager.registerReloader(this.paintingManager);
 		this.statusEffectSpriteManager = new StatusEffectSpriteManager(this.textureManager);
-		this.resourceManager.registerListener(this.statusEffectSpriteManager);
+		this.resourceManager.registerReloader(this.statusEffectSpriteManager);
 		this.videoWarningManager = new VideoWarningManager();
-		this.resourceManager.registerListener(this.videoWarningManager);
+		this.resourceManager.registerReloader(this.videoWarningManager);
 		this.inGameHud = new InGameHud(this);
 		this.debugRenderer = new DebugRenderer(this);
 		RenderSystem.setErrorCallback(this::handleGlErrorByDisableVsync);
@@ -584,13 +591,13 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.openScreen(new TitleScreen(true));
 		}
 
-		this.gameRenderer.method_34521(this.getResourcePackProvider().getPack());
+		this.gameRenderer.preloadShaders(this.getResourcePackProvider().getPack());
 		SplashScreen.init(this);
 		List<ResourcePack> list = this.resourcePackManager.createResourcePacks();
 		this.setOverlay(
 			new SplashScreen(
 				this,
-				this.resourceManager.beginMonitoredReload(Util.getMainWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list),
+				this.resourceManager.reload(Util.getMainWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list),
 				optional -> Util.ifPresentOrElse(optional, this::handleResourceReloadException, () -> {
 						if (SharedConstants.isDevelopment) {
 							this.checkGameData();
@@ -690,9 +697,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				try {
 					TickDurationMonitor tickDurationMonitor = TickDurationMonitor.create("Renderer");
 					boolean bl2 = this.shouldMonitorTickDuration();
-					this.startMonitor(bl2, tickDurationMonitor);
+					this.profiler = this.startMonitor(bl2, tickDurationMonitor);
 					this.profiler.startTick();
+					this.field_29569.method_34771();
 					this.render(!bl);
+					this.field_29569.method_34772();
 					this.profiler.endTick();
 					this.endMonitor(bl2, tickDurationMonitor);
 				} catch (OutOfMemoryError var4) {
@@ -826,7 +835,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				this.setOverlay(
 					new SplashScreen(
 						this,
-						this.resourceManager.beginMonitoredReload(Util.getMainWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list),
+						this.resourceManager.reload(Util.getMainWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list),
 						optional -> Util.ifPresentOrElse(optional, this::handleResourceReloadException, () -> {
 								this.worldRenderer.reload();
 								completableFuture.complete(null);
@@ -1043,10 +1052,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		matrixStack.push();
 		RenderSystem.applyModelViewMatrix();
 		RenderSystem.clear(16640, IS_SYSTEM_MAC);
-		this.framebuffer.clearColor[0] = 0.1F;
-		this.framebuffer.clearColor[1] = 0.2F;
-		this.framebuffer.clearColor[2] = 0.3F;
-		this.framebuffer.clear(IS_SYSTEM_MAC);
 		this.framebuffer.beginWrite(true);
 		BackgroundRenderer.method_23792();
 		this.profiler.push("display");
@@ -1131,19 +1136,27 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.options.debugEnabled && this.options.debugProfilerEnabled && !this.options.hudHidden;
 	}
 
-	private void startMonitor(boolean active, @Nullable TickDurationMonitor monitor) {
-		if (active) {
+	private Profiler startMonitor(boolean active, @Nullable TickDurationMonitor tickDurationMonitor) {
+		if (!active && !this.field_29569.method_34773()) {
+			return (Profiler)(tickDurationMonitor == null ? DummyProfiler.INSTANCE : tickDurationMonitor.nextProfiler());
+		} else if (active) {
 			if (!this.tickTimeTracker.isActive()) {
 				this.trackingTick = 0;
 				this.tickTimeTracker.enable();
 			}
 
 			this.trackingTick++;
+			Profiler profiler = this.field_29569.method_34773()
+				? Profiler.union(this.tickTimeTracker.getProfiler(), this.field_29569.method_34774())
+				: this.tickTimeTracker.getProfiler();
+			return TickDurationMonitor.tickProfiler(profiler, tickDurationMonitor);
 		} else {
-			this.tickTimeTracker.disable();
-		}
+			if (this.tickTimeTracker.isActive()) {
+				this.tickTimeTracker.disable();
+			}
 
-		this.profiler = TickDurationMonitor.tickProfiler(this.tickTimeTracker.getProfiler(), monitor);
+			return TickDurationMonitor.tickProfiler(this.field_29569.method_34774(), tickDurationMonitor);
+		}
 	}
 
 	private void endMonitor(boolean active, @Nullable TickDurationMonitor monitor) {
@@ -1203,6 +1216,16 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		System.gc();
 	}
 
+	void method_34745(Runnable runnable, Consumer<Path> consumer) {
+		if (this.field_29569.method_34773()) {
+			this.field_29569.method_34770();
+		} else {
+			Runnable runnable2 = () -> this.field_29569 = class_5963.field_29594;
+			this.field_29569 = class_5961.method_34760(Util.nanoTimeSupplier, Util.getIoWorkerExecutor(), new class_5971(), runnable2, consumer);
+			runnable.run();
+		}
+	}
+
 	void handleProfilerKeyPress(int digit) {
 		if (this.tickProfilerResult != null) {
 			List<ProfilerTiming> list = this.tickProfilerResult.getTimings(this.openProfilerSection);
@@ -1233,6 +1256,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		List<ProfilerTiming> list = profileResult.getTimings(this.openProfilerSection);
 		ProfilerTiming profilerTiming = (ProfilerTiming)list.remove(0);
 		RenderSystem.clear(256, IS_SYSTEM_MAC);
+		RenderSystem.setShader(GameRenderer::getPositionColorShader);
 		Matrix4f matrix4f = Matrix4f.method_34239(0.0F, (float)this.window.getFramebufferWidth(), 0.0F, (float)this.window.getFramebufferHeight(), 1000.0F, 3000.0F);
 		RenderSystem.setProjectionMatrix(matrix4f);
 		MatrixStack matrixStack = RenderSystem.getModelViewStack();
@@ -1727,7 +1751,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public static SaveProperties createSaveProperties(
 		LevelStorage.Session session, DynamicRegistryManager.Impl registryTracker, ResourceManager resourceManager, DataPackSettings dataPackSettings
 	) {
-		RegistryOps<Tag> registryOps = RegistryOps.of(NbtOps.INSTANCE, resourceManager, registryTracker);
+		RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, resourceManager, registryTracker);
 		SaveProperties saveProperties = session.readLevelProperties(registryOps, dataPackSettings);
 		if (saveProperties == null) {
 			throw new IllegalStateException("Failed to load world");
@@ -1975,7 +1999,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public void joinWorld(ClientWorld world) {
 		ProgressScreen progressScreen = new ProgressScreen();
-		progressScreen.method_15412(new TranslatableText("connect.joining"));
+		progressScreen.setTitle(new TranslatableText("connect.joining"));
 		this.reset(progressScreen);
 		this.world = world;
 		this.setWorld(world);
@@ -2170,18 +2194,18 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	private ItemStack addBlockEntityNbt(ItemStack stack, BlockEntity blockEntity) {
-		CompoundTag compoundTag = blockEntity.writeNbt(new CompoundTag());
-		if (stack.getItem() instanceof SkullItem && compoundTag.contains("SkullOwner")) {
-			CompoundTag compoundTag2 = compoundTag.getCompound("SkullOwner");
-			stack.getOrCreateTag().put("SkullOwner", compoundTag2);
+		NbtCompound nbtCompound = blockEntity.writeNbt(new NbtCompound());
+		if (stack.getItem() instanceof SkullItem && nbtCompound.contains("SkullOwner")) {
+			NbtCompound nbtCompound2 = nbtCompound.getCompound("SkullOwner");
+			stack.getOrCreateTag().put("SkullOwner", nbtCompound2);
 			return stack;
 		} else {
-			stack.putSubTag("BlockEntityTag", compoundTag);
-			CompoundTag compoundTag2 = new CompoundTag();
-			ListTag listTag = new ListTag();
-			listTag.add(StringTag.of("\"(+NBT)\""));
-			compoundTag2.put("Lore", listTag);
-			stack.putSubTag("display", compoundTag2);
+			stack.putSubTag("BlockEntityTag", nbtCompound);
+			NbtCompound nbtCompound2 = new NbtCompound();
+			NbtList nbtList = new NbtList();
+			nbtList.add(NbtString.of("\"(+NBT)\""));
+			nbtCompound2.put("Lore", nbtList);
+			stack.putSubTag("display", nbtCompound2);
 			return stack;
 		}
 	}

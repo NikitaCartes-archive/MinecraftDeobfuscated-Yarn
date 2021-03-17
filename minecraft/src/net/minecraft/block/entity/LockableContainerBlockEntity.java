@@ -1,12 +1,13 @@
 package net.minecraft.block.entity;
 
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ContainerLock;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundCategory;
@@ -25,16 +26,16 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 	}
 
 	@Override
-	public void readNbt(CompoundTag tag) {
+	public void readNbt(NbtCompound tag) {
 		super.readNbt(tag);
 		this.lock = ContainerLock.fromNbt(tag);
-		if (tag.contains("CustomName", 8)) {
+		if (tag.contains("CustomName", NbtTypeIds.STRING)) {
 			this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
 		}
 	}
 
 	@Override
-	public CompoundTag writeNbt(CompoundTag tag) {
+	public NbtCompound writeNbt(NbtCompound tag) {
 		super.writeNbt(tag);
 		this.lock.writeNbt(tag);
 		if (this.customName != null) {

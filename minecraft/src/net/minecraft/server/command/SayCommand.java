@@ -13,14 +13,14 @@ public class SayCommand {
 		dispatcher.register(
 			CommandManager.literal("say")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
-				.then(CommandManager.argument("message", MessageArgumentType.message()).executes(commandContext -> {
-					Text text = MessageArgumentType.getMessage(commandContext, "message");
-					Text text2 = new TranslatableText("chat.type.announcement", commandContext.getSource().getDisplayName(), text);
-					Entity entity = commandContext.getSource().getEntity();
+				.then(CommandManager.argument("message", MessageArgumentType.message()).executes(context -> {
+					Text text = MessageArgumentType.getMessage(context, "message");
+					Text text2 = new TranslatableText("chat.type.announcement", context.getSource().getDisplayName(), text);
+					Entity entity = context.getSource().getEntity();
 					if (entity != null) {
-						commandContext.getSource().getMinecraftServer().getPlayerManager().broadcastChatMessage(text2, MessageType.CHAT, entity.getUuid());
+						context.getSource().getMinecraftServer().getPlayerManager().broadcastChatMessage(text2, MessageType.CHAT, entity.getUuid());
 					} else {
-						commandContext.getSource().getMinecraftServer().getPlayerManager().broadcastChatMessage(text2, MessageType.SYSTEM, Util.NIL_UUID);
+						context.getSource().getMinecraftServer().getPlayerManager().broadcastChatMessage(text2, MessageType.SYSTEM, Util.NIL_UUID);
 					}
 
 					return 1;

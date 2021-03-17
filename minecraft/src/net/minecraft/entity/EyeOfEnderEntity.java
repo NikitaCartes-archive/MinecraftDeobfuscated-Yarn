@@ -4,13 +4,14 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvironmentInterface;
 import net.fabricmc.api.EnvironmentInterfaces;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
@@ -169,7 +170,7 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 				if (this.dropsItem) {
 					this.world.spawnEntity(new ItemEntity(this.world, this.getX(), this.getY(), this.getZ(), this.getStack()));
 				} else {
-					this.world.syncWorldEvent(2003, this.getBlockPos(), 0);
+					this.world.syncWorldEvent(WorldEvents.EYE_OF_ENDER_BREAKS, this.getBlockPos(), 0);
 				}
 			}
 		} else {
@@ -178,15 +179,15 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		ItemStack itemStack = this.getTrackedItem();
 		if (!itemStack.isEmpty()) {
-			tag.put("Item", itemStack.writeNbt(new CompoundTag()));
+			tag.put("Item", itemStack.writeNbt(new NbtCompound()));
 		}
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		ItemStack itemStack = ItemStack.fromNbt(tag.getCompound("Item"));
 		this.setItem(itemStack);
 	}

@@ -6,8 +6,9 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
@@ -22,6 +23,14 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.Vec3d;
 
+/**
+ * A common logic for command-block behaviors shared by
+ * {@linkplain net.minecraft.block.entity.CommandBlockBlockEntity
+ * command blocks} and {@linkplain net.minecraft.entity.vehicle.CommandBlockMinecartEntity
+ * command block minecarts}.
+ * 
+ * @see MobSpawnerLogic
+ */
 public abstract class CommandBlockExecutor implements CommandOutput {
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss");
 	private static final Text DEFAULT_NAME = new LiteralText("@");
@@ -46,7 +55,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		return this.lastOutput == null ? LiteralText.EMPTY : this.lastOutput;
 	}
 
-	public CompoundTag serialize(CompoundTag tag) {
+	public NbtCompound writeNbt(NbtCompound tag) {
 		tag.putString("Command", this.command);
 		tag.putInt("SuccessCount", this.successCount);
 		tag.putString("CustomName", Text.Serializer.toJson(this.customName));
@@ -63,18 +72,18 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		return tag;
 	}
 
-	public void deserialize(CompoundTag tag) {
+	public void readNbt(NbtCompound tag) {
 		this.command = tag.getString("Command");
 		this.successCount = tag.getInt("SuccessCount");
-		if (tag.contains("CustomName", 8)) {
+		if (tag.contains("CustomName", NbtTypeIds.STRING)) {
 			this.setCustomName(Text.Serializer.fromJson(tag.getString("CustomName")));
 		}
 
-		if (tag.contains("TrackOutput", 1)) {
+		if (tag.contains("TrackOutput", NbtTypeIds.BYTE)) {
 			this.trackOutput = tag.getBoolean("TrackOutput");
 		}
 
-		if (tag.contains("LastOutput", 8) && this.trackOutput) {
+		if (tag.contains("LastOutput", NbtTypeIds.STRING) && this.trackOutput) {
 			try {
 				this.lastOutput = Text.Serializer.fromJson(tag.getString("LastOutput"));
 			} catch (Throwable var3) {
@@ -170,7 +179,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		this.lastOutput = lastOutput;
 	}
 
-	public void shouldTrackOutput(boolean trackOutput) {
+	public void setTrackingOutput(boolean trackOutput) {
 		this.trackOutput = trackOutput;
 	}
 

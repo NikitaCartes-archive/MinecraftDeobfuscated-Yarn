@@ -12,7 +12,7 @@ import org.apache.logging.log4j.MarkerManager;
 
 public class DecoderHandler extends ByteToMessageDecoder {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Marker MARKER = MarkerManager.getMarker("PACKET_RECEIVED", ClientConnection.MARKER_NETWORK_PACKETS);
+	private static final Marker MARKER = MarkerManager.getMarker("PACKET_RECEIVED", ClientConnection.NETWORK_PACKETS_MARKER);
 	private final NetworkSide side;
 
 	public DecoderHandler(NetworkSide side) {
@@ -24,13 +24,13 @@ public class DecoderHandler extends ByteToMessageDecoder {
 		if (byteBuf.readableBytes() != 0) {
 			PacketByteBuf packetByteBuf = new PacketByteBuf(byteBuf);
 			int i = packetByteBuf.readVarInt();
-			Packet<?> packet = channelHandlerContext.channel().attr(ClientConnection.ATTR_KEY_PROTOCOL).get().getPacketHandler(this.side, i, packetByteBuf);
+			Packet<?> packet = channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get().getPacketHandler(this.side, i, packetByteBuf);
 			if (packet == null) {
 				throw new IOException("Bad packet id " + i);
 			} else if (packetByteBuf.readableBytes() > 0) {
 				throw new IOException(
 					"Packet "
-						+ channelHandlerContext.channel().attr(ClientConnection.ATTR_KEY_PROTOCOL).get().getId()
+						+ channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get().getId()
 						+ "/"
 						+ i
 						+ " ("
@@ -43,7 +43,9 @@ public class DecoderHandler extends ByteToMessageDecoder {
 			} else {
 				list.add(packet);
 				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug(MARKER, " IN: [{}:{}] {}", channelHandlerContext.channel().attr(ClientConnection.ATTR_KEY_PROTOCOL).get(), i, packet.getClass().getName());
+					LOGGER.debug(
+						MARKER, " IN: [{}:{}] {}", channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get(), i, packet.getClass().getName()
+					);
 				}
 			}
 		}

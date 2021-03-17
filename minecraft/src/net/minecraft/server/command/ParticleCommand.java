@@ -21,33 +21,33 @@ public class ParticleCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("particle")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
+				.requires(source -> source.hasPermissionLevel(2))
 				.then(
 					CommandManager.argument("name", ParticleEffectArgumentType.particleEffect())
 						.executes(
-							commandContext -> execute(
-									commandContext.getSource(),
-									ParticleEffectArgumentType.getParticle(commandContext, "name"),
-									commandContext.getSource().getPosition(),
+							context -> execute(
+									context.getSource(),
+									ParticleEffectArgumentType.getParticle(context, "name"),
+									context.getSource().getPosition(),
 									Vec3d.ZERO,
 									0.0F,
 									0,
 									false,
-									commandContext.getSource().getMinecraftServer().getPlayerManager().getPlayerList()
+									context.getSource().getMinecraftServer().getPlayerManager().getPlayerList()
 								)
 						)
 						.then(
 							CommandManager.argument("pos", Vec3ArgumentType.vec3())
 								.executes(
-									commandContext -> execute(
-											commandContext.getSource(),
-											ParticleEffectArgumentType.getParticle(commandContext, "name"),
-											Vec3ArgumentType.getVec3(commandContext, "pos"),
+									context -> execute(
+											context.getSource(),
+											ParticleEffectArgumentType.getParticle(context, "name"),
+											Vec3ArgumentType.getVec3(context, "pos"),
 											Vec3d.ZERO,
 											0.0F,
 											0,
 											false,
-											commandContext.getSource().getMinecraftServer().getPlayerManager().getPlayerList()
+											context.getSource().getMinecraftServer().getPlayerManager().getPlayerList()
 										)
 								)
 								.then(
@@ -57,43 +57,43 @@ public class ParticleCommand {
 												.then(
 													CommandManager.argument("count", IntegerArgumentType.integer(0))
 														.executes(
-															commandContext -> execute(
-																	commandContext.getSource(),
-																	ParticleEffectArgumentType.getParticle(commandContext, "name"),
-																	Vec3ArgumentType.getVec3(commandContext, "pos"),
-																	Vec3ArgumentType.getVec3(commandContext, "delta"),
-																	FloatArgumentType.getFloat(commandContext, "speed"),
-																	IntegerArgumentType.getInteger(commandContext, "count"),
+															context -> execute(
+																	context.getSource(),
+																	ParticleEffectArgumentType.getParticle(context, "name"),
+																	Vec3ArgumentType.getVec3(context, "pos"),
+																	Vec3ArgumentType.getVec3(context, "delta"),
+																	FloatArgumentType.getFloat(context, "speed"),
+																	IntegerArgumentType.getInteger(context, "count"),
 																	false,
-																	commandContext.getSource().getMinecraftServer().getPlayerManager().getPlayerList()
+																	context.getSource().getMinecraftServer().getPlayerManager().getPlayerList()
 																)
 														)
 														.then(
 															CommandManager.literal("force")
 																.executes(
-																	commandContext -> execute(
-																			commandContext.getSource(),
-																			ParticleEffectArgumentType.getParticle(commandContext, "name"),
-																			Vec3ArgumentType.getVec3(commandContext, "pos"),
-																			Vec3ArgumentType.getVec3(commandContext, "delta"),
-																			FloatArgumentType.getFloat(commandContext, "speed"),
-																			IntegerArgumentType.getInteger(commandContext, "count"),
+																	context -> execute(
+																			context.getSource(),
+																			ParticleEffectArgumentType.getParticle(context, "name"),
+																			Vec3ArgumentType.getVec3(context, "pos"),
+																			Vec3ArgumentType.getVec3(context, "delta"),
+																			FloatArgumentType.getFloat(context, "speed"),
+																			IntegerArgumentType.getInteger(context, "count"),
 																			true,
-																			commandContext.getSource().getMinecraftServer().getPlayerManager().getPlayerList()
+																			context.getSource().getMinecraftServer().getPlayerManager().getPlayerList()
 																		)
 																)
 																.then(
 																	CommandManager.argument("viewers", EntityArgumentType.players())
 																		.executes(
-																			commandContext -> execute(
-																					commandContext.getSource(),
-																					ParticleEffectArgumentType.getParticle(commandContext, "name"),
-																					Vec3ArgumentType.getVec3(commandContext, "pos"),
-																					Vec3ArgumentType.getVec3(commandContext, "delta"),
-																					FloatArgumentType.getFloat(commandContext, "speed"),
-																					IntegerArgumentType.getInteger(commandContext, "count"),
+																			context -> execute(
+																					context.getSource(),
+																					ParticleEffectArgumentType.getParticle(context, "name"),
+																					Vec3ArgumentType.getVec3(context, "pos"),
+																					Vec3ArgumentType.getVec3(context, "delta"),
+																					FloatArgumentType.getFloat(context, "speed"),
+																					IntegerArgumentType.getInteger(context, "count"),
 																					true,
-																					EntityArgumentType.getPlayers(commandContext, "viewers")
+																					EntityArgumentType.getPlayers(context, "viewers")
 																				)
 																		)
 																)
@@ -101,29 +101,29 @@ public class ParticleCommand {
 														.then(
 															CommandManager.literal("normal")
 																.executes(
-																	commandContext -> execute(
-																			commandContext.getSource(),
-																			ParticleEffectArgumentType.getParticle(commandContext, "name"),
-																			Vec3ArgumentType.getVec3(commandContext, "pos"),
-																			Vec3ArgumentType.getVec3(commandContext, "delta"),
-																			FloatArgumentType.getFloat(commandContext, "speed"),
-																			IntegerArgumentType.getInteger(commandContext, "count"),
+																	context -> execute(
+																			context.getSource(),
+																			ParticleEffectArgumentType.getParticle(context, "name"),
+																			Vec3ArgumentType.getVec3(context, "pos"),
+																			Vec3ArgumentType.getVec3(context, "delta"),
+																			FloatArgumentType.getFloat(context, "speed"),
+																			IntegerArgumentType.getInteger(context, "count"),
 																			false,
-																			commandContext.getSource().getMinecraftServer().getPlayerManager().getPlayerList()
+																			context.getSource().getMinecraftServer().getPlayerManager().getPlayerList()
 																		)
 																)
 																.then(
 																	CommandManager.argument("viewers", EntityArgumentType.players())
 																		.executes(
-																			commandContext -> execute(
-																					commandContext.getSource(),
-																					ParticleEffectArgumentType.getParticle(commandContext, "name"),
-																					Vec3ArgumentType.getVec3(commandContext, "pos"),
-																					Vec3ArgumentType.getVec3(commandContext, "delta"),
-																					FloatArgumentType.getFloat(commandContext, "speed"),
-																					IntegerArgumentType.getInteger(commandContext, "count"),
+																			context -> execute(
+																					context.getSource(),
+																					ParticleEffectArgumentType.getParticle(context, "name"),
+																					Vec3ArgumentType.getVec3(context, "pos"),
+																					Vec3ArgumentType.getVec3(context, "delta"),
+																					FloatArgumentType.getFloat(context, "speed"),
+																					IntegerArgumentType.getInteger(context, "count"),
 																					false,
-																					EntityArgumentType.getPlayers(commandContext, "viewers")
+																					EntityArgumentType.getPlayers(context, "viewers")
 																				)
 																		)
 																)

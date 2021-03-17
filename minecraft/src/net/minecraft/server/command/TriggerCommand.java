@@ -32,11 +32,10 @@ public class TriggerCommand {
 			CommandManager.literal("trigger")
 				.then(
 					CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective())
-						.suggests((commandContext, suggestionsBuilder) -> suggestObjectives(commandContext.getSource(), suggestionsBuilder))
+						.suggests((context, builder) -> suggestObjectives(context.getSource(), builder))
 						.executes(
-							commandContext -> executeSimple(
-									commandContext.getSource(),
-									getScore(commandContext.getSource().getPlayer(), ScoreboardObjectiveArgumentType.getObjective(commandContext, "objective"))
+							context -> executeSimple(
+									context.getSource(), getScore(context.getSource().getPlayer(), ScoreboardObjectiveArgumentType.getObjective(context, "objective"))
 								)
 						)
 						.then(
@@ -44,10 +43,10 @@ public class TriggerCommand {
 								.then(
 									CommandManager.argument("value", IntegerArgumentType.integer())
 										.executes(
-											commandContext -> executeAdd(
-													commandContext.getSource(),
-													getScore(commandContext.getSource().getPlayer(), ScoreboardObjectiveArgumentType.getObjective(commandContext, "objective")),
-													IntegerArgumentType.getInteger(commandContext, "value")
+											context -> executeAdd(
+													context.getSource(),
+													getScore(context.getSource().getPlayer(), ScoreboardObjectiveArgumentType.getObjective(context, "objective")),
+													IntegerArgumentType.getInteger(context, "value")
 												)
 										)
 								)
@@ -57,10 +56,10 @@ public class TriggerCommand {
 								.then(
 									CommandManager.argument("value", IntegerArgumentType.integer())
 										.executes(
-											commandContext -> executeSet(
-													commandContext.getSource(),
-													getScore(commandContext.getSource().getPlayer(), ScoreboardObjectiveArgumentType.getObjective(commandContext, "objective")),
-													IntegerArgumentType.getInteger(commandContext, "value")
+											context -> executeSet(
+													context.getSource(),
+													getScore(context.getSource().getPlayer(), ScoreboardObjectiveArgumentType.getObjective(context, "objective")),
+													IntegerArgumentType.getInteger(context, "value")
 												)
 										)
 								)

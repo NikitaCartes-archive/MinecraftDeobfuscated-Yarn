@@ -121,9 +121,7 @@ public interface CauldronBehavior {
 	ActionResult interact(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack);
 
 	static void registerBehavior() {
-		EMPTY_CAULDRON_BEHAVIOR.put(Items.WATER_BUCKET, FILL_WITH_WATER);
-		EMPTY_CAULDRON_BEHAVIOR.put(Items.LAVA_BUCKET, FILL_WITH_LAVA);
-		EMPTY_CAULDRON_BEHAVIOR.put(Items.POWDER_SNOW_BUCKET, FILL_WITH_POWDER_SNOW);
+		registerBucketBehavior(EMPTY_CAULDRON_BEHAVIOR);
 		EMPTY_CAULDRON_BEHAVIOR.put(Items.POTION, (CauldronBehavior)(state, world, pos, player, hand, stack) -> {
 			if (PotionUtil.getPotion(stack) != Potions.WATER) {
 				return ActionResult.PASS;
@@ -139,9 +137,7 @@ public interface CauldronBehavior {
 				return ActionResult.success(world.isClient);
 			}
 		});
-		WATER_CAULDRON_BEHAVIOR.put(Items.LAVA_BUCKET, FILL_WITH_LAVA);
-		WATER_CAULDRON_BEHAVIOR.put(Items.WATER_BUCKET, FILL_WITH_WATER);
-		WATER_CAULDRON_BEHAVIOR.put(Items.POWDER_SNOW_BUCKET, FILL_WITH_POWDER_SNOW);
+		registerBucketBehavior(WATER_CAULDRON_BEHAVIOR);
 		WATER_CAULDRON_BEHAVIOR.put(
 			Items.BUCKET,
 			(CauldronBehavior)(state, world, pos, player, hand, stack) -> emptyCauldron(
@@ -225,8 +221,7 @@ public interface CauldronBehavior {
 					state, world, pos, player, hand, stack, new ItemStack(Items.LAVA_BUCKET), statex -> true, SoundEvents.ITEM_BUCKET_FILL_LAVA
 				)
 		);
-		LAVA_CAULDRON_BEHAVIOR.put(Items.WATER_BUCKET, FILL_WITH_WATER);
-		LAVA_CAULDRON_BEHAVIOR.put(Items.POWDER_SNOW_BUCKET, FILL_WITH_POWDER_SNOW);
+		registerBucketBehavior(LAVA_CAULDRON_BEHAVIOR);
 		POWDER_SNOW_CAULDRON_BEHAVIOR.put(
 			Items.BUCKET,
 			(CauldronBehavior)(state, world, pos, player, hand, stack) -> emptyCauldron(
@@ -241,8 +236,13 @@ public interface CauldronBehavior {
 					SoundEvents.ITEM_BUCKET_FILL_POWDER_SNOW
 				)
 		);
-		POWDER_SNOW_CAULDRON_BEHAVIOR.put(Items.WATER_BUCKET, FILL_WITH_WATER);
-		POWDER_SNOW_CAULDRON_BEHAVIOR.put(Items.LAVA_BUCKET, FILL_WITH_LAVA);
+		registerBucketBehavior(POWDER_SNOW_CAULDRON_BEHAVIOR);
+	}
+
+	static void registerBucketBehavior(Map<Item, CauldronBehavior> behavior) {
+		behavior.put(Items.LAVA_BUCKET, FILL_WITH_LAVA);
+		behavior.put(Items.WATER_BUCKET, FILL_WITH_WATER);
+		behavior.put(Items.POWDER_SNOW_BUCKET, FILL_WITH_POWDER_SNOW);
 	}
 
 	static ActionResult emptyCauldron(

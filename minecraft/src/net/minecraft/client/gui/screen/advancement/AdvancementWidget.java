@@ -135,7 +135,7 @@ public class AdvancementWidget extends DrawableHelper {
 				advancementObtainedStatus = AdvancementObtainedStatus.UNOBTAINED;
 			}
 
-			RenderSystem.setShader(GameRenderer::method_34542);
+			RenderSystem.setShader(GameRenderer::getPositionTexShader);
 			RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
 			this.drawTexture(
 				matrices, x + this.xPos + 3, y + this.yPos, this.display.getFrame().getTextureV(), 128 + advancementObtainedStatus.getSpriteIndex() * 26, 26, 26
@@ -188,7 +188,7 @@ public class AdvancementWidget extends DrawableHelper {
 		}
 
 		int m = this.width - l;
-		RenderSystem.setShader(GameRenderer::method_34542);
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableBlend();

@@ -10,19 +10,19 @@ import net.minecraft.world.Difficulty;
 
 public class DifficultyCommand {
 	private static final DynamicCommandExceptionType FAILURE_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableText("commands.difficulty.failure", object)
+		difficulty -> new TranslatableText("commands.difficulty.failure", difficulty)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("difficulty");
 
 		for (Difficulty difficulty : Difficulty.values()) {
-			literalArgumentBuilder.then(CommandManager.literal(difficulty.getName()).executes(commandContext -> execute(commandContext.getSource(), difficulty)));
+			literalArgumentBuilder.then(CommandManager.literal(difficulty.getName()).executes(context -> execute(context.getSource(), difficulty)));
 		}
 
-		dispatcher.register(literalArgumentBuilder.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2)).executes(commandContext -> {
-			Difficulty difficultyx = commandContext.getSource().getWorld().getDifficulty();
-			commandContext.getSource().sendFeedback(new TranslatableText("commands.difficulty.query", difficultyx.getTranslatableName()), false);
+		dispatcher.register(literalArgumentBuilder.requires(source -> source.hasPermissionLevel(2)).executes(context -> {
+			Difficulty difficultyx = context.getSource().getWorld().getDifficulty();
+			context.getSource().sendFeedback(new TranslatableText("commands.difficulty.query", difficultyx.getTranslatableName()), false);
 			return difficultyx.getId();
 		}));
 	}

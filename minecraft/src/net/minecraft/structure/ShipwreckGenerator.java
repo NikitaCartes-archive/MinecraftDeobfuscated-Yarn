@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Random;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.loot.LootTables;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -80,20 +81,20 @@ public class ShipwreckGenerator {
 			this.initializeStructureData(manager);
 		}
 
-		public Piece(StructureManager manager, CompoundTag tag) {
+		public Piece(ServerWorld serverWorld, NbtCompound tag) {
 			super(StructurePieceType.SHIPWRECK, tag);
 			this.template = new Identifier(tag.getString("Template"));
 			this.grounded = tag.getBoolean("isBeached");
 			this.rotation = BlockRotation.valueOf(tag.getString("Rot"));
-			this.initializeStructureData(manager);
+			this.initializeStructureData(serverWorld.getStructureManager());
 		}
 
 		@Override
-		protected void writeNbt(CompoundTag tag) {
-			super.writeNbt(tag);
-			tag.putString("Template", this.template.toString());
-			tag.putBoolean("isBeached", this.grounded);
-			tag.putString("Rot", this.rotation.name());
+		protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+			super.writeNbt(world, nbt);
+			nbt.putString("Template", this.template.toString());
+			nbt.putBoolean("isBeached", this.grounded);
+			nbt.putString("Rot", this.rotation.name());
 		}
 
 		private void initializeStructureData(StructureManager manager) {

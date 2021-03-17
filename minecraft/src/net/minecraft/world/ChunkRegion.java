@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -18,7 +19,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -182,7 +183,7 @@ public class ChunkRegion implements StructureWorldAccess {
 				Block.dropStacks(blockState, this.world, pos, blockEntity, breakingEntity, ItemStack.EMPTY);
 			}
 
-			return this.setBlockState(pos, Blocks.AIR.getDefaultState(), 3, maxUpdateDepth);
+			return this.setBlockState(pos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT, maxUpdateDepth);
 		}
 	}
 
@@ -194,17 +195,17 @@ public class ChunkRegion implements StructureWorldAccess {
 		if (blockEntity != null) {
 			return blockEntity;
 		} else {
-			CompoundTag compoundTag = chunk.getBlockEntityNbt(pos);
+			NbtCompound nbtCompound = chunk.getBlockEntityNbt(pos);
 			BlockState blockState = chunk.getBlockState(pos);
-			if (compoundTag != null) {
-				if ("DUMMY".equals(compoundTag.getString("id"))) {
+			if (nbtCompound != null) {
+				if ("DUMMY".equals(nbtCompound.getString("id"))) {
 					if (!blockState.hasBlockEntity()) {
 						return null;
 					}
 
 					blockEntity = ((BlockEntityProvider)blockState.getBlock()).createBlockEntity(pos, blockState);
 				} else {
-					blockEntity = BlockEntity.createFromNbt(pos, blockState, compoundTag);
+					blockEntity = BlockEntity.createFromNbt(pos, blockState, nbtCompound);
 				}
 
 				if (blockEntity != null) {
@@ -238,12 +239,12 @@ public class ChunkRegion implements StructureWorldAccess {
 					chunk.removeBlockEntity(pos);
 				}
 			} else {
-				CompoundTag compoundTag = new CompoundTag();
-				compoundTag.putInt("x", pos.getX());
-				compoundTag.putInt("y", pos.getY());
-				compoundTag.putInt("z", pos.getZ());
-				compoundTag.putString("id", "DUMMY");
-				chunk.addPendingBlockEntityNbt(compoundTag);
+				NbtCompound nbtCompound = new NbtCompound();
+				nbtCompound.putInt("x", pos.getX());
+				nbtCompound.putInt("y", pos.getY());
+				nbtCompound.putInt("z", pos.getZ());
+				nbtCompound.putString("id", "DUMMY");
+				chunk.addPendingBlockEntityNbt(nbtCompound);
 			}
 		} else if (blockState != null && blockState.hasBlockEntity()) {
 			chunk.removeBlockEntity(pos);
@@ -270,7 +271,7 @@ public class ChunkRegion implements StructureWorldAccess {
 
 	@Override
 	public boolean removeBlock(BlockPos pos, boolean move) {
-		return this.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
+		return this.setBlockState(pos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT);
 	}
 
 	@Override

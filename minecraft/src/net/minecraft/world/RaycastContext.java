@@ -65,7 +65,7 @@ public class RaycastContext {
 	public static enum ShapeType implements RaycastContext.ShapeProvider {
 		COLLIDER(AbstractBlock.AbstractBlockState::getCollisionShape),
 		OUTLINE(AbstractBlock.AbstractBlockState::getOutlineShape),
-		VISUAL(AbstractBlock.AbstractBlockState::getVisualShape);
+		VISUAL(AbstractBlock.AbstractBlockState::getCameraCollisionShape);
 
 		private final RaycastContext.ShapeProvider provider;
 

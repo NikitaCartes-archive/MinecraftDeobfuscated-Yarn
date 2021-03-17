@@ -10,10 +10,10 @@ import net.minecraft.world.GameMode;
 public class DefaultGameModeCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("defaultgamemode")
-			.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2));
+			.requires(source -> source.hasPermissionLevel(2));
 
 		for (GameMode gameMode : GameMode.values()) {
-			literalArgumentBuilder.then(CommandManager.literal(gameMode.getName()).executes(commandContext -> execute(commandContext.getSource(), gameMode)));
+			literalArgumentBuilder.then(CommandManager.literal(gameMode.getName()).executes(context -> execute(context.getSource(), gameMode)));
 		}
 
 		dispatcher.register(literalArgumentBuilder);

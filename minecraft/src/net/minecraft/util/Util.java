@@ -2,6 +2,7 @@ package net.minecraft.util;
 
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.DSL.TypeReference;
@@ -40,8 +41,10 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
@@ -77,8 +80,8 @@ public class Util {
 		return Collectors.toMap(Entry::getKey, Entry::getValue);
 	}
 
-	public static <T extends Comparable<T>> String getValueAsString(Property<T> property, Object object) {
-		return property.name((T)object);
+	public static <T extends Comparable<T>> String getValueAsString(Property<T> property, Object value) {
+		return property.name((T)value);
 	}
 
 	public static String createTranslationKey(String type, @Nullable Identifier id) {
@@ -244,7 +247,7 @@ public class Util {
 
 	public static Stream<String> getJVMFlags() {
 		RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
-		return runtimeMXBean.getInputArguments().stream().filter(string -> string.startsWith("-X"));
+		return runtimeMXBean.getInputArguments().stream().filter(runtimeArg -> runtimeArg.startsWith("-X"));
 	}
 
 	public static <T> T getLast(List<T> list) {
@@ -347,10 +350,10 @@ public class Util {
 		List<V> list = Lists.<V>newArrayListWithCapacity(futures.size());
 		CompletableFuture<?>[] completableFutures = new CompletableFuture[futures.size()];
 		CompletableFuture<Void> completableFuture = new CompletableFuture();
-		futures.forEach(completableFuture2 -> {
+		futures.forEach(future -> {
 			int i = list.size();
 			list.add(null);
-			completableFutures[i] = completableFuture2.whenComplete((object, throwable) -> {
+			completableFutures[i] = future.whenComplete((object, throwable) -> {
 				if (throwable != null) {
 					completableFuture.completeExceptionally(throwable);
 				} else {
@@ -486,8 +489,8 @@ public class Util {
 		};
 	}
 
-	private static boolean attemptTasks(BooleanSupplier... booleanSuppliers) {
-		for (BooleanSupplier booleanSupplier : booleanSuppliers) {
+	private static boolean attemptTasks(BooleanSupplier... tasks) {
+		for (BooleanSupplier booleanSupplier : tasks) {
 			if (!booleanSupplier.getAsBoolean()) {
 				LOGGER.warn("Failed to execute {}", booleanSupplier);
 				return false;
@@ -555,7 +558,7 @@ public class Util {
 	}
 
 	public static Consumer<String> addPrefix(String prefix, Consumer<String> consumer) {
-		return string2 -> consumer.accept(prefix + string2);
+		return string -> consumer.accept(prefix + string);
 	}
 
 	public static DataResult<int[]> toArray(IntStream stream, int length) {
@@ -611,8 +614,38 @@ public class Util {
 	public static String replaceInvalidChars(String string, CharPredicate predicate) {
 		return (String)string.toLowerCase(Locale.ROOT)
 			.chars()
-			.mapToObj(i -> predicate.test((char)i) ? Character.toString((char)i) : "_")
+			.mapToObj(charCode -> predicate.test((char)charCode) ? Character.toString((char)charCode) : "_")
 			.collect(Collectors.joining());
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static <T, R> Function<T, R> memoize(Function<T, R> function) {
+		return new Function<T, R>() {
+			private final Map<T, R> cache = Maps.<T, R>newHashMap();
+
+			public R apply(T object) {
+				return (R)this.cache.computeIfAbsent(object, function);
+			}
+
+			public String toString() {
+				return "memoize/1[function=" + function + ", size=" + this.cache.size() + "]";
+			}
+		};
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static <T, U, R> BiFunction<T, U, R> memoize(BiFunction<T, U, R> biFunction) {
+		return new BiFunction<T, U, R>() {
+			private final Map<com.mojang.datafixers.util.Pair<T, U>, R> cache = Maps.<com.mojang.datafixers.util.Pair<T, U>, R>newHashMap();
+
+			public R apply(T object, U object2) {
+				return (R)this.cache.computeIfAbsent(com.mojang.datafixers.util.Pair.of(object, object2), pair -> biFunction.apply(pair.getFirst(), pair.getSecond()));
+			}
+
+			public String toString() {
+				return "memoize/2[function=" + biFunction + ", size=" + this.cache.size() + "]";
+			}
+		};
 	}
 
 	static enum IdentityHashStrategy implements Strategy<Object> {
@@ -669,11 +702,11 @@ public class Util {
 		}
 
 		@Environment(EnvType.CLIENT)
-		public void open(URI uRI) {
+		public void open(URI uri) {
 			try {
-				this.open(uRI.toURL());
+				this.open(uri.toURL());
 			} catch (MalformedURLException var3) {
-				Util.LOGGER.error("Couldn't open uri '{}'", uRI, var3);
+				Util.LOGGER.error("Couldn't open uri '{}'", uri, var3);
 			}
 		}
 
@@ -697,11 +730,11 @@ public class Util {
 		}
 
 		@Environment(EnvType.CLIENT)
-		public void open(String string) {
+		public void open(String uri) {
 			try {
-				this.open(new URI(string).toURL());
+				this.open(new URI(uri).toURL());
 			} catch (MalformedURLException | IllegalArgumentException | URISyntaxException var3) {
-				Util.LOGGER.error("Couldn't open uri '{}'", string, var3);
+				Util.LOGGER.error("Couldn't open uri '{}'", uri, var3);
 			}
 		}
 	}

@@ -12,6 +12,7 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class ControlsOptionsScreen extends GameOptionsScreen {
@@ -64,7 +65,7 @@ public class ControlsOptionsScreen extends GameOptionsScreen {
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (this.focusedBinding != null) {
-			if (keyCode == 256) {
+			if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
 				this.gameOptions.setKeyCode(this.focusedBinding, InputUtil.UNKNOWN_KEY);
 			} else {
 				this.gameOptions.setKeyCode(this.focusedBinding, InputUtil.fromKeyCode(keyCode, scanCode));

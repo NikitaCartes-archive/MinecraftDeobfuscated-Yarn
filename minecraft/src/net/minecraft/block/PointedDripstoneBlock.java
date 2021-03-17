@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.enums.Thickness;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
@@ -158,7 +159,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 					if (blockPos != null) {
 						BlockPos blockPos2 = getCauldronPos(world, blockPos, fluid);
 						if (blockPos2 != null) {
-							world.syncWorldEvent(1504, blockPos, 0);
+							world.syncWorldEvent(WorldEvents.POINTED_DRIPSTONE_DRIPS, blockPos, 0);
 							int i = blockPos.getY() - blockPos2.getY();
 							int j = 50 + i;
 							BlockState blockState = world.getBlockState(blockPos2);
@@ -243,7 +244,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	@Override
 	public void onDestroyedOnLanding(World world, BlockPos pos, FallingBlockEntity fallingBlockEntity) {
 		if (!fallingBlockEntity.isSilent()) {
-			world.syncWorldEvent(1045, pos, 0);
+			world.syncWorldEvent(WorldEvents.POINTED_DRIPSTONE_LANDS, pos, 0);
 		}
 	}
 
@@ -416,7 +417,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	}
 
 	private static Optional<Fluid> getFluid(World world, BlockPos pos, BlockState state) {
-		return !isPointingDown(state) ? Optional.empty() : getSupportingPos(world, pos, state, 10).map(blockPos -> world.getFluidState(blockPos.up()).getFluid());
+		return !isPointingDown(state) ? Optional.empty() : getSupportingPos(world, pos, state, 10).map(posx -> world.getFluidState(posx.up()).getFluid());
 	}
 
 	/**

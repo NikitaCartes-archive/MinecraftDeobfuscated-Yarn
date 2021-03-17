@@ -122,6 +122,15 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 			.min(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(pos)));
 	}
 
+	public Optional<BlockPos> method_34712(
+		Predicate<PointOfInterestType> predicate, Predicate<BlockPos> predicate2, BlockPos blockPos, int i, PointOfInterestStorage.OccupationStatus occupationStatus
+	) {
+		return this.getInCircle(predicate, blockPos, i, occupationStatus)
+			.map(PointOfInterest::getPos)
+			.filter(predicate2)
+			.min(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(blockPos)));
+	}
+
 	public Optional<BlockPos> getPosition(Predicate<PointOfInterestType> typePredicate, Predicate<BlockPos> positionPredicate, BlockPos pos, int radius) {
 		return this.getInCircle(typePredicate, pos, radius, PointOfInterestStorage.OccupationStatus.HAS_SPACE)
 			.filter(poi -> positionPredicate.test(poi.getPos()))

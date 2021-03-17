@@ -12,6 +12,8 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.item.TooltipContext;
@@ -34,6 +36,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
+import net.minecraft.state.property.Property;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -172,10 +175,10 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		if (newState != state) {
 			if (newState.isAir()) {
 				if (!world.isClient()) {
-					world.breakBlock(pos, (flags & 32) == 0, null, maxUpdateDepth);
+					world.breakBlock(pos, (flags & SetBlockStateFlags.SKIP_DROPS) == 0, null, maxUpdateDepth);
 				}
 			} else {
-				world.setBlockState(pos, newState, flags & -33, maxUpdateDepth);
+				world.setBlockState(pos, newState, flags & ~SetBlockStateFlags.SKIP_DROPS, maxUpdateDepth);
 			}
 		}
 	}
@@ -405,7 +408,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	}
 
 	protected void spawnBreakParticles(World world, PlayerEntity player, BlockPos pos, BlockState state) {
-		world.syncWorldEvent(player, 2001, pos, getRawIdFromState(state));
+		world.syncWorldEvent(player, WorldEvents.BLOCK_BROKEN, pos, getRawIdFromState(state));
 	}
 
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
@@ -437,6 +440,25 @@ public class Block extends AbstractBlock implements ItemConvertible {
 
 	public final BlockState getDefaultState() {
 		return this.defaultState;
+	}
+
+	/**
+	 * Gets a block state with all properties that both this block and the source block state have.
+	 */
+	public final BlockState getStateWithProperties(BlockState blockState) {
+		BlockState blockState2 = this.getDefaultState();
+
+		for (Property<?> property : blockState.getBlock().getStateManager().getProperties()) {
+			if (blockState2.contains(property)) {
+				blockState2 = copyProperty(blockState, blockState2, property);
+			}
+		}
+
+		return blockState2;
+	}
+
+	private static <T extends Comparable<T>> BlockState copyProperty(BlockState source, BlockState target, Property<T> property) {
+		return target.with(property, source.get(property));
 	}
 
 	public BlockSoundGroup getSoundGroup(BlockState state) {

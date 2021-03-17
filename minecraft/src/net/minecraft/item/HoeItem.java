@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.Set;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -34,7 +35,9 @@ public class HoeItem extends MiningToolItem {
 		Blocks.BIRCH_LEAVES,
 		Blocks.AZALEA_LEAVES,
 		Blocks.AZALEA_LEAVES_FLOWERS,
-		Blocks.SCULK_SENSOR
+		Blocks.SCULK_SENSOR,
+		Blocks.MOSS_BLOCK,
+		Blocks.MOSS_CARPET
 	);
 	protected static final Map<Block, BlockState> TILLED_BLOCKS = Maps.<Block, BlockState>newHashMap(
 		ImmutableMap.of(
@@ -63,7 +66,7 @@ public class HoeItem extends MiningToolItem {
 				PlayerEntity playerEntity = context.getPlayer();
 				world.playSound(playerEntity, blockPos, SoundEvents.ITEM_HOE_TILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
 				if (!world.isClient) {
-					world.setBlockState(blockPos, blockState, 11);
+					world.setBlockState(blockPos, blockState, SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
 					if (playerEntity != null) {
 						context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
 					}

@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -40,9 +41,9 @@ public class ObserverBlock extends FacingBlock {
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if ((Boolean)state.get(POWERED)) {
-			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), 2);
+			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), SetBlockStateFlags.NOTIFY_LISTENERS);
 		} else {
-			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), 2);
+			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), SetBlockStateFlags.NOTIFY_LISTENERS);
 			world.getBlockTickScheduler().schedule(pos, this, 2);
 		}
 
@@ -93,7 +94,7 @@ public class ObserverBlock extends FacingBlock {
 		if (!state.isOf(oldState.getBlock())) {
 			if (!world.isClient() && (Boolean)state.get(POWERED) && !world.getBlockTickScheduler().isScheduled(pos, this)) {
 				BlockState blockState = state.with(POWERED, Boolean.valueOf(false));
-				world.setBlockState(pos, blockState, 18);
+				world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.FORCE_STATE);
 				this.updateNeighbors(world, pos, blockState);
 			}
 		}

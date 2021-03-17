@@ -40,7 +40,6 @@ public class EnderPearlEntity extends ThrownItemEntity {
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		super.onCollision(hitResult);
-		Entity entity = this.getOwner();
 
 		for (int i = 0; i < 32; i++) {
 			this.world
@@ -50,6 +49,7 @@ public class EnderPearlEntity extends ThrownItemEntity {
 		}
 
 		if (!this.world.isClient && !this.isRemoved()) {
+			Entity entity = this.getOwner();
 			if (entity instanceof ServerPlayerEntity) {
 				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
 				if (serverPlayerEntity.networkHandler.getConnection().isOpen() && serverPlayerEntity.world == this.world && !serverPlayerEntity.isSleeping()) {

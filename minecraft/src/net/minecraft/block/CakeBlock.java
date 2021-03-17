@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -86,7 +87,7 @@ public class CakeBlock extends Block {
 			int i = (Integer)state.get(BITES);
 			world.emitGameEvent(player, GameEvent.EAT, pos);
 			if (i < 6) {
-				world.setBlockState(pos, state.with(BITES, Integer.valueOf(i + 1)), 3);
+				world.setBlockState(pos, state.with(BITES, Integer.valueOf(i + 1)), SetBlockStateFlags.DEFAULT);
 			} else {
 				world.removeBlock(pos, false);
 				world.emitGameEvent(player, GameEvent.BLOCK_DESTROY, pos);

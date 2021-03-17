@@ -3,11 +3,12 @@ package net.minecraft.block.entity;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CommandBlock;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
@@ -37,7 +38,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 		@Override
 		public void markDirty() {
 			BlockState blockState = CommandBlockBlockEntity.this.world.getBlockState(CommandBlockBlockEntity.this.pos);
-			this.getWorld().updateListeners(CommandBlockBlockEntity.this.pos, blockState, blockState, 3);
+			this.getWorld().updateListeners(CommandBlockBlockEntity.this.pos, blockState, blockState, SetBlockStateFlags.DEFAULT);
 		}
 
 		@Environment(EnvType.CLIENT)
@@ -67,9 +68,9 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag writeNbt(CompoundTag tag) {
+	public NbtCompound writeNbt(NbtCompound tag) {
 		super.writeNbt(tag);
-		this.commandExecutor.serialize(tag);
+		this.commandExecutor.writeNbt(tag);
 		tag.putBoolean("powered", this.isPowered());
 		tag.putBoolean("conditionMet", this.isConditionMet());
 		tag.putBoolean("auto", this.isAuto());
@@ -77,9 +78,9 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void readNbt(CompoundTag tag) {
+	public void readNbt(NbtCompound tag) {
 		super.readNbt(tag);
-		this.commandExecutor.deserialize(tag);
+		this.commandExecutor.readNbt(tag);
 		this.powered = tag.getBoolean("powered");
 		this.conditionMet = tag.getBoolean("conditionMet");
 		this.setAuto(tag.getBoolean("auto"));
@@ -90,8 +91,8 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
 		if (this.needsUpdatePacket()) {
 			this.setNeedsUpdatePacket(false);
-			CompoundTag compoundTag = this.writeNbt(new CompoundTag());
-			return new BlockEntityUpdateS2CPacket(this.pos, 2, compoundTag);
+			NbtCompound nbtCompound = this.writeNbt(new NbtCompound());
+			return new BlockEntityUpdateS2CPacket(this.pos, 2, nbtCompound);
 		} else {
 			return null;
 		}

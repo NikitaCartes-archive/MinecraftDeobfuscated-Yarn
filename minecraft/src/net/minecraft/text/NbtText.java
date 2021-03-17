@@ -14,8 +14,8 @@ import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.command.argument.PosArgument;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
@@ -50,7 +50,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 		this.interpret = interpret;
 	}
 
-	protected abstract Stream<CompoundTag> toNbt(ServerCommandSource source) throws CommandSyntaxException;
+	protected abstract Stream<NbtCompound> toNbt(ServerCommandSource source) throws CommandSyntaxException;
 
 	public String getPath() {
 		return this.rawPath;
@@ -69,7 +69,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 				} catch (CommandSyntaxException var3) {
 					return Stream.empty();
 				}
-			}).map(Tag::asString);
+			}).map(NbtElement::asString);
 			return (MutableText)(this.interpret ? (MutableText)stream.flatMap(text -> {
 				try {
 					MutableText mutableText = Text.Serializer.fromJson(text);
@@ -120,14 +120,14 @@ public abstract class NbtText extends BaseText implements ParsableText {
 		}
 
 		@Override
-		protected Stream<CompoundTag> toNbt(ServerCommandSource source) {
+		protected Stream<NbtCompound> toNbt(ServerCommandSource source) {
 			if (this.pos != null) {
 				ServerWorld serverWorld = source.getWorld();
 				BlockPos blockPos = this.pos.toAbsoluteBlockPos(source);
 				if (serverWorld.canSetBlock(blockPos)) {
 					BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
 					if (blockEntity != null) {
-						return Stream.of(blockEntity.writeNbt(new CompoundTag()));
+						return Stream.of(blockEntity.writeNbt(new NbtCompound()));
 					}
 				}
 			}
@@ -189,7 +189,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 		}
 
 		@Override
-		protected Stream<CompoundTag> toNbt(ServerCommandSource source) throws CommandSyntaxException {
+		protected Stream<NbtCompound> toNbt(ServerCommandSource source) throws CommandSyntaxException {
 			if (this.selector != null) {
 				List<? extends Entity> list = this.selector.getEntities(source);
 				return list.stream().map(NbtPredicate::entityToNbt);
@@ -248,9 +248,9 @@ public abstract class NbtText extends BaseText implements ParsableText {
 		}
 
 		@Override
-		protected Stream<CompoundTag> toNbt(ServerCommandSource source) {
-			CompoundTag compoundTag = source.getMinecraftServer().getDataCommandStorage().get(this.id);
-			return Stream.of(compoundTag);
+		protected Stream<NbtCompound> toNbt(ServerCommandSource source) {
+			NbtCompound nbtCompound = source.getMinecraftServer().getDataCommandStorage().get(this.id);
+			return Stream.of(nbtCompound);
 		}
 
 		@Override

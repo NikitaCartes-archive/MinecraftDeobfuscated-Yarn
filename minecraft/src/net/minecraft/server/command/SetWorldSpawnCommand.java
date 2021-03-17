@@ -10,18 +10,14 @@ public class SetWorldSpawnCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("setworldspawn")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
-				.executes(commandContext -> execute(commandContext.getSource(), new BlockPos(commandContext.getSource().getPosition()), 0.0F))
+				.requires(source -> source.hasPermissionLevel(2))
+				.executes(context -> execute(context.getSource(), new BlockPos(context.getSource().getPosition()), 0.0F))
 				.then(
 					CommandManager.argument("pos", BlockPosArgumentType.blockPos())
-						.executes(commandContext -> execute(commandContext.getSource(), BlockPosArgumentType.getBlockPos(commandContext, "pos"), 0.0F))
+						.executes(context -> execute(context.getSource(), BlockPosArgumentType.getBlockPos(context, "pos"), 0.0F))
 						.then(
 							CommandManager.argument("angle", AngleArgumentType.angle())
-								.executes(
-									commandContext -> execute(
-											commandContext.getSource(), BlockPosArgumentType.getBlockPos(commandContext, "pos"), AngleArgumentType.getAngle(commandContext, "angle")
-										)
-								)
+								.executes(context -> execute(context.getSource(), BlockPosArgumentType.getBlockPos(context, "pos"), AngleArgumentType.getAngle(context, "angle")))
 						)
 				)
 		);

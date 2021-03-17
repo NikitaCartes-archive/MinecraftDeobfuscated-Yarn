@@ -238,7 +238,7 @@ public abstract class ChunkGenerator {
 		return this.structuresConfig;
 	}
 
-	public int getSpawnHeight() {
+	public int getSpawnHeight(HeightLimitView heightLimitView) {
 		return 64;
 	}
 

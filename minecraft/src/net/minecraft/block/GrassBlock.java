@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
@@ -54,20 +55,20 @@ public class GrassBlock extends SpreadableBlock implements Fertilizable {
 						continue;
 					}
 
-					blockState3 = method_31647(random, blockPos2, (ConfiguredFeature)list.get(0));
+					blockState3 = getFlowerState(random, blockPos2, (ConfiguredFeature)list.get(0));
 				} else {
 					blockState3 = blockState;
 				}
 
 				if (blockState3.canPlaceAt(world, blockPos2)) {
-					world.setBlockState(blockPos2, blockState3, 3);
+					world.setBlockState(blockPos2, blockState3, SetBlockStateFlags.DEFAULT);
 				}
 			}
 		}
 	}
 
-	private static <U extends FeatureConfig> BlockState method_31647(Random random, BlockPos blockPos, ConfiguredFeature<U, ?> configuredFeature) {
-		FlowerFeature<U> flowerFeature = (FlowerFeature<U>)configuredFeature.feature;
-		return flowerFeature.getFlowerState(random, blockPos, configuredFeature.getConfig());
+	private static <U extends FeatureConfig> BlockState getFlowerState(Random random, BlockPos pos, ConfiguredFeature<U, ?> flowerFeature) {
+		FlowerFeature<U> flowerFeature2 = (FlowerFeature<U>)flowerFeature.feature;
+		return flowerFeature2.getFlowerState(random, pos, flowerFeature.getConfig());
 	}
 }

@@ -232,8 +232,8 @@ public class RenderLayers {
 		hashMap.put(Blocks.LARGE_AMETHYST_BUD, renderLayer3);
 		hashMap.put(Blocks.AMETHYST_CLUSTER, renderLayer3);
 		hashMap.put(Blocks.LIGHTNING_ROD, renderLayer3);
-		hashMap.put(Blocks.CAVE_VINES_HEAD, renderLayer3);
-		hashMap.put(Blocks.CAVE_VINES_BODY, renderLayer3);
+		hashMap.put(Blocks.CAVE_VINES, renderLayer3);
+		hashMap.put(Blocks.CAVE_VINES_PLANT, renderLayer3);
 		hashMap.put(Blocks.SPORE_BLOSSOM, renderLayer3);
 		hashMap.put(Blocks.FLOWERING_AZALEA, renderLayer3);
 		hashMap.put(Blocks.AZALEA, renderLayer3);

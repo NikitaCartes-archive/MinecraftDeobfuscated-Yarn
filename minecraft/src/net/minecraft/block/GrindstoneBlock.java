@@ -162,7 +162,7 @@ public class GrindstoneBlock extends WallMountedBlock {
 	@Override
 	public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
 		return new SimpleNamedScreenHandlerFactory(
-			(i, playerInventory, playerEntity) -> new GrindstoneScreenHandler(i, playerInventory, ScreenHandlerContext.create(world, pos)), TITLE
+			(syncId, inventory, player) -> new GrindstoneScreenHandler(syncId, inventory, ScreenHandlerContext.create(world, pos)), TITLE
 		);
 	}
 

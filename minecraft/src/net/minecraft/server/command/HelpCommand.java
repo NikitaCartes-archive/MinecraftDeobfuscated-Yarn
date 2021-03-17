@@ -17,11 +17,11 @@ public class HelpCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("help")
-				.executes(commandContext -> {
-					Map<CommandNode<ServerCommandSource>, String> map = dispatcher.getSmartUsage(dispatcher.getRoot(), commandContext.getSource());
+				.executes(context -> {
+					Map<CommandNode<ServerCommandSource>, String> map = dispatcher.getSmartUsage(dispatcher.getRoot(), context.getSource());
 
 					for (String string : map.values()) {
-						commandContext.getSource().sendFeedback(new LiteralText("/" + string), false);
+						context.getSource().sendFeedback(new LiteralText("/" + string), false);
 					}
 
 					return map.size();
@@ -29,17 +29,17 @@ public class HelpCommand {
 				.then(
 					CommandManager.argument("command", StringArgumentType.greedyString())
 						.executes(
-							commandContext -> {
-								ParseResults<ServerCommandSource> parseResults = dispatcher.parse(StringArgumentType.getString(commandContext, "command"), commandContext.getSource());
+							context -> {
+								ParseResults<ServerCommandSource> parseResults = dispatcher.parse(StringArgumentType.getString(context, "command"), context.getSource());
 								if (parseResults.getContext().getNodes().isEmpty()) {
 									throw FAILED_EXCEPTION.create();
 								} else {
 									Map<CommandNode<ServerCommandSource>, String> map = dispatcher.getSmartUsage(
-										Iterables.<ParsedCommandNode<ServerCommandSource>>getLast(parseResults.getContext().getNodes()).getNode(), commandContext.getSource()
+										Iterables.<ParsedCommandNode<ServerCommandSource>>getLast(parseResults.getContext().getNodes()).getNode(), context.getSource()
 									);
 
 									for (String string : map.values()) {
-										commandContext.getSource().sendFeedback(new LiteralText("/" + parseResults.getReader().getString() + " " + string), false);
+										context.getSource().sendFeedback(new LiteralText("/" + parseResults.getReader().getString() + " " + string), false);
 									}
 
 									return map.size();

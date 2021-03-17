@@ -1,6 +1,8 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.JukeboxBlockEntity;
 import net.minecraft.entity.ItemEntity;
@@ -9,7 +11,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.MusicDiscItem;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -31,11 +33,11 @@ public class JukeboxBlock extends BlockWithEntity {
 	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
 		super.onPlaced(world, pos, state, placer, itemStack);
-		CompoundTag compoundTag = itemStack.getOrCreateTag();
-		if (compoundTag.contains("BlockEntityTag")) {
-			CompoundTag compoundTag2 = compoundTag.getCompound("BlockEntityTag");
-			if (compoundTag2.contains("RecordItem")) {
-				world.setBlockState(pos, state.with(HAS_RECORD, Boolean.valueOf(true)), 2);
+		NbtCompound nbtCompound = itemStack.getOrCreateTag();
+		if (nbtCompound.contains("BlockEntityTag")) {
+			NbtCompound nbtCompound2 = nbtCompound.getCompound("BlockEntityTag");
+			if (nbtCompound2.contains("RecordItem")) {
+				world.setBlockState(pos, state.with(HAS_RECORD, Boolean.valueOf(true)), SetBlockStateFlags.NOTIFY_LISTENERS);
 			}
 		}
 	}
@@ -45,7 +47,7 @@ public class JukeboxBlock extends BlockWithEntity {
 		if ((Boolean)state.get(HAS_RECORD)) {
 			this.removeRecord(world, pos);
 			state = state.with(HAS_RECORD, Boolean.valueOf(false));
-			world.setBlockState(pos, state, 2);
+			world.setBlockState(pos, state, SetBlockStateFlags.NOTIFY_LISTENERS);
 			return ActionResult.success(world.isClient);
 		} else {
 			return ActionResult.PASS;
@@ -56,7 +58,7 @@ public class JukeboxBlock extends BlockWithEntity {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof JukeboxBlockEntity) {
 			((JukeboxBlockEntity)blockEntity).setRecord(stack.copy());
-			world.setBlockState(pos, state.with(HAS_RECORD, Boolean.valueOf(true)), 2);
+			world.setBlockState(pos, state.with(HAS_RECORD, Boolean.valueOf(true)), SetBlockStateFlags.NOTIFY_LISTENERS);
 		}
 	}
 
@@ -67,7 +69,7 @@ public class JukeboxBlock extends BlockWithEntity {
 				JukeboxBlockEntity jukeboxBlockEntity = (JukeboxBlockEntity)blockEntity;
 				ItemStack itemStack = jukeboxBlockEntity.getRecord();
 				if (!itemStack.isEmpty()) {
-					world.syncWorldEvent(1010, pos, 0);
+					world.syncWorldEvent(WorldEvents.MUSIC_DISC_PLAYED, pos, 0);
 					jukeboxBlockEntity.clear();
 					float f = 0.7F;
 					double d = (double)(world.random.nextFloat() * 0.7F) + 0.15F;

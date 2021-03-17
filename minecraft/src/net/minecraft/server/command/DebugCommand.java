@@ -38,10 +38,10 @@ public class DebugCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("debug")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
-				.then(CommandManager.literal("start").executes(commandContext -> executeStart(commandContext.getSource())))
-				.then(CommandManager.literal("stop").executes(commandContext -> executeStop(commandContext.getSource())))
-				.then(CommandManager.literal("report").executes(commandContext -> createDebugReport(commandContext.getSource())))
+				.requires(source -> source.hasPermissionLevel(3))
+				.then(CommandManager.literal("start").executes(context -> executeStart(context.getSource())))
+				.then(CommandManager.literal("stop").executes(context -> executeStop(context.getSource())))
+				.then(CommandManager.literal("report").executes(context -> createDebugReport(context.getSource())))
 		);
 	}
 
@@ -63,7 +63,7 @@ public class DebugCommand {
 		} else {
 			ProfileResult profileResult = minecraftServer.stopDebug();
 			File file = new File(minecraftServer.getFile("debug"), "profile-results-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + ".txt");
-			profileResult.save(file);
+			profileResult.save(file.toPath());
 			float f = (float)profileResult.getTimeSpan() / 1.0E9F;
 			float g = (float)profileResult.getTickSpan() / f;
 			source.sendFeedback(

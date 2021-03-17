@@ -42,7 +42,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -215,14 +215,14 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
 		tag.putString("MainGene", this.getMainGene().getName());
 		tag.putString("HiddenGene", this.getHiddenGene().getName());
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
 		this.setMainGene(PandaEntity.Gene.byName(tag.getString("MainGene")));
 		this.setHiddenGene(PandaEntity.Gene.byName(tag.getString("HiddenGene")));
@@ -530,7 +530,7 @@ public class PandaEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
 	) {
 		this.setMainGene(PandaEntity.Gene.createRandom(this.random));
 		this.setHiddenGene(PandaEntity.Gene.createRandom(this.random));

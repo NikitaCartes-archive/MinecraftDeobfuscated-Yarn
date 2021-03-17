@@ -8,8 +8,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.LecternBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.Structure;
@@ -146,7 +146,7 @@ class StructureTestListener implements TestListener {
 
 	private static ItemStack createBookWithText(String text, boolean required, String output) {
 		ItemStack itemStack = new ItemStack(Items.WRITABLE_BOOK);
-		ListTag listTag = new ListTag();
+		NbtList nbtList = new NbtList();
 		StringBuffer stringBuffer = new StringBuffer();
 		Arrays.stream(text.split("\\.")).forEach(string -> stringBuffer.append(string).append('\n'));
 		if (!required) {
@@ -154,8 +154,8 @@ class StructureTestListener implements TestListener {
 		}
 
 		stringBuffer.append("-------------------\n");
-		listTag.add(StringTag.of(stringBuffer + output));
-		itemStack.putSubTag("pages", listTag);
+		nbtList.add(NbtString.of(stringBuffer + output));
+		itemStack.putSubTag("pages", nbtList);
 		return itemStack;
 	}
 

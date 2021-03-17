@@ -22,11 +22,11 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 
 public class NbtIo {
-	public static CompoundTag readCompressed(File file) throws IOException {
+	public static NbtCompound readCompressed(File file) throws IOException {
 		InputStream inputStream = new FileInputStream(file);
 		Throwable var2 = null;
 
-		CompoundTag var3;
+		NbtCompound var3;
 		try {
 			var3 = readCompressed(inputStream);
 		} catch (Throwable var12) {
@@ -49,11 +49,11 @@ public class NbtIo {
 		return var3;
 	}
 
-	public static CompoundTag readCompressed(InputStream stream) throws IOException {
+	public static NbtCompound readCompressed(InputStream stream) throws IOException {
 		DataInputStream dataInputStream = new DataInputStream(new BufferedInputStream(new GZIPInputStream(stream)));
 		Throwable var2 = null;
 
-		CompoundTag var3;
+		NbtCompound var3;
 		try {
 			var3 = read(dataInputStream, NbtTagSizeTracker.EMPTY);
 		} catch (Throwable var12) {
@@ -76,12 +76,12 @@ public class NbtIo {
 		return var3;
 	}
 
-	public static void writeCompressed(CompoundTag tag, File file) throws IOException {
+	public static void writeCompressed(NbtCompound compound, File file) throws IOException {
 		OutputStream outputStream = new FileOutputStream(file);
 		Throwable var3 = null;
 
 		try {
-			writeCompressed(tag, outputStream);
+			writeCompressed(compound, outputStream);
 		} catch (Throwable var12) {
 			var3 = var12;
 			throw var12;
@@ -100,12 +100,12 @@ public class NbtIo {
 		}
 	}
 
-	public static void writeCompressed(CompoundTag tag, OutputStream stream) throws IOException {
+	public static void writeCompressed(NbtCompound compound, OutputStream stream) throws IOException {
 		DataOutputStream dataOutputStream = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(stream)));
 		Throwable var3 = null;
 
 		try {
-			write(tag, dataOutputStream);
+			write(compound, dataOutputStream);
 		} catch (Throwable var12) {
 			var3 = var12;
 			throw var12;
@@ -125,7 +125,7 @@ public class NbtIo {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void write(CompoundTag tag, File file) throws IOException {
+	public static void write(NbtCompound compound, File file) throws IOException {
 		FileOutputStream fileOutputStream = new FileOutputStream(file);
 		Throwable var3 = null;
 
@@ -134,7 +134,7 @@ public class NbtIo {
 			Throwable var5 = null;
 
 			try {
-				write(tag, dataOutputStream);
+				write(compound, dataOutputStream);
 			} catch (Throwable var28) {
 				var5 = var28;
 				throw var28;
@@ -171,14 +171,14 @@ public class NbtIo {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public static CompoundTag read(File file) throws IOException {
+	public static NbtCompound read(File file) throws IOException {
 		if (!file.exists()) {
 			return null;
 		} else {
 			FileInputStream fileInputStream = new FileInputStream(file);
 			Throwable var2 = null;
 
-			CompoundTag var5;
+			NbtCompound var5;
 			try {
 				DataInputStream dataInputStream = new DataInputStream(fileInputStream);
 				Throwable var4 = null;
@@ -222,40 +222,40 @@ public class NbtIo {
 		}
 	}
 
-	public static CompoundTag read(DataInput input) throws IOException {
+	public static NbtCompound read(DataInput input) throws IOException {
 		return read(input, NbtTagSizeTracker.EMPTY);
 	}
 
-	public static CompoundTag read(DataInput input, NbtTagSizeTracker tracker) throws IOException {
-		Tag tag = read(input, 0, tracker);
-		if (tag instanceof CompoundTag) {
-			return (CompoundTag)tag;
+	public static NbtCompound read(DataInput input, NbtTagSizeTracker tracker) throws IOException {
+		NbtElement nbtElement = read(input, 0, tracker);
+		if (nbtElement instanceof NbtCompound) {
+			return (NbtCompound)nbtElement;
 		} else {
 			throw new IOException("Root tag must be a named compound tag");
 		}
 	}
 
-	public static void write(CompoundTag tag, DataOutput output) throws IOException {
-		write((Tag)tag, output);
+	public static void write(NbtCompound compound, DataOutput output) throws IOException {
+		write((NbtElement)compound, output);
 	}
 
-	private static void write(Tag tag, DataOutput output) throws IOException {
-		output.writeByte(tag.getType());
-		if (tag.getType() != 0) {
+	private static void write(NbtElement element, DataOutput output) throws IOException {
+		output.writeByte(element.getType());
+		if (element.getType() != 0) {
 			output.writeUTF("");
-			tag.write(output);
+			element.write(output);
 		}
 	}
 
-	private static Tag read(DataInput input, int depth, NbtTagSizeTracker tracker) throws IOException {
+	private static NbtElement read(DataInput input, int depth, NbtTagSizeTracker tracker) throws IOException {
 		byte b = input.readByte();
 		if (b == 0) {
-			return EndTag.INSTANCE;
+			return NbtNull.INSTANCE;
 		} else {
 			input.readUTF();
 
 			try {
-				return TagReaders.of(b).read(input, depth, tracker);
+				return NbtTypes.byId(b).read(input, depth, tracker);
 			} catch (IOException var7) {
 				CrashReport crashReport = CrashReport.create(var7, "Loading NBT data");
 				CrashReportSection crashReportSection = crashReport.addElement("NBT Tag");

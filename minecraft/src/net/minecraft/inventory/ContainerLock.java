@@ -1,8 +1,9 @@
 package net.minecraft.inventory;
 
 import javax.annotation.concurrent.Immutable;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 
 @Immutable
 public class ContainerLock {
@@ -31,7 +32,7 @@ public class ContainerLock {
 	/**
 	 * Inserts the key string of this lock into the {@code Lock} key of the compound tag.
 	 */
-	public void writeNbt(CompoundTag tag) {
+	public void writeNbt(NbtCompound tag) {
 		if (!this.key.isEmpty()) {
 			tag.putString("Lock", this.key);
 		}
@@ -42,7 +43,7 @@ public class ContainerLock {
 	 * <p>
 	 * If the {@code Lock} key is not present, returns an empty lock.
 	 */
-	public static ContainerLock fromNbt(CompoundTag tag) {
-		return tag.contains("Lock", 8) ? new ContainerLock(tag.getString("Lock")) : EMPTY;
+	public static ContainerLock fromNbt(NbtCompound tag) {
+		return tag.contains("Lock", NbtTypeIds.STRING) ? new ContainerLock(tag.getString("Lock")) : EMPTY;
 	}
 }

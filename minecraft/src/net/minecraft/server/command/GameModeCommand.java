@@ -15,16 +15,15 @@ import net.minecraft.world.GameRules;
 
 public class GameModeCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("gamemode")
-			.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2));
+		LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("gamemode").requires(source -> source.hasPermissionLevel(2));
 
 		for (GameMode gameMode : GameMode.values()) {
 			literalArgumentBuilder.then(
 				CommandManager.literal(gameMode.getName())
-					.executes(commandContext -> execute(commandContext, Collections.singleton(commandContext.getSource().getPlayer()), gameMode))
+					.executes(context -> execute(context, Collections.singleton(context.getSource().getPlayer()), gameMode))
 					.then(
 						CommandManager.argument("target", EntityArgumentType.players())
-							.executes(commandContext -> execute(commandContext, EntityArgumentType.getPlayers(commandContext, "target"), gameMode))
+							.executes(context -> execute(context, EntityArgumentType.getPlayers(context, "target"), gameMode))
 					)
 			);
 		}

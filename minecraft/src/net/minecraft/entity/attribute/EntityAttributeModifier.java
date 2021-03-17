@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.MathHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -76,17 +76,17 @@ public class EntityAttributeModifier {
 			+ '}';
 	}
 
-	public CompoundTag toNbt() {
-		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.putString("Name", this.getName());
-		compoundTag.putDouble("Amount", this.value);
-		compoundTag.putInt("Operation", this.operation.getId());
-		compoundTag.putUuid("UUID", this.uuid);
-		return compoundTag;
+	public NbtCompound toNbt() {
+		NbtCompound nbtCompound = new NbtCompound();
+		nbtCompound.putString("Name", this.getName());
+		nbtCompound.putDouble("Amount", this.value);
+		nbtCompound.putInt("Operation", this.operation.getId());
+		nbtCompound.putUuid("UUID", this.uuid);
+		return nbtCompound;
 	}
 
 	@Nullable
-	public static EntityAttributeModifier fromNbt(CompoundTag tag) {
+	public static EntityAttributeModifier fromNbt(NbtCompound tag) {
 		try {
 			UUID uUID = tag.getUuid("UUID");
 			EntityAttributeModifier.Operation operation = EntityAttributeModifier.Operation.fromId(tag.getInt("Operation"));

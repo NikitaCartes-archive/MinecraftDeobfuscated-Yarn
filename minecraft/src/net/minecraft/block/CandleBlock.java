@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.function.ToIntFunction;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -132,7 +133,7 @@ public class CandleBlock extends AbstractCandleBlock implements Waterloggable {
 			if ((Boolean)state.get(LIT)) {
 				extinguish(null, blockState, world, pos);
 			} else {
-				world.setBlockState(pos, blockState, 3);
+				world.setBlockState(pos, blockState, SetBlockStateFlags.DEFAULT);
 			}
 
 			world.getFluidTickScheduler().schedule(pos, fluidState.getFluid(), fluidState.getFluid().getTickRate(world));

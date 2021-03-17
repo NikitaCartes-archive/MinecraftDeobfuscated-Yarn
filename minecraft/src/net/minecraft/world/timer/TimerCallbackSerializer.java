@@ -4,7 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import javax.annotation.Nullable;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
@@ -28,16 +28,16 @@ public class TimerCallbackSerializer<C> {
 		return (TimerCallback.Serializer<C, T>)this.serializersByClass.get(class_);
 	}
 
-	public <T extends TimerCallback<C>> CompoundTag serialize(T callback) {
+	public <T extends TimerCallback<C>> NbtCompound serialize(T callback) {
 		TimerCallback.Serializer<C, T> serializer = this.getSerializer(callback.getClass());
-		CompoundTag compoundTag = new CompoundTag();
-		serializer.serialize(compoundTag, callback);
-		compoundTag.putString("Type", serializer.getId().toString());
-		return compoundTag;
+		NbtCompound nbtCompound = new NbtCompound();
+		serializer.serialize(nbtCompound, callback);
+		nbtCompound.putString("Type", serializer.getId().toString());
+		return nbtCompound;
 	}
 
 	@Nullable
-	public TimerCallback<C> deserialize(CompoundTag tag) {
+	public TimerCallback<C> deserialize(NbtCompound tag) {
 		Identifier identifier = Identifier.tryParse(tag.getString("Type"));
 		TimerCallback.Serializer<C, ?> serializer = (TimerCallback.Serializer<C, ?>)this.serializersByType.get(identifier);
 		if (serializer == null) {

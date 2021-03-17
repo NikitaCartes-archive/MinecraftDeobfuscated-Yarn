@@ -2,6 +2,8 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
 import java.util.function.Predicate;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -71,8 +73,8 @@ public class EatGrassGoal extends Goal {
 				BlockPos blockPos2 = blockPos.down();
 				if (this.world.getBlockState(blockPos2).isOf(Blocks.GRASS_BLOCK)) {
 					if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
-						this.world.syncWorldEvent(2001, blockPos2, Block.getRawIdFromState(Blocks.GRASS_BLOCK.getDefaultState()));
-						this.world.setBlockState(blockPos2, Blocks.DIRT.getDefaultState(), 2);
+						this.world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, blockPos2, Block.getRawIdFromState(Blocks.GRASS_BLOCK.getDefaultState()));
+						this.world.setBlockState(blockPos2, Blocks.DIRT.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
 					}
 
 					this.mob.onEatingGrass();

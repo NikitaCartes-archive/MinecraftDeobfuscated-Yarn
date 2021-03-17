@@ -2,7 +2,8 @@ package net.minecraft.structure;
 
 import java.util.List;
 import java.util.Random;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -51,11 +52,11 @@ public class NetherFossilGenerator {
 			this.initializeStructureData(manager);
 		}
 
-		public Piece(StructureManager manager, CompoundTag tag) {
+		public Piece(ServerWorld serverWorld, NbtCompound tag) {
 			super(StructurePieceType.NETHER_FOSSIL, tag);
 			this.template = new Identifier(tag.getString("Template"));
 			this.structureRotation = BlockRotation.valueOf(tag.getString("Rot"));
-			this.initializeStructureData(manager);
+			this.initializeStructureData(serverWorld.getStructureManager());
 		}
 
 		private void initializeStructureData(StructureManager manager) {
@@ -68,10 +69,10 @@ public class NetherFossilGenerator {
 		}
 
 		@Override
-		protected void writeNbt(CompoundTag tag) {
-			super.writeNbt(tag);
-			tag.putString("Template", this.template.toString());
-			tag.putString("Rot", this.structureRotation.name());
+		protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+			super.writeNbt(world, nbt);
+			nbt.putString("Template", this.template.toString());
+			nbt.putString("Rot", this.structureRotation.name());
 		}
 
 		@Override

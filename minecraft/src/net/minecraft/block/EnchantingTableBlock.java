@@ -112,7 +112,7 @@ public class EnchantingTableBlock extends BlockWithEntity {
 		if (blockEntity instanceof EnchantingTableBlockEntity) {
 			Text text = ((Nameable)blockEntity).getDisplayName();
 			return new SimpleNamedScreenHandlerFactory(
-				(i, playerInventory, playerEntity) -> new EnchantmentScreenHandler(i, playerInventory, ScreenHandlerContext.create(world, pos)), text
+				(syncId, inventory, player) -> new EnchantmentScreenHandler(syncId, inventory, ScreenHandlerContext.create(world, pos)), text
 			);
 		} else {
 			return null;

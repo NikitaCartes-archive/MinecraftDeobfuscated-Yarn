@@ -7,6 +7,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.AbstractFurnaceBlock;
 import net.minecraft.block.BlockState;
@@ -20,7 +21,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.AbstractCookingRecipe;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeFinder;
@@ -161,9 +162,15 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		addFuel(map, Blocks.FLETCHING_TABLE, 300);
 		addFuel(map, Blocks.SMITHING_TABLE, 300);
 		addFuel(map, Blocks.COMPOSTER, 300);
+		addFuel(map, Blocks.AZALEA, 100);
+		addFuel(map, Blocks.FLOWERING_AZALEA, 100);
 		return map;
 	}
 
+	/**
+	 * Returns whether the provided {@code item} is in the {@link
+	 * net.minecraft.tag.ItemTags#NON_FLAMMABLE_WOOD non_flammable_wood} tag.
+	 */
 	private static boolean isNonFlammableWood(Item item) {
 		return ItemTags.NON_FLAMMABLE_WOOD.contains(item);
 	}
@@ -196,7 +203,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	@Override
-	public void readNbt(CompoundTag tag) {
+	public void readNbt(NbtCompound tag) {
 		super.readNbt(tag);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
 		Inventories.readNbt(tag, this.inventory);
@@ -204,23 +211,23 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		this.cookTime = tag.getShort("CookTime");
 		this.cookTimeTotal = tag.getShort("CookTimeTotal");
 		this.fuelTime = this.getFuelTime(this.inventory.get(1));
-		CompoundTag compoundTag = tag.getCompound("RecipesUsed");
+		NbtCompound nbtCompound = tag.getCompound("RecipesUsed");
 
-		for (String string : compoundTag.getKeys()) {
-			this.recipesUsed.put(new Identifier(string), compoundTag.getInt(string));
+		for (String string : nbtCompound.getKeys()) {
+			this.recipesUsed.put(new Identifier(string), nbtCompound.getInt(string));
 		}
 	}
 
 	@Override
-	public CompoundTag writeNbt(CompoundTag tag) {
+	public NbtCompound writeNbt(NbtCompound tag) {
 		super.writeNbt(tag);
 		tag.putShort("BurnTime", (short)this.burnTime);
 		tag.putShort("CookTime", (short)this.cookTime);
 		tag.putShort("CookTimeTotal", (short)this.cookTimeTotal);
 		Inventories.writeNbt(tag, this.inventory);
-		CompoundTag compoundTag = new CompoundTag();
-		this.recipesUsed.forEach((identifier, integer) -> compoundTag.putInt(identifier.toString(), integer));
-		tag.put("RecipesUsed", compoundTag);
+		NbtCompound nbtCompound = new NbtCompound();
+		this.recipesUsed.forEach((identifier, integer) -> nbtCompound.putInt(identifier.toString(), integer));
+		tag.put("RecipesUsed", nbtCompound);
 		return tag;
 	}
 
@@ -272,7 +279,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		if (bl != blockEntity.isBurning()) {
 			bl2 = true;
 			state = state.with(AbstractFurnaceBlock.LIT, Boolean.valueOf(blockEntity.isBurning()));
-			world.setBlockState(pos, state, 3);
+			world.setBlockState(pos, state, SetBlockStateFlags.DEFAULT);
 		}
 
 		if (bl2) {

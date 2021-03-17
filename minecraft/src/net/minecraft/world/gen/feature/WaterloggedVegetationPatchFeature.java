@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Predicate;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.state.property.Properties;
@@ -33,7 +34,7 @@ public class WaterloggedVegetationPatchFeature extends VegetationPatchFeature {
 		}
 
 		for (BlockPos blockPosx : set2) {
-			world.setBlockState(blockPosx, Blocks.WATER.getDefaultState(), 2);
+			world.setBlockState(blockPosx, Blocks.WATER.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
 		}
 
 		return set2;
@@ -43,7 +44,8 @@ public class WaterloggedVegetationPatchFeature extends VegetationPatchFeature {
 		return isSolidBlockSide(world, pos, mutablePos, Direction.NORTH)
 			|| isSolidBlockSide(world, pos, mutablePos, Direction.EAST)
 			|| isSolidBlockSide(world, pos, mutablePos, Direction.SOUTH)
-			|| isSolidBlockSide(world, pos, mutablePos, Direction.WEST);
+			|| isSolidBlockSide(world, pos, mutablePos, Direction.WEST)
+			|| isSolidBlockSide(world, pos, mutablePos, Direction.DOWN);
 	}
 
 	private static boolean isSolidBlockSide(StructureWorldAccess world, BlockPos pos, BlockPos.Mutable mutablePos, Direction direction) {
@@ -58,7 +60,7 @@ public class WaterloggedVegetationPatchFeature extends VegetationPatchFeature {
 		if (super.generateVegetationFeature(world, config, generator, random, pos.down())) {
 			BlockState blockState = world.getBlockState(pos);
 			if (blockState.contains(Properties.WATERLOGGED) && !(Boolean)blockState.get(Properties.WATERLOGGED)) {
-				world.setBlockState(pos, blockState.with(Properties.WATERLOGGED, Boolean.valueOf(true)), 2);
+				world.setBlockState(pos, blockState.with(Properties.WATERLOGGED, Boolean.valueOf(true)), SetBlockStateFlags.NOTIFY_LISTENERS);
 			}
 
 			return true;

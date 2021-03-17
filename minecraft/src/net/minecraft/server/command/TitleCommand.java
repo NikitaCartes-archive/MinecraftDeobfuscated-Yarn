@@ -22,26 +22,20 @@ public class TitleCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("title")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
+				.requires(source -> source.hasPermissionLevel(2))
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.players())
-						.then(
-							CommandManager.literal("clear")
-								.executes(commandContext -> executeClear(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets")))
-						)
-						.then(
-							CommandManager.literal("reset")
-								.executes(commandContext -> executeReset(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets")))
-						)
+						.then(CommandManager.literal("clear").executes(context -> executeClear(context.getSource(), EntityArgumentType.getPlayers(context, "targets"))))
+						.then(CommandManager.literal("reset").executes(context -> executeReset(context.getSource(), EntityArgumentType.getPlayers(context, "targets"))))
 						.then(
 							CommandManager.literal("title")
 								.then(
 									CommandManager.argument("title", TextArgumentType.text())
 										.executes(
-											commandContext -> executeTitle(
-													commandContext.getSource(),
-													EntityArgumentType.getPlayers(commandContext, "targets"),
-													TextArgumentType.getTextArgument(commandContext, "title"),
+											context -> executeTitle(
+													context.getSource(),
+													EntityArgumentType.getPlayers(context, "targets"),
+													TextArgumentType.getTextArgument(context, "title"),
 													"title",
 													TitleS2CPacket::new
 												)
@@ -53,10 +47,10 @@ public class TitleCommand {
 								.then(
 									CommandManager.argument("title", TextArgumentType.text())
 										.executes(
-											commandContext -> executeTitle(
-													commandContext.getSource(),
-													EntityArgumentType.getPlayers(commandContext, "targets"),
-													TextArgumentType.getTextArgument(commandContext, "title"),
+											context -> executeTitle(
+													context.getSource(),
+													EntityArgumentType.getPlayers(context, "targets"),
+													TextArgumentType.getTextArgument(context, "title"),
 													"subtitle",
 													SubtitleS2CPacket::new
 												)
@@ -68,10 +62,10 @@ public class TitleCommand {
 								.then(
 									CommandManager.argument("title", TextArgumentType.text())
 										.executes(
-											commandContext -> executeTitle(
-													commandContext.getSource(),
-													EntityArgumentType.getPlayers(commandContext, "targets"),
-													TextArgumentType.getTextArgument(commandContext, "title"),
+											context -> executeTitle(
+													context.getSource(),
+													EntityArgumentType.getPlayers(context, "targets"),
+													TextArgumentType.getTextArgument(context, "title"),
 													"actionbar",
 													OverlayMessageS2CPacket::new
 												)
@@ -87,12 +81,12 @@ public class TitleCommand {
 												.then(
 													CommandManager.argument("fadeOut", IntegerArgumentType.integer(0))
 														.executes(
-															commandContext -> executeTimes(
-																	commandContext.getSource(),
-																	EntityArgumentType.getPlayers(commandContext, "targets"),
-																	IntegerArgumentType.getInteger(commandContext, "fadeIn"),
-																	IntegerArgumentType.getInteger(commandContext, "stay"),
-																	IntegerArgumentType.getInteger(commandContext, "fadeOut")
+															context -> executeTimes(
+																	context.getSource(),
+																	EntityArgumentType.getPlayers(context, "targets"),
+																	IntegerArgumentType.getInteger(context, "fadeIn"),
+																	IntegerArgumentType.getInteger(context, "stay"),
+																	IntegerArgumentType.getInteger(context, "fadeOut")
 																)
 														)
 												)
@@ -136,18 +130,18 @@ public class TitleCommand {
 	}
 
 	private static int executeTitle(
-		ServerCommandSource source, Collection<ServerPlayerEntity> targets, Text title, String string, Function<Text, Packet<?>> function
+		ServerCommandSource source, Collection<ServerPlayerEntity> targets, Text title, String titleType, Function<Text, Packet<?>> constructor
 	) throws CommandSyntaxException {
 		for (ServerPlayerEntity serverPlayerEntity : targets) {
-			serverPlayerEntity.networkHandler.sendPacket((Packet<?>)function.apply(Texts.parse(source, title, serverPlayerEntity, 0)));
+			serverPlayerEntity.networkHandler.sendPacket((Packet<?>)constructor.apply(Texts.parse(source, title, serverPlayerEntity, 0)));
 		}
 
 		if (targets.size() == 1) {
 			source.sendFeedback(
-				new TranslatableText("commands.title.show." + string + ".single", ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true
+				new TranslatableText("commands.title.show." + titleType + ".single", ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true
 			);
 		} else {
-			source.sendFeedback(new TranslatableText("commands.title.show." + string + ".multiple", targets.size()), true);
+			source.sendFeedback(new TranslatableText("commands.title.show." + titleType + ".multiple", targets.size()), true);
 		}
 
 		return targets.size();

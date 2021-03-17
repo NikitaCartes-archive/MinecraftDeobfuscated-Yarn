@@ -18,15 +18,13 @@ public class PardonIpCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("pardon-ip")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
+				.requires(source -> source.hasPermissionLevel(3))
 				.then(
 					CommandManager.argument("target", StringArgumentType.word())
 						.suggests(
-							(commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(
-									commandContext.getSource().getMinecraftServer().getPlayerManager().getIpBanList().getNames(), suggestionsBuilder
-								)
+							(context, builder) -> CommandSource.suggestMatching(context.getSource().getMinecraftServer().getPlayerManager().getIpBanList().getNames(), builder)
 						)
-						.executes(commandContext -> pardonIp(commandContext.getSource(), StringArgumentType.getString(commandContext, "target")))
+						.executes(context -> pardonIp(context.getSource(), StringArgumentType.getString(context, "target")))
 				)
 		);
 	}

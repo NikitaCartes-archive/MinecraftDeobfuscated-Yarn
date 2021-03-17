@@ -5,9 +5,11 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
@@ -43,7 +45,7 @@ public class SignBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag writeNbt(CompoundTag tag) {
+	public NbtCompound writeNbt(NbtCompound tag) {
 		super.writeNbt(tag);
 
 		for (int i = 0; i < 4; i++) {
@@ -62,7 +64,7 @@ public class SignBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void readNbt(CompoundTag tag) {
+	public void readNbt(NbtCompound tag) {
 		this.editable = false;
 		super.readNbt(tag);
 		this.textColor = DyeColor.byName(tag.getString("Color"), DyeColor.BLACK);
@@ -72,7 +74,7 @@ public class SignBlockEntity extends BlockEntity {
 			Text text = this.parseTextFromJson(string);
 			this.texts[i] = text;
 			String string2 = FILTERED_TEXT_KEYS[i];
-			if (tag.contains(string2, 8)) {
+			if (tag.contains(string2, NbtTypeIds.STRING)) {
 				this.filteredTexts[i] = this.parseTextFromJson(tag.getString(string2));
 			} else {
 				this.filteredTexts[i] = text;
@@ -147,8 +149,8 @@ public class SignBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag toInitialChunkDataNbt() {
-		return this.writeNbt(new CompoundTag());
+	public NbtCompound toInitialChunkDataNbt() {
+		return this.writeNbt(new NbtCompound());
 	}
 
 	@Override
@@ -226,6 +228,6 @@ public class SignBlockEntity extends BlockEntity {
 
 	private void updateListeners() {
 		this.markDirty();
-		this.world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), 3);
+		this.world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), SetBlockStateFlags.DEFAULT);
 	}
 }

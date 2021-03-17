@@ -5,6 +5,8 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -14,8 +16,8 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
@@ -114,22 +116,22 @@ public class BlockItem extends Item {
 
 	private BlockState placeFromTag(BlockPos pos, World world, ItemStack stack, BlockState state) {
 		BlockState blockState = state;
-		CompoundTag compoundTag = stack.getTag();
-		if (compoundTag != null) {
-			CompoundTag compoundTag2 = compoundTag.getCompound("BlockStateTag");
+		NbtCompound nbtCompound = stack.getTag();
+		if (nbtCompound != null) {
+			NbtCompound nbtCompound2 = nbtCompound.getCompound("BlockStateTag");
 			StateManager<Block, BlockState> stateManager = state.getBlock().getStateManager();
 
-			for (String string : compoundTag2.getKeys()) {
+			for (String string : nbtCompound2.getKeys()) {
 				Property<?> property = stateManager.getProperty(string);
 				if (property != null) {
-					String string2 = compoundTag2.get(string).asString();
+					String string2 = nbtCompound2.get(string).asString();
 					blockState = with(blockState, property, string2);
 				}
 			}
 		}
 
 		if (blockState != state) {
-			world.setBlockState(pos, blockState, 2);
+			world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
 		}
 
 		return blockState;
@@ -151,7 +153,7 @@ public class BlockItem extends Item {
 	}
 
 	protected boolean place(ItemPlacementContext context, BlockState state) {
-		return context.getWorld().setBlockState(context.getBlockPos(), state, 11);
+		return context.getWorld().setBlockState(context.getBlockPos(), state, SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
 	}
 
 	public static boolean writeTagToBlockEntity(World world, @Nullable PlayerEntity player, BlockPos pos, ItemStack stack) {
@@ -159,22 +161,22 @@ public class BlockItem extends Item {
 		if (minecraftServer == null) {
 			return false;
 		} else {
-			CompoundTag compoundTag = stack.getSubTag("BlockEntityTag");
-			if (compoundTag != null) {
+			NbtCompound nbtCompound = stack.getSubTag("BlockEntityTag");
+			if (nbtCompound != null) {
 				BlockEntity blockEntity = world.getBlockEntity(pos);
 				if (blockEntity != null) {
 					if (!world.isClient && blockEntity.copyItemDataRequiresOperator() && (player == null || !player.isCreativeLevelTwoOp())) {
 						return false;
 					}
 
-					CompoundTag compoundTag2 = blockEntity.writeNbt(new CompoundTag());
-					CompoundTag compoundTag3 = compoundTag2.copy();
-					compoundTag2.copyFrom(compoundTag);
-					compoundTag2.putInt("x", pos.getX());
-					compoundTag2.putInt("y", pos.getY());
-					compoundTag2.putInt("z", pos.getZ());
-					if (!compoundTag2.equals(compoundTag3)) {
-						blockEntity.readNbt(compoundTag2);
+					NbtCompound nbtCompound2 = blockEntity.writeNbt(new NbtCompound());
+					NbtCompound nbtCompound3 = nbtCompound2.copy();
+					nbtCompound2.copyFrom(nbtCompound);
+					nbtCompound2.putInt("x", pos.getX());
+					nbtCompound2.putInt("y", pos.getY());
+					nbtCompound2.putInt("z", pos.getZ());
+					if (!nbtCompound2.equals(nbtCompound3)) {
+						blockEntity.readNbt(nbtCompound2);
 						blockEntity.markDirty();
 						return true;
 					}
@@ -220,10 +222,10 @@ public class BlockItem extends Item {
 	@Override
 	public void onItemEntityDestroyed(ItemEntity entity) {
 		if (this.block instanceof ShulkerBoxBlock) {
-			CompoundTag compoundTag = entity.getStack().getTag();
-			if (compoundTag != null) {
-				ListTag listTag = compoundTag.getCompound("BlockEntityTag").getList("Items", 10);
-				ItemUsage.spawnItemContents(entity, listTag.stream().map(CompoundTag.class::cast).map(ItemStack::fromNbt));
+			NbtCompound nbtCompound = entity.getStack().getTag();
+			if (nbtCompound != null) {
+				NbtList nbtList = nbtCompound.getCompound("BlockEntityTag").getList("Items", NbtTypeIds.COMPOUND);
+				ItemUsage.spawnItemContents(entity, nbtList.stream().map(NbtCompound.class::cast).map(ItemStack::fromNbt));
 			}
 		}
 	}

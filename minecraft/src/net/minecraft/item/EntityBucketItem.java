@@ -4,6 +4,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Bucketable;
 import net.minecraft.entity.Entity;
@@ -12,7 +13,7 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -36,10 +37,10 @@ public class EntityBucketItem extends BucketItem {
 	}
 
 	@Override
-	public void onEmptied(@Nullable PlayerEntity playerEntity, World world, ItemStack itemStack, BlockPos blockPos) {
+	public void onEmptied(@Nullable PlayerEntity player, World world, ItemStack stack, BlockPos pos) {
 		if (world instanceof ServerWorld) {
-			this.spawnEntity((ServerWorld)world, itemStack, blockPos);
-			world.emitGameEvent(playerEntity, GameEvent.ENTITY_PLACE, blockPos);
+			this.spawnEntity((ServerWorld)world, stack, pos);
+			world.emitGameEvent(player, GameEvent.ENTITY_PLACE, pos);
 		}
 	}
 
@@ -59,9 +60,9 @@ public class EntityBucketItem extends BucketItem {
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 		if (this.entityType == EntityType.TROPICAL_FISH) {
-			CompoundTag compoundTag = stack.getTag();
-			if (compoundTag != null && compoundTag.contains("BucketVariantTag", 3)) {
-				int i = compoundTag.getInt("BucketVariantTag");
+			NbtCompound nbtCompound = stack.getTag();
+			if (nbtCompound != null && nbtCompound.contains("BucketVariantTag", NbtTypeIds.INT)) {
+				int i = nbtCompound.getInt("BucketVariantTag");
 				Formatting[] formattings = new Formatting[]{Formatting.ITALIC, Formatting.GRAY};
 				String string = "color.minecraft." + TropicalFishEntity.getBaseDyeColor(i);
 				String string2 = "color.minecraft." + TropicalFishEntity.getPatternDyeColor(i);

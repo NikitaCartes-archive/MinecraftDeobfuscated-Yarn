@@ -161,9 +161,9 @@ public abstract class DynamicRegistryManager {
 	/**
 	 * Loads a dynamic registry manager from the resource manager's data files.
 	 */
-	public static void load(DynamicRegistryManager.Impl registryManager, RegistryOps<?> registryOps) {
+	public static void load(DynamicRegistryManager dynamicRegistryManager, RegistryOps<?> registryOps) {
 		for (DynamicRegistryManager.Info<?> info : INFOS.values()) {
-			load(registryOps, registryManager, info);
+			load(registryOps, dynamicRegistryManager, info);
 		}
 	}
 
@@ -172,11 +172,9 @@ public abstract class DynamicRegistryManager {
 	 * info} within the {@code manager}. Note that the resource manager instance
 	 * is kept within the {@code ops}.
 	 */
-	private static <E> void load(RegistryOps<?> ops, DynamicRegistryManager.Impl manager, DynamicRegistryManager.Info<E> info) {
+	private static <E> void load(RegistryOps<?> ops, DynamicRegistryManager dynamicRegistryManager, DynamicRegistryManager.Info<E> info) {
 		RegistryKey<? extends Registry<E>> registryKey = info.getRegistry();
-		SimpleRegistry<E> simpleRegistry = (SimpleRegistry<E>)Optional.ofNullable(manager.registries.get(registryKey))
-			.map(simpleRegistryx -> simpleRegistryx)
-			.orElseThrow(() -> new IllegalStateException("Missing registry: " + registryKey));
+		SimpleRegistry<E> simpleRegistry = (SimpleRegistry<E>)dynamicRegistryManager.<E>getMutable(registryKey);
 		DataResult<SimpleRegistry<E>> dataResult = ops.loadToRegistry(simpleRegistry, info.getRegistry(), info.getEntryCodec());
 		dataResult.error().ifPresent(partialResult -> LOGGER.error("Error loading registry data: {}", partialResult.message()));
 	}

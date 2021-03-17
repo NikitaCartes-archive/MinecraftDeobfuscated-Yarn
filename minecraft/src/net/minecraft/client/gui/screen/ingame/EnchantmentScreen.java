@@ -81,7 +81,7 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 	@Override
 	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
 		DiffuseLighting.disableGuiDepthLighting();
-		RenderSystem.setShader(GameRenderer::method_34542);
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.setShaderTexture(0, TEXTURE);
 		int i = (this.width - this.backgroundWidth) / 2;
@@ -144,7 +144,7 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 			int p = i + 60;
 			int q = p + 20;
 			this.setZOffset(0);
-			RenderSystem.setShader(GameRenderer::method_34542);
+			RenderSystem.setShader(GameRenderer::getPositionTexShader);
 			RenderSystem.setShaderTexture(0, TEXTURE);
 			int r = this.handler.enchantmentPower[o];
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);

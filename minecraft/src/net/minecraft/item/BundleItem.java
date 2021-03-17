@@ -5,14 +5,15 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.client.item.BundleTooltipData;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.item.TooltipData;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.CommandItemSlot;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
@@ -45,7 +46,7 @@ public class BundleItem extends Item {
 		} else {
 			ItemStack itemStack = slot.getStack();
 			if (itemStack.isEmpty()) {
-				removeFirstStack(stack).ifPresent(itemStack2 -> addToBundle(stack, slot.insertStack(itemStack2)));
+				removeFirstStack(stack).ifPresent(removedStack -> addToBundle(stack, slot.insertStack(removedStack)));
 			} else if (itemStack.getItem().canBeNested()) {
 				int i = (64 - getBundleOccupancy(stack)) / getItemOccupancy(itemStack);
 				addToBundle(stack, slot.takeStackRange(itemStack.getCount(), i, player));
@@ -101,9 +102,9 @@ public class BundleItem extends Item {
 
 	private static int addToBundle(ItemStack bundle, ItemStack stack) {
 		if (!stack.isEmpty() && stack.getItem().canBeNested()) {
-			CompoundTag compoundTag = bundle.getOrCreateTag();
-			if (!compoundTag.contains("Items")) {
-				compoundTag.put("Items", new ListTag());
+			NbtCompound nbtCompound = bundle.getOrCreateTag();
+			if (!nbtCompound.contains("Items")) {
+				nbtCompound.put("Items", new NbtList());
 			}
 
 			int i = getBundleOccupancy(bundle);
@@ -112,21 +113,21 @@ public class BundleItem extends Item {
 			if (k == 0) {
 				return 0;
 			} else {
-				ListTag listTag = compoundTag.getList("Items", 10);
-				Optional<CompoundTag> optional = method_32344(stack, listTag);
+				NbtList nbtList = nbtCompound.getList("Items", NbtTypeIds.COMPOUND);
+				Optional<NbtCompound> optional = canMergeStack(stack, nbtList);
 				if (optional.isPresent()) {
-					CompoundTag compoundTag2 = (CompoundTag)optional.get();
-					ItemStack itemStack = ItemStack.fromNbt(compoundTag2);
+					NbtCompound nbtCompound2 = (NbtCompound)optional.get();
+					ItemStack itemStack = ItemStack.fromNbt(nbtCompound2);
 					itemStack.increment(k);
-					itemStack.writeNbt(compoundTag2);
-					listTag.remove(compoundTag2);
-					listTag.add(0, compoundTag2);
+					itemStack.writeNbt(nbtCompound2);
+					nbtList.remove(nbtCompound2);
+					nbtList.add(0, nbtCompound2);
 				} else {
 					ItemStack itemStack2 = stack.copy();
 					itemStack2.setCount(k);
-					CompoundTag compoundTag3 = new CompoundTag();
-					itemStack2.writeNbt(compoundTag3);
-					listTag.add(0, compoundTag3);
+					NbtCompound nbtCompound3 = new NbtCompound();
+					itemStack2.writeNbt(nbtCompound3);
+					nbtList.add(0, nbtCompound3);
 				}
 
 				return k;
@@ -136,13 +137,13 @@ public class BundleItem extends Item {
 		}
 	}
 
-	private static Optional<CompoundTag> method_32344(ItemStack itemStack, ListTag listTag) {
-		return itemStack.isOf(Items.BUNDLE)
+	private static Optional<NbtCompound> canMergeStack(ItemStack stack, NbtList items) {
+		return stack.isOf(Items.BUNDLE)
 			? Optional.empty()
-			: listTag.stream()
-				.filter(CompoundTag.class::isInstance)
-				.map(CompoundTag.class::cast)
-				.filter(compoundTag -> ItemStack.canCombine(ItemStack.fromNbt(compoundTag), itemStack))
+			: items.stream()
+				.filter(NbtCompound.class::isInstance)
+				.map(NbtCompound.class::cast)
+				.filter(item -> ItemStack.canCombine(ItemStack.fromNbt(item), stack))
 				.findFirst();
 	}
 
@@ -155,19 +156,19 @@ public class BundleItem extends Item {
 	}
 
 	private static Optional<ItemStack> removeFirstStack(ItemStack stack) {
-		CompoundTag compoundTag = stack.getOrCreateTag();
-		if (!compoundTag.contains("Items")) {
+		NbtCompound nbtCompound = stack.getOrCreateTag();
+		if (!nbtCompound.contains("Items")) {
 			return Optional.empty();
 		} else {
-			ListTag listTag = compoundTag.getList("Items", 10);
-			if (listTag.isEmpty()) {
+			NbtList nbtList = nbtCompound.getList("Items", NbtTypeIds.COMPOUND);
+			if (nbtList.isEmpty()) {
 				return Optional.empty();
 			} else {
 				int i = 0;
-				CompoundTag compoundTag2 = listTag.getCompound(0);
-				ItemStack itemStack = ItemStack.fromNbt(compoundTag2);
-				listTag.remove(0);
-				if (listTag.isEmpty()) {
+				NbtCompound nbtCompound2 = nbtList.getCompound(0);
+				ItemStack itemStack = ItemStack.fromNbt(nbtCompound2);
+				nbtList.remove(0);
+				if (nbtList.isEmpty()) {
 					stack.removeSubTag("Items");
 				}
 
@@ -177,16 +178,16 @@ public class BundleItem extends Item {
 	}
 
 	private static boolean dropAllBundledItems(ItemStack stack, PlayerEntity player) {
-		CompoundTag compoundTag = stack.getOrCreateTag();
-		if (!compoundTag.contains("Items")) {
+		NbtCompound nbtCompound = stack.getOrCreateTag();
+		if (!nbtCompound.contains("Items")) {
 			return false;
 		} else {
 			if (player instanceof ServerPlayerEntity) {
-				ListTag listTag = compoundTag.getList("Items", 10);
+				NbtList nbtList = nbtCompound.getList("Items", NbtTypeIds.COMPOUND);
 
-				for (int i = 0; i < listTag.size(); i++) {
-					CompoundTag compoundTag2 = listTag.getCompound(i);
-					ItemStack itemStack = ItemStack.fromNbt(compoundTag2);
+				for (int i = 0; i < nbtList.size(); i++) {
+					NbtCompound nbtCompound2 = nbtList.getCompound(i);
+					ItemStack itemStack = ItemStack.fromNbt(nbtCompound2);
 					player.dropItem(itemStack, true);
 				}
 			}
@@ -197,12 +198,12 @@ public class BundleItem extends Item {
 	}
 
 	private static Stream<ItemStack> getBundledStacks(ItemStack stack) {
-		CompoundTag compoundTag = stack.getTag();
-		if (compoundTag == null) {
+		NbtCompound nbtCompound = stack.getTag();
+		if (nbtCompound == null) {
 			return Stream.empty();
 		} else {
-			ListTag listTag = compoundTag.getList("Items", 10);
-			return listTag.stream().map(CompoundTag.class::cast).map(ItemStack::fromNbt);
+			NbtList nbtList = nbtCompound.getList("Items", NbtTypeIds.COMPOUND);
+			return nbtList.stream().map(NbtCompound.class::cast).map(ItemStack::fromNbt);
 		}
 	}
 

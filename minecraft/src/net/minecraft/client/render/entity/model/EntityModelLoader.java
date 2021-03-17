@@ -7,10 +7,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SynchronousResourceReloadListener;
+import net.minecraft.resource.SynchronousResourceReloader;
 
 @Environment(EnvType.CLIENT)
-public class EntityModelLoader implements SynchronousResourceReloadListener {
+public class EntityModelLoader implements SynchronousResourceReloader {
 	private Map<EntityModelLayer, TexturedModelData> modelParts = ImmutableMap.of();
 
 	public ModelPart getModelPart(EntityModelLayer layer) {
@@ -23,7 +23,7 @@ public class EntityModelLoader implements SynchronousResourceReloadListener {
 	}
 
 	@Override
-	public void apply(ResourceManager manager) {
+	public void reload(ResourceManager manager) {
 		this.modelParts = ImmutableMap.copyOf(EntityModels.getModels());
 	}
 }

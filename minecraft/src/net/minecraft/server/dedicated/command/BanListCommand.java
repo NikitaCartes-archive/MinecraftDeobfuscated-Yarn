@@ -14,26 +14,18 @@ public class BanListCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("banlist")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
-				.executes(
-					commandContext -> {
-						PlayerManager playerManager = commandContext.getSource().getMinecraftServer().getPlayerManager();
-						return execute(
-							commandContext.getSource(), Lists.newArrayList(Iterables.concat(playerManager.getUserBanList().values(), playerManager.getIpBanList().values()))
-						);
-					}
-				)
+				.requires(source -> source.hasPermissionLevel(3))
+				.executes(context -> {
+					PlayerManager playerManager = context.getSource().getMinecraftServer().getPlayerManager();
+					return execute(context.getSource(), Lists.newArrayList(Iterables.concat(playerManager.getUserBanList().values(), playerManager.getIpBanList().values())));
+				})
 				.then(
 					CommandManager.literal("ips")
-						.executes(
-							commandContext -> execute(commandContext.getSource(), commandContext.getSource().getMinecraftServer().getPlayerManager().getIpBanList().values())
-						)
+						.executes(context -> execute(context.getSource(), context.getSource().getMinecraftServer().getPlayerManager().getIpBanList().values()))
 				)
 				.then(
 					CommandManager.literal("players")
-						.executes(
-							commandContext -> execute(commandContext.getSource(), commandContext.getSource().getMinecraftServer().getPlayerManager().getUserBanList().values())
-						)
+						.executes(context -> execute(context.getSource(), context.getSource().getMinecraftServer().getPlayerManager().getUserBanList().values()))
 				)
 		);
 	}

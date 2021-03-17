@@ -9,6 +9,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -52,9 +53,9 @@ import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.FloatTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtFloat;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.DebugInfoSender;
@@ -102,7 +103,7 @@ public abstract class MobEntity extends LivingEntity {
 	private Entity holdingEntity;
 	private int holdingEntityId;
 	@Nullable
-	private CompoundTag leashTag;
+	private NbtCompound leashTag;
 	private BlockPos positionTarget = BlockPos.ORIGIN;
 	private float positionTargetRange = -1.0F;
 
@@ -259,7 +260,7 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	@Override
-	protected int getCurrentExperience(PlayerEntity player) {
+	protected int getXpToDrop(PlayerEntity player) {
 		if (this.experiencePoints > 0) {
 			int i = this.experiencePoints;
 
@@ -336,61 +337,61 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
 		tag.putBoolean("CanPickUpLoot", this.canPickUpLoot());
 		tag.putBoolean("PersistenceRequired", this.persistent);
-		ListTag listTag = new ListTag();
+		NbtList nbtList = new NbtList();
 
 		for (ItemStack itemStack : this.armorItems) {
-			CompoundTag compoundTag = new CompoundTag();
+			NbtCompound nbtCompound = new NbtCompound();
 			if (!itemStack.isEmpty()) {
-				itemStack.writeNbt(compoundTag);
+				itemStack.writeNbt(nbtCompound);
 			}
 
-			listTag.add(compoundTag);
+			nbtList.add(nbtCompound);
 		}
 
-		tag.put("ArmorItems", listTag);
-		ListTag listTag2 = new ListTag();
+		tag.put("ArmorItems", nbtList);
+		NbtList nbtList2 = new NbtList();
 
 		for (ItemStack itemStack2 : this.handItems) {
-			CompoundTag compoundTag2 = new CompoundTag();
+			NbtCompound nbtCompound2 = new NbtCompound();
 			if (!itemStack2.isEmpty()) {
-				itemStack2.writeNbt(compoundTag2);
+				itemStack2.writeNbt(nbtCompound2);
 			}
 
-			listTag2.add(compoundTag2);
+			nbtList2.add(nbtCompound2);
 		}
 
-		tag.put("HandItems", listTag2);
-		ListTag listTag3 = new ListTag();
+		tag.put("HandItems", nbtList2);
+		NbtList nbtList3 = new NbtList();
 
 		for (float f : this.armorDropChances) {
-			listTag3.add(FloatTag.of(f));
+			nbtList3.add(NbtFloat.of(f));
 		}
 
-		tag.put("ArmorDropChances", listTag3);
-		ListTag listTag4 = new ListTag();
+		tag.put("ArmorDropChances", nbtList3);
+		NbtList nbtList4 = new NbtList();
 
 		for (float g : this.handDropChances) {
-			listTag4.add(FloatTag.of(g));
+			nbtList4.add(NbtFloat.of(g));
 		}
 
-		tag.put("HandDropChances", listTag4);
+		tag.put("HandDropChances", nbtList4);
 		if (this.holdingEntity != null) {
-			CompoundTag compoundTag2 = new CompoundTag();
+			NbtCompound nbtCompound2 = new NbtCompound();
 			if (this.holdingEntity instanceof LivingEntity) {
 				UUID uUID = this.holdingEntity.getUuid();
-				compoundTag2.putUuid("UUID", uUID);
+				nbtCompound2.putUuid("UUID", uUID);
 			} else if (this.holdingEntity instanceof AbstractDecorationEntity) {
 				BlockPos blockPos = ((AbstractDecorationEntity)this.holdingEntity).getDecorationBlockPos();
-				compoundTag2.putInt("X", blockPos.getX());
-				compoundTag2.putInt("Y", blockPos.getY());
-				compoundTag2.putInt("Z", blockPos.getZ());
+				nbtCompound2.putInt("X", blockPos.getX());
+				nbtCompound2.putInt("Y", blockPos.getY());
+				nbtCompound2.putInt("Z", blockPos.getZ());
 			}
 
-			tag.put("Leash", compoundTag2);
+			tag.put("Leash", nbtCompound2);
 		} else if (this.leashTag != null) {
 			tag.put("Leash", this.leashTag.copy());
 		}
@@ -409,51 +410,51 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
-		if (tag.contains("CanPickUpLoot", 1)) {
+		if (tag.contains("CanPickUpLoot", NbtTypeIds.BYTE)) {
 			this.setCanPickUpLoot(tag.getBoolean("CanPickUpLoot"));
 		}
 
 		this.persistent = tag.getBoolean("PersistenceRequired");
-		if (tag.contains("ArmorItems", 9)) {
-			ListTag listTag = tag.getList("ArmorItems", 10);
+		if (tag.contains("ArmorItems", NbtTypeIds.LIST)) {
+			NbtList nbtList = tag.getList("ArmorItems", NbtTypeIds.COMPOUND);
 
 			for (int i = 0; i < this.armorItems.size(); i++) {
-				this.armorItems.set(i, ItemStack.fromNbt(listTag.getCompound(i)));
+				this.armorItems.set(i, ItemStack.fromNbt(nbtList.getCompound(i)));
 			}
 		}
 
-		if (tag.contains("HandItems", 9)) {
-			ListTag listTag = tag.getList("HandItems", 10);
+		if (tag.contains("HandItems", NbtTypeIds.LIST)) {
+			NbtList nbtList = tag.getList("HandItems", NbtTypeIds.COMPOUND);
 
 			for (int i = 0; i < this.handItems.size(); i++) {
-				this.handItems.set(i, ItemStack.fromNbt(listTag.getCompound(i)));
+				this.handItems.set(i, ItemStack.fromNbt(nbtList.getCompound(i)));
 			}
 		}
 
-		if (tag.contains("ArmorDropChances", 9)) {
-			ListTag listTag = tag.getList("ArmorDropChances", 5);
+		if (tag.contains("ArmorDropChances", NbtTypeIds.LIST)) {
+			NbtList nbtList = tag.getList("ArmorDropChances", NbtTypeIds.FLOAT);
 
-			for (int i = 0; i < listTag.size(); i++) {
-				this.armorDropChances[i] = listTag.getFloat(i);
+			for (int i = 0; i < nbtList.size(); i++) {
+				this.armorDropChances[i] = nbtList.getFloat(i);
 			}
 		}
 
-		if (tag.contains("HandDropChances", 9)) {
-			ListTag listTag = tag.getList("HandDropChances", 5);
+		if (tag.contains("HandDropChances", NbtTypeIds.LIST)) {
+			NbtList nbtList = tag.getList("HandDropChances", NbtTypeIds.FLOAT);
 
-			for (int i = 0; i < listTag.size(); i++) {
-				this.handDropChances[i] = listTag.getFloat(i);
+			for (int i = 0; i < nbtList.size(); i++) {
+				this.handDropChances[i] = nbtList.getFloat(i);
 			}
 		}
 
-		if (tag.contains("Leash", 10)) {
+		if (tag.contains("Leash", NbtTypeIds.COMPOUND)) {
 			this.leashTag = tag.getCompound("Leash");
 		}
 
 		this.setLeftHanded(tag.getBoolean("LeftHanded"));
-		if (tag.contains("DeathLootTable", 8)) {
+		if (tag.contains("DeathLootTable", NbtTypeIds.STRING)) {
 			this.lootTable = new Identifier(tag.getString("DeathLootTable"));
 			this.lootTableSeed = tag.getLong("DeathLootTableSeed");
 		}
@@ -977,7 +978,7 @@ public abstract class MobEntity extends LivingEntity {
 
 	@Nullable
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
 	) {
 		this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE)
 			.addPersistentModifier(new EntityAttributeModifier("Random spawn bonus", this.random.nextGaussian() * 0.05, EntityAttributeModifier.Operation.MULTIPLY_BASE));
@@ -1240,7 +1241,9 @@ public abstract class MobEntity extends LivingEntity {
 					this.attachLeash(entity, true);
 					return;
 				}
-			} else if (this.leashTag.contains("X", 99) && this.leashTag.contains("Y", 99) && this.leashTag.contains("Z", 99)) {
+			} else if (this.leashTag.contains("X", NbtTypeIds.NUMBER)
+				&& this.leashTag.contains("Y", NbtTypeIds.NUMBER)
+				&& this.leashTag.contains("Z", NbtTypeIds.NUMBER)) {
 				BlockPos blockPos = new BlockPos(this.leashTag.getInt("X"), this.leashTag.getInt("Y"), this.leashTag.getInt("Z"));
 				this.attachLeash(LeashKnotEntity.getOrCreate(this.world, blockPos), true);
 				return;

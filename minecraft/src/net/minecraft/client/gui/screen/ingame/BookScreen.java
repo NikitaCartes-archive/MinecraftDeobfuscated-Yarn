@@ -10,6 +10,7 @@ import java.util.function.IntFunction;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
@@ -21,8 +22,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WrittenBookItem;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.OrderedText;
@@ -158,7 +159,7 @@ public class BookScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		RenderSystem.setShader(GameRenderer::method_34542);
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.setShaderTexture(0, BOOK_TEXTURE);
 		int i = (this.width - 192) / 2;
@@ -254,26 +255,26 @@ public class BookScreen extends Screen {
 		}
 	}
 
-	private static List<String> readPages(CompoundTag tag) {
+	private static List<String> readPages(NbtCompound tag) {
 		Builder<String> builder = ImmutableList.builder();
 		method_33888(tag, builder::add);
 		return builder.build();
 	}
 
-	public static void method_33888(CompoundTag compoundTag, Consumer<String> consumer) {
-		ListTag listTag = compoundTag.getList("pages", 8).copy();
+	public static void method_33888(NbtCompound nbtCompound, Consumer<String> consumer) {
+		NbtList nbtList = nbtCompound.getList("pages", NbtTypeIds.STRING).copy();
 		IntFunction<String> intFunction;
-		if (MinecraftClient.getInstance().shouldFilterText() && compoundTag.contains("filtered_pages", 10)) {
-			CompoundTag compoundTag2 = compoundTag.getCompound("filtered_pages");
+		if (MinecraftClient.getInstance().shouldFilterText() && nbtCompound.contains("filtered_pages", NbtTypeIds.COMPOUND)) {
+			NbtCompound nbtCompound2 = nbtCompound.getCompound("filtered_pages");
 			intFunction = ix -> {
 				String string = String.valueOf(ix);
-				return compoundTag2.contains(string) ? compoundTag2.getString(string) : listTag.getString(ix);
+				return nbtCompound2.contains(string) ? nbtCompound2.getString(string) : nbtList.getString(ix);
 			};
 		} else {
-			intFunction = listTag::getString;
+			intFunction = nbtList::getString;
 		}
 
-		for (int i = 0; i < listTag.size(); i++) {
+		for (int i = 0; i < nbtList.size(); i++) {
 			consumer.accept(intFunction.apply(i));
 		}
 	}
@@ -306,8 +307,8 @@ public class BookScreen extends Screen {
 		}
 
 		private static List<String> getPages(ItemStack stack) {
-			CompoundTag compoundTag = stack.getTag();
-			return (List<String>)(compoundTag != null ? BookScreen.readPages(compoundTag) : ImmutableList.of());
+			NbtCompound nbtCompound = stack.getTag();
+			return (List<String>)(nbtCompound != null ? BookScreen.readPages(nbtCompound) : ImmutableList.of());
 		}
 
 		@Override
@@ -330,9 +331,9 @@ public class BookScreen extends Screen {
 		}
 
 		private static List<String> getPages(ItemStack stack) {
-			CompoundTag compoundTag = stack.getTag();
-			return (List<String>)(compoundTag != null && WrittenBookItem.isValid(compoundTag)
-				? BookScreen.readPages(compoundTag)
+			NbtCompound nbtCompound = stack.getTag();
+			return (List<String>)(nbtCompound != null && WrittenBookItem.isValid(nbtCompound)
+				? BookScreen.readPages(nbtCompound)
 				: ImmutableList.of(Text.Serializer.toJson(new TranslatableText("book.invalid.tag").formatted(Formatting.DARK_RED))));
 		}
 

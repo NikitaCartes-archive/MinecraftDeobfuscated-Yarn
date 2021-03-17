@@ -73,7 +73,7 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 	}
 
 	public static class Start extends StructureStart<DefaultFeatureConfig> {
-		private boolean field_13717;
+		private boolean initialized;
 
 		public Start(StructureFeature<DefaultFeatureConfig> structureFeature, ChunkPos chunkPos, BlockBox blockBox, int i, long l) {
 			super(structureFeature, chunkPos, blockBox, i, l);
@@ -88,25 +88,25 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 			DefaultFeatureConfig defaultFeatureConfig,
 			HeightLimitView heightLimitView
 		) {
-			this.method_16588(chunkPos);
+			this.init(chunkPos);
 		}
 
-		private void method_16588(ChunkPos chunkPos) {
-			int i = chunkPos.getStartX() - 29;
-			int j = chunkPos.getStartZ() - 29;
+		private void init(ChunkPos pos) {
+			int i = pos.getStartX() - 29;
+			int j = pos.getStartZ() - 29;
 			Direction direction = Direction.Type.HORIZONTAL.random(this.random);
 			this.children.add(new OceanMonumentGenerator.Base(this.random, i, j, direction));
 			this.setBoundingBoxFromChildren();
-			this.field_13717 = true;
+			this.initialized = true;
 		}
 
 		@Override
 		public void generateStructure(
 			StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox box, ChunkPos chunkPos
 		) {
-			if (!this.field_13717) {
+			if (!this.initialized) {
 				this.children.clear();
-				this.method_16588(this.method_34000());
+				this.init(this.getPos());
 			}
 
 			super.generateStructure(world, structureAccessor, chunkGenerator, random, box, chunkPos);

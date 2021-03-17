@@ -85,7 +85,7 @@ public class TypeFilterableList<T> extends AbstractCollection<T> {
 			throw new IllegalArgumentException("Don't know how to search for " + type);
 		} else {
 			List<? extends T> list = (List<? extends T>)this.elementsByType
-				.computeIfAbsent(type, class_ -> (List)this.allElements.stream().filter(class_::isInstance).collect(Collectors.toList()));
+				.computeIfAbsent(type, typeClass -> (List)this.allElements.stream().filter(typeClass::isInstance).collect(Collectors.toList()));
 			return Collections.unmodifiableCollection(list);
 		}
 	}

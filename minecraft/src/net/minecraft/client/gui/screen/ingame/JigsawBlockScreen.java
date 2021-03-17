@@ -20,6 +20,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class JigsawBlockScreen extends Screen {
@@ -181,7 +182,7 @@ public class JigsawBlockScreen extends Screen {
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (super.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
-		} else if (!this.doneButton.active || keyCode != 257 && keyCode != 335) {
+		} else if (!this.doneButton.active || keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_KP_ENTER) {
 			return false;
 		} else {
 			this.onDone();

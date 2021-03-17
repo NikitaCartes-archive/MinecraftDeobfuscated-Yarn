@@ -4,9 +4,10 @@ import com.mojang.datafixers.DataFixer;
 import java.io.File;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import org.apache.logging.log4j.LogManager;
@@ -31,19 +32,19 @@ public class HotbarStorage {
 
 	private void load() {
 		try {
-			CompoundTag compoundTag = NbtIo.read(this.file);
-			if (compoundTag == null) {
+			NbtCompound nbtCompound = NbtIo.read(this.file);
+			if (nbtCompound == null) {
 				return;
 			}
 
-			if (!compoundTag.contains("DataVersion", 99)) {
-				compoundTag.putInt("DataVersion", 1343);
+			if (!nbtCompound.contains("DataVersion", NbtTypeIds.NUMBER)) {
+				nbtCompound.putInt("DataVersion", 1343);
 			}
 
-			compoundTag = NbtHelper.update(this.dataFixer, DataFixTypes.HOTBAR, compoundTag, compoundTag.getInt("DataVersion"));
+			nbtCompound = NbtHelper.update(this.dataFixer, DataFixTypes.HOTBAR, nbtCompound, nbtCompound.getInt("DataVersion"));
 
 			for (int i = 0; i < 9; i++) {
-				this.entries[i].fromListTag(compoundTag.getList(String.valueOf(i), 10));
+				this.entries[i].fromListTag(nbtCompound.getList(String.valueOf(i), NbtTypeIds.COMPOUND));
 			}
 		} catch (Exception var3) {
 			LOGGER.error("Failed to load creative mode options", (Throwable)var3);
@@ -52,14 +53,14 @@ public class HotbarStorage {
 
 	public void save() {
 		try {
-			CompoundTag compoundTag = new CompoundTag();
-			compoundTag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
+			NbtCompound nbtCompound = new NbtCompound();
+			nbtCompound.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
 
 			for (int i = 0; i < 9; i++) {
-				compoundTag.put(String.valueOf(i), this.getSavedHotbar(i).toListTag());
+				nbtCompound.put(String.valueOf(i), this.getSavedHotbar(i).toListTag());
 			}
 
-			NbtIo.write(compoundTag, this.file);
+			NbtIo.write(nbtCompound, this.file);
 		} catch (Exception var3) {
 			LOGGER.error("Failed to save creative mode options", (Throwable)var3);
 		}

@@ -3,6 +3,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
@@ -58,7 +59,7 @@ public class RedstoneOreBlock extends Block {
 	private static void light(BlockState state, World world, BlockPos pos) {
 		spawnParticles(world, pos);
 		if (!(Boolean)state.get(LIT)) {
-			world.setBlockState(pos, state.with(LIT, Boolean.valueOf(true)), 3);
+			world.setBlockState(pos, state.with(LIT, Boolean.valueOf(true)), SetBlockStateFlags.DEFAULT);
 		}
 	}
 
@@ -70,7 +71,7 @@ public class RedstoneOreBlock extends Block {
 	@Override
 	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if ((Boolean)state.get(LIT)) {
-			world.setBlockState(pos, state.with(LIT, Boolean.valueOf(false)), 3);
+			world.setBlockState(pos, state.with(LIT, Boolean.valueOf(false)), SetBlockStateFlags.DEFAULT);
 		}
 	}
 

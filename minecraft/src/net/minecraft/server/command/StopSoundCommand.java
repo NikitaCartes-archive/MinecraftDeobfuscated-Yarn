@@ -17,19 +17,14 @@ import net.minecraft.util.Identifier;
 public class StopSoundCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		RequiredArgumentBuilder<ServerCommandSource, EntitySelector> requiredArgumentBuilder = CommandManager.argument("targets", EntityArgumentType.players())
-			.executes(commandContext -> execute(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), null, null))
+			.executes(context -> execute(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), null, null))
 			.then(
 				CommandManager.literal("*")
 					.then(
 						CommandManager.argument("sound", IdentifierArgumentType.identifier())
 							.suggests(SuggestionProviders.AVAILABLE_SOUNDS)
 							.executes(
-								commandContext -> execute(
-										commandContext.getSource(),
-										EntityArgumentType.getPlayers(commandContext, "targets"),
-										null,
-										IdentifierArgumentType.getIdentifier(commandContext, "sound")
-									)
+								context -> execute(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), null, IdentifierArgumentType.getIdentifier(context, "sound"))
 							)
 					)
 			);
@@ -37,25 +32,20 @@ public class StopSoundCommand {
 		for (SoundCategory soundCategory : SoundCategory.values()) {
 			requiredArgumentBuilder.then(
 				CommandManager.literal(soundCategory.getName())
-					.executes(commandContext -> execute(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), soundCategory, null))
+					.executes(context -> execute(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), soundCategory, null))
 					.then(
 						CommandManager.argument("sound", IdentifierArgumentType.identifier())
 							.suggests(SuggestionProviders.AVAILABLE_SOUNDS)
 							.executes(
-								commandContext -> execute(
-										commandContext.getSource(),
-										EntityArgumentType.getPlayers(commandContext, "targets"),
-										soundCategory,
-										IdentifierArgumentType.getIdentifier(commandContext, "sound")
+								context -> execute(
+										context.getSource(), EntityArgumentType.getPlayers(context, "targets"), soundCategory, IdentifierArgumentType.getIdentifier(context, "sound")
 									)
 							)
 					)
 			);
 		}
 
-		dispatcher.register(
-			CommandManager.literal("stopsound").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2)).then(requiredArgumentBuilder)
-		);
+		dispatcher.register(CommandManager.literal("stopsound").requires(source -> source.hasPermissionLevel(2)).then(requiredArgumentBuilder));
 	}
 
 	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, @Nullable SoundCategory category, @Nullable Identifier sound) {

@@ -7,7 +7,6 @@ import java.nio.ByteBuffer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5944;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.Window;
 
@@ -104,58 +103,58 @@ public class BufferRenderer {
 				m = intType.field_27374;
 			}
 
-			class_5944 lv = RenderSystem.getShader();
+			Shader shader = RenderSystem.getShader();
 
 			for (int l = 0; l < 8; l++) {
 				int o = RenderSystem.getShaderTexture(l);
-				lv.method_34583("Sampler" + l, o);
+				shader.method_34583("Sampler" + l, o);
 			}
 
-			if (lv.field_29470 != null) {
-				lv.field_29470.set(RenderSystem.getModelViewMatrix());
+			if (shader.field_29470 != null) {
+				shader.field_29470.set(RenderSystem.getModelViewMatrix());
 			}
 
-			if (lv.field_29471 != null) {
-				lv.field_29471.set(RenderSystem.getProjectionMatrix());
+			if (shader.field_29471 != null) {
+				shader.field_29471.set(RenderSystem.getProjectionMatrix());
 			}
 
-			if (lv.field_29474 != null) {
-				lv.field_29474.set(RenderSystem.getShaderColor());
+			if (shader.field_29474 != null) {
+				shader.field_29474.set(RenderSystem.getShaderColor());
 			}
 
-			if (lv.field_29477 != null) {
-				lv.field_29477.set(RenderSystem.getShaderFogStart());
+			if (shader.field_29477 != null) {
+				shader.field_29477.set(RenderSystem.getShaderFogStart());
 			}
 
-			if (lv.field_29478 != null) {
-				lv.field_29478.set(RenderSystem.getShaderFogEnd());
+			if (shader.field_29478 != null) {
+				shader.field_29478.set(RenderSystem.getShaderFogEnd());
 			}
 
-			if (lv.field_29479 != null) {
-				lv.field_29479.set(RenderSystem.getShaderFogColor());
+			if (shader.field_29479 != null) {
+				shader.field_29479.set(RenderSystem.getShaderFogColor());
 			}
 
-			if (lv.field_29472 != null) {
-				lv.field_29472.set(RenderSystem.getTextureMatrix());
+			if (shader.field_29472 != null) {
+				shader.field_29472.set(RenderSystem.getTextureMatrix());
 			}
 
-			if (lv.field_29481 != null) {
-				lv.field_29481.set(RenderSystem.getShaderGameTime());
+			if (shader.field_29481 != null) {
+				shader.field_29481.set(RenderSystem.getShaderGameTime());
 			}
 
-			if (lv.field_29473 != null) {
+			if (shader.field_29473 != null) {
 				Window window = MinecraftClient.getInstance().getWindow();
-				lv.field_29473.set((float)window.getFramebufferWidth(), (float)window.getFramebufferHeight());
+				shader.field_29473.set((float)window.getFramebufferWidth(), (float)window.getFramebufferHeight());
 			}
 
-			if (lv.field_29480 != null && (drawMode == VertexFormat.DrawMode.LINES || drawMode == VertexFormat.DrawMode.LINE_STRIP)) {
-				lv.field_29480.set(RenderSystem.getShaderLineWidth());
+			if (shader.field_29480 != null && (drawMode == VertexFormat.DrawMode.LINES || drawMode == VertexFormat.DrawMode.LINE_STRIP)) {
+				shader.field_29480.set(RenderSystem.getShaderLineWidth());
 			}
 
-			RenderSystem.setupShaderLights(lv);
-			lv.method_34586();
+			RenderSystem.setupShaderLights(shader);
+			shader.method_34586();
 			GlStateManager.drawElements(drawMode.mode, j, m, 0L);
-			lv.method_34585();
+			shader.method_34585();
 			byteBuffer.position(0);
 		}
 	}

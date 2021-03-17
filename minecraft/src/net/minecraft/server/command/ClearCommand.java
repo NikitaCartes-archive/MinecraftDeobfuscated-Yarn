@@ -15,38 +15,35 @@ import net.minecraft.text.TranslatableText;
 
 public class ClearCommand {
 	private static final DynamicCommandExceptionType FAILED_SINGLE_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableText("clear.failed.single", object)
+		playerName -> new TranslatableText("clear.failed.single", playerName)
 	);
 	private static final DynamicCommandExceptionType FAILED_MULTIPLE_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableText("clear.failed.multiple", object)
+		playerCount -> new TranslatableText("clear.failed.multiple", playerCount)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("clear")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
-				.executes(commandContext -> execute(commandContext.getSource(), Collections.singleton(commandContext.getSource().getPlayer()), itemStack -> true, -1))
+				.requires(source -> source.hasPermissionLevel(2))
+				.executes(context -> execute(context.getSource(), Collections.singleton(context.getSource().getPlayer()), stack -> true, -1))
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.players())
-						.executes(commandContext -> execute(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), itemStack -> true, -1))
+						.executes(context -> execute(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), stack -> true, -1))
 						.then(
 							CommandManager.argument("item", ItemPredicateArgumentType.itemPredicate())
 								.executes(
-									commandContext -> execute(
-											commandContext.getSource(),
-											EntityArgumentType.getPlayers(commandContext, "targets"),
-											ItemPredicateArgumentType.getItemPredicate(commandContext, "item"),
-											-1
+									context -> execute(
+											context.getSource(), EntityArgumentType.getPlayers(context, "targets"), ItemPredicateArgumentType.getItemPredicate(context, "item"), -1
 										)
 								)
 								.then(
 									CommandManager.argument("maxCount", IntegerArgumentType.integer(0))
 										.executes(
-											commandContext -> execute(
-													commandContext.getSource(),
-													EntityArgumentType.getPlayers(commandContext, "targets"),
-													ItemPredicateArgumentType.getItemPredicate(commandContext, "item"),
-													IntegerArgumentType.getInteger(commandContext, "maxCount")
+											context -> execute(
+													context.getSource(),
+													EntityArgumentType.getPlayers(context, "targets"),
+													ItemPredicateArgumentType.getItemPredicate(context, "item"),
+													IntegerArgumentType.getInteger(context, "maxCount")
 												)
 										)
 								)

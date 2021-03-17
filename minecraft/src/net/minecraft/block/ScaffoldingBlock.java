@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -105,7 +106,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 				world.breakBlock(pos, true);
 			}
 		} else if (state != blockState) {
-			world.setBlockState(pos, blockState, 3);
+			world.setBlockState(pos, blockState, SetBlockStateFlags.DEFAULT);
 		}
 	}
 

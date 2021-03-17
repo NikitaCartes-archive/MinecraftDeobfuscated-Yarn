@@ -16,9 +16,9 @@ import net.minecraft.world.gen.feature.EndPortalFeature;
 
 public class HoldingPatternPhase extends AbstractPhase {
 	private static final TargetPredicate PLAYERS_IN_RANGE_PREDICATE = new TargetPredicate().setBaseMaxDistance(64.0);
-	private Path field_7043;
-	private Vec3d target;
-	private boolean field_7044;
+	private Path path;
+	private Vec3d pathTarget;
+	private boolean shouldFindNewPath;
 
 	public HoldingPatternPhase(EnderDragonEntity enderDragonEntity) {
 		super(enderDragonEntity);
@@ -31,26 +31,26 @@ public class HoldingPatternPhase extends AbstractPhase {
 
 	@Override
 	public void serverTick() {
-		double d = this.target == null ? 0.0 : this.target.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
+		double d = this.pathTarget == null ? 0.0 : this.pathTarget.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
 		if (d < 100.0 || d > 22500.0 || this.dragon.horizontalCollision || this.dragon.verticalCollision) {
-			this.method_6841();
+			this.tickInRange();
 		}
 	}
 
 	@Override
 	public void beginPhase() {
-		this.field_7043 = null;
-		this.target = null;
+		this.path = null;
+		this.pathTarget = null;
 	}
 
 	@Nullable
 	@Override
-	public Vec3d getTarget() {
-		return this.target;
+	public Vec3d getPathTarget() {
+		return this.pathTarget;
 	}
 
-	private void method_6841() {
-		if (this.field_7043 != null && this.field_7043.isFinished()) {
+	private void tickInRange() {
+		if (this.path != null && this.path.isFinished()) {
 			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(EndPortalFeature.ORIGIN));
 			int i = this.dragon.getFight() == null ? 0 : this.dragon.getFight().getAliveEndCrystals();
 			if (this.dragon.getRandom().nextInt(i + 3) == 0) {
@@ -74,15 +74,15 @@ public class HoldingPatternPhase extends AbstractPhase {
 			}
 		}
 
-		if (this.field_7043 == null || this.field_7043.isFinished()) {
+		if (this.path == null || this.path.isFinished()) {
 			int j = this.dragon.getNearestPathNodeIndex();
 			int ix = j;
 			if (this.dragon.getRandom().nextInt(8) == 0) {
-				this.field_7044 = !this.field_7044;
+				this.shouldFindNewPath = !this.shouldFindNewPath;
 				ix = j + 6;
 			}
 
-			if (this.field_7044) {
+			if (this.shouldFindNewPath) {
 				ix++;
 			} else {
 				ix--;
@@ -99,24 +99,24 @@ public class HoldingPatternPhase extends AbstractPhase {
 				ix += 12;
 			}
 
-			this.field_7043 = this.dragon.findPath(j, ix, null);
-			if (this.field_7043 != null) {
-				this.field_7043.next();
+			this.path = this.dragon.findPath(j, ix, null);
+			if (this.path != null) {
+				this.path.next();
 			}
 		}
 
-		this.method_6842();
+		this.followPath();
 	}
 
 	private void strafePlayer(PlayerEntity player) {
 		this.dragon.getPhaseManager().setPhase(PhaseType.STRAFE_PLAYER);
-		this.dragon.getPhaseManager().create(PhaseType.STRAFE_PLAYER).method_6862(player);
+		this.dragon.getPhaseManager().create(PhaseType.STRAFE_PLAYER).setTargetEntity(player);
 	}
 
-	private void method_6842() {
-		if (this.field_7043 != null && !this.field_7043.isFinished()) {
-			Vec3i vec3i = this.field_7043.method_31032();
-			this.field_7043.next();
+	private void followPath() {
+		if (this.path != null && !this.path.isFinished()) {
+			Vec3i vec3i = this.path.method_31032();
+			this.path.next();
 			double d = (double)vec3i.getX();
 			double e = (double)vec3i.getZ();
 
@@ -125,7 +125,7 @@ public class HoldingPatternPhase extends AbstractPhase {
 				f = (double)((float)vec3i.getY() + this.dragon.getRandom().nextFloat() * 20.0F);
 			} while (f < (double)vec3i.getY());
 
-			this.target = new Vec3d(d, f, e);
+			this.pathTarget = new Vec3d(d, f, e);
 		}
 	}
 

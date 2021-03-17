@@ -41,25 +41,23 @@ public class WorldBorderCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("worldborder")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
+				.requires(source -> source.hasPermissionLevel(2))
 				.then(
 					CommandManager.literal("add")
 						.then(
 							CommandManager.argument("distance", FloatArgumentType.floatArg(-6.0E7F, 6.0E7F))
 								.executes(
-									commandContext -> executeSet(
-											commandContext.getSource(),
-											commandContext.getSource().getWorld().getWorldBorder().getSize() + (double)FloatArgumentType.getFloat(commandContext, "distance"),
-											0L
+									context -> executeSet(
+											context.getSource(), context.getSource().getWorld().getWorldBorder().getSize() + (double)FloatArgumentType.getFloat(context, "distance"), 0L
 										)
 								)
 								.then(
 									CommandManager.argument("time", IntegerArgumentType.integer(0))
 										.executes(
-											commandContext -> executeSet(
-													commandContext.getSource(),
-													commandContext.getSource().getWorld().getWorldBorder().getSize() + (double)FloatArgumentType.getFloat(commandContext, "distance"),
-													commandContext.getSource().getWorld().getWorldBorder().getSizeLerpTime() + (long)IntegerArgumentType.getInteger(commandContext, "time") * 1000L
+											context -> executeSet(
+													context.getSource(),
+													context.getSource().getWorld().getWorldBorder().getSize() + (double)FloatArgumentType.getFloat(context, "distance"),
+													context.getSource().getWorld().getWorldBorder().getSizeLerpTime() + (long)IntegerArgumentType.getInteger(context, "time") * 1000L
 												)
 										)
 								)
@@ -69,14 +67,12 @@ public class WorldBorderCommand {
 					CommandManager.literal("set")
 						.then(
 							CommandManager.argument("distance", FloatArgumentType.floatArg(-6.0E7F, 6.0E7F))
-								.executes(commandContext -> executeSet(commandContext.getSource(), (double)FloatArgumentType.getFloat(commandContext, "distance"), 0L))
+								.executes(context -> executeSet(context.getSource(), (double)FloatArgumentType.getFloat(context, "distance"), 0L))
 								.then(
 									CommandManager.argument("time", IntegerArgumentType.integer(0))
 										.executes(
-											commandContext -> executeSet(
-													commandContext.getSource(),
-													(double)FloatArgumentType.getFloat(commandContext, "distance"),
-													(long)IntegerArgumentType.getInteger(commandContext, "time") * 1000L
+											context -> executeSet(
+													context.getSource(), (double)FloatArgumentType.getFloat(context, "distance"), (long)IntegerArgumentType.getInteger(context, "time") * 1000L
 												)
 										)
 								)
@@ -86,7 +82,7 @@ public class WorldBorderCommand {
 					CommandManager.literal("center")
 						.then(
 							CommandManager.argument("pos", Vec2ArgumentType.vec2())
-								.executes(commandContext -> executeCenter(commandContext.getSource(), Vec2ArgumentType.getVec2(commandContext, "pos")))
+								.executes(context -> executeCenter(context.getSource(), Vec2ArgumentType.getVec2(context, "pos")))
 						)
 				)
 				.then(
@@ -95,32 +91,32 @@ public class WorldBorderCommand {
 							CommandManager.literal("amount")
 								.then(
 									CommandManager.argument("damagePerBlock", FloatArgumentType.floatArg(0.0F))
-										.executes(commandContext -> executeDamage(commandContext.getSource(), FloatArgumentType.getFloat(commandContext, "damagePerBlock")))
+										.executes(context -> executeDamage(context.getSource(), FloatArgumentType.getFloat(context, "damagePerBlock")))
 								)
 						)
 						.then(
 							CommandManager.literal("buffer")
 								.then(
 									CommandManager.argument("distance", FloatArgumentType.floatArg(0.0F))
-										.executes(commandContext -> executeBuffer(commandContext.getSource(), FloatArgumentType.getFloat(commandContext, "distance")))
+										.executes(context -> executeBuffer(context.getSource(), FloatArgumentType.getFloat(context, "distance")))
 								)
 						)
 				)
-				.then(CommandManager.literal("get").executes(commandContext -> executeGet(commandContext.getSource())))
+				.then(CommandManager.literal("get").executes(context -> executeGet(context.getSource())))
 				.then(
 					CommandManager.literal("warning")
 						.then(
 							CommandManager.literal("distance")
 								.then(
 									CommandManager.argument("distance", IntegerArgumentType.integer(0))
-										.executes(commandContext -> executeWarningDistance(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "distance")))
+										.executes(context -> executeWarningDistance(context.getSource(), IntegerArgumentType.getInteger(context, "distance")))
 								)
 						)
 						.then(
 							CommandManager.literal("time")
 								.then(
 									CommandManager.argument("time", IntegerArgumentType.integer(0))
-										.executes(commandContext -> executeWarningTime(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "time")))
+										.executes(context -> executeWarningTime(context.getSource(), IntegerArgumentType.getInteger(context, "time")))
 								)
 						)
 				)

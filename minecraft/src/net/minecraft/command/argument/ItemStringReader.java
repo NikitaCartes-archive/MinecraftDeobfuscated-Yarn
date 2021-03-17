@@ -11,7 +11,7 @@ import java.util.function.BiFunction;
 import javax.annotation.Nullable;
 import net.minecraft.command.CommandSource;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.tag.TagGroup;
 import net.minecraft.text.TranslatableText;
@@ -28,7 +28,7 @@ public class ItemStringReader {
 	private final boolean allowTag;
 	private Item item;
 	@Nullable
-	private CompoundTag tag;
+	private NbtCompound tag;
 	private Identifier id = new Identifier("");
 	private int cursor;
 	private BiFunction<SuggestionsBuilder, TagGroup<Item>, CompletableFuture<Suggestions>> suggestions = NBT_SUGGESTION_PROVIDER;
@@ -43,7 +43,7 @@ public class ItemStringReader {
 	}
 
 	@Nullable
-	public CompoundTag getTag() {
+	public NbtCompound getTag() {
 		return this.tag;
 	}
 
@@ -72,7 +72,7 @@ public class ItemStringReader {
 	}
 
 	public void readNbt() throws CommandSyntaxException {
-		this.tag = new StringNbtReader(this.reader).parseCompoundTag();
+		this.tag = new StringNbtReader(this.reader).parseCompound();
 	}
 
 	public ItemStringReader consume() throws CommandSyntaxException {

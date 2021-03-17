@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
@@ -55,7 +56,7 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 		if (world.random.nextInt(5) == 0) {
 			int i = (Integer)state.get(AGE);
 			if (i < 2) {
-				world.setBlockState(pos, state.with(AGE, Integer.valueOf(i + 1)), 2);
+				world.setBlockState(pos, state.with(AGE, Integer.valueOf(i + 1)), SetBlockStateFlags.NOTIFY_LISTENERS);
 			}
 		}
 	}
@@ -122,7 +123,7 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-		world.setBlockState(pos, state.with(AGE, Integer.valueOf((Integer)state.get(AGE) + 1)), 2);
+		world.setBlockState(pos, state.with(AGE, Integer.valueOf((Integer)state.get(AGE) + 1)), SetBlockStateFlags.NOTIFY_LISTENERS);
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -49,7 +50,7 @@ public class FrostedIceBlock extends IceBlock {
 	private boolean increaseAge(BlockState state, World world, BlockPos pos) {
 		int i = (Integer)state.get(AGE);
 		if (i < 3) {
-			world.setBlockState(pos, state.with(AGE, Integer.valueOf(i + 1)), 2);
+			world.setBlockState(pos, state.with(AGE, Integer.valueOf(i + 1)), SetBlockStateFlags.NOTIFY_LISTENERS);
 			return false;
 		} else {
 			this.melt(state, world, pos);

@@ -1,6 +1,8 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -86,7 +88,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 			return ActionResult.PASS;
 		} else {
 			state = state.cycle(OPEN);
-			world.setBlockState(pos, state, 2);
+			world.setBlockState(pos, state, SetBlockStateFlags.NOTIFY_LISTENERS);
 			if ((Boolean)state.get(WATERLOGGED)) {
 				world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 			}
@@ -98,10 +100,10 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 
 	protected void playToggleSound(@Nullable PlayerEntity player, World world, BlockPos pos, boolean open) {
 		if (open) {
-			int i = this.material == Material.METAL ? 1037 : 1007;
+			int i = this.material == Material.METAL ? WorldEvents.IRON_TRAPDOOR_OPENS : WorldEvents.WOODEN_TRAPDOOR_OPENS;
 			world.syncWorldEvent(player, i, pos, 0);
 		} else {
-			int i = this.material == Material.METAL ? 1036 : 1013;
+			int i = this.material == Material.METAL ? WorldEvents.IRON_TRAPDOOR_CLOSES : WorldEvents.WOODEN_TRAPDOOR_CLOSES;
 			world.syncWorldEvent(player, i, pos, 0);
 		}
 
@@ -118,7 +120,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 					this.playToggleSound(null, world, pos, bl);
 				}
 
-				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)), 2);
+				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)), SetBlockStateFlags.NOTIFY_LISTENERS);
 				if ((Boolean)state.get(WATERLOGGED)) {
 					world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 				}

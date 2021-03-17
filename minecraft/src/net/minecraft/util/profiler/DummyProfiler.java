@@ -1,6 +1,7 @@
 package net.minecraft.util.profiler;
 
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
@@ -50,5 +51,12 @@ public class DummyProfiler implements ReadableProfiler {
 	@Override
 	public ProfileResult getResult() {
 		return EmptyProfileResult.INSTANCE;
+	}
+
+	@Nullable
+	@Environment(EnvType.CLIENT)
+	@Override
+	public ProfilerSystem.LocatedInfo method_34696(String string) {
+		return null;
 	}
 }

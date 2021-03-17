@@ -23,18 +23,14 @@ public class BanCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("ban")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
+				.requires(source -> source.hasPermissionLevel(3))
 				.then(
 					CommandManager.argument("targets", GameProfileArgumentType.gameProfile())
-						.executes(commandContext -> ban(commandContext.getSource(), GameProfileArgumentType.getProfileArgument(commandContext, "targets"), null))
+						.executes(context -> ban(context.getSource(), GameProfileArgumentType.getProfileArgument(context, "targets"), null))
 						.then(
 							CommandManager.argument("reason", MessageArgumentType.message())
 								.executes(
-									commandContext -> ban(
-											commandContext.getSource(),
-											GameProfileArgumentType.getProfileArgument(commandContext, "targets"),
-											MessageArgumentType.getMessage(commandContext, "reason")
-										)
+									context -> ban(context.getSource(), GameProfileArgumentType.getProfileArgument(context, "targets"), MessageArgumentType.getMessage(context, "reason"))
 								)
 						)
 				)

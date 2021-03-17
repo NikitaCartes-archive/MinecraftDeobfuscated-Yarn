@@ -26,7 +26,7 @@ public class TeamMsgCommand {
 			CommandManager.literal("teammsg")
 				.then(
 					CommandManager.argument("message", MessageArgumentType.message())
-						.executes(commandContext -> execute(commandContext.getSource(), MessageArgumentType.getMessage(commandContext, "message")))
+						.executes(context -> execute(context.getSource(), MessageArgumentType.getMessage(context, "message")))
 				)
 		);
 		dispatcher.register(CommandManager.literal("tm").redirect(literalCommandNode));

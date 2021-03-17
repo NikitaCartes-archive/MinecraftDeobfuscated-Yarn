@@ -1,5 +1,6 @@
 package net.minecraft.item;
 
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DispenserBlock;
@@ -66,7 +67,7 @@ public class MinecartItem extends Item {
 
 		@Override
 		protected void playSound(BlockPointer pointer) {
-			pointer.getWorld().syncWorldEvent(1000, pointer.getBlockPos(), 0);
+			pointer.getWorld().syncWorldEvent(WorldEvents.DISPENSER_DISPENSES, pointer.getBlockPos(), 0);
 		}
 	};
 	private final AbstractMinecartEntity.Type type;

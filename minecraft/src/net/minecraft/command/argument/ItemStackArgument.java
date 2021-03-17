@@ -6,7 +6,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.registry.Registry;
@@ -17,9 +17,9 @@ public class ItemStackArgument implements Predicate<ItemStack> {
 	);
 	private final Item item;
 	@Nullable
-	private final CompoundTag tag;
+	private final NbtCompound tag;
 
-	public ItemStackArgument(Item item, @Nullable CompoundTag tag) {
+	public ItemStackArgument(Item item, @Nullable NbtCompound tag) {
 		this.item = item;
 		this.tag = tag;
 	}

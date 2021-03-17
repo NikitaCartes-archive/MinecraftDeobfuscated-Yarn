@@ -2,6 +2,7 @@ package net.minecraft.entity.passive;
 
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -17,7 +18,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.HorseArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
@@ -51,11 +52,11 @@ public class HorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
 		tag.putInt("Variant", this.getVariant());
 		if (!this.items.getStack(1).isEmpty()) {
-			tag.put("ArmorItem", this.items.getStack(1).writeNbt(new CompoundTag()));
+			tag.put("ArmorItem", this.items.getStack(1).writeNbt(new NbtCompound()));
 		}
 	}
 
@@ -69,10 +70,10 @@ public class HorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
 		this.setVariant(tag.getInt("Variant"));
-		if (tag.contains("ArmorItem", 10)) {
+		if (tag.contains("ArmorItem", NbtTypeIds.COMPOUND)) {
 			ItemStack itemStack = ItemStack.fromNbt(tag.getCompound("ArmorItem"));
 			if (!itemStack.isEmpty() && this.isHorseArmor(itemStack)) {
 				this.items.setStack(1, itemStack);
@@ -274,7 +275,7 @@ public class HorseEntity extends HorseBaseEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
 	) {
 		HorseColor horseColor;
 		if (entityData instanceof HorseEntity.HorseData) {

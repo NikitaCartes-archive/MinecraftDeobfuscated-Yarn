@@ -13,10 +13,10 @@ public class SeedCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
 		dispatcher.register(
 			CommandManager.literal("seed")
-				.requires(serverCommandSource -> !dedicated || serverCommandSource.hasPermissionLevel(2))
+				.requires(source -> !dedicated || source.hasPermissionLevel(2))
 				.executes(
-					commandContext -> {
-						long l = commandContext.getSource().getWorld().getSeed();
+					context -> {
+						long l = context.getSource().getWorld().getSeed();
 						Text text = Texts.bracketed(
 							new LiteralText(String.valueOf(l))
 								.styled(
@@ -26,7 +26,7 @@ public class SeedCommand {
 											.withInsertion(String.valueOf(l))
 								)
 						);
-						commandContext.getSource().sendFeedback(new TranslatableText("commands.seed.success", text), false);
+						context.getSource().sendFeedback(new TranslatableText("commands.seed.success", text), false);
 						return (int)l;
 					}
 				)

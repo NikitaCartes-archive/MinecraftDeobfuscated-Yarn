@@ -16,7 +16,7 @@ import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.predicate.NbtPredicate;
@@ -240,7 +240,7 @@ public class ItemPredicate {
 			return this;
 		}
 
-		public ItemPredicate.Builder nbt(CompoundTag nbt) {
+		public ItemPredicate.Builder nbt(NbtCompound nbt) {
 			this.nbt = new NbtPredicate(nbt);
 			return this;
 		}

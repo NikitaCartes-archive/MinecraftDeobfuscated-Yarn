@@ -88,7 +88,7 @@ public class TexturedButtonWidget extends ButtonWidget {
 	@Override
 	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		RenderSystem.setShader(GameRenderer::method_34542);
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderTexture(0, this.texture);
 		int i = this.v;
 		if (this.isHovered()) {

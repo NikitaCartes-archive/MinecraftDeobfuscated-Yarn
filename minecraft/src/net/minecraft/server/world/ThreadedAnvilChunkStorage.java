@@ -38,11 +38,12 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkRenderDistanceCenterS2CPacket;
@@ -166,11 +167,11 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return f * f + g * g;
 	}
 
-	private static int getChebyshevDistance(ChunkPos pos, ServerPlayerEntity player, boolean useCameraPosition) {
+	private static int getChebyshevDistance(ChunkPos pos, ServerPlayerEntity player, boolean useWatchedPosition) {
 		int i;
 		int j;
-		if (useCameraPosition) {
-			ChunkSectionPos chunkSectionPos = player.getCameraPosition();
+		if (useWatchedPosition) {
+			ChunkSectionPos chunkSectionPos = player.getWatchedSection();
 			i = chunkSectionPos.getSectionX();
 			j = chunkSectionPos.getSectionZ();
 		} else {
@@ -474,11 +475,11 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return CompletableFuture.supplyAsync(() -> {
 			try {
 				this.world.getProfiler().visit("chunkLoad");
-				CompoundTag compoundTag = this.getUpdatedChunkNbt(pos);
-				if (compoundTag != null) {
-					boolean bl = compoundTag.contains("Level", 10) && compoundTag.getCompound("Level").contains("Status", 8);
+				NbtCompound nbtCompound = this.getUpdatedChunkNbt(pos);
+				if (nbtCompound != null) {
+					boolean bl = nbtCompound.contains("Level", NbtTypeIds.COMPOUND) && nbtCompound.getCompound("Level").contains("Status", NbtTypeIds.STRING);
 					if (bl) {
-						Chunk chunk = ChunkSerializer.deserialize(this.world, this.structureManager, this.pointOfInterestStorage, pos, compoundTag);
+						Chunk chunk = ChunkSerializer.deserialize(this.world, this.structureManager, this.pointOfInterestStorage, pos, nbtCompound);
 						this.method_27053(pos, chunk.getStatus().getChunkType());
 						return Either.left(chunk);
 					}
@@ -566,7 +567,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return chunkStatus;
 	}
 
-	private static void method_31413(ServerWorld serverWorld, List<CompoundTag> list) {
+	private static void method_31413(ServerWorld serverWorld, List<NbtCompound> list) {
 		if (!list.isEmpty()) {
 			serverWorld.addEntities(EntityType.streamFromNbt(list, serverWorld));
 		}
@@ -648,8 +649,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				}
 
 				this.world.getProfiler().visit("chunkSave");
-				CompoundTag compoundTag = ChunkSerializer.serialize(this.world, chunk);
-				this.setTagAt(chunkPos, compoundTag);
+				NbtCompound nbtCompound = ChunkSerializer.serialize(this.world, chunk);
+				this.setTagAt(chunkPos, nbtCompound);
 				this.method_27053(chunkPos, chunkStatus.getChunkType());
 				return true;
 			} catch (Exception var5) {
@@ -664,10 +665,10 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		if (b != 0) {
 			return b == 1;
 		} else {
-			CompoundTag compoundTag;
+			NbtCompound nbtCompound;
 			try {
-				compoundTag = this.getUpdatedChunkNbt(chunkPos);
-				if (compoundTag == null) {
+				nbtCompound = this.getUpdatedChunkNbt(chunkPos);
+				if (nbtCompound == null) {
 					this.method_27054(chunkPos);
 					return false;
 				}
@@ -677,7 +678,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				return false;
 			}
 
-			ChunkStatus.ChunkType chunkType = ChunkSerializer.getChunkType(compoundTag);
+			ChunkStatus.ChunkType chunkType = ChunkSerializer.getChunkType(nbtCompound);
 			return this.method_27053(chunkPos, chunkType) == 1;
 		}
 	}
@@ -784,9 +785,9 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	@Nullable
-	private CompoundTag getUpdatedChunkNbt(ChunkPos pos) throws IOException {
-		CompoundTag compoundTag = this.getNbt(pos);
-		return compoundTag == null ? null : this.updateChunkNbt(this.world.getRegistryKey(), this.persistentStateManagerFactory, compoundTag);
+	private NbtCompound getUpdatedChunkNbt(ChunkPos pos) throws IOException {
+		NbtCompound nbtCompound = this.getNbt(pos);
+		return nbtCompound == null ? null : this.updateChunkNbt(this.world.getRegistryKey(), this.persistentStateManagerFactory, nbtCompound);
 	}
 
 	boolean isTooFarFromPlayersToSpawnMobs(ChunkPos chunkPos) {
@@ -809,12 +810,12 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		int j = ChunkSectionPos.getSectionCoord(player.getBlockZ());
 		if (added) {
 			this.playerChunkWatchingManager.add(ChunkPos.toLong(i, j), player, bl);
-			this.method_20726(player);
+			this.updateWatchedSection(player);
 			if (!bl) {
 				this.ticketManager.handleChunkEnter(ChunkSectionPos.from(player), player);
 			}
 		} else {
-			ChunkSectionPos chunkSectionPos = player.getCameraPosition();
+			ChunkSectionPos chunkSectionPos = player.getWatchedSection();
 			this.playerChunkWatchingManager.remove(chunkSectionPos.toChunkPos().toLong(), player);
 			if (!bl2) {
 				this.ticketManager.handleChunkLeave(chunkSectionPos, player);
@@ -829,25 +830,35 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		}
 	}
 
-	private ChunkSectionPos method_20726(ServerPlayerEntity serverPlayerEntity) {
-		ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(serverPlayerEntity);
-		serverPlayerEntity.setCameraPosition(chunkSectionPos);
-		serverPlayerEntity.networkHandler.sendPacket(new ChunkRenderDistanceCenterS2CPacket(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ()));
+	/**
+	 * Updates the watched chunk section position for the {@code player}, and sends a
+	 * render distance update packet to the client.
+	 */
+	private ChunkSectionPos updateWatchedSection(ServerPlayerEntity player) {
+		ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(player);
+		player.setWatchedSection(chunkSectionPos);
+		player.networkHandler.sendPacket(new ChunkRenderDistanceCenterS2CPacket(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ()));
 		return chunkSectionPos;
 	}
 
-	public void updateCameraPosition(ServerPlayerEntity player) {
+	/**
+	 * Updates the chunk section position of the {@code player}. This updates the player
+	 * position for both entity tracking and chunk loading (watching) logic.
+	 * 
+	 * @see ServerChunkManager#updatePosition(ServerPlayerEntity)
+	 */
+	public void updatePosition(ServerPlayerEntity player) {
 		for (ThreadedAnvilChunkStorage.EntityTracker entityTracker : this.entityTrackers.values()) {
 			if (entityTracker.entity == player) {
-				entityTracker.updateCameraPosition(this.world.getPlayers());
+				entityTracker.updateTrackedStatus(this.world.getPlayers());
 			} else {
-				entityTracker.updateCameraPosition(player);
+				entityTracker.updateTrackedStatus(player);
 			}
 		}
 
 		int i = ChunkSectionPos.getSectionCoord(player.getBlockX());
 		int j = ChunkSectionPos.getSectionCoord(player.getBlockZ());
-		ChunkSectionPos chunkSectionPos = player.getCameraPosition();
+		ChunkSectionPos chunkSectionPos = player.getWatchedSection();
 		ChunkSectionPos chunkSectionPos2 = ChunkSectionPos.from(player);
 		long l = chunkSectionPos.toChunkPos().toLong();
 		long m = chunkSectionPos2.toChunkPos().toLong();
@@ -855,7 +866,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		boolean bl2 = this.doesNotGenerateChunks(player);
 		boolean bl3 = chunkSectionPos.asLong() != chunkSectionPos2.asLong();
 		if (bl3 || bl != bl2) {
-			this.method_20726(player);
+			this.updateWatchedSection(player);
 			if (!bl) {
 				this.ticketManager.handleChunkLeave(chunkSectionPos, player);
 			}
@@ -932,14 +943,14 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			} else {
 				ThreadedAnvilChunkStorage.EntityTracker entityTracker = new ThreadedAnvilChunkStorage.EntityTracker(entity, i, j, entityType.alwaysUpdateVelocity());
 				this.entityTrackers.put(entity.getId(), entityTracker);
-				entityTracker.updateCameraPosition(this.world.getPlayers());
+				entityTracker.updateTrackedStatus(this.world.getPlayers());
 				if (entity instanceof ServerPlayerEntity) {
 					ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
 					this.handlePlayerAddedOrRemoved(serverPlayerEntity, true);
 
 					for (ThreadedAnvilChunkStorage.EntityTracker entityTracker2 : this.entityTrackers.values()) {
 						if (entityTracker2.entity != serverPlayerEntity) {
-							entityTracker2.updateCameraPosition(serverPlayerEntity);
+							entityTracker2.updateTrackedStatus(serverPlayerEntity);
 						}
 					}
 				}
@@ -963,21 +974,29 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		}
 	}
 
-	protected void tickPlayerMovement() {
+	/**
+	 * Ticks and updates the tracked status of each tracker.
+	 * 
+	 * <p>This first checks if entities have changed chunk sections, and updates
+	 * tracking status of those entities to all players. It then checks if any player
+	 * has changed chunk sections, and updates all entities tracking status to those
+	 * players. This ensures all possible updates are accounted for.
+	 */
+	protected void tickEntityMovement() {
 		List<ServerPlayerEntity> list = Lists.<ServerPlayerEntity>newArrayList();
 		List<ServerPlayerEntity> list2 = this.world.getPlayers();
 
 		for (ThreadedAnvilChunkStorage.EntityTracker entityTracker : this.entityTrackers.values()) {
-			ChunkSectionPos chunkSectionPos = entityTracker.lastCameraPosition;
+			ChunkSectionPos chunkSectionPos = entityTracker.trackedSection;
 			ChunkSectionPos chunkSectionPos2 = ChunkSectionPos.from(entityTracker.entity);
 			if (!Objects.equals(chunkSectionPos, chunkSectionPos2)) {
-				entityTracker.updateCameraPosition(list2);
+				entityTracker.updateTrackedStatus(list2);
 				Entity entity = entityTracker.entity;
 				if (entity instanceof ServerPlayerEntity) {
 					list.add((ServerPlayerEntity)entity);
 				}
 
-				entityTracker.lastCameraPosition = chunkSectionPos2;
+				entityTracker.trackedSection = chunkSectionPos2;
 			}
 
 			entityTracker.entry.tick();
@@ -985,7 +1004,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 		if (!list.isEmpty()) {
 			for (ThreadedAnvilChunkStorage.EntityTracker entityTracker : this.entityTrackers.values()) {
-				entityTracker.updateCameraPosition(list);
+				entityTracker.updateTrackedStatus(list);
 			}
 		}
 	}
@@ -1018,7 +1037,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		for (ThreadedAnvilChunkStorage.EntityTracker entityTracker : this.entityTrackers.values()) {
 			Entity entity = entityTracker.entity;
 			if (entity != player && entity.getChunkPos().equals(chunk.getPos())) {
-				entityTracker.updateCameraPosition(player);
+				entityTracker.updateTrackedStatus(player);
 				if (entity instanceof MobEntity && ((MobEntity)entity).getHoldingEntity() != null) {
 					list.add(entity);
 				}
@@ -1054,18 +1073,31 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		this.field_26931.onChunkStatusChange(chunkPos, levelType);
 	}
 
+	/**
+	 * An entity tracker governs which players' clients can see an entity. Each
+	 * tracker corresponds to one entity in a server world and is mapped from the
+	 * entity's network ID.
+	 * 
+	 * @see ThreadedAnvilChunkStorage#entityTrackers
+	 */
 	class EntityTracker {
 		private final EntityTrackerEntry entry;
 		private final Entity entity;
 		private final int maxDistance;
-		private ChunkSectionPos lastCameraPosition;
+		/**
+		 * The chunk section position of the tracked entity, may be outdated as an entity
+		 * ticks. This is used by {@link ThreadedAnvilChunkStorage#tickEntityMovement()
+		 * tickEntityMovement()} to bypass unnecessary status updates before calling
+		 * {@link #updateTrackedStatus(ServerPlayerEntity) updateTrackedStatus()}.
+		 */
+		private ChunkSectionPos trackedSection;
 		private final Set<EntityTrackingListener> listeners = Sets.newIdentityHashSet();
 
-		public EntityTracker(Entity maxDistance, int tickInterval, int i, boolean bl) {
-			this.entry = new EntityTrackerEntry(ThreadedAnvilChunkStorage.this.world, maxDistance, i, bl, this::sendToOtherNearbyPlayers);
-			this.entity = maxDistance;
-			this.maxDistance = tickInterval;
-			this.lastCameraPosition = ChunkSectionPos.from(maxDistance);
+		public EntityTracker(Entity entity, int maxDistance, int tickInterval, boolean alwaysUpdateVelocity) {
+			this.entry = new EntityTrackerEntry(ThreadedAnvilChunkStorage.this.world, entity, tickInterval, alwaysUpdateVelocity, this::sendToOtherNearbyPlayers);
+			this.entity = entity;
+			this.maxDistance = maxDistance;
+			this.trackedSection = ChunkSectionPos.from(entity);
 		}
 
 		public boolean equals(Object o) {
@@ -1101,7 +1133,15 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			}
 		}
 
-		public void updateCameraPosition(ServerPlayerEntity player) {
+		/**
+		 * Updates the tracked status of this tracker's entity for the {@code player}.
+		 * 
+		 * <p>If this tracker should be listened by the player, the player's tracking
+		 * listener is added if it is not in the listeners; if this tracker should not be
+		 * listened by the player, the player's tracking listener is removed if it is in
+		 * the listeners.
+		 */
+		public void updateTrackedStatus(ServerPlayerEntity player) {
 			if (player != this.entity) {
 				Vec3d vec3d = player.getPos().subtract(this.entry.getLastPos());
 				int i = Math.min(this.getMaxTrackDistance(), (ThreadedAnvilChunkStorage.this.watchDistance - 1) * 16);
@@ -1133,9 +1173,14 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			return this.adjustTrackingDistance(i);
 		}
 
-		public void updateCameraPosition(List<ServerPlayerEntity> players) {
+		/**
+		 * Updates the tracked status of this tracker's entity for the given players.
+		 * 
+		 * @see updateTrackedStatus(ServerPlayerEntity)
+		 */
+		public void updateTrackedStatus(List<ServerPlayerEntity> players) {
 			for (ServerPlayerEntity serverPlayerEntity : players) {
-				this.updateCameraPosition(serverPlayerEntity);
+				this.updateTrackedStatus(serverPlayerEntity);
 			}
 		}
 	}
