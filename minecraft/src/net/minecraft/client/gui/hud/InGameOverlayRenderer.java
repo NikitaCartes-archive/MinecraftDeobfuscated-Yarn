@@ -33,7 +33,7 @@ public class InGameOverlayRenderer {
 		if (!playerEntity.noClip) {
 			BlockState blockState = getInWallBlockState(playerEntity);
 			if (blockState != null) {
-				renderInWallOverlay(client, client.getBlockRenderManager().getModels().getSprite(blockState), matrices);
+				renderInWallOverlay(client.getBlockRenderManager().getModels().getSprite(blockState), matrices);
 			}
 		}
 
@@ -66,8 +66,9 @@ public class InGameOverlayRenderer {
 		return null;
 	}
 
-	private static void renderInWallOverlay(MinecraftClient client, Sprite sprite, MatrixStack matrices) {
+	private static void renderInWallOverlay(Sprite sprite, MatrixStack matrixStack) {
 		RenderSystem.setShaderTexture(0, sprite.getAtlas().getId());
+		RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 		float f = 0.1F;
 		float g = -1.0F;
@@ -79,7 +80,7 @@ public class InGameOverlayRenderer {
 		float m = sprite.getMaxU();
 		float n = sprite.getMinV();
 		float o = sprite.getMaxV();
-		Matrix4f matrix4f = matrices.peek().getModel();
+		Matrix4f matrix4f = matrixStack.peek().getModel();
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
 		bufferBuilder.vertex(matrix4f, -1.0F, -1.0F, -0.5F).color(0.1F, 0.1F, 0.1F, 1.0F).texture(m, o).next();
 		bufferBuilder.vertex(matrix4f, 1.0F, -1.0F, -0.5F).color(0.1F, 0.1F, 0.1F, 1.0F).texture(l, o).next();
@@ -90,7 +91,7 @@ public class InGameOverlayRenderer {
 	}
 
 	private static void renderUnderwaterOverlay(MinecraftClient minecraftClient, MatrixStack matrixStack) {
-		RenderSystem.setShader(GameRenderer::method_34542);
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.enableTexture();
 		RenderSystem.setShaderTexture(0, UNDERWATER_TEXTURE);
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
@@ -119,7 +120,7 @@ public class InGameOverlayRenderer {
 
 	private static void renderFireOverlay(MinecraftClient client, MatrixStack matrices) {
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-		RenderSystem.setShader(GameRenderer::method_34541);
+		RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
 		RenderSystem.depthFunc(519);
 		RenderSystem.depthMask(false);
 		RenderSystem.enableBlend();

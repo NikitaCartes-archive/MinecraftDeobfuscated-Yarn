@@ -1,7 +1,7 @@
 package net.minecraft.block.entity;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 
 public class ComparatorBlockEntity extends BlockEntity {
@@ -12,14 +12,14 @@ public class ComparatorBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag writeNbt(CompoundTag tag) {
+	public NbtCompound writeNbt(NbtCompound tag) {
 		super.writeNbt(tag);
 		tag.putInt("OutputSignal", this.outputSignal);
 		return tag;
 	}
 
 	@Override
-	public void readNbt(CompoundTag tag) {
+	public void readNbt(NbtCompound tag) {
 		super.readNbt(tag);
 		this.outputSignal = tag.getInt("OutputSignal");
 	}

@@ -315,7 +315,7 @@ public abstract class AbstractBlock {
 	}
 
 	@Deprecated
-	public VoxelShape getVisualShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	public VoxelShape getCameraCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return this.getCollisionShape(state, world, pos, context);
 	}
 
@@ -572,8 +572,8 @@ public abstract class AbstractBlock {
 			return this.getBlock().getSidesShape(this.asBlockState(), world, pos);
 		}
 
-		public VoxelShape getVisualShape(BlockView world, BlockPos pos, ShapeContext context) {
-			return this.getBlock().getVisualShape(this.asBlockState(), world, pos, context);
+		public VoxelShape getCameraCollisionShape(BlockView world, BlockPos pos, ShapeContext context) {
+			return this.getBlock().getCameraCollisionShape(this.asBlockState(), world, pos, context);
 		}
 
 		public VoxelShape getRaycastShape(BlockView world, BlockPos pos) {

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -37,7 +38,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -110,7 +111,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
 		if (this.isBaby()) {
 			tag.putBoolean("IsBaby", true);
@@ -124,11 +125,11 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
 		this.setBaby(tag.getBoolean("IsBaby"));
 		this.setCannotHunt(tag.getBoolean("CannotHunt"));
-		this.inventory.readTags(tag.getList("Inventory", 10));
+		this.inventory.readTags(tag.getList("Inventory", NbtTypeIds.COMPOUND));
 	}
 
 	@Override
@@ -175,7 +176,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
 	) {
 		if (spawnReason != SpawnReason.STRUCTURE) {
 			if (world.getRandom().nextFloat() < 0.2F) {
@@ -291,7 +292,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 	}
 
 	@Override
-	protected int getCurrentExperience(PlayerEntity player) {
+	protected int getXpToDrop(PlayerEntity player) {
 		return this.experiencePoints;
 	}
 

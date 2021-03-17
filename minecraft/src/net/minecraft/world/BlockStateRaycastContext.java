@@ -7,12 +7,12 @@ import net.minecraft.util.math.Vec3d;
 public class BlockStateRaycastContext {
 	private final Vec3d start;
 	private final Vec3d end;
-	private final Predicate<BlockState> state;
+	private final Predicate<BlockState> statePredicate;
 
-	public BlockStateRaycastContext(Vec3d start, Vec3d end, Predicate<BlockState> state) {
+	public BlockStateRaycastContext(Vec3d start, Vec3d end, Predicate<BlockState> statePredicate) {
 		this.start = start;
 		this.end = end;
-		this.state = state;
+		this.statePredicate = statePredicate;
 	}
 
 	public Vec3d getEnd() {
@@ -23,7 +23,7 @@ public class BlockStateRaycastContext {
 		return this.start;
 	}
 
-	public Predicate<BlockState> getState() {
-		return this.state;
+	public Predicate<BlockState> getStatePredicate() {
+		return this.statePredicate;
 	}
 }

@@ -66,7 +66,7 @@ public class AnimatedResultButton extends AbstractButtonWidget {
 		}
 
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		RenderSystem.setShader(GameRenderer::method_34542);
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
 		int i = 29;
 		if (!this.results.hasCraftableRecipes()) {

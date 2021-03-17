@@ -29,13 +29,13 @@ public class SoulSandBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getVisualShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	public VoxelShape getCameraCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return VoxelShapes.fullCube();
 	}
 
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		BubbleColumnBlock.method_34268(world, pos.up(), state);
+		BubbleColumnBlock.update(world, pos.up(), state);
 	}
 
 	@Override

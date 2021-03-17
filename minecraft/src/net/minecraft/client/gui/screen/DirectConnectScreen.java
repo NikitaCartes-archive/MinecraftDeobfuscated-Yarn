@@ -10,6 +10,7 @@ import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class DirectConnectScreen extends Screen {
@@ -34,7 +35,7 @@ public class DirectConnectScreen extends Screen {
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (this.getFocused() != this.addressField || keyCode != 257 && keyCode != 335) {
+		if (this.getFocused() != this.addressField || keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_KP_ENTER) {
 			return super.keyPressed(keyCode, scanCode, modifiers);
 		} else {
 			this.saveAndClose();

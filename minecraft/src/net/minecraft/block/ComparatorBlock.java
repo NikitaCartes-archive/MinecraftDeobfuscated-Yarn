@@ -3,6 +3,7 @@ package net.minecraft.block;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ComparatorBlockEntity;
 import net.minecraft.block.enums.ComparatorMode;
@@ -116,7 +117,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 			state = state.cycle(MODE);
 			float f = state.get(MODE) == ComparatorMode.SUBTRACT ? 0.55F : 0.5F;
 			world.playSound(player, pos, SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.BLOCKS, 0.3F, f);
-			world.setBlockState(pos, state, 2);
+			world.setBlockState(pos, state, SetBlockStateFlags.NOTIFY_LISTENERS);
 			this.update(world, pos, state);
 			return ActionResult.success(world.isClient);
 		}
@@ -149,9 +150,9 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 			boolean bl = this.hasPower(world, pos, state);
 			boolean bl2 = state.get(POWERED);
 			if (bl2 && !bl) {
-				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), 2);
+				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), SetBlockStateFlags.NOTIFY_LISTENERS);
 			} else if (!bl2 && bl) {
-				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), 2);
+				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), SetBlockStateFlags.NOTIFY_LISTENERS);
 			}
 
 			this.updateTarget(world, pos, state);

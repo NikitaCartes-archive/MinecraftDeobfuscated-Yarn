@@ -2,6 +2,8 @@ package net.minecraft.block.entity;
 
 import java.util.Arrays;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BrewingStandBlock;
 import net.minecraft.entity.player.PlayerEntity;
@@ -11,7 +13,7 @@ import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.screen.BrewingStandScreenHandler;
 import net.minecraft.screen.PropertyDelegate;
@@ -128,7 +130,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 				blockState = blockState.with(BrewingStandBlock.BOTTLE_PROPERTIES[i], Boolean.valueOf(bls[i]));
 			}
 
-			world.setBlockState(pos, blockState, 2);
+			world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
 		}
 	}
 
@@ -180,11 +182,11 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 		}
 
 		slots.set(3, itemStack);
-		world.syncWorldEvent(1035, pos, 0);
+		world.syncWorldEvent(WorldEvents.BREWING_STAND_BREWS, pos, 0);
 	}
 
 	@Override
-	public void readNbt(CompoundTag tag) {
+	public void readNbt(NbtCompound tag) {
 		super.readNbt(tag);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
 		Inventories.readNbt(tag, this.inventory);
@@ -193,7 +195,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	}
 
 	@Override
-	public CompoundTag writeNbt(CompoundTag tag) {
+	public NbtCompound writeNbt(NbtCompound tag) {
 		super.writeNbt(tag);
 		tag.putShort("BrewTime", (short)this.brewTime);
 		Inventories.writeNbt(tag, this.inventory);

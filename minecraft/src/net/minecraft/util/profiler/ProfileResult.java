@@ -1,6 +1,6 @@
 package net.minecraft.util.profiler;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -9,7 +9,7 @@ public interface ProfileResult {
 	@Environment(EnvType.CLIENT)
 	List<ProfilerTiming> getTimings(String parentPath);
 
-	boolean save(File file);
+	boolean save(Path path);
 
 	long getStartTime();
 

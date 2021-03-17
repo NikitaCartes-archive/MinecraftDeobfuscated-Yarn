@@ -5,12 +5,18 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.SharedConstants;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
+/**
+ * The information of a server entry in the list of servers available in
+ * the multiplayer screen from the menu. The list of these servers is
+ * stored in the {@code servers.dat} file within the client game directory.
+ */
 @Environment(EnvType.CLIENT)
 public class ServerInfo {
 	public String name;
@@ -22,7 +28,7 @@ public class ServerInfo {
 	public Text version = new LiteralText(SharedConstants.getGameVersion().getName());
 	public boolean online;
 	public List<Text> playerListSummary = Collections.emptyList();
-	private ServerInfo.ResourcePackState resourcePackState = ServerInfo.ResourcePackState.PROMPT;
+	private ServerInfo.ResourcePackPolicy resourcePackPolicy = ServerInfo.ResourcePackPolicy.PROMPT;
 	@Nullable
 	private String icon;
 	private boolean local;
@@ -33,45 +39,54 @@ public class ServerInfo {
 		this.local = local;
 	}
 
-	public CompoundTag serialize() {
-		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.putString("name", this.name);
-		compoundTag.putString("ip", this.address);
+	public NbtCompound toNbt() {
+		NbtCompound nbtCompound = new NbtCompound();
+		nbtCompound.putString("name", this.name);
+		nbtCompound.putString("ip", this.address);
 		if (this.icon != null) {
-			compoundTag.putString("icon", this.icon);
+			nbtCompound.putString("icon", this.icon);
 		}
 
-		if (this.resourcePackState == ServerInfo.ResourcePackState.ENABLED) {
-			compoundTag.putBoolean("acceptTextures", true);
-		} else if (this.resourcePackState == ServerInfo.ResourcePackState.DISABLED) {
-			compoundTag.putBoolean("acceptTextures", false);
+		if (this.resourcePackPolicy == ServerInfo.ResourcePackPolicy.ENABLED) {
+			nbtCompound.putBoolean("acceptTextures", true);
+		} else if (this.resourcePackPolicy == ServerInfo.ResourcePackPolicy.DISABLED) {
+			nbtCompound.putBoolean("acceptTextures", false);
 		}
 
-		return compoundTag;
+		return nbtCompound;
 	}
 
-	public ServerInfo.ResourcePackState getResourcePack() {
-		return this.resourcePackState;
+	/**
+	 * Returns the policy on resource packs sent by this server.
+	 */
+	public ServerInfo.ResourcePackPolicy getResourcePackPolicy() {
+		return this.resourcePackPolicy;
 	}
 
-	public void setResourcePackState(ServerInfo.ResourcePackState resourcePackState) {
-		this.resourcePackState = resourcePackState;
+	/**
+	 * Sets the resource pack policy on this server.
+	 * 
+	 * <p>This is called when a user has responded to the prompt on whether to
+	 * accept server resource packs from this server in the future.
+	 */
+	public void setResourcePackPolicy(ServerInfo.ResourcePackPolicy policy) {
+		this.resourcePackPolicy = policy;
 	}
 
-	public static ServerInfo deserialize(CompoundTag tag) {
-		ServerInfo serverInfo = new ServerInfo(tag.getString("name"), tag.getString("ip"), false);
-		if (tag.contains("icon", 8)) {
-			serverInfo.setIcon(tag.getString("icon"));
+	public static ServerInfo fromNbt(NbtCompound root) {
+		ServerInfo serverInfo = new ServerInfo(root.getString("name"), root.getString("ip"), false);
+		if (root.contains("icon", NbtTypeIds.STRING)) {
+			serverInfo.setIcon(root.getString("icon"));
 		}
 
-		if (tag.contains("acceptTextures", 1)) {
-			if (tag.getBoolean("acceptTextures")) {
-				serverInfo.setResourcePackState(ServerInfo.ResourcePackState.ENABLED);
+		if (root.contains("acceptTextures", NbtTypeIds.BYTE)) {
+			if (root.getBoolean("acceptTextures")) {
+				serverInfo.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.ENABLED);
 			} else {
-				serverInfo.setResourcePackState(ServerInfo.ResourcePackState.DISABLED);
+				serverInfo.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.DISABLED);
 			}
 		} else {
-			serverInfo.setResourcePackState(ServerInfo.ResourcePackState.PROMPT);
+			serverInfo.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.PROMPT);
 		}
 
 		return serverInfo;
@@ -93,20 +108,37 @@ public class ServerInfo {
 	public void copyFrom(ServerInfo serverInfo) {
 		this.address = serverInfo.address;
 		this.name = serverInfo.name;
-		this.setResourcePackState(serverInfo.getResourcePack());
+		this.setResourcePackPolicy(serverInfo.getResourcePackPolicy());
 		this.icon = serverInfo.icon;
 		this.local = serverInfo.local;
 	}
 
+	/**
+	 * The policy of the client when this server sends a {@linkplain
+	 * net.minecraft.network.packet.s2c.play.ResourcePackSendS2CPacket server
+	 * resource pack}.
+	 * 
+	 * @see ServerInfo#getResourcePackPolicy()
+	 */
 	@Environment(EnvType.CLIENT)
-	public static enum ResourcePackState {
+	public static enum ResourcePackPolicy {
+		/**
+		 * Always accepts the resource pack and starts downloading it.
+		 */
 		ENABLED("enabled"),
+		/**
+		 * Always rejects the resource pack.
+		 */
 		DISABLED("disabled"),
+		/**
+		 * Opens a screen on whether to always accept or reject resource packs from
+		 * this server for the current pack or any pack in the future.
+		 */
 		PROMPT("prompt");
 
 		private final Text name;
 
-		private ResourcePackState(String name) {
+		private ResourcePackPolicy(String name) {
 			this.name = new TranslatableText("addServer.resourcePack." + name);
 		}
 

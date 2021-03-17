@@ -8,7 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
@@ -58,7 +58,7 @@ public class EvokerFangsEntity extends Entity {
 	}
 
 	@Override
-	protected void readCustomDataFromNbt(CompoundTag tag) {
+	protected void readCustomDataFromNbt(NbtCompound tag) {
 		this.warmup = tag.getInt("Warmup");
 		if (tag.containsUuid("Owner")) {
 			this.ownerUuid = tag.getUuid("Owner");
@@ -66,7 +66,7 @@ public class EvokerFangsEntity extends Entity {
 	}
 
 	@Override
-	protected void writeCustomDataToNbt(CompoundTag tag) {
+	protected void writeCustomDataToNbt(NbtCompound tag) {
 		tag.putInt("Warmup", this.warmup);
 		if (this.ownerUuid != null) {
 			tag.putUuid("Owner", this.ownerUuid);

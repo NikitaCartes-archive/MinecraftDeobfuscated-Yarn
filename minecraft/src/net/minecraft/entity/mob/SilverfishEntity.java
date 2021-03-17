@@ -2,6 +2,7 @@ package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.InfestedBlock;
@@ -172,7 +173,7 @@ public class SilverfishEntity extends HostileEntity {
 								if (world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 									world.breakBlock(blockPos2, true, this.silverfish);
 								} else {
-									world.setBlockState(blockPos2, ((InfestedBlock)block).getRegularBlock().getDefaultState(), 3);
+									world.setBlockState(blockPos2, ((InfestedBlock)block).getRegularBlock().getDefaultState(), SetBlockStateFlags.DEFAULT);
 								}
 
 								if (random.nextBoolean()) {
@@ -232,7 +233,7 @@ public class SilverfishEntity extends HostileEntity {
 				BlockPos blockPos = new BlockPos(this.mob.getX(), this.mob.getY() + 0.5, this.mob.getZ()).offset(this.direction);
 				BlockState blockState = worldAccess.getBlockState(blockPos);
 				if (InfestedBlock.isInfestable(blockState)) {
-					worldAccess.setBlockState(blockPos, InfestedBlock.fromRegularBlock(blockState.getBlock()), 3);
+					worldAccess.setBlockState(blockPos, InfestedBlock.fromRegularBlock(blockState.getBlock()), SetBlockStateFlags.DEFAULT);
 					this.mob.playSpawnEffects();
 					this.mob.discard();
 				}

@@ -1,23 +1,24 @@
 package net.minecraft.item;
 
 import java.util.List;
-import net.minecraft.nbt.CompoundTag;
+import net.fabricmc.yarn.constants.NbtTypeIds;
+import net.minecraft.nbt.NbtCompound;
 
 public interface DyeableItem {
 	default boolean hasColor(ItemStack stack) {
-		CompoundTag compoundTag = stack.getSubTag("display");
-		return compoundTag != null && compoundTag.contains("color", 99);
+		NbtCompound nbtCompound = stack.getSubTag("display");
+		return nbtCompound != null && nbtCompound.contains("color", NbtTypeIds.NUMBER);
 	}
 
 	default int getColor(ItemStack stack) {
-		CompoundTag compoundTag = stack.getSubTag("display");
-		return compoundTag != null && compoundTag.contains("color", 99) ? compoundTag.getInt("color") : 10511680;
+		NbtCompound nbtCompound = stack.getSubTag("display");
+		return nbtCompound != null && nbtCompound.contains("color", NbtTypeIds.NUMBER) ? nbtCompound.getInt("color") : 10511680;
 	}
 
 	default void removeColor(ItemStack stack) {
-		CompoundTag compoundTag = stack.getSubTag("display");
-		if (compoundTag != null && compoundTag.contains("color")) {
-			compoundTag.remove("color");
+		NbtCompound nbtCompound = stack.getSubTag("display");
+		if (nbtCompound != null && nbtCompound.contains("color")) {
+			nbtCompound.remove("color");
 		}
 	}
 

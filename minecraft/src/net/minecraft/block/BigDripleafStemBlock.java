@@ -1,6 +1,8 @@
 package net.minecraft.block;
 
+import java.util.Optional;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.server.world.ServerWorld;
@@ -11,10 +13,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.PortalUtil;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
-public class BigDripleafStemBlock extends HorizontalFacingBlock implements Waterloggable {
+public class BigDripleafStemBlock extends HorizontalFacingBlock implements Fertilizable, Waterloggable {
 	private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	private static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(5.0, 0.0, 8.0, 11.0, 16.0, 14.0);
 	private static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(5.0, 0.0, 2.0, 11.0, 16.0, 8.0);
@@ -63,7 +67,7 @@ public class BigDripleafStemBlock extends HorizontalFacingBlock implements Water
 			.getDefaultState()
 			.with(WATERLOGGED, Boolean.valueOf(fluidState.isEqualAndStill(Fluids.WATER)))
 			.with(FACING, direction);
-		return world.setBlockState(pos, blockState, 2);
+		return world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
 	}
 
 	@Override
@@ -85,6 +89,36 @@ public class BigDripleafStemBlock extends HorizontalFacingBlock implements Water
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (!state.canPlaceAt(world, pos)) {
 			world.breakBlock(pos, true);
+		}
+	}
+
+	@Override
+	public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
+		Optional<BlockPos> optional = PortalUtil.method_34851(world, pos, state.getBlock(), Direction.UP, Blocks.BIG_DRIPLEAF);
+		if (!optional.isPresent()) {
+			return false;
+		} else {
+			BlockPos blockPos = ((BlockPos)optional.get()).up();
+			BlockState blockState = world.getBlockState(blockPos);
+			return BigDripleafBlock.canGrowInto(world, blockPos, blockState);
+		}
+	}
+
+	@Override
+	public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
+		return true;
+	}
+
+	@Override
+	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
+		Optional<BlockPos> optional = PortalUtil.method_34851(world, pos, state.getBlock(), Direction.UP, Blocks.BIG_DRIPLEAF);
+		if (optional.isPresent()) {
+			BlockPos blockPos = (BlockPos)optional.get();
+			BlockPos blockPos2 = blockPos.up();
+			FluidState fluidState = world.getFluidState(blockPos2);
+			Direction direction = state.get(FACING);
+			placeStemAt(world, blockPos, state.getFluidState(), direction);
+			BigDripleafBlock.placeDripleafAt(world, blockPos2, fluidState, direction);
 		}
 	}
 }

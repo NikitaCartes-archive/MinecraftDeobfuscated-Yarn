@@ -91,12 +91,12 @@ public class FileNameUtil {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static String method_34675(String string) {
-		return FilenameUtils.getFullPath(string).replace(File.separator, "/");
+	public static String getPosixFullPath(String path) {
+		return FilenameUtils.getFullPath(path).replace(File.separator, "/");
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static String method_34676(String string) {
-		return FilenameUtils.normalize(string).replace(File.separator, "/");
+	public static String normalizeToPosix(String path) {
+		return FilenameUtils.normalize(path).replace(File.separator, "/");
 	}
 }

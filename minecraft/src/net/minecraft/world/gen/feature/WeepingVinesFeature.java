@@ -2,6 +2,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractPlantStemBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -39,7 +40,7 @@ public class WeepingVinesFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	private void generateNetherWartBlocksInArea(WorldAccess world, Random random, BlockPos pos) {
-		world.setBlockState(pos, Blocks.NETHER_WART_BLOCK.getDefaultState(), 2);
+		world.setBlockState(pos, Blocks.NETHER_WART_BLOCK.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		BlockPos.Mutable mutable2 = new BlockPos.Mutable();
 
@@ -60,7 +61,7 @@ public class WeepingVinesFeature extends Feature<DefaultFeatureConfig> {
 				}
 
 				if (j == 1) {
-					world.setBlockState(mutable, Blocks.NETHER_WART_BLOCK.getDefaultState(), 2);
+					world.setBlockState(mutable, Blocks.NETHER_WART_BLOCK.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
 				}
 			}
 		}
@@ -96,12 +97,14 @@ public class WeepingVinesFeature extends Feature<DefaultFeatureConfig> {
 			if (world.isAir(pos)) {
 				if (i == length || !world.isAir(pos.down())) {
 					world.setBlockState(
-						pos, Blocks.WEEPING_VINES.getDefaultState().with(AbstractPlantStemBlock.AGE, Integer.valueOf(MathHelper.nextInt(random, minAge, maxAge))), 2
+						pos,
+						Blocks.WEEPING_VINES.getDefaultState().with(AbstractPlantStemBlock.AGE, Integer.valueOf(MathHelper.nextInt(random, minAge, maxAge))),
+						SetBlockStateFlags.NOTIFY_LISTENERS
 					);
 					break;
 				}
 
-				world.setBlockState(pos, Blocks.WEEPING_VINES_PLANT.getDefaultState(), 2);
+				world.setBlockState(pos, Blocks.WEEPING_VINES_PLANT.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
 			}
 
 			pos.move(Direction.DOWN);

@@ -4,6 +4,7 @@ import java.util.Locale;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -13,7 +14,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
@@ -107,13 +108,13 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
 		tag.putInt("Variant", this.getVariant());
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
 		this.setVariant(tag.getInt("Variant"));
 	}
@@ -134,8 +135,8 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 	@Override
 	protected void copyDataToStack(ItemStack stack) {
 		super.copyDataToStack(stack);
-		CompoundTag compoundTag = stack.getOrCreateTag();
-		compoundTag.putInt("BucketVariantTag", this.getVariant());
+		NbtCompound nbtCompound = stack.getOrCreateTag();
+		nbtCompound.putInt("BucketVariantTag", this.getVariant());
 	}
 
 	@Override
@@ -211,10 +212,10 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
 	) {
 		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
-		if (entityTag != null && entityTag.contains("BucketVariantTag", 3)) {
+		if (entityTag != null && entityTag.contains("BucketVariantTag", NbtTypeIds.INT)) {
 			this.setVariant(entityTag.getInt("BucketVariantTag"));
 			return entityData;
 		} else {

@@ -99,6 +99,10 @@ public class ParticleTypes {
 	public static final DefaultParticleType FALLING_DRIPSTONE_WATER = register("falling_dripstone_water", false);
 	public static final DefaultParticleType GLOW_SQUID_INK = register("glow_squid_ink", true);
 	public static final DefaultParticleType GLOW = register("glow", true);
+	public static final DefaultParticleType WAX_ON = register("wax_on", true);
+	public static final DefaultParticleType WAX_OFF = register("wax_off", true);
+	public static final DefaultParticleType ELECTRIC_SPARK = register("electric_spark", true);
+	public static final DefaultParticleType SCRAPE = register("scrape", true);
 	public static final Codec<ParticleEffect> TYPE_CODEC = Registry.PARTICLE_TYPE.dispatch("type", ParticleEffect::getType, ParticleType::getCodec);
 
 	private static DefaultParticleType register(String name, boolean alwaysShow) {

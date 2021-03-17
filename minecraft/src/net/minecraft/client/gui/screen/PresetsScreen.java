@@ -34,6 +34,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
 import net.minecraft.world.gen.chunk.StructureConfig;
@@ -41,6 +42,7 @@ import net.minecraft.world.gen.chunk.StructuresConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class PresetsScreen extends Screen {
@@ -78,7 +80,7 @@ public class PresetsScreen extends Screen {
 			i = 1;
 		}
 
-		int j = Math.min(layerStartHeight + i, 256);
+		int j = Math.min(layerStartHeight + i, DimensionType.MAX_HEIGHT);
 		int k = j - layerStartHeight;
 		String string = strings[strings.length - 1];
 
@@ -94,9 +96,7 @@ public class PresetsScreen extends Screen {
 			LOGGER.error("Error while parsing flat world string => Unknown block, {}", string);
 			return null;
 		} else {
-			FlatChunkGeneratorLayer flatChunkGeneratorLayer = new FlatChunkGeneratorLayer(k, block);
-			flatChunkGeneratorLayer.setStartY(layerStartHeight);
-			return flatChunkGeneratorLayer;
+			return new FlatChunkGeneratorLayer(k, block);
 		}
 	}
 
@@ -131,7 +131,7 @@ public class PresetsScreen extends Screen {
 			if (list.isEmpty()) {
 				return FlatChunkGeneratorConfig.getDefaultConfig(biomeRegistry);
 			} else {
-				FlatChunkGeneratorConfig flatChunkGeneratorConfig = generatorConfig.method_29965(list, generatorConfig.getStructuresConfig());
+				FlatChunkGeneratorConfig flatChunkGeneratorConfig = generatorConfig.withLayers(list, generatorConfig.getStructuresConfig());
 				RegistryKey<Biome> registryKey = BIOME_KEY;
 				if (iterator.hasNext()) {
 					try {
@@ -442,7 +442,7 @@ public class PresetsScreen extends Screen {
 			if (super.keyPressed(keyCode, scanCode, modifiers)) {
 				return true;
 			} else {
-				if ((keyCode == 257 || keyCode == 335) && this.getSelected() != null) {
+				if ((keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) && this.getSelected() != null) {
 					this.getSelected().setPreset();
 				}
 

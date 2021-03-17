@@ -21,9 +21,13 @@ public class DeepslateInterpolator implements BlockInterpolator {
 	public BlockState sample(int x, int y, int z, ChunkGeneratorSettings settings) {
 		if (!settings.hasDeepslate()) {
 			return this.defaultBlock;
+		} else if (y < -8) {
+			return this.deepslateState;
+		} else if (y > 0) {
+			return this.defaultBlock;
 		} else {
+			double d = MathHelper.lerpFromProgress((double)y, -8.0, 0.0, 1.0, 0.0);
 			this.random.setGrimstoneSeed(this.seed, x, y, z);
-			double d = MathHelper.clampedLerpFromProgress((double)y, -8.0, 0.0, 1.0, 0.0);
 			return (double)this.random.nextFloat() < d ? this.deepslateState : this.defaultBlock;
 		}
 	}

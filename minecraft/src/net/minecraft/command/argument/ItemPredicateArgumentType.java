@@ -14,7 +14,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.tag.ItemTags;
@@ -76,11 +76,11 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 	static class ItemPredicate implements Predicate<ItemStack> {
 		private final Item item;
 		@Nullable
-		private final CompoundTag compound;
+		private final NbtCompound compound;
 
-		public ItemPredicate(Item item, @Nullable CompoundTag compoundTag) {
+		public ItemPredicate(Item item, @Nullable NbtCompound nbtCompound) {
 			this.item = item;
-			this.compound = compoundTag;
+			this.compound = nbtCompound;
 		}
 
 		public boolean test(ItemStack itemStack) {
@@ -95,11 +95,11 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 	static class TagPredicate implements Predicate<ItemStack> {
 		private final Tag<Item> tag;
 		@Nullable
-		private final CompoundTag compound;
+		private final NbtCompound compound;
 
-		public TagPredicate(Tag<Item> tag, @Nullable CompoundTag compoundTag) {
+		public TagPredicate(Tag<Item> tag, @Nullable NbtCompound nbtCompound) {
 			this.tag = tag;
-			this.compound = compoundTag;
+			this.compound = nbtCompound;
 		}
 
 		public boolean test(ItemStack itemStack) {

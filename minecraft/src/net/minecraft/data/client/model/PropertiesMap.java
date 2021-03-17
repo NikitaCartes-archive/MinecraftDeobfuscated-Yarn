@@ -37,8 +37,8 @@ public final class PropertiesMap {
 		return new PropertiesMap(ImmutableList.copyOf(values));
 	}
 
-	public boolean equals(Object object) {
-		return this == object || object instanceof PropertiesMap && this.values.equals(((PropertiesMap)object).values);
+	public boolean equals(Object o) {
+		return this == o || o instanceof PropertiesMap && this.values.equals(((PropertiesMap)o).values);
 	}
 
 	public int hashCode() {

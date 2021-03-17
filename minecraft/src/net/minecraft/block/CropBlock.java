@@ -3,6 +3,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.item.ItemConvertible;
@@ -80,7 +81,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 			if (i < this.getMaxAge()) {
 				float f = getAvailableMoisture(this, world, pos);
 				if (random.nextInt((int)(25.0F / f) + 1) == 0) {
-					world.setBlockState(pos, this.withAge(i + 1), 2);
+					world.setBlockState(pos, this.withAge(i + 1), SetBlockStateFlags.NOTIFY_LISTENERS);
 				}
 			}
 		}
@@ -93,7 +94,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 			i = j;
 		}
 
-		world.setBlockState(pos, this.withAge(i), 2);
+		world.setBlockState(pos, this.withAge(i), SetBlockStateFlags.NOTIFY_LISTENERS);
 	}
 
 	protected int getGrowthAmount(World world) {

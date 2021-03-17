@@ -33,7 +33,7 @@ import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SynchronousResourceReloadListener;
+import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -50,7 +50,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
 @Environment(EnvType.CLIENT)
-public class EntityRenderDispatcher implements SynchronousResourceReloadListener {
+public class EntityRenderDispatcher implements SynchronousResourceReloader {
 	private static final RenderLayer SHADOW_LAYER = RenderLayer.getEntityShadow(new Identifier("textures/misc/shadow.png"));
 	private Map<EntityType<?>, EntityRenderer<?>> renderers = ImmutableMap.of();
 	private Map<String, EntityRenderer<? extends PlayerEntity>> modelRenderers = ImmutableMap.of();
@@ -365,7 +365,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloadListener
 	}
 
 	@Override
-	public void apply(ResourceManager manager) {
+	public void reload(ResourceManager manager) {
 		EntityRendererFactory.Context context = new EntityRendererFactory.Context(this, this.itemRenderer, manager, this.modelLoader, this.textRenderer);
 		this.renderers = EntityRenderers.reloadEntityRenderers(context);
 		this.modelRenderers = EntityRenderers.reloadPlayerRenderers(context);

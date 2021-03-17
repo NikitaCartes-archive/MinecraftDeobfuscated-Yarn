@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.block.entity.BlockEntity;
@@ -36,7 +37,7 @@ public class DropperBlock extends DispenserBlock {
 		DispenserBlockEntity dispenserBlockEntity = blockPointerImpl.getBlockEntity();
 		int i = dispenserBlockEntity.chooseNonEmptySlot();
 		if (i < 0) {
-			world.syncWorldEvent(1001, pos, 0);
+			world.syncWorldEvent(WorldEvents.DISPENSER_FAILS, pos, 0);
 		} else {
 			ItemStack itemStack = dispenserBlockEntity.getStack(i);
 			if (!itemStack.isEmpty()) {

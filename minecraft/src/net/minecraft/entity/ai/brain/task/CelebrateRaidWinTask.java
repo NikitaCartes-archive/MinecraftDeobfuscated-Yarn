@@ -10,8 +10,8 @@ import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.item.FireworkItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Util;
@@ -61,21 +61,21 @@ public class CelebrateRaidWinTask extends Task<VillagerEntity> {
 	private ItemStack createFirework(DyeColor color, int flight) {
 		ItemStack itemStack = new ItemStack(Items.FIREWORK_ROCKET, 1);
 		ItemStack itemStack2 = new ItemStack(Items.FIREWORK_STAR);
-		CompoundTag compoundTag = itemStack2.getOrCreateSubTag("Explosion");
+		NbtCompound nbtCompound = itemStack2.getOrCreateSubTag("Explosion");
 		List<Integer> list = Lists.newArrayList();
 		list.add(color.getFireworkColor());
-		compoundTag.putIntArray("Colors", list);
-		compoundTag.putByte("Type", (byte)FireworkItem.Type.BURST.getId());
-		CompoundTag compoundTag2 = itemStack.getOrCreateSubTag("Fireworks");
-		ListTag listTag = new ListTag();
-		CompoundTag compoundTag3 = itemStack2.getSubTag("Explosion");
-		if (compoundTag3 != null) {
-			listTag.add(compoundTag3);
+		nbtCompound.putIntArray("Colors", list);
+		nbtCompound.putByte("Type", (byte)FireworkItem.Type.BURST.getId());
+		NbtCompound nbtCompound2 = itemStack.getOrCreateSubTag("Fireworks");
+		NbtList nbtList = new NbtList();
+		NbtCompound nbtCompound3 = itemStack2.getSubTag("Explosion");
+		if (nbtCompound3 != null) {
+			nbtList.add(nbtCompound3);
 		}
 
-		compoundTag2.putByte("Flight", (byte)flight);
-		if (!listTag.isEmpty()) {
-			compoundTag2.put("Explosions", listTag);
+		nbtCompound2.putByte("Flight", (byte)flight);
+		if (!nbtList.isEmpty()) {
+			nbtCompound2.put("Explosions", nbtList);
 		}
 
 		return itemStack;

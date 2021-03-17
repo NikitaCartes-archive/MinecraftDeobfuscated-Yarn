@@ -29,6 +29,11 @@ import net.minecraft.util.math.Vec3f;
 
 /**
  * Manages the rendering of text.
+ * 
+ * <p>The current instance used by the client can be obtained by
+ * {@code MinecraftClient.getInstance().textRenderer}.
+ * 
+ * @see net.minecraft.client.MinecraftClient#textRenderer
  */
 @Environment(EnvType.CLIENT)
 public class TextRenderer {

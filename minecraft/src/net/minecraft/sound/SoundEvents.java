@@ -67,6 +67,8 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_ARROW_HIT_PLAYER = register("entity.arrow.hit_player");
 	public static final SoundEvent ENTITY_ARROW_SHOOT = register("entity.arrow.shoot");
 	public static final SoundEvent ITEM_AXE_STRIP = register("item.axe.strip");
+	public static final SoundEvent ITEM_AXE_SCRAPE = register("item.axe.scrape");
+	public static final SoundEvent ITEM_AXE_WAX_OFF = register("item.axe.wax_off");
 	public static final SoundEvent ENTITY_AXOLOTL_ATTACK = register("entity.axolotl.attack");
 	public static final SoundEvent ENTITY_AXOLOTL_DEATH = register("entity.axolotl.death");
 	public static final SoundEvent ENTITY_AXOLOTL_HURT = register("entity.axolotl.hurt");
@@ -471,6 +473,7 @@ public class SoundEvents {
 	public static final SoundEvent BLOCK_HONEY_BLOCK_PLACE = register("block.honey_block.place");
 	public static final SoundEvent BLOCK_HONEY_BLOCK_SLIDE = register("block.honey_block.slide");
 	public static final SoundEvent BLOCK_HONEY_BLOCK_STEP = register("block.honey_block.step");
+	public static final SoundEvent ITEM_HONEYCOMB_WAX_ON = register("item.honeycomb.wax_on");
 	public static final SoundEvent ITEM_HONEY_BOTTLE_DRINK = register("item.honey_bottle.drink");
 	public static final SoundEvent ENTITY_HORSE_AMBIENT = register("entity.horse.ambient");
 	public static final SoundEvent ENTITY_HORSE_ANGRY = register("entity.horse.angry");

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.GlowLichenBlock;
@@ -65,14 +66,14 @@ public class GlowLichenFeature extends Feature<GlowLichenFeatureConfig> {
 			BlockState blockState = world.getBlockState(mutable.set(pos, direction));
 			if (config.canGrowOn(blockState.getBlock())) {
 				GlowLichenBlock glowLichenBlock = (GlowLichenBlock)Blocks.GLOW_LICHEN;
-				BlockState blockState2 = glowLichenBlock.addDirection(state, world, pos, direction);
+				BlockState blockState2 = glowLichenBlock.withDirection(state, world, pos, direction);
 				if (blockState2 == null) {
 					return false;
 				}
 
-				world.setBlockState(pos, blockState2, 3);
+				world.setBlockState(pos, blockState2, SetBlockStateFlags.DEFAULT);
 				if (random.nextFloat() < config.spreadChance) {
-					glowLichenBlock.canSpreadRandomly(blockState2, world, pos, direction, random);
+					glowLichenBlock.trySpreadRandomly(blockState2, world, pos, direction, random);
 				}
 
 				return true;

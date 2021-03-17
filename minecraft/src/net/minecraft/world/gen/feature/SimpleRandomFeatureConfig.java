@@ -17,7 +17,7 @@ public class SimpleRandomFeatureConfig implements FeatureConfig {
 	}
 
 	@Override
-	public Stream<ConfiguredFeature<?, ?>> method_30649() {
-		return this.features.stream().flatMap(supplier -> ((ConfiguredFeature)supplier.get()).method_30648());
+	public Stream<ConfiguredFeature<?, ?>> getDecoratedFeatures() {
+		return this.features.stream().flatMap(supplier -> ((ConfiguredFeature)supplier.get()).getDecoratedFeatures());
 	}
 }

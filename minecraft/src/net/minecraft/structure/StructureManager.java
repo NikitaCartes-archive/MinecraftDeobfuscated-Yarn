@@ -14,8 +14,9 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.Map;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.datafixer.DataFixTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.resource.Resource;
@@ -143,12 +144,12 @@ public class StructureManager {
 	}
 
 	private Structure readStructure(InputStream structureInputStream) throws IOException {
-		CompoundTag compoundTag = NbtIo.readCompressed(structureInputStream);
-		return this.createStructure(compoundTag);
+		NbtCompound nbtCompound = NbtIo.readCompressed(structureInputStream);
+		return this.createStructure(nbtCompound);
 	}
 
-	public Structure createStructure(CompoundTag tag) {
-		if (!tag.contains("DataVersion", 99)) {
+	public Structure createStructure(NbtCompound tag) {
+		if (!tag.contains("DataVersion", NbtTypeIds.NUMBER)) {
 			tag.putInt("DataVersion", 500);
 		}
 
@@ -174,14 +175,14 @@ public class StructureManager {
 					return false;
 				}
 
-				CompoundTag compoundTag = structure.writeNbt(new CompoundTag());
+				NbtCompound nbtCompound = structure.writeNbt(new NbtCompound());
 
 				try {
 					OutputStream outputStream = new FileOutputStream(path.toFile());
 					Throwable var7 = null;
 
 					try {
-						NbtIo.writeCompressed(compoundTag, outputStream);
+						NbtIo.writeCompressed(nbtCompound, outputStream);
 					} catch (Throwable var18) {
 						var7 = var18;
 						throw var18;

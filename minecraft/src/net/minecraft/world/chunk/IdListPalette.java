@@ -3,7 +3,7 @@ package net.minecraft.world.chunk;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.collection.IdList;
 
@@ -48,6 +48,6 @@ public class IdListPalette<T> implements Palette<T> {
 	}
 
 	@Override
-	public void readNbt(ListTag tag) {
+	public void readNbt(NbtList tag) {
 	}
 }

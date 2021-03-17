@@ -18,6 +18,7 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -25,7 +26,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.MessageType;
@@ -127,9 +128,9 @@ public abstract class PlayerManager {
 		GameProfile gameProfile2 = userCache.getByUuid(gameProfile.getId());
 		String string = gameProfile2 == null ? gameProfile.getName() : gameProfile2.getName();
 		userCache.add(gameProfile);
-		CompoundTag compoundTag = this.loadPlayerData(player);
-		RegistryKey<World> registryKey = compoundTag != null
-			? (RegistryKey)DimensionType.worldFromDimensionTag(new Dynamic<>(NbtOps.INSTANCE, compoundTag.get("Dimension")))
+		NbtCompound nbtCompound = this.loadPlayerData(player);
+		RegistryKey<World> registryKey = nbtCompound != null
+			? (RegistryKey)DimensionType.worldFromDimensionTag(new Dynamic<>(NbtOps.INSTANCE, nbtCompound.get("Dimension")))
 				.resultOrPartial(LOGGER::error)
 				.orElse(World.OVERWORLD)
 			: World.OVERWORLD;
@@ -152,7 +153,7 @@ public abstract class PlayerManager {
 			"{}[{}] logged in with entity id {} at ({}, {}, {})", player.getName().getString(), string2, player.getId(), player.getX(), player.getY(), player.getZ()
 		);
 		WorldProperties worldProperties = serverWorld2.getLevelProperties();
-		player.setGameMode(compoundTag);
+		player.setGameMode(nbtCompound);
 		ServerPlayNetworkHandler serverPlayNetworkHandler = new ServerPlayNetworkHandler(this.server, connection, player);
 		GameRules gameRules = serverWorld2.getGameRules();
 		boolean bl = gameRules.getBoolean(GameRules.DO_IMMEDIATE_RESPAWN);
@@ -217,15 +218,15 @@ public abstract class PlayerManager {
 			serverPlayNetworkHandler.sendPacket(new EntityStatusEffectS2CPacket(player.getId(), statusEffectInstance));
 		}
 
-		if (compoundTag != null && compoundTag.contains("RootVehicle", 10)) {
-			CompoundTag compoundTag2 = compoundTag.getCompound("RootVehicle");
+		if (nbtCompound != null && nbtCompound.contains("RootVehicle", NbtTypeIds.COMPOUND)) {
+			NbtCompound nbtCompound2 = nbtCompound.getCompound("RootVehicle");
 			Entity entity = EntityType.loadEntityWithPassengers(
-				compoundTag2.getCompound("Entity"), serverWorld2, vehicle -> !serverWorld2.tryLoadEntity(vehicle) ? null : vehicle
+				nbtCompound2.getCompound("Entity"), serverWorld2, vehicle -> !serverWorld2.tryLoadEntity(vehicle) ? null : vehicle
 			);
 			if (entity != null) {
 				UUID uUID;
-				if (compoundTag2.containsUuid("Attach")) {
-					uUID = compoundTag2.getUuid("Attach");
+				if (nbtCompound2.containsUuid("Attach")) {
+					uUID = nbtCompound2.getUuid("Attach");
 				} else {
 					uUID = null;
 				}
@@ -312,18 +313,18 @@ public abstract class PlayerManager {
 	}
 
 	@Nullable
-	public CompoundTag loadPlayerData(ServerPlayerEntity player) {
-		CompoundTag compoundTag = this.server.getSaveProperties().getPlayerData();
-		CompoundTag compoundTag2;
-		if (player.getName().getString().equals(this.server.getUserName()) && compoundTag != null) {
-			compoundTag2 = compoundTag;
-			player.readNbt(compoundTag);
+	public NbtCompound loadPlayerData(ServerPlayerEntity player) {
+		NbtCompound nbtCompound = this.server.getSaveProperties().getPlayerData();
+		NbtCompound nbtCompound2;
+		if (player.getName().getString().equals(this.server.getUserName()) && nbtCompound != null) {
+			nbtCompound2 = nbtCompound;
+			player.readNbt(nbtCompound);
 			LOGGER.debug("loading single player");
 		} else {
-			compoundTag2 = this.saveHandler.loadPlayerData(player);
+			nbtCompound2 = this.saveHandler.loadPlayerData(player);
 		}
 
-		return compoundTag2;
+		return nbtCompound2;
 	}
 
 	protected void savePlayerData(ServerPlayerEntity player) {
@@ -726,7 +727,7 @@ public abstract class PlayerManager {
 	 * 
 	 * @return the user data of the host of the server if the server is an integrated server, otherwise {@code null}
 	 */
-	public CompoundTag getUserData() {
+	public NbtCompound getUserData() {
 		return null;
 	}
 

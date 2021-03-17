@@ -80,7 +80,7 @@ public abstract class GeneratorType {
 				seed,
 				generateStructures,
 				bonusChest,
-				GeneratorOptions.method_29962(
+				GeneratorOptions.getRegistryWithReplacedOverworld(
 					DimensionType.createDefaultDimensionOptions(registry2, registry, registry3, seed),
 					() -> registry2.getOrThrow(DimensionType.OVERWORLD_CAVES_REGISTRY_KEY),
 					this.getChunkGenerator(registry, registry3, seed)
@@ -126,7 +126,7 @@ public abstract class GeneratorType {
 								generatorOptions.getSeed(),
 								generatorOptions.shouldGenerateStructures(),
 								generatorOptions.hasBonusChest(),
-								GeneratorOptions.method_28608(
+								GeneratorOptions.getRegistryWithReplacedOverworldGenerator(
 									screen.moreOptionsDialog.getRegistryManager().get(Registry.DIMENSION_TYPE_KEY), generatorOptions.getDimensions(), new FlatChunkGenerator(config)
 								)
 							)
@@ -186,7 +186,9 @@ public abstract class GeneratorType {
 			generatorOptions.getSeed(),
 			generatorOptions.shouldGenerateStructures(),
 			generatorOptions.hasBonusChest(),
-			GeneratorOptions.method_28608(registry, generatorOptions.getDimensions(), new NoiseChunkGenerator(biomeSource, generatorOptions.getSeed(), supplier))
+			GeneratorOptions.getRegistryWithReplacedOverworldGenerator(
+				registry, generatorOptions.getDimensions(), new NoiseChunkGenerator(biomeSource, generatorOptions.getSeed(), supplier)
+			)
 		);
 	}
 
@@ -220,7 +222,7 @@ public abstract class GeneratorType {
 			seed,
 			generateStructures,
 			bonusChest,
-			GeneratorOptions.method_28608(
+			GeneratorOptions.getRegistryWithReplacedOverworldGenerator(
 				registry2, DimensionType.createDefaultDimensionOptions(registry2, registry, registry3, seed), this.getChunkGenerator(registry, registry3, seed)
 			)
 		);

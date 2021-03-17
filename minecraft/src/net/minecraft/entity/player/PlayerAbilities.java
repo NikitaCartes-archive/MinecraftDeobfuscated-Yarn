@@ -2,7 +2,8 @@ package net.minecraft.entity.player;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.nbt.CompoundTag;
+import net.fabricmc.yarn.constants.NbtTypeIds;
+import net.minecraft.nbt.NbtCompound;
 
 public class PlayerAbilities {
 	public boolean invulnerable;
@@ -13,32 +14,32 @@ public class PlayerAbilities {
 	private float flySpeed = 0.05F;
 	private float walkSpeed = 0.1F;
 
-	public void serialize(CompoundTag tag) {
-		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.putBoolean("invulnerable", this.invulnerable);
-		compoundTag.putBoolean("flying", this.flying);
-		compoundTag.putBoolean("mayfly", this.allowFlying);
-		compoundTag.putBoolean("instabuild", this.creativeMode);
-		compoundTag.putBoolean("mayBuild", this.allowModifyWorld);
-		compoundTag.putFloat("flySpeed", this.flySpeed);
-		compoundTag.putFloat("walkSpeed", this.walkSpeed);
-		tag.put("abilities", compoundTag);
+	public void serialize(NbtCompound tag) {
+		NbtCompound nbtCompound = new NbtCompound();
+		nbtCompound.putBoolean("invulnerable", this.invulnerable);
+		nbtCompound.putBoolean("flying", this.flying);
+		nbtCompound.putBoolean("mayfly", this.allowFlying);
+		nbtCompound.putBoolean("instabuild", this.creativeMode);
+		nbtCompound.putBoolean("mayBuild", this.allowModifyWorld);
+		nbtCompound.putFloat("flySpeed", this.flySpeed);
+		nbtCompound.putFloat("walkSpeed", this.walkSpeed);
+		tag.put("abilities", nbtCompound);
 	}
 
-	public void deserialize(CompoundTag tag) {
-		if (tag.contains("abilities", 10)) {
-			CompoundTag compoundTag = tag.getCompound("abilities");
-			this.invulnerable = compoundTag.getBoolean("invulnerable");
-			this.flying = compoundTag.getBoolean("flying");
-			this.allowFlying = compoundTag.getBoolean("mayfly");
-			this.creativeMode = compoundTag.getBoolean("instabuild");
-			if (compoundTag.contains("flySpeed", 99)) {
-				this.flySpeed = compoundTag.getFloat("flySpeed");
-				this.walkSpeed = compoundTag.getFloat("walkSpeed");
+	public void deserialize(NbtCompound tag) {
+		if (tag.contains("abilities", NbtTypeIds.COMPOUND)) {
+			NbtCompound nbtCompound = tag.getCompound("abilities");
+			this.invulnerable = nbtCompound.getBoolean("invulnerable");
+			this.flying = nbtCompound.getBoolean("flying");
+			this.allowFlying = nbtCompound.getBoolean("mayfly");
+			this.creativeMode = nbtCompound.getBoolean("instabuild");
+			if (nbtCompound.contains("flySpeed", NbtTypeIds.NUMBER)) {
+				this.flySpeed = nbtCompound.getFloat("flySpeed");
+				this.walkSpeed = nbtCompound.getFloat("walkSpeed");
 			}
 
-			if (compoundTag.contains("mayBuild", 1)) {
-				this.allowModifyWorld = compoundTag.getBoolean("mayBuild");
+			if (nbtCompound.contains("mayBuild", NbtTypeIds.BYTE)) {
+				this.allowModifyWorld = nbtCompound.getBoolean("mayBuild");
 			}
 		}
 	}

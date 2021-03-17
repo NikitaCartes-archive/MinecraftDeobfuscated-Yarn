@@ -5,6 +5,8 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -182,7 +184,7 @@ public abstract class LavaFluid extends FlowableFluid {
 	}
 
 	private void playExtinguishEvent(WorldAccess world, BlockPos pos) {
-		world.syncWorldEvent(1501, pos, 0);
+		world.syncWorldEvent(WorldEvents.LAVA_EXTINGUISHED, pos, 0);
 	}
 
 	@Override
@@ -196,7 +198,7 @@ public abstract class LavaFluid extends FlowableFluid {
 			FluidState fluidState2 = world.getFluidState(pos);
 			if (this.isIn(FluidTags.LAVA) && fluidState2.isIn(FluidTags.WATER)) {
 				if (state.getBlock() instanceof FluidBlock) {
-					world.setBlockState(pos, Blocks.STONE.getDefaultState(), 3);
+					world.setBlockState(pos, Blocks.STONE.getDefaultState(), SetBlockStateFlags.DEFAULT);
 				}
 
 				this.playExtinguishEvent(world, pos);

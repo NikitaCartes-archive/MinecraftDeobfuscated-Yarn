@@ -1,5 +1,6 @@
 package net.minecraft.block.entity;
 
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BarrelBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -7,7 +8,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundCategory;
@@ -56,7 +57,7 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	public CompoundTag writeNbt(CompoundTag tag) {
+	public NbtCompound writeNbt(NbtCompound tag) {
 		super.writeNbt(tag);
 		if (!this.serializeLootTable(tag)) {
 			Inventories.writeNbt(tag, this.inventory);
@@ -66,7 +67,7 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	public void readNbt(CompoundTag tag) {
+	public void readNbt(NbtCompound tag) {
 		super.readNbt(tag);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
 		if (!this.deserializeLootTable(tag)) {
@@ -118,7 +119,7 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	private void setOpen(BlockState state, boolean open) {
-		this.world.setBlockState(this.getPos(), state.with(BarrelBlock.OPEN, Boolean.valueOf(open)), 3);
+		this.world.setBlockState(this.getPos(), state.with(BarrelBlock.OPEN, Boolean.valueOf(open)), SetBlockStateFlags.DEFAULT);
 	}
 
 	private void playSound(BlockState state, SoundEvent soundEvent) {

@@ -11,9 +11,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import org.apache.logging.log4j.LogManager;
@@ -34,7 +35,7 @@ public class PersistentStateManager {
 		return new File(this.directory, id + ".dat");
 	}
 
-	public <T extends PersistentState> T getOrCreate(Function<CompoundTag, T> function, Supplier<T> supplier, String string) {
+	public <T extends PersistentState> T getOrCreate(Function<NbtCompound, T> function, Supplier<T> supplier, String string) {
 		T persistentState = this.get(function, string);
 		if (persistentState != null) {
 			return persistentState;
@@ -46,7 +47,7 @@ public class PersistentStateManager {
 	}
 
 	@Nullable
-	public <T extends PersistentState> T get(Function<CompoundTag, T> function, String id) {
+	public <T extends PersistentState> T get(Function<NbtCompound, T> function, String id) {
 		PersistentState persistentState = (PersistentState)this.loadedStates.get(id);
 		if (persistentState == null && !this.loadedStates.containsKey(id)) {
 			persistentState = this.readFromFile(function, id);
@@ -57,12 +58,12 @@ public class PersistentStateManager {
 	}
 
 	@Nullable
-	private <T extends PersistentState> T readFromFile(Function<CompoundTag, T> function, String id) {
+	private <T extends PersistentState> T readFromFile(Function<NbtCompound, T> function, String id) {
 		try {
 			File file = this.getFile(id);
 			if (file.exists()) {
-				CompoundTag compoundTag = this.readNbt(id, SharedConstants.getGameVersion().getWorldVersion());
-				return (T)function.apply(compoundTag.getCompound("data"));
+				NbtCompound nbtCompound = this.readNbt(id, SharedConstants.getGameVersion().getWorldVersion());
+				return (T)function.apply(nbtCompound.getCompound("data"));
 			}
 		} catch (Exception var5) {
 			LOGGER.error("Error loading saved data: {}", id, var5);
@@ -75,7 +76,7 @@ public class PersistentStateManager {
 		this.loadedStates.put(string, persistentState);
 	}
 
-	public CompoundTag readNbt(String id, int dataVersion) throws IOException {
+	public NbtCompound readNbt(String id, int dataVersion) throws IOException {
 		File file = this.getFile(id);
 		FileInputStream fileInputStream = new FileInputStream(file);
 		Throwable var5 = null;
@@ -88,15 +89,15 @@ public class PersistentStateManager {
 				Throwable var7 = null;
 
 				try {
-					CompoundTag compoundTag;
+					NbtCompound nbtCompound;
 					if (this.isCompressed(pushbackInputStream)) {
-						compoundTag = NbtIo.readCompressed(pushbackInputStream);
+						nbtCompound = NbtIo.readCompressed(pushbackInputStream);
 					} else {
 						DataInputStream dataInputStream = new DataInputStream(pushbackInputStream);
 						var10 = null;
 
 						try {
-							compoundTag = NbtIo.read(dataInputStream);
+							nbtCompound = NbtIo.read(dataInputStream);
 						} catch (Throwable var54) {
 							var10 = var54;
 							throw var54;
@@ -115,8 +116,8 @@ public class PersistentStateManager {
 						}
 					}
 
-					int i = compoundTag.contains("DataVersion", 99) ? compoundTag.getInt("DataVersion") : 1343;
-					var10 = NbtHelper.update(this.dataFixer, DataFixTypes.SAVED_DATA, compoundTag, i, dataVersion);
+					int i = nbtCompound.contains("DataVersion", NbtTypeIds.NUMBER) ? nbtCompound.getInt("DataVersion") : 1343;
+					var10 = NbtHelper.update(this.dataFixer, DataFixTypes.SAVED_DATA, nbtCompound, i, dataVersion);
 				} catch (Throwable var56) {
 					var7 = var56;
 					throw var56;
@@ -152,7 +153,7 @@ public class PersistentStateManager {
 			}
 		}
 
-		return (CompoundTag)var10;
+		return (NbtCompound)var10;
 	}
 
 	private boolean isCompressed(PushbackInputStream pushbackInputStream) throws IOException {

@@ -22,7 +22,7 @@ public class TagCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("tag")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
+				.requires(source -> source.hasPermissionLevel(2))
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.entities())
 						.then(
@@ -30,9 +30,7 @@ public class TagCommand {
 								.then(
 									CommandManager.argument("name", StringArgumentType.word())
 										.executes(
-											commandContext -> executeAdd(
-													commandContext.getSource(), EntityArgumentType.getEntities(commandContext, "targets"), StringArgumentType.getString(commandContext, "name")
-												)
+											context -> executeAdd(context.getSource(), EntityArgumentType.getEntities(context, "targets"), StringArgumentType.getString(context, "name"))
 										)
 								)
 						)
@@ -40,22 +38,13 @@ public class TagCommand {
 							CommandManager.literal("remove")
 								.then(
 									CommandManager.argument("name", StringArgumentType.word())
-										.suggests(
-											(commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(
-													getTags(EntityArgumentType.getEntities(commandContext, "targets")), suggestionsBuilder
-												)
-										)
+										.suggests((context, builder) -> CommandSource.suggestMatching(getTags(EntityArgumentType.getEntities(context, "targets")), builder))
 										.executes(
-											commandContext -> executeRemove(
-													commandContext.getSource(), EntityArgumentType.getEntities(commandContext, "targets"), StringArgumentType.getString(commandContext, "name")
-												)
+											context -> executeRemove(context.getSource(), EntityArgumentType.getEntities(context, "targets"), StringArgumentType.getString(context, "name"))
 										)
 								)
 						)
-						.then(
-							CommandManager.literal("list")
-								.executes(commandContext -> executeList(commandContext.getSource(), EntityArgumentType.getEntities(commandContext, "targets")))
-						)
+						.then(CommandManager.literal("list").executes(context -> executeList(context.getSource(), EntityArgumentType.getEntities(context, "targets"))))
 				)
 		);
 	}

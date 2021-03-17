@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -20,7 +21,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ContainerLock;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.screen.BeaconScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
@@ -257,8 +258,8 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	}
 
 	@Override
-	public CompoundTag toInitialChunkDataNbt() {
-		return this.writeNbt(new CompoundTag());
+	public NbtCompound toInitialChunkDataNbt() {
+		return this.writeNbt(new NbtCompound());
 	}
 
 	@Nullable
@@ -268,11 +269,11 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	}
 
 	@Override
-	public void readNbt(CompoundTag tag) {
+	public void readNbt(NbtCompound tag) {
 		super.readNbt(tag);
 		this.primary = getPotionEffectById(tag.getInt("Primary"));
 		this.secondary = getPotionEffectById(tag.getInt("Secondary"));
-		if (tag.contains("CustomName", 8)) {
+		if (tag.contains("CustomName", NbtTypeIds.STRING)) {
 			this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
 		}
 
@@ -280,7 +281,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	}
 
 	@Override
-	public CompoundTag writeNbt(CompoundTag tag) {
+	public NbtCompound writeNbt(NbtCompound tag) {
 		super.writeNbt(tag);
 		tag.putInt("Primary", StatusEffect.getRawId(this.primary));
 		tag.putInt("Secondary", StatusEffect.getRawId(this.secondary));

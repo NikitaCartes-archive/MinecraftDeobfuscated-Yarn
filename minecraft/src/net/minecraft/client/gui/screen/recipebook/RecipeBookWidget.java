@@ -37,6 +37,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class RecipeBookWidget extends DrawableHelper implements Drawable, Element, RecipeDisplayListener, RecipeGridAligner<Ingredient> {
@@ -235,7 +236,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		if (this.isOpen()) {
 			matrices.push();
 			matrices.translate(0.0, 0.0, 100.0);
-			RenderSystem.setShader(GameRenderer::method_34542);
+			RenderSystem.setShader(GameRenderer::getPositionTexShader);
 			RenderSystem.setShaderTexture(0, TEXTURE);
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			int i = (this.parentWidth - 147) / 2 - this.leftOffset;
@@ -370,13 +371,13 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		this.searching = false;
 		if (!this.isOpen() || this.client.player.isSpectator()) {
 			return false;
-		} else if (keyCode == 256 && !this.isWide()) {
+		} else if (keyCode == GLFW.GLFW_KEY_ESCAPE && !this.isWide()) {
 			this.setOpen(false);
 			return true;
 		} else if (this.searchField.keyPressed(keyCode, scanCode, modifiers)) {
 			this.refreshSearchResults();
 			return true;
-		} else if (this.searchField.isFocused() && this.searchField.isVisible() && keyCode != 256) {
+		} else if (this.searchField.isFocused() && this.searchField.isVisible() && keyCode != GLFW.GLFW_KEY_ESCAPE) {
 			return true;
 		} else if (this.client.options.keyChat.matchesKey(keyCode, scanCode) && !this.searchField.isFocused()) {
 			this.searching = true;

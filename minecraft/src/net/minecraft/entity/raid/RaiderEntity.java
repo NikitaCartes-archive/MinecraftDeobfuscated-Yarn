@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -31,7 +32,7 @@ import net.minecraft.entity.mob.PatrolEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -203,7 +204,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
 		tag.putInt("Wave", this.wave);
 		tag.putBoolean("CanJoinRaid", this.ableToJoinRaid);
@@ -213,11 +214,11 @@ public abstract class RaiderEntity extends PatrolEntity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
 		this.wave = tag.getInt("Wave");
 		this.ableToJoinRaid = tag.getBoolean("CanJoinRaid");
-		if (tag.contains("RaidId", 3)) {
+		if (tag.contains("RaidId", NbtTypeIds.INT)) {
 			if (this.world instanceof ServerWorld) {
 				this.raid = ((ServerWorld)this.world).getRaidManager().getRaid(tag.getInt("RaidId"));
 			}
@@ -284,7 +285,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
 	) {
 		this.setAbleToJoinRaid(this.getType() != EntityType.WITCH || spawnReason != SpawnReason.NATURAL);
 		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);

@@ -365,7 +365,7 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 				double[] es = this.dragon.getSegmentProperties(5 - o, this.tickDelta);
 				float p = (float)Math.cos((double)((float)o * 0.45F + n)) * 0.15F;
 				this.neck.yaw = MathHelper.fwrapDegrees(es[0] - ds[0]) * (float) (Math.PI / 180.0) * 1.5F;
-				this.neck.pitch = p + this.dragon.method_6823(o, ds, es) * (float) (Math.PI / 180.0) * 1.5F * 5.0F;
+				this.neck.pitch = p + this.dragon.getChangeInNeckPitch(o, ds, es) * (float) (Math.PI / 180.0) * 1.5F * 5.0F;
 				this.neck.roll = -MathHelper.fwrapDegrees(es[0] - (double)m) * (float) (Math.PI / 180.0) * 1.5F;
 				this.neck.pivotY = i;
 				this.neck.pivotZ = j;
@@ -381,7 +381,7 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 			this.head.pivotX = h;
 			double[] fs = this.dragon.getSegmentProperties(0, this.tickDelta);
 			this.head.yaw = MathHelper.fwrapDegrees(fs[0] - ds[0]) * (float) (Math.PI / 180.0);
-			this.head.pitch = MathHelper.fwrapDegrees((double)this.dragon.method_6823(6, ds, fs)) * (float) (Math.PI / 180.0) * 1.5F * 5.0F;
+			this.head.pitch = MathHelper.fwrapDegrees((double)this.dragon.getChangeInNeckPitch(6, ds, fs)) * (float) (Math.PI / 180.0) * 1.5F * 5.0F;
 			this.head.roll = -MathHelper.fwrapDegrees(fs[0] - (double)m) * (float) (Math.PI / 180.0);
 			this.head.render(matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, alpha);
 			matrices.push();

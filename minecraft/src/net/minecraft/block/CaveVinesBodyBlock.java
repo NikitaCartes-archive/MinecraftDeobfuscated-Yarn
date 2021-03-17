@@ -3,6 +3,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -24,7 +25,7 @@ public class CaveVinesBodyBlock extends AbstractPlantBlock implements Fertilizab
 
 	@Override
 	protected AbstractPlantStemBlock getStem() {
-		return (AbstractPlantStemBlock)Blocks.CAVE_VINES_HEAD;
+		return (AbstractPlantStemBlock)Blocks.CAVE_VINES;
 	}
 
 	@Override
@@ -60,6 +61,6 @@ public class CaveVinesBodyBlock extends AbstractPlantBlock implements Fertilizab
 
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-		world.setBlockState(pos, state.with(BERRIES, Boolean.valueOf(true)), 2);
+		world.setBlockState(pos, state.with(BERRIES, Boolean.valueOf(true)), SetBlockStateFlags.NOTIFY_LISTENERS);
 	}
 }

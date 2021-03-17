@@ -1,6 +1,7 @@
 package net.minecraft.item;
 
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -95,7 +96,7 @@ public class BucketItem extends Item implements FluidModificationItem {
 	}
 
 	@Override
-	public void onEmptied(@Nullable PlayerEntity playerEntity, World world, ItemStack itemStack, BlockPos blockPos) {
+	public void onEmptied(@Nullable PlayerEntity player, World world, ItemStack stack, BlockPos pos) {
 	}
 
 	@Override
@@ -132,7 +133,8 @@ public class BucketItem extends Item implements FluidModificationItem {
 					world.breakBlock(pos, true);
 				}
 
-				if (!world.setBlockState(pos, this.fluid.getDefaultState().getBlockState(), 11) && !blockState.getFluidState().isStill()) {
+				if (!world.setBlockState(pos, this.fluid.getDefaultState().getBlockState(), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD)
+					&& !blockState.getFluidState().isStill()) {
 					return false;
 				} else {
 					this.playEmptyingSound(player, world, pos);

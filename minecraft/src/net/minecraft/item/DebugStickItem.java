@@ -2,10 +2,11 @@ package net.minecraft.item;
 
 import java.util.Collection;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateManager;
@@ -60,8 +61,8 @@ public class DebugStickItem extends Item {
 			if (collection.isEmpty()) {
 				sendMessage(player, new TranslatableText(this.getTranslationKey() + ".empty", string));
 			} else {
-				CompoundTag compoundTag = stack.getOrCreateSubTag("DebugProperty");
-				String string2 = compoundTag.getString(string);
+				NbtCompound nbtCompound = stack.getOrCreateSubTag("DebugProperty");
+				String string2 = nbtCompound.getString(string);
 				Property<?> property = stateManager.getProperty(string2);
 				if (update) {
 					if (property == null) {
@@ -69,12 +70,12 @@ public class DebugStickItem extends Item {
 					}
 
 					BlockState blockState = cycle(state, property, player.shouldCancelInteraction());
-					world.setBlockState(pos, blockState, 18);
+					world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.FORCE_STATE);
 					sendMessage(player, new TranslatableText(this.getTranslationKey() + ".update", property.getName(), getValueString(blockState, property)));
 				} else {
 					property = cycle(collection, property, player.shouldCancelInteraction());
 					String string3 = property.getName();
-					compoundTag.putString(string, string3);
+					nbtCompound.putString(string, string3);
 					sendMessage(player, new TranslatableText(this.getTranslationKey() + ".select", string3, getValueString(state, property)));
 				}
 			}

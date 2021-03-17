@@ -12,7 +12,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.ElderGuardianEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -99,7 +100,7 @@ public class OceanMonumentGenerator {
 			this.field_14465.add(new OceanMonumentGenerator.Penthouse(direction, blockBox3));
 		}
 
-		public Base(StructureManager structureManager, CompoundTag nbt) {
+		public Base(ServerWorld serverWorld, NbtCompound nbt) {
 			super(StructurePieceType.OCEAN_MONUMENT_BASE, nbt);
 		}
 
@@ -601,7 +602,7 @@ public class OceanMonumentGenerator {
 			super(StructurePieceType.OCEAN_MONUMENT_CORE_ROOM, 1, orientation, setting, 2, 2, 2);
 		}
 
-		public CoreRoom(StructureManager structureManager, CompoundTag nbt) {
+		public CoreRoom(ServerWorld serverWorld, NbtCompound nbt) {
 			super(StructurePieceType.OCEAN_MONUMENT_CORE_ROOM, nbt);
 		}
 
@@ -688,7 +689,7 @@ public class OceanMonumentGenerator {
 			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_ROOM, 1, orientation, setting, 2, 1, 1);
 		}
 
-		public DoubleXRoom(StructureManager structureManager, CompoundTag nbt) {
+		public DoubleXRoom(ServerWorld serverWorld, NbtCompound nbt) {
 			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_ROOM, nbt);
 		}
 
@@ -784,7 +785,7 @@ public class OceanMonumentGenerator {
 			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_Y_ROOM, 1, orientation, setting, 2, 2, 1);
 		}
 
-		public DoubleXYRoom(StructureManager structureManager, CompoundTag nbt) {
+		public DoubleXYRoom(ServerWorld serverWorld, NbtCompound nbt) {
 			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_Y_ROOM, nbt);
 		}
 
@@ -934,8 +935,8 @@ public class OceanMonumentGenerator {
 			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_ROOM, 1, direction, pieceSetting, 1, 2, 1);
 		}
 
-		public DoubleYRoom(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_ROOM, compoundTag);
+		public DoubleYRoom(ServerWorld serverWorld, NbtCompound nbtCompound) {
+			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_ROOM, nbtCompound);
 		}
 
 		@Override
@@ -1041,7 +1042,7 @@ public class OceanMonumentGenerator {
 			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_Z_ROOM, 1, orientation, setting, 1, 2, 2);
 		}
 
-		public DoubleYZRoom(StructureManager structureManager, CompoundTag nbt) {
+		public DoubleYZRoom(ServerWorld serverWorld, NbtCompound nbt) {
 			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_Z_ROOM, nbt);
 		}
 
@@ -1189,7 +1190,7 @@ public class OceanMonumentGenerator {
 			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Z_ROOM, 1, orientation, setting, 1, 1, 2);
 		}
 
-		public DoubleZRoom(StructureManager structureManager, CompoundTag nbt) {
+		public DoubleZRoom(ServerWorld serverWorld, NbtCompound nbt) {
 			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Z_ROOM, nbt);
 		}
 
@@ -1309,7 +1310,7 @@ public class OceanMonumentGenerator {
 			super(StructurePieceType.OCEAN_MONUMENT_ENTRY_ROOM, 1, orientation, setting, 1, 1, 1);
 		}
 
-		public Entry(StructureManager structureManager, CompoundTag nbt) {
+		public Entry(ServerWorld serverWorld, NbtCompound nbt) {
 			super(StructurePieceType.OCEAN_MONUMENT_ENTRY_ROOM, nbt);
 		}
 
@@ -1353,7 +1354,7 @@ public class OceanMonumentGenerator {
 			super(StructurePieceType.OCEAN_MONUMENT_PENTHOUSE, orientation, box);
 		}
 
-		public Penthouse(StructureManager structureManager, CompoundTag nbt) {
+		public Penthouse(ServerWorld serverWorld, NbtCompound nbt) {
 			super(StructurePieceType.OCEAN_MONUMENT_PENTHOUSE, nbt);
 		}
 
@@ -1474,12 +1475,12 @@ public class OceanMonumentGenerator {
 			}
 		}
 
-		public Piece(StructurePieceType structurePieceType, CompoundTag compoundTag) {
-			super(structurePieceType, compoundTag);
+		public Piece(StructurePieceType structurePieceType, NbtCompound nbtCompound) {
+			super(structurePieceType, nbtCompound);
 		}
 
 		@Override
-		protected void writeNbt(CompoundTag tag) {
+		protected void writeNbt(ServerWorld world, NbtCompound nbt) {
 		}
 
 		protected void setAirAndWater(StructureWorldAccess world, BlockBox box, int x, int y, int z, int width, int height, int depth) {
@@ -1621,7 +1622,7 @@ public class OceanMonumentGenerator {
 			this.field_14480 = random.nextInt(3);
 		}
 
-		public SimpleRoom(StructureManager structureManager, CompoundTag nbt) {
+		public SimpleRoom(ServerWorld serverWorld, NbtCompound nbt) {
 			super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_ROOM, nbt);
 		}
 
@@ -1813,7 +1814,7 @@ public class OceanMonumentGenerator {
 			super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_TOP_ROOM, 1, direction, setting, 1, 1, 1);
 		}
 
-		public SimpleRoomTop(StructureManager structureManager, CompoundTag nbt) {
+		public SimpleRoomTop(ServerWorld serverWorld, NbtCompound nbt) {
 			super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_TOP_ROOM, nbt);
 		}
 
@@ -1897,7 +1898,7 @@ public class OceanMonumentGenerator {
 			this.field_14481 = i & 1;
 		}
 
-		public WingRoom(StructureManager structureManager, CompoundTag tag) {
+		public WingRoom(ServerWorld serverWorld, NbtCompound tag) {
 			super(StructurePieceType.OCEAN_MONUMENT_WING_ROOM, tag);
 		}
 

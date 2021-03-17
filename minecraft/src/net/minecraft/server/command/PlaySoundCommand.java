@@ -31,9 +31,7 @@ public class PlaySoundCommand {
 			requiredArgumentBuilder.then(makeArgumentsForCategory(soundCategory));
 		}
 
-		dispatcher.register(
-			CommandManager.literal("playsound").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2)).then(requiredArgumentBuilder)
-		);
+		dispatcher.register(CommandManager.literal("playsound").requires(source -> source.hasPermissionLevel(2)).then(requiredArgumentBuilder));
 	}
 
 	private static LiteralArgumentBuilder<ServerCommandSource> makeArgumentsForCategory(SoundCategory category) {
@@ -41,12 +39,12 @@ public class PlaySoundCommand {
 			.then(
 				CommandManager.argument("targets", EntityArgumentType.players())
 					.executes(
-						commandContext -> execute(
-								commandContext.getSource(),
-								EntityArgumentType.getPlayers(commandContext, "targets"),
-								IdentifierArgumentType.getIdentifier(commandContext, "sound"),
+						context -> execute(
+								context.getSource(),
+								EntityArgumentType.getPlayers(context, "targets"),
+								IdentifierArgumentType.getIdentifier(context, "sound"),
 								category,
-								commandContext.getSource().getPosition(),
+								context.getSource().getPosition(),
 								1.0F,
 								1.0F,
 								0.0F
@@ -55,12 +53,12 @@ public class PlaySoundCommand {
 					.then(
 						CommandManager.argument("pos", Vec3ArgumentType.vec3())
 							.executes(
-								commandContext -> execute(
-										commandContext.getSource(),
-										EntityArgumentType.getPlayers(commandContext, "targets"),
-										IdentifierArgumentType.getIdentifier(commandContext, "sound"),
+								context -> execute(
+										context.getSource(),
+										EntityArgumentType.getPlayers(context, "targets"),
+										IdentifierArgumentType.getIdentifier(context, "sound"),
 										category,
-										Vec3ArgumentType.getVec3(commandContext, "pos"),
+										Vec3ArgumentType.getVec3(context, "pos"),
 										1.0F,
 										1.0F,
 										0.0F
@@ -69,13 +67,13 @@ public class PlaySoundCommand {
 							.then(
 								CommandManager.argument("volume", FloatArgumentType.floatArg(0.0F))
 									.executes(
-										commandContext -> execute(
-												commandContext.getSource(),
-												EntityArgumentType.getPlayers(commandContext, "targets"),
-												IdentifierArgumentType.getIdentifier(commandContext, "sound"),
+										context -> execute(
+												context.getSource(),
+												EntityArgumentType.getPlayers(context, "targets"),
+												IdentifierArgumentType.getIdentifier(context, "sound"),
 												category,
-												Vec3ArgumentType.getVec3(commandContext, "pos"),
-												commandContext.getArgument("volume", Float.class),
+												Vec3ArgumentType.getVec3(context, "pos"),
+												context.getArgument("volume", Float.class),
 												1.0F,
 												0.0F
 											)
@@ -83,29 +81,29 @@ public class PlaySoundCommand {
 									.then(
 										CommandManager.argument("pitch", FloatArgumentType.floatArg(0.0F, 2.0F))
 											.executes(
-												commandContext -> execute(
-														commandContext.getSource(),
-														EntityArgumentType.getPlayers(commandContext, "targets"),
-														IdentifierArgumentType.getIdentifier(commandContext, "sound"),
+												context -> execute(
+														context.getSource(),
+														EntityArgumentType.getPlayers(context, "targets"),
+														IdentifierArgumentType.getIdentifier(context, "sound"),
 														category,
-														Vec3ArgumentType.getVec3(commandContext, "pos"),
-														commandContext.getArgument("volume", Float.class),
-														commandContext.getArgument("pitch", Float.class),
+														Vec3ArgumentType.getVec3(context, "pos"),
+														context.getArgument("volume", Float.class),
+														context.getArgument("pitch", Float.class),
 														0.0F
 													)
 											)
 											.then(
 												CommandManager.argument("minVolume", FloatArgumentType.floatArg(0.0F, 1.0F))
 													.executes(
-														commandContext -> execute(
-																commandContext.getSource(),
-																EntityArgumentType.getPlayers(commandContext, "targets"),
-																IdentifierArgumentType.getIdentifier(commandContext, "sound"),
+														context -> execute(
+																context.getSource(),
+																EntityArgumentType.getPlayers(context, "targets"),
+																IdentifierArgumentType.getIdentifier(context, "sound"),
 																category,
-																Vec3ArgumentType.getVec3(commandContext, "pos"),
-																commandContext.getArgument("volume", Float.class),
-																commandContext.getArgument("pitch", Float.class),
-																commandContext.getArgument("minVolume", Float.class)
+																Vec3ArgumentType.getVec3(context, "pos"),
+																context.getArgument("volume", Float.class),
+																context.getArgument("pitch", Float.class),
+																context.getArgument("minVolume", Float.class)
 															)
 													)
 											)

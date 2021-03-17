@@ -3,6 +3,7 @@ package net.minecraft.entity.decoration;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -21,7 +22,7 @@ import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.sound.SoundEvent;
@@ -329,10 +330,10 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
 		if (!this.getHeldItemStack().isEmpty()) {
-			tag.put("Item", this.getHeldItemStack().writeNbt(new CompoundTag()));
+			tag.put("Item", this.getHeldItemStack().writeNbt(new NbtCompound()));
 			tag.putByte("ItemRotation", (byte)this.getRotation());
 			tag.putFloat("ItemDropChance", this.itemDropChance);
 		}
@@ -343,13 +344,13 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
-		CompoundTag compoundTag = tag.getCompound("Item");
-		if (compoundTag != null && !compoundTag.isEmpty()) {
-			ItemStack itemStack = ItemStack.fromNbt(compoundTag);
+		NbtCompound nbtCompound = tag.getCompound("Item");
+		if (nbtCompound != null && !nbtCompound.isEmpty()) {
+			ItemStack itemStack = ItemStack.fromNbt(nbtCompound);
 			if (itemStack.isEmpty()) {
-				ITEM_FRAME_LOGGER.warn("Unable to load item from: {}", compoundTag);
+				ITEM_FRAME_LOGGER.warn("Unable to load item from: {}", nbtCompound);
 			}
 
 			ItemStack itemStack2 = this.getHeldItemStack();
@@ -359,7 +360,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 
 			this.setHeldItemStack(itemStack, false);
 			this.setRotation(tag.getByte("ItemRotation"), false);
-			if (tag.contains("ItemDropChance", 99)) {
+			if (tag.contains("ItemDropChance", NbtTypeIds.NUMBER)) {
 				this.itemDropChance = tag.getFloat("ItemDropChance");
 			}
 		}

@@ -7,7 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
@@ -17,9 +17,9 @@ public class BlockStateArgument implements Predicate<CachedBlockPosition> {
 	private final BlockState state;
 	private final Set<Property<?>> properties;
 	@Nullable
-	private final CompoundTag data;
+	private final NbtCompound data;
 
-	public BlockStateArgument(BlockState state, Set<Property<?>> properties, @Nullable CompoundTag data) {
+	public BlockStateArgument(BlockState state, Set<Property<?>> properties, @Nullable NbtCompound data) {
 		this.state = state;
 		this.properties = properties;
 		this.data = data;
@@ -44,7 +44,7 @@ public class BlockStateArgument implements Predicate<CachedBlockPosition> {
 				return true;
 			} else {
 				BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-				return blockEntity != null && NbtHelper.matches(this.data, blockEntity.writeNbt(new CompoundTag()), true);
+				return blockEntity != null && NbtHelper.matches(this.data, blockEntity.writeNbt(new NbtCompound()), true);
 			}
 		}
 	}
@@ -61,11 +61,11 @@ public class BlockStateArgument implements Predicate<CachedBlockPosition> {
 			if (this.data != null) {
 				BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
 				if (blockEntity != null) {
-					CompoundTag compoundTag = this.data.copy();
-					compoundTag.putInt("x", blockPos.getX());
-					compoundTag.putInt("y", blockPos.getY());
-					compoundTag.putInt("z", blockPos.getZ());
-					blockEntity.readNbt(compoundTag);
+					NbtCompound nbtCompound = this.data.copy();
+					nbtCompound.putInt("x", blockPos.getX());
+					nbtCompound.putInt("y", blockPos.getY());
+					nbtCompound.putInt("z", blockPos.getZ());
+					blockEntity.readNbt(nbtCompound);
 				}
 			}
 

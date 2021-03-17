@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.state.property.BooleanProperty;
@@ -30,7 +31,7 @@ public abstract class TreeDecorator {
 	}
 
 	protected void setBlockStateAndEncompassPosition(ModifiableWorld world, BlockPos pos, BlockState state, Set<BlockPos> placedStates, BlockBox box) {
-		world.setBlockState(pos, state, 19);
+		world.setBlockState(pos, state, SetBlockStateFlags.DEFAULT | SetBlockStateFlags.FORCE_STATE);
 		placedStates.add(pos);
 		box.encompass(new BlockBox(pos));
 	}

@@ -6,7 +6,7 @@ import net.minecraft.entity.decoration.GlowItemFrameEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -45,9 +45,9 @@ public class DecorationItem extends Item {
 				abstractDecorationEntity = new GlowItemFrameEntity(world, blockPos2, direction);
 			}
 
-			CompoundTag compoundTag = itemStack.getTag();
-			if (compoundTag != null) {
-				EntityType.loadFromEntityNbt(world, playerEntity, abstractDecorationEntity, compoundTag);
+			NbtCompound nbtCompound = itemStack.getTag();
+			if (nbtCompound != null) {
+				EntityType.loadFromEntityNbt(world, playerEntity, abstractDecorationEntity, nbtCompound);
 			}
 
 			if (abstractDecorationEntity.canStayAttached()) {

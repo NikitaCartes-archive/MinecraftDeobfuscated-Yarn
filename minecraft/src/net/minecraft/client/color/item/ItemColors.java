@@ -2,6 +2,7 @@ package net.minecraft.client.color.item;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.color.block.BlockColors;
@@ -14,7 +15,7 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.SpawnEggItem;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.util.collection.IdList;
 import net.minecraft.util.registry.Registry;
@@ -38,8 +39,8 @@ public class ItemColors {
 			if (tintIndex != 1) {
 				return -1;
 			} else {
-				CompoundTag compoundTag = stack.getSubTag("Explosion");
-				int[] is = compoundTag != null && compoundTag.contains("Colors", 11) ? compoundTag.getIntArray("Colors") : null;
+				NbtCompound nbtCompound = stack.getSubTag("Explosion");
+				int[] is = nbtCompound != null && nbtCompound.contains("Colors", NbtTypeIds.INT_ARRAY) ? nbtCompound.getIntArray("Colors") : null;
 				if (is != null && is.length != 0) {
 					if (is.length == 1) {
 						return is[0];

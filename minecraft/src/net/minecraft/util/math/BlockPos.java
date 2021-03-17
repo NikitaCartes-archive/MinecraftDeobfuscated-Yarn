@@ -238,6 +238,23 @@ public class BlockPos extends Vec3i {
 	}
 
 	/**
+	 * Iterates through {@code count} random block positions in a given range around the given position.
+	 * 
+	 * <p>The iterator yields positions in no specific order. The same position
+	 * may be returned multiple times by the iterator.
+	 * 
+	 * @param random the {@link Random} object used to compute new positions
+	 * @param count the number of positions to iterate
+	 * @param around the {@link BlockPos} to iterate around
+	 * @param range the maximum distance from the given pos in any axis
+	 */
+	public static Iterable<BlockPos> iterateRandomly(Random random, int count, BlockPos around, int range) {
+		return iterateRandomly(
+			random, count, around.getX() - range, around.getY() - range, around.getZ() - range, around.getX() + range, around.getY() + range, around.getZ() + range
+		);
+	}
+
+	/**
 	 * Iterates through {@code count} random block positions in the given area.
 	 * 
 	 * <p>The iterator yields positions in no specific order. The same position

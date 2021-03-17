@@ -32,6 +32,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.SignType;
 import net.minecraft.util.math.Matrix4f;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class SignEditScreen extends Screen {
@@ -106,13 +107,13 @@ public class SignEditScreen extends Screen {
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == 265) {
+		if (keyCode == GLFW.GLFW_KEY_UP) {
 			this.currentRow = this.currentRow - 1 & 3;
-			this.selectionManager.moveCaretToEnd();
+			this.selectionManager.putCursorAtEnd();
 			return true;
-		} else if (keyCode == 264 || keyCode == 257 || keyCode == 335) {
+		} else if (keyCode == GLFW.GLFW_KEY_DOWN || keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
 			this.currentRow = this.currentRow + 1 & 3;
-			this.selectionManager.moveCaretToEnd();
+			this.selectionManager.putCursorAtEnd();
 			return true;
 		} else {
 			return this.selectionManager.handleSpecialKey(keyCode) ? true : super.keyPressed(keyCode, scanCode, modifiers);

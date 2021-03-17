@@ -2,7 +2,7 @@ package net.minecraft.network.packet.s2c.play;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -11,9 +11,9 @@ import net.minecraft.util.math.BlockPos;
 public class BlockEntityUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final BlockPos pos;
 	private final int blockEntityType;
-	private final CompoundTag tag;
+	private final NbtCompound tag;
 
-	public BlockEntityUpdateS2CPacket(BlockPos pos, int blockEntityType, CompoundTag tag) {
+	public BlockEntityUpdateS2CPacket(BlockPos pos, int blockEntityType, NbtCompound tag) {
 		this.pos = pos;
 		this.blockEntityType = blockEntityType;
 		this.tag = tag;
@@ -22,14 +22,14 @@ public class BlockEntityUpdateS2CPacket implements Packet<ClientPlayPacketListen
 	public BlockEntityUpdateS2CPacket(PacketByteBuf buf) {
 		this.pos = buf.readBlockPos();
 		this.blockEntityType = buf.readUnsignedByte();
-		this.tag = buf.readCompoundTag();
+		this.tag = buf.readCompound();
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeBlockPos(this.pos);
 		buf.writeByte((byte)this.blockEntityType);
-		buf.writeCompoundTag(this.tag);
+		buf.writeCompound(this.tag);
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -47,7 +47,7 @@ public class BlockEntityUpdateS2CPacket implements Packet<ClientPlayPacketListen
 	}
 
 	@Environment(EnvType.CLIENT)
-	public CompoundTag getCompoundTag() {
+	public NbtCompound getCompoundTag() {
 		return this.tag;
 	}
 }

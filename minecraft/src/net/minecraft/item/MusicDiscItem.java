@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.JukeboxBlock;
@@ -42,7 +43,7 @@ public class MusicDiscItem extends Item {
 			ItemStack itemStack = context.getStack();
 			if (!world.isClient) {
 				((JukeboxBlock)Blocks.JUKEBOX).setRecord(world, blockPos, blockState, itemStack);
-				world.syncWorldEvent(null, 1010, blockPos, Item.getRawId(this));
+				world.syncWorldEvent(null, WorldEvents.MUSIC_DISC_PLAYED, blockPos, Item.getRawId(this));
 				itemStack.decrement(1);
 				PlayerEntity playerEntity = context.getPlayer();
 				if (playerEntity != null) {

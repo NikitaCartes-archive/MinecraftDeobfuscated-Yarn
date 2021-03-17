@@ -14,7 +14,8 @@ import net.minecraft.block.VineBlock;
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.block.enums.WireConnection;
 import net.minecraft.loot.LootTables;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -34,7 +35,7 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 		super(StructurePieceType.JUNGLE_TEMPLE, random, x, 64, z, 12, 10, 15);
 	}
 
-	public JungleTempleGenerator(StructureManager manager, CompoundTag tag) {
+	public JungleTempleGenerator(ServerWorld serverWorld, NbtCompound tag) {
 		super(StructurePieceType.JUNGLE_TEMPLE, tag);
 		this.placedMainChest = tag.getBoolean("placedMainChest");
 		this.placedHiddenChest = tag.getBoolean("placedHiddenChest");
@@ -43,12 +44,12 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 	}
 
 	@Override
-	protected void writeNbt(CompoundTag tag) {
-		super.writeNbt(tag);
-		tag.putBoolean("placedMainChest", this.placedMainChest);
-		tag.putBoolean("placedHiddenChest", this.placedHiddenChest);
-		tag.putBoolean("placedTrap1", this.placedTrap1);
-		tag.putBoolean("placedTrap2", this.placedTrap2);
+	protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+		super.writeNbt(world, nbt);
+		nbt.putBoolean("placedMainChest", this.placedMainChest);
+		nbt.putBoolean("placedHiddenChest", this.placedHiddenChest);
+		nbt.putBoolean("placedTrap1", this.placedTrap1);
+		nbt.putBoolean("placedTrap2", this.placedTrap2);
 	}
 
 	@Override

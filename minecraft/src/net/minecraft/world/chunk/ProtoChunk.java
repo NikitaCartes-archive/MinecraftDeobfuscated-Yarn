@@ -25,7 +25,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -51,9 +51,9 @@ public class ProtoChunk implements Chunk {
 	private final Map<Heightmap.Type, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Type.class);
 	private volatile ChunkStatus status = ChunkStatus.EMPTY;
 	private final Map<BlockPos, BlockEntity> blockEntities = Maps.<BlockPos, BlockEntity>newHashMap();
-	private final Map<BlockPos, CompoundTag> blockEntityTags = Maps.<BlockPos, CompoundTag>newHashMap();
+	private final Map<BlockPos, NbtCompound> blockEntityTags = Maps.<BlockPos, NbtCompound>newHashMap();
 	private final ChunkSection[] sections;
-	private final List<CompoundTag> entities = Lists.<CompoundTag>newArrayList();
+	private final List<NbtCompound> entities = Lists.<NbtCompound>newArrayList();
 	private final List<BlockPos> lightSources = Lists.<BlockPos>newArrayList();
 	private final ShortList[] postProcessingLists;
 	private final Map<StructureFeature<?>, StructureStart<?>> structureStarts = Maps.<StructureFeature<?>, StructureStart<?>>newHashMap();
@@ -226,20 +226,20 @@ public class ProtoChunk implements Chunk {
 		return this.blockEntities;
 	}
 
-	public void addEntity(CompoundTag entityTag) {
+	public void addEntity(NbtCompound entityTag) {
 		this.entities.add(entityTag);
 	}
 
 	@Override
 	public void addEntity(Entity entity) {
 		if (!entity.hasVehicle()) {
-			CompoundTag compoundTag = new CompoundTag();
-			entity.saveToTag(compoundTag);
-			this.addEntity(compoundTag);
+			NbtCompound nbtCompound = new NbtCompound();
+			entity.saveToTag(nbtCompound);
+			this.addEntity(nbtCompound);
 		}
 	}
 
-	public List<CompoundTag> getEntities() {
+	public List<NbtCompound> getEntities() {
 		return this.entities;
 	}
 
@@ -414,24 +414,24 @@ public class ProtoChunk implements Chunk {
 	}
 
 	@Override
-	public void addPendingBlockEntityNbt(CompoundTag tag) {
+	public void addPendingBlockEntityNbt(NbtCompound tag) {
 		this.blockEntityTags.put(new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")), tag);
 	}
 
-	public Map<BlockPos, CompoundTag> getBlockEntityTags() {
+	public Map<BlockPos, NbtCompound> getBlockEntityTags() {
 		return Collections.unmodifiableMap(this.blockEntityTags);
 	}
 
 	@Override
-	public CompoundTag getBlockEntityNbt(BlockPos pos) {
-		return (CompoundTag)this.blockEntityTags.get(pos);
+	public NbtCompound getBlockEntityNbt(BlockPos pos) {
+		return (NbtCompound)this.blockEntityTags.get(pos);
 	}
 
 	@Nullable
 	@Override
-	public CompoundTag getPackedBlockEntityNbt(BlockPos pos) {
+	public NbtCompound getPackedBlockEntityNbt(BlockPos pos) {
 		BlockEntity blockEntity = this.getBlockEntity(pos);
-		return blockEntity != null ? blockEntity.writeNbt(new CompoundTag()) : (CompoundTag)this.blockEntityTags.get(pos);
+		return blockEntity != null ? blockEntity.writeNbt(new NbtCompound()) : (NbtCompound)this.blockEntityTags.get(pos);
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package net.minecraft.block.dispenser;
 
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.util.math.BlockPointer;
 
 public abstract class FallibleItemDispenserBehavior extends ItemDispenserBehavior {
@@ -15,6 +16,6 @@ public abstract class FallibleItemDispenserBehavior extends ItemDispenserBehavio
 
 	@Override
 	protected void playSound(BlockPointer pointer) {
-		pointer.getWorld().syncWorldEvent(this.isSuccess() ? 1000 : 1001, pointer.getBlockPos(), 0);
+		pointer.getWorld().syncWorldEvent(this.isSuccess() ? WorldEvents.DISPENSER_DISPENSES : WorldEvents.DISPENSER_FAILS, pointer.getBlockPos(), 0);
 	}
 }

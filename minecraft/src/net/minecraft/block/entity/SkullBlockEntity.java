@@ -7,8 +7,9 @@ import com.mojang.authlib.properties.Property;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.ChatUtil;
@@ -39,23 +40,23 @@ public class SkullBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag writeNbt(CompoundTag tag) {
+	public NbtCompound writeNbt(NbtCompound tag) {
 		super.writeNbt(tag);
 		if (this.owner != null) {
-			CompoundTag compoundTag = new CompoundTag();
-			NbtHelper.fromGameProfile(compoundTag, this.owner);
-			tag.put("SkullOwner", compoundTag);
+			NbtCompound nbtCompound = new NbtCompound();
+			NbtHelper.writeGameProfile(nbtCompound, this.owner);
+			tag.put("SkullOwner", nbtCompound);
 		}
 
 		return tag;
 	}
 
 	@Override
-	public void readNbt(CompoundTag tag) {
+	public void readNbt(NbtCompound tag) {
 		super.readNbt(tag);
-		if (tag.contains("SkullOwner", 10)) {
+		if (tag.contains("SkullOwner", NbtTypeIds.COMPOUND)) {
 			this.setOwner(NbtHelper.toGameProfile(tag.getCompound("SkullOwner")));
-		} else if (tag.contains("ExtraType", 8)) {
+		} else if (tag.contains("ExtraType", NbtTypeIds.STRING)) {
 			String string = tag.getString("ExtraType");
 			if (!ChatUtil.isEmpty(string)) {
 				this.setOwner(new GameProfile(null, string));
@@ -90,8 +91,8 @@ public class SkullBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag toInitialChunkDataNbt() {
-		return this.writeNbt(new CompoundTag());
+	public NbtCompound toInitialChunkDataNbt() {
+		return this.writeNbt(new NbtCompound());
 	}
 
 	public void setOwner(@Nullable GameProfile owner) {

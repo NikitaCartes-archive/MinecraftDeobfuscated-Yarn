@@ -16,6 +16,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.CommandBlockExecutor;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public abstract class AbstractCommandBlockScreen extends Screen {
@@ -60,7 +61,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 				.build(
 					this.width / 2 + 150 - 20, this.getTrackOutputButtonHeight(), 20, 20, new TranslatableText("advMode.trackOutput"), (cyclingButtonWidget, boolean_) -> {
 						CommandBlockExecutor commandBlockExecutor = this.getCommandExecutor();
-						commandBlockExecutor.shouldTrackOutput(boolean_);
+						commandBlockExecutor.setTrackingOutput(boolean_);
 						this.method_32642(boolean_);
 					}
 				)
@@ -120,7 +121,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		this.getCommandExecutor().shouldTrackOutput(this.trackingOutput);
+		this.getCommandExecutor().setTrackingOutput(this.trackingOutput);
 		this.client.openScreen(null);
 	}
 
@@ -134,7 +135,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 			return true;
 		} else if (super.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
-		} else if (keyCode != 257 && keyCode != 335) {
+		} else if (keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_KP_ENTER) {
 			return false;
 		} else {
 			this.commitAndClose();

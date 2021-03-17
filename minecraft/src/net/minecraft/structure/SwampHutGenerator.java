@@ -9,7 +9,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.passive.CatEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -27,17 +28,17 @@ public class SwampHutGenerator extends StructurePieceWithDimensions {
 		super(StructurePieceType.SWAMP_HUT, random, i, 64, j, 7, 7, 9);
 	}
 
-	public SwampHutGenerator(StructureManager structureManager, CompoundTag nbt) {
+	public SwampHutGenerator(ServerWorld serverWorld, NbtCompound nbt) {
 		super(StructurePieceType.SWAMP_HUT, nbt);
 		this.hasWitch = nbt.getBoolean("Witch");
 		this.hasCat = nbt.getBoolean("Cat");
 	}
 
 	@Override
-	protected void writeNbt(CompoundTag tag) {
-		super.writeNbt(tag);
-		tag.putBoolean("Witch", this.hasWitch);
-		tag.putBoolean("Cat", this.hasCat);
+	protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+		super.writeNbt(world, nbt);
+		nbt.putBoolean("Witch", this.hasWitch);
+		nbt.putBoolean("Cat", this.hasCat);
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package net.minecraft.entity.mob;
 
+import net.fabricmc.yarn.constants.NbtTypeIds;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
@@ -7,7 +9,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
@@ -56,15 +58,15 @@ public class SkeletonEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
 		tag.putInt("StrayConversionTime", this.isConverting() ? this.conversionTime : -1);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
-		if (tag.contains("StrayConversionTime", 99) && tag.getInt("StrayConversionTime") > -1) {
+		if (tag.contains("StrayConversionTime", NbtTypeIds.NUMBER) && tag.getInt("StrayConversionTime") > -1) {
 			this.setConversionTime(tag.getInt("StrayConversionTime"));
 		}
 	}
@@ -80,7 +82,7 @@ public class SkeletonEntity extends AbstractSkeletonEntity {
 	protected void convertToStray() {
 		this.convertTo(EntityType.STRAY, true);
 		if (!this.isSilent()) {
-			this.world.syncWorldEvent(null, 1048, this.getBlockPos(), 0);
+			this.world.syncWorldEvent(null, WorldEvents.SKELETON_CONVERTS_TO_STRAY, this.getBlockPos(), 0);
 		}
 	}
 

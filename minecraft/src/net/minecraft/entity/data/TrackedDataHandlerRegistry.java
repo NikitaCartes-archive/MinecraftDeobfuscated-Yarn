@@ -8,7 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
@@ -240,17 +240,17 @@ public class TrackedDataHandlerRegistry {
 			return optional;
 		}
 	};
-	public static final TrackedDataHandler<CompoundTag> TAG_COMPOUND = new TrackedDataHandler<CompoundTag>() {
-		public void write(PacketByteBuf packetByteBuf, CompoundTag compoundTag) {
-			packetByteBuf.writeCompoundTag(compoundTag);
+	public static final TrackedDataHandler<NbtCompound> TAG_COMPOUND = new TrackedDataHandler<NbtCompound>() {
+		public void write(PacketByteBuf packetByteBuf, NbtCompound nbtCompound) {
+			packetByteBuf.writeCompound(nbtCompound);
 		}
 
-		public CompoundTag read(PacketByteBuf packetByteBuf) {
-			return packetByteBuf.readCompoundTag();
+		public NbtCompound read(PacketByteBuf packetByteBuf) {
+			return packetByteBuf.readCompound();
 		}
 
-		public CompoundTag copy(CompoundTag compoundTag) {
-			return compoundTag.copy();
+		public NbtCompound copy(NbtCompound nbtCompound) {
+			return nbtCompound.copy();
 		}
 	};
 	public static final TrackedDataHandler<VillagerData> VILLAGER_DATA = new TrackedDataHandler<VillagerData>() {

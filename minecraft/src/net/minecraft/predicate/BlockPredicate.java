@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.ServerTagManagerHolder;
 import net.minecraft.tag.Tag;
@@ -49,7 +49,7 @@ public class BlockPredicate {
 			} else {
 				if (this.nbt != NbtPredicate.ANY) {
 					BlockEntity blockEntity = world.getBlockEntity(pos);
-					if (blockEntity == null || !this.nbt.test(blockEntity.writeNbt(new CompoundTag()))) {
+					if (blockEntity == null || !this.nbt.test(blockEntity.writeNbt(new NbtCompound()))) {
 						return false;
 					}
 				}

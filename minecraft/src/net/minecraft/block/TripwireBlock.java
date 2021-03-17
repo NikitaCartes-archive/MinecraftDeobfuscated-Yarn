@@ -3,6 +3,7 @@ package net.minecraft.block;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -93,7 +94,7 @@ public class TripwireBlock extends Block {
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		if (!world.isClient && !player.getMainHandStack().isEmpty() && player.getMainHandStack().isOf(Items.SHEARS)) {
-			world.setBlockState(pos, state.with(DISARMED, Boolean.valueOf(true)), 4);
+			world.setBlockState(pos, state.with(DISARMED, Boolean.valueOf(true)), SetBlockStateFlags.NO_REDRAW);
 			world.emitGameEvent(player, GameEvent.SHEAR, pos);
 		}
 
@@ -151,7 +152,7 @@ public class TripwireBlock extends Block {
 
 		if (bl2 != bl) {
 			blockState = blockState.with(POWERED, Boolean.valueOf(bl2));
-			world.setBlockState(pos, blockState, 3);
+			world.setBlockState(pos, blockState, SetBlockStateFlags.DEFAULT);
 			this.update(world, pos, blockState);
 		}
 

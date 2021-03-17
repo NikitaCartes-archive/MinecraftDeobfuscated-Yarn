@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.c2s.play.QueryBlockNbtC2SPacket;
 import net.minecraft.network.packet.c2s.play.QueryEntityNbtC2SPacket;
 import net.minecraft.util.math.BlockPos;
@@ -14,13 +14,13 @@ public class DataQueryHandler {
 	private final ClientPlayNetworkHandler networkHandler;
 	private int expectedTransactionId = -1;
 	@Nullable
-	private Consumer<CompoundTag> callback;
+	private Consumer<NbtCompound> callback;
 
 	public DataQueryHandler(ClientPlayNetworkHandler networkHandler) {
 		this.networkHandler = networkHandler;
 	}
 
-	public boolean handleQueryResponse(int transactionId, @Nullable CompoundTag tag) {
+	public boolean handleQueryResponse(int transactionId, @Nullable NbtCompound tag) {
 		if (this.expectedTransactionId == transactionId && this.callback != null) {
 			this.callback.accept(tag);
 			this.callback = null;
@@ -30,17 +30,17 @@ public class DataQueryHandler {
 		}
 	}
 
-	private int nextQuery(Consumer<CompoundTag> callback) {
+	private int nextQuery(Consumer<NbtCompound> callback) {
 		this.callback = callback;
 		return ++this.expectedTransactionId;
 	}
 
-	public void queryEntityNbt(int entityNetworkId, Consumer<CompoundTag> callback) {
+	public void queryEntityNbt(int entityNetworkId, Consumer<NbtCompound> callback) {
 		int i = this.nextQuery(callback);
 		this.networkHandler.sendPacket(new QueryEntityNbtC2SPacket(i, entityNetworkId));
 	}
 
-	public void queryBlockNbt(BlockPos pos, Consumer<CompoundTag> callback) {
+	public void queryBlockNbt(BlockPos pos, Consumer<NbtCompound> callback) {
 		int i = this.nextQuery(callback);
 		this.networkHandler.sendPacket(new QueryBlockNbtC2SPacket(i, pos));
 	}

@@ -243,7 +243,7 @@ public class RegionFile implements AutoCloseable {
 		return new DataOutputStream(new BufferedOutputStream(this.outputChunkStreamVersion.wrap(new RegionFile.ChunkBuffer(pos))));
 	}
 
-	public void method_26981() throws IOException {
+	public void sync() throws IOException {
 		this.channel.force(true);
 	}
 

@@ -6,7 +6,7 @@ import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
@@ -67,10 +67,10 @@ public class ShieldDecorationRecipe extends SpecialCraftingRecipe {
 		if (itemStack2.isEmpty()) {
 			return itemStack2;
 		} else {
-			CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
-			CompoundTag compoundTag2 = compoundTag == null ? new CompoundTag() : compoundTag.copy();
-			compoundTag2.putInt("Base", ((BannerItem)itemStack.getItem()).getColor().getId());
-			itemStack2.putSubTag("BlockEntityTag", compoundTag2);
+			NbtCompound nbtCompound = itemStack.getSubTag("BlockEntityTag");
+			NbtCompound nbtCompound2 = nbtCompound == null ? new NbtCompound() : nbtCompound.copy();
+			nbtCompound2.putInt("Base", ((BannerItem)itemStack.getItem()).getColor().getId());
+			itemStack2.putSubTag("BlockEntityTag", nbtCompound2);
 			return itemStack2;
 		}
 	}

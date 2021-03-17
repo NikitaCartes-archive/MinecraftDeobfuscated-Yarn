@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -160,7 +161,7 @@ public abstract class AbstractFireBlock extends Block {
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		if (!world.isClient()) {
-			world.syncWorldEvent(null, 1009, pos, 0);
+			world.syncWorldEvent(null, WorldEvents.FIRE_EXTINGUISHED, pos, 0);
 		}
 
 		super.onBreak(world, pos, state, player);

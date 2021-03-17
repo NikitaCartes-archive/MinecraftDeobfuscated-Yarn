@@ -28,8 +28,8 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 	public static final Decorator<HeightmapDecoratorConfig> HEIGHTMAP_SPREAD_DOUBLE = register(
 		"heightmap_spread_double", new SpreadDoubleHeightmapDecorator(HeightmapDecoratorConfig.CODEC)
 	);
-	public static final Decorator<WaterThresholdDecoratorConfig> HEIGHTMAP_WITH_WATER_THRESHOLD = register(
-		"heightmap_with_water_threshold", new WaterThresholdDecorator(WaterThresholdDecoratorConfig.CODEC)
+	public static final Decorator<WaterDepthThresholdDecoratorConfig> WATER_DEPTH_THRESHOLD = register(
+		"water_depth_threshold", new WaterDepthThresholdDecorator(WaterDepthThresholdDecoratorConfig.CODEC)
 	);
 	public static final Decorator<CaveSurfaceDecoratorConfig> CAVE_SURFACE = register("cave_surface", new CaveSurfaceDecorator(CaveSurfaceDecoratorConfig.CODEC));
 	public static final Decorator<RangeDecoratorConfig> RANGE = register("range", new RangeDecorator(RangeDecoratorConfig.CODEC));

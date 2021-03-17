@@ -3,6 +3,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.enums.BambooLeaves;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -57,7 +58,7 @@ public class BambooSaplingBlock extends Block implements Fertilizable {
 			return Blocks.AIR.getDefaultState();
 		} else {
 			if (direction == Direction.UP && neighborState.isOf(Blocks.BAMBOO)) {
-				world.setBlockState(pos, Blocks.BAMBOO.getDefaultState(), 2);
+				world.setBlockState(pos, Blocks.BAMBOO.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
 			}
 
 			return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
@@ -91,6 +92,6 @@ public class BambooSaplingBlock extends Block implements Fertilizable {
 	}
 
 	protected void grow(World world, BlockPos pos) {
-		world.setBlockState(pos.up(), Blocks.BAMBOO.getDefaultState().with(BambooBlock.LEAVES, BambooLeaves.SMALL), 3);
+		world.setBlockState(pos.up(), Blocks.BAMBOO.getDefaultState().with(BambooBlock.LEAVES, BambooLeaves.SMALL), SetBlockStateFlags.DEFAULT);
 	}
 }

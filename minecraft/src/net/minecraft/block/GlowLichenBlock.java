@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import java.util.stream.Stream;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -47,7 +48,7 @@ public class GlowLichenBlock extends AbstractLichenBlock implements Fertilizable
 
 	@Override
 	public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
-		return true;
+		return Stream.of(DIRECTIONS).anyMatch(direction -> this.canSpread(state, world, pos, direction.getOpposite()));
 	}
 
 	@Override
@@ -57,7 +58,7 @@ public class GlowLichenBlock extends AbstractLichenBlock implements Fertilizable
 
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-		this.canSpreadRandomly(state, world, pos, random);
+		this.trySpreadRandomly(state, world, pos, random);
 	}
 
 	@Override

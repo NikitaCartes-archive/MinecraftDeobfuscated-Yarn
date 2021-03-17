@@ -7,7 +7,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Util;
 
@@ -79,7 +79,7 @@ public final class RecipeBookOptions {
 		}
 	}
 
-	public static RecipeBookOptions fromNbt(CompoundTag tag) {
+	public static RecipeBookOptions fromNbt(NbtCompound tag) {
 		Map<RecipeBookCategory, RecipeBookOptions.CategoryOption> map = Maps.newEnumMap(RecipeBookCategory.class);
 		CATEGORY_OPTION_NAMES.forEach((category, pair) -> {
 			boolean bl = tag.getBoolean((String)pair.getFirst());
@@ -89,7 +89,7 @@ public final class RecipeBookOptions {
 		return new RecipeBookOptions(map);
 	}
 
-	public void writeNbt(CompoundTag tag) {
+	public void writeNbt(NbtCompound tag) {
 		CATEGORY_OPTION_NAMES.forEach((category, pair) -> {
 			RecipeBookOptions.CategoryOption categoryOption = (RecipeBookOptions.CategoryOption)this.categoryOptions.get(category);
 			tag.putBoolean((String)pair.getFirst(), categoryOption.guiOpen);

@@ -49,7 +49,7 @@ public abstract class AbstractPhase implements Phase {
 
 	@Nullable
 	@Override
-	public Vec3d getTarget() {
+	public Vec3d getPathTarget() {
 		return null;
 	}
 
@@ -59,7 +59,7 @@ public abstract class AbstractPhase implements Phase {
 	}
 
 	@Override
-	public float method_6847() {
+	public float getYawAcceleration() {
 		float f = MathHelper.sqrt(Entity.squaredHorizontalLength(this.dragon.getVelocity())) + 1.0F;
 		float g = Math.min(f, 40.0F);
 		return 0.7F / g / f;

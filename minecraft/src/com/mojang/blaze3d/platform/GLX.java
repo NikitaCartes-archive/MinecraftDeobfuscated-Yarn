@@ -107,11 +107,11 @@ public class GLX {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		GlStateManager.disableTexture();
 		GlStateManager.depthMask(false);
-		RenderSystem.setShader(GameRenderer::method_34535);
+		RenderSystem.setShader(GameRenderer::getRenderTypeLinesShader);
 		Tessellator tessellator = RenderSystem.renderThreadTesselator();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		RenderSystem.lineWidth(4.0F);
-		bufferBuilder.begin(VertexFormat.DrawMode.LINES, VertexFormats.field_29337);
+		bufferBuilder.begin(VertexFormat.DrawMode.LINES, VertexFormats.LINES);
 		if (drawX) {
 			bufferBuilder.vertex(0.0, 0.0, 0.0).color(0, 0, 0, 255).normal(1.0F, 0.0F, 0.0F).next();
 			bufferBuilder.vertex((double)size, 0.0, 0.0).color(0, 0, 0, 255).normal(1.0F, 0.0F, 0.0F).next();
@@ -129,7 +129,7 @@ public class GLX {
 
 		tessellator.draw();
 		RenderSystem.lineWidth(2.0F);
-		bufferBuilder.begin(VertexFormat.DrawMode.LINES, VertexFormats.field_29337);
+		bufferBuilder.begin(VertexFormat.DrawMode.LINES, VertexFormats.LINES);
 		if (drawX) {
 			bufferBuilder.vertex(0.0, 0.0, 0.0).color(255, 0, 0, 255).normal(1.0F, 0.0F, 0.0F).next();
 			bufferBuilder.vertex((double)size, 0.0, 0.0).color(255, 0, 0, 255).normal(1.0F, 0.0F, 0.0F).next();

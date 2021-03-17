@@ -1,6 +1,7 @@
 package net.minecraft.block.entity;
 
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LecternBlock;
 import net.minecraft.entity.player.PlayerEntity;
@@ -9,7 +10,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WrittenBookItem;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.LecternScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.PropertyDelegate;
@@ -204,9 +205,9 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 	}
 
 	@Override
-	public void readNbt(CompoundTag tag) {
+	public void readNbt(NbtCompound tag) {
 		super.readNbt(tag);
-		if (tag.contains("Book", 10)) {
+		if (tag.contains("Book", NbtTypeIds.COMPOUND)) {
 			this.book = this.resolveBook(ItemStack.fromNbt(tag.getCompound("Book")), null);
 		} else {
 			this.book = ItemStack.EMPTY;
@@ -217,10 +218,10 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 	}
 
 	@Override
-	public CompoundTag writeNbt(CompoundTag tag) {
+	public NbtCompound writeNbt(NbtCompound tag) {
 		super.writeNbt(tag);
 		if (!this.getBook().isEmpty()) {
-			tag.put("Book", this.getBook().writeNbt(new CompoundTag()));
+			tag.put("Book", this.getBook().writeNbt(new NbtCompound()));
 			tag.putInt("Page", this.currentPage);
 		}
 

@@ -1,6 +1,7 @@
 package net.minecraft.entity.projectile;
 
 import java.util.List;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -26,11 +27,11 @@ public class DragonFireballEntity extends ExplosiveProjectileEntity {
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		super.onCollision(hitResult);
-		Entity entity = this.getOwner();
-		if (hitResult.getType() != HitResult.Type.ENTITY || !((EntityHitResult)hitResult).getEntity().isPartOf(entity)) {
+		if (hitResult.getType() != HitResult.Type.ENTITY || !this.method_34714(((EntityHitResult)hitResult).getEntity())) {
 			if (!this.world.isClient) {
 				List<LivingEntity> list = this.world.getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox().expand(4.0, 2.0, 4.0));
 				AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.getX(), this.getY(), this.getZ());
+				Entity entity = this.getOwner();
 				if (entity instanceof LivingEntity) {
 					areaEffectCloudEntity.setOwner((LivingEntity)entity);
 				}
@@ -50,7 +51,7 @@ public class DragonFireballEntity extends ExplosiveProjectileEntity {
 					}
 				}
 
-				this.world.syncWorldEvent(2006, this.getBlockPos(), this.isSilent() ? -1 : 1);
+				this.world.syncWorldEvent(WorldEvents.DRAGON_BREATH_CLOUD_SPAWNS, this.getBlockPos(), this.isSilent() ? -1 : 1);
 				this.world.spawnEntity(areaEffectCloudEntity);
 				this.discard();
 			}

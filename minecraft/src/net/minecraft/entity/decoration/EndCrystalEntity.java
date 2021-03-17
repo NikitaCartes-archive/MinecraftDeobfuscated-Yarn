@@ -4,6 +4,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -15,7 +16,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -65,7 +66,7 @@ public class EndCrystalEntity extends Entity {
 	}
 
 	@Override
-	protected void writeCustomDataToNbt(CompoundTag tag) {
+	protected void writeCustomDataToNbt(NbtCompound tag) {
 		if (this.getBeamTarget() != null) {
 			tag.put("BeamTarget", NbtHelper.fromBlockPos(this.getBeamTarget()));
 		}
@@ -74,12 +75,12 @@ public class EndCrystalEntity extends Entity {
 	}
 
 	@Override
-	protected void readCustomDataFromNbt(CompoundTag tag) {
-		if (tag.contains("BeamTarget", 10)) {
+	protected void readCustomDataFromNbt(NbtCompound tag) {
+		if (tag.contains("BeamTarget", NbtTypeIds.COMPOUND)) {
 			this.setBeamTarget(NbtHelper.toBlockPos(tag.getCompound("BeamTarget")));
 		}
 
-		if (tag.contains("ShowBottom", 1)) {
+		if (tag.contains("ShowBottom", NbtTypeIds.BYTE)) {
 			this.setShowBottom(tag.getBoolean("ShowBottom"));
 		}
 	}

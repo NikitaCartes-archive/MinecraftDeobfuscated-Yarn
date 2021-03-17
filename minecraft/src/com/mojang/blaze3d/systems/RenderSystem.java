@@ -15,11 +15,11 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5944;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.GraphicsMode;
 import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.Shader;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.texture.AbstractTexture;
@@ -79,7 +79,7 @@ public class RenderSystem {
 	private static float shaderGameTime;
 	private static float shaderLineWidth = 1.0F;
 	@Nullable
-	private static class_5944 shader;
+	private static Shader shader;
 
 	public static void initRenderThread() {
 		if (renderThread == null && gameThread != Thread.currentThread()) {
@@ -407,14 +407,14 @@ public class RenderSystem {
 		shaderLightDirections[1] = vec3f2;
 	}
 
-	public static void setupShaderLights(class_5944 arg) {
+	public static void setupShaderLights(Shader shader) {
 		assertThread(RenderSystem::isOnRenderThread);
-		if (arg.field_29475 != null) {
-			arg.field_29475.method_34413(shaderLightDirections[0]);
+		if (shader.field_29475 != null) {
+			shader.field_29475.method_34413(shaderLightDirections[0]);
 		}
 
-		if (arg.field_29476 != null) {
-			arg.field_29476.method_34413(shaderLightDirections[1]);
+		if (shader.field_29476 != null) {
+			shader.field_29476.method_34413(shaderLightDirections[1]);
 		}
 	}
 
@@ -424,10 +424,6 @@ public class RenderSystem {
 		} else {
 			_setShaderColor(f, g, h, i);
 		}
-	}
-
-	public static void setShaderColor(float f, float g, float h) {
-		setShaderColor(f, g, h, 1.0F);
 	}
 
 	private static void _setShaderColor(float f, float g, float h, float i) {
@@ -709,16 +705,16 @@ public class RenderSystem {
 		}
 	}
 
-	public static void setShader(Supplier<class_5944> supplier) {
+	public static void setShader(Supplier<Shader> supplier) {
 		if (!isOnRenderThread()) {
-			recordRenderCall(() -> shader = (class_5944)supplier.get());
+			recordRenderCall(() -> shader = (Shader)supplier.get());
 		} else {
-			shader = (class_5944)supplier.get();
+			shader = (Shader)supplier.get();
 		}
 	}
 
 	@Nullable
-	public static class_5944 getShader() {
+	public static Shader getShader() {
 		assertThread(RenderSystem::isOnRenderThread);
 		return shader;
 	}

@@ -12,7 +12,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -166,18 +166,18 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public void addPendingBlockEntityNbt(CompoundTag tag) {
+	public void addPendingBlockEntityNbt(NbtCompound tag) {
 	}
 
 	@Nullable
 	@Override
-	public CompoundTag getBlockEntityNbt(BlockPos pos) {
+	public NbtCompound getBlockEntityNbt(BlockPos pos) {
 		return this.wrapped.getBlockEntityNbt(pos);
 	}
 
 	@Nullable
 	@Override
-	public CompoundTag getPackedBlockEntityNbt(BlockPos pos) {
+	public NbtCompound getPackedBlockEntityNbt(BlockPos pos) {
 		return this.wrapped.getPackedBlockEntityNbt(pos);
 	}
 

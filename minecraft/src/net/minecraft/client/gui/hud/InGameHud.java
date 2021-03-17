@@ -188,11 +188,11 @@ public class InGameHud extends DrawableHelper {
 
 		if (!this.client.options.hudHidden) {
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-			RenderSystem.setShader(GameRenderer::method_34542);
+			RenderSystem.setShader(GameRenderer::getPositionTexShader);
 			RenderSystem.setShaderTexture(0, GUI_ICONS_TEXTURE);
 			RenderSystem.enableBlend();
 			this.renderCrosshair(matrices);
-			RenderSystem.setShader(GameRenderer::method_34542);
+			RenderSystem.setShader(GameRenderer::getPositionTexShader);
 			RenderSystem.defaultBlendFunc();
 			this.client.getProfiler().push("bossHealth");
 			this.bossBarHud.render(matrices);
@@ -474,6 +474,7 @@ public class InGameHud extends DrawableHelper {
 			}
 
 			list.forEach(Runnable::run);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 	}
 
@@ -481,7 +482,7 @@ public class InGameHud extends DrawableHelper {
 		PlayerEntity playerEntity = this.getCameraPlayer();
 		if (playerEntity != null) {
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-			RenderSystem.setShader(GameRenderer::method_34542);
+			RenderSystem.setShader(GameRenderer::getPositionTexShader);
 			RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
 			ItemStack itemStack = playerEntity.getOffHandStack();
 			Arm arm = playerEntity.getMainArm().getOpposite();
@@ -939,6 +940,7 @@ public class InGameHud extends DrawableHelper {
 		RenderSystem.disableDepthTest();
 		RenderSystem.depthMask(false);
 		RenderSystem.defaultBlendFunc();
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, opacity);
 		RenderSystem.setShaderTexture(0, texture);
 		Tessellator tessellator = Tessellator.getInstance();
@@ -958,6 +960,7 @@ public class InGameHud extends DrawableHelper {
 		RenderSystem.disableDepthTest();
 		RenderSystem.depthMask(false);
 		RenderSystem.defaultBlendFunc();
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderTexture(0, SPYGLASS_SCOPE);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
@@ -975,7 +978,7 @@ public class InGameHud extends DrawableHelper {
 		bufferBuilder.vertex((double)m, (double)l, -90.0).texture(1.0F, 0.0F).next();
 		bufferBuilder.vertex((double)k, (double)l, -90.0).texture(0.0F, 0.0F).next();
 		tessellator.draw();
-		RenderSystem.setShader(GameRenderer::method_34540);
+		RenderSystem.setShader(GameRenderer::getPositionColorShader);
 		RenderSystem.disableTexture();
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 		bufferBuilder.vertex(0.0, (double)this.scaledHeight, -90.0).color(0, 0, 0, 255).next();
@@ -1027,12 +1030,15 @@ public class InGameHud extends DrawableHelper {
 			GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
 		);
 		if (f > 0.0F) {
+			f = MathHelper.clamp(f, 0.0F, 1.0F);
 			RenderSystem.setShaderColor(0.0F, f, f, 1.0F);
 		} else {
-			RenderSystem.setShaderColor(this.vignetteDarkness, this.vignetteDarkness, this.vignetteDarkness, 1.0F);
+			float g = this.vignetteDarkness;
+			g = MathHelper.clamp(g, 0.0F, 1.0F);
+			RenderSystem.setShaderColor(g, g, g, 1.0F);
 		}
 
-		RenderSystem.setShader(GameRenderer::method_34542);
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderTexture(0, VIGNETTE_TEXTURE);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
@@ -1060,6 +1066,7 @@ public class InGameHud extends DrawableHelper {
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, nauseaStrength);
 		RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		Sprite sprite = this.client.getBlockRenderManager().getModels().getSprite(Blocks.NETHER_PORTAL.getDefaultState());
 		float f = sprite.getMinU();
 		float g = sprite.getMinV();
@@ -1092,7 +1099,7 @@ public class InGameHud extends DrawableHelper {
 			}
 
 			this.itemRenderer.renderInGuiWithOverrides(player, stack, x, y, i);
-			RenderSystem.setShader(GameRenderer::method_34540);
+			RenderSystem.setShader(GameRenderer::getPositionColorShader);
 			if (f > 0.0F) {
 				matrixStack.pop();
 				RenderSystem.applyModelViewMatrix();

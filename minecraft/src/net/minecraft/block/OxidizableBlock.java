@@ -6,18 +6,10 @@ import net.minecraft.util.math.BlockPos;
 
 public class OxidizableBlock extends Block implements Oxidizable {
 	private final Oxidizable.OxidizationLevel oxidizationLevel;
-	private final Block degraded;
 
-	public OxidizableBlock(AbstractBlock.Settings settings) {
-		super(settings);
-		this.oxidizationLevel = Oxidizable.OxidizationLevel.values()[Oxidizable.OxidizationLevel.values().length - 1];
-		this.degraded = this;
-	}
-
-	public OxidizableBlock(AbstractBlock.Settings settings, Oxidizable.OxidizationLevel oxidizationLevel, Block degraded) {
+	public OxidizableBlock(Oxidizable.OxidizationLevel oxidizationLevel, AbstractBlock.Settings settings) {
 		super(settings);
 		this.oxidizationLevel = oxidizationLevel;
-		this.degraded = degraded;
 	}
 
 	@Override
@@ -27,15 +19,10 @@ public class OxidizableBlock extends Block implements Oxidizable {
 
 	@Override
 	public boolean hasRandomTicks(BlockState state) {
-		return this.degraded != this;
+		return Oxidizable.getIncreasedOxidationBlock(state.getBlock()).isPresent();
 	}
 
 	public Oxidizable.OxidizationLevel getDegradationLevel() {
 		return this.oxidizationLevel;
-	}
-
-	@Override
-	public BlockState getDegradationResult(BlockState state) {
-		return this.degraded.getDefaultState();
 	}
 }

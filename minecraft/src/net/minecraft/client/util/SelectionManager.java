@@ -35,7 +35,7 @@ public class SelectionManager {
 		this.clipboardGetter = clipboardGetter;
 		this.clipboardSetter = clipboardSetter;
 		this.stringFilter = stringFilter;
-		this.moveCaretToEnd();
+		this.putCursorAtEnd();
 	}
 
 	public static Supplier<String> makeClipboardGetter(MinecraftClient client) {
@@ -47,7 +47,7 @@ public class SelectionManager {
 	}
 
 	public static Consumer<String> makeClipboardSetter(MinecraftClient client) {
-		return string -> setClipboard(client, string);
+		return clipboardString -> setClipboard(client, clipboardString);
 	}
 
 	public static void setClipboard(MinecraftClient client, String clipboard) {
@@ -103,12 +103,12 @@ public class SelectionManager {
 				}
 
 				if (keyCode == 268) {
-					this.method_27553(Screen.hasShiftDown());
+					this.moveCursorToStart(Screen.hasShiftDown());
 					return true;
 				}
 
 				if (keyCode == 269) {
-					this.method_27558(Screen.hasShiftDown());
+					this.moveCursorToEnd(Screen.hasShiftDown());
 					return true;
 				}
 			}
@@ -117,8 +117,8 @@ public class SelectionManager {
 		}
 	}
 
-	private int method_27567(int i) {
-		return MathHelper.clamp(i, 0, ((String)this.stringGetter.get()).length());
+	private int clampCursorPosition(int pos) {
+		return MathHelper.clamp(pos, 0, ((String)this.stringGetter.get()).length());
 	}
 
 	private void insert(String string, String insertion) {
@@ -212,40 +212,40 @@ public class SelectionManager {
 		}
 	}
 
-	private void method_27553(boolean bl) {
+	private void moveCursorToStart(boolean shiftDown) {
 		this.selectionStart = 0;
-		this.updateSelectionRange(bl);
+		this.updateSelectionRange(shiftDown);
 	}
 
-	public void moveCaretToEnd() {
-		this.method_27558(false);
+	public void putCursorAtEnd() {
+		this.moveCursorToEnd(false);
 	}
 
-	private void method_27558(boolean bl) {
+	private void moveCursorToEnd(boolean shiftDown) {
 		this.selectionStart = ((String)this.stringGetter.get()).length();
-		this.updateSelectionRange(bl);
+		this.updateSelectionRange(shiftDown);
 	}
 
 	public int getSelectionStart() {
 		return this.selectionStart;
 	}
 
-	public void method_27560(int i, boolean bl) {
-		this.selectionStart = this.method_27567(i);
-		this.updateSelectionRange(bl);
+	public void moveCursorTo(int position, boolean shiftDown) {
+		this.selectionStart = this.clampCursorPosition(position);
+		this.updateSelectionRange(shiftDown);
 	}
 
 	public int getSelectionEnd() {
 		return this.selectionEnd;
 	}
 
-	public void method_27548(int i, int j) {
-		int k = ((String)this.stringGetter.get()).length();
-		this.selectionStart = MathHelper.clamp(i, 0, k);
-		this.selectionEnd = MathHelper.clamp(j, 0, k);
+	public void setSelection(int start, int end) {
+		int i = ((String)this.stringGetter.get()).length();
+		this.selectionStart = MathHelper.clamp(start, 0, i);
+		this.selectionEnd = MathHelper.clamp(end, 0, i);
 	}
 
-	public boolean method_27568() {
+	public boolean isSelecting() {
 		return this.selectionStart != this.selectionEnd;
 	}
 }

@@ -6,18 +6,10 @@ import net.minecraft.util.math.BlockPos;
 
 public class OxidizableStairsBlock extends StairsBlock implements Oxidizable {
 	private final Oxidizable.OxidizationLevel oxidizationLevel;
-	private final Block degraded;
 
-	public OxidizableStairsBlock(BlockState blockState, AbstractBlock.Settings settings) {
-		super(blockState, settings);
-		this.oxidizationLevel = Oxidizable.OxidizationLevel.values()[Oxidizable.OxidizationLevel.values().length - 1];
-		this.degraded = this;
-	}
-
-	public OxidizableStairsBlock(BlockState baseBlockState, AbstractBlock.Settings settings, Oxidizable.OxidizationLevel oxidizationLevel, Block degraded) {
+	public OxidizableStairsBlock(Oxidizable.OxidizationLevel oxidizationLevel, BlockState baseBlockState, AbstractBlock.Settings settings) {
 		super(baseBlockState, settings);
 		this.oxidizationLevel = oxidizationLevel;
-		this.degraded = degraded;
 	}
 
 	@Override
@@ -27,20 +19,10 @@ public class OxidizableStairsBlock extends StairsBlock implements Oxidizable {
 
 	@Override
 	public boolean hasRandomTicks(BlockState state) {
-		return this.degraded != this;
+		return Oxidizable.getIncreasedOxidationBlock(state.getBlock()).isPresent();
 	}
 
 	public Oxidizable.OxidizationLevel getDegradationLevel() {
 		return this.oxidizationLevel;
-	}
-
-	@Override
-	public BlockState getDegradationResult(BlockState state) {
-		return this.degraded
-			.getDefaultState()
-			.with(FACING, state.get(FACING))
-			.with(HALF, state.get(HALF))
-			.with(SHAPE, state.get(SHAPE))
-			.with(WATERLOGGED, state.get(WATERLOGGED));
 	}
 }

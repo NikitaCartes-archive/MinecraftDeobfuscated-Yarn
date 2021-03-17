@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.damage.DamageSource;
@@ -49,10 +50,10 @@ public class CactusBlock extends Block {
 				if (j == 15) {
 					world.setBlockState(blockPos, this.getDefaultState());
 					BlockState blockState = state.with(AGE, Integer.valueOf(0));
-					world.setBlockState(pos, blockState, 4);
+					world.setBlockState(pos, blockState, SetBlockStateFlags.NO_REDRAW);
 					blockState.neighborUpdate(world, blockPos, this, pos, false);
 				} else {
-					world.setBlockState(pos, state.with(AGE, Integer.valueOf(j + 1)), 4);
+					world.setBlockState(pos, state.with(AGE, Integer.valueOf(j + 1)), SetBlockStateFlags.NO_REDRAW);
 				}
 			}
 		}

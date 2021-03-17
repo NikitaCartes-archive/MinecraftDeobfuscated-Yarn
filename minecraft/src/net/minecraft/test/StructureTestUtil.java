@@ -13,6 +13,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
@@ -21,7 +22,7 @@ import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.command.argument.BlockStateArgument;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.Structure;
@@ -192,11 +193,11 @@ public class StructureTestUtil {
 		} else {
 			String string = structureId + ".snbt";
 			Path path = Paths.get(testStructuresDirectoryName, string);
-			CompoundTag compoundTag = loadSnbt(path);
-			if (compoundTag == null) {
+			NbtCompound nbtCompound = loadSnbt(path);
+			if (nbtCompound == null) {
 				throw new RuntimeException("Could not find structure file " + path + ", and the structure is not available in the world structures either.");
 			} else {
-				return structureManager.createStructure(compoundTag);
+				return structureManager.createStructure(nbtCompound);
 			}
 		}
 	}
@@ -223,7 +224,7 @@ public class StructureTestUtil {
 	}
 
 	@Nullable
-	private static CompoundTag loadSnbt(Path path) {
+	private static NbtCompound loadSnbt(Path path) {
 		try {
 			BufferedReader bufferedReader = Files.newBufferedReader(path);
 			String string = IOUtils.toString(bufferedReader);
@@ -239,10 +240,10 @@ public class StructureTestUtil {
 		BlockState blockState = null;
 		FlatChunkGeneratorConfig flatChunkGeneratorConfig = FlatChunkGeneratorConfig.getDefaultConfig(world.getRegistryManager().get(Registry.BIOME_KEY));
 		if (flatChunkGeneratorConfig instanceof FlatChunkGeneratorConfig) {
-			BlockState[] blockStates = flatChunkGeneratorConfig.getLayerBlocks();
-			int i = flatChunkGeneratorConfig.method_31926(pos.getY());
-			if (pos.getY() < altitude && i > 0 && i <= blockStates.length) {
-				blockState = blockStates[i - 1];
+			List<BlockState> list = flatChunkGeneratorConfig.getLayerBlocks();
+			int i = pos.getY() - world.getBottomY();
+			if (pos.getY() < altitude && i > 0 && i <= list.size()) {
+				blockState = (BlockState)list.get(i - 1);
 			}
 		} else if (pos.getY() == altitude - 1) {
 			blockState = world.getBiome(pos).getGenerationSettings().getSurfaceConfig().getTopMaterial();
@@ -255,7 +256,7 @@ public class StructureTestUtil {
 		}
 
 		BlockStateArgument blockStateArgument = new BlockStateArgument(blockState, Collections.emptySet(), null);
-		blockStateArgument.setBlockState(world, pos, 2);
+		blockStateArgument.setBlockState(world, pos, SetBlockStateFlags.NOTIFY_LISTENERS);
 		world.updateNeighbors(pos, blockState.getBlock());
 	}
 

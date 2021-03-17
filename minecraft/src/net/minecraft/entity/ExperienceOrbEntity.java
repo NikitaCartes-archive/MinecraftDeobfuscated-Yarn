@@ -9,7 +9,7 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.ExperienceOrbSpawnS2CPacket;
 import net.minecraft.server.world.ServerWorld;
@@ -187,7 +187,7 @@ public class ExperienceOrbEntity extends Entity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		tag.putShort("Health", (short)this.health);
 		tag.putShort("Age", (short)this.orbAge);
 		tag.putShort("Value", (short)this.amount);
@@ -195,7 +195,7 @@ public class ExperienceOrbEntity extends Entity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		this.health = tag.getShort("Health");
 		this.orbAge = tag.getShort("Age");
 		this.amount = tag.getShort("Value");

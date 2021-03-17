@@ -10,6 +10,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public abstract class SliderWidget extends AbstractButtonWidget {
@@ -46,8 +47,8 @@ public abstract class SliderWidget extends AbstractButtonWidget {
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		boolean bl = keyCode == 263;
-		if (bl || keyCode == 262) {
+		boolean bl = keyCode == GLFW.GLFW_KEY_LEFT;
+		if (bl || keyCode == GLFW.GLFW_KEY_RIGHT) {
 			float f = bl ? -1.0F : 1.0F;
 			this.setValue(this.value + (double)(f / (float)(this.width - 8)));
 		}

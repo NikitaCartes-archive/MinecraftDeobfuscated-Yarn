@@ -448,8 +448,8 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		RenderSystem.setShader(GameRenderer::method_34539);
-		RenderSystem.setShaderColor(0.0F, 0.0F, 255.0F, 255.0F);
+		RenderSystem.setShader(GameRenderer::getPositionShader);
+		RenderSystem.setShaderColor(0.0F, 0.0F, 1.0F, 1.0F);
 		RenderSystem.disableTexture();
 		RenderSystem.enableColorLogicOp();
 		RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
@@ -459,6 +459,7 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 		bufferBuilder.vertex((double)x2, (double)y1, 0.0).next();
 		bufferBuilder.vertex((double)x1, (double)y1, 0.0).next();
 		tessellator.draw();
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.disableColorLogicOp();
 		RenderSystem.enableTexture();
 	}

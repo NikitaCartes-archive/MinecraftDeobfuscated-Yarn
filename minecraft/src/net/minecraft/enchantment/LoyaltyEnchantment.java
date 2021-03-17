@@ -21,9 +21,4 @@ public class LoyaltyEnchantment extends Enchantment {
 	public int getMaxLevel() {
 		return 3;
 	}
-
-	@Override
-	public boolean canAccept(Enchantment other) {
-		return super.canAccept(other);
-	}
 }

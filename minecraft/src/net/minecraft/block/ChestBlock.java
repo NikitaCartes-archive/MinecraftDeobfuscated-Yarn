@@ -280,7 +280,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 	) {
 		BiPredicate<WorldAccess, BlockPos> biPredicate;
 		if (ignoreBlocked) {
-			biPredicate = (worldAccess, blockPos) -> false;
+			biPredicate = (worldx, posx) -> false;
 		} else {
 			biPredicate = ChestBlock::isChestBlocked;
 		}

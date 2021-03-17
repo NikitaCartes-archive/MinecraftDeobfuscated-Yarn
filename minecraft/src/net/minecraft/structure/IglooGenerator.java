@@ -4,12 +4,14 @@ import com.google.common.collect.ImmutableMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.loot.LootTables;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -60,11 +62,11 @@ public class IglooGenerator {
 			this.initializeStructureData(manager);
 		}
 
-		public Piece(StructureManager manager, CompoundTag tag) {
+		public Piece(ServerWorld serverWorld, NbtCompound tag) {
 			super(StructurePieceType.IGLOO, tag);
 			this.template = new Identifier(tag.getString("Template"));
 			this.rotation = BlockRotation.valueOf(tag.getString("Rot"));
-			this.initializeStructureData(manager);
+			this.initializeStructureData(serverWorld.getStructureManager());
 		}
 
 		private void initializeStructureData(StructureManager manager) {
@@ -78,16 +80,16 @@ public class IglooGenerator {
 		}
 
 		@Override
-		protected void writeNbt(CompoundTag tag) {
-			super.writeNbt(tag);
-			tag.putString("Template", this.template.toString());
-			tag.putString("Rot", this.rotation.name());
+		protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+			super.writeNbt(world, nbt);
+			nbt.putString("Template", this.template.toString());
+			nbt.putString("Rot", this.rotation.name());
 		}
 
 		@Override
 		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox) {
 			if ("chest".equals(metadata)) {
-				world.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
+				world.setBlockState(pos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT);
 				BlockEntity blockEntity = world.getBlockEntity(pos.down());
 				if (blockEntity instanceof ChestBlockEntity) {
 					((ChestBlockEntity)blockEntity).setLootTable(LootTables.IGLOO_CHEST_CHEST, random.nextLong());
@@ -120,7 +122,7 @@ public class IglooGenerator {
 				BlockPos blockPos4 = this.pos.add(Structure.transform(structurePlacementData, new BlockPos(3, 0, 5)));
 				BlockState blockState = world.getBlockState(blockPos4.down());
 				if (!blockState.isAir() && !blockState.isOf(Blocks.LADDER)) {
-					world.setBlockState(blockPos4, Blocks.SNOW_BLOCK.getDefaultState(), 3);
+					world.setBlockState(blockPos4, Blocks.SNOW_BLOCK.getDefaultState(), SetBlockStateFlags.DEFAULT);
 				}
 			}
 

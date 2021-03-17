@@ -7,7 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -34,9 +34,9 @@ public class SmithingRecipe implements Recipe<Inventory> {
 	@Override
 	public ItemStack craft(Inventory inv) {
 		ItemStack itemStack = this.result.copy();
-		CompoundTag compoundTag = inv.getStack(0).getTag();
-		if (compoundTag != null) {
-			itemStack.setTag(compoundTag.copy());
+		NbtCompound nbtCompound = inv.getStack(0).getTag();
+		if (nbtCompound != null) {
+			itemStack.setTag(nbtCompound.copy());
 		}
 
 		return itemStack;

@@ -11,6 +11,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class ChatScreen extends Screen {
@@ -76,10 +77,10 @@ public class ChatScreen extends Screen {
 			return true;
 		} else if (super.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
-		} else if (keyCode == 256) {
+		} else if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
 			this.client.openScreen(null);
 			return true;
-		} else if (keyCode == 257 || keyCode == 335) {
+		} else if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
 			String string = this.chatField.getText().trim();
 			if (!string.isEmpty()) {
 				this.sendMessage(string);
@@ -87,16 +88,16 @@ public class ChatScreen extends Screen {
 
 			this.client.openScreen(null);
 			return true;
-		} else if (keyCode == 265) {
+		} else if (keyCode == GLFW.GLFW_KEY_UP) {
 			this.setChatFromHistory(-1);
 			return true;
-		} else if (keyCode == 264) {
+		} else if (keyCode == GLFW.GLFW_KEY_DOWN) {
 			this.setChatFromHistory(1);
 			return true;
-		} else if (keyCode == 266) {
+		} else if (keyCode == GLFW.GLFW_KEY_PAGE_UP) {
 			this.client.inGameHud.getChatHud().scroll((double)(this.client.inGameHud.getChatHud().getVisibleLineCount() - 1));
 			return true;
-		} else if (keyCode == 267) {
+		} else if (keyCode == GLFW.GLFW_KEY_PAGE_DOWN) {
 			this.client.inGameHud.getChatHud().scroll((double)(-this.client.inGameHud.getChatHud().getVisibleLineCount() + 1));
 			return true;
 		} else {

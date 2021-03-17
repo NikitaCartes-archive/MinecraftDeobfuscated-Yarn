@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
@@ -39,11 +40,11 @@ public class CauldronBlock extends AbstractCauldronBlock {
 	protected void fillFromDripstone(BlockState state, World world, BlockPos pos, Fluid fluid) {
 		if (fluid == Fluids.WATER) {
 			world.setBlockState(pos, Blocks.WATER_CAULDRON.getDefaultState());
-			world.syncWorldEvent(1047, pos, 0);
+			world.syncWorldEvent(WorldEvents.POINTED_DRIPSTONE_DRIPS_WATER_INTO_CAULDRON, pos, 0);
 			world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
 		} else if (fluid == Fluids.LAVA) {
 			world.setBlockState(pos, Blocks.LAVA_CAULDRON.getDefaultState());
-			world.syncWorldEvent(1046, pos, 0);
+			world.syncWorldEvent(WorldEvents.POINTED_DRIPSTONE_DRIPS_LAVA_INTO_CAULDRON, pos, 0);
 			world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
 		}
 	}

@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Blocks;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
@@ -127,7 +128,7 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 									break;
 								}
 
-								world.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), 2);
+								world.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
 							}
 						}
 					}
