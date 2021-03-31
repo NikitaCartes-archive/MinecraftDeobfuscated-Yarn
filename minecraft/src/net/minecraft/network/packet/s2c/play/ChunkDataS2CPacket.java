@@ -6,8 +6,6 @@ import io.netty.buffer.Unpooled;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Map.Entry;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtLongArray;
@@ -22,6 +20,7 @@ import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.WorldChunk;
 
 public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final int MAX_DATA_LENGTH = 2097152;
 	private final int chunkX;
 	private final int chunkZ;
 	private final BitSet verticalStripBitmask;
@@ -58,7 +57,7 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.chunkX = buf.readInt();
 		this.chunkZ = buf.readInt();
 		this.verticalStripBitmask = buf.readBitSet();
-		this.heightmaps = buf.readCompound();
+		this.heightmaps = buf.readNbt();
 		this.biomeArray = buf.readIntArray(BiomeArray.DEFAULT_LENGTH);
 		int i = buf.readVarInt();
 		if (i > 2097152) {
@@ -66,7 +65,7 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		} else {
 			this.data = new byte[i];
 			buf.readBytes(this.data);
-			this.blockEntities = buf.readList(PacketByteBuf::readCompound);
+			this.blockEntities = buf.readList(PacketByteBuf::readNbt);
 		}
 	}
 
@@ -75,18 +74,17 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeInt(this.chunkX);
 		buf.writeInt(this.chunkZ);
 		buf.writeBitSet(this.verticalStripBitmask);
-		buf.writeCompound(this.heightmaps);
+		buf.writeNbt(this.heightmaps);
 		buf.writeIntArray(this.biomeArray);
 		buf.writeVarInt(this.data.length);
 		buf.writeBytes(this.data);
-		buf.writeCollection(this.blockEntities, PacketByteBuf::writeCompound);
+		buf.writeCollection(this.blockEntities, PacketByteBuf::writeNbt);
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onChunkData(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public PacketByteBuf getReadBuffer() {
 		return new PacketByteBuf(Unpooled.wrappedBuffer(this.data));
 	}
@@ -128,32 +126,26 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		return i;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getX() {
 		return this.chunkX;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getZ() {
 		return this.chunkZ;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public BitSet getVerticalStripBitmask() {
 		return this.verticalStripBitmask;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public NbtCompound getHeightmaps() {
 		return this.heightmaps;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public List<NbtCompound> getBlockEntityTagList() {
 		return this.blockEntities;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int[] getBiomeArray() {
 		return this.biomeArray;
 	}

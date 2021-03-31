@@ -3,9 +3,6 @@ package net.minecraft.block;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
@@ -56,6 +53,8 @@ public class BeehiveBlock extends BlockWithEntity {
 	private static final Direction[] GENERATE_DIRECTIONS = new Direction[]{Direction.WEST, Direction.EAST, Direction.SOUTH};
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final IntProperty HONEY_LEVEL = Properties.HONEY_LEVEL;
+	public static final int FULL_HONEY_LEVEL = 5;
+	private static final int DROPPED_HONEYCOMB_COUNT = 3;
 
 	public BeehiveBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -168,10 +167,9 @@ public class BeehiveBlock extends BlockWithEntity {
 	}
 
 	public void takeHoney(World world, BlockState state, BlockPos pos) {
-		world.setBlockState(pos, state.with(HONEY_LEVEL, Integer.valueOf(0)), SetBlockStateFlags.DEFAULT);
+		world.setBlockState(pos, state.with(HONEY_LEVEL, Integer.valueOf(0)), Block.NOTIFY_ALL);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		if ((Integer)state.get(HONEY_LEVEL) >= 5) {
@@ -181,7 +179,6 @@ public class BeehiveBlock extends BlockWithEntity {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	private void spawnHoneyParticles(World world, BlockPos pos, BlockState state) {
 		if (state.getFluidState().isEmpty() && !(world.random.nextFloat() < 0.3F)) {
 			VoxelShape voxelShape = state.getCollisionShape(world, pos);
@@ -203,7 +200,6 @@ public class BeehiveBlock extends BlockWithEntity {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	private void addHoneyParticle(World world, BlockPos pos, VoxelShape shape, double height) {
 		this.addHoneyParticle(
 			world,
@@ -215,7 +211,6 @@ public class BeehiveBlock extends BlockWithEntity {
 		);
 	}
 
-	@Environment(EnvType.CLIENT)
 	private void addHoneyParticle(World world, double minX, double maxX, double minZ, double maxZ, double height) {
 		world.addParticle(
 			ParticleTypes.DRIPPING_HONEY,

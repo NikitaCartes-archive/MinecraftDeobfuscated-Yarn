@@ -46,18 +46,18 @@ public class EntityDataObject implements DataCommandObject {
 	}
 
 	@Override
-	public void setTag(NbtCompound tag) throws CommandSyntaxException {
+	public void setNbt(NbtCompound nbt) throws CommandSyntaxException {
 		if (this.entity instanceof PlayerEntity) {
 			throw INVALID_ENTITY_EXCEPTION.create();
 		} else {
 			UUID uUID = this.entity.getUuid();
-			this.entity.readNbt(tag);
+			this.entity.readNbt(nbt);
 			this.entity.setUuid(uUID);
 		}
 	}
 
 	@Override
-	public NbtCompound getTag() {
+	public NbtCompound getNbt() {
 		return NbtPredicate.entityToNbt(this.entity);
 	}
 
@@ -67,12 +67,12 @@ public class EntityDataObject implements DataCommandObject {
 	}
 
 	@Override
-	public Text feedbackQuery(NbtElement tag) {
-		return new TranslatableText("commands.data.entity.query", this.entity.getDisplayName(), NbtHelper.toPrettyPrintedText(tag));
+	public Text feedbackQuery(NbtElement element) {
+		return new TranslatableText("commands.data.entity.query", this.entity.getDisplayName(), NbtHelper.toPrettyPrintedText(element));
 	}
 
 	@Override
-	public Text feedbackGet(NbtPathArgumentType.NbtPath nbtPath, double scale, int result) {
-		return new TranslatableText("commands.data.entity.get", nbtPath, this.entity.getDisplayName(), String.format(Locale.ROOT, "%.2f", scale), result);
+	public Text feedbackGet(NbtPathArgumentType.NbtPath path, double scale, int result) {
+		return new TranslatableText("commands.data.entity.get", path, this.entity.getDisplayName(), String.format(Locale.ROOT, "%.2f", scale), result);
 	}
 }

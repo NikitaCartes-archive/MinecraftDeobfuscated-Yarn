@@ -14,10 +14,6 @@ import java.util.OptionalInt;
 import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.SharedConstants;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BedBlock;
@@ -70,6 +66,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.particle.ParticleEffect;
@@ -114,6 +111,16 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public abstract class PlayerEntity extends LivingEntity {
+	public static final String field_30642 = "OfflinePlayer:";
+	public static final int field_30643 = 16;
+	public static final int field_30644 = 20;
+	public static final int field_30645 = 100;
+	public static final int field_30646 = 10;
+	public static final int field_30647 = 200;
+	public static final float field_30648 = 1.5F;
+	public static final float field_30649 = 0.6F;
+	public static final float field_30650 = 0.6F;
+	public static final float field_30651 = 1.62F;
 	public static final EntityDimensions STANDING_DIMENSIONS = EntityDimensions.changing(0.6F, 1.8F);
 	private static final Map<EntityPose, EntityDimensions> POSE_DIMENSIONS = ImmutableMap.<EntityPose, EntityDimensions>builder()
 		.put(EntityPose.STANDING, STANDING_DIMENSIONS)
@@ -124,6 +131,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		.put(EntityPose.CROUCHING, EntityDimensions.changing(0.6F, 1.5F))
 		.put(EntityPose.DYING, EntityDimensions.fixed(0.2F, 0.2F))
 		.build();
+	private static final int field_30652 = 25;
 	private static final TrackedData<Float> ABSORPTION_AMOUNT = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Integer> SCORE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	protected static final TrackedData<Byte> PLAYER_MODEL_PARTS = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BYTE);
@@ -156,7 +164,6 @@ public abstract class PlayerEntity extends LivingEntity {
 	protected final float field_7509 = 0.02F;
 	private int lastPlayedLevelUpSoundTime;
 	private final GameProfile gameProfile;
-	@Environment(EnvType.CLIENT)
 	private boolean reducedDebugInfo;
 	private ItemStack selectedItem = ItemStack.EMPTY;
 	private final ItemCooldownManager itemCooldownManager = this.createCooldownManager();
@@ -422,7 +429,6 @@ public abstract class PlayerEntity extends LivingEntity {
 		return 20;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void handleStatus(byte status) {
 		if (status == 9) {
@@ -438,7 +444,6 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	private void spawnParticles(ParticleEffect parameters) {
 		for (int i = 0; i < 5; i++) {
 			double d = this.random.nextGaussian() * 0.02;
@@ -540,9 +545,9 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 	}
 
-	private void updateShoulderEntity(@Nullable NbtCompound tag) {
-		if (tag != null && (!tag.contains("Silent") || !tag.getBoolean("Silent")) && this.world.random.nextInt(200) == 0) {
-			String string = tag.getString("id");
+	private void updateShoulderEntity(@Nullable NbtCompound entityNbt) {
+		if (entityNbt != null && (!entityNbt.contains("Silent") || !entityNbt.getBoolean("Silent")) && this.world.random.nextInt(200) == 0) {
+			String string = entityNbt.getString("id");
 			EntityType.get(string)
 				.filter(entityType -> entityType == EntityType.PARROT)
 				.ifPresent(
@@ -760,59 +765,59 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
 		this.setUuid(getUuidFromProfile(this.gameProfile));
-		NbtList nbtList = tag.getList("Inventory", NbtTypeIds.COMPOUND);
-		this.inventory.deserialize(nbtList);
-		this.inventory.selectedSlot = tag.getInt("SelectedItemSlot");
-		this.sleepTimer = tag.getShort("SleepTimer");
-		this.experienceProgress = tag.getFloat("XpP");
-		this.experienceLevel = tag.getInt("XpLevel");
-		this.totalExperience = tag.getInt("XpTotal");
-		this.enchantmentTableSeed = tag.getInt("XpSeed");
+		NbtList nbtList = nbt.getList("Inventory", NbtElement.COMPOUND_TYPE);
+		this.inventory.readNbt(nbtList);
+		this.inventory.selectedSlot = nbt.getInt("SelectedItemSlot");
+		this.sleepTimer = nbt.getShort("SleepTimer");
+		this.experienceProgress = nbt.getFloat("XpP");
+		this.experienceLevel = nbt.getInt("XpLevel");
+		this.totalExperience = nbt.getInt("XpTotal");
+		this.enchantmentTableSeed = nbt.getInt("XpSeed");
 		if (this.enchantmentTableSeed == 0) {
 			this.enchantmentTableSeed = this.random.nextInt();
 		}
 
-		this.setScore(tag.getInt("Score"));
-		this.hungerManager.readNbt(tag);
-		this.abilities.deserialize(tag);
+		this.setScore(nbt.getInt("Score"));
+		this.hungerManager.readNbt(nbt);
+		this.abilities.readNbt(nbt);
 		this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue((double)this.abilities.getWalkSpeed());
-		if (tag.contains("EnderItems", NbtTypeIds.LIST)) {
-			this.enderChestInventory.readTags(tag.getList("EnderItems", NbtTypeIds.COMPOUND));
+		if (nbt.contains("EnderItems", NbtElement.LIST_TYPE)) {
+			this.enderChestInventory.readNbtList(nbt.getList("EnderItems", NbtElement.COMPOUND_TYPE));
 		}
 
-		if (tag.contains("ShoulderEntityLeft", NbtTypeIds.COMPOUND)) {
-			this.setShoulderEntityLeft(tag.getCompound("ShoulderEntityLeft"));
+		if (nbt.contains("ShoulderEntityLeft", NbtElement.COMPOUND_TYPE)) {
+			this.setShoulderEntityLeft(nbt.getCompound("ShoulderEntityLeft"));
 		}
 
-		if (tag.contains("ShoulderEntityRight", NbtTypeIds.COMPOUND)) {
-			this.setShoulderEntityRight(tag.getCompound("ShoulderEntityRight"));
+		if (nbt.contains("ShoulderEntityRight", NbtElement.COMPOUND_TYPE)) {
+			this.setShoulderEntityRight(nbt.getCompound("ShoulderEntityRight"));
 		}
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
-		tag.put("Inventory", this.inventory.serialize(new NbtList()));
-		tag.putInt("SelectedItemSlot", this.inventory.selectedSlot);
-		tag.putShort("SleepTimer", (short)this.sleepTimer);
-		tag.putFloat("XpP", this.experienceProgress);
-		tag.putInt("XpLevel", this.experienceLevel);
-		tag.putInt("XpTotal", this.totalExperience);
-		tag.putInt("XpSeed", this.enchantmentTableSeed);
-		tag.putInt("Score", this.getScore());
-		this.hungerManager.writeNbt(tag);
-		this.abilities.serialize(tag);
-		tag.put("EnderItems", this.enderChestInventory.getTags());
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
+		nbt.put("Inventory", this.inventory.writeNbt(new NbtList()));
+		nbt.putInt("SelectedItemSlot", this.inventory.selectedSlot);
+		nbt.putShort("SleepTimer", (short)this.sleepTimer);
+		nbt.putFloat("XpP", this.experienceProgress);
+		nbt.putInt("XpLevel", this.experienceLevel);
+		nbt.putInt("XpTotal", this.totalExperience);
+		nbt.putInt("XpSeed", this.enchantmentTableSeed);
+		nbt.putInt("Score", this.getScore());
+		this.hungerManager.writeNbt(nbt);
+		this.abilities.writeNbt(nbt);
+		nbt.put("EnderItems", this.enderChestInventory.toNbtList());
 		if (!this.getShoulderEntityLeft().isEmpty()) {
-			tag.put("ShoulderEntityLeft", this.getShoulderEntityLeft());
+			nbt.put("ShoulderEntityLeft", this.getShoulderEntityLeft());
 		}
 
 		if (!this.getShoulderEntityRight().isEmpty()) {
-			tag.put("ShoulderEntityRight", this.getShoulderEntityRight());
+			nbt.put("ShoulderEntityRight", this.getShoulderEntityRight());
 		}
 	}
 
@@ -1306,7 +1311,6 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void requestRespawn() {
 	}
 
@@ -1375,7 +1379,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			Optional<Vec3d> optional = RespawnAnchorBlock.findRespawnPosition(EntityType.PLAYER, world, pos);
 			if (!bl2 && optional.isPresent()) {
 				world.setBlockState(
-					pos, blockState.with(RespawnAnchorBlock.CHARGES, Integer.valueOf((Integer)blockState.get(RespawnAnchorBlock.CHARGES) - 1)), SetBlockStateFlags.DEFAULT
+					pos, blockState.with(RespawnAnchorBlock.CHARGES, Integer.valueOf((Integer)blockState.get(RespawnAnchorBlock.CHARGES) - 1)), Block.NOTIFY_ALL
 				);
 			}
 
@@ -1733,7 +1737,6 @@ public abstract class PlayerEntity extends LivingEntity {
 		return true;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean shouldRenderName() {
 		return true;
@@ -1796,15 +1799,15 @@ public abstract class PlayerEntity extends LivingEntity {
 		return this.inventory.armor;
 	}
 
-	public boolean addShoulderEntity(NbtCompound tag) {
+	public boolean addShoulderEntity(NbtCompound entityNbt) {
 		if (this.hasVehicle() || !this.onGround || this.isTouchingWater()) {
 			return false;
 		} else if (this.getShoulderEntityLeft().isEmpty()) {
-			this.setShoulderEntityLeft(tag);
+			this.setShoulderEntityLeft(entityNbt);
 			this.shoulderEntityAddedTime = this.world.getTime();
 			return true;
 		} else if (this.getShoulderEntityRight().isEmpty()) {
-			this.setShoulderEntityRight(tag);
+			this.setShoulderEntityRight(entityNbt);
 			this.shoulderEntityAddedTime = this.world.getTime();
 			return true;
 		} else {
@@ -1917,7 +1920,6 @@ public abstract class PlayerEntity extends LivingEntity {
 		return UUID.nameUUIDFromBytes(("OfflinePlayer:" + nickname).getBytes(StandardCharsets.UTF_8));
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isPartVisible(PlayerModelPart modelPart) {
 		return (this.getDataTracker().get(PLAYER_MODEL_PARTS) & modelPart.getBitFlag()) == modelPart.getBitFlag();
 	}
@@ -1932,12 +1934,10 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean hasReducedDebugInfo() {
 		return this.reducedDebugInfo;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void setReducedDebugInfo(boolean reducedDebugInfo) {
 		this.reducedDebugInfo = reducedDebugInfo;
 	}
@@ -1960,16 +1960,16 @@ public abstract class PlayerEntity extends LivingEntity {
 		return this.dataTracker.get(LEFT_SHOULDER_ENTITY);
 	}
 
-	protected void setShoulderEntityLeft(NbtCompound entityTag) {
-		this.dataTracker.set(LEFT_SHOULDER_ENTITY, entityTag);
+	protected void setShoulderEntityLeft(NbtCompound entityNbt) {
+		this.dataTracker.set(LEFT_SHOULDER_ENTITY, entityNbt);
 	}
 
 	public NbtCompound getShoulderEntityRight() {
 		return this.dataTracker.get(RIGHT_SHOULDER_ENTITY);
 	}
 
-	protected void setShoulderEntityRight(NbtCompound entityTag) {
-		this.dataTracker.set(RIGHT_SHOULDER_ENTITY, entityTag);
+	protected void setShoulderEntityRight(NbtCompound entityNbt) {
+		this.dataTracker.set(RIGHT_SHOULDER_ENTITY, entityNbt);
 	}
 
 	public float getAttackCooldownProgressPerTick() {
@@ -2060,7 +2060,6 @@ public abstract class PlayerEntity extends LivingEntity {
 		return this.abilities.flying || super.shouldRemoveSoulSpeedBoost(landingState);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public Vec3d method_30951(float f) {
 		double d = 0.22 * (this.getMainArm() == Arm.RIGHT ? -1.0 : 1.0);
@@ -2095,7 +2094,6 @@ public abstract class PlayerEntity extends LivingEntity {
 		return true;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isUsingSpyglass() {
 		return this.isUsingItem() && this.getActiveItem().isOf(Items.SPYGLASS);
 	}

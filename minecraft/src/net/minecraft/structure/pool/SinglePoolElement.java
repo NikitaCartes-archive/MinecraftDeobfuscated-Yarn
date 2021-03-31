@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.structure.Structure;
@@ -27,6 +27,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -64,6 +65,12 @@ public class SinglePoolElement extends StructurePoolElement {
 		this(Either.right(structure), () -> StructureProcessorLists.EMPTY, StructurePool.Projection.RIGID);
 	}
 
+	@Override
+	public Vec3i getStart(StructureManager structureManager, BlockRotation blockRotation) {
+		Structure structure = this.method_27233(structureManager);
+		return structure.getRotatedSize(blockRotation);
+	}
+
 	private Structure method_27233(StructureManager structureManager) {
 		return this.field_24015.map(structureManager::getStructureOrBlank, Function.identity());
 	}
@@ -78,8 +85,8 @@ public class SinglePoolElement extends StructurePoolElement {
 		List<Structure.StructureBlockInfo> list2 = Lists.<Structure.StructureBlockInfo>newArrayList();
 
 		for (Structure.StructureBlockInfo structureBlockInfo : list) {
-			if (structureBlockInfo.tag != null) {
-				StructureBlockMode structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.tag.getString("mode"));
+			if (structureBlockInfo.nbt != null) {
+				StructureBlockMode structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.nbt.getString("mode"));
 				if (structureBlockMode == StructureBlockMode.DATA) {
 					list2.add(structureBlockInfo);
 				}
@@ -118,7 +125,7 @@ public class SinglePoolElement extends StructurePoolElement {
 	) {
 		Structure structure = this.method_27233(structureManager);
 		StructurePlacementData structurePlacementData = this.createPlacementData(rotation, box, keepJigsaws);
-		if (!structure.place(world, pos, blockPos, structurePlacementData, random, SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.FORCE_STATE)) {
+		if (!structure.place(world, pos, blockPos, structurePlacementData, random, Block.NOTIFY_LISTENERS | Block.FORCE_STATE)) {
 			return false;
 		} else {
 			for (Structure.StructureBlockInfo structureBlockInfo : Structure.process(

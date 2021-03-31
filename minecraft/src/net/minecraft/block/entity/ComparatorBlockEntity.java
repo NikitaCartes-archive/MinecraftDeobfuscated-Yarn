@@ -12,16 +12,16 @@ public class ComparatorBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound tag) {
-		super.writeNbt(tag);
-		tag.putInt("OutputSignal", this.outputSignal);
-		return tag;
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		super.writeNbt(nbt);
+		nbt.putInt("OutputSignal", this.outputSignal);
+		return nbt;
 	}
 
 	@Override
-	public void readNbt(NbtCompound tag) {
-		super.readNbt(tag);
-		this.outputSignal = tag.getInt("OutputSignal");
+	public void readNbt(NbtCompound nbt) {
+		super.readNbt(nbt);
+		this.outputSignal = nbt.getInt("OutputSignal");
 	}
 
 	public int getOutputSignal() {

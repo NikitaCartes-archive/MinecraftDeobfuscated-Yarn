@@ -14,7 +14,6 @@ import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
@@ -34,6 +33,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class AbstractLichenBlock extends Block {
+	private static final float field_31194 = 1.0F;
 	private static final VoxelShape UP_SHAPE = Block.createCuboidShape(0.0, 15.0, 0.0, 16.0, 16.0, 16.0);
 	private static final VoxelShape DOWN_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 1.0, 16.0);
 	private static final VoxelShape EAST_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 1.0, 16.0, 16.0);
@@ -230,7 +230,7 @@ public class AbstractLichenBlock extends Block {
 	private boolean addDirection(WorldAccess world, BlockPos pos, Direction direction) {
 		BlockState blockState = world.getBlockState(pos);
 		BlockState blockState2 = this.withDirection(blockState, world, pos, direction);
-		return blockState2 != null ? world.setBlockState(pos, blockState2, SetBlockStateFlags.NOTIFY_LISTENERS) : false;
+		return blockState2 != null ? world.setBlockState(pos, blockState2, Block.NOTIFY_LISTENERS) : false;
 	}
 
 	private boolean canGrowIn(BlockState state) {

@@ -15,8 +15,6 @@ import java.io.OutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -124,7 +122,6 @@ public class NbtIo {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static void write(NbtCompound compound, File file) throws IOException {
 		FileOutputStream fileOutputStream = new FileOutputStream(file);
 		Throwable var3 = null;
@@ -170,7 +167,6 @@ public class NbtIo {
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public static NbtCompound read(File file) throws IOException {
 		if (!file.exists()) {
 			return null;

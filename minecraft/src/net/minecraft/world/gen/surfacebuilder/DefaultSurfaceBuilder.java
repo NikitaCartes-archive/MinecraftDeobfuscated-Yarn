@@ -9,6 +9,8 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 
 public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
+	private static final int field_31700 = 50;
+
 	public DefaultSurfaceBuilder(Codec<TernarySurfaceConfig> codec) {
 		super(codec);
 	}

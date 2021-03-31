@@ -14,19 +14,19 @@ public class GlProgramManager {
 
 	public static void useProgram(int i) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		GlStateManager.useProgram(i);
+		GlStateManager._glUseProgram(i);
 	}
 
-	public static void deleteProgram(GlProgram glProgram) {
+	public static void deleteProgram(GlShader glShader) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		glProgram.getFragmentShader().release();
-		glProgram.getVertexShader().release();
-		GlStateManager.deleteProgram(glProgram.getProgramRef());
+		glShader.getFragmentShader().release();
+		glShader.getVertexShader().release();
+		GlStateManager.glDeleteProgram(glShader.getProgramRef());
 	}
 
 	public static int createProgram() throws IOException {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		int i = GlStateManager.createProgram();
+		int i = GlStateManager.glCreateProgram();
 		if (i <= 0) {
 			throw new IOException("Could not create shader program (returned program ID " + i + ")");
 		} else {
@@ -34,18 +34,18 @@ public class GlProgramManager {
 		}
 	}
 
-	public static void linkProgram(GlProgram glProgram) {
+	public static void linkProgram(GlShader glShader) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		glProgram.method_34418();
-		GlStateManager.linkProgram(glProgram.getProgramRef());
-		int i = GlStateManager.getProgram(glProgram.getProgramRef(), 35714);
+		glShader.attachReferencedShaders();
+		GlStateManager.glLinkProgram(glShader.getProgramRef());
+		int i = GlStateManager.glGetProgrami(glShader.getProgramRef(), 35714);
 		if (i == 0) {
 			LOGGER.warn(
 				"Error encountered when linking program containing VS {} and FS {}. Log output:",
-				glProgram.getVertexShader().getName(),
-				glProgram.getFragmentShader().getName()
+				glShader.getVertexShader().getName(),
+				glShader.getFragmentShader().getName()
 			);
-			LOGGER.warn(GlStateManager.getProgramInfoLog(glProgram.getProgramRef(), 32768));
+			LOGGER.warn(GlStateManager.glGetProgramInfoLog(glShader.getProgramRef(), 32768));
 		}
 	}
 }

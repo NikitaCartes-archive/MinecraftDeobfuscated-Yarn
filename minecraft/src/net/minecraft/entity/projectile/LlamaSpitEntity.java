@@ -1,7 +1,5 @@
 package net.minecraft.entity.projectile;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -82,7 +80,6 @@ public class LlamaSpitEntity extends ProjectileEntity {
 	protected void initDataTracker() {
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void onSpawnPacket(EntitySpawnS2CPacket packet) {
 		super.onSpawnPacket(packet);

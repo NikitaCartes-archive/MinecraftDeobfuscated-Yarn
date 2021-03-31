@@ -2,6 +2,7 @@ package net.minecraft.entity.ai.brain.sensor;
 
 import java.util.function.Supplier;
 import net.minecraft.entity.passive.AxolotlBrain;
+import net.minecraft.entity.passive.GoatBrain;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -22,10 +23,11 @@ public class SensorType<U extends Sensor<?>> {
 	);
 	public static final SensorType<HoglinSpecificSensor> HOGLIN_SPECIFIC_SENSOR = register("hoglin_specific_sensor", HoglinSpecificSensor::new);
 	public static final SensorType<NearestVisibleAdultSensor> NEAREST_ADULT = register("nearest_adult", NearestVisibleAdultSensor::new);
-	public static final SensorType<AxolotlHostilesSensor> AXOLOTL_HOSTILES = register("axolotl_hostiles", AxolotlHostilesSensor::new);
-	public static final SensorType<AxolotlTemptationsSensor> AXOLOTL_TEMPTATIONS = register(
-		"axolotl_temptations", () -> new AxolotlTemptationsSensor(AxolotlBrain.getTemptItems())
+	public static final SensorType<AxolotlAttackablesSensor> AXOLOTL_ATTACKABLES = register("axolotl_attackables", AxolotlAttackablesSensor::new);
+	public static final SensorType<TemptationsSensor> AXOLOTL_TEMPTATIONS = register(
+		"axolotl_temptations", () -> new TemptationsSensor(AxolotlBrain.getTemptItems())
 	);
+	public static final SensorType<TemptationsSensor> GOAT_TEMPTATIONS = register("goat_temptations", () -> new TemptationsSensor(GoatBrain.getTemptItems()));
 	private final Supplier<U> factory;
 
 	private SensorType(Supplier<U> factory) {

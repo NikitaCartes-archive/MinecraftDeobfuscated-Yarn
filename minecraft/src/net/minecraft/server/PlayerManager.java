@@ -16,9 +16,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -27,6 +24,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.MessageType;
@@ -97,6 +95,7 @@ public abstract class PlayerManager {
 	public static final File OPERATORS_FILE = new File("ops.json");
 	public static final File WHITELIST_FILE = new File("whitelist.json");
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int field_29790 = 600;
 	private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
 	private final MinecraftServer server;
 	private final List<ServerPlayerEntity> players = Lists.<ServerPlayerEntity>newArrayList();
@@ -113,6 +112,7 @@ public abstract class PlayerManager {
 	protected final int maxPlayers;
 	private int viewDistance;
 	private boolean cheatsAllowed;
+	private static final boolean field_29791 = false;
 	private int latencyUpdateTimer;
 
 	public PlayerManager(MinecraftServer server, DynamicRegistryManager.Impl registryManager, WorldSaveHandler saveHandler, int maxPlayers) {
@@ -130,7 +130,7 @@ public abstract class PlayerManager {
 		userCache.add(gameProfile);
 		NbtCompound nbtCompound = this.loadPlayerData(player);
 		RegistryKey<World> registryKey = nbtCompound != null
-			? (RegistryKey)DimensionType.worldFromDimensionTag(new Dynamic<>(NbtOps.INSTANCE, nbtCompound.get("Dimension")))
+			? (RegistryKey)DimensionType.worldFromDimensionNbt(new Dynamic<>(NbtOps.INSTANCE, nbtCompound.get("Dimension")))
 				.resultOrPartial(LOGGER::error)
 				.orElse(World.OVERWORLD)
 			: World.OVERWORLD;
@@ -218,7 +218,7 @@ public abstract class PlayerManager {
 			serverPlayNetworkHandler.sendPacket(new EntityStatusEffectS2CPacket(player.getId(), statusEffectInstance));
 		}
 
-		if (nbtCompound != null && nbtCompound.contains("RootVehicle", NbtTypeIds.COMPOUND)) {
+		if (nbtCompound != null && nbtCompound.contains("RootVehicle", NbtElement.COMPOUND_TYPE)) {
 			NbtCompound nbtCompound2 = nbtCompound.getCompound("RootVehicle");
 			Entity entity = EntityType.loadEntityWithPassengers(
 				nbtCompound2.getCompound("Entity"), serverWorld2, vehicle -> !serverWorld2.tryLoadEntity(vehicle) ? null : vehicle
@@ -459,7 +459,8 @@ public abstract class PlayerManager {
 			serverPlayerEntity.setSpawnPoint(serverWorld2.getRegistryKey(), blockPos, f, bl, false);
 			bl2 = !alive && bl3;
 		} else if (blockPos != null) {
-			serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.NO_RESPAWN_BLOCK, 0.0F));
+			serverPlayerEntity.networkHandler
+				.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.NO_RESPAWN_BLOCK, GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
 		}
 
 		while (!serverWorld2.isSpaceEmpty(serverPlayerEntity) && serverPlayerEntity.getY() < (double)serverWorld2.getTopY()) {
@@ -674,7 +675,7 @@ public abstract class PlayerManager {
 			.sendPacket(new WorldTimeUpdateS2CPacket(world.getTime(), world.getTimeOfDay(), world.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)));
 		player.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(world.getSpawnPos(), world.getSpawnAngle()));
 		if (world.isRaining()) {
-			player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_STARTED, 0.0F));
+			player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_STARTED, GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
 			player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_GRADIENT_CHANGED, world.getRainGradient(1.0F)));
 			player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.THUNDER_GRADIENT_CHANGED, world.getThunderGradient(1.0F)));
 		}
@@ -731,7 +732,6 @@ public abstract class PlayerManager {
 		return null;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void setCheatsAllowed(boolean cheatsAllowed) {
 		this.cheatsAllowed = cheatsAllowed;
 	}

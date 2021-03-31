@@ -66,6 +66,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 
 public class ExecuteCommand {
+	private static final int field_33390 = 32768;
 	private static final Dynamic2CommandExceptionType BLOCKS_TOOBIG_EXCEPTION = new Dynamic2CommandExceptionType(
 		(maxCount, count) -> new TranslatableText("commands.execute.blocks.toobig", maxCount, count)
 	);
@@ -376,14 +377,14 @@ public class ExecuteCommand {
 	}
 
 	private static ServerCommandSource executeStoreData(
-		ServerCommandSource source, DataCommandObject object, NbtPathArgumentType.NbtPath path, IntFunction<NbtElement> tagSetter, boolean requestResult
+		ServerCommandSource source, DataCommandObject object, NbtPathArgumentType.NbtPath path, IntFunction<NbtElement> nbtSetter, boolean requestResult
 	) {
 		return source.mergeConsumers((context, success, result) -> {
 			try {
-				NbtCompound nbtCompound = object.getTag();
+				NbtCompound nbtCompound = object.getNbt();
 				int i = requestResult ? result : (success ? 1 : 0);
-				path.put(nbtCompound, () -> (NbtElement)tagSetter.apply(i));
-				object.setTag(nbtCompound);
+				path.put(nbtCompound, () -> (NbtElement)nbtSetter.apply(i));
+				object.setNbt(nbtCompound);
 			} catch (CommandSyntaxException var9) {
 			}
 		}, BINARY_RESULT_CONSUMER);
@@ -581,7 +582,7 @@ public class ExecuteCommand {
 	}
 
 	private static int countPathMatches(DataCommandObject object, NbtPathArgumentType.NbtPath path) throws CommandSyntaxException {
-		return path.count(object.getTag());
+		return path.count(object.getNbt());
 	}
 
 	private static boolean testScoreCondition(CommandContext<ServerCommandSource> context, BiPredicate<Integer, Integer> condition) throws CommandSyntaxException {
@@ -671,16 +672,16 @@ public class ExecuteCommand {
 	private static OptionalInt testBlocksCondition(ServerWorld world, BlockPos start, BlockPos end, BlockPos destination, boolean masked) throws CommandSyntaxException {
 		BlockBox blockBox = BlockBox.create(start, end);
 		BlockBox blockBox2 = BlockBox.create(destination, destination.add(blockBox.getDimensions()));
-		BlockPos blockPos = new BlockPos(blockBox2.minX - blockBox.minX, blockBox2.minY - blockBox.minY, blockBox2.minZ - blockBox.minZ);
+		BlockPos blockPos = new BlockPos(blockBox2.getMinX() - blockBox.getMinX(), blockBox2.getMinY() - blockBox.getMinY(), blockBox2.getMinZ() - blockBox.getMinZ());
 		int i = blockBox.getBlockCountX() * blockBox.getBlockCountY() * blockBox.getBlockCountZ();
 		if (i > 32768) {
 			throw BLOCKS_TOOBIG_EXCEPTION.create(32768, i);
 		} else {
 			int j = 0;
 
-			for (int k = blockBox.minZ; k <= blockBox.maxZ; k++) {
-				for (int l = blockBox.minY; l <= blockBox.maxY; l++) {
-					for (int m = blockBox.minX; m <= blockBox.maxX; m++) {
+			for (int k = blockBox.getMinZ(); k <= blockBox.getMaxZ(); k++) {
+				for (int l = blockBox.getMinY(); l <= blockBox.getMaxY(); l++) {
+					for (int m = blockBox.getMinX(); m <= blockBox.getMaxX(); m++) {
 						BlockPos blockPos2 = new BlockPos(m, l, k);
 						BlockPos blockPos3 = blockPos2.add(blockPos);
 						BlockState blockState = world.getBlockState(blockPos2);

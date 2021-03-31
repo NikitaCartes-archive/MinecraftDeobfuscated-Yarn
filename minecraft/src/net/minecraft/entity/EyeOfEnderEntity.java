@@ -1,10 +1,5 @@
 package net.minecraft.entity;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.api.EnvironmentInterface;
-import net.fabricmc.api.EnvironmentInterfaces;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -21,11 +16,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 
-@EnvironmentInterfaces({@EnvironmentInterface(
-		value = EnvType.CLIENT,
-		itf = FlyingItemEntity.class
-	)})
 public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 	private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(EyeOfEnderEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 	private double targetX;
@@ -64,7 +56,6 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 		this.getDataTracker().startTracking(ITEM, ItemStack.EMPTY);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean shouldRender(double distance) {
 		double d = this.getBoundingBox().getAverageSideLength() * 4.0;
@@ -103,7 +94,6 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 		this.dropsItem = this.random.nextInt(5) > 0;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void setVelocityClient(double x, double y, double z) {
 		this.setVelocity(x, y, z);
@@ -179,16 +169,16 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
+	public void writeCustomDataToNbt(NbtCompound nbt) {
 		ItemStack itemStack = this.getTrackedItem();
 		if (!itemStack.isEmpty()) {
-			tag.put("Item", itemStack.writeNbt(new NbtCompound()));
+			nbt.put("Item", itemStack.writeNbt(new NbtCompound()));
 		}
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		ItemStack itemStack = ItemStack.fromNbt(tag.getCompound("Item"));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		ItemStack itemStack = ItemStack.fromNbt(nbt.getCompound("Item"));
 		this.setItem(itemStack);
 	}
 

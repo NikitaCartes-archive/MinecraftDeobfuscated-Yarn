@@ -24,12 +24,12 @@ public class VillagerResemblingModel<T extends Entity> extends SinglePartEntityM
 
 	public VillagerResemblingModel(ModelPart root) {
 		this.root = root;
-		this.head = root.getChild("head");
-		this.hat = this.head.getChild("hat");
-		this.hatRim = this.hat.getChild("hat_rim");
-		this.nose = this.head.getChild("nose");
-		this.rightLeg = root.getChild("right_leg");
-		this.leftLeg = root.getChild("left_leg");
+		this.head = root.getChild(EntityModelPartNames.HEAD);
+		this.hat = this.head.getChild(EntityModelPartNames.HAT);
+		this.hatRim = this.hat.getChild(EntityModelPartNames.HAT_RIM);
+		this.nose = this.head.getChild(EntityModelPartNames.NOSE);
+		this.rightLeg = root.getChild(EntityModelPartNames.RIGHT_LEG);
+		this.leftLeg = root.getChild(EntityModelPartNames.LEFT_LEG);
 	}
 
 	public static ModelData getModelData() {
@@ -37,21 +37,27 @@ public class VillagerResemblingModel<T extends Entity> extends SinglePartEntityM
 		ModelPartData modelPartData = modelData.getRoot();
 		float f = 0.5F;
 		ModelPartData modelPartData2 = modelPartData.addChild(
-			"head", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -10.0F, -4.0F, 8.0F, 10.0F, 8.0F), ModelTransform.NONE
+			EntityModelPartNames.HEAD, ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -10.0F, -4.0F, 8.0F, 10.0F, 8.0F), ModelTransform.NONE
 		);
 		ModelPartData modelPartData3 = modelPartData2.addChild(
-			"hat", ModelPartBuilder.create().uv(32, 0).cuboid(-4.0F, -10.0F, -4.0F, 8.0F, 10.0F, 8.0F, new Dilation(0.5F)), ModelTransform.NONE
+			EntityModelPartNames.HAT, ModelPartBuilder.create().uv(32, 0).cuboid(-4.0F, -10.0F, -4.0F, 8.0F, 10.0F, 8.0F, new Dilation(0.5F)), ModelTransform.NONE
 		);
 		modelPartData3.addChild(
-			"hat_rim", ModelPartBuilder.create().uv(30, 47).cuboid(-8.0F, -8.0F, -6.0F, 16.0F, 16.0F, 1.0F), ModelTransform.rotation((float) (-Math.PI / 2), 0.0F, 0.0F)
+			EntityModelPartNames.HAT_RIM,
+			ModelPartBuilder.create().uv(30, 47).cuboid(-8.0F, -8.0F, -6.0F, 16.0F, 16.0F, 1.0F),
+			ModelTransform.rotation((float) (-Math.PI / 2), 0.0F, 0.0F)
 		);
-		modelPartData2.addChild("nose", ModelPartBuilder.create().uv(24, 0).cuboid(-1.0F, -1.0F, -6.0F, 2.0F, 4.0F, 2.0F), ModelTransform.pivot(0.0F, -2.0F, 0.0F));
+		modelPartData2.addChild(
+			EntityModelPartNames.NOSE, ModelPartBuilder.create().uv(24, 0).cuboid(-1.0F, -1.0F, -6.0F, 2.0F, 4.0F, 2.0F), ModelTransform.pivot(0.0F, -2.0F, 0.0F)
+		);
 		ModelPartData modelPartData4 = modelPartData.addChild(
-			"body", ModelPartBuilder.create().uv(16, 20).cuboid(-4.0F, 0.0F, -3.0F, 8.0F, 12.0F, 6.0F), ModelTransform.NONE
+			EntityModelPartNames.BODY, ModelPartBuilder.create().uv(16, 20).cuboid(-4.0F, 0.0F, -3.0F, 8.0F, 12.0F, 6.0F), ModelTransform.NONE
 		);
-		modelPartData4.addChild("jacket", ModelPartBuilder.create().uv(0, 38).cuboid(-4.0F, 0.0F, -3.0F, 8.0F, 18.0F, 6.0F, new Dilation(0.5F)), ModelTransform.NONE);
+		modelPartData4.addChild(
+			EntityModelPartNames.JACKET, ModelPartBuilder.create().uv(0, 38).cuboid(-4.0F, 0.0F, -3.0F, 8.0F, 18.0F, 6.0F, new Dilation(0.5F)), ModelTransform.NONE
+		);
 		modelPartData.addChild(
-			"arms",
+			EntityModelPartNames.ARMS,
 			ModelPartBuilder.create()
 				.uv(44, 22)
 				.cuboid(-8.0F, -2.0F, -2.0F, 4.0F, 8.0F, 4.0F)
@@ -62,10 +68,12 @@ public class VillagerResemblingModel<T extends Entity> extends SinglePartEntityM
 			ModelTransform.of(0.0F, 3.0F, -1.0F, -0.75F, 0.0F, 0.0F)
 		);
 		modelPartData.addChild(
-			"right_leg", ModelPartBuilder.create().uv(0, 22).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F), ModelTransform.pivot(-2.0F, 12.0F, 0.0F)
+			EntityModelPartNames.RIGHT_LEG, ModelPartBuilder.create().uv(0, 22).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F), ModelTransform.pivot(-2.0F, 12.0F, 0.0F)
 		);
 		modelPartData.addChild(
-			"left_leg", ModelPartBuilder.create().uv(0, 22).mirrored().cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F), ModelTransform.pivot(2.0F, 12.0F, 0.0F)
+			EntityModelPartNames.LEFT_LEG,
+			ModelPartBuilder.create().uv(0, 22).mirrored().cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F),
+			ModelTransform.pivot(2.0F, 12.0F, 0.0F)
 		);
 		return modelData;
 	}

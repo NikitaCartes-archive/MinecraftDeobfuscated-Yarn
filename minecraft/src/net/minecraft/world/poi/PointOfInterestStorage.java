@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 import net.minecraft.block.BlockState;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.util.Util;
+import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -32,6 +33,8 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.storage.SerializingRegionBasedStorage;
 
 public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointOfInterestSet> {
+	public static final int field_30265 = 6;
+	public static final int field_30266 = 1;
 	private final PointOfInterestStorage.PointOfInterestDistanceTracker pointOfInterestDistanceTracker;
 	private final LongSet preloadedChunks = new LongOpenHashSet();
 
@@ -73,6 +76,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 		return this.getInSquare(typePredicate, pos, radius, occupationStatus).filter(poi -> poi.getPos().getSquaredDistance(pos) <= (double)i);
 	}
 
+	@Debug
 	public Stream<PointOfInterest> getInChunk(
 		Predicate<PointOfInterestType> predicate, ChunkPos chunkPos, PointOfInterestStorage.OccupationStatus occupationStatus
 	) {
@@ -166,6 +170,12 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 
 	public Optional<PointOfInterestType> getType(BlockPos pos) {
 		return this.get(ChunkSectionPos.toLong(pos)).flatMap(pointOfInterestSet -> pointOfInterestSet.getType(pos));
+	}
+
+	@Deprecated
+	@Debug
+	public int method_35155(BlockPos blockPos) {
+		return (Integer)this.get(ChunkSectionPos.toLong(blockPos)).map(pointOfInterestSet -> pointOfInterestSet.method_35157(blockPos)).orElse(0);
 	}
 
 	public int getDistanceFromNearestOccupied(ChunkSectionPos pos) {

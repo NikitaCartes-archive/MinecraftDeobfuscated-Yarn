@@ -4,8 +4,6 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Locale;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -22,7 +20,6 @@ public class CrashReportSection {
 		this.title = title;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static String createPositionString(HeightLimitView world, double x, double y, double z) {
 		return String.format(Locale.ROOT, "%.2f,%.2f,%.2f - %s", x, y, z, createPositionString(world, new BlockPos(x, y, z)));
 	}

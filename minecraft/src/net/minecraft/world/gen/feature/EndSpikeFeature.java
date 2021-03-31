@@ -27,6 +27,8 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
+	public static final int field_31516 = 10;
+	private static final int field_31517 = 42;
 	private static final LoadingCache<Long, List<EndSpikeFeature.Spike>> CACHE = CacheBuilder.newBuilder()
 		.expireAfterWrite(5L, TimeUnit.MINUTES)
 		.build(new EndSpikeFeature.SpikeCache());

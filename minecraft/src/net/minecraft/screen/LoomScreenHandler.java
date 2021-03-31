@@ -1,8 +1,5 @@
 package net.minecraft.screen;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,6 +11,7 @@ import net.minecraft.item.BannerPatternItem;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundCategory;
@@ -21,6 +19,10 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
 
 public class LoomScreenHandler extends ScreenHandler {
+	private static final int field_30826 = 4;
+	private static final int field_30827 = 31;
+	private static final int field_30828 = 31;
+	private static final int field_30829 = 40;
 	private final ScreenHandlerContext context;
 	private final Property selectedPattern = Property.create();
 	private Runnable inventoryChangeListener = () -> {
@@ -109,7 +111,6 @@ public class LoomScreenHandler extends ScreenHandler {
 		this.addProperty(this.selectedPattern);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getSelectedPattern() {
 		return this.selectedPattern.get();
 	}
@@ -143,7 +144,9 @@ public class LoomScreenHandler extends ScreenHandler {
 				&& (this.selectedPattern.get() < BannerPattern.COUNT - BannerPattern.HAS_PATTERN_ITEM_COUNT || !itemStack3.isEmpty())) {
 			if (!itemStack3.isEmpty() && itemStack3.getItem() instanceof BannerPatternItem) {
 				NbtCompound nbtCompound = itemStack.getOrCreateSubTag("BlockEntityTag");
-				boolean bl = nbtCompound.contains("Patterns", NbtTypeIds.LIST) && !itemStack.isEmpty() && nbtCompound.getList("Patterns", NbtTypeIds.COMPOUND).size() >= 6;
+				boolean bl = nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)
+					&& !itemStack.isEmpty()
+					&& nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE).size() >= 6;
 				if (bl) {
 					this.selectedPattern.set(0);
 				} else {
@@ -159,7 +162,6 @@ public class LoomScreenHandler extends ScreenHandler {
 		this.sendContentUpdates();
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void setInventoryChangeListener(Runnable inventoryChangeListener) {
 		this.inventoryChangeListener = inventoryChangeListener;
 	}
@@ -235,8 +237,8 @@ public class LoomScreenHandler extends ScreenHandler {
 				DyeColor dyeColor = ((DyeItem)itemStack2.getItem()).getColor();
 				NbtCompound nbtCompound = itemStack3.getOrCreateSubTag("BlockEntityTag");
 				NbtList nbtList;
-				if (nbtCompound.contains("Patterns", NbtTypeIds.LIST)) {
-					nbtList = nbtCompound.getList("Patterns", NbtTypeIds.COMPOUND);
+				if (nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)) {
+					nbtList = nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE);
 				} else {
 					nbtList = new NbtList();
 					nbtCompound.put("Patterns", nbtList);
@@ -254,22 +256,18 @@ public class LoomScreenHandler extends ScreenHandler {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Slot getBannerSlot() {
 		return this.bannerSlot;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Slot getDyeSlot() {
 		return this.dyeSlot;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Slot getPatternSlot() {
 		return this.patternSlot;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Slot getOutputSlot() {
 		return this.outputSlot;
 	}

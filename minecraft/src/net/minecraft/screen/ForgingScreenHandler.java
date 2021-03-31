@@ -11,6 +11,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 
 public abstract class ForgingScreenHandler extends ScreenHandler {
+	public static final int FIRST_INPUT_SLOT_INDEX = 0;
+	public static final int SECOND_INPUT_SLOT_INDEX = 1;
+	public static final int OUTPUT_SLOT_INDEX = 2;
+	private static final int PLAYER_INVENTORY_START_INDEX = 3;
+	private static final int field_30817 = 30;
+	private static final int field_30818 = 30;
+	private static final int PLAYER_INVENTORY_END_INDEX = 39;
 	protected final CraftingResultInventory output = new CraftingResultInventory();
 	protected final Inventory input = new SimpleInventory(2) {
 		@Override

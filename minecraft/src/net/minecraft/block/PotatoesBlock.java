@@ -1,7 +1,5 @@
 package net.minecraft.block;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
@@ -24,7 +22,6 @@ public class PotatoesBlock extends CropBlock {
 		super(settings);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	protected ItemConvertible getSeedsItem() {
 		return Items.POTATO;

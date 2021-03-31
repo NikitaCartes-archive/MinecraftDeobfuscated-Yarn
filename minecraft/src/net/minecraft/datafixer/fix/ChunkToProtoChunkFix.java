@@ -22,6 +22,8 @@ import java.util.stream.Stream;
 import net.minecraft.datafixer.TypeReferences;
 
 public class ChunkToProtoChunkFix extends DataFix {
+	private static final int field_29881 = 16;
+
 	public ChunkToProtoChunkFix(Schema outputSchema, boolean changesType) {
 		super(outputSchema, changesType);
 	}

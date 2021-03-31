@@ -2,8 +2,6 @@ package net.minecraft.network.packet.s2c.play;
 
 import java.util.Objects;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -37,13 +35,11 @@ public class ScoreboardDisplayS2CPacket implements Packet<ClientPlayPacketListen
 		clientPlayPacketListener.onScoreboardDisplay(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getSlot() {
 		return this.slot;
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public String getName() {
 		return Objects.equals(this.name, "") ? null : this.name;
 	}

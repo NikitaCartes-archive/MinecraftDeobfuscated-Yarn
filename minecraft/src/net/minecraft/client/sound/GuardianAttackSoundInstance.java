@@ -8,6 +8,10 @@ import net.minecraft.sound.SoundEvents;
 
 @Environment(EnvType.CLIENT)
 public class GuardianAttackSoundInstance extends MovingSoundInstance {
+	private static final float field_32997 = 0.0F;
+	private static final float field_32998 = 1.0F;
+	private static final float field_32999 = 0.7F;
+	private static final float field_33000 = 0.5F;
 	private final GuardianEntity guardian;
 
 	public GuardianAttackSoundInstance(GuardianEntity guardian) {

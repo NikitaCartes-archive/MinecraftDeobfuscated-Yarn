@@ -48,6 +48,11 @@ import org.apache.commons.lang3.mutable.MutableInt;
 
 @Environment(EnvType.CLIENT)
 public class BookEditScreen extends Screen {
+	private static final int field_32323 = 114;
+	private static final int field_32324 = 128;
+	private static final int field_32325 = 250;
+	private static final int field_32326 = 192;
+	private static final int field_32327 = 192;
 	private static final Text EDIT_TITLE_TEXT = new TranslatableText("book.editTitle");
 	private static final Text FINALIZE_WARNING_TEXT = new TranslatableText("book.finalizeWarning");
 	private static final OrderedText BLACK_CURSOR_TEXT = OrderedText.styledString("_", Style.EMPTY.withColor(Formatting.BLACK));

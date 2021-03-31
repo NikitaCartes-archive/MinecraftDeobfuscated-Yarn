@@ -1,17 +1,15 @@
 package net.minecraft.network.packet.c2s.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.util.math.BlockPos;
 
 public class UpdateSignC2SPacket implements Packet<ServerPlayPacketListener> {
+	private static final int MAX_LINE_LENGTH = 384;
 	private final BlockPos pos;
 	private final String[] text;
 
-	@Environment(EnvType.CLIENT)
 	public UpdateSignC2SPacket(BlockPos pos, String line1, String line2, String line3, String line4) {
 		this.pos = pos;
 		this.text = new String[]{line1, line2, line3, line4};

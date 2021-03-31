@@ -5,9 +5,6 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -37,6 +34,7 @@ import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -48,6 +46,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public class VindicatorEntity extends IllagerEntity {
+	private static final String JOHNNY_KEY = "Johnny";
 	private static final Predicate<Difficulty> DIFFICULTY_ALLOWS_DOOR_BREAKING_PREDICATE = difficulty -> difficulty == Difficulty.NORMAL
 			|| difficulty == Difficulty.HARD;
 	private boolean johnny;
@@ -93,14 +92,13 @@ public class VindicatorEntity extends IllagerEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
 		if (this.johnny) {
-			tag.putBoolean("Johnny", true);
+			nbt.putBoolean("Johnny", true);
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public IllagerEntity.State getState() {
 		if (this.isAttacking()) {
@@ -111,10 +109,10 @@ public class VindicatorEntity extends IllagerEntity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		if (tag.contains("Johnny", NbtTypeIds.NUMBER)) {
-			this.johnny = tag.getBoolean("Johnny");
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		if (nbt.contains("Johnny", NbtElement.NUMBER_TYPE)) {
+			this.johnny = nbt.getBoolean("Johnny");
 		}
 	}
 
@@ -126,9 +124,9 @@ public class VindicatorEntity extends IllagerEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
-		EntityData entityData2 = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		EntityData entityData2 = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 		((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
 		this.initEquipment(difficulty);
 		this.updateEnchantments(difficulty);

@@ -2,9 +2,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import java.util.function.Supplier;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
@@ -12,6 +9,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -20,7 +18,9 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class StemBlock extends PlantBlock implements Fertilizable {
+	public static final int field_31255 = 7;
 	public static final IntProperty AGE = Properties.AGE_7;
+	protected static final float field_31256 = 1.0F;
 	protected static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{
 		Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 2.0, 9.0),
 		Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 4.0, 9.0),
@@ -59,19 +59,12 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 				int i = (Integer)state.get(AGE);
 				if (i < 7) {
 					state = state.with(AGE, Integer.valueOf(i + 1));
-					world.setBlockState(pos, state, SetBlockStateFlags.NOTIFY_LISTENERS);
+					world.setBlockState(pos, state, Block.NOTIFY_LISTENERS);
 				} else {
 					Direction direction = Direction.Type.HORIZONTAL.random(random);
 					BlockPos blockPos = pos.offset(direction);
 					BlockState blockState = world.getBlockState(blockPos.down());
-					if (world.getBlockState(blockPos).isAir()
-						&& (
-							blockState.isOf(Blocks.FARMLAND)
-								|| blockState.isOf(Blocks.DIRT)
-								|| blockState.isOf(Blocks.COARSE_DIRT)
-								|| blockState.isOf(Blocks.PODZOL)
-								|| blockState.isOf(Blocks.GRASS_BLOCK)
-						)) {
+					if (world.getBlockState(blockPos).isAir() && (blockState.isOf(Blocks.FARMLAND) || blockState.isIn(BlockTags.DIRT) || blockState.isOf(Blocks.GRASS_BLOCK))) {
 						world.setBlockState(blockPos, this.gourdBlock.getDefaultState());
 						world.setBlockState(pos, this.gourdBlock.getAttachedStem().getDefaultState().with(HorizontalFacingBlock.FACING, direction));
 					}
@@ -80,7 +73,6 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
 		return new ItemStack((ItemConvertible)this.pickBlockItem.get());
@@ -100,7 +92,7 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
 		int i = Math.min(7, (Integer)state.get(AGE) + MathHelper.nextInt(world.random, 2, 5));
 		BlockState blockState = state.with(AGE, Integer.valueOf(i));
-		world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
+		world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
 		if (i == 7) {
 			blockState.randomTick(world, pos, world.random);
 		}

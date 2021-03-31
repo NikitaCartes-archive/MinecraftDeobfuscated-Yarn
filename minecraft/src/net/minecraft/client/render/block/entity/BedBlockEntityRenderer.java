@@ -20,6 +20,7 @@ import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Direction;
@@ -41,12 +42,12 @@ public class BedBlockEntityRenderer implements BlockEntityRenderer<BedBlockEntit
 		ModelPartData modelPartData = modelData.getRoot();
 		modelPartData.addChild("main", ModelPartBuilder.create().uv(0, 0).cuboid(0.0F, 0.0F, 0.0F, 16.0F, 16.0F, 6.0F), ModelTransform.NONE);
 		modelPartData.addChild(
-			"left_leg",
+			EntityModelPartNames.LEFT_LEG,
 			ModelPartBuilder.create().uv(50, 6).cuboid(0.0F, 6.0F, 0.0F, 3.0F, 3.0F, 3.0F),
 			ModelTransform.rotation((float) (Math.PI / 2), 0.0F, (float) (Math.PI / 2))
 		);
 		modelPartData.addChild(
-			"right_leg",
+			EntityModelPartNames.RIGHT_LEG,
 			ModelPartBuilder.create().uv(50, 18).cuboid(-16.0F, 6.0F, 0.0F, 3.0F, 3.0F, 3.0F),
 			ModelTransform.rotation((float) (Math.PI / 2), 0.0F, (float) Math.PI)
 		);
@@ -58,10 +59,12 @@ public class BedBlockEntityRenderer implements BlockEntityRenderer<BedBlockEntit
 		ModelPartData modelPartData = modelData.getRoot();
 		modelPartData.addChild("main", ModelPartBuilder.create().uv(0, 22).cuboid(0.0F, 0.0F, 0.0F, 16.0F, 16.0F, 6.0F), ModelTransform.NONE);
 		modelPartData.addChild(
-			"left_leg", ModelPartBuilder.create().uv(50, 0).cuboid(0.0F, 6.0F, -16.0F, 3.0F, 3.0F, 3.0F), ModelTransform.rotation((float) (Math.PI / 2), 0.0F, 0.0F)
+			EntityModelPartNames.LEFT_LEG,
+			ModelPartBuilder.create().uv(50, 0).cuboid(0.0F, 6.0F, -16.0F, 3.0F, 3.0F, 3.0F),
+			ModelTransform.rotation((float) (Math.PI / 2), 0.0F, 0.0F)
 		);
 		modelPartData.addChild(
-			"right_leg",
+			EntityModelPartNames.RIGHT_LEG,
 			ModelPartBuilder.create().uv(50, 12).cuboid(-16.0F, 6.0F, -16.0F, 3.0F, 3.0F, 3.0F),
 			ModelTransform.rotation((float) (Math.PI / 2), 0.0F, (float) (Math.PI * 3.0 / 2.0))
 		);

@@ -5,12 +5,12 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
-import net.minecraft.util.math.BlockBox;
+import java.util.function.BiConsumer;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.ModifiableTestableWorld;
-import net.minecraft.world.gen.UniformIntDistribution;
+import net.minecraft.util.math.intprovider.IntProvider;
+import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
@@ -18,18 +18,18 @@ import net.minecraft.world.gen.foliage.FoliagePlacer;
 public class BendingTrunkPlacer extends TrunkPlacer {
 	public static final Codec<BendingTrunkPlacer> CODEC = RecordCodecBuilder.create(
 		instance -> fillTrunkPlacerFields(instance)
-				.<Integer, UniformIntDistribution>and(
+				.<Integer, IntProvider>and(
 					instance.group(
 						Codec.intRange(1, Integer.MAX_VALUE).optionalFieldOf("min_height_for_leaves", 1).forGetter(bendingTrunkPlacer -> bendingTrunkPlacer.minHeightForLeaves),
-						UniformIntDistribution.createValidatedCodec(1, 32, 32).fieldOf("bend_length").forGetter(bendingTrunkPlacer -> bendingTrunkPlacer.bendLength)
+						IntProvider.createValidatingCodec(1, 64).fieldOf("bend_length").forGetter(bendingTrunkPlacer -> bendingTrunkPlacer.bendLength)
 					)
 				)
 				.apply(instance, BendingTrunkPlacer::new)
 	);
 	private final int minHeightForLeaves;
-	private final UniformIntDistribution bendLength;
+	private final IntProvider bendLength;
 
-	public BendingTrunkPlacer(int baseHeight, int firstRandomHeight, int secondRandomHeight, int minHeightForLeaves, UniformIntDistribution bendLength) {
+	public BendingTrunkPlacer(int baseHeight, int firstRandomHeight, int secondRandomHeight, int minHeightForLeaves, IntProvider bendLength) {
 		super(baseHeight, firstRandomHeight, secondRandomHeight);
 		this.minHeightForLeaves = minHeightForLeaves;
 		this.bendLength = bendLength;
@@ -42,36 +42,36 @@ public class BendingTrunkPlacer extends TrunkPlacer {
 
 	@Override
 	public List<FoliagePlacer.TreeNode> generate(
-		ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> placedStates, BlockBox box, TreeFeatureConfig config
+		TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, int i, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig
 	) {
 		Direction direction = Direction.Type.HORIZONTAL.random(random);
-		int i = trunkHeight - 1;
-		BlockPos.Mutable mutable = pos.mutableCopy();
-		BlockPos blockPos = mutable.down();
-		setToDirt(world, random, blockPos, config);
+		int j = i - 1;
+		BlockPos.Mutable mutable = blockPos.mutableCopy();
+		BlockPos blockPos2 = mutable.down();
+		setToDirt(testableWorld, biConsumer, random, blockPos2, treeFeatureConfig);
 		List<FoliagePlacer.TreeNode> list = Lists.<FoliagePlacer.TreeNode>newArrayList();
 
-		for (int j = 0; j <= i; j++) {
-			if (j + 1 >= i + random.nextInt(2)) {
+		for (int k = 0; k <= j; k++) {
+			if (k + 1 >= j + random.nextInt(2)) {
 				mutable.move(direction);
 			}
 
-			if (TreeFeature.canReplace(world, mutable)) {
-				getAndSetState(world, random, mutable, placedStates, box, config);
+			if (TreeFeature.canReplace(testableWorld, mutable)) {
+				method_35375(testableWorld, biConsumer, random, mutable, treeFeatureConfig);
 			}
 
-			if (j >= this.minHeightForLeaves) {
+			if (k >= this.minHeightForLeaves) {
 				list.add(new FoliagePlacer.TreeNode(mutable.toImmutable(), 0, false));
 			}
 
 			mutable.move(Direction.UP);
 		}
 
-		int j = this.bendLength.getValue(random);
+		int k = this.bendLength.get(random);
 
-		for (int k = 0; k <= j; k++) {
-			if (TreeFeature.canReplace(world, mutable)) {
-				getAndSetState(world, random, mutable, placedStates, box, config);
+		for (int l = 0; l <= k; l++) {
+			if (TreeFeature.canReplace(testableWorld, mutable)) {
+				method_35375(testableWorld, biConsumer, random, mutable, treeFeatureConfig);
 			}
 
 			list.add(new FoliagePlacer.TreeNode(mutable.toImmutable(), 0, false));

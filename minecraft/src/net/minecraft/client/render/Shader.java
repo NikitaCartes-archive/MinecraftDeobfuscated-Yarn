@@ -19,13 +19,13 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5913;
 import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.gl.GLImportProcessor;
 import net.minecraft.client.gl.GlBlendState;
-import net.minecraft.client.gl.GlProgram;
 import net.minecraft.client.gl.GlProgramManager;
 import net.minecraft.client.gl.GlShader;
 import net.minecraft.client.gl.GlUniform;
+import net.minecraft.client.gl.Program;
 import net.minecraft.client.gl.ShaderParseException;
 import net.minecraft.client.gl.Uniform;
 import net.minecraft.client.texture.AbstractTexture;
@@ -39,71 +39,74 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class Shader implements GlProgram, AutoCloseable {
-	private static final Logger field_29483 = LogManager.getLogger();
-	private static final Uniform field_29484 = new Uniform();
-	private static Shader field_29485;
-	private static int field_29486 = -1;
-	private final Map<String, Object> field_29487 = Maps.<String, Object>newHashMap();
-	private final List<String> field_29488 = Lists.<String>newArrayList();
-	private final List<Integer> field_29489 = Lists.<Integer>newArrayList();
-	private final List<GlUniform> field_29490 = Lists.<GlUniform>newArrayList();
-	private final List<Integer> field_29491 = Lists.<Integer>newArrayList();
-	private final Map<String, GlUniform> field_29492 = Maps.<String, GlUniform>newHashMap();
-	private final int field_29493;
-	private final String field_29494;
-	private boolean field_29495;
-	private final GlBlendState field_29464;
-	private final List<Integer> field_29465;
-	private final List<String> field_29466;
-	private final GlShader field_29467;
-	private final GlShader field_29468;
-	private final VertexFormat field_29469;
+public class Shader implements GlShader, AutoCloseable {
+	private static final String field_32778 = "shaders/core/";
+	private static final String field_32779 = "shaders/include/";
+	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Uniform DEFAULT_UNIFORM = new Uniform();
+	private static final boolean field_32780 = true;
+	private static Shader activeShader;
+	private static int activeShaderId = -1;
+	private final Map<String, Object> samplers = Maps.<String, Object>newHashMap();
+	private final List<String> samplerNames = Lists.<String>newArrayList();
+	private final List<Integer> loadedSamplerIds = Lists.<Integer>newArrayList();
+	private final List<GlUniform> uniforms = Lists.<GlUniform>newArrayList();
+	private final List<Integer> loadedUniformIds = Lists.<Integer>newArrayList();
+	private final Map<String, GlUniform> loadedUniforms = Maps.<String, GlUniform>newHashMap();
+	private final int programId;
+	private final String name;
+	private boolean dirty;
+	private final GlBlendState blendState;
+	private final List<Integer> loadedAttributeIds;
+	private final List<String> attributeNames;
+	private final Program vertexShader;
+	private final Program fragmentShader;
+	private final VertexFormat format;
 	@Nullable
-	public final GlUniform field_29470;
+	public final GlUniform modelViewMat;
 	@Nullable
-	public final GlUniform field_29471;
+	public final GlUniform projectionMat;
 	@Nullable
-	public final GlUniform field_29472;
+	public final GlUniform textureMat;
 	@Nullable
-	public final GlUniform field_29473;
+	public final GlUniform screenSize;
 	@Nullable
-	public final GlUniform field_29474;
+	public final GlUniform colorModulator;
 	@Nullable
-	public final GlUniform field_29475;
+	public final GlUniform light0Direction;
 	@Nullable
-	public final GlUniform field_29476;
+	public final GlUniform light1Direction;
 	@Nullable
-	public final GlUniform field_29477;
+	public final GlUniform fogStart;
 	@Nullable
-	public final GlUniform field_29478;
+	public final GlUniform fogEnd;
 	@Nullable
-	public final GlUniform field_29479;
+	public final GlUniform fogColor;
 	@Nullable
-	public final GlUniform field_29480;
+	public final GlUniform lineWidth;
 	@Nullable
-	public final GlUniform field_29481;
+	public final GlUniform gameTime;
 	@Nullable
-	public final GlUniform field_29482;
+	public final GlUniform chunkOffset;
 
-	public Shader(ResourceFactory resourceFactory, String string, VertexFormat vertexFormat) throws IOException {
-		this.field_29494 = string;
-		this.field_29469 = vertexFormat;
-		Identifier identifier = new Identifier("shaders/core/" + string + ".json");
+	public Shader(ResourceFactory factory, String name, VertexFormat format) throws IOException {
+		this.name = name;
+		this.format = format;
+		Identifier identifier = new Identifier("shaders/core/" + name + ".json");
 		Resource resource = null;
 
 		try {
-			resource = resourceFactory.getResource(identifier);
+			resource = factory.getResource(identifier);
 			JsonObject jsonObject = JsonHelper.deserialize(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
-			String string2 = JsonHelper.getString(jsonObject, "vertex");
-			String string3 = JsonHelper.getString(jsonObject, "fragment");
+			String string = JsonHelper.getString(jsonObject, "vertex");
+			String string2 = JsonHelper.getString(jsonObject, "fragment");
 			JsonArray jsonArray = JsonHelper.getArray(jsonObject, "samplers", null);
 			if (jsonArray != null) {
 				int i = 0;
 
 				for (JsonElement jsonElement : jsonArray) {
 					try {
-						this.method_34580(jsonElement);
+						this.readSampler(jsonElement);
 					} catch (Exception var25) {
 						ShaderParseException shaderParseException = ShaderParseException.wrap(var25);
 						shaderParseException.addFaultyElement("samplers[" + i + "]");
@@ -117,12 +120,12 @@ public class Shader implements GlProgram, AutoCloseable {
 			JsonArray jsonArray2 = JsonHelper.getArray(jsonObject, "attributes", null);
 			if (jsonArray2 != null) {
 				int j = 0;
-				this.field_29465 = Lists.<Integer>newArrayListWithCapacity(jsonArray2.size());
-				this.field_29466 = Lists.<String>newArrayListWithCapacity(jsonArray2.size());
+				this.loadedAttributeIds = Lists.<Integer>newArrayListWithCapacity(jsonArray2.size());
+				this.attributeNames = Lists.<String>newArrayListWithCapacity(jsonArray2.size());
 
 				for (JsonElement jsonElement2 : jsonArray2) {
 					try {
-						this.field_29466.add(JsonHelper.asString(jsonElement2, "attribute"));
+						this.attributeNames.add(JsonHelper.asString(jsonElement2, "attribute"));
 					} catch (Exception var24) {
 						ShaderParseException shaderParseException2 = ShaderParseException.wrap(var24);
 						shaderParseException2.addFaultyElement("attributes[" + j + "]");
@@ -132,8 +135,8 @@ public class Shader implements GlProgram, AutoCloseable {
 					j++;
 				}
 			} else {
-				this.field_29465 = null;
-				this.field_29466 = null;
+				this.loadedAttributeIds = null;
+				this.attributeNames = null;
 			}
 
 			JsonArray jsonArray3 = JsonHelper.getArray(jsonObject, "uniforms", null);
@@ -142,7 +145,7 @@ public class Shader implements GlProgram, AutoCloseable {
 
 				for (JsonElement jsonElement3 : jsonArray3) {
 					try {
-						this.method_34584(jsonElement3);
+						this.addUniform(jsonElement3);
 					} catch (Exception var23) {
 						ShaderParseException shaderParseException3 = ShaderParseException.wrap(var23);
 						shaderParseException3.addFaultyElement("uniforms[" + k + "]");
@@ -153,22 +156,22 @@ public class Shader implements GlProgram, AutoCloseable {
 				}
 			}
 
-			this.field_29464 = method_34581(JsonHelper.getObject(jsonObject, "blend", null));
-			this.field_29467 = method_34579(resourceFactory, GlShader.Type.VERTEX, string2);
-			this.field_29468 = method_34579(resourceFactory, GlShader.Type.FRAGMENT, string3);
-			this.field_29493 = GlProgramManager.createProgram();
-			if (this.field_29466 != null) {
+			this.blendState = readBlendState(JsonHelper.getObject(jsonObject, "blend", null));
+			this.vertexShader = loadProgram(factory, Program.Type.VERTEX, string);
+			this.fragmentShader = loadProgram(factory, Program.Type.FRAGMENT, string2);
+			this.programId = GlProgramManager.createProgram();
+			if (this.attributeNames != null) {
 				int k = 0;
 
-				for (String string4 : vertexFormat.method_34445()) {
-					GlUniform.method_34419(this.field_29493, k, string4);
-					this.field_29465.add(k);
+				for (String string3 : format.getShaderAttributes()) {
+					GlUniform.bindAttribLocation(this.programId, k, string3);
+					this.loadedAttributeIds.add(k);
 					k++;
 				}
 			}
 
 			GlProgramManager.linkProgram(this);
-			this.method_34588();
+			this.loadReferences();
 		} catch (Exception var26) {
 			ShaderParseException shaderParseException4 = ShaderParseException.wrap(var26);
 			shaderParseException4.addFaultyFile(identifier.getPath());
@@ -178,44 +181,44 @@ public class Shader implements GlProgram, AutoCloseable {
 		}
 
 		this.markUniformsDirty();
-		this.field_29470 = this.method_34582("ModelViewMat");
-		this.field_29471 = this.method_34582("ProjMat");
-		this.field_29472 = this.method_34582("TextureMat");
-		this.field_29473 = this.method_34582("ScreenSize");
-		this.field_29474 = this.method_34582("ColorModulator");
-		this.field_29475 = this.method_34582("Light0_Direction");
-		this.field_29476 = this.method_34582("Light1_Direction");
-		this.field_29477 = this.method_34582("FogStart");
-		this.field_29478 = this.method_34582("FogEnd");
-		this.field_29479 = this.method_34582("FogColor");
-		this.field_29480 = this.method_34582("LineWidth");
-		this.field_29481 = this.method_34582("GameTime");
-		this.field_29482 = this.method_34582("ChunkOffset");
+		this.modelViewMat = this.getUniform("ModelViewMat");
+		this.projectionMat = this.getUniform("ProjMat");
+		this.textureMat = this.getUniform("TextureMat");
+		this.screenSize = this.getUniform("ScreenSize");
+		this.colorModulator = this.getUniform("ColorModulator");
+		this.light0Direction = this.getUniform("Light0_Direction");
+		this.light1Direction = this.getUniform("Light1_Direction");
+		this.fogStart = this.getUniform("FogStart");
+		this.fogEnd = this.getUniform("FogEnd");
+		this.fogColor = this.getUniform("FogColor");
+		this.lineWidth = this.getUniform("LineWidth");
+		this.gameTime = this.getUniform("GameTime");
+		this.chunkOffset = this.getUniform("ChunkOffset");
 	}
 
-	private static GlShader method_34579(ResourceFactory resourceFactory, GlShader.Type type, String string) throws IOException {
-		GlShader glShader = (GlShader)type.getLoadedShaders().get(string);
-		GlShader glShader2;
-		if (glShader == null) {
-			String string2 = "shaders/core/" + string + type.getFileExtension();
-			Identifier identifier = new Identifier(string2);
-			Resource resource = resourceFactory.getResource(identifier);
-			final String string3 = FileNameUtil.getPosixFullPath(string2);
+	private static Program loadProgram(ResourceFactory factory, Program.Type type, String name) throws IOException {
+		Program program = (Program)type.getProgramCache().get(name);
+		Program program2;
+		if (program == null) {
+			String string = "shaders/core/" + name + type.getFileExtension();
+			Identifier identifier = new Identifier(string);
+			Resource resource = factory.getResource(identifier);
+			final String string2 = FileNameUtil.getPosixFullPath(string);
 
 			try {
-				glShader2 = GlShader.createFromResource(type, string, resource.getInputStream(), resource.getResourcePackName(), new class_5913() {
-					private final Set<String> field_29498 = Sets.<String>newHashSet();
+				program2 = Program.createFromResource(type, name, resource.getInputStream(), resource.getResourcePackName(), new GLImportProcessor() {
+					private final Set<String> visitedImports = Sets.<String>newHashSet();
 
 					@Override
-					public String method_34233(boolean bl, String string) {
-						string = FileNameUtil.normalizeToPosix((bl ? string3 : "shaders/include/") + string);
-						if (!this.field_29498.add(string)) {
+					public String loadImport(boolean inline, String name) {
+						name = FileNameUtil.normalizeToPosix((inline ? string2 : "shaders/include/") + name);
+						if (!this.visitedImports.add(name)) {
 							return null;
 						} else {
-							Identifier identifier = new Identifier(string);
+							Identifier identifier = new Identifier(name);
 
 							try {
-								Resource resource = resourceFactory.getResource(identifier);
+								Resource resource = factory.getResource(identifier);
 								Throwable var5 = null;
 
 								String var6;
@@ -240,7 +243,7 @@ public class Shader implements GlProgram, AutoCloseable {
 
 								return var6;
 							} catch (IOException var18) {
-								Shader.field_29483.error("Could not open GLSL import {}: {}", string, var18.getMessage());
+								Shader.LOGGER.error("Could not open GLSL import {}: {}", name, var18.getMessage());
 								return "#error " + var18.getMessage();
 							}
 						}
@@ -250,14 +253,14 @@ public class Shader implements GlProgram, AutoCloseable {
 				IOUtils.closeQuietly(resource);
 			}
 		} else {
-			glShader2 = glShader;
+			program2 = program;
 		}
 
-		return glShader2;
+		return program2;
 	}
 
-	public static GlBlendState method_34581(JsonObject jsonObject) {
-		if (jsonObject == null) {
+	public static GlBlendState readBlendState(JsonObject json) {
+		if (json == null) {
 			return new GlBlendState();
 		} else {
 			int i = 32774;
@@ -267,29 +270,29 @@ public class Shader implements GlProgram, AutoCloseable {
 			int m = 0;
 			boolean bl = true;
 			boolean bl2 = false;
-			if (JsonHelper.hasString(jsonObject, "func")) {
-				i = GlBlendState.getFuncFromString(jsonObject.get("func").getAsString());
+			if (JsonHelper.hasString(json, "func")) {
+				i = GlBlendState.getFuncFromString(json.get("func").getAsString());
 				if (i != 32774) {
 					bl = false;
 				}
 			}
 
-			if (JsonHelper.hasString(jsonObject, "srcrgb")) {
-				j = GlBlendState.getComponentFromString(jsonObject.get("srcrgb").getAsString());
+			if (JsonHelper.hasString(json, "srcrgb")) {
+				j = GlBlendState.getComponentFromString(json.get("srcrgb").getAsString());
 				if (j != 1) {
 					bl = false;
 				}
 			}
 
-			if (JsonHelper.hasString(jsonObject, "dstrgb")) {
-				k = GlBlendState.getComponentFromString(jsonObject.get("dstrgb").getAsString());
+			if (JsonHelper.hasString(json, "dstrgb")) {
+				k = GlBlendState.getComponentFromString(json.get("dstrgb").getAsString());
 				if (k != 0) {
 					bl = false;
 				}
 			}
 
-			if (JsonHelper.hasString(jsonObject, "srcalpha")) {
-				l = GlBlendState.getComponentFromString(jsonObject.get("srcalpha").getAsString());
+			if (JsonHelper.hasString(json, "srcalpha")) {
+				l = GlBlendState.getComponentFromString(json.get("srcalpha").getAsString());
 				if (l != 1) {
 					bl = false;
 				}
@@ -297,8 +300,8 @@ public class Shader implements GlProgram, AutoCloseable {
 				bl2 = true;
 			}
 
-			if (JsonHelper.hasString(jsonObject, "dstalpha")) {
-				m = GlBlendState.getComponentFromString(jsonObject.get("dstalpha").getAsString());
+			if (JsonHelper.hasString(json, "dstalpha")) {
+				m = GlBlendState.getComponentFromString(json.get("dstalpha").getAsString());
 				if (m != 0) {
 					bl = false;
 				}
@@ -315,50 +318,50 @@ public class Shader implements GlProgram, AutoCloseable {
 	}
 
 	public void close() {
-		for (GlUniform glUniform : this.field_29490) {
+		for (GlUniform glUniform : this.uniforms) {
 			glUniform.close();
 		}
 
 		GlProgramManager.deleteProgram(this);
 	}
 
-	public void method_34585() {
+	public void bind() {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		GlProgramManager.useProgram(0);
-		field_29486 = -1;
-		field_29485 = null;
-		int i = GlStateManager.method_34411();
+		activeShaderId = -1;
+		activeShader = null;
+		int i = GlStateManager._getActiveTexture();
 
-		for (int j = 0; j < this.field_29489.size(); j++) {
-			if (this.field_29487.get(this.field_29488.get(j)) != null) {
-				GlStateManager.activeTexture(33984 + j);
-				GlStateManager.bindTexture(0);
+		for (int j = 0; j < this.loadedSamplerIds.size(); j++) {
+			if (this.samplers.get(this.samplerNames.get(j)) != null) {
+				GlStateManager._activeTexture(33984 + j);
+				GlStateManager._bindTexture(0);
 			}
 		}
 
-		GlStateManager.activeTexture(i);
+		GlStateManager._activeTexture(i);
 	}
 
-	public void method_34586() {
+	public void upload() {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		this.field_29495 = false;
-		field_29485 = this;
-		this.field_29464.enable();
-		if (this.field_29493 != field_29486) {
-			GlProgramManager.useProgram(this.field_29493);
-			field_29486 = this.field_29493;
+		this.dirty = false;
+		activeShader = this;
+		this.blendState.enable();
+		if (this.programId != activeShaderId) {
+			GlProgramManager.useProgram(this.programId);
+			activeShaderId = this.programId;
 		}
 
-		int i = GlStateManager.method_34411();
+		int i = GlStateManager._getActiveTexture();
 
-		for (int j = 0; j < this.field_29489.size(); j++) {
-			String string = (String)this.field_29488.get(j);
-			if (this.field_29487.get(string) != null) {
-				int k = GlUniform.getUniformLocation(this.field_29493, string);
+		for (int j = 0; j < this.loadedSamplerIds.size(); j++) {
+			String string = (String)this.samplerNames.get(j);
+			if (this.samplers.get(string) != null) {
+				int k = GlUniform.getUniformLocation(this.programId, string);
 				GlUniform.uniform1(k, j);
 				RenderSystem.activeTexture(33984 + j);
 				RenderSystem.enableTexture();
-				Object object = this.field_29487.get(string);
+				Object object = this.samplers.get(string);
 				int l = -1;
 				if (object instanceof Framebuffer) {
 					l = ((Framebuffer)object).getColorAttachment();
@@ -374,76 +377,82 @@ public class Shader implements GlProgram, AutoCloseable {
 			}
 		}
 
-		GlStateManager.activeTexture(i);
+		GlStateManager._activeTexture(i);
 
-		for (GlUniform glUniform : this.field_29490) {
+		for (GlUniform glUniform : this.uniforms) {
 			glUniform.upload();
 		}
 	}
 
 	@Override
 	public void markUniformsDirty() {
-		this.field_29495 = true;
+		this.dirty = true;
 	}
 
 	@Nullable
-	public GlUniform method_34582(String string) {
+	public GlUniform getUniform(String name) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		return (GlUniform)this.field_29492.get(string);
+		return (GlUniform)this.loadedUniforms.get(name);
 	}
 
-	private void method_34588() {
+	public Uniform method_35785(String string) {
+		RenderSystem.assertThread(RenderSystem::isOnGameThread);
+		GlUniform glUniform = this.getUniform(string);
+		return (Uniform)(glUniform == null ? DEFAULT_UNIFORM : glUniform);
+	}
+
+	private void loadReferences() {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		IntList intList = new IntArrayList();
 
-		for (int i = 0; i < this.field_29488.size(); i++) {
-			String string = (String)this.field_29488.get(i);
-			int j = GlUniform.getUniformLocation(this.field_29493, string);
+		for (int i = 0; i < this.samplerNames.size(); i++) {
+			String string = (String)this.samplerNames.get(i);
+			int j = GlUniform.getUniformLocation(this.programId, string);
 			if (j == -1) {
-				field_29483.warn("Shader {} could not find sampler named {} in the specified shader program.", this.field_29494, string);
-				this.field_29487.remove(string);
+				LOGGER.warn("Shader {} could not find sampler named {} in the specified shader program.", this.name, string);
+				this.samplers.remove(string);
 				intList.add(i);
 			} else {
-				this.field_29489.add(j);
+				this.loadedSamplerIds.add(j);
 			}
 		}
 
 		for (int ix = intList.size() - 1; ix >= 0; ix--) {
 			int k = intList.getInt(ix);
-			this.field_29488.remove(k);
+			this.samplerNames.remove(k);
 		}
 
-		for (GlUniform glUniform : this.field_29490) {
+		for (GlUniform glUniform : this.uniforms) {
 			String string2 = glUniform.getName();
-			int l = GlUniform.getUniformLocation(this.field_29493, string2);
+			int l = GlUniform.getUniformLocation(this.programId, string2);
 			if (l == -1) {
-				field_29483.warn("Shader {} could not find uniform named {} in the specified shader program.", this.field_29494, string2);
+				LOGGER.warn("Shader {} could not find uniform named {} in the specified shader program.", this.name, string2);
 			} else {
-				this.field_29491.add(l);
+				this.loadedUniformIds.add(l);
 				glUniform.setLoc(l);
-				this.field_29492.put(string2, glUniform);
+				this.loadedUniforms.put(string2, glUniform);
 			}
 		}
 	}
 
-	private void method_34580(JsonElement jsonElement) {
-		JsonObject jsonObject = JsonHelper.asObject(jsonElement, "sampler");
+	private void readSampler(JsonElement json) {
+		JsonObject jsonObject = JsonHelper.asObject(json, "sampler");
 		String string = JsonHelper.getString(jsonObject, "name");
 		if (!JsonHelper.hasString(jsonObject, "file")) {
-			this.field_29487.put(string, null);
-			this.field_29488.add(string);
+			this.samplers.put(string, null);
+			this.samplerNames.add(string);
 		} else {
-			this.field_29488.add(string);
+			this.samplerNames.add(string);
 		}
 	}
 
-	public void method_34583(String string, Object object) {
-		this.field_29487.put(string, object);
+	public void addSampler(String name, Object sampler) {
+		this.samplers.put(name, sampler);
 		this.markUniformsDirty();
 	}
 
-	private void method_34584(JsonElement jsonElement) throws ShaderParseException {
-		JsonObject jsonObject = JsonHelper.asObject(jsonElement, "uniform");
+	private void addUniform(JsonElement json) throws ShaderParseException {
+		JsonObject jsonObject = JsonHelper.asObject(json, "uniform");
 		String string = JsonHelper.getString(jsonObject, "name");
 		int i = GlUniform.getTypeIndex(JsonHelper.getString(jsonObject, "type"));
 		int j = JsonHelper.getInt(jsonObject, "count");
@@ -454,9 +463,9 @@ public class Shader implements GlProgram, AutoCloseable {
 		} else {
 			int k = 0;
 
-			for (JsonElement jsonElement2 : jsonArray) {
+			for (JsonElement jsonElement : jsonArray) {
 				try {
-					fs[k] = JsonHelper.asFloat(jsonElement2, "value");
+					fs[k] = JsonHelper.asFloat(jsonElement, "value");
 				} catch (Exception var13) {
 					ShaderParseException shaderParseException = ShaderParseException.wrap(var13);
 					shaderParseException.addFaultyElement("values[" + k + "]");
@@ -483,28 +492,36 @@ public class Shader implements GlProgram, AutoCloseable {
 				glUniform.set(fs);
 			}
 
-			this.field_29490.add(glUniform);
+			this.uniforms.add(glUniform);
 		}
 	}
 
 	@Override
-	public GlShader getVertexShader() {
-		return this.field_29467;
+	public Program getVertexShader() {
+		return this.vertexShader;
 	}
 
 	@Override
-	public GlShader getFragmentShader() {
-		return this.field_29468;
+	public Program getFragmentShader() {
+		return this.fragmentShader;
 	}
 
 	@Override
-	public void method_34418() {
-		this.field_29468.attachTo(this);
-		this.field_29467.attachTo(this);
+	public void attachReferencedShaders() {
+		this.fragmentShader.attachTo(this);
+		this.vertexShader.attachTo(this);
+	}
+
+	public VertexFormat method_35786() {
+		return this.format;
+	}
+
+	public String method_35787() {
+		return this.name;
 	}
 
 	@Override
 	public int getProgramRef() {
-		return this.field_29493;
+		return this.programId;
 	}
 }

@@ -3,8 +3,6 @@ package net.minecraft.block.dispenser;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.Block;
@@ -70,6 +68,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 
 public interface DispenserBehavior {
@@ -476,7 +475,7 @@ public interface DispenserBehavior {
 							Blocks.WITHER_SKELETON_SKULL
 								.getDefaultState()
 								.with(SkullBlock.ROTATION, Integer.valueOf(direction.getAxis() == Direction.Axis.Y ? 0 : direction.getOpposite().getHorizontal() * 4)),
-							SetBlockStateFlags.DEFAULT
+							Block.NOTIFY_ALL
 						);
 						world.emitGameEvent(null, GameEvent.BLOCK_PLACE, blockPos);
 						BlockEntity blockEntity = world.getBlockEntity(blockPos);
@@ -502,7 +501,7 @@ public interface DispenserBehavior {
 				CarvedPumpkinBlock carvedPumpkinBlock = (CarvedPumpkinBlock)Blocks.CARVED_PUMPKIN;
 				if (world.isAir(blockPos) && carvedPumpkinBlock.canDispense(world, blockPos)) {
 					if (!world.isClient) {
-						world.setBlockState(blockPos, carvedPumpkinBlock.getDefaultState(), SetBlockStateFlags.DEFAULT);
+						world.setBlockState(blockPos, carvedPumpkinBlock.getDefaultState(), Block.NOTIFY_ALL);
 						world.emitGameEvent(null, GameEvent.BLOCK_PLACE, blockPos);
 					}
 

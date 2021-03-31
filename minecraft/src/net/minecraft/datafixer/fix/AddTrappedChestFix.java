@@ -22,6 +22,8 @@ import org.apache.logging.log4j.Logger;
 
 public class AddTrappedChestFix extends DataFix {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int field_29910 = 4096;
+	private static final short field_29911 = 12;
 
 	public AddTrappedChestFix(Schema outputSchema, boolean changesType) {
 		super(outputSchema, changesType);

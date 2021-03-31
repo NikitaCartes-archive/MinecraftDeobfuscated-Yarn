@@ -35,6 +35,10 @@ public class ConstructBeaconCriterion extends AbstractCriterion<ConstructBeaconC
 			this.level = level;
 		}
 
+		public static ConstructBeaconCriterion.Conditions method_35110() {
+			return new ConstructBeaconCriterion.Conditions(EntityPredicate.Extended.EMPTY, NumberRange.IntRange.ANY);
+		}
+
 		public static ConstructBeaconCriterion.Conditions level(NumberRange.IntRange level) {
 			return new ConstructBeaconCriterion.Conditions(EntityPredicate.Extended.EMPTY, level);
 		}

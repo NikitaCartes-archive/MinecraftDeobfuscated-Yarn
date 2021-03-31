@@ -114,6 +114,12 @@ public class TextHandler {
 		return text.substring(mutableInt.intValue());
 	}
 
+	public int method_35715(String string, int i, Style style) {
+		TextHandler.WidthLimitingVisitor widthLimitingVisitor = new TextHandler.WidthLimitingVisitor((float)i);
+		TextVisitFactory.visitFormatted(string, style, widthLimitingVisitor);
+		return widthLimitingVisitor.getLength();
+	}
+
 	/**
 	 * Gets the style at the {@code x} position in a text.
 	 * 
@@ -152,6 +158,10 @@ public class TextHandler {
 		return mutableObject.getValue();
 	}
 
+	public String method_35716(String string, int i, Style style) {
+		return string.substring(0, this.method_35715(string, i, style));
+	}
+
 	public StringVisitable trimToWidth(StringVisitable text, int width, Style style) {
 		final TextHandler.WidthLimitingVisitor widthLimitingVisitor = new TextHandler.WidthLimitingVisitor((float)width);
 		return (StringVisitable)text.visit(new StringVisitable.StyledVisitor<StringVisitable>() {
@@ -176,6 +186,12 @@ public class TextHandler {
 				}
 			}
 		}, style).orElse(text);
+	}
+
+	public int method_35717(String string, int i, Style style) {
+		TextHandler.LineBreakingVisitor lineBreakingVisitor = new TextHandler.LineBreakingVisitor((float)i);
+		TextVisitFactory.visitFormatted(string, style, lineBreakingVisitor);
+		return lineBreakingVisitor.getEndingIndex();
 	}
 
 	public static int moveCursorByWords(String text, int offset, int cursor, boolean consumeSpaceOrBreak) {
@@ -250,6 +266,17 @@ public class TextHandler {
 	public List<StringVisitable> wrapLines(StringVisitable text, int maxWidth, Style style) {
 		List<StringVisitable> list = Lists.<StringVisitable>newArrayList();
 		this.wrapLines(text, maxWidth, style, (stringVisitable, boolean_) -> list.add(stringVisitable));
+		return list;
+	}
+
+	public List<StringVisitable> method_35714(StringVisitable stringVisitable, int i, Style style, StringVisitable stringVisitable2) {
+		List<StringVisitable> list = Lists.<StringVisitable>newArrayList();
+		this.wrapLines(
+			stringVisitable,
+			i,
+			style,
+			(stringVisitable2x, boolean_) -> list.add(boolean_ ? StringVisitable.concat(stringVisitable2, stringVisitable2x) : stringVisitable2x)
+		);
 		return list;
 	}
 

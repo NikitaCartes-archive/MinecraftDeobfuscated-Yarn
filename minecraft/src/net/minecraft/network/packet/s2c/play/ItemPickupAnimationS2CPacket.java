@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -34,17 +32,14 @@ public class ItemPickupAnimationS2CPacket implements Packet<ClientPlayPacketList
 		clientPlayPacketListener.onItemPickupAnimation(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getEntityId() {
 		return this.entityId;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getCollectorEntityId() {
 		return this.collectorEntityId;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getStackAmount() {
 		return this.stackAmount;
 	}

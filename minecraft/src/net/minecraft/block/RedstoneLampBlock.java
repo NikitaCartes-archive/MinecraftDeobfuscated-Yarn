@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -32,7 +31,7 @@ public class RedstoneLampBlock extends Block {
 				if (bl) {
 					world.getBlockTickScheduler().schedule(pos, this, 4);
 				} else {
-					world.setBlockState(pos, state.cycle(LIT), SetBlockStateFlags.NOTIFY_LISTENERS);
+					world.setBlockState(pos, state.cycle(LIT), Block.NOTIFY_LISTENERS);
 				}
 			}
 		}
@@ -41,7 +40,7 @@ public class RedstoneLampBlock extends Block {
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if ((Boolean)state.get(LIT) && !world.isReceivingRedstonePower(pos)) {
-			world.setBlockState(pos, state.cycle(LIT), SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(pos, state.cycle(LIT), Block.NOTIFY_LISTENERS);
 		}
 	}
 

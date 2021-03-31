@@ -18,25 +18,31 @@ import net.minecraft.util.math.BlockPos;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 public class TestUtil {
-	public static void startTest(GameTest test, BlockPos pos, TestManager testManager) {
+	private static final int field_33152 = 100;
+	public static final int field_33148 = 2;
+	public static final int field_33149 = 5;
+	public static final int field_33150 = 6;
+	public static final int field_33151 = 8;
+
+	public static void startTest(GameTestState test, BlockPos pos, TestManager testManager) {
 		test.startCountdown();
 		testManager.start(test);
 		test.addListener(new StructureTestListener(test, testManager, pos));
 		test.init(pos, 2);
 	}
 
-	public static Collection<GameTest> runTestBatches(
-		Collection<GameTestBatch> batches, BlockPos pos, BlockRotation rotation, ServerWorld world, TestManager testManager, int i
+	public static Collection<GameTestState> runTestBatches(
+		Collection<GameTestBatch> batches, BlockPos pos, BlockRotation rotation, ServerWorld world, TestManager testManager, int sizeZ
 	) {
-		TestRunner testRunner = new TestRunner(batches, pos, rotation, world, testManager, i);
+		TestRunner testRunner = new TestRunner(batches, pos, rotation, world, testManager, sizeZ);
 		testRunner.run();
 		return testRunner.getTests();
 	}
 
-	public static Collection<GameTest> runTestFunctions(
-		Collection<TestFunction> testFunctions, BlockPos pos, BlockRotation rotation, ServerWorld world, TestManager testManager, int i
+	public static Collection<GameTestState> runTestFunctions(
+		Collection<TestFunction> testFunctions, BlockPos pos, BlockRotation rotation, ServerWorld world, TestManager testManager, int sizeZ
 	) {
-		return runTestBatches(createBatches(testFunctions), pos, rotation, world, testManager, i);
+		return runTestBatches(createBatches(testFunctions), pos, rotation, world, testManager, sizeZ);
 	}
 
 	public static Collection<GameTestBatch> createBatches(Collection<TestFunction> testFunctions) {
@@ -46,12 +52,14 @@ public class TestUtil {
 			.flatMap(
 				entry -> {
 					String string = (String)entry.getKey();
-					Consumer<ServerWorld> consumer = TestFunctions.getWorldSetter(string);
-					Consumer<ServerWorld> consumer2 = TestFunctions.method_32244(string);
+					Consumer<ServerWorld> consumer = TestFunctions.getAfterBatchConsumer(string);
+					Consumer<ServerWorld> consumer2 = TestFunctions.getBeforeBatchConsumer(string);
 					MutableInt mutableInt = new MutableInt();
 					Collection<TestFunction> collection = (Collection<TestFunction>)entry.getValue();
 					return Streams.stream(Iterables.partition(collection, 100))
-						.map(list -> new GameTestBatch(string + ":" + mutableInt.incrementAndGet(), ImmutableList.<TestFunction>copyOf(list), consumer, consumer2));
+						.map(
+							testFunctionsx -> new GameTestBatch(string + ":" + mutableInt.incrementAndGet(), ImmutableList.<TestFunction>copyOf(testFunctionsx), consumer, consumer2)
+						);
 				}
 			)
 			.collect(ImmutableList.toImmutableList());
@@ -61,11 +69,11 @@ public class TestUtil {
 		testManager.clear();
 		BlockPos blockPos = pos.add(-radius, 0, -radius);
 		BlockPos blockPos2 = pos.add(radius, 0, radius);
-		BlockPos.stream(blockPos, blockPos2).filter(blockPosx -> world.getBlockState(blockPosx).isOf(Blocks.STRUCTURE_BLOCK)).forEach(blockPosx -> {
-			StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)world.getBlockEntity(blockPosx);
-			BlockPos blockPos2x = structureBlockBlockEntity.getPos();
+		BlockPos.stream(blockPos, blockPos2).filter(posx -> world.getBlockState(posx).isOf(Blocks.STRUCTURE_BLOCK)).forEach(posx -> {
+			StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)world.getBlockEntity(posx);
+			BlockPos blockPosx = structureBlockBlockEntity.getPos();
 			BlockBox blockBox = StructureTestUtil.getStructureBlockBox(structureBlockBlockEntity);
-			StructureTestUtil.clearArea(blockBox, blockPos2x.getY(), world);
+			StructureTestUtil.clearArea(blockBox, blockPosx.getY(), world);
 		});
 	}
 

@@ -1,5 +1,6 @@
 package net.minecraft.client.util;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.util.Locale;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -7,11 +8,17 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class ModelIdentifier extends Identifier {
+	@VisibleForTesting
+	static final char field_32990 = '#';
 	private final String variant;
 
 	protected ModelIdentifier(String[] strings) {
 		super(strings);
 		this.variant = strings[2].toLowerCase(Locale.ROOT);
+	}
+
+	public ModelIdentifier(String string, String string2, String string3) {
+		this(new String[]{string, string2, string3});
 	}
 
 	public ModelIdentifier(String string) {

@@ -6,22 +6,20 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.Function;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
-import net.minecraft.util.collection.WeightedPicker;
+import net.minecraft.util.collection.Pool;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.registry.Registry;
@@ -30,8 +28,10 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class MobSpawnerLogic {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int field_30951 = 1;
+	private static Pool<MobSpawnerEntry> field_30952 = Pool.empty();
 	private int spawnDelay = 20;
-	private final List<MobSpawnerEntry> spawnPotentials = Lists.<MobSpawnerEntry>newArrayList();
+	private Pool<MobSpawnerEntry> spawnPotentials = field_30952;
 	private MobSpawnerEntry spawnEntry = new MobSpawnerEntry();
 	private double field_9161;
 	private double field_9159;
@@ -104,7 +104,7 @@ public abstract class MobSpawnerLogic {
 						return;
 					}
 
-					NbtList nbtList = nbtCompound.getList("Pos", NbtTypeIds.DOUBLE);
+					NbtList nbtList = nbtCompound.getList("Pos", NbtElement.DOUBLE_TYPE);
 					int j = nbtList.size();
 					double d = j >= 1 ? nbtList.getDouble(0) : (double)pos.getX() + (world.random.nextDouble() - world.random.nextDouble()) * (double)this.spawnRange + 0.5;
 					double e = j >= 2 ? nbtList.getDouble(1) : (double)(pos.getY() + world.random.nextInt(3) - 1);
@@ -138,7 +138,7 @@ public abstract class MobSpawnerLogic {
 								continue;
 							}
 
-							if (this.spawnEntry.getEntityNbt().getSize() == 1 && this.spawnEntry.getEntityNbt().contains("id", NbtTypeIds.STRING)) {
+							if (this.spawnEntry.getEntityNbt().getSize() == 1 && this.spawnEntry.getEntityNbt().contains("id", NbtElement.STRING_TYPE)) {
 								((MobEntity)entity).initialize(world, world.getLocalDifficulty(entity.getBlockPos()), SpawnReason.SPAWNER, null, null);
 							}
 						}
@@ -148,7 +148,7 @@ public abstract class MobSpawnerLogic {
 							return;
 						}
 
-						world.syncWorldEvent(2004, pos, 0);
+						world.syncWorldEvent(WorldEvents.SPAWNER_SPAWNS_MOB, pos, 0);
 						if (entity instanceof MobEntity) {
 							((MobEntity)entity).playSpawnEffects();
 						}
@@ -171,43 +171,41 @@ public abstract class MobSpawnerLogic {
 			this.spawnDelay = this.minSpawnDelay + this.random.nextInt(this.maxSpawnDelay - this.minSpawnDelay);
 		}
 
-		if (!this.spawnPotentials.isEmpty()) {
-			WeightedPicker.getRandom(this.random, this.spawnPotentials).ifPresent(mobSpawnerEntry -> this.setSpawnEntry(world, pos, mobSpawnerEntry));
-		}
-
+		this.spawnPotentials.getOrEmpty(this.random).ifPresent(mobSpawnerEntry -> this.setSpawnEntry(world, pos, mobSpawnerEntry));
 		this.sendStatus(world, pos, 1);
 	}
 
-	public void readNbt(@Nullable World world, BlockPos pos, NbtCompound tag) {
-		this.spawnDelay = tag.getShort("Delay");
-		this.spawnPotentials.clear();
-		if (tag.contains("SpawnPotentials", NbtTypeIds.LIST)) {
-			NbtList nbtList = tag.getList("SpawnPotentials", NbtTypeIds.COMPOUND);
+	public void readNbt(@Nullable World world, BlockPos pos, NbtCompound nbt) {
+		this.spawnDelay = nbt.getShort("Delay");
+		List<MobSpawnerEntry> list = Lists.<MobSpawnerEntry>newArrayList();
+		if (nbt.contains("SpawnPotentials", NbtElement.LIST_TYPE)) {
+			NbtList nbtList = nbt.getList("SpawnPotentials", NbtElement.COMPOUND_TYPE);
 
 			for (int i = 0; i < nbtList.size(); i++) {
-				this.spawnPotentials.add(new MobSpawnerEntry(nbtList.getCompound(i)));
+				list.add(new MobSpawnerEntry(nbtList.getCompound(i)));
 			}
 		}
 
-		if (tag.contains("SpawnData", NbtTypeIds.COMPOUND)) {
-			this.setSpawnEntry(world, pos, new MobSpawnerEntry(1, tag.getCompound("SpawnData")));
-		} else if (!this.spawnPotentials.isEmpty()) {
-			WeightedPicker.getRandom(this.random, this.spawnPotentials).ifPresent(mobSpawnerEntry -> this.setSpawnEntry(world, pos, mobSpawnerEntry));
+		this.spawnPotentials = Pool.of(list);
+		if (nbt.contains("SpawnData", NbtElement.COMPOUND_TYPE)) {
+			this.setSpawnEntry(world, pos, new MobSpawnerEntry(1, nbt.getCompound("SpawnData")));
+		} else if (!list.isEmpty()) {
+			this.spawnPotentials.getOrEmpty(this.random).ifPresent(mobSpawnerEntry -> this.setSpawnEntry(world, pos, mobSpawnerEntry));
 		}
 
-		if (tag.contains("MinSpawnDelay", NbtTypeIds.NUMBER)) {
-			this.minSpawnDelay = tag.getShort("MinSpawnDelay");
-			this.maxSpawnDelay = tag.getShort("MaxSpawnDelay");
-			this.spawnCount = tag.getShort("SpawnCount");
+		if (nbt.contains("MinSpawnDelay", NbtElement.NUMBER_TYPE)) {
+			this.minSpawnDelay = nbt.getShort("MinSpawnDelay");
+			this.maxSpawnDelay = nbt.getShort("MaxSpawnDelay");
+			this.spawnCount = nbt.getShort("SpawnCount");
 		}
 
-		if (tag.contains("MaxNearbyEntities", NbtTypeIds.NUMBER)) {
-			this.maxNearbyEntities = tag.getShort("MaxNearbyEntities");
-			this.requiredPlayerRange = tag.getShort("RequiredPlayerRange");
+		if (nbt.contains("MaxNearbyEntities", NbtElement.NUMBER_TYPE)) {
+			this.maxNearbyEntities = nbt.getShort("MaxNearbyEntities");
+			this.requiredPlayerRange = nbt.getShort("RequiredPlayerRange");
 		}
 
-		if (tag.contains("SpawnRange", NbtTypeIds.NUMBER)) {
-			this.spawnRange = tag.getShort("SpawnRange");
+		if (nbt.contains("SpawnRange", NbtElement.NUMBER_TYPE)) {
+			this.spawnRange = nbt.getShort("SpawnRange");
 		}
 
 		this.renderedEntity = null;
@@ -228,10 +226,10 @@ public abstract class MobSpawnerLogic {
 			nbt.put("SpawnData", this.spawnEntry.getEntityNbt().copy());
 			NbtList nbtList = new NbtList();
 			if (this.spawnPotentials.isEmpty()) {
-				nbtList.add(this.spawnEntry.serialize());
+				nbtList.add(this.spawnEntry.toNbt());
 			} else {
-				for (MobSpawnerEntry mobSpawnerEntry : this.spawnPotentials) {
-					nbtList.add(mobSpawnerEntry.serialize());
+				for (MobSpawnerEntry mobSpawnerEntry : this.spawnPotentials.getEntries()) {
+					nbtList.add(mobSpawnerEntry.toNbt());
 				}
 			}
 
@@ -241,12 +239,11 @@ public abstract class MobSpawnerLogic {
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public Entity getRenderedEntity(World world) {
 		if (this.renderedEntity == null) {
 			this.renderedEntity = EntityType.loadEntityWithPassengers(this.spawnEntry.getEntityNbt(), world, Function.identity());
 			if (this.spawnEntry.getEntityNbt().getSize() == 1
-				&& this.spawnEntry.getEntityNbt().contains("id", NbtTypeIds.STRING)
+				&& this.spawnEntry.getEntityNbt().contains("id", NbtElement.STRING_TYPE)
 				&& this.renderedEntity instanceof MobEntity) {
 			}
 		}
@@ -272,12 +269,10 @@ public abstract class MobSpawnerLogic {
 
 	public abstract void sendStatus(World world, BlockPos pos, int i);
 
-	@Environment(EnvType.CLIENT)
 	public double method_8278() {
 		return this.field_9161;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public double method_8279() {
 		return this.field_9159;
 	}

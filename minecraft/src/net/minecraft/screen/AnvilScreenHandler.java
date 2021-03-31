@@ -1,11 +1,8 @@
 package net.minecraft.screen;
 
 import java.util.Map;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AnvilBlock;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -16,15 +13,25 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.text.LiteralText;
+import net.minecraft.world.WorldEvents;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class AnvilScreenHandler extends ForgingScreenHandler {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final boolean field_30752 = false;
+	public static final int field_30751 = 35;
 	private int repairItemUsage;
 	private String newItemName;
 	private final Property levelCost = Property.create();
+	private static final int field_30753 = 0;
+	private static final int field_30754 = 1;
+	private static final int field_30755 = 1;
+	private static final int field_30747 = 1;
+	private static final int field_30748 = 2;
+	private static final int field_30749 = 1;
+	private static final int field_30750 = 1;
 
 	public AnvilScreenHandler(int syncId, PlayerInventory inventory) {
 		this(syncId, inventory, ScreenHandlerContext.EMPTY);
@@ -73,7 +80,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 					world.removeBlock(blockPos, false);
 					world.syncWorldEvent(WorldEvents.ANVIL_DESTROYED, blockPos, 0);
 				} else {
-					world.setBlockState(blockPos, blockState2, SetBlockStateFlags.NOTIFY_LISTENERS);
+					world.setBlockState(blockPos, blockState2, Block.NOTIFY_LISTENERS);
 					world.syncWorldEvent(WorldEvents.ANVIL_USED, blockPos, 0);
 				}
 			} else {
@@ -267,7 +274,6 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 		this.updateResult();
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getLevelCost() {
 		return this.levelCost.get();
 	}

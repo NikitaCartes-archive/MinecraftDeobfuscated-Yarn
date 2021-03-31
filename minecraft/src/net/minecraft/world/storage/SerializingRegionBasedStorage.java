@@ -32,6 +32,7 @@ import org.apache.logging.log4j.Logger;
 
 public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final String field_31427 = "Sections";
 	private final StorageIoWorker worker;
 	private final Long2ObjectMap<Optional<R>> loadedElements = new Long2ObjectOpenHashMap<>();
 	private final LongLinkedOpenHashSet unsavedElements = new LongLinkedOpenHashSet();

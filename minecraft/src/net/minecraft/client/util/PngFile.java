@@ -56,6 +56,7 @@ public class PngFile {
 
 	@Environment(EnvType.CLIENT)
 	static class ChannelReader extends PngFile.Reader {
+		private static final int field_32035 = 128;
 		private final ReadableByteChannel channel;
 		private long buffer = MemoryUtil.nmemAlloc(128L);
 		private int bufferSize = 128;

@@ -2,9 +2,6 @@ package net.minecraft.item;
 
 import java.util.List;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Bucketable;
 import net.minecraft.entity.Entity;
@@ -14,6 +11,7 @@ import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -52,16 +50,17 @@ public class EntityBucketItem extends BucketItem {
 	private void spawnEntity(ServerWorld world, ItemStack stack, BlockPos pos) {
 		Entity entity = this.entityType.spawnFromItemStack(world, stack, null, pos, SpawnReason.BUCKET, true, false);
 		if (entity instanceof Bucketable) {
-			((Bucketable)entity).setFromBucket(true);
+			Bucketable bucketable = (Bucketable)entity;
+			bucketable.copyDataFromNbt(stack.getOrCreateTag());
+			bucketable.setFromBucket(true);
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 		if (this.entityType == EntityType.TROPICAL_FISH) {
 			NbtCompound nbtCompound = stack.getTag();
-			if (nbtCompound != null && nbtCompound.contains("BucketVariantTag", NbtTypeIds.INT)) {
+			if (nbtCompound != null && nbtCompound.contains("BucketVariantTag", NbtElement.INT_TYPE)) {
 				int i = nbtCompound.getInt("BucketVariantTag");
 				Formatting[] formattings = new Formatting[]{Formatting.ITALIC, Formatting.GRAY};
 				String string = "color.minecraft." + TropicalFishEntity.getBaseDyeColor(i);

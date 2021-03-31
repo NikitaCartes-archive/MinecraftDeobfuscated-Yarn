@@ -60,6 +60,7 @@ import org.lwjgl.glfw.GLFW;
 @Environment(EnvType.CLIENT)
 public class CreateWorldScreen extends Screen {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final String field_32434 = "mcworld-";
 	private static final Text GAME_MODE_TEXT = new TranslatableText("selectWorld.gameMode");
 	private static final Text ENTER_SEED_TEXT = new TranslatableText("selectWorld.enterSeed");
 	private static final Text SEED_INFO_TEXT = new TranslatableText("selectWorld.seedInfo");
@@ -131,7 +132,7 @@ public class CreateWorldScreen extends Screen {
 			DataPackSettings.SAFE_MODE,
 			new MoreOptionsDialog(
 				impl,
-				GeneratorOptions.getDefaultOptions(impl.get(Registry.DIMENSION_TYPE_KEY), impl.get(Registry.BIOME_KEY), impl.get(Registry.NOISE_SETTINGS_WORLDGEN)),
+				GeneratorOptions.getDefaultOptions(impl.get(Registry.DIMENSION_TYPE_KEY), impl.get(Registry.BIOME_KEY), impl.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY)),
 				Optional.of(GeneratorType.DEFAULT),
 				OptionalLong.empty()
 			)

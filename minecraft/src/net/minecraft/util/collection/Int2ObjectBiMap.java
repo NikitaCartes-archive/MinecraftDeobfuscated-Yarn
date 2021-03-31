@@ -8,7 +8,9 @@ import javax.annotation.Nullable;
 import net.minecraft.util.math.MathHelper;
 
 public class Int2ObjectBiMap<K> implements IndexedIterable<K> {
+	public static final int field_29828 = -1;
 	private static final Object EMPTY = null;
+	private static final float field_29829 = 0.8F;
 	private K[] values;
 	private int[] ids;
 	private K[] idToValues;
@@ -35,6 +37,14 @@ public class Int2ObjectBiMap<K> implements IndexedIterable<K> {
 
 	private int getIdFromIndex(int index) {
 		return index == -1 ? -1 : this.ids[index];
+	}
+
+	public boolean method_34904(K object) {
+		return this.getRawId(object) != -1;
+	}
+
+	public boolean containsKey(int index) {
+		return this.get(index) != null;
 	}
 
 	public int add(K value) {

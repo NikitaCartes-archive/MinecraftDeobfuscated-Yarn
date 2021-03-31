@@ -21,6 +21,9 @@ import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 
 public class FindPointOfInterestTask extends Task<PathAwareEntity> {
+	private static final int field_30099 = 5;
+	private static final int field_30100 = 20;
+	public static final int field_30098 = 48;
 	private final PointOfInterestType poiType;
 	private final MemoryModuleType<GlobalPos> targetMemoryModuleType;
 	private final boolean onlyRunIfChild;
@@ -107,6 +110,9 @@ public class FindPointOfInterestTask extends Task<PathAwareEntity> {
 	}
 
 	static class RetryMarker {
+		private static final int field_30101 = 40;
+		private static final int field_30102 = 80;
+		private static final int field_30103 = 400;
 		private final Random random;
 		private long previousAttemptAt;
 		private long nextScheduledAttemptAt;

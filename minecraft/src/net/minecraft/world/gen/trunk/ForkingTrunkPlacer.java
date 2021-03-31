@@ -5,11 +5,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
-import net.minecraft.util.math.BlockBox;
+import java.util.function.BiConsumer;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.ModifiableTestableWorld;
+import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 
@@ -29,55 +29,55 @@ public class ForkingTrunkPlacer extends TrunkPlacer {
 
 	@Override
 	public List<FoliagePlacer.TreeNode> generate(
-		ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> placedStates, BlockBox box, TreeFeatureConfig config
+		TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, int i, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig
 	) {
-		setToDirt(world, random, pos.down(), config);
+		setToDirt(testableWorld, biConsumer, random, blockPos.down(), treeFeatureConfig);
 		List<FoliagePlacer.TreeNode> list = Lists.<FoliagePlacer.TreeNode>newArrayList();
 		Direction direction = Direction.Type.HORIZONTAL.random(random);
-		int i = trunkHeight - random.nextInt(4) - 1;
-		int j = 3 - random.nextInt(3);
+		int j = i - random.nextInt(4) - 1;
+		int k = 3 - random.nextInt(3);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		int k = pos.getX();
-		int l = pos.getZ();
-		int m = 0;
+		int l = blockPos.getX();
+		int m = blockPos.getZ();
+		int n = 0;
 
-		for (int n = 0; n < trunkHeight; n++) {
-			int o = pos.getY() + n;
-			if (n >= i && j > 0) {
-				k += direction.getOffsetX();
-				l += direction.getOffsetZ();
-				j--;
+		for (int o = 0; o < i; o++) {
+			int p = blockPos.getY() + o;
+			if (o >= j && k > 0) {
+				l += direction.getOffsetX();
+				m += direction.getOffsetZ();
+				k--;
 			}
 
-			if (getAndSetState(world, random, mutable.set(k, o, l), placedStates, box, config)) {
-				m = o + 1;
+			if (method_35375(testableWorld, biConsumer, random, mutable.set(l, p, m), treeFeatureConfig)) {
+				n = p + 1;
 			}
 		}
 
-		list.add(new FoliagePlacer.TreeNode(new BlockPos(k, m, l), 1, false));
-		k = pos.getX();
-		l = pos.getZ();
+		list.add(new FoliagePlacer.TreeNode(new BlockPos(l, n, m), 1, false));
+		l = blockPos.getX();
+		m = blockPos.getZ();
 		Direction direction2 = Direction.Type.HORIZONTAL.random(random);
 		if (direction2 != direction) {
-			int ox = i - random.nextInt(2) - 1;
-			int p = 1 + random.nextInt(3);
-			m = 0;
+			int px = j - random.nextInt(2) - 1;
+			int q = 1 + random.nextInt(3);
+			n = 0;
 
-			for (int q = ox; q < trunkHeight && p > 0; p--) {
-				if (q >= 1) {
-					int r = pos.getY() + q;
-					k += direction2.getOffsetX();
-					l += direction2.getOffsetZ();
-					if (getAndSetState(world, random, mutable.set(k, r, l), placedStates, box, config)) {
-						m = r + 1;
+			for (int r = px; r < i && q > 0; q--) {
+				if (r >= 1) {
+					int s = blockPos.getY() + r;
+					l += direction2.getOffsetX();
+					m += direction2.getOffsetZ();
+					if (method_35375(testableWorld, biConsumer, random, mutable.set(l, s, m), treeFeatureConfig)) {
+						n = s + 1;
 					}
 				}
 
-				q++;
+				r++;
 			}
 
-			if (m > 1) {
-				list.add(new FoliagePlacer.TreeNode(new BlockPos(k, m, l), 0, false));
+			if (n > 1) {
+				list.add(new FoliagePlacer.TreeNode(new BlockPos(l, n, m), 0, false));
 			}
 		}
 

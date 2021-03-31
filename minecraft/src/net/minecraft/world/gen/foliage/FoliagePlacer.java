@@ -5,29 +5,28 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Mu;
 import java.util.Random;
-import java.util.Set;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.minecraft.util.math.BlockBox;
+import java.util.function.BiConsumer;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.ModifiableTestableWorld;
-import net.minecraft.world.gen.UniformIntDistribution;
+import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public abstract class FoliagePlacer {
 	public static final Codec<FoliagePlacer> TYPE_CODEC = Registry.FOLIAGE_PLACER_TYPE.dispatch(FoliagePlacer::getType, FoliagePlacerType::getCodec);
-	protected final UniformIntDistribution radius;
-	protected final UniformIntDistribution offset;
+	protected final IntProvider radius;
+	protected final IntProvider offset;
 
-	protected static <P extends FoliagePlacer> P2<Mu<P>, UniformIntDistribution, UniformIntDistribution> fillFoliagePlacerFields(Instance<P> instance) {
+	protected static <P extends FoliagePlacer> P2<Mu<P>, IntProvider, IntProvider> fillFoliagePlacerFields(Instance<P> instance) {
 		return instance.group(
-			UniformIntDistribution.createValidatedCodec(0, 8, 8).fieldOf("radius").forGetter(foliagePlacer -> foliagePlacer.radius),
-			UniformIntDistribution.createValidatedCodec(0, 8, 8).fieldOf("offset").forGetter(foliagePlacer -> foliagePlacer.offset)
+			IntProvider.createValidatingCodec(0, 16).fieldOf("radius").forGetter(foliagePlacer -> foliagePlacer.radius),
+			IntProvider.createValidatingCodec(0, 16).fieldOf("offset").forGetter(foliagePlacer -> foliagePlacer.offset)
 		);
 	}
 
-	public FoliagePlacer(UniformIntDistribution radius, UniformIntDistribution offset) {
+	public FoliagePlacer(IntProvider radius, IntProvider offset) {
 		this.radius = radius;
 		this.offset = offset;
 	}
@@ -35,43 +34,41 @@ public abstract class FoliagePlacer {
 	protected abstract FoliagePlacerType<?> getType();
 
 	public void generate(
-		ModifiableTestableWorld world,
+		TestableWorld testableWorld,
+		BiConsumer<BlockPos, BlockState> biConsumer,
 		Random random,
-		TreeFeatureConfig config,
-		int trunkHeight,
+		TreeFeatureConfig treeFeatureConfig,
+		int i,
 		FoliagePlacer.TreeNode treeNode,
-		int foliageHeight,
-		int radius,
-		Set<BlockPos> leaves,
-		BlockBox box
+		int j,
+		int k
 	) {
-		this.generate(world, random, config, trunkHeight, treeNode, foliageHeight, radius, leaves, this.getRandomOffset(random), box);
+		this.generate(testableWorld, biConsumer, random, treeFeatureConfig, i, treeNode, j, k, this.getRandomOffset(random));
 	}
 
 	/**
 	 * This is the main method used to generate foliage.
 	 */
 	protected abstract void generate(
-		ModifiableTestableWorld world,
+		TestableWorld testableWorld,
+		BiConsumer<BlockPos, BlockState> biConsumer,
 		Random random,
-		TreeFeatureConfig config,
-		int trunkHeight,
+		TreeFeatureConfig treeFeatureConfig,
+		int i,
 		FoliagePlacer.TreeNode treeNode,
-		int foliageHeight,
 		int radius,
-		Set<BlockPos> leaves,
-		int offset,
-		BlockBox box
+		int j,
+		int offset
 	);
 
 	public abstract int getRandomHeight(Random random, int trunkHeight, TreeFeatureConfig config);
 
 	public int getRandomRadius(Random random, int baseHeight) {
-		return this.radius.getValue(random);
+		return this.radius.get(random);
 	}
 
 	private int getRandomOffset(Random random) {
-		return this.offset.getValue(random);
+		return this.offset.get(random);
 	}
 
 	/**
@@ -100,36 +97,33 @@ public abstract class FoliagePlacer {
 	 * Generates a square of leaves with the given radius. Sub-classes can use the method {@code isInvalidForLeaves} to exclude certain positions, such as corners.
 	 */
 	protected void generateSquare(
-		ModifiableTestableWorld world,
+		TestableWorld testableWorld,
+		BiConsumer<BlockPos, BlockState> biConsumer,
 		Random random,
-		TreeFeatureConfig config,
-		BlockPos pos,
-		int radius,
-		Set<BlockPos> positions,
+		TreeFeatureConfig treeFeatureConfig,
+		BlockPos blockPos,
+		int i,
 		int y,
-		boolean giantTrunk,
-		BlockBox box
+		boolean giantTrunk
 	) {
-		int i = giantTrunk ? 1 : 0;
+		int j = giantTrunk ? 1 : 0;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (int j = -radius; j <= radius + i; j++) {
-			for (int k = -radius; k <= radius + i; k++) {
-				if (!this.isPositionInvalid(random, j, y, k, radius, giantTrunk)) {
-					mutable.set(pos, j, y, k);
-					this.placeFoliageBlock(world, random, config, positions, box, mutable);
+		for (int k = -i; k <= i + j; k++) {
+			for (int l = -i; l <= i + j; l++) {
+				if (!this.isPositionInvalid(random, k, y, l, i, giantTrunk)) {
+					mutable.set(blockPos, k, y, l);
+					placeFoliageBlock(testableWorld, biConsumer, random, treeFeatureConfig, mutable);
 				}
 			}
 		}
 	}
 
-	protected void placeFoliageBlock(
-		ModifiableTestableWorld world, Random random, TreeFeatureConfig config, Set<BlockPos> positions, BlockBox box, BlockPos.Mutable mutablePos
+	protected static void placeFoliageBlock(
+		TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, TreeFeatureConfig config, BlockPos blockPos
 	) {
-		if (TreeFeature.canReplace(world, mutablePos)) {
-			world.setBlockState(mutablePos, config.foliageProvider.getBlockState(random, mutablePos), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.FORCE_STATE);
-			box.encompass(new BlockBox(mutablePos));
-			positions.add(mutablePos.toImmutable());
+		if (TreeFeature.canReplace(testableWorld, blockPos)) {
+			biConsumer.accept(blockPos, config.foliageProvider.getBlockState(random, blockPos));
 		}
 	}
 

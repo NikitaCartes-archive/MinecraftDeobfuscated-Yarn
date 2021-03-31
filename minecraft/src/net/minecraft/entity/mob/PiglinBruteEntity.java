@@ -3,8 +3,6 @@ package net.minecraft.entity.mob;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Dynamic;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -30,6 +28,9 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public class PiglinBruteEntity extends AbstractPiglinEntity {
+	private static final int field_30586 = 50;
+	private static final float field_30587 = 0.35F;
+	private static final int field_30588 = 7;
 	protected static final ImmutableList<SensorType<? extends Sensor<? super PiglinBruteEntity>>> SENSOR_TYPES = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS, SensorType.HURT_BY, SensorType.PIGLIN_BRUTE_SPECIFIC_SENSOR
 	);
@@ -70,11 +71,11 @@ public class PiglinBruteEntity extends AbstractPiglinEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
 		PiglinBruteBrain.setCurrentPosAsHome(this);
 		this.initEquipment(difficulty);
-		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
 	@Override
@@ -117,7 +118,6 @@ public class PiglinBruteEntity extends AbstractPiglinEntity {
 		super.mobTick();
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public PiglinActivity getActivity() {
 		return this.isAttacking() && this.isHoldingTool() ? PiglinActivity.ATTACKING_WITH_MELEE_WEAPON : PiglinActivity.DEFAULT;

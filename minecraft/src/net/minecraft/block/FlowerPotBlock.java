@@ -2,9 +2,6 @@ package net.minecraft.block;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
@@ -24,6 +21,7 @@ import net.minecraft.world.event.GameEvent;
 
 public class FlowerPotBlock extends Block {
 	private static final Map<Block, Block> CONTENT_TO_POTTED = Maps.<Block, Block>newHashMap();
+	public static final float field_31095 = 3.0F;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 6.0, 11.0);
 	private final Block content;
 
@@ -53,7 +51,7 @@ public class FlowerPotBlock extends Block {
 		boolean bl2 = this.isEmpty();
 		if (bl != bl2) {
 			if (bl2) {
-				world.setBlockState(pos, blockState, SetBlockStateFlags.DEFAULT);
+				world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
 				player.incrementStat(Stats.POT_FLOWER);
 				if (!player.getAbilities().creativeMode) {
 					itemStack.decrement(1);
@@ -66,7 +64,7 @@ public class FlowerPotBlock extends Block {
 					player.dropItem(itemStack2, false);
 				}
 
-				world.setBlockState(pos, Blocks.FLOWER_POT.getDefaultState(), SetBlockStateFlags.DEFAULT);
+				world.setBlockState(pos, Blocks.FLOWER_POT.getDefaultState(), Block.NOTIFY_ALL);
 			}
 
 			world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
@@ -76,7 +74,6 @@ public class FlowerPotBlock extends Block {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
 		return this.isEmpty() ? super.getPickStack(world, pos, state) : new ItemStack(this.content);

@@ -12,4 +12,6 @@ public interface TickScheduler<T> {
 	void schedule(BlockPos pos, T object, int delay, TickPriority priority);
 
 	boolean isTicking(BlockPos pos, T object);
+
+	int getTicks();
 }

@@ -1,18 +1,17 @@
 package net.minecraft.network.packet.c2s.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 
 public class PlayerInputC2SPacket implements Packet<ServerPlayPacketListener> {
+	private static final int JUMPING_MASK = 1;
+	private static final int SNEAKING_MASK = 2;
 	private final float sideways;
 	private final float forward;
 	private final boolean jumping;
 	private final boolean sneaking;
 
-	@Environment(EnvType.CLIENT)
 	public PlayerInputC2SPacket(float sideways, float forward, boolean jumping, boolean sneaking) {
 		this.sideways = sideways;
 		this.forward = forward;

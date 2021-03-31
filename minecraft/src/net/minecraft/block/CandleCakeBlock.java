@@ -3,8 +3,6 @@ package net.minecraft.block;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import java.util.Map;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -27,6 +25,7 @@ import net.minecraft.world.WorldView;
 
 public class CandleCakeBlock extends AbstractCandleBlock {
 	public static final BooleanProperty LIT = AbstractCandleBlock.LIT;
+	protected static final float field_31052 = 1.0F;
 	protected static final VoxelShape CAKE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 8.0, 15.0);
 	protected static final VoxelShape CANDLE_SHAPE = Block.createCuboidShape(7.0, 8.0, 7.0, 9.0, 14.0, 9.0);
 	protected static final VoxelShape SHAPE = VoxelShapes.union(CAKE_SHAPE, CANDLE_SHAPE);
@@ -39,7 +38,6 @@ public class CandleCakeBlock extends AbstractCandleBlock {
 		CANDLES_TO_CANDLE_CAKES.put(candle, this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	protected Iterable<Vec3d> getParticleOffsets(BlockState state) {
 		return PARTICLE_OFFSETS;
@@ -77,7 +75,6 @@ public class CandleCakeBlock extends AbstractCandleBlock {
 		builder.add(LIT);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
 		return new ItemStack(Blocks.CAKE);

@@ -4,9 +4,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -47,6 +44,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
@@ -70,6 +68,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public abstract class HorseBaseEntity extends AnimalEntity implements InventoryChangedListener, JumpingMount, Saddleable {
+	public static final int field_30413 = 400;
+	public static final int field_30414 = 499;
+	public static final int field_30415 = 500;
 	private static final Predicate<LivingEntity> IS_BRED_HORSE = entity -> entity instanceof HorseBaseEntity && ((HorseBaseEntity)entity).isBred();
 	private static final TargetPredicate PARENT_HORSE_PREDICATE = new TargetPredicate()
 		.setBaseMaxDistance(16.0)
@@ -82,6 +83,15 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	);
 	private static final TrackedData<Byte> HORSE_FLAGS = DataTracker.registerData(HorseBaseEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Optional<UUID>> OWNER_UUID = DataTracker.registerData(HorseBaseEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
+	private static final int field_30419 = 2;
+	private static final int field_30420 = 4;
+	private static final int field_30421 = 8;
+	private static final int field_30422 = 16;
+	private static final int field_30423 = 32;
+	private static final int field_30424 = 64;
+	public static final int field_30416 = 0;
+	public static final int field_30417 = 1;
+	public static final int field_30418 = 2;
 	private int eatingGrassTicks;
 	private int eatingTicks;
 	private int angryTicks;
@@ -754,33 +764,33 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putBoolean("EatingHaystack", this.isEatingGrass());
-		tag.putBoolean("Bred", this.isBred());
-		tag.putInt("Temper", this.getTemper());
-		tag.putBoolean("Tame", this.isTame());
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putBoolean("EatingHaystack", this.isEatingGrass());
+		nbt.putBoolean("Bred", this.isBred());
+		nbt.putInt("Temper", this.getTemper());
+		nbt.putBoolean("Tame", this.isTame());
 		if (this.getOwnerUuid() != null) {
-			tag.putUuid("Owner", this.getOwnerUuid());
+			nbt.putUuid("Owner", this.getOwnerUuid());
 		}
 
 		if (!this.items.getStack(0).isEmpty()) {
-			tag.put("SaddleItem", this.items.getStack(0).writeNbt(new NbtCompound()));
+			nbt.put("SaddleItem", this.items.getStack(0).writeNbt(new NbtCompound()));
 		}
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.setEatingGrass(tag.getBoolean("EatingHaystack"));
-		this.setBred(tag.getBoolean("Bred"));
-		this.setTemper(tag.getInt("Temper"));
-		this.setTame(tag.getBoolean("Tame"));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.setEatingGrass(nbt.getBoolean("EatingHaystack"));
+		this.setBred(nbt.getBoolean("Bred"));
+		this.setTemper(nbt.getInt("Temper"));
+		this.setTame(nbt.getBoolean("Tame"));
 		UUID uUID;
-		if (tag.containsUuid("Owner")) {
-			uUID = tag.getUuid("Owner");
+		if (nbt.containsUuid("Owner")) {
+			uUID = nbt.getUuid("Owner");
 		} else {
-			String string = tag.getString("Owner");
+			String string = nbt.getString("Owner");
 			uUID = ServerConfigHandler.getPlayerUuidByName(this.getServer(), string);
 		}
 
@@ -788,8 +798,8 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 			this.setOwnerUuid(uUID);
 		}
 
-		if (tag.contains("SaddleItem", NbtTypeIds.COMPOUND)) {
-			ItemStack itemStack = ItemStack.fromNbt(tag.getCompound("SaddleItem"));
+		if (nbt.contains("SaddleItem", NbtElement.COMPOUND_TYPE)) {
+			ItemStack itemStack = ItemStack.fromNbt(nbt.getCompound("SaddleItem"));
 			if (itemStack.isOf(Items.SADDLE)) {
 				this.items.setStack(0, itemStack);
 			}
@@ -833,22 +843,18 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		return this.getPrimaryPassenger() instanceof LivingEntity;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getEatingGrassAnimationProgress(float tickDelta) {
 		return MathHelper.lerp(tickDelta, this.lastEatingGrassAnimationProgress, this.eatingGrassAnimationProgress);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getAngryAnimationProgress(float tickDelta) {
 		return MathHelper.lerp(tickDelta, this.lastAngryAnimationProgress, this.angryAnimationProgress);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getEatingAnimationProgress(float tickDelta) {
 		return MathHelper.lerp(tickDelta, this.lastEatingAnimationProgress, this.eatingAnimationProgress);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void setJumpStrength(int strength) {
 		if (this.isSaddled()) {
@@ -883,7 +889,6 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	public void stopJumping() {
 	}
 
-	@Environment(EnvType.CLIENT)
 	protected void spawnPlayerReactionParticles(boolean positive) {
 		ParticleEffect particleEffect = positive ? ParticleTypes.HEART : ParticleTypes.SMOKE;
 
@@ -895,7 +900,6 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void handleStatus(byte status) {
 		if (status == 7) {
@@ -1087,14 +1091,14 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
 		if (entityData == null) {
 			entityData = new PassiveEntity.PassiveData(0.2F);
 		}
 
 		this.initAttributes();
-		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
 	public boolean method_33338(Inventory inventory) {

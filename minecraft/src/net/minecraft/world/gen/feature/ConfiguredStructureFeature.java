@@ -20,10 +20,10 @@ public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends Stru
 	public static final Codec<ConfiguredStructureFeature<?, ?>> CODEC = Registry.STRUCTURE_FEATURE
 		.dispatch(configuredStructureFeature -> configuredStructureFeature.feature, StructureFeature::getCodec);
 	public static final Codec<Supplier<ConfiguredStructureFeature<?, ?>>> REGISTRY_CODEC = RegistryElementCodec.of(
-		Registry.CONFIGURED_STRUCTURE_FEATURE_WORLDGEN, CODEC
+		Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, CODEC
 	);
 	public static final Codec<List<Supplier<ConfiguredStructureFeature<?, ?>>>> REGISTRY_ELEMENT_CODEC = RegistryElementCodec.method_31194(
-		Registry.CONFIGURED_STRUCTURE_FEATURE_WORLDGEN, CODEC
+		Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, CODEC
 	);
 	public final F feature;
 	public final FC config;

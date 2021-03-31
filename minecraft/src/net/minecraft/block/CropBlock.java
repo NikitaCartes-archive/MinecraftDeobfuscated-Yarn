@@ -1,9 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.item.ItemConvertible;
@@ -22,6 +19,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
 public class CropBlock extends PlantBlock implements Fertilizable {
+	public static final int field_31079 = 7;
 	public static final IntProperty AGE = Properties.AGE_7;
 	private static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{
 		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0),
@@ -81,7 +79,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 			if (i < this.getMaxAge()) {
 				float f = getAvailableMoisture(this, world, pos);
 				if (random.nextInt((int)(25.0F / f) + 1) == 0) {
-					world.setBlockState(pos, this.withAge(i + 1), SetBlockStateFlags.NOTIFY_LISTENERS);
+					world.setBlockState(pos, this.withAge(i + 1), Block.NOTIFY_LISTENERS);
 				}
 			}
 		}
@@ -94,7 +92,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 			i = j;
 		}
 
-		world.setBlockState(pos, this.withAge(i), SetBlockStateFlags.NOTIFY_LISTENERS);
+		world.setBlockState(pos, this.withAge(i), Block.NOTIFY_LISTENERS);
 	}
 
 	protected int getGrowthAmount(World world) {
@@ -159,12 +157,10 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 		super.onEntityCollision(state, world, pos, entity);
 	}
 
-	@Environment(EnvType.CLIENT)
 	protected ItemConvertible getSeedsItem() {
 		return Items.WHEAT_SEEDS;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
 		return new ItemStack(this.getSeedsItem());

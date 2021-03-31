@@ -1,13 +1,12 @@
 package net.minecraft.scoreboard;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 
 public class ScoreboardObjective {
+	public static final int field_31882 = 16;
 	private final Scoreboard scoreboard;
 	private final String name;
 	private final ScoreboardCriterion criterion;
@@ -24,7 +23,6 @@ public class ScoreboardObjective {
 		this.renderType = renderType;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Scoreboard getScoreboard() {
 		return this.scoreboard;
 	}

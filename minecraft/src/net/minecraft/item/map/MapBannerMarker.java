@@ -28,10 +28,10 @@ public class MapBannerMarker {
 		this.name = name;
 	}
 
-	public static MapBannerMarker fromNbt(NbtCompound tag) {
-		BlockPos blockPos = NbtHelper.toBlockPos(tag.getCompound("Pos"));
-		DyeColor dyeColor = DyeColor.byName(tag.getString("Color"), DyeColor.WHITE);
-		Text text = tag.contains("Name") ? Text.Serializer.fromJson(tag.getString("Name")) : null;
+	public static MapBannerMarker fromNbt(NbtCompound nbt) {
+		BlockPos blockPos = NbtHelper.toBlockPos(nbt.getCompound("Pos"));
+		DyeColor dyeColor = DyeColor.byName(nbt.getString("Color"), DyeColor.WHITE);
+		Text text = nbt.contains("Name") ? Text.Serializer.fromJson(nbt.getString("Name")) : null;
 		return new MapBannerMarker(blockPos, dyeColor, text);
 	}
 
@@ -50,6 +50,10 @@ public class MapBannerMarker {
 
 	public BlockPos getPos() {
 		return this.pos;
+	}
+
+	public DyeColor getColor() {
+		return this.color;
 	}
 
 	public MapIcon.Type getIconType() {

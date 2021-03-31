@@ -28,6 +28,11 @@ import org.lwjgl.glfw.GLFW;
 @Environment(EnvType.CLIENT)
 public abstract class HandledScreen<T extends ScreenHandler> extends Screen implements ScreenHandlerProvider<T> {
 	public static final Identifier BACKGROUND_TEXTURE = new Identifier("textures/gui/container/inventory.png");
+	private static final float field_32318 = 100.0F;
+	private static final int field_32319 = 500;
+	private static final int field_32320 = 250;
+	public static final int field_32322 = 100;
+	private static final int field_32321 = 200;
 	protected int backgroundWidth = 176;
 	protected int backgroundHeight = 166;
 	protected int titleX;
@@ -46,8 +51,8 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	private Slot touchHoveredSlot;
 	@Nullable
 	private Slot lastClickedSlot;
-	protected int x;
-	protected int y;
+	protected int field_2776;
+	protected int field_2800;
 	private boolean touchIsRightClickDrag;
 	private ItemStack touchDragStack = ItemStack.EMPTY;
 	private int touchDropX;
@@ -80,14 +85,14 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	@Override
 	protected void init() {
 		super.init();
-		this.x = (this.width - this.backgroundWidth) / 2;
-		this.y = (this.height - this.backgroundHeight) / 2;
+		this.field_2776 = (this.width - this.backgroundWidth) / 2;
+		this.field_2800 = (this.height - this.backgroundHeight) / 2;
 	}
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		int i = this.x;
-		int j = this.y;
+		int i = this.field_2776;
+		int j = this.field_2800;
 		this.drawBackground(matrices, delta, mouseX, mouseY);
 		RenderSystem.disableDepthTest();
 		super.render(matrices, mouseX, mouseY, delta);
@@ -292,8 +297,8 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 			if (button != 0 && button != GLFW.GLFW_MOUSE_BUTTON_RIGHT && !bl) {
 				this.method_30107(button);
 			} else {
-				int i = this.x;
-				int j = this.y;
+				int i = this.field_2776;
+				int j = this.field_2800;
 				boolean bl2 = this.isClickOutsideBounds(mouseX, mouseY, i, j, button);
 				int k = -1;
 				if (slot != null) {
@@ -425,8 +430,8 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	@Override
 	public boolean mouseReleased(double mouseX, double mouseY, int button) {
 		Slot slot = this.getSlotAt(mouseX, mouseY);
-		int i = this.x;
-		int j = this.y;
+		int i = this.field_2776;
+		int j = this.field_2800;
 		boolean bl = this.isClickOutsideBounds(mouseX, mouseY, i, j, button);
 		int k = GLFW.GLFW_KEY_UNKNOWN;
 		if (slot != null) {
@@ -539,8 +544,8 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	}
 
 	protected boolean isPointWithinBounds(int xPosition, int yPosition, int width, int height, double pointX, double pointY) {
-		int i = this.x;
-		int j = this.y;
+		int i = this.field_2776;
+		int j = this.field_2800;
 		pointX -= (double)i;
 		pointY -= (double)j;
 		return pointX >= (double)(xPosition - 1)
@@ -552,12 +557,12 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	/**
 	 * @see net.minecraft.screen.ScreenHandler#onSlotClick(int, int, net.minecraft.screen.slot.SlotActionType, net.minecraft.entity.player.PlayerEntity)
 	 */
-	protected void onMouseClick(Slot slot, int invSlot, int clickData, SlotActionType actionType) {
+	protected void onMouseClick(Slot slot, int slotId, int button, SlotActionType actionType) {
 		if (slot != null) {
-			invSlot = slot.id;
+			slotId = slot.id;
 		}
 
-		this.client.interactionManager.clickSlot(this.handler.syncId, invSlot, clickData, actionType, this.client.player);
+		this.client.interactionManager.clickSlot(this.handler.syncId, slotId, button, actionType, this.client.player);
 	}
 
 	@Override

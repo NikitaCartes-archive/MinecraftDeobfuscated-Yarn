@@ -31,6 +31,7 @@ import org.apache.logging.log4j.Logger;
 public class TagGroupLoader<T> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Gson GSON = new Gson();
+	private static final String JSON_EXTENSION = ".json";
 	private static final int JSON_EXTENSION_LENGTH = ".json".length();
 	private final Function<Identifier, Optional<T>> registryGetter;
 	private final String dataType;

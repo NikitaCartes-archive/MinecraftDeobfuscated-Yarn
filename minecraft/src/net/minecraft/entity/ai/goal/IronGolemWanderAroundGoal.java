@@ -15,6 +15,11 @@ import net.minecraft.world.poi.PointOfInterest;
 import net.minecraft.world.poi.PointOfInterestStorage;
 
 public class IronGolemWanderAroundGoal extends WanderAroundGoal {
+	private static final int field_30213 = 2;
+	private static final int field_30214 = 32;
+	private static final int field_30215 = 10;
+	private static final int field_30216 = 7;
+
 	public IronGolemWanderAroundGoal(PathAwareEntity pathAwareEntity, double d) {
 		super(pathAwareEntity, d, 240, false);
 	}

@@ -24,16 +24,16 @@ public class BufferRenderer {
 			field_29334 = null;
 		}
 
-		GlStateManager.bindBuffer(34963, 0);
+		GlStateManager._glBindBuffer(34963, 0);
 		currentElementBufferObject = 0;
-		GlStateManager.bindBuffer(34962, 0);
+		GlStateManager._glBindBuffer(34962, 0);
 		currentVertexBufferObject = 0;
-		GlStateManager.bindVertexArray(0);
+		GlStateManager._glBindVertexArray(0);
 		currentVertexArrayObject = 0;
 	}
 
 	public static void unbindElementBuffer() {
-		GlStateManager.bindBuffer(34963, 0);
+		GlStateManager._glBindBuffer(34963, 0);
 		currentElementBufferObject = 0;
 	}
 
@@ -79,13 +79,13 @@ public class BufferRenderer {
 			method_34421(vertexFormat);
 			byteBuffer.position(0);
 			byteBuffer.limit(k);
-			GlStateManager.bufferData(34962, byteBuffer, 35048);
+			GlStateManager._glBufferData(34962, byteBuffer, 35048);
 			int m;
 			if (bl) {
 				RenderSystem.IndexBuffer indexBuffer = RenderSystem.getSequentialBuffer(drawMode, j);
 				int l = indexBuffer.getId();
 				if (l != currentElementBufferObject) {
-					GlStateManager.bindBuffer(34963, l);
+					GlStateManager._glBindBuffer(34963, l);
 					currentElementBufferObject = l;
 				}
 
@@ -93,13 +93,13 @@ public class BufferRenderer {
 			} else {
 				int n = vertexFormat.method_34448();
 				if (n != currentElementBufferObject) {
-					GlStateManager.bindBuffer(34963, n);
+					GlStateManager._glBindBuffer(34963, n);
 					currentElementBufferObject = n;
 				}
 
 				byteBuffer.position(k);
 				byteBuffer.limit(k + j * intType.size);
-				GlStateManager.bufferData(34963, byteBuffer, 35048);
+				GlStateManager._glBufferData(34963, byteBuffer, 35048);
 				m = intType.field_27374;
 			}
 
@@ -107,54 +107,54 @@ public class BufferRenderer {
 
 			for (int l = 0; l < 8; l++) {
 				int o = RenderSystem.getShaderTexture(l);
-				shader.method_34583("Sampler" + l, o);
+				shader.addSampler("Sampler" + l, o);
 			}
 
-			if (shader.field_29470 != null) {
-				shader.field_29470.set(RenderSystem.getModelViewMatrix());
+			if (shader.modelViewMat != null) {
+				shader.modelViewMat.set(RenderSystem.getModelViewMatrix());
 			}
 
-			if (shader.field_29471 != null) {
-				shader.field_29471.set(RenderSystem.getProjectionMatrix());
+			if (shader.projectionMat != null) {
+				shader.projectionMat.set(RenderSystem.getProjectionMatrix());
 			}
 
-			if (shader.field_29474 != null) {
-				shader.field_29474.set(RenderSystem.getShaderColor());
+			if (shader.colorModulator != null) {
+				shader.colorModulator.set(RenderSystem.getShaderColor());
 			}
 
-			if (shader.field_29477 != null) {
-				shader.field_29477.set(RenderSystem.getShaderFogStart());
+			if (shader.fogStart != null) {
+				shader.fogStart.set(RenderSystem.getShaderFogStart());
 			}
 
-			if (shader.field_29478 != null) {
-				shader.field_29478.set(RenderSystem.getShaderFogEnd());
+			if (shader.fogEnd != null) {
+				shader.fogEnd.set(RenderSystem.getShaderFogEnd());
 			}
 
-			if (shader.field_29479 != null) {
-				shader.field_29479.set(RenderSystem.getShaderFogColor());
+			if (shader.fogColor != null) {
+				shader.fogColor.set(RenderSystem.getShaderFogColor());
 			}
 
-			if (shader.field_29472 != null) {
-				shader.field_29472.set(RenderSystem.getTextureMatrix());
+			if (shader.textureMat != null) {
+				shader.textureMat.set(RenderSystem.getTextureMatrix());
 			}
 
-			if (shader.field_29481 != null) {
-				shader.field_29481.set(RenderSystem.getShaderGameTime());
+			if (shader.gameTime != null) {
+				shader.gameTime.set(RenderSystem.getShaderGameTime());
 			}
 
-			if (shader.field_29473 != null) {
+			if (shader.screenSize != null) {
 				Window window = MinecraftClient.getInstance().getWindow();
-				shader.field_29473.set((float)window.getFramebufferWidth(), (float)window.getFramebufferHeight());
+				shader.screenSize.set((float)window.getFramebufferWidth(), (float)window.getFramebufferHeight());
 			}
 
-			if (shader.field_29480 != null && (drawMode == VertexFormat.DrawMode.LINES || drawMode == VertexFormat.DrawMode.LINE_STRIP)) {
-				shader.field_29480.set(RenderSystem.getShaderLineWidth());
+			if (shader.lineWidth != null && (drawMode == VertexFormat.DrawMode.LINES || drawMode == VertexFormat.DrawMode.LINE_STRIP)) {
+				shader.lineWidth.set(RenderSystem.getShaderLineWidth());
 			}
 
 			RenderSystem.setupShaderLights(shader);
-			shader.method_34586();
-			GlStateManager.drawElements(drawMode.mode, j, m, 0L);
-			shader.method_34585();
+			shader.upload();
+			GlStateManager._drawElements(drawMode.mode, j, m, 0L);
+			shader.bind();
 			byteBuffer.position(0);
 		}
 	}
@@ -172,16 +172,16 @@ public class BufferRenderer {
 			method_34421(vertexFormat);
 			byteBuffer.position(0);
 			byteBuffer.limit(j);
-			GlStateManager.bufferData(34962, byteBuffer, 35048);
+			GlStateManager._glBufferData(34962, byteBuffer, 35048);
 			RenderSystem.IndexBuffer indexBuffer = RenderSystem.getSequentialBuffer(drawArrayParameters.getMode(), drawArrayParameters.method_31955());
 			int k = indexBuffer.getId();
 			if (k != currentElementBufferObject) {
-				GlStateManager.bindBuffer(34963, k);
+				GlStateManager._glBindBuffer(34963, k);
 				currentElementBufferObject = k;
 			}
 
 			int l = indexBuffer.getVertexFormat().field_27374;
-			GlStateManager.drawElements(drawArrayParameters.getMode().mode, drawArrayParameters.method_31955(), l, 0L);
+			GlStateManager._drawElements(drawArrayParameters.getMode().mode, drawArrayParameters.method_31955(), l, 0L);
 			byteBuffer.position(0);
 		}
 	}
@@ -195,12 +195,12 @@ public class BufferRenderer {
 		}
 
 		if (i != currentVertexArrayObject) {
-			GlStateManager.bindVertexArray(i);
+			GlStateManager._glBindVertexArray(i);
 			currentVertexArrayObject = i;
 		}
 
 		if (j != currentVertexBufferObject) {
-			GlStateManager.bindBuffer(34962, j);
+			GlStateManager._glBindBuffer(34962, j);
 			currentVertexBufferObject = j;
 		}
 

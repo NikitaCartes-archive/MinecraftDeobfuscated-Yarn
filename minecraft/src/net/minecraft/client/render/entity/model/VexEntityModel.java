@@ -24,18 +24,22 @@ public class VexEntityModel extends BipedEntityModel<VexEntity> {
 		super(modelPart);
 		this.leftLeg.visible = false;
 		this.hat.visible = false;
-		this.rightWing = modelPart.getChild("right_wing");
-		this.leftWing = modelPart.getChild("left_wing");
+		this.rightWing = modelPart.getChild(EntityModelPartNames.RIGHT_WING);
+		this.leftWing = modelPart.getChild(EntityModelPartNames.LEFT_WING);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = BipedEntityModel.getModelData(Dilation.NONE, 0.0F);
 		ModelPartData modelPartData = modelData.getRoot();
 		modelPartData.addChild(
-			"right_leg", ModelPartBuilder.create().uv(32, 0).cuboid(-1.0F, -1.0F, -2.0F, 6.0F, 10.0F, 4.0F), ModelTransform.pivot(-1.9F, 12.0F, 0.0F)
+			EntityModelPartNames.RIGHT_LEG, ModelPartBuilder.create().uv(32, 0).cuboid(-1.0F, -1.0F, -2.0F, 6.0F, 10.0F, 4.0F), ModelTransform.pivot(-1.9F, 12.0F, 0.0F)
 		);
-		modelPartData.addChild("right_wing", ModelPartBuilder.create().uv(0, 32).cuboid(-20.0F, 0.0F, 0.0F, 20.0F, 12.0F, 1.0F), ModelTransform.NONE);
-		modelPartData.addChild("left_wing", ModelPartBuilder.create().uv(0, 32).mirrored().cuboid(0.0F, 0.0F, 0.0F, 20.0F, 12.0F, 1.0F), ModelTransform.NONE);
+		modelPartData.addChild(
+			EntityModelPartNames.RIGHT_WING, ModelPartBuilder.create().uv(0, 32).cuboid(-20.0F, 0.0F, 0.0F, 20.0F, 12.0F, 1.0F), ModelTransform.NONE
+		);
+		modelPartData.addChild(
+			EntityModelPartNames.LEFT_WING, ModelPartBuilder.create().uv(0, 32).mirrored().cuboid(0.0F, 0.0F, 0.0F, 20.0F, 12.0F, 1.0F), ModelTransform.NONE
+		);
 		return TexturedModelData.of(modelData, 64, 64);
 	}
 

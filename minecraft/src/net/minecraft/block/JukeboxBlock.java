@@ -1,8 +1,6 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.JukeboxBlockEntity;
 import net.minecraft.entity.ItemEntity;
@@ -21,6 +19,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldEvents;
 
 public class JukeboxBlock extends BlockWithEntity {
 	public static final BooleanProperty HAS_RECORD = Properties.HAS_RECORD;
@@ -37,7 +36,7 @@ public class JukeboxBlock extends BlockWithEntity {
 		if (nbtCompound.contains("BlockEntityTag")) {
 			NbtCompound nbtCompound2 = nbtCompound.getCompound("BlockEntityTag");
 			if (nbtCompound2.contains("RecordItem")) {
-				world.setBlockState(pos, state.with(HAS_RECORD, Boolean.valueOf(true)), SetBlockStateFlags.NOTIFY_LISTENERS);
+				world.setBlockState(pos, state.with(HAS_RECORD, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
 			}
 		}
 	}
@@ -47,7 +46,7 @@ public class JukeboxBlock extends BlockWithEntity {
 		if ((Boolean)state.get(HAS_RECORD)) {
 			this.removeRecord(world, pos);
 			state = state.with(HAS_RECORD, Boolean.valueOf(false));
-			world.setBlockState(pos, state, SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(pos, state, Block.NOTIFY_LISTENERS);
 			return ActionResult.success(world.isClient);
 		} else {
 			return ActionResult.PASS;
@@ -58,7 +57,7 @@ public class JukeboxBlock extends BlockWithEntity {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof JukeboxBlockEntity) {
 			((JukeboxBlockEntity)blockEntity).setRecord(stack.copy());
-			world.setBlockState(pos, state.with(HAS_RECORD, Boolean.valueOf(true)), SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(pos, state.with(HAS_RECORD, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
 		}
 	}
 

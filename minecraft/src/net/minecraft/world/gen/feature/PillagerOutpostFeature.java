@@ -1,9 +1,8 @@
 package net.minecraft.world.gen.feature;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
-import java.util.List;
 import net.minecraft.entity.EntityType;
+import net.minecraft.util.collection.Pool;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
@@ -14,14 +13,14 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.StructureConfig;
 
 public class PillagerOutpostFeature extends JigsawFeature {
-	private static final List<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = ImmutableList.of(new SpawnSettings.SpawnEntry(EntityType.PILLAGER, 1, 1, 1));
+	private static final Pool<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = Pool.of(new SpawnSettings.SpawnEntry(EntityType.PILLAGER, 1, 1, 1));
 
 	public PillagerOutpostFeature(Codec<StructurePoolFeatureConfig> codec) {
 		super(codec, 0, true, true);
 	}
 
 	@Override
-	public List<SpawnSettings.SpawnEntry> getMonsterSpawns() {
+	public Pool<SpawnSettings.SpawnEntry> getMonsterSpawns() {
 		return MONSTER_SPAWNS;
 	}
 

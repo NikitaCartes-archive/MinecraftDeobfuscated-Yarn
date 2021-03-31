@@ -7,19 +7,19 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.class_5948;
-import net.minecraft.class_5949;
-import net.minecraft.class_5950;
-import net.minecraft.class_5951;
-import net.minecraft.class_5952;
+import net.minecraft.client.util.profiler.Metric;
+import net.minecraft.client.util.profiler.MetricSampler;
+import net.minecraft.client.util.profiler.SamplingChannel;
 import net.minecraft.util.Util;
+import net.minecraft.util.profiler.MetricSamplerSupplier;
+import net.minecraft.util.profiler.MetricSuppliers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class TaskExecutor<T> implements class_5952, MessageListener<T>, AutoCloseable, Runnable {
+public class TaskExecutor<T> implements MetricSamplerSupplier, MessageListener<T>, AutoCloseable, Runnable {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int field_29940 = 1;
+	private static final int field_29941 = 2;
 	private final AtomicInteger stateFlags = new AtomicInteger(0);
 	private final TaskQueue<? super T, ? extends Runnable> queue;
 	private final Executor executor;
@@ -33,7 +33,7 @@ public class TaskExecutor<T> implements class_5952, MessageListener<T>, AutoClos
 		this.executor = executor;
 		this.queue = queue;
 		this.name = name;
-		class_5950.field_29555.method_34702(this);
+		MetricSuppliers.INSTANCE.add(this);
 	}
 
 	private boolean unpause() {
@@ -124,6 +124,10 @@ public class TaskExecutor<T> implements class_5952, MessageListener<T>, AutoClos
 		return i;
 	}
 
+	public int method_34996() {
+		return this.queue.getSize();
+	}
+
 	public String toString() {
 		return this.name + " " + this.stateFlags.get() + " " + this.queue.isEmpty();
 	}
@@ -133,9 +137,8 @@ public class TaskExecutor<T> implements class_5952, MessageListener<T>, AutoClos
 		return this.name;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
-	public List<class_5948> method_34705() {
-		return ImmutableList.of(new class_5948(new class_5951(this.name + "-queuesize"), this.queue::method_34706, class_5949.field_29552));
+	public List<MetricSampler> getSamplers() {
+		return ImmutableList.of(new MetricSampler(new Metric(this.name + "-queuesize"), this.queue::getSize, SamplingChannel.MAIL_BOX));
 	}
 }

@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -48,6 +46,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 	private final Random velocityRandom = new Random();
 	private boolean caughtFish;
 	private int outOfOpenWaterTicks;
+	private static final int field_30665 = 10;
 	private static final TrackedData<Integer> HOOK_ENTITY_ID = DataTracker.registerData(FishingBobberEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> CAUGHT_FISH = DataTracker.registerData(FishingBobberEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private int removalTimer;
@@ -122,14 +121,12 @@ public class FishingBobberEntity extends ProjectileEntity {
 		super.onTrackedDataSet(data);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean shouldRender(double distance) {
 		double d = 64.0;
 		return distance < 4096.0;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
 	}
@@ -409,11 +406,11 @@ public class FishingBobberEntity extends ProjectileEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
+	public void writeCustomDataToNbt(NbtCompound nbt) {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
+	public void readCustomDataFromNbt(NbtCompound nbt) {
 	}
 
 	public int use(ItemStack usedItem) {
@@ -467,7 +464,6 @@ public class FishingBobberEntity extends ProjectileEntity {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void handleStatus(byte status) {
 		if (status == 31 && this.world.isClient && this.hookedEntity instanceof PlayerEntity && ((PlayerEntity)this.hookedEntity).isMainPlayer()) {
@@ -530,7 +526,6 @@ public class FishingBobberEntity extends ProjectileEntity {
 		return new EntitySpawnS2CPacket(this, entity == null ? this.getId() : entity.getId());
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void onSpawnPacket(EntitySpawnS2CPacket packet) {
 		super.onSpawnPacket(packet);

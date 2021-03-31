@@ -34,12 +34,12 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandl
 		super.init();
 		this.narrow = this.width < 379;
 		this.recipeBook.initialize(this.width, this.height, this.client, this.narrow, this.handler);
-		this.x = this.recipeBook.findLeftEdge(this.narrow, this.width, this.backgroundWidth);
-		this.addButton(new TexturedButtonWidget(this.x + 20, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, buttonWidget -> {
+		this.field_2776 = this.recipeBook.findLeftEdge(this.narrow, this.width, this.backgroundWidth);
+		this.addButton(new TexturedButtonWidget(this.field_2776 + 20, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, buttonWidget -> {
 			this.recipeBook.reset(this.narrow);
 			this.recipeBook.toggleOpen();
-			this.x = this.recipeBook.findLeftEdge(this.narrow, this.width, this.backgroundWidth);
-			((TexturedButtonWidget)buttonWidget).setPos(this.x + 20, this.height / 2 - 49);
+			this.field_2776 = this.recipeBook.findLeftEdge(this.narrow, this.width, this.backgroundWidth);
+			((TexturedButtonWidget)buttonWidget).setPos(this.field_2776 + 20, this.height / 2 - 49);
 		}));
 		this.titleX = (this.backgroundWidth - this.textRenderer.getWidth(this.title)) / 2;
 	}
@@ -59,11 +59,11 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandl
 		} else {
 			this.recipeBook.render(matrices, mouseX, mouseY, delta);
 			super.render(matrices, mouseX, mouseY, delta);
-			this.recipeBook.drawGhostSlots(matrices, this.x, this.y, true, delta);
+			this.recipeBook.drawGhostSlots(matrices, this.field_2776, this.field_2800, true, delta);
 		}
 
 		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
-		this.recipeBook.drawTooltip(matrices, this.x, this.y, mouseX, mouseY);
+		this.recipeBook.drawTooltip(matrices, this.field_2776, this.field_2800, mouseX, mouseY);
 	}
 
 	@Override
@@ -71,8 +71,8 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandl
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.setShaderTexture(0, this.background);
-		int i = this.x;
-		int j = this.y;
+		int i = this.field_2776;
+		int j = this.field_2800;
 		this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		if (this.handler.isBurning()) {
 			int k = this.handler.getFuelProgress();
@@ -93,8 +93,8 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandl
 	}
 
 	@Override
-	protected void onMouseClick(Slot slot, int invSlot, int clickData, SlotActionType actionType) {
-		super.onMouseClick(slot, invSlot, clickData, actionType);
+	protected void onMouseClick(Slot slot, int slotId, int button, SlotActionType actionType) {
+		super.onMouseClick(slot, slotId, button, actionType);
 		this.recipeBook.slotClicked(slot);
 	}
 
@@ -109,7 +109,7 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandl
 			|| mouseY < (double)top
 			|| mouseX >= (double)(left + this.backgroundWidth)
 			|| mouseY >= (double)(top + this.backgroundHeight);
-		return this.recipeBook.isClickOutsideBounds(mouseX, mouseY, this.x, this.y, this.backgroundWidth, this.backgroundHeight, button) && bl;
+		return this.recipeBook.isClickOutsideBounds(mouseX, mouseY, this.field_2776, this.field_2800, this.backgroundWidth, this.backgroundHeight, button) && bl;
 	}
 
 	@Override

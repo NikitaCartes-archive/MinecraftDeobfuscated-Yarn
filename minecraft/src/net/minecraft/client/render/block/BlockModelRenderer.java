@@ -29,8 +29,11 @@ import net.minecraft.world.BlockRenderView;
 
 @Environment(EnvType.CLIENT)
 public class BlockModelRenderer {
+	private static final int field_32782 = 0;
+	private static final int field_32783 = 1;
 	private static final Direction[] DIRECTIONS = Direction.values();
 	private final BlockColors colorMap;
+	private static final int field_32784 = 100;
 	private static final ThreadLocal<BlockModelRenderer.BrightnessCache> brightnessCache = ThreadLocal.withInitial(() -> new BlockModelRenderer.BrightnessCache());
 
 	public BlockModelRenderer(BlockColors colorMap) {

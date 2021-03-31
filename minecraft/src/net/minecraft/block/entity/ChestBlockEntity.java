@@ -1,9 +1,5 @@
 package net.minecraft.block.entity;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.api.EnvironmentInterface;
-import net.fabricmc.api.EnvironmentInterfaces;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
@@ -29,11 +25,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-@EnvironmentInterfaces({@EnvironmentInterface(
-		value = EnvType.CLIENT,
-		itf = ChestAnimationProgress.class
-	)})
 public class ChestBlockEntity extends LootableContainerBlockEntity implements ChestAnimationProgress {
+	private static final int field_31332 = 1;
 	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
 	private final ChestStateManager stateManager = new ChestStateManager() {
 		@Override
@@ -82,22 +75,22 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	@Override
-	public void readNbt(NbtCompound tag) {
-		super.readNbt(tag);
+	public void readNbt(NbtCompound nbt) {
+		super.readNbt(nbt);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-		if (!this.deserializeLootTable(tag)) {
-			Inventories.readNbt(tag, this.inventory);
+		if (!this.deserializeLootTable(nbt)) {
+			Inventories.readNbt(nbt, this.inventory);
 		}
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound tag) {
-		super.writeNbt(tag);
-		if (!this.serializeLootTable(tag)) {
-			Inventories.writeNbt(tag, this.inventory);
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		super.writeNbt(nbt);
+		if (!this.serializeLootTable(nbt)) {
+			Inventories.writeNbt(nbt, this.inventory);
 		}
 
-		return tag;
+		return nbt;
 	}
 
 	public static void clientTick(World world, BlockPos pos, BlockState state, ChestBlockEntity blockEntity) {
@@ -154,7 +147,6 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 		this.inventory = list;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public float getAnimationProgress(float tickDelta) {
 		return this.lidAnimator.getProgress(tickDelta);

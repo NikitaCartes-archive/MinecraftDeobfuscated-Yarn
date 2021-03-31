@@ -63,7 +63,7 @@ public interface StructurePieceType {
 	StructurePieceType NETHER_FOSSIL = register(NetherFossilGenerator.Piece::new, "NeFos");
 	StructurePieceType JIGSAW = register(PoolStructurePiece::new, "jigsaw");
 
-	StructurePiece load(ServerWorld serverWorld, NbtCompound tag);
+	StructurePiece load(ServerWorld world, NbtCompound nbt);
 
 	static StructurePieceType register(StructurePieceType pieceType, String id) {
 		return Registry.register(Registry.STRUCTURE_PIECE, id.toLowerCase(Locale.ROOT), pieceType);

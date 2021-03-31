@@ -6,8 +6,6 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.Formatting;
 
 /**
@@ -18,6 +16,7 @@ import net.minecraft.util.Formatting;
  * @see Style
  */
 public final class TextColor {
+	private static final String RGB_PREFIX = "#";
 	private static final Map<Formatting, TextColor> FORMATTING_TO_COLOR = (Map<Formatting, TextColor>)Stream.of(Formatting.values())
 		.filter(Formatting::isColor)
 		.collect(ImmutableMap.toImmutableMap(Function.identity(), formatting -> new TextColor(formatting.getColorValue(), formatting.getName())));
@@ -44,7 +43,6 @@ public final class TextColor {
 	 * <p>The red bits can be obtained by {@code (rgb >> 16) & 0xFF}, green bits
 	 * by {@code (rgb >> 8) & 0xFF}, blue bits by {@code rgb & 0xFF}.</p>
 	 */
-	@Environment(EnvType.CLIENT)
 	public int getRgb() {
 		return this.rgb;
 	}

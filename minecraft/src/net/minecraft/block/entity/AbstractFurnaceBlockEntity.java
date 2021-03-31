@@ -7,9 +7,9 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.AbstractFurnaceBlock;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -43,9 +43,19 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockEntity implements SidedInventory, RecipeUnlocker, RecipeInputProvider {
+	protected static final int field_31286 = 0;
+	protected static final int field_31287 = 1;
+	protected static final int field_31288 = 2;
+	public static final int field_31289 = 0;
 	private static final int[] TOP_SLOTS = new int[]{0};
 	private static final int[] BOTTOM_SLOTS = new int[]{2, 1};
 	private static final int[] SIDE_SLOTS = new int[]{1};
+	public static final int field_31290 = 1;
+	public static final int field_31291 = 2;
+	public static final int field_31292 = 3;
+	public static final int field_31293 = 4;
+	public static final int field_31294 = 200;
+	public static final int field_31295 = 2;
 	protected DefaultedList<ItemStack> inventory = DefaultedList.ofSize(3, ItemStack.EMPTY);
 	private int burnTime;
 	private int fuelTime;
@@ -203,15 +213,15 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	@Override
-	public void readNbt(NbtCompound tag) {
-		super.readNbt(tag);
+	public void readNbt(NbtCompound nbt) {
+		super.readNbt(nbt);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-		Inventories.readNbt(tag, this.inventory);
-		this.burnTime = tag.getShort("BurnTime");
-		this.cookTime = tag.getShort("CookTime");
-		this.cookTimeTotal = tag.getShort("CookTimeTotal");
+		Inventories.readNbt(nbt, this.inventory);
+		this.burnTime = nbt.getShort("BurnTime");
+		this.cookTime = nbt.getShort("CookTime");
+		this.cookTimeTotal = nbt.getShort("CookTimeTotal");
 		this.fuelTime = this.getFuelTime(this.inventory.get(1));
-		NbtCompound nbtCompound = tag.getCompound("RecipesUsed");
+		NbtCompound nbtCompound = nbt.getCompound("RecipesUsed");
 
 		for (String string : nbtCompound.getKeys()) {
 			this.recipesUsed.put(new Identifier(string), nbtCompound.getInt(string));
@@ -219,16 +229,16 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound tag) {
-		super.writeNbt(tag);
-		tag.putShort("BurnTime", (short)this.burnTime);
-		tag.putShort("CookTime", (short)this.cookTime);
-		tag.putShort("CookTimeTotal", (short)this.cookTimeTotal);
-		Inventories.writeNbt(tag, this.inventory);
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		super.writeNbt(nbt);
+		nbt.putShort("BurnTime", (short)this.burnTime);
+		nbt.putShort("CookTime", (short)this.cookTime);
+		nbt.putShort("CookTimeTotal", (short)this.cookTimeTotal);
+		Inventories.writeNbt(nbt, this.inventory);
 		NbtCompound nbtCompound = new NbtCompound();
 		this.recipesUsed.forEach((identifier, integer) -> nbtCompound.putInt(identifier.toString(), integer));
-		tag.put("RecipesUsed", nbtCompound);
-		return tag;
+		nbt.put("RecipesUsed", nbtCompound);
+		return nbt;
 	}
 
 	public static void tick(World world, BlockPos pos, BlockState state, AbstractFurnaceBlockEntity blockEntity) {
@@ -279,7 +289,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		if (bl != blockEntity.isBurning()) {
 			bl2 = true;
 			state = state.with(AbstractFurnaceBlock.LIT, Boolean.valueOf(blockEntity.isBurning()));
-			world.setBlockState(pos, state, SetBlockStateFlags.DEFAULT);
+			world.setBlockState(pos, state, Block.NOTIFY_ALL);
 		}
 
 		if (bl2) {

@@ -24,7 +24,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.collection.WeightedPicker;
+import net.minecraft.util.collection.Weighting;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.mutable.MutableFloat;
@@ -70,11 +70,11 @@ public class EnchantmentHelper {
 	/**
 	 * Loads enchantments from an NBT list.
 	 */
-	public static Map<Enchantment, Integer> fromNbt(NbtList tag) {
+	public static Map<Enchantment, Integer> fromNbt(NbtList list) {
 		Map<Enchantment, Integer> map = Maps.<Enchantment, Integer>newLinkedHashMap();
 
-		for (int i = 0; i < tag.size(); i++) {
-			NbtCompound nbtCompound = tag.getCompound(i);
+		for (int i = 0; i < list.size(); i++) {
+			NbtCompound nbtCompound = list.getCompound(i);
 			Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(nbtCompound.getString("id"))).ifPresent(enchantment -> {
 				Integer var10000 = (Integer)map.put(enchantment, nbtCompound.getInt("lvl"));
 			});
@@ -377,7 +377,7 @@ public class EnchantmentHelper {
 			level = MathHelper.clamp(Math.round((float)level + (float)level * f), 1, Integer.MAX_VALUE);
 			List<EnchantmentLevelEntry> list2 = getPossibleEntries(level, stack, treasureAllowed);
 			if (!list2.isEmpty()) {
-				WeightedPicker.getRandom(random, list2).ifPresent(list::add);
+				Weighting.getRandom(random, list2).ifPresent(list::add);
 
 				while (random.nextInt(50) <= level) {
 					if (!list.isEmpty()) {
@@ -388,7 +388,7 @@ public class EnchantmentHelper {
 						break;
 					}
 
-					WeightedPicker.getRandom(random, list2).ifPresent(list::add);
+					Weighting.getRandom(random, list2).ifPresent(list::add);
 					level /= 2;
 				}
 			}

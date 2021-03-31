@@ -7,6 +7,10 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class SittingScanningPhase extends AbstractSittingPhase {
+	private static final int field_30436 = 100;
+	private static final int field_30437 = 10;
+	private static final int field_30438 = 20;
+	private static final int field_30439 = 150;
 	private static final TargetPredicate PLAYER_WITHIN_RANGE_PREDICATE = new TargetPredicate().setBaseMaxDistance(150.0);
 	private final TargetPredicate CLOSE_PLAYER_PREDICATE;
 	private int ticks;

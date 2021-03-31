@@ -6,8 +6,6 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Dynamic;
 import java.util.List;
 import java.util.Optional;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
@@ -46,11 +44,21 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.IntRange;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.World;
 
 public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 	private static final TrackedData<Boolean> BABY = DataTracker.registerData(ZoglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final int field_30514 = 40;
+	private static final int field_30505 = 1;
+	private static final float field_30506 = 0.6F;
+	private static final int field_30507 = 6;
+	private static final float field_30508 = 0.5F;
+	private static final int field_30509 = 40;
+	private static final int field_30510 = 15;
+	private static final int field_30511 = 200;
+	private static final float field_30512 = 0.3F;
+	private static final float field_30513 = 0.4F;
 	private int movementCooldownTicks;
 	protected static final ImmutableList<? extends SensorType<? extends Sensor<? super ZoglinEntity>>> USED_SENSORS = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS
@@ -100,7 +108,7 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 			10,
 			ImmutableList.of(
 				new UpdateAttackTargetTask<>(ZoglinEntity::getHoglinTarget),
-				new TimeLimitedTask(new FollowMobTask(8.0F), IntRange.between(30, 60)),
+				new TimeLimitedTask(new FollowMobTask(8.0F), UniformIntProvider.create(30, 60)),
 				new RandomTask(ImmutableList.of(Pair.of(new StrollTask(0.4F), 2), Pair.of(new GoTowardsLookTarget(0.4F, 3), 2), Pair.of(new WaitTask(30, 60), 1)))
 			)
 		);
@@ -256,7 +264,6 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 		super.tickMovement();
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void handleStatus(byte status) {
 		if (status == 4) {
@@ -267,7 +274,6 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public int getMovementCooldownTicks() {
 		return this.movementCooldownTicks;
@@ -313,17 +319,17 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
 		if (this.isBaby()) {
-			tag.putBoolean("IsBaby", true);
+			nbt.putBoolean("IsBaby", true);
 		}
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		if (tag.getBoolean("IsBaby")) {
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		if (nbt.getBoolean("IsBaby")) {
 			this.setBaby(true);
 		}
 	}

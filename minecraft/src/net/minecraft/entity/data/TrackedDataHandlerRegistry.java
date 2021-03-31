@@ -242,11 +242,11 @@ public class TrackedDataHandlerRegistry {
 	};
 	public static final TrackedDataHandler<NbtCompound> TAG_COMPOUND = new TrackedDataHandler<NbtCompound>() {
 		public void write(PacketByteBuf packetByteBuf, NbtCompound nbtCompound) {
-			packetByteBuf.writeCompound(nbtCompound);
+			packetByteBuf.writeNbt(nbtCompound);
 		}
 
 		public NbtCompound read(PacketByteBuf packetByteBuf) {
-			return packetByteBuf.readCompound();
+			return packetByteBuf.readNbt();
 		}
 
 		public NbtCompound copy(NbtCompound nbtCompound) {
@@ -309,6 +309,9 @@ public class TrackedDataHandlerRegistry {
 
 	public static int getId(TrackedDataHandler<?> handler) {
 		return DATA_HANDLERS.getRawId(handler);
+	}
+
+	private TrackedDataHandlerRegistry() {
 	}
 
 	static {

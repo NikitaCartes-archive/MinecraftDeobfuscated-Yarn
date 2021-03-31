@@ -1,8 +1,6 @@
 package net.minecraft.network.packet.s2c.play;
 
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -53,12 +51,10 @@ public class InventoryS2CPacket implements Packet<ClientPlayPacketListener> {
 		clientPlayPacketListener.onInventory(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getSyncId() {
 		return this.syncId;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public List<ItemStack> getContents() {
 		return this.contents;
 	}

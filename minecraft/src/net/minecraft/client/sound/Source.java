@@ -15,6 +15,8 @@ import org.lwjgl.openal.AL10;
 @Environment(EnvType.CLIENT)
 public class Source {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int field_31895 = 4;
+	public static final int field_31894 = 1;
 	private final int pointer;
 	private final AtomicBoolean playing = new AtomicBoolean(true);
 	private int bufferSize = 16384;
@@ -77,6 +79,10 @@ public class Source {
 			AL10.alSourceStop(this.pointer);
 			AlUtil.checkErrors("Stop");
 		}
+	}
+
+	public boolean method_35598() {
+		return this.getSourceState() == 4114;
 	}
 
 	public boolean isStopped() {

@@ -3,8 +3,6 @@ package net.minecraft.fluid;
 import java.util.Optional;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -42,7 +40,6 @@ public abstract class WaterFluid extends FlowableFluid {
 		return Items.WATER_BUCKET;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
 		if (!state.isStill() && !(Boolean)state.get(FALLING)) {
@@ -72,7 +69,6 @@ public abstract class WaterFluid extends FlowableFluid {
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ParticleEffect getParticle() {
 		return ParticleTypes.DRIPPING_WATER;

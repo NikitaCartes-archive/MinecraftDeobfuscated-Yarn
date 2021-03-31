@@ -1,5 +1,6 @@
 package net.minecraft.client.world;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
@@ -11,7 +12,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -29,6 +29,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
@@ -79,6 +80,7 @@ import net.minecraft.world.level.ColorResolver;
 
 @Environment(EnvType.CLIENT)
 public class ClientWorld extends World {
+	private static final double field_32641 = 0.05;
 	private final EntityList entityList = new EntityList();
 	private final ClientEntityManager<Entity> entityManager = new ClientEntityManager<>(Entity.class, new ClientWorld.ClientEntityHandler());
 	private final ClientPlayNetworkHandler netHandler;
@@ -89,6 +91,7 @@ public class ClientWorld extends World {
 	private final List<AbstractClientPlayerEntity> players = Lists.<AbstractClientPlayerEntity>newArrayList();
 	private Scoreboard scoreboard = new Scoreboard();
 	private final Map<String, MapState> mapStates = Maps.<String, MapState>newHashMap();
+	private static final long field_32640 = 16777215L;
 	private int lightningTicksLeft;
 	private final Object2ObjectArrayMap<ColorResolver, BiomeColorCache> colorCache = Util.make(new Object2ObjectArrayMap<>(3), cache -> {
 		cache.put(BiomeColors.GRASS_COLOR, new BiomeColorCache());
@@ -246,7 +249,7 @@ public class ClientWorld extends World {
 	}
 
 	public void setBlockStateWithoutNeighborUpdates(BlockPos pos, BlockState state) {
-		this.setBlockState(pos, state, SetBlockStateFlags.DEFAULT | SetBlockStateFlags.FORCE_STATE);
+		this.setBlockState(pos, state, Block.NOTIFY_ALL | Block.FORCE_STATE);
 	}
 
 	@Override
@@ -257,25 +260,34 @@ public class ClientWorld extends World {
 	public void doRandomBlockDisplayTicks(int xCenter, int yCenter, int zCenter) {
 		int i = 32;
 		Random random = new Random();
-		boolean bl = false;
-		if (this.client.interactionManager.getCurrentGameMode() == GameMode.CREATIVE) {
-			for (ItemStack itemStack : this.client.player.getItemsHand()) {
-				if (itemStack.isOf(Blocks.BARRIER.asItem())) {
-					bl = true;
-					break;
-				}
-			}
-		}
-
+		ClientWorld.BlockParticle blockParticle = this.getBlockParticle();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int j = 0; j < 667; j++) {
-			this.randomBlockDisplayTick(xCenter, yCenter, zCenter, 16, random, bl, mutable);
-			this.randomBlockDisplayTick(xCenter, yCenter, zCenter, 32, random, bl, mutable);
+			this.randomBlockDisplayTick(xCenter, yCenter, zCenter, 16, random, blockParticle, mutable);
+			this.randomBlockDisplayTick(xCenter, yCenter, zCenter, 32, random, blockParticle, mutable);
 		}
 	}
 
-	public void randomBlockDisplayTick(int xCenter, int yCenter, int zCenter, int radius, Random random, boolean spawnBarrierParticles, BlockPos.Mutable pos) {
+	@Nullable
+	private ClientWorld.BlockParticle getBlockParticle() {
+		if (this.client.interactionManager.getCurrentGameMode() == GameMode.CREATIVE) {
+			ItemStack itemStack = this.client.player.getMainHandStack();
+			if (itemStack.getItem() == Items.BARRIER) {
+				return ClientWorld.BlockParticle.BARRIER;
+			}
+
+			if (itemStack.getItem() == Items.LIGHT) {
+				return ClientWorld.BlockParticle.LIGHT;
+			}
+		}
+
+		return null;
+	}
+
+	public void randomBlockDisplayTick(
+		int xCenter, int yCenter, int zCenter, int radius, Random random, @Nullable ClientWorld.BlockParticle blockParticle, BlockPos.Mutable pos
+	) {
 		int i = xCenter + this.random.nextInt(radius) - this.random.nextInt(radius);
 		int j = yCenter + this.random.nextInt(radius) - this.random.nextInt(radius);
 		int k = zCenter + this.random.nextInt(radius) - this.random.nextInt(radius);
@@ -293,8 +305,8 @@ public class ClientWorld extends World {
 			}
 		}
 
-		if (spawnBarrierParticles && blockState.isOf(Blocks.BARRIER)) {
-			this.addParticle(ParticleTypes.BARRIER, (double)i + 0.5, (double)j + 0.5, (double)k + 0.5, 0.0, 0.0, 0.0);
+		if (blockParticle != null && blockState.getBlock() == blockParticle.block) {
+			this.addParticle(blockParticle.particle, (double)i + 0.5, (double)j + 0.5, (double)k + 0.5, 0.0, 0.0, 0.0);
 		}
 
 		if (!blockState.isFullCube(this, pos)) {
@@ -399,10 +411,10 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void addFireworkParticle(double x, double y, double z, double velocityX, double velocityY, double velocityZ, @Nullable NbtCompound tag) {
+	public void addFireworkParticle(double x, double y, double z, double velocityX, double velocityY, double velocityZ, @Nullable NbtCompound nbt) {
 		this.client
 			.particleManager
-			.addParticle(new FireworksSparkParticle.FireworkParticle(this, x, y, z, velocityX, velocityY, velocityZ, this.client.particleManager, tag));
+			.addParticle(new FireworksSparkParticle.FireworkParticle(this, x, y, z, velocityX, velocityY, velocityZ, this.client.particleManager, nbt));
 	}
 
 	@Override
@@ -717,11 +729,20 @@ public class ClientWorld extends World {
 	public void emitGameEvent(@Nullable Entity entity, GameEvent event, BlockPos pos) {
 	}
 
+	public Map<String, MapState> method_35754() {
+		return ImmutableMap.copyOf(this.mapStates);
+	}
+
+	public void method_35753(Map<String, MapState> map) {
+		this.mapStates.putAll(map);
+	}
+
 	@Override
 	protected EntityLookup<Entity> getEntityLookup() {
 		return this.entityManager.getLookup();
 	}
 
+	@Override
 	public String asString() {
 		return "Chunks[C] W: " + this.chunkManager.getDebugString() + " E: " + this.entityManager.getDebugString();
 	}
@@ -729,6 +750,20 @@ public class ClientWorld extends World {
 	@Override
 	public void addBlockBreakParticles(BlockPos pos, BlockState state) {
 		this.client.particleManager.addBlockBreakParticles(pos, state);
+	}
+
+	@Environment(EnvType.CLIENT)
+	static enum BlockParticle {
+		BARRIER(Blocks.BARRIER, ParticleTypes.BARRIER),
+		LIGHT(Blocks.LIGHT, ParticleTypes.LIGHT);
+
+		private final Block block;
+		private final ParticleEffect particle;
+
+		private BlockParticle(Block block, ParticleEffect particle) {
+			this.block = block;
+			this.particle = particle;
+		}
 	}
 
 	@Environment(EnvType.CLIENT)

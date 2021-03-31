@@ -13,6 +13,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.longs.LongIterator;
+import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -51,8 +52,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.command.DataCommandStorage;
@@ -65,6 +64,7 @@ import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
+import net.minecraft.obfuscate.DontObfuscate;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.ResourceManager;
@@ -172,10 +172,27 @@ import org.apache.logging.log4j.Logger;
  */
 public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask> implements SnooperListener, CommandOutput, AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final float field_33212 = 0.8F;
+	private static final int field_33213 = 100;
+	public static final int field_33206 = 50;
+	private static final int field_33214 = 6000;
+	private static final int field_33215 = 2000;
+	private static final int field_33216 = 15000;
+	public static final String field_33207 = "level";
+	public static final String field_33208 = "level://";
+	private static final long field_33217 = 5000000000L;
+	private static final int field_33218 = 12;
+	public static final String field_33209 = "resources.zip";
 	public static final File USER_CACHE_FILE = new File("usercache.json");
+	public static final int field_33210 = 11;
+	private static final int field_33219 = 441;
+	private static final int field_33220 = 6000;
+	private static final int field_33221 = 3;
+	public static final int field_33211 = 29999984;
 	public static final LevelInfo DEMO_LEVEL_INFO = new LevelInfo(
 		"Demo World", GameMode.SURVIVAL, false, Difficulty.NORMAL, false, new GameRules(), DataPackSettings.SAFE_MODE
 	);
+	private static final long field_33205 = 50L;
 	protected final LevelStorage.Session session;
 	protected final WorldSaveHandler saveHandler;
 	private final Snooper snooper = new Snooper("server", this, Util.getMeasuringTimeMs());
@@ -222,7 +239,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private long timeReference = Util.getMeasuringTimeMs();
 	private long nextTickTimestamp;
 	private boolean waitingForNextTick;
-	@Environment(EnvType.CLIENT)
 	private boolean iconFilePresent;
 	private final ResourcePackManager dataPackManager;
 	private final ServerScoreboard scoreboard = new ServerScoreboard(this);
@@ -306,7 +322,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				public void setTitle(Text title) {
 				}
 
-				@Environment(EnvType.CLIENT)
 				@Override
 				public void setTitleAndTask(Text title) {
 				}
@@ -319,7 +334,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 					}
 				}
 
-				@Environment(EnvType.CLIENT)
 				@Override
 				public void setDone() {
 				}
@@ -359,7 +373,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		if (dimensionOptions == null) {
 			dimensionType = this.registryManager.get(Registry.DIMENSION_TYPE_KEY).getOrThrow(DimensionType.OVERWORLD_REGISTRY_KEY);
 			chunkGenerator = GeneratorOptions.createOverworldGenerator(
-				this.registryManager.get(Registry.BIOME_KEY), this.registryManager.get(Registry.NOISE_SETTINGS_WORLDGEN), new Random().nextLong()
+				this.registryManager.get(Registry.BIOME_KEY), this.registryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY), new Random().nextLong()
 			);
 		} else {
 			dimensionType = dimensionOptions.getDimensionType();
@@ -415,7 +429,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : simpleRegistry.getEntries()) {
 			RegistryKey<DimensionOptions> registryKey = (RegistryKey<DimensionOptions>)entry.getKey();
 			if (registryKey != DimensionOptions.OVERWORLD) {
-				RegistryKey<World> registryKey2 = RegistryKey.of(Registry.DIMENSION, registryKey.getValue());
+				RegistryKey<World> registryKey2 = RegistryKey.of(Registry.WORLD_KEY, registryKey.getValue());
 				DimensionType dimensionType2 = ((DimensionOptions)entry.getValue()).getDimensionType();
 				ChunkGenerator chunkGenerator2 = ((DimensionOptions)entry.getValue()).getChunkGenerator();
 				UnmodifiableLevelProperties unmodifiableLevelProperties = new UnmodifiableLevelProperties(this.saveProperties, serverWorldProperties);
@@ -816,13 +830,11 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean hasIconFile() {
 		this.iconFilePresent = this.iconFilePresent || this.getIconFile().isFile();
 		return this.iconFilePresent;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public File getIconFile() {
 		return this.session.getIconFile();
 	}
@@ -942,7 +954,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.serverId = serverId;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isStopping() {
 		return !this.serverThread.isAlive();
 	}
@@ -987,6 +998,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return this.playerManager.getPlayerNames();
 	}
 
+	@DontObfuscate
 	public String getServerModName() {
 		return "vanilla";
 	}
@@ -1152,6 +1164,19 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		snooper.addInfo("worlds", i);
 	}
 
+	@Override
+	public void method_35034(Snooper snooper) {
+		snooper.addInitialInfo("singleplayer", this.isSinglePlayer());
+		snooper.addInitialInfo("server_brand", this.getServerModName());
+		snooper.addInitialInfo("gui_supported", GraphicsEnvironment.isHeadless() ? "headless" : "supported");
+		snooper.addInitialInfo("dedicated", this.isDedicated());
+	}
+
+	@Override
+	public boolean method_35033() {
+		return true;
+	}
+
 	/**
 	 * Checks whether this server is a dedicated server.
 	 * 
@@ -1243,7 +1268,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return this.networkIo;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isLoading() {
 		return this.loading;
 	}
@@ -1273,7 +1297,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return this.ticks;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Snooper getSnooper() {
 		return this.snooper;
 	}
@@ -1288,6 +1311,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public boolean acceptsStatusQuery() {
 		return true;
+	}
+
+	public Proxy method_36113() {
+		return this.proxy;
 	}
 
 	public int getPlayerIdleTimeout() {
@@ -1491,6 +1518,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return true;
 	}
 
+	@Override
+	public abstract boolean shouldBroadcastConsoleToOps();
+
 	public RecipeManager getRecipeManager() {
 		return this.serverResourceManager.getRecipeManager();
 	}
@@ -1560,7 +1590,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public MetricsData getMetricsData() {
 		return this.metricsData;
 	}

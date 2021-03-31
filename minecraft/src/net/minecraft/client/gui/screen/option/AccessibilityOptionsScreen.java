@@ -25,8 +25,10 @@ public class AccessibilityOptionsScreen extends NarratorOptionsScreen {
 		Option.SNEAK_TOGGLED,
 		Option.SPRINT_TOGGLED,
 		Option.DISTORTION_EFFECT_SCALE,
-		Option.FOV_EFFECT_SCALE
+		Option.FOV_EFFECT_SCALE,
+		Option.MONOCHROME_LOGO
 	};
+	private static final String field_32235 = "https://aka.ms/MinecraftJavaAccessibility";
 
 	public AccessibilityOptionsScreen(Screen parent, GameOptions gameOptions) {
 		super(parent, gameOptions, new TranslatableText("options.accessibility.title"), OPTIONS);

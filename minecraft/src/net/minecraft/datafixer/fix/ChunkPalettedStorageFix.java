@@ -31,6 +31,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ChunkPalettedStorageFix extends DataFix {
+	private static final int field_29871 = 128;
+	private static final int field_29872 = 64;
+	private static final int field_29873 = 32;
+	private static final int field_29874 = 16;
+	private static final int field_29875 = 8;
+	private static final int field_29876 = 4;
+	private static final int field_29877 = 2;
+	private static final int field_29878 = 1;
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final BitSet BLOCKS_NEEDING_SIDE_UPDATE = new BitSet(256);
 	private static final BitSet BLOCKS_NEEDING_IN_PLACE_UPDATE = new BitSet(256);
@@ -124,6 +132,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 		}
 	});
 	private static final Dynamic<?> AIR = BlockStateFlattening.lookupState(0);
+	private static final int field_29870 = 4096;
 
 	public ChunkPalettedStorageFix(Schema outputSchema, boolean changesType) {
 		super(outputSchema, changesType);
@@ -519,6 +528,8 @@ public class ChunkPalettedStorageFix extends DataFix {
 	}
 
 	static class ChunkNibbleArray {
+		private static final int field_29879 = 2048;
+		private static final int field_29880 = 4;
 		private final byte[] contents;
 
 		public ChunkNibbleArray() {

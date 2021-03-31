@@ -17,11 +17,11 @@ public class ItemStackArgument implements Predicate<ItemStack> {
 	);
 	private final Item item;
 	@Nullable
-	private final NbtCompound tag;
+	private final NbtCompound nbt;
 
-	public ItemStackArgument(Item item, @Nullable NbtCompound tag) {
+	public ItemStackArgument(Item item, @Nullable NbtCompound nbt) {
 		this.item = item;
-		this.tag = tag;
+		this.nbt = nbt;
 	}
 
 	public Item getItem() {
@@ -29,13 +29,13 @@ public class ItemStackArgument implements Predicate<ItemStack> {
 	}
 
 	public boolean test(ItemStack itemStack) {
-		return itemStack.isOf(this.item) && NbtHelper.matches(this.tag, itemStack.getTag(), true);
+		return itemStack.isOf(this.item) && NbtHelper.matches(this.nbt, itemStack.getTag(), true);
 	}
 
 	public ItemStack createStack(int amount, boolean checkOverstack) throws CommandSyntaxException {
 		ItemStack itemStack = new ItemStack(this.item, amount);
-		if (this.tag != null) {
-			itemStack.setTag(this.tag);
+		if (this.nbt != null) {
+			itemStack.setTag(this.nbt);
 		}
 
 		if (checkOverstack && amount > itemStack.getMaxCount()) {
@@ -47,8 +47,8 @@ public class ItemStackArgument implements Predicate<ItemStack> {
 
 	public String asString() {
 		StringBuilder stringBuilder = new StringBuilder(Registry.ITEM.getRawId(this.item));
-		if (this.tag != null) {
-			stringBuilder.append(this.tag);
+		if (this.nbt != null) {
+			stringBuilder.append(this.nbt);
 		}
 
 		return stringBuilder.toString();

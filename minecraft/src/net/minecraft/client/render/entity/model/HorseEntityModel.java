@@ -14,6 +14,23 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class HorseEntityModel<T extends HorseBaseEntity> extends AnimalModel<T> {
+	private static final float field_32487 = 2.1816616F;
+	private static final float field_32488 = (float) (Math.PI / 3);
+	private static final float field_32489 = (float) (Math.PI / 4);
+	private static final float field_32490 = (float) (Math.PI / 6);
+	private static final float field_32491 = (float) (Math.PI / 12);
+	protected static final String HEAD_PARTS = "head_parts";
+	private static final String LEFT_HIND_BABY_LEG = "left_hind_baby_leg";
+	private static final String RIGHT_HIND_BABY_LEG = "right_hind_baby_leg";
+	private static final String LEFT_FRONT_BABY_LEG = "left_front_baby_leg";
+	private static final String RIGHT_FRONT_BABY_LEG = "right_front_baby_leg";
+	private static final String SADDLE = "saddle";
+	private static final String LEFT_SADDLE_MOUTH = "left_saddle_mouth";
+	private static final String LEFT_SADDLE_LINE = "left_saddle_line";
+	private static final String RIGHT_SADDLE_MOUTH = "right_saddle_mouth";
+	private static final String RIGHT_SADDLE_LINE = "right_saddle_line";
+	private static final String HEAD_SADDLE = "head_saddle";
+	private static final String MOUTH_SADDLE_WRAP = "mouth_saddle_wrap";
 	protected final ModelPart body;
 	protected final ModelPart head;
 	private final ModelPart rightHindLeg;
@@ -30,17 +47,17 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends AnimalModel<T> 
 
 	public HorseEntityModel(ModelPart root) {
 		super(true, 16.2F, 1.36F, 2.7272F, 2.0F, 20.0F);
-		this.body = root.getChild("body");
+		this.body = root.getChild(EntityModelPartNames.BODY);
 		this.head = root.getChild("head_parts");
-		this.rightHindLeg = root.getChild("right_hind_leg");
-		this.leftHindLeg = root.getChild("left_hind_leg");
-		this.rightFrontLeg = root.getChild("right_front_leg");
-		this.leftFrontLeg = root.getChild("left_front_leg");
+		this.rightHindLeg = root.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
+		this.leftHindLeg = root.getChild(EntityModelPartNames.LEFT_HIND_LEG);
+		this.rightFrontLeg = root.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
+		this.leftFrontLeg = root.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
 		this.rightHindBabyLeg = root.getChild("right_hind_baby_leg");
 		this.leftHindBabyLeg = root.getChild("left_hind_baby_leg");
 		this.rightFrontBabyLeg = root.getChild("right_front_baby_leg");
 		this.leftFrontBabyLeg = root.getChild("left_front_baby_leg");
-		this.tail = this.body.getChild("tail");
+		this.tail = this.body.getChild(EntityModelPartNames.TAIL);
 		ModelPart modelPart = this.body.getChild("saddle");
 		ModelPart modelPart2 = this.head.getChild("left_saddle_mouth");
 		ModelPart modelPart3 = this.head.getChild("right_saddle_mouth");
@@ -56,7 +73,9 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends AnimalModel<T> 
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
 		ModelPartData modelPartData2 = modelPartData.addChild(
-			"body", ModelPartBuilder.create().uv(0, 32).cuboid(-5.0F, -8.0F, -17.0F, 10.0F, 10.0F, 22.0F, new Dilation(0.05F)), ModelTransform.pivot(0.0F, 11.0F, 5.0F)
+			EntityModelPartNames.BODY,
+			ModelPartBuilder.create().uv(0, 32).cuboid(-5.0F, -8.0F, -17.0F, 10.0F, 10.0F, 22.0F, new Dilation(0.05F)),
+			ModelTransform.pivot(0.0F, 11.0F, 5.0F)
 		);
 		ModelPartData modelPartData3 = modelPartData.addChild(
 			"head_parts",
@@ -64,25 +83,29 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends AnimalModel<T> 
 			ModelTransform.of(0.0F, 4.0F, -12.0F, (float) (Math.PI / 6), 0.0F, 0.0F)
 		);
 		ModelPartData modelPartData4 = modelPartData3.addChild(
-			"head", ModelPartBuilder.create().uv(0, 13).cuboid(-3.0F, -11.0F, -2.0F, 6.0F, 5.0F, 7.0F, dilation), ModelTransform.NONE
+			EntityModelPartNames.HEAD, ModelPartBuilder.create().uv(0, 13).cuboid(-3.0F, -11.0F, -2.0F, 6.0F, 5.0F, 7.0F, dilation), ModelTransform.NONE
 		);
-		modelPartData3.addChild("mane", ModelPartBuilder.create().uv(56, 36).cuboid(-1.0F, -11.0F, 5.01F, 2.0F, 16.0F, 2.0F, dilation), ModelTransform.NONE);
+		modelPartData3.addChild(
+			EntityModelPartNames.MANE, ModelPartBuilder.create().uv(56, 36).cuboid(-1.0F, -11.0F, 5.01F, 2.0F, 16.0F, 2.0F, dilation), ModelTransform.NONE
+		);
 		modelPartData3.addChild("upper_mouth", ModelPartBuilder.create().uv(0, 25).cuboid(-2.0F, -11.0F, -7.0F, 4.0F, 5.0F, 5.0F, dilation), ModelTransform.NONE);
 		modelPartData.addChild(
-			"left_hind_leg",
+			EntityModelPartNames.LEFT_HIND_LEG,
 			ModelPartBuilder.create().uv(48, 21).mirrored().cuboid(-3.0F, -1.01F, -1.0F, 4.0F, 11.0F, 4.0F, dilation),
 			ModelTransform.pivot(4.0F, 14.0F, 7.0F)
 		);
 		modelPartData.addChild(
-			"right_hind_leg", ModelPartBuilder.create().uv(48, 21).cuboid(-1.0F, -1.01F, -1.0F, 4.0F, 11.0F, 4.0F, dilation), ModelTransform.pivot(-4.0F, 14.0F, 7.0F)
+			EntityModelPartNames.RIGHT_HIND_LEG,
+			ModelPartBuilder.create().uv(48, 21).cuboid(-1.0F, -1.01F, -1.0F, 4.0F, 11.0F, 4.0F, dilation),
+			ModelTransform.pivot(-4.0F, 14.0F, 7.0F)
 		);
 		modelPartData.addChild(
-			"left_front_leg",
+			EntityModelPartNames.LEFT_FRONT_LEG,
 			ModelPartBuilder.create().uv(48, 21).mirrored().cuboid(-3.0F, -1.01F, -1.9F, 4.0F, 11.0F, 4.0F, dilation),
 			ModelTransform.pivot(4.0F, 14.0F, -12.0F)
 		);
 		modelPartData.addChild(
-			"right_front_leg",
+			EntityModelPartNames.RIGHT_FRONT_LEG,
 			ModelPartBuilder.create().uv(48, 21).cuboid(-1.0F, -1.01F, -1.9F, 4.0F, 11.0F, 4.0F, dilation),
 			ModelTransform.pivot(-4.0F, 14.0F, -12.0F)
 		);
@@ -108,7 +131,7 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends AnimalModel<T> 
 			ModelTransform.pivot(-4.0F, 14.0F, -12.0F)
 		);
 		modelPartData2.addChild(
-			"tail",
+			EntityModelPartNames.TAIL,
 			ModelPartBuilder.create().uv(42, 36).cuboid(-1.5F, 0.0F, 0.0F, 3.0F, 14.0F, 4.0F, dilation),
 			ModelTransform.of(0.0F, -5.0F, 2.0F, (float) (Math.PI / 6), 0.0F, 0.0F)
 		);
@@ -134,10 +157,14 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends AnimalModel<T> 
 			"mouth_saddle_wrap", ModelPartBuilder.create().uv(19, 0).cuboid(-2.0F, -11.0F, -4.0F, 4.0F, 5.0F, 2.0F, new Dilation(0.2F)), ModelTransform.NONE
 		);
 		modelPartData4.addChild(
-			"left_ear", ModelPartBuilder.create().uv(19, 16).cuboid(0.55F, -13.0F, 4.0F, 2.0F, 3.0F, 1.0F, new Dilation(-0.001F)), ModelTransform.NONE
+			EntityModelPartNames.LEFT_EAR,
+			ModelPartBuilder.create().uv(19, 16).cuboid(0.55F, -13.0F, 4.0F, 2.0F, 3.0F, 1.0F, new Dilation(-0.001F)),
+			ModelTransform.NONE
 		);
 		modelPartData4.addChild(
-			"right_ear", ModelPartBuilder.create().uv(19, 16).cuboid(-2.55F, -13.0F, 4.0F, 2.0F, 3.0F, 1.0F, new Dilation(-0.001F)), ModelTransform.NONE
+			EntityModelPartNames.RIGHT_EAR,
+			ModelPartBuilder.create().uv(19, 16).cuboid(-2.55F, -13.0F, 4.0F, 2.0F, 3.0F, 1.0F, new Dilation(-0.001F)),
+			ModelTransform.NONE
 		);
 		return modelData;
 	}

@@ -6,7 +6,6 @@ import net.minecraft.structure.MarginedStructureStart;
 import net.minecraft.structure.StrongholdGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.HeightLimitView;
@@ -42,8 +41,8 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 	public static class Start extends MarginedStructureStart<DefaultFeatureConfig> {
 		private final long seed;
 
-		public Start(StructureFeature<DefaultFeatureConfig> structureFeature, ChunkPos chunkPos, BlockBox blockBox, int i, long l) {
-			super(structureFeature, chunkPos, blockBox, i, l);
+		public Start(StructureFeature<DefaultFeatureConfig> structureFeature, ChunkPos chunkPos, int i, long l) {
+			super(structureFeature, chunkPos, i, l);
 			this.seed = l;
 		}
 
@@ -60,24 +59,22 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 
 			StrongholdGenerator.Start start;
 			do {
-				this.children.clear();
-				this.boundingBox = BlockBox.empty();
+				this.clearChildren();
 				this.random.setCarverSeed(this.seed + (long)(i++), chunkPos.x, chunkPos.z);
 				StrongholdGenerator.init();
 				start = new StrongholdGenerator.Start(this.random, chunkPos.getOffsetX(2), chunkPos.getOffsetZ(2));
-				this.children.add(start);
-				start.fillOpenings(start, this.children, this.random);
+				this.method_35462(start);
+				start.fillOpenings(start, this, this.random);
 				List<StructurePiece> list = start.pieces;
 
 				while (!list.isEmpty()) {
 					int j = this.random.nextInt(list.size());
 					StructurePiece structurePiece = (StructurePiece)list.remove(j);
-					structurePiece.fillOpenings(start, this.children, this.random);
+					structurePiece.fillOpenings(start, this, this.random);
 				}
 
-				this.setBoundingBoxFromChildren();
 				this.randomUpwardTranslation(chunkGenerator.getSeaLevel(), chunkGenerator.getMinimumY(), this.random, 10);
-			} while (this.children.isEmpty() || start.portalRoom == null);
+			} while (this.hasNoChildren() || start.portalRoom == null);
 		}
 	}
 }

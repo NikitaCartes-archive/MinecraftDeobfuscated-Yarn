@@ -27,6 +27,7 @@ import net.minecraft.world.TickPriority;
 import net.minecraft.world.TickScheduler;
 
 public class ServerTickScheduler<T> implements TickScheduler<T> {
+	public static final int field_30975 = 65536;
 	protected final Predicate<T> invalidObjPredicate;
 	private final Function<T, Identifier> idToName;
 	private final Set<ScheduledTick<T>> scheduledTickActions = Sets.<ScheduledTick<T>>newHashSet();
@@ -129,7 +130,7 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 		while (iterator.hasNext()) {
 			ScheduledTick<T> scheduledTick = (ScheduledTick<T>)iterator.next();
 			BlockPos blockPos = scheduledTick.pos;
-			if (blockPos.getX() >= bounds.minX && blockPos.getX() < bounds.maxX && blockPos.getZ() >= bounds.minZ && blockPos.getZ() < bounds.maxZ) {
+			if (blockPos.getX() >= bounds.getMinX() && blockPos.getX() < bounds.getMaxX() && blockPos.getZ() >= bounds.getMinZ() && blockPos.getZ() < bounds.getMaxZ()) {
 				if (move) {
 					iterator.remove();
 				}
@@ -196,6 +197,7 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 		}
 	}
 
+	@Override
 	public int getTicks() {
 		return this.scheduledTickActions.size();
 	}

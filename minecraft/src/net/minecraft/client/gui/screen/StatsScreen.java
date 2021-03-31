@@ -47,6 +47,18 @@ public class StatsScreen extends Screen implements StatsListener {
 	@Nullable
 	private AlwaysSelectedEntryListWidget<?> selectedList;
 	private boolean downloadingStats = true;
+	private static final int field_32281 = 128;
+	private static final int field_32282 = 18;
+	private static final int field_32283 = 20;
+	private static final int field_32284 = 1;
+	private static final int field_32285 = 1;
+	private static final int field_32274 = 2;
+	private static final int field_32275 = 2;
+	private static final int field_32276 = 40;
+	private static final int field_32277 = 5;
+	private static final int field_32278 = 0;
+	private static final int field_32279 = -1;
+	private static final int field_32280 = 1;
 
 	public StatsScreen(Screen parent, StatHandler statHandler) {
 		super(new TranslatableText("gui.stats"));

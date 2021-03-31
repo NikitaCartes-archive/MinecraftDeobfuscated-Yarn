@@ -5,8 +5,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.dynamic.RegistryLookupCodec;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
@@ -114,7 +112,6 @@ public class VanillaLayeredBiomeSource extends BiomeSource {
 		return CODEC;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public BiomeSource withSeed(long seed) {
 		return new VanillaLayeredBiomeSource(seed, this.legacyBiomeInitLayer, this.largeBiomes, this.biomeRegistry);

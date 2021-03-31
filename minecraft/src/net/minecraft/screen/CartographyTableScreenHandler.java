@@ -15,6 +15,13 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 
 public class CartographyTableScreenHandler extends ScreenHandler {
+	public static final int MAP_SLOT_INDEX = 0;
+	public static final int MATERIAL_SLOT_INDEX = 1;
+	public static final int RESULT_SLOT_INDEX = 2;
+	private static final int field_30776 = 3;
+	private static final int field_30777 = 30;
+	private static final int field_30778 = 30;
+	private static final int field_30779 = 39;
 	private final ScreenHandlerContext context;
 	private long lastTakeResultTime;
 	public final Inventory inventory = new SimpleInventory(2) {
@@ -24,7 +31,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 			super.markDirty();
 		}
 	};
-	private final CraftingResultInventory resultSlot = new CraftingResultInventory() {
+	private final CraftingResultInventory resultInventory = new CraftingResultInventory() {
 		@Override
 		public void markDirty() {
 			CartographyTableScreenHandler.this.onContentChanged(this);
@@ -51,7 +58,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 				return stack.isOf(Items.PAPER) || stack.isOf(Items.MAP) || stack.isOf(Items.GLASS_PANE);
 			}
 		});
-		this.addSlot(new Slot(this.resultSlot, 2, 145, 39) {
+		this.addSlot(new Slot(this.resultInventory, 2, 145, 39) {
 			@Override
 			public boolean canInsert(ItemStack stack) {
 				return false;
@@ -93,13 +100,13 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 	public void onContentChanged(Inventory inventory) {
 		ItemStack itemStack = this.inventory.getStack(0);
 		ItemStack itemStack2 = this.inventory.getStack(1);
-		ItemStack itemStack3 = this.resultSlot.getStack(2);
+		ItemStack itemStack3 = this.resultInventory.getStack(2);
 		if (itemStack3.isEmpty() || !itemStack.isEmpty() && !itemStack2.isEmpty()) {
 			if (!itemStack.isEmpty() && !itemStack2.isEmpty()) {
 				this.updateResult(itemStack, itemStack2, itemStack3);
 			}
 		} else {
-			this.resultSlot.removeStack(2);
+			this.resultInventory.removeStack(2);
 		}
 	}
 
@@ -120,7 +127,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 					this.sendContentUpdates();
 				} else {
 					if (!itemStack2.isOf(Items.MAP)) {
-						this.resultSlot.removeStack(2);
+						this.resultInventory.removeStack(2);
 						this.sendContentUpdates();
 						return;
 					}
@@ -131,7 +138,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 				}
 
 				if (!ItemStack.areEqual(itemStack4, oldResult)) {
-					this.resultSlot.setStack(2, itemStack4);
+					this.resultInventory.setStack(2, itemStack4);
 					this.sendContentUpdates();
 				}
 			}
@@ -140,7 +147,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 
 	@Override
 	public boolean canInsertIntoSlot(ItemStack stack, Slot slot) {
-		return slot.inventory != this.resultSlot && super.canInsertIntoSlot(stack, slot);
+		return slot.inventory != this.resultInventory && super.canInsertIntoSlot(stack, slot);
 	}
 
 	@Override
@@ -196,7 +203,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 	@Override
 	public void close(PlayerEntity player) {
 		super.close(player);
-		this.resultSlot.removeStack(2);
+		this.resultInventory.removeStack(2);
 		this.context.run((world, blockPos) -> this.dropInventory(player, this.inventory));
 	}
 }

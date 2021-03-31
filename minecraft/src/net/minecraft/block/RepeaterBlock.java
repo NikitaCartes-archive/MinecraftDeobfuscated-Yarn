@@ -1,9 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.DustParticleEffect;
@@ -41,7 +38,7 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 		if (!player.getAbilities().allowModifyWorld) {
 			return ActionResult.PASS;
 		} else {
-			world.setBlockState(pos, state.cycle(DELAY), SetBlockStateFlags.DEFAULT);
+			world.setBlockState(pos, state.cycle(DELAY), Block.NOTIFY_ALL);
 			return ActionResult.success(world.isClient);
 		}
 	}
@@ -76,7 +73,6 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 		return isRedstoneGate(state);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		if ((Boolean)state.get(POWERED)) {

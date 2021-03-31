@@ -1,6 +1,10 @@
 package net.minecraft.util;
 
 public class CuboidBlockIterator {
+	public static final int field_33084 = 0;
+	public static final int field_33085 = 1;
+	public static final int field_33086 = 2;
+	public static final int field_33087 = 3;
 	private final int startX;
 	private final int startY;
 	private final int startZ;

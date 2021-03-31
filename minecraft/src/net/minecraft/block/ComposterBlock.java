@@ -4,10 +4,6 @@ import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -35,10 +31,15 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldEvents;
 
 public class ComposterBlock extends Block implements InventoryProvider {
+	public static final int field_31071 = 8;
+	public static final int field_31072 = 0;
+	public static final int field_31073 = 7;
 	public static final IntProperty LEVEL = Properties.LEVEL_8;
 	public static final Object2FloatMap<ItemConvertible> ITEM_TO_LEVEL_INCREASE_CHANCE = new Object2FloatOpenHashMap<>();
+	private static final int field_31074 = 2;
 	private static final VoxelShape RAY_TRACE_SHAPE = VoxelShapes.fullCube();
 	private static final VoxelShape[] LEVEL_TO_COLLISION_SHAPE = Util.make(
 		new VoxelShape[9],
@@ -162,7 +163,6 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		this.setDefaultState(this.stateManager.getDefaultState().with(LEVEL, Integer.valueOf(0)));
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static void playEffects(World world, BlockPos pos, boolean fill) {
 		BlockState blockState = world.getBlockState(pos);
 		world.playSound(
@@ -269,7 +269,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 
 	private static BlockState emptyComposter(BlockState state, WorldAccess world, BlockPos pos) {
 		BlockState blockState = state.with(LEVEL, Integer.valueOf(0));
-		world.setBlockState(pos, blockState, SetBlockStateFlags.DEFAULT);
+		world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
 		return blockState;
 	}
 
@@ -281,7 +281,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		} else {
 			int j = i + 1;
 			BlockState blockState = state.with(LEVEL, Integer.valueOf(j));
-			world.setBlockState(pos, blockState, SetBlockStateFlags.DEFAULT);
+			world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
 			if (j == 7) {
 				world.getBlockTickScheduler().schedule(pos, state.getBlock(), 20);
 			}
@@ -293,7 +293,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if ((Integer)state.get(LEVEL) == 7) {
-			world.setBlockState(pos, state.cycle(LEVEL), SetBlockStateFlags.DEFAULT);
+			world.setBlockState(pos, state.cycle(LEVEL), Block.NOTIFY_ALL);
 			world.playSound(null, pos, SoundEvents.BLOCK_COMPOSTER_READY, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		}
 	}

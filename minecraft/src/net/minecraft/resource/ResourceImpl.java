@@ -7,8 +7,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -19,9 +17,7 @@ public class ResourceImpl implements Resource {
 	private final Identifier id;
 	private final InputStream inputStream;
 	private final InputStream metaInputStream;
-	@Environment(EnvType.CLIENT)
 	private boolean readMetadata;
-	@Environment(EnvType.CLIENT)
 	private JsonObject metadata;
 
 	public ResourceImpl(String packName, Identifier id, InputStream inputStream, @Nullable InputStream metaInputStream) {
@@ -31,7 +27,6 @@ public class ResourceImpl implements Resource {
 		this.metaInputStream = metaInputStream;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public Identifier getId() {
 		return this.id;
@@ -42,13 +37,12 @@ public class ResourceImpl implements Resource {
 		return this.inputStream;
 	}
 
-	@Environment(EnvType.CLIENT)
+	@Override
 	public boolean hasMetadata() {
 		return this.metaInputStream != null;
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	@Override
 	public <T> T getMetadata(ResourceMetadataReader<T> metaReader) {
 		if (!this.hasMetadata()) {

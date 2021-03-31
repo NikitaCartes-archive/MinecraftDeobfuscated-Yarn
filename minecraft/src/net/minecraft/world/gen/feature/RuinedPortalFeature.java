@@ -44,6 +44,13 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 	private static final String[] RARE_PORTAL_STRUCTURE_IDS = new String[]{
 		"ruined_portal/giant_portal_1", "ruined_portal/giant_portal_2", "ruined_portal/giant_portal_3"
 	};
+	private static final float field_31512 = 0.05F;
+	private static final float field_31513 = 0.5F;
+	private static final float field_31514 = 0.5F;
+	private static final float field_31508 = 0.8F;
+	private static final float field_31509 = 0.8F;
+	private static final float field_31510 = 0.5F;
+	private static final int field_31511 = 15;
 
 	public RuinedPortalFeature(Codec<RuinedPortalFeatureConfig> codec) {
 		super(codec);
@@ -90,7 +97,10 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 		}
 
 		List<BlockPos> list = ImmutableList.of(
-			new BlockPos(box.minX, 0, box.minZ), new BlockPos(box.maxX, 0, box.minZ), new BlockPos(box.minX, 0, box.maxZ), new BlockPos(box.maxX, 0, box.maxZ)
+			new BlockPos(box.getMinX(), 0, box.getMinZ()),
+			new BlockPos(box.getMaxX(), 0, box.getMinZ()),
+			new BlockPos(box.getMinX(), 0, box.getMaxZ()),
+			new BlockPos(box.getMaxX(), 0, box.getMaxZ())
 		);
 		List<VerticalBlockSample> list2 = (List<VerticalBlockSample>)list.stream()
 			.map(blockPos -> chunkGenerator.getColumnSample(blockPos.getX(), blockPos.getZ(), world))
@@ -123,8 +133,8 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 	}
 
 	public static class Start extends StructureStart<RuinedPortalFeatureConfig> {
-		protected Start(StructureFeature<RuinedPortalFeatureConfig> structureFeature, ChunkPos chunkPos, BlockBox blockBox, int i, long l) {
-			super(structureFeature, chunkPos, blockBox, i, l);
+		protected Start(StructureFeature<RuinedPortalFeatureConfig> structureFeature, ChunkPos chunkPos, int i, long l) {
+			super(structureFeature, chunkPos, i, l);
 		}
 
 		public void init(
@@ -199,8 +209,9 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 				properties.cold = RuinedPortalFeature.isColdAt(blockPos4, biome);
 			}
 
-			this.children.add(new RuinedPortalStructurePiece(blockPos4, verticalPlacement, properties, identifier, structure, blockRotation, blockMirror, blockPos));
-			this.setBoundingBoxFromChildren();
+			this.method_35462(
+				new RuinedPortalStructurePiece(structureManager, blockPos4, verticalPlacement, properties, identifier, structure, blockRotation, blockMirror, blockPos)
+			);
 		}
 	}
 

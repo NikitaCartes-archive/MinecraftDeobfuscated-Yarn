@@ -32,6 +32,7 @@ import org.apache.logging.log4j.Logger;
 
 public class FunctionLoader implements ResourceReloader {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final String field_33385 = ".mcfunction";
 	private static final int PATH_PREFIX_LENGTH = "functions/".length();
 	private static final int PATH_SUFFIX_LENGTH = ".mcfunction".length();
 	private volatile Map<Identifier, CommandFunction> functions = ImmutableMap.of();

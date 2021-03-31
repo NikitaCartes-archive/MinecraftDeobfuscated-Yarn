@@ -35,6 +35,7 @@ import org.apache.logging.log4j.Logger;
 public class SoundManager extends SinglePreparationResourceReloader<SoundManager.SoundList> {
 	public static final Sound MISSING_SOUND = new Sound("meta:missing_sound", 1.0F, 1.0F, 1, Sound.RegistrationType.FILE, false, false, 16);
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final String field_33026 = "sounds.json";
 	private static final Gson GSON = new GsonBuilder()
 		.registerTypeHierarchyAdapter(Text.class, new Text.Serializer())
 		.registerTypeAdapter(SoundEntry.class, new SoundEntryDeserializer())

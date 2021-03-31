@@ -79,6 +79,7 @@ public class ModelLoader {
 	public static final SpriteIdentifier SHIELD_BASE_NO_PATTERN = new SpriteIdentifier(
 		SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("entity/shield_base_nopattern")
 	);
+	public static final int field_32983 = 10;
 	public static final List<Identifier> BLOCK_DESTRUCTION_STAGES = (List<Identifier>)IntStream.range(0, 10)
 		.mapToObj(i -> new Identifier("block/destroy_stage_" + i))
 		.collect(Collectors.toList());
@@ -117,7 +118,13 @@ public class ModelLoader {
 		hashSet.add(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, PlayerScreenHandler.EMPTY_OFFHAND_ARMOR_SLOT));
 		TexturedRenderLayers.addDefaultTextures(hashSet::add);
 	});
+	static final int field_32984 = -1;
+	private static final int field_32985 = 0;
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final String field_32986 = "builtin/";
+	private static final String field_32987 = "builtin/generated";
+	private static final String field_32988 = "builtin/entity";
+	private static final String field_32989 = "missing";
 	public static final ModelIdentifier MISSING = new ModelIdentifier("builtin/missing", "missing");
 	private static final String field_21773 = MISSING.toString();
 	@VisibleForTesting

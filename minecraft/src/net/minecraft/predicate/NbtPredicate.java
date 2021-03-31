@@ -18,10 +18,10 @@ import net.minecraft.util.JsonHelper;
 public class NbtPredicate {
 	public static final NbtPredicate ANY = new NbtPredicate(null);
 	@Nullable
-	private final NbtCompound tag;
+	private final NbtCompound nbt;
 
-	public NbtPredicate(@Nullable NbtCompound tag) {
-		this.tag = tag;
+	public NbtPredicate(@Nullable NbtCompound nbt) {
+		this.nbt = nbt;
 	}
 
 	public boolean test(ItemStack stack) {
@@ -32,12 +32,12 @@ public class NbtPredicate {
 		return this == ANY ? true : this.test(entityToNbt(entity));
 	}
 
-	public boolean test(@Nullable NbtElement tag) {
-		return tag == null ? this == ANY : this.tag == null || NbtHelper.matches(this.tag, tag, true);
+	public boolean test(@Nullable NbtElement element) {
+		return element == null ? this == ANY : this.nbt == null || NbtHelper.matches(this.nbt, element, true);
 	}
 
 	public JsonElement toJson() {
-		return (JsonElement)(this != ANY && this.tag != null ? new JsonPrimitive(this.tag.toString()) : JsonNull.INSTANCE);
+		return (JsonElement)(this != ANY && this.nbt != null ? new JsonPrimitive(this.nbt.toString()) : JsonNull.INSTANCE);
 	}
 
 	public static NbtPredicate fromJson(@Nullable JsonElement json) {

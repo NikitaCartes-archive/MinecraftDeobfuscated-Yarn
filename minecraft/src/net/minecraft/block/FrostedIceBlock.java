@@ -1,9 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -16,7 +13,10 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class FrostedIceBlock extends IceBlock {
+	public static final int field_31096 = 3;
 	public static final IntProperty AGE = Properties.AGE_3;
+	private static final int field_31097 = 4;
+	private static final int field_31098 = 2;
 
 	public FrostedIceBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -50,7 +50,7 @@ public class FrostedIceBlock extends IceBlock {
 	private boolean increaseAge(BlockState state, World world, BlockPos pos) {
 		int i = (Integer)state.get(AGE);
 		if (i < 3) {
-			world.setBlockState(pos, state.with(AGE, Integer.valueOf(i + 1)), SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(pos, state.with(AGE, Integer.valueOf(i + 1)), Block.NOTIFY_LISTENERS);
 			return false;
 		} else {
 			this.melt(state, world, pos);
@@ -88,7 +88,6 @@ public class FrostedIceBlock extends IceBlock {
 		builder.add(AGE);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
 		return ItemStack.EMPTY;

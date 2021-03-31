@@ -11,10 +11,17 @@ public final class FluidTags {
 	public static final Tag.Identified<Fluid> WATER = register("water");
 	public static final Tag.Identified<Fluid> LAVA = register("lava");
 
+	private FluidTags() {
+	}
+
 	private static Tag.Identified<Fluid> register(String id) {
 		Tag.Identified<Fluid> identified = REQUIRED_TAGS.add(id);
 		TAGS.add(identified);
 		return identified;
+	}
+
+	public static TagGroup<Fluid> getTagGroup() {
+		return REQUIRED_TAGS.getGroup();
 	}
 
 	@Deprecated

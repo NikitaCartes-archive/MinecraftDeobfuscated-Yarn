@@ -11,14 +11,14 @@ import net.minecraft.util.math.MathHelper;
 public class UniformFloatProvider extends FloatProvider {
 	public static final Codec<UniformFloatProvider> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codec.FLOAT.fieldOf("base").forGetter(uniformFloatProvider -> uniformFloatProvider.base),
-						Codec.FLOAT.fieldOf("spread").forGetter(uniformFloatProvider -> uniformFloatProvider.spread)
+						Codec.FLOAT.fieldOf("min_inclusive").forGetter(uniformFloatProvider -> uniformFloatProvider.base),
+						Codec.FLOAT.fieldOf("max_exclusive").forGetter(uniformFloatProvider -> uniformFloatProvider.spread)
 					)
 					.apply(instance, UniformFloatProvider::new)
 		)
 		.comapFlatMap(
-			uniformFloatProvider -> uniformFloatProvider.spread < 0.0F
-					? DataResult.error("Spread must be non-negative, got: " + uniformFloatProvider.spread)
+			uniformFloatProvider -> uniformFloatProvider.spread <= uniformFloatProvider.base
+					? DataResult.error("Max must be larger than min, min_inclusive: " + uniformFloatProvider.base + ", max_exclusive: " + uniformFloatProvider.spread)
 					: DataResult.success(uniformFloatProvider),
 			Function.identity()
 		);
@@ -31,12 +31,16 @@ public class UniformFloatProvider extends FloatProvider {
 	}
 
 	public static UniformFloatProvider create(float base, float spread) {
-		return new UniformFloatProvider(base, spread);
+		if (spread <= base) {
+			throw new IllegalArgumentException("Max must exceed min");
+		} else {
+			return new UniformFloatProvider(base, spread);
+		}
 	}
 
 	@Override
 	public float get(Random random) {
-		return this.spread == 0.0F ? this.base : MathHelper.nextBetween(random, this.base, this.base + this.spread);
+		return MathHelper.nextBetween(random, this.base, this.spread);
 	}
 
 	@Override
@@ -46,7 +50,7 @@ public class UniformFloatProvider extends FloatProvider {
 
 	@Override
 	public float getMax() {
-		return this.base + this.spread;
+		return this.spread;
 	}
 
 	@Override
@@ -70,6 +74,6 @@ public class UniformFloatProvider extends FloatProvider {
 	}
 
 	public String toString() {
-		return "[" + this.base + '-' + (this.base + this.spread) + ']';
+		return "[" + this.base + '-' + this.spread + ']';
 	}
 }

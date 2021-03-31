@@ -13,8 +13,6 @@ import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.network.Packet;
@@ -49,6 +47,7 @@ public class ChunkHolder {
 	);
 	private static final List<ChunkStatus> CHUNK_STATUSES = ChunkStatus.createOrderedList();
 	private static final ChunkHolder.LevelType[] LEVEL_TYPES = ChunkHolder.LevelType.values();
+	private static final int field_29668 = 64;
 	private final AtomicReferenceArray<CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> futuresByStatus = new AtomicReferenceArray(CHUNK_STATUSES.size());
 	private final HeightLimitView world;
 	private volatile CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> accessibleFuture = UNLOADED_WORLD_CHUNK_FUTURE;
@@ -131,7 +130,6 @@ public class ChunkHolder {
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public ChunkStatus getCurrentStatus() {
 		for (int i = CHUNK_STATUSES.size() - 1; i >= 0; i--) {
 			ChunkStatus chunkStatus = (ChunkStatus)CHUNK_STATUSES.get(i);
@@ -291,7 +289,6 @@ public class ChunkHolder {
 		this.savingFuture = this.savingFuture.thenCombine(then, (chunk, either) -> either.map(chunkx -> chunkx, unloaded -> chunk));
 	}
 
-	@Environment(EnvType.CLIENT)
 	public ChunkHolder.LevelType getLevelType() {
 		return getLevelType(this.level);
 	}

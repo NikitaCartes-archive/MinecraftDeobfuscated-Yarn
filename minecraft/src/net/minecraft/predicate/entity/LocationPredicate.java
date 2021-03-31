@@ -207,7 +207,7 @@ public class LocationPredicate {
 				? (RegistryKey)Identifier.CODEC
 					.parse(JsonOps.INSTANCE, jsonObject.get("dimension"))
 					.resultOrPartial(LOGGER::error)
-					.map(identifier -> RegistryKey.of(Registry.DIMENSION, identifier))
+					.map(identifier -> RegistryKey.of(Registry.WORLD_KEY, identifier))
 					.orElse(null)
 				: null;
 			StructureFeature<?> structureFeature = jsonObject.has("feature")
@@ -251,13 +251,48 @@ public class LocationPredicate {
 			return new LocationPredicate.Builder();
 		}
 
+		public LocationPredicate.Builder x(NumberRange.FloatRange x) {
+			this.x = x;
+			return this;
+		}
+
+		public LocationPredicate.Builder y(NumberRange.FloatRange y) {
+			this.y = y;
+			return this;
+		}
+
+		public LocationPredicate.Builder z(NumberRange.FloatRange z) {
+			this.z = z;
+			return this;
+		}
+
 		public LocationPredicate.Builder biome(@Nullable RegistryKey<Biome> biome) {
 			this.biome = biome;
 			return this;
 		}
 
+		public LocationPredicate.Builder feature(@Nullable StructureFeature<?> feature) {
+			this.feature = feature;
+			return this;
+		}
+
+		public LocationPredicate.Builder dimension(@Nullable RegistryKey<World> dimension) {
+			this.dimension = dimension;
+			return this;
+		}
+
+		public LocationPredicate.Builder light(LightPredicate light) {
+			this.light = light;
+			return this;
+		}
+
 		public LocationPredicate.Builder block(BlockPredicate block) {
 			this.block = block;
+			return this;
+		}
+
+		public LocationPredicate.Builder fluid(FluidPredicate fluid) {
+			this.fluid = fluid;
 			return this;
 		}
 

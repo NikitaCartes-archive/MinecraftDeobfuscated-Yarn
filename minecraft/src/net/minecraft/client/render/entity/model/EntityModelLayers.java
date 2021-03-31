@@ -11,6 +11,7 @@ import net.minecraft.util.SignType;
 
 @Environment(EnvType.CLIENT)
 public class EntityModelLayers {
+	private static final String MAIN = "main";
 	private static final Set<EntityModelLayer> LAYERS = Sets.<EntityModelLayer>newHashSet();
 	public static final EntityModelLayer ARMOR_STAND = registerMain("armor_stand");
 	public static final EntityModelLayer ARMOR_STAND_INNER_ARMOR = createInnerArmor("armor_stand");
@@ -64,6 +65,7 @@ public class EntityModelLayers {
 	public static final EntityModelLayer GIANT_INNER_ARMOR = createInnerArmor("giant");
 	public static final EntityModelLayer GIANT_OUTER_ARMOR = createOuterArmor("giant");
 	public static final EntityModelLayer GLOW_SQUID = registerMain("glow_squid");
+	public static final EntityModelLayer GOAT = registerMain("goat");
 	public static final EntityModelLayer GUARDIAN = registerMain("guardian");
 	public static final EntityModelLayer HOGLIN = registerMain("hoglin");
 	public static final EntityModelLayer HOPPER_MINECART = registerMain("hopper_minecart");

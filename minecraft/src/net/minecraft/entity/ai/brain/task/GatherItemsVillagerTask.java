@@ -17,6 +17,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.village.VillagerProfession;
 
 public class GatherItemsVillagerTask extends Task<VillagerEntity> {
+	private static final int field_30182 = 5;
+	private static final float field_30183 = 0.5F;
 	private Set<Item> items = ImmutableSet.of();
 
 	public GatherItemsVillagerTask() {

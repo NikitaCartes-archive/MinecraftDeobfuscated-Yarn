@@ -1,7 +1,10 @@
 package net.minecraft.test;
 
 public interface TestCompletionListener {
-	void onTestFailed(GameTest test);
+	void onTestFailed(GameTestState test);
 
-	void onTestPassed(GameTest test);
+	void onTestPassed(GameTestState test);
+
+	default void onStopped() {
+	}
 }

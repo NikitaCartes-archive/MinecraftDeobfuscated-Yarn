@@ -27,6 +27,7 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class BlockColors {
+	private static final int field_32163 = -1;
 	private final IdList<BlockColorProvider> providers = new IdList<>(32);
 	private final Map<Block, Set<Property<?>>> properties = Maps.<Block, Set<Property<?>>>newHashMap();
 

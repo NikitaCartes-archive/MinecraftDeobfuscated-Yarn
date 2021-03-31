@@ -6,8 +6,6 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.NbtTypeIds;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -40,6 +38,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -51,9 +50,9 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.IntRange;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
@@ -64,6 +63,8 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	private static final EntityAttributeModifier ATTACKING_SPEED_BOOST = new EntityAttributeModifier(
 		ATTACKING_SPEED_BOOST_ID, "Attacking speed boost", 0.15F, EntityAttributeModifier.Operation.ADDITION
 	);
+	private static final int field_30462 = 400;
+	private static final int field_30461 = 600;
 	private static final TrackedData<Optional<BlockState>> CARRIED_BLOCK = DataTracker.registerData(
 		EndermanEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_STATE
 	);
@@ -71,7 +72,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	private static final TrackedData<Boolean> PROVOKED = DataTracker.registerData(EndermanEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private int lastAngrySoundAge = Integer.MIN_VALUE;
 	private int ageWhenTargetSet;
-	private static final IntRange ANGER_TIME_RANGE = Durations.betweenSeconds(20, 39);
+	private static final UniformIntProvider ANGER_TIME_RANGE = Durations.betweenSeconds(20, 39);
 	private int angerTime;
 	private UUID targetUuid;
 
@@ -133,7 +134,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 
 	@Override
 	public void chooseRandomAngerTime() {
-		this.setAngerTime(ANGER_TIME_RANGE.choose(this.random));
+		this.setAngerTime(ANGER_TIME_RANGE.get(this.random));
 	}
 
 	@Override
@@ -175,29 +176,29 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
 		BlockState blockState = this.getCarriedBlock();
 		if (blockState != null) {
-			tag.put("carriedBlockState", NbtHelper.fromBlockState(blockState));
+			nbt.put("carriedBlockState", NbtHelper.fromBlockState(blockState));
 		}
 
-		this.writeAngerToNbt(tag);
+		this.writeAngerToNbt(nbt);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
 		BlockState blockState = null;
-		if (tag.contains("carriedBlockState", NbtTypeIds.COMPOUND)) {
-			blockState = NbtHelper.toBlockState(tag.getCompound("carriedBlockState"));
+		if (nbt.contains("carriedBlockState", NbtElement.COMPOUND_TYPE)) {
+			blockState = NbtHelper.toBlockState(nbt.getCompound("carriedBlockState"));
 			if (blockState.isAir()) {
 				blockState = null;
 			}
 		}
 
 		this.setCarriedBlock(blockState);
-		this.readAngerFromNbt(this.world, tag);
+		this.readAngerFromNbt(this.world, nbt);
 	}
 
 	private boolean isPlayerStaring(PlayerEntity player) {
@@ -479,7 +480,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			if (blockState3 != null) {
 				blockState3 = Block.postProcessState(blockState3, this.enderman.world, blockPos);
 				if (this.canPlaceOn(world, blockPos, blockState3, blockState, blockState2, blockPos2)) {
-					world.setBlockState(blockPos, blockState3, SetBlockStateFlags.DEFAULT);
+					world.setBlockState(blockPos, blockState3, Block.NOTIFY_ALL);
 					world.emitGameEvent(this.enderman, GameEvent.BLOCK_PLACE, blockPos);
 					this.enderman.setCarriedBlock(null);
 				}

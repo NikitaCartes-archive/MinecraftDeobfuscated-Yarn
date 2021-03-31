@@ -28,9 +28,9 @@ public final class DimensionOptions {
 				)
 				.apply(instance, instance.stable(DimensionOptions::new))
 	);
-	public static final RegistryKey<DimensionOptions> OVERWORLD = RegistryKey.of(Registry.DIMENSION_OPTIONS, new Identifier("overworld"));
-	public static final RegistryKey<DimensionOptions> NETHER = RegistryKey.of(Registry.DIMENSION_OPTIONS, new Identifier("the_nether"));
-	public static final RegistryKey<DimensionOptions> END = RegistryKey.of(Registry.DIMENSION_OPTIONS, new Identifier("the_end"));
+	public static final RegistryKey<DimensionOptions> OVERWORLD = RegistryKey.of(Registry.DIMENSION_KEY, new Identifier("overworld"));
+	public static final RegistryKey<DimensionOptions> NETHER = RegistryKey.of(Registry.DIMENSION_KEY, new Identifier("the_nether"));
+	public static final RegistryKey<DimensionOptions> END = RegistryKey.of(Registry.DIMENSION_KEY, new Identifier("the_end"));
 	private static final Set<RegistryKey<DimensionOptions>> BASE_DIMENSIONS = Sets.<RegistryKey<DimensionOptions>>newLinkedHashSet(
 		ImmutableList.of(OVERWORLD, NETHER, END)
 	);
@@ -55,7 +55,7 @@ public final class DimensionOptions {
 	}
 
 	public static SimpleRegistry<DimensionOptions> method_29569(SimpleRegistry<DimensionOptions> simpleRegistry) {
-		SimpleRegistry<DimensionOptions> simpleRegistry2 = new SimpleRegistry<>(Registry.DIMENSION_OPTIONS, Lifecycle.experimental());
+		SimpleRegistry<DimensionOptions> simpleRegistry2 = new SimpleRegistry<>(Registry.DIMENSION_KEY, Lifecycle.experimental());
 
 		for (RegistryKey<DimensionOptions> registryKey : BASE_DIMENSIONS) {
 			DimensionOptions dimensionOptions = simpleRegistry.get(registryKey);

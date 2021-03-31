@@ -4,15 +4,12 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.Language;
 
 public abstract class BaseText implements MutableText {
 	protected final List<Text> siblings = Lists.<Text>newArrayList();
 	private OrderedText orderedText = OrderedText.EMPTY;
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	private Language previousLanguage;
 	private Style style = Style.EMPTY;
 
@@ -53,7 +50,6 @@ public abstract class BaseText implements MutableText {
 		return baseText;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public OrderedText asOrderedText() {
 		Language language = Language.getInstance();

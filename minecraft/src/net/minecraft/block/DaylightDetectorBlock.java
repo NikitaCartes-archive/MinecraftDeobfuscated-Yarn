@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
@@ -61,7 +60,7 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 
 		i = MathHelper.clamp(i, 0, 15);
 		if ((Integer)state.get(POWER) != i) {
-			world.setBlockState(pos, state.with(POWER, Integer.valueOf(i)), SetBlockStateFlags.DEFAULT);
+			world.setBlockState(pos, state.with(POWER, Integer.valueOf(i)), Block.NOTIFY_ALL);
 		}
 	}
 
@@ -72,7 +71,7 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 				return ActionResult.SUCCESS;
 			} else {
 				BlockState blockState = state.cycle(INVERTED);
-				world.setBlockState(pos, blockState, SetBlockStateFlags.NO_REDRAW);
+				world.setBlockState(pos, blockState, Block.NO_REDRAW);
 				updateState(blockState, world, pos);
 				return ActionResult.CONSUME;
 			}

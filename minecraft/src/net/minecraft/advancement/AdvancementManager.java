@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,7 +19,6 @@ public class AdvancementManager {
 	private final Set<Advancement> dependents = Sets.<Advancement>newLinkedHashSet();
 	private AdvancementManager.Listener listener;
 
-	@Environment(EnvType.CLIENT)
 	private void remove(Advancement advancement) {
 		for (Advancement advancement2 : advancement.getChildren()) {
 			this.remove(advancement2);
@@ -42,7 +39,6 @@ public class AdvancementManager {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void removeAll(Set<Identifier> advancements) {
 		for (Identifier identifier : advancements) {
 			Advancement advancement = (Advancement)this.advancements.get(identifier);
@@ -95,7 +91,6 @@ public class AdvancementManager {
 		LOGGER.info("Loaded {} advancements", this.advancements.size());
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void clear() {
 		this.advancements.clear();
 		this.roots.clear();
@@ -118,7 +113,6 @@ public class AdvancementManager {
 		return (Advancement)this.advancements.get(id);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void setListener(@Nullable AdvancementManager.Listener listener) {
 		this.listener = listener;
 		if (listener != null) {
@@ -135,15 +129,12 @@ public class AdvancementManager {
 	public interface Listener {
 		void onRootAdded(Advancement root);
 
-		@Environment(EnvType.CLIENT)
 		void onRootRemoved(Advancement root);
 
 		void onDependentAdded(Advancement dependent);
 
-		@Environment(EnvType.CLIENT)
 		void onDependentRemoved(Advancement dependent);
 
-		@Environment(EnvType.CLIENT)
 		void onClear();
 	}
 }

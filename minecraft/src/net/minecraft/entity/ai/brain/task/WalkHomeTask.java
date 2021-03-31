@@ -19,6 +19,10 @@ import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 
 public class WalkHomeTask extends Task<LivingEntity> {
+	private static final int field_30161 = 40;
+	private static final int field_30162 = 5;
+	private static final int field_30163 = 20;
+	private static final int field_30164 = 4;
 	private final float speed;
 	private final Long2LongMap positionToExpiry = new Long2LongOpenHashMap();
 	private int tries;

@@ -3,8 +3,6 @@ package net.minecraft.world.biome;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 
@@ -24,12 +22,10 @@ public class BiomeParticleConfig {
 		this.probability = probability;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public ParticleEffect getParticle() {
 		return this.particle;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean shouldAddParticle(Random random) {
 		return random.nextFloat() <= this.probability;
 	}

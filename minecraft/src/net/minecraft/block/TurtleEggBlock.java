@@ -2,8 +2,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -26,8 +24,12 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 
 public class TurtleEggBlock extends Block {
+	public static final int field_31272 = 2;
+	public static final int field_31273 = 1;
+	public static final int field_31274 = 4;
 	private static final VoxelShape SMALL_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 12.0, 7.0, 12.0);
 	private static final VoxelShape LARGE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 7.0, 15.0);
 	public static final IntProperty HATCH = Properties.HATCH;
@@ -70,7 +72,7 @@ public class TurtleEggBlock extends Block {
 		if (i <= 1) {
 			world.breakBlock(pos, false);
 		} else {
-			world.setBlockState(pos, state.with(EGGS, Integer.valueOf(i - 1)), SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(pos, state.with(EGGS, Integer.valueOf(i - 1)), Block.NOTIFY_LISTENERS);
 			world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
 		}
 	}
@@ -81,7 +83,7 @@ public class TurtleEggBlock extends Block {
 			int i = (Integer)state.get(HATCH);
 			if (i < 2) {
 				world.playSound(null, pos, SoundEvents.ENTITY_TURTLE_EGG_CRACK, SoundCategory.BLOCKS, 0.7F, 0.9F + random.nextFloat() * 0.2F);
-				world.setBlockState(pos, state.with(HATCH, Integer.valueOf(i + 1)), SetBlockStateFlags.NOTIFY_LISTENERS);
+				world.setBlockState(pos, state.with(HATCH, Integer.valueOf(i + 1)), Block.NOTIFY_LISTENERS);
 			} else {
 				world.playSound(null, pos, SoundEvents.ENTITY_TURTLE_EGG_HATCH, SoundCategory.BLOCKS, 0.7F, 0.9F + random.nextFloat() * 0.2F);
 				world.removeBlock(pos, false);
@@ -126,7 +128,7 @@ public class TurtleEggBlock extends Block {
 
 	@Override
 	public boolean canReplace(BlockState state, ItemPlacementContext context) {
-		return context.getStack().isOf(this.asItem()) && state.get(EGGS) < 4 ? true : super.canReplace(state, context);
+		return !context.shouldCancelInteraction() && context.getStack().isOf(this.asItem()) && state.get(EGGS) < 4 ? true : super.canReplace(state, context);
 	}
 
 	@Nullable

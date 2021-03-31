@@ -141,7 +141,7 @@ public class VibrationParticle extends SpriteBillboardParticle {
 			VibrationParticleEffect vibrationParticleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i
 		) {
 			VibrationParticle vibrationParticle = new VibrationParticle(
-				clientWorld, vibrationParticleEffect.method_33125(), vibrationParticleEffect.method_33125().getArrivalInTicks()
+				clientWorld, vibrationParticleEffect.getVibration(), vibrationParticleEffect.getVibration().getArrivalInTicks()
 			);
 			vibrationParticle.setSprite(this.spriteProvider);
 			vibrationParticle.setColorAlpha(1.0F);

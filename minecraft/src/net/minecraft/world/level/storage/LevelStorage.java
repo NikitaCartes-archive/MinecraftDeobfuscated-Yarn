@@ -31,9 +31,6 @@ import java.util.function.BiFunction;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.Schemas;
@@ -79,6 +76,7 @@ public class LevelStorage {
 		.appendLiteral('-')
 		.appendValue(ChronoField.SECOND_OF_MINUTE, 2)
 		.toFormatter();
+	private static final String DEFAULT_ICON = "icon.png";
 	private static final ImmutableList<String> GENERATOR_OPTION_KEYS = ImmutableList.of(
 		"RandomSeed", "generatorName", "generatorOptions", "generatorVersion", "legacy_custom_options", "MapFeatures", "BonusChest"
 	);
@@ -129,7 +127,7 @@ public class LevelStorage {
 							.parse(dynamic2)
 							.resultOrPartial(Util.addPrefix("Biome registry: ", LOGGER::error))
 							.orElseThrow(() -> new IllegalStateException("Failed to get biome registry"));
-						Registry<ChunkGeneratorSettings> registry3 = (Registry<ChunkGeneratorSettings>)RegistryLookupCodec.of(Registry.NOISE_SETTINGS_WORLDGEN)
+						Registry<ChunkGeneratorSettings> registry3 = (Registry<ChunkGeneratorSettings>)RegistryLookupCodec.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY)
 							.codec()
 							.parse(dynamic2)
 							.resultOrPartial(Util.addPrefix("Noise settings registry: ", LOGGER::error))
@@ -145,7 +143,10 @@ public class LevelStorage {
 		return (DataPackSettings)DataPackSettings.CODEC.parse(dynamic).resultOrPartial(LOGGER::error).orElse(DataPackSettings.SAFE_MODE);
 	}
 
-	@Environment(EnvType.CLIENT)
+	public String getFormatName() {
+		return "Anvil";
+	}
+
 	public List<LevelSummary> getLevelList() throws LevelStorageException {
 		if (!Files.isDirectory(this.savesDirectory, new LinkOption[0])) {
 			throw new LevelStorageException(new TranslatableText("selectWorld.load_folder_access").getString());
@@ -202,7 +203,7 @@ public class LevelStorage {
 			NbtCompound nbtCompound = NbtIo.readCompressed(file);
 			NbtCompound nbtCompound2 = nbtCompound.getCompound("Data");
 			nbtCompound2.remove("Player");
-			int i = nbtCompound2.contains("DataVersion", NbtTypeIds.NUMBER) ? nbtCompound2.getInt("DataVersion") : -1;
+			int i = nbtCompound2.contains("DataVersion", NbtElement.NUMBER_TYPE) ? nbtCompound2.getInt("DataVersion") : -1;
 			Dynamic<NbtElement> dynamic = dataFixer.update(
 				DataFixTypes.LEVEL.getTypeReference(), new Dynamic<>(NbtOps.INSTANCE, nbtCompound2), i, SharedConstants.getGameVersion().getWorldVersion()
 			);
@@ -218,9 +219,9 @@ public class LevelStorage {
 			try {
 				NbtCompound nbtCompound = NbtIo.readCompressed(file);
 				NbtCompound nbtCompound2 = nbtCompound.getCompound("Data");
-				NbtCompound nbtCompound3 = nbtCompound2.contains("Player", NbtTypeIds.COMPOUND) ? nbtCompound2.getCompound("Player") : null;
+				NbtCompound nbtCompound3 = nbtCompound2.contains("Player", NbtElement.COMPOUND_TYPE) ? nbtCompound2.getCompound("Player") : null;
 				nbtCompound2.remove("Player");
-				int i = nbtCompound2.contains("DataVersion", NbtTypeIds.NUMBER) ? nbtCompound2.getInt("DataVersion") : -1;
+				int i = nbtCompound2.contains("DataVersion", NbtElement.NUMBER_TYPE) ? nbtCompound2.getInt("DataVersion") : -1;
 				Dynamic<NbtElement> dynamic = dataFixer.update(
 					DataFixTypes.LEVEL.getTypeReference(), new Dynamic<>(dynamicOps, nbtCompound2), i, SharedConstants.getGameVersion().getWorldVersion()
 				);
@@ -241,7 +242,7 @@ public class LevelStorage {
 				NbtCompound nbtCompound = NbtIo.readCompressed(file2);
 				NbtCompound nbtCompound2 = nbtCompound.getCompound("Data");
 				nbtCompound2.remove("Player");
-				int i = nbtCompound2.contains("DataVersion", NbtTypeIds.NUMBER) ? nbtCompound2.getInt("DataVersion") : -1;
+				int i = nbtCompound2.contains("DataVersion", NbtElement.NUMBER_TYPE) ? nbtCompound2.getInt("DataVersion") : -1;
 				Dynamic<NbtElement> dynamic = dataFixer.update(
 					DataFixTypes.LEVEL.getTypeReference(), new Dynamic<>(NbtOps.INSTANCE, nbtCompound2), i, SharedConstants.getGameVersion().getWorldVersion()
 				);
@@ -266,7 +267,6 @@ public class LevelStorage {
 		};
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isLevelNameValid(String name) {
 		try {
 			Path path = this.savesDirectory.resolve(name);
@@ -278,17 +278,14 @@ public class LevelStorage {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean levelExists(String name) {
 		return Files.isDirectory(this.savesDirectory.resolve(name), new LinkOption[0]);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Path getSavesDirectory() {
 		return this.savesDirectory;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Path getBackupsDirectory() {
 		return this.backupsDirectory;
 	}
@@ -386,7 +383,6 @@ public class LevelStorage {
 			return this.directory.resolve("icon.png").toFile();
 		}
 
-		@Environment(EnvType.CLIENT)
 		public void deleteSessionLock() throws IOException {
 			this.checkValid();
 			final Path path = this.directory.resolve("session.lock");
@@ -435,7 +431,6 @@ public class LevelStorage {
 			}
 		}
 
-		@Environment(EnvType.CLIENT)
 		public void save(String name) throws IOException {
 			this.checkValid();
 			File file = new File(LevelStorage.this.savesDirectory.toFile(), this.directoryName);
@@ -450,7 +445,6 @@ public class LevelStorage {
 			}
 		}
 
-		@Environment(EnvType.CLIENT)
 		public long createBackup() throws IOException {
 			this.checkValid();
 			String string = LocalDateTime.now().format(LevelStorage.TIME_FORMATTER) + "_" + this.directoryName;

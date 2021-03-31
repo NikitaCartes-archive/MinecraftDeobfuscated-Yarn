@@ -18,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
+import net.minecraft.loot.provider.nbt.ContextLootNbtProvider;
 import net.minecraft.loot.provider.nbt.LootNbtProvider;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -64,6 +65,10 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 
 	public static CopyNbtLootFunction.Builder builder(LootNbtProvider source) {
 		return new CopyNbtLootFunction.Builder(source);
+	}
+
+	public static CopyNbtLootFunction.Builder builder(LootContext.EntityTarget target) {
+		return new CopyNbtLootFunction.Builder(ContextLootNbtProvider.fromTarget(target));
 	}
 
 	public static class Builder extends ConditionalLootFunction.Builder<CopyNbtLootFunction.Builder> {

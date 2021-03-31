@@ -3,9 +3,6 @@ package net.minecraft.block;
 import java.util.Optional;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
@@ -59,6 +56,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	 * The shape used to test whether a given block is considered 'smokey'.
 	 */
 	private static final VoxelShape SMOKEY_SHAPE = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 16.0, 10.0);
+	private static final int field_31049 = 5;
 	private final boolean emitsParticles;
 	private final int fireDamage;
 
@@ -158,7 +156,6 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 		return BlockRenderType.MODEL;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		if ((Boolean)state.get(LIT)) {
@@ -218,7 +215,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 				extinguish(null, world, pos, state);
 			}
 
-			world.setBlockState(pos, state.with(WATERLOGGED, Boolean.valueOf(true)).with(LIT, Boolean.valueOf(false)), SetBlockStateFlags.DEFAULT);
+			world.setBlockState(pos, state.with(WATERLOGGED, Boolean.valueOf(true)).with(LIT, Boolean.valueOf(false)), Block.NOTIFY_ALL);
 			world.getFluidTickScheduler().schedule(pos, fluidState.getFluid(), fluidState.getFluid().getTickRate(world));
 			return true;
 		} else {
@@ -233,7 +230,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 			boolean bl = entity == null || entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
 			if (bl && !(Boolean)state.get(LIT) && !(Boolean)state.get(WATERLOGGED)) {
 				BlockPos blockPos = hit.getBlockPos();
-				world.setBlockState(blockPos, state.with(Properties.LIT, Boolean.valueOf(true)), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
+				world.setBlockState(blockPos, state.with(Properties.LIT, Boolean.valueOf(true)), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
 			}
 		}
 	}
@@ -254,9 +251,9 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 		if (lotsOfSmoke) {
 			world.addParticle(
 				ParticleTypes.SMOKE,
-				(double)pos.getX() + 0.25 + random.nextDouble() / 2.0 * (double)(random.nextBoolean() ? 1 : -1),
+				(double)pos.getX() + 0.5 + random.nextDouble() / 4.0 * (double)(random.nextBoolean() ? 1 : -1),
 				(double)pos.getY() + 0.4,
-				(double)pos.getZ() + 0.25 + random.nextDouble() / 2.0 * (double)(random.nextBoolean() ? 1 : -1),
+				(double)pos.getZ() + 0.5 + random.nextDouble() / 4.0 * (double)(random.nextBoolean() ? 1 : -1),
 				0.0,
 				0.005,
 				0.0

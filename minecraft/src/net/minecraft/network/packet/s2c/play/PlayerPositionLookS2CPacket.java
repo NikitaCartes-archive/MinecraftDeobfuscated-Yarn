@@ -2,8 +2,6 @@ package net.minecraft.network.packet.s2c.play;
 
 import java.util.EnumSet;
 import java.util.Set;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -58,42 +56,34 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 		clientPlayPacketListener.onPlayerPositionLook(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public double getX() {
 		return this.x;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public double getY() {
 		return this.y;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public double getZ() {
 		return this.z;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getYaw() {
 		return this.yaw;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getPitch() {
 		return this.pitch;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getTeleportId() {
 		return this.teleportId;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean shouldDismount() {
 		return this.shouldDismount;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Set<PlayerPositionLookS2CPacket.Flag> getFlags() {
 		return this.flags;
 	}

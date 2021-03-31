@@ -1,6 +1,5 @@
 package net.minecraft.block.dispenser;
 
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.ItemStack;
@@ -9,6 +8,7 @@ import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 
 public class BoatDispenserBehavior extends ItemDispenserBehavior {
 	private final ItemDispenserBehavior itemDispenser = new ItemDispenserBehavior();

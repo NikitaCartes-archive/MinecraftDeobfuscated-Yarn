@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -127,7 +126,7 @@ public class PoweredRailBlock extends AbstractRailBlock {
 			|| this.isPoweredByOtherRails(world, pos, state, true, 0)
 			|| this.isPoweredByOtherRails(world, pos, state, false, 0);
 		if (bl2 != bl) {
-			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl2)), SetBlockStateFlags.DEFAULT);
+			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl2)), Block.NOTIFY_ALL);
 			world.updateNeighborsAlways(pos.down(), this);
 			if (((RailShape)state.get(SHAPE)).isAscending()) {
 				world.updateNeighborsAlways(pos.up(), this);

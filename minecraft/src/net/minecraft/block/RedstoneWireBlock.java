@@ -7,9 +7,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.enums.WireConnection;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -48,6 +45,11 @@ public class RedstoneWireBlock extends Block {
 			Direction.NORTH, WIRE_CONNECTION_NORTH, Direction.EAST, WIRE_CONNECTION_EAST, Direction.SOUTH, WIRE_CONNECTION_SOUTH, Direction.WEST, WIRE_CONNECTION_WEST
 		)
 	);
+	protected static final int field_31222 = 1;
+	protected static final int field_31223 = 3;
+	protected static final int field_31224 = 13;
+	protected static final int field_31225 = 3;
+	protected static final int field_31226 = 13;
 	private static final VoxelShape DOT_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 1.0, 13.0);
 	private static final Map<Direction, VoxelShape> field_24414 = Maps.newEnumMap(
 		ImmutableMap.of(
@@ -83,6 +85,7 @@ public class RedstoneWireBlock extends Block {
 			vec3ds[i] = new Vec3d((double)g, (double)h, (double)j);
 		}
 	});
+	private static final float field_31221 = 0.2F;
 	private final BlockState dotState;
 	private boolean wiresGivePower = true;
 
@@ -277,7 +280,7 @@ public class RedstoneWireBlock extends Block {
 		int i = this.getReceivedRedstonePower(world, pos);
 		if ((Integer)state.get(POWER) != i) {
 			if (world.getBlockState(pos) == state) {
-				world.setBlockState(pos, state.with(POWER, Integer.valueOf(i)), SetBlockStateFlags.NOTIFY_LISTENERS);
+				world.setBlockState(pos, state.with(POWER, Integer.valueOf(i)), Block.NOTIFY_LISTENERS);
 			}
 
 			Set<BlockPos> set = Sets.<BlockPos>newHashSet();
@@ -427,13 +430,11 @@ public class RedstoneWireBlock extends Block {
 		return this.wiresGivePower;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static int getWireColor(int powerLevel) {
 		Vec3d vec3d = COLORS[powerLevel];
 		return MathHelper.packRgb((float)vec3d.getX(), (float)vec3d.getY(), (float)vec3d.getZ());
 	}
 
-	@Environment(EnvType.CLIENT)
 	private void addPoweredParticles(World world, Random random, BlockPos pos, Vec3d color, Direction direction, Direction direction2, float f, float g) {
 		float h = g - f;
 		if (!(random.nextFloat() >= 0.2F * h)) {
@@ -446,7 +447,6 @@ public class RedstoneWireBlock extends Block {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		int i = (Integer)state.get(POWER);
@@ -517,7 +517,7 @@ public class RedstoneWireBlock extends Block {
 				blockState = blockState.with(POWER, state.get(POWER));
 				blockState = this.getPlacementState(world, blockState, pos);
 				if (blockState != state) {
-					world.setBlockState(pos, blockState, SetBlockStateFlags.DEFAULT);
+					world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
 					this.updateForNewState(world, pos, state, blockState);
 					return ActionResult.SUCCESS;
 				}

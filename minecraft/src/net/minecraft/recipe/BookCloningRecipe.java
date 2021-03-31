@@ -1,7 +1,5 @@
 package net.minecraft.recipe;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -99,7 +97,6 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 		return RecipeSerializer.BOOK_CLONING;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean fits(int width, int height) {
 		return width >= 3 && height >= 3;

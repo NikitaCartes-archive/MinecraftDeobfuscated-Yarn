@@ -125,6 +125,16 @@ public class EntityEquipmentPredicate {
 			return this;
 		}
 
+		public EntityEquipmentPredicate.Builder mainhand(ItemPredicate mainhand) {
+			this.mainhand = mainhand;
+			return this;
+		}
+
+		public EntityEquipmentPredicate.Builder offhand(ItemPredicate offhand) {
+			this.offhand = offhand;
+			return this;
+		}
+
 		public EntityEquipmentPredicate build() {
 			return new EntityEquipmentPredicate(this.head, this.chest, this.legs, this.feet, this.mainhand, this.offhand);
 		}

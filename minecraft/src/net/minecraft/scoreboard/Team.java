@@ -4,8 +4,6 @@ import com.google.common.collect.Sets;
 import java.util.Collection;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -15,6 +13,9 @@ import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 
 public class Team extends AbstractTeam {
+	public static final int field_31883 = 16;
+	private static final int field_31884 = 0;
+	private static final int field_31885 = 1;
 	private final Scoreboard scoreboard;
 	private final String name;
 	private final Set<String> playerList = Sets.<String>newHashSet();
@@ -34,6 +35,10 @@ public class Team extends AbstractTeam {
 		this.name = name;
 		this.displayName = new LiteralText(name);
 		this.nameStyle = Style.EMPTY.withInsertion(name).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(name)));
+	}
+
+	public Scoreboard getScoreboard() {
+		return this.scoreboard;
 	}
 
 	@Override
@@ -172,7 +177,6 @@ public class Team extends AbstractTeam {
 		return i;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void setFriendlyFlagsBitwise(int flags) {
 		this.setFriendlyFireAllowed((flags & 1) > 0);
 		this.setShowFriendlyInvisibles((flags & 2) > 0);

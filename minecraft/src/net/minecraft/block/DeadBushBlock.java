@@ -1,10 +1,12 @@
 package net.minecraft.block;
 
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 
 public class DeadBushBlock extends PlantBlock {
+	protected static final float field_31080 = 6.0F;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 13.0, 14.0);
 
 	protected DeadBushBlock(AbstractBlock.Settings settings) {
@@ -37,8 +39,6 @@ public class DeadBushBlock extends PlantBlock {
 			|| floor.isOf(Blocks.GREEN_TERRACOTTA)
 			|| floor.isOf(Blocks.RED_TERRACOTTA)
 			|| floor.isOf(Blocks.BLACK_TERRACOTTA)
-			|| floor.isOf(Blocks.DIRT)
-			|| floor.isOf(Blocks.COARSE_DIRT)
-			|| floor.isOf(Blocks.PODZOL);
+			|| floor.isIn(BlockTags.DIRT);
 	}
 }

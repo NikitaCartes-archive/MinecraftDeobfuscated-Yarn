@@ -27,6 +27,7 @@ import net.minecraft.world.BlockView;
 
 @Environment(EnvType.CLIENT)
 public class FluidRenderer {
+	private static final float field_32781 = 0.8888889F;
 	private final Sprite[] lavaSprites = new Sprite[2];
 	private final Sprite[] waterSprites = new Sprite[2];
 	private Sprite waterOverlaySprite;

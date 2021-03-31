@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.function.Predicate;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -69,18 +70,47 @@ import net.minecraft.tag.ItemTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.IntRange;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.GameRules;
 
 public class PiglinBrain {
+	public static final int field_30565 = 8;
+	public static final int field_30566 = 4;
 	public static final Item BARTERING_ITEM = Items.GOLD_INGOT;
-	private static final IntRange HUNT_MEMORY_DURATION = Durations.betweenSeconds(30, 120);
-	private static final IntRange MEMORY_TRANSFER_TASK_DURATION = Durations.betweenSeconds(10, 40);
-	private static final IntRange RIDE_TARGET_MEMORY_DURATION = Durations.betweenSeconds(10, 30);
-	private static final IntRange AVOID_MEMORY_DURATION = Durations.betweenSeconds(5, 20);
-	private static final IntRange GO_TO_ZOMBIFIED_MEMORY_DURATION = Durations.betweenSeconds(5, 7);
-	private static final IntRange GO_TO_NEMESIS_MEMORY_DURATION = Durations.betweenSeconds(5, 7);
+	private static final int field_30567 = 16;
+	private static final int field_30568 = 600;
+	private static final int field_30569 = 120;
+	private static final int field_30570 = 9;
+	private static final int field_30571 = 200;
+	private static final int field_30572 = 200;
+	private static final int field_30573 = 300;
+	private static final UniformIntProvider HUNT_MEMORY_DURATION = Durations.betweenSeconds(30, 120);
+	private static final int field_30574 = 100;
+	private static final int field_30575 = 400;
+	private static final int field_30576 = 8;
+	private static final UniformIntProvider MEMORY_TRANSFER_TASK_DURATION = Durations.betweenSeconds(10, 40);
+	private static final UniformIntProvider RIDE_TARGET_MEMORY_DURATION = Durations.betweenSeconds(10, 30);
+	private static final UniformIntProvider AVOID_MEMORY_DURATION = Durations.betweenSeconds(5, 20);
+	private static final int field_30577 = 20;
+	private static final int field_30578 = 200;
+	private static final int field_30579 = 12;
+	private static final int field_30580 = 8;
+	private static final int field_30581 = 14;
+	private static final int field_30582 = 8;
+	private static final int field_30583 = 5;
+	private static final float field_30584 = 0.75F;
+	private static final int field_30585 = 6;
+	private static final UniformIntProvider GO_TO_ZOMBIFIED_MEMORY_DURATION = Durations.betweenSeconds(5, 7);
+	private static final UniformIntProvider GO_TO_NEMESIS_MEMORY_DURATION = Durations.betweenSeconds(5, 7);
+	private static final float field_30557 = 0.1F;
+	private static final float field_30558 = 1.0F;
+	private static final float field_30559 = 1.0F;
+	private static final float field_30560 = 0.8F;
+	private static final float field_30561 = 1.0F;
+	private static final float field_30562 = 1.0F;
+	private static final float field_30563 = 0.6F;
+	private static final float field_30564 = 0.6F;
 
 	protected static Brain<?> create(PiglinEntity piglin, Brain<PiglinEntity> brain) {
 		addCoreActivities(brain);
@@ -97,7 +127,7 @@ public class PiglinBrain {
 	}
 
 	protected static void setHuntedRecently(PiglinEntity piglin) {
-		int i = HUNT_MEMORY_DURATION.choose(piglin.world.random);
+		int i = HUNT_MEMORY_DURATION.get(piglin.world.random);
 		piglin.getBrain().remember(MemoryModuleType.HUNTED_RECENTLY, true, (long)i);
 	}
 
@@ -141,7 +171,7 @@ public class PiglinBrain {
 			Activity.FIGHT,
 			10,
 			ImmutableList.of(
-				new ForgetAttackTargetTask<>(livingEntity -> !isPreferredAttackTarget(piglin, livingEntity)),
+				new ForgetAttackTargetTask<>((Predicate<LivingEntity>)(livingEntity -> !isPreferredAttackTarget(piglin, livingEntity))),
 				new ConditionalTask(PiglinBrain::isHoldingCrossbow, new AttackTask<>(5, 0.75F)),
 				new RangedApproachTask(1.0F),
 				new MeleeAttackTask(20),
@@ -161,7 +191,7 @@ public class PiglinBrain {
 				makeGoToSoulFireTask(),
 				new FollowMobTask(PiglinBrain::isGoldHoldingPlayer, 14.0F),
 				new UpdateAttackTargetTask(AbstractPiglinEntity::isAdult, PiglinBrain::getPreferredTarget),
-				new ConditionalTask(piglinEntity -> !piglinEntity.isDancing(), new GoToCelebrateTask(2, 1.0F)),
+				new ConditionalTask((Predicate)(piglinEntity -> !piglinEntity.isDancing()), new GoToCelebrateTask(2, 1.0F)),
 				new ConditionalTask(PiglinEntity::isDancing, new GoToCelebrateTask(4, 0.6F)),
 				new RandomTask(
 					ImmutableList.of(Pair.of(new FollowMobTask(EntityType.PIGLIN, 8.0F), 1), Pair.of(new StrollTask(0.6F, 2, 1), 1), Pair.of(new WaitTask(10, 20), 1))
@@ -740,12 +770,16 @@ public class PiglinBrain {
 		piglin.getBrain().forget(MemoryModuleType.ANGRY_AT);
 		piglin.getBrain().forget(MemoryModuleType.ATTACK_TARGET);
 		piglin.getBrain().forget(MemoryModuleType.WALK_TARGET);
-		piglin.getBrain().remember(MemoryModuleType.AVOID_TARGET, target, (long)AVOID_MEMORY_DURATION.choose(piglin.world.random));
+		piglin.getBrain().remember(MemoryModuleType.AVOID_TARGET, target, (long)AVOID_MEMORY_DURATION.get(piglin.world.random));
 		rememberHunting(piglin);
 	}
 
 	public static void rememberHunting(AbstractPiglinEntity piglin) {
-		piglin.getBrain().remember(MemoryModuleType.HUNTED_RECENTLY, true, (long)HUNT_MEMORY_DURATION.choose(piglin.world.random));
+		piglin.getBrain().remember(MemoryModuleType.HUNTED_RECENTLY, true, (long)HUNT_MEMORY_DURATION.get(piglin.world.random));
+	}
+
+	private static boolean method_35197(PiglinEntity piglinEntity) {
+		return piglinEntity.getBrain().hasMemoryModule(MemoryModuleType.NEAREST_PLAYER_HOLDING_WANTED_ITEM);
 	}
 
 	private static void setEatenRecently(PiglinEntity piglin) {

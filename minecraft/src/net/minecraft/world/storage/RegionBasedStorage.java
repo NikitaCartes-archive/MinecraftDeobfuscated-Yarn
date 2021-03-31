@@ -12,6 +12,8 @@ import net.minecraft.util.ThrowableDeliverer;
 import net.minecraft.util.math.ChunkPos;
 
 public final class RegionBasedStorage implements AutoCloseable {
+	public static final String field_31425 = ".mca";
+	private static final int field_31426 = 256;
 	private final Long2ObjectLinkedOpenHashMap<RegionFile> cachedRegionFiles = new Long2ObjectLinkedOpenHashMap<>();
 	private final File directory;
 	private final boolean dsync;
@@ -75,16 +77,16 @@ public final class RegionBasedStorage implements AutoCloseable {
 		return (NbtCompound)var5;
 	}
 
-	protected void write(ChunkPos pos, @Nullable NbtCompound tag) throws IOException {
+	protected void write(ChunkPos pos, @Nullable NbtCompound nbt) throws IOException {
 		RegionFile regionFile = this.getRegionFile(pos);
-		if (tag == null) {
+		if (nbt == null) {
 			regionFile.method_31740(pos);
 		} else {
 			DataOutputStream dataOutputStream = regionFile.getChunkOutputStream(pos);
 			Throwable var5 = null;
 
 			try {
-				NbtIo.write(tag, dataOutputStream);
+				NbtIo.write(nbt, dataOutputStream);
 			} catch (Throwable var14) {
 				var5 = var14;
 				throw var14;

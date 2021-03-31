@@ -3,8 +3,6 @@ package net.minecraft.network.packet.s2c.play;
 import com.google.common.collect.Lists;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -84,42 +82,34 @@ public class ExplosionS2CPacket implements Packet<ClientPlayPacketListener> {
 		clientPlayPacketListener.onExplosion(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getPlayerVelocityX() {
 		return this.playerVelocityX;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getPlayerVelocityY() {
 		return this.playerVelocityY;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getPlayerVelocityZ() {
 		return this.playerVelocityZ;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public double getX() {
 		return this.x;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public double getY() {
 		return this.y;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public double getZ() {
 		return this.z;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getRadius() {
 		return this.radius;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public List<BlockPos> getAffectedBlocks() {
 		return this.affectedBlocks;
 	}

@@ -38,6 +38,9 @@ public class PufferfishEntity extends FishEntity {
 				: false;
 		}
 	};
+	public static final int field_30353 = 0;
+	public static final int field_30354 = 1;
+	public static final int field_30355 = 2;
 
 	public PufferfishEntity(EntityType<? extends PufferfishEntity> entityType, World world) {
 		super(entityType, world);
@@ -68,19 +71,19 @@ public class PufferfishEntity extends FishEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putInt("PuffState", this.getPuffState());
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putInt("PuffState", this.getPuffState());
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.setPuffState(tag.getInt("PuffState"));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.setPuffState(nbt.getInt("PuffState"));
 	}
 
 	@Override
-	protected ItemStack getFishBucketItem() {
+	public ItemStack getBucketItem() {
 		return new ItemStack(Items.PUFFERFISH_BUCKET);
 	}
 
@@ -144,7 +147,9 @@ public class PufferfishEntity extends FishEntity {
 		int i = this.getPuffState();
 		if (player instanceof ServerPlayerEntity && i > 0 && player.damage(DamageSource.mob(this), (float)(1 + i))) {
 			if (!this.isSilent()) {
-				((ServerPlayerEntity)player).networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.PUFFERFISH_STING, 0.0F));
+				((ServerPlayerEntity)player)
+					.networkHandler
+					.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.PUFFERFISH_STING, GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
 			}
 
 			player.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 60 * i, 0));

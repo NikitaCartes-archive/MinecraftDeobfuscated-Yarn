@@ -17,9 +17,7 @@ public interface ModifiableWorld {
 	 * change persisted across loads. It's recommended to check whether this world is client before
 	 * interacting with the world in this way.</p>
 	 * 
-	 * <p>For the accepted values of the flags, see {@link net.fabricmc.yarn.constants.SetBlockStateFlags}.
-	 * 
-	 * @see net.fabricmc.yarn.constants.SetBlockStateFlags
+	 * <p>See {@link #setBlockState(BlockPos, BlockState, int)} for a list of accepted flags.
 	 * 
 	 * @param pos the target position
 	 * @param state the block state to set
@@ -36,10 +34,20 @@ public interface ModifiableWorld {
 	 * change persisted across loads. It's recommended to check whether this world is client before
 	 * interacting with the world in this way.</p>
 	 * 
-	 * <p>For the accepted values of the flags, see {@link net.fabricmc.yarn.constants.SetBlockStateFlags}.
+	 * <p>The accepted values of these flags are:
+	 * <ul>
+	 * <li>{@link net.minecraft.block.Block#NOTIFY_ALL Block.NOTIFY_ALL}</li>
+	 * <li>{@link net.minecraft.block.Block#NOTIFY_NEIGHBORS Block.NOTIFY_NEIGHBORS}</li>
+	 * <li>{@link net.minecraft.block.Block#NOTIFY_LISTENERS Block.NOTIFY_LISTENERS}</li>
+	 * <li>{@link net.minecraft.block.Block#NO_REDRAW Block.NO_REDRAW}</li>
+	 * <li>{@link net.minecraft.block.Block#REDRAW_ON_MAIN_THREAD Block.REDRAW_ON_MAIN_THREAD}</li>
+	 * <li>{@link net.minecraft.block.Block#FORCE_STATE Block.FORCE_STATE}</li>
+	 * <li>{@link net.minecraft.block.Block#SKIP_DROPS Block.SKIP_DROPS}</li>
+	 * <li>{@link net.minecraft.block.Block#MOVED Block.MOVED}</li>
+	 * <li>{@link net.minecraft.block.Block#SKIP_LIGHTING_UPDATES Block.SKIP_LIGHTING_UPDATES}</li>
+	 * </ul>
 	 * 
 	 * @see #setBlockState(BlockPos, BlockState, int, int)
-	 * @see net.fabricmc.yarn.constants.SetBlockStateFlags
 	 * 
 	 * @param pos the target position
 	 * @param state the block state to set

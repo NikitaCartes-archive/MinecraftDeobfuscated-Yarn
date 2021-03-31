@@ -2,8 +2,6 @@ package net.minecraft.network.packet.c2s.play;
 
 import java.util.function.Function;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -32,24 +30,20 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 		}
 	};
 
-	@Environment(EnvType.CLIENT)
 	private PlayerInteractEntityC2SPacket(int entityId, boolean playerSneaking, PlayerInteractEntityC2SPacket.InteractTypeHandler type) {
 		this.entityId = entityId;
 		this.type = type;
 		this.playerSneaking = playerSneaking;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static PlayerInteractEntityC2SPacket attack(Entity entity, boolean playerSneaking) {
 		return new PlayerInteractEntityC2SPacket(entity.getId(), playerSneaking, ATTACK);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static PlayerInteractEntityC2SPacket interact(Entity entity, boolean playerSneaking, Hand hand) {
 		return new PlayerInteractEntityC2SPacket(entity.getId(), playerSneaking, new PlayerInteractEntityC2SPacket.InteractHandler(hand));
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static PlayerInteractEntityC2SPacket interactAt(Entity entity, boolean playerSneaking, Hand hand, Vec3d pos) {
 		return new PlayerInteractEntityC2SPacket(entity.getId(), playerSneaking, new PlayerInteractEntityC2SPacket.InteractAtHandler(hand, pos));
 	}
@@ -98,7 +92,6 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 		private final Hand hand;
 		private final Vec3d pos;
 
-		@Environment(EnvType.CLIENT)
 		private InteractAtHandler(Hand hand, Vec3d pos) {
 			this.hand = hand;
 			this.pos = pos;
@@ -131,7 +124,6 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 	static class InteractHandler implements PlayerInteractEntityC2SPacket.InteractTypeHandler {
 		private final Hand hand;
 
-		@Environment(EnvType.CLIENT)
 		private InteractHandler(Hand hand) {
 			this.hand = hand;
 		}

@@ -3,9 +3,6 @@ package net.minecraft.entity.passive;
 import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -48,6 +45,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -56,9 +54,9 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.IntRange;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -70,13 +68,15 @@ public class WolfEntity extends TameableEntity implements Angerable {
 		EntityType<?> entityType = livingEntity.getType();
 		return entityType == EntityType.SHEEP || entityType == EntityType.RABBIT || entityType == EntityType.FOX;
 	};
+	private static final float field_30386 = 8.0F;
+	private static final float field_30387 = 20.0F;
 	private float begAnimationProgress;
 	private float lastBegAnimationProgress;
 	private boolean furWet;
 	private boolean canShakeWaterOff;
 	private float shakeProgress;
 	private float lastShakeProgress;
-	private static final IntRange ANGER_TIME_RANGE = Durations.betweenSeconds(20, 39);
+	private static final UniformIntProvider ANGER_TIME_RANGE = Durations.betweenSeconds(20, 39);
 	private UUID targetUuid;
 
 	public WolfEntity(EntityType<? extends WolfEntity> entityType, World world) {
@@ -128,20 +128,20 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putByte("CollarColor", (byte)this.getCollarColor().getId());
-		this.writeAngerToNbt(tag);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putByte("CollarColor", (byte)this.getCollarColor().getId());
+		this.writeAngerToNbt(nbt);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		if (tag.contains("CollarColor", NbtTypeIds.NUMBER)) {
-			this.setCollarColor(DyeColor.byId(tag.getInt("CollarColor")));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		if (nbt.contains("CollarColor", NbtElement.NUMBER_TYPE)) {
+			this.setCollarColor(DyeColor.byId(nbt.getInt("CollarColor")));
 		}
 
-		this.readAngerFromNbt(this.world, tag);
+		this.readAngerFromNbt(this.world, nbt);
 	}
 
 	@Override
@@ -252,7 +252,6 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	 * <p>
 	 * The wolf's fur will remain wet until the wolf shakes.
 	 */
-	@Environment(EnvType.CLIENT)
 	public boolean isFurWet() {
 		return this.furWet;
 	}
@@ -266,12 +265,10 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	 * @return Brightness as a float value between 0.75 and 1.0.
 	 * @see net.minecraft.client.render.entity.model.TintableAnimalModel#setColorMultiplier(float, float, float)
 	 */
-	@Environment(EnvType.CLIENT)
 	public float getFurWetBrightnessMultiplier(float tickDelta) {
 		return Math.min(0.5F + MathHelper.lerp(tickDelta, this.lastShakeProgress, this.shakeProgress) / 2.0F * 0.5F, 1.0F);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getShakeAnimationProgress(float tickDelta, float f) {
 		float g = (MathHelper.lerp(tickDelta, this.lastShakeProgress, this.shakeProgress) + f) / 1.8F;
 		if (g < 0.0F) {
@@ -283,7 +280,6 @@ public class WolfEntity extends TameableEntity implements Angerable {
 		return MathHelper.sin(g * (float) Math.PI) * MathHelper.sin(g * (float) Math.PI * 11.0F) * 0.15F * (float) Math.PI;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getBegAnimationProgress(float tickDelta) {
 		return MathHelper.lerp(tickDelta, this.lastBegAnimationProgress, this.begAnimationProgress) * 0.15F * (float) Math.PI;
 	}
@@ -399,7 +395,6 @@ public class WolfEntity extends TameableEntity implements Angerable {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void handleStatus(byte status) {
 		if (status == 8) {
@@ -413,7 +408,6 @@ public class WolfEntity extends TameableEntity implements Angerable {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getTailAngle() {
 		if (this.hasAngerTime()) {
 			return 1.5393804F;
@@ -445,7 +439,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 
 	@Override
 	public void chooseRandomAngerTime() {
-		this.setAngerTime(ANGER_TIME_RANGE.choose(this.random));
+		this.setAngerTime(ANGER_TIME_RANGE.get(this.random));
 	}
 
 	@Nullable
@@ -525,7 +519,6 @@ public class WolfEntity extends TameableEntity implements Angerable {
 		return !this.hasAngerTime() && super.canBeLeashedBy(player);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public Vec3d method_29919() {
 		return new Vec3d(0.0, (double)(0.6F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));

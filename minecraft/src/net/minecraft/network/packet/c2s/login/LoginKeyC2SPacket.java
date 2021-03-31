@@ -3,8 +3,6 @@ package net.minecraft.network.packet.c2s.login;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import javax.crypto.SecretKey;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.encryption.NetworkEncryptionException;
@@ -15,7 +13,6 @@ public class LoginKeyC2SPacket implements Packet<ServerLoginPacketListener> {
 	private final byte[] encryptedSecretKey;
 	private final byte[] encryptedNonce;
 
-	@Environment(EnvType.CLIENT)
 	public LoginKeyC2SPacket(SecretKey secretKey, PublicKey publicKey, byte[] nonce) throws NetworkEncryptionException {
 		this.encryptedSecretKey = NetworkEncryptionUtils.encrypt(publicKey, secretKey.getEncoded());
 		this.encryptedNonce = NetworkEncryptionUtils.encrypt(publicKey, nonce);

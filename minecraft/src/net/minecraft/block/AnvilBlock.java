@@ -1,9 +1,6 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.damage.DamageSource;
@@ -28,6 +25,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 
 public class AnvilBlock extends FallingBlock {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
@@ -41,6 +39,8 @@ public class AnvilBlock extends FallingBlock {
 	private static final VoxelShape X_AXIS_SHAPE = VoxelShapes.union(BASE_SHAPE, X_STEP_SHAPE, X_STEM_SHAPE, X_FACE_SHAPE);
 	private static final VoxelShape Z_AXIS_SHAPE = VoxelShapes.union(BASE_SHAPE, Z_STEP_SHAPE, Z_STEM_SHAPE, Z_FACE_SHAPE);
 	private static final Text TITLE = new TranslatableText("container.repair");
+	private static final float FALLING_BLOCK_ENTITY_DAMAGE_MULTIPLIER = 2.0F;
+	private static final int FALLING_BLOCK_ENTITY_MAX_DAMAGE = 40;
 
 	public AnvilBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -125,7 +125,6 @@ public class AnvilBlock extends FallingBlock {
 		return false;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public int getColor(BlockState state, BlockView world, BlockPos pos) {
 		return state.getMapColor(world, pos).color;

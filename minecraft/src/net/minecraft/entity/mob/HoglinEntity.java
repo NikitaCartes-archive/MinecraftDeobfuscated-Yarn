@@ -4,8 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Dynamic;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -47,6 +45,14 @@ import net.minecraft.world.WorldView;
 
 public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	private static final TrackedData<Boolean> BABY = DataTracker.registerData(HoglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final float field_30525 = 0.2F;
+	private static final int field_30526 = 40;
+	private static final float field_30527 = 0.3F;
+	private static final int field_30528 = 1;
+	private static final float field_30529 = 0.6F;
+	private static final int field_30530 = 6;
+	private static final float field_30531 = 0.5F;
+	private static final int field_30532 = 300;
 	private int movementCooldownTicks;
 	private int timeInOverworld;
 	private boolean cannotBeHunted;
@@ -187,13 +193,13 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
 		if (world.getRandom().nextFloat() < 0.2F) {
 			this.setBaby(true);
 		}
 
-		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
 	@Override
@@ -225,7 +231,6 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 		return actionResult;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void handleStatus(byte status) {
 		if (status == 4) {
@@ -236,7 +241,6 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public int getMovementCooldownTicks() {
 		return this.movementCooldownTicks;
@@ -275,24 +279,24 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
 		if (this.isImmuneToZombification()) {
-			tag.putBoolean("IsImmuneToZombification", true);
+			nbt.putBoolean("IsImmuneToZombification", true);
 		}
 
-		tag.putInt("TimeInOverworld", this.timeInOverworld);
+		nbt.putInt("TimeInOverworld", this.timeInOverworld);
 		if (this.cannotBeHunted) {
-			tag.putBoolean("CannotBeHunted", true);
+			nbt.putBoolean("CannotBeHunted", true);
 		}
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.setImmuneToZombification(tag.getBoolean("IsImmuneToZombification"));
-		this.timeInOverworld = tag.getInt("TimeInOverworld");
-		this.setCannotBeHunted(tag.getBoolean("CannotBeHunted"));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.setImmuneToZombification(nbt.getBoolean("IsImmuneToZombification"));
+		this.timeInOverworld = nbt.getInt("TimeInOverworld");
+		this.setCannotBeHunted(nbt.getBoolean("CannotBeHunted"));
 	}
 
 	public void setImmuneToZombification(boolean immuneToZombification) {

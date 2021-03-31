@@ -45,10 +45,10 @@ public class BossBarManager {
 		return nbtCompound;
 	}
 
-	public void readNbt(NbtCompound tag) {
-		for (String string : tag.getKeys()) {
+	public void readNbt(NbtCompound nbt) {
+		for (String string : nbt.getKeys()) {
 			Identifier identifier = new Identifier(string);
-			this.commandBossBars.put(identifier, CommandBossBar.fromNbt(tag.getCompound(string), identifier));
+			this.commandBossBars.put(identifier, CommandBossBar.fromNbt(nbt.getCompound(string), identifier));
 		}
 	}
 

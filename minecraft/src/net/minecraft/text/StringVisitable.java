@@ -3,8 +3,6 @@ package net.minecraft.text;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Optional;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.Unit;
 
 /**
@@ -25,7 +23,6 @@ public interface StringVisitable {
 			return Optional.empty();
 		}
 
-		@Environment(EnvType.CLIENT)
 		@Override
 		public <T> Optional<T> visit(StringVisitable.StyledVisitor<T> styledVisitor, Style style) {
 			return Optional.empty();
@@ -52,7 +49,6 @@ public interface StringVisitable {
 	 * @param styledVisitor the visitor
 	 * @param style the contextual style
 	 */
-	@Environment(EnvType.CLIENT)
 	<T> Optional<T> visit(StringVisitable.StyledVisitor<T> styledVisitor, Style style);
 
 	/**
@@ -67,7 +63,6 @@ public interface StringVisitable {
 				return visitor.accept(string);
 			}
 
-			@Environment(EnvType.CLIENT)
 			@Override
 			public <T> Optional<T> visit(StringVisitable.StyledVisitor<T> styledVisitor, Style style) {
 				return styledVisitor.accept(style, string);
@@ -81,7 +76,6 @@ public interface StringVisitable {
 	 * @param string the plain string
 	 * @param style the root style
 	 */
-	@Environment(EnvType.CLIENT)
 	static StringVisitable styled(String string, Style style) {
 		return new StringVisitable() {
 			@Override
@@ -101,7 +95,6 @@ public interface StringVisitable {
 	 * 
 	 * @param visitables an array or varargs of visitables
 	 */
-	@Environment(EnvType.CLIENT)
 	static StringVisitable concat(StringVisitable... visitables) {
 		return concat(ImmutableList.copyOf(visitables));
 	}
@@ -111,7 +104,6 @@ public interface StringVisitable {
 	 * 
 	 * @param visitables a list of visitables
 	 */
-	@Environment(EnvType.CLIENT)
 	static StringVisitable concat(List<StringVisitable> visitables) {
 		return new StringVisitable() {
 			@Override
@@ -152,7 +144,6 @@ public interface StringVisitable {
 	/**
 	 * A visitor for string content and a contextual {@link Style}.
 	 */
-	@Environment(EnvType.CLIENT)
 	public interface StyledVisitor<T> {
 		/**
 		 * Visits a string's content with a contextual style.

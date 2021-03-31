@@ -30,6 +30,7 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public abstract class LivingEntityRenderer<T extends LivingEntity, M extends EntityModel<T>> extends EntityRenderer<T> implements FeatureRendererContext<T, M> {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final float field_32939 = 0.1F;
 	protected M model;
 	protected final List<FeatureRenderer<T, M>> features = Lists.<FeatureRenderer<T, M>>newArrayList();
 
@@ -175,7 +176,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	 * husk, or piglin are undergoing conversion.
 	 */
 	protected boolean isShaking(T entity) {
-		return false;
+		return entity.isFreezing();
 	}
 
 	protected void setupTransforms(T entity, MatrixStack matrices, float animationProgress, float bodyYaw, float tickDelta) {

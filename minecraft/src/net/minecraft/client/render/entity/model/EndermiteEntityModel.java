@@ -13,6 +13,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class EndermiteEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
+	private static final int BODY_SEGMENTS_COUNT = 4;
 	private static final int[][] SEGMENT_DIMENSIONS = new int[][]{{4, 3, 2}, {6, 4, 5}, {3, 3, 1}, {1, 2, 1}};
 	private static final int[][] SEGMENT_UVS = new int[][]{{0, 0}, {0, 5}, {0, 14}, {0, 18}};
 	private final ModelPart root;

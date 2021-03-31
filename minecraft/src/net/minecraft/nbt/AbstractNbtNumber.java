@@ -3,7 +3,7 @@ package net.minecraft.nbt;
 /**
  * Represents an NBT number.
  * <p>
- * The type {@linkplain net.fabricmc.yarn.constants.NbtTypeIds#NUMBER NbtTypeIds.NUMBER} can be used to
+ * The type {@link NbtElement#NUMBER_TYPE NUMBER_TYPE} can be used to
  * {@linkplain NbtCompound#contains check for the existence of any numeric element in a NBT compound object}.
  */
 public abstract class AbstractNbtNumber implements NbtElement {

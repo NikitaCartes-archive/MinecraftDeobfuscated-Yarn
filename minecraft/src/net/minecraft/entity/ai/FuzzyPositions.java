@@ -12,6 +12,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class FuzzyPositions {
+	private static final int field_30264 = 10;
+
 	/**
 	 * Creates a fuzzy offset position within the given horizontal and vertical
 	 * ranges.

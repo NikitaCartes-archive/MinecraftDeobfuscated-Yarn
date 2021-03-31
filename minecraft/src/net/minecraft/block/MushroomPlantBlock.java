@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import java.util.function.Supplier;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -13,6 +12,7 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 
 public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
+	protected static final float field_31195 = 3.0F;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 6.0, 11.0);
 	private final Supplier<ConfiguredFeature<?, ?>> feature;
 
@@ -51,7 +51,7 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 			}
 
 			if (world.isAir(blockPos2) && state.canPlaceAt(world, blockPos2)) {
-				world.setBlockState(blockPos2, state, SetBlockStateFlags.NOTIFY_LISTENERS);
+				world.setBlockState(blockPos2, state, Block.NOTIFY_LISTENERS);
 			}
 		}
 	}
@@ -73,7 +73,7 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 		if (((ConfiguredFeature)this.feature.get()).generate(world, world.getChunkManager().getChunkGenerator(), random, pos)) {
 			return true;
 		} else {
-			world.setBlockState(pos, state, SetBlockStateFlags.DEFAULT);
+			world.setBlockState(pos, state, Block.NOTIFY_ALL);
 			return false;
 		}
 	}

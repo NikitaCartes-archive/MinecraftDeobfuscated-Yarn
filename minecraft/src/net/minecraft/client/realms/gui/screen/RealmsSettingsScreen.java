@@ -14,6 +14,7 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class RealmsSettingsScreen extends RealmsScreen {
+	private static final int field_32124 = 212;
 	private static final Text WORLD_NAME_TEXT = new TranslatableText("mco.configure.world.name");
 	private static final Text WORLD_DESCRIPTION_TEXT = new TranslatableText("mco.configure.world.description");
 	private final RealmsConfigureWorldScreen parent;

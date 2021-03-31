@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.IntSupplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -25,8 +26,17 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class SplashScreen extends Overlay {
 	private static final Identifier LOGO = new Identifier("textures/gui/title/mojangstudios.png");
-	private static final int BRAND_ARGB = BackgroundHelper.ColorMixer.getArgb(255, 239, 50, 61);
-	private static final int BRAND_RGB = BRAND_ARGB & 16777215;
+	private static final int field_32249 = BackgroundHelper.ColorMixer.getArgb(255, 239, 50, 61);
+	private static final int field_32250 = BackgroundHelper.ColorMixer.getArgb(255, 0, 0, 0);
+	private static final IntSupplier BRAND_ARGB = () -> MinecraftClient.getInstance().options.monochromeLogo ? field_32250 : field_32249;
+	private static final int field_32251 = 240;
+	private static final float field_32252 = 60.0F;
+	private static final int field_32253 = 60;
+	private static final int field_32254 = 120;
+	private static final float field_32255 = 0.0625F;
+	private static final float field_32256 = 0.95F;
+	public static final long field_32247 = 1000L;
+	public static final long field_32248 = 500L;
 	private final MinecraftClient client;
 	private final ResourceReload reload;
 	private final Consumer<Optional<Throwable>> exceptionHandler;
@@ -44,6 +54,10 @@ public class SplashScreen extends Overlay {
 
 	public static void init(MinecraftClient client) {
 		client.getTextureManager().registerTexture(LOGO, new SplashScreen.LogoTexture());
+	}
+
+	private static int method_35732(int i, int j) {
+		return i & 16777215 | j << 24;
 	}
 
 	@Override
@@ -64,7 +78,7 @@ public class SplashScreen extends Overlay {
 			}
 
 			int k = MathHelper.ceil((1.0F - MathHelper.clamp(f - 1.0F, 0.0F, 1.0F)) * 255.0F);
-			fill(matrices, 0, 0, i, j, BRAND_RGB | k << 24);
+			fill(matrices, 0, 0, i, j, method_35732(BRAND_ARGB.getAsInt(), k));
 			h = 1.0F - MathHelper.clamp(f - 1.0F, 0.0F, 1.0F);
 		} else if (this.reloading) {
 			if (this.client.currentScreen != null && g < 1.0F) {
@@ -72,10 +86,10 @@ public class SplashScreen extends Overlay {
 			}
 
 			int k = MathHelper.ceil(MathHelper.clamp((double)g, 0.15, 1.0) * 255.0);
-			fill(matrices, 0, 0, i, j, BRAND_RGB | k << 24);
+			fill(matrices, 0, 0, i, j, method_35732(BRAND_ARGB.getAsInt(), k));
 			h = MathHelper.clamp(g, 0.0F, 1.0F);
 		} else {
-			fill(matrices, 0, 0, i, j, BRAND_ARGB);
+			fill(matrices, 0, 0, i, j, BRAND_ARGB.getAsInt());
 			h = 1.0F;
 		}
 

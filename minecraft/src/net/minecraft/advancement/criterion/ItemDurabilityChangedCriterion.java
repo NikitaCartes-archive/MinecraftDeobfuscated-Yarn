@@ -43,6 +43,10 @@ public class ItemDurabilityChangedCriterion extends AbstractCriterion<ItemDurabi
 			this.delta = delta;
 		}
 
+		public static ItemDurabilityChangedCriterion.Conditions create(ItemPredicate item, NumberRange.IntRange durability) {
+			return create(EntityPredicate.Extended.EMPTY, item, durability);
+		}
+
 		public static ItemDurabilityChangedCriterion.Conditions create(EntityPredicate.Extended player, ItemPredicate item, NumberRange.IntRange durability) {
 			return new ItemDurabilityChangedCriterion.Conditions(player, item, durability, NumberRange.IntRange.ANY);
 		}

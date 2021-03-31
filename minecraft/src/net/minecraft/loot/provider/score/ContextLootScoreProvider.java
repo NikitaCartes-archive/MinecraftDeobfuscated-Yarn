@@ -21,6 +21,10 @@ public class ContextLootScoreProvider implements LootScoreProvider {
 		this.target = target;
 	}
 
+	public static LootScoreProvider create(LootContext.EntityTarget target) {
+		return new ContextLootScoreProvider(target);
+	}
+
 	@Override
 	public LootScoreProviderType getType() {
 		return LootScoreProviderTypes.CONTEXT;

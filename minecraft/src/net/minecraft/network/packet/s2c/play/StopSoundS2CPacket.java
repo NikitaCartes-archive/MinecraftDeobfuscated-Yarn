@@ -1,8 +1,6 @@
 package net.minecraft.network.packet.s2c.play;
 
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -10,6 +8,8 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
 
 public class StopSoundS2CPacket implements Packet<ClientPlayPacketListener> {
+	private static final int CATEGORY_MASK = 1;
+	private static final int SOUND_ID_MASK = 2;
 	@Nullable
 	private final Identifier soundId;
 	@Nullable
@@ -55,13 +55,11 @@ public class StopSoundS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public Identifier getSoundId() {
 		return this.soundId;
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public SoundCategory getCategory() {
 		return this.category;
 	}

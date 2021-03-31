@@ -3,13 +3,13 @@ package net.minecraft.nbt;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 
 /**
  * Represents an NBT 32-bit integer.
  */
 public class NbtInt extends AbstractNbtNumber {
+	private static final int field_33196 = 96;
 	public static final NbtType<NbtInt> TYPE = new NbtType<NbtInt>() {
 		public NbtInt read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
 			nbtTagSizeTracker.add(96L);
@@ -48,7 +48,7 @@ public class NbtInt extends AbstractNbtNumber {
 
 	@Override
 	public byte getType() {
-		return (byte)NbtTypeIds.INT;
+		return NbtElement.INT_TYPE;
 	}
 
 	@Override
@@ -109,7 +109,12 @@ public class NbtInt extends AbstractNbtNumber {
 	}
 
 	static class Cache {
+		private static final int field_33197 = 1024;
+		private static final int field_33198 = -128;
 		static final NbtInt[] VALUES = new NbtInt[1153];
+
+		private Cache() {
+		}
 
 		static {
 			for (int i = 0; i < VALUES.length; i++) {

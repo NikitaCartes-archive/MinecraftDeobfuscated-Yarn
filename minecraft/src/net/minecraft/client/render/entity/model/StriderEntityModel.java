@@ -13,6 +13,12 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class StriderEntityModel<T extends StriderEntity> extends SinglePartEntityModel<T> {
+	private static final String RIGHT_BOTTOM_BRISTLE = "right_bottom_bristle";
+	private static final String RIGHT_MIDDLE_BRISTLE = "right_middle_bristle";
+	private static final String RIGHT_TOP_BRISTLE = "right_top_bristle";
+	private static final String LEFT_TOP_BRISTLE = "left_top_bristle";
+	private static final String LEFT_MIDDLE_BRISTLE = "left_middle_bristle";
+	private static final String LEFT_BOTTOM_BRISTLE = "left_bottom_bristle";
 	private final ModelPart root;
 	private final ModelPart rightLeg;
 	private final ModelPart leftLeg;
@@ -26,9 +32,9 @@ public class StriderEntityModel<T extends StriderEntity> extends SinglePartEntit
 
 	public StriderEntityModel(ModelPart root) {
 		this.root = root;
-		this.rightLeg = root.getChild("right_leg");
-		this.leftLeg = root.getChild("left_leg");
-		this.body = root.getChild("body");
+		this.rightLeg = root.getChild(EntityModelPartNames.RIGHT_LEG);
+		this.leftLeg = root.getChild(EntityModelPartNames.LEFT_LEG);
+		this.body = root.getChild(EntityModelPartNames.BODY);
 		this.rightBottomBristle = this.body.getChild("right_bottom_bristle");
 		this.rightMiddleBristle = this.body.getChild("right_middle_bristle");
 		this.rightTopBristle = this.body.getChild("right_top_bristle");
@@ -41,11 +47,13 @@ public class StriderEntityModel<T extends StriderEntity> extends SinglePartEntit
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
 		modelPartData.addChild(
-			"right_leg", ModelPartBuilder.create().uv(0, 32).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 16.0F, 4.0F), ModelTransform.pivot(-4.0F, 8.0F, 0.0F)
+			EntityModelPartNames.RIGHT_LEG, ModelPartBuilder.create().uv(0, 32).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 16.0F, 4.0F), ModelTransform.pivot(-4.0F, 8.0F, 0.0F)
 		);
-		modelPartData.addChild("left_leg", ModelPartBuilder.create().uv(0, 55).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 16.0F, 4.0F), ModelTransform.pivot(4.0F, 8.0F, 0.0F));
+		modelPartData.addChild(
+			EntityModelPartNames.LEFT_LEG, ModelPartBuilder.create().uv(0, 55).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 16.0F, 4.0F), ModelTransform.pivot(4.0F, 8.0F, 0.0F)
+		);
 		ModelPartData modelPartData2 = modelPartData.addChild(
-			"body", ModelPartBuilder.create().uv(0, 0).cuboid(-8.0F, -6.0F, -8.0F, 16.0F, 14.0F, 16.0F), ModelTransform.pivot(0.0F, 1.0F, 0.0F)
+			EntityModelPartNames.BODY, ModelPartBuilder.create().uv(0, 0).cuboid(-8.0F, -6.0F, -8.0F, 16.0F, 14.0F, 16.0F), ModelTransform.pivot(0.0F, 1.0F, 0.0F)
 		);
 		modelPartData2.addChild(
 			"right_bottom_bristle",

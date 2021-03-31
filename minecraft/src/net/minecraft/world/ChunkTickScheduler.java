@@ -1,8 +1,11 @@
 package net.minecraft.world;
 
 import it.unimi.dsi.fastutil.shorts.ShortList;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -19,17 +22,17 @@ public class ChunkTickScheduler<T> implements TickScheduler<T> {
 		this(shouldExclude, pos, new NbtList(), world);
 	}
 
-	public ChunkTickScheduler(Predicate<T> shouldExclude, ChunkPos pos, NbtList tag, HeightLimitView world) {
+	public ChunkTickScheduler(Predicate<T> shouldExclude, ChunkPos pos, NbtList nbtList, HeightLimitView world) {
 		this.shouldExclude = shouldExclude;
 		this.pos = pos;
 		this.world = world;
 		this.scheduledPositions = new ShortList[world.countVerticalSections()];
 
-		for (int i = 0; i < tag.size(); i++) {
-			NbtList nbtList = tag.getList(i);
+		for (int i = 0; i < nbtList.size(); i++) {
+			NbtList nbtList2 = nbtList.getList(i);
 
-			for (int j = 0; j < nbtList.size(); j++) {
-				Chunk.getList(this.scheduledPositions, i).add(nbtList.getShort(j));
+			for (int j = 0; j < nbtList2.size(); j++) {
+				Chunk.getList(this.scheduledPositions, i).add(nbtList2.getShort(j));
 			}
 		}
 	}
@@ -64,5 +67,10 @@ public class ChunkTickScheduler<T> implements TickScheduler<T> {
 	@Override
 	public boolean isTicking(BlockPos pos, T object) {
 		return false;
+	}
+
+	@Override
+	public int getTicks() {
+		return Stream.of(this.scheduledPositions).filter(Objects::nonNull).mapToInt(List::size).sum();
 	}
 }

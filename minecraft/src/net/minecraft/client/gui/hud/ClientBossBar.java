@@ -10,6 +10,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ClientBossBar extends BossBar {
+	private static final long field_32204 = 100L;
 	protected float healthLatest;
 	protected long timeHealthSet;
 

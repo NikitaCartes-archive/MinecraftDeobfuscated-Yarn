@@ -1,8 +1,6 @@
 package net.minecraft.recipe;
 
 import com.google.gson.JsonObject;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
@@ -43,7 +41,6 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 		return this.id;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public String getGroup() {
 		return this.group;
@@ -61,7 +58,6 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 		return defaultedList;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean fits(int width, int height) {
 		return true;

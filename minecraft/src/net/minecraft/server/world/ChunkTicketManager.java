@@ -17,6 +17,10 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -34,7 +38,9 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class ChunkTicketManager {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int field_29764 = 2;
 	private static final int NEARBY_PLAYER_TICKET_LEVEL = 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.FULL) - 2;
+	private static final int field_29765 = 4;
 	private final Long2ObjectMap<ObjectSet<ServerPlayerEntity>> playersByChunkPos = new Long2ObjectOpenHashMap<>();
 	private final Long2ObjectOpenHashMap<SortedArraySet<ChunkTicket<?>>> ticketsByPosition = new Long2ObjectOpenHashMap<>();
 	private final ChunkTicketManager.TicketDistanceLevelPropagator distanceFromTicketTracker = new ChunkTicketManager.TicketDistanceLevelPropagator();
@@ -225,6 +231,42 @@ public abstract class ChunkTicketManager {
 		return this.levelUpdateListener.getDebugString();
 	}
 
+	private void method_34876(String string) {
+		try {
+			FileOutputStream fileOutputStream = new FileOutputStream(new File(string));
+			Throwable var3 = null;
+
+			try {
+				for (Entry<SortedArraySet<ChunkTicket<?>>> entry : this.ticketsByPosition.long2ObjectEntrySet()) {
+					ChunkPos chunkPos = new ChunkPos(entry.getLongKey());
+
+					for (ChunkTicket<?> chunkTicket : (SortedArraySet)entry.getValue()) {
+						fileOutputStream.write(
+							("" + chunkPos.x + "\t" + chunkPos.z + "\t" + chunkTicket.getType() + "\t" + chunkTicket.getLevel() + "\t\n").getBytes(StandardCharsets.UTF_8)
+						);
+					}
+				}
+			} catch (Throwable var17) {
+				var3 = var17;
+				throw var17;
+			} finally {
+				if (fileOutputStream != null) {
+					if (var3 != null) {
+						try {
+							fileOutputStream.close();
+						} catch (Throwable var16) {
+							var3.addSuppressed(var16);
+						}
+					} else {
+						fileOutputStream.close();
+					}
+				}
+			}
+		} catch (IOException var19) {
+			LOGGER.error(var19);
+		}
+	}
+
 	class DistanceFromNearestPlayerTracker extends ChunkPosDistanceLevelPropagator {
 		protected final Long2ByteMap distanceFromNearestPlayer = new Long2ByteOpenHashMap();
 		protected final int maxDistance;
@@ -267,6 +309,38 @@ public abstract class ChunkTicketManager {
 
 		public void updateLevels() {
 			this.applyPendingUpdates(Integer.MAX_VALUE);
+		}
+
+		private void method_34878(String string) {
+			try {
+				FileOutputStream fileOutputStream = new FileOutputStream(new File(string));
+				Throwable var3 = null;
+
+				try {
+					for (it.unimi.dsi.fastutil.longs.Long2ByteMap.Entry entry : this.distanceFromNearestPlayer.long2ByteEntrySet()) {
+						ChunkPos chunkPos = new ChunkPos(entry.getLongKey());
+						String string2 = Byte.toString(entry.getByteValue());
+						fileOutputStream.write(("" + chunkPos.x + "\t" + chunkPos.z + "\t" + string2 + "\n").getBytes(StandardCharsets.UTF_8));
+					}
+				} catch (Throwable var16) {
+					var3 = var16;
+					throw var16;
+				} finally {
+					if (fileOutputStream != null) {
+						if (var3 != null) {
+							try {
+								fileOutputStream.close();
+							} catch (Throwable var15) {
+								var3.addSuppressed(var15);
+							}
+						} else {
+							fileOutputStream.close();
+						}
+					}
+				}
+			} catch (IOException var18) {
+				ChunkTicketManager.LOGGER.error(var18);
+			}
 		}
 	}
 

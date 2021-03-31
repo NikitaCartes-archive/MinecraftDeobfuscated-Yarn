@@ -7,9 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffect;
@@ -17,6 +14,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -27,6 +25,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class PotionUtil {
+	public static final String CUSTOM_POTION_EFFECTS_KEY = "CustomPotionEffects";
+	public static final String CUSTOM_POTION_COLOR_KEY = "CustomPotionColor";
+	public static final String POTION_KEY = "Potion";
+	private static final int DEFAULT_COLOR = 16253176;
 	private static final Text NONE_TEXT = new TranslatableText("effect.none").formatted(Formatting.GRAY);
 
 	public static List<StatusEffectInstance> getPotionEffects(ItemStack stack) {
@@ -40,10 +42,10 @@ public class PotionUtil {
 		return list;
 	}
 
-	public static List<StatusEffectInstance> getPotionEffects(@Nullable NbtCompound tag) {
+	public static List<StatusEffectInstance> getPotionEffects(@Nullable NbtCompound nbt) {
 		List<StatusEffectInstance> list = Lists.<StatusEffectInstance>newArrayList();
-		list.addAll(getPotion(tag).getEffects());
-		getCustomPotionEffects(tag, list);
+		list.addAll(getPotion(nbt).getEffects());
+		getCustomPotionEffects(nbt, list);
 		return list;
 	}
 
@@ -51,15 +53,15 @@ public class PotionUtil {
 		return getCustomPotionEffects(stack.getTag());
 	}
 
-	public static List<StatusEffectInstance> getCustomPotionEffects(@Nullable NbtCompound tag) {
+	public static List<StatusEffectInstance> getCustomPotionEffects(@Nullable NbtCompound nbt) {
 		List<StatusEffectInstance> list = Lists.<StatusEffectInstance>newArrayList();
-		getCustomPotionEffects(tag, list);
+		getCustomPotionEffects(nbt, list);
 		return list;
 	}
 
-	public static void getCustomPotionEffects(@Nullable NbtCompound tag, List<StatusEffectInstance> list) {
-		if (tag != null && tag.contains("CustomPotionEffects", NbtTypeIds.LIST)) {
-			NbtList nbtList = tag.getList("CustomPotionEffects", NbtTypeIds.COMPOUND);
+	public static void getCustomPotionEffects(@Nullable NbtCompound nbt, List<StatusEffectInstance> list) {
+		if (nbt != null && nbt.contains("CustomPotionEffects", NbtElement.LIST_TYPE)) {
+			NbtList nbtList = nbt.getList("CustomPotionEffects", NbtElement.COMPOUND_TYPE);
 
 			for (int i = 0; i < nbtList.size(); i++) {
 				NbtCompound nbtCompound = nbtList.getCompound(i);
@@ -73,7 +75,7 @@ public class PotionUtil {
 
 	public static int getColor(ItemStack stack) {
 		NbtCompound nbtCompound = stack.getTag();
-		if (nbtCompound != null && nbtCompound.contains("CustomPotionColor", NbtTypeIds.NUMBER)) {
+		if (nbtCompound != null && nbtCompound.contains("CustomPotionColor", NbtElement.NUMBER_TYPE)) {
 			return nbtCompound.getInt("CustomPotionColor");
 		} else {
 			return getPotion(stack) == Potions.EMPTY ? 16253176 : getColor(getPotionEffects(stack));
@@ -140,7 +142,7 @@ public class PotionUtil {
 			return stack;
 		} else {
 			NbtCompound nbtCompound = stack.getOrCreateTag();
-			NbtList nbtList = nbtCompound.getList("CustomPotionEffects", NbtTypeIds.LIST);
+			NbtList nbtList = nbtCompound.getList("CustomPotionEffects", NbtElement.LIST_TYPE);
 
 			for (StatusEffectInstance statusEffectInstance : effects) {
 				nbtList.add(statusEffectInstance.writeNbt(new NbtCompound()));
@@ -151,7 +153,6 @@ public class PotionUtil {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static void buildTooltip(ItemStack stack, List<Text> list, float f) {
 		List<StatusEffectInstance> list2 = getPotionEffects(stack);
 		List<Pair<EntityAttribute, EntityAttributeModifier>> list3 = Lists.<Pair<EntityAttribute, EntityAttributeModifier>>newArrayList();

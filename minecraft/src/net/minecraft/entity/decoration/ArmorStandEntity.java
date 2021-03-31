@@ -3,9 +3,6 @@ package net.minecraft.entity.decoration;
 import java.util.List;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.piston.PistonBehavior;
@@ -27,6 +24,7 @@ import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -46,6 +44,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class ArmorStandEntity extends LivingEntity {
+	public static final int field_30443 = 5;
+	private static final boolean field_30445 = true;
 	private static final EulerAngle DEFAULT_HEAD_ROTATION = new EulerAngle(0.0F, 0.0F, 0.0F);
 	private static final EulerAngle DEFAULT_BODY_ROTATION = new EulerAngle(0.0F, 0.0F, 0.0F);
 	private static final EulerAngle DEFAULT_LEFT_ARM_ROTATION = new EulerAngle(-10.0F, 0.0F, -10.0F);
@@ -54,6 +54,16 @@ public class ArmorStandEntity extends LivingEntity {
 	private static final EulerAngle DEFAULT_RIGHT_LEG_ROTATION = new EulerAngle(1.0F, 0.0F, 1.0F);
 	private static final EntityDimensions MARKER_DIMENSIONS = new EntityDimensions(0.0F, 0.0F, true);
 	private static final EntityDimensions SMALL_DIMENSIONS = EntityType.ARMOR_STAND.getDimensions().scaled(0.5F);
+	private static final double field_30447 = 0.1;
+	private static final double field_30448 = 0.9;
+	private static final double field_30449 = 0.4;
+	private static final double field_30450 = 1.6;
+	public static final int field_30446 = 8;
+	public static final int field_30451 = 16;
+	public static final int field_30452 = 1;
+	public static final int field_30453 = 4;
+	public static final int field_30442 = 8;
+	public static final int field_30444 = 16;
 	public static final TrackedData<Byte> ARMOR_STAND_FLAGS = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.BYTE);
 	public static final TrackedData<EulerAngle> TRACKER_HEAD_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
 	public static final TrackedData<EulerAngle> TRACKER_BODY_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
@@ -157,8 +167,8 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
 		NbtList nbtList = new NbtList();
 
 		for (ItemStack itemStack : this.armorItems) {
@@ -170,7 +180,7 @@ public class ArmorStandEntity extends LivingEntity {
 			nbtList.add(nbtCompound);
 		}
 
-		tag.put("ArmorItems", nbtList);
+		nbt.put("ArmorItems", nbtList);
 		NbtList nbtList2 = new NbtList();
 
 		for (ItemStack itemStack2 : this.heldItems) {
@@ -182,61 +192,61 @@ public class ArmorStandEntity extends LivingEntity {
 			nbtList2.add(nbtCompound2);
 		}
 
-		tag.put("HandItems", nbtList2);
-		tag.putBoolean("Invisible", this.isInvisible());
-		tag.putBoolean("Small", this.isSmall());
-		tag.putBoolean("ShowArms", this.shouldShowArms());
-		tag.putInt("DisabledSlots", this.disabledSlots);
-		tag.putBoolean("NoBasePlate", this.shouldHideBasePlate());
+		nbt.put("HandItems", nbtList2);
+		nbt.putBoolean("Invisible", this.isInvisible());
+		nbt.putBoolean("Small", this.isSmall());
+		nbt.putBoolean("ShowArms", this.shouldShowArms());
+		nbt.putInt("DisabledSlots", this.disabledSlots);
+		nbt.putBoolean("NoBasePlate", this.shouldHideBasePlate());
 		if (this.isMarker()) {
-			tag.putBoolean("Marker", this.isMarker());
+			nbt.putBoolean("Marker", this.isMarker());
 		}
 
-		tag.put("Pose", this.serializePose());
+		nbt.put("Pose", this.serializePose());
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		if (tag.contains("ArmorItems", NbtTypeIds.LIST)) {
-			NbtList nbtList = tag.getList("ArmorItems", NbtTypeIds.COMPOUND);
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		if (nbt.contains("ArmorItems", NbtElement.LIST_TYPE)) {
+			NbtList nbtList = nbt.getList("ArmorItems", NbtElement.COMPOUND_TYPE);
 
 			for (int i = 0; i < this.armorItems.size(); i++) {
 				this.armorItems.set(i, ItemStack.fromNbt(nbtList.getCompound(i)));
 			}
 		}
 
-		if (tag.contains("HandItems", NbtTypeIds.LIST)) {
-			NbtList nbtList = tag.getList("HandItems", NbtTypeIds.COMPOUND);
+		if (nbt.contains("HandItems", NbtElement.LIST_TYPE)) {
+			NbtList nbtList = nbt.getList("HandItems", NbtElement.COMPOUND_TYPE);
 
 			for (int i = 0; i < this.heldItems.size(); i++) {
 				this.heldItems.set(i, ItemStack.fromNbt(nbtList.getCompound(i)));
 			}
 		}
 
-		this.setInvisible(tag.getBoolean("Invisible"));
-		this.setSmall(tag.getBoolean("Small"));
-		this.setShowArms(tag.getBoolean("ShowArms"));
-		this.disabledSlots = tag.getInt("DisabledSlots");
-		this.setHideBasePlate(tag.getBoolean("NoBasePlate"));
-		this.setMarker(tag.getBoolean("Marker"));
+		this.setInvisible(nbt.getBoolean("Invisible"));
+		this.setSmall(nbt.getBoolean("Small"));
+		this.setShowArms(nbt.getBoolean("ShowArms"));
+		this.disabledSlots = nbt.getInt("DisabledSlots");
+		this.setHideBasePlate(nbt.getBoolean("NoBasePlate"));
+		this.setMarker(nbt.getBoolean("Marker"));
 		this.noClip = !this.canClip();
-		NbtCompound nbtCompound = tag.getCompound("Pose");
-		this.deserializePose(nbtCompound);
+		NbtCompound nbtCompound = nbt.getCompound("Pose");
+		this.readPoseNbt(nbtCompound);
 	}
 
-	private void deserializePose(NbtCompound tag) {
-		NbtList nbtList = tag.getList("Head", NbtTypeIds.FLOAT);
+	private void readPoseNbt(NbtCompound nbt) {
+		NbtList nbtList = nbt.getList("Head", NbtElement.FLOAT_TYPE);
 		this.setHeadRotation(nbtList.isEmpty() ? DEFAULT_HEAD_ROTATION : new EulerAngle(nbtList));
-		NbtList nbtList2 = tag.getList("Body", NbtTypeIds.FLOAT);
+		NbtList nbtList2 = nbt.getList("Body", NbtElement.FLOAT_TYPE);
 		this.setBodyRotation(nbtList2.isEmpty() ? DEFAULT_BODY_ROTATION : new EulerAngle(nbtList2));
-		NbtList nbtList3 = tag.getList("LeftArm", NbtTypeIds.FLOAT);
+		NbtList nbtList3 = nbt.getList("LeftArm", NbtElement.FLOAT_TYPE);
 		this.setLeftArmRotation(nbtList3.isEmpty() ? DEFAULT_LEFT_ARM_ROTATION : new EulerAngle(nbtList3));
-		NbtList nbtList4 = tag.getList("RightArm", NbtTypeIds.FLOAT);
+		NbtList nbtList4 = nbt.getList("RightArm", NbtElement.FLOAT_TYPE);
 		this.setRightArmRotation(nbtList4.isEmpty() ? DEFAULT_RIGHT_ARM_ROTATION : new EulerAngle(nbtList4));
-		NbtList nbtList5 = tag.getList("LeftLeg", NbtTypeIds.FLOAT);
+		NbtList nbtList5 = nbt.getList("LeftLeg", NbtElement.FLOAT_TYPE);
 		this.setLeftLegRotation(nbtList5.isEmpty() ? DEFAULT_LEFT_LEG_ROTATION : new EulerAngle(nbtList5));
-		NbtList nbtList6 = tag.getList("RightLeg", NbtTypeIds.FLOAT);
+		NbtList nbtList6 = nbt.getList("RightLeg", NbtElement.FLOAT_TYPE);
 		this.setRightLegRotation(nbtList6.isEmpty() ? DEFAULT_RIGHT_LEG_ROTATION : new EulerAngle(nbtList6));
 	}
 
@@ -429,7 +439,6 @@ public class ArmorStandEntity extends LivingEntity {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void handleStatus(byte status) {
 		if (status == 32) {
@@ -442,7 +451,6 @@ public class ArmorStandEntity extends LivingEntity {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean shouldRender(double distance) {
 		double d = this.getBoundingBox().getAverageSideLength() * 4.0;
@@ -694,22 +702,18 @@ public class ArmorStandEntity extends LivingEntity {
 		return this.bodyRotation;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public EulerAngle getLeftArmRotation() {
 		return this.leftArmRotation;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public EulerAngle getRightArmRotation() {
 		return this.rightArmRotation;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public EulerAngle getLeftLegRotation() {
 		return this.leftLegRotation;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public EulerAngle getRightLegRotation() {
 		return this.rightLegRotation;
 	}
@@ -783,7 +787,6 @@ public class ArmorStandEntity extends LivingEntity {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public Vec3d getClientCameraPosVec(float tickDelta) {
 		if (this.isMarker()) {
@@ -809,7 +812,6 @@ public class ArmorStandEntity extends LivingEntity {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickBlockStack() {
 		return new ItemStack(Items.ARMOR_STAND);

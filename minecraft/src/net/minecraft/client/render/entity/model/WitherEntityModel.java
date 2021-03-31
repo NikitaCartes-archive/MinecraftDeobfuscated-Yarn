@@ -14,6 +14,12 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class WitherEntityModel<T extends WitherEntity> extends SinglePartEntityModel<T> {
+	private static final String RIBCAGE = "ribcage";
+	private static final String CENTER_HEAD = "center_head";
+	private static final String RIGHT_HEAD = "right_head";
+	private static final String LEFT_HEAD = "left_head";
+	private static final float field_32575 = 0.065F;
+	private static final float field_32576 = 0.265F;
 	private final ModelPart root;
 	private final ModelPart centerHead;
 	private final ModelPart rightHead;
@@ -24,7 +30,7 @@ public class WitherEntityModel<T extends WitherEntity> extends SinglePartEntityM
 	public WitherEntityModel(ModelPart root) {
 		this.root = root;
 		this.ribcage = root.getChild("ribcage");
-		this.tail = root.getChild("tail");
+		this.tail = root.getChild(EntityModelPartNames.TAIL);
 		this.centerHead = root.getChild("center_head");
 		this.rightHead = root.getChild("right_head");
 		this.leftHead = root.getChild("left_head");
@@ -49,7 +55,7 @@ public class WitherEntityModel<T extends WitherEntity> extends SinglePartEntityM
 			ModelTransform.of(-2.0F, 6.9F, -0.5F, 0.20420352F, 0.0F, 0.0F)
 		);
 		modelPartData.addChild(
-			"tail",
+			EntityModelPartNames.TAIL,
 			ModelPartBuilder.create().uv(12, 22).cuboid(0.0F, 0.0F, 0.0F, 3.0F, 6.0F, 3.0F, dilation),
 			ModelTransform.of(-2.0F, 6.9F + MathHelper.cos(0.20420352F) * 10.0F, -0.5F + MathHelper.sin(0.20420352F) * 10.0F, 0.83252203F, 0.0F, 0.0F)
 		);

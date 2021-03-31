@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -26,6 +25,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class FireBlock extends AbstractFireBlock {
+	public static final int field_31093 = 15;
 	public static final IntProperty AGE = Properties.AGE_15;
 	public static final BooleanProperty NORTH = ConnectingBlock.NORTH;
 	public static final BooleanProperty EAST = ConnectingBlock.EAST;
@@ -43,6 +43,14 @@ public class FireBlock extends AbstractFireBlock {
 	private static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 1.0);
 	private static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 15.0, 16.0, 16.0, 16.0);
 	private final Map<BlockState, VoxelShape> shapesByState;
+	private static final int field_31085 = 60;
+	private static final int field_31086 = 30;
+	private static final int field_31087 = 15;
+	private static final int field_31088 = 5;
+	private static final int field_31089 = 100;
+	private static final int field_31090 = 60;
+	private static final int field_31091 = 20;
+	private static final int field_31092 = 5;
 	private final Object2IntMap<Block> burnChances = new Object2IntOpenHashMap<>();
 	private final Object2IntMap<Block> spreadChances = new Object2IntOpenHashMap<>();
 
@@ -151,7 +159,7 @@ public class FireBlock extends AbstractFireBlock {
 				int j = Math.min(15, i + random.nextInt(3) / 2);
 				if (i != j) {
 					state = state.with(AGE, Integer.valueOf(j));
-					world.setBlockState(pos, state, SetBlockStateFlags.NO_REDRAW);
+					world.setBlockState(pos, state, Block.NO_REDRAW);
 				}
 
 				if (!bl) {
@@ -199,7 +207,7 @@ public class FireBlock extends AbstractFireBlock {
 
 									if (q > 0 && random.nextInt(o) <= q && (!world.isRaining() || !this.isRainingAround(world, mutable))) {
 										int r = Math.min(15, i + random.nextInt(5) / 4);
-										world.setBlockState(mutable, this.getStateWithAge(world, mutable, r), SetBlockStateFlags.DEFAULT);
+										world.setBlockState(mutable, this.getStateWithAge(world, mutable, r), Block.NOTIFY_ALL);
 									}
 								}
 							}
@@ -228,7 +236,7 @@ public class FireBlock extends AbstractFireBlock {
 			BlockState blockState = world.getBlockState(pos);
 			if (rand.nextInt(currentAge + 10) < 5 && !world.hasRain(pos)) {
 				int j = Math.min(currentAge + rand.nextInt(5) / 4, 15);
-				world.setBlockState(pos, this.getStateWithAge(world, pos, j), SetBlockStateFlags.DEFAULT);
+				world.setBlockState(pos, this.getStateWithAge(world, pos, j), Block.NOTIFY_ALL);
 			} else {
 				world.removeBlock(pos, false);
 			}

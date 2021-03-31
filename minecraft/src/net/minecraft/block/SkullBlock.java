@@ -13,6 +13,8 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 
 public class SkullBlock extends AbstractSkullBlock {
+	public static final int field_31244 = 15;
+	private static final int field_31245 = 16;
 	public static final IntProperty ROTATION = Properties.ROTATION;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 8.0, 12.0);
 

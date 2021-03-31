@@ -10,6 +10,9 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.scoreboard.AbstractTeam;
 
 public abstract class TrackTargetGoal extends Goal {
+	private static final int field_30233 = 0;
+	private static final int field_30234 = 1;
+	private static final int field_30235 = 2;
 	protected final MobEntity mob;
 	protected final boolean checkVisibility;
 	private final boolean checkCanNavigate;

@@ -3,11 +3,8 @@ package net.minecraft.fluid;
 import java.util.Optional;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractFireBlock;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -26,9 +23,12 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 
 public abstract class LavaFluid extends FlowableFluid {
+	public static final float field_31729 = 0.44444445F;
+
 	@Override
 	public Fluid getFlowing() {
 		return Fluids.FLOWING_LAVA;
@@ -44,7 +44,6 @@ public abstract class LavaFluid extends FlowableFluid {
 		return Items.LAVA_BUCKET;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
 		BlockPos blockPos = pos.up();
@@ -127,7 +126,6 @@ public abstract class LavaFluid extends FlowableFluid {
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ParticleEffect getParticle() {
 		return ParticleTypes.DRIPPING_LAVA;
@@ -198,7 +196,7 @@ public abstract class LavaFluid extends FlowableFluid {
 			FluidState fluidState2 = world.getFluidState(pos);
 			if (this.isIn(FluidTags.LAVA) && fluidState2.isIn(FluidTags.WATER)) {
 				if (state.getBlock() instanceof FluidBlock) {
-					world.setBlockState(pos, Blocks.STONE.getDefaultState(), SetBlockStateFlags.DEFAULT);
+					world.setBlockState(pos, Blocks.STONE.getDefaultState(), Block.NOTIFY_ALL);
 				}
 
 				this.playExtinguishEvent(world, pos);

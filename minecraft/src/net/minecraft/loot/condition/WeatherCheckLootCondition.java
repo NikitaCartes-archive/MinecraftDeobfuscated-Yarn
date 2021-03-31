@@ -30,6 +30,31 @@ public class WeatherCheckLootCondition implements LootCondition {
 		return this.raining != null && this.raining != serverWorld.isRaining() ? false : this.thundering == null || this.thundering == serverWorld.isThundering();
 	}
 
+	public static WeatherCheckLootCondition.Builder create() {
+		return new WeatherCheckLootCondition.Builder();
+	}
+
+	public static class Builder implements LootCondition.Builder {
+		@Nullable
+		private Boolean raining;
+		@Nullable
+		private Boolean thundering;
+
+		public WeatherCheckLootCondition.Builder raining(@Nullable Boolean raining) {
+			this.raining = raining;
+			return this;
+		}
+
+		public WeatherCheckLootCondition.Builder thundering(@Nullable Boolean thundering) {
+			this.thundering = thundering;
+			return this;
+		}
+
+		public WeatherCheckLootCondition build() {
+			return new WeatherCheckLootCondition(this.raining, this.thundering);
+		}
+	}
+
 	public static class Serializer implements JsonSerializer<WeatherCheckLootCondition> {
 		public void toJson(JsonObject jsonObject, WeatherCheckLootCondition weatherCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.addProperty("raining", weatherCheckLootCondition.raining);

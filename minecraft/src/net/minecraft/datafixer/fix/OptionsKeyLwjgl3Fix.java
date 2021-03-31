@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import net.minecraft.datafixer.TypeReferences;
 
 public class OptionsKeyLwjgl3Fix extends DataFix {
+	public static final String field_29906 = "key.unknown";
 	private static final Int2ObjectMap<String> NUMERICAL_KEY_IDS_TO_KEY_NAMES = DataFixUtils.make(new Int2ObjectOpenHashMap<>(), int2ObjectOpenHashMap -> {
 		int2ObjectOpenHashMap.put(0, "key.unknown");
 		int2ObjectOpenHashMap.put(11, "key.0");

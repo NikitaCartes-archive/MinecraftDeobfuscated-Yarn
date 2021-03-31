@@ -43,4 +43,21 @@ public class LightPredicate {
 			return ANY;
 		}
 	}
+
+	public static class Builder {
+		private NumberRange.IntRange light = NumberRange.IntRange.ANY;
+
+		public static LightPredicate.Builder create() {
+			return new LightPredicate.Builder();
+		}
+
+		public LightPredicate.Builder light(NumberRange.IntRange light) {
+			this.light = light;
+			return this;
+		}
+
+		public LightPredicate build() {
+			return new LightPredicate(this.light);
+		}
+	}
 }

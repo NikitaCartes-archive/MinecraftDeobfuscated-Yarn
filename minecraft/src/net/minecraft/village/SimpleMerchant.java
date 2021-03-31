@@ -1,8 +1,6 @@
 package net.minecraft.village;
 
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvent;
@@ -32,7 +30,6 @@ public class SimpleMerchant implements Merchant {
 		return this.offers;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void setOffersFromServer(TradeOfferList offers) {
 		this.offers = offers;

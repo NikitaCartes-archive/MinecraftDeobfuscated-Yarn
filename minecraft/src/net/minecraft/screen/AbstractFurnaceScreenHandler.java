@@ -1,7 +1,5 @@
 package net.minecraft.screen;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -20,6 +18,15 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.world.World;
 
 public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenHandler<Inventory> {
+	public static final int field_30738 = 0;
+	public static final int field_30739 = 1;
+	public static final int field_30740 = 2;
+	public static final int field_30741 = 3;
+	public static final int field_30742 = 4;
+	private static final int field_30743 = 3;
+	private static final int field_30744 = 30;
+	private static final int field_30745 = 30;
+	private static final int field_30746 = 39;
 	private final Inventory inventory;
 	private final PropertyDelegate propertyDelegate;
 	protected final World world;
@@ -170,14 +177,12 @@ public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenH
 		return AbstractFurnaceBlockEntity.canUseAsFuel(itemStack);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getCookProgress() {
 		int i = this.propertyDelegate.get(2);
 		int j = this.propertyDelegate.get(3);
 		return j != 0 && i != 0 ? i * 24 / j : 0;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getFuelProgress() {
 		int i = this.propertyDelegate.get(1);
 		if (i == 0) {
@@ -187,12 +192,10 @@ public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenH
 		return this.propertyDelegate.get(0) * 13 / i;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isBurning() {
 		return this.propertyDelegate.get(0) > 0;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public RecipeBookCategory getCategory() {
 		return this.category;

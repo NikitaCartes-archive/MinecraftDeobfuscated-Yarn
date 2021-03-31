@@ -29,6 +29,7 @@ import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.util.GlException;
 import net.minecraft.client.util.Session;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.obfuscate.DontObfuscate;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
@@ -41,6 +42,7 @@ import org.apache.logging.log4j.Logger;
 public class Main {
 	private static final Logger LOGGER = LogManager.getLogger();
 
+	@DontObfuscate
 	public static void main(String[] args) {
 		OptionParser optionParser = new OptionParser();
 		optionParser.allowsUnrecognizedOptions();

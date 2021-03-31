@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
@@ -54,7 +53,7 @@ public class DragonEggBlock extends FallingBlock {
 						world.addParticle(ParticleTypes.PORTAL, e, k, l, (double)f, (double)g, (double)h);
 					}
 				} else {
-					world.setBlockState(blockPos, state, SetBlockStateFlags.NOTIFY_LISTENERS);
+					world.setBlockState(blockPos, state, Block.NOTIFY_LISTENERS);
 					world.removeBlock(pos, false);
 				}
 

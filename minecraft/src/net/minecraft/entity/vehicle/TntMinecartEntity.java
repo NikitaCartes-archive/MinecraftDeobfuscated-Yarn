@@ -1,8 +1,5 @@
 package net.minecraft.entity.vehicle;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -11,6 +8,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -22,6 +20,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
 public class TntMinecartEntity extends AbstractMinecartEntity {
+	private static final byte field_30703 = 10;
 	private int fuseTicks = -1;
 
 	public TntMinecartEntity(EntityType<? extends TntMinecartEntity> entityType, World world) {
@@ -118,7 +117,6 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void handleStatus(byte status) {
 		if (status == 10) {
@@ -138,7 +136,6 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getFuseTicks() {
 		return this.fuseTicks;
 	}
@@ -162,16 +159,16 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	protected void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		if (tag.contains("TNTFuse", NbtTypeIds.NUMBER)) {
-			this.fuseTicks = tag.getInt("TNTFuse");
+	protected void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		if (nbt.contains("TNTFuse", NbtElement.NUMBER_TYPE)) {
+			this.fuseTicks = nbt.getInt("TNTFuse");
 		}
 	}
 
 	@Override
-	protected void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putInt("TNTFuse", this.fuseTicks);
+	protected void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putInt("TNTFuse", this.fuseTicks);
 	}
 }

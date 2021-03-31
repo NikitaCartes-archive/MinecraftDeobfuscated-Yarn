@@ -18,7 +18,7 @@ public class SquidEntityModel<T extends Entity> extends SinglePartEntityModel<T>
 
 	public SquidEntityModel(ModelPart root) {
 		this.root = root;
-		Arrays.setAll(this.tentacles, i -> root.getChild(getTentacleName(i)));
+		Arrays.setAll(this.tentacles, index -> root.getChild(getTentacleName(index)));
 	}
 
 	private static String getTentacleName(int index) {
@@ -29,7 +29,9 @@ public class SquidEntityModel<T extends Entity> extends SinglePartEntityModel<T>
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
 		int i = -16;
-		modelPartData.addChild("body", ModelPartBuilder.create().uv(0, 0).cuboid(-6.0F, -8.0F, -6.0F, 12.0F, 16.0F, 12.0F), ModelTransform.pivot(0.0F, 8.0F, 0.0F));
+		modelPartData.addChild(
+			EntityModelPartNames.BODY, ModelPartBuilder.create().uv(0, 0).cuboid(-6.0F, -8.0F, -6.0F, 12.0F, 16.0F, 12.0F), ModelTransform.pivot(0.0F, 8.0F, 0.0F)
+		);
 		int j = 8;
 		ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(48, 0).cuboid(-1.0F, 0.0F, -1.0F, 2.0F, 18.0F, 2.0F);
 

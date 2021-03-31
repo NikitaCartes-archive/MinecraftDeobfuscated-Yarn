@@ -2,8 +2,6 @@ package net.minecraft.block;
 
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.pattern.BlockPatternBuilder;
@@ -21,6 +19,7 @@ import net.minecraft.util.function.MaterialPredicate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 
 public class CarvedPumpkinBlock extends HorizontalFacingBlock implements Wearable {
@@ -57,7 +56,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock implements Wearabl
 		if (result != null) {
 			for (int i = 0; i < this.getSnowGolemPattern().getHeight(); i++) {
 				CachedBlockPosition cachedBlockPosition = result.translate(0, i, 0);
-				world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.AIR.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+				world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
 				world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
 			}
 
@@ -80,7 +79,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock implements Wearabl
 				for (int i = 0; i < this.getIronGolemPattern().getWidth(); i++) {
 					for (int k = 0; k < this.getIronGolemPattern().getHeight(); k++) {
 						CachedBlockPosition cachedBlockPosition3 = result.translate(i, k, 0);
-						world.setBlockState(cachedBlockPosition3.getBlockPos(), Blocks.AIR.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+						world.setBlockState(cachedBlockPosition3.getBlockPos(), Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
 						world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, cachedBlockPosition3.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition3.getBlockState()));
 					}
 				}

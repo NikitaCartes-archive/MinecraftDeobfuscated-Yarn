@@ -1,12 +1,12 @@
 package net.minecraft.item;
 
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LecternBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
@@ -42,13 +42,13 @@ public class WritableBookItem extends Item {
 		return TypedActionResult.success(itemStack, world.isClient());
 	}
 
-	public static boolean isValid(@Nullable NbtCompound tag) {
-		if (tag == null) {
+	public static boolean isValid(@Nullable NbtCompound nbt) {
+		if (nbt == null) {
 			return false;
-		} else if (!tag.contains("pages", NbtTypeIds.LIST)) {
+		} else if (!nbt.contains("pages", NbtElement.LIST_TYPE)) {
 			return false;
 		} else {
-			NbtList nbtList = tag.getList("pages", NbtTypeIds.STRING);
+			NbtList nbtList = nbt.getList("pages", NbtElement.STRING_TYPE);
 
 			for (int i = 0; i < nbtList.size(); i++) {
 				String string = nbtList.getString(i);

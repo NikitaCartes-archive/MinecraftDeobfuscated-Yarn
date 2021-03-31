@@ -3,9 +3,6 @@ package net.minecraft.item;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.client.item.BundleTooltipData;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.item.TooltipData;
@@ -13,6 +10,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -28,13 +26,15 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class BundleItem extends Item {
+	private static final String ITEMS_KEY = "Items";
+	public static final int MAX_STORAGE = 64;
+	private static final int field_30859 = 4;
 	private static final int ITEM_BAR_COLOR = MathHelper.packRgb(0.4F, 0.4F, 1.0F);
 
 	public BundleItem(Item.Settings settings) {
 		super(settings);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static float getAmountFilled(ItemStack stack) {
 		return (float)getBundleOccupancy(stack) / 64.0F;
 	}
@@ -82,19 +82,16 @@ public class BundleItem extends Item {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean isItemBarVisible(ItemStack stack) {
 		return getBundleOccupancy(stack) > 0;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public int getItemBarStep(ItemStack stack) {
 		return Math.min(1 + 12 * getBundleOccupancy(stack) / 64, 13);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public int getItemBarColor(ItemStack stack) {
 		return ITEM_BAR_COLOR;
@@ -113,7 +110,7 @@ public class BundleItem extends Item {
 			if (k == 0) {
 				return 0;
 			} else {
-				NbtList nbtList = nbtCompound.getList("Items", NbtTypeIds.COMPOUND);
+				NbtList nbtList = nbtCompound.getList("Items", NbtElement.COMPOUND_TYPE);
 				Optional<NbtCompound> optional = canMergeStack(stack, nbtList);
 				if (optional.isPresent()) {
 					NbtCompound nbtCompound2 = (NbtCompound)optional.get();
@@ -160,7 +157,7 @@ public class BundleItem extends Item {
 		if (!nbtCompound.contains("Items")) {
 			return Optional.empty();
 		} else {
-			NbtList nbtList = nbtCompound.getList("Items", NbtTypeIds.COMPOUND);
+			NbtList nbtList = nbtCompound.getList("Items", NbtElement.COMPOUND_TYPE);
 			if (nbtList.isEmpty()) {
 				return Optional.empty();
 			} else {
@@ -183,7 +180,7 @@ public class BundleItem extends Item {
 			return false;
 		} else {
 			if (player instanceof ServerPlayerEntity) {
-				NbtList nbtList = nbtCompound.getList("Items", NbtTypeIds.COMPOUND);
+				NbtList nbtList = nbtCompound.getList("Items", NbtElement.COMPOUND_TYPE);
 
 				for (int i = 0; i < nbtList.size(); i++) {
 					NbtCompound nbtCompound2 = nbtList.getCompound(i);
@@ -202,12 +199,11 @@ public class BundleItem extends Item {
 		if (nbtCompound == null) {
 			return Stream.empty();
 		} else {
-			NbtList nbtList = nbtCompound.getList("Items", NbtTypeIds.COMPOUND);
+			NbtList nbtList = nbtCompound.getList("Items", NbtElement.COMPOUND_TYPE);
 			return nbtList.stream().map(NbtCompound.class::cast).map(ItemStack::fromNbt);
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public Optional<TooltipData> getTooltipData(ItemStack stack) {
 		DefaultedList<ItemStack> defaultedList = DefaultedList.of();
@@ -215,7 +211,6 @@ public class BundleItem extends Item {
 		return Optional.of(new BundleTooltipData(defaultedList, getBundleOccupancy(stack)));
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {
 		tooltip.add(new TranslatableText("item.minecraft.bundle.fullness", getBundleOccupancy(stack), 64).formatted(Formatting.GRAY));

@@ -3,6 +3,9 @@ package net.minecraft.block;
 import java.util.Random;
 
 public class VineLogic {
+	private static final double field_31198 = 0.826;
+	public static final double field_31197 = 0.1;
+
 	public static boolean isValidForWeepingStem(BlockState state) {
 		return state.isAir();
 	}

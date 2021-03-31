@@ -18,6 +18,8 @@ import net.minecraft.util.JsonHelper;
  * Represents metadata sent to the client. This describes the server's message of the day, online players and the protocol version.
  */
 public class ServerMetadata {
+	public static final int field_33375 = 64;
+	public static final int field_33376 = 64;
 	private Text description;
 	private ServerMetadata.Players players;
 	private ServerMetadata.Version version;

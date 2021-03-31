@@ -15,11 +15,9 @@ public class WitherArmorFeatureRenderer extends EnergySwirlOverlayFeatureRendere
 	private static final Identifier SKIN = new Identifier("textures/entity/wither/wither_armor.png");
 	private final WitherEntityModel<WitherEntity> model;
 
-	public WitherArmorFeatureRenderer(
-		FeatureRendererContext<WitherEntity, WitherEntityModel<WitherEntity>> featureRendererContext, EntityModelLoader entityModelLoader
-	) {
-		super(featureRendererContext);
-		this.model = new WitherEntityModel<>(entityModelLoader.getModelPart(EntityModelLayers.WITHER_ARMOR));
+	public WitherArmorFeatureRenderer(FeatureRendererContext<WitherEntity, WitherEntityModel<WitherEntity>> context, EntityModelLoader loader) {
+		super(context);
+		this.model = new WitherEntityModel<>(loader.getModelPart(EntityModelLayers.WITHER_ARMOR));
 	}
 
 	@Override

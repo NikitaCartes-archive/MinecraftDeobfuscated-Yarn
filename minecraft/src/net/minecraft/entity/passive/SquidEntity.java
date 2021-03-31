@@ -1,8 +1,6 @@
 package net.minecraft.entity.passive;
 
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -213,7 +211,6 @@ public class SquidEntity extends WaterCreatureEntity {
 		return pos.getY() > 45 && pos.getY() < world.getSeaLevel();
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void handleStatus(byte status) {
 		if (status == 19) {
@@ -237,6 +234,9 @@ public class SquidEntity extends WaterCreatureEntity {
 	}
 
 	class EscapeAttackerGoal extends Goal {
+		private static final float field_30375 = 3.0F;
+		private static final float field_30376 = 5.0F;
+		private static final float field_30377 = 10.0F;
 		private int timer;
 
 		private EscapeAttackerGoal() {

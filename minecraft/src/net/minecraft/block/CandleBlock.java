@@ -6,9 +6,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.List;
 import java.util.function.ToIntFunction;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -32,6 +29,8 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class CandleBlock extends AbstractCandleBlock implements Waterloggable {
+	public static final int field_31050 = 1;
+	public static final int field_31051 = 4;
 	public static final IntProperty CANDLES = Properties.CANDLES;
 	public static final BooleanProperty LIT = AbstractCandleBlock.LIT;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
@@ -133,7 +132,7 @@ public class CandleBlock extends AbstractCandleBlock implements Waterloggable {
 			if ((Boolean)state.get(LIT)) {
 				extinguish(null, blockState, world, pos);
 			} else {
-				world.setBlockState(pos, blockState, SetBlockStateFlags.DEFAULT);
+				world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
 			}
 
 			world.getFluidTickScheduler().schedule(pos, fluidState.getFluid(), fluidState.getFluid().getTickRate(world));
@@ -149,10 +148,14 @@ public class CandleBlock extends AbstractCandleBlock implements Waterloggable {
 			&& !(Boolean)state.get(WATERLOGGED);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	protected Iterable<Vec3d> getParticleOffsets(BlockState state) {
 		return (Iterable<Vec3d>)CANDLES_TO_PARTICLE_OFFSETS.get(((Integer)state.get(CANDLES)).intValue());
+	}
+
+	@Override
+	protected boolean isNotLit(BlockState state) {
+		return !(Boolean)state.get(WATERLOGGED) && super.isNotLit(state);
 	}
 
 	@Override

@@ -5,11 +5,13 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -32,20 +34,33 @@ public class ListPoolElement extends StructurePoolElement {
 	}
 
 	@Override
+	public Vec3i getStart(StructureManager structureManager, BlockRotation blockRotation) {
+		int i = 0;
+		int j = 0;
+		int k = 0;
+
+		for (StructurePoolElement structurePoolElement : this.elements) {
+			Vec3i vec3i = structurePoolElement.getStart(structureManager, blockRotation);
+			i = Math.max(i, vec3i.getX());
+			j = Math.max(j, vec3i.getY());
+			k = Math.max(k, vec3i.getZ());
+		}
+
+		return new Vec3i(i, j, k);
+	}
+
+	@Override
 	public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random) {
 		return ((StructurePoolElement)this.elements.get(0)).getStructureBlockInfos(structureManager, pos, rotation, random);
 	}
 
 	@Override
 	public BlockBox getBoundingBox(StructureManager structureManager, BlockPos pos, BlockRotation rotation) {
-		BlockBox blockBox = BlockBox.empty();
-
-		for (StructurePoolElement structurePoolElement : this.elements) {
-			BlockBox blockBox2 = structurePoolElement.getBoundingBox(structureManager, pos, rotation);
-			blockBox.encompass(blockBox2);
-		}
-
-		return blockBox;
+		Stream<BlockBox> stream = this.elements
+			.stream()
+			.filter(structurePoolElement -> structurePoolElement != EmptyPoolElement.INSTANCE)
+			.map(structurePoolElement -> structurePoolElement.getBoundingBox(structureManager, pos, rotation));
+		return (BlockBox)BlockBox.method_35413(stream::iterator).orElseThrow(() -> new IllegalStateException("Unable to calculate boundingbox for ListPoolElement"));
 	}
 
 	@Override

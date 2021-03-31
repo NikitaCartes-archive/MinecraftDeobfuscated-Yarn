@@ -3,7 +3,6 @@ package net.minecraft.screen;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -20,8 +19,17 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 
 public class GrindstoneScreenHandler extends ScreenHandler {
+	public static final int field_30793 = 35;
+	public static final int field_30794 = 0;
+	public static final int field_30795 = 1;
+	public static final int field_30796 = 2;
+	private static final int field_30797 = 3;
+	private static final int field_30798 = 30;
+	private static final int field_30799 = 30;
+	private static final int field_30800 = 39;
 	private final Inventory result = new CraftingResultInventory();
 	private final Inventory input = new SimpleInventory(2) {
 		@Override

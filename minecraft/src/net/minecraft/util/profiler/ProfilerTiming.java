@@ -1,8 +1,5 @@
 package net.minecraft.util.profiler;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-
 public final class ProfilerTiming implements Comparable<ProfilerTiming> {
 	public final double parentSectionUsagePercentage;
 	public final double totalUsagePercentage;
@@ -24,7 +21,6 @@ public final class ProfilerTiming implements Comparable<ProfilerTiming> {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getColor() {
 		return (this.name.hashCode() & 11184810) + 4473924;
 	}

@@ -27,6 +27,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public abstract class Option {
+	protected static final int field_32147 = 200;
 	public static final DoubleOption BIOME_BLEND_RADIUS = new DoubleOption(
 		"options.biomeBlendRadius", 0.0, 7.0, 1.0F, gameOptions -> (double)gameOptions.biomeBlendRadius, (gameOptions, biomeBlendRadius) -> {
 			gameOptions.biomeBlendRadius = MathHelper.clamp((int)biomeBlendRadius.doubleValue(), 0, 7);
@@ -461,6 +462,13 @@ public abstract class Option {
 	);
 	public static final CyclingOption<Boolean> VIEW_BOBBING = CyclingOption.create(
 		"options.viewBobbing", gameOptions -> gameOptions.bobView, (gameOptions, option, bobView) -> gameOptions.bobView = bobView
+	);
+	private static final Text MONOCHROME_LOGO_TOOLTIP = new TranslatableText("options.darkMojangStudiosBackgroundColor.tooltip");
+	public static final CyclingOption<Boolean> MONOCHROME_LOGO = CyclingOption.create(
+		"options.darkMojangStudiosBackgroundColor",
+		MONOCHROME_LOGO_TOOLTIP,
+		gameOptions -> gameOptions.monochromeLogo,
+		(gameOptions, option, monochromeLogo) -> gameOptions.monochromeLogo = monochromeLogo
 	);
 	private final Text key;
 

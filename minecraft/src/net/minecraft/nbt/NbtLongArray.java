@@ -6,7 +6,6 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -14,6 +13,7 @@ import org.apache.commons.lang3.ArrayUtils;
  * Represents an NBT 64-bit integer array.
  */
 public class NbtLongArray extends AbstractNbtList<NbtLong> {
+	private static final int field_33200 = 192;
 	public static final NbtType<NbtLongArray> TYPE = new NbtType<NbtLongArray>() {
 		public NbtLongArray read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
 			nbtTagSizeTracker.add(192L);
@@ -74,7 +74,7 @@ public class NbtLongArray extends AbstractNbtList<NbtLong> {
 
 	@Override
 	public byte getType() {
-		return (byte)NbtTypeIds.LONG_ARRAY;
+		return NbtElement.LONG_ARRAY_TYPE;
 	}
 
 	@Override
@@ -156,7 +156,7 @@ public class NbtLongArray extends AbstractNbtList<NbtLong> {
 
 	@Override
 	public byte getHeldType() {
-		return (byte)NbtTypeIds.LONG;
+		return NbtElement.LONG_TYPE;
 	}
 
 	public void clear() {

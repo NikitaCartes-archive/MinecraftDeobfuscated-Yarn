@@ -3,9 +3,6 @@ package net.minecraft.entity.passive;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -27,6 +24,7 @@ import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
 import net.minecraft.item.SuspiciousStewItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -44,6 +42,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public class MooshroomEntity extends CowEntity implements Shearable {
 	private static final TrackedData<String> TYPE = DataTracker.registerData(MooshroomEntity.class, TrackedDataHandlerRegistry.STRING);
+	private static final int field_30339 = 1024;
 	private StatusEffect stewEffect;
 	private int stewEffectDuration;
 	private UUID lightningId;
@@ -196,25 +195,25 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putString("Type", this.getMooshroomType().name);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putString("Type", this.getMooshroomType().name);
 		if (this.stewEffect != null) {
-			tag.putByte("EffectId", (byte)StatusEffect.getRawId(this.stewEffect));
-			tag.putInt("EffectDuration", this.stewEffectDuration);
+			nbt.putByte("EffectId", (byte)StatusEffect.getRawId(this.stewEffect));
+			nbt.putInt("EffectDuration", this.stewEffectDuration);
 		}
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.setType(MooshroomEntity.Type.fromName(tag.getString("Type")));
-		if (tag.contains("EffectId", NbtTypeIds.BYTE)) {
-			this.stewEffect = StatusEffect.byRawId(tag.getByte("EffectId"));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.setType(MooshroomEntity.Type.fromName(nbt.getString("Type")));
+		if (nbt.contains("EffectId", NbtElement.BYTE_TYPE)) {
+			this.stewEffect = StatusEffect.byRawId(nbt.getByte("EffectId"));
 		}
 
-		if (tag.contains("EffectDuration", NbtTypeIds.INT)) {
-			this.stewEffectDuration = tag.getInt("EffectDuration");
+		if (nbt.contains("EffectDuration", NbtElement.INT_TYPE)) {
+			this.stewEffectDuration = nbt.getInt("EffectDuration");
 		}
 	}
 
@@ -270,7 +269,6 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 			this.mushroom = mushroom;
 		}
 
-		@Environment(EnvType.CLIENT)
 		public BlockState getMushroomState() {
 			return this.mushroom;
 		}

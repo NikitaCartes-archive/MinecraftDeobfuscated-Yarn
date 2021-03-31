@@ -1,10 +1,9 @@
 package net.minecraft.entity.ai.pathing;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 public class PathNode {
 	public final int x;
@@ -53,10 +52,24 @@ public class PathNode {
 		return MathHelper.sqrt(f * f + g * g + h * h);
 	}
 
+	public float method_35494(BlockPos blockPos) {
+		float f = (float)(blockPos.getX() - this.x);
+		float g = (float)(blockPos.getY() - this.y);
+		float h = (float)(blockPos.getZ() - this.z);
+		return MathHelper.sqrt(f * f + g * g + h * h);
+	}
+
 	public float getSquaredDistance(PathNode node) {
 		float f = (float)(node.x - this.x);
 		float g = (float)(node.y - this.y);
 		float h = (float)(node.z - this.z);
+		return f * f + g * g + h * h;
+	}
+
+	public float method_35497(BlockPos blockPos) {
+		float f = (float)(blockPos.getX() - this.x);
+		float g = (float)(blockPos.getY() - this.y);
+		float h = (float)(blockPos.getZ() - this.z);
 		return f * f + g * g + h * h;
 	}
 
@@ -76,6 +89,10 @@ public class PathNode {
 
 	public BlockPos getPos() {
 		return new BlockPos(this.x, this.y, this.z);
+	}
+
+	public Vec3d method_35496() {
+		return new Vec3d((double)this.x, (double)this.y, (double)this.z);
 	}
 
 	public boolean equals(Object o) {
@@ -99,7 +116,17 @@ public class PathNode {
 		return "Node{x=" + this.x + ", y=" + this.y + ", z=" + this.z + '}';
 	}
 
-	@Environment(EnvType.CLIENT)
+	public void method_35495(PacketByteBuf packetByteBuf) {
+		packetByteBuf.writeInt(this.x);
+		packetByteBuf.writeInt(this.y);
+		packetByteBuf.writeInt(this.z);
+		packetByteBuf.writeFloat(this.pathLength);
+		packetByteBuf.writeFloat(this.penalty);
+		packetByteBuf.writeBoolean(this.visited);
+		packetByteBuf.writeInt(this.type.ordinal());
+		packetByteBuf.writeFloat(this.heapWeight);
+	}
+
 	public static PathNode fromBuffer(PacketByteBuf buffer) {
 		PathNode pathNode = new PathNode(buffer.readInt(), buffer.readInt(), buffer.readInt());
 		pathNode.pathLength = buffer.readFloat();

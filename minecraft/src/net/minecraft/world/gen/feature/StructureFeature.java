@@ -10,17 +10,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockBox;
+import net.minecraft.util.collection.Pool;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -108,6 +107,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 		.put(new Identifier("bastionremnant"), JIGSAW_ID)
 		.put(new Identifier("runtime"), JIGSAW_ID)
 		.build();
+	public static final int field_31518 = 8;
 	private final Codec<ConfiguredStructureFeature<C, StructureFeature<C>>> codec;
 
 	private static <F extends StructureFeature<?>> F register(String name, F structureFeature, GenerationStep.Feature step) {
@@ -136,8 +136,8 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 	}
 
 	@Nullable
-	public static StructureStart<?> readStructureStart(ServerWorld world, NbtCompound tag, long worldSeed) {
-		String string = tag.getString("id");
+	public static StructureStart<?> readStructureStart(ServerWorld world, NbtCompound nbt, long worldSeed) {
+		String string = nbt.getString("id");
 		if ("INVALID".equals(string)) {
 			return StructureStart.DEFAULT;
 		} else {
@@ -146,19 +146,12 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 				LOGGER.error("Unknown feature id: {}", string);
 				return null;
 			} else {
-				ChunkPos chunkPos = new ChunkPos(tag.getInt("ChunkX"), tag.getInt("ChunkZ"));
-				int i = tag.getInt("references");
-				BlockBox blockBox;
-				if (tag.contains("BB")) {
-					blockBox = (BlockBox)BlockBox.CODEC.parse(NbtOps.INSTANCE, tag.get("BB")).resultOrPartial(LOGGER::error).orElse(new BlockBox(BlockPos.ORIGIN));
-				} else {
-					blockBox = BlockBox.empty();
-				}
-
-				NbtList nbtList = tag.getList("Children", NbtTypeIds.COMPOUND);
+				ChunkPos chunkPos = new ChunkPos(nbt.getInt("ChunkX"), nbt.getInt("ChunkZ"));
+				int i = nbt.getInt("references");
+				NbtList nbtList = nbt.getList("Children", NbtElement.COMPOUND_TYPE);
 
 				try {
-					StructureStart<?> structureStart = structureFeature.createStart(chunkPos, blockBox, i, worldSeed);
+					StructureStart<?> structureStart = structureFeature.createStart(chunkPos, i, worldSeed);
 
 					for (int j = 0; j < nbtList.size(); j++) {
 						NbtCompound nbtCompound = nbtList.getCompound(j);
@@ -171,16 +164,16 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 						} else {
 							try {
 								StructurePiece structurePiece = structurePieceType.load(world, nbtCompound);
-								structureStart.getChildren().add(structurePiece);
-							} catch (Exception var18) {
-								LOGGER.error("Exception loading structure piece with id {}", identifier2, var18);
+								structureStart.method_35462(structurePiece);
+							} catch (Exception var17) {
+								LOGGER.error("Exception loading structure piece with id {}", identifier2, var17);
 							}
 						}
 					}
 
 					return structureStart;
-				} catch (Exception var19) {
-					LOGGER.error("Failed Start with id {}", string, var19);
+				} catch (Exception var18) {
+					LOGGER.error("Failed Start with id {}", string, var18);
 					return null;
 				}
 			}
@@ -321,8 +314,8 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 		return true;
 	}
 
-	private StructureStart<C> createStart(ChunkPos pos, BlockBox box, int references, long worldSeed) {
-		return this.getStructureStartFactory().create(this, pos, box, references, worldSeed);
+	private StructureStart<C> createStart(ChunkPos pos, int i, long l) {
+		return this.getStructureStartFactory().create(this, pos, i, l);
 	}
 
 	/**
@@ -347,7 +340,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 	) {
 		ChunkPos chunkPos = this.getStartChunk(structureConfig, worldSeed, random, pos.x, pos.z);
 		if (pos.x == chunkPos.x && pos.z == chunkPos.z && this.shouldStartAt(generator, biomeSource, worldSeed, random, pos, biome, chunkPos, config, world)) {
-			StructureStart<C> structureStart = this.createStart(pos, BlockBox.empty(), referenceCount, worldSeed);
+			StructureStart<C> structureStart = this.createStart(pos, referenceCount, worldSeed);
 			structureStart.init(dynamicRegistryManager, generator, manager, pos, biome, config, world);
 			if (structureStart.hasChildren()) {
 				return structureStart;
@@ -363,15 +356,15 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 		return (String)STRUCTURES.inverse().get(this);
 	}
 
-	public List<SpawnSettings.SpawnEntry> getMonsterSpawns() {
-		return ImmutableList.of();
+	public Pool<SpawnSettings.SpawnEntry> getMonsterSpawns() {
+		return SpawnSettings.field_30982;
 	}
 
-	public List<SpawnSettings.SpawnEntry> getCreatureSpawns() {
-		return ImmutableList.of();
+	public Pool<SpawnSettings.SpawnEntry> getCreatureSpawns() {
+		return SpawnSettings.field_30982;
 	}
 
 	public interface StructureStartFactory<C extends FeatureConfig> {
-		StructureStart<C> create(StructureFeature<C> feature, ChunkPos pos, BlockBox box, int references, long worldSeed);
+		StructureStart<C> create(StructureFeature<C> feature, ChunkPos pos, int i, long l);
 	}
 }

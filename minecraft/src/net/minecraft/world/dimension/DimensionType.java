@@ -10,8 +10,6 @@ import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.Tag;
@@ -71,6 +69,7 @@ public class DimensionType {
 					.apply(instance, DimensionType::new)
 		)
 		.comapFlatMap(DimensionType::checkHeight, Function.identity());
+	private static final int field_31440 = 8;
 	public static final float[] MOON_SIZES = new float[]{1.0F, 0.75F, 0.5F, 0.25F, 0.0F, 0.25F, 0.5F, 0.75F};
 	public static final RegistryKey<DimensionType> OVERWORLD_REGISTRY_KEY = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, new Identifier("overworld"));
 	public static final RegistryKey<DimensionType> THE_NETHER_REGISTRY_KEY = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, new Identifier("the_nether"));
@@ -330,8 +329,8 @@ public class DimensionType {
 	}
 
 	@Deprecated
-	public static DataResult<RegistryKey<World>> worldFromDimensionTag(Dynamic<?> tag) {
-		Optional<Number> optional = tag.asNumber().result();
+	public static DataResult<RegistryKey<World>> worldFromDimensionNbt(Dynamic<?> nbt) {
+		Optional<Number> optional = nbt.asNumber().result();
 		if (optional.isPresent()) {
 			int i = ((Number)optional.get()).intValue();
 			if (i == -1) {
@@ -347,7 +346,7 @@ public class DimensionType {
 			}
 		}
 
-		return World.CODEC.parse(tag);
+		return World.CODEC.parse(nbt);
 	}
 
 	public static DynamicRegistryManager.Impl addRegistryDefaults(DynamicRegistryManager.Impl registryManager) {
@@ -374,7 +373,7 @@ public class DimensionType {
 	public static SimpleRegistry<DimensionOptions> createDefaultDimensionOptions(
 		Registry<DimensionType> dimensionRegistry, Registry<Biome> biomeRegistry, Registry<ChunkGeneratorSettings> chunkGeneratorSettingsRegistry, long seed
 	) {
-		SimpleRegistry<DimensionOptions> simpleRegistry = new SimpleRegistry<>(Registry.DIMENSION_OPTIONS, Lifecycle.experimental());
+		SimpleRegistry<DimensionOptions> simpleRegistry = new SimpleRegistry<>(Registry.DIMENSION_KEY, Lifecycle.experimental());
 		simpleRegistry.add(
 			DimensionOptions.NETHER,
 			new DimensionOptions(() -> dimensionRegistry.getOrThrow(THE_NETHER_REGISTRY_KEY), createNetherGenerator(biomeRegistry, chunkGeneratorSettingsRegistry, seed)),
@@ -497,7 +496,6 @@ public class DimensionType {
 		return (Tag<Block>)(tag != null ? tag : BlockTags.INFINIBURN_OVERWORLD);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Identifier getSkyProperties() {
 		return this.skyProperties;
 	}

@@ -9,6 +9,8 @@ import net.minecraft.util.Identifier;
 public class DefaultSkinHelper {
 	private static final Identifier STEVE_SKIN = new Identifier("textures/entity/steve.png");
 	private static final Identifier ALEX_SKIN = new Identifier("textures/entity/alex.png");
+	private static final String field_32964 = "default";
+	private static final String field_32965 = "slim";
 
 	public static Identifier getTexture() {
 		return STEVE_SKIN;

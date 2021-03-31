@@ -36,6 +36,7 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class IntegratedServer extends MinecraftServer {
+	public static final int field_33015 = -1;
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final MinecraftClient client;
 	private boolean paused;
@@ -180,6 +181,11 @@ public class IntegratedServer extends MinecraftServer {
 	public void addSnooperInfo(Snooper snooper) {
 		super.addSnooperInfo(snooper);
 		snooper.addInfo("snooper_partner", this.client.getSnooper().getToken());
+	}
+
+	@Override
+	public boolean method_35033() {
+		return MinecraftClient.getInstance().method_35033();
 	}
 
 	@Override

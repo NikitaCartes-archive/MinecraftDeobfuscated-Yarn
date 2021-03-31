@@ -5,8 +5,6 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -24,6 +22,7 @@ import net.minecraft.world.WorldView;
 
 public class WallTorchBlock extends TorchBlock {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+	protected static final float field_31285 = 2.5F;
 	private static final Map<Direction, VoxelShape> BOUNDING_SHAPES = Maps.newEnumMap(
 		ImmutableMap.of(
 			Direction.NORTH,
@@ -92,7 +91,6 @@ public class WallTorchBlock extends TorchBlock {
 		return direction.getOpposite() == state.get(FACING) && !state.canPlaceAt(world, pos) ? Blocks.AIR.getDefaultState() : state;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		Direction direction = state.get(FACING);

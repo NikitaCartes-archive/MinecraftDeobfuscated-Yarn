@@ -1,6 +1,5 @@
 package net.minecraft.entity.passive;
 
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -13,6 +12,7 @@ import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
@@ -21,6 +21,7 @@ import net.minecraft.world.World;
 
 public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 	private static final TrackedData<Boolean> CHEST = DataTracker.registerData(AbstractDonkeyEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	public static final int field_30412 = 15;
 
 	protected AbstractDonkeyEntity(EntityType<? extends AbstractDonkeyEntity> entityType, World world) {
 		super(entityType, world);
@@ -73,9 +74,9 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putBoolean("ChestedHorse", this.hasChest());
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putBoolean("ChestedHorse", this.hasChest());
 		if (this.hasChest()) {
 			NbtList nbtList = new NbtList();
 
@@ -89,17 +90,17 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 				}
 			}
 
-			tag.put("Items", nbtList);
+			nbt.put("Items", nbtList);
 		}
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.setHasChest(tag.getBoolean("ChestedHorse"));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.setHasChest(nbt.getBoolean("ChestedHorse"));
 		this.onChestedStatusChanged();
 		if (this.hasChest()) {
-			NbtList nbtList = tag.getList("Items", NbtTypeIds.COMPOUND);
+			NbtList nbtList = nbt.getList("Items", NbtElement.COMPOUND_TYPE);
 
 			for (int i = 0; i < nbtList.size(); i++) {
 				NbtCompound nbtCompound = nbtList.getCompound(i);

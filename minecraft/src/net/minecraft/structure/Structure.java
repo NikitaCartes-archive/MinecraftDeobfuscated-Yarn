@@ -13,8 +13,6 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.NbtTypeIds;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -31,6 +29,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtDouble;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtInt;
 import net.minecraft.nbt.NbtList;
@@ -53,6 +52,18 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class Structure {
+	public static final String field_31687 = "palette";
+	public static final String field_31688 = "palettes";
+	public static final String field_31689 = "entities";
+	public static final String field_31690 = "blocks";
+	public static final String field_31691 = "pos";
+	public static final String field_31692 = "state";
+	public static final String field_31693 = "nbt";
+	public static final String field_31694 = "pos";
+	public static final String field_31695 = "blockPos";
+	public static final String field_31696 = "nbt";
+	public static final String field_31697 = "size";
+	static final int field_31698 = 16;
 	private final List<Structure.PalettedBlockInfoList> blockInfoLists = Lists.<Structure.PalettedBlockInfoList>newArrayList();
 	private final List<Structure.StructureEntityInfo> entities = Lists.<Structure.StructureEntityInfo>newArrayList();
 	private Vec3i size = Vec3i.ZERO;
@@ -117,7 +128,7 @@ public class Structure {
 		List<Structure.StructureBlockInfo> list2,
 		List<Structure.StructureBlockInfo> list3
 	) {
-		if (structureBlockInfo.tag != null) {
+		if (structureBlockInfo.nbt != null) {
 			list2.add(structureBlockInfo);
 		} else if (!structureBlockInfo.state.getBlock().hasDynamicBounds() && structureBlockInfo.state.isFullCube(EmptyBlockView.INSTANCE, BlockPos.ORIGIN)) {
 			list.add(structureBlockInfo);
@@ -149,7 +160,7 @@ public class Structure {
 		for (Entity entity : list) {
 			Vec3d vec3d = new Vec3d(entity.getX() - (double)firstCorner.getX(), entity.getY() - (double)firstCorner.getY(), entity.getZ() - (double)firstCorner.getZ());
 			NbtCompound nbtCompound = new NbtCompound();
-			entity.saveToTag(nbtCompound);
+			entity.saveNbt(nbtCompound);
 			BlockPos blockPos;
 			if (entity instanceof PaintingEntity) {
 				blockPos = ((PaintingEntity)entity).getDecorationBlockPos().subtract(firstCorner);
@@ -174,7 +185,7 @@ public class Structure {
 			for (Structure.StructureBlockInfo structureBlockInfo : placementData.getRandomBlockInfos(this.blockInfoLists, pos).getAllOf(block)) {
 				BlockPos blockPos = transformed ? transform(placementData, structureBlockInfo.pos).add(pos) : structureBlockInfo.pos;
 				if (blockBox == null || blockBox.contains(blockPos)) {
-					list.add(new Structure.StructureBlockInfo(blockPos, structureBlockInfo.state.rotate(placementData.getRotation()), structureBlockInfo.tag));
+					list.add(new Structure.StructureBlockInfo(blockPos, structureBlockInfo.state.rotate(placementData.getRotation()), structureBlockInfo.nbt));
 				}
 			}
 
@@ -217,10 +228,10 @@ public class Structure {
 					if (blockBox == null || blockBox.contains(blockPos2)) {
 						FluidState fluidState = placementData.shouldPlaceFluids() ? world.getFluidState(blockPos2) : null;
 						BlockState blockState = structureBlockInfo.state.mirror(placementData.getMirror()).rotate(placementData.getRotation());
-						if (structureBlockInfo.tag != null) {
+						if (structureBlockInfo.nbt != null) {
 							BlockEntity blockEntity = world.getBlockEntity(blockPos2);
 							Clearable.clear(blockEntity);
-							world.setBlockState(blockPos2, Blocks.BARRIER.getDefaultState(), SetBlockStateFlags.NO_REDRAW | SetBlockStateFlags.FORCE_STATE);
+							world.setBlockState(blockPos2, Blocks.BARRIER.getDefaultState(), Block.NO_REDRAW | Block.FORCE_STATE);
 						}
 
 						if (world.setBlockState(blockPos2, blockState, i)) {
@@ -230,18 +241,18 @@ public class Structure {
 							m = Math.max(m, blockPos2.getX());
 							n = Math.max(n, blockPos2.getY());
 							o = Math.max(o, blockPos2.getZ());
-							list4.add(Pair.of(blockPos2, structureBlockInfo.tag));
-							if (structureBlockInfo.tag != null) {
+							list4.add(Pair.of(blockPos2, structureBlockInfo.nbt));
+							if (structureBlockInfo.nbt != null) {
 								BlockEntity blockEntity = world.getBlockEntity(blockPos2);
 								if (blockEntity != null) {
-									structureBlockInfo.tag.putInt("x", blockPos2.getX());
-									structureBlockInfo.tag.putInt("y", blockPos2.getY());
-									structureBlockInfo.tag.putInt("z", blockPos2.getZ());
+									structureBlockInfo.nbt.putInt("x", blockPos2.getX());
+									structureBlockInfo.nbt.putInt("y", blockPos2.getY());
+									structureBlockInfo.nbt.putInt("z", blockPos2.getZ());
 									if (blockEntity instanceof LootableContainerBlockEntity) {
-										structureBlockInfo.tag.putLong("LootTableSeed", random.nextLong());
+										structureBlockInfo.nbt.putLong("LootTableSeed", random.nextLong());
 									}
 
-									blockEntity.readNbt(structureBlockInfo.tag);
+									blockEntity.readNbt(structureBlockInfo.nbt);
 								}
 							}
 
@@ -311,7 +322,7 @@ public class Structure {
 							BlockState blockState2 = world.getBlockState(blockPos6);
 							BlockState blockState3 = Block.postProcessState(blockState2, world, blockPos6);
 							if (blockState2 != blockState3) {
-								world.setBlockState(blockPos6, blockState3, i & ~SetBlockStateFlags.PROPAGATE_CHANGE | SetBlockStateFlags.FORCE_STATE);
+								world.setBlockState(blockPos6, blockState3, i & ~Block.NOTIFY_NEIGHBORS | Block.FORCE_STATE);
 							}
 
 							world.updateNeighbors(blockPos6, blockState3.getBlock());
@@ -345,12 +356,12 @@ public class Structure {
 			BlockState blockState2 = world.getBlockState(blockPos2);
 			BlockState blockState3 = blockState.getStateForNeighborUpdate(direction, blockState2, world, blockPos, blockPos2);
 			if (blockState != blockState3) {
-				world.setBlockState(blockPos, blockState3, flags & ~SetBlockStateFlags.PROPAGATE_CHANGE);
+				world.setBlockState(blockPos, blockState3, flags & ~Block.NOTIFY_NEIGHBORS);
 			}
 
 			BlockState blockState4 = blockState2.getStateForNeighborUpdate(direction.getOpposite(), blockState3, world, blockPos2, blockPos);
 			if (blockState2 != blockState4) {
-				world.setBlockState(blockPos2, blockState4, flags & ~SetBlockStateFlags.PROPAGATE_CHANGE);
+				world.setBlockState(blockPos2, blockState4, flags & ~Block.NOTIFY_NEIGHBORS);
 			}
 		});
 	}
@@ -363,7 +374,7 @@ public class Structure {
 		for (Structure.StructureBlockInfo structureBlockInfo : list) {
 			BlockPos blockPos2 = transform(placementData, structureBlockInfo.pos).add(pos);
 			Structure.StructureBlockInfo structureBlockInfo2 = new Structure.StructureBlockInfo(
-				blockPos2, structureBlockInfo.state, structureBlockInfo.tag != null ? structureBlockInfo.tag.copy() : null
+				blockPos2, structureBlockInfo.state, structureBlockInfo.nbt != null ? structureBlockInfo.nbt.copy() : null
 			);
 			Iterator<StructureProcessor> iterator = placementData.getProcessors().iterator();
 
@@ -385,7 +396,7 @@ public class Structure {
 		for (Structure.StructureEntityInfo structureEntityInfo : this.entities) {
 			BlockPos blockPos = transformAround(structureEntityInfo.blockPos, mirror, rotation, pivot).add(pos);
 			if (area == null || area.contains(blockPos)) {
-				NbtCompound nbtCompound = structureEntityInfo.tag.copy();
+				NbtCompound nbtCompound = structureEntityInfo.nbt.copy();
 				Vec3d vec3d = transformAround(structureEntityInfo.pos, mirror, rotation, pivot);
 				Vec3d vec3d2 = vec3d.add((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
 				NbtList nbtList = new NbtList();
@@ -529,10 +540,10 @@ public class Structure {
 		return BlockBox.create(blockPos3, blockPos4).move(blockPos);
 	}
 
-	public NbtCompound writeNbt(NbtCompound tag) {
+	public NbtCompound writeNbt(NbtCompound nbt) {
 		if (this.blockInfoLists.isEmpty()) {
-			tag.put("blocks", new NbtList());
-			tag.put("palette", new NbtList());
+			nbt.put("blocks", new NbtList());
+			nbt.put("palette", new NbtList());
 		} else {
 			List<Structure.Palette> list = Lists.<Structure.Palette>newArrayList();
 			Structure.Palette palette = new Structure.Palette();
@@ -548,11 +559,11 @@ public class Structure {
 			for (int j = 0; j < list2.size(); j++) {
 				Structure.StructureBlockInfo structureBlockInfo = (Structure.StructureBlockInfo)list2.get(j);
 				NbtCompound nbtCompound = new NbtCompound();
-				nbtCompound.put("pos", this.createIntListTag(structureBlockInfo.pos.getX(), structureBlockInfo.pos.getY(), structureBlockInfo.pos.getZ()));
+				nbtCompound.put("pos", this.createNbtIntList(structureBlockInfo.pos.getX(), structureBlockInfo.pos.getY(), structureBlockInfo.pos.getZ()));
 				int k = palette.getId(structureBlockInfo.state);
 				nbtCompound.putInt("state", k);
-				if (structureBlockInfo.tag != null) {
-					nbtCompound.put("nbt", structureBlockInfo.tag);
+				if (structureBlockInfo.nbt != null) {
+					nbtCompound.put("nbt", structureBlockInfo.nbt);
 				}
 
 				nbtList.add(nbtCompound);
@@ -563,7 +574,7 @@ public class Structure {
 				}
 			}
 
-			tag.put("blocks", nbtList);
+			nbt.put("blocks", nbtList);
 			if (list.size() == 1) {
 				NbtList nbtList2 = new NbtList();
 
@@ -571,7 +582,7 @@ public class Structure {
 					nbtList2.add(NbtHelper.fromBlockState(blockState));
 				}
 
-				tag.put("palette", nbtList2);
+				nbt.put("palette", nbtList2);
 			} else {
 				NbtList nbtList2 = new NbtList();
 
@@ -585,7 +596,7 @@ public class Structure {
 					nbtList2.add(nbtList3);
 				}
 
-				tag.put("palettes", nbtList2);
+				nbt.put("palettes", nbtList2);
 			}
 		}
 
@@ -593,46 +604,46 @@ public class Structure {
 
 		for (Structure.StructureEntityInfo structureEntityInfo : this.entities) {
 			NbtCompound nbtCompound2 = new NbtCompound();
-			nbtCompound2.put("pos", this.createDoubleListTag(structureEntityInfo.pos.x, structureEntityInfo.pos.y, structureEntityInfo.pos.z));
+			nbtCompound2.put("pos", this.createNbtDoubleList(structureEntityInfo.pos.x, structureEntityInfo.pos.y, structureEntityInfo.pos.z));
 			nbtCompound2.put(
-				"blockPos", this.createIntListTag(structureEntityInfo.blockPos.getX(), structureEntityInfo.blockPos.getY(), structureEntityInfo.blockPos.getZ())
+				"blockPos", this.createNbtIntList(structureEntityInfo.blockPos.getX(), structureEntityInfo.blockPos.getY(), structureEntityInfo.blockPos.getZ())
 			);
-			if (structureEntityInfo.tag != null) {
-				nbtCompound2.put("nbt", structureEntityInfo.tag);
+			if (structureEntityInfo.nbt != null) {
+				nbtCompound2.put("nbt", structureEntityInfo.nbt);
 			}
 
 			nbtList4.add(nbtCompound2);
 		}
 
-		tag.put("entities", nbtList4);
-		tag.put("size", this.createIntListTag(this.size.getX(), this.size.getY(), this.size.getZ()));
-		tag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
-		return tag;
+		nbt.put("entities", nbtList4);
+		nbt.put("size", this.createNbtIntList(this.size.getX(), this.size.getY(), this.size.getZ()));
+		nbt.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
+		return nbt;
 	}
 
-	public void readNbt(NbtCompound tag) {
+	public void readNbt(NbtCompound nbt) {
 		this.blockInfoLists.clear();
 		this.entities.clear();
-		NbtList nbtList = tag.getList("size", NbtTypeIds.INT);
+		NbtList nbtList = nbt.getList("size", NbtElement.INT_TYPE);
 		this.size = new Vec3i(nbtList.getInt(0), nbtList.getInt(1), nbtList.getInt(2));
-		NbtList nbtList2 = tag.getList("blocks", NbtTypeIds.COMPOUND);
-		if (tag.contains("palettes", NbtTypeIds.LIST)) {
-			NbtList nbtList3 = tag.getList("palettes", NbtTypeIds.LIST);
+		NbtList nbtList2 = nbt.getList("blocks", NbtElement.COMPOUND_TYPE);
+		if (nbt.contains("palettes", NbtElement.LIST_TYPE)) {
+			NbtList nbtList3 = nbt.getList("palettes", NbtElement.LIST_TYPE);
 
 			for (int i = 0; i < nbtList3.size(); i++) {
 				this.loadPalettedBlockInfo(nbtList3.getList(i), nbtList2);
 			}
 		} else {
-			this.loadPalettedBlockInfo(tag.getList("palette", NbtTypeIds.COMPOUND), nbtList2);
+			this.loadPalettedBlockInfo(nbt.getList("palette", NbtElement.COMPOUND_TYPE), nbtList2);
 		}
 
-		NbtList nbtList3 = tag.getList("entities", NbtTypeIds.COMPOUND);
+		NbtList nbtList3 = nbt.getList("entities", NbtElement.COMPOUND_TYPE);
 
 		for (int i = 0; i < nbtList3.size(); i++) {
 			NbtCompound nbtCompound = nbtList3.getCompound(i);
-			NbtList nbtList4 = nbtCompound.getList("pos", NbtTypeIds.DOUBLE);
+			NbtList nbtList4 = nbtCompound.getList("pos", NbtElement.DOUBLE_TYPE);
 			Vec3d vec3d = new Vec3d(nbtList4.getDouble(0), nbtList4.getDouble(1), nbtList4.getDouble(2));
-			NbtList nbtList5 = nbtCompound.getList("blockPos", NbtTypeIds.INT);
+			NbtList nbtList5 = nbtCompound.getList("blockPos", NbtElement.INT_TYPE);
 			BlockPos blockPos = new BlockPos(nbtList5.getInt(0), nbtList5.getInt(1), nbtList5.getInt(2));
 			if (nbtCompound.contains("nbt")) {
 				NbtCompound nbtCompound2 = nbtCompound.getCompound("nbt");
@@ -641,20 +652,20 @@ public class Structure {
 		}
 	}
 
-	private void loadPalettedBlockInfo(NbtList paletteTag, NbtList blocksTag) {
+	private void loadPalettedBlockInfo(NbtList paletteNbt, NbtList blocksNbt) {
 		Structure.Palette palette = new Structure.Palette();
 
-		for (int i = 0; i < paletteTag.size(); i++) {
-			palette.set(NbtHelper.toBlockState(paletteTag.getCompound(i)), i);
+		for (int i = 0; i < paletteNbt.size(); i++) {
+			palette.set(NbtHelper.toBlockState(paletteNbt.getCompound(i)), i);
 		}
 
 		List<Structure.StructureBlockInfo> list = Lists.<Structure.StructureBlockInfo>newArrayList();
 		List<Structure.StructureBlockInfo> list2 = Lists.<Structure.StructureBlockInfo>newArrayList();
 		List<Structure.StructureBlockInfo> list3 = Lists.<Structure.StructureBlockInfo>newArrayList();
 
-		for (int j = 0; j < blocksTag.size(); j++) {
-			NbtCompound nbtCompound = blocksTag.getCompound(j);
-			NbtList nbtList = nbtCompound.getList("pos", NbtTypeIds.INT);
+		for (int j = 0; j < blocksNbt.size(); j++) {
+			NbtCompound nbtCompound = blocksNbt.getCompound(j);
+			NbtList nbtList = nbtCompound.getList("pos", NbtElement.INT_TYPE);
 			BlockPos blockPos = new BlockPos(nbtList.getInt(0), nbtList.getInt(1), nbtList.getInt(2));
 			BlockState blockState = palette.getState(nbtCompound.getInt("state"));
 			NbtCompound nbtCompound2;
@@ -672,20 +683,20 @@ public class Structure {
 		this.blockInfoLists.add(new Structure.PalettedBlockInfoList(list4));
 	}
 
-	private NbtList createIntListTag(int... is) {
+	private NbtList createNbtIntList(int... ints) {
 		NbtList nbtList = new NbtList();
 
-		for (int i : is) {
+		for (int i : ints) {
 			nbtList.add(NbtInt.of(i));
 		}
 
 		return nbtList;
 	}
 
-	private NbtList createDoubleListTag(double... ds) {
+	private NbtList createNbtDoubleList(double... doubles) {
 		NbtList nbtList = new NbtList();
 
-		for (double d : ds) {
+		for (double d : doubles) {
 			nbtList.add(NbtDouble.of(d));
 		}
 
@@ -748,28 +759,28 @@ public class Structure {
 	public static class StructureBlockInfo {
 		public final BlockPos pos;
 		public final BlockState state;
-		public final NbtCompound tag;
+		public final NbtCompound nbt;
 
-		public StructureBlockInfo(BlockPos pos, BlockState state, @Nullable NbtCompound tag) {
+		public StructureBlockInfo(BlockPos pos, BlockState state, @Nullable NbtCompound nbt) {
 			this.pos = pos;
 			this.state = state;
-			this.tag = tag;
+			this.nbt = nbt;
 		}
 
 		public String toString() {
-			return String.format("<StructureBlockInfo | %s | %s | %s>", this.pos, this.state, this.tag);
+			return String.format("<StructureBlockInfo | %s | %s | %s>", this.pos, this.state, this.nbt);
 		}
 	}
 
 	public static class StructureEntityInfo {
 		public final Vec3d pos;
 		public final BlockPos blockPos;
-		public final NbtCompound tag;
+		public final NbtCompound nbt;
 
-		public StructureEntityInfo(Vec3d pos, BlockPos blockPos, NbtCompound tag) {
+		public StructureEntityInfo(Vec3d pos, BlockPos blockPos, NbtCompound nbt) {
 			this.pos = pos;
 			this.blockPos = blockPos;
-			this.tag = tag;
+			this.nbt = nbt;
 		}
 	}
 }

@@ -1,7 +1,7 @@
 package net.minecraft.structure;
 
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.loot.LootTables;
@@ -19,12 +19,11 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 public class BuriedTreasureGenerator {
 	public static class Piece extends StructurePiece {
 		public Piece(BlockPos pos) {
-			super(StructurePieceType.BURIED_TREASURE, 0);
-			this.boundingBox = new BlockBox(pos);
+			super(StructurePieceType.BURIED_TREASURE, 0, new BlockBox(pos));
 		}
 
-		public Piece(ServerWorld serverWorld, NbtCompound tag) {
-			super(StructurePieceType.BURIED_TREASURE, tag);
+		public Piece(ServerWorld world, NbtCompound nbt) {
+			super(StructurePieceType.BURIED_TREASURE, nbt);
 		}
 
 		@Override
@@ -41,8 +40,8 @@ public class BuriedTreasureGenerator {
 			ChunkPos chunkPos,
 			BlockPos pos
 		) {
-			int i = world.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, this.boundingBox.minX, this.boundingBox.minZ);
-			BlockPos.Mutable mutable = new BlockPos.Mutable(this.boundingBox.minX, i, this.boundingBox.minZ);
+			int i = world.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, this.boundingBox.getMinX(), this.boundingBox.getMinZ());
+			BlockPos.Mutable mutable = new BlockPos.Mutable(this.boundingBox.getMinX(), i, this.boundingBox.getMinZ());
 
 			while (mutable.getY() > world.getBottomY()) {
 				BlockState blockState = world.getBlockState(mutable);
@@ -61,9 +60,9 @@ public class BuriedTreasureGenerator {
 							BlockPos blockPos2 = blockPos.down();
 							BlockState blockState5 = world.getBlockState(blockPos2);
 							if ((blockState5.isAir() || this.isLiquid(blockState5)) && direction != Direction.UP) {
-								world.setBlockState(blockPos, blockState2, SetBlockStateFlags.DEFAULT);
+								world.setBlockState(blockPos, blockState2, Block.NOTIFY_ALL);
 							} else {
-								world.setBlockState(blockPos, blockState3, SetBlockStateFlags.DEFAULT);
+								world.setBlockState(blockPos, blockState3, Block.NOTIFY_ALL);
 							}
 						}
 					}

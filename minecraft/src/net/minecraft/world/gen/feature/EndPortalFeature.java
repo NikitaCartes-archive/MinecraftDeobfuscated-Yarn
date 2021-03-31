@@ -8,6 +8,10 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class EndPortalFeature extends Feature<DefaultFeatureConfig> {
+	public static final int field_31503 = 4;
+	public static final int field_31504 = 4;
+	public static final int field_31505 = 1;
+	public static final float field_31506 = 0.5F;
 	public static final BlockPos ORIGIN = BlockPos.ORIGIN;
 	private final boolean open;
 

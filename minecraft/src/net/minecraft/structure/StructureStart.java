@@ -4,9 +4,10 @@ import com.google.common.collect.Lists;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import javax.annotation.Nullable;
+import net.minecraft.class_6130;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -30,11 +31,10 @@ import org.apache.logging.log4j.Logger;
  * chunk generation. It contains a definition of its pieces and is associated
  * with the chunk that the structure originates from.
  */
-public abstract class StructureStart<C extends FeatureConfig> {
-	private static final Logger field_29328 = LogManager.getLogger();
-	public static final StructureStart<?> DEFAULT = new StructureStart<MineshaftFeatureConfig>(
-		StructureFeature.MINESHAFT, new ChunkPos(0, 0), BlockBox.empty(), 0, 0L
-	) {
+public abstract class StructureStart<C extends FeatureConfig> implements class_6130 {
+	private static final Logger LOGGER = LogManager.getLogger();
+	public static final String INVALID = "INVALID";
+	public static final StructureStart<?> DEFAULT = new StructureStart<MineshaftFeatureConfig>(null, new ChunkPos(0, 0), 0, 0L) {
 		public void init(
 			DynamicRegistryManager dynamicRegistryManager,
 			ChunkGenerator chunkGenerator,
@@ -45,10 +45,14 @@ public abstract class StructureStart<C extends FeatureConfig> {
 			HeightLimitView heightLimitView
 		) {
 		}
+
+		@Override
+		public boolean hasChildren() {
+			return false;
+		}
 	};
 	private final StructureFeature<C> feature;
 	protected final List<StructurePiece> children = Lists.<StructurePiece>newArrayList();
-	protected BlockBox boundingBox;
 	private final ChunkPos pos;
 	/**
 	 * The number of chunks that intersect the structures bounding box,
@@ -61,21 +65,29 @@ public abstract class StructureStart<C extends FeatureConfig> {
 	 */
 	private int references;
 	protected final ChunkRandom random;
+	@Nullable
+	private BlockBox boundingBox;
 
-	public StructureStart(StructureFeature<C> feature, ChunkPos pos, BlockBox box, int references, long worldSeed) {
+	public StructureStart(StructureFeature<C> feature, ChunkPos pos, int references, long seed) {
 		this.feature = feature;
 		this.pos = pos;
 		this.references = references;
 		this.random = new ChunkRandom();
-		this.random.setCarverSeed(worldSeed, pos.x, pos.z);
-		this.boundingBox = box;
+		this.random.setCarverSeed(seed, pos.x, pos.z);
 	}
 
 	public abstract void init(
 		DynamicRegistryManager registryManager, ChunkGenerator chunkGenerator, StructureManager manager, ChunkPos pos, Biome biome, C config, HeightLimitView world
 	);
 
-	public BlockBox getBoundingBox() {
+	public BlockBox setBoundingBoxFromChildren() {
+		if (this.boundingBox == null) {
+			synchronized (this.children) {
+				this.boundingBox = (BlockBox)BlockBox.method_35413(this.children.stream().map(StructurePiece::getBoundingBox)::iterator)
+					.orElseThrow(() -> new IllegalStateException("Unable to calculate boundingbox without pieces"));
+			}
+		}
+
 		return this.boundingBox;
 	}
 
@@ -90,7 +102,7 @@ public abstract class StructureStart<C extends FeatureConfig> {
 			if (!this.children.isEmpty()) {
 				BlockBox blockBox = ((StructurePiece)this.children.get(0)).boundingBox;
 				BlockPos blockPos = blockBox.getCenter();
-				BlockPos blockPos2 = new BlockPos(blockPos.getX(), blockBox.minY, blockPos.getZ());
+				BlockPos blockPos2 = new BlockPos(blockPos.getX(), blockBox.getMinY(), blockPos.getZ());
 				Iterator<StructurePiece> iterator = this.children.iterator();
 
 				while (iterator.hasNext()) {
@@ -100,17 +112,7 @@ public abstract class StructureStart<C extends FeatureConfig> {
 						iterator.remove();
 					}
 				}
-
-				this.setBoundingBoxFromChildren();
 			}
-		}
-	}
-
-	protected void setBoundingBoxFromChildren() {
-		this.boundingBox = BlockBox.empty();
-
-		for (StructurePiece structurePiece : this.children) {
-			this.boundingBox.encompass(structurePiece.getBoundingBox());
 		}
 	}
 
@@ -121,7 +123,6 @@ public abstract class StructureStart<C extends FeatureConfig> {
 			nbtCompound.putInt("ChunkX", chunkPos.x);
 			nbtCompound.putInt("ChunkZ", chunkPos.z);
 			nbtCompound.putInt("references", this.references);
-			BlockBox.CODEC.encodeStart(NbtOps.INSTANCE, this.boundingBox).resultOrPartial(field_29328::error).ifPresent(nbtElement -> nbtCompound.put("BB", nbtElement));
 			NbtList nbtList = new NbtList();
 			synchronized (this.children) {
 				for (StructurePiece structurePiece : this.children) {
@@ -139,21 +140,19 @@ public abstract class StructureStart<C extends FeatureConfig> {
 
 	protected void randomUpwardTranslation(int seaLevel, int i, Random random, int j) {
 		int k = seaLevel - j;
-		int l = this.boundingBox.getBlockCountY() + i + 1;
+		BlockBox blockBox = this.setBoundingBoxFromChildren();
+		int l = blockBox.getBlockCountY() + i + 1;
 		if (l < k) {
 			l += random.nextInt(k - l);
 		}
 
-		int m = l - this.boundingBox.maxY;
-		this.boundingBox.move(0, m, 0);
-
-		for (StructurePiece structurePiece : this.children) {
-			structurePiece.translate(0, m, 0);
-		}
+		int m = l - blockBox.getMaxY();
+		this.translateUpward(m);
 	}
 
 	protected void randomUpwardTranslation(Random random, int minY, int maxY) {
-		int i = maxY - minY + 1 - this.boundingBox.getBlockCountY();
+		BlockBox blockBox = this.setBoundingBoxFromChildren();
+		int i = maxY - minY + 1 - blockBox.getBlockCountY();
 		int j;
 		if (i > 1) {
 			j = minY + random.nextInt(i);
@@ -161,12 +160,20 @@ public abstract class StructureStart<C extends FeatureConfig> {
 			j = minY;
 		}
 
-		int k = j - this.boundingBox.minY;
-		this.boundingBox.move(0, k, 0);
+		int k = j - blockBox.getMinY();
+		this.translateUpward(k);
+	}
 
+	protected void translateUpward(int amount) {
 		for (StructurePiece structurePiece : this.children) {
-			structurePiece.translate(0, k, 0);
+			structurePiece.translate(0, amount, 0);
 		}
+
+		this.resetBoundingBox();
+	}
+
+	private void resetBoundingBox() {
+		this.boundingBox = null;
 	}
 
 	public boolean hasChildren() {
@@ -199,5 +206,47 @@ public abstract class StructureStart<C extends FeatureConfig> {
 
 	public StructureFeature<?> getFeature() {
 		return this.feature;
+	}
+
+	@Override
+	public void method_35462(StructurePiece structurePiece) {
+		this.children.add(structurePiece);
+		this.resetBoundingBox();
+	}
+
+	@Nullable
+	@Override
+	public StructurePiece method_35461(BlockBox blockBox) {
+		return intersects(this.children, blockBox);
+	}
+
+	public void clearChildren() {
+		this.children.clear();
+		this.resetBoundingBox();
+	}
+
+	public boolean hasNoChildren() {
+		return this.children.isEmpty();
+	}
+
+	@Nullable
+	public static StructurePiece intersects(List<StructurePiece> pieces, BlockBox box) {
+		for (StructurePiece structurePiece : pieces) {
+			if (structurePiece.getBoundingBox().intersects(box)) {
+				return structurePiece;
+			}
+		}
+
+		return null;
+	}
+
+	protected boolean contains(BlockPos pos) {
+		for (StructurePiece structurePiece : this.children) {
+			if (structurePiece.getBoundingBox().contains(pos)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

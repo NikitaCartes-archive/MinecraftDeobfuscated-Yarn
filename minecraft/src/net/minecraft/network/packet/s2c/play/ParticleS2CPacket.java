@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -74,52 +72,42 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.parameters.write(buf);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isLongDistance() {
 		return this.longDistance;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public double getX() {
 		return this.x;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public double getY() {
 		return this.y;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public double getZ() {
 		return this.z;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getOffsetX() {
 		return this.offsetX;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getOffsetY() {
 		return this.offsetY;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getOffsetZ() {
 		return this.offsetZ;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getSpeed() {
 		return this.speed;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getCount() {
 		return this.count;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public ParticleEffect getParameters() {
 		return this.parameters;
 	}

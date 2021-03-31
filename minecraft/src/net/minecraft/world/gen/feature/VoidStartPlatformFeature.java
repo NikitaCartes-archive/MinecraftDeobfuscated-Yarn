@@ -1,7 +1,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -11,6 +11,8 @@ import net.minecraft.world.gen.feature.util.FeatureContext;
 public class VoidStartPlatformFeature extends Feature<DefaultFeatureConfig> {
 	private static final BlockPos START_BLOCK = new BlockPos(8, 3, 8);
 	private static final ChunkPos START_CHUNK = new ChunkPos(START_BLOCK);
+	private static final int field_31520 = 16;
+	private static final int field_31521 = 1;
 
 	public VoidStartPlatformFeature(Codec<DefaultFeatureConfig> codec) {
 		super(codec);
@@ -35,9 +37,9 @@ public class VoidStartPlatformFeature extends Feature<DefaultFeatureConfig> {
 					if (getDistance(blockPos.getX(), blockPos.getZ(), j, i) <= 16) {
 						mutable.set(j, blockPos.getY(), i);
 						if (mutable.equals(blockPos)) {
-							structureWorldAccess.setBlockState(mutable, Blocks.COBBLESTONE.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+							structureWorldAccess.setBlockState(mutable, Blocks.COBBLESTONE.getDefaultState(), Block.NOTIFY_LISTENERS);
 						} else {
-							structureWorldAccess.setBlockState(mutable, Blocks.STONE.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+							structureWorldAccess.setBlockState(mutable, Blocks.STONE.getDefaultState(), Block.NOTIFY_LISTENERS);
 						}
 					}
 				}

@@ -3,7 +3,6 @@ package net.minecraft.nbt;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 
 /**
@@ -13,6 +12,7 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
  * and is the type of empty NBT lists.
  */
 public class NbtNull implements NbtElement {
+	private static final int field_33193 = 64;
 	public static final NbtType<NbtNull> TYPE = new NbtType<NbtNull>() {
 		public NbtNull read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) {
 			nbtTagSizeTracker.add(64L);
@@ -45,7 +45,7 @@ public class NbtNull implements NbtElement {
 
 	@Override
 	public byte getType() {
-		return (byte)NbtTypeIds.NULL;
+		return NbtElement.NULL_TYPE;
 	}
 
 	@Override

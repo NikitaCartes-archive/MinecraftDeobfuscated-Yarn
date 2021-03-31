@@ -12,8 +12,6 @@ import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.crash.CrashException;
@@ -26,6 +24,8 @@ import org.apache.logging.log4j.Logger;
 public class DataTracker {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Object2IntMap<Class<? extends Entity>> TRACKED_ENTITIES = new Object2IntOpenHashMap<>();
+	private static final int field_33377 = 255;
+	private static final int field_33378 = 254;
 	private final Entity trackedEntity;
 	private final Int2ObjectMap<DataTracker.Entry<?>> entries = new Int2ObjectOpenHashMap<>();
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
@@ -219,7 +219,6 @@ public class DataTracker {
 		return new DataTracker.Entry<>(trackedDataHandler.create(i), trackedDataHandler.read(buf));
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void writeUpdatedEntries(List<DataTracker.Entry<?>> list) {
 		this.lock.writeLock().lock();
 
@@ -235,7 +234,6 @@ public class DataTracker {
 		this.dirty = true;
 	}
 
-	@Environment(EnvType.CLIENT)
 	private <T> void copyToFrom(DataTracker.Entry<T> entry, DataTracker.Entry<?> entry2) {
 		if (!Objects.equals(entry2.data.getType(), entry.data.getType())) {
 			throw new IllegalStateException(

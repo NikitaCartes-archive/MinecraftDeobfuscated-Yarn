@@ -14,8 +14,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
@@ -97,7 +95,6 @@ public enum Direction implements StringIdentifiable {
 		return new Direction[]{first, second, third, third.getOpposite(), second.getOpposite(), first.getOpposite()};
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static Direction transform(Matrix4f matrix, Direction direction) {
 		Vec3i vec3i = direction.getVector();
 		Vector4f vector4f = new Vector4f((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ(), 0.0F);
@@ -105,7 +102,6 @@ public enum Direction implements StringIdentifiable {
 		return getFacing(vector4f.getX(), vector4f.getY(), vector4f.getZ());
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Quaternion getRotationQuaternion() {
 		Quaternion quaternion = Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F);
 		switch (this) {
@@ -156,6 +152,56 @@ public enum Direction implements StringIdentifiable {
 		return byId(this.idOpposite);
 	}
 
+	public Direction method_35833(Direction.Axis axis) {
+		switch (axis) {
+			case X:
+				if (this != WEST && this != EAST) {
+					return this.method_35835();
+				}
+
+				return this;
+			case Z:
+				if (this != NORTH && this != SOUTH) {
+					return this.method_35837();
+				}
+
+				return this;
+			case Y:
+				if (this != UP && this != DOWN) {
+					return this.rotateYClockwise();
+				}
+
+				return this;
+			default:
+				throw new IllegalStateException("Unable to get CW facing for axis " + axis);
+		}
+	}
+
+	public Direction method_35834(Direction.Axis axis) {
+		switch (axis) {
+			case X:
+				if (this != WEST && this != EAST) {
+					return this.method_35836();
+				}
+
+				return this;
+			case Z:
+				if (this != NORTH && this != SOUTH) {
+					return this.method_35838();
+				}
+
+				return this;
+			case Y:
+				if (this != UP && this != DOWN) {
+					return this.rotateYCounterclockwise();
+				}
+
+				return this;
+			default:
+				throw new IllegalStateException("Unable to get CW facing for axis " + axis);
+		}
+	}
+
 	public Direction rotateYClockwise() {
 		switch (this) {
 			case NORTH:
@@ -168,6 +214,70 @@ public enum Direction implements StringIdentifiable {
 				return SOUTH;
 			default:
 				throw new IllegalStateException("Unable to get Y-rotated facing of " + this);
+		}
+	}
+
+	private Direction method_35835() {
+		switch (this) {
+			case DOWN:
+				return SOUTH;
+			case UP:
+				return NORTH;
+			case NORTH:
+				return DOWN;
+			case SOUTH:
+				return UP;
+			default:
+				throw new IllegalStateException("Unable to get X-rotated facing of " + this);
+		}
+	}
+
+	private Direction method_35836() {
+		switch (this) {
+			case DOWN:
+				return NORTH;
+			case UP:
+				return SOUTH;
+			case NORTH:
+				return UP;
+			case SOUTH:
+				return DOWN;
+			default:
+				throw new IllegalStateException("Unable to get X-rotated facing of " + this);
+		}
+	}
+
+	private Direction method_35837() {
+		switch (this) {
+			case DOWN:
+				return WEST;
+			case UP:
+				return EAST;
+			case NORTH:
+			case SOUTH:
+			default:
+				throw new IllegalStateException("Unable to get Z-rotated facing of " + this);
+			case WEST:
+				return UP;
+			case EAST:
+				return DOWN;
+		}
+	}
+
+	private Direction method_35838() {
+		switch (this) {
+			case DOWN:
+				return EAST;
+			case UP:
+				return WEST;
+			case NORTH:
+			case SOUTH:
+			default:
+				throw new IllegalStateException("Unable to get Z-rotated facing of " + this);
+			case WEST:
+				return DOWN;
+			case EAST:
+				return UP;
 		}
 	}
 
@@ -198,7 +308,6 @@ public enum Direction implements StringIdentifiable {
 		return this.vector.getZ();
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Vec3f getUnitVector() {
 		return new Vec3f((float)this.getOffsetX(), (float)this.getOffsetY(), (float)this.getOffsetZ());
 	}
@@ -222,6 +331,11 @@ public enum Direction implements StringIdentifiable {
 
 	public static Direction fromHorizontal(int value) {
 		return HORIZONTAL[MathHelper.abs(value % HORIZONTAL.length)];
+	}
+
+	@Nullable
+	public static Direction method_35832(BlockPos blockPos) {
+		return VECTOR_TO_DIRECTION.get(blockPos.asLong());
 	}
 
 	@Nullable
@@ -412,6 +526,10 @@ public enum Direction implements StringIdentifiable {
 
 		public int offset() {
 			return this.offset;
+		}
+
+		public String method_35839() {
+			return this.description;
 		}
 
 		public String toString() {

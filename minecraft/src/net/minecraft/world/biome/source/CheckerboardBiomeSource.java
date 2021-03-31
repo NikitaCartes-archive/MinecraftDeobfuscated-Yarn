@@ -4,8 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.function.Supplier;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.world.biome.Biome;
 
 public class CheckerboardBiomeSource extends BiomeSource {
@@ -32,7 +30,6 @@ public class CheckerboardBiomeSource extends BiomeSource {
 		return CODEC;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public BiomeSource withSeed(long seed) {
 		return this;

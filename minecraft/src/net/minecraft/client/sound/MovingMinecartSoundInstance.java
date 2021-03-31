@@ -13,6 +13,11 @@ import net.minecraft.util.math.MathHelper;
  */
 @Environment(EnvType.CLIENT)
 public class MovingMinecartSoundInstance extends MovingSoundInstance {
+	private static final float field_33001 = 0.0F;
+	private static final float field_33002 = 0.7F;
+	private static final float field_33003 = 0.0F;
+	private static final float field_33004 = 1.0F;
+	private static final float field_33005 = 0.0025F;
 	private final AbstractMinecartEntity minecart;
 	private float distance = 0.0F;
 

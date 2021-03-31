@@ -23,12 +23,14 @@ public class ItemStringReader {
 	public static final DynamicCommandExceptionType ID_INVALID_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableText("argument.item.id.invalid", object)
 	);
+	private static final char field_33066 = '{';
+	private static final char field_33067 = '#';
 	private static final BiFunction<SuggestionsBuilder, TagGroup<Item>, CompletableFuture<Suggestions>> NBT_SUGGESTION_PROVIDER = (suggestionsBuilder, tagGroup) -> suggestionsBuilder.buildFuture();
 	private final StringReader reader;
 	private final boolean allowTag;
 	private Item item;
 	@Nullable
-	private NbtCompound tag;
+	private NbtCompound nbt;
 	private Identifier id = new Identifier("");
 	private int cursor;
 	private BiFunction<SuggestionsBuilder, TagGroup<Item>, CompletableFuture<Suggestions>> suggestions = NBT_SUGGESTION_PROVIDER;
@@ -43,8 +45,8 @@ public class ItemStringReader {
 	}
 
 	@Nullable
-	public NbtCompound getTag() {
-		return this.tag;
+	public NbtCompound getNbt() {
+		return this.nbt;
 	}
 
 	public Identifier getId() {
@@ -72,7 +74,7 @@ public class ItemStringReader {
 	}
 
 	public void readNbt() throws CommandSyntaxException {
-		this.tag = new StringNbtReader(this.reader).parseCompound();
+		this.nbt = new StringNbtReader(this.reader).parseCompound();
 	}
 
 	public ItemStringReader consume() throws CommandSyntaxException {

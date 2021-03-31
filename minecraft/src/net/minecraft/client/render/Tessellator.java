@@ -6,6 +6,8 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class Tessellator {
+	private static final int field_32051 = 8388608;
+	private static final int field_32052 = 2097152;
 	private final BufferBuilder buffer;
 	private static final Tessellator INSTANCE = new Tessellator();
 

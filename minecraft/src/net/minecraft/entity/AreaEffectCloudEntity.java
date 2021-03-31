@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.command.argument.ParticleEffectArgumentType;
 import net.minecraft.entity.data.DataTracker;
@@ -16,6 +15,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -33,10 +33,12 @@ import org.apache.logging.log4j.Logger;
 
 public class AreaEffectCloudEntity extends Entity {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int field_29972 = 5;
 	private static final TrackedData<Float> RADIUS = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Integer> COLOR = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> WAITING = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<ParticleEffect> PARTICLE_ID = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.PARTICLE);
+	private static final float field_29971 = 32.0F;
 	private Potion potion = Potions.EMPTY;
 	private final List<StatusEffectInstance> effects = Lists.<StatusEffectInstance>newArrayList();
 	private final Map<Entity, Integer> affectedEntities = Maps.<Entity, Integer>newHashMap();
@@ -305,12 +307,32 @@ public class AreaEffectCloudEntity extends Entity {
 		}
 	}
 
+	public float method_35044() {
+		return this.radiusOnUse;
+	}
+
 	public void setRadiusOnUse(float radius) {
 		this.radiusOnUse = radius;
 	}
 
+	public float method_35045() {
+		return this.radiusGrowth;
+	}
+
 	public void setRadiusGrowth(float growth) {
 		this.radiusGrowth = growth;
+	}
+
+	public int method_35046() {
+		return this.durationOnUse;
+	}
+
+	public void method_35043(int i) {
+		this.durationOnUse = i;
+	}
+
+	public int method_35047() {
+		return this.waitTime;
 	}
 
 	public void setWaitTime(int ticks) {
@@ -335,37 +357,37 @@ public class AreaEffectCloudEntity extends Entity {
 	}
 
 	@Override
-	protected void readCustomDataFromNbt(NbtCompound tag) {
-		this.age = tag.getInt("Age");
-		this.duration = tag.getInt("Duration");
-		this.waitTime = tag.getInt("WaitTime");
-		this.reapplicationDelay = tag.getInt("ReapplicationDelay");
-		this.durationOnUse = tag.getInt("DurationOnUse");
-		this.radiusOnUse = tag.getFloat("RadiusOnUse");
-		this.radiusGrowth = tag.getFloat("RadiusPerTick");
-		this.setRadius(tag.getFloat("Radius"));
-		if (tag.containsUuid("Owner")) {
-			this.ownerUuid = tag.getUuid("Owner");
+	protected void readCustomDataFromNbt(NbtCompound nbt) {
+		this.age = nbt.getInt("Age");
+		this.duration = nbt.getInt("Duration");
+		this.waitTime = nbt.getInt("WaitTime");
+		this.reapplicationDelay = nbt.getInt("ReapplicationDelay");
+		this.durationOnUse = nbt.getInt("DurationOnUse");
+		this.radiusOnUse = nbt.getFloat("RadiusOnUse");
+		this.radiusGrowth = nbt.getFloat("RadiusPerTick");
+		this.setRadius(nbt.getFloat("Radius"));
+		if (nbt.containsUuid("Owner")) {
+			this.ownerUuid = nbt.getUuid("Owner");
 		}
 
-		if (tag.contains("Particle", NbtTypeIds.STRING)) {
+		if (nbt.contains("Particle", NbtElement.STRING_TYPE)) {
 			try {
-				this.setParticleType(ParticleEffectArgumentType.readParameters(new StringReader(tag.getString("Particle"))));
+				this.setParticleType(ParticleEffectArgumentType.readParameters(new StringReader(nbt.getString("Particle"))));
 			} catch (CommandSyntaxException var5) {
-				LOGGER.warn("Couldn't load custom particle {}", tag.getString("Particle"), var5);
+				LOGGER.warn("Couldn't load custom particle {}", nbt.getString("Particle"), var5);
 			}
 		}
 
-		if (tag.contains("Color", NbtTypeIds.NUMBER)) {
-			this.setColor(tag.getInt("Color"));
+		if (nbt.contains("Color", NbtElement.NUMBER_TYPE)) {
+			this.setColor(nbt.getInt("Color"));
 		}
 
-		if (tag.contains("Potion", NbtTypeIds.STRING)) {
-			this.setPotion(PotionUtil.getPotion(tag));
+		if (nbt.contains("Potion", NbtElement.STRING_TYPE)) {
+			this.setPotion(PotionUtil.getPotion(nbt));
 		}
 
-		if (tag.contains("Effects", NbtTypeIds.LIST)) {
-			NbtList nbtList = tag.getList("Effects", NbtTypeIds.COMPOUND);
+		if (nbt.contains("Effects", NbtElement.LIST_TYPE)) {
+			NbtList nbtList = nbt.getList("Effects", NbtElement.COMPOUND_TYPE);
 			this.effects.clear();
 
 			for (int i = 0; i < nbtList.size(); i++) {
@@ -378,26 +400,26 @@ public class AreaEffectCloudEntity extends Entity {
 	}
 
 	@Override
-	protected void writeCustomDataToNbt(NbtCompound tag) {
-		tag.putInt("Age", this.age);
-		tag.putInt("Duration", this.duration);
-		tag.putInt("WaitTime", this.waitTime);
-		tag.putInt("ReapplicationDelay", this.reapplicationDelay);
-		tag.putInt("DurationOnUse", this.durationOnUse);
-		tag.putFloat("RadiusOnUse", this.radiusOnUse);
-		tag.putFloat("RadiusPerTick", this.radiusGrowth);
-		tag.putFloat("Radius", this.getRadius());
-		tag.putString("Particle", this.getParticleType().asString());
+	protected void writeCustomDataToNbt(NbtCompound nbt) {
+		nbt.putInt("Age", this.age);
+		nbt.putInt("Duration", this.duration);
+		nbt.putInt("WaitTime", this.waitTime);
+		nbt.putInt("ReapplicationDelay", this.reapplicationDelay);
+		nbt.putInt("DurationOnUse", this.durationOnUse);
+		nbt.putFloat("RadiusOnUse", this.radiusOnUse);
+		nbt.putFloat("RadiusPerTick", this.radiusGrowth);
+		nbt.putFloat("Radius", this.getRadius());
+		nbt.putString("Particle", this.getParticleType().asString());
 		if (this.ownerUuid != null) {
-			tag.putUuid("Owner", this.ownerUuid);
+			nbt.putUuid("Owner", this.ownerUuid);
 		}
 
 		if (this.customColor) {
-			tag.putInt("Color", this.getColor());
+			nbt.putInt("Color", this.getColor());
 		}
 
 		if (this.potion != Potions.EMPTY) {
-			tag.putString("Potion", Registry.POTION.getId(this.potion).toString());
+			nbt.putString("Potion", Registry.POTION.getId(this.potion).toString());
 		}
 
 		if (!this.effects.isEmpty()) {
@@ -407,7 +429,7 @@ public class AreaEffectCloudEntity extends Entity {
 				nbtList.add(statusEffectInstance.writeNbt(new NbtCompound()));
 			}
 
-			tag.put("Effects", nbtList);
+			nbt.put("Effects", nbtList);
 		}
 	}
 
@@ -418,6 +440,10 @@ public class AreaEffectCloudEntity extends Entity {
 		}
 
 		super.onTrackedDataSet(data);
+	}
+
+	public Potion method_35048() {
+		return this.potion;
 	}
 
 	@Override

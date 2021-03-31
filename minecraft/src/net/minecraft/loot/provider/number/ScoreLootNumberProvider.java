@@ -6,6 +6,7 @@ import com.google.gson.JsonSerializationContext;
 import java.util.Set;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
+import net.minecraft.loot.provider.score.ContextLootScoreProvider;
 import net.minecraft.loot.provider.score.LootScoreProvider;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
@@ -31,6 +32,14 @@ public class ScoreLootNumberProvider implements LootNumberProvider {
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
 		return this.target.getRequiredParameters();
+	}
+
+	public static ScoreLootNumberProvider create(LootContext.EntityTarget target, String score) {
+		return create(target, score, 1.0F);
+	}
+
+	public static ScoreLootNumberProvider create(LootContext.EntityTarget target, String score, float scale) {
+		return new ScoreLootNumberProvider(ContextLootScoreProvider.create(target), score, scale);
 	}
 
 	@Override

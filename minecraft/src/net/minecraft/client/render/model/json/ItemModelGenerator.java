@@ -16,6 +16,8 @@ import net.minecraft.util.math.Vec3f;
 @Environment(EnvType.CLIENT)
 public class ItemModelGenerator {
 	public static final List<String> LAYERS = Lists.<String>newArrayList("layer0", "layer1", "layer2", "layer3", "layer4");
+	private static final float field_32806 = 7.5F;
+	private static final float field_32807 = 8.5F;
 
 	public JsonUnbakedModel create(Function<SpriteIdentifier, Sprite> textureGetter, JsonUnbakedModel blockModel) {
 		Map<String, Either<SpriteIdentifier, String>> map = Maps.<String, Either<SpriteIdentifier, String>>newHashMap();

@@ -1,8 +1,6 @@
 package net.minecraft.entity.passive;
 
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityDimensions;
@@ -43,6 +41,8 @@ import net.minecraft.world.event.GameEvent;
 
 public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAttackMob {
 	private static final TrackedData<Byte> SNOW_GOLEM_FLAGS = DataTracker.registerData(SnowGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
+	private static final byte field_30373 = 16;
+	private static final float field_30374 = 1.7F;
 
 	public SnowGolemEntity(EntityType<? extends SnowGolemEntity> entityType, World world) {
 		super(entityType, world);
@@ -68,16 +68,16 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putBoolean("Pumpkin", this.hasPumpkin());
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putBoolean("Pumpkin", this.hasPumpkin());
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		if (tag.contains("Pumpkin")) {
-			this.setHasPumpkin(tag.getBoolean("Pumpkin"));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		if (nbt.contains("Pumpkin")) {
+			this.setHasPumpkin(nbt.getBoolean("Pumpkin"));
 		}
 	}
 
@@ -196,7 +196,6 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 		return SoundEvents.ENTITY_SNOW_GOLEM_DEATH;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public Vec3d method_29919() {
 		return new Vec3d(0.0, (double)(0.75F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));

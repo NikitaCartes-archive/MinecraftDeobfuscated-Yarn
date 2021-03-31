@@ -38,8 +38,8 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.setShaderTexture(0, TEXTURE);
-		int i = this.x;
-		int j = this.y;
+		int i = this.field_2776;
+		int j = this.field_2800;
 		this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		ItemStack itemStack = this.handler.getSlot(1).getStack();
 		boolean bl = itemStack.isOf(Items.MAP);
@@ -74,8 +74,8 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 	}
 
 	private void drawMap(MatrixStack matrices, @Nullable Integer integer, @Nullable MapState mapState, boolean bl, boolean bl2, boolean bl3, boolean bl4) {
-		int i = this.x;
-		int j = this.y;
+		int i = this.field_2776;
+		int j = this.field_2800;
 		if (bl2 && !bl4) {
 			this.drawTexture(matrices, i + 67, j + 13, this.backgroundWidth, 66, 66, 66);
 			this.drawMap(matrices, integer, mapState, i + 85, j + 31, 0.226F);

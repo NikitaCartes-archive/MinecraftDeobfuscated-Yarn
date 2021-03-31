@@ -2,7 +2,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SeaPickleBlock;
@@ -23,7 +23,7 @@ public class SeaPickleFeature extends Feature<CountConfig> {
 		Random random = context.getRandom();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		BlockPos blockPos = context.getOrigin();
-		int j = context.getConfig().getCount().getValue(random);
+		int j = context.getConfig().getCount().get(random);
 
 		for (int k = 0; k < j; k++) {
 			int l = random.nextInt(8) - random.nextInt(8);
@@ -32,7 +32,7 @@ public class SeaPickleFeature extends Feature<CountConfig> {
 			BlockPos blockPos2 = new BlockPos(blockPos.getX() + l, n, blockPos.getZ() + m);
 			BlockState blockState = Blocks.SEA_PICKLE.getDefaultState().with(SeaPickleBlock.PICKLES, Integer.valueOf(random.nextInt(4) + 1));
 			if (structureWorldAccess.getBlockState(blockPos2).isOf(Blocks.WATER) && blockState.canPlaceAt(structureWorldAccess, blockPos2)) {
-				structureWorldAccess.setBlockState(blockPos2, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
+				structureWorldAccess.setBlockState(blockPos2, blockState, Block.NOTIFY_LISTENERS);
 				i++;
 			}
 		}

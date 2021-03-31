@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
@@ -61,7 +60,7 @@ public class GrassBlock extends SpreadableBlock implements Fertilizable {
 				}
 
 				if (blockState3.canPlaceAt(world, blockPos2)) {
-					world.setBlockState(blockPos2, blockState3, SetBlockStateFlags.DEFAULT);
+					world.setBlockState(blockPos2, blockState3, Block.NOTIFY_ALL);
 				}
 			}
 		}

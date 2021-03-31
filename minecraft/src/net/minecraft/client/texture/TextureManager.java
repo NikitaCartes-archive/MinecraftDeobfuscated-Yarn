@@ -2,6 +2,7 @@ package net.minecraft.client.texture;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.util.Iterator;
@@ -156,7 +157,7 @@ public class TextureManager implements ResourceReloader, TextureTickListener, Au
 	public void destroyTexture(Identifier id) {
 		AbstractTexture abstractTexture = this.method_34590(id, MissingSprite.getMissingSpriteTexture());
 		if (abstractTexture != MissingSprite.getMissingSpriteTexture()) {
-			TextureUtil.deleteId(abstractTexture.getGlId());
+			TextureUtil.releaseTextureId(abstractTexture.getGlId());
 		}
 	}
 

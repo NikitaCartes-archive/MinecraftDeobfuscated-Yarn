@@ -1,5 +1,6 @@
 package net.minecraft.world.biome.layer;
 
+import net.minecraft.world.biome.BiomeIds;
 import net.minecraft.world.biome.layer.type.MergingLayer;
 import net.minecraft.world.biome.layer.util.IdentityCoordinateTransformer;
 import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
@@ -22,32 +23,32 @@ public enum ApplyOceanTemperatureLayer implements MergingLayer, IdentityCoordina
 				for (int n = -8; n <= 8; n += 4) {
 					int o = sampler1.sample(this.transformX(x + m), this.transformZ(z + n));
 					if (!BiomeLayers.isOcean(o)) {
-						if (j == 44) {
-							return 45;
+						if (j == BiomeIds.WARM_OCEAN) {
+							return BiomeIds.LUKEWARM_OCEAN;
 						}
 
-						if (j == 10) {
-							return 46;
+						if (j == BiomeIds.FROZEN_OCEAN) {
+							return BiomeIds.COLD_OCEAN;
 						}
 					}
 				}
 			}
 
-			if (i == 24) {
-				if (j == 45) {
-					return 48;
+			if (i == BiomeIds.DEEP_OCEAN) {
+				if (j == BiomeIds.LUKEWARM_OCEAN) {
+					return BiomeIds.DEEP_LUKEWARM_OCEAN;
 				}
 
 				if (j == 0) {
-					return 24;
+					return BiomeIds.DEEP_OCEAN;
 				}
 
-				if (j == 46) {
-					return 49;
+				if (j == BiomeIds.COLD_OCEAN) {
+					return BiomeIds.DEEP_COLD_OCEAN;
 				}
 
-				if (j == 10) {
-					return 50;
+				if (j == BiomeIds.FROZEN_OCEAN) {
+					return BiomeIds.DEEP_FROZEN_OCEAN;
 				}
 			}
 

@@ -1,7 +1,5 @@
 package net.minecraft.entity.mob;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.raid.RaiderEntity;
@@ -22,7 +20,6 @@ public abstract class IllagerEntity extends RaiderEntity {
 		return EntityGroup.ILLAGER;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public IllagerEntity.State getState() {
 		return IllagerEntity.State.CROSSED;
 	}
@@ -38,7 +35,6 @@ public abstract class IllagerEntity extends RaiderEntity {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static enum State {
 		CROSSED,
 		ATTACKING,

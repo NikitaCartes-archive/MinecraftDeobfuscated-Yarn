@@ -4,11 +4,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
@@ -55,37 +53,37 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		return this.lastOutput == null ? LiteralText.EMPTY : this.lastOutput;
 	}
 
-	public NbtCompound writeNbt(NbtCompound tag) {
-		tag.putString("Command", this.command);
-		tag.putInt("SuccessCount", this.successCount);
-		tag.putString("CustomName", Text.Serializer.toJson(this.customName));
-		tag.putBoolean("TrackOutput", this.trackOutput);
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		nbt.putString("Command", this.command);
+		nbt.putInt("SuccessCount", this.successCount);
+		nbt.putString("CustomName", Text.Serializer.toJson(this.customName));
+		nbt.putBoolean("TrackOutput", this.trackOutput);
 		if (this.lastOutput != null && this.trackOutput) {
-			tag.putString("LastOutput", Text.Serializer.toJson(this.lastOutput));
+			nbt.putString("LastOutput", Text.Serializer.toJson(this.lastOutput));
 		}
 
-		tag.putBoolean("UpdateLastExecution", this.updateLastExecution);
+		nbt.putBoolean("UpdateLastExecution", this.updateLastExecution);
 		if (this.updateLastExecution && this.lastExecution > 0L) {
-			tag.putLong("LastExecution", this.lastExecution);
+			nbt.putLong("LastExecution", this.lastExecution);
 		}
 
-		return tag;
+		return nbt;
 	}
 
-	public void readNbt(NbtCompound tag) {
-		this.command = tag.getString("Command");
-		this.successCount = tag.getInt("SuccessCount");
-		if (tag.contains("CustomName", NbtTypeIds.STRING)) {
-			this.setCustomName(Text.Serializer.fromJson(tag.getString("CustomName")));
+	public void readNbt(NbtCompound nbt) {
+		this.command = nbt.getString("Command");
+		this.successCount = nbt.getInt("SuccessCount");
+		if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
+			this.setCustomName(Text.Serializer.fromJson(nbt.getString("CustomName")));
 		}
 
-		if (tag.contains("TrackOutput", NbtTypeIds.BYTE)) {
-			this.trackOutput = tag.getBoolean("TrackOutput");
+		if (nbt.contains("TrackOutput", NbtElement.BYTE_TYPE)) {
+			this.trackOutput = nbt.getBoolean("TrackOutput");
 		}
 
-		if (tag.contains("LastOutput", NbtTypeIds.STRING) && this.trackOutput) {
+		if (nbt.contains("LastOutput", NbtElement.STRING_TYPE) && this.trackOutput) {
 			try {
-				this.lastOutput = Text.Serializer.fromJson(tag.getString("LastOutput"));
+				this.lastOutput = Text.Serializer.fromJson(nbt.getString("LastOutput"));
 			} catch (Throwable var3) {
 				this.lastOutput = new LiteralText(var3.getMessage());
 			}
@@ -93,12 +91,12 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 			this.lastOutput = null;
 		}
 
-		if (tag.contains("UpdateLastExecution")) {
-			this.updateLastExecution = tag.getBoolean("UpdateLastExecution");
+		if (nbt.contains("UpdateLastExecution")) {
+			this.updateLastExecution = nbt.getBoolean("UpdateLastExecution");
 		}
 
-		if (this.updateLastExecution && tag.contains("LastExecution")) {
-			this.lastExecution = tag.getLong("LastExecution");
+		if (this.updateLastExecution && nbt.contains("LastExecution")) {
+			this.lastExecution = nbt.getLong("LastExecution");
 		} else {
 			this.lastExecution = -1L;
 		}
@@ -183,7 +181,6 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		this.trackOutput = trackOutput;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isTrackingOutput() {
 		return this.trackOutput;
 	}
@@ -200,7 +197,6 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public abstract Vec3d getPos();
 
 	public abstract ServerCommandSource getSource();

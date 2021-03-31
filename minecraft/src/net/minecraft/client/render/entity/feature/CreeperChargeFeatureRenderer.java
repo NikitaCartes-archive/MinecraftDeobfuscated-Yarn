@@ -14,11 +14,9 @@ public class CreeperChargeFeatureRenderer extends EnergySwirlOverlayFeatureRende
 	private static final Identifier SKIN = new Identifier("textures/entity/creeper/creeper_armor.png");
 	private final CreeperEntityModel<CreeperEntity> model;
 
-	public CreeperChargeFeatureRenderer(
-		FeatureRendererContext<CreeperEntity, CreeperEntityModel<CreeperEntity>> featureRendererContext, EntityModelLoader entityModelLoader
-	) {
-		super(featureRendererContext);
-		this.model = new CreeperEntityModel<>(entityModelLoader.getModelPart(EntityModelLayers.CREEPER_ARMOR));
+	public CreeperChargeFeatureRenderer(FeatureRendererContext<CreeperEntity, CreeperEntityModel<CreeperEntity>> context, EntityModelLoader loader) {
+		super(context);
+		this.model = new CreeperEntityModel<>(loader.getModelPart(EntityModelLayers.CREEPER_ARMOR));
 	}
 
 	@Override

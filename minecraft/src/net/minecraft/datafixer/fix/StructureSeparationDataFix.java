@@ -25,6 +25,15 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 public class StructureSeparationDataFix extends DataFix {
+	private static final String field_29915 = "minecraft:village";
+	private static final String field_29916 = "minecraft:desert_pyramid";
+	private static final String field_29917 = "minecraft:igloo";
+	private static final String field_29918 = "minecraft:jungle_pyramid";
+	private static final String field_29919 = "minecraft:swamp_hut";
+	private static final String field_29920 = "minecraft:pillager_outpost";
+	private static final String field_29921 = "minecraft:endcity";
+	private static final String field_29922 = "minecraft:mansion";
+	private static final String field_29923 = "minecraft:monument";
 	private static final ImmutableMap<String, StructureSeparationDataFix.Information> STRUCTURE_SPACING = ImmutableMap.<String, StructureSeparationDataFix.Information>builder()
 		.put("minecraft:village", new StructureSeparationDataFix.Information(32, 8, 10387312))
 		.put("minecraft:desert_pyramid", new StructureSeparationDataFix.Information(32, 8, 14357617))

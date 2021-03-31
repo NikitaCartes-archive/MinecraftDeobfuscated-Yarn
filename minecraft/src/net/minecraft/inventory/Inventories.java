@@ -2,9 +2,9 @@ package net.minecraft.inventory;
 
 import java.util.List;
 import java.util.function.Predicate;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.collection.DefaultedList;
 
@@ -19,11 +19,11 @@ public class Inventories {
 		return slot >= 0 && slot < stacks.size() ? (ItemStack)stacks.set(slot, ItemStack.EMPTY) : ItemStack.EMPTY;
 	}
 
-	public static NbtCompound writeNbt(NbtCompound tag, DefaultedList<ItemStack> stacks) {
-		return writeNbt(tag, stacks, true);
+	public static NbtCompound writeNbt(NbtCompound nbt, DefaultedList<ItemStack> stacks) {
+		return writeNbt(nbt, stacks, true);
 	}
 
-	public static NbtCompound writeNbt(NbtCompound tag, DefaultedList<ItemStack> stacks, boolean setIfEmpty) {
+	public static NbtCompound writeNbt(NbtCompound nbt, DefaultedList<ItemStack> stacks, boolean setIfEmpty) {
 		NbtList nbtList = new NbtList();
 
 		for (int i = 0; i < stacks.size(); i++) {
@@ -37,14 +37,14 @@ public class Inventories {
 		}
 
 		if (!nbtList.isEmpty() || setIfEmpty) {
-			tag.put("Items", nbtList);
+			nbt.put("Items", nbtList);
 		}
 
-		return tag;
+		return nbt;
 	}
 
-	public static void readNbt(NbtCompound tag, DefaultedList<ItemStack> stacks) {
-		NbtList nbtList = tag.getList("Items", NbtTypeIds.COMPOUND);
+	public static void readNbt(NbtCompound nbt, DefaultedList<ItemStack> stacks) {
+		NbtList nbtList = nbt.getList("Items", NbtElement.COMPOUND_TYPE);
 
 		for (int i = 0; i < nbtList.size(); i++) {
 			NbtCompound nbtCompound = nbtList.getCompound(i);

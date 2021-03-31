@@ -19,15 +19,15 @@ public class DesertTempleGenerator extends StructurePieceWithDimensions {
 	private final boolean[] hasPlacedChest = new boolean[4];
 
 	public DesertTempleGenerator(Random random, int x, int z) {
-		super(StructurePieceType.DESERT_TEMPLE, random, x, 64, z, 21, 15, 21);
+		super(StructurePieceType.DESERT_TEMPLE, x, 64, z, 21, 15, 21, method_35457(random));
 	}
 
-	public DesertTempleGenerator(ServerWorld serverWorld, NbtCompound tag) {
-		super(StructurePieceType.DESERT_TEMPLE, tag);
-		this.hasPlacedChest[0] = tag.getBoolean("hasPlacedChest0");
-		this.hasPlacedChest[1] = tag.getBoolean("hasPlacedChest1");
-		this.hasPlacedChest[2] = tag.getBoolean("hasPlacedChest2");
-		this.hasPlacedChest[3] = tag.getBoolean("hasPlacedChest3");
+	public DesertTempleGenerator(ServerWorld world, NbtCompound nbt) {
+		super(StructurePieceType.DESERT_TEMPLE, nbt);
+		this.hasPlacedChest[0] = nbt.getBoolean("hasPlacedChest0");
+		this.hasPlacedChest[1] = nbt.getBoolean("hasPlacedChest1");
+		this.hasPlacedChest[2] = nbt.getBoolean("hasPlacedChest2");
+		this.hasPlacedChest[3] = nbt.getBoolean("hasPlacedChest3");
 	}
 
 	@Override

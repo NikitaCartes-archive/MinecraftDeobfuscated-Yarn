@@ -19,8 +19,6 @@ import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resource.JsonDataLoader;
@@ -64,6 +62,10 @@ public class RecipeManager extends JsonDataLoader {
 			.stream()
 			.collect(ImmutableMap.toImmutableMap(Entry::getKey, entryx -> ((Builder)entryx.getValue()).build()));
 		LOGGER.info("Loaded {} recipes", map2.size());
+	}
+
+	public boolean method_35227() {
+		return this.errored;
 	}
 
 	public <C extends Inventory, T extends Recipe<C>> Optional<T> getFirstMatch(RecipeType<T> type, C inventory, World world) {
@@ -126,7 +128,6 @@ public class RecipeManager extends JsonDataLoader {
 			.read(id, json);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void setRecipes(Iterable<Recipe<?>> recipes) {
 		this.errored = false;
 		Map<RecipeType<?>, Map<Identifier, Recipe<?>>> map = Maps.<RecipeType<?>, Map<Identifier, Recipe<?>>>newHashMap();

@@ -19,6 +19,13 @@ public class KeyBinding implements Comparable<KeyBinding> {
 	private static final Map<String, KeyBinding> keysById = Maps.<String, KeyBinding>newHashMap();
 	private static final Map<InputUtil.Key, KeyBinding> keyToBindings = Maps.<InputUtil.Key, KeyBinding>newHashMap();
 	private static final Set<String> keyCategories = Sets.<String>newHashSet();
+	public static final String field_32136 = "key.categories.movement";
+	public static final String field_32137 = "key.categories.misc";
+	public static final String field_32138 = "key.categories.multiplayer";
+	public static final String field_32139 = "key.categories.gameplay";
+	public static final String field_32140 = "key.categories.inventory";
+	public static final String field_32141 = "key.categories.ui";
+	public static final String field_32142 = "key.categories.creative";
 	private static final Map<String, Integer> categoryOrderMap = Util.make(Maps.<String, Integer>newHashMap(), hashMap -> {
 		hashMap.put("key.categories.movement", 1);
 		hashMap.put("key.categories.gameplay", 2);

@@ -1,8 +1,8 @@
 package net.minecraft.village;
 
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.MathHelper;
 
@@ -18,31 +18,31 @@ public class TradeOffer {
 	private float priceMultiplier;
 	private int merchantExperience = 1;
 
-	public TradeOffer(NbtCompound tag) {
-		this.firstBuyItem = ItemStack.fromNbt(tag.getCompound("buy"));
-		this.secondBuyItem = ItemStack.fromNbt(tag.getCompound("buyB"));
-		this.sellItem = ItemStack.fromNbt(tag.getCompound("sell"));
-		this.uses = tag.getInt("uses");
-		if (tag.contains("maxUses", NbtTypeIds.NUMBER)) {
-			this.maxUses = tag.getInt("maxUses");
+	public TradeOffer(NbtCompound nbt) {
+		this.firstBuyItem = ItemStack.fromNbt(nbt.getCompound("buy"));
+		this.secondBuyItem = ItemStack.fromNbt(nbt.getCompound("buyB"));
+		this.sellItem = ItemStack.fromNbt(nbt.getCompound("sell"));
+		this.uses = nbt.getInt("uses");
+		if (nbt.contains("maxUses", NbtElement.NUMBER_TYPE)) {
+			this.maxUses = nbt.getInt("maxUses");
 		} else {
 			this.maxUses = 4;
 		}
 
-		if (tag.contains("rewardExp", NbtTypeIds.BYTE)) {
-			this.rewardingPlayerExperience = tag.getBoolean("rewardExp");
+		if (nbt.contains("rewardExp", NbtElement.BYTE_TYPE)) {
+			this.rewardingPlayerExperience = nbt.getBoolean("rewardExp");
 		}
 
-		if (tag.contains("xp", NbtTypeIds.INT)) {
-			this.merchantExperience = tag.getInt("xp");
+		if (nbt.contains("xp", NbtElement.INT_TYPE)) {
+			this.merchantExperience = nbt.getInt("xp");
 		}
 
-		if (tag.contains("priceMultiplier", NbtTypeIds.FLOAT)) {
-			this.priceMultiplier = tag.getFloat("priceMultiplier");
+		if (nbt.contains("priceMultiplier", NbtElement.FLOAT_TYPE)) {
+			this.priceMultiplier = nbt.getFloat("priceMultiplier");
 		}
 
-		this.specialPrice = tag.getInt("specialPrice");
-		this.demandBonus = tag.getInt("demand");
+		this.specialPrice = nbt.getInt("specialPrice");
+		this.demandBonus = nbt.getInt("demand");
 	}
 
 	public TradeOffer(ItemStack buyItem, ItemStack sellItem, int maxUses, int merchantExperience, float priceMultiplier) {

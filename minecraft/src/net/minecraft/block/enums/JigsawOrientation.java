@@ -3,6 +3,7 @@ package net.minecraft.block.enums;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
 
 public enum JigsawOrientation implements StringIdentifiable {
@@ -19,13 +20,17 @@ public enum JigsawOrientation implements StringIdentifiable {
 	NORTH_UP("north_up", Direction.NORTH, Direction.UP),
 	SOUTH_UP("south_up", Direction.SOUTH, Direction.UP);
 
-	private static final Int2ObjectMap<JigsawOrientation> BY_INDEX = new Int2ObjectOpenHashMap<>(values().length);
+	private static final Int2ObjectMap<JigsawOrientation> BY_INDEX = Util.make(new Int2ObjectOpenHashMap<>(values().length), int2ObjectOpenHashMap -> {
+		for (JigsawOrientation jigsawOrientation : values()) {
+			int2ObjectOpenHashMap.put(getIndex(jigsawOrientation.facing, jigsawOrientation.rotation), jigsawOrientation);
+		}
+	});
 	private final String name;
 	private final Direction rotation;
 	private final Direction facing;
 
 	private static int getIndex(Direction facing, Direction rotation) {
-		return facing.ordinal() << 3 | rotation.ordinal();
+		return rotation.ordinal() << 3 | facing.ordinal();
 	}
 
 	private JigsawOrientation(String name, Direction facing, Direction rotation) {
@@ -40,7 +45,7 @@ public enum JigsawOrientation implements StringIdentifiable {
 	}
 
 	public static JigsawOrientation byDirections(Direction facing, Direction rotation) {
-		int i = getIndex(rotation, facing);
+		int i = getIndex(facing, rotation);
 		return BY_INDEX.get(i);
 	}
 
@@ -50,11 +55,5 @@ public enum JigsawOrientation implements StringIdentifiable {
 
 	public Direction getRotation() {
 		return this.rotation;
-	}
-
-	static {
-		for (JigsawOrientation jigsawOrientation : values()) {
-			BY_INDEX.put(getIndex(jigsawOrientation.rotation, jigsawOrientation.facing), jigsawOrientation);
-		}
 	}
 }

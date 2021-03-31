@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -34,17 +32,14 @@ public class ExperienceBarUpdateS2CPacket implements Packet<ClientPlayPacketList
 		clientPlayPacketListener.onExperienceBarUpdate(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getBarProgress() {
 		return this.barProgress;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getExperienceLevel() {
 		return this.experienceLevel;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getExperience() {
 		return this.experience;
 	}

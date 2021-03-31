@@ -4,8 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
 import java.util.Map;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Util;
@@ -35,7 +33,6 @@ public final class RecipeBookOptions {
 		}));
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isGuiOpen(RecipeBookCategory category) {
 		return ((RecipeBookOptions.CategoryOption)this.categoryOptions.get(category)).guiOpen;
 	}
@@ -44,7 +41,6 @@ public final class RecipeBookOptions {
 		((RecipeBookOptions.CategoryOption)this.categoryOptions.get(category)).guiOpen = open;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isFilteringCraftable(RecipeBookCategory category) {
 		return ((RecipeBookOptions.CategoryOption)this.categoryOptions.get(category)).filteringCraftable;
 	}
@@ -78,21 +74,21 @@ public final class RecipeBookOptions {
 		}
 	}
 
-	public static RecipeBookOptions fromNbt(NbtCompound tag) {
+	public static RecipeBookOptions fromNbt(NbtCompound nbt) {
 		Map<RecipeBookCategory, RecipeBookOptions.CategoryOption> map = Maps.newEnumMap(RecipeBookCategory.class);
 		CATEGORY_OPTION_NAMES.forEach((category, pair) -> {
-			boolean bl = tag.getBoolean((String)pair.getFirst());
-			boolean bl2 = tag.getBoolean((String)pair.getSecond());
+			boolean bl = nbt.getBoolean((String)pair.getFirst());
+			boolean bl2 = nbt.getBoolean((String)pair.getSecond());
 			map.put(category, new RecipeBookOptions.CategoryOption(bl, bl2));
 		});
 		return new RecipeBookOptions(map);
 	}
 
-	public void writeNbt(NbtCompound tag) {
+	public void writeNbt(NbtCompound nbt) {
 		CATEGORY_OPTION_NAMES.forEach((category, pair) -> {
 			RecipeBookOptions.CategoryOption categoryOption = (RecipeBookOptions.CategoryOption)this.categoryOptions.get(category);
-			tag.putBoolean((String)pair.getFirst(), categoryOption.guiOpen);
-			tag.putBoolean((String)pair.getSecond(), categoryOption.filteringCraftable);
+			nbt.putBoolean((String)pair.getFirst(), categoryOption.guiOpen);
+			nbt.putBoolean((String)pair.getSecond(), categoryOption.filteringCraftable);
 		});
 	}
 

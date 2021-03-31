@@ -36,6 +36,7 @@ public class Camera {
 	private boolean thirdPerson;
 	private float cameraY;
 	private float lastCameraY;
+	public static final float field_32133 = 0.083333336F;
 
 	public void update(BlockView area, Entity focusedEntity, boolean thirdPerson, boolean inverseView, float tickDelta) {
 		this.ready = true;
@@ -204,6 +205,10 @@ public class Camera {
 
 	public final Vec3f getVerticalPlane() {
 		return this.verticalPlane;
+	}
+
+	public final Vec3f method_35689() {
+		return this.diagonalPlane;
 	}
 
 	public void reset() {

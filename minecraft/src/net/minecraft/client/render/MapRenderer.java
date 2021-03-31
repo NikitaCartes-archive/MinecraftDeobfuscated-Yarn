@@ -2,7 +2,6 @@ package net.minecraft.client.render;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.MapColor;
@@ -23,6 +22,8 @@ import net.minecraft.util.math.Vec3f;
 public class MapRenderer implements AutoCloseable {
 	private static final Identifier MAP_ICONS_TEXTURE = new Identifier("textures/map/map_icons.png");
 	private static final RenderLayer MAP_ICONS_RENDER_LAYER = RenderLayer.getText(MAP_ICONS_TEXTURE);
+	private static final int field_32173 = 128;
+	private static final int field_32174 = 128;
 	private final TextureManager textureManager;
 	private final Int2ObjectMap<MapRenderer.MapTexture> mapTextures = new Int2ObjectOpenHashMap<>();
 
@@ -40,12 +41,6 @@ public class MapRenderer implements AutoCloseable {
 
 	private MapRenderer.MapTexture getMapTexture(int id, MapState state) {
 		return this.mapTextures.computeIfAbsent(id, i -> new MapRenderer.MapTexture(i, state));
-	}
-
-	@Nullable
-	public MapState getMapTextureFromId(int id) {
-		MapRenderer.MapTexture mapTexture = this.mapTextures.get(id);
-		return mapTexture != null ? mapTexture.state : null;
 	}
 
 	public void clearStateTextures() {

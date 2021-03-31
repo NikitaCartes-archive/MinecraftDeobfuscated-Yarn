@@ -12,6 +12,10 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
 
 public class NearestItemsSensor extends Sensor<MobEntity> {
+	private static final long field_30255 = 8L;
+	private static final long field_30256 = 4L;
+	public static final int field_30254 = 9;
+
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
 		return ImmutableSet.of(MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM);

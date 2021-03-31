@@ -13,7 +13,7 @@ import net.minecraft.entity.mob.ZombieEntity;
 
 @Environment(EnvType.CLIENT)
 public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEntityModel<T> implements ModelWithHat {
-	private final ModelPart hatRim = this.hat.getChild("hat_rim");
+	private final ModelPart hatRim = this.hat.getChild(EntityModelPartNames.HAT_RIM);
 
 	public ZombieVillagerEntityModel(ModelPart modelPart) {
 		super(modelPart);
@@ -23,18 +23,20 @@ public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEnti
 		ModelData modelData = BipedEntityModel.getModelData(Dilation.NONE, 0.0F);
 		ModelPartData modelPartData = modelData.getRoot();
 		modelPartData.addChild(
-			"head",
+			EntityModelPartNames.HEAD,
 			new ModelPartBuilder().uv(0, 0).cuboid(-4.0F, -10.0F, -4.0F, 8.0F, 10.0F, 8.0F).uv(24, 0).cuboid(-1.0F, -3.0F, -6.0F, 2.0F, 4.0F, 2.0F),
 			ModelTransform.NONE
 		);
 		ModelPartData modelPartData2 = modelPartData.addChild(
-			"hat", ModelPartBuilder.create().uv(32, 0).cuboid(-4.0F, -10.0F, -4.0F, 8.0F, 10.0F, 8.0F, new Dilation(0.5F)), ModelTransform.NONE
+			EntityModelPartNames.HAT, ModelPartBuilder.create().uv(32, 0).cuboid(-4.0F, -10.0F, -4.0F, 8.0F, 10.0F, 8.0F, new Dilation(0.5F)), ModelTransform.NONE
 		);
 		modelPartData2.addChild(
-			"hat_rim", ModelPartBuilder.create().uv(30, 47).cuboid(-8.0F, -8.0F, -6.0F, 16.0F, 16.0F, 1.0F), ModelTransform.rotation((float) (-Math.PI / 2), 0.0F, 0.0F)
+			EntityModelPartNames.HAT_RIM,
+			ModelPartBuilder.create().uv(30, 47).cuboid(-8.0F, -8.0F, -6.0F, 16.0F, 16.0F, 1.0F),
+			ModelTransform.rotation((float) (-Math.PI / 2), 0.0F, 0.0F)
 		);
 		modelPartData.addChild(
-			"body",
+			EntityModelPartNames.BODY,
 			ModelPartBuilder.create()
 				.uv(16, 20)
 				.cuboid(-4.0F, 0.0F, -3.0F, 8.0F, 12.0F, 6.0F)
@@ -43,16 +45,20 @@ public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEnti
 			ModelTransform.NONE
 		);
 		modelPartData.addChild(
-			"right_arm", ModelPartBuilder.create().uv(44, 22).cuboid(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F), ModelTransform.pivot(-5.0F, 2.0F, 0.0F)
+			EntityModelPartNames.RIGHT_ARM, ModelPartBuilder.create().uv(44, 22).cuboid(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F), ModelTransform.pivot(-5.0F, 2.0F, 0.0F)
 		);
 		modelPartData.addChild(
-			"left_arm", ModelPartBuilder.create().uv(44, 22).mirrored().cuboid(-1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F), ModelTransform.pivot(5.0F, 2.0F, 0.0F)
+			EntityModelPartNames.LEFT_ARM,
+			ModelPartBuilder.create().uv(44, 22).mirrored().cuboid(-1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F),
+			ModelTransform.pivot(5.0F, 2.0F, 0.0F)
 		);
 		modelPartData.addChild(
-			"right_leg", ModelPartBuilder.create().uv(0, 22).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F), ModelTransform.pivot(-2.0F, 12.0F, 0.0F)
+			EntityModelPartNames.RIGHT_LEG, ModelPartBuilder.create().uv(0, 22).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F), ModelTransform.pivot(-2.0F, 12.0F, 0.0F)
 		);
 		modelPartData.addChild(
-			"left_leg", ModelPartBuilder.create().uv(0, 22).mirrored().cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F), ModelTransform.pivot(2.0F, 12.0F, 0.0F)
+			EntityModelPartNames.LEFT_LEG,
+			ModelPartBuilder.create().uv(0, 22).mirrored().cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F),
+			ModelTransform.pivot(2.0F, 12.0F, 0.0F)
 		);
 		return TexturedModelData.of(modelData, 64, 64);
 	}
@@ -60,17 +66,23 @@ public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEnti
 	public static TexturedModelData getArmorTexturedModelData(Dilation dilation) {
 		ModelData modelData = BipedEntityModel.getModelData(dilation, 0.0F);
 		ModelPartData modelPartData = modelData.getRoot();
-		modelPartData.addChild("head", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -10.0F, -4.0F, 8.0F, 8.0F, 8.0F, dilation), ModelTransform.NONE);
-		modelPartData.addChild("body", ModelPartBuilder.create().uv(16, 16).cuboid(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, dilation.add(0.1F)), ModelTransform.NONE);
 		modelPartData.addChild(
-			"right_leg", ModelPartBuilder.create().uv(0, 16).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, dilation.add(0.1F)), ModelTransform.pivot(-2.0F, 12.0F, 0.0F)
+			EntityModelPartNames.HEAD, ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -10.0F, -4.0F, 8.0F, 8.0F, 8.0F, dilation), ModelTransform.NONE
 		);
 		modelPartData.addChild(
-			"left_leg",
+			EntityModelPartNames.BODY, ModelPartBuilder.create().uv(16, 16).cuboid(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, dilation.add(0.1F)), ModelTransform.NONE
+		);
+		modelPartData.addChild(
+			EntityModelPartNames.RIGHT_LEG,
+			ModelPartBuilder.create().uv(0, 16).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, dilation.add(0.1F)),
+			ModelTransform.pivot(-2.0F, 12.0F, 0.0F)
+		);
+		modelPartData.addChild(
+			EntityModelPartNames.LEFT_LEG,
 			ModelPartBuilder.create().uv(0, 16).mirrored().cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, dilation.add(0.1F)),
 			ModelTransform.pivot(2.0F, 12.0F, 0.0F)
 		);
-		modelPartData.getChild("hat").addChild("hat_rim", ModelPartBuilder.create(), ModelTransform.NONE);
+		modelPartData.getChild(EntityModelPartNames.HAT).addChild(EntityModelPartNames.HAT_RIM, ModelPartBuilder.create(), ModelTransform.NONE);
 		return TexturedModelData.of(modelData, 64, 32);
 	}
 

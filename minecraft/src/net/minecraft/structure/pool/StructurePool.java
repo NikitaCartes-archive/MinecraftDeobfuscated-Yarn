@@ -29,6 +29,7 @@ import org.apache.logging.log4j.Logger;
 
 public class StructurePool {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int field_31523 = Integer.MIN_VALUE;
 	public static final Codec<StructurePool> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Identifier.CODEC.fieldOf("name").forGetter(StructurePool::getId),
@@ -42,7 +43,7 @@ public class StructurePool {
 				)
 				.apply(instance, StructurePool::new)
 	);
-	public static final Codec<Supplier<StructurePool>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.TEMPLATE_POOL_WORLDGEN, CODEC);
+	public static final Codec<Supplier<StructurePool>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.STRUCTURE_POOL_KEY, CODEC);
 	private final Identifier id;
 	private final List<Pair<StructurePoolElement, Integer>> elementCounts;
 	private final List<StructurePoolElement> elements;
@@ -91,6 +92,7 @@ public class StructurePool {
 		if (this.highestY == Integer.MIN_VALUE) {
 			this.highestY = this.elements
 				.stream()
+				.filter(structurePoolElement -> structurePoolElement != EmptyPoolElement.INSTANCE)
 				.mapToInt(structurePoolElement -> structurePoolElement.getBoundingBox(structureManager, BlockPos.ORIGIN, BlockRotation.NONE).getBlockCountY())
 				.max()
 				.orElse(0);

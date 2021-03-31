@@ -89,7 +89,11 @@ public class Format4ResourcePack implements ResourcePack {
 		.collect(Collectors.toSet());
 	public static final Identifier OLD_SHIELD_BASE_TEXTURE = new Identifier("textures/entity/shield_base.png");
 	public static final Identifier OLD_BANNER_BASE_TEXTURE = new Identifier("textures/entity/banner_base.png");
+	public static final int field_32966 = 64;
+	public static final int field_32967 = 64;
+	public static final int field_32968 = 64;
 	public static final Identifier IRON_GOLEM_TEXTURE = new Identifier("textures/entity/iron_golem.png");
+	public static final String field_32969 = "textures/entity/iron_golem/iron_golem.png";
 	private final ResourcePack parent;
 
 	public Format4ResourcePack(ResourcePack parent) {

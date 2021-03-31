@@ -8,6 +8,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class FernBlock extends PlantBlock implements Fertilizable {
+	protected static final float field_31261 = 6.0F;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 13.0, 14.0);
 
 	protected FernBlock(AbstractBlock.Settings settings) {

@@ -30,12 +30,12 @@ public class FeaturePoolElement extends StructurePoolElement {
 				.apply(instance, FeaturePoolElement::new)
 	);
 	private final Supplier<ConfiguredFeature<?, ?>> feature;
-	private final NbtCompound tag;
+	private final NbtCompound nbt;
 
 	protected FeaturePoolElement(Supplier<ConfiguredFeature<?, ?>> feature, StructurePool.Projection projection) {
 		super(projection);
 		this.feature = feature;
-		this.tag = this.createDefaultJigsawNbt();
+		this.nbt = this.createDefaultJigsawNbt();
 	}
 
 	private NbtCompound createDefaultJigsawNbt() {
@@ -48,7 +48,8 @@ public class FeaturePoolElement extends StructurePoolElement {
 		return nbtCompound;
 	}
 
-	public Vec3i getStart(StructureManager structureManager, BlockRotation rotation) {
+	@Override
+	public Vec3i getStart(StructureManager structureManager, BlockRotation blockRotation) {
 		return Vec3i.ZERO;
 	}
 
@@ -57,7 +58,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 		List<Structure.StructureBlockInfo> list = Lists.<Structure.StructureBlockInfo>newArrayList();
 		list.add(
 			new Structure.StructureBlockInfo(
-				pos, Blocks.JIGSAW.getDefaultState().with(JigsawBlock.ORIENTATION, JigsawOrientation.byDirections(Direction.DOWN, Direction.SOUTH)), this.tag
+				pos, Blocks.JIGSAW.getDefaultState().with(JigsawBlock.ORIENTATION, JigsawOrientation.byDirections(Direction.DOWN, Direction.SOUTH)), this.nbt
 			)
 		);
 		return list;

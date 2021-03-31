@@ -2,8 +2,6 @@ package net.minecraft.sound;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 
 public class MusicSound {
 	public static final Codec<MusicSound> CODEC = RecordCodecBuilder.create(
@@ -27,22 +25,18 @@ public class MusicSound {
 		this.replaceCurrentMusic = replaceCurrentMusic;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public SoundEvent getSound() {
 		return this.sound;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getMinDelay() {
 		return this.minDelay;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getMaxDelay() {
 		return this.maxDelay;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean shouldReplaceCurrentMusic() {
 		return this.replaceCurrentMusic;
 	}

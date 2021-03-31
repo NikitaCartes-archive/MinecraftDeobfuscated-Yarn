@@ -3,9 +3,9 @@ package net.minecraft.item;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Optional;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeManager;
@@ -18,6 +18,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class KnowledgeBookItem extends Item {
+	private static final String RECIPES_KEY = "Recipes";
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	public KnowledgeBookItem(Item.Settings settings) {
@@ -32,9 +33,9 @@ public class KnowledgeBookItem extends Item {
 			user.setStackInHand(hand, ItemStack.EMPTY);
 		}
 
-		if (nbtCompound != null && nbtCompound.contains("Recipes", NbtTypeIds.LIST)) {
+		if (nbtCompound != null && nbtCompound.contains("Recipes", NbtElement.LIST_TYPE)) {
 			if (!world.isClient) {
-				NbtList nbtList = nbtCompound.getList("Recipes", NbtTypeIds.STRING);
+				NbtList nbtList = nbtCompound.getList("Recipes", NbtElement.STRING_TYPE);
 				List<Recipe<?>> list = Lists.<Recipe<?>>newArrayList();
 				RecipeManager recipeManager = world.getServer().getRecipeManager();
 

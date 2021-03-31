@@ -13,6 +13,9 @@ public enum VillageGossipType {
 	MAJOR_POSITIVE("major_positive", 5, 100, 0, 100),
 	TRADING("trading", 1, 25, 2, 20);
 
+	public static final int field_30240 = 25;
+	public static final int field_30241 = 20;
+	public static final int field_30242 = 2;
 	public final String key;
 	public final int multiplier;
 	public final int maxValue;

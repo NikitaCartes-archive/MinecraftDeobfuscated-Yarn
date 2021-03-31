@@ -5,11 +5,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.api.EnvironmentInterface;
-import net.fabricmc.api.EnvironmentInterfaces;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.entity.feature.SkinOverlayOwner;
 import net.minecraft.entity.Entity;
@@ -53,18 +48,16 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.explosion.Explosion;
 
-@EnvironmentInterfaces({@EnvironmentInterface(
-		value = EnvType.CLIENT,
-		itf = SkinOverlayOwner.class
-	)})
 public class WitherEntity extends HostileEntity implements SkinOverlayOwner, RangedAttackMob {
 	private static final TrackedData<Integer> TRACKED_ENTITY_ID_1 = DataTracker.registerData(WitherEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> TRACKED_ENTITY_ID_2 = DataTracker.registerData(WitherEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> TRACKED_ENTITY_ID_3 = DataTracker.registerData(WitherEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final List<TrackedData<Integer>> TRACKED_ENTITY_IDS = ImmutableList.of(TRACKED_ENTITY_ID_1, TRACKED_ENTITY_ID_2, TRACKED_ENTITY_ID_3);
 	private static final TrackedData<Integer> INVUL_TIMER = DataTracker.registerData(WitherEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final int field_30441 = 220;
 	private final float[] sideHeadPitches = new float[2];
 	private final float[] sideHeadYaws = new float[2];
 	private final float[] prevSideHeadPitches = new float[2];
@@ -105,15 +98,15 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putInt("Invul", this.getInvulnerableTimer());
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putInt("Invul", this.getInvulnerableTimer());
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.setInvulTimer(tag.getInt("Invul"));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.setInvulTimer(nbt.getInt("Invul"));
 		if (this.hasCustomName()) {
 			this.bossBar.setName(this.getDisplayName());
 		}
@@ -513,12 +506,10 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 			.add(EntityAttributes.GENERIC_ARMOR, 4.0);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getHeadYaw(int headIndex) {
 		return this.sideHeadYaws[headIndex];
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getHeadPitch(int headIndex) {
 		return this.sideHeadPitches[headIndex];
 	}

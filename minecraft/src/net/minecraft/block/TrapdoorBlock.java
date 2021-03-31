@@ -1,8 +1,6 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,6 +20,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 
 public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggable {
@@ -29,6 +28,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	public static final EnumProperty<BlockHalf> HALF = Properties.BLOCK_HALF;
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+	protected static final int field_31266 = 3;
 	protected static final VoxelShape EAST_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 3.0, 16.0, 16.0);
 	protected static final VoxelShape WEST_SHAPE = Block.createCuboidShape(13.0, 0.0, 0.0, 16.0, 16.0, 16.0);
 	protected static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 3.0);
@@ -88,7 +88,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 			return ActionResult.PASS;
 		} else {
 			state = state.cycle(OPEN);
-			world.setBlockState(pos, state, SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(pos, state, Block.NOTIFY_LISTENERS);
 			if ((Boolean)state.get(WATERLOGGED)) {
 				world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 			}
@@ -120,7 +120,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 					this.playToggleSound(null, world, pos, bl);
 				}
 
-				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)), SetBlockStateFlags.NOTIFY_LISTENERS);
+				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)), Block.NOTIFY_LISTENERS);
 				if ((Boolean)state.get(WATERLOGGED)) {
 					world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 				}

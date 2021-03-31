@@ -23,6 +23,7 @@ import org.apache.logging.log4j.Logger;
  */
 public abstract class JsonDataLoader extends SinglePreparationResourceReloader<Map<Identifier, JsonElement>> {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final String FILE_SUFFIX = ".json";
 	private static final int FILE_SUFFIX_LENGTH = ".json".length();
 	private final Gson gson;
 	private final String dataType;

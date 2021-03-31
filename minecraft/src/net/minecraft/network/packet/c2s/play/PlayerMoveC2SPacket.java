@@ -53,6 +53,14 @@ public abstract class PlayerMoveC2SPacket implements Packet<ServerPlayPacketList
 		return this.onGround;
 	}
 
+	public boolean changesPosition() {
+		return this.changePosition;
+	}
+
+	public boolean changesLook() {
+		return this.changeLook;
+	}
+
 	public static class Full extends PlayerMoveC2SPacket {
 		public Full(double x, double y, double z, float yaw, float pitch, boolean onGround) {
 			super(x, y, z, yaw, pitch, onGround, true, true);

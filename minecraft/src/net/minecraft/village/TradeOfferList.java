@@ -2,9 +2,9 @@ package net.minecraft.village;
 
 import java.util.ArrayList;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
 
@@ -13,7 +13,7 @@ public class TradeOfferList extends ArrayList<TradeOffer> {
 	}
 
 	public TradeOfferList(NbtCompound nbt) {
-		NbtList nbtList = nbt.getList("Recipes", NbtTypeIds.COMPOUND);
+		NbtList nbtList = nbt.getList("Recipes", NbtElement.COMPOUND_TYPE);
 
 		for (int i = 0; i < nbtList.size(); i++) {
 			this.add(new TradeOffer(nbtList.getCompound(i)));

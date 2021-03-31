@@ -52,6 +52,7 @@ import org.apache.logging.log4j.Logger;
 
 public class PlayerAdvancementTracker {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int field_33383 = 2;
 	private static final Gson GSON = new GsonBuilder()
 		.registerTypeAdapter(AdvancementProgress.class, new AdvancementProgress.Serializer())
 		.registerTypeAdapter(Identifier.class, new Identifier.Serializer())

@@ -30,6 +30,14 @@ public class DataStreamHelper {
 		this.dataOutputStream.writeShort(Short.reverseBytes(s));
 	}
 
+	public void method_34887(int i) throws IOException {
+		this.dataOutputStream.writeInt(Integer.reverseBytes(i));
+	}
+
+	public void method_34886(float f) throws IOException {
+		this.dataOutputStream.writeInt(Integer.reverseBytes(Float.floatToIntBits(f)));
+	}
+
 	public byte[] bytes() {
 		return this.byteArrayOutputStream.toByteArray();
 	}

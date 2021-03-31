@@ -1,6 +1,5 @@
 package net.minecraft.block.dispenser;
 
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
@@ -8,6 +7,7 @@ import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 
 public class ItemDispenserBehavior implements DispenserBehavior {
 	@Override

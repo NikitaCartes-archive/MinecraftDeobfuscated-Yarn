@@ -139,19 +139,19 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	protected void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putDouble("PushX", this.pushX);
-		tag.putDouble("PushZ", this.pushZ);
-		tag.putShort("Fuel", (short)this.fuel);
+	protected void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putDouble("PushX", this.pushX);
+		nbt.putDouble("PushZ", this.pushZ);
+		nbt.putShort("Fuel", (short)this.fuel);
 	}
 
 	@Override
-	protected void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.pushX = tag.getDouble("PushX");
-		this.pushZ = tag.getDouble("PushZ");
-		this.fuel = tag.getShort("Fuel");
+	protected void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.pushX = nbt.getDouble("PushX");
+		this.pushZ = nbt.getDouble("PushZ");
+		this.fuel = nbt.getShort("Fuel");
 	}
 
 	protected boolean isLit() {

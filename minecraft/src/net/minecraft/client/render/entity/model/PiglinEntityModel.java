@@ -17,8 +17,8 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class PiglinEntityModel<T extends MobEntity> extends PlayerEntityModel<T> {
-	public final ModelPart rightEar = this.head.getChild("right_ear");
-	private final ModelPart leftEar = this.head.getChild("left_ear");
+	public final ModelPart rightEar = this.head.getChild(EntityModelPartNames.RIGHT_EAR);
+	private final ModelPart leftEar = this.head.getChild(EntityModelPartNames.LEFT_EAR);
 	private final ModelTransform bodyRotation = this.body.getTransform();
 	private final ModelTransform headRotation = this.head.getTransform();
 	private final ModelTransform leftArmRotation = this.leftArm.getTransform();
@@ -31,9 +31,11 @@ public class PiglinEntityModel<T extends MobEntity> extends PlayerEntityModel<T>
 	public static ModelData getModelData(Dilation dilation) {
 		ModelData modelData = PlayerEntityModel.getTexturedModelData(dilation, false);
 		ModelPartData modelPartData = modelData.getRoot();
-		modelPartData.addChild("body", ModelPartBuilder.create().uv(16, 16).cuboid(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, dilation), ModelTransform.NONE);
+		modelPartData.addChild(
+			EntityModelPartNames.BODY, ModelPartBuilder.create().uv(16, 16).cuboid(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, dilation), ModelTransform.NONE
+		);
 		ModelPartData modelPartData2 = modelPartData.addChild(
-			"head",
+			EntityModelPartNames.HEAD,
 			ModelPartBuilder.create()
 				.uv(0, 0)
 				.cuboid(-5.0F, -8.0F, -4.0F, 10.0F, 8.0F, 8.0F, dilation)
@@ -46,16 +48,16 @@ public class PiglinEntityModel<T extends MobEntity> extends PlayerEntityModel<T>
 			ModelTransform.NONE
 		);
 		modelPartData2.addChild(
-			"left_ear",
+			EntityModelPartNames.LEFT_EAR,
 			ModelPartBuilder.create().uv(51, 6).cuboid(0.0F, 0.0F, -2.0F, 1.0F, 5.0F, 4.0F, dilation),
 			ModelTransform.of(4.5F, -6.0F, 0.0F, 0.0F, 0.0F, (float) (-Math.PI / 6))
 		);
 		modelPartData2.addChild(
-			"right_ear",
+			EntityModelPartNames.RIGHT_EAR,
 			ModelPartBuilder.create().uv(39, 6).cuboid(-1.0F, 0.0F, -2.0F, 1.0F, 5.0F, 4.0F, dilation),
 			ModelTransform.of(-4.5F, -6.0F, 0.0F, 0.0F, 0.0F, (float) (Math.PI / 6))
 		);
-		modelPartData.addChild("hat", ModelPartBuilder.create(), ModelTransform.NONE);
+		modelPartData.addChild(EntityModelPartNames.HAT, ModelPartBuilder.create(), ModelTransform.NONE);
 		return modelData;
 	}
 

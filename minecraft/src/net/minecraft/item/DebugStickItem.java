@@ -2,7 +2,6 @@ package net.minecraft.item;
 
 import java.util.Collection;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -70,7 +69,7 @@ public class DebugStickItem extends Item {
 					}
 
 					BlockState blockState = cycle(state, property, player.shouldCancelInteraction());
-					world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.FORCE_STATE);
+					world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
 					sendMessage(player, new TranslatableText(this.getTranslationKey() + ".update", property.getName(), getValueString(blockState, property)));
 				} else {
 					property = cycle(collection, property, player.shouldCancelInteraction());

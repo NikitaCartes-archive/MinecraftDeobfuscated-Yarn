@@ -4,8 +4,6 @@ import com.google.common.collect.ImmutableList;
 import java.util.Collection;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -15,10 +13,39 @@ import net.minecraft.util.Formatting;
 
 public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 	/**
-	 * <ul><li>0 - Create/Update team with players</li>
-	 * <li>1 - Remove player/team</li>
-	 * <li>2 - Update team</li>
-	 * <li>3 - Change player team</li></ul>
+	 * The {@link #packetType} that creates a new team with a few players. Has value
+	 * {@value}.
+	 */
+	private static final int ADD = 0;
+	/**
+	 * The {@link #packetType} that removes a team. Has value {@value}.
+	 */
+	private static final int REMOVE = 1;
+	/**
+	 * The {@link #packetType} that updates a team's information. Has value {@value}.
+	 */
+	private static final int UPDATE = 2;
+	/**
+	 * The {@link #packetType} that adds a few players to a team. Has value {@value}.
+	 */
+	private static final int ADD_PLAYERS = 3;
+	/**
+	 * The {@link #packetType} that removes a few players from a team. Has value {@value}.
+	 */
+	private static final int REMOVE_PLAYERS = 4;
+	/**
+	 * One of the name tag visibility rule or collision rule strings' max length.
+	 * Has value {@value}.
+	 */
+	private static final int FIRST_MAX_VISIBILITY_OR_COLLISION_RULE_LENGTH = 40;
+	/**
+	 * One of the name tag visibility rule or collision rule strings' max length.
+	 * Has value {@value}.
+	 */
+	private static final int SECOND_MAX_VISIBILITY_OR_COLLISION_RULE_LENGTH = 40;
+	/**
+	 * Indicates the type of this packet. Is one of {@link #ADD}, {@link #REMOVE},
+	 * {@link #UPDATE}, {@link #ADD_PLAYERS}, or {@link #REMOVE_PLAYERS}.
 	 */
 	private final int packetType;
 	private final String teamName;
@@ -35,18 +62,20 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 	public static TeamS2CPacket updateTeam(Team team, boolean updatePlayers) {
 		return new TeamS2CPacket(
 			team.getName(),
-			updatePlayers ? 0 : 2,
+			updatePlayers ? ADD : UPDATE,
 			Optional.of(new TeamS2CPacket.SerializableTeam(team)),
 			(Collection<String>)(updatePlayers ? team.getPlayerList() : ImmutableList.<String>of())
 		);
 	}
 
 	public static TeamS2CPacket updateRemovedTeam(Team team) {
-		return new TeamS2CPacket(team.getName(), 1, Optional.empty(), ImmutableList.<String>of());
+		return new TeamS2CPacket(team.getName(), REMOVE, Optional.empty(), ImmutableList.<String>of());
 	}
 
 	public static TeamS2CPacket changePlayerTeam(Team team, String playerName, TeamS2CPacket.Operation operation) {
-		return new TeamS2CPacket(team.getName(), operation == TeamS2CPacket.Operation.ADD ? 3 : 4, Optional.empty(), ImmutableList.<String>of(playerName));
+		return new TeamS2CPacket(
+			team.getName(), operation == TeamS2CPacket.Operation.ADD ? ADD_PLAYERS : REMOVE_PLAYERS, Optional.empty(), ImmutableList.<String>of(playerName)
+		);
 	}
 
 	public TeamS2CPacket(PacketByteBuf buf) {
@@ -80,15 +109,14 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	private static boolean containsPlayers(int packetType) {
-		return packetType == 0 || packetType == 3 || packetType == 4;
+		return packetType == 0 || packetType == ADD_PLAYERS || packetType == REMOVE_PLAYERS;
 	}
 
 	private static boolean containsTeamInfo(int packetType) {
-		return packetType == 0 || packetType == 2;
+		return packetType == 0 || packetType == UPDATE;
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public TeamS2CPacket.Operation getPlayerListOperation() {
 		switch (this.packetType) {
 			case 0:
@@ -104,7 +132,6 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public TeamS2CPacket.Operation getTeamOperation() {
 		switch (this.packetType) {
 			case 0:
@@ -120,17 +147,14 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 		clientPlayPacketListener.onTeam(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public String getTeamName() {
 		return this.teamName;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Collection<String> getPlayerNames() {
 		return this.playerNames;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Optional<TeamS2CPacket.SerializableTeam> getTeam() {
 		return this.team;
 	}
@@ -169,37 +193,30 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 			this.suffix = buf.readText();
 		}
 
-		@Environment(EnvType.CLIENT)
 		public Text getDisplayName() {
 			return this.displayName;
 		}
 
-		@Environment(EnvType.CLIENT)
 		public int getFriendlyFlagsBitwise() {
 			return this.friendlyFlags;
 		}
 
-		@Environment(EnvType.CLIENT)
 		public Formatting getColor() {
 			return this.color;
 		}
 
-		@Environment(EnvType.CLIENT)
 		public String getNameTagVisibilityRule() {
 			return this.nameTagVisibilityRule;
 		}
 
-		@Environment(EnvType.CLIENT)
 		public String getCollisionRule() {
 			return this.collisionRule;
 		}
 
-		@Environment(EnvType.CLIENT)
 		public Text getPrefix() {
 			return this.prefix;
 		}
 
-		@Environment(EnvType.CLIENT)
 		public Text getSuffix() {
 			return this.suffix;
 		}

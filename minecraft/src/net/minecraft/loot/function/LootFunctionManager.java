@@ -41,6 +41,10 @@ public class LootFunctionManager extends JsonDataLoader {
 		return (LootFunction)this.functions.get(id);
 	}
 
+	public LootFunction getOrDefault(Identifier id, LootFunction fallback) {
+		return (LootFunction)this.functions.getOrDefault(id, fallback);
+	}
+
 	protected void apply(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
 		Builder<Identifier, LootFunction> builder = ImmutableMap.builder();
 		map.forEach((id, json) -> {

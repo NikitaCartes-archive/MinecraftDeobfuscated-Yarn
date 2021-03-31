@@ -13,6 +13,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap;
 
 public class GoToVillageGoal extends Goal {
+	private static final int field_30228 = 10;
 	private final PathAwareEntity mob;
 	private final int searchRange;
 	@Nullable

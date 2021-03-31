@@ -10,12 +10,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIntArray;
 import net.minecraft.nbt.NbtList;
@@ -26,6 +26,8 @@ import org.apache.logging.log4j.Logger;
 
 public class EntityChunkDataAccess implements ChunkDataAccess<Entity> {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final String ENTITIES_KEY = "Entities";
+	private static final String POSITION_KEY = "Position";
 	private final ServerWorld world;
 	private final StorageIoWorker dataLoadWorker;
 	private final LongSet emptyChunks = new LongOpenHashSet();
@@ -58,7 +60,7 @@ public class EntityChunkDataAccess implements ChunkDataAccess<Entity> {
 					}
 
 					NbtCompound nbtCompound2 = this.fixChunkData(nbtCompound);
-					NbtList nbtList = nbtCompound2.getList("Entities", NbtTypeIds.COMPOUND);
+					NbtList nbtList = nbtCompound2.getList("Entities", NbtElement.COMPOUND_TYPE);
 					List<Entity> list = (List<Entity>)EntityType.streamFromNbt(nbtList, this.world).collect(ImmutableList.toImmutableList());
 					return new ChunkDataList(pos, list);
 				}
@@ -89,7 +91,7 @@ public class EntityChunkDataAccess implements ChunkDataAccess<Entity> {
 			NbtList nbtList = new NbtList();
 			dataList.stream().forEach(entity -> {
 				NbtCompound nbtCompoundx = new NbtCompound();
-				if (entity.saveToTag(nbtCompoundx)) {
+				if (entity.saveNbt(nbtCompoundx)) {
 					nbtList.add(nbtCompoundx);
 				}
 			});
@@ -116,7 +118,7 @@ public class EntityChunkDataAccess implements ChunkDataAccess<Entity> {
 	}
 
 	public static int getChunkDataVersion(NbtCompound chunkTag) {
-		return chunkTag.contains("DataVersion", NbtTypeIds.NUMBER) ? chunkTag.getInt("DataVersion") : -1;
+		return chunkTag.contains("DataVersion", NbtElement.NUMBER_TYPE) ? chunkTag.getInt("DataVersion") : -1;
 	}
 
 	@Override

@@ -59,6 +59,8 @@ import org.apache.logging.log4j.Logger;
 
 public class MinecraftDedicatedServer extends MinecraftServer implements DedicatedServer {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int field_29662 = 5000;
+	private static final int field_29663 = 2;
 	private static final Pattern SHA1_PATTERN = Pattern.compile("^[a-fA-F0-9]{40}$");
 	private final List<PendingServerCommand> commandQueue = Collections.synchronizedList(Lists.newArrayList());
 	private QueryResponseHandler queryResponseHandler;
@@ -329,6 +331,11 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		snooper.addInfo("whitelist_enabled", this.getPlayerManager().isWhitelistEnabled());
 		snooper.addInfo("whitelist_count", this.getPlayerManager().getWhitelistedNames().length);
 		super.addSnooperInfo(snooper);
+	}
+
+	@Override
+	public boolean method_35033() {
+		return this.getProperties().snooperEnabled;
 	}
 
 	public void enqueueCommand(String command, ServerCommandSource commandSource) {

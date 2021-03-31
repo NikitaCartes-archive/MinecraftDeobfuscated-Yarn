@@ -289,6 +289,11 @@ public class CyclingButtonWidget<T> extends AbstractPressableButtonWidget implem
 			return this;
 		}
 
+		public CyclingButtonWidget<T> method_35723(int i, int j, int k, int l, Text text) {
+			return this.build(i, j, k, l, text, (cyclingButtonWidget, object) -> {
+			});
+		}
+
 		/**
 		 * Builds a cycling button widget.
 		 * 

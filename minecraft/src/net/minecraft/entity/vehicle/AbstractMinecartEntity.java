@@ -7,8 +7,6 @@ import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -59,6 +57,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 	private static final ImmutableMap<EntityPose, ImmutableList<Integer>> DISMOUNT_FREE_Y_SPACES_NEEDED = ImmutableMap.of(
 		EntityPose.STANDING, ImmutableList.of(0, 1, -1), EntityPose.CROUCHING, ImmutableList.of(0, 1, -1), EntityPose.SWIMMING, ImmutableList.of(0, 1)
 	);
+	protected static final float field_30694 = 0.95F;
 	private boolean yawFlipped;
 	private static final Map<RailShape, Pair<Vec3i, Vec3i>> ADJACENT_RAIL_POSITIONS_BY_SHAPE = Util.make(Maps.newEnumMap(RailShape.class), enumMap -> {
 		Vec3i vec3i = Direction.WEST.getVector();
@@ -86,11 +85,8 @@ public abstract class AbstractMinecartEntity extends Entity {
 	private double clientZ;
 	private double clientYaw;
 	private double clientPitch;
-	@Environment(EnvType.CLIENT)
 	private double clientXVelocity;
-	@Environment(EnvType.CLIENT)
 	private double clientYVelocity;
-	@Environment(EnvType.CLIENT)
 	private double clientZVelocity;
 
 	protected AbstractMinecartEntity(EntityType<?> entityType, World world) {
@@ -151,7 +147,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	@Override
 	protected Vec3d positionInPortal(Direction.Axis portalAxis, PortalUtil.Rectangle portalRect) {
-		return LivingEntity.method_31079(super.positionInPortal(portalAxis, portalRect));
+		return LivingEntity.positionInPortal(super.positionInPortal(portalAxis, portalRect));
 	}
 
 	@Override
@@ -252,7 +248,6 @@ public abstract class AbstractMinecartEntity extends Entity {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void animateDamage() {
 		this.setDamageWobbleSide(-this.getDamageWobbleSide());
@@ -576,7 +571,6 @@ public abstract class AbstractMinecartEntity extends Entity {
 	 * This method is used to determine the minecart's render orientation, by computing a position along the rail slightly before and slightly after the minecart's actual position.
 	 */
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public Vec3d snapPositionToRailWithOffset(double x, double y, double z, double offset) {
 		int i = MathHelper.floor(x);
 		int j = MathHelper.floor(y);
@@ -665,7 +659,6 @@ public abstract class AbstractMinecartEntity extends Entity {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public Box getVisibilityBoundingBox() {
 		Box box = this.getBoundingBox();
@@ -673,19 +666,19 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	@Override
-	protected void readCustomDataFromNbt(NbtCompound tag) {
-		if (tag.getBoolean("CustomDisplayTile")) {
-			this.setCustomBlock(NbtHelper.toBlockState(tag.getCompound("DisplayState")));
-			this.setCustomBlockOffset(tag.getInt("DisplayOffset"));
+	protected void readCustomDataFromNbt(NbtCompound nbt) {
+		if (nbt.getBoolean("CustomDisplayTile")) {
+			this.setCustomBlock(NbtHelper.toBlockState(nbt.getCompound("DisplayState")));
+			this.setCustomBlockOffset(nbt.getInt("DisplayOffset"));
 		}
 	}
 
 	@Override
-	protected void writeCustomDataToNbt(NbtCompound tag) {
+	protected void writeCustomDataToNbt(NbtCompound nbt) {
 		if (this.hasCustomBlock()) {
-			tag.putBoolean("CustomDisplayTile", true);
-			tag.put("DisplayState", NbtHelper.fromBlockState(this.getContainedBlock()));
-			tag.putInt("DisplayOffset", this.getBlockOffset());
+			nbt.putBoolean("CustomDisplayTile", true);
+			nbt.put("DisplayState", NbtHelper.fromBlockState(this.getContainedBlock()));
+			nbt.putInt("DisplayOffset", this.getBlockOffset());
 		}
 	}
 
@@ -753,7 +746,6 @@ public abstract class AbstractMinecartEntity extends Entity {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
 		this.clientX = x;
@@ -765,7 +757,6 @@ public abstract class AbstractMinecartEntity extends Entity {
 		this.setVelocity(this.clientXVelocity, this.clientYVelocity, this.clientZVelocity);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void setVelocityClient(double x, double y, double z) {
 		this.clientXVelocity = x;
@@ -839,7 +830,6 @@ public abstract class AbstractMinecartEntity extends Entity {
 		return new EntitySpawnS2CPacket(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickBlockStack() {
 		Item item;

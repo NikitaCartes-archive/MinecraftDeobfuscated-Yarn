@@ -2,15 +2,15 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.collection.WeightedList;
+import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.gen.UniformIntDistribution;
+import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
 public class GrowingPlantFeatureConfig implements FeatureConfig {
 	public static final Codec<GrowingPlantFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					WeightedList.createCodec(UniformIntDistribution.CODEC)
+					DataPool.createCodec(IntProvider.VALUE_CODEC)
 						.fieldOf("height_distribution")
 						.forGetter(growingPlantFeatureConfig -> growingPlantFeatureConfig.heightDistribution),
 					Direction.CODEC.fieldOf("direction").forGetter(growingPlantFeatureConfig -> growingPlantFeatureConfig.direction),
@@ -20,18 +20,14 @@ public class GrowingPlantFeatureConfig implements FeatureConfig {
 				)
 				.apply(instance, GrowingPlantFeatureConfig::new)
 	);
-	public final WeightedList<UniformIntDistribution> heightDistribution;
+	public final DataPool<IntProvider> heightDistribution;
 	public final Direction direction;
 	public final BlockStateProvider bodyProvider;
 	public final BlockStateProvider headProvider;
 	public final boolean allowWater;
 
 	public GrowingPlantFeatureConfig(
-		WeightedList<UniformIntDistribution> heightDistribution,
-		Direction direction,
-		BlockStateProvider bodyProvider,
-		BlockStateProvider headProvider,
-		boolean allowWater
+		DataPool<IntProvider> heightDistribution, Direction direction, BlockStateProvider bodyProvider, BlockStateProvider headProvider, boolean allowWater
 	) {
 		this.heightDistribution = heightDistribution;
 		this.direction = direction;

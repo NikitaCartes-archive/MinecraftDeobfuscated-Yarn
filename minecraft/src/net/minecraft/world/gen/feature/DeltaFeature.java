@@ -17,6 +17,7 @@ public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 		Blocks.BEDROCK, Blocks.NETHER_BRICKS, Blocks.NETHER_BRICK_FENCE, Blocks.NETHER_BRICK_STAIRS, Blocks.NETHER_WART, Blocks.CHEST, Blocks.SPAWNER
 	);
 	private static final Direction[] DIRECTIONS = Direction.values();
+	private static final double field_31501 = 0.9;
 
 	public DeltaFeature(Codec<DeltaFeatureConfig> codec) {
 		super(codec);
@@ -30,11 +31,11 @@ public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 		DeltaFeatureConfig deltaFeatureConfig = context.getConfig();
 		BlockPos blockPos = context.getOrigin();
 		boolean bl2 = random.nextDouble() < 0.9;
-		int i = bl2 ? deltaFeatureConfig.getRimSize().getValue(random) : 0;
-		int j = bl2 ? deltaFeatureConfig.getRimSize().getValue(random) : 0;
+		int i = bl2 ? deltaFeatureConfig.getRimSize().get(random) : 0;
+		int j = bl2 ? deltaFeatureConfig.getRimSize().get(random) : 0;
 		boolean bl3 = bl2 && i != 0 && j != 0;
-		int k = deltaFeatureConfig.getSize().getValue(random);
-		int l = deltaFeatureConfig.getSize().getValue(random);
+		int k = deltaFeatureConfig.getSize().get(random);
+		int l = deltaFeatureConfig.getSize().get(random);
 		int m = Math.max(k, l);
 
 		for (BlockPos blockPos2 : BlockPos.iterateOutwards(blockPos, k, 0, l)) {

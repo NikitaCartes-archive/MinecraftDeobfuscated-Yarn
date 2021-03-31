@@ -20,9 +20,9 @@ public class DataQueryHandler {
 		this.networkHandler = networkHandler;
 	}
 
-	public boolean handleQueryResponse(int transactionId, @Nullable NbtCompound tag) {
+	public boolean handleQueryResponse(int transactionId, @Nullable NbtCompound nbt) {
 		if (this.expectedTransactionId == transactionId && this.callback != null) {
-			this.callback.accept(tag);
+			this.callback.accept(nbt);
 			this.callback = null;
 			return true;
 		} else {

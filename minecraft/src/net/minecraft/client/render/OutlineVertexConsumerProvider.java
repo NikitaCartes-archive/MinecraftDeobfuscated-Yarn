@@ -63,7 +63,11 @@ public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 		}
 
 		@Override
-		public void fixedColor(int red, int green, int blue, int alpha) {
+		public void fixedColor(int i, int j, int k, int l) {
+		}
+
+		@Override
+		public void method_35666() {
 		}
 
 		@Override

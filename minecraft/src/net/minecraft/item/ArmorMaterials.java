@@ -1,8 +1,6 @@
 package net.minecraft.item;
 
 import java.util.function.Supplier;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.sound.SoundEvent;
@@ -73,7 +71,6 @@ public enum ArmorMaterials implements ArmorMaterial {
 		return this.repairIngredientSupplier.get();
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public String getName() {
 		return this.name;

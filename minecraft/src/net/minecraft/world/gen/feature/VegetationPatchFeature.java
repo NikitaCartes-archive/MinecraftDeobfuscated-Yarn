@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Predicate;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -29,8 +28,8 @@ public class VegetationPatchFeature extends Feature<VegetationPatchFeatureConfig
 		Random random = context.getRandom();
 		BlockPos blockPos = context.getOrigin();
 		Predicate<BlockState> predicate = getReplaceablePredicate(vegetationPatchFeatureConfig);
-		int i = vegetationPatchFeatureConfig.horizontalRadius.getValue(random) + 1;
-		int j = vegetationPatchFeatureConfig.horizontalRadius.getValue(random) + 1;
+		int i = vegetationPatchFeatureConfig.horizontalRadius.get(random) + 1;
+		int j = vegetationPatchFeatureConfig.horizontalRadius.get(random) + 1;
 		Set<BlockPos> set = this.placeGroundAndGetPositions(structureWorldAccess, vegetationPatchFeatureConfig, random, blockPos, predicate, i, j);
 		this.generateVegetation(context, structureWorldAccess, vegetationPatchFeatureConfig, random, set, i, j);
 		return !set.isEmpty();
@@ -67,7 +66,7 @@ public class VegetationPatchFeature extends Feature<VegetationPatchFeatureConfig
 					mutable2.set(mutable, config.surface.getDirection());
 					BlockState blockState = world.getBlockState(mutable2);
 					if (world.isAir(mutable) && blockState.isSideSolidFullSquare(world, mutable2, config.surface.getDirection().getOpposite())) {
-						int l = config.depth.getValue(random) + (config.extraBottomBlockChance > 0.0F && random.nextFloat() < config.extraBottomBlockChance ? 1 : 0);
+						int l = config.depth.get(random) + (config.extraBottomBlockChance > 0.0F && random.nextFloat() < config.extraBottomBlockChance ? 1 : 0);
 						BlockPos blockPos = mutable2.toImmutable();
 						boolean bl6 = this.placeGround(world, config, replaceable, random, mutable2, l);
 						if (bl6) {
@@ -111,7 +110,7 @@ public class VegetationPatchFeature extends Feature<VegetationPatchFeatureConfig
 				return i != 0;
 			}
 
-			world.setBlockState(pos, config.groundState.getBlockState(random, pos), SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(pos, config.groundState.getBlockState(random, pos), Block.NOTIFY_LISTENERS);
 			pos.move(config.surface.getDirection());
 		}
 

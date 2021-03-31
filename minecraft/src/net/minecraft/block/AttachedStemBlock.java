@@ -4,8 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.function.Supplier;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
@@ -21,6 +19,7 @@ import net.minecraft.world.WorldAccess;
 
 public class AttachedStemBlock extends PlantBlock {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+	protected static final float field_30995 = 2.0F;
 	private static final Map<Direction, VoxelShape> FACING_TO_SHAPE = Maps.newEnumMap(
 		ImmutableMap.of(
 			Direction.SOUTH,
@@ -62,7 +61,6 @@ public class AttachedStemBlock extends PlantBlock {
 		return floor.isOf(Blocks.FARMLAND);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
 		return new ItemStack((ItemConvertible)this.pickBlockItem.get());

@@ -15,8 +15,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
@@ -28,6 +26,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class GameRules {
+	public static final int DEFAULT_RANDOM_TICK_SPEED = 3;
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Map<GameRules.Key<?>, GameRules.Type<?>> RULE_TYPES = Maps.newTreeMap(Comparator.comparing(key -> key.name));
 	public static final GameRules.Key<GameRules.BooleanRule> DO_FIRE_TICK = register("doFireTick", GameRules.Category.UPDATES, GameRules.BooleanRule.create(true));
@@ -138,11 +137,17 @@ public class GameRules {
 	 * A {@linkplain Rule game rule} which regulates whether a player should immediately respawn upon death.
 	 */
 	public static final GameRules.Key<GameRules.BooleanRule> DO_IMMEDIATE_RESPAWN = register(
-		"doImmediateRespawn", GameRules.Category.PLAYER, GameRules.BooleanRule.create(false, (server, rule) -> {
-			for (ServerPlayerEntity serverPlayerEntity : server.getPlayerManager().getPlayerList()) {
-				serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.IMMEDIATE_RESPAWN, rule.get() ? 1.0F : 0.0F));
+		"doImmediateRespawn",
+		GameRules.Category.PLAYER,
+		GameRules.BooleanRule.create(
+			false,
+			(server, rule) -> {
+				for (ServerPlayerEntity serverPlayerEntity : server.getPlayerManager().getPlayerList()) {
+					serverPlayerEntity.networkHandler
+						.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.IMMEDIATE_RESPAWN, rule.get() ? 1.0F : GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
+				}
 			}
-		})
+		)
 	);
 	public static final GameRules.Key<GameRules.BooleanRule> DROWNING_DAMAGE = register(
 		"drowningDamage", GameRules.Category.PLAYER, GameRules.BooleanRule.create(true)
@@ -231,12 +236,10 @@ public class GameRules {
 		type.accept(consumer, key);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void setAllValues(GameRules rules, @Nullable MinecraftServer server) {
 		rules.rules.keySet().forEach(key -> this.setValue(key, rules, server));
 	}
 
-	@Environment(EnvType.CLIENT)
 	private <T extends GameRules.Rule<T>> void setValue(GameRules.Key<T> key, GameRules rules, @Nullable MinecraftServer server) {
 		T rule = rules.get(key);
 		this.<T>get(key).setValue(rule, server);
@@ -308,7 +311,6 @@ public class GameRules {
 			return new GameRules.BooleanRule(this.type, this.value);
 		}
 
-		@Environment(EnvType.CLIENT)
 		public void setValue(GameRules.BooleanRule booleanRule, @Nullable MinecraftServer minecraftServer) {
 			this.value = booleanRule.value;
 			this.changed(minecraftServer);
@@ -330,7 +332,6 @@ public class GameRules {
 			this.category = category;
 		}
 
-		@Environment(EnvType.CLIENT)
 		public String getCategory() {
 			return this.category;
 		}
@@ -362,6 +363,11 @@ public class GameRules {
 			return this.value;
 		}
 
+		public void set(int value, @Nullable MinecraftServer server) {
+			this.value = value;
+			this.changed(server);
+		}
+
 		@Override
 		public String serialize() {
 			return Integer.toString(this.value);
@@ -375,7 +381,6 @@ public class GameRules {
 		/**
 		 * Validates that an input is valid for this rule.
 		 */
-		@Environment(EnvType.CLIENT)
 		public boolean validate(String input) {
 			try {
 				this.value = Integer.parseInt(input);
@@ -410,7 +415,6 @@ public class GameRules {
 			return new GameRules.IntRule(this.type, this.value);
 		}
 
-		@Environment(EnvType.CLIENT)
 		public void setValue(GameRules.IntRule intRule, @Nullable MinecraftServer minecraftServer) {
 			this.value = intRule.value;
 			this.changed(minecraftServer);
@@ -446,7 +450,6 @@ public class GameRules {
 			return "gamerule." + this.name;
 		}
 
-		@Environment(EnvType.CLIENT)
 		public GameRules.Category getCategory() {
 			return this.category;
 		}
@@ -486,7 +489,6 @@ public class GameRules {
 
 		protected abstract T copy();
 
-		@Environment(EnvType.CLIENT)
 		public abstract void setValue(T rule, @Nullable MinecraftServer server);
 	}
 

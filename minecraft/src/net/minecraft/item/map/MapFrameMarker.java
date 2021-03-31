@@ -15,10 +15,10 @@ public class MapFrameMarker {
 		this.entityId = entityId;
 	}
 
-	public static MapFrameMarker fromNbt(NbtCompound tag) {
-		BlockPos blockPos = NbtHelper.toBlockPos(tag.getCompound("Pos"));
-		int i = tag.getInt("Rotation");
-		int j = tag.getInt("EntityId");
+	public static MapFrameMarker fromNbt(NbtCompound nbt) {
+		BlockPos blockPos = NbtHelper.toBlockPos(nbt.getCompound("Pos"));
+		int i = nbt.getInt("Rotation");
+		int j = nbt.getInt("EntityId");
 		return new MapFrameMarker(blockPos, i, j);
 	}
 

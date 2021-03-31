@@ -24,6 +24,7 @@ public class PiglinEntityRenderer extends BipedEntityRenderer<MobEntity, PiglinE
 		EntityType.PIGLIN_BRUTE,
 		new Identifier("textures/entity/piglin/piglin_brute.png")
 	);
+	private static final float field_32942 = 1.0019531F;
 
 	public PiglinEntityRenderer(
 		EntityRendererFactory.Context ctx, EntityModelLayer mainLayer, EntityModelLayer innerArmorLayer, EntityModelLayer outerArmorLayer, boolean zombie
@@ -52,6 +53,6 @@ public class PiglinEntityRenderer extends BipedEntityRenderer<MobEntity, PiglinE
 	}
 
 	protected boolean isShaking(MobEntity mobEntity) {
-		return mobEntity instanceof AbstractPiglinEntity && ((AbstractPiglinEntity)mobEntity).shouldZombify();
+		return super.isShaking(mobEntity) || mobEntity instanceof AbstractPiglinEntity && ((AbstractPiglinEntity)mobEntity).shouldZombify();
 	}
 }

@@ -14,12 +14,11 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.util.Util;
+import net.minecraft.util.collection.Pool;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -141,7 +140,6 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		return CODEC;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ChunkGenerator withSeed(long seed) {
 		return new NoiseChunkGenerator(this.populationSource.withSeed(seed), seed, this.settings);
@@ -264,7 +262,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		BlockState blockState;
 		if (d > 0.0) {
 			blockState = blockInterpolator.sample(x, y, z, (ChunkGeneratorSettings)this.settings.get());
-		} else if (this.hasAquifers && y < this.getMinimumY() + 9) {
+		} else if (this.hasAquifers && AquiferSampler.method_35324(y - this.getMinimumY())) {
 			blockState = Blocks.LAVA.getDefaultState();
 		} else {
 			int i = aquiferSampler == null ? this.getSeaLevel() : aquiferSampler.getWaterLevel();
@@ -473,7 +471,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public List<SpawnSettings.SpawnEntry> getEntitySpawnList(Biome biome, StructureAccessor accessor, SpawnGroup group, BlockPos pos) {
+	public Pool<SpawnSettings.SpawnEntry> getEntitySpawnList(Biome biome, StructureAccessor accessor, SpawnGroup group, BlockPos pos) {
 		if (accessor.getStructureAt(pos, true, StructureFeature.SWAMP_HUT).hasChildren()) {
 			if (group == SpawnGroup.MONSTER) {
 				return StructureFeature.SWAMP_HUT.getMonsterSpawns();

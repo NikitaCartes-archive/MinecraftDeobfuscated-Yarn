@@ -11,11 +11,10 @@ import com.google.gson.JsonSyntaxException;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -50,7 +49,6 @@ public class ShapedRecipe implements CraftingRecipe {
 		return RecipeSerializer.SHAPED;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public String getGroup() {
 		return this.group;
@@ -66,7 +64,6 @@ public class ShapedRecipe implements CraftingRecipe {
 		return this.inputs;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean fits(int width, int height) {
 		return width >= this.width && height >= this.height;
@@ -184,7 +181,6 @@ public class ShapedRecipe implements CraftingRecipe {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean isEmpty() {
 		DefaultedList<Ingredient> defaultedList = this.getPreviewInputs();
@@ -255,14 +251,27 @@ public class ShapedRecipe implements CraftingRecipe {
 		return map;
 	}
 
-	public static ItemStack getItemStack(JsonObject json) {
-		String string = JsonHelper.getString(json, "item");
-		Item item = (Item)Registry.ITEM.getOrEmpty(new Identifier(string)).orElseThrow(() -> new JsonSyntaxException("Unknown item '" + string + "'"));
+	public static ItemStack outputFromJson(JsonObject json) {
+		Item item = getItemStack(json);
 		if (json.has("data")) {
 			throw new JsonParseException("Disallowed data tag found");
 		} else {
 			int i = JsonHelper.getInt(json, "count", 1);
-			return new ItemStack(item, i);
+			if (i < 1) {
+				throw new JsonSyntaxException("Invalid output count: " + i);
+			} else {
+				return new ItemStack(item, i);
+			}
+		}
+	}
+
+	public static Item getItemStack(JsonObject json) {
+		String string = JsonHelper.getString(json, "item");
+		Item item = (Item)Registry.ITEM.getOrEmpty(new Identifier(string)).orElseThrow(() -> new JsonSyntaxException("Unknown item '" + string + "'"));
+		if (item == Items.AIR) {
+			throw new JsonSyntaxException("Invalid item: " + string);
+		} else {
+			return item;
 		}
 	}
 
@@ -274,7 +283,7 @@ public class ShapedRecipe implements CraftingRecipe {
 			int i = strings[0].length();
 			int j = strings.length;
 			DefaultedList<Ingredient> defaultedList = ShapedRecipe.getIngredients(strings, map, i, j);
-			ItemStack itemStack = ShapedRecipe.getItemStack(JsonHelper.getObject(jsonObject, "result"));
+			ItemStack itemStack = ShapedRecipe.outputFromJson(JsonHelper.getObject(jsonObject, "result"));
 			return new ShapedRecipe(identifier, string, i, j, defaultedList, itemStack);
 		}
 

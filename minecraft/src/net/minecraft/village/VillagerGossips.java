@@ -19,14 +19,27 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.DoublePredicate;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.util.Util;
+import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
 
 public class VillagerGossips {
+	public static final int field_30236 = 2;
 	private final Map<UUID, VillagerGossips.Reputation> entityReputation = Maps.<UUID, VillagerGossips.Reputation>newHashMap();
+
+	@Debug
+	public Map<UUID, Object2IntMap<VillageGossipType>> method_35120() {
+		Map<UUID, Object2IntMap<VillageGossipType>> map = Maps.<UUID, Object2IntMap<VillageGossipType>>newHashMap();
+		this.entityReputation.keySet().forEach(uUID -> {
+			VillagerGossips.Reputation reputation = (VillagerGossips.Reputation)this.entityReputation.get(uUID);
+			map.put(uUID, reputation.associatedGossip);
+		});
+		return map;
+	}
 
 	public void decay() {
 		Iterator<VillagerGossips.Reputation> iterator = this.entityReputation.values().iterator();
@@ -89,12 +102,46 @@ public class VillagerGossips {
 		return reputation != null ? reputation.getValueFor(gossipTypeFilter) : 0;
 	}
 
+	public long method_35122(VillageGossipType villageGossipType, DoublePredicate doublePredicate) {
+		return this.entityReputation
+			.values()
+			.stream()
+			.filter(reputation -> doublePredicate.test((double)(reputation.associatedGossip.getOrDefault(villageGossipType, 0) * villageGossipType.multiplier)))
+			.count();
+	}
+
 	public void startGossip(UUID target, VillageGossipType type, int value) {
 		VillagerGossips.Reputation reputation = this.getReputationFor(target);
 		reputation.associatedGossip.mergeInt(type, value, (integer, integer2) -> this.mergeReputation(type, integer, integer2));
 		reputation.clamp(type);
 		if (reputation.isObsolete()) {
 			this.entityReputation.remove(target);
+		}
+	}
+
+	public void method_35126(UUID uUID, VillageGossipType villageGossipType, int i) {
+		this.startGossip(uUID, villageGossipType, -i);
+	}
+
+	public void method_35124(UUID uUID, VillageGossipType villageGossipType) {
+		VillagerGossips.Reputation reputation = (VillagerGossips.Reputation)this.entityReputation.get(uUID);
+		if (reputation != null) {
+			reputation.remove(villageGossipType);
+			if (reputation.isObsolete()) {
+				this.entityReputation.remove(uUID);
+			}
+		}
+	}
+
+	public void method_35121(VillageGossipType villageGossipType) {
+		Iterator<VillagerGossips.Reputation> iterator = this.entityReputation.values().iterator();
+
+		while (iterator.hasNext()) {
+			VillagerGossips.Reputation reputation = (VillagerGossips.Reputation)iterator.next();
+			reputation.remove(villageGossipType);
+			if (reputation.isObsolete()) {
+				iterator.remove();
+			}
 		}
 	}
 
@@ -119,6 +166,9 @@ public class VillagerGossips {
 	}
 
 	static class GossipEntry {
+		public static final String field_30237 = "Target";
+		public static final String field_30238 = "Type";
+		public static final String field_30239 = "Value";
 		public final UUID target;
 		public final VillageGossipType type;
 		public final int value;

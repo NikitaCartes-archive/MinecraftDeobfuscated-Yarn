@@ -2,7 +2,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -50,7 +50,7 @@ public class BlockPileFeature extends Feature<BlockPileFeatureConfig> {
 
 	private void addPileBlock(WorldAccess world, BlockPos pos, Random random, BlockPileFeatureConfig config) {
 		if (world.isAir(pos) && this.canPlace(world, pos, random)) {
-			world.setBlockState(pos, config.stateProvider.getBlockState(random, pos), SetBlockStateFlags.NO_REDRAW);
+			world.setBlockState(pos, config.stateProvider.getBlockState(random, pos), Block.NO_REDRAW);
 		}
 	}
 }

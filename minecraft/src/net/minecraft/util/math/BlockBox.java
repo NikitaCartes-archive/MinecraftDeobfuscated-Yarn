@@ -2,10 +2,15 @@ package net.minecraft.util.math;
 
 import com.google.common.base.MoreObjects;
 import com.mojang.serialization.Codec;
+import java.util.Iterator;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
+import net.minecraft.SharedConstants;
 import net.minecraft.util.Util;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * A mutable box with integer coordinates. The box is axis-aligned and the
@@ -18,6 +23,7 @@ import net.minecraft.util.Util;
  * @see Box
  */
 public class BlockBox {
+	private static final Logger LOGGER = LogManager.getLogger();
 	/**
 	 * A codec that stores a block box as an int array. In the serialized array,
 	 * the ordered elements are {@link #minX}, {@link #minY}, {@link #minZ},
@@ -29,12 +35,12 @@ public class BlockBox {
 			box -> IntStream.of(new int[]{box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ})
 		)
 		.stable();
-	public int minX;
-	public int minY;
-	public int minZ;
-	public int maxX;
-	public int maxY;
-	public int maxZ;
+	private int minX;
+	private int minY;
+	private int minZ;
+	private int maxX;
+	private int maxY;
+	private int maxZ;
 
 	/**
 	 * Creates a box enclosing only {@code pos}.
@@ -50,39 +56,51 @@ public class BlockBox {
 		this.maxX = maxX;
 		this.maxY = maxY;
 		this.maxZ = maxZ;
+		if (maxX < minX || maxY < minY || maxZ < minZ) {
+			String string = "Invalid bounding box data, inverted bounds for: " + this;
+			if (SharedConstants.isDevelopment) {
+				throw new IllegalStateException(string);
+			}
+
+			LOGGER.error(string);
+			this.minX = Math.min(minX, maxX);
+			this.minY = Math.min(minY, maxY);
+			this.minZ = Math.min(minZ, maxZ);
+			this.maxX = Math.max(minX, maxX);
+			this.maxY = Math.max(minY, maxY);
+			this.maxZ = Math.max(minZ, maxZ);
+		}
 	}
 
 	public static BlockBox create(Vec3i first, Vec3i second) {
-		return create(first.getX(), first.getY(), first.getZ(), second.getX(), second.getY(), second.getZ());
-	}
-
-	public static BlockBox create(int x1, int y1, int z1, int x2, int y2, int z2) {
-		return new BlockBox(Math.min(x1, x2), Math.min(y1, y2), Math.min(z1, z2), Math.max(x1, x2), Math.max(y1, y2), Math.max(z1, z2));
+		return new BlockBox(
+			Math.min(first.getX(), second.getX()),
+			Math.min(first.getY(), second.getY()),
+			Math.min(first.getZ(), second.getZ()),
+			Math.max(first.getX(), second.getX()),
+			Math.max(first.getY(), second.getY()),
+			Math.max(first.getZ(), second.getZ())
+		);
 	}
 
 	/**
 	 * Creates an empty box.
 	 */
 	public static BlockBox empty() {
-		return new BlockBox(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
-	}
-
-	public static BlockBox infinite() {
 		return new BlockBox(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
 	}
 
 	public static BlockBox rotated(int x, int y, int z, int offsetX, int offsetY, int offsetZ, int sizeX, int sizeY, int sizeZ, Direction facing) {
 		switch (facing) {
+			case SOUTH:
+			default:
+				return new BlockBox(x + offsetX, y + offsetY, z + offsetZ, x + sizeX - 1 + offsetX, y + sizeY - 1 + offsetY, z + sizeZ - 1 + offsetZ);
 			case NORTH:
 				return new BlockBox(x + offsetX, y + offsetY, z - sizeZ + 1 + offsetZ, x + sizeX - 1 + offsetX, y + sizeY - 1 + offsetY, z + offsetZ);
-			case SOUTH:
-				return new BlockBox(x + offsetX, y + offsetY, z + offsetZ, x + sizeX - 1 + offsetX, y + sizeY - 1 + offsetY, z + sizeZ - 1 + offsetZ);
 			case WEST:
 				return new BlockBox(x - sizeZ + 1 + offsetZ, y + offsetY, z + offsetX, x + offsetZ, y + sizeY - 1 + offsetY, z + sizeX - 1 + offsetX);
 			case EAST:
 				return new BlockBox(x + offsetZ, y + offsetY, z + offsetX, x + sizeZ - 1 + offsetZ, y + sizeY - 1 + offsetY, z + sizeX - 1 + offsetX);
-			default:
-				return new BlockBox(x + offsetX, y + offsetY, z + offsetZ, x + sizeX - 1 + offsetX, y + sizeY - 1 + offsetY, z + sizeZ - 1 + offsetZ);
 		}
 	}
 
@@ -99,13 +117,37 @@ public class BlockBox {
 		return this.maxX >= minX && this.minX <= maxX && this.maxZ >= minZ && this.minZ <= maxZ;
 	}
 
-	public void encompass(BlockBox region) {
-		this.minX = Math.min(this.minX, region.minX);
-		this.minY = Math.min(this.minY, region.minY);
-		this.minZ = Math.min(this.minZ, region.minZ);
-		this.maxX = Math.max(this.maxX, region.maxX);
-		this.maxY = Math.max(this.maxY, region.maxY);
-		this.maxZ = Math.max(this.maxZ, region.maxZ);
+	public static Optional<BlockBox> method_35411(Iterable<BlockPos> iterable) {
+		Iterator<BlockPos> iterator = iterable.iterator();
+		if (!iterator.hasNext()) {
+			return Optional.empty();
+		} else {
+			BlockBox blockBox = new BlockBox((BlockPos)iterator.next());
+			iterator.forEachRemaining(blockBox::encompass);
+			return Optional.of(blockBox);
+		}
+	}
+
+	public static Optional<BlockBox> method_35413(Iterable<BlockBox> iterable) {
+		Iterator<BlockBox> iterator = iterable.iterator();
+		if (!iterator.hasNext()) {
+			return Optional.empty();
+		} else {
+			BlockBox blockBox = (BlockBox)iterator.next();
+			BlockBox blockBox2 = new BlockBox(blockBox.minX, blockBox.minY, blockBox.minZ, blockBox.maxX, blockBox.maxY, blockBox.maxZ);
+			iterator.forEachRemaining(blockBox2::intersection);
+			return Optional.of(blockBox2);
+		}
+	}
+
+	public BlockBox intersection(BlockBox box) {
+		this.minX = Math.min(this.minX, box.minX);
+		this.minY = Math.min(this.minY, box.minY);
+		this.minZ = Math.min(this.minZ, box.minZ);
+		this.maxX = Math.max(this.maxX, box.maxX);
+		this.maxY = Math.max(this.maxY, box.maxY);
+		this.maxZ = Math.max(this.maxZ, box.maxZ);
+		return this;
 	}
 
 	/**
@@ -122,6 +164,16 @@ public class BlockBox {
 		this.maxX = Math.max(this.maxX, pos.getX());
 		this.maxY = Math.max(this.maxY, pos.getY());
 		this.maxZ = Math.max(this.maxZ, pos.getZ());
+		return this;
+	}
+
+	public BlockBox expand(int offset) {
+		this.minX -= offset;
+		this.minY -= offset;
+		this.minZ -= offset;
+		this.maxX += offset;
+		this.maxY += offset;
+		this.maxZ += offset;
 		return this;
 	}
 
@@ -196,12 +248,12 @@ public class BlockBox {
 
 	public String toString() {
 		return MoreObjects.toStringHelper(this)
-			.add("x0", this.minX)
-			.add("y0", this.minY)
-			.add("z0", this.minZ)
-			.add("x1", this.maxX)
-			.add("y1", this.maxY)
-			.add("z1", this.maxZ)
+			.add("minX", this.minX)
+			.add("minY", this.minY)
+			.add("minZ", this.minZ)
+			.add("maxX", this.maxX)
+			.add("maxY", this.maxY)
+			.add("maxZ", this.maxZ)
 			.toString();
 	}
 
@@ -223,5 +275,29 @@ public class BlockBox {
 
 	public int hashCode() {
 		return Objects.hash(new Object[]{this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ});
+	}
+
+	public int getMinX() {
+		return this.minX;
+	}
+
+	public int getMinY() {
+		return this.minY;
+	}
+
+	public int getMinZ() {
+		return this.minZ;
+	}
+
+	public int getMaxX() {
+		return this.maxX;
+	}
+
+	public int getMaxY() {
+		return this.maxY;
+	}
+
+	public int getMaxZ() {
+		return this.maxZ;
 	}
 }

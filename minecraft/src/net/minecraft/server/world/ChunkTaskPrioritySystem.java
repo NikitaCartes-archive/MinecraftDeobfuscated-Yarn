@@ -36,6 +36,10 @@ public class ChunkTaskPrioritySystem implements ChunkHolder.LevelUpdateListener,
 		this.controlActor = new TaskExecutor<>(new TaskQueue.Prioritized(4), executor, "sorter");
 	}
 
+	public static <T> ChunkTaskPrioritySystem.Task<T> method_34871(Function<MessageListener<Unit>, T> function, long l, IntSupplier intSupplier) {
+		return new ChunkTaskPrioritySystem.Task<>(function, l, intSupplier);
+	}
+
 	public static ChunkTaskPrioritySystem.Task<Runnable> createMessage(Runnable task, long pos, IntSupplier lastLevelUpdatedToProvider) {
 		return new ChunkTaskPrioritySystem.Task<>(yield -> () -> {
 				task.run();
@@ -45,6 +49,10 @@ public class ChunkTaskPrioritySystem implements ChunkHolder.LevelUpdateListener,
 
 	public static ChunkTaskPrioritySystem.Task<Runnable> createMessage(ChunkHolder holder, Runnable task) {
 		return createMessage(task, holder.getPos().toLong(), holder::getCompletedLevel);
+	}
+
+	public static <T> ChunkTaskPrioritySystem.Task<T> method_34870(ChunkHolder chunkHolder, Function<MessageListener<Unit>, T> function) {
+		return method_34871(function, chunkHolder.getPos().toLong(), chunkHolder::getCompletedLevel);
 	}
 
 	public static ChunkTaskPrioritySystem.UnblockingMessage createUnblockingMessage(Runnable task, long pos, boolean removeTask) {

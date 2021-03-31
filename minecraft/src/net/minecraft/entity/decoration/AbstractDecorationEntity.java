@@ -179,16 +179,16 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
+	public void writeCustomDataToNbt(NbtCompound nbt) {
 		BlockPos blockPos = this.getDecorationBlockPos();
-		tag.putInt("TileX", blockPos.getX());
-		tag.putInt("TileY", blockPos.getY());
-		tag.putInt("TileZ", blockPos.getZ());
+		nbt.putInt("TileX", blockPos.getX());
+		nbt.putInt("TileY", blockPos.getY());
+		nbt.putInt("TileZ", blockPos.getZ());
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		this.attachmentPos = new BlockPos(tag.getInt("TileX"), tag.getInt("TileY"), tag.getInt("TileZ"));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		this.attachmentPos = new BlockPos(nbt.getInt("TileX"), nbt.getInt("TileY"), nbt.getInt("TileZ"));
 	}
 
 	public abstract int getWidthPixels();

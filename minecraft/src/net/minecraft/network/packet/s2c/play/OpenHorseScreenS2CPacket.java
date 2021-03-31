@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -34,17 +32,14 @@ public class OpenHorseScreenS2CPacket implements Packet<ClientPlayPacketListener
 		clientPlayPacketListener.onOpenHorseScreen(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getSyncId() {
 		return this.syncId;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getSlotCount() {
 		return this.slotCount;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getHorseId() {
 		return this.horseId;
 	}

@@ -14,6 +14,8 @@ import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 
 public class HoneyBottleItem extends Item {
+	private static final int MAX_USE_TIME = 40;
+
 	public HoneyBottleItem(Item.Settings settings) {
 		super(settings);
 	}

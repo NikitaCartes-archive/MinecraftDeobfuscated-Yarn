@@ -8,8 +8,6 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Language;
@@ -119,7 +117,6 @@ public class TranslatableText extends BaseText implements ParsableText {
 		return new TranslatableText(this.key, this.args);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public <T> Optional<T> visitSelf(StringVisitable.StyledVisitor<T> visitor, Style style) {
 		this.updateTranslations();

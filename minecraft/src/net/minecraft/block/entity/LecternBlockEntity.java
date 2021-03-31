@@ -1,7 +1,6 @@
 package net.minecraft.block.entity;
 
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LecternBlock;
 import net.minecraft.entity.player.PlayerEntity;
@@ -11,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.screen.LecternScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.PropertyDelegate;
@@ -28,6 +28,10 @@ import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 
 public class LecternBlockEntity extends BlockEntity implements Clearable, NamedScreenHandlerFactory {
+	public static final int field_31348 = 0;
+	public static final int field_31349 = 1;
+	public static final int field_31350 = 0;
+	public static final int field_31351 = 1;
 	private final Inventory inventory = new Inventory() {
 		@Override
 		public int size() {
@@ -205,27 +209,27 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 	}
 
 	@Override
-	public void readNbt(NbtCompound tag) {
-		super.readNbt(tag);
-		if (tag.contains("Book", NbtTypeIds.COMPOUND)) {
-			this.book = this.resolveBook(ItemStack.fromNbt(tag.getCompound("Book")), null);
+	public void readNbt(NbtCompound nbt) {
+		super.readNbt(nbt);
+		if (nbt.contains("Book", NbtElement.COMPOUND_TYPE)) {
+			this.book = this.resolveBook(ItemStack.fromNbt(nbt.getCompound("Book")), null);
 		} else {
 			this.book = ItemStack.EMPTY;
 		}
 
 		this.pageCount = WrittenBookItem.getPageCount(this.book);
-		this.currentPage = MathHelper.clamp(tag.getInt("Page"), 0, this.pageCount - 1);
+		this.currentPage = MathHelper.clamp(nbt.getInt("Page"), 0, this.pageCount - 1);
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound tag) {
-		super.writeNbt(tag);
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		super.writeNbt(nbt);
 		if (!this.getBook().isEmpty()) {
-			tag.put("Book", this.getBook().writeNbt(new NbtCompound()));
-			tag.putInt("Page", this.currentPage);
+			nbt.put("Book", this.getBook().writeNbt(new NbtCompound()));
+			nbt.putInt("Page", this.currentPage);
 		}
 
-		return tag;
+		return nbt;
 	}
 
 	@Override

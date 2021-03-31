@@ -1,7 +1,7 @@
 package net.minecraft.world.level.storage;
 
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
@@ -12,6 +12,7 @@ import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 
 public class AlphaChunkIo {
+	private static final int field_31416 = 7;
 	private static final HeightLimitView world = new HeightLimitView() {
 		@Override
 		public int getBottomY() {
@@ -24,41 +25,41 @@ public class AlphaChunkIo {
 		}
 	};
 
-	public static AlphaChunkIo.AlphaChunk readAlphaChunk(NbtCompound tag) {
-		int i = tag.getInt("xPos");
-		int j = tag.getInt("zPos");
+	public static AlphaChunkIo.AlphaChunk readAlphaChunk(NbtCompound nbt) {
+		int i = nbt.getInt("xPos");
+		int j = nbt.getInt("zPos");
 		AlphaChunkIo.AlphaChunk alphaChunk = new AlphaChunkIo.AlphaChunk(i, j);
-		alphaChunk.blocks = tag.getByteArray("Blocks");
-		alphaChunk.data = new AlphaChunkDataArray(tag.getByteArray("Data"), 7);
-		alphaChunk.skyLight = new AlphaChunkDataArray(tag.getByteArray("SkyLight"), 7);
-		alphaChunk.blockLight = new AlphaChunkDataArray(tag.getByteArray("BlockLight"), 7);
-		alphaChunk.heightMap = tag.getByteArray("HeightMap");
-		alphaChunk.terrainPopulated = tag.getBoolean("TerrainPopulated");
-		alphaChunk.entities = tag.getList("Entities", NbtTypeIds.COMPOUND);
-		alphaChunk.blockEntities = tag.getList("TileEntities", NbtTypeIds.COMPOUND);
-		alphaChunk.blockTicks = tag.getList("TileTicks", NbtTypeIds.COMPOUND);
+		alphaChunk.blocks = nbt.getByteArray("Blocks");
+		alphaChunk.data = new AlphaChunkDataArray(nbt.getByteArray("Data"), 7);
+		alphaChunk.skyLight = new AlphaChunkDataArray(nbt.getByteArray("SkyLight"), 7);
+		alphaChunk.blockLight = new AlphaChunkDataArray(nbt.getByteArray("BlockLight"), 7);
+		alphaChunk.heightMap = nbt.getByteArray("HeightMap");
+		alphaChunk.terrainPopulated = nbt.getBoolean("TerrainPopulated");
+		alphaChunk.entities = nbt.getList("Entities", NbtElement.COMPOUND_TYPE);
+		alphaChunk.blockEntities = nbt.getList("TileEntities", NbtElement.COMPOUND_TYPE);
+		alphaChunk.blockTicks = nbt.getList("TileTicks", NbtElement.COMPOUND_TYPE);
 
 		try {
-			alphaChunk.lastUpdate = tag.getLong("LastUpdate");
+			alphaChunk.lastUpdate = nbt.getLong("LastUpdate");
 		} catch (ClassCastException var5) {
-			alphaChunk.lastUpdate = (long)tag.getInt("LastUpdate");
+			alphaChunk.lastUpdate = (long)nbt.getInt("LastUpdate");
 		}
 
 		return alphaChunk;
 	}
 
-	public static void convertAlphaChunk(DynamicRegistryManager.Impl impl, AlphaChunkIo.AlphaChunk alphaChunk, NbtCompound tag, BiomeSource biomeSource) {
-		tag.putInt("xPos", alphaChunk.x);
-		tag.putInt("zPos", alphaChunk.z);
-		tag.putLong("LastUpdate", alphaChunk.lastUpdate);
+	public static void convertAlphaChunk(DynamicRegistryManager.Impl impl, AlphaChunkIo.AlphaChunk alphaChunk, NbtCompound nbt, BiomeSource biomeSource) {
+		nbt.putInt("xPos", alphaChunk.x);
+		nbt.putInt("zPos", alphaChunk.z);
+		nbt.putLong("LastUpdate", alphaChunk.lastUpdate);
 		int[] is = new int[alphaChunk.heightMap.length];
 
 		for (int i = 0; i < alphaChunk.heightMap.length; i++) {
 			is[i] = alphaChunk.heightMap[i];
 		}
 
-		tag.putIntArray("HeightMap", is);
-		tag.putBoolean("TerrainPopulated", alphaChunk.terrainPopulated);
+		nbt.putIntArray("HeightMap", is);
+		nbt.putBoolean("TerrainPopulated", alphaChunk.terrainPopulated);
 		NbtList nbtList = new NbtList();
 
 		for (int j = 0; j < 8; j++) {
@@ -106,15 +107,15 @@ public class AlphaChunkIo {
 			}
 		}
 
-		tag.put("Sections", nbtList);
-		tag.putIntArray("Biomes", new BiomeArray(impl.get(Registry.BIOME_KEY), world, new ChunkPos(alphaChunk.x, alphaChunk.z), biomeSource).toIntArray());
-		tag.put("Entities", alphaChunk.entities);
-		tag.put("TileEntities", alphaChunk.blockEntities);
+		nbt.put("Sections", nbtList);
+		nbt.putIntArray("Biomes", new BiomeArray(impl.get(Registry.BIOME_KEY), world, new ChunkPos(alphaChunk.x, alphaChunk.z), biomeSource).toIntArray());
+		nbt.put("Entities", alphaChunk.entities);
+		nbt.put("TileEntities", alphaChunk.blockEntities);
 		if (alphaChunk.blockTicks != null) {
-			tag.put("TileTicks", alphaChunk.blockTicks);
+			nbt.put("TileTicks", alphaChunk.blockTicks);
 		}
 
-		tag.putBoolean("convertedFromAlphaFormat", true);
+		nbt.putBoolean("convertedFromAlphaFormat", true);
 	}
 
 	public static class AlphaChunk {

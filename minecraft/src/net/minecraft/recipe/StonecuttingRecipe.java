@@ -1,7 +1,5 @@
 package net.minecraft.recipe;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -18,7 +16,6 @@ public class StonecuttingRecipe extends CuttingRecipe {
 		return this.input.test(inv.getStack(0));
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getRecipeKindIcon() {
 		return new ItemStack(Blocks.STONECUTTER);

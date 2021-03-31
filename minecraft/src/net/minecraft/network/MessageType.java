@@ -1,8 +1,5 @@
 package net.minecraft.network;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-
 public enum MessageType {
 	CHAT((byte)0, false),
 	SYSTEM((byte)1, true),
@@ -30,7 +27,6 @@ public enum MessageType {
 		return CHAT;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean interruptsNarration() {
 		return this.interruptsNarration;
 	}

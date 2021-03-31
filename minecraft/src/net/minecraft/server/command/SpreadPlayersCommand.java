@@ -29,6 +29,7 @@ import net.minecraft.util.math.Vec2f;
 import net.minecraft.world.BlockView;
 
 public class SpreadPlayersCommand {
+	private static final int field_33397 = 10000;
 	private static final Dynamic4CommandExceptionType FAILED_TEAMS_EXCEPTION = new Dynamic4CommandExceptionType(
 		(pilesCount, x, z, maxSpreadDistance) -> new TranslatableText("commands.spreadplayers.failed.teams", pilesCount, x, z, maxSpreadDistance)
 	);

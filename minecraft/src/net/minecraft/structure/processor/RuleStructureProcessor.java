@@ -39,7 +39,7 @@ public class RuleStructureProcessor extends StructureProcessor {
 
 		for (StructureProcessorRule structureProcessorRule : this.rules) {
 			if (structureProcessorRule.test(structureBlockInfo2.state, blockState, structureBlockInfo.pos, structureBlockInfo2.pos, blockPos, random)) {
-				return new Structure.StructureBlockInfo(structureBlockInfo2.pos, structureProcessorRule.getOutputState(), structureProcessorRule.getTag());
+				return new Structure.StructureBlockInfo(structureBlockInfo2.pos, structureProcessorRule.getOutputState(), structureProcessorRule.getOutputNbt());
 			}
 		}
 

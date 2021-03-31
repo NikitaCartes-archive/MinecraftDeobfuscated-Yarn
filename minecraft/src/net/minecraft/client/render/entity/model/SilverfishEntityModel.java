@@ -14,6 +14,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SilverfishEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
+	private static final int BODY_PARTS_COUNT = 7;
 	private final ModelPart root;
 	private final ModelPart[] body = new ModelPart[7];
 	private final ModelPart[] scales = new ModelPart[3];
@@ -22,8 +23,8 @@ public class SilverfishEntityModel<T extends Entity> extends SinglePartEntityMod
 
 	public SilverfishEntityModel(ModelPart root) {
 		this.root = root;
-		Arrays.setAll(this.body, i -> root.getChild(getSegmentName(i)));
-		Arrays.setAll(this.scales, i -> root.getChild(getLayerName(i)));
+		Arrays.setAll(this.body, index -> root.getChild(getSegmentName(index)));
+		Arrays.setAll(this.scales, index -> root.getChild(getLayerName(index)));
 	}
 
 	private static String getLayerName(int index) {

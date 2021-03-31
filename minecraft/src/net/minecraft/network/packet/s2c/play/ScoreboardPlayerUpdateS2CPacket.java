@@ -2,8 +2,6 @@ package net.minecraft.network.packet.s2c.play;
 
 import java.util.Objects;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -53,23 +51,19 @@ public class ScoreboardPlayerUpdateS2CPacket implements Packet<ClientPlayPacketL
 		clientPlayPacketListener.onScoreboardPlayerUpdate(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public String getPlayerName() {
 		return this.playerName;
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public String getObjectiveName() {
 		return this.objectiveName;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getScore() {
 		return this.score;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public ServerScoreboard.UpdateMode getUpdateMode() {
 		return this.mode;
 	}

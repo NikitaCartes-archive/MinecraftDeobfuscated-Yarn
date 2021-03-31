@@ -11,10 +11,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import org.apache.logging.log4j.LogManager;
@@ -114,7 +114,7 @@ public class PersistentStateManager {
 					}
 				}
 
-				int i = nbtCompound.contains("DataVersion", NbtTypeIds.NUMBER) ? nbtCompound.getInt("DataVersion") : 1343;
+				int i = nbtCompound.contains("DataVersion", NbtElement.NUMBER_TYPE) ? nbtCompound.getInt("DataVersion") : 1343;
 				var61 = NbtHelper.update(this.dataFixer, DataFixTypes.SAVED_DATA, nbtCompound, i, dataVersion);
 			} catch (Throwable var56) {
 				var7 = var56;

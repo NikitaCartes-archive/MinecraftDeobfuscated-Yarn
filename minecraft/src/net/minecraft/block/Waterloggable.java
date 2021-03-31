@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Optional;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -23,7 +22,7 @@ public interface Waterloggable extends FluidDrainable, FluidFillable {
 	default boolean tryFillWithFluid(WorldAccess world, BlockPos pos, BlockState state, FluidState fluidState) {
 		if (!(Boolean)state.get(Properties.WATERLOGGED) && fluidState.getFluid() == Fluids.WATER) {
 			if (!world.isClient()) {
-				world.setBlockState(pos, state.with(Properties.WATERLOGGED, Boolean.valueOf(true)), SetBlockStateFlags.DEFAULT);
+				world.setBlockState(pos, state.with(Properties.WATERLOGGED, Boolean.valueOf(true)), Block.NOTIFY_ALL);
 				world.getFluidTickScheduler().schedule(pos, fluidState.getFluid(), fluidState.getFluid().getTickRate(world));
 			}
 
@@ -36,7 +35,7 @@ public interface Waterloggable extends FluidDrainable, FluidFillable {
 	@Override
 	default ItemStack tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state) {
 		if ((Boolean)state.get(Properties.WATERLOGGED)) {
-			world.setBlockState(pos, state.with(Properties.WATERLOGGED, Boolean.valueOf(false)), SetBlockStateFlags.DEFAULT);
+			world.setBlockState(pos, state.with(Properties.WATERLOGGED, Boolean.valueOf(false)), Block.NOTIFY_ALL);
 			return new ItemStack(Items.WATER_BUCKET);
 		} else {
 			return ItemStack.EMPTY;

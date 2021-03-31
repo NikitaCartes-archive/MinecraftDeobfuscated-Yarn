@@ -2,7 +2,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
@@ -74,16 +74,16 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 						BlockState blockState = structureWorldAccess.getBlockState(blockPos2x);
 						if (s == k || t == -1 || u == p || s == l || t == 4 || u == q) {
 							if (blockPos2x.getY() >= structureWorldAccess.getBottomY() && !structureWorldAccess.getBlockState(blockPos2x.down()).getMaterial().isSolid()) {
-								structureWorldAccess.setBlockState(blockPos2x, AIR, SetBlockStateFlags.NOTIFY_LISTENERS);
+								structureWorldAccess.setBlockState(blockPos2x, AIR, Block.NOTIFY_LISTENERS);
 							} else if (blockState.getMaterial().isSolid() && !blockState.isOf(Blocks.CHEST)) {
 								if (t == -1 && random.nextInt(4) != 0) {
-									structureWorldAccess.setBlockState(blockPos2x, Blocks.MOSSY_COBBLESTONE.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+									structureWorldAccess.setBlockState(blockPos2x, Blocks.MOSSY_COBBLESTONE.getDefaultState(), Block.NOTIFY_LISTENERS);
 								} else {
-									structureWorldAccess.setBlockState(blockPos2x, Blocks.COBBLESTONE.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+									structureWorldAccess.setBlockState(blockPos2x, Blocks.COBBLESTONE.getDefaultState(), Block.NOTIFY_LISTENERS);
 								}
 							}
 						} else if (!blockState.isOf(Blocks.CHEST) && !blockState.isOf(Blocks.SPAWNER)) {
-							structureWorldAccess.setBlockState(blockPos2x, AIR, SetBlockStateFlags.NOTIFY_LISTENERS);
+							structureWorldAccess.setBlockState(blockPos2x, AIR, Block.NOTIFY_LISTENERS);
 						}
 					}
 				}
@@ -106,7 +106,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 
 						if (x == 1) {
 							structureWorldAccess.setBlockState(
-								blockPos3, StructurePiece.orientateChest(structureWorldAccess, blockPos3, Blocks.CHEST.getDefaultState()), SetBlockStateFlags.NOTIFY_LISTENERS
+								blockPos3, StructurePiece.orientateChest(structureWorldAccess, blockPos3, Blocks.CHEST.getDefaultState()), Block.NOTIFY_LISTENERS
 							);
 							LootableContainerBlockEntity.setLootTable(structureWorldAccess, random, blockPos3, LootTables.SIMPLE_DUNGEON_CHEST);
 							break;
@@ -115,7 +115,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 				}
 			}
 
-			structureWorldAccess.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+			structureWorldAccess.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), Block.NOTIFY_LISTENERS);
 			BlockEntity blockEntity = structureWorldAccess.getBlockEntity(blockPos);
 			if (blockEntity instanceof MobSpawnerBlockEntity) {
 				((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(this.getMobSpawnerEntity(random));

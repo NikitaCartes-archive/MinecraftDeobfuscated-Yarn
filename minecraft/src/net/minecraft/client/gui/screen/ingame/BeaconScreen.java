@@ -58,8 +58,8 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 	@Override
 	protected void init() {
 		super.init();
-		this.doneButton = this.addButton(new BeaconScreen.DoneButtonWidget(this.x + 164, this.y + 107));
-		this.addButton(new BeaconScreen.CancelButtonWidget(this.x + 190, this.y + 107));
+		this.doneButton = this.addButton(new BeaconScreen.DoneButtonWidget(this.field_2776 + 164, this.field_2800 + 107));
+		this.addButton(new BeaconScreen.CancelButtonWidget(this.field_2776 + 190, this.field_2800 + 107));
 		this.consumeGem = true;
 		this.doneButton.active = false;
 	}
@@ -78,7 +78,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 				for (int m = 0; m < k; m++) {
 					StatusEffect statusEffect = BeaconBlockEntity.EFFECTS_BY_LEVEL[j][m];
 					BeaconScreen.EffectButtonWidget effectButtonWidget = new BeaconScreen.EffectButtonWidget(
-						this.x + 76 + m * 24 - l / 2, this.y + 22 + j * 25, statusEffect, true
+						this.field_2776 + 76 + m * 24 - l / 2, this.field_2800 + 22 + j * 25, statusEffect, true
 					);
 					this.addButton(effectButtonWidget);
 					if (j >= i) {
@@ -95,7 +95,9 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 			for (int mx = 0; mx < k - 1; mx++) {
 				StatusEffect statusEffect = BeaconBlockEntity.EFFECTS_BY_LEVEL[3][mx];
-				BeaconScreen.EffectButtonWidget effectButtonWidget = new BeaconScreen.EffectButtonWidget(this.x + 167 + mx * 24 - l / 2, this.y + 47, statusEffect, false);
+				BeaconScreen.EffectButtonWidget effectButtonWidget = new BeaconScreen.EffectButtonWidget(
+					this.field_2776 + 167 + mx * 24 - l / 2, this.field_2800 + 47, statusEffect, false
+				);
 				this.addButton(effectButtonWidget);
 				if (3 >= i) {
 					effectButtonWidget.active = false;
@@ -106,7 +108,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 			if (this.primaryEffect != null) {
 				BeaconScreen.EffectButtonWidget effectButtonWidget2 = new BeaconScreen.EffectButtonWidget(
-					this.x + 167 + (k - 1) * 24 - l / 2, this.y + 47, this.primaryEffect, false
+					this.field_2776 + 167 + (k - 1) * 24 - l / 2, this.field_2800 + 47, this.primaryEffect, false
 				);
 				this.addButton(effectButtonWidget2);
 				if (3 >= i) {
@@ -127,7 +129,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 		for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
 			if (abstractButtonWidget.isHovered()) {
-				abstractButtonWidget.renderToolTip(matrices, mouseX - this.x, mouseY - this.y);
+				abstractButtonWidget.renderToolTip(matrices, mouseX - this.field_2776, mouseY - this.field_2800);
 				break;
 			}
 		}

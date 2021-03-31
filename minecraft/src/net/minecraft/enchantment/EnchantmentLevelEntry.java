@@ -1,6 +1,6 @@
 package net.minecraft.enchantment;
 
-import net.minecraft.util.collection.WeightedPicker;
+import net.minecraft.util.collection.Weighted;
 
 /**
  * Represents an entry in an enchantments array, i.e. a pair between
@@ -13,7 +13,7 @@ import net.minecraft.util.collection.WeightedPicker;
  * 
  * <p>This class is immutable. It does not override hashCode or equals.
  */
-public class EnchantmentLevelEntry extends WeightedPicker.Entry {
+public class EnchantmentLevelEntry extends Weighted.Absent {
 	public final Enchantment enchantment;
 	public final int level;
 

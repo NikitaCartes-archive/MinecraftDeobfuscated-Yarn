@@ -11,6 +11,6 @@ public class CountDecorator extends AbstractCountDecorator<CountConfig> {
 	}
 
 	protected int getCount(Random random, CountConfig countConfig, BlockPos blockPos) {
-		return countConfig.getCount().getValue(random);
+		return countConfig.getCount().get(random);
 	}
 }

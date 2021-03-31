@@ -2,8 +2,6 @@ package net.minecraft.screen;
 
 import java.util.List;
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -228,13 +226,11 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 		return list;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getLapisCount() {
 		ItemStack itemStack = this.inventory.getStack(1);
 		return itemStack.isEmpty() ? 0 : itemStack.getCount();
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getSeed() {
 		return this.seed.get();
 	}

@@ -28,4 +28,9 @@ public class DummyClientTickScheduler<T> implements TickScheduler<T> {
 	public boolean isTicking(BlockPos pos, T object) {
 		return false;
 	}
+
+	@Override
+	public int getTicks() {
+		return 0;
+	}
 }

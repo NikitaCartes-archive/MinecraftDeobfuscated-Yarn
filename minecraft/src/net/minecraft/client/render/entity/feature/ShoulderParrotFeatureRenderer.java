@@ -19,9 +19,9 @@ import net.minecraft.nbt.NbtCompound;
 public class ShoulderParrotFeatureRenderer<T extends PlayerEntity> extends FeatureRenderer<T, PlayerEntityModel<T>> {
 	private final ParrotEntityModel model;
 
-	public ShoulderParrotFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> featureRendererContext, EntityModelLoader entityModelLoader) {
-		super(featureRendererContext);
-		this.model = new ParrotEntityModel(entityModelLoader.getModelPart(EntityModelLayers.PARROT));
+	public ShoulderParrotFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> context, EntityModelLoader loader) {
+		super(context);
+		this.model = new ParrotEntityModel(loader.getModelPart(EntityModelLayers.PARROT));
 	}
 
 	public void render(
@@ -43,7 +43,7 @@ public class ShoulderParrotFeatureRenderer<T extends PlayerEntity> extends Featu
 		boolean leftShoulder
 	) {
 		NbtCompound nbtCompound = leftShoulder ? player.getShoulderEntityLeft() : player.getShoulderEntityRight();
-		EntityType.get(nbtCompound.getString("id")).filter(entityType -> entityType == EntityType.PARROT).ifPresent(entityType -> {
+		EntityType.get(nbtCompound.getString("id")).filter(type -> type == EntityType.PARROT).ifPresent(type -> {
 			matrices.push();
 			matrices.translate(leftShoulder ? 0.4F : -0.4F, player.isInSneakingPose() ? -1.3F : -1.5, 0.0);
 			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(this.model.getLayer(ParrotEntityRenderer.TEXTURES[nbtCompound.getInt("Variant")]));

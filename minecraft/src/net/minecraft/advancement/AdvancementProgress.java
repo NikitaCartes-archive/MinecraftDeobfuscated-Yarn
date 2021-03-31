@@ -17,8 +17,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.CriterionProgress;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.JsonHelper;
@@ -120,7 +118,6 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 		return (CriterionProgress)this.criteriaProgresses.get(name);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getProgressBarPercentage() {
 		if (this.criteriaProgresses.isEmpty()) {
 			return 0.0F;
@@ -132,7 +129,6 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public String getProgressBarFraction() {
 		if (this.criteriaProgresses.isEmpty()) {
 			return null;
@@ -147,7 +143,6 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	private int countObtainedRequirements() {
 		int i = 0;
 

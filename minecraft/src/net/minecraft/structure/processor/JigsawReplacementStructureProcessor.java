@@ -34,7 +34,7 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 	) {
 		BlockState blockState = structureBlockInfo2.state;
 		if (blockState.isOf(Blocks.JIGSAW)) {
-			String string = structureBlockInfo2.tag.getString("final_state");
+			String string = structureBlockInfo2.nbt.getString("final_state");
 			BlockArgumentParser blockArgumentParser = new BlockArgumentParser(new StringReader(string), false);
 
 			try {

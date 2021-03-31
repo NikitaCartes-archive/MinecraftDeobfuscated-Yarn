@@ -1,7 +1,5 @@
 package net.minecraft.block;
 
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -19,6 +17,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 
 public class FenceGateBlock extends HorizontalFacingBlock {
@@ -125,7 +124,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if ((Boolean)state.get(OPEN)) {
 			state = state.with(OPEN, Boolean.valueOf(false));
-			world.setBlockState(pos, state, SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
+			world.setBlockState(pos, state, Block.NOTIFY_LISTENERS | Block.REDRAW_ON_MAIN_THREAD);
 		} else {
 			Direction direction = player.getHorizontalFacing();
 			if (state.get(FACING) == direction.getOpposite()) {
@@ -133,7 +132,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 			}
 
 			state = state.with(OPEN, Boolean.valueOf(true));
-			world.setBlockState(pos, state, SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
+			world.setBlockState(pos, state, Block.NOTIFY_LISTENERS | Block.REDRAW_ON_MAIN_THREAD);
 		}
 
 		boolean bl = (Boolean)state.get(OPEN);
@@ -147,7 +146,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 		if (!world.isClient) {
 			boolean bl = world.isReceivingRedstonePower(pos);
 			if ((Boolean)state.get(POWERED) != bl) {
-				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)).with(OPEN, Boolean.valueOf(bl)), SetBlockStateFlags.NOTIFY_LISTENERS);
+				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)).with(OPEN, Boolean.valueOf(bl)), Block.NOTIFY_LISTENERS);
 				if ((Boolean)state.get(OPEN) != bl) {
 					world.syncWorldEvent(null, bl ? WorldEvents.FENCE_GATE_OPENS : WorldEvents.FENCE_GATE_CLOSES, pos, 0);
 					world.emitGameEvent(bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);

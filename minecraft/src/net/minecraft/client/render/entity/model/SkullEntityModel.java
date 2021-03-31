@@ -20,21 +20,23 @@ public class SkullEntityModel extends SkullBlockEntityModel {
 
 	public SkullEntityModel(ModelPart root) {
 		this.root = root;
-		this.head = root.getChild("head");
+		this.head = root.getChild(EntityModelPartNames.HEAD);
 	}
 
 	public static ModelData getModelData() {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
-		modelPartData.addChild("head", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F), ModelTransform.NONE);
+		modelPartData.addChild(EntityModelPartNames.HEAD, ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F), ModelTransform.NONE);
 		return modelData;
 	}
 
 	public static TexturedModelData getHeadTexturedModelData() {
 		ModelData modelData = getModelData();
 		ModelPartData modelPartData = modelData.getRoot();
-		modelPartData.getChild("head")
-			.addChild("hat", ModelPartBuilder.create().uv(32, 0).cuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, new Dilation(0.25F)), ModelTransform.NONE);
+		modelPartData.getChild(EntityModelPartNames.HEAD)
+			.addChild(
+				EntityModelPartNames.HAT, ModelPartBuilder.create().uv(32, 0).cuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, new Dilation(0.25F)), ModelTransform.NONE
+			);
 		return TexturedModelData.of(modelData, 64, 64);
 	}
 

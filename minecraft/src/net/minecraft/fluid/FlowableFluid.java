@@ -9,7 +9,6 @@ import it.unimi.dsi.fastutil.shorts.Short2ObjectMap;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -37,6 +36,7 @@ import net.minecraft.world.WorldView;
 public abstract class FlowableFluid extends Fluid {
 	public static final BooleanProperty FALLING = Properties.FALLING;
 	public static final IntProperty LEVEL = Properties.LEVEL_1_8;
+	private static final int field_31726 = 200;
 	private static final ThreadLocal<Object2ByteLinkedOpenHashMap<Block.NeighborGroup>> field_15901 = ThreadLocal.withInitial(() -> {
 		Object2ByteLinkedOpenHashMap<Block.NeighborGroup> object2ByteLinkedOpenHashMap = new Object2ByteLinkedOpenHashMap<Block.NeighborGroup>(200) {
 			@Override
@@ -246,7 +246,7 @@ public abstract class FlowableFluid extends Fluid {
 				this.beforeBreakingBlock(world, pos, state);
 			}
 
-			world.setBlockState(pos, fluidState.getBlockState(), SetBlockStateFlags.DEFAULT);
+			world.setBlockState(pos, fluidState.getBlockState(), Block.NOTIFY_ALL);
 		}
 	}
 
@@ -431,11 +431,11 @@ public abstract class FlowableFluid extends Fluid {
 			int i = this.getNextTickDelay(world, pos, state, fluidState);
 			if (fluidState.isEmpty()) {
 				state = fluidState;
-				world.setBlockState(pos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT);
+				world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
 			} else if (!fluidState.equals(state)) {
 				state = fluidState;
 				BlockState blockState = fluidState.getBlockState();
-				world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
+				world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
 				world.getFluidTickScheduler().schedule(pos, fluidState.getFluid(), i);
 				world.updateNeighborsAlways(pos, blockState.getBlock());
 			}
@@ -461,6 +461,9 @@ public abstract class FlowableFluid extends Fluid {
 	public float getHeight(FluidState state) {
 		return (float)state.getLevel() / 9.0F;
 	}
+
+	@Override
+	public abstract int getLevel(FluidState state);
 
 	@Override
 	public VoxelShape getShape(FluidState state, BlockView world, BlockPos pos) {

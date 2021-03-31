@@ -1,7 +1,5 @@
 package net.minecraft.screen;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.recipe.InputSlotFiller;
 import net.minecraft.recipe.Recipe;
@@ -32,7 +30,6 @@ public abstract class AbstractRecipeScreenHandler<C extends Inventory> extends S
 
 	public abstract int getCraftingSlotCount();
 
-	@Environment(EnvType.CLIENT)
 	public abstract RecipeBookCategory getCategory();
 
 	public abstract boolean method_32339(int i);

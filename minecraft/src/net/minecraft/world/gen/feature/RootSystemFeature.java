@@ -3,7 +3,6 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import java.util.Random;
 import java.util.function.Predicate;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.tag.BlockTags;
@@ -91,7 +90,7 @@ public class RootSystemFeature extends Feature<RootSystemFeatureConfig> {
 		for (int j = 0; j < config.rootPlacementAttempts; j++) {
 			mutablePos.set(mutablePos, random.nextInt(i) - random.nextInt(i), 0, random.nextInt(i) - random.nextInt(i));
 			if (predicate.test(world.getBlockState(mutablePos))) {
-				world.setBlockState(mutablePos, config.rootStateProvider.getBlockState(random, mutablePos), SetBlockStateFlags.NOTIFY_LISTENERS);
+				world.setBlockState(mutablePos, config.rootStateProvider.getBlockState(random, mutablePos), Block.NOTIFY_LISTENERS);
 			}
 
 			mutablePos.setX(x);
@@ -108,7 +107,7 @@ public class RootSystemFeature extends Feature<RootSystemFeatureConfig> {
 			if (world.isAir(mutablePos)) {
 				BlockState blockState = config.hangingRootStateProvider.getBlockState(random, mutablePos);
 				if (blockState.canPlaceAt(world, mutablePos) && world.getBlockState(mutablePos.up()).isSideSolidFullSquare(world, mutablePos, Direction.DOWN)) {
-					world.setBlockState(mutablePos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
+					world.setBlockState(mutablePos, blockState, Block.NOTIFY_LISTENERS);
 				}
 			}
 		}

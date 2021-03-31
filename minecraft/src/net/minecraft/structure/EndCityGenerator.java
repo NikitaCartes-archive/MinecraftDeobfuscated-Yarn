@@ -22,12 +22,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.ServerWorldAccess;
 
 public class EndCityGenerator {
-	private static final StructurePlacementData PLACEMENT_DATA = new StructurePlacementData()
-		.setIgnoreEntities(true)
-		.addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
-	private static final StructurePlacementData IGNORE_AIR_PLACEMENT_DATA = new StructurePlacementData()
-		.setIgnoreEntities(true)
-		.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
+	private static final int field_31549 = 8;
 	private static final EndCityGenerator.Part BUILDING = new EndCityGenerator.Part() {
 		@Override
 		public void init() {
@@ -237,7 +232,7 @@ public class EndCityGenerator {
 
 				for (StructurePiece structurePiece : list) {
 					structurePiece.chainLength = i;
-					StructurePiece structurePiece2 = StructurePiece.getOverlappingPiece(pieces, structurePiece.getBoundingBox());
+					StructurePiece structurePiece2 = StructureStart.intersects(pieces, structurePiece.getBoundingBox());
 					if (structurePiece2 != null && structurePiece2.chainLength != parent.chainLength) {
 						bl = true;
 						break;
@@ -261,41 +256,40 @@ public class EndCityGenerator {
 	}
 
 	public static class Piece extends SimpleStructurePiece {
-		private final String template;
-		private final BlockRotation rotation;
-		private final boolean ignoreAir;
-
 		public Piece(StructureManager manager, String template, BlockPos pos, BlockRotation rotation, boolean ignoreAir) {
-			super(StructurePieceType.END_CITY, 0);
-			this.template = template;
-			this.pos = pos;
-			this.rotation = rotation;
-			this.ignoreAir = ignoreAir;
-			this.initializeStructureData(manager);
+			super(StructurePieceType.END_CITY, 0, manager, method_35425(template), template, method_35427(ignoreAir, rotation), pos);
 		}
 
-		public Piece(ServerWorld serverWorld, NbtCompound tag) {
-			super(StructurePieceType.END_CITY, tag);
-			this.template = tag.getString("Template");
-			this.rotation = BlockRotation.valueOf(tag.getString("Rot"));
-			this.ignoreAir = tag.getBoolean("OW");
-			this.initializeStructureData(serverWorld.getStructureManager());
+		public Piece(ServerWorld serverWorld, NbtCompound nbtCompound) {
+			super(
+				StructurePieceType.END_CITY,
+				nbtCompound,
+				serverWorld,
+				identifier -> method_35427(nbtCompound.getBoolean("OW"), BlockRotation.valueOf(nbtCompound.getString("Rot")))
+			);
 		}
 
-		private void initializeStructureData(StructureManager manager) {
-			Structure structure = manager.getStructureOrBlank(new Identifier("end_city/" + this.template));
-			StructurePlacementData structurePlacementData = (this.ignoreAir ? EndCityGenerator.PLACEMENT_DATA : EndCityGenerator.IGNORE_AIR_PLACEMENT_DATA)
-				.copy()
-				.setRotation(this.rotation);
-			this.setStructureData(structure, this.pos, structurePlacementData);
+		private static StructurePlacementData method_35427(boolean bl, BlockRotation blockRotation) {
+			BlockIgnoreStructureProcessor blockIgnoreStructureProcessor = bl
+				? BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS
+				: BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS;
+			return new StructurePlacementData().setIgnoreEntities(true).addProcessor(blockIgnoreStructureProcessor).setRotation(blockRotation);
+		}
+
+		@Override
+		protected Identifier method_35470() {
+			return method_35425(this.field_31664);
+		}
+
+		private static Identifier method_35425(String string) {
+			return new Identifier("end_city/" + string);
 		}
 
 		@Override
 		protected void writeNbt(ServerWorld world, NbtCompound nbt) {
 			super.writeNbt(world, nbt);
-			nbt.putString("Template", this.template);
-			nbt.putString("Rot", this.rotation.name());
-			nbt.putBoolean("OW", this.ignoreAir);
+			nbt.putString("Rot", this.placementData.getRotation().name());
+			nbt.putBoolean("OW", this.placementData.getProcessors().get(0) == BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
 		}
 
 		@Override
@@ -310,7 +304,7 @@ public class EndCityGenerator {
 				shulkerEntity.setPosition((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5);
 				world.spawnEntity(shulkerEntity);
 			} else if (metadata.startsWith("Elytra")) {
-				ItemFrameEntity itemFrameEntity = new ItemFrameEntity(world.toServerWorld(), pos, this.rotation.rotate(Direction.SOUTH));
+				ItemFrameEntity itemFrameEntity = new ItemFrameEntity(world.toServerWorld(), pos, this.placementData.getRotation().rotate(Direction.SOUTH));
 				itemFrameEntity.setHeldItemStack(new ItemStack(Items.ELYTRA), false);
 				world.spawnEntity(itemFrameEntity);
 			}

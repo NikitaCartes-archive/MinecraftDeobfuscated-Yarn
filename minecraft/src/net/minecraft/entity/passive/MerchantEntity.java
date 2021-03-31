@@ -3,15 +3,13 @@ package net.minecraft.entity.passive;
 import com.google.common.collect.Sets;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.Npc;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.pathing.PathNodeType;
@@ -24,6 +22,7 @@ import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -39,8 +38,10 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
-public abstract class MerchantEntity extends PassiveEntity implements Npc, Merchant {
+public abstract class MerchantEntity extends PassiveEntity implements InventoryOwner, Npc, Merchant {
 	private static final TrackedData<Integer> HEAD_ROLLING_TIME_LEFT = DataTracker.registerData(MerchantEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	public static final int field_30599 = 300;
+	private static final int field_30600 = 8;
 	@Nullable
 	private PlayerEntity customer;
 	@Nullable
@@ -55,13 +56,13 @@ public abstract class MerchantEntity extends PassiveEntity implements Npc, Merch
 
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
 		if (entityData == null) {
 			entityData = new PassiveEntity.PassiveData(false);
 		}
 
-		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
 	public int getHeadRollingTimeLeft() {
@@ -113,7 +114,6 @@ public abstract class MerchantEntity extends PassiveEntity implements Npc, Merch
 		return this.offers;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void setOffersFromServer(@Nullable TradeOfferList offers) {
 	}
@@ -161,24 +161,24 @@ public abstract class MerchantEntity extends PassiveEntity implements Npc, Merch
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
 		TradeOfferList tradeOfferList = this.getOffers();
 		if (!tradeOfferList.isEmpty()) {
-			tag.put("Offers", tradeOfferList.toNbt());
+			nbt.put("Offers", tradeOfferList.toNbt());
 		}
 
-		tag.put("Inventory", this.inventory.getTags());
+		nbt.put("Inventory", this.inventory.toNbtList());
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		if (tag.contains("Offers", NbtTypeIds.COMPOUND)) {
-			this.offers = new TradeOfferList(tag.getCompound("Offers"));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		if (nbt.contains("Offers", NbtElement.COMPOUND_TYPE)) {
+			this.offers = new TradeOfferList(nbt.getCompound("Offers"));
 		}
 
-		this.inventory.readTags(tag.getList("Inventory", NbtTypeIds.COMPOUND));
+		this.inventory.readNbtList(nbt.getList("Inventory", NbtElement.COMPOUND_TYPE));
 	}
 
 	@Nullable
@@ -198,7 +198,6 @@ public abstract class MerchantEntity extends PassiveEntity implements Npc, Merch
 		this.resetCustomer();
 	}
 
-	@Environment(EnvType.CLIENT)
 	protected void produceParticles(ParticleEffect parameters) {
 		for (int i = 0; i < 5; i++) {
 			double d = this.random.nextGaussian() * 0.02;
@@ -251,7 +250,6 @@ public abstract class MerchantEntity extends PassiveEntity implements Npc, Merch
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public Vec3d method_30951(float f) {
 		float g = MathHelper.lerp(f, this.prevBodyYaw, this.bodyYaw) * (float) (Math.PI / 180.0);

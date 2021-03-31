@@ -31,8 +31,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -146,6 +144,7 @@ import org.apache.logging.log4j.Logger;
 public class ServerWorld extends World implements StructureWorldAccess {
 	public static final BlockPos END_SPAWN_POS = new BlockPos(100, 50, 0);
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int field_29768 = 300;
 	private final List<ServerPlayerEntity> players = Lists.<ServerPlayerEntity>newArrayList();
 	private final ServerChunkManager serverChunkManager;
 	private final MinecraftServer server;
@@ -327,9 +326,9 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 		if (bl != this.isRaining()) {
 			if (bl) {
-				this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_STOPPED, 0.0F));
+				this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_STOPPED, GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
 			} else {
-				this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_STARTED, 0.0F));
+				this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_STARTED, GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
 			}
 
 			this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_GRADIENT_CHANGED, this.rainGradient));
@@ -845,6 +844,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			);
 	}
 
+	@Override
 	public int getLogicalHeight() {
 		return this.getDimension().getLogicalHeight();
 	}
@@ -1389,7 +1389,6 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public float getBrightness(Direction direction, boolean shaded) {
 		return 1.0F;
@@ -1438,7 +1437,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			getTopFive(this.blockEntityTickers, BlockEntityTickInvoker::getName),
 			this.getBlockTickScheduler().getTicks(),
 			this.getFluidTickScheduler().getTicks(),
-			this.getChunkSourceDebugString()
+			this.asString()
 		);
 	}
 
@@ -1497,7 +1496,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		this.entityManager.close();
 	}
 
-	public String getChunkSourceDebugString() {
+	@Override
+	public String asString() {
 		return "Chunks[S] W: " + this.serverChunkManager.getDebugString() + " E: " + this.entityManager.getDebugString();
 	}
 

@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.enums.BambooLeaves;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -25,12 +24,20 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class BambooBlock extends Block implements Fertilizable {
+	protected static final float field_30997 = 3.0F;
+	protected static final float field_30998 = 5.0F;
+	protected static final float field_30999 = 1.5F;
 	protected static final VoxelShape SMALL_LEAVES_SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 16.0, 11.0);
 	protected static final VoxelShape LARGE_LEAVES_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 16.0, 13.0);
 	protected static final VoxelShape NO_LEAVES_SHAPE = Block.createCuboidShape(6.5, 0.0, 6.5, 9.5, 16.0, 9.5);
 	public static final IntProperty AGE = Properties.AGE_1;
 	public static final EnumProperty<BambooLeaves> LEAVES = Properties.BAMBOO_LEAVES;
 	public static final IntProperty STAGE = Properties.STAGE;
+	public static final int field_31000 = 16;
+	public static final int field_31001 = 0;
+	public static final int field_31002 = 1;
+	public static final int field_31003 = 0;
+	public static final int field_31004 = 1;
 
 	public BambooBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -132,7 +139,7 @@ public class BambooBlock extends Block implements Fertilizable {
 		}
 
 		if (direction == Direction.UP && neighborState.isOf(Blocks.BAMBOO) && (Integer)neighborState.get(AGE) > (Integer)state.get(AGE)) {
-			world.setBlockState(pos, state.cycle(AGE), SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(pos, state.cycle(AGE), Block.NOTIFY_LISTENERS);
 		}
 
 		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
@@ -186,8 +193,8 @@ public class BambooBlock extends Block implements Fertilizable {
 			} else if (blockState.isOf(Blocks.BAMBOO) && blockState.get(LEAVES) != BambooLeaves.NONE) {
 				bambooLeaves = BambooLeaves.LARGE;
 				if (blockState2.isOf(Blocks.BAMBOO)) {
-					world.setBlockState(pos.down(), blockState.with(LEAVES, BambooLeaves.SMALL), SetBlockStateFlags.DEFAULT);
-					world.setBlockState(blockPos, blockState2.with(LEAVES, BambooLeaves.NONE), SetBlockStateFlags.DEFAULT);
+					world.setBlockState(pos.down(), blockState.with(LEAVES, BambooLeaves.SMALL), Block.NOTIFY_ALL);
+					world.setBlockState(blockPos, blockState2.with(LEAVES, BambooLeaves.NONE), Block.NOTIFY_ALL);
 				}
 			}
 		}
@@ -195,7 +202,7 @@ public class BambooBlock extends Block implements Fertilizable {
 		int i = state.get(AGE) != 1 && !blockState2.isOf(Blocks.BAMBOO) ? 0 : 1;
 		int j = (height < 11 || !(random.nextFloat() < 0.25F)) && height != 15 ? 0 : 1;
 		world.setBlockState(
-			pos.up(), this.getDefaultState().with(AGE, Integer.valueOf(i)).with(LEAVES, bambooLeaves).with(STAGE, Integer.valueOf(j)), SetBlockStateFlags.DEFAULT
+			pos.up(), this.getDefaultState().with(AGE, Integer.valueOf(i)).with(LEAVES, bambooLeaves).with(STAGE, Integer.valueOf(j)), Block.NOTIFY_ALL
 		);
 	}
 

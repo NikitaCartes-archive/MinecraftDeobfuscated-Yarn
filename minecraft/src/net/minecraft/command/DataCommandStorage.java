@@ -8,6 +8,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.PersistentStateManager;
 
 public class DataCommandStorage {
+	private static final String COMMAND_STORAGE_PREFIX = "command_storage_";
 	private final Map<String, DataCommandStorage.PersistentState> storages = Maps.<String, DataCommandStorage.PersistentState>newHashMap();
 	private final PersistentStateManager stateManager;
 
@@ -24,17 +25,17 @@ public class DataCommandStorage {
 	public NbtCompound get(Identifier id) {
 		String string = id.getNamespace();
 		DataCommandStorage.PersistentState persistentState = this.stateManager
-			.get(nbtCompound -> this.createStorage(string).method_32383(nbtCompound), getSaveKey(string));
+			.get(nbtCompound -> this.createStorage(string).readNbt(nbtCompound), getSaveKey(string));
 		return persistentState != null ? persistentState.get(id.getPath()) : new NbtCompound();
 	}
 
-	public void set(Identifier id, NbtCompound tag) {
+	public void set(Identifier id, NbtCompound nbt) {
 		String string = id.getNamespace();
 		this.stateManager
 			.<DataCommandStorage.PersistentState>getOrCreate(
-				nbtCompound -> this.createStorage(string).method_32383(nbtCompound), () -> this.createStorage(string), getSaveKey(string)
+				nbtCompound -> this.createStorage(string).readNbt(nbtCompound), () -> this.createStorage(string), getSaveKey(string)
 			)
-			.set(id.getPath(), tag);
+			.set(id.getPath(), nbt);
 	}
 
 	public Stream<Identifier> getIds() {
@@ -46,27 +47,28 @@ public class DataCommandStorage {
 	}
 
 	static class PersistentState extends net.minecraft.world.PersistentState {
+		private static final String CONTENTS_KEY = "contents";
 		private final Map<String, NbtCompound> map = Maps.<String, NbtCompound>newHashMap();
 
 		private PersistentState() {
 		}
 
-		private DataCommandStorage.PersistentState method_32383(NbtCompound nbtCompound) {
-			NbtCompound nbtCompound2 = nbtCompound.getCompound("contents");
+		private DataCommandStorage.PersistentState readNbt(NbtCompound nbt) {
+			NbtCompound nbtCompound = nbt.getCompound("contents");
 
-			for (String string : nbtCompound2.getKeys()) {
-				this.map.put(string, nbtCompound2.getCompound(string));
+			for (String string : nbtCompound.getKeys()) {
+				this.map.put(string, nbtCompound.getCompound(string));
 			}
 
 			return this;
 		}
 
 		@Override
-		public NbtCompound writeNbt(NbtCompound tag) {
+		public NbtCompound writeNbt(NbtCompound nbt) {
 			NbtCompound nbtCompound = new NbtCompound();
 			this.map.forEach((string, nbtCompound2) -> nbtCompound.put(string, nbtCompound2.copy()));
-			tag.put("contents", nbtCompound);
-			return tag;
+			nbt.put("contents", nbtCompound);
+			return nbt;
 		}
 
 		public NbtCompound get(String name) {
@@ -74,11 +76,11 @@ public class DataCommandStorage {
 			return nbtCompound != null ? nbtCompound : new NbtCompound();
 		}
 
-		public void set(String name, NbtCompound tag) {
-			if (tag.isEmpty()) {
+		public void set(String name, NbtCompound nbt) {
+			if (nbt.isEmpty()) {
 				this.map.remove(name);
 			} else {
-				this.map.put(name, tag);
+				this.map.put(name, nbt);
 			}
 
 			this.markDirty();

@@ -19,6 +19,7 @@ import net.minecraft.util.hit.HitResult;
 
 @Environment(EnvType.CLIENT)
 public class FindTreeTutorialStepHandler implements TutorialStepHandler {
+	private static final int field_33028 = 6000;
 	private static final Set<Block> TREE_BLOCKS = Sets.<Block>newHashSet(
 		Blocks.OAK_LOG,
 		Blocks.SPRUCE_LOG,

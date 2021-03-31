@@ -51,15 +51,15 @@ public class GlowSquidEntity extends SquidEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putInt("DarkTicksRemaining", this.getDarkTicksRemaining());
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putInt("DarkTicksRemaining", this.getDarkTicksRemaining());
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.setDarkTicksRemaining(tag.getInt("DarkTicksRemaining"));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.setDarkTicksRemaining(nbt.getInt("DarkTicksRemaining"));
 	}
 
 	@Override

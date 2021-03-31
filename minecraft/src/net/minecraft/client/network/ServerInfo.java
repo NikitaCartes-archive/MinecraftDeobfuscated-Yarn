@@ -5,9 +5,9 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.SharedConstants;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -75,11 +75,11 @@ public class ServerInfo {
 
 	public static ServerInfo fromNbt(NbtCompound root) {
 		ServerInfo serverInfo = new ServerInfo(root.getString("name"), root.getString("ip"), false);
-		if (root.contains("icon", NbtTypeIds.STRING)) {
+		if (root.contains("icon", NbtElement.STRING_TYPE)) {
 			serverInfo.setIcon(root.getString("icon"));
 		}
 
-		if (root.contains("acceptTextures", NbtTypeIds.BYTE)) {
+		if (root.contains("acceptTextures", NbtElement.BYTE_TYPE)) {
 			if (root.getBoolean("acceptTextures")) {
 				serverInfo.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.ENABLED);
 			} else {

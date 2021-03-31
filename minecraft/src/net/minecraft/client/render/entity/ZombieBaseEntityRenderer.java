@@ -21,6 +21,6 @@ public abstract class ZombieBaseEntityRenderer<T extends ZombieEntity, M extends
 	}
 
 	protected boolean isShaking(T zombieEntity) {
-		return zombieEntity.isConvertingInWater();
+		return super.isShaking(zombieEntity) || zombieEntity.isConvertingInWater();
 	}
 }

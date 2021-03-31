@@ -2,11 +2,6 @@ package net.minecraft.entity.projectile;
 
 import java.util.OptionalInt;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.api.EnvironmentInterface;
-import net.fabricmc.api.EnvironmentInterfaces;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingItemEntity;
@@ -19,6 +14,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
@@ -32,10 +28,6 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-@EnvironmentInterfaces({@EnvironmentInterface(
-		value = EnvType.CLIENT,
-		itf = FlyingItemEntity.class
-	)})
 public class FireworkRocketEntity extends ProjectileEntity implements FlyingItemEntity {
 	private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(FireworkRocketEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 	private static final TrackedData<OptionalInt> SHOOTER_ENTITY_ID = DataTracker.registerData(
@@ -92,13 +84,11 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 		this.dataTracker.startTracking(SHOT_AT_ANGLE, false);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean shouldRender(double distance) {
 		return distance < 4096.0 && !this.wasShotByEntity();
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean shouldRender(double cameraX, double cameraY, double cameraZ) {
 		return super.shouldRender(cameraX, cameraY, cameraZ) && !this.wasShotByEntity();
@@ -204,7 +194,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 	private boolean hasExplosionEffects() {
 		ItemStack itemStack = this.dataTracker.get(ITEM);
 		NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubTag("Fireworks");
-		NbtList nbtList = nbtCompound != null ? nbtCompound.getList("Explosions", NbtTypeIds.COMPOUND) : null;
+		NbtList nbtList = nbtCompound != null ? nbtCompound.getList("Explosions", NbtElement.COMPOUND_TYPE) : null;
 		return nbtList != null && !nbtList.isEmpty();
 	}
 
@@ -212,7 +202,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 		float f = 0.0F;
 		ItemStack itemStack = this.dataTracker.get(ITEM);
 		NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubTag("Fireworks");
-		NbtList nbtList = nbtCompound != null ? nbtCompound.getList("Explosions", NbtTypeIds.COMPOUND) : null;
+		NbtList nbtList = nbtCompound != null ? nbtCompound.getList("Explosions", NbtElement.COMPOUND_TYPE) : null;
 		if (nbtList != null && !nbtList.isEmpty()) {
 			f = 5.0F + (float)(nbtList.size() * 2);
 		}
@@ -255,7 +245,6 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 		return this.dataTracker.get(SHOT_AT_ANGLE);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void handleStatus(byte status) {
 		if (status == 17 && this.world.isClient) {
@@ -276,34 +265,33 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putInt("Life", this.life);
-		tag.putInt("LifeTime", this.lifeTime);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putInt("Life", this.life);
+		nbt.putInt("LifeTime", this.lifeTime);
 		ItemStack itemStack = this.dataTracker.get(ITEM);
 		if (!itemStack.isEmpty()) {
-			tag.put("FireworksItem", itemStack.writeNbt(new NbtCompound()));
+			nbt.put("FireworksItem", itemStack.writeNbt(new NbtCompound()));
 		}
 
-		tag.putBoolean("ShotAtAngle", this.dataTracker.get(SHOT_AT_ANGLE));
+		nbt.putBoolean("ShotAtAngle", this.dataTracker.get(SHOT_AT_ANGLE));
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.life = tag.getInt("Life");
-		this.lifeTime = tag.getInt("LifeTime");
-		ItemStack itemStack = ItemStack.fromNbt(tag.getCompound("FireworksItem"));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.life = nbt.getInt("Life");
+		this.lifeTime = nbt.getInt("LifeTime");
+		ItemStack itemStack = ItemStack.fromNbt(nbt.getCompound("FireworksItem"));
 		if (!itemStack.isEmpty()) {
 			this.dataTracker.set(ITEM, itemStack);
 		}
 
-		if (tag.contains("ShotAtAngle")) {
-			this.dataTracker.set(SHOT_AT_ANGLE, tag.getBoolean("ShotAtAngle"));
+		if (nbt.contains("ShotAtAngle")) {
+			this.dataTracker.set(SHOT_AT_ANGLE, nbt.getBoolean("ShotAtAngle"));
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getStack() {
 		ItemStack itemStack = this.dataTracker.get(ITEM);

@@ -19,6 +19,7 @@ import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class SubtitlesHud extends DrawableHelper implements SoundInstanceListener {
+	private static final long field_32214 = 3000L;
 	private final MinecraftClient client;
 	private final List<SubtitlesHud.SubtitleEntry> entries = Lists.<SubtitlesHud.SubtitleEntry>newArrayList();
 	private boolean enabled;

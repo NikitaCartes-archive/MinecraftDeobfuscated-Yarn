@@ -3,6 +3,7 @@ package net.minecraft.client.texture;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import java.io.IOException;
@@ -40,6 +41,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 	public static final Identifier BLOCK_ATLAS_TEXTURE = PlayerScreenHandler.BLOCK_ATLAS_TEXTURE;
 	@Deprecated
 	public static final Identifier PARTICLE_ATLAS_TEXTURE = new Identifier("textures/atlas/particles.png");
+	private static final String field_32957 = ".png";
 	private final List<TextureTickListener> animatedSprites = Lists.<TextureTickListener>newArrayList();
 	private final Set<Identifier> spritesToLoad = Sets.<Identifier>newHashSet();
 	private final Map<Identifier, Sprite> sprites = Maps.<Identifier, Sprite>newHashMap();
@@ -59,7 +61,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 		this.spritesToLoad.clear();
 		this.spritesToLoad.addAll(data.spriteIds);
 		LOGGER.info("Created: {}x{}x{} {}-atlas", data.width, data.height, data.maxLevel, this.id);
-		TextureUtil.allocate(this.getGlId(), data.maxLevel, data.width, data.height);
+		TextureUtil.prepareImage(this.getGlId(), data.maxLevel, data.width, data.height);
 		this.clear();
 
 		for (Sprite sprite : data.sprites) {

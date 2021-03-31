@@ -1,9 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.DustParticleEffect;
@@ -25,6 +22,9 @@ import net.minecraft.world.event.GameEvent;
 
 public class LeverBlock extends WallMountedBlock {
 	public static final BooleanProperty POWERED = Properties.POWERED;
+	protected static final int field_31184 = 6;
+	protected static final int field_31185 = 6;
+	protected static final int field_31186 = 8;
 	protected static final VoxelShape NORTH_WALL_SHAPE = Block.createCuboidShape(5.0, 4.0, 10.0, 11.0, 12.0, 16.0);
 	protected static final VoxelShape SOUTH_WALL_SHAPE = Block.createCuboidShape(5.0, 4.0, 0.0, 11.0, 12.0, 6.0);
 	protected static final VoxelShape WEST_WALL_SHAPE = Block.createCuboidShape(10.0, 4.0, 5.0, 16.0, 12.0, 11.0);
@@ -96,7 +96,7 @@ public class LeverBlock extends WallMountedBlock {
 
 	public BlockState togglePower(BlockState state, World world, BlockPos pos) {
 		state = state.cycle(POWERED);
-		world.setBlockState(pos, state, SetBlockStateFlags.DEFAULT);
+		world.setBlockState(pos, state, Block.NOTIFY_ALL);
 		this.updateNeighbors(state, world, pos);
 		return state;
 	}
@@ -110,7 +110,6 @@ public class LeverBlock extends WallMountedBlock {
 		world.addParticle(new DustParticleEffect(DustParticleEffect.RED, alpha), d, e, f, 0.0, 0.0, 0.0);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		if ((Boolean)state.get(POWERED) && random.nextFloat() < 0.25F) {

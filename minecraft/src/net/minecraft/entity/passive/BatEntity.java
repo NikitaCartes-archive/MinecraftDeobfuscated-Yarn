@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoField;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -28,13 +27,16 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldEvents;
 
 public class BatEntity extends AmbientEntity {
+	public static final float field_30268 = 74.48451F;
 	public static final int field_28637 = MathHelper.ceil(2.4166098F);
 	/**
 	 * Equals 0 when the bat is flying, and 1 when it's roosting.
 	 */
 	private static final TrackedData<Byte> BAT_FLAGS = DataTracker.registerData(BatEntity.class, TrackedDataHandlerRegistry.BYTE);
+	private static final int field_30269 = 1;
 	private static final TargetPredicate CLOSE_PLAYER_PREDICATE = new TargetPredicate().setBaseMaxDistance(4.0).includeTeammates();
 	private BlockPos hangingPosition;
 
@@ -210,15 +212,15 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.dataTracker.set(BAT_FLAGS, tag.getByte("BatFlags"));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.dataTracker.set(BAT_FLAGS, nbt.getByte("BatFlags"));
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putByte("BatFlags", this.dataTracker.get(BAT_FLAGS));
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putByte("BatFlags", this.dataTracker.get(BAT_FLAGS));
 	}
 
 	public static boolean canSpawn(EntityType<BatEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {

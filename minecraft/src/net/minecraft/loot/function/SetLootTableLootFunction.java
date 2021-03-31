@@ -58,6 +58,14 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 		}
 	}
 
+	public static ConditionalLootFunction.Builder<?> builder(Identifier id) {
+		return builder(conditions -> new SetLootTableLootFunction(conditions, id, 0L));
+	}
+
+	public static ConditionalLootFunction.Builder<?> builder(Identifier id, long seed) {
+		return builder(conditions -> new SetLootTableLootFunction(conditions, id, seed));
+	}
+
 	public static class Serializer extends ConditionalLootFunction.Serializer<SetLootTableLootFunction> {
 		public void toJson(JsonObject jsonObject, SetLootTableLootFunction setLootTableLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, setLootTableLootFunction, jsonSerializationContext);

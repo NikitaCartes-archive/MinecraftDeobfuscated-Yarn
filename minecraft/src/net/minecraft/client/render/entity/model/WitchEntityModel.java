@@ -24,10 +24,10 @@ public class WitchEntityModel<T extends Entity> extends VillagerResemblingModel<
 		ModelData modelData = VillagerResemblingModel.getModelData();
 		ModelPartData modelPartData = modelData.getRoot();
 		ModelPartData modelPartData2 = modelPartData.addChild(
-			"head", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -10.0F, -4.0F, 8.0F, 10.0F, 8.0F), ModelTransform.NONE
+			EntityModelPartNames.HEAD, ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -10.0F, -4.0F, 8.0F, 10.0F, 8.0F), ModelTransform.NONE
 		);
 		ModelPartData modelPartData3 = modelPartData2.addChild(
-			"hat", ModelPartBuilder.create().uv(0, 64).cuboid(0.0F, 0.0F, 0.0F, 10.0F, 2.0F, 10.0F), ModelTransform.pivot(-5.0F, -10.03125F, -5.0F)
+			EntityModelPartNames.HAT, ModelPartBuilder.create().uv(0, 64).cuboid(0.0F, 0.0F, 0.0F, 10.0F, 2.0F, 10.0F), ModelTransform.pivot(-5.0F, -10.03125F, -5.0F)
 		);
 		ModelPartData modelPartData4 = modelPartData3.addChild(
 			"hat2",
@@ -44,7 +44,7 @@ public class WitchEntityModel<T extends Entity> extends VillagerResemblingModel<
 			ModelPartBuilder.create().uv(0, 95).cuboid(0.0F, 0.0F, 0.0F, 1.0F, 2.0F, 1.0F, new Dilation(0.25F)),
 			ModelTransform.of(1.75F, -2.0F, 2.0F, (float) (-Math.PI / 15), 0.0F, 0.10471976F)
 		);
-		ModelPartData modelPartData6 = modelPartData2.getChild("nose");
+		ModelPartData modelPartData6 = modelPartData2.getChild(EntityModelPartNames.NOSE);
 		modelPartData6.addChild(
 			"mole", ModelPartBuilder.create().uv(0, 0).cuboid(0.0F, 3.0F, -6.75F, 1.0F, 1.0F, 1.0F, new Dilation(-0.25F)), ModelTransform.pivot(0.0F, -2.0F, 0.0F)
 		);

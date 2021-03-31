@@ -6,7 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 
 public class ConstantFloatProvider extends FloatProvider {
-	public static ConstantFloatProvider ZERO = create(0.0F);
+	public static final ConstantFloatProvider ZERO = new ConstantFloatProvider(0.0F);
 	public static final Codec<ConstantFloatProvider> CODEC = Codec.either(
 			Codec.FLOAT,
 			RecordCodecBuilder.create(
@@ -18,7 +18,7 @@ public class ConstantFloatProvider extends FloatProvider {
 			either -> either.map(ConstantFloatProvider::create, constantFloatProvider -> constantFloatProvider),
 			constantFloatProvider -> Either.left(constantFloatProvider.value)
 		);
-	private float value;
+	private final float value;
 
 	public static ConstantFloatProvider create(float value) {
 		return value == 0.0F ? ZERO : new ConstantFloatProvider(value);

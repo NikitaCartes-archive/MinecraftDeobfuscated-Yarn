@@ -3,11 +3,7 @@ package net.minecraft.entity.projectile.thrown;
 import java.util.List;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.EnvironmentInterface;
-import net.fabricmc.api.EnvironmentInterfaces;
-import net.fabricmc.yarn.constants.NbtTypeIds;
-import net.fabricmc.yarn.constants.WorldEvents;
+import net.minecraft.block.AbstractCandleBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.entity.AreaEffectCloudEntity;
@@ -22,6 +18,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
@@ -33,12 +30,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 
-@EnvironmentInterfaces({@EnvironmentInterface(
-		value = EnvType.CLIENT,
-		itf = FlyingItemEntity.class
-	)})
 public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
+	public static final double field_30667 = 4.0;
+	private static final double field_30668 = 16.0;
 	public static final Predicate<LivingEntity> WATER_HURTS = LivingEntity::hurtByWater;
 
 	public PotionEntity(EntityType<? extends PotionEntity> entityType, World world) {
@@ -174,7 +170,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		}
 
 		NbtCompound nbtCompound = stack.getTag();
-		if (nbtCompound != null && nbtCompound.contains("CustomPotionColor", NbtTypeIds.NUMBER)) {
+		if (nbtCompound != null && nbtCompound.contains("CustomPotionColor", NbtElement.NUMBER_TYPE)) {
 			areaEffectCloudEntity.setColor(nbtCompound.getInt("CustomPotionColor"));
 		}
 
@@ -189,6 +185,8 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		BlockState blockState = this.world.getBlockState(pos);
 		if (blockState.isIn(BlockTags.FIRE)) {
 			this.world.removeBlock(pos, false);
+		} else if (AbstractCandleBlock.isLitCandle(blockState)) {
+			AbstractCandleBlock.extinguish(null, blockState, this.world, pos);
 		} else if (CampfireBlock.isLitCampfire(blockState)) {
 			this.world.syncWorldEvent(null, WorldEvents.FIRE_EXTINGUISHED, pos, 0);
 			CampfireBlock.extinguish(this.getOwner(), this.world, pos, blockState);

@@ -28,4 +28,8 @@ public class TextCollector {
 		StringVisitable stringVisitable = this.getRawCombined();
 		return stringVisitable != null ? stringVisitable : StringVisitable.EMPTY;
 	}
+
+	public void method_35690() {
+		this.field_25260.clear();
+	}
 }

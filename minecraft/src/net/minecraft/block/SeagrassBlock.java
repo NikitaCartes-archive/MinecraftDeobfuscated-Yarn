@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -18,6 +17,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class SeagrassBlock extends PlantBlock implements Fertilizable, FluidFillable {
+	protected static final float field_31242 = 6.0F;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 12.0, 14.0);
 
 	protected SeagrassBlock(AbstractBlock.Settings settings) {
@@ -74,8 +74,8 @@ public class SeagrassBlock extends PlantBlock implements Fertilizable, FluidFill
 		BlockState blockState2 = blockState.with(TallSeagrassBlock.HALF, DoubleBlockHalf.UPPER);
 		BlockPos blockPos = pos.up();
 		if (world.getBlockState(blockPos).isOf(Blocks.WATER)) {
-			world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
-			world.setBlockState(blockPos, blockState2, SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
+			world.setBlockState(blockPos, blockState2, Block.NOTIFY_LISTENERS);
 		}
 	}
 

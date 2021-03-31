@@ -2,9 +2,6 @@ package net.minecraft.block;
 
 import java.util.List;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
@@ -24,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
@@ -126,7 +124,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 			ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
 			if (!world.isClient && player.isCreative() && !shulkerBoxBlockEntity.isEmpty()) {
 				ItemStack itemStack = getItemStack(this.getColor());
-				NbtCompound nbtCompound = shulkerBoxBlockEntity.serializeInventory(new NbtCompound());
+				NbtCompound nbtCompound = shulkerBoxBlockEntity.writeInventoryNbt(new NbtCompound());
 				if (!nbtCompound.isEmpty()) {
 					itemStack.putSubTag("BlockEntityTag", nbtCompound);
 				}
@@ -183,17 +181,16 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
 		super.appendTooltip(stack, world, tooltip, options);
 		NbtCompound nbtCompound = stack.getSubTag("BlockEntityTag");
 		if (nbtCompound != null) {
-			if (nbtCompound.contains("LootTable", NbtTypeIds.STRING)) {
+			if (nbtCompound.contains("LootTable", NbtElement.STRING_TYPE)) {
 				tooltip.add(new LiteralText("???????"));
 			}
 
-			if (nbtCompound.contains("Items", NbtTypeIds.LIST)) {
+			if (nbtCompound.contains("Items", NbtElement.LIST_TYPE)) {
 				DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(27, ItemStack.EMPTY);
 				Inventories.readNbt(nbtCompound, defaultedList);
 				int i = 0;
@@ -239,12 +236,11 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 		return ScreenHandler.calculateComparatorOutput((Inventory)world.getBlockEntity(pos));
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
 		ItemStack itemStack = super.getPickStack(world, pos, state);
 		ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)world.getBlockEntity(pos);
-		NbtCompound nbtCompound = shulkerBoxBlockEntity.serializeInventory(new NbtCompound());
+		NbtCompound nbtCompound = shulkerBoxBlockEntity.writeInventoryNbt(new NbtCompound());
 		if (!nbtCompound.isEmpty()) {
 			itemStack.putSubTag("BlockEntityTag", nbtCompound);
 		}
@@ -253,7 +249,6 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public static DyeColor getColor(Item item) {
 		return getColor(Block.getBlockFromItem(item));
 	}

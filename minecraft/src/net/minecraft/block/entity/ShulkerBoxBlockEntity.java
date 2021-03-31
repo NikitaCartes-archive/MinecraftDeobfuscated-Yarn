@@ -3,10 +3,6 @@ package net.minecraft.block.entity;
 import java.util.List;
 import java.util.stream.IntStream;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShulkerBoxBlock;
@@ -20,6 +16,7 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ShulkerBoxScreenHandler;
 import net.minecraft.sound.SoundCategory;
@@ -37,6 +34,14 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implements SidedInventory {
+	public static final int field_31354 = 9;
+	public static final int field_31355 = 3;
+	public static final int field_31356 = 27;
+	public static final int field_31357 = 1;
+	public static final int field_31358 = 10;
+	public static final float field_31359 = 0.5F;
+	public static final float field_31360 = 270.0F;
+	public static final String ITEMS_KEY = "Items";
 	private static final int[] AVAILABLE_SLOTS = IntStream.range(0, 27).toArray();
 	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
 	private int viewerCount;
@@ -174,7 +179,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	private static void updateNeighborStates(World world, BlockPos pos, BlockState state) {
-		state.updateNeighbors(world, pos, SetBlockStateFlags.DEFAULT);
+		state.updateNeighbors(world, pos, Block.NOTIFY_ALL);
 	}
 
 	@Override
@@ -211,30 +216,30 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	public void readNbt(NbtCompound tag) {
-		super.readNbt(tag);
-		this.deserializeInventory(tag);
+	public void readNbt(NbtCompound nbt) {
+		super.readNbt(nbt);
+		this.readInventoryNbt(nbt);
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound tag) {
-		super.writeNbt(tag);
-		return this.serializeInventory(tag);
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		super.writeNbt(nbt);
+		return this.writeInventoryNbt(nbt);
 	}
 
-	public void deserializeInventory(NbtCompound tag) {
+	public void readInventoryNbt(NbtCompound nbt) {
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-		if (!this.deserializeLootTable(tag) && tag.contains("Items", NbtTypeIds.LIST)) {
-			Inventories.readNbt(tag, this.inventory);
+		if (!this.deserializeLootTable(nbt) && nbt.contains("Items", NbtElement.LIST_TYPE)) {
+			Inventories.readNbt(nbt, this.inventory);
 		}
 	}
 
-	public NbtCompound serializeInventory(NbtCompound tag) {
-		if (!this.serializeLootTable(tag)) {
-			Inventories.writeNbt(tag, this.inventory, false);
+	public NbtCompound writeInventoryNbt(NbtCompound nbt) {
+		if (!this.serializeLootTable(nbt)) {
+			Inventories.writeNbt(nbt, this.inventory, false);
 		}
 
-		return tag;
+		return nbt;
 	}
 
 	@Override
@@ -267,7 +272,6 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public DyeColor getColor() {
 		return this.cachedColor;
 	}

@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -69,6 +67,13 @@ public class PandaEntity extends AnimalEntity {
 	private static final TrackedData<Byte> HIDDEN_GENE = DataTracker.registerData(PandaEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Byte> PANDA_FLAGS = DataTracker.registerData(PandaEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TargetPredicate ASK_FOR_BAMBOO_TARGET = new TargetPredicate().setBaseMaxDistance(8.0).includeTeammates().includeInvulnerable();
+	private static final int field_30344 = 2;
+	private static final int field_30345 = 4;
+	private static final int field_30346 = 8;
+	private static final int field_30347 = 16;
+	private static final int field_30348 = 5;
+	public static final int field_30343 = 32;
+	private static final int field_30349 = 32;
 	private boolean shouldGetRevenge;
 	private boolean shouldAttack;
 	public int playingTicks;
@@ -215,17 +220,17 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putString("MainGene", this.getMainGene().getName());
-		tag.putString("HiddenGene", this.getHiddenGene().getName());
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putString("MainGene", this.getMainGene().getName());
+		nbt.putString("HiddenGene", this.getHiddenGene().getName());
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.setMainGene(PandaEntity.Gene.byName(tag.getString("MainGene")));
-		this.setHiddenGene(PandaEntity.Gene.byName(tag.getString("HiddenGene")));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.setMainGene(PandaEntity.Gene.byName(nbt.getString("MainGene")));
+		this.setHiddenGene(PandaEntity.Gene.byName(nbt.getString("HiddenGene")));
 	}
 
 	@Nullable
@@ -279,6 +284,10 @@ public class PandaEntity extends AnimalEntity {
 
 	public boolean isPlayful() {
 		return this.getProductGene() == PandaEntity.Gene.PLAYFUL;
+	}
+
+	public boolean isBrown() {
+		return this.getProductGene() == PandaEntity.Gene.BROWN;
 	}
 
 	public boolean isWeak() {
@@ -448,17 +457,14 @@ public class PandaEntity extends AnimalEntity {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getScaredAnimationProgress(float tickDelta) {
 		return MathHelper.lerp(tickDelta, this.lastScaredAnimationProgress, this.scaredAnimationProgress);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getLieOnBackAnimationProgress(float tickDelta) {
 		return MathHelper.lerp(tickDelta, this.lastLieOnBackAnimationProgress, this.lieOnBackAnimationProgress);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getRollOverAnimationProgress(float tickDelta) {
 		return MathHelper.lerp(tickDelta, this.lastRollOverAnimationProgress, this.rollOverAnimationProgress);
 	}
@@ -530,7 +536,7 @@ public class PandaEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
 		this.setMainGene(PandaEntity.Gene.createRandom(this.random));
 		this.setHiddenGene(PandaEntity.Gene.createRandom(this.random));
@@ -539,7 +545,7 @@ public class PandaEntity extends AnimalEntity {
 			entityData = new PassiveEntity.PassiveData(0.2F);
 		}
 
-		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
 	public void initGenes(PandaEntity mother, @Nullable PandaEntity father) {
@@ -735,6 +741,7 @@ public class PandaEntity extends AnimalEntity {
 		private static final PandaEntity.Gene[] VALUES = (PandaEntity.Gene[])Arrays.stream(values())
 			.sorted(Comparator.comparingInt(PandaEntity.Gene::getId))
 			.toArray(PandaEntity.Gene[]::new);
+		private static final int field_30350 = 6;
 		private final int id;
 		private final String name;
 		private final boolean recessive;

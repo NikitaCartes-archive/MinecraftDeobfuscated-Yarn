@@ -11,4 +11,8 @@ public class GameEventTags {
 	private static Tag.Identified<GameEvent> register(String id) {
 		return REQUIRED_TAGS.add(id);
 	}
+
+	public static TagGroup<GameEvent> getTagGroup() {
+		return REQUIRED_TAGS.getGroup();
+	}
 }

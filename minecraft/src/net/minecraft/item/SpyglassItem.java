@@ -10,6 +10,9 @@ import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 
 public class SpyglassItem extends Item {
+	public static final int MAX_USE_TIME = 1200;
+	public static final float field_30922 = 0.1F;
+
 	public SpyglassItem(Item.Settings settings) {
 		super(settings);
 	}

@@ -12,6 +12,8 @@ import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
 public class RaidCenterDebugRenderer implements DebugRenderer.Renderer {
+	private static final int field_32914 = 160;
+	private static final float field_32915 = 0.04F;
 	private final MinecraftClient client;
 	private Collection<BlockPos> raidCenters = Lists.<BlockPos>newArrayList();
 

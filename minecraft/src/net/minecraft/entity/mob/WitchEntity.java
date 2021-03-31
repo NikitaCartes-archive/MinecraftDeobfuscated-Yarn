@@ -2,8 +2,6 @@ package net.minecraft.entity.mob;
 
 import java.util.List;
 import java.util.UUID;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -181,7 +179,6 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 		return SoundEvents.ENTITY_WITCH_CELEBRATE;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void handleStatus(byte status) {
 		if (status == 15) {

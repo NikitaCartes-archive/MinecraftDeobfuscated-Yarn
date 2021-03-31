@@ -1,8 +1,6 @@
 package net.minecraft.screen;
 
 import com.mojang.datafixers.util.Pair;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.MobEntity;
@@ -20,6 +18,17 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
 
 public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInventory> {
+	public static final int field_30802 = 0;
+	public static final int field_30803 = 0;
+	public static final int field_30804 = 1;
+	public static final int field_30805 = 5;
+	public static final int field_30806 = 5;
+	public static final int field_30807 = 9;
+	public static final int field_30808 = 9;
+	public static final int field_30809 = 36;
+	public static final int field_30810 = 36;
+	public static final int field_30811 = 45;
+	public static final int field_30812 = 45;
 	public static final Identifier BLOCK_ATLAS_TEXTURE = new Identifier("textures/atlas/blocks.png");
 	public static final Identifier EMPTY_HELMET_SLOT_TEXTURE = new Identifier("item/empty_armor_slot_helmet");
 	public static final Identifier EMPTY_CHESTPLATE_SLOT_TEXTURE = new Identifier("item/empty_armor_slot_chestplate");
@@ -68,7 +77,6 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 					return !itemStack.isEmpty() && !playerEntity.isCreative() && EnchantmentHelper.hasBindingCurse(itemStack) ? false : super.canTakeItems(playerEntity);
 				}
 
-				@Environment(EnvType.CLIENT)
 				@Override
 				public Pair<Identifier, Identifier> getBackgroundSprite() {
 					return Pair.of(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, PlayerScreenHandler.EMPTY_ARMOR_SLOT_TEXTURES[equipmentSlot.getEntitySlotId()]);
@@ -87,7 +95,6 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 		}
 
 		this.addSlot(new Slot(inventory, 40, 77, 62) {
-			@Environment(EnvType.CLIENT)
 			@Override
 			public Pair<Identifier, Identifier> getBackgroundSprite() {
 				return Pair.of(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, PlayerScreenHandler.EMPTY_OFFHAND_ARMOR_SLOT);
@@ -221,7 +228,6 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 		return this.craftingInput;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public RecipeBookCategory getCategory() {
 		return RecipeBookCategory.CRAFTING;

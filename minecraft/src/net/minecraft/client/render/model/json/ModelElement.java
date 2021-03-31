@@ -21,6 +21,9 @@ import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class ModelElement {
+	private static final boolean field_32785 = false;
+	private static final float field_32786 = -16.0F;
+	private static final float field_32787 = 32.0F;
 	public final Vec3f from;
 	public final Vec3f to;
 	public final Map<Direction, ModelElementFace> faces;
@@ -63,6 +66,8 @@ public class ModelElement {
 
 	@Environment(EnvType.CLIENT)
 	public static class Deserializer implements JsonDeserializer<ModelElement> {
+		private static final boolean field_32788 = true;
+
 		protected Deserializer() {
 		}
 

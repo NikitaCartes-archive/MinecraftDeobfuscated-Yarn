@@ -2,9 +2,6 @@ package net.minecraft.item;
 
 import java.util.List;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LecternBlock;
@@ -29,18 +26,32 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class WrittenBookItem extends Item {
+	public static final int field_30929 = 16;
+	public static final int MAX_TITLE_LENGTH = 32;
+	public static final int field_30931 = 1024;
+	public static final int field_30932 = 32767;
+	public static final int field_30933 = 100;
+	public static final int field_30934 = 2;
+	public static final String TITLE_KEY = "title";
+	public static final String FILTERED_TITLE_KEY = "filtered_title";
+	public static final String AUTHOR_KEY = "author";
+	public static final String PAGES_KEY = "pages";
+	public static final String FILTERED_PAGES_KEY = "filtered_pages";
+	public static final String GENERATION_KEY = "generation";
+	public static final String RESOLVED_KEY = "resolved";
+
 	public WrittenBookItem(Item.Settings settings) {
 		super(settings);
 	}
 
-	public static boolean isValid(@Nullable NbtCompound tag) {
-		if (!WritableBookItem.isValid(tag)) {
+	public static boolean isValid(@Nullable NbtCompound nbt) {
+		if (!WritableBookItem.isValid(nbt)) {
 			return false;
-		} else if (!tag.contains("title", NbtTypeIds.STRING)) {
+		} else if (!nbt.contains("title", NbtElement.STRING_TYPE)) {
 			return false;
 		} else {
-			String string = tag.getString("title");
-			return string.length() > 32 ? false : tag.contains("author", NbtTypeIds.STRING);
+			String string = nbt.getString("title");
+			return string.length() > 32 ? false : nbt.contains("author", NbtElement.STRING_TYPE);
 		}
 	}
 
@@ -50,7 +61,7 @@ public class WrittenBookItem extends Item {
 
 	public static int getPageCount(ItemStack stack) {
 		NbtCompound nbtCompound = stack.getTag();
-		return nbtCompound != null ? nbtCompound.getList("pages", NbtTypeIds.STRING).size() : 0;
+		return nbtCompound != null ? nbtCompound.getList("pages", NbtElement.STRING_TYPE).size() : 0;
 	}
 
 	@Override
@@ -66,7 +77,6 @@ public class WrittenBookItem extends Item {
 		return super.getName(stack);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 		if (stack.hasTag()) {
@@ -109,13 +119,13 @@ public class WrittenBookItem extends Item {
 			if (!isValid(nbtCompound)) {
 				return false;
 			} else {
-				NbtList nbtList = nbtCompound.getList("pages", NbtTypeIds.STRING);
+				NbtList nbtList = nbtCompound.getList("pages", NbtElement.STRING_TYPE);
 
 				for (int i = 0; i < nbtList.size(); i++) {
 					nbtList.set(i, (NbtElement)NbtString.of(method_33826(commandSource, player, nbtList.getString(i))));
 				}
 
-				if (nbtCompound.contains("filtered_pages", NbtTypeIds.COMPOUND)) {
+				if (nbtCompound.contains("filtered_pages", NbtElement.COMPOUND_TYPE)) {
 					NbtCompound nbtCompound2 = nbtCompound.getCompound("filtered_pages");
 
 					for (String string : nbtCompound2.getKeys()) {

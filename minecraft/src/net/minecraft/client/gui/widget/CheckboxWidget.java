@@ -14,6 +14,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class CheckboxWidget extends AbstractPressableButtonWidget {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/checkbox.png");
+	private static final int field_32181 = 14737632;
 	private boolean checked;
 	private final boolean showMessage;
 

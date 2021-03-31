@@ -19,6 +19,8 @@ import javax.annotation.Nullable;
 import net.minecraft.state.property.Property;
 
 public abstract class State<O, S> {
+	public static final String NAME = "Name";
+	public static final String PROPERTIES = "Properties";
 	private static final Function<Entry<Property<?>, Comparable<?>>, String> PROPERTY_MAP_PRINTER = new Function<Entry<Property<?>, Comparable<?>>, String>() {
 		public String apply(@Nullable Entry<Property<?>, Comparable<?>> entry) {
 			if (entry == null) {

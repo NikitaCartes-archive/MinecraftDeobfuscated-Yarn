@@ -5,8 +5,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.state.State;
@@ -22,6 +20,8 @@ import net.minecraft.world.World;
 
 public final class FluidState extends State<Fluid, FluidState> {
 	public static final Codec<FluidState> CODEC = createCodec(Registry.FLUID, Fluid::getDefaultState).stable();
+	public static final int field_31727 = 9;
+	public static final int field_31728 = 8;
 
 	public FluidState(Fluid fluid, ImmutableMap<Property<?>, Comparable<?>> propertiesMap, MapCodec<FluidState> codec) {
 		super(fluid, propertiesMap, codec);
@@ -55,7 +55,6 @@ public final class FluidState extends State<Fluid, FluidState> {
 		return this.getFluid().getLevel(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean method_15756(BlockView world, BlockPos pos) {
 		for (int i = -1; i <= 1; i++) {
 			for (int j = -1; j <= 1; j++) {
@@ -74,7 +73,6 @@ public final class FluidState extends State<Fluid, FluidState> {
 		this.getFluid().onScheduledTick(world, pos, this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void randomDisplayTick(World world, BlockPos pos, Random random) {
 		this.getFluid().randomDisplayTick(world, pos, this, random);
 	}
@@ -96,7 +94,6 @@ public final class FluidState extends State<Fluid, FluidState> {
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public ParticleEffect getParticle() {
 		return this.getFluid().getParticle();
 	}

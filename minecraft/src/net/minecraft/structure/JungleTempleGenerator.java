@@ -32,15 +32,15 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 	private static final JungleTempleGenerator.CobblestoneRandomizer COBBLESTONE_RANDOMIZER = new JungleTempleGenerator.CobblestoneRandomizer();
 
 	public JungleTempleGenerator(Random random, int x, int z) {
-		super(StructurePieceType.JUNGLE_TEMPLE, random, x, 64, z, 12, 10, 15);
+		super(StructurePieceType.JUNGLE_TEMPLE, x, 64, z, 12, 10, 15, method_35457(random));
 	}
 
-	public JungleTempleGenerator(ServerWorld serverWorld, NbtCompound tag) {
-		super(StructurePieceType.JUNGLE_TEMPLE, tag);
-		this.placedMainChest = tag.getBoolean("placedMainChest");
-		this.placedHiddenChest = tag.getBoolean("placedHiddenChest");
-		this.placedTrap1 = tag.getBoolean("placedTrap1");
-		this.placedTrap2 = tag.getBoolean("placedTrap2");
+	public JungleTempleGenerator(ServerWorld world, NbtCompound nbt) {
+		super(StructurePieceType.JUNGLE_TEMPLE, nbt);
+		this.placedMainChest = nbt.getBoolean("placedMainChest");
+		this.placedHiddenChest = nbt.getBoolean("placedHiddenChest");
+		this.placedTrap1 = nbt.getBoolean("placedTrap1");
+		this.placedTrap2 = nbt.getBoolean("placedTrap2");
 	}
 
 	@Override

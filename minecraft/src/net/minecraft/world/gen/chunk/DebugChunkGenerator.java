@@ -6,9 +6,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.dynamic.RegistryLookupCodec;
@@ -33,6 +31,7 @@ public class DebugChunkGenerator extends ChunkGenerator {
 		.<DebugChunkGenerator>xmap(DebugChunkGenerator::new, DebugChunkGenerator::getBiomeRegistry)
 		.stable()
 		.codec();
+	private static final int field_31467 = 2;
 	private static final List<BlockState> BLOCK_STATES = (List<BlockState>)StreamSupport.stream(Registry.BLOCK.spliterator(), false)
 		.flatMap(block -> block.getStateManager().getStates().stream())
 		.collect(Collectors.toList());
@@ -40,6 +39,8 @@ public class DebugChunkGenerator extends ChunkGenerator {
 	private static final int Z_SIDE_LENGTH = MathHelper.ceil((float)BLOCK_STATES.size() / (float)X_SIDE_LENGTH);
 	protected static final BlockState AIR = Blocks.AIR.getDefaultState();
 	protected static final BlockState BARRIER = Blocks.BARRIER.getDefaultState();
+	public static final int field_31465 = 70;
+	public static final int field_31466 = 60;
 	private final Registry<Biome> biomeRegistry;
 
 	public DebugChunkGenerator(Registry<Biome> biomeRegistry) {
@@ -56,7 +57,6 @@ public class DebugChunkGenerator extends ChunkGenerator {
 		return CODEC;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ChunkGenerator withSeed(long seed) {
 		return this;
@@ -79,10 +79,10 @@ public class DebugChunkGenerator extends ChunkGenerator {
 			for (int j = 0; j < 16; j++) {
 				int k = ChunkSectionPos.getOffsetPos(chunkPos.x, i);
 				int l = ChunkSectionPos.getOffsetPos(chunkPos.z, j);
-				region.setBlockState(mutable.set(k, 60, l), BARRIER, SetBlockStateFlags.NOTIFY_LISTENERS);
+				region.setBlockState(mutable.set(k, 60, l), BARRIER, Block.NOTIFY_LISTENERS);
 				BlockState blockState = getBlockState(k, l);
 				if (blockState != null) {
-					region.setBlockState(mutable.set(k, 70, l), blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
+					region.setBlockState(mutable.set(k, 70, l), blockState, Block.NOTIFY_LISTENERS);
 				}
 			}
 		}

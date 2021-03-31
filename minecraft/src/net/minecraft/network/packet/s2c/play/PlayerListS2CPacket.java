@@ -8,8 +8,6 @@ import com.mojang.authlib.properties.PropertyMap;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -70,12 +68,10 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 		clientPlayPacketListener.onPlayerList(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public List<PlayerListS2CPacket.Entry> getEntries() {
 		return this.entries;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public PlayerListS2CPacket.Action getAction() {
 		return this.action;
 	}

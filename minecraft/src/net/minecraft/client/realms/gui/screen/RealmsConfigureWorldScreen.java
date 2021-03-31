@@ -41,6 +41,8 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	private static final Text EXPIRES_IN_A_DAY_TEXT = new TranslatableText("mco.selectServer.expires.day");
 	private static final Text OPEN_TEXT = new TranslatableText("mco.selectServer.open");
 	private static final Text CLOSED_TEXT = new TranslatableText("mco.selectServer.closed");
+	private static final int field_32121 = 80;
+	private static final int field_32122 = 5;
 	@Nullable
 	private Text toolTip;
 	private final RealmsMainScreen parent;

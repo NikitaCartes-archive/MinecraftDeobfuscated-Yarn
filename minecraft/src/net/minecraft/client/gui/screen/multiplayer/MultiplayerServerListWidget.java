@@ -135,6 +135,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 
 	@Environment(EnvType.CLIENT)
 	public static class LanServerEntry extends MultiplayerServerListWidget.Entry {
+		private static final int field_32386 = 32;
 		private static final Text TITLE_TEXT = new TranslatableText("lanServer.title");
 		private static final Text HIDDEN_ADDRESS_TEXT = new TranslatableText("selectServer.hiddenAddress");
 		private final MultiplayerScreen screen;
@@ -213,6 +214,14 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 
 	@Environment(EnvType.CLIENT)
 	public class ServerEntry extends MultiplayerServerListWidget.Entry {
+		private static final int field_32387 = 32;
+		private static final int field_32388 = 32;
+		private static final int field_32389 = 0;
+		private static final int field_32390 = 32;
+		private static final int field_32391 = 64;
+		private static final int field_32392 = 96;
+		private static final int field_32393 = 0;
+		private static final int field_32394 = 32;
 		private final MultiplayerScreen screen;
 		private final MinecraftClient client;
 		private final ServerInfo server;

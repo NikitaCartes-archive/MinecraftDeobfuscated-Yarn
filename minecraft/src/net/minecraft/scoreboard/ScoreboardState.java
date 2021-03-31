@@ -1,7 +1,7 @@
 package net.minecraft.scoreboard;
 
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.text.Text;
@@ -9,29 +9,30 @@ import net.minecraft.util.Formatting;
 import net.minecraft.world.PersistentState;
 
 public class ScoreboardState extends PersistentState {
+	public static final String field_31893 = "scoreboard";
 	private final Scoreboard scoreboard;
 
 	public ScoreboardState(Scoreboard scoreboard) {
 		this.scoreboard = scoreboard;
 	}
 
-	public ScoreboardState readNbt(NbtCompound tag) {
-		this.readObjectivesFromNbt(tag.getList("Objectives", NbtTypeIds.COMPOUND));
-		this.scoreboard.readNbt(tag.getList("PlayerScores", NbtTypeIds.COMPOUND));
-		if (tag.contains("DisplaySlots", NbtTypeIds.COMPOUND)) {
-			this.readDisplaySlotsFromNbt(tag.getCompound("DisplaySlots"));
+	public ScoreboardState readNbt(NbtCompound nbt) {
+		this.readObjectivesNbt(nbt.getList("Objectives", NbtElement.COMPOUND_TYPE));
+		this.scoreboard.readNbt(nbt.getList("PlayerScores", NbtElement.COMPOUND_TYPE));
+		if (nbt.contains("DisplaySlots", NbtElement.COMPOUND_TYPE)) {
+			this.readDisplaySlotsNbt(nbt.getCompound("DisplaySlots"));
 		}
 
-		if (tag.contains("Teams", NbtTypeIds.LIST)) {
-			this.readTeamsFromNbt(tag.getList("Teams", NbtTypeIds.COMPOUND));
+		if (nbt.contains("Teams", NbtElement.LIST_TYPE)) {
+			this.readTeamsNbt(nbt.getList("Teams", NbtElement.COMPOUND_TYPE));
 		}
 
 		return this;
 	}
 
-	private void readTeamsFromNbt(NbtList tag) {
-		for (int i = 0; i < tag.size(); i++) {
-			NbtCompound nbtCompound = tag.getCompound(i);
+	private void readTeamsNbt(NbtList nbt) {
+		for (int i = 0; i < nbt.size(); i++) {
+			NbtCompound nbtCompound = nbt.getCompound(i);
 			String string = nbtCompound.getString("Name");
 			if (string.length() > 16) {
 				string = string.substring(0, 16);
@@ -43,76 +44,76 @@ public class ScoreboardState extends PersistentState {
 				team.setDisplayName(text);
 			}
 
-			if (nbtCompound.contains("TeamColor", NbtTypeIds.STRING)) {
+			if (nbtCompound.contains("TeamColor", NbtElement.STRING_TYPE)) {
 				team.setColor(Formatting.byName(nbtCompound.getString("TeamColor")));
 			}
 
-			if (nbtCompound.contains("AllowFriendlyFire", NbtTypeIds.NUMBER)) {
+			if (nbtCompound.contains("AllowFriendlyFire", NbtElement.NUMBER_TYPE)) {
 				team.setFriendlyFireAllowed(nbtCompound.getBoolean("AllowFriendlyFire"));
 			}
 
-			if (nbtCompound.contains("SeeFriendlyInvisibles", NbtTypeIds.NUMBER)) {
+			if (nbtCompound.contains("SeeFriendlyInvisibles", NbtElement.NUMBER_TYPE)) {
 				team.setShowFriendlyInvisibles(nbtCompound.getBoolean("SeeFriendlyInvisibles"));
 			}
 
-			if (nbtCompound.contains("MemberNamePrefix", NbtTypeIds.STRING)) {
+			if (nbtCompound.contains("MemberNamePrefix", NbtElement.STRING_TYPE)) {
 				Text text2 = Text.Serializer.fromJson(nbtCompound.getString("MemberNamePrefix"));
 				if (text2 != null) {
 					team.setPrefix(text2);
 				}
 			}
 
-			if (nbtCompound.contains("MemberNameSuffix", NbtTypeIds.STRING)) {
+			if (nbtCompound.contains("MemberNameSuffix", NbtElement.STRING_TYPE)) {
 				Text text2 = Text.Serializer.fromJson(nbtCompound.getString("MemberNameSuffix"));
 				if (text2 != null) {
 					team.setSuffix(text2);
 				}
 			}
 
-			if (nbtCompound.contains("NameTagVisibility", NbtTypeIds.STRING)) {
+			if (nbtCompound.contains("NameTagVisibility", NbtElement.STRING_TYPE)) {
 				AbstractTeam.VisibilityRule visibilityRule = AbstractTeam.VisibilityRule.getRule(nbtCompound.getString("NameTagVisibility"));
 				if (visibilityRule != null) {
 					team.setNameTagVisibilityRule(visibilityRule);
 				}
 			}
 
-			if (nbtCompound.contains("DeathMessageVisibility", NbtTypeIds.STRING)) {
+			if (nbtCompound.contains("DeathMessageVisibility", NbtElement.STRING_TYPE)) {
 				AbstractTeam.VisibilityRule visibilityRule = AbstractTeam.VisibilityRule.getRule(nbtCompound.getString("DeathMessageVisibility"));
 				if (visibilityRule != null) {
 					team.setDeathMessageVisibilityRule(visibilityRule);
 				}
 			}
 
-			if (nbtCompound.contains("CollisionRule", NbtTypeIds.STRING)) {
+			if (nbtCompound.contains("CollisionRule", NbtElement.STRING_TYPE)) {
 				AbstractTeam.CollisionRule collisionRule = AbstractTeam.CollisionRule.getRule(nbtCompound.getString("CollisionRule"));
 				if (collisionRule != null) {
 					team.setCollisionRule(collisionRule);
 				}
 			}
 
-			this.readTeamPlayersFromNbt(team, nbtCompound.getList("Players", NbtTypeIds.STRING));
+			this.readTeamPlayersNbt(team, nbtCompound.getList("Players", NbtElement.STRING_TYPE));
 		}
 	}
 
-	private void readTeamPlayersFromNbt(Team team, NbtList tag) {
-		for (int i = 0; i < tag.size(); i++) {
-			this.scoreboard.addPlayerToTeam(tag.getString(i), team);
+	private void readTeamPlayersNbt(Team team, NbtList nbt) {
+		for (int i = 0; i < nbt.size(); i++) {
+			this.scoreboard.addPlayerToTeam(nbt.getString(i), team);
 		}
 	}
 
-	private void readDisplaySlotsFromNbt(NbtCompound tag) {
+	private void readDisplaySlotsNbt(NbtCompound nbt) {
 		for (int i = 0; i < 19; i++) {
-			if (tag.contains("slot_" + i, NbtTypeIds.STRING)) {
-				String string = tag.getString("slot_" + i);
+			if (nbt.contains("slot_" + i, NbtElement.STRING_TYPE)) {
+				String string = nbt.getString("slot_" + i);
 				ScoreboardObjective scoreboardObjective = this.scoreboard.getNullableObjective(string);
 				this.scoreboard.setObjectiveSlot(i, scoreboardObjective);
 			}
 		}
 	}
 
-	private void readObjectivesFromNbt(NbtList tag) {
-		for (int i = 0; i < tag.size(); i++) {
-			NbtCompound nbtCompound = tag.getCompound(i);
+	private void readObjectivesNbt(NbtList nbt) {
+		for (int i = 0; i < nbt.size(); i++) {
+			NbtCompound nbtCompound = nbt.getCompound(i);
 			ScoreboardCriterion.getOrCreateStatCriterion(nbtCompound.getString("CriteriaName")).ifPresent(scoreboardCriterion -> {
 				String string = nbtCompound.getString("Name");
 				if (string.length() > 16) {
@@ -127,12 +128,12 @@ public class ScoreboardState extends PersistentState {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound tag) {
-		tag.put("Objectives", this.objectivesToNbt());
-		tag.put("PlayerScores", this.scoreboard.toNbt());
-		tag.put("Teams", this.teamsToNbt());
-		this.writeDisplaySlotsToNbt(tag);
-		return tag;
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		nbt.put("Objectives", this.objectivesToNbt());
+		nbt.put("PlayerScores", this.scoreboard.toNbt());
+		nbt.put("Teams", this.teamsToNbt());
+		this.writeDisplaySlotsNbt(nbt);
+		return nbt;
 	}
 
 	private NbtList teamsToNbt() {
@@ -166,7 +167,7 @@ public class ScoreboardState extends PersistentState {
 		return nbtList;
 	}
 
-	private void writeDisplaySlotsToNbt(NbtCompound tag) {
+	private void writeDisplaySlotsNbt(NbtCompound nbt) {
 		NbtCompound nbtCompound = new NbtCompound();
 		boolean bl = false;
 
@@ -179,7 +180,7 @@ public class ScoreboardState extends PersistentState {
 		}
 
 		if (bl) {
-			tag.put("DisplaySlots", nbtCompound);
+			nbt.put("DisplaySlots", nbtCompound);
 		}
 	}
 

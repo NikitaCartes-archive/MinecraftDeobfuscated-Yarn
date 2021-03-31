@@ -36,6 +36,9 @@ import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEntity> {
+	public static final int field_32828 = 90;
+	private static final int field_32829 = 10;
+	private static final String field_32830 = "stick";
 	private final Map<SignType, SignBlockEntityRenderer.SignModel> typeToModel;
 	private final TextRenderer textRenderer;
 

@@ -3,8 +3,6 @@ package net.minecraft.world.chunk;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
@@ -61,7 +59,6 @@ public class ArrayPalette<T> implements Palette<T> {
 		return index >= 0 && index < this.size ? this.array[index] : null;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void fromPacket(PacketByteBuf buf) {
 		this.size = buf.readVarInt();
@@ -82,25 +79,26 @@ public class ArrayPalette<T> implements Palette<T> {
 
 	@Override
 	public int getPacketSize() {
-		int i = PacketByteBuf.getVarIntSizeBytes(this.getSize());
+		int i = PacketByteBuf.getVarIntLength(this.getIndexBits());
 
-		for (int j = 0; j < this.getSize(); j++) {
-			i += PacketByteBuf.getVarIntSizeBytes(this.idList.getRawId(this.array[j]));
+		for (int j = 0; j < this.getIndexBits(); j++) {
+			i += PacketByteBuf.getVarIntLength(this.idList.getRawId(this.array[j]));
 		}
 
 		return i;
 	}
 
-	public int getSize() {
+	@Override
+	public int getIndexBits() {
 		return this.size;
 	}
 
 	@Override
-	public void readNbt(NbtList tag) {
-		for (int i = 0; i < tag.size(); i++) {
-			this.array[i] = (T)this.valueDeserializer.apply(tag.getCompound(i));
+	public void readNbt(NbtList nbt) {
+		for (int i = 0; i < nbt.size(); i++) {
+			this.array[i] = (T)this.valueDeserializer.apply(nbt.getCompound(i));
 		}
 
-		this.size = tag.size();
+		this.size = nbt.size();
 	}
 }

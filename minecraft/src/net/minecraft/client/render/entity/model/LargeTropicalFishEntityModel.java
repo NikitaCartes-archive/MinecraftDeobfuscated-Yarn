@@ -19,7 +19,7 @@ public class LargeTropicalFishEntityModel<T extends Entity> extends TintableComp
 
 	public LargeTropicalFishEntityModel(ModelPart root) {
 		this.root = root;
-		this.tail = root.getChild("tail");
+		this.tail = root.getChild(EntityModelPartNames.TAIL);
 	}
 
 	public static TexturedModelData getTexturedModelData(Dilation dilation) {
@@ -27,26 +27,34 @@ public class LargeTropicalFishEntityModel<T extends Entity> extends TintableComp
 		ModelPartData modelPartData = modelData.getRoot();
 		int i = 19;
 		modelPartData.addChild(
-			"body", ModelPartBuilder.create().uv(0, 20).cuboid(-1.0F, -3.0F, -3.0F, 2.0F, 6.0F, 6.0F, dilation), ModelTransform.pivot(0.0F, 19.0F, 0.0F)
+			EntityModelPartNames.BODY,
+			ModelPartBuilder.create().uv(0, 20).cuboid(-1.0F, -3.0F, -3.0F, 2.0F, 6.0F, 6.0F, dilation),
+			ModelTransform.pivot(0.0F, 19.0F, 0.0F)
 		);
 		modelPartData.addChild(
-			"tail", ModelPartBuilder.create().uv(21, 16).cuboid(0.0F, -3.0F, 0.0F, 0.0F, 6.0F, 5.0F, dilation), ModelTransform.pivot(0.0F, 19.0F, 3.0F)
+			EntityModelPartNames.TAIL,
+			ModelPartBuilder.create().uv(21, 16).cuboid(0.0F, -3.0F, 0.0F, 0.0F, 6.0F, 5.0F, dilation),
+			ModelTransform.pivot(0.0F, 19.0F, 3.0F)
 		);
 		modelPartData.addChild(
-			"right_fin",
+			EntityModelPartNames.RIGHT_FIN,
 			ModelPartBuilder.create().uv(2, 16).cuboid(-2.0F, 0.0F, 0.0F, 2.0F, 2.0F, 0.0F, dilation),
 			ModelTransform.of(-1.0F, 20.0F, 0.0F, 0.0F, (float) (Math.PI / 4), 0.0F)
 		);
 		modelPartData.addChild(
-			"left_fin",
+			EntityModelPartNames.LEFT_FIN,
 			ModelPartBuilder.create().uv(2, 12).cuboid(0.0F, 0.0F, 0.0F, 2.0F, 2.0F, 0.0F, dilation),
 			ModelTransform.of(1.0F, 20.0F, 0.0F, 0.0F, (float) (-Math.PI / 4), 0.0F)
 		);
 		modelPartData.addChild(
-			"top_fin", ModelPartBuilder.create().uv(20, 11).cuboid(0.0F, -4.0F, 0.0F, 0.0F, 4.0F, 6.0F, dilation), ModelTransform.pivot(0.0F, 16.0F, -3.0F)
+			EntityModelPartNames.TOP_FIN,
+			ModelPartBuilder.create().uv(20, 11).cuboid(0.0F, -4.0F, 0.0F, 0.0F, 4.0F, 6.0F, dilation),
+			ModelTransform.pivot(0.0F, 16.0F, -3.0F)
 		);
 		modelPartData.addChild(
-			"bottom_fin", ModelPartBuilder.create().uv(20, 21).cuboid(0.0F, 0.0F, 0.0F, 0.0F, 4.0F, 6.0F, dilation), ModelTransform.pivot(0.0F, 22.0F, -3.0F)
+			EntityModelPartNames.BOTTOM_FIN,
+			ModelPartBuilder.create().uv(20, 21).cuboid(0.0F, 0.0F, 0.0F, 0.0F, 4.0F, 6.0F, dilation),
+			ModelTransform.pivot(0.0F, 22.0F, -3.0F)
 		);
 		return TexturedModelData.of(modelData, 32, 32);
 	}

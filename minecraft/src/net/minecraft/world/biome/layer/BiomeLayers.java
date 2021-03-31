@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import java.util.function.LongFunction;
 import net.minecraft.util.Util;
+import net.minecraft.world.biome.BiomeIds;
 import net.minecraft.world.biome.layer.type.ParentedLayer;
 import net.minecraft.world.biome.layer.util.CachingLayerContext;
 import net.minecraft.world.biome.layer.util.CachingLayerSampler;
@@ -12,76 +13,82 @@ import net.minecraft.world.biome.layer.util.LayerSampleContext;
 import net.minecraft.world.biome.layer.util.LayerSampler;
 import net.minecraft.world.biome.source.BiomeLayerSampler;
 
-public class BiomeLayers {
+public class BiomeLayers implements BiomeIds {
+	protected static final int field_31799 = 1;
+	protected static final int field_31800 = 2;
+	protected static final int field_31801 = 3;
+	protected static final int field_31802 = 4;
+	protected static final int field_31803 = 3840;
+	protected static final int field_31804 = 8;
 	private static final Int2IntMap BY_CATEGORY = Util.make(new Int2IntOpenHashMap(), map -> {
-		putCategory(map, BiomeLayers.Category.BEACH, 16);
-		putCategory(map, BiomeLayers.Category.BEACH, 26);
-		putCategory(map, BiomeLayers.Category.DESERT, 2);
-		putCategory(map, BiomeLayers.Category.DESERT, 17);
-		putCategory(map, BiomeLayers.Category.DESERT, 130);
-		putCategory(map, BiomeLayers.Category.EXTREME_HILLS, 131);
-		putCategory(map, BiomeLayers.Category.EXTREME_HILLS, 162);
-		putCategory(map, BiomeLayers.Category.EXTREME_HILLS, 20);
-		putCategory(map, BiomeLayers.Category.EXTREME_HILLS, 3);
-		putCategory(map, BiomeLayers.Category.EXTREME_HILLS, 34);
-		putCategory(map, BiomeLayers.Category.FOREST, 27);
-		putCategory(map, BiomeLayers.Category.FOREST, 28);
-		putCategory(map, BiomeLayers.Category.FOREST, 29);
-		putCategory(map, BiomeLayers.Category.FOREST, 157);
-		putCategory(map, BiomeLayers.Category.FOREST, 132);
-		putCategory(map, BiomeLayers.Category.FOREST, 4);
-		putCategory(map, BiomeLayers.Category.FOREST, 155);
-		putCategory(map, BiomeLayers.Category.FOREST, 156);
-		putCategory(map, BiomeLayers.Category.FOREST, 18);
-		putCategory(map, BiomeLayers.Category.ICY, 140);
-		putCategory(map, BiomeLayers.Category.ICY, 13);
-		putCategory(map, BiomeLayers.Category.ICY, 12);
-		putCategory(map, BiomeLayers.Category.JUNGLE, 168);
-		putCategory(map, BiomeLayers.Category.JUNGLE, 169);
-		putCategory(map, BiomeLayers.Category.JUNGLE, 21);
-		putCategory(map, BiomeLayers.Category.JUNGLE, 23);
-		putCategory(map, BiomeLayers.Category.JUNGLE, 22);
-		putCategory(map, BiomeLayers.Category.JUNGLE, 149);
-		putCategory(map, BiomeLayers.Category.JUNGLE, 151);
-		putCategory(map, BiomeLayers.Category.MESA, 37);
-		putCategory(map, BiomeLayers.Category.MESA, 165);
-		putCategory(map, BiomeLayers.Category.MESA, 167);
-		putCategory(map, BiomeLayers.Category.MESA, 166);
-		putCategory(map, BiomeLayers.Category.BADLANDS_PLATEAU, 39);
-		putCategory(map, BiomeLayers.Category.BADLANDS_PLATEAU, 38);
-		putCategory(map, BiomeLayers.Category.MUSHROOM, 14);
-		putCategory(map, BiomeLayers.Category.MUSHROOM, 15);
-		putCategory(map, BiomeLayers.Category.NONE, 25);
-		putCategory(map, BiomeLayers.Category.OCEAN, 46);
-		putCategory(map, BiomeLayers.Category.OCEAN, 49);
-		putCategory(map, BiomeLayers.Category.OCEAN, 50);
-		putCategory(map, BiomeLayers.Category.OCEAN, 48);
-		putCategory(map, BiomeLayers.Category.OCEAN, 24);
-		putCategory(map, BiomeLayers.Category.OCEAN, 47);
-		putCategory(map, BiomeLayers.Category.OCEAN, 10);
-		putCategory(map, BiomeLayers.Category.OCEAN, 45);
-		putCategory(map, BiomeLayers.Category.OCEAN, 0);
-		putCategory(map, BiomeLayers.Category.OCEAN, 44);
-		putCategory(map, BiomeLayers.Category.PLAINS, 1);
-		putCategory(map, BiomeLayers.Category.PLAINS, 129);
-		putCategory(map, BiomeLayers.Category.RIVER, 11);
-		putCategory(map, BiomeLayers.Category.RIVER, 7);
-		putCategory(map, BiomeLayers.Category.SAVANNA, 35);
-		putCategory(map, BiomeLayers.Category.SAVANNA, 36);
-		putCategory(map, BiomeLayers.Category.SAVANNA, 163);
-		putCategory(map, BiomeLayers.Category.SAVANNA, 164);
-		putCategory(map, BiomeLayers.Category.SWAMP, 6);
-		putCategory(map, BiomeLayers.Category.SWAMP, 134);
-		putCategory(map, BiomeLayers.Category.TAIGA, 160);
-		putCategory(map, BiomeLayers.Category.TAIGA, 161);
-		putCategory(map, BiomeLayers.Category.TAIGA, 32);
-		putCategory(map, BiomeLayers.Category.TAIGA, 33);
-		putCategory(map, BiomeLayers.Category.TAIGA, 30);
-		putCategory(map, BiomeLayers.Category.TAIGA, 31);
-		putCategory(map, BiomeLayers.Category.TAIGA, 158);
-		putCategory(map, BiomeLayers.Category.TAIGA, 5);
-		putCategory(map, BiomeLayers.Category.TAIGA, 19);
-		putCategory(map, BiomeLayers.Category.TAIGA, 133);
+		putCategory(map, BiomeLayers.Category.BEACH, BiomeIds.BEACH);
+		putCategory(map, BiomeLayers.Category.BEACH, BiomeIds.SNOWY_BEACH);
+		putCategory(map, BiomeLayers.Category.DESERT, BiomeIds.DESERT);
+		putCategory(map, BiomeLayers.Category.DESERT, BiomeIds.DESERT_HILLS);
+		putCategory(map, BiomeLayers.Category.DESERT, BiomeIds.DESERT_LAKES);
+		putCategory(map, BiomeLayers.Category.EXTREME_HILLS, BiomeIds.GRAVELLY_MOUNTAINS);
+		putCategory(map, BiomeLayers.Category.EXTREME_HILLS, BiomeIds.MODIFIED_GRAVELLY_MOUNTAINS);
+		putCategory(map, BiomeLayers.Category.EXTREME_HILLS, BiomeIds.MOUNTAIN_EDGE);
+		putCategory(map, BiomeLayers.Category.EXTREME_HILLS, BiomeIds.MOUNTAINS);
+		putCategory(map, BiomeLayers.Category.EXTREME_HILLS, BiomeIds.WOODED_MOUNTAINS);
+		putCategory(map, BiomeLayers.Category.FOREST, BiomeIds.BIRCH_FOREST);
+		putCategory(map, BiomeLayers.Category.FOREST, BiomeIds.BIRCH_FOREST_HILLS);
+		putCategory(map, BiomeLayers.Category.FOREST, BiomeIds.DARK_FOREST);
+		putCategory(map, BiomeLayers.Category.FOREST, BiomeIds.DARK_FOREST_HILLS);
+		putCategory(map, BiomeLayers.Category.FOREST, BiomeIds.FLOWER_FOREST);
+		putCategory(map, BiomeLayers.Category.FOREST, BiomeIds.FOREST);
+		putCategory(map, BiomeLayers.Category.FOREST, BiomeIds.TALL_BIRCH_FOREST);
+		putCategory(map, BiomeLayers.Category.FOREST, BiomeIds.TALL_BIRCH_HILLS);
+		putCategory(map, BiomeLayers.Category.FOREST, BiomeIds.WOODED_HILLS);
+		putCategory(map, BiomeLayers.Category.ICY, BiomeIds.ICE_SPIKES);
+		putCategory(map, BiomeLayers.Category.ICY, BiomeIds.SNOWY_MOUNTAINS);
+		putCategory(map, BiomeLayers.Category.ICY, BiomeIds.SNOWY_TUNDRA);
+		putCategory(map, BiomeLayers.Category.JUNGLE, BiomeIds.BAMBOO_JUNGLE);
+		putCategory(map, BiomeLayers.Category.JUNGLE, BiomeIds.BAMBOO_JUNGLE_HILLS);
+		putCategory(map, BiomeLayers.Category.JUNGLE, BiomeIds.JUNGLE);
+		putCategory(map, BiomeLayers.Category.JUNGLE, BiomeIds.JUNGLE_EDGE);
+		putCategory(map, BiomeLayers.Category.JUNGLE, BiomeIds.JUNGLE_HILLS);
+		putCategory(map, BiomeLayers.Category.JUNGLE, BiomeIds.MODIFIED_JUNGLE);
+		putCategory(map, BiomeLayers.Category.JUNGLE, BiomeIds.MODIFIED_JUNGLE_EDGE);
+		putCategory(map, BiomeLayers.Category.MESA, BiomeIds.BADLANDS);
+		putCategory(map, BiomeLayers.Category.MESA, BiomeIds.ERODED_BADLANDS);
+		putCategory(map, BiomeLayers.Category.MESA, BiomeIds.MODIFIED_BADLANDS_PLATEAU);
+		putCategory(map, BiomeLayers.Category.MESA, BiomeIds.MODIFIED_WOODED_BADLANDS_PLATEAU);
+		putCategory(map, BiomeLayers.Category.BADLANDS_PLATEAU, BiomeIds.BADLANDS_PLATEAU);
+		putCategory(map, BiomeLayers.Category.BADLANDS_PLATEAU, BiomeIds.WOODED_BADLANDS_PLATEAU);
+		putCategory(map, BiomeLayers.Category.MUSHROOM, BiomeIds.MUSHROOM_FIELDS);
+		putCategory(map, BiomeLayers.Category.MUSHROOM, BiomeIds.MUSHROOM_FIELD_SHORE);
+		putCategory(map, BiomeLayers.Category.NONE, BiomeIds.STONE_SHORE);
+		putCategory(map, BiomeLayers.Category.OCEAN, BiomeIds.COLD_OCEAN);
+		putCategory(map, BiomeLayers.Category.OCEAN, BiomeIds.DEEP_COLD_OCEAN);
+		putCategory(map, BiomeLayers.Category.OCEAN, BiomeIds.DEEP_FROZEN_OCEAN);
+		putCategory(map, BiomeLayers.Category.OCEAN, BiomeIds.DEEP_LUKEWARM_OCEAN);
+		putCategory(map, BiomeLayers.Category.OCEAN, BiomeIds.DEEP_OCEAN);
+		putCategory(map, BiomeLayers.Category.OCEAN, BiomeIds.DEEP_WARM_OCEAN);
+		putCategory(map, BiomeLayers.Category.OCEAN, BiomeIds.FROZEN_OCEAN);
+		putCategory(map, BiomeLayers.Category.OCEAN, BiomeIds.LUKEWARM_OCEAN);
+		putCategory(map, BiomeLayers.Category.OCEAN, BiomeIds.OCEAN);
+		putCategory(map, BiomeLayers.Category.OCEAN, BiomeIds.WARM_OCEAN);
+		putCategory(map, BiomeLayers.Category.PLAINS, BiomeIds.PLAINS);
+		putCategory(map, BiomeLayers.Category.PLAINS, BiomeIds.SUNFLOWER_PLAINS);
+		putCategory(map, BiomeLayers.Category.RIVER, BiomeIds.FROZEN_RIVER);
+		putCategory(map, BiomeLayers.Category.RIVER, BiomeIds.RIVER);
+		putCategory(map, BiomeLayers.Category.SAVANNA, BiomeIds.SAVANNA);
+		putCategory(map, BiomeLayers.Category.SAVANNA, BiomeIds.SAVANNA_PLATEAU);
+		putCategory(map, BiomeLayers.Category.SAVANNA, BiomeIds.SHATTERED_SAVANNA);
+		putCategory(map, BiomeLayers.Category.SAVANNA, BiomeIds.SHATTERED_SAVANNA_PLATEAU);
+		putCategory(map, BiomeLayers.Category.SWAMP, BiomeIds.SWAMP);
+		putCategory(map, BiomeLayers.Category.SWAMP, BiomeIds.SWAMP_HILLS);
+		putCategory(map, BiomeLayers.Category.TAIGA, BiomeIds.GIANT_SPRUCE_TAIGA);
+		putCategory(map, BiomeLayers.Category.TAIGA, BiomeIds.GIANT_SPRUCE_TAIGA_HILLS);
+		putCategory(map, BiomeLayers.Category.TAIGA, BiomeIds.GIANT_TREE_TAIGA);
+		putCategory(map, BiomeLayers.Category.TAIGA, BiomeIds.GIANT_TREE_TAIGA_HILLS);
+		putCategory(map, BiomeLayers.Category.TAIGA, BiomeIds.SNOWY_TAIGA);
+		putCategory(map, BiomeLayers.Category.TAIGA, BiomeIds.SNOWY_TAIGA_HILLS);
+		putCategory(map, BiomeLayers.Category.TAIGA, BiomeIds.SNOWY_TAIGA_MOUNTAINS);
+		putCategory(map, BiomeLayers.Category.TAIGA, BiomeIds.TAIGA);
+		putCategory(map, BiomeLayers.Category.TAIGA, BiomeIds.TAIGA_HILLS);
+		putCategory(map, BiomeLayers.Category.TAIGA, BiomeIds.TAIGA_MOUNTAINS);
 	});
 
 	private static <T extends LayerSampler, C extends LayerSampleContext<T>> LayerFactory<T> stack(
@@ -165,11 +172,20 @@ public class BiomeLayers {
 	}
 
 	protected static boolean isOcean(int id) {
-		return id == 44 || id == 45 || id == 0 || id == 46 || id == 10 || id == 47 || id == 48 || id == 24 || id == 49 || id == 50;
+		return id == BiomeIds.WARM_OCEAN
+			|| id == BiomeIds.LUKEWARM_OCEAN
+			|| id == 0
+			|| id == BiomeIds.COLD_OCEAN
+			|| id == BiomeIds.FROZEN_OCEAN
+			|| id == BiomeIds.DEEP_WARM_OCEAN
+			|| id == BiomeIds.DEEP_LUKEWARM_OCEAN
+			|| id == BiomeIds.DEEP_OCEAN
+			|| id == BiomeIds.DEEP_COLD_OCEAN
+			|| id == BiomeIds.DEEP_FROZEN_OCEAN;
 	}
 
 	protected static boolean isShallowOcean(int id) {
-		return id == 44 || id == 45 || id == 0 || id == 46 || id == 10;
+		return id == BiomeIds.WARM_OCEAN || id == BiomeIds.LUKEWARM_OCEAN || id == 0 || id == BiomeIds.COLD_OCEAN || id == BiomeIds.FROZEN_OCEAN;
 	}
 
 	static enum Category {

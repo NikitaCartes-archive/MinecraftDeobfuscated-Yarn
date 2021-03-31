@@ -19,6 +19,7 @@ import net.minecraft.world.LightType;
 
 @Environment(EnvType.CLIENT)
 public abstract class EntityRenderer<T extends Entity> {
+	protected static final float field_32921 = 0.025F;
 	protected final EntityRenderDispatcher dispatcher;
 	private final TextRenderer textRenderer;
 	protected float shadowRadius;

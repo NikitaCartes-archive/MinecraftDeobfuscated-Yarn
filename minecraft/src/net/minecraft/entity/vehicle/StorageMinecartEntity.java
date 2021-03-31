@@ -1,7 +1,6 @@
 package net.minecraft.entity.vehicle;
 
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -18,6 +17,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -138,27 +138,27 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	protected void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
+	protected void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
 		if (this.lootTableId != null) {
-			tag.putString("LootTable", this.lootTableId.toString());
+			nbt.putString("LootTable", this.lootTableId.toString());
 			if (this.lootSeed != 0L) {
-				tag.putLong("LootTableSeed", this.lootSeed);
+				nbt.putLong("LootTableSeed", this.lootSeed);
 			}
 		} else {
-			Inventories.writeNbt(tag, this.inventory);
+			Inventories.writeNbt(nbt, this.inventory);
 		}
 	}
 
 	@Override
-	protected void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
+	protected void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-		if (tag.contains("LootTable", NbtTypeIds.STRING)) {
-			this.lootTableId = new Identifier(tag.getString("LootTable"));
-			this.lootSeed = tag.getLong("LootTableSeed");
+		if (nbt.contains("LootTable", NbtElement.STRING_TYPE)) {
+			this.lootTableId = new Identifier(nbt.getString("LootTable"));
+			this.lootSeed = nbt.getLong("LootTableSeed");
 		} else {
-			Inventories.readNbt(tag, this.inventory);
+			Inventories.readNbt(nbt, this.inventory);
 		}
 	}
 

@@ -25,6 +25,7 @@ import net.minecraft.world.WorldAccess;
 
 public class ConduitBlock extends BlockWithEntity implements Waterloggable {
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+	private static final int field_31075 = 3;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(5.0, 5.0, 5.0, 11.0, 11.0, 11.0);
 
 	public ConduitBlock(AbstractBlock.Settings settings) {

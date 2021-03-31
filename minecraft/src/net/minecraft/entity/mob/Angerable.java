@@ -14,6 +14,9 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public interface Angerable {
+	String ANGER_TIME_KEY = "AngerTime";
+	String ANGRY_AT_KEY = "AngryAt";
+
 	int getAngerTime();
 
 	void setAngerTime(int ticks);
@@ -25,20 +28,20 @@ public interface Angerable {
 
 	void chooseRandomAngerTime();
 
-	default void writeAngerToNbt(NbtCompound tag) {
-		tag.putInt("AngerTime", this.getAngerTime());
+	default void writeAngerToNbt(NbtCompound nbt) {
+		nbt.putInt("AngerTime", this.getAngerTime());
 		if (this.getAngryAt() != null) {
-			tag.putUuid("AngryAt", this.getAngryAt());
+			nbt.putUuid("AngryAt", this.getAngryAt());
 		}
 	}
 
-	default void readAngerFromNbt(World world, NbtCompound tag) {
-		this.setAngerTime(tag.getInt("AngerTime"));
+	default void readAngerFromNbt(World world, NbtCompound nbt) {
+		this.setAngerTime(nbt.getInt("AngerTime"));
 		if (world instanceof ServerWorld) {
-			if (!tag.containsUuid("AngryAt")) {
+			if (!nbt.containsUuid("AngryAt")) {
 				this.setAngryAt(null);
 			} else {
-				UUID uUID = tag.getUuid("AngryAt");
+				UUID uUID = nbt.getUuid("AngryAt");
 				this.setAngryAt(uUID);
 				Entity entity = ((ServerWorld)world).getEntity(uUID);
 				if (entity != null) {
@@ -109,6 +112,9 @@ public interface Angerable {
 		this.setTarget(null);
 		this.setAngerTime(0);
 	}
+
+	@Nullable
+	LivingEntity getAttacker();
 
 	void setAttacker(@Nullable LivingEntity attacker);
 

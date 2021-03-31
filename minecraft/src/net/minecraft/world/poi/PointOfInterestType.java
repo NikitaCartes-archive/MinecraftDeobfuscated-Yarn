@@ -49,6 +49,12 @@ public class PointOfInterestType {
 		.flatMap(block -> block.getStateManager().getStates().stream())
 		.filter(state -> state.get(BedBlock.PART) == BedPart.HEAD)
 		.collect(ImmutableSet.toImmutableSet());
+	private static final Set<BlockState> CAULDRON_STATES = (Set<BlockState>)ImmutableList.of(
+			Blocks.CAULDRON, Blocks.LAVA_CAULDRON, Blocks.WATER_CAULDRON, Blocks.POWDER_SNOW_CAULDRON
+		)
+		.stream()
+		.flatMap(block -> block.getStateManager().getStates().stream())
+		.collect(ImmutableSet.toImmutableSet());
 	private static final Map<BlockState, PointOfInterestType> BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE = Maps.<BlockState, PointOfInterestType>newHashMap();
 	public static final PointOfInterestType UNEMPLOYED = register("unemployed", ImmutableSet.of(), 1, IS_USED_BY_PROFESSION, 1);
 	public static final PointOfInterestType ARMORER = register("armorer", getAllStatesOf(Blocks.BLAST_FURNACE), 1, 1);
@@ -58,7 +64,7 @@ public class PointOfInterestType {
 	public static final PointOfInterestType FARMER = register("farmer", getAllStatesOf(Blocks.COMPOSTER), 1, 1);
 	public static final PointOfInterestType FISHERMAN = register("fisherman", getAllStatesOf(Blocks.BARREL), 1, 1);
 	public static final PointOfInterestType FLETCHER = register("fletcher", getAllStatesOf(Blocks.FLETCHING_TABLE), 1, 1);
-	public static final PointOfInterestType LEATHERWORKER = register("leatherworker", getAllStatesOf(Blocks.CAULDRON), 1, 1);
+	public static final PointOfInterestType LEATHERWORKER = register("leatherworker", CAULDRON_STATES, 1, 1);
 	public static final PointOfInterestType LIBRARIAN = register("librarian", getAllStatesOf(Blocks.LECTERN), 1, 1);
 	public static final PointOfInterestType MASON = register("mason", getAllStatesOf(Blocks.STONECUTTER), 1, 1);
 	public static final PointOfInterestType NITWIT = register("nitwit", ImmutableSet.of(), 1, 1);
@@ -99,12 +105,20 @@ public class PointOfInterestType {
 		this.searchDistance = searchDistance;
 	}
 
+	public String getId() {
+		return this.id;
+	}
+
 	public int getTicketCount() {
 		return this.ticketCount;
 	}
 
 	public Predicate<PointOfInterestType> getCompletionCondition() {
 		return this.completionCondition;
+	}
+
+	public boolean contains(BlockState state) {
+		return this.blockStates.contains(state);
 	}
 
 	public int getSearchDistance() {

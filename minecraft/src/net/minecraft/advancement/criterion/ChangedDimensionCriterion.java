@@ -23,8 +23,8 @@ public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensio
 	public ChangedDimensionCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
-		RegistryKey<World> registryKey = jsonObject.has("from") ? RegistryKey.of(Registry.DIMENSION, new Identifier(JsonHelper.getString(jsonObject, "from"))) : null;
-		RegistryKey<World> registryKey2 = jsonObject.has("to") ? RegistryKey.of(Registry.DIMENSION, new Identifier(JsonHelper.getString(jsonObject, "to"))) : null;
+		RegistryKey<World> registryKey = jsonObject.has("from") ? RegistryKey.of(Registry.WORLD_KEY, new Identifier(JsonHelper.getString(jsonObject, "from"))) : null;
+		RegistryKey<World> registryKey2 = jsonObject.has("to") ? RegistryKey.of(Registry.WORLD_KEY, new Identifier(JsonHelper.getString(jsonObject, "to"))) : null;
 		return new ChangedDimensionCriterion.Conditions(extended, registryKey, registryKey2);
 	}
 
@@ -44,8 +44,20 @@ public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensio
 			this.to = to;
 		}
 
+		public static ChangedDimensionCriterion.Conditions create() {
+			return new ChangedDimensionCriterion.Conditions(EntityPredicate.Extended.EMPTY, null, null);
+		}
+
+		public static ChangedDimensionCriterion.Conditions create(RegistryKey<World> from, RegistryKey<World> to) {
+			return new ChangedDimensionCriterion.Conditions(EntityPredicate.Extended.EMPTY, from, to);
+		}
+
 		public static ChangedDimensionCriterion.Conditions to(RegistryKey<World> to) {
 			return new ChangedDimensionCriterion.Conditions(EntityPredicate.Extended.EMPTY, null, to);
+		}
+
+		public static ChangedDimensionCriterion.Conditions from(RegistryKey<World> from) {
+			return new ChangedDimensionCriterion.Conditions(EntityPredicate.Extended.EMPTY, from, null);
 		}
 
 		public boolean matches(RegistryKey<World> from, RegistryKey<World> to) {

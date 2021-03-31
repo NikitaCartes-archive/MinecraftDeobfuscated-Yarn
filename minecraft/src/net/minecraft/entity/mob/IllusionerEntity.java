@@ -1,8 +1,6 @@
 package net.minecraft.entity.mob;
 
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityGroup;
@@ -43,6 +41,9 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public class IllusionerEntity extends SpellcastingIllagerEntity implements RangedAttackMob {
+	private static final int field_30473 = 4;
+	private static final int field_30471 = 3;
+	private static final int field_30472 = 3;
 	private int field_7296;
 	private final Vec3d[][] field_7297;
 
@@ -83,10 +84,10 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
 		this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
-		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
 	@Override
@@ -94,7 +95,6 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 		super.initDataTracker();
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public Box getVisibilityBoundingBox() {
 		return this.getBoundingBox().expand(3.0, 0.0, 3.0);
@@ -144,7 +144,6 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 		return SoundEvents.ENTITY_ILLUSIONER_AMBIENT;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Vec3d[] method_7065(float f) {
 		if (this.field_7296 <= 0) {
 			return this.field_7297[1];
@@ -209,7 +208,6 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 		this.world.spawnEntity(persistentProjectileEntity);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public IllagerEntity.State getState() {
 		if (this.isSpellcasting()) {

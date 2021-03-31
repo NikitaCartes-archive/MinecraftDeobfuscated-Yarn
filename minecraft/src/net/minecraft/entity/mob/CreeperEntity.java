@@ -1,11 +1,6 @@
 package net.minecraft.entity.mob;
 
 import java.util.Collection;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.api.EnvironmentInterface;
-import net.fabricmc.api.EnvironmentInterfaces;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.client.render.entity.feature.SkinOverlayOwner;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
@@ -33,6 +28,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -44,10 +40,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 
-@EnvironmentInterfaces({@EnvironmentInterface(
-		value = EnvType.CLIENT,
-		itf = SkinOverlayOwner.class
-	)})
 public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 	private static final TrackedData<Integer> FUSE_SPEED = DataTracker.registerData(CreeperEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> CHARGED = DataTracker.registerData(CreeperEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -105,30 +97,30 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
 		if (this.dataTracker.get(CHARGED)) {
-			tag.putBoolean("powered", true);
+			nbt.putBoolean("powered", true);
 		}
 
-		tag.putShort("Fuse", (short)this.fuseTime);
-		tag.putByte("ExplosionRadius", (byte)this.explosionRadius);
-		tag.putBoolean("ignited", this.isIgnited());
+		nbt.putShort("Fuse", (short)this.fuseTime);
+		nbt.putByte("ExplosionRadius", (byte)this.explosionRadius);
+		nbt.putBoolean("ignited", this.isIgnited());
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.dataTracker.set(CHARGED, tag.getBoolean("powered"));
-		if (tag.contains("Fuse", NbtTypeIds.NUMBER)) {
-			this.fuseTime = tag.getShort("Fuse");
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.dataTracker.set(CHARGED, nbt.getBoolean("powered"));
+		if (nbt.contains("Fuse", NbtElement.NUMBER_TYPE)) {
+			this.fuseTime = nbt.getShort("Fuse");
 		}
 
-		if (tag.contains("ExplosionRadius", NbtTypeIds.NUMBER)) {
-			this.explosionRadius = tag.getByte("ExplosionRadius");
+		if (nbt.contains("ExplosionRadius", NbtElement.NUMBER_TYPE)) {
+			this.explosionRadius = nbt.getByte("ExplosionRadius");
 		}
 
-		if (tag.getBoolean("ignited")) {
+		if (nbt.getBoolean("ignited")) {
 			this.ignite();
 		}
 	}
@@ -194,7 +186,6 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 		return this.dataTracker.get(CHARGED);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getClientFuseTime(float timeDelta) {
 		return MathHelper.lerp(timeDelta, (float)this.lastFuseTime, (float)this.currentFuseTime) / (float)(this.fuseTime - 2);
 	}

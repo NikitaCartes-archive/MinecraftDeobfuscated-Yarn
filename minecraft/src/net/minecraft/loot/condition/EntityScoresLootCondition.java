@@ -72,6 +72,29 @@ public class EntityScoresLootCondition implements LootCondition {
 		}
 	}
 
+	public static EntityScoresLootCondition.Builder create(LootContext.EntityTarget target) {
+		return new EntityScoresLootCondition.Builder(target);
+	}
+
+	public static class Builder implements LootCondition.Builder {
+		private final Map<String, BoundedIntUnaryOperator> scores = Maps.<String, BoundedIntUnaryOperator>newHashMap();
+		private final LootContext.EntityTarget target;
+
+		public Builder(LootContext.EntityTarget target) {
+			this.target = target;
+		}
+
+		public EntityScoresLootCondition.Builder score(String name, BoundedIntUnaryOperator value) {
+			this.scores.put(name, value);
+			return this;
+		}
+
+		@Override
+		public LootCondition build() {
+			return new EntityScoresLootCondition(this.scores, this.target);
+		}
+	}
+
 	public static class Serializer implements JsonSerializer<EntityScoresLootCondition> {
 		public void toJson(JsonObject jsonObject, EntityScoresLootCondition entityScoresLootCondition, JsonSerializationContext jsonSerializationContext) {
 			JsonObject jsonObject2 = new JsonObject();

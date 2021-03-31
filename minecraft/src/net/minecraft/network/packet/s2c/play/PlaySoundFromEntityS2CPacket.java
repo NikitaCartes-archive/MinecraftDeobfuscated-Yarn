@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -44,27 +42,22 @@ public class PlaySoundFromEntityS2CPacket implements Packet<ClientPlayPacketList
 		buf.writeFloat(this.pitch);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public SoundEvent getSound() {
 		return this.sound;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public SoundCategory getCategory() {
 		return this.category;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getEntityId() {
 		return this.entityId;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getVolume() {
 		return this.volume;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getPitch() {
 		return this.pitch;
 	}

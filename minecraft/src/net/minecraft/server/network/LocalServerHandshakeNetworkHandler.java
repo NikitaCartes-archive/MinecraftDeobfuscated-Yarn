@@ -1,7 +1,5 @@
 package net.minecraft.server.network;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.listener.ServerHandshakePacketListener;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
@@ -17,7 +15,6 @@ import net.minecraft.text.Text;
  * 
  * @see net.minecraft.server.ServerNetworkIo#bindLocal()
  */
-@Environment(EnvType.CLIENT)
 public class LocalServerHandshakeNetworkHandler implements ServerHandshakePacketListener {
 	private final MinecraftServer server;
 	private final ClientConnection connection;

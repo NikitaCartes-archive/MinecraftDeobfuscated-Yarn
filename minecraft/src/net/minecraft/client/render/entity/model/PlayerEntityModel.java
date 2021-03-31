@@ -21,6 +21,12 @@ import net.minecraft.util.Arm;
 
 @Environment(EnvType.CLIENT)
 public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<T> {
+	private static final String EAR = "ear";
+	private static final String CLOAK = "cloak";
+	private static final String LEFT_SLEEVE = "left_sleeve";
+	private static final String RIGHT_SLEEVE = "right_sleeve";
+	private static final String LEFT_PANTS = "left_pants";
+	private static final String RIGHT_PANTS = "right_pants";
 	/**
 	 * All the parts. Used when picking a part to render stuck arrows.
 	 */
@@ -43,8 +49,8 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 		this.rightSleeve = root.getChild("right_sleeve");
 		this.leftPants = root.getChild("left_pants");
 		this.rightPants = root.getChild("right_pants");
-		this.jacket = root.getChild("jacket");
-		this.parts = (List<ModelPart>)root.traverse().filter(modelPart -> !modelPart.isEmpty()).collect(ImmutableList.toImmutableList());
+		this.jacket = root.getChild(EntityModelPartNames.JACKET);
+		this.parts = (List<ModelPart>)root.traverse().filter(part -> !part.isEmpty()).collect(ImmutableList.toImmutableList());
 	}
 
 	public static ModelData getTexturedModelData(Dilation dilation, boolean slim) {
@@ -57,10 +63,14 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 		float f = 0.25F;
 		if (slim) {
 			modelPartData.addChild(
-				"left_arm", ModelPartBuilder.create().uv(32, 48).cuboid(-1.0F, -2.0F, -2.0F, 3.0F, 12.0F, 4.0F, dilation), ModelTransform.pivot(5.0F, 2.5F, 0.0F)
+				EntityModelPartNames.LEFT_ARM,
+				ModelPartBuilder.create().uv(32, 48).cuboid(-1.0F, -2.0F, -2.0F, 3.0F, 12.0F, 4.0F, dilation),
+				ModelTransform.pivot(5.0F, 2.5F, 0.0F)
 			);
 			modelPartData.addChild(
-				"right_arm", ModelPartBuilder.create().uv(40, 16).cuboid(-2.0F, -2.0F, -2.0F, 3.0F, 12.0F, 4.0F, dilation), ModelTransform.pivot(-5.0F, 2.5F, 0.0F)
+				EntityModelPartNames.RIGHT_ARM,
+				ModelPartBuilder.create().uv(40, 16).cuboid(-2.0F, -2.0F, -2.0F, 3.0F, 12.0F, 4.0F, dilation),
+				ModelTransform.pivot(-5.0F, 2.5F, 0.0F)
 			);
 			modelPartData.addChild(
 				"left_sleeve",
@@ -74,7 +84,9 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 			);
 		} else {
 			modelPartData.addChild(
-				"left_arm", ModelPartBuilder.create().uv(32, 48).cuboid(-1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, dilation), ModelTransform.pivot(5.0F, 2.0F, 0.0F)
+				EntityModelPartNames.LEFT_ARM,
+				ModelPartBuilder.create().uv(32, 48).cuboid(-1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, dilation),
+				ModelTransform.pivot(5.0F, 2.0F, 0.0F)
 			);
 			modelPartData.addChild(
 				"left_sleeve",
@@ -89,7 +101,9 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 		}
 
 		modelPartData.addChild(
-			"left_leg", ModelPartBuilder.create().uv(16, 48).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, dilation), ModelTransform.pivot(1.9F, 12.0F, 0.0F)
+			EntityModelPartNames.LEFT_LEG,
+			ModelPartBuilder.create().uv(16, 48).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, dilation),
+			ModelTransform.pivot(1.9F, 12.0F, 0.0F)
 		);
 		modelPartData.addChild(
 			"left_pants",
@@ -101,7 +115,9 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 			ModelPartBuilder.create().uv(0, 32).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, dilation.add(0.25F)),
 			ModelTransform.pivot(-1.9F, 12.0F, 0.0F)
 		);
-		modelPartData.addChild("jacket", ModelPartBuilder.create().uv(16, 32).cuboid(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, dilation.add(0.25F)), ModelTransform.NONE);
+		modelPartData.addChild(
+			EntityModelPartNames.JACKET, ModelPartBuilder.create().uv(16, 32).cuboid(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, dilation.add(0.25F)), ModelTransform.NONE
+		);
 		return modelData;
 	}
 

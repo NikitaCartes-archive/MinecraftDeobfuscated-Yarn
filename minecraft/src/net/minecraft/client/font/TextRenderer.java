@@ -37,6 +37,7 @@ import net.minecraft.util.math.Vec3f;
  */
 @Environment(EnvType.CLIENT)
 public class TextRenderer {
+	private static final float field_32166 = 0.01F;
 	private static final Vec3f FORWARD_SHIFT = new Vec3f(0.0F, 0.0F, 0.03F);
 	/**
 	 * The font height of the text that is rendered by the text renderer.

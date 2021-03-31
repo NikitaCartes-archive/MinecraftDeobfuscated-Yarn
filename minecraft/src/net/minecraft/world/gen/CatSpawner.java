@@ -17,6 +17,7 @@ import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 
 public class CatSpawner implements Spawner {
+	private static final int field_30601 = 1200;
 	private int ticksUntilNextSpawn;
 
 	@Override

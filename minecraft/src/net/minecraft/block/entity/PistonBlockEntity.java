@@ -2,9 +2,6 @@ package net.minecraft.block.entity;
 
 import java.util.Iterator;
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -33,6 +30,9 @@ import net.minecraft.world.World;
  * A piston block entity represents the block being pushed by a piston.
  */
 public class PistonBlockEntity extends BlockEntity {
+	private static final int field_31382 = 2;
+	private static final double field_31383 = 0.01;
+	public static final double field_31381 = 0.51;
 	private BlockState pushedBlock;
 	private Direction facing;
 	private boolean extending;
@@ -80,17 +80,14 @@ public class PistonBlockEntity extends BlockEntity {
 		return MathHelper.lerp(tickDelta, this.lastProgress, this.progress);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getRenderOffsetX(float tickDelta) {
 		return (float)this.facing.getOffsetX() * this.getAmountExtended(this.getProgress(tickDelta));
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getRenderOffsetY(float tickDelta) {
 		return (float)this.facing.getOffsetY() * this.getAmountExtended(this.getProgress(tickDelta));
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getRenderOffsetZ(float tickDelta) {
 		return (float)this.facing.getOffsetZ() * this.getAmountExtended(this.getProgress(tickDelta));
 	}
@@ -278,7 +275,7 @@ public class PistonBlockEntity extends BlockEntity {
 					blockState = Block.postProcessState(this.pushedBlock, this.world, this.pos);
 				}
 
-				this.world.setBlockState(this.pos, blockState, SetBlockStateFlags.DEFAULT);
+				this.world.setBlockState(this.pos, blockState, Block.NOTIFY_ALL);
 				this.world.updateNeighbor(this.pos, blockState.getBlock(), this.pos);
 			}
 		}
@@ -296,14 +293,14 @@ public class PistonBlockEntity extends BlockEntity {
 				if (blockEntity.pushedBlock != null && world.getBlockState(pos).isOf(Blocks.MOVING_PISTON)) {
 					BlockState blockState = Block.postProcessState(blockEntity.pushedBlock, world, pos);
 					if (blockState.isAir()) {
-						world.setBlockState(pos, blockEntity.pushedBlock, SetBlockStateFlags.NO_REDRAW | SetBlockStateFlags.FORCE_STATE | SetBlockStateFlags.MOVED);
+						world.setBlockState(pos, blockEntity.pushedBlock, Block.NO_REDRAW | Block.FORCE_STATE | Block.MOVED);
 						Block.replace(blockEntity.pushedBlock, blockState, world, pos, 3);
 					} else {
 						if (blockState.contains(Properties.WATERLOGGED) && (Boolean)blockState.get(Properties.WATERLOGGED)) {
 							blockState = blockState.with(Properties.WATERLOGGED, Boolean.valueOf(false));
 						}
 
-						world.setBlockState(pos, blockState, SetBlockStateFlags.DEFAULT | SetBlockStateFlags.MOVED);
+						world.setBlockState(pos, blockState, Block.NOTIFY_ALL | Block.MOVED);
 						world.updateNeighbor(pos, blockState.getBlock(), pos);
 					}
 				}
@@ -320,25 +317,25 @@ public class PistonBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void readNbt(NbtCompound tag) {
-		super.readNbt(tag);
-		this.pushedBlock = NbtHelper.toBlockState(tag.getCompound("blockState"));
-		this.facing = Direction.byId(tag.getInt("facing"));
-		this.progress = tag.getFloat("progress");
+	public void readNbt(NbtCompound nbt) {
+		super.readNbt(nbt);
+		this.pushedBlock = NbtHelper.toBlockState(nbt.getCompound("blockState"));
+		this.facing = Direction.byId(nbt.getInt("facing"));
+		this.progress = nbt.getFloat("progress");
 		this.lastProgress = this.progress;
-		this.extending = tag.getBoolean("extending");
-		this.source = tag.getBoolean("source");
+		this.extending = nbt.getBoolean("extending");
+		this.source = nbt.getBoolean("source");
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound tag) {
-		super.writeNbt(tag);
-		tag.put("blockState", NbtHelper.fromBlockState(this.pushedBlock));
-		tag.putInt("facing", this.facing.getId());
-		tag.putFloat("progress", this.lastProgress);
-		tag.putBoolean("extending", this.extending);
-		tag.putBoolean("source", this.source);
-		return tag;
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		super.writeNbt(nbt);
+		nbt.put("blockState", NbtHelper.fromBlockState(this.pushedBlock));
+		nbt.putInt("facing", this.facing.getId());
+		nbt.putFloat("progress", this.lastProgress);
+		nbt.putBoolean("extending", this.extending);
+		nbt.putBoolean("source", this.source);
+		return nbt;
 	}
 
 	public VoxelShape getCollisionShape(BlockView world, BlockPos pos) {

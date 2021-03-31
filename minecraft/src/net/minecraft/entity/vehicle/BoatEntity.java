@@ -3,9 +3,6 @@ package net.minecraft.entity.vehicle;
 import com.google.common.collect.Lists;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -29,6 +26,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -60,6 +58,12 @@ public class BoatEntity extends Entity {
 	private static final TrackedData<Boolean> LEFT_PADDLE_MOVING = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> RIGHT_PADDLE_MOVING = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> BUBBLE_WOBBLE_TICKS = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	public static final int field_30697 = 0;
+	public static final int field_30698 = 1;
+	private static final int field_30695 = 60;
+	private static final double field_30696 = (float) (Math.PI / 8);
+	public static final double field_30699 = (float) (Math.PI / 4);
+	public static final int field_30700 = 60;
 	private final float[] paddlePhases = new float[2];
 	private float velocityDecay;
 	private float ticksUnderwater;
@@ -140,7 +144,7 @@ public class BoatEntity extends Entity {
 
 	@Override
 	protected Vec3d positionInPortal(Direction.Axis portalAxis, PortalUtil.Rectangle portalRect) {
-		return LivingEntity.method_31079(super.positionInPortal(portalAxis, portalRect));
+		return LivingEntity.positionInPortal(super.positionInPortal(portalAxis, portalRect));
 	}
 
 	@Override
@@ -224,7 +228,6 @@ public class BoatEntity extends Entity {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void animateDamage() {
 		this.setDamageWobbleSide(-this.getDamageWobbleSide());
@@ -237,7 +240,6 @@ public class BoatEntity extends Entity {
 		return !this.isRemoved();
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
 		this.x = x;
@@ -417,7 +419,6 @@ public class BoatEntity extends Entity {
 		this.dataTracker.set(RIGHT_PADDLE_MOVING, rightMoving);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float interpolatePaddlePhase(int paddle, float tickDelta) {
 		return this.isPaddleMoving(paddle)
 			? (float)MathHelper.clampedLerp((double)this.paddlePhases[paddle] - (float) (Math.PI / 8), (double)this.paddlePhases[paddle], (double)tickDelta)
@@ -721,21 +722,20 @@ public class BoatEntity extends Entity {
 		entity.setHeadYaw(entity.yaw);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void onPassengerLookAround(Entity passenger) {
 		this.copyEntityData(passenger);
 	}
 
 	@Override
-	protected void writeCustomDataToNbt(NbtCompound tag) {
-		tag.putString("Type", this.getBoatType().getName());
+	protected void writeCustomDataToNbt(NbtCompound nbt) {
+		nbt.putString("Type", this.getBoatType().getName());
 	}
 
 	@Override
-	protected void readCustomDataFromNbt(NbtCompound tag) {
-		if (tag.contains("Type", NbtTypeIds.STRING)) {
-			this.setBoatType(BoatEntity.Type.getType(tag.getString("Type")));
+	protected void readCustomDataFromNbt(NbtCompound nbt) {
+		if (nbt.contains("Type", NbtElement.STRING_TYPE)) {
+			this.setBoatType(BoatEntity.Type.getType(nbt.getString("Type")));
 		}
 	}
 
@@ -815,7 +815,6 @@ public class BoatEntity extends Entity {
 		return this.dataTracker.get(BUBBLE_WOBBLE_TICKS);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float interpolateBubbleWobble(float tickDelta) {
 		return MathHelper.lerp(tickDelta, this.lastBubbleWobble, this.bubbleWobble);
 	}
@@ -847,7 +846,6 @@ public class BoatEntity extends Entity {
 		return this.getFirstPassenger();
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void setInputs(boolean pressingLeft, boolean pressingRight, boolean pressingForward, boolean pressingBack) {
 		this.pressingLeft = pressingLeft;
 		this.pressingRight = pressingRight;
@@ -865,7 +863,6 @@ public class BoatEntity extends Entity {
 		return this.location == BoatEntity.Location.UNDER_WATER || this.location == BoatEntity.Location.UNDER_FLOWING_WATER;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickBlockStack() {
 		return new ItemStack(this.asItem());

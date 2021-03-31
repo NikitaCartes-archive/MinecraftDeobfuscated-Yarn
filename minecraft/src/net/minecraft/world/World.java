@@ -10,10 +10,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -70,11 +66,18 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class World implements WorldAccess, AutoCloseable {
 	protected static final Logger LOGGER = LogManager.getLogger();
-	public static final Codec<RegistryKey<World>> CODEC = Identifier.CODEC.xmap(RegistryKey.createKeyFactory(Registry.DIMENSION), RegistryKey::getValue);
-	public static final RegistryKey<World> OVERWORLD = RegistryKey.of(Registry.DIMENSION, new Identifier("overworld"));
-	public static final RegistryKey<World> NETHER = RegistryKey.of(Registry.DIMENSION, new Identifier("the_nether"));
-	public static final RegistryKey<World> END = RegistryKey.of(Registry.DIMENSION, new Identifier("the_end"));
+	public static final Codec<RegistryKey<World>> CODEC = Identifier.CODEC.xmap(RegistryKey.createKeyFactory(Registry.WORLD_KEY), RegistryKey::getValue);
+	public static final RegistryKey<World> OVERWORLD = RegistryKey.of(Registry.WORLD_KEY, new Identifier("overworld"));
+	public static final RegistryKey<World> NETHER = RegistryKey.of(Registry.WORLD_KEY, new Identifier("the_nether"));
+	public static final RegistryKey<World> END = RegistryKey.of(Registry.WORLD_KEY, new Identifier("the_end"));
+	public static final int field_30965 = 30000000;
+	public static final int field_30966 = 512;
+	public static final int field_30967 = 32;
 	private static final Direction[] DIRECTIONS = Direction.values();
+	public static final int field_30968 = 15;
+	public static final int field_30969 = 24000;
+	public static final int field_30970 = 20000000;
+	public static final int field_30971 = -20000000;
 	protected final List<BlockEntityTickInvoker> blockEntityTickers = Lists.<BlockEntityTickInvoker>newArrayList();
 	private final List<BlockEntityTickInvoker> pendingBlockEntityTickers = Lists.<BlockEntityTickInvoker>newArrayList();
 	private boolean iteratingTickingBlockEntities;
@@ -137,6 +140,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	@Nullable
+	@Override
 	public MinecraftServer getServer() {
 		return null;
 	}
@@ -190,12 +194,12 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		} else {
 			WorldChunk worldChunk = this.getWorldChunk(pos);
 			Block block = state.getBlock();
-			BlockState blockState = worldChunk.setBlockState(pos, state, (flags & SetBlockStateFlags.MOVED) != 0);
+			BlockState blockState = worldChunk.setBlockState(pos, state, (flags & Block.MOVED) != 0);
 			if (blockState == null) {
 				return false;
 			} else {
 				BlockState blockState2 = this.getBlockState(pos);
-				if ((flags & SetBlockStateFlags.SKIP_LIGHTING_UPDATES) == 0
+				if ((flags & Block.SKIP_LIGHTING_UPDATES) == 0
 					&& blockState2 != blockState
 					&& (
 						blockState2.getOpacity(this, pos) != blockState.getOpacity(this, pos)
@@ -213,21 +217,21 @@ public abstract class World implements WorldAccess, AutoCloseable {
 						this.scheduleBlockRerenderIfNeeded(pos, blockState, blockState2);
 					}
 
-					if ((flags & SetBlockStateFlags.NOTIFY_LISTENERS) != 0
-						&& (!this.isClient || (flags & SetBlockStateFlags.NO_REDRAW) == 0)
+					if ((flags & Block.NOTIFY_LISTENERS) != 0
+						&& (!this.isClient || (flags & Block.NO_REDRAW) == 0)
 						&& (this.isClient || worldChunk.getLevelType() != null && worldChunk.getLevelType().isAfter(ChunkHolder.LevelType.TICKING))) {
 						this.updateListeners(pos, blockState, state, flags);
 					}
 
-					if ((flags & SetBlockStateFlags.PROPAGATE_CHANGE) != 0) {
+					if ((flags & Block.NOTIFY_NEIGHBORS) != 0) {
 						this.updateNeighbors(pos, blockState.getBlock());
 						if (!this.isClient && state.hasComparatorOutput()) {
 							this.updateComparators(pos, block);
 						}
 					}
 
-					if ((flags & SetBlockStateFlags.FORCE_STATE) == 0 && maxUpdateDepth > 0) {
-						int i = flags & ~(SetBlockStateFlags.PROPAGATE_CHANGE | SetBlockStateFlags.SKIP_DROPS);
+					if ((flags & Block.FORCE_STATE) == 0 && maxUpdateDepth > 0) {
+						int i = flags & ~(Block.NOTIFY_NEIGHBORS | Block.SKIP_DROPS);
 						blockState.prepare(this, pos, i, maxUpdateDepth - 1);
 						state.updateNeighbors(this, pos, i, maxUpdateDepth - 1);
 						state.prepare(this, pos, i, maxUpdateDepth - 1);
@@ -247,7 +251,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	@Override
 	public boolean removeBlock(BlockPos pos, boolean move) {
 		FluidState fluidState = this.getFluidState(pos);
-		return this.setBlockState(pos, fluidState.getBlockState(), SetBlockStateFlags.DEFAULT | (move ? SetBlockStateFlags.MOVED : 0));
+		return this.setBlockState(pos, fluidState.getBlockState(), Block.NOTIFY_ALL | (move ? Block.MOVED : 0));
 	}
 
 	@Override
@@ -266,7 +270,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 				Block.dropStacks(blockState, this, pos, blockEntity, breakingEntity, ItemStack.EMPTY);
 			}
 
-			boolean bl = this.setBlockState(pos, fluidState.getBlockState(), SetBlockStateFlags.DEFAULT, maxUpdateDepth);
+			boolean bl = this.setBlockState(pos, fluidState.getBlockState(), Block.NOTIFY_ALL, maxUpdateDepth);
 			if (bl) {
 				this.emitGameEvent(breakingEntity, GameEvent.BLOCK_DESTROY, pos);
 			}
@@ -279,7 +283,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	public boolean setBlockState(BlockPos pos, BlockState state) {
-		return this.setBlockState(pos, state, SetBlockStateFlags.DEFAULT);
+		return this.setBlockState(pos, state, Block.NOTIFY_ALL);
 	}
 
 	public abstract void updateListeners(BlockPos pos, BlockState oldState, BlockState newState, int flags);
@@ -411,7 +415,6 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public void addParticle(ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void addParticle(ParticleEffect parameters, boolean alwaysSpawn, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
 	}
 
@@ -493,6 +496,8 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		explosion.affectWorld(true);
 		return explosion;
 	}
+
+	public abstract String asString();
 
 	@Nullable
 	@Override
@@ -693,7 +698,6 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		return i;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void disconnect() {
 	}
 
@@ -729,7 +733,6 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		return MathHelper.lerp(delta, this.thunderGradientPrev, this.thunderGradient) * this.getRainGradient(delta);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void setThunderGradient(float thunderGradient) {
 		this.thunderGradientPrev = thunderGradient;
 		this.thunderGradient = thunderGradient;
@@ -739,7 +742,6 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		return MathHelper.lerp(delta, this.rainGradientPrev, this.rainGradient);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void setRainGradient(float rainGradient) {
 		this.rainGradientPrev = rainGradient;
 		this.rainGradient = rainGradient;
@@ -798,8 +800,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	public abstract void setBlockBreakingInfo(int entityId, BlockPos pos, int progress);
 
-	@Environment(EnvType.CLIENT)
-	public void addFireworkParticle(double x, double y, double z, double velocityX, double velocityY, double velocityZ, @Nullable NbtCompound tag) {
+	public void addFireworkParticle(double x, double y, double z, double velocityX, double velocityY, double velocityZ, @Nullable NbtCompound nbt) {
 	}
 
 	public abstract Scoreboard getScoreboard();
@@ -868,6 +869,11 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	@Override
 	public boolean testBlockState(BlockPos pos, Predicate<BlockState> state) {
 		return state.test(this.getBlockState(pos));
+	}
+
+	@Override
+	public boolean testFluidState(BlockPos pos, Predicate<FluidState> state) {
+		return state.test(this.getFluidState(pos));
 	}
 
 	public abstract RecipeManager getRecipeManager();

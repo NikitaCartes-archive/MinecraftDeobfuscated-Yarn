@@ -56,6 +56,10 @@ public class WeightedSoundSet implements SoundContainer<Sound> {
 		this.sounds.add(soundContainer);
 	}
 
+	public Identifier method_35812() {
+		return this.id;
+	}
+
 	@Nullable
 	public Text getSubtitle() {
 		return this.subtitle;

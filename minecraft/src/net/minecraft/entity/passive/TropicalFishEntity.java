@@ -2,9 +2,6 @@ package net.minecraft.entity.passive;
 
 import java.util.Locale;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -25,7 +22,11 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public class TropicalFishEntity extends SchoolingFishEntity {
+	public static final String field_30378 = "BucketVariantTag";
 	private static final TrackedData<Integer> VARIANT = DataTracker.registerData(TropicalFishEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	public static final int field_30380 = 0;
+	public static final int field_30383 = 1;
+	private static final int field_30379 = 2;
 	private static final Identifier[] SHAPE_IDS = new Identifier[]{
 		new Identifier("textures/entity/fish/tropical_a.png"), new Identifier("textures/entity/fish/tropical_b.png")
 	};
@@ -45,6 +46,8 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 		new Identifier("textures/entity/fish/tropical_b_pattern_5.png"),
 		new Identifier("textures/entity/fish/tropical_b_pattern_6.png")
 	};
+	private static final int field_30381 = 6;
+	private static final int field_30382 = 15;
 	public static final int[] COMMON_VARIANTS = new int[]{
 		toVariant(TropicalFishEntity.Variety.STRIPEY, DyeColor.ORANGE, DyeColor.GRAY),
 		toVariant(TropicalFishEntity.Variety.FLOPPER, DyeColor.GRAY, DyeColor.GRAY),
@@ -79,22 +82,18 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 		super(entityType, world);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static String getToolTipForVariant(int variant) {
 		return "entity.minecraft.tropical_fish.predefined." + variant;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static DyeColor getBaseDyeColor(int variant) {
 		return DyeColor.byId(getBaseDyeColorIndex(variant));
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static DyeColor getPatternDyeColor(int variant) {
 		return DyeColor.byId(getPatternDyeColorIndex(variant));
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static String getTranslationKey(int variant) {
 		int i = getShape(variant);
 		int j = getPattern(variant);
@@ -108,15 +107,15 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putInt("Variant", this.getVariant());
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putInt("Variant", this.getVariant());
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.setVariant(tag.getInt("Variant"));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.setVariant(nbt.getInt("Variant"));
 	}
 
 	public void setVariant(int variant) {
@@ -133,14 +132,20 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 	}
 
 	@Override
-	protected void copyDataToStack(ItemStack stack) {
+	public void copyDataToStack(ItemStack stack) {
 		super.copyDataToStack(stack);
 		NbtCompound nbtCompound = stack.getOrCreateTag();
 		nbtCompound.putInt("BucketVariantTag", this.getVariant());
 	}
 
 	@Override
-	protected ItemStack getFishBucketItem() {
+	public void copyDataFromNbt(NbtCompound nbt) {
+		super.copyDataFromNbt(nbt);
+		this.setVariant(nbt.getInt("BucketVariantTag"));
+	}
+
+	@Override
+	public ItemStack getBucketItem() {
 		return new ItemStack(Items.TROPICAL_FISH_BUCKET);
 	}
 
@@ -164,47 +169,38 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 		return SoundEvents.ENTITY_TROPICAL_FISH_FLOP;
 	}
 
-	@Environment(EnvType.CLIENT)
 	private static int getBaseDyeColorIndex(int variant) {
 		return (variant & 0xFF0000) >> 16;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float[] getBaseColorComponents() {
 		return DyeColor.byId(getBaseDyeColorIndex(this.getVariant())).getColorComponents();
 	}
 
-	@Environment(EnvType.CLIENT)
 	private static int getPatternDyeColorIndex(int variant) {
 		return (variant & 0xFF000000) >> 24;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float[] getPatternColorComponents() {
 		return DyeColor.byId(getPatternDyeColorIndex(this.getVariant())).getColorComponents();
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static int getShape(int variant) {
 		return Math.min(variant & 0xFF, 1);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getShape() {
 		return getShape(this.getVariant());
 	}
 
-	@Environment(EnvType.CLIENT)
 	private static int getPattern(int variant) {
 		return Math.min((variant & 0xFF00) >> 8, 5);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Identifier getVarietyId() {
 		return getShape(this.getVariant()) == 0 ? SMALL_FISH_VARIETY_IDS[getPattern(this.getVariant())] : LARGE_FISH_VARIETY_IDS[getPattern(this.getVariant())];
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Identifier getShapeId() {
 		return SHAPE_IDS[getShape(this.getVariant())];
 	}
@@ -212,11 +208,10 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
-		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
-		if (entityTag != null && entityTag.contains("BucketVariantTag", NbtTypeIds.INT)) {
-			this.setVariant(entityTag.getInt("BucketVariantTag"));
+		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		if (spawnReason == SpawnReason.BUCKET) {
 			return entityData;
 		} else {
 			int i;
@@ -295,12 +290,10 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 			return this.pattern;
 		}
 
-		@Environment(EnvType.CLIENT)
 		public static String getTranslateKey(int shape, int pattern) {
 			return VALUES[pattern + 6 * shape].getTranslationKey();
 		}
 
-		@Environment(EnvType.CLIENT)
 		public String getTranslationKey() {
 			return this.name().toLowerCase(Locale.ROOT);
 		}

@@ -7,6 +7,7 @@ package net.minecraft.entity.attribute;
  * An attribute has a default value on which attribute modifiers operate.
  */
 public class EntityAttribute {
+	public static final int field_30097 = 64;
 	private final double fallback;
 	private boolean tracked;
 	private final String translationKey;

@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.stream.Collectors;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.sound.BiomeAdditionsSound;
 import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.sound.MusicSound;
@@ -76,42 +74,34 @@ public class BiomeEffects {
 		this.music = music;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getFogColor() {
 		return this.fogColor;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getWaterColor() {
 		return this.waterColor;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getWaterFogColor() {
 		return this.waterFogColor;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getSkyColor() {
 		return this.skyColor;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Optional<Integer> getFoliageColor() {
 		return this.foliageColor;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Optional<Integer> getGrassColor() {
 		return this.grassColor;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public BiomeEffects.GrassColorModifier getGrassColorModifier() {
 		return this.grassColorModifier;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Optional<BiomeParticleConfig> getParticleConfig() {
 		return this.particleConfig;
 	}
@@ -122,7 +112,6 @@ public class BiomeEffects {
 	 * <p>A loop sound is played continuously as an ambient sound whenever the
 	 * player is in the biome with this effect.
 	 */
-	@Environment(EnvType.CLIENT)
 	public Optional<SoundEvent> getLoopSound() {
 		return this.loopSound;
 	}
@@ -137,7 +126,6 @@ public class BiomeEffects {
 	 * <p>Overworld biomes have the regular cave sound as their mood sound,
 	 * while three nether biomes in 20w10a have their dedicated mood sounds.
 	 */
-	@Environment(EnvType.CLIENT)
 	public Optional<BiomeMoodSound> getMoodSound() {
 		return this.moodSound;
 	}
@@ -148,12 +136,10 @@ public class BiomeEffects {
 	 * <p>An additions sound is played at 1.1% chance every tick as an ambient
 	 * sound whenever the player is in the biome with this effect.
 	 */
-	@Environment(EnvType.CLIENT)
 	public Optional<BiomeAdditionsSound> getAdditionsSound() {
 		return this.additionsSound;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Optional<MusicSound> getMusic() {
 		return this.music;
 	}
@@ -252,21 +238,18 @@ public class BiomeEffects {
 
 	public static enum GrassColorModifier implements StringIdentifiable {
 		NONE("none") {
-			@Environment(EnvType.CLIENT)
 			@Override
 			public int getModifiedGrassColor(double x, double z, int color) {
 				return color;
 			}
 		},
 		DARK_FOREST("dark_forest") {
-			@Environment(EnvType.CLIENT)
 			@Override
 			public int getModifiedGrassColor(double x, double z, int color) {
 				return (color & 16711422) + 2634762 >> 1;
 			}
 		},
 		SWAMP("swamp") {
-			@Environment(EnvType.CLIENT)
 			@Override
 			public int getModifiedGrassColor(double x, double z, int color) {
 				double d = Biome.FOLIAGE_NOISE.sample(x * 0.0225, z * 0.0225, false);
@@ -281,7 +264,6 @@ public class BiomeEffects {
 		private static final Map<String, BiomeEffects.GrassColorModifier> BY_NAME = (Map<String, BiomeEffects.GrassColorModifier>)Arrays.stream(values())
 			.collect(Collectors.toMap(BiomeEffects.GrassColorModifier::getName, grassColorModifier -> grassColorModifier));
 
-		@Environment(EnvType.CLIENT)
 		public abstract int getModifiedGrassColor(double x, double z, int color);
 
 		private GrassColorModifier(String name) {

@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -35,17 +33,14 @@ public class WorldBorderInterpolateSizeS2CPacket implements Packet<ClientPlayPac
 		clientPlayPacketListener.onWorldBorderInterpolateSize(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public double getSize() {
 		return this.size;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public double getSizeLerpTarget() {
 		return this.sizeLerpTarget;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public long getSizeLerpTime() {
 		return this.sizeLerpTime;
 	}

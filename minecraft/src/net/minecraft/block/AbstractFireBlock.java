@@ -2,9 +2,6 @@ package net.minecraft.block;
 
 import java.util.Optional;
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,10 +14,13 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.dimension.AreaHelper;
 
 public abstract class AbstractFireBlock extends Block {
+	private static final int field_31008 = 8;
 	private final float damage;
+	protected static final float field_31007 = 1.0F;
 	protected static final VoxelShape BASE_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 1.0, 16.0);
 
 	public AbstractFireBlock(AbstractBlock.Settings settings, float damage) {
@@ -44,7 +44,6 @@ public abstract class AbstractFireBlock extends Block {
 		return BASE_SHAPE;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		if (random.nextInt(24) == 0) {

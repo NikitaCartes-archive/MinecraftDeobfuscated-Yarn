@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.enums.Instrument;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -54,7 +53,7 @@ public class NoteBlock extends Block {
 				this.playNote(world, pos);
 			}
 
-			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)), SetBlockStateFlags.DEFAULT);
+			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)), Block.NOTIFY_ALL);
 		}
 	}
 
@@ -70,7 +69,7 @@ public class NoteBlock extends Block {
 			return ActionResult.SUCCESS;
 		} else {
 			state = state.cycle(NOTE);
-			world.setBlockState(pos, state, SetBlockStateFlags.DEFAULT);
+			world.setBlockState(pos, state, Block.NOTIFY_ALL);
 			this.playNote(world, pos);
 			player.incrementStat(Stats.TUNE_NOTEBLOCK);
 			return ActionResult.CONSUME;

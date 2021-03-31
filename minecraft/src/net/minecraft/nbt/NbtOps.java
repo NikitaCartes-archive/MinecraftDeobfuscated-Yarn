@@ -22,7 +22,6 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 
 /**
  * Used to handle Minecraft NBTs within {@link com.mojang.serialization.Dynamic
@@ -134,12 +133,12 @@ public class NbtOps implements DynamicOps<NbtElement> {
 	}
 
 	private static AbstractNbtList<?> method_29144(byte b, byte c) {
-		if (method_29145(b, c, (byte)NbtTypeIds.LONG)) {
+		if (method_29145(b, c, NbtElement.LONG_TYPE)) {
 			return new NbtLongArray(new long[0]);
-		} else if (method_29145(b, c, (byte)NbtTypeIds.BYTE)) {
+		} else if (method_29145(b, c, NbtElement.BYTE_TYPE)) {
 			return new NbtByteArray(new byte[0]);
 		} else {
-			return (AbstractNbtList<?>)(method_29145(b, c, (byte)NbtTypeIds.INT) ? new NbtIntArray(new int[0]) : new NbtList());
+			return (AbstractNbtList<?>)(method_29145(b, c, NbtElement.INT_TYPE) ? new NbtIntArray(new int[0]) : new NbtList());
 		}
 	}
 
@@ -170,7 +169,7 @@ public class NbtOps implements DynamicOps<NbtElement> {
 			return DataResult.error("mergeToList called with not a list: " + nbtElement, nbtElement);
 		} else {
 			AbstractNbtList<?> abstractNbtList = method_29144(
-				(byte)(nbtElement instanceof AbstractNbtList ? ((AbstractNbtList)nbtElement).getHeldType() : NbtTypeIds.NULL), nbtElement2.getType()
+				nbtElement instanceof AbstractNbtList ? ((AbstractNbtList)nbtElement).getHeldType() : NbtElement.NULL_TYPE, nbtElement2.getType()
 			);
 			method_29151(abstractNbtList, nbtElement, nbtElement2);
 			return DataResult.success(abstractNbtList);
@@ -182,7 +181,7 @@ public class NbtOps implements DynamicOps<NbtElement> {
 			return DataResult.error("mergeToList called with not a list: " + nbtElement, nbtElement);
 		} else {
 			AbstractNbtList<?> abstractNbtList = method_29144(
-				(byte)(nbtElement instanceof AbstractNbtList ? ((AbstractNbtList)nbtElement).getHeldType() : NbtTypeIds.NULL),
+				nbtElement instanceof AbstractNbtList ? ((AbstractNbtList)nbtElement).getHeldType() : NbtElement.NULL_TYPE,
 				(Byte)list.stream().findFirst().map(NbtElement::getType).orElse((byte)0)
 			);
 			method_29150(abstractNbtList, nbtElement, list);

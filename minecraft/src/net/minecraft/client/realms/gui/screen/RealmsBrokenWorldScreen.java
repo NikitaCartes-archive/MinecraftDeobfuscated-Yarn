@@ -34,6 +34,7 @@ import org.lwjgl.glfw.GLFW;
 @Environment(EnvType.CLIENT)
 public class RealmsBrokenWorldScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int field_32120 = 80;
 	private final Screen parent;
 	private final RealmsMainScreen mainScreen;
 	private RealmsServer field_20492;

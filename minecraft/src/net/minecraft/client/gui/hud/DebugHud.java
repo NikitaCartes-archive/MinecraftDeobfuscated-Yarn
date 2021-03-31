@@ -66,6 +66,10 @@ import net.minecraft.world.chunk.WorldChunk;
 
 @Environment(EnvType.CLIENT)
 public class DebugHud extends DrawableHelper {
+	private static final int field_32187 = 14737632;
+	private static final int field_32188 = 2;
+	private static final int field_32189 = 2;
+	private static final int field_32190 = 2;
 	private static final Map<Heightmap.Type, String> HEIGHT_MAP_TYPES = Util.make(new EnumMap(Heightmap.Type.class), enumMap -> {
 		enumMap.put(Heightmap.Type.WORLD_SURFACE_WG, "SW");
 		enumMap.put(Heightmap.Type.WORLD_SURFACE, "S");
@@ -84,6 +88,9 @@ public class DebugHud extends DrawableHelper {
 	private WorldChunk chunk;
 	@Nullable
 	private CompletableFuture<WorldChunk> chunkFuture;
+	private static final int field_32191 = -65536;
+	private static final int field_32192 = -256;
+	private static final int field_32193 = -16711936;
 
 	public DebugHud(MinecraftClient client) {
 		this.client = client;
@@ -349,7 +356,7 @@ public class DebugHud extends DrawableHelper {
 	@Nullable
 	private String getServerWorldDebugString() {
 		ServerWorld serverWorld = this.getServerWorld();
-		return serverWorld != null ? serverWorld.getChunkSourceDebugString() : null;
+		return serverWorld != null ? serverWorld.asString() : null;
 	}
 
 	private World getWorld() {

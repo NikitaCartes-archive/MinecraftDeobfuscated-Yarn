@@ -1,5 +1,6 @@
 package net.minecraft.text;
 
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -21,8 +22,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.LowercaseEnumTypeAdapterFactory;
@@ -93,10 +92,8 @@ public interface Text extends Message, StringVisitable {
 	 */
 	MutableText shallowCopy();
 
-	@Environment(EnvType.CLIENT)
 	OrderedText asOrderedText();
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	default <T> Optional<T> visit(StringVisitable.StyledVisitor<T> styledVisitor, Style style) {
 		Style style2 = this.getStyle().withParent(style);
@@ -141,7 +138,6 @@ public interface Text extends Message, StringVisitable {
 	 * @param visitor the visitor
 	 * @param style the current style
 	 */
-	@Environment(EnvType.CLIENT)
 	default <T> Optional<T> visitSelf(StringVisitable.StyledVisitor<T> visitor, Style style) {
 		return visitor.accept(style, this.asString());
 	}
@@ -158,10 +154,21 @@ public interface Text extends Message, StringVisitable {
 		return visitor.accept(this.asString());
 	}
 
+	default List<Text> method_36136(Style style) {
+		List<Text> list = Lists.<Text>newArrayList();
+		this.visit((stylex, string) -> {
+			if (!string.isEmpty()) {
+				list.add(new LiteralText(string).fillStyle(stylex));
+			}
+
+			return Optional.empty();
+		}, style);
+		return list;
+	}
+
 	/**
 	 * Creates a literal text with the given string as content.
 	 */
-	@Environment(EnvType.CLIENT)
 	static Text of(@Nullable String string) {
 		return (Text)(string != null ? new LiteralText(string) : LiteralText.EMPTY);
 	}

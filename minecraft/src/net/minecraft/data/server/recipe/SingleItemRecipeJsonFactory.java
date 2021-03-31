@@ -43,6 +43,11 @@ public class SingleItemRecipeJsonFactory {
 		return this;
 	}
 
+	public SingleItemRecipeJsonFactory method_35919(String string) {
+		this.group = string;
+		return this;
+	}
+
 	public void offerTo(Consumer<RecipeJsonProvider> exporter, String recipeIdStr) {
 		Identifier identifier = Registry.ITEM.getId(this.output);
 		if (new Identifier(recipeIdStr).equals(identifier)) {

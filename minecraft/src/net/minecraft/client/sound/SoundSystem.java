@@ -33,7 +33,13 @@ import org.apache.logging.log4j.MarkerManager;
 public class SoundSystem {
 	private static final Marker MARKER = MarkerManager.getMarker("SOUNDS");
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final float field_33021 = 0.5F;
+	private static final float field_33022 = 2.0F;
+	private static final float field_33023 = 0.0F;
+	private static final float field_33024 = 1.0F;
+	private static final int field_33025 = 20;
 	private static final Set<Identifier> unknownSounds = Sets.<Identifier>newHashSet();
+	public static final String field_33020 = "FOR THE DEBUG!";
 	private final SoundManager loader;
 	private final GameOptions settings;
 	private boolean started;

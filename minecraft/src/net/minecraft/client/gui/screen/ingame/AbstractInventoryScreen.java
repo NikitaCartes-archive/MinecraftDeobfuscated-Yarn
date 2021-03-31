@@ -32,10 +32,10 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends H
 
 	protected void applyStatusEffectOffset() {
 		if (this.client.player.getStatusEffects().isEmpty()) {
-			this.x = (this.width - this.backgroundWidth) / 2;
+			this.field_2776 = (this.width - this.backgroundWidth) / 2;
 			this.drawStatusEffects = false;
 		} else {
-			this.x = 160 + (this.width - this.backgroundWidth - 200) / 2;
+			this.field_2776 = 160 + (this.width - this.backgroundWidth - 200) / 2;
 			this.drawStatusEffects = true;
 		}
 	}
@@ -49,7 +49,7 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends H
 	}
 
 	private void drawStatusEffects(MatrixStack matrices) {
-		int i = this.x - 124;
+		int i = this.field_2776 - 124;
 		Collection<StatusEffectInstance> collection = this.client.player.getStatusEffects();
 		if (!collection.isEmpty()) {
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -67,7 +67,7 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends H
 
 	private void drawStatusEffectBackgrounds(MatrixStack matrices, int i, int j, Iterable<StatusEffectInstance> iterable) {
 		RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
-		int k = this.y;
+		int k = this.field_2800;
 
 		for (StatusEffectInstance statusEffectInstance : iterable) {
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -78,7 +78,7 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends H
 
 	private void drawStatusEffectSprites(MatrixStack matrices, int i, int j, Iterable<StatusEffectInstance> iterable) {
 		StatusEffectSpriteManager statusEffectSpriteManager = this.client.getStatusEffectSpriteManager();
-		int k = this.y;
+		int k = this.field_2800;
 
 		for (StatusEffectInstance statusEffectInstance : iterable) {
 			StatusEffect statusEffect = statusEffectInstance.getEffectType();
@@ -90,7 +90,7 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends H
 	}
 
 	private void drawStatusEffectDescriptions(MatrixStack matrices, int i, int j, Iterable<StatusEffectInstance> iterable) {
-		int k = this.y;
+		int k = this.field_2800;
 
 		for (StatusEffectInstance statusEffectInstance : iterable) {
 			String string = I18n.translate(statusEffectInstance.getEffectType().getTranslationKey());

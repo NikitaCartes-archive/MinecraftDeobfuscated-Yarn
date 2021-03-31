@@ -103,6 +103,12 @@ public class VertexBuffer implements AutoCloseable {
 		RenderSystem.glBindVertexArray(() -> 0);
 	}
 
+	public void method_35665() {
+		if (this.vertexCount != 0) {
+			RenderSystem.drawElements(this.field_27368.mode, this.vertexCount, this.field_27367.field_27374);
+		}
+	}
+
 	public void method_34427(Matrix4f matrix4f, Matrix4f matrix4f2, Shader shader) {
 		if (!RenderSystem.isOnRenderThread()) {
 			RenderSystem.recordRenderCall(() -> this.method_34431(matrix4f.copy(), matrix4f2.copy(), shader));
@@ -118,57 +124,57 @@ public class VertexBuffer implements AutoCloseable {
 
 			for (int i = 0; i < 12; i++) {
 				int j = RenderSystem.getShaderTexture(i);
-				shader.method_34583("Sampler" + i, j);
+				shader.addSampler("Sampler" + i, j);
 			}
 
-			if (shader.field_29470 != null) {
-				shader.field_29470.set(matrix4f);
+			if (shader.modelViewMat != null) {
+				shader.modelViewMat.set(matrix4f);
 			}
 
-			if (shader.field_29471 != null) {
-				shader.field_29471.set(matrix4f2);
+			if (shader.projectionMat != null) {
+				shader.projectionMat.set(matrix4f2);
 			}
 
-			if (shader.field_29474 != null) {
-				shader.field_29474.set(RenderSystem.getShaderColor());
+			if (shader.colorModulator != null) {
+				shader.colorModulator.set(RenderSystem.getShaderColor());
 			}
 
-			if (shader.field_29477 != null) {
-				shader.field_29477.set(RenderSystem.getShaderFogStart());
+			if (shader.fogStart != null) {
+				shader.fogStart.set(RenderSystem.getShaderFogStart());
 			}
 
-			if (shader.field_29478 != null) {
-				shader.field_29478.set(RenderSystem.getShaderFogEnd());
+			if (shader.fogEnd != null) {
+				shader.fogEnd.set(RenderSystem.getShaderFogEnd());
 			}
 
-			if (shader.field_29479 != null) {
-				shader.field_29479.set(RenderSystem.getShaderFogColor());
+			if (shader.fogColor != null) {
+				shader.fogColor.set(RenderSystem.getShaderFogColor());
 			}
 
-			if (shader.field_29472 != null) {
-				shader.field_29472.set(RenderSystem.getTextureMatrix());
+			if (shader.textureMat != null) {
+				shader.textureMat.set(RenderSystem.getTextureMatrix());
 			}
 
-			if (shader.field_29481 != null) {
-				shader.field_29481.set(RenderSystem.getShaderGameTime());
+			if (shader.gameTime != null) {
+				shader.gameTime.set(RenderSystem.getShaderGameTime());
 			}
 
-			if (shader.field_29473 != null) {
+			if (shader.screenSize != null) {
 				Window window = MinecraftClient.getInstance().getWindow();
-				shader.field_29473.set((float)window.getFramebufferWidth(), (float)window.getFramebufferHeight());
+				shader.screenSize.set((float)window.getFramebufferWidth(), (float)window.getFramebufferHeight());
 			}
 
-			if (shader.field_29480 != null && (this.field_27368 == VertexFormat.DrawMode.LINES || this.field_27368 == VertexFormat.DrawMode.LINE_STRIP)) {
-				shader.field_29480.set(RenderSystem.getShaderLineWidth());
+			if (shader.lineWidth != null && (this.field_27368 == VertexFormat.DrawMode.LINES || this.field_27368 == VertexFormat.DrawMode.LINE_STRIP)) {
+				shader.lineWidth.set(RenderSystem.getShaderLineWidth());
 			}
 
 			RenderSystem.setupShaderLights(shader);
 			this.method_34437();
 			this.bind();
 			this.method_34435().startDrawing();
-			shader.method_34586();
+			shader.upload();
 			RenderSystem.drawElements(this.field_27368.mode, this.vertexCount, this.field_27367.field_27374);
-			shader.method_34585();
+			shader.bind();
 			this.method_34435().endDrawing();
 			unbind();
 			method_34430();

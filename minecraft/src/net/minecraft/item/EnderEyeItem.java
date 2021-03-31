@@ -1,7 +1,5 @@
 package net.minecraft.item;
 
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -23,6 +21,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class EnderEyeItem extends Item {
@@ -42,7 +41,7 @@ public class EnderEyeItem extends Item {
 		} else {
 			BlockState blockState2 = blockState.with(EndPortalFrameBlock.EYE, Boolean.valueOf(true));
 			Block.pushEntitiesUpBeforeBlockChange(blockState, blockState2, world, blockPos);
-			world.setBlockState(blockPos, blockState2, SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(blockPos, blockState2, Block.NOTIFY_LISTENERS);
 			world.updateComparators(blockPos, Blocks.END_PORTAL_FRAME);
 			context.getStack().decrement(1);
 			world.syncWorldEvent(WorldEvents.END_PORTAL_FRAME_FILLED, blockPos, 0);
@@ -52,7 +51,7 @@ public class EnderEyeItem extends Item {
 
 				for (int i = 0; i < 3; i++) {
 					for (int j = 0; j < 3; j++) {
-						world.setBlockState(blockPos2.add(i, 0, j), Blocks.END_PORTAL.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+						world.setBlockState(blockPos2.add(i, 0, j), Blocks.END_PORTAL.getDefaultState(), Block.NOTIFY_LISTENERS);
 					}
 				}
 

@@ -5,10 +5,9 @@ import com.google.common.collect.Sets;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
@@ -16,7 +15,6 @@ public class Path {
 	private final List<PathNode> nodes;
 	private PathNode[] field_57 = new PathNode[0];
 	private PathNode[] field_55 = new PathNode[0];
-	@Environment(EnvType.CLIENT)
 	private Set<TargetPathNode> field_20300;
 	private int currentNodeIndex;
 	private final BlockPos target;
@@ -124,17 +122,52 @@ public class Path {
 		return this.reachesTarget;
 	}
 
-	@Environment(EnvType.CLIENT)
+	@Debug
+	void method_35500(PathNode[] pathNodes, PathNode[] pathNodes2, Set<TargetPathNode> set) {
+		this.field_57 = pathNodes;
+		this.field_55 = pathNodes2;
+		this.field_20300 = set;
+	}
+
+	@Debug
 	public PathNode[] method_22880() {
 		return this.field_57;
 	}
 
-	@Environment(EnvType.CLIENT)
+	@Debug
 	public PathNode[] method_22881() {
 		return this.field_55;
 	}
 
-	@Environment(EnvType.CLIENT)
+	public void method_35498(PacketByteBuf packetByteBuf) {
+		if (this.field_20300 != null && !this.field_20300.isEmpty()) {
+			packetByteBuf.writeBoolean(this.reachesTarget);
+			packetByteBuf.writeInt(this.currentNodeIndex);
+			packetByteBuf.writeInt(this.field_20300.size());
+			this.field_20300.forEach(targetPathNode -> targetPathNode.method_35495(packetByteBuf));
+			packetByteBuf.writeInt(this.target.getX());
+			packetByteBuf.writeInt(this.target.getY());
+			packetByteBuf.writeInt(this.target.getZ());
+			packetByteBuf.writeInt(this.nodes.size());
+
+			for (PathNode pathNode : this.nodes) {
+				pathNode.method_35495(packetByteBuf);
+			}
+
+			packetByteBuf.writeInt(this.field_57.length);
+
+			for (PathNode pathNode2 : this.field_57) {
+				pathNode2.method_35495(packetByteBuf);
+			}
+
+			packetByteBuf.writeInt(this.field_55.length);
+
+			for (PathNode pathNode2 : this.field_55) {
+				pathNode2.method_35495(packetByteBuf);
+			}
+		}
+	}
+
 	public static Path fromBuffer(PacketByteBuf buffer) {
 		boolean bl = buffer.readBoolean();
 		int i = buffer.readInt();

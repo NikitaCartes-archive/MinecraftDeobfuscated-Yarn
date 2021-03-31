@@ -25,6 +25,14 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 	private final Map<Integer, Path> paths = Maps.<Integer, Path>newHashMap();
 	private final Map<Integer, Float> field_4617 = Maps.<Integer, Float>newHashMap();
 	private final Map<Integer, Long> pathTimes = Maps.<Integer, Long>newHashMap();
+	private static final long field_32906 = 5000L;
+	private static final float field_32907 = 80.0F;
+	private static final boolean field_32908 = true;
+	private static final boolean field_32909 = false;
+	private static final boolean field_32910 = false;
+	private static final boolean field_32911 = true;
+	private static final boolean field_32912 = true;
+	private static final float field_32913 = 0.02F;
 
 	public void addPath(int id, Path path, float f) {
 		this.paths.put(id, path);

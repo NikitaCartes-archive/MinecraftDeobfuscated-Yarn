@@ -3,7 +3,8 @@ package net.minecraft.structure;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.class_6130;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
@@ -111,86 +112,73 @@ public class OceanRuinGenerator {
 		return Util.getRandom(BIG_WARM_RUINS, random);
 	}
 
-	public static void addPieces(
-		StructureManager manager, BlockPos pos, BlockRotation rotation, List<StructurePiece> pieces, Random random, OceanRuinFeatureConfig config
-	) {
+	public static void addPieces(StructureManager manager, BlockPos pos, BlockRotation rotation, class_6130 arg, Random random, OceanRuinFeatureConfig config) {
 		boolean bl = random.nextFloat() <= config.largeProbability;
 		float f = bl ? 0.9F : 0.8F;
-		method_14822(manager, pos, rotation, pieces, random, config, bl, f);
+		method_14822(manager, pos, rotation, arg, random, config, bl, f);
 		if (bl && random.nextFloat() <= config.clusterProbability) {
-			method_14825(manager, random, rotation, pos, config, pieces);
+			method_14825(manager, random, rotation, pos, config, arg);
 		}
 	}
 
-	private static void method_14825(
-		StructureManager manager, Random random, BlockRotation rotation, BlockPos pos, OceanRuinFeatureConfig config, List<StructurePiece> pieces
-	) {
-		int i = pos.getX();
-		int j = pos.getZ();
-		BlockPos blockPos = Structure.transformAround(new BlockPos(15, 0, 15), BlockMirror.NONE, rotation, BlockPos.ORIGIN).add(i, 0, j);
-		BlockBox blockBox = BlockBox.create(i, 0, j, blockPos.getX(), 0, blockPos.getZ());
-		BlockPos blockPos2 = new BlockPos(Math.min(i, blockPos.getX()), 0, Math.min(j, blockPos.getZ()));
-		List<BlockPos> list = getRoomPositions(random, blockPos2.getX(), blockPos2.getZ());
-		int k = MathHelper.nextInt(random, 4, 8);
+	private static void method_14825(StructureManager manager, Random random, BlockRotation rotation, BlockPos pos, OceanRuinFeatureConfig config, class_6130 arg) {
+		BlockPos blockPos = new BlockPos(pos.getX(), 90, pos.getZ());
+		BlockPos blockPos2 = Structure.transformAround(new BlockPos(15, 0, 15), BlockMirror.NONE, rotation, BlockPos.ORIGIN).add(blockPos);
+		BlockBox blockBox = BlockBox.create(blockPos, blockPos2);
+		BlockPos blockPos3 = new BlockPos(Math.min(blockPos.getX(), blockPos2.getX()), blockPos.getY(), Math.min(blockPos.getZ(), blockPos2.getZ()));
+		List<BlockPos> list = getRoomPositions(random, blockPos3);
+		int i = MathHelper.nextInt(random, 4, 8);
 
-		for (int l = 0; l < k; l++) {
+		for (int j = 0; j < i; j++) {
 			if (!list.isEmpty()) {
-				int m = random.nextInt(list.size());
-				BlockPos blockPos3 = (BlockPos)list.remove(m);
-				int n = blockPos3.getX();
-				int o = blockPos3.getZ();
+				int k = random.nextInt(list.size());
+				BlockPos blockPos4 = (BlockPos)list.remove(k);
 				BlockRotation blockRotation = BlockRotation.random(random);
-				BlockPos blockPos4 = Structure.transformAround(new BlockPos(5, 0, 6), BlockMirror.NONE, blockRotation, BlockPos.ORIGIN).add(n, 0, o);
-				BlockBox blockBox2 = BlockBox.create(n, 0, o, blockPos4.getX(), 0, blockPos4.getZ());
+				BlockPos blockPos5 = Structure.transformAround(new BlockPos(5, 0, 6), BlockMirror.NONE, blockRotation, BlockPos.ORIGIN).add(blockPos4);
+				BlockBox blockBox2 = BlockBox.create(blockPos4, blockPos5);
 				if (!blockBox2.intersects(blockBox)) {
-					method_14822(manager, blockPos3, blockRotation, pieces, random, config, false, 0.8F);
+					method_14822(manager, blockPos4, blockRotation, arg, random, config, false, 0.8F);
 				}
 			}
 		}
 	}
 
-	private static List<BlockPos> getRoomPositions(Random random, int x, int z) {
+	private static List<BlockPos> getRoomPositions(Random random, BlockPos blockPos) {
 		List<BlockPos> list = Lists.<BlockPos>newArrayList();
-		list.add(new BlockPos(x - 16 + MathHelper.nextInt(random, 1, 8), 90, z + 16 + MathHelper.nextInt(random, 1, 7)));
-		list.add(new BlockPos(x - 16 + MathHelper.nextInt(random, 1, 8), 90, z + MathHelper.nextInt(random, 1, 7)));
-		list.add(new BlockPos(x - 16 + MathHelper.nextInt(random, 1, 8), 90, z - 16 + MathHelper.nextInt(random, 4, 8)));
-		list.add(new BlockPos(x + MathHelper.nextInt(random, 1, 7), 90, z + 16 + MathHelper.nextInt(random, 1, 7)));
-		list.add(new BlockPos(x + MathHelper.nextInt(random, 1, 7), 90, z - 16 + MathHelper.nextInt(random, 4, 6)));
-		list.add(new BlockPos(x + 16 + MathHelper.nextInt(random, 1, 7), 90, z + 16 + MathHelper.nextInt(random, 3, 8)));
-		list.add(new BlockPos(x + 16 + MathHelper.nextInt(random, 1, 7), 90, z + MathHelper.nextInt(random, 1, 7)));
-		list.add(new BlockPos(x + 16 + MathHelper.nextInt(random, 1, 7), 90, z - 16 + MathHelper.nextInt(random, 4, 8)));
+		list.add(blockPos.add(-16 + MathHelper.nextInt(random, 1, 8), 0, 16 + MathHelper.nextInt(random, 1, 7)));
+		list.add(blockPos.add(-16 + MathHelper.nextInt(random, 1, 8), 0, MathHelper.nextInt(random, 1, 7)));
+		list.add(blockPos.add(-16 + MathHelper.nextInt(random, 1, 8), 0, -16 + MathHelper.nextInt(random, 4, 8)));
+		list.add(blockPos.add(MathHelper.nextInt(random, 1, 7), 0, 16 + MathHelper.nextInt(random, 1, 7)));
+		list.add(blockPos.add(MathHelper.nextInt(random, 1, 7), 0, -16 + MathHelper.nextInt(random, 4, 6)));
+		list.add(blockPos.add(16 + MathHelper.nextInt(random, 1, 7), 0, 16 + MathHelper.nextInt(random, 3, 8)));
+		list.add(blockPos.add(16 + MathHelper.nextInt(random, 1, 7), 0, MathHelper.nextInt(random, 1, 7)));
+		list.add(blockPos.add(16 + MathHelper.nextInt(random, 1, 7), 0, -16 + MathHelper.nextInt(random, 4, 8)));
 		return list;
 	}
 
 	private static void method_14822(
-		StructureManager manager,
-		BlockPos pos,
-		BlockRotation rotation,
-		List<StructurePiece> pieces,
-		Random random,
-		OceanRuinFeatureConfig config,
-		boolean large,
-		float integrity
+		StructureManager manager, BlockPos pos, BlockRotation rotation, class_6130 arg, Random random, OceanRuinFeatureConfig config, boolean large, float integrity
 	) {
-		if (config.biomeType == OceanRuinFeature.BiomeType.WARM) {
-			Identifier identifier = large ? getRandomBigWarmRuin(random) : getRandomWarmRuin(random);
-			pieces.add(new OceanRuinGenerator.Piece(manager, identifier, pos, rotation, integrity, config.biomeType, large));
-		} else if (config.biomeType == OceanRuinFeature.BiomeType.COLD) {
-			Identifier[] identifiers = large ? BIG_BRICK_RUINS : BRICK_RUINS;
-			Identifier[] identifiers2 = large ? BIG_CRACKED_RUINS : CRACKED_RUINS;
-			Identifier[] identifiers3 = large ? BIG_MOSSY_RUINS : MOSSY_RUINS;
-			int i = random.nextInt(identifiers.length);
-			pieces.add(new OceanRuinGenerator.Piece(manager, identifiers[i], pos, rotation, integrity, config.biomeType, large));
-			pieces.add(new OceanRuinGenerator.Piece(manager, identifiers2[i], pos, rotation, 0.7F, config.biomeType, large));
-			pieces.add(new OceanRuinGenerator.Piece(manager, identifiers3[i], pos, rotation, 0.5F, config.biomeType, large));
+		switch (config.biomeType) {
+			case WARM:
+			default:
+				Identifier identifier = large ? getRandomBigWarmRuin(random) : getRandomWarmRuin(random);
+				arg.method_35462(new OceanRuinGenerator.Piece(manager, identifier, pos, rotation, integrity, config.biomeType, large));
+				break;
+			case COLD:
+				Identifier[] identifiers = large ? BIG_BRICK_RUINS : BRICK_RUINS;
+				Identifier[] identifiers2 = large ? BIG_CRACKED_RUINS : CRACKED_RUINS;
+				Identifier[] identifiers3 = large ? BIG_MOSSY_RUINS : MOSSY_RUINS;
+				int i = random.nextInt(identifiers.length);
+				arg.method_35462(new OceanRuinGenerator.Piece(manager, identifiers[i], pos, rotation, integrity, config.biomeType, large));
+				arg.method_35462(new OceanRuinGenerator.Piece(manager, identifiers2[i], pos, rotation, 0.7F, config.biomeType, large));
+				arg.method_35462(new OceanRuinGenerator.Piece(manager, identifiers3[i], pos, rotation, 0.5F, config.biomeType, large));
 		}
 	}
 
 	public static class Piece extends SimpleStructurePiece {
 		private final OceanRuinFeature.BiomeType biomeType;
 		private final float integrity;
-		private final Identifier template;
-		private final BlockRotation rotation;
 		private final boolean large;
 
 		public Piece(
@@ -202,40 +190,30 @@ public class OceanRuinGenerator {
 			OceanRuinFeature.BiomeType biomeType,
 			boolean large
 		) {
-			super(StructurePieceType.OCEAN_TEMPLE, 0);
-			this.template = template;
-			this.pos = pos;
-			this.rotation = rotation;
+			super(StructurePieceType.OCEAN_TEMPLE, 0, structureManager, template, template.toString(), method_35446(rotation), pos);
 			this.integrity = integrity;
 			this.biomeType = biomeType;
 			this.large = large;
-			this.initialize(structureManager);
 		}
 
-		public Piece(ServerWorld serverWorld, NbtCompound tag) {
-			super(StructurePieceType.OCEAN_TEMPLE, tag);
-			this.template = new Identifier(tag.getString("Template"));
-			this.rotation = BlockRotation.valueOf(tag.getString("Rot"));
-			this.integrity = tag.getFloat("Integrity");
-			this.biomeType = OceanRuinFeature.BiomeType.valueOf(tag.getString("BiomeType"));
-			this.large = tag.getBoolean("IsLarge");
-			this.initialize(serverWorld.getStructureManager());
+		public Piece(ServerWorld world, NbtCompound nbt) {
+			super(StructurePieceType.OCEAN_TEMPLE, nbt, world, identifier -> method_35446(BlockRotation.valueOf(nbt.getString("Rot"))));
+			this.integrity = nbt.getFloat("Integrity");
+			this.biomeType = OceanRuinFeature.BiomeType.valueOf(nbt.getString("BiomeType"));
+			this.large = nbt.getBoolean("IsLarge");
 		}
 
-		private void initialize(StructureManager structureManager) {
-			Structure structure = structureManager.getStructureOrBlank(this.template);
-			StructurePlacementData structurePlacementData = new StructurePlacementData()
-				.setRotation(this.rotation)
+		private static StructurePlacementData method_35446(BlockRotation blockRotation) {
+			return new StructurePlacementData()
+				.setRotation(blockRotation)
 				.setMirror(BlockMirror.NONE)
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
-			this.setStructureData(structure, this.pos, structurePlacementData);
 		}
 
 		@Override
 		protected void writeNbt(ServerWorld world, NbtCompound nbt) {
 			super.writeNbt(world, nbt);
-			nbt.putString("Template", this.template.toString());
-			nbt.putString("Rot", this.rotation.name());
+			nbt.putString("Rot", this.placementData.getRotation().name());
 			nbt.putFloat("Integrity", this.integrity);
 			nbt.putString("BiomeType", this.biomeType.toString());
 			nbt.putBoolean("IsLarge", this.large);
@@ -245,9 +223,7 @@ public class OceanRuinGenerator {
 		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox) {
 			if ("chest".equals(metadata)) {
 				world.setBlockState(
-					pos,
-					Blocks.CHEST.getDefaultState().with(ChestBlock.WATERLOGGED, Boolean.valueOf(world.getFluidState(pos).isIn(FluidTags.WATER))),
-					SetBlockStateFlags.NOTIFY_LISTENERS
+					pos, Blocks.CHEST.getDefaultState().with(ChestBlock.WATERLOGGED, Boolean.valueOf(world.getFluidState(pos).isIn(FluidTags.WATER))), Block.NOTIFY_LISTENERS
 				);
 				BlockEntity blockEntity = world.getBlockEntity(pos);
 				if (blockEntity instanceof ChestBlockEntity) {
@@ -261,9 +237,9 @@ public class OceanRuinGenerator {
 				drownedEntity.initialize(world, world.getLocalDifficulty(pos), SpawnReason.STRUCTURE, null, null);
 				world.spawnEntityAndPassengers(drownedEntity);
 				if (pos.getY() > world.getSeaLevel()) {
-					world.setBlockState(pos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+					world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
 				} else {
-					world.setBlockState(pos, Blocks.WATER.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+					world.setBlockState(pos, Blocks.WATER.getDefaultState(), Block.NOTIFY_LISTENERS);
 				}
 			}
 		}
@@ -285,7 +261,10 @@ public class OceanRuinGenerator {
 			int i = world.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, this.pos.getX(), this.pos.getZ());
 			this.pos = new BlockPos(this.pos.getX(), i, this.pos.getZ());
 			BlockPos blockPos = Structure.transformAround(
-					new BlockPos(this.structure.getSize().getX() - 1, 0, this.structure.getSize().getZ() - 1), BlockMirror.NONE, this.rotation, BlockPos.ORIGIN
+					new BlockPos(this.structure.getSize().getX() - 1, 0, this.structure.getSize().getZ() - 1),
+					BlockMirror.NONE,
+					this.placementData.getRotation(),
+					BlockPos.ORIGIN
 				)
 				.add(this.pos);
 			this.pos = new BlockPos(this.pos.getX(), this.method_14829(this.pos, world, blockPos), this.pos.getZ());

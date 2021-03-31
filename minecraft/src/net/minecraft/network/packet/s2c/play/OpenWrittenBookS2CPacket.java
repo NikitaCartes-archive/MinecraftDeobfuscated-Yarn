@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -27,7 +25,6 @@ public class OpenWrittenBookS2CPacket implements Packet<ClientPlayPacketListener
 		clientPlayPacketListener.onOpenWrittenBook(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Hand getHand() {
 		return this.hand;
 	}

@@ -6,10 +6,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -21,6 +18,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
@@ -67,7 +65,7 @@ public class SpawnEggItem extends Item {
 					EntityType<?> entityType = this.getEntityType(itemStack.getTag());
 					mobSpawnerLogic.setEntityId(entityType);
 					blockEntity.markDirty();
-					world.updateListeners(blockPos, blockState, blockState, SetBlockStateFlags.DEFAULT);
+					world.updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);
 					itemStack.decrement(1);
 					return ActionResult.CONSUME;
 				}
@@ -131,17 +129,15 @@ public class SpawnEggItem extends Item {
 		}
 	}
 
-	public boolean isOfSameEntityType(@Nullable NbtCompound tag, EntityType<?> type) {
-		return Objects.equals(this.getEntityType(tag), type);
+	public boolean isOfSameEntityType(@Nullable NbtCompound nbt, EntityType<?> type) {
+		return Objects.equals(this.getEntityType(nbt), type);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getColor(int num) {
 		return num == 0 ? this.primaryColor : this.secondaryColor;
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public static SpawnEggItem forEntity(@Nullable EntityType<?> type) {
 		return (SpawnEggItem)SPAWN_EGGS.get(type);
 	}
@@ -150,10 +146,10 @@ public class SpawnEggItem extends Item {
 		return Iterables.unmodifiableIterable(SPAWN_EGGS.values());
 	}
 
-	public EntityType<?> getEntityType(@Nullable NbtCompound tag) {
-		if (tag != null && tag.contains("EntityTag", NbtTypeIds.COMPOUND)) {
-			NbtCompound nbtCompound = tag.getCompound("EntityTag");
-			if (nbtCompound.contains("id", NbtTypeIds.STRING)) {
+	public EntityType<?> getEntityType(@Nullable NbtCompound nbt) {
+		if (nbt != null && nbt.contains("EntityTag", NbtElement.COMPOUND_TYPE)) {
+			NbtCompound nbtCompound = nbt.getCompound("EntityTag");
+			if (nbtCompound.contains("id", NbtElement.STRING_TYPE)) {
 				return (EntityType<?>)EntityType.get(nbtCompound.getString("id")).orElse(this.type);
 			}
 		}

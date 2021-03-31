@@ -33,6 +33,9 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProgress> implements BlockEntityRenderer<T> {
+	private static final String field_32825 = "bottom";
+	private static final String field_32826 = "lid";
+	private static final String field_32827 = "lock";
 	private final ModelPart singleChestLid;
 	private final ModelPart singleChestBase;
 	private final ModelPart singleChestLatch;

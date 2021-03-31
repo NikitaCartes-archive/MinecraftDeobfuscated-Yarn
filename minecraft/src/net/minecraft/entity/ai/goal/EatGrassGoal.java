@@ -2,8 +2,6 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
 import java.util.function.Predicate;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -12,9 +10,11 @@ import net.minecraft.predicate.block.BlockStatePredicate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 
 public class EatGrassGoal extends Goal {
+	private static final int field_30203 = 40;
 	private static final Predicate<BlockState> GRASS_PREDICATE = BlockStatePredicate.forBlock(Blocks.GRASS);
 	private final MobEntity mob;
 	private final World world;
@@ -74,7 +74,7 @@ public class EatGrassGoal extends Goal {
 				if (this.world.getBlockState(blockPos2).isOf(Blocks.GRASS_BLOCK)) {
 					if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 						this.world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, blockPos2, Block.getRawIdFromState(Blocks.GRASS_BLOCK.getDefaultState()));
-						this.world.setBlockState(blockPos2, Blocks.DIRT.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+						this.world.setBlockState(blockPos2, Blocks.DIRT.getDefaultState(), Block.NOTIFY_LISTENERS);
 					}
 
 					this.mob.onEatingGrass();

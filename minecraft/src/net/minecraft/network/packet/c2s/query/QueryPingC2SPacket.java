@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.c2s.query;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerQueryPacketListener;
@@ -9,7 +7,6 @@ import net.minecraft.network.listener.ServerQueryPacketListener;
 public class QueryPingC2SPacket implements Packet<ServerQueryPacketListener> {
 	private final long startTime;
 
-	@Environment(EnvType.CLIENT)
 	public QueryPingC2SPacket(long startTime) {
 		this.startTime = startTime;
 	}

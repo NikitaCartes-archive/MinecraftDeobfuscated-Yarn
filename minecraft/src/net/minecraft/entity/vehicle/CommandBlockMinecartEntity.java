@@ -1,7 +1,5 @@
 package net.minecraft.entity.vehicle;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
@@ -24,6 +22,7 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 	private static final TrackedData<String> COMMAND = DataTracker.registerData(CommandBlockMinecartEntity.class, TrackedDataHandlerRegistry.STRING);
 	private static final TrackedData<Text> LAST_OUTPUT = DataTracker.registerData(CommandBlockMinecartEntity.class, TrackedDataHandlerRegistry.TEXT_COMPONENT);
 	private final CommandBlockExecutor commandExecutor = new CommandBlockMinecartEntity.CommandExecutor();
+	private static final int field_30701 = 4;
 	private int lastExecuted;
 
 	public CommandBlockMinecartEntity(EntityType<? extends CommandBlockMinecartEntity> entityType, World world) {
@@ -42,17 +41,17 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	protected void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.commandExecutor.readNbt(tag);
+	protected void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.commandExecutor.readNbt(nbt);
 		this.getDataTracker().set(COMMAND, this.getCommandExecutor().getCommand());
 		this.getDataTracker().set(LAST_OUTPUT, this.getCommandExecutor().getLastOutput());
 	}
 
 	@Override
-	protected void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		this.commandExecutor.writeNbt(tag);
+	protected void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		this.commandExecutor.writeNbt(nbt);
 	}
 
 	@Override
@@ -112,13 +111,11 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 			CommandBlockMinecartEntity.this.getDataTracker().set(CommandBlockMinecartEntity.LAST_OUTPUT, this.getLastOutput());
 		}
 
-		@Environment(EnvType.CLIENT)
 		@Override
 		public Vec3d getPos() {
 			return CommandBlockMinecartEntity.this.getPos();
 		}
 
-		@Environment(EnvType.CLIENT)
 		public CommandBlockMinecartEntity getMinecart() {
 			return CommandBlockMinecartEntity.this;
 		}

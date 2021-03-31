@@ -22,6 +22,8 @@ import org.apache.logging.log4j.Logger;
 
 public class DedicatedServerWatchdog implements Runnable {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final long field_29664 = 10000L;
+	private static final int field_29665 = 1;
 	private final MinecraftDedicatedServer server;
 	private final long maxTickTime;
 

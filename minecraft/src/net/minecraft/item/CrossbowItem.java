@@ -5,9 +5,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -19,6 +16,7 @@ import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -38,8 +36,16 @@ import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
 
 public class CrossbowItem extends RangedWeaponItem implements Vanishable {
+	private static final String CHARGED_KEY = "Charged";
+	private static final String CHARGED_PROJECTILES_KEY = "ChargedProjectiles";
+	private static final int field_30866 = 25;
+	public static final int RANGE = 8;
 	private boolean charged = false;
 	private boolean loaded = false;
+	private static final float field_30867 = 0.2F;
+	private static final float field_30868 = 0.5F;
+	private static final float field_30869 = 3.15F;
+	private static final float field_30870 = 1.6F;
 
 	public CrossbowItem(Item.Settings settings) {
 		super(settings);
@@ -157,8 +163,8 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 	private static void putProjectile(ItemStack crossbow, ItemStack projectile) {
 		NbtCompound nbtCompound = crossbow.getOrCreateTag();
 		NbtList nbtList;
-		if (nbtCompound.contains("ChargedProjectiles", NbtTypeIds.LIST)) {
-			nbtList = nbtCompound.getList("ChargedProjectiles", NbtTypeIds.COMPOUND);
+		if (nbtCompound.contains("ChargedProjectiles", NbtElement.LIST_TYPE)) {
+			nbtList = nbtCompound.getList("ChargedProjectiles", NbtElement.COMPOUND_TYPE);
 		} else {
 			nbtList = new NbtList();
 		}
@@ -172,8 +178,8 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 	private static List<ItemStack> getProjectiles(ItemStack crossbow) {
 		List<ItemStack> list = Lists.<ItemStack>newArrayList();
 		NbtCompound nbtCompound = crossbow.getTag();
-		if (nbtCompound != null && nbtCompound.contains("ChargedProjectiles", NbtTypeIds.LIST)) {
-			NbtList nbtList = nbtCompound.getList("ChargedProjectiles", NbtTypeIds.COMPOUND);
+		if (nbtCompound != null && nbtCompound.contains("ChargedProjectiles", NbtElement.LIST_TYPE)) {
+			NbtList nbtList = nbtCompound.getList("ChargedProjectiles", NbtElement.COMPOUND_TYPE);
 			if (nbtList != null) {
 				for (int i = 0; i < nbtList.size(); i++) {
 					NbtCompound nbtCompound2 = nbtList.getCompound(i);
@@ -188,7 +194,7 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 	private static void clearProjectiles(ItemStack crossbow) {
 		NbtCompound nbtCompound = crossbow.getTag();
 		if (nbtCompound != null) {
-			NbtList nbtList = nbtCompound.getList("ChargedProjectiles", NbtTypeIds.LIST);
+			NbtList nbtList = nbtCompound.getList("ChargedProjectiles", NbtElement.LIST_TYPE);
 			nbtList.clear();
 			nbtCompound.put("ChargedProjectiles", nbtList);
 		}
@@ -362,7 +368,6 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 		return f;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 		List<ItemStack> list = getProjectiles(stack);

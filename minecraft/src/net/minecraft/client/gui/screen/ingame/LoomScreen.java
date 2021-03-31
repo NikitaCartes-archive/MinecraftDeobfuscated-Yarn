@@ -6,7 +6,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.MinecraftClient;
@@ -25,6 +24,7 @@ import net.minecraft.item.BannerItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.screen.LoomScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -37,7 +37,16 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/loom.png");
+	private static final int field_32345 = 1;
+	private static final int field_32346 = 4;
+	private static final int field_32347 = 4;
 	private static final int PATTERN_BUTTON_ROW_COUNT = (BannerPattern.COUNT - BannerPattern.HAS_PATTERN_ITEM_COUNT - 1 + 4 - 1) / 4;
+	private static final int field_32348 = 12;
+	private static final int field_32349 = 15;
+	private static final int field_32350 = 14;
+	private static final int field_32351 = 56;
+	private static final int field_32352 = 60;
+	private static final int field_32353 = 13;
 	private ModelPart bannerField;
 	@Nullable
 	private List<Pair<BannerPattern, DyeColor>> bannerPatterns;
@@ -74,8 +83,8 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 		this.renderBackground(matrices);
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderTexture(0, TEXTURE);
-		int i = this.x;
-		int j = this.y;
+		int i = this.field_2776;
+		int j = this.field_2800;
 		this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		Slot slot = this.handler.getBannerSlot();
 		Slot slot2 = this.handler.getDyeSlot();
@@ -173,8 +182,8 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		this.scrollbarClicked = false;
 		if (this.canApplyDyePattern) {
-			int i = this.x + 60;
-			int j = this.y + 13;
+			int i = this.field_2776 + 60;
+			int j = this.field_2800 + 13;
 			int k = this.firstPatternButtonId + 16;
 
 			for (int l = this.firstPatternButtonId; l < k; l++) {
@@ -188,8 +197,8 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 				}
 			}
 
-			i = this.x + 119;
-			j = this.y + 9;
+			i = this.field_2776 + 119;
+			j = this.field_2800 + 9;
 			if (mouseX >= (double)i && mouseX < (double)(i + 12) && mouseY >= (double)j && mouseY < (double)(j + 56)) {
 				this.scrollbarClicked = true;
 			}
@@ -201,7 +210,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 	@Override
 	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
 		if (this.scrollbarClicked && this.canApplyDyePattern) {
-			int i = this.y + 13;
+			int i = this.field_2800 + 13;
 			int j = i + 56;
 			this.scrollPosition = ((float)mouseY - (float)i - 7.5F) / ((float)(j - i) - 15.0F);
 			this.scrollPosition = MathHelper.clamp(this.scrollPosition, 0.0F, 1.0F);
@@ -247,9 +256,9 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 		ItemStack itemStack3 = this.handler.getDyeSlot().getStack();
 		ItemStack itemStack4 = this.handler.getPatternSlot().getStack();
 		NbtCompound nbtCompound = itemStack2.getOrCreateSubTag("BlockEntityTag");
-		this.hasTooManyPatterns = nbtCompound.contains("Patterns", NbtTypeIds.LIST)
+		this.hasTooManyPatterns = nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)
 			&& !itemStack2.isEmpty()
-			&& nbtCompound.getList("Patterns", NbtTypeIds.COMPOUND).size() >= 6;
+			&& nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE).size() >= 6;
 		if (this.hasTooManyPatterns) {
 			this.bannerPatterns = null;
 		}

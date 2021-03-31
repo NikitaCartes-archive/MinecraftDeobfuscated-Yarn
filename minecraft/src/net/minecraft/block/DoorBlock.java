@@ -1,10 +1,6 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.enums.DoorHinge;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.piston.PistonBehavior;
@@ -32,6 +28,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 
@@ -41,6 +38,7 @@ public class DoorBlock extends Block {
 	public static final EnumProperty<DoorHinge> HINGE = Properties.DOOR_HINGE;
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	public static final EnumProperty<DoubleBlockHalf> HALF = Properties.DOUBLE_BLOCK_HALF;
+	protected static final float field_31083 = 3.0F;
 	protected static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 3.0);
 	protected static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 13.0, 16.0, 16.0, 16.0);
 	protected static final VoxelShape EAST_SHAPE = Block.createCuboidShape(13.0, 0.0, 0.0, 16.0, 16.0, 16.0);
@@ -147,7 +145,7 @@ public class DoorBlock extends Block {
 
 	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-		world.setBlockState(pos.up(), state.with(HALF, DoubleBlockHalf.UPPER), SetBlockStateFlags.DEFAULT);
+		world.setBlockState(pos.up(), state.with(HALF, DoubleBlockHalf.UPPER), Block.NOTIFY_ALL);
 	}
 
 	private DoorHinge getHinge(ItemPlacementContext ctx) {
@@ -193,7 +191,7 @@ public class DoorBlock extends Block {
 			return ActionResult.PASS;
 		} else {
 			state = state.cycle(OPEN);
-			world.setBlockState(pos, state, SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
+			world.setBlockState(pos, state, Block.NOTIFY_LISTENERS | Block.REDRAW_ON_MAIN_THREAD);
 			world.syncWorldEvent(player, state.get(OPEN) ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos, 0);
 			world.emitGameEvent(player, this.isOpen(state) ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
 			return ActionResult.success(world.isClient);
@@ -206,7 +204,7 @@ public class DoorBlock extends Block {
 
 	public void setOpen(@Nullable Entity entity, World world, BlockState state, BlockPos pos, boolean open) {
 		if (state.isOf(this) && (Boolean)state.get(OPEN) != open) {
-			world.setBlockState(pos, state.with(OPEN, Boolean.valueOf(open)), SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
+			world.setBlockState(pos, state.with(OPEN, Boolean.valueOf(open)), Block.NOTIFY_LISTENERS | Block.REDRAW_ON_MAIN_THREAD);
 			this.playOpenCloseSound(world, pos, open);
 			world.emitGameEvent(entity, open ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
 		}
@@ -222,7 +220,7 @@ public class DoorBlock extends Block {
 				world.emitGameEvent(bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
 			}
 
-			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)).with(OPEN, Boolean.valueOf(bl)), SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)).with(OPEN, Boolean.valueOf(bl)), Block.NOTIFY_LISTENERS);
 		}
 	}
 
@@ -252,7 +250,6 @@ public class DoorBlock extends Block {
 		return mirror == BlockMirror.NONE ? state : state.rotate(mirror.getRotation(state.get(FACING))).cycle(HINGE);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public long getRenderingSeed(BlockState state, BlockPos pos) {
 		return MathHelper.hashCode(pos.getX(), pos.down(state.get(HALF) == DoubleBlockHalf.LOWER ? 0 : 1).getY(), pos.getZ());

@@ -8,6 +8,8 @@ import net.minecraft.particle.DefaultParticleType;
 
 @Environment(EnvType.CLIENT)
 public class WhiteAshParticle extends AscendingParticle {
+	private static final int field_32658 = 12235202;
+
 	protected WhiteAshParticle(
 		ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, float scaleMultiplier, SpriteProvider spriteProvider
 	) {

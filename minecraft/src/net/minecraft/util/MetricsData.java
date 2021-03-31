@@ -1,9 +1,7 @@
 package net.minecraft.util;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-
 public class MetricsData {
+	public static final int field_29839 = 240;
 	private final long[] samples = new long[240];
 	private int startIndex;
 	private int sampleCount;
@@ -24,18 +22,31 @@ public class MetricsData {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
+	public long method_34912(int i) {
+		int j = (this.startIndex + i) % 240;
+		int k = this.startIndex;
+
+		long l;
+		for (l = 0L; k != j; k++) {
+			l += this.samples[k];
+		}
+
+		return l / (long)i;
+	}
+
+	public int method_34913(int i, int j) {
+		return this.method_15248(this.method_34912(i), j, 60);
+	}
+
 	public int method_15248(long l, int i, int j) {
 		double d = (double)l / (double)(1000000000L / (long)j);
 		return (int)(d * (double)i);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getStartIndex() {
 		return this.startIndex;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getCurrentIndex() {
 		return this.writeIndex;
 	}
@@ -44,7 +55,6 @@ public class MetricsData {
 		return index % 240;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public long[] getSamples() {
 		return this.samples;
 	}

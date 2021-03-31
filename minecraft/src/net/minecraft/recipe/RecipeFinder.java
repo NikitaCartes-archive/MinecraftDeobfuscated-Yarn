@@ -16,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.registry.Registry;
 
 public class RecipeFinder {
+	private static final int field_30653 = 0;
 	public final Int2IntMap idToAmountMap = new Int2IntOpenHashMap();
 
 	public void addNormalItem(ItemStack stack) {

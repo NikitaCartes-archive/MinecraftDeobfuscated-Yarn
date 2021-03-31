@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -35,17 +33,14 @@ public class BlockBreakingProgressS2CPacket implements Packet<ClientPlayPacketLi
 		clientPlayPacketListener.onBlockDestroyProgress(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getEntityId() {
 		return this.entityId;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public BlockPos getPos() {
 		return this.pos;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getProgress() {
 		return this.progress;
 	}

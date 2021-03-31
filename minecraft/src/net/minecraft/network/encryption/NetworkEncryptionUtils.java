@@ -14,11 +14,15 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 
 public class NetworkEncryptionUtils {
-	@Environment(EnvType.CLIENT)
+	private static final String field_29830 = "AES";
+	private static final int field_29831 = 128;
+	private static final String field_29832 = "RSA";
+	private static final int field_29833 = 1024;
+	private static final String field_29834 = "ISO_8859_1";
+	private static final String field_29835 = "SHA-1";
+
 	public static SecretKey generateKey() throws NetworkEncryptionException {
 		try {
 			KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
@@ -57,7 +61,6 @@ public class NetworkEncryptionUtils {
 		return messageDigest.digest();
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static PublicKey readEncodedPublicKey(byte[] bs) throws NetworkEncryptionException {
 		try {
 			EncodedKeySpec encodedKeySpec = new X509EncodedKeySpec(bs);
@@ -78,7 +81,6 @@ public class NetworkEncryptionUtils {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static byte[] encrypt(Key key, byte[] data) throws NetworkEncryptionException {
 		return crypt(1, key, data);
 	}

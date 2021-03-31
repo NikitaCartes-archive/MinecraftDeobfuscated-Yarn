@@ -2,8 +2,6 @@ package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
@@ -32,18 +30,17 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.spellTicks = tag.getInt("SpellTicks");
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.spellTicks = nbt.getInt("SpellTicks");
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putInt("SpellTicks", this.spellTicks);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putInt("SpellTicks", this.spellTicks);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public IllagerEntity.State getState() {
 		if (this.isSpellcasting()) {

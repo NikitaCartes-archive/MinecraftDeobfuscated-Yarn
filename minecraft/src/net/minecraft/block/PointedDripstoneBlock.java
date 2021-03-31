@@ -5,9 +5,6 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.enums.Thickness;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
@@ -39,18 +36,35 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 
 public class PointedDripstoneBlock extends Block implements LandingBlock, Waterloggable {
 	public static final DirectionProperty VERTICAL_DIRECTION = Properties.VERTICAL_DIRECTION;
 	public static final EnumProperty<Thickness> THICKNESS = Properties.THICKNESS;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+	private static final int field_31205 = 10;
+	private static final int field_31206 = Integer.MAX_VALUE;
+	private static final int field_31207 = 2;
+	private static final float field_31208 = 0.02F;
+	private static final float field_31209 = 0.12F;
+	private static final int field_31210 = 10;
+	private static final float field_31211 = 0.17578125F;
+	private static final float field_31212 = 0.05859375F;
+	private static final double field_31213 = 0.6;
+	private static final float field_31214 = 1.0F;
+	private static final int field_31215 = 40;
+	private static final int field_31200 = 6;
+	private static final float field_31201 = 2.0F;
+	private static final int field_31202 = 2;
+	private static final float field_31203 = 0.6875F;
 	private static final VoxelShape TIP_MERGE_SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 16.0, 11.0);
 	private static final VoxelShape UP_TIP_SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 11.0, 11.0);
 	private static final VoxelShape DOWN_TIP_SHAPE = Block.createCuboidShape(5.0, 5.0, 5.0, 11.0, 16.0, 11.0);
 	private static final VoxelShape BASE_SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
 	private static final VoxelShape FRUSTUM_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 16.0, 13.0);
 	private static final VoxelShape MIDDLE_SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0);
+	private static final float field_31204 = 0.125F;
 
 	public PointedDripstoneBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -79,25 +93,24 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 
 		if (direction != Direction.UP && direction != Direction.DOWN) {
 			return state;
-		} else if (world.getBlockTickScheduler().isScheduled(pos, this)) {
-			return state;
 		} else {
 			Direction direction2 = state.get(VERTICAL_DIRECTION);
-			if (direction != direction2.getOpposite() || canPlaceAtWithDirection(world, pos, direction2)) {
-				boolean bl = state.get(THICKNESS) == Thickness.TIP_MERGE;
-				Thickness thickness = getThickness(world, pos, direction2, bl);
-				return thickness == null ? getFluidBlockState(state) : state.with(THICKNESS, thickness);
-			} else if (direction2 == Direction.DOWN) {
-				this.scheduleFall(state, world, pos);
+			if (direction2 == Direction.DOWN && world.getBlockTickScheduler().isScheduled(pos, this)) {
+				return state;
+			} else if (direction == direction2.getOpposite() && !this.canPlaceAt(state, world, pos)) {
+				if (direction2 == Direction.DOWN) {
+					this.scheduleFall(state, world, pos);
+				} else {
+					world.getBlockTickScheduler().schedule(pos, this, 1);
+				}
+
 				return state;
 			} else {
-				return getFluidBlockState(state);
+				boolean bl = state.get(THICKNESS) == Thickness.TIP_MERGE;
+				Thickness thickness = getThickness(world, pos, direction2, bl);
+				return state.with(THICKNESS, thickness);
 			}
 		}
-	}
-
-	private static BlockState getFluidBlockState(BlockState state) {
-		return state.get(WATERLOGGED) ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState();
 	}
 
 	@Override
@@ -117,7 +130,6 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		if (canDrip(state)) {
@@ -130,7 +142,11 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		spawnFallingBlock(state, world, pos);
+		if (method_35283(state) && !this.canPlaceAt(state, world, pos)) {
+			world.breakBlock(pos, true);
+		} else {
+			spawnFallingBlock(state, world, pos);
+		}
 	}
 
 	@Override
@@ -294,12 +310,10 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 		world.spawnEntity(fallingBlockEntity);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static void createParticle(World world, BlockPos pos, BlockState state) {
 		getFluid(world, pos, state).ifPresent(fluid -> createParticle(world, pos, state, fluid));
 	}
 
-	@Environment(EnvType.CLIENT)
 	private static void createParticle(World world, BlockPos pos, BlockState state, Fluid fluid) {
 		Vec3d vec3d = state.getModelOffset(world, pos);
 		double d = 0.0625;
@@ -338,7 +352,6 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 		return direction2;
 	}
 
-	@Nullable
 	private static Thickness getThickness(WorldView world, BlockPos pos, Direction direction, boolean tryMerge) {
 		Direction direction2 = direction.getOpposite();
 		BlockState blockState = world.getBlockState(pos.offset(direction));
@@ -386,6 +399,10 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 		return isPointedDripstoneFacingDirection(state, Direction.DOWN);
 	}
 
+	private static boolean method_35283(BlockState blockState) {
+		return isPointedDripstoneFacingDirection(blockState, Direction.UP);
+	}
+
 	private static boolean isHeldByPointedDripstone(BlockState state, WorldView world, BlockPos pos) {
 		return isPointingDown(state) && !world.getBlockState(pos.up()).isOf(Blocks.POINTED_DRIPSTONE);
 	}
@@ -427,7 +444,6 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 		return fluid == Fluids.LAVA || fluid == Fluids.WATER;
 	}
 
-	@Environment(EnvType.CLIENT)
 	private static Fluid getDripFluid(World world, Fluid fluid) {
 		if (fluid.matchesType(Fluids.EMPTY)) {
 			return world.getDimension().isUltrawarm() ? Fluids.LAVA : Fluids.WATER;

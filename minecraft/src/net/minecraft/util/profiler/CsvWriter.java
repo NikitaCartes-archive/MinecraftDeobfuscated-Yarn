@@ -10,6 +10,8 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 public class CsvWriter {
+	private static final String field_29836 = "\r\n";
+	private static final String field_29837 = ",";
 	private final Writer writer;
 	private final int column;
 

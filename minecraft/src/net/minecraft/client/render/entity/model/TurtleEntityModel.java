@@ -17,6 +17,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityModel<T> {
+	private static final String EGG_BELLY = "egg_belly";
 	/**
 	 * The belly side of the turtle's shell.
 	 */
@@ -30,9 +31,11 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
-		modelPartData.addChild("head", ModelPartBuilder.create().uv(3, 0).cuboid(-3.0F, -1.0F, -3.0F, 6.0F, 5.0F, 6.0F), ModelTransform.pivot(0.0F, 19.0F, -10.0F));
 		modelPartData.addChild(
-			"body",
+			EntityModelPartNames.HEAD, ModelPartBuilder.create().uv(3, 0).cuboid(-3.0F, -1.0F, -3.0F, 6.0F, 5.0F, 6.0F), ModelTransform.pivot(0.0F, 19.0F, -10.0F)
+		);
+		modelPartData.addChild(
+			EntityModelPartNames.BODY,
 			ModelPartBuilder.create()
 				.uv(7, 37)
 				.cuboid("shell", -9.5F, 3.0F, -10.0F, 19.0F, 20.0F, 6.0F)
@@ -47,16 +50,24 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 		);
 		int i = 1;
 		modelPartData.addChild(
-			"right_hind_leg", ModelPartBuilder.create().uv(1, 23).cuboid(-2.0F, 0.0F, 0.0F, 4.0F, 1.0F, 10.0F), ModelTransform.pivot(-3.5F, 22.0F, 11.0F)
+			EntityModelPartNames.RIGHT_HIND_LEG,
+			ModelPartBuilder.create().uv(1, 23).cuboid(-2.0F, 0.0F, 0.0F, 4.0F, 1.0F, 10.0F),
+			ModelTransform.pivot(-3.5F, 22.0F, 11.0F)
 		);
 		modelPartData.addChild(
-			"left_hind_leg", ModelPartBuilder.create().uv(1, 12).cuboid(-2.0F, 0.0F, 0.0F, 4.0F, 1.0F, 10.0F), ModelTransform.pivot(3.5F, 22.0F, 11.0F)
+			EntityModelPartNames.LEFT_HIND_LEG,
+			ModelPartBuilder.create().uv(1, 12).cuboid(-2.0F, 0.0F, 0.0F, 4.0F, 1.0F, 10.0F),
+			ModelTransform.pivot(3.5F, 22.0F, 11.0F)
 		);
 		modelPartData.addChild(
-			"right_front_leg", ModelPartBuilder.create().uv(27, 30).cuboid(-13.0F, 0.0F, -2.0F, 13.0F, 1.0F, 5.0F), ModelTransform.pivot(-5.0F, 21.0F, -4.0F)
+			EntityModelPartNames.RIGHT_FRONT_LEG,
+			ModelPartBuilder.create().uv(27, 30).cuboid(-13.0F, 0.0F, -2.0F, 13.0F, 1.0F, 5.0F),
+			ModelTransform.pivot(-5.0F, 21.0F, -4.0F)
 		);
 		modelPartData.addChild(
-			"left_front_leg", ModelPartBuilder.create().uv(27, 24).cuboid(0.0F, 0.0F, -2.0F, 13.0F, 1.0F, 5.0F), ModelTransform.pivot(5.0F, 21.0F, -4.0F)
+			EntityModelPartNames.LEFT_FRONT_LEG,
+			ModelPartBuilder.create().uv(27, 24).cuboid(0.0F, 0.0F, -2.0F, 13.0F, 1.0F, 5.0F),
+			ModelTransform.pivot(5.0F, 21.0F, -4.0F)
 		);
 		return TexturedModelData.of(modelData, 128, 64);
 	}

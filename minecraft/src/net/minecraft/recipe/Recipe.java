@@ -1,7 +1,5 @@
 package net.minecraft.recipe;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
@@ -15,7 +13,6 @@ public interface Recipe<C extends Inventory> {
 
 	ItemStack craft(C inv);
 
-	@Environment(EnvType.CLIENT)
 	boolean fits(int width, int height);
 
 	ItemStack getOutput();
@@ -41,12 +38,10 @@ public interface Recipe<C extends Inventory> {
 		return false;
 	}
 
-	@Environment(EnvType.CLIENT)
 	default String getGroup() {
 		return "";
 	}
 
-	@Environment(EnvType.CLIENT)
 	default ItemStack getRecipeKindIcon() {
 		return new ItemStack(Blocks.CRAFTING_TABLE);
 	}
@@ -57,7 +52,6 @@ public interface Recipe<C extends Inventory> {
 
 	RecipeType<?> getType();
 
-	@Environment(EnvType.CLIENT)
 	default boolean isEmpty() {
 		DefaultedList<Ingredient> defaultedList = this.getPreviewInputs();
 		return defaultedList.isEmpty() || defaultedList.stream().anyMatch(ingredient -> ingredient.getMatchingStacksClient().length == 0);

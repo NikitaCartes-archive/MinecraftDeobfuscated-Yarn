@@ -30,6 +30,6 @@ public class ZombieVillagerEntityRenderer extends BipedEntityRenderer<ZombieVill
 	}
 
 	protected boolean isShaking(ZombieVillagerEntity zombieVillagerEntity) {
-		return zombieVillagerEntity.isConverting();
+		return super.isShaking(zombieVillagerEntity) || zombieVillagerEntity.isConverting();
 	}
 }

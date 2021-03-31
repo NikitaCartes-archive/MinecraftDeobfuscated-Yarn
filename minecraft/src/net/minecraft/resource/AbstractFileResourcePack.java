@@ -9,8 +9,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -45,7 +43,6 @@ public abstract class AbstractFileResourcePack implements ResourcePack {
 
 	protected abstract InputStream openFile(String name) throws IOException;
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public InputStream openRoot(String fileName) throws IOException {
 		if (!fileName.contains("/") && !fileName.contains("\\")) {

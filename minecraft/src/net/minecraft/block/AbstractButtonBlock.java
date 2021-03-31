@@ -3,7 +3,6 @@ package net.minecraft.block;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -27,6 +26,10 @@ import net.minecraft.world.event.GameEvent;
 
 public abstract class AbstractButtonBlock extends WallMountedBlock {
 	public static final BooleanProperty POWERED = Properties.POWERED;
+	private static final int field_31040 = 1;
+	private static final int field_31041 = 2;
+	protected static final int field_31042 = 2;
+	protected static final int field_31043 = 3;
 	protected static final VoxelShape CEILING_X_SHAPE = Block.createCuboidShape(6.0, 14.0, 5.0, 10.0, 16.0, 11.0);
 	protected static final VoxelShape CEILING_Z_SHAPE = Block.createCuboidShape(5.0, 14.0, 6.0, 11.0, 16.0, 10.0);
 	protected static final VoxelShape FLOOR_X_SHAPE = Block.createCuboidShape(6.0, 0.0, 5.0, 10.0, 2.0, 11.0);
@@ -103,7 +106,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 	}
 
 	public void powerOn(BlockState state, World world, BlockPos pos) {
-		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), SetBlockStateFlags.DEFAULT);
+		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), Block.NOTIFY_ALL);
 		this.updateNeighbors(state, world, pos);
 		world.getBlockTickScheduler().schedule(pos, this, this.getPressTicks());
 	}
@@ -146,7 +149,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 			if (this.wooden) {
 				this.tryPowerWithProjectiles(state, world, pos);
 			} else {
-				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), SetBlockStateFlags.DEFAULT);
+				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), Block.NOTIFY_ALL);
 				this.updateNeighbors(state, world, pos);
 				this.playClickSound(null, world, pos, false);
 				world.emitGameEvent(GameEvent.BLOCK_UNPRESS, pos);
@@ -166,7 +169,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 		boolean bl = !list.isEmpty();
 		boolean bl2 = (Boolean)state.get(POWERED);
 		if (bl != bl2) {
-			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)), SetBlockStateFlags.DEFAULT);
+			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)), Block.NOTIFY_ALL);
 			this.updateNeighbors(state, world, pos);
 			this.playClickSound(null, world, pos, bl);
 			world.emitGameEvent((Entity)list.stream().findFirst().orElse(null), bl ? GameEvent.BLOCK_PRESS : GameEvent.BLOCK_UNPRESS, pos);

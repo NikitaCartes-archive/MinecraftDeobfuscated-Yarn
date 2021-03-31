@@ -2,8 +2,6 @@ package net.minecraft.network.packet.s2c.play;
 
 import it.unimi.dsi.fastutil.shorts.ShortSet;
 import java.util.function.BiConsumer;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.network.Packet;
@@ -14,6 +12,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.chunk.ChunkSection;
 
 public class ChunkDeltaUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
+	private static final int field_33341 = 12;
 	private final ChunkSectionPos sectionPos;
 	/**
 	 * The packed local positions for each entry in {@link #blockStates}.
@@ -22,20 +21,20 @@ public class ChunkDeltaUpdateS2CPacket implements Packet<ClientPlayPacketListene
 	 */
 	private final short[] positions;
 	private final BlockState[] blockStates;
-	private final boolean field_26749;
+	private final boolean noLightingUpdates;
 
 	/**
 	 * @param sectionPos the position of the given chunk section that will be sent to the client
 	 */
-	public ChunkDeltaUpdateS2CPacket(ChunkSectionPos sectionPos, ShortSet shortSet, ChunkSection section, boolean bl) {
+	public ChunkDeltaUpdateS2CPacket(ChunkSectionPos sectionPos, ShortSet positions, ChunkSection section, boolean noLightingUpdates) {
 		this.sectionPos = sectionPos;
-		this.field_26749 = bl;
-		int i = shortSet.size();
+		this.noLightingUpdates = noLightingUpdates;
+		int i = positions.size();
 		this.positions = new short[i];
 		this.blockStates = new BlockState[i];
 		int j = 0;
 
-		for (short s : shortSet) {
+		for (short s : positions) {
 			this.positions[j] = s;
 			this.blockStates[j] = section.getBlockState(ChunkSectionPos.unpackLocalX(s), ChunkSectionPos.unpackLocalY(s), ChunkSectionPos.unpackLocalZ(s));
 			j++;
@@ -44,7 +43,7 @@ public class ChunkDeltaUpdateS2CPacket implements Packet<ClientPlayPacketListene
 
 	public ChunkDeltaUpdateS2CPacket(PacketByteBuf buf) {
 		this.sectionPos = ChunkSectionPos.from(buf.readLong());
-		this.field_26749 = buf.readBoolean();
+		this.noLightingUpdates = buf.readBoolean();
 		int i = buf.readVarInt();
 		this.positions = new short[i];
 		this.blockStates = new BlockState[i];
@@ -59,7 +58,7 @@ public class ChunkDeltaUpdateS2CPacket implements Packet<ClientPlayPacketListene
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeLong(this.sectionPos.asLong());
-		buf.writeBoolean(this.field_26749);
+		buf.writeBoolean(this.noLightingUpdates);
 		buf.writeVarInt(this.positions.length);
 
 		for (int i = 0; i < this.positions.length; i++) {
@@ -84,8 +83,7 @@ public class ChunkDeltaUpdateS2CPacket implements Packet<ClientPlayPacketListene
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
-	public boolean method_31179() {
-		return this.field_26749;
+	public boolean shouldSkipLightingUpdates() {
+		return this.noLightingUpdates;
 	}
 }

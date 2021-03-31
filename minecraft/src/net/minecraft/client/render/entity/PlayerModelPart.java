@@ -1,11 +1,8 @@
 package net.minecraft.client.render.entity;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
-@Environment(EnvType.CLIENT)
 public enum PlayerModelPart {
 	CAPE(0, "cape"),
 	JACKET(1, "jacket"),
@@ -29,6 +26,10 @@ public enum PlayerModelPart {
 
 	public int getBitFlag() {
 		return this.bitFlag;
+	}
+
+	public int method_35206() {
+		return this.id;
 	}
 
 	public String getName() {

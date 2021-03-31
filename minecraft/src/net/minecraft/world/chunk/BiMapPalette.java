@@ -3,8 +3,6 @@ package net.minecraft.world.chunk;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
@@ -64,7 +62,6 @@ public class BiMapPalette<T> implements Palette<T> {
 		return this.map.get(index);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void fromPacket(PacketByteBuf buf) {
 		this.map.clear();
@@ -87,31 +84,32 @@ public class BiMapPalette<T> implements Palette<T> {
 
 	@Override
 	public int getPacketSize() {
-		int i = PacketByteBuf.getVarIntSizeBytes(this.getIndexBits());
+		int i = PacketByteBuf.getVarIntLength(this.getIndexBits());
 
 		for (int j = 0; j < this.getIndexBits(); j++) {
-			i += PacketByteBuf.getVarIntSizeBytes(this.idList.getRawId(this.map.get(j)));
+			i += PacketByteBuf.getVarIntLength(this.idList.getRawId(this.map.get(j)));
 		}
 
 		return i;
 	}
 
+	@Override
 	public int getIndexBits() {
 		return this.map.size();
 	}
 
 	@Override
-	public void readNbt(NbtList tag) {
+	public void readNbt(NbtList nbt) {
 		this.map.clear();
 
-		for (int i = 0; i < tag.size(); i++) {
-			this.map.add((T)this.elementDeserializer.apply(tag.getCompound(i)));
+		for (int i = 0; i < nbt.size(); i++) {
+			this.map.add((T)this.elementDeserializer.apply(nbt.getCompound(i)));
 		}
 	}
 
-	public void writeNbt(NbtList tag) {
+	public void writeNbt(NbtList nbt) {
 		for (int i = 0; i < this.getIndexBits(); i++) {
-			tag.add(this.elementSerializer.apply(this.map.get(i)));
+			nbt.add(this.elementSerializer.apply(this.map.get(i)));
 		}
 	}
 }

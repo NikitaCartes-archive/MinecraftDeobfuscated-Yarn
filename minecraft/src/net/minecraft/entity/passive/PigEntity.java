@@ -1,8 +1,6 @@
 package net.minecraft.entity.passive;
 
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.Entity;
@@ -109,15 +107,15 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		this.saddledComponent.writeNbt(tag);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		this.saddledComponent.writeNbt(nbt);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.saddledComponent.readNbt(tag);
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.saddledComponent.readNbt(nbt);
 	}
 
 	@Override
@@ -266,7 +264,6 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 		return BREEDING_INGREDIENT.test(stack);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public Vec3d method_29919() {
 		return new Vec3d(0.0, (double)(0.6F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));

@@ -12,6 +12,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
 
 public class RangedApproachTask extends Task<MobEntity> {
+	private static final int field_30166 = 1;
 	private final Function<LivingEntity, Float> speed;
 
 	public RangedApproachTask(float speed) {

@@ -5,7 +5,6 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -13,6 +12,7 @@ import org.apache.commons.lang3.ArrayUtils;
  * Represents an NBT 32-bit integer array.
  */
 public class NbtIntArray extends AbstractNbtList<NbtInt> {
+	private static final int field_33195 = 192;
 	public static final NbtType<NbtIntArray> TYPE = new NbtType<NbtIntArray>() {
 		public NbtIntArray read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
 			nbtTagSizeTracker.add(192L);
@@ -69,7 +69,7 @@ public class NbtIntArray extends AbstractNbtList<NbtInt> {
 
 	@Override
 	public byte getType() {
-		return (byte)NbtTypeIds.INT_ARRAY;
+		return NbtElement.INT_ARRAY_TYPE;
 	}
 
 	@Override
@@ -151,7 +151,7 @@ public class NbtIntArray extends AbstractNbtList<NbtInt> {
 
 	@Override
 	public byte getHeldType() {
-		return (byte)NbtTypeIds.INT;
+		return NbtElement.INT_TYPE;
 	}
 
 	public void clear() {

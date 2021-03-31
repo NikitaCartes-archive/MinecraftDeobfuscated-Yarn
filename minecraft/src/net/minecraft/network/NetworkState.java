@@ -115,6 +115,7 @@ import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.NbtQueryResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
@@ -148,7 +149,6 @@ import net.minecraft.network.packet.s2c.play.StopSoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeTagsS2CPacket;
-import net.minecraft.network.packet.s2c.play.TagQueryResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
@@ -275,7 +275,7 @@ public enum NetworkState {
 					.register(PlaySoundS2CPacket.class, PlaySoundS2CPacket::new)
 					.register(StopSoundS2CPacket.class, StopSoundS2CPacket::new)
 					.register(PlayerListHeaderS2CPacket.class, PlayerListHeaderS2CPacket::new)
-					.register(TagQueryResponseS2CPacket.class, TagQueryResponseS2CPacket::new)
+					.register(NbtQueryResponseS2CPacket.class, NbtQueryResponseS2CPacket::new)
 					.register(ItemPickupAnimationS2CPacket.class, ItemPickupAnimationS2CPacket::new)
 					.register(EntityPositionS2CPacket.class, EntityPositionS2CPacket::new)
 					.register(AdvancementUpdateS2CPacket.class, AdvancementUpdateS2CPacket::new)
@@ -373,6 +373,8 @@ public enum NetworkState {
 			)
 	);
 
+	private static final int NULL_PACKET_ID_OR_MIN_STATE_ID = -1;
+	private static final int MAX_STATE_ID = 2;
 	private static final NetworkState[] STATES = new NetworkState[4];
 	private static final Map<Class<? extends Packet<?>>, NetworkState> HANDLER_STATE_MAP = Maps.<Class<? extends Packet<?>>, NetworkState>newHashMap();
 	private final int stateId;
@@ -481,8 +483,8 @@ public enum NetworkState {
 		private PacketHandlerInitializer() {
 		}
 
-		public <T extends PacketListener> NetworkState.PacketHandlerInitializer setup(NetworkSide side, NetworkState.PacketHandler<T> packetHandler) {
-			this.packetHandlers.put(side, packetHandler);
+		public <T extends PacketListener> NetworkState.PacketHandlerInitializer setup(NetworkSide side, NetworkState.PacketHandler<T> handler) {
+			this.packetHandlers.put(side, handler);
 			return this;
 		}
 	}

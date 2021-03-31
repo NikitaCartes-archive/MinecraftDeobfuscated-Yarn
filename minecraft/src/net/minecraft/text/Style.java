@@ -11,8 +11,6 @@ import com.google.gson.JsonSyntaxException;
 import java.lang.reflect.Type;
 import java.util.Objects;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
@@ -198,6 +196,10 @@ public class Style {
 		return this.withColor(color != null ? TextColor.fromFormatting(color) : null);
 	}
 
+	public Style withColor(int rgbColor) {
+		return this.withColor(TextColor.fromRgb(rgbColor));
+	}
+
 	/**
 	 * Returns a new style with the bold attribute provided and all other
 	 * attributes of this style.
@@ -226,10 +228,21 @@ public class Style {
 	 * Returns a new style with the underline attribute provided and all other
 	 * attributes of this style.
 	 */
-	@Environment(EnvType.CLIENT)
 	public Style withUnderline(@Nullable Boolean underline) {
 		return new Style(
 			this.color, this.bold, this.italic, underline, this.strikethrough, this.obfuscated, this.clickEvent, this.hoverEvent, this.insertion, this.font
+		);
+	}
+
+	public Style withStrikethrough(@Nullable Boolean strikethrough) {
+		return new Style(
+			this.color, this.bold, this.italic, this.underlined, strikethrough, this.obfuscated, this.clickEvent, this.hoverEvent, this.insertion, this.font
+		);
+	}
+
+	public Style obfuscated(@Nullable Boolean obfuscated) {
+		return new Style(
+			this.color, this.bold, this.italic, this.underlined, this.strikethrough, obfuscated, this.clickEvent, this.hoverEvent, this.insertion, this.font
 		);
 	}
 
@@ -275,7 +288,6 @@ public class Style {
 	 * 
 	 * @param font the new font
 	 */
-	@Environment(EnvType.CLIENT)
 	public Style withFont(@Nullable Identifier font) {
 		return new Style(
 			this.color, this.bold, this.italic, this.underlined, this.strikethrough, this.obfuscated, this.clickEvent, this.hoverEvent, this.insertion, font
@@ -330,7 +342,6 @@ public class Style {
 	 * 
 	 * @param formatting the new formatting
 	 */
-	@Environment(EnvType.CLIENT)
 	public Style withExclusiveFormatting(Formatting formatting) {
 		TextColor textColor = this.color;
 		Boolean boolean_ = this.bold;

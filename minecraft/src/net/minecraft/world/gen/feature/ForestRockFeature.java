@@ -2,7 +2,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
@@ -40,7 +40,7 @@ public class ForestRockFeature extends Feature<SingleStateFeatureConfig> {
 
 				for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-j, -k, -l), blockPos.add(j, k, l))) {
 					if (blockPos2.getSquaredDistance(blockPos) <= (double)(f * f)) {
-						structureWorldAccess.setBlockState(blockPos2, singleStateFeatureConfig.state, SetBlockStateFlags.NO_REDRAW);
+						structureWorldAccess.setBlockState(blockPos2, singleStateFeatureConfig.state, Block.NO_REDRAW);
 					}
 				}
 

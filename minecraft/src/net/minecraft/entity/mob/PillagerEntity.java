@@ -3,9 +3,6 @@ package net.minecraft.entity.mob;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
@@ -17,6 +14,7 @@ import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
@@ -38,12 +36,14 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.inventory.CommandItemSlot;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -55,8 +55,11 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
-public class PillagerEntity extends IllagerEntity implements CrossbowUser {
+public class PillagerEntity extends IllagerEntity implements CrossbowUser, InventoryOwner {
 	private static final TrackedData<Boolean> CHARGING = DataTracker.registerData(PillagerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final int field_30478 = 5;
+	private static final int field_30476 = 300;
+	private static final float field_30477 = 1.6F;
 	private final SimpleInventory inventory = new SimpleInventory(5);
 
 	public PillagerEntity(EntityType<? extends PillagerEntity> entityType, World world) {
@@ -97,7 +100,6 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 		return weapon == Items.CROSSBOW;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isCharging() {
 		return this.dataTracker.get(CHARGING);
 	}
@@ -113,8 +115,8 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
 		NbtList nbtList = new NbtList();
 
 		for (int i = 0; i < this.inventory.size(); i++) {
@@ -124,10 +126,9 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 			}
 		}
 
-		tag.put("Inventory", nbtList);
+		nbt.put("Inventory", nbtList);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public IllagerEntity.State getState() {
 		if (this.isCharging()) {
@@ -140,9 +141,9 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		NbtList nbtList = tag.getList("Inventory", NbtTypeIds.COMPOUND);
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		NbtList nbtList = nbt.getList("Inventory", NbtElement.COMPOUND_TYPE);
 
 		for (int i = 0; i < nbtList.size(); i++) {
 			ItemStack itemStack = ItemStack.fromNbt(nbtList.getCompound(i));
@@ -168,11 +169,11 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
 		this.initEquipment(difficulty);
 		this.updateEnchantments(difficulty);
-		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
 	@Override
@@ -231,11 +232,16 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 	}
 
 	@Override
+	public Inventory getInventory() {
+		return this.inventory;
+	}
+
+	@Override
 	protected void loot(ItemEntity item) {
 		ItemStack itemStack = item.getStack();
 		if (itemStack.getItem() instanceof BannerItem) {
 			super.loot(item);
-		} else if (this.method_7111(itemStack)) {
+		} else if (this.isRaidCaptain(itemStack)) {
 			this.triggerItemPickedUpByEntityCriteria(item);
 			ItemStack itemStack2 = this.inventory.addStack(itemStack);
 			if (itemStack2.isEmpty()) {
@@ -246,8 +252,8 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 		}
 	}
 
-	private boolean method_7111(ItemStack itemStack) {
-		return this.hasActiveRaid() && itemStack.isOf(Items.WHITE_BANNER);
+	private boolean isRaidCaptain(ItemStack stack) {
+		return this.hasActiveRaid() && stack.isOf(Items.WHITE_BANNER);
 	}
 
 	@Override

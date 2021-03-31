@@ -128,6 +128,11 @@ public class BlockPredicate {
 			return this;
 		}
 
+		public BlockPredicate.Builder nbt(NbtCompound nbt) {
+			this.nbt = new NbtPredicate(nbt);
+			return this;
+		}
+
 		public BlockPredicate.Builder state(StatePredicate state) {
 			this.state = state;
 			return this;

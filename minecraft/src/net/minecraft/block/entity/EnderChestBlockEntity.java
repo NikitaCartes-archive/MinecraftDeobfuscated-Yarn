@@ -1,9 +1,5 @@
 package net.minecraft.block.entity;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.api.EnvironmentInterface;
-import net.fabricmc.api.EnvironmentInterfaces;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.block.ChestAnimationProgress;
@@ -13,10 +9,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-@EnvironmentInterfaces({@EnvironmentInterface(
-		value = EnvType.CLIENT,
-		itf = ChestAnimationProgress.class
-	)})
 public class EnderChestBlockEntity extends BlockEntity implements ChestAnimationProgress {
 	private final ChestLidAnimator lidAnimator = new ChestLidAnimator();
 	private final ChestStateManager stateManager = new ChestStateManager() {
@@ -55,7 +47,7 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 
 		@Override
 		protected boolean isPlayerViewing(PlayerEntity player) {
-			return player.getEnderChestInventory().method_31556(EnderChestBlockEntity.this);
+			return player.getEnderChestInventory().isActiveBlockEntity(EnderChestBlockEntity.this);
 		}
 	};
 
@@ -99,7 +91,6 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 		this.stateManager.updateViewerCount(this.getWorld(), this.getPos(), this.getCachedState());
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public float getAnimationProgress(float tickDelta) {
 		return this.lidAnimator.getProgress(tickDelta);

@@ -1,9 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -27,6 +24,8 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
+	private static final float field_31260 = 0.003F;
+	public static final int field_31259 = 3;
 	public static final IntProperty AGE = Properties.AGE_3;
 	private static final VoxelShape SMALL_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 8.0, 13.0);
 	private static final VoxelShape LARGE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 16.0, 15.0);
@@ -36,7 +35,6 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 		this.setDefaultState(this.stateManager.getDefaultState().with(AGE, Integer.valueOf(0)));
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
 		return new ItemStack(Items.SWEET_BERRIES);
@@ -60,7 +58,7 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		int i = (Integer)state.get(AGE);
 		if (i < 3 && random.nextInt(5) == 0 && world.getBaseLightLevel(pos.up(), 0) >= 9) {
-			world.setBlockState(pos, state.with(AGE, Integer.valueOf(i + 1)), SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(pos, state.with(AGE, Integer.valueOf(i + 1)), Block.NOTIFY_LISTENERS);
 		}
 	}
 
@@ -88,7 +86,7 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 			int j = 1 + world.random.nextInt(2);
 			dropStack(world, pos, new ItemStack(Items.SWEET_BERRIES, j + (bl ? 1 : 0)));
 			world.playSound(null, pos, SoundEvents.ITEM_SWEET_BERRIES_PICK_FROM_BUSH, SoundCategory.BLOCKS, 1.0F, 0.8F + world.random.nextFloat() * 0.4F);
-			world.setBlockState(pos, state.with(AGE, Integer.valueOf(1)), SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(pos, state.with(AGE, Integer.valueOf(1)), Block.NOTIFY_LISTENERS);
 			return ActionResult.success(world.isClient);
 		} else {
 			return super.onUse(state, world, pos, player, hand, hit);
@@ -113,6 +111,6 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
 		int i = Math.min(3, (Integer)state.get(AGE) + 1);
-		world.setBlockState(pos, state.with(AGE, Integer.valueOf(i)), SetBlockStateFlags.NOTIFY_LISTENERS);
+		world.setBlockState(pos, state.with(AGE, Integer.valueOf(i)), Block.NOTIFY_LISTENERS);
 	}
 }

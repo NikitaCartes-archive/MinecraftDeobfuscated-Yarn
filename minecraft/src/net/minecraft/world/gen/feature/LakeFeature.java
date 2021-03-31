@@ -2,7 +2,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
@@ -94,7 +94,7 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 					for (int s = 0; s < 16; s++) {
 						for (int tx = 0; tx < 8; tx++) {
 							if (bls[(j * 16 + s) * 8 + tx]) {
-								structureWorldAccess.setBlockState(blockPos.add(j, tx, s), tx >= 4 ? CAVE_AIR : singleStateFeatureConfig.state, SetBlockStateFlags.NOTIFY_LISTENERS);
+								structureWorldAccess.setBlockState(blockPos.add(j, tx, s), tx >= 4 ? CAVE_AIR : singleStateFeatureConfig.state, Block.NOTIFY_LISTENERS);
 							}
 						}
 					}
@@ -108,9 +108,9 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 								if (isSoil(structureWorldAccess.getBlockState(blockPos2)) && structureWorldAccess.getLightLevel(LightType.SKY, blockPos.add(j, txx, s)) > 0) {
 									Biome biome = structureWorldAccess.getBiome(blockPos2);
 									if (biome.getGenerationSettings().getSurfaceConfig().getTopMaterial().isOf(Blocks.MYCELIUM)) {
-										structureWorldAccess.setBlockState(blockPos2, Blocks.MYCELIUM.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+										structureWorldAccess.setBlockState(blockPos2, Blocks.MYCELIUM.getDefaultState(), Block.NOTIFY_LISTENERS);
 									} else {
-										structureWorldAccess.setBlockState(blockPos2, Blocks.GRASS_BLOCK.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+										structureWorldAccess.setBlockState(blockPos2, Blocks.GRASS_BLOCK.getDefaultState(), Block.NOTIFY_LISTENERS);
 									}
 								}
 							}
@@ -132,7 +132,7 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 											|| txxx > 0 && bls[(j * 16 + s) * 8 + (txxx - 1)]
 									);
 								if (bl && (txxx < 4 || random.nextInt(2) != 0) && structureWorldAccess.getBlockState(blockPos.add(j, txxx, s)).getMaterial().isSolid()) {
-									structureWorldAccess.setBlockState(blockPos.add(j, txxx, s), Blocks.STONE.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+									structureWorldAccess.setBlockState(blockPos.add(j, txxx, s), Blocks.STONE.getDefaultState(), Block.NOTIFY_LISTENERS);
 								}
 							}
 						}
@@ -145,7 +145,7 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 							int txxxx = 4;
 							BlockPos blockPos2 = blockPos.add(j, 4, s);
 							if (structureWorldAccess.getBiome(blockPos2).canSetIce(structureWorldAccess, blockPos2, false)) {
-								structureWorldAccess.setBlockState(blockPos2, Blocks.ICE.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+								structureWorldAccess.setBlockState(blockPos2, Blocks.ICE.getDefaultState(), Block.NOTIFY_LISTENERS);
 							}
 						}
 					}

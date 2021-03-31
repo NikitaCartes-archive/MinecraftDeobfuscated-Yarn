@@ -2,8 +2,12 @@ package net.minecraft.world.chunk;
 
 import javax.annotation.Nullable;
 import net.minecraft.util.Util;
+import net.minecraft.util.annotation.Debug;
 
 public class ChunkNibbleArray {
+	public static final int field_31403 = 2048;
+	public static final int field_31404 = 128;
+	private static final int field_31405 = 4;
 	@Nullable
 	protected byte[] bytes;
 
@@ -85,6 +89,20 @@ public class ChunkNibbleArray {
 			}
 
 			if ((i & 0xFF) == 255) {
+				stringBuilder.append("\n");
+			}
+		}
+
+		return stringBuilder.toString();
+	}
+
+	@Debug
+	public String method_35320(int i) {
+		StringBuilder stringBuilder = new StringBuilder();
+
+		for (int j = 0; j < 256; j++) {
+			stringBuilder.append(Integer.toHexString(this.get(j)));
+			if ((j & 15) == 15) {
 				stringBuilder.append("\n");
 			}
 		}

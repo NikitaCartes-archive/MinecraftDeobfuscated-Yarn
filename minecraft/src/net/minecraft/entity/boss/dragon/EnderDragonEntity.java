@@ -3,9 +3,6 @@ package net.minecraft.entity.boss.dragon;
 import com.google.common.collect.Lists;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
 import net.minecraft.entity.Entity;
@@ -48,6 +45,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.gen.feature.EndPortalFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -56,6 +54,9 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final TrackedData<Integer> PHASE_TYPE = DataTracker.registerData(EnderDragonEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TargetPredicate CLOSE_PLAYER_PREDICATE = new TargetPredicate().setBaseMaxDistance(64.0);
+	private static final int field_30428 = 200;
+	private static final int field_30429 = 400;
+	private static final float field_30430 = 0.25F;
 	/**
 	 * (yaw, y, ?)
 	 */
@@ -742,16 +743,16 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putInt("DragonPhase", this.phaseManager.getCurrent().getType().getTypeId());
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putInt("DragonPhase", this.phaseManager.getCurrent().getType().getTypeId());
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		if (tag.contains("DragonPhase")) {
-			this.phaseManager.setPhase(PhaseType.getFromId(tag.getInt("DragonPhase")));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		if (nbt.contains("DragonPhase")) {
+			this.phaseManager.setPhase(PhaseType.getFromId(nbt.getInt("DragonPhase")));
 		}
 	}
 
@@ -788,7 +789,6 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		return 5.0F;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getChangeInNeckPitch(int segmentOffset, double[] segment1, double[] segment2) {
 		Phase phase = this.phaseManager.getCurrent();
 		PhaseType<? extends Phase> phaseType = phase.getType();
@@ -882,7 +882,6 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		return false;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void readFromPacket(MobSpawnS2CPacket packet) {
 		super.readFromPacket(packet);

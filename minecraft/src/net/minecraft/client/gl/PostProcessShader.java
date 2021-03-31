@@ -18,7 +18,7 @@ import net.minecraft.util.math.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class PostProcessShader implements AutoCloseable {
-	private final JsonGlProgram program;
+	private final JsonEffectGlShader program;
 	public final Framebuffer input;
 	public final Framebuffer output;
 	private final List<IntSupplier> samplerValues = Lists.<IntSupplier>newArrayList();
@@ -28,13 +28,17 @@ public class PostProcessShader implements AutoCloseable {
 	private Matrix4f projectionMatrix;
 
 	public PostProcessShader(ResourceManager resourceManager, String programName, Framebuffer input, Framebuffer output) throws IOException {
-		this.program = new JsonGlProgram(resourceManager, programName);
+		this.program = new JsonEffectGlShader(resourceManager, programName);
 		this.input = input;
 		this.output = output;
 	}
 
 	public void close() {
 		this.program.close();
+	}
+
+	public final String method_35777() {
+		return this.program.method_35763();
 	}
 
 	public void addAuxTarget(String name, IntSupplier intSupplier, int width, int height) {
@@ -94,7 +98,7 @@ public class PostProcessShader implements AutoCloseable {
 		}
 	}
 
-	public JsonGlProgram getProgram() {
+	public JsonEffectGlShader getProgram() {
 		return this.program;
 	}
 }

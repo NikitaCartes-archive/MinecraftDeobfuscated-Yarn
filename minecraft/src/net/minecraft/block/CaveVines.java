@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
@@ -22,7 +21,7 @@ public interface CaveVines {
 			Block.dropStack(world, pos, new ItemStack(Items.GLOW_BERRIES, 1));
 			float f = MathHelper.nextBetween(world.random, 0.8F, 1.2F);
 			world.playSound(null, pos, SoundEvents.BLOCK_CAVE_VINES_PICK_BERRIES, SoundCategory.BLOCKS, 1.0F, f);
-			world.setBlockState(pos, state.with(BERRIES, Boolean.valueOf(false)), SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(pos, state.with(BERRIES, Boolean.valueOf(false)), Block.NOTIFY_LISTENERS);
 			return ActionResult.success(world.isClient);
 		} else {
 			return ActionResult.PASS;

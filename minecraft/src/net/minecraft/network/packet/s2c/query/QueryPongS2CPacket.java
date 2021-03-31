@@ -23,4 +23,8 @@ public class QueryPongS2CPacket implements Packet<ClientQueryPacketListener> {
 	public void apply(ClientQueryPacketListener clientQueryPacketListener) {
 		clientQueryPacketListener.onPong(this);
 	}
+
+	public long getStartTime() {
+		return this.startTime;
+	}
 }

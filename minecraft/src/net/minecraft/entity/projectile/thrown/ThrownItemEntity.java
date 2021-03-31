@@ -1,8 +1,5 @@
 package net.minecraft.entity.projectile.thrown;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.EnvironmentInterface;
-import net.fabricmc.api.EnvironmentInterfaces;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -15,10 +12,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Util;
 import net.minecraft.world.World;
 
-@EnvironmentInterfaces({@EnvironmentInterface(
-		value = EnvType.CLIENT,
-		itf = FlyingItemEntity.class
-	)})
 public abstract class ThrownItemEntity extends ThrownEntity implements FlyingItemEntity {
 	private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(ThrownItemEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 
@@ -58,18 +51,18 @@ public abstract class ThrownItemEntity extends ThrownEntity implements FlyingIte
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
 		ItemStack itemStack = this.getItem();
 		if (!itemStack.isEmpty()) {
-			tag.put("Item", itemStack.writeNbt(new NbtCompound()));
+			nbt.put("Item", itemStack.writeNbt(new NbtCompound()));
 		}
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		ItemStack itemStack = ItemStack.fromNbt(tag.getCompound("Item"));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		ItemStack itemStack = ItemStack.fromNbt(nbt.getCompound("Item"));
 		this.setItem(itemStack);
 	}
 }

@@ -1,6 +1,8 @@
 package net.minecraft.world.chunk;
 
 public class ColumnChunkNibbleArray extends ChunkNibbleArray {
+	public static final int field_31707 = 128;
+
 	public ColumnChunkNibbleArray() {
 		super(128);
 	}

@@ -6,9 +6,6 @@ import java.util.Random;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -21,6 +18,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -161,7 +159,6 @@ public class ChunkRegion implements StructureWorldAccess {
 		return this.world.getGeneratorStoredBiome(biomeX, biomeY, biomeZ);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public float getBrightness(Direction direction, boolean shaded) {
 		return 1.0F;
@@ -183,7 +180,7 @@ public class ChunkRegion implements StructureWorldAccess {
 				Block.dropStacks(blockState, this.world, pos, blockEntity, breakingEntity, ItemStack.EMPTY);
 			}
 
-			return this.setBlockState(pos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT, maxUpdateDepth);
+			return this.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL, maxUpdateDepth);
 		}
 	}
 
@@ -271,7 +268,7 @@ public class ChunkRegion implements StructureWorldAccess {
 
 	@Override
 	public boolean removeBlock(BlockPos pos, boolean move) {
-		return this.setBlockState(pos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT);
+		return this.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
 	}
 
 	@Override
@@ -307,6 +304,12 @@ public class ChunkRegion implements StructureWorldAccess {
 		} else {
 			return new LocalDifficulty(this.world.getDifficulty(), this.world.getTimeOfDay(), 0L, this.world.getMoonSize());
 		}
+	}
+
+	@Nullable
+	@Override
+	public MinecraftServer getServer() {
+		return this.world.getServer();
 	}
 
 	@Override
@@ -368,6 +371,11 @@ public class ChunkRegion implements StructureWorldAccess {
 	@Override
 	public boolean testBlockState(BlockPos pos, Predicate<BlockState> state) {
 		return state.test(this.getBlockState(pos));
+	}
+
+	@Override
+	public boolean testFluidState(BlockPos pos, Predicate<FluidState> state) {
+		return state.test(this.getFluidState(pos));
 	}
 
 	@Override

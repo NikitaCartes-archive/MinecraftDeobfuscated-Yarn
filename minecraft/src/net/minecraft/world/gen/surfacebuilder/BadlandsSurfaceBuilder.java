@@ -14,6 +14,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkRandom;
 
 public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
+	protected static final int field_31699 = 15;
 	private static final BlockState WHITE_TERRACOTTA = Blocks.WHITE_TERRACOTTA.getDefaultState();
 	private static final BlockState ORANGE_TERRACOTTA = Blocks.ORANGE_TERRACOTTA.getDefaultState();
 	private static final BlockState TERRACOTTA = Blocks.TERRACOTTA.getDefaultState();

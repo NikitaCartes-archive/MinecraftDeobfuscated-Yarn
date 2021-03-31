@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.c2s.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
@@ -10,7 +8,6 @@ public class RequestCommandCompletionsC2SPacket implements Packet<ServerPlayPack
 	private final int completionId;
 	private final String partialCommand;
 
-	@Environment(EnvType.CLIENT)
 	public RequestCommandCompletionsC2SPacket(int completionId, String partialCommand) {
 		this.completionId = completionId;
 		this.partialCommand = partialCommand;

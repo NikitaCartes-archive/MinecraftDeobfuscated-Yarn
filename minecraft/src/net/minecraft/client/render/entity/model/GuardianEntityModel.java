@@ -22,6 +22,10 @@ public class GuardianEntityModel extends SinglePartEntityModel<GuardianEntity> {
 	private static final float[] SPIKE_PIVOTS_X = new float[]{0.0F, 0.0F, 8.0F, -8.0F, -8.0F, 8.0F, 8.0F, -8.0F, 0.0F, 0.0F, 8.0F, -8.0F};
 	private static final float[] SPIKE_PIVOTS_Y = new float[]{-8.0F, -8.0F, -8.0F, -8.0F, 0.0F, 0.0F, 0.0F, 0.0F, 8.0F, 8.0F, 8.0F, 8.0F};
 	private static final float[] SPIKE_PIVOTS_Z = new float[]{8.0F, -8.0F, 0.0F, 0.0F, -8.0F, -8.0F, 8.0F, 8.0F, 8.0F, -8.0F, 0.0F, 0.0F};
+	private static final String EYE = "eye";
+	private static final String TAIL0 = "tail0";
+	private static final String TAIL1 = "tail1";
+	private static final String TAIL2 = "tail2";
 	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart eye;
@@ -31,7 +35,7 @@ public class GuardianEntityModel extends SinglePartEntityModel<GuardianEntity> {
 	public GuardianEntityModel(ModelPart root) {
 		this.root = root;
 		this.spikes = new ModelPart[12];
-		this.head = root.getChild("head");
+		this.head = root.getChild(EntityModelPartNames.HEAD);
 
 		for (int i = 0; i < this.spikes.length; i++) {
 			this.spikes[i] = this.head.getChild(getSpikeName(i));
@@ -52,7 +56,7 @@ public class GuardianEntityModel extends SinglePartEntityModel<GuardianEntity> {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
 		ModelPartData modelPartData2 = modelPartData.addChild(
-			"head",
+			EntityModelPartNames.HEAD,
 			ModelPartBuilder.create()
 				.uv(0, 0)
 				.cuboid(-6.0F, 10.0F, -8.0F, 12.0F, 12.0F, 16.0F)

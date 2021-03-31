@@ -2,11 +2,11 @@ package net.minecraft.village;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.registry.Registry;
 
 public class VillagerData {
+	public static final int field_30613 = 1;
+	public static final int field_30614 = 5;
 	private static final int[] LEVEL_BASE_EXPERIENCE = new int[]{0, 10, 70, 150, 250};
 	public static final Codec<VillagerData> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
@@ -50,7 +50,6 @@ public class VillagerData {
 		return new VillagerData(this.type, this.profession, level);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static int getLowerLevelExperience(int level) {
 		return canLevelUp(level) ? LEVEL_BASE_EXPERIENCE[level - 1] : 0;
 	}

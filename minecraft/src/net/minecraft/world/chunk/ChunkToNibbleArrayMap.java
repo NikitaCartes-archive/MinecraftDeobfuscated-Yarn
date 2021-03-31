@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import javax.annotation.Nullable;
 
 public abstract class ChunkToNibbleArrayMap<M extends ChunkToNibbleArrayMap<M>> {
+	private static final int field_31705 = 2;
 	private final long[] cachePositions = new long[2];
 	private final ChunkNibbleArray[] cacheArrays = new ChunkNibbleArray[2];
 	private boolean cacheEnabled;

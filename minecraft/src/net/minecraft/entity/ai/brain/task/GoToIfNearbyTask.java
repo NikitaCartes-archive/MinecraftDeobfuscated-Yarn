@@ -12,6 +12,9 @@ import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.Vec3d;
 
 public class GoToIfNearbyTask extends Task<PathAwareEntity> {
+	private static final int field_30179 = 180;
+	private static final int field_30180 = 8;
+	private static final int field_30181 = 6;
 	private final MemoryModuleType<GlobalPos> target;
 	private long nextUpdateTime;
 	private final int maxDistance;

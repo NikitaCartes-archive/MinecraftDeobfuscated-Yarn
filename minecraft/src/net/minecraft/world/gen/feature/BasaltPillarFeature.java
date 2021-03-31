@@ -2,7 +2,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -34,7 +34,7 @@ public class BasaltPillarFeature extends Feature<DefaultFeatureConfig> {
 					return true;
 				}
 
-				structureWorldAccess.setBlockState(mutable, Blocks.BASALT.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+				structureWorldAccess.setBlockState(mutable, Blocks.BASALT.getDefaultState(), Block.NOTIFY_LISTENERS);
 				bl = bl && this.stopOrPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.NORTH));
 				bl2 = bl2 && this.stopOrPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.SOUTH));
 				bl3 = bl3 && this.stopOrPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.WEST));
@@ -65,7 +65,7 @@ public class BasaltPillarFeature extends Feature<DefaultFeatureConfig> {
 						}
 
 						if (!structureWorldAccess.isAir(mutable2.set(mutable3, Direction.DOWN))) {
-							structureWorldAccess.setBlockState(mutable3, Blocks.BASALT.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+							structureWorldAccess.setBlockState(mutable3, Blocks.BASALT.getDefaultState(), Block.NOTIFY_LISTENERS);
 						}
 					}
 				}
@@ -79,13 +79,13 @@ public class BasaltPillarFeature extends Feature<DefaultFeatureConfig> {
 
 	private void tryPlaceBasalt(WorldAccess world, Random random, BlockPos pos) {
 		if (random.nextBoolean()) {
-			world.setBlockState(pos, Blocks.BASALT.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(pos, Blocks.BASALT.getDefaultState(), Block.NOTIFY_LISTENERS);
 		}
 	}
 
 	private boolean stopOrPlaceBasalt(WorldAccess world, Random random, BlockPos pos) {
 		if (random.nextInt(10) != 0) {
-			world.setBlockState(pos, Blocks.BASALT.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(pos, Blocks.BASALT.getDefaultState(), Block.NOTIFY_LISTENERS);
 			return true;
 		} else {
 			return false;

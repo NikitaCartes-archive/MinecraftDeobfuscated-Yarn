@@ -5,7 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.command.argument.BlockPosArgumentType;
@@ -95,7 +95,7 @@ public class SetBlockCommand {
 				bl = true;
 			}
 
-			if (bl && !block.setBlockState(serverWorld, pos, SetBlockStateFlags.NOTIFY_LISTENERS)) {
+			if (bl && !block.setBlockState(serverWorld, pos, Block.NOTIFY_LISTENERS)) {
 				throw FAILED_EXCEPTION.create();
 			} else {
 				serverWorld.updateNeighbors(pos, block.getBlockState().getBlock());

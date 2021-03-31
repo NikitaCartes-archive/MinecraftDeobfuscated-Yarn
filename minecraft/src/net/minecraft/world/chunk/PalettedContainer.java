@@ -7,8 +7,6 @@ import java.util.concurrent.Semaphore;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
@@ -19,6 +17,9 @@ import net.minecraft.util.thread.AtomicStack;
 import net.minecraft.util.thread.LockHelper;
 
 public class PalettedContainer<T> implements PaletteResizeListener<T> {
+	private static final int field_31411 = 4096;
+	public static final int field_31409 = 9;
+	public static final int field_31410 = 4;
 	private final Palette<T> fallbackPalette;
 	private final PaletteResizeListener<T> noOpPaletteResizeHandler = (newSize, added) -> 0;
 	private final IdList<T> idList;
@@ -112,6 +113,12 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 		return object == null ? this.defaultValue : object;
 	}
 
+	public void method_35321(int i, int j, int k, T object) {
+		this.lock();
+		this.set(toIndex(i, j, k), object);
+		this.unlock();
+	}
+
 	private void set(int index, T object) {
 		int i = this.palette.getIndex(object);
 		this.data.set(index, i);
@@ -126,7 +133,6 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 		return object == null ? this.defaultValue : object;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void fromPacket(PacketByteBuf buf) {
 		this.lock();
 		int i = buf.readByte();
@@ -147,18 +153,18 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 		this.unlock();
 	}
 
-	public void read(NbtList paletteTag, long[] data) {
+	public void read(NbtList paletteNbt, long[] data) {
 		this.lock();
-		int i = Math.max(4, MathHelper.log2DeBruijn(paletteTag.size()));
+		int i = Math.max(4, MathHelper.log2DeBruijn(paletteNbt.size()));
 		if (i != this.paletteSize) {
 			this.setPaletteSize(i);
 		}
 
-		this.palette.readNbt(paletteTag);
+		this.palette.readNbt(paletteNbt);
 		int j = data.length * 64 / 4096;
 		if (this.palette == this.fallbackPalette) {
 			Palette<T> palette = new BiMapPalette<>(this.idList, i, this.noOpPaletteResizeHandler, this.elementDeserializer, this.elementSerializer);
-			palette.readNbt(paletteTag);
+			palette.readNbt(paletteNbt);
 			PackedIntegerArray packedIntegerArray = new PackedIntegerArray(i, 4096, data);
 
 			for (int k = 0; k < 4096; k++) {
@@ -177,7 +183,7 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 		this.unlock();
 	}
 
-	public void write(NbtCompound tag, String paletteKey, String dataKey) {
+	public void write(NbtCompound nbt, String paletteKey, String dataKey) {
 		this.lock();
 		BiMapPalette<T> biMapPalette = new BiMapPalette<>(
 			this.idList, this.paletteSize, this.noOpPaletteResizeHandler, this.elementDeserializer, this.elementSerializer
@@ -198,7 +204,7 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 
 		NbtList nbtList = new NbtList();
 		biMapPalette.writeNbt(nbtList);
-		tag.put(paletteKey, nbtList);
+		nbt.put(paletteKey, nbtList);
 		int k = Math.max(4, MathHelper.log2DeBruijn(nbtList.size()));
 		PackedIntegerArray packedIntegerArray = new PackedIntegerArray(k, 4096);
 
@@ -206,12 +212,12 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 			packedIntegerArray.set(l, is[l]);
 		}
 
-		tag.putLongArray(dataKey, packedIntegerArray.getStorage());
+		nbt.putLongArray(dataKey, packedIntegerArray.getStorage());
 		this.unlock();
 	}
 
 	public int getPacketSize() {
-		return 1 + this.palette.getPacketSize() + PacketByteBuf.getVarIntSizeBytes(this.data.getSize()) + this.data.getStorage().length * 8;
+		return 1 + this.palette.getPacketSize() + PacketByteBuf.getVarIntLength(this.data.getSize()) + this.data.getStorage().length * 8;
 	}
 
 	public boolean hasAny(Predicate<T> predicate) {

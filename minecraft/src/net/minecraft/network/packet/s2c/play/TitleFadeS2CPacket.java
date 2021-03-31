@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -34,17 +32,14 @@ public class TitleFadeS2CPacket implements Packet<ClientPlayPacketListener> {
 		clientPlayPacketListener.onTitleFade(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getFadeInTicks() {
 		return this.fadeInTicks;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getRemainTicks() {
 		return this.remainTicks;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getFadeOutTicks() {
 		return this.fadeOutTicks;
 	}

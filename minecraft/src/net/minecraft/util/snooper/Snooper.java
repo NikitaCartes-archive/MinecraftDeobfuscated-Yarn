@@ -6,10 +6,14 @@ import java.net.URL;
 import java.util.Map;
 import java.util.Timer;
 import java.util.UUID;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import java.util.Map.Entry;
+import net.minecraft.SharedConstants;
+import net.minecraft.util.Util;
 
 public class Snooper {
+	private static final String field_29957 = "http://snoop.minecraft.net/";
+	private static final long field_29958 = 900000L;
+	private static final int field_29959 = 2;
 	private final Map<String, Object> initialInfo = Maps.<String, Object>newHashMap();
 	private final Map<String, Object> info = Maps.<String, Object>newHashMap();
 	private final String token = UUID.randomUUID().toString();
@@ -19,6 +23,7 @@ public class Snooper {
 	private final Object syncObject = new Object();
 	private final long startTime;
 	private boolean active;
+	private int field_29960;
 
 	public Snooper(String urlPath, SnooperListener listener, long startTime) {
 		try {
@@ -34,6 +39,24 @@ public class Snooper {
 	public void method_5482() {
 		if (!this.active) {
 		}
+	}
+
+	private void method_35030() {
+		this.method_35032();
+		this.addInfo("snooper_token", this.token);
+		this.addInitialInfo("snooper_token", this.token);
+		this.addInitialInfo("os_name", System.getProperty("os.name"));
+		this.addInitialInfo("os_version", System.getProperty("os.version"));
+		this.addInitialInfo("os_architecture", System.getProperty("os.arch"));
+		this.addInitialInfo("java_version", System.getProperty("java.version"));
+		this.addInfo("version", SharedConstants.getGameVersion().getId());
+		this.listener.method_35034(this);
+	}
+
+	private void method_35032() {
+		int[] is = new int[]{0};
+		Util.getJVMFlags().forEach(string -> this.addInfo("jvm_arg[" + is[0]++ + "]", string));
+		this.addInfo("jvm_args", is[0]);
 	}
 
 	public void update() {
@@ -56,6 +79,23 @@ public class Snooper {
 		}
 	}
 
+	public Map<String, String> method_35024() {
+		Map<String, String> map = Maps.<String, String>newLinkedHashMap();
+		synchronized (this.syncObject) {
+			this.update();
+
+			for (Entry<String, Object> entry : this.initialInfo.entrySet()) {
+				map.put(entry.getKey(), entry.getValue().toString());
+			}
+
+			for (Entry<String, Object> entry : this.info.entrySet()) {
+				map.put(entry.getKey(), entry.getValue().toString());
+			}
+
+			return map;
+		}
+	}
+
 	public boolean isActive() {
 		return this.active;
 	}
@@ -64,7 +104,6 @@ public class Snooper {
 		this.timer.cancel();
 	}
 
-	@Environment(EnvType.CLIENT)
 	public String getToken() {
 		return this.token;
 	}

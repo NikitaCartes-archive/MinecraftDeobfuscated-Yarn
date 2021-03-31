@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -22,6 +21,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterloggable {
+	public static final int field_31241 = 4;
 	public static final IntProperty PICKLES = Properties.PICKLES;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	protected static final VoxelShape ONE_PICKLE_SHAPE = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 6.0, 10.0);
@@ -79,7 +79,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 
 	@Override
 	public boolean canReplace(BlockState state, ItemPlacementContext context) {
-		return context.getStack().isOf(this.asItem()) && state.get(PICKLES) < 4 ? true : super.canReplace(state, context);
+		return !context.shouldCancelInteraction() && context.getStack().isOf(this.asItem()) && state.get(PICKLES) < 4 ? true : super.canReplace(state, context);
 	}
 
 	@Override
@@ -136,7 +136,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 						if (blockPos != pos && random.nextInt(6) == 0 && world.getBlockState(blockPos).isOf(Blocks.WATER)) {
 							BlockState blockState = world.getBlockState(blockPos.down());
 							if (blockState.isIn(BlockTags.CORAL_BLOCKS)) {
-								world.setBlockState(blockPos, Blocks.SEA_PICKLE.getDefaultState().with(PICKLES, Integer.valueOf(random.nextInt(4) + 1)), SetBlockStateFlags.DEFAULT);
+								world.setBlockState(blockPos, Blocks.SEA_PICKLE.getDefaultState().with(PICKLES, Integer.valueOf(random.nextInt(4) + 1)), Block.NOTIFY_ALL);
 							}
 						}
 					}
@@ -153,7 +153,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 				l++;
 			}
 
-			world.setBlockState(pos, state.with(PICKLES, Integer.valueOf(4)), SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(pos, state.with(PICKLES, Integer.valueOf(4)), Block.NOTIFY_LISTENERS);
 		}
 	}
 

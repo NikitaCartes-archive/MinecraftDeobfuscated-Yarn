@@ -10,6 +10,9 @@ import net.minecraft.item.AxeItem;
 import net.minecraft.item.ItemStack;
 
 public class DamageEnchantment extends Enchantment {
+	public static final int ALL_INDEX = 0;
+	public static final int UNDEAD_INDEX = 1;
+	public static final int ARTHROPODS_INDEX = 2;
 	private static final String[] typeNames = new String[]{"all", "undead", "arthropods"};
 	private static final int[] basePowers = new int[]{1, 5, 5};
 	private static final int[] powersPerLevel = new int[]{11, 8, 8};

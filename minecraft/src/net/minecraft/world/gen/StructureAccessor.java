@@ -60,8 +60,11 @@ public class StructureAccessor {
 	public StructureStart<?> getStructureAt(BlockPos pos, boolean matchChildren, StructureFeature<?> feature) {
 		return DataFixUtils.orElse(
 			this.getStructuresWithChildren(ChunkSectionPos.from(pos), feature)
-				.filter(structureStart -> structureStart.getBoundingBox().contains(pos))
-				.filter(structureStart -> !matchChildren || structureStart.getChildren().stream().anyMatch(piece -> piece.getBoundingBox().contains(pos)))
+				.filter(
+					structureStart -> matchChildren
+							? structureStart.getChildren().stream().anyMatch(piece -> piece.getBoundingBox().contains(pos))
+							: structureStart.setBoundingBoxFromChildren().contains(pos)
+				)
 				.findFirst(),
 			StructureStart.DEFAULT
 		);

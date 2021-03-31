@@ -1,8 +1,6 @@
 package net.minecraft.server;
 
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
@@ -42,7 +40,6 @@ public class WorldGenerationProgressLogger implements WorldGenerationProgressLis
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void start() {
 	}

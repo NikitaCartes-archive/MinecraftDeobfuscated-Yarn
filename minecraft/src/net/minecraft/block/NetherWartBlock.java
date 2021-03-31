@@ -1,9 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
@@ -15,6 +12,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 
 public class NetherWartBlock extends PlantBlock {
+	public static final int field_31199 = 3;
 	public static final IntProperty AGE = Properties.AGE_3;
 	private static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{
 		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 5.0, 16.0),
@@ -48,11 +46,10 @@ public class NetherWartBlock extends PlantBlock {
 		int i = (Integer)state.get(AGE);
 		if (i < 3 && random.nextInt(10) == 0) {
 			state = state.with(AGE, Integer.valueOf(i + 1));
-			world.setBlockState(pos, state, SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(pos, state, Block.NOTIFY_LISTENERS);
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
 		return new ItemStack(Items.NETHER_WART);

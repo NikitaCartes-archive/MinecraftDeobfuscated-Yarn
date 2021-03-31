@@ -70,6 +70,16 @@ public interface MultilineText {
 		);
 	}
 
+	static MultilineText method_35726(TextRenderer textRenderer, List<Text> list) {
+		return create(
+			textRenderer,
+			(List<MultilineText.Line>)list.stream()
+				.map(Text::asOrderedText)
+				.map(orderedText -> new MultilineText.Line(orderedText, textRenderer.getWidth(orderedText)))
+				.collect(ImmutableList.toImmutableList())
+		);
+	}
+
 	static MultilineText create(TextRenderer renderer, List<MultilineText.Line> lines) {
 		return lines.isEmpty() ? EMPTY : new MultilineText() {
 			@Override

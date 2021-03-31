@@ -1,11 +1,11 @@
 package net.minecraft.util.math;
 
 import com.mojang.datafixers.util.Pair;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import java.nio.FloatBuffer;
 import org.apache.commons.lang3.tuple.Triple;
 
 public final class Matrix3f {
+	private static final int field_31077 = 3;
 	private static final float THREE_PLUS_TWO_SQRT_TWO = 3.0F + 2.0F * (float)Math.sqrt(2.0);
 	private static final float COS_PI_OVER_EIGHT = (float)Math.cos(Math.PI / 8);
 	private static final float SIN_PI_OVER_EIGHT = (float)Math.sin(Math.PI / 8);
@@ -48,7 +48,6 @@ public final class Matrix3f {
 		this.a12 = 2.0F * (n - p);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static Matrix3f scale(float x, float y, float z) {
 		Matrix3f matrix3f = new Matrix3f();
 		matrix3f.a00 = x;
@@ -57,16 +56,16 @@ public final class Matrix3f {
 		return matrix3f;
 	}
 
-	public Matrix3f(Matrix4f source) {
-		this.a00 = source.a00;
-		this.a01 = source.a01;
-		this.a02 = source.a02;
-		this.a10 = source.a10;
-		this.a11 = source.a11;
-		this.a12 = source.a12;
-		this.a20 = source.a20;
-		this.a21 = source.a21;
-		this.a22 = source.a22;
+	public Matrix3f(Matrix4f matrix4f) {
+		this.a00 = matrix4f.a00;
+		this.a01 = matrix4f.a01;
+		this.a02 = matrix4f.a02;
+		this.a10 = matrix4f.a10;
+		this.a11 = matrix4f.a11;
+		this.a12 = matrix4f.a12;
+		this.a20 = matrix4f.a20;
+		this.a21 = matrix4f.a21;
+		this.a22 = matrix4f.a22;
 	}
 
 	public Matrix3f(Matrix3f source) {
@@ -81,7 +80,6 @@ public final class Matrix3f {
 		this.a22 = source.a22;
 	}
 
-	@Environment(EnvType.CLIENT)
 	private static Pair<Float, Float> getSinAndCosOfRotation(float upperLeft, float diagonalAverage, float lowerRight) {
 		float f = 2.0F * (upperLeft - lowerRight);
 		if (THREE_PLUS_TWO_SQRT_TWO * diagonalAverage * diagonalAverage < f * f) {
@@ -92,7 +90,6 @@ public final class Matrix3f {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	private static Pair<Float, Float> method_22848(float f, float g) {
 		float h = (float)Math.hypot((double)f, (double)g);
 		float i = h > 1.0E-6F ? g : 0.0F;
@@ -109,7 +106,6 @@ public final class Matrix3f {
 		return Pair.of(i, j);
 	}
 
-	@Environment(EnvType.CLIENT)
 	private static Quaternion method_22857(Matrix3f matrix3f) {
 		Matrix3f matrix3f2 = new Matrix3f();
 		Quaternion quaternion = Quaternion.IDENTITY.copy();
@@ -179,7 +175,57 @@ public final class Matrix3f {
 		return quaternion;
 	}
 
-	@Environment(EnvType.CLIENT)
+	private static void method_35260(Matrix3f matrix3f, Quaternion quaternion) {
+		float f = matrix3f.a00 * matrix3f.a00 + matrix3f.a10 * matrix3f.a10 + matrix3f.a20 * matrix3f.a20;
+		float g = matrix3f.a01 * matrix3f.a01 + matrix3f.a11 * matrix3f.a11 + matrix3f.a21 * matrix3f.a21;
+		float h = matrix3f.a02 * matrix3f.a02 + matrix3f.a12 * matrix3f.a12 + matrix3f.a22 * matrix3f.a22;
+		if (f < g) {
+			float i = matrix3f.a10;
+			matrix3f.a10 = -matrix3f.a00;
+			matrix3f.a00 = i;
+			i = matrix3f.a11;
+			matrix3f.a11 = -matrix3f.a01;
+			matrix3f.a01 = i;
+			i = matrix3f.a12;
+			matrix3f.a12 = -matrix3f.a02;
+			matrix3f.a02 = i;
+			Quaternion quaternion2 = new Quaternion(0.0F, 0.0F, SQRT_HALF, SQRT_HALF);
+			quaternion.hamiltonProduct(quaternion2);
+			i = f;
+			f = g;
+			g = i;
+		}
+
+		if (f < h) {
+			float i = matrix3f.a20;
+			matrix3f.a20 = -matrix3f.a00;
+			matrix3f.a00 = i;
+			i = matrix3f.a21;
+			matrix3f.a21 = -matrix3f.a01;
+			matrix3f.a01 = i;
+			i = matrix3f.a22;
+			matrix3f.a22 = -matrix3f.a02;
+			matrix3f.a02 = i;
+			Quaternion quaternion2 = new Quaternion(0.0F, SQRT_HALF, 0.0F, SQRT_HALF);
+			quaternion.hamiltonProduct(quaternion2);
+			h = f;
+		}
+
+		if (g < h) {
+			float i = matrix3f.a20;
+			matrix3f.a20 = -matrix3f.a10;
+			matrix3f.a10 = i;
+			i = matrix3f.a21;
+			matrix3f.a21 = -matrix3f.a11;
+			matrix3f.a11 = i;
+			i = matrix3f.a22;
+			matrix3f.a22 = -matrix3f.a12;
+			matrix3f.a12 = i;
+			Quaternion quaternion2 = new Quaternion(SQRT_HALF, 0.0F, 0.0F, SQRT_HALF);
+			quaternion.hamiltonProduct(quaternion2);
+		}
+	}
+
 	public void transpose() {
 		float f = this.a01;
 		this.a01 = this.a10;
@@ -192,7 +238,6 @@ public final class Matrix3f {
 		this.a21 = f;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Triple<Quaternion, Vec3f, Quaternion> decomposeLinearTransformation() {
 		Quaternion quaternion = Quaternion.IDENTITY.copy();
 		Quaternion quaternion2 = Quaternion.IDENTITY.copy();
@@ -296,7 +341,42 @@ public final class Matrix3f {
 		return 31 * i + (this.a22 != 0.0F ? Float.floatToIntBits(this.a22) : 0);
 	}
 
-	@Environment(EnvType.CLIENT)
+	private static int method_35259(int i, int j) {
+		return j * 3 + i;
+	}
+
+	public void method_35261(FloatBuffer floatBuffer) {
+		this.a00 = floatBuffer.get(method_35259(0, 0));
+		this.a01 = floatBuffer.get(method_35259(0, 1));
+		this.a02 = floatBuffer.get(method_35259(0, 2));
+		this.a10 = floatBuffer.get(method_35259(1, 0));
+		this.a11 = floatBuffer.get(method_35259(1, 1));
+		this.a12 = floatBuffer.get(method_35259(1, 2));
+		this.a20 = floatBuffer.get(method_35259(2, 0));
+		this.a21 = floatBuffer.get(method_35259(2, 1));
+		this.a22 = floatBuffer.get(method_35259(2, 2));
+	}
+
+	public void method_35263(FloatBuffer floatBuffer) {
+		this.a00 = floatBuffer.get(method_35259(0, 0));
+		this.a01 = floatBuffer.get(method_35259(1, 0));
+		this.a02 = floatBuffer.get(method_35259(2, 0));
+		this.a10 = floatBuffer.get(method_35259(0, 1));
+		this.a11 = floatBuffer.get(method_35259(1, 1));
+		this.a12 = floatBuffer.get(method_35259(2, 1));
+		this.a20 = floatBuffer.get(method_35259(0, 2));
+		this.a21 = floatBuffer.get(method_35259(1, 2));
+		this.a22 = floatBuffer.get(method_35259(2, 2));
+	}
+
+	public void method_35262(FloatBuffer floatBuffer, boolean bl) {
+		if (bl) {
+			this.method_35263(floatBuffer);
+		} else {
+			this.method_35261(floatBuffer);
+		}
+	}
+
 	public void load(Matrix3f source) {
 		this.a00 = source.a00;
 		this.a01 = source.a01;
@@ -333,7 +413,38 @@ public final class Matrix3f {
 		return stringBuilder.toString();
 	}
 
-	@Environment(EnvType.CLIENT)
+	public void method_35266(FloatBuffer floatBuffer) {
+		floatBuffer.put(method_35259(0, 0), this.a00);
+		floatBuffer.put(method_35259(0, 1), this.a01);
+		floatBuffer.put(method_35259(0, 2), this.a02);
+		floatBuffer.put(method_35259(1, 0), this.a10);
+		floatBuffer.put(method_35259(1, 1), this.a11);
+		floatBuffer.put(method_35259(1, 2), this.a12);
+		floatBuffer.put(method_35259(2, 0), this.a20);
+		floatBuffer.put(method_35259(2, 1), this.a21);
+		floatBuffer.put(method_35259(2, 2), this.a22);
+	}
+
+	public void method_35268(FloatBuffer floatBuffer) {
+		floatBuffer.put(method_35259(0, 0), this.a00);
+		floatBuffer.put(method_35259(1, 0), this.a01);
+		floatBuffer.put(method_35259(2, 0), this.a02);
+		floatBuffer.put(method_35259(0, 1), this.a10);
+		floatBuffer.put(method_35259(1, 1), this.a11);
+		floatBuffer.put(method_35259(2, 1), this.a12);
+		floatBuffer.put(method_35259(0, 2), this.a20);
+		floatBuffer.put(method_35259(1, 2), this.a21);
+		floatBuffer.put(method_35259(2, 2), this.a22);
+	}
+
+	public void method_35264(FloatBuffer floatBuffer, boolean bl) {
+		if (bl) {
+			this.method_35268(floatBuffer);
+		} else {
+			this.method_35266(floatBuffer);
+		}
+	}
+
 	public void loadIdentity() {
 		this.a00 = 1.0F;
 		this.a01 = 0.0F;
@@ -346,7 +457,6 @@ public final class Matrix3f {
 		this.a22 = 1.0F;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float determinantAndAdjugate() {
 		float f = this.a11 * this.a22 - this.a12 * this.a21;
 		float g = -(this.a10 * this.a22 - this.a12 * this.a20);
@@ -370,7 +480,13 @@ public final class Matrix3f {
 		return o;
 	}
 
-	@Environment(EnvType.CLIENT)
+	public float method_35269() {
+		float f = this.a11 * this.a22 - this.a12 * this.a21;
+		float g = -(this.a10 * this.a22 - this.a12 * this.a20);
+		float h = this.a10 * this.a21 - this.a11 * this.a20;
+		return this.a00 * f + this.a01 * g + this.a02 * h;
+	}
+
 	public boolean invert() {
 		float f = this.determinantAndAdjugate();
 		if (Math.abs(f) > 1.0E-6F) {
@@ -428,12 +544,10 @@ public final class Matrix3f {
 		this.a22 = n;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void multiply(Quaternion quaternion) {
 		this.multiply(new Matrix3f(quaternion));
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void multiply(float scalar) {
 		this.a00 *= scalar;
 		this.a01 *= scalar;
@@ -446,7 +560,34 @@ public final class Matrix3f {
 		this.a22 *= scalar;
 	}
 
-	@Environment(EnvType.CLIENT)
+	public void method_35265(Matrix3f matrix3f) {
+		this.a00 = this.a00 + matrix3f.a00;
+		this.a01 = this.a01 + matrix3f.a01;
+		this.a02 = this.a02 + matrix3f.a02;
+		this.a10 = this.a10 + matrix3f.a10;
+		this.a11 = this.a11 + matrix3f.a11;
+		this.a12 = this.a12 + matrix3f.a12;
+		this.a20 = this.a20 + matrix3f.a20;
+		this.a21 = this.a21 + matrix3f.a21;
+		this.a22 = this.a22 + matrix3f.a22;
+	}
+
+	public void method_35267(Matrix3f matrix3f) {
+		this.a00 = this.a00 - matrix3f.a00;
+		this.a01 = this.a01 - matrix3f.a01;
+		this.a02 = this.a02 - matrix3f.a02;
+		this.a10 = this.a10 - matrix3f.a10;
+		this.a11 = this.a11 - matrix3f.a11;
+		this.a12 = this.a12 - matrix3f.a12;
+		this.a20 = this.a20 - matrix3f.a20;
+		this.a21 = this.a21 - matrix3f.a21;
+		this.a22 = this.a22 - matrix3f.a22;
+	}
+
+	public float method_35270() {
+		return this.a00 + this.a11 + this.a22;
+	}
+
 	public Matrix3f copy() {
 		return new Matrix3f(this);
 	}

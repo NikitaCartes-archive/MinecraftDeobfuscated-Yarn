@@ -14,8 +14,6 @@ import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -121,7 +119,6 @@ public class ProfilerSystem implements ReadableProfiler {
 		this.push(location);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void swap(Supplier<String> locationGetter) {
 		this.pop();
@@ -152,10 +149,9 @@ public class ProfilerSystem implements ReadableProfiler {
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	@Override
-	public ProfilerSystem.LocatedInfo method_34696(String string) {
-		return (ProfilerSystem.LocatedInfo)this.locationInfos.get(string);
+	public ProfilerSystem.LocatedInfo getInfo(String name) {
+		return (ProfilerSystem.LocatedInfo)this.locationInfos.get(name);
 	}
 
 	public static class LocatedInfo implements ProfileLocationInfo {

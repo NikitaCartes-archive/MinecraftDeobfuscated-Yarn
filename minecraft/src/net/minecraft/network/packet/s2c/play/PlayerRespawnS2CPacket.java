@@ -1,8 +1,6 @@
 package net.minecraft.network.packet.s2c.play;
 
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -45,7 +43,7 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 
 	public PlayerRespawnS2CPacket(PacketByteBuf buf) {
 		this.dimensionType = (DimensionType)buf.decode(DimensionType.REGISTRY_CODEC).get();
-		this.dimension = RegistryKey.of(Registry.DIMENSION, buf.readIdentifier());
+		this.dimension = RegistryKey.of(Registry.WORLD_KEY, buf.readIdentifier());
 		this.sha256Seed = buf.readLong();
 		this.gameMode = GameMode.byId(buf.readUnsignedByte());
 		this.previousGameMode = GameMode.getOrNull(buf.readByte());
@@ -70,43 +68,35 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 		clientPlayPacketListener.onPlayerRespawn(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public DimensionType getDimensionType() {
 		return this.dimensionType;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public RegistryKey<World> getDimension() {
 		return this.dimension;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public long getSha256Seed() {
 		return this.sha256Seed;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public GameMode getGameMode() {
 		return this.gameMode;
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public GameMode getPreviousGameMode() {
 		return this.previousGameMode;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isDebugWorld() {
 		return this.debugWorld;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isFlatWorld() {
 		return this.flatWorld;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean shouldKeepPlayerAttributes() {
 		return this.keepPlayerAttributes;
 	}

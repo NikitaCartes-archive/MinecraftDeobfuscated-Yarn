@@ -18,11 +18,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Map.Entry;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.StatisticsS2CPacket;
 import net.minecraft.server.MinecraftServer;
@@ -36,6 +36,7 @@ import org.apache.logging.log4j.Logger;
 
 public class ServerStatHandler extends StatHandler {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int field_29821 = 300;
 	private final MinecraftServer server;
 	private final File file;
 	private final Set<Stat<?>> pendingStats = Sets.<Stat<?>>newHashSet();
@@ -85,23 +86,23 @@ public class ServerStatHandler extends StatHandler {
 				JsonElement jsonElement = Streams.parse(jsonReader);
 				if (!jsonElement.isJsonNull()) {
 					NbtCompound nbtCompound = jsonToCompound(jsonElement.getAsJsonObject());
-					if (!nbtCompound.contains("DataVersion", NbtTypeIds.NUMBER)) {
+					if (!nbtCompound.contains("DataVersion", NbtElement.NUMBER_TYPE)) {
 						nbtCompound.putInt("DataVersion", 1343);
 					}
 
 					nbtCompound = NbtHelper.update(dataFixer, DataFixTypes.STATS, nbtCompound, nbtCompound.getInt("DataVersion"));
-					if (nbtCompound.contains("stats", NbtTypeIds.COMPOUND)) {
+					if (nbtCompound.contains("stats", NbtElement.COMPOUND_TYPE)) {
 						NbtCompound nbtCompound2 = nbtCompound.getCompound("stats");
 
 						for (String string : nbtCompound2.getKeys()) {
-							if (nbtCompound2.contains(string, NbtTypeIds.COMPOUND)) {
+							if (nbtCompound2.contains(string, NbtElement.COMPOUND_TYPE)) {
 								Util.ifPresentOrElse(
 									Registry.STAT_TYPE.getOrEmpty(new Identifier(string)),
 									statType -> {
 										NbtCompound nbtCompound2x = nbtCompound2.getCompound(string);
 
 										for (String string2 : nbtCompound2x.getKeys()) {
-											if (nbtCompound2x.contains(string2, NbtTypeIds.NUMBER)) {
+											if (nbtCompound2x.contains(string2, NbtElement.NUMBER_TYPE)) {
 												Util.ifPresentOrElse(
 													this.createStat(statType, string2),
 													stat -> this.statMap.put(stat, nbtCompound2x.getInt(string2)),
@@ -147,10 +148,10 @@ public class ServerStatHandler extends StatHandler {
 		return Optional.ofNullable(Identifier.tryParse(id)).flatMap(type.getRegistry()::getOrEmpty).map(type::getOrCreateStat);
 	}
 
-	private static NbtCompound jsonToCompound(JsonObject jsonObject) {
+	private static NbtCompound jsonToCompound(JsonObject json) {
 		NbtCompound nbtCompound = new NbtCompound();
 
-		for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+		for (Entry<String, JsonElement> entry : json.entrySet()) {
 			JsonElement jsonElement = (JsonElement)entry.getValue();
 			if (jsonElement.isJsonObject()) {
 				nbtCompound.put((String)entry.getKey(), jsonToCompound(jsonElement.getAsJsonObject()));

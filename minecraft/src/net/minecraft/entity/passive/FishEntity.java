@@ -24,7 +24,6 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsage;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundEvent;
@@ -80,6 +79,7 @@ public abstract class FishEntity extends WaterCreatureEntity implements Bucketab
 		this.dataTracker.startTracking(FROM_BUCKET, false);
 	}
 
+	@Override
 	public boolean isFromBucket() {
 		return this.dataTracker.get(FROM_BUCKET);
 	}
@@ -90,15 +90,15 @@ public abstract class FishEntity extends WaterCreatureEntity implements Bucketab
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putBoolean("FromBucket", this.isFromBucket());
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putBoolean("FromBucket", this.isFromBucket());
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.setFromBucket(tag.getBoolean("FromBucket"));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.setFromBucket(nbt.getBoolean("FromBucket"));
 	}
 
 	@Override
@@ -144,20 +144,23 @@ public abstract class FishEntity extends WaterCreatureEntity implements Bucketab
 
 	@Override
 	protected ActionResult interactMob(PlayerEntity player, Hand hand) {
-		return (ActionResult)ItemUsage.fillEntityBucket(player, hand, this, SoundEvents.ITEM_BUCKET_FILL_FISH, () -> {
-			ItemStack itemStack = this.getFishBucketItem();
-			this.copyDataToStack(itemStack);
-			return itemStack;
-		}).orElse(super.interactMob(player, hand));
+		return (ActionResult)Bucketable.tryBucket(player, hand, this).orElse(super.interactMob(player, hand));
 	}
 
-	protected void copyDataToStack(ItemStack stack) {
-		if (this.hasCustomName()) {
-			stack.setCustomName(this.getCustomName());
-		}
+	@Override
+	public void copyDataToStack(ItemStack stack) {
+		Bucketable.copyDataToStack(this, stack);
 	}
 
-	protected abstract ItemStack getFishBucketItem();
+	@Override
+	public void copyDataFromNbt(NbtCompound nbt) {
+		Bucketable.copyDataFromNbt(this, nbt);
+	}
+
+	@Override
+	public SoundEvent getBucketedSound() {
+		return SoundEvents.ITEM_BUCKET_FILL_FISH;
+	}
 
 	protected boolean hasSelfControl() {
 		return true;

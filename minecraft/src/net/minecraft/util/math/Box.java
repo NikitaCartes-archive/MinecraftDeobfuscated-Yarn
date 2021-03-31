@@ -2,11 +2,10 @@ package net.minecraft.util.math;
 
 import java.util.Optional;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.hit.BlockHitResult;
 
 public class Box {
+	private static final double field_31879 = 1.0E-7;
 	public final double minX;
 	public final double minY;
 	public final double minZ;
@@ -37,12 +36,41 @@ public class Box {
 
 	public static Box from(BlockBox mutable) {
 		return new Box(
-			(double)mutable.minX, (double)mutable.minY, (double)mutable.minZ, (double)(mutable.maxX + 1), (double)(mutable.maxY + 1), (double)(mutable.maxZ + 1)
+			(double)mutable.getMinX(),
+			(double)mutable.getMinY(),
+			(double)mutable.getMinZ(),
+			(double)(mutable.getMaxX() + 1),
+			(double)(mutable.getMaxY() + 1),
+			(double)(mutable.getMaxZ() + 1)
 		);
 	}
 
 	public static Box from(Vec3d vec3d) {
 		return new Box(vec3d.x, vec3d.y, vec3d.z, vec3d.x + 1.0, vec3d.y + 1.0, vec3d.z + 1.0);
+	}
+
+	public Box method_35574(double d) {
+		return new Box(d, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ);
+	}
+
+	public Box method_35575(double d) {
+		return new Box(this.minX, d, this.minZ, this.maxX, this.maxY, this.maxZ);
+	}
+
+	public Box method_35576(double d) {
+		return new Box(this.minX, this.minY, d, this.maxX, this.maxY, this.maxZ);
+	}
+
+	public Box method_35577(double d) {
+		return new Box(this.minX, this.minY, this.minZ, d, this.maxY, this.maxZ);
+	}
+
+	public Box method_35578(double d) {
+		return new Box(this.minX, this.minY, this.minZ, this.maxX, d, this.maxZ);
+	}
+
+	public Box method_35579(double d) {
+		return new Box(this.minX, this.minY, this.minZ, this.maxX, this.maxY, d);
 	}
 
 	public double getMin(Direction.Axis axis) {
@@ -210,7 +238,6 @@ public class Box {
 		return this.minX < maxX && this.maxX > minX && this.minY < maxY && this.maxY > minY && this.minZ < maxZ && this.maxZ > minZ;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean intersects(Vec3d from, Vec3d to) {
 		return this.intersects(
 			Math.min(from.x, to.x), Math.min(from.y, to.y), Math.min(from.z, to.z), Math.max(from.x, to.x), Math.max(from.y, to.y), Math.max(from.z, to.z)
@@ -242,6 +269,10 @@ public class Box {
 
 	public double getZLength() {
 		return this.maxZ - this.minZ;
+	}
+
+	public Box method_35580(double d, double e, double f) {
+		return this.expand(-d, -e, -f);
 	}
 
 	public Box contract(double value) {
@@ -429,7 +460,6 @@ public class Box {
 		return "AABB[" + this.minX + ", " + this.minY + ", " + this.minZ + "] -> [" + this.maxX + ", " + this.maxY + ", " + this.maxZ + "]";
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isValid() {
 		return Double.isNaN(this.minX)
 			|| Double.isNaN(this.minY)

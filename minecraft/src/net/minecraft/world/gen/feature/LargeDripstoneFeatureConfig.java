@@ -3,7 +3,7 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.math.floatprovider.FloatProvider;
-import net.minecraft.world.gen.UniformIntDistribution;
+import net.minecraft.util.math.intprovider.IntProvider;
 
 public class LargeDripstoneFeatureConfig implements FeatureConfig {
 	public static final Codec<LargeDripstoneFeatureConfig> CODEC = RecordCodecBuilder.create(
@@ -12,9 +12,7 @@ public class LargeDripstoneFeatureConfig implements FeatureConfig {
 						.fieldOf("floor_to_ceiling_search_range")
 						.orElse(30)
 						.forGetter(largeDripstoneFeatureConfig -> largeDripstoneFeatureConfig.floorToCeilingSearchRange),
-					UniformIntDistribution.createValidatedCodec(1, 30, 30)
-						.fieldOf("column_radius")
-						.forGetter(largeDripstoneFeatureConfig -> largeDripstoneFeatureConfig.columnRadius),
+					IntProvider.createValidatingCodec(1, 60).fieldOf("column_radius").forGetter(largeDripstoneFeatureConfig -> largeDripstoneFeatureConfig.columnRadius),
 					FloatProvider.createValidatedCodec(0.0F, 20.0F).fieldOf("height_scale").forGetter(largeDripstoneFeatureConfig -> largeDripstoneFeatureConfig.heightScale),
 					Codec.floatRange(0.1F, 1.0F)
 						.fieldOf("max_column_radius_to_cave_height_ratio")
@@ -32,7 +30,7 @@ public class LargeDripstoneFeatureConfig implements FeatureConfig {
 				.apply(instance, LargeDripstoneFeatureConfig::new)
 	);
 	public final int floorToCeilingSearchRange;
-	public final UniformIntDistribution columnRadius;
+	public final IntProvider columnRadius;
 	public final FloatProvider heightScale;
 	public final float maxColumnRadiusToCaveHeightRatio;
 	public final FloatProvider stalactiteBluntness;
@@ -43,7 +41,7 @@ public class LargeDripstoneFeatureConfig implements FeatureConfig {
 
 	public LargeDripstoneFeatureConfig(
 		int floorToCeilingSearchRange,
-		UniformIntDistribution columnRadius,
+		IntProvider columnRadius,
 		FloatProvider heightScale,
 		float maxColumnRadiusToCaveHeightRatio,
 		FloatProvider stalactiteBluntness,

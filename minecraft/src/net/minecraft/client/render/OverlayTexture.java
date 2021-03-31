@@ -8,6 +8,10 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 
 @Environment(EnvType.CLIENT)
 public class OverlayTexture implements AutoCloseable {
+	private static final int field_32956 = 16;
+	public static final int field_32953 = 0;
+	public static final int field_32954 = 3;
+	public static final int field_32955 = 10;
 	public static final int DEFAULT_UV = packUv(0, 10);
 	private final NativeImageBackedTexture texture = new NativeImageBackedTexture(16, 16, false);
 

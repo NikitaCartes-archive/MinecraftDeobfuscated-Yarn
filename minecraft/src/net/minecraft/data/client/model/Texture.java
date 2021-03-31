@@ -20,8 +20,19 @@ public class Texture {
 		return this;
 	}
 
+	public Texture method_35909(TextureKey textureKey, Identifier identifier) {
+		this.entries.put(textureKey, identifier);
+		this.inherited.add(textureKey);
+		return this;
+	}
+
 	public Stream<TextureKey> getInherited() {
 		return this.inherited.stream();
+	}
+
+	public Texture method_35908(TextureKey textureKey, TextureKey textureKey2) {
+		this.entries.put(textureKey2, this.entries.get(textureKey));
+		return this;
 	}
 
 	public Texture inherit(TextureKey parent, TextureKey child) {
@@ -95,6 +106,10 @@ public class Texture {
 		return of(TextureKey.WOOL, getId(block));
 	}
 
+	public static Texture method_35911(Identifier identifier) {
+		return of(TextureKey.WOOL, identifier);
+	}
+
 	public static Texture stem(Block block) {
 		return of(TextureKey.STEM, getId(block));
 	}
@@ -158,6 +173,10 @@ public class Texture {
 	public static Texture wallSideEnd(Block block) {
 		Identifier identifier = getId(block);
 		return new Texture().put(TextureKey.WALL, identifier).put(TextureKey.SIDE, identifier).put(TextureKey.END, getSubId(block, "_top"));
+	}
+
+	public static Texture method_35910(Identifier identifier, Identifier identifier2) {
+		return new Texture().put(TextureKey.TOP, identifier).put(TextureKey.BOTTOM, identifier2);
 	}
 
 	public static Texture topBottom(Block block) {

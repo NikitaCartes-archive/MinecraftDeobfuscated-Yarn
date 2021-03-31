@@ -322,6 +322,10 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		return Math.max(0, this.getMaxPosition() - (this.bottom - this.top - 4));
 	}
 
+	public int method_35721() {
+		return (int)this.getScrollAmount() - this.height - this.headerHeight;
+	}
+
 	protected void updateScrollingState(double mouseX, double mouseY, int button) {
 		this.scrolling = button == 0 && mouseX >= (double)this.getScrollbarPositionX() && mouseX < (double)(this.getScrollbarPositionX() + 6);
 	}

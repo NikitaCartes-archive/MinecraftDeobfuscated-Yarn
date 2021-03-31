@@ -2,9 +2,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.particle.ParticleTypes;
@@ -12,6 +9,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -20,23 +18,30 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
 
 public abstract class AbstractCandleBlock extends Block {
+	public static final int field_30987 = 3;
 	public static final BooleanProperty LIT = Properties.LIT;
 
 	protected AbstractCandleBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
-	@Environment(EnvType.CLIENT)
 	protected abstract Iterable<Vec3d> getParticleOffsets(BlockState state);
+
+	public static boolean isLitCandle(BlockState state) {
+		return state.contains(LIT) && state.isIn(BlockTags.CANDLES) && (Boolean)state.get(LIT);
+	}
 
 	@Override
 	public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
-		if (!world.isClient && projectile.isOnFire() && !(Boolean)state.get(LIT)) {
+		if (!world.isClient && projectile.isOnFire() && this.isNotLit(state)) {
 			setLit(world, state, hit.getBlockPos(), true);
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
+	protected boolean isNotLit(BlockState state) {
+		return !(Boolean)state.get(LIT);
+	}
+
 	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		if ((Boolean)state.get(LIT)) {
@@ -45,7 +50,6 @@ public abstract class AbstractCandleBlock extends Block {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	private static void spawnCandleParticles(World world, Vec3d vec3d, Random random) {
 		float f = random.nextFloat();
 		if (f < 0.3F) {
@@ -67,14 +71,23 @@ public abstract class AbstractCandleBlock extends Block {
 		world.addParticle(ParticleTypes.SMALL_FLAME, vec3d.x, vec3d.y, vec3d.z, 0.0, 0.0, 0.0);
 	}
 
-	protected static void extinguish(@Nullable PlayerEntity player, BlockState state, WorldAccess world, BlockPos pos) {
+	public static void extinguish(@Nullable PlayerEntity player, BlockState state, WorldAccess world, BlockPos pos) {
 		setLit(world, state, pos, false);
-		world.addParticle(ParticleTypes.SMOKE, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), 0.0, 0.1F, 0.0);
+		if (state.getBlock() instanceof AbstractCandleBlock) {
+			((AbstractCandleBlock)state.getBlock())
+				.getParticleOffsets(state)
+				.forEach(
+					vec3d -> world.addParticle(
+							ParticleTypes.SMOKE, (double)pos.getX() + vec3d.getX(), (double)pos.getY() + vec3d.getY(), (double)pos.getZ() + vec3d.getZ(), 0.0, 0.1F, 0.0
+						)
+				);
+		}
+
 		world.playSound(null, pos, SoundEvents.BLOCK_CANDLE_EXTINGUISH, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
 	}
 
 	private static void setLit(WorldAccess world, BlockState state, BlockPos pos, boolean lit) {
-		world.setBlockState(pos, state.with(LIT, Boolean.valueOf(lit)), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
+		world.setBlockState(pos, state.with(LIT, Boolean.valueOf(lit)), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
 	}
 }

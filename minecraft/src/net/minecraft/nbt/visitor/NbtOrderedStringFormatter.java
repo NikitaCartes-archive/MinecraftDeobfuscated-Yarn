@@ -49,6 +49,13 @@ public class NbtOrderedStringFormatter implements NbtElementVisitor {
 	private static final Pattern SIMPLE_NAME = Pattern.compile("[A-Za-z0-9._+-]+");
 	private static final String KEY_VALUE_SEPARATOR = String.valueOf(':');
 	private static final String ENTRY_SEPARATOR = String.valueOf(',');
+	private static final String field_33234 = "[";
+	private static final String field_33235 = "]";
+	private static final String field_33236 = ";";
+	private static final String field_33237 = " ";
+	private static final String field_33238 = "{";
+	private static final String field_33239 = "}";
+	private static final String field_33240 = "\n";
 	private final String prefix;
 	private final int indentationLevel;
 	private final List<String> pathParts;

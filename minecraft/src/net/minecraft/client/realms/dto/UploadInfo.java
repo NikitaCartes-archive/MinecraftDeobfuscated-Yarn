@@ -17,6 +17,8 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class UploadInfo extends ValueObject {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final String field_32116 = "http://";
+	private static final int field_32117 = 8080;
 	private static final Pattern field_26467 = Pattern.compile("^[a-zA-Z][-a-zA-Z0-9+.]+:");
 	private final boolean worldClosed;
 	@Nullable

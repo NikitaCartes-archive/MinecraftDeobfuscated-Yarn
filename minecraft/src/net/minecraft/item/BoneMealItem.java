@@ -4,10 +4,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DeadCoralWallFanBlock;
@@ -21,10 +18,15 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 
 public class BoneMealItem extends Item {
+	public static final int field_30851 = 3;
+	public static final int field_30852 = 1;
+	public static final int field_30853 = 3;
+
 	public BoneMealItem(Item.Settings settings) {
 		super(settings);
 	}
@@ -112,7 +114,7 @@ public class BoneMealItem extends Item {
 					if (blockState.canPlaceAt(world, blockPos2)) {
 						BlockState blockState2 = world.getBlockState(blockPos2);
 						if (blockState2.isOf(Blocks.WATER) && world.getFluidState(blockPos2).getLevel() == 8) {
-							world.setBlockState(blockPos2, blockState, SetBlockStateFlags.DEFAULT);
+							world.setBlockState(blockPos2, blockState, Block.NOTIFY_ALL);
 						} else if (blockState2.isOf(Blocks.SEAGRASS) && random.nextInt(10) == 0) {
 							((Fertilizable)Blocks.SEAGRASS).grow((ServerWorld)world, random, blockPos2, blockState2);
 						}
@@ -127,7 +129,6 @@ public class BoneMealItem extends Item {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static void createParticles(WorldAccess world, BlockPos pos, int count) {
 		if (count == 0) {
 			count = 15;

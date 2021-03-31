@@ -10,8 +10,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
@@ -129,7 +127,6 @@ public abstract class AbstractBlock {
 	}
 
 	@Deprecated
-	@Environment(EnvType.CLIENT)
 	public boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
 		return false;
 	}
@@ -253,7 +250,6 @@ public abstract class AbstractBlock {
 	}
 
 	@Deprecated
-	@Environment(EnvType.CLIENT)
 	public long getRenderingSeed(BlockState state, BlockPos pos) {
 		return MathHelper.hashCode(pos);
 	}
@@ -294,7 +290,6 @@ public abstract class AbstractBlock {
 	}
 
 	@Deprecated
-	@Environment(EnvType.CLIENT)
 	public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
 		return state.isFullCube(world, pos) ? 0.2F : 1.0F;
 	}
@@ -488,12 +483,10 @@ public abstract class AbstractBlock {
 			return this.getBlock().getRenderType(this.asBlockState());
 		}
 
-		@Environment(EnvType.CLIENT)
 		public boolean hasEmissiveLighting(BlockView world, BlockPos pos) {
 			return this.emissiveLightingPredicate.test(this.asBlockState(), world, pos);
 		}
 
-		@Environment(EnvType.CLIENT)
 		public float getAmbientOcclusionLightLevel(BlockView world, BlockPos pos) {
 			return this.getBlock().getAmbientOcclusionLightLevel(this.asBlockState(), world, pos);
 		}
@@ -547,7 +540,6 @@ public abstract class AbstractBlock {
 			return this.opaque;
 		}
 
-		@Environment(EnvType.CLIENT)
 		public boolean isSideInvisible(BlockState state, Direction direction) {
 			return this.getBlock().isSideInvisible(this.asBlockState(), state, direction);
 		}
@@ -675,7 +667,6 @@ public abstract class AbstractBlock {
 			return this.suffocationPredicate.test(this.asBlockState(), world, pos);
 		}
 
-		@Environment(EnvType.CLIENT)
 		public boolean shouldBlockVision(BlockView world, BlockPos pos) {
 			return this.blockVisionPredicate.test(this.asBlockState(), world, pos);
 		}
@@ -749,7 +740,6 @@ public abstract class AbstractBlock {
 			return this.getBlock().hasRandomTicks(this.asBlockState());
 		}
 
-		@Environment(EnvType.CLIENT)
 		public long getRenderingSeed(BlockPos pos) {
 			return this.getBlock().getRenderingSeed(this.asBlockState(), pos);
 		}

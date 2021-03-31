@@ -2,7 +2,6 @@ package net.minecraft.screen;
 
 import java.util.List;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
@@ -12,6 +11,7 @@ import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.SmithingRecipe;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 
 public class SmithingScreenHandler extends ForgingScreenHandler {
 	private final World field_25385;

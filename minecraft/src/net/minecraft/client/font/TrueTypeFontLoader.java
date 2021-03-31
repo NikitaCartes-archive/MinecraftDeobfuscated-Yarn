@@ -4,12 +4,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.mojang.blaze3d.platform.TextureUtil;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.texture.TextureUtil;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -90,7 +90,7 @@ public class TrueTypeFontLoader implements FontLoader {
 			try {
 				LOGGER.debug("Loading font {}", this.filename);
 				sTBTTFontinfo = STBTTFontinfo.malloc();
-				byteBuffer = TextureUtil.readAllToByteBuffer(resource.getInputStream());
+				byteBuffer = TextureUtil.readResource(resource.getInputStream());
 				byteBuffer.flip();
 				LOGGER.debug("Reading font {}", this.filename);
 				if (!STBTruetype.stbtt_InitFont(sTBTTFontinfo, byteBuffer)) {

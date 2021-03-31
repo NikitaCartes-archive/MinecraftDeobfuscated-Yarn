@@ -49,6 +49,12 @@ public class BlockArgumentParser {
 	public static final SimpleCommandExceptionType UNCLOSED_PROPERTIES_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("argument.block.property.unclosed")
 	);
+	private static final char field_32800 = '[';
+	private static final char field_32801 = '{';
+	private static final char field_32802 = ']';
+	private static final char field_32803 = '=';
+	private static final char field_32804 = ',';
+	private static final char field_32805 = '#';
 	private static final BiFunction<SuggestionsBuilder, TagGroup<Block>, CompletableFuture<Suggestions>> SUGGEST_DEFAULT = (suggestionsBuilder, tagGroup) -> suggestionsBuilder.buildFuture();
 	private final StringReader reader;
 	private final boolean allowTag;

@@ -1,11 +1,10 @@
 package net.minecraft.structure;
 
 import com.google.common.collect.ImmutableSet;
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.class_6130;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -61,19 +60,33 @@ public abstract class StructurePiece {
 		.add(Blocks.IRON_BARS)
 		.build();
 
-	protected StructurePiece(StructurePieceType type, int length) {
+	protected StructurePiece(StructurePieceType type, int length, BlockBox blockBox) {
 		this.type = type;
 		this.chainLength = length;
+		this.boundingBox = blockBox;
 	}
 
-	public StructurePiece(StructurePieceType type, NbtCompound tag) {
-		this(type, tag.getInt("GD"));
-		if (tag.contains("BB")) {
-			this.boundingBox = (BlockBox)BlockBox.CODEC.parse(NbtOps.INSTANCE, tag.get("BB")).resultOrPartial(field_29327::error).orElse(new BlockBox(BlockPos.ORIGIN));
-		}
-
-		int i = tag.getInt("O");
+	public StructurePiece(StructurePieceType type, NbtCompound nbt) {
+		this(
+			type,
+			nbt.getInt("GD"),
+			(BlockBox)BlockBox.CODEC
+				.parse(NbtOps.INSTANCE, nbt.get("BB"))
+				.resultOrPartial(field_29327::error)
+				.orElseThrow(() -> new IllegalArgumentException("Invalid boundingbox"))
+		);
+		int i = nbt.getInt("O");
 		this.setOrientation(i == -1 ? null : Direction.fromHorizontal(i));
+	}
+
+	protected static BlockBox method_35454(int i, int j, int k, Direction direction, int l, int m, int n) {
+		return direction.getAxis() == Direction.Axis.Z
+			? new BlockBox(i, j, k, i + l - 1, j + m - 1, k + n - 1)
+			: new BlockBox(i, j, k, i + n - 1, j + m - 1, k + l - 1);
+	}
+
+	protected static Direction method_35457(Random random) {
+		return Direction.Type.HORIZONTAL.random(random);
 	}
 
 	public final NbtCompound toNbt(ServerWorld world) {
@@ -93,7 +106,7 @@ public abstract class StructurePiece {
 		return StructureWeightType.BEARD;
 	}
 
-	public void fillOpenings(StructurePiece start, List<StructurePiece> pieces, Random random) {
+	public void fillOpenings(StructurePiece start, class_6130 arg, Random random) {
 	}
 
 	public abstract boolean generate(
@@ -120,18 +133,12 @@ public abstract class StructurePiece {
 		return this.boundingBox.intersectsXZ(i - offset, j - offset, i + 15 + offset, j + 15 + offset);
 	}
 
-	public static StructurePiece getOverlappingPiece(List<StructurePiece> pieces, BlockBox box) {
-		for (StructurePiece structurePiece : pieces) {
-			if (structurePiece.getBoundingBox() != null && structurePiece.getBoundingBox().intersects(box)) {
-				return structurePiece;
-			}
-		}
-
-		return null;
+	public BlockPos method_35458() {
+		return new BlockPos(this.boundingBox.getCenter());
 	}
 
-	protected BlockPos offsetPos(int x, int y, int z) {
-		return new BlockPos(this.applyXTransform(x, z), this.applyYTransform(y), this.applyZTransform(x, z));
+	protected BlockPos.Mutable offsetPos(int x, int y, int z) {
+		return new BlockPos.Mutable(this.applyXTransform(x, z), this.applyYTransform(y), this.applyZTransform(x, z));
 	}
 
 	protected int applyXTransform(int x, int z) {
@@ -142,11 +149,11 @@ public abstract class StructurePiece {
 			switch (direction) {
 				case NORTH:
 				case SOUTH:
-					return this.boundingBox.minX + x;
+					return this.boundingBox.getMinX() + x;
 				case WEST:
-					return this.boundingBox.maxX - z;
+					return this.boundingBox.getMaxX() - z;
 				case EAST:
-					return this.boundingBox.minX + z;
+					return this.boundingBox.getMinX() + z;
 				default:
 					return x;
 			}
@@ -154,7 +161,7 @@ public abstract class StructurePiece {
 	}
 
 	protected int applyYTransform(int y) {
-		return this.getFacing() == null ? y : y + this.boundingBox.minY;
+		return this.getFacing() == null ? y : y + this.boundingBox.getMinY();
 	}
 
 	protected int applyZTransform(int x, int z) {
@@ -164,22 +171,22 @@ public abstract class StructurePiece {
 		} else {
 			switch (direction) {
 				case NORTH:
-					return this.boundingBox.maxZ - z;
+					return this.boundingBox.getMaxZ() - z;
 				case SOUTH:
-					return this.boundingBox.minZ + z;
+					return this.boundingBox.getMinZ() + z;
 				case WEST:
 				case EAST:
-					return this.boundingBox.minZ + x;
+					return this.boundingBox.getMinZ() + x;
 				default:
 					return z;
 			}
 		}
 	}
 
-	protected void addBlock(StructureWorldAccess world, BlockState block, int x, int y, int z, BlockBox box) {
-		BlockPos blockPos = new BlockPos(this.applyXTransform(x, z), this.applyYTransform(y), this.applyZTransform(x, z));
+	protected void addBlock(StructureWorldAccess world, BlockState block, int x, int i, int j, BlockBox box) {
+		BlockPos blockPos = this.offsetPos(x, i, j);
 		if (box.contains(blockPos)) {
-			if (this.canAddBlock(world, x, y, z, box)) {
+			if (this.canAddBlock(world, x, i, j, box)) {
 				if (this.mirror != BlockMirror.NONE) {
 					block = block.mirror(this.mirror);
 				}
@@ -188,7 +195,7 @@ public abstract class StructurePiece {
 					block = block.rotate(this.rotation);
 				}
 
-				world.setBlockState(blockPos, block, SetBlockStateFlags.NOTIFY_LISTENERS);
+				world.setBlockState(blockPos, block, Block.NOTIFY_LISTENERS);
 				FluidState fluidState = world.getFluidState(blockPos);
 				if (!fluidState.isEmpty()) {
 					world.getFluidTickScheduler().schedule(blockPos, fluidState.getFluid(), 0);
@@ -205,20 +212,14 @@ public abstract class StructurePiece {
 		return true;
 	}
 
-	protected BlockState getBlockAt(BlockView world, int x, int y, int z, BlockBox box) {
-		int i = this.applyXTransform(x, z);
-		int j = this.applyYTransform(y);
-		int k = this.applyZTransform(x, z);
-		BlockPos blockPos = new BlockPos(i, j, k);
+	protected BlockState getBlockAt(BlockView world, int x, int i, int j, BlockBox box) {
+		BlockPos blockPos = this.offsetPos(x, i, j);
 		return !box.contains(blockPos) ? Blocks.AIR.getDefaultState() : world.getBlockState(blockPos);
 	}
 
 	protected boolean isUnderSeaLevel(WorldView world, int x, int z, int y, BlockBox box) {
-		int i = this.applyXTransform(x, y);
-		int j = this.applyYTransform(z + 1);
-		int k = this.applyZTransform(x, y);
-		BlockPos blockPos = new BlockPos(i, j, k);
-		return !box.contains(blockPos) ? false : j < world.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, i, k);
+		BlockPos blockPos = this.offsetPos(x, z + 1, y);
+		return !box.contains(blockPos) ? false : blockPos.getY() < world.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, blockPos.getX(), blockPos.getZ());
 	}
 
 	protected void fill(StructureWorldAccess world, BlockBox bounds, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
@@ -259,6 +260,24 @@ public abstract class StructurePiece {
 		}
 	}
 
+	protected void method_35455(
+		StructureWorldAccess structureWorldAccess, BlockBox blockBox, BlockBox blockBox2, BlockState blockState, BlockState blockState2, boolean bl
+	) {
+		this.fillWithOutline(
+			structureWorldAccess,
+			blockBox,
+			blockBox2.getMinX(),
+			blockBox2.getMinY(),
+			blockBox2.getMinZ(),
+			blockBox2.getMaxX(),
+			blockBox2.getMaxY(),
+			blockBox2.getMaxZ(),
+			blockState,
+			blockState2,
+			bl
+		);
+	}
+
 	protected void fillWithOutline(
 		StructureWorldAccess world,
 		BlockBox box,
@@ -282,6 +301,24 @@ public abstract class StructurePiece {
 				}
 			}
 		}
+	}
+
+	protected void method_35456(
+		StructureWorldAccess structureWorldAccess, BlockBox blockBox, BlockBox blockBox2, boolean bl, Random random, StructurePiece.BlockRandomizer blockRandomizer
+	) {
+		this.fillWithOutline(
+			structureWorldAccess,
+			blockBox,
+			blockBox2.getMinX(),
+			blockBox2.getMinY(),
+			blockBox2.getMinZ(),
+			blockBox2.getMaxX(),
+			blockBox2.getMaxY(),
+			blockBox2.getMaxZ(),
+			bl,
+			random,
+			blockRandomizer
+		);
 	}
 
 	protected void fillWithOutlineUnderSeaLevel(
@@ -369,14 +406,11 @@ public abstract class StructurePiece {
 		}
 	}
 
-	protected void fillDownwards(StructureWorldAccess world, BlockState state, int x, int y, int z, BlockBox box) {
-		int i = this.applyXTransform(x, z);
-		int j = this.applyYTransform(y);
-		int k = this.applyZTransform(x, z);
-		BlockPos.Mutable mutable = new BlockPos.Mutable(i, j, k);
+	protected void fillDownwards(StructureWorldAccess world, BlockState state, int x, int i, int j, BlockBox box) {
+		BlockPos.Mutable mutable = this.offsetPos(x, i, j);
 		if (box.contains(mutable)) {
 			while (this.canReplace(world.getBlockState(mutable)) && mutable.getY() > world.getBottomY() + 1) {
-				world.setBlockState(mutable, state, SetBlockStateFlags.NOTIFY_LISTENERS);
+				world.setBlockState(mutable, state, Block.NOTIFY_LISTENERS);
 				mutable.move(Direction.DOWN);
 			}
 		}
@@ -386,9 +420,8 @@ public abstract class StructurePiece {
 		return state.isAir() || state.getMaterial().isLiquid() || state.isOf(Blocks.GLOW_LICHEN) || state.isOf(Blocks.SEAGRASS) || state.isOf(Blocks.TALL_SEAGRASS);
 	}
 
-	protected boolean addChest(StructureWorldAccess world, BlockBox boundingBox, Random random, int x, int y, int z, Identifier lootTableId) {
-		BlockPos blockPos = new BlockPos(this.applyXTransform(x, z), this.applyYTransform(y), this.applyZTransform(x, z));
-		return this.addChest(world, boundingBox, random, blockPos, lootTableId, null);
+	protected boolean addChest(StructureWorldAccess world, BlockBox boundingBox, Random random, int i, int j, int z, Identifier lootTableId) {
+		return this.addChest(world, boundingBox, random, this.offsetPos(i, j, z), lootTableId, null);
 	}
 
 	public static BlockState orientateChest(BlockView world, BlockPos pos, BlockState state) {
@@ -441,7 +474,7 @@ public abstract class StructurePiece {
 				block = orientateChest(world, pos, Blocks.CHEST.getDefaultState());
 			}
 
-			world.setBlockState(pos, block, SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(pos, block, Block.NOTIFY_LISTENERS);
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof ChestBlockEntity) {
 				((ChestBlockEntity)blockEntity).setLootTable(lootTableId, random.nextLong());
@@ -453,10 +486,10 @@ public abstract class StructurePiece {
 		}
 	}
 
-	protected boolean addDispenser(StructureWorldAccess world, BlockBox boundingBox, Random random, int x, int y, int z, Direction facing, Identifier lootTableId) {
-		BlockPos blockPos = new BlockPos(this.applyXTransform(x, z), this.applyYTransform(y), this.applyZTransform(x, z));
+	protected boolean addDispenser(StructureWorldAccess world, BlockBox boundingBox, Random random, int x, int i, int j, Direction facing, Identifier lootTableId) {
+		BlockPos blockPos = this.offsetPos(x, i, j);
 		if (boundingBox.contains(blockPos) && !world.getBlockState(blockPos).isOf(Blocks.DISPENSER)) {
-			this.addBlock(world, Blocks.DISPENSER.getDefaultState().with(DispenserBlock.FACING, facing), x, y, z, boundingBox);
+			this.addBlock(world, Blocks.DISPENSER.getDefaultState().with(DispenserBlock.FACING, facing), x, i, j, boundingBox);
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof DispenserBlockEntity) {
 				((DispenserBlockEntity)blockEntity).setLootTable(lootTableId, random.nextLong());
@@ -505,6 +538,10 @@ public abstract class StructurePiece {
 
 	public BlockRotation getRotation() {
 		return this.rotation;
+	}
+
+	public BlockMirror method_35460() {
+		return this.mirror;
 	}
 
 	public StructurePieceType getType() {

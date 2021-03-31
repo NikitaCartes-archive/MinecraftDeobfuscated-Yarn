@@ -159,6 +159,7 @@ public class PickaxeItem extends MiningToolItem {
 		Blocks.DEEPSLATE_BRICK_WALL,
 		Blocks.CHISELED_DEEPSLATE
 	);
+	private static final int DEFAULT_MINING_LEVEL = -1;
 	private static final Object2IntMap<Block> BLOCK_MINING_LEVELS = Util.make(
 		new Object2IntOpenHashMap<>(),
 		miningLevels -> {
@@ -225,7 +226,7 @@ public class PickaxeItem extends MiningToolItem {
 				miningLevels.put(block, 1);
 			}
 
-			for (Block block : ImmutableList.of(Blocks.NETHER_GOLD_ORE)) {
+			for (Block block : ImmutableList.of(Blocks.NETHER_GOLD_ORE, Blocks.AMETHYST_BLOCK)) {
 				miningLevels.put(block, 0);
 			}
 		}

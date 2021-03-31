@@ -5,10 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.FluidState;
@@ -27,6 +23,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldEvents;
 
 public class FluidBlock extends Block implements FluidDrainable {
 	public static final IntProperty LEVEL = Properties.LEVEL_15;
@@ -81,7 +78,6 @@ public class FluidBlock extends Block implements FluidDrainable {
 		return (FluidState)this.statesByLevel.get(Math.min(i, 8));
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
 		return stateFrom.getFluidState().getFluid().matchesType(this.fluid);
@@ -165,7 +161,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 	@Override
 	public ItemStack tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state) {
 		if ((Integer)state.get(LEVEL) == 0) {
-			world.setBlockState(pos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
+			world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
 			return new ItemStack(this.fluid.getBucketItem());
 		} else {
 			return ItemStack.EMPTY;

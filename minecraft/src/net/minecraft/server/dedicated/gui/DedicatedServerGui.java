@@ -33,6 +33,8 @@ import org.apache.logging.log4j.Logger;
 public class DedicatedServerGui extends JComponent {
 	private static final Font FONT_MONOSPACE = new Font("Monospaced", 0, 12);
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final String field_29666 = "Minecraft server";
+	private static final String field_29667 = "Minecraft server - shutting down!";
 	private final MinecraftDedicatedServer server;
 	private Thread consoleUpdateThread;
 	private final Collection<Runnable> stopTasks = Lists.<Runnable>newArrayList();

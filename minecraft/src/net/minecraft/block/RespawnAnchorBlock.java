@@ -4,9 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import java.util.Optional;
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -38,6 +35,8 @@ import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 
 public class RespawnAnchorBlock extends Block {
+	public static final int field_31231 = 0;
+	public static final int field_31232 = 4;
 	public static final IntProperty CHARGES = Properties.CHARGES;
 	private static final ImmutableList<Vec3i> VALID_HORIZONTAL_SPAWN_OFFSETS = ImmutableList.of(
 		new Vec3i(0, 0, -1),
@@ -159,7 +158,7 @@ public class RespawnAnchorBlock extends Block {
 	}
 
 	public static void charge(World world, BlockPos pos, BlockState state) {
-		world.setBlockState(pos, state.with(CHARGES, Integer.valueOf((Integer)state.get(CHARGES) + 1)), SetBlockStateFlags.DEFAULT);
+		world.setBlockState(pos, state.with(CHARGES, Integer.valueOf((Integer)state.get(CHARGES) + 1)), Block.NOTIFY_ALL);
 		world.playSound(
 			null,
 			(double)pos.getX() + 0.5,
@@ -172,7 +171,6 @@ public class RespawnAnchorBlock extends Block {
 		);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		if ((Integer)state.get(CHARGES) != 0) {

@@ -7,7 +7,6 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import java.util.Set;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
@@ -16,6 +15,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
@@ -48,7 +48,7 @@ public class CopyStateFunction extends ConditionalLootFunction {
 		if (blockState != null) {
 			NbtCompound nbtCompound = stack.getOrCreateTag();
 			NbtCompound nbtCompound2;
-			if (nbtCompound.contains("BlockStateTag", NbtTypeIds.COMPOUND)) {
+			if (nbtCompound.contains("BlockStateTag", NbtElement.COMPOUND_TYPE)) {
 				nbtCompound2 = nbtCompound.getCompound("BlockStateTag");
 			} else {
 				nbtCompound2 = new NbtCompound();

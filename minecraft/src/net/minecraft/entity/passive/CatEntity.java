@@ -4,10 +4,7 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.yarn.constants.CatTypes;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -49,6 +46,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.world.ServerWorld;
@@ -72,11 +70,27 @@ import net.minecraft.world.gen.feature.StructureFeature;
  * Meow.
  */
 public class CatEntity extends TameableEntity {
+	public static final double field_30310 = 0.6;
+	public static final double field_30311 = 0.8;
+	public static final double field_30312 = 1.33;
 	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.COD, Items.SALMON);
 	private static final TrackedData<Integer> CAT_TYPE = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> SLEEPING_WITH_OWNER = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> HEAD_DOWN = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> COLLAR_COLOR = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	public static final int field_30313 = 0;
+	public static final int field_30314 = 1;
+	public static final int field_30315 = 2;
+	public static final int field_30316 = 3;
+	public static final int field_30317 = 4;
+	public static final int field_30318 = 5;
+	public static final int field_30319 = 6;
+	public static final int field_30320 = 7;
+	public static final int field_30321 = 8;
+	public static final int field_30322 = 9;
+	public static final int field_30323 = 10;
+	private static final int field_30324 = 11;
+	private static final int field_30325 = 10;
 	public static final Map<Integer, Identifier> TEXTURES = Util.make(Maps.<Integer, Identifier>newHashMap(), hashMap -> {
 		hashMap.put(0, new Identifier("textures/entity/cat/tabby.png"));
 		hashMap.put(1, new Identifier("textures/entity/cat/black.png"));
@@ -172,18 +186,18 @@ public class CatEntity extends TameableEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putInt("CatType", this.getCatType());
-		tag.putByte("CollarColor", (byte)this.getCollarColor().getId());
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putInt("CatType", this.getCatType());
+		nbt.putByte("CollarColor", (byte)this.getCollarColor().getId());
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.setCatType(tag.getInt("CatType"));
-		if (tag.contains("CollarColor", NbtTypeIds.NUMBER)) {
-			this.setCollarColor(DyeColor.byId(tag.getInt("CollarColor")));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.setCatType(nbt.getInt("CatType"));
+		if (nbt.contains("CollarColor", NbtElement.NUMBER_TYPE)) {
+			this.setCollarColor(DyeColor.byId(nbt.getInt("CollarColor")));
 		}
 	}
 
@@ -310,17 +324,14 @@ public class CatEntity extends TameableEntity {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getSleepAnimation(float tickDelta) {
 		return MathHelper.lerp(tickDelta, this.prevSleepAnimation, this.sleepAnimation);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getTailCurlAnimation(float tickDelta) {
 		return MathHelper.lerp(tickDelta, this.prevTailCurlAnimation, this.tailCurlAnimation);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getHeadDownAnimation(float tickDelta) {
 		return MathHelper.lerp(tickDelta, this.prevHeadDownAnimation, this.headDownAnimation);
 	}
@@ -363,9 +374,9 @@ public class CatEntity extends TameableEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
-		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 		if (world.getMoonSize() > 0.9F) {
 			this.setCatType(this.random.nextInt(11));
 		} else {

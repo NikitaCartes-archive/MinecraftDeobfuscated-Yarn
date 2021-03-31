@@ -3,7 +3,6 @@ package net.minecraft.block;
 import com.google.common.base.MoreObjects;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -29,6 +28,10 @@ public class TripwireHookBlock extends Block {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	public static final BooleanProperty ATTACHED = Properties.ATTACHED;
+	protected static final int field_31268 = 1;
+	protected static final int field_31269 = 42;
+	private static final int field_31271 = 10;
+	protected static final int field_31270 = 3;
 	protected static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(5.0, 0.0, 10.0, 11.0, 10.0, 16.0);
 	protected static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(5.0, 0.0, 0.0, 11.0, 10.0, 6.0);
 	protected static final VoxelShape EAST_SHAPE = Block.createCuboidShape(10.0, 0.0, 5.0, 16.0, 10.0, 11.0);
@@ -143,14 +146,14 @@ public class TripwireHookBlock extends Block {
 		if (j > 0) {
 			BlockPos blockPosx = pos.offset(direction, j);
 			Direction direction2 = direction.getOpposite();
-			world.setBlockState(blockPosx, blockState3.with(FACING, direction2), SetBlockStateFlags.DEFAULT);
+			world.setBlockState(blockPosx, blockState3.with(FACING, direction2), Block.NOTIFY_ALL);
 			this.updateNeighborsOnAxis(world, blockPosx, direction2);
 			this.playSound(world, blockPosx, bl4, bl5, bl2, bl3);
 		}
 
 		this.playSound(world, pos, bl4, bl5, bl2, bl3);
 		if (!beingRemoved) {
-			world.setBlockState(pos, blockState3.with(FACING, direction), SetBlockStateFlags.DEFAULT);
+			world.setBlockState(pos, blockState3.with(FACING, direction), Block.NOTIFY_ALL);
 			if (bl) {
 				this.updateNeighborsOnAxis(world, pos, direction);
 			}
@@ -161,7 +164,7 @@ public class TripwireHookBlock extends Block {
 				BlockPos blockPos2 = pos.offset(direction, l);
 				BlockState blockState4 = blockStates[l];
 				if (blockState4 != null) {
-					world.setBlockState(blockPos2, blockState4.with(ATTACHED, Boolean.valueOf(bl4)), SetBlockStateFlags.DEFAULT);
+					world.setBlockState(blockPos2, blockState4.with(ATTACHED, Boolean.valueOf(bl4)), Block.NOTIFY_ALL);
 					if (!world.getBlockState(blockPos2).isAir()) {
 					}
 				}

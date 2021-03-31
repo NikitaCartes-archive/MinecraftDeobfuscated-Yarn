@@ -37,6 +37,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class NbtTextFormatter implements NbtElementVisitor {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int field_33271 = 8;
 	private static final ByteCollection SINGLE_LINE_ELEMENT_TYPES = new ByteOpenHashSet(Arrays.asList((byte)1, (byte)2, (byte)3, (byte)4, (byte)5, (byte)6));
 	private static final Formatting NAME_COLOR = Formatting.AQUA;
 	private static final Formatting STRING_COLOR = Formatting.GREEN;
@@ -45,6 +46,13 @@ public class NbtTextFormatter implements NbtElementVisitor {
 	private static final Pattern SIMPLE_NAME = Pattern.compile("[A-Za-z0-9._+-]+");
 	private static final String KEY_VALUE_SEPARATOR = String.valueOf(':');
 	private static final String ENTRY_SEPARATOR = String.valueOf(',');
+	private static final String field_33272 = "[";
+	private static final String field_33273 = "]";
+	private static final String field_33274 = ";";
+	private static final String field_33275 = " ";
+	private static final String field_33276 = "{";
+	private static final String field_33277 = "}";
+	private static final String field_33278 = "\n";
 	private final String prefix;
 	private final int indentationLevel;
 	private Text result;

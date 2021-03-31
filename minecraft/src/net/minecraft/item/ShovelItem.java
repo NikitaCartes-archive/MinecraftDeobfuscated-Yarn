@@ -1,12 +1,10 @@
 package net.minecraft.item;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableMap.Builder;
 import java.util.Map;
 import java.util.Set;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -18,6 +16,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 
 public class ShovelItem extends MiningToolItem {
 	private static final Set<Block> EFFECTIVE_BLOCKS = Sets.<Block>newHashSet(
@@ -51,21 +50,18 @@ public class ShovelItem extends MiningToolItem {
 		Blocks.GREEN_CONCRETE_POWDER,
 		Blocks.RED_CONCRETE_POWDER,
 		Blocks.BLACK_CONCRETE_POWDER,
-		Blocks.SOUL_SOIL
+		Blocks.SOUL_SOIL,
+		Blocks.ROOTED_DIRT
 	);
 	protected static final Map<Block, BlockState> PATH_STATES = Maps.<Block, BlockState>newHashMap(
-		ImmutableMap.of(
-			Blocks.GRASS_BLOCK,
-			Blocks.DIRT_PATH.getDefaultState(),
-			Blocks.DIRT,
-			Blocks.DIRT_PATH.getDefaultState(),
-			Blocks.PODZOL,
-			Blocks.DIRT_PATH.getDefaultState(),
-			Blocks.COARSE_DIRT,
-			Blocks.DIRT_PATH.getDefaultState(),
-			Blocks.MYCELIUM,
-			Blocks.DIRT_PATH.getDefaultState()
-		)
+		new Builder()
+			.put(Blocks.GRASS_BLOCK, Blocks.DIRT_PATH.getDefaultState())
+			.put(Blocks.DIRT, Blocks.DIRT_PATH.getDefaultState())
+			.put(Blocks.PODZOL, Blocks.DIRT_PATH.getDefaultState())
+			.put(Blocks.COARSE_DIRT, Blocks.DIRT_PATH.getDefaultState())
+			.put(Blocks.MYCELIUM, Blocks.DIRT_PATH.getDefaultState())
+			.put(Blocks.ROOTED_DIRT, Blocks.DIRT_PATH.getDefaultState())
+			.build()
 	);
 
 	public ShovelItem(ToolMaterial material, float attackDamage, float attackSpeed, Item.Settings settings) {
@@ -102,7 +98,7 @@ public class ShovelItem extends MiningToolItem {
 
 			if (blockState3 != null) {
 				if (!world.isClient) {
-					world.setBlockState(blockPos, blockState3, SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
+					world.setBlockState(blockPos, blockState3, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
 					if (playerEntity != null) {
 						context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
 					}

@@ -1,8 +1,6 @@
 package net.minecraft.network.packet.c2s.play;
 
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.vehicle.CommandBlockMinecartEntity;
 import net.minecraft.network.Packet;
@@ -16,7 +14,6 @@ public class UpdateCommandBlockMinecartC2SPacket implements Packet<ServerPlayPac
 	private final String command;
 	private final boolean trackOutput;
 
-	@Environment(EnvType.CLIENT)
 	public UpdateCommandBlockMinecartC2SPacket(int entityId, String command, boolean trackOutput) {
 		this.entityId = entityId;
 		this.command = command;

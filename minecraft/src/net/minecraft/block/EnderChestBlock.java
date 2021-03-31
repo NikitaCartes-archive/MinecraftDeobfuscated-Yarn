@@ -2,8 +2,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
@@ -50,7 +48,6 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(WATERLOGGED, Boolean.valueOf(false)));
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public DoubleBlockProperties.PropertySource<? extends ChestBlockEntity> getBlockEntitySource(
 		BlockState state, World world, BlockPos pos, boolean ignoreBlocked
@@ -112,7 +109,6 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 		return world.isClient ? checkType(type, BlockEntityType.ENDER_CHEST, EnderChestBlockEntity::clientTick) : null;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		for (int i = 0; i < 3; i++) {

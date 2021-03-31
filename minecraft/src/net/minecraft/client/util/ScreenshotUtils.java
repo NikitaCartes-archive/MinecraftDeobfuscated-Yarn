@@ -1,7 +1,11 @@
 package net.minecraft.client.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,6 +28,12 @@ import org.apache.logging.log4j.Logger;
 public class ScreenshotUtils {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
+	private int field_32157;
+	private final DataOutputStream field_32158;
+	private final byte[] field_32159;
+	private final int field_32160;
+	private final int field_32161;
+	private File field_32162;
 
 	public static void saveScreenshot(File gameDirectory, int framebufferWidth, int framebufferHeight, Framebuffer framebuffer, Consumer<Text> messageReceiver) {
 		saveScreenshot(gameDirectory, null, framebufferWidth, framebufferHeight, framebuffer, messageReceiver);
@@ -93,5 +103,59 @@ public class ScreenshotUtils {
 
 			i++;
 		}
+	}
+
+	public ScreenshotUtils(File file, int i, int j, int k) throws IOException {
+		this.field_32160 = i;
+		this.field_32161 = j;
+		this.field_32157 = k;
+		File file2 = new File(file, "screenshots");
+		file2.mkdir();
+		String string = "huge_" + DATE_FORMAT.format(new Date());
+		int l = 1;
+
+		while ((this.field_32162 = new File(file2, string + (l == 1 ? "" : "_" + l) + ".tga")).exists()) {
+			l++;
+		}
+
+		byte[] bs = new byte[18];
+		bs[2] = 2;
+		bs[12] = (byte)(i % 256);
+		bs[13] = (byte)(i / 256);
+		bs[14] = (byte)(j % 256);
+		bs[15] = (byte)(j / 256);
+		bs[16] = 24;
+		this.field_32159 = new byte[i * k * 3];
+		this.field_32158 = new DataOutputStream(new FileOutputStream(this.field_32162));
+		this.field_32158.write(bs);
+	}
+
+	public void method_35711(ByteBuffer byteBuffer, int i, int j, int k, int l) {
+		int m = k;
+		int n = l;
+		if (k > this.field_32160 - i) {
+			m = this.field_32160 - i;
+		}
+
+		if (l > this.field_32161 - j) {
+			n = this.field_32161 - j;
+		}
+
+		this.field_32157 = n;
+
+		for (int o = 0; o < n; o++) {
+			byteBuffer.position((l - n) * k * 3 + o * k * 3);
+			int p = (i + o * this.field_32160) * 3;
+			byteBuffer.get(this.field_32159, p, m * 3);
+		}
+	}
+
+	public void method_35710() throws IOException {
+		this.field_32158.write(this.field_32159, 0, this.field_32160 * 3 * this.field_32157);
+	}
+
+	public File method_35712() throws IOException {
+		this.field_32158.close();
+		return this.field_32162;
 	}
 }

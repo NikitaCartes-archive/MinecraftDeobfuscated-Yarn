@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
@@ -14,6 +13,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.network.DebugInfoSender;
@@ -21,11 +21,22 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.EntityTypeTags;
+import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class BeehiveBlockEntity extends BlockEntity {
+	public static final String FLOWER_POS_KEY = "FlowerPos";
+	public static final String MIN_OCCUPATION_TICKS_KEY = "MinOccupationTicks";
+	public static final String ENTITY_DATA_KEY = "EntityData";
+	public static final String TICKS_IN_HIVE_KEY = "TicksInHive";
+	public static final String HAS_NECTAR_KEY = "HasNectar";
+	public static final String BEES_KEY = "Bees";
+	public static final int MAX_BEE_COUNT = 3;
+	private static final int ANGERED_CANNOT_ENTER_HIVE_TICKS = 400;
+	private static final int MIN_OCCUPATION_TICKS_WITH_NECTAR = 2400;
+	public static final int MIN_OCCUPATION_TICKS_WITHOUT_NECTAR = 600;
 	private final List<BeehiveBlockEntity.Bee> bees = Lists.<BeehiveBlockEntity.Bee>newArrayList();
 	@Nullable
 	private BlockPos flowerPos;
@@ -93,6 +104,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 		this.tryEnterHive(entity, hasNectar, 0);
 	}
 
+	@Debug
 	public int getBeeCount() {
 		return this.bees.size();
 	}
@@ -101,6 +113,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 		return (Integer)state.get(BeehiveBlock.HONEY_LEVEL);
 	}
 
+	@Debug
 	public boolean isSmoked() {
 		return CampfireBlock.isLitCampfireInRange(this.world, this.getPos());
 	}
@@ -110,8 +123,8 @@ public class BeehiveBlockEntity extends BlockEntity {
 			entity.stopRiding();
 			entity.removeAllPassengers();
 			NbtCompound nbtCompound = new NbtCompound();
-			entity.saveToTag(nbtCompound);
-			this.bees.add(new BeehiveBlockEntity.Bee(nbtCompound, ticksInHive, hasNectar ? 2400 : 600));
+			entity.saveNbt(nbtCompound);
+			this.addBee(nbtCompound, ticksInHive, hasNectar);
 			if (this.world != null) {
 				if (entity instanceof BeeEntity) {
 					BeeEntity beeEntity = (BeeEntity)entity;
@@ -131,14 +144,18 @@ public class BeehiveBlockEntity extends BlockEntity {
 		}
 	}
 
+	public void addBee(NbtCompound nbtCompound, int ticksInHive, boolean hasNectar) {
+		this.bees.add(new BeehiveBlockEntity.Bee(nbtCompound, ticksInHive, hasNectar ? 2400 : 600));
+	}
+
 	private static boolean releaseBee(
 		World world,
-		BlockPos blockPos,
-		BlockState blockState,
+		BlockPos pos,
+		BlockState state,
 		BeehiveBlockEntity.Bee bee,
-		@Nullable List<Entity> list,
+		@Nullable List<Entity> entities,
 		BeehiveBlockEntity.BeeState beeState,
-		@Nullable BlockPos blockPos2
+		@Nullable BlockPos flowerPos
 	) {
 		if ((world.isNight() || world.isRaining()) && beeState != BeehiveBlockEntity.BeeState.EMERGENCY) {
 			return false;
@@ -147,9 +164,9 @@ public class BeehiveBlockEntity extends BlockEntity {
 			nbtCompound.remove("Passengers");
 			nbtCompound.remove("Leash");
 			nbtCompound.remove("UUID");
-			Direction direction = blockState.get(BeehiveBlock.FACING);
-			BlockPos blockPos3 = blockPos.offset(direction);
-			boolean bl = !world.getBlockState(blockPos3).getCollisionShape(world, blockPos3).isEmpty();
+			Direction direction = state.get(BeehiveBlock.FACING);
+			BlockPos blockPos = pos.offset(direction);
+			boolean bl = !world.getBlockState(blockPos).getCollisionShape(world, blockPos).isEmpty();
 			if (bl && beeState != BeehiveBlockEntity.BeeState.EMERGENCY) {
 				return false;
 			} else {
@@ -160,39 +177,39 @@ public class BeehiveBlockEntity extends BlockEntity {
 					} else {
 						if (entity instanceof BeeEntity) {
 							BeeEntity beeEntity = (BeeEntity)entity;
-							if (blockPos2 != null && !beeEntity.hasFlower() && world.random.nextFloat() < 0.9F) {
-								beeEntity.setFlowerPos(blockPos2);
+							if (flowerPos != null && !beeEntity.hasFlower() && world.random.nextFloat() < 0.9F) {
+								beeEntity.setFlowerPos(flowerPos);
 							}
 
 							if (beeState == BeehiveBlockEntity.BeeState.HONEY_DELIVERED) {
 								beeEntity.onHoneyDelivered();
-								if (blockState.isIn(BlockTags.BEEHIVES)) {
-									int i = getHoneyLevel(blockState);
+								if (state.isIn(BlockTags.BEEHIVES)) {
+									int i = getHoneyLevel(state);
 									if (i < 5) {
 										int j = world.random.nextInt(100) == 0 ? 2 : 1;
 										if (i + j > 5) {
 											j--;
 										}
 
-										world.setBlockState(blockPos, blockState.with(BeehiveBlock.HONEY_LEVEL, Integer.valueOf(i + j)));
+										world.setBlockState(pos, state.with(BeehiveBlock.HONEY_LEVEL, Integer.valueOf(i + j)));
 									}
 								}
 							}
 
 							ageBee(bee.ticksInHive, beeEntity);
-							if (list != null) {
-								list.add(beeEntity);
+							if (entities != null) {
+								entities.add(beeEntity);
 							}
 
 							float f = entity.getWidth();
 							double d = bl ? 0.0 : 0.55 + (double)(f / 2.0F);
-							double e = (double)blockPos.getX() + 0.5 + d * (double)direction.getOffsetX();
-							double g = (double)blockPos.getY() + 0.5 - (double)(entity.getHeight() / 2.0F);
-							double h = (double)blockPos.getZ() + 0.5 + d * (double)direction.getOffsetZ();
+							double e = (double)pos.getX() + 0.5 + d * (double)direction.getOffsetX();
+							double g = (double)pos.getY() + 0.5 - (double)(entity.getHeight() / 2.0F);
+							double h = (double)pos.getZ() + 0.5 + d * (double)direction.getOffsetZ();
 							entity.refreshPositionAndAngles(e, g, h, entity.yaw, entity.pitch);
 						}
 
-						world.playSound(null, blockPos, SoundEvents.BLOCK_BEEHIVE_EXIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+						world.playSound(null, pos, SoundEvents.BLOCK_BEEHIVE_EXIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 						return world.spawnEntity(entity);
 					}
 				} else {
@@ -202,24 +219,24 @@ public class BeehiveBlockEntity extends BlockEntity {
 		}
 	}
 
-	private static void ageBee(int i, BeeEntity beeEntity) {
-		int j = beeEntity.getBreedingAge();
-		if (j < 0) {
-			beeEntity.setBreedingAge(Math.min(0, j + i));
-		} else if (j > 0) {
-			beeEntity.setBreedingAge(Math.max(0, j - i));
+	private static void ageBee(int ticks, BeeEntity bee) {
+		int i = bee.getBreedingAge();
+		if (i < 0) {
+			bee.setBreedingAge(Math.min(0, i + ticks));
+		} else if (i > 0) {
+			bee.setBreedingAge(Math.max(0, i - ticks));
 		}
 
-		beeEntity.setLoveTicks(Math.max(0, beeEntity.getLoveTicks() - i));
-		beeEntity.resetPollinationTicks();
+		bee.setLoveTicks(Math.max(0, bee.getLoveTicks() - ticks));
+		bee.resetPollinationTicks();
 	}
 
 	private boolean hasFlowerPos() {
 		return this.flowerPos != null;
 	}
 
-	private static void tickBees(World world, BlockPos blockPos, BlockState blockState, List<BeehiveBlockEntity.Bee> list, @Nullable BlockPos blockPos2) {
-		Iterator<BeehiveBlockEntity.Bee> iterator = list.iterator();
+	private static void tickBees(World world, BlockPos pos, BlockState state, List<BeehiveBlockEntity.Bee> bees, @Nullable BlockPos flowerPos) {
+		Iterator<BeehiveBlockEntity.Bee> iterator = bees.iterator();
 
 		while (iterator.hasNext()) {
 			BeehiveBlockEntity.Bee bee = (BeehiveBlockEntity.Bee)iterator.next();
@@ -227,7 +244,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 				BeehiveBlockEntity.BeeState beeState = bee.entityData.getBoolean("HasNectar")
 					? BeehiveBlockEntity.BeeState.HONEY_DELIVERED
 					: BeehiveBlockEntity.BeeState.BEE_RELEASED;
-				if (releaseBee(world, blockPos, blockState, bee, null, beeState, blockPos2)) {
+				if (releaseBee(world, pos, state, bee, null, beeState, flowerPos)) {
 					iterator.remove();
 				}
 			}
@@ -236,23 +253,23 @@ public class BeehiveBlockEntity extends BlockEntity {
 		}
 	}
 
-	public static void serverTick(World world, BlockPos blockPos, BlockState blockState, BeehiveBlockEntity beehiveBlockEntity) {
-		tickBees(world, blockPos, blockState, beehiveBlockEntity.bees, beehiveBlockEntity.flowerPos);
-		if (!beehiveBlockEntity.bees.isEmpty() && world.getRandom().nextDouble() < 0.005) {
-			double d = (double)blockPos.getX() + 0.5;
-			double e = (double)blockPos.getY();
-			double f = (double)blockPos.getZ() + 0.5;
+	public static void serverTick(World world, BlockPos pos, BlockState state, BeehiveBlockEntity blockEntity) {
+		tickBees(world, pos, state, blockEntity.bees, blockEntity.flowerPos);
+		if (!blockEntity.bees.isEmpty() && world.getRandom().nextDouble() < 0.005) {
+			double d = (double)pos.getX() + 0.5;
+			double e = (double)pos.getY();
+			double f = (double)pos.getZ() + 0.5;
 			world.playSound(null, d, e, f, SoundEvents.BLOCK_BEEHIVE_WORK, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		}
 
-		DebugInfoSender.sendBeehiveDebugData(world, blockPos, blockState, beehiveBlockEntity);
+		DebugInfoSender.sendBeehiveDebugData(world, pos, state, blockEntity);
 	}
 
 	@Override
-	public void readNbt(NbtCompound tag) {
-		super.readNbt(tag);
+	public void readNbt(NbtCompound nbt) {
+		super.readNbt(nbt);
 		this.bees.clear();
-		NbtList nbtList = tag.getList("Bees", NbtTypeIds.COMPOUND);
+		NbtList nbtList = nbt.getList("Bees", NbtElement.COMPOUND_TYPE);
 
 		for (int i = 0; i < nbtList.size(); i++) {
 			NbtCompound nbtCompound = nbtList.getCompound(i);
@@ -263,20 +280,20 @@ public class BeehiveBlockEntity extends BlockEntity {
 		}
 
 		this.flowerPos = null;
-		if (tag.contains("FlowerPos")) {
-			this.flowerPos = NbtHelper.toBlockPos(tag.getCompound("FlowerPos"));
+		if (nbt.contains("FlowerPos")) {
+			this.flowerPos = NbtHelper.toBlockPos(nbt.getCompound("FlowerPos"));
 		}
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound tag) {
-		super.writeNbt(tag);
-		tag.put("Bees", this.getBees());
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		super.writeNbt(nbt);
+		nbt.put("Bees", this.getBees());
 		if (this.hasFlowerPos()) {
-			tag.put("FlowerPos", NbtHelper.fromBlockPos(this.flowerPos));
+			nbt.put("FlowerPos", NbtHelper.fromBlockPos(this.flowerPos));
 		}
 
-		return tag;
+		return nbt;
 	}
 
 	public NbtList getBees() {

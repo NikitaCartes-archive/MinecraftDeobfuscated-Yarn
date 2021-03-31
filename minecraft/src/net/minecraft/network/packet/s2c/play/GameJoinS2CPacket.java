@@ -3,8 +3,6 @@ package net.minecraft.network.packet.s2c.play;
 import com.google.common.collect.Sets;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -16,6 +14,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
 public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
+	private static final int field_33334 = 8;
 	private final int playerEntityId;
 	private final long sha256Seed;
 	private final boolean hardcore;
@@ -72,10 +71,10 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.hardcore = buf.readBoolean();
 		this.gameMode = GameMode.byId(buf.readByte());
 		this.previousGameMode = GameMode.getOrNull(buf.readByte());
-		this.dimensionIds = buf.readCollection(Sets::newHashSetWithExpectedSize, b -> RegistryKey.of(Registry.DIMENSION, b.readIdentifier()));
+		this.dimensionIds = buf.readCollection(Sets::newHashSetWithExpectedSize, b -> RegistryKey.of(Registry.WORLD_KEY, b.readIdentifier()));
 		this.registryManager = buf.decode(DynamicRegistryManager.Impl.CODEC);
 		this.dimensionType = (DimensionType)buf.decode(DimensionType.REGISTRY_CODEC).get();
-		this.dimensionId = RegistryKey.of(Registry.DIMENSION, buf.readIdentifier());
+		this.dimensionId = RegistryKey.of(Registry.WORLD_KEY, buf.readIdentifier());
 		this.sha256Seed = buf.readLong();
 		this.maxPlayers = buf.readVarInt();
 		this.viewDistance = buf.readVarInt();
@@ -108,73 +107,63 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		clientPlayPacketListener.onGameJoin(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getEntityId() {
 		return this.playerEntityId;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public long getSha256Seed() {
 		return this.sha256Seed;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isHardcore() {
 		return this.hardcore;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public GameMode getGameMode() {
 		return this.gameMode;
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public GameMode getPreviousGameMode() {
 		return this.previousGameMode;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Set<RegistryKey<World>> getDimensionIds() {
 		return this.dimensionIds;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public DynamicRegistryManager getRegistryManager() {
 		return this.registryManager;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public DimensionType getDimensionType() {
 		return this.dimensionType;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public RegistryKey<World> getDimensionId() {
 		return this.dimensionId;
 	}
 
-	@Environment(EnvType.CLIENT)
+	public int getMaxPlayers() {
+		return this.maxPlayers;
+	}
+
 	public int getViewDistance() {
 		return this.viewDistance;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean hasReducedDebugInfo() {
 		return this.reducedDebugInfo;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean showsDeathScreen() {
 		return this.showDeathScreen;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isDebugWorld() {
 		return this.debugWorld;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isFlatWorld() {
 		return this.flatWorld;
 	}

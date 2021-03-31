@@ -12,6 +12,11 @@ import org.apache.logging.log4j.Logger;
 
 public class RconClient extends RconBase {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int field_29799 = 3;
+	private static final int field_29800 = 2;
+	private static final int field_29801 = 0;
+	private static final int field_29802 = 2;
+	private static final int field_29803 = -1;
 	private boolean authenticated;
 	private final Socket socket;
 	private final byte[] packetBuffer = new byte[1460];

@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.nbt.NbtCompound;
@@ -31,6 +29,11 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class JigsawBlockEntity extends BlockEntity {
+	public static final String TARGET_KEY = "target";
+	public static final String POOL_KEY = "pool";
+	public static final String JOINT_KEY = "joint";
+	public static final String NAME_KEY = "name";
+	public static final String FINAL_STATE_KEY = "final_state";
 	private Identifier name = new Identifier("empty");
 	private Identifier target = new Identifier("empty");
 	private Identifier pool = new Identifier("empty");
@@ -41,27 +44,22 @@ public class JigsawBlockEntity extends BlockEntity {
 		super(BlockEntityType.JIGSAW, pos, state);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Identifier getName() {
 		return this.name;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Identifier getTarget() {
 		return this.target;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Identifier getPool() {
 		return this.pool;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public String getFinalState() {
 		return this.finalState;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public JigsawBlockEntity.Joint getJoint() {
 		return this.joint;
 	}
@@ -87,31 +85,31 @@ public class JigsawBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound tag) {
-		super.writeNbt(tag);
-		tag.putString("name", this.name.toString());
-		tag.putString("target", this.target.toString());
-		tag.putString("pool", this.pool.toString());
-		tag.putString("final_state", this.finalState);
-		tag.putString("joint", this.joint.asString());
-		return tag;
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		super.writeNbt(nbt);
+		nbt.putString("name", this.name.toString());
+		nbt.putString("target", this.target.toString());
+		nbt.putString("pool", this.pool.toString());
+		nbt.putString("final_state", this.finalState);
+		nbt.putString("joint", this.joint.asString());
+		return nbt;
 	}
 
 	@Override
-	public void readNbt(NbtCompound tag) {
-		super.readNbt(tag);
-		this.name = new Identifier(tag.getString("name"));
-		this.target = new Identifier(tag.getString("target"));
-		this.pool = new Identifier(tag.getString("pool"));
-		this.finalState = tag.getString("final_state");
-		this.joint = (JigsawBlockEntity.Joint)JigsawBlockEntity.Joint.byName(tag.getString("joint"))
+	public void readNbt(NbtCompound nbt) {
+		super.readNbt(nbt);
+		this.name = new Identifier(nbt.getString("name"));
+		this.target = new Identifier(nbt.getString("target"));
+		this.pool = new Identifier(nbt.getString("pool"));
+		this.finalState = nbt.getString("final_state");
+		this.joint = (JigsawBlockEntity.Joint)JigsawBlockEntity.Joint.byName(nbt.getString("joint"))
 			.orElseGet(() -> JigsawBlock.getFacing(this.getCachedState()).getAxis().isHorizontal() ? JigsawBlockEntity.Joint.ALIGNED : JigsawBlockEntity.Joint.ROLLABLE);
 	}
 
 	@Nullable
 	@Override
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, 12, this.toInitialChunkDataNbt());
+		return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.JIGSAW, this.toInitialChunkDataNbt());
 	}
 
 	@Override
@@ -137,7 +135,7 @@ public class JigsawBlockEntity extends BlockEntity {
 		);
 
 		for (PoolStructurePiece poolStructurePiece2 : list) {
-			poolStructurePiece2.generate(world, structureAccessor, chunkGenerator, random, BlockBox.infinite(), blockPos, keepJigsaws);
+			poolStructurePiece2.generate(world, structureAccessor, chunkGenerator, random, BlockBox.empty(), blockPos, keepJigsaws);
 		}
 	}
 
@@ -160,7 +158,6 @@ public class JigsawBlockEntity extends BlockEntity {
 			return Arrays.stream(values()).filter(joint -> joint.asString().equals(name)).findFirst();
 		}
 
-		@Environment(EnvType.CLIENT)
 		public Text asText() {
 			return new TranslatableText("jigsaw_block.joint." + this.name);
 		}

@@ -37,11 +37,9 @@ public class LlamaDecorFeatureRenderer extends FeatureRenderer<LlamaEntity, Llam
 	private static final Identifier TRADER_LLAMA_DECOR = new Identifier("textures/entity/llama/decor/trader_llama.png");
 	private final LlamaEntityModel<LlamaEntity> model;
 
-	public LlamaDecorFeatureRenderer(
-		FeatureRendererContext<LlamaEntity, LlamaEntityModel<LlamaEntity>> featureRendererContext, EntityModelLoader entityModelLoader
-	) {
-		super(featureRendererContext);
-		this.model = new LlamaEntityModel<>(entityModelLoader.getModelPart(EntityModelLayers.LLAMA_DECOR));
+	public LlamaDecorFeatureRenderer(FeatureRendererContext<LlamaEntity, LlamaEntityModel<LlamaEntity>> context, EntityModelLoader loader) {
+		super(context);
+		this.model = new LlamaEntityModel<>(loader.getModelPart(EntityModelLayers.LLAMA_DECOR));
 	}
 
 	public void render(

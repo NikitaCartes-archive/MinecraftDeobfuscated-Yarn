@@ -14,6 +14,8 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3d;
 
 public class FindWalkTargetTask extends Task<PathAwareEntity> {
+	private static final int field_30186 = 10;
+	private static final int field_30187 = 7;
 	private final float walkSpeed;
 	private final int maxHorizontalDistance;
 	private final int maxVerticalDistance;

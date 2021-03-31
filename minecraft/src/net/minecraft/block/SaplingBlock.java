@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.sapling.SaplingGenerator;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -14,6 +13,7 @@ import net.minecraft.world.World;
 
 public class SaplingBlock extends PlantBlock implements Fertilizable {
 	public static final IntProperty STAGE = Properties.STAGE;
+	protected static final float field_31236 = 6.0F;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 12.0, 14.0);
 	private final SaplingGenerator generator;
 
@@ -37,7 +37,7 @@ public class SaplingBlock extends PlantBlock implements Fertilizable {
 
 	public void generate(ServerWorld world, BlockPos pos, BlockState state, Random random) {
 		if ((Integer)state.get(STAGE) == 0) {
-			world.setBlockState(pos, state.cycle(STAGE), SetBlockStateFlags.NO_REDRAW);
+			world.setBlockState(pos, state.cycle(STAGE), Block.NO_REDRAW);
 		} else {
 			this.generator.generate(world, world.getChunkManager().getChunkGenerator(), pos, state, random);
 		}

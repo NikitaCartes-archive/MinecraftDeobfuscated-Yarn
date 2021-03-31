@@ -1,8 +1,6 @@
 package net.minecraft.screen;
 
 import java.util.Optional;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -22,6 +20,13 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 
 public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingInventory> {
+	public static final int field_30781 = 0;
+	private static final int field_30782 = 1;
+	private static final int field_30783 = 10;
+	private static final int field_30784 = 10;
+	private static final int field_30785 = 37;
+	private static final int field_30786 = 37;
+	private static final int field_30787 = 46;
 	private final CraftingInventory input = new CraftingInventory(this, 3, 3);
 	private final CraftingResultInventory result = new CraftingResultInventory();
 	private final ScreenHandlerContext context;
@@ -178,7 +183,6 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 		return 10;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public RecipeBookCategory getCategory() {
 		return RecipeBookCategory.CRAFTING;

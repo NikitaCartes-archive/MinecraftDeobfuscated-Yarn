@@ -14,6 +14,9 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class WolfEntityModel<T extends WolfEntity> extends TintableAnimalModel<T> {
+	private static final String REAL_HEAD = "real_head";
+	private static final String UPPER_BODY = "upper_body";
+	private static final String REAL_TAIL = "real_tail";
 	/**
 	 * The main bone used to animate the head. Contains {@link #realHead} as one of its children.
 	 */
@@ -30,17 +33,18 @@ public class WolfEntityModel<T extends WolfEntity> extends TintableAnimalModel<T
 	private final ModelPart tail;
 	private final ModelPart realTail;
 	private final ModelPart neck;
+	private static final int field_32580 = 8;
 
 	public WolfEntityModel(ModelPart root) {
-		this.head = root.getChild("head");
+		this.head = root.getChild(EntityModelPartNames.HEAD);
 		this.realHead = this.head.getChild("real_head");
-		this.torso = root.getChild("body");
+		this.torso = root.getChild(EntityModelPartNames.BODY);
 		this.neck = root.getChild("upper_body");
-		this.rightHindLeg = root.getChild("right_hind_leg");
-		this.leftHindLeg = root.getChild("left_hind_leg");
-		this.rightFrontLeg = root.getChild("right_front_leg");
-		this.leftFrontLeg = root.getChild("left_front_leg");
-		this.tail = root.getChild("tail");
+		this.rightHindLeg = root.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
+		this.leftHindLeg = root.getChild(EntityModelPartNames.LEFT_HIND_LEG);
+		this.rightFrontLeg = root.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
+		this.leftFrontLeg = root.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
+		this.tail = root.getChild(EntityModelPartNames.TAIL);
 		this.realTail = this.tail.getChild("real_tail");
 	}
 
@@ -48,7 +52,7 @@ public class WolfEntityModel<T extends WolfEntity> extends TintableAnimalModel<T
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
 		float f = 13.5F;
-		ModelPartData modelPartData2 = modelPartData.addChild("head", ModelPartBuilder.create(), ModelTransform.pivot(-1.0F, 13.5F, -7.0F));
+		ModelPartData modelPartData2 = modelPartData.addChild(EntityModelPartNames.HEAD, ModelPartBuilder.create(), ModelTransform.pivot(-1.0F, 13.5F, -7.0F));
 		modelPartData2.addChild(
 			"real_head",
 			ModelPartBuilder.create()
@@ -63,7 +67,7 @@ public class WolfEntityModel<T extends WolfEntity> extends TintableAnimalModel<T
 			ModelTransform.NONE
 		);
 		modelPartData.addChild(
-			"body",
+			EntityModelPartNames.BODY,
 			ModelPartBuilder.create().uv(18, 14).cuboid(-3.0F, -2.0F, -3.0F, 6.0F, 9.0F, 6.0F),
 			ModelTransform.of(0.0F, 14.0F, 2.0F, (float) (Math.PI / 2), 0.0F, 0.0F)
 		);
@@ -73,12 +77,12 @@ public class WolfEntityModel<T extends WolfEntity> extends TintableAnimalModel<T
 			ModelTransform.of(-1.0F, 14.0F, -3.0F, (float) (Math.PI / 2), 0.0F, 0.0F)
 		);
 		ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(0, 18).cuboid(0.0F, 0.0F, -1.0F, 2.0F, 8.0F, 2.0F);
-		modelPartData.addChild("right_hind_leg", modelPartBuilder, ModelTransform.pivot(-2.5F, 16.0F, 7.0F));
-		modelPartData.addChild("left_hind_leg", modelPartBuilder, ModelTransform.pivot(0.5F, 16.0F, 7.0F));
-		modelPartData.addChild("right_front_leg", modelPartBuilder, ModelTransform.pivot(-2.5F, 16.0F, -4.0F));
-		modelPartData.addChild("left_front_leg", modelPartBuilder, ModelTransform.pivot(0.5F, 16.0F, -4.0F));
+		modelPartData.addChild(EntityModelPartNames.RIGHT_HIND_LEG, modelPartBuilder, ModelTransform.pivot(-2.5F, 16.0F, 7.0F));
+		modelPartData.addChild(EntityModelPartNames.LEFT_HIND_LEG, modelPartBuilder, ModelTransform.pivot(0.5F, 16.0F, 7.0F));
+		modelPartData.addChild(EntityModelPartNames.RIGHT_FRONT_LEG, modelPartBuilder, ModelTransform.pivot(-2.5F, 16.0F, -4.0F));
+		modelPartData.addChild(EntityModelPartNames.LEFT_FRONT_LEG, modelPartBuilder, ModelTransform.pivot(0.5F, 16.0F, -4.0F));
 		ModelPartData modelPartData3 = modelPartData.addChild(
-			"tail", ModelPartBuilder.create(), ModelTransform.of(-1.0F, 12.0F, 8.0F, (float) (Math.PI / 5), 0.0F, 0.0F)
+			EntityModelPartNames.TAIL, ModelPartBuilder.create(), ModelTransform.of(-1.0F, 12.0F, 8.0F, (float) (Math.PI / 5), 0.0F, 0.0F)
 		);
 		modelPartData3.addChild("real_tail", ModelPartBuilder.create().uv(9, 18).cuboid(0.0F, 0.0F, -1.0F, 2.0F, 8.0F, 2.0F), ModelTransform.NONE);
 		return TexturedModelData.of(modelData, 64, 32);

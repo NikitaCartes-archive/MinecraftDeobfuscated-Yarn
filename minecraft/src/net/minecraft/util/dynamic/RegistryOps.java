@@ -42,6 +42,7 @@ import org.apache.logging.log4j.Logger;
 
 public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final String field_33379 = ".json";
 	private final RegistryOps.EntryLoader entryLoader;
 	private final DynamicRegistryManager registryManager;
 	private final Map<RegistryKey<? extends Registry<?>>, RegistryOps.ValueHolder<?>> valueHolders;

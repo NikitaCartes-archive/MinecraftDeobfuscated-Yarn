@@ -54,7 +54,15 @@ public class GameOptions {
 	private static final Gson GSON = new Gson();
 	private static final TypeToken<List<String>> STRING_LIST_TYPE = new TypeToken<List<String>>() {
 	};
+	public static final int field_32149 = 2;
+	public static final int field_32150 = 4;
+	public static final int field_32152 = 8;
+	public static final int field_32153 = 12;
+	public static final int field_32154 = 16;
+	public static final int field_32155 = 32;
 	private static final Splitter COLON_SPLITTER = Splitter.on(':').limit(2);
+	private static final float field_32151 = 1.0F;
+	public boolean monochromeLogo;
 	public double mouseSensitivity = 0.5;
 	public int viewDistance;
 	public float entityDistanceScaling = 1.0F;
@@ -255,6 +263,7 @@ public class GameOptions {
 		this.bobView = visitor.visitBoolean("bobView", this.bobView);
 		this.sneakToggled = visitor.visitBoolean("toggleCrouch", this.sneakToggled);
 		this.sprintToggled = visitor.visitBoolean("toggleSprint", this.sprintToggled);
+		this.monochromeLogo = visitor.visitBoolean("darkMojangStudiosBackground", this.monochromeLogo);
 		this.mouseSensitivity = visitor.visitDouble("mouseSensitivity", this.mouseSensitivity);
 		this.fov = visitor.visitDouble("fov", (this.fov - 70.0) / 40.0) * 40.0 + 70.0;
 		this.distortionEffectScale = visitor.visitFloat("screenEffectScale", this.distortionEffectScale);
@@ -486,15 +495,15 @@ public class GameOptions {
 		return "false".equals(value);
 	}
 
-	private NbtCompound update(NbtCompound tag) {
+	private NbtCompound update(NbtCompound nbt) {
 		int i = 0;
 
 		try {
-			i = Integer.parseInt(tag.getString("version"));
+			i = Integer.parseInt(nbt.getString("version"));
 		} catch (RuntimeException var4) {
 		}
 
-		return NbtHelper.update(this.client.getDataFixer(), DataFixTypes.OPTIONS, tag, i);
+		return NbtHelper.update(this.client.getDataFixer(), DataFixTypes.OPTIONS, nbt, i);
 	}
 
 	public void write() {

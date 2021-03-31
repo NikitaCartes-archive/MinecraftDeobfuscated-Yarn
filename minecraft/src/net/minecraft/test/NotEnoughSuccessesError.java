@@ -1,7 +1,7 @@
 package net.minecraft.test;
 
 class NotEnoughSuccessesError extends Throwable {
-	public NotEnoughSuccessesError(int attempts, int successes, GameTest test) {
+	public NotEnoughSuccessesError(int attempts, int successes, GameTestState test) {
 		super(
 			"Not enough successes: "
 				+ successes

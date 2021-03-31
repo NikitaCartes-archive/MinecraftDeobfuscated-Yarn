@@ -12,6 +12,7 @@ import net.minecraft.world.event.GameEvent;
  * Handles the viewer count for chest-like block entities.
  */
 public abstract class ChestStateManager {
+	private static final int field_31339 = 5;
 	private int viewerCount;
 
 	/**

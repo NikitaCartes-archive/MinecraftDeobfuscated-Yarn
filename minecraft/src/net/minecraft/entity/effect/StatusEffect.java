@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
@@ -120,7 +118,6 @@ public class StatusEffect {
 		return new TranslatableText(this.getTranslationKey());
 	}
 
-	@Environment(EnvType.CLIENT)
 	public StatusEffectType getType() {
 		return this.type;
 	}
@@ -135,7 +132,6 @@ public class StatusEffect {
 		return this;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Map<EntityAttribute, EntityAttributeModifier> getAttributeModifiers() {
 		return this.attributeModifiers;
 	}
@@ -171,7 +167,6 @@ public class StatusEffect {
 		return modifier.getValue() * (double)(amplifier + 1);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isBeneficial() {
 		return this.type == StatusEffectType.BENEFICIAL;
 	}

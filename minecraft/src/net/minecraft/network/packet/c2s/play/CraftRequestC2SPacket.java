@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.c2s.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
@@ -13,7 +11,6 @@ public class CraftRequestC2SPacket implements Packet<ServerPlayPacketListener> {
 	private final Identifier recipe;
 	private final boolean craftAll;
 
-	@Environment(EnvType.CLIENT)
 	public CraftRequestC2SPacket(int syncId, Recipe<?> recipe, boolean craftAll) {
 		this.syncId = syncId;
 		this.recipe = recipe.getId();

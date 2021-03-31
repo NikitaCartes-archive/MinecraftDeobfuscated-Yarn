@@ -21,6 +21,7 @@ import net.minecraft.Bootstrap;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.obfuscate.DontObfuscate;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.FileResourcePackProvider;
 import net.minecraft.resource.ResourcePackManager;
@@ -58,6 +59,7 @@ import org.apache.logging.log4j.Logger;
 public class Main {
 	private static final Logger LOGGER = LogManager.getLogger();
 
+	@DontObfuscate
 	public static void main(String[] args) {
 		OptionParser optionParser = new OptionParser();
 		OptionSpec<Void> optionSpec = optionParser.accepts("nogui");

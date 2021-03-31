@@ -240,6 +240,21 @@ public class ItemPredicate {
 			return this;
 		}
 
+		public ItemPredicate.Builder count(NumberRange.IntRange count) {
+			this.count = count;
+			return this;
+		}
+
+		public ItemPredicate.Builder durability(NumberRange.IntRange durability) {
+			this.durability = durability;
+			return this;
+		}
+
+		public ItemPredicate.Builder potion(Potion potion) {
+			this.potion = potion;
+			return this;
+		}
+
 		public ItemPredicate.Builder nbt(NbtCompound nbt) {
 			this.nbt = new NbtPredicate(nbt);
 			return this;
@@ -247,6 +262,11 @@ public class ItemPredicate {
 
 		public ItemPredicate.Builder enchantment(EnchantmentPredicate enchantment) {
 			this.enchantments.add(enchantment);
+			return this;
+		}
+
+		public ItemPredicate.Builder storedEnchantment(EnchantmentPredicate enchantment) {
+			this.storedEnchantments.add(enchantment);
 			return this;
 		}
 

@@ -4,6 +4,8 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -21,6 +23,11 @@ import net.minecraft.world.biome.Biome;
  */
 public interface RegistryWorldView extends EntityView, WorldView, ModifiableTestableWorld {
 	@Override
+	default <T extends BlockEntity> Optional<T> getBlockEntity(BlockPos pos, BlockEntityType<T> type) {
+		return WorldView.super.getBlockEntity(pos, type);
+	}
+
+	@Override
 	default Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Predicate<Entity> predicate) {
 		return EntityView.super.getEntityCollisions(entity, box, predicate);
 	}
@@ -31,8 +38,8 @@ public interface RegistryWorldView extends EntityView, WorldView, ModifiableTest
 	}
 
 	@Override
-	default BlockPos getTopPosition(Heightmap.Type heightmap, BlockPos pos) {
-		return WorldView.super.getTopPosition(heightmap, pos);
+	default BlockPos getTopPosition(Heightmap.Type type, BlockPos blockPos) {
+		return WorldView.super.getTopPosition(type, blockPos);
 	}
 
 	DynamicRegistryManager getRegistryManager();

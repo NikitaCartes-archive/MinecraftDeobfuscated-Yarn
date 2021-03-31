@@ -3,10 +3,6 @@ package net.minecraft.block;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.entity.BedBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.BedPart;
@@ -41,13 +37,16 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.CollisionView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.explosion.Explosion;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvider {
 	public static final EnumProperty<BedPart> PART = Properties.BED_PART;
 	public static final BooleanProperty OCCUPIED = Properties.OCCUPIED;
+	protected static final int field_31009 = 9;
 	protected static final VoxelShape TOP_SHAPE = Block.createCuboidShape(0.0, 3.0, 0.0, 16.0, 9.0, 16.0);
+	private static final int field_31010 = 3;
 	protected static final VoxelShape LEG_1_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 3.0, 3.0, 3.0);
 	protected static final VoxelShape LEG_2_SHAPE = Block.createCuboidShape(0.0, 0.0, 13.0, 3.0, 3.0, 16.0);
 	protected static final VoxelShape LEG_3_SHAPE = Block.createCuboidShape(13.0, 0.0, 0.0, 16.0, 3.0, 3.0);
@@ -65,7 +64,6 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public static Direction getDirection(BlockView world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos);
 		return blockState.getBlock() instanceof BedBlock ? blockState.get(FACING) : null;
@@ -181,7 +179,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 				BlockPos blockPos = pos.offset(getDirectionTowardsOtherPart(bedPart, state.get(FACING)));
 				BlockState blockState = world.getBlockState(blockPos);
 				if (blockState.isOf(this) && blockState.get(PART) == BedPart.HEAD) {
-					world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.SKIP_DROPS);
+					world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL | Block.SKIP_DROPS);
 					world.syncWorldEvent(player, WorldEvents.BLOCK_BROKEN, blockPos, Block.getRawIdFromState(blockState));
 				}
 			}
@@ -219,7 +217,6 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		return state.get(PART) == BedPart.HEAD ? direction.getOpposite() : direction;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static DoubleBlockProperties.Type getBedPart(BlockState state) {
 		BedPart bedPart = state.get(PART);
 		return bedPart == BedPart.HEAD ? DoubleBlockProperties.Type.FIRST : DoubleBlockProperties.Type.SECOND;
@@ -309,9 +306,9 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		super.onPlaced(world, pos, state, placer, itemStack);
 		if (!world.isClient) {
 			BlockPos blockPos = pos.offset(state.get(FACING));
-			world.setBlockState(blockPos, state.with(PART, BedPart.HEAD), SetBlockStateFlags.DEFAULT);
+			world.setBlockState(blockPos, state.with(PART, BedPart.HEAD), Block.NOTIFY_ALL);
 			world.updateNeighbors(pos, Blocks.AIR);
-			state.updateNeighbors(world, pos, SetBlockStateFlags.DEFAULT);
+			state.updateNeighbors(world, pos, Block.NOTIFY_ALL);
 		}
 	}
 
@@ -319,7 +316,6 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		return this.color;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public long getRenderingSeed(BlockState state, BlockPos pos) {
 		BlockPos blockPos = pos.offset(state.get(FACING), state.get(PART) == BedPart.HEAD ? 0 : 1);

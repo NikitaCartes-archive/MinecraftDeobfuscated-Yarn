@@ -58,6 +58,14 @@ public abstract class LootPoolEntry implements EntryCombiner {
 			return new AlternativeEntry.Builder(this, builder);
 		}
 
+		public SequenceEntry.Builder sequenceEntry(LootPoolEntry.Builder<?> entry) {
+			return new SequenceEntry.Builder(this, entry);
+		}
+
+		public GroupEntry.Builder groupEntry(LootPoolEntry.Builder<?> entry) {
+			return new GroupEntry.Builder(this, entry);
+		}
+
 		public abstract LootPoolEntry build();
 	}
 

@@ -2,13 +2,11 @@ package net.minecraft.item;
 
 import java.util.List;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -17,6 +15,8 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class EnchantedBookItem extends Item {
+	public static final String STORED_ENCHANTMENTS_KEY = "StoredEnchantments";
+
 	public EnchantedBookItem(Item.Settings settings) {
 		super(settings);
 	}
@@ -33,10 +33,9 @@ public class EnchantedBookItem extends Item {
 
 	public static NbtList getEnchantmentNbt(ItemStack stack) {
 		NbtCompound nbtCompound = stack.getTag();
-		return nbtCompound != null ? nbtCompound.getList("StoredEnchantments", NbtTypeIds.COMPOUND) : new NbtList();
+		return nbtCompound != null ? nbtCompound.getList("StoredEnchantments", NbtElement.COMPOUND_TYPE) : new NbtList();
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 		super.appendTooltip(stack, world, tooltip, context);

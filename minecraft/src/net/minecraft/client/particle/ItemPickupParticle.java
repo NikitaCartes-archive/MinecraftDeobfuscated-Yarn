@@ -16,6 +16,7 @@ import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class ItemPickupParticle extends Particle {
+	private static final int field_32656 = 3;
 	private final BufferBuilderStorage bufferStorage;
 	private final Entity itemEntity;
 	private final Entity interactingEntity;

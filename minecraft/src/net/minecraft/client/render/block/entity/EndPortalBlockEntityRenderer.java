@@ -20,18 +20,19 @@ public class EndPortalBlockEntityRenderer<T extends EndPortalBlockEntity> implem
 	}
 
 	public void render(T endPortalBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
-		float g = this.getTopYOffset();
 		Matrix4f matrix4f = matrixStack.peek().getModel();
-		this.renderSides(endPortalBlockEntity, g, matrix4f, vertexConsumerProvider.getBuffer(this.method_34589()));
+		this.renderSides(endPortalBlockEntity, matrix4f, vertexConsumerProvider.getBuffer(this.method_34589()));
 	}
 
-	private void renderSides(T entity, float topYOffset, Matrix4f matrix4f, VertexConsumer vertexConsumer) {
+	private void renderSides(T entity, Matrix4f matrix4f, VertexConsumer vertexConsumer) {
+		float f = this.method_35793();
+		float g = this.getTopYOffset();
 		this.renderSide(entity, matrix4f, vertexConsumer, 0.0F, 1.0F, 0.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, Direction.SOUTH);
 		this.renderSide(entity, matrix4f, vertexConsumer, 0.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, Direction.NORTH);
 		this.renderSide(entity, matrix4f, vertexConsumer, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.0F, Direction.EAST);
 		this.renderSide(entity, matrix4f, vertexConsumer, 0.0F, 0.0F, 0.0F, 1.0F, 0.0F, 1.0F, 1.0F, 0.0F, Direction.WEST);
-		this.renderSide(entity, matrix4f, vertexConsumer, 0.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 1.0F, 1.0F, Direction.DOWN);
-		this.renderSide(entity, matrix4f, vertexConsumer, 0.0F, 1.0F, topYOffset, topYOffset, 1.0F, 1.0F, 0.0F, 0.0F, Direction.UP);
+		this.renderSide(entity, matrix4f, vertexConsumer, 0.0F, 1.0F, f, f, 0.0F, 0.0F, 1.0F, 1.0F, Direction.DOWN);
+		this.renderSide(entity, matrix4f, vertexConsumer, 0.0F, 1.0F, g, g, 1.0F, 1.0F, 0.0F, 0.0F, Direction.UP);
 	}
 
 	private void renderSide(
@@ -47,6 +48,10 @@ public class EndPortalBlockEntityRenderer<T extends EndPortalBlockEntity> implem
 
 	protected float getTopYOffset() {
 		return 0.75F;
+	}
+
+	protected float method_35793() {
+		return 0.375F;
 	}
 
 	protected RenderLayer method_34589() {

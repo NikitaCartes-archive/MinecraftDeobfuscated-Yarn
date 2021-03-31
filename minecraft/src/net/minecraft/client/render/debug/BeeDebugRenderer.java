@@ -26,6 +26,32 @@ import net.minecraft.util.math.Position;
 
 @Environment(EnvType.CLIENT)
 public class BeeDebugRenderer implements DebugRenderer.Renderer {
+	private static final boolean field_32841 = true;
+	private static final boolean field_32842 = true;
+	private static final boolean field_32843 = true;
+	private static final boolean field_32844 = true;
+	private static final boolean field_32845 = true;
+	private static final boolean field_32846 = false;
+	private static final boolean field_32847 = true;
+	private static final boolean field_32848 = true;
+	private static final boolean field_32849 = true;
+	private static final boolean field_32850 = true;
+	private static final boolean field_32851 = true;
+	private static final boolean field_32852 = true;
+	private static final boolean field_32853 = true;
+	private static final boolean field_32854 = true;
+	private static final int field_32855 = 30;
+	private static final int field_32856 = 30;
+	private static final int field_32857 = 8;
+	private static final int field_32858 = 20;
+	private static final float field_32859 = 0.02F;
+	private static final int field_32860 = -1;
+	private static final int field_32861 = -256;
+	private static final int field_32862 = -23296;
+	private static final int field_32863 = -16711936;
+	private static final int field_32864 = -3355444;
+	private static final int field_32865 = -98404;
+	private static final int field_32866 = -65536;
 	private final MinecraftClient client;
 	private final Map<BlockPos, BeeDebugRenderer.Hive> hives = Maps.<BlockPos, BeeDebugRenderer.Hive>newHashMap();
 	private final Map<UUID, BeeDebugRenderer.Bee> bees = Maps.<UUID, BeeDebugRenderer.Bee>newHashMap();
@@ -48,6 +74,10 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 
 	public void addBee(BeeDebugRenderer.Bee bee) {
 		this.bees.put(bee.uuid, bee);
+	}
+
+	public void method_35794(int i) {
+		this.bees.values().removeIf(bee -> bee.entityId == i);
 	}
 
 	@Override
@@ -238,6 +268,10 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 
 	private Camera getCameraPos() {
 		return this.client.gameRenderer.getCamera();
+	}
+
+	private Set<String> method_35796(BeeDebugRenderer.Hive hive) {
+		return (Set<String>)this.getBeesForHive(hive.pos).stream().map(NameGenerator::name).collect(Collectors.toSet());
 	}
 
 	private String getPositionString(BeeDebugRenderer.Bee bee, BlockPos pos) {

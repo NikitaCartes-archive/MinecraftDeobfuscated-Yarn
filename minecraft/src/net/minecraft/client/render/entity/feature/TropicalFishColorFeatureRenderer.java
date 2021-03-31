@@ -18,11 +18,11 @@ public class TropicalFishColorFeatureRenderer extends FeatureRenderer<TropicalFi
 	private final LargeTropicalFishEntityModel<TropicalFishEntity> largeModel;
 
 	public TropicalFishColorFeatureRenderer(
-		FeatureRendererContext<TropicalFishEntity, TintableCompositeModel<TropicalFishEntity>> featureRendererContext, EntityModelLoader entityModelLoader
+		FeatureRendererContext<TropicalFishEntity, TintableCompositeModel<TropicalFishEntity>> context, EntityModelLoader loader
 	) {
-		super(featureRendererContext);
-		this.smallModel = new SmallTropicalFishEntityModel<>(entityModelLoader.getModelPart(EntityModelLayers.TROPICAL_FISH_SMALL_PATTERN));
-		this.largeModel = new LargeTropicalFishEntityModel<>(entityModelLoader.getModelPart(EntityModelLayers.TROPICAL_FISH_LARGE_PATTERN));
+		super(context);
+		this.smallModel = new SmallTropicalFishEntityModel<>(loader.getModelPart(EntityModelLayers.TROPICAL_FISH_SMALL_PATTERN));
+		this.largeModel = new LargeTropicalFishEntityModel<>(loader.getModelPart(EntityModelLayers.TROPICAL_FISH_LARGE_PATTERN));
 	}
 
 	public void render(

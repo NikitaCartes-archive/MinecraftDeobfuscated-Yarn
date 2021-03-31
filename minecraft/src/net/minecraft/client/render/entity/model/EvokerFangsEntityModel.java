@@ -13,6 +13,9 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class EvokerFangsEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
+	private static final String BASE = "base";
+	private static final String UPPER_JAW = "upper_jaw";
+	private static final String LOWER_JAW = "lower_jaw";
 	private final ModelPart root;
 	private final ModelPart base;
 	private final ModelPart upperJaw;

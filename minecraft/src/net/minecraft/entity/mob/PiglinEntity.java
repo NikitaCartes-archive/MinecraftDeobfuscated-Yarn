@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -17,6 +16,7 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
@@ -34,16 +34,19 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
@@ -51,7 +54,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
-public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
+public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, InventoryOwner {
 	private static final TrackedData<Boolean> BABY = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> CHARGING = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> DANCING = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -59,6 +62,15 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 	private static final EntityAttributeModifier BABY_SPEED_BOOST = new EntityAttributeModifier(
 		BABY_SPEED_BOOST_ID, "Baby speed boost", 0.2F, EntityAttributeModifier.Operation.MULTIPLY_BASE
 	);
+	private static final int field_30548 = 16;
+	private static final float field_30549 = 0.35F;
+	private static final int field_30550 = 5;
+	private static final float field_30551 = 1.6F;
+	private static final float field_30552 = 0.1F;
+	private static final int field_30553 = 3;
+	private static final float field_30554 = 0.2F;
+	private static final float field_30555 = 0.81F;
+	private static final double field_30556 = 0.5;
 	private final SimpleInventory inventory = new SimpleInventory(8);
 	private boolean cannotHunt;
 	protected static final ImmutableList<SensorType<? extends Sensor<? super PiglinEntity>>> SENSOR_TYPES = ImmutableList.of(
@@ -111,25 +123,31 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
 		if (this.isBaby()) {
-			tag.putBoolean("IsBaby", true);
+			nbt.putBoolean("IsBaby", true);
 		}
 
 		if (this.cannotHunt) {
-			tag.putBoolean("CannotHunt", true);
+			nbt.putBoolean("CannotHunt", true);
 		}
 
-		tag.put("Inventory", this.inventory.getTags());
+		nbt.put("Inventory", this.inventory.toNbtList());
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.setBaby(tag.getBoolean("IsBaby"));
-		this.setCannotHunt(tag.getBoolean("CannotHunt"));
-		this.inventory.readTags(tag.getList("Inventory", NbtTypeIds.COMPOUND));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.setBaby(nbt.getBoolean("IsBaby"));
+		this.setCannotHunt(nbt.getBoolean("CannotHunt"));
+		this.inventory.readNbtList(nbt.getList("Inventory", NbtElement.COMPOUND_TYPE));
+	}
+
+	@Debug
+	@Override
+	public Inventory getInventory() {
+		return this.inventory;
 	}
 
 	@Override
@@ -176,7 +194,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
 		if (spawnReason != SpawnReason.STRUCTURE) {
 			if (world.getRandom().nextFloat() < 0.2F) {
@@ -189,7 +207,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 		PiglinBrain.setHuntedRecently(this);
 		this.initEquipment(difficulty);
 		this.updateEnchantments(difficulty);
-		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
 	@Override

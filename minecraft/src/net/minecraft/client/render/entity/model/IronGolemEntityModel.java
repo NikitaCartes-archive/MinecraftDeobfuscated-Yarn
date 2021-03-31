@@ -23,23 +23,23 @@ public class IronGolemEntityModel<T extends IronGolemEntity> extends SinglePartE
 
 	public IronGolemEntityModel(ModelPart root) {
 		this.root = root;
-		this.head = root.getChild("head");
-		this.rightArm = root.getChild("right_arm");
-		this.leftArm = root.getChild("left_arm");
-		this.rightLeg = root.getChild("right_leg");
-		this.leftLeg = root.getChild("left_leg");
+		this.head = root.getChild(EntityModelPartNames.HEAD);
+		this.rightArm = root.getChild(EntityModelPartNames.RIGHT_ARM);
+		this.leftArm = root.getChild(EntityModelPartNames.LEFT_ARM);
+		this.rightLeg = root.getChild(EntityModelPartNames.RIGHT_LEG);
+		this.leftLeg = root.getChild(EntityModelPartNames.LEFT_LEG);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
 		modelPartData.addChild(
-			"head",
+			EntityModelPartNames.HEAD,
 			ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -12.0F, -5.5F, 8.0F, 10.0F, 8.0F).uv(24, 0).cuboid(-1.0F, -5.0F, -7.5F, 2.0F, 4.0F, 2.0F),
 			ModelTransform.pivot(0.0F, -7.0F, -2.0F)
 		);
 		modelPartData.addChild(
-			"body",
+			EntityModelPartNames.BODY,
 			ModelPartBuilder.create()
 				.uv(0, 40)
 				.cuboid(-9.0F, -2.0F, -6.0F, 18.0F, 12.0F, 11.0F)
@@ -48,16 +48,20 @@ public class IronGolemEntityModel<T extends IronGolemEntity> extends SinglePartE
 			ModelTransform.pivot(0.0F, -7.0F, 0.0F)
 		);
 		modelPartData.addChild(
-			"right_arm", ModelPartBuilder.create().uv(60, 21).cuboid(-13.0F, -2.5F, -3.0F, 4.0F, 30.0F, 6.0F), ModelTransform.pivot(0.0F, -7.0F, 0.0F)
+			EntityModelPartNames.RIGHT_ARM,
+			ModelPartBuilder.create().uv(60, 21).cuboid(-13.0F, -2.5F, -3.0F, 4.0F, 30.0F, 6.0F),
+			ModelTransform.pivot(0.0F, -7.0F, 0.0F)
 		);
 		modelPartData.addChild(
-			"left_arm", ModelPartBuilder.create().uv(60, 58).cuboid(9.0F, -2.5F, -3.0F, 4.0F, 30.0F, 6.0F), ModelTransform.pivot(0.0F, -7.0F, 0.0F)
+			EntityModelPartNames.LEFT_ARM, ModelPartBuilder.create().uv(60, 58).cuboid(9.0F, -2.5F, -3.0F, 4.0F, 30.0F, 6.0F), ModelTransform.pivot(0.0F, -7.0F, 0.0F)
 		);
 		modelPartData.addChild(
-			"right_leg", ModelPartBuilder.create().uv(37, 0).cuboid(-3.5F, -3.0F, -3.0F, 6.0F, 16.0F, 5.0F), ModelTransform.pivot(-4.0F, 11.0F, 0.0F)
+			EntityModelPartNames.RIGHT_LEG, ModelPartBuilder.create().uv(37, 0).cuboid(-3.5F, -3.0F, -3.0F, 6.0F, 16.0F, 5.0F), ModelTransform.pivot(-4.0F, 11.0F, 0.0F)
 		);
 		modelPartData.addChild(
-			"left_leg", ModelPartBuilder.create().uv(60, 0).mirrored().cuboid(-3.5F, -3.0F, -3.0F, 6.0F, 16.0F, 5.0F), ModelTransform.pivot(5.0F, 11.0F, 0.0F)
+			EntityModelPartNames.LEFT_LEG,
+			ModelPartBuilder.create().uv(60, 0).mirrored().cuboid(-3.5F, -3.0F, -3.0F, 6.0F, 16.0F, 5.0F),
+			ModelTransform.pivot(5.0F, 11.0F, 0.0F)
 		);
 		return TexturedModelData.of(modelData, 128, 128);
 	}

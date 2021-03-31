@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -25,6 +24,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 
 public class FillCommand {
+	private static final int field_33391 = 32768;
 	private static final Dynamic2CommandExceptionType TOO_BIG_EXCEPTION = new Dynamic2CommandExceptionType(
 		(maxCount, count) -> new TranslatableText("commands.fill.toobig", maxCount, count)
 	);
@@ -139,13 +139,13 @@ public class FillCommand {
 			ServerWorld serverWorld = source.getWorld();
 			int j = 0;
 
-			for (BlockPos blockPos : BlockPos.iterate(range.minX, range.minY, range.minZ, range.maxX, range.maxY, range.maxZ)) {
+			for (BlockPos blockPos : BlockPos.iterate(range.getMinX(), range.getMinY(), range.getMinZ(), range.getMaxX(), range.getMaxY(), range.getMaxZ())) {
 				if (filter == null || filter.test(new CachedBlockPosition(serverWorld, blockPos, true))) {
 					BlockStateArgument blockStateArgument = mode.filter.filter(range, blockPos, block, serverWorld);
 					if (blockStateArgument != null) {
 						BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
 						Clearable.clear(blockEntity);
-						if (blockStateArgument.setBlockState(serverWorld, blockPos, SetBlockStateFlags.NOTIFY_LISTENERS)) {
+						if (blockStateArgument.setBlockState(serverWorld, blockPos, Block.NOTIFY_LISTENERS)) {
 							list.add(blockPos.toImmutable());
 							j++;
 						}
@@ -170,22 +170,22 @@ public class FillCommand {
 	static enum Mode {
 		REPLACE((range, pos, block, world) -> block),
 		OUTLINE(
-			(range, pos, block, world) -> pos.getX() != range.minX
-						&& pos.getX() != range.maxX
-						&& pos.getY() != range.minY
-						&& pos.getY() != range.maxY
-						&& pos.getZ() != range.minZ
-						&& pos.getZ() != range.maxZ
+			(range, pos, block, world) -> pos.getX() != range.getMinX()
+						&& pos.getX() != range.getMaxX()
+						&& pos.getY() != range.getMinY()
+						&& pos.getY() != range.getMaxY()
+						&& pos.getZ() != range.getMinZ()
+						&& pos.getZ() != range.getMaxZ()
 					? null
 					: block
 		),
 		HOLLOW(
-			(range, pos, block, world) -> pos.getX() != range.minX
-						&& pos.getX() != range.maxX
-						&& pos.getY() != range.minY
-						&& pos.getY() != range.maxY
-						&& pos.getZ() != range.minZ
-						&& pos.getZ() != range.maxZ
+			(range, pos, block, world) -> pos.getX() != range.getMinX()
+						&& pos.getX() != range.getMaxX()
+						&& pos.getY() != range.getMinY()
+						&& pos.getY() != range.getMaxY()
+						&& pos.getZ() != range.getMinZ()
+						&& pos.getZ() != range.getMaxZ()
 					? FillCommand.AIR_BLOCK_ARGUMENT
 					: block
 		),

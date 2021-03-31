@@ -42,6 +42,29 @@ public class TimeCheckLootCondition implements LootCondition {
 		return this.value.test(lootContext, (int)l);
 	}
 
+	public static TimeCheckLootCondition.Builder create(BoundedIntUnaryOperator value) {
+		return new TimeCheckLootCondition.Builder(value);
+	}
+
+	public static class Builder implements LootCondition.Builder {
+		@Nullable
+		private Long period;
+		private final BoundedIntUnaryOperator value;
+
+		public Builder(BoundedIntUnaryOperator value) {
+			this.value = value;
+		}
+
+		public TimeCheckLootCondition.Builder period(long period) {
+			this.period = period;
+			return this;
+		}
+
+		public TimeCheckLootCondition build() {
+			return new TimeCheckLootCondition(this.period, this.value);
+		}
+	}
+
 	public static class Serializer implements JsonSerializer<TimeCheckLootCondition> {
 		public void toJson(JsonObject jsonObject, TimeCheckLootCondition timeCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.addProperty("period", timeCheckLootCondition.period);

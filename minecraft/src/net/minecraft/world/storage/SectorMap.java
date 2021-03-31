@@ -1,5 +1,9 @@
 package net.minecraft.world.storage;
 
+import com.google.common.annotations.VisibleForTesting;
+import it.unimi.dsi.fastutil.ints.IntArraySet;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import java.util.BitSet;
 
 public class SectorMap {
@@ -26,5 +30,10 @@ public class SectorMap {
 
 			i = k;
 		}
+	}
+
+	@VisibleForTesting
+	public IntSet method_35322() {
+		return (IntSet)this.bitSet.stream().collect(IntArraySet::new, IntCollection::add, IntCollection::addAll);
 	}
 }

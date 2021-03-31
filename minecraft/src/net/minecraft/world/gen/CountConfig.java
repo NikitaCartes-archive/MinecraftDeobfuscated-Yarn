@@ -1,25 +1,27 @@
 package net.minecraft.world.gen;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.util.math.intprovider.ConstantIntProvider;
+import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
 import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class CountConfig implements DecoratorConfig, FeatureConfig {
-	public static final Codec<CountConfig> CODEC = UniformIntDistribution.createValidatedCodec(-10, 128, 128)
+	public static final Codec<CountConfig> CODEC = IntProvider.createValidatingCodec(-10, 256)
 		.fieldOf("count")
 		.<CountConfig>xmap(CountConfig::new, CountConfig::getCount)
 		.codec();
-	private final UniformIntDistribution count;
+	private final IntProvider count;
 
 	public CountConfig(int count) {
-		this.count = UniformIntDistribution.of(count);
+		this.count = ConstantIntProvider.create(count);
 	}
 
-	public CountConfig(UniformIntDistribution distribution) {
+	public CountConfig(IntProvider distribution) {
 		this.count = distribution;
 	}
 
-	public UniformIntDistribution getCount() {
+	public IntProvider getCount() {
 		return this.count;
 	}
 }

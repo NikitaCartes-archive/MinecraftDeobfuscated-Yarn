@@ -9,7 +9,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.structure.MineshaftGenerator;
 import net.minecraft.structure.StructureManager;
-import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockBox;
@@ -48,8 +47,8 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 	}
 
 	public static class Start extends StructureStart<MineshaftFeatureConfig> {
-		public Start(StructureFeature<MineshaftFeatureConfig> structureFeature, ChunkPos chunkPos, BlockBox blockBox, int i, long l) {
-			super(structureFeature, chunkPos, blockBox, i, l);
+		public Start(StructureFeature<MineshaftFeatureConfig> structureFeature, ChunkPos chunkPos, int i, long l) {
+			super(structureFeature, chunkPos, i, l);
 		}
 
 		public void init(
@@ -64,17 +63,13 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 			MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(
 				0, this.random, chunkPos.getOffsetX(2), chunkPos.getOffsetZ(2), mineshaftFeatureConfig.type
 			);
-			this.children.add(mineshaftRoom);
-			mineshaftRoom.fillOpenings(mineshaftRoom, this.children, this.random);
-			this.setBoundingBoxFromChildren();
+			this.method_35462(mineshaftRoom);
+			mineshaftRoom.fillOpenings(mineshaftRoom, this, this.random);
 			if (mineshaftFeatureConfig.type == MineshaftFeature.Type.MESA) {
 				int i = -5;
-				int j = chunkGenerator.getSeaLevel() - this.boundingBox.maxY + this.boundingBox.getBlockCountY() / 2 - -5;
-				this.boundingBox.move(0, j, 0);
-
-				for (StructurePiece structurePiece : this.children) {
-					structurePiece.translate(0, j, 0);
-				}
+				BlockBox blockBox = this.setBoundingBoxFromChildren();
+				int j = chunkGenerator.getSeaLevel() - blockBox.getMaxY() + blockBox.getBlockCountY() / 2 - -5;
+				this.translateUpward(j);
 			} else {
 				this.randomUpwardTranslation(chunkGenerator.getSeaLevel(), chunkGenerator.getMinimumY(), this.random, 10);
 			}

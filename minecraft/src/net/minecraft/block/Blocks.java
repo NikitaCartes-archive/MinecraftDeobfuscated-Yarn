@@ -24,7 +24,7 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.SignType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.IntRange;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;
@@ -147,7 +147,7 @@ public class Blocks {
 		"deepslate_iron_ore", new OreBlock(AbstractBlock.Settings.copy(IRON_ORE).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE))
 	);
 	public static final Block COAL_ORE = register(
-		"coal_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0F, 3.0F), IntRange.between(0, 2))
+		"coal_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0F, 3.0F), UniformIntProvider.create(0, 2))
 	);
 	public static final Block DEEPSLATE_COAL_ORE = register(
 		"deepslate_coal_ore", new OreBlock(AbstractBlock.Settings.copy(COAL_ORE).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE))
@@ -156,7 +156,7 @@ public class Blocks {
 		"nether_gold_ore",
 		new OreBlock(
 			AbstractBlock.Settings.of(Material.STONE, MapColor.DARK_RED).requiresTool().strength(3.0F, 3.0F).sounds(BlockSoundGroup.NETHER_GOLD_ORE),
-			IntRange.between(0, 1)
+			UniformIntProvider.create(0, 1)
 		)
 	);
 	public static final Block OAK_LOG = register("oak_log", createLogBlock(MapColor.OAK_TAN, MapColor.SPRUCE_BROWN));
@@ -233,10 +233,11 @@ public class Blocks {
 		)
 	);
 	public static final Block LAPIS_ORE = register(
-		"lapis_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0F, 3.0F), IntRange.between(2, 5))
+		"lapis_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0F, 3.0F), UniformIntProvider.create(2, 5))
 	);
 	public static final Block DEEPSLATE_LAPIS_ORE = register(
-		"deepslate_lapis_ore", new OreBlock(AbstractBlock.Settings.copy(LAPIS_ORE).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE), IntRange.between(2, 5))
+		"deepslate_lapis_ore",
+		new OreBlock(AbstractBlock.Settings.copy(LAPIS_ORE).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE), UniformIntProvider.create(2, 5))
 	);
 	public static final Block LAPIS_BLOCK = register(
 		"lapis_block", new Block(AbstractBlock.Settings.of(Material.METAL, MapColor.LAPIS_BLUE).requiresTool().strength(3.0F, 3.0F))
@@ -487,11 +488,11 @@ public class Blocks {
 		"redstone_wire", new RedstoneWireBlock(AbstractBlock.Settings.of(Material.DECORATION).noCollision().breakInstantly())
 	);
 	public static final Block DIAMOND_ORE = register(
-		"diamond_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0F, 3.0F), IntRange.between(3, 7))
+		"diamond_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0F, 3.0F), UniformIntProvider.create(3, 7))
 	);
 	public static final Block DEEPSLATE_DIAMOND_ORE = register(
 		"deepslate_diamond_ore",
-		new OreBlock(AbstractBlock.Settings.copy(DIAMOND_ORE).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE), IntRange.between(3, 7))
+		new OreBlock(AbstractBlock.Settings.copy(DIAMOND_ORE).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE), UniformIntProvider.create(3, 7))
 	);
 	public static final Block DIAMOND_BLOCK = register(
 		"diamond_block",
@@ -996,11 +997,11 @@ public class Blocks {
 	);
 	public static final Block SANDSTONE_STAIRS = register("sandstone_stairs", new StairsBlock(SANDSTONE.getDefaultState(), AbstractBlock.Settings.copy(SANDSTONE)));
 	public static final Block EMERALD_ORE = register(
-		"emerald_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0F, 3.0F), IntRange.between(3, 7))
+		"emerald_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0F, 3.0F), UniformIntProvider.create(3, 7))
 	);
 	public static final Block DEEPSLATE_EMERALD_ORE = register(
 		"deepslate_emerald_ore",
-		new OreBlock(AbstractBlock.Settings.copy(EMERALD_ORE).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE), IntRange.between(3, 7))
+		new OreBlock(AbstractBlock.Settings.copy(EMERALD_ORE).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE), UniformIntProvider.create(3, 7))
 	);
 	public static final Block ENDER_CHEST = register(
 		"ender_chest", new EnderChestBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(22.5F, 600.0F).luminance(state -> 7))
@@ -1202,7 +1203,8 @@ public class Blocks {
 	public static final Block NETHER_QUARTZ_ORE = register(
 		"nether_quartz_ore",
 		new OreBlock(
-			AbstractBlock.Settings.of(Material.STONE, MapColor.DARK_RED).requiresTool().strength(3.0F, 3.0F).sounds(BlockSoundGroup.NETHER_ORE), IntRange.between(2, 5)
+			AbstractBlock.Settings.of(Material.STONE, MapColor.DARK_RED).requiresTool().strength(3.0F, 3.0F).sounds(BlockSoundGroup.NETHER_ORE),
+			UniformIntProvider.create(2, 5)
 		)
 	);
 	public static final Block HOPPER = register(
@@ -1347,6 +1349,10 @@ public class Blocks {
 	);
 	public static final Block BARRIER = register(
 		"barrier", new BarrierBlock(AbstractBlock.Settings.of(Material.BARRIER).strength(-1.0F, 3600000.8F).dropsNothing().nonOpaque().allowsSpawning(Blocks::never))
+	);
+	public static final Block LIGHT = register(
+		"light",
+		new LightBlock(AbstractBlock.Settings.of(Material.AIR).strength(-1.0F, 3600000.8F).dropsNothing().nonOpaque().luminance(LightBlock.STATE_TO_LUMINANCE))
 	);
 	public static final Block IRON_TRAPDOOR = register(
 		"iron_trapdoor",
@@ -2999,7 +3005,7 @@ public class Blocks {
 		)
 	);
 	public static final Block POWDER_SNOW = register(
-		"powder_snow", new PowderSnowBlock(AbstractBlock.Settings.of(Material.POWDER_SNOW).strength(0.1F).sounds(BlockSoundGroup.POWDER_SNOW).dynamicBounds())
+		"powder_snow", new PowderSnowBlock(AbstractBlock.Settings.of(Material.POWDER_SNOW).strength(0.25F).sounds(BlockSoundGroup.POWDER_SNOW).dynamicBounds())
 	);
 	public static final Block SCULK_SENSOR = register(
 		"sculk_sensor",
@@ -3150,17 +3156,19 @@ public class Blocks {
 		)
 	);
 	public static final Block SPORE_BLOSSOM = register(
-		"spore_blossom", new SporeBlossomBlock(AbstractBlock.Settings.of(Material.PLANT).noCollision().sounds(BlockSoundGroup.SPORE_BLOSSOM))
+		"spore_blossom", new SporeBlossomBlock(AbstractBlock.Settings.of(Material.PLANT).breakInstantly().noCollision().sounds(BlockSoundGroup.SPORE_BLOSSOM))
 	);
-	public static final Block AZALEA = register("azalea", new AzaleaBlock(AbstractBlock.Settings.of(Material.PLANT).sounds(BlockSoundGroup.AZALEA).nonOpaque()));
+	public static final Block AZALEA = register(
+		"azalea", new AzaleaBlock(AbstractBlock.Settings.of(Material.PLANT).breakInstantly().sounds(BlockSoundGroup.AZALEA).nonOpaque())
+	);
 	public static final Block FLOWERING_AZALEA = register(
-		"flowering_azalea", new AzaleaBlock(AbstractBlock.Settings.of(Material.PLANT).sounds(BlockSoundGroup.FLOWERING_AZALEA).nonOpaque())
+		"flowering_azalea", new AzaleaBlock(AbstractBlock.Settings.of(Material.PLANT).breakInstantly().sounds(BlockSoundGroup.FLOWERING_AZALEA).nonOpaque())
 	);
 	public static final Block MOSS_CARPET = register(
 		"moss_carpet", new CarpetBlock(AbstractBlock.Settings.of(Material.PLANT, MapColor.GREEN).strength(0.1F).sounds(BlockSoundGroup.MOSS_CARPET))
 	);
 	public static final Block MOSS_BLOCK = register(
-		"moss_block", new MossBlock(AbstractBlock.Settings.of(Material.PLANT, MapColor.GREEN).strength(0.1F).sounds(BlockSoundGroup.MOSS))
+		"moss_block", new MossBlock(AbstractBlock.Settings.of(Material.MOSS_BLOCK, MapColor.GREEN).strength(0.1F).sounds(BlockSoundGroup.MOSS_BLOCK))
 	);
 	public static final Block BIG_DRIPLEAF = register(
 		"big_dripleaf", new BigDripleafBlock(AbstractBlock.Settings.of(Material.PLANT).strength(0.1F).sounds(BlockSoundGroup.BIG_DRIPLEAF))
@@ -3169,29 +3177,26 @@ public class Blocks {
 		"big_dripleaf_stem", new BigDripleafStemBlock(AbstractBlock.Settings.of(Material.PLANT).noCollision().strength(0.1F).sounds(BlockSoundGroup.BIG_DRIPLEAF))
 	);
 	public static final Block SMALL_DRIPLEAF = register(
-		"small_dripleaf",
-		new SmallDripleafBlock(AbstractBlock.Settings.of(Material.PLANT).strength(0.1F).noCollision().breakInstantly().sounds(BlockSoundGroup.SMALL_DRIPLEAF))
+		"small_dripleaf", new SmallDripleafBlock(AbstractBlock.Settings.of(Material.PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.SMALL_DRIPLEAF))
 	);
 	public static final Block HANGING_ROOTS = register(
 		"hanging_roots",
 		new HangingRootsBlock(
-			AbstractBlock.Settings.of(Material.PLANT, MapColor.DIRT_BROWN).noCollision().breakInstantly().strength(0.1F).sounds(BlockSoundGroup.HANGING_ROOTS)
+			AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT, MapColor.DIRT_BROWN).noCollision().breakInstantly().sounds(BlockSoundGroup.HANGING_ROOTS)
 		)
 	);
 	public static final Block ROOTED_DIRT = register(
-		"rooted_dirt", new RootedDirtBlock(AbstractBlock.Settings.of(Material.SOIL, MapColor.DIRT_BROWN).strength(0.1F).sounds(BlockSoundGroup.ROOTED_DIRT))
+		"rooted_dirt", new RootedDirtBlock(AbstractBlock.Settings.of(Material.SOIL, MapColor.DIRT_BROWN).strength(0.5F).sounds(BlockSoundGroup.ROOTED_DIRT))
 	);
 	public static final Block DEEPSLATE = register(
 		"deepslate",
 		new PillarBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.STONE_GRAY).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.DEEPSLATE))
 	);
-	public static final Block COBBLED_DEEPSLATE = register("cobbled_deepslate", new Block(AbstractBlock.Settings.copy(DEEPSLATE)));
+	public static final Block COBBLED_DEEPSLATE = register("cobbled_deepslate", new Block(AbstractBlock.Settings.copy(DEEPSLATE).strength(3.5F, 6.0F)));
 	public static final Block COBBLED_DEEPSLATE_STAIRS = register(
 		"cobbled_deepslate_stairs", new StairsBlock(COBBLED_DEEPSLATE.getDefaultState(), AbstractBlock.Settings.copy(COBBLED_DEEPSLATE))
 	);
-	public static final Block COBBLED_DEEPSLATE_SLAB = register(
-		"cobbled_deepslate_slab", new SlabBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.STONE_GRAY).requiresTool().strength(3.5F, 6.0F))
-	);
+	public static final Block COBBLED_DEEPSLATE_SLAB = register("cobbled_deepslate_slab", new SlabBlock(AbstractBlock.Settings.copy(COBBLED_DEEPSLATE)));
 	public static final Block COBBLED_DEEPSLATE_WALL = register("cobbled_deepslate_wall", new WallBlock(AbstractBlock.Settings.copy(COBBLED_DEEPSLATE)));
 	public static final Block POLISHED_DEEPSLATE = register(
 		"polished_deepslate", new Block(AbstractBlock.Settings.copy(COBBLED_DEEPSLATE).strength(3.5F, 6.0F).sounds(BlockSoundGroup.POLISHED_DEEPSLATE))
@@ -3202,7 +3207,7 @@ public class Blocks {
 	public static final Block POLISHED_DEEPSLATE_SLAB = register("polished_deepslate_slab", new SlabBlock(AbstractBlock.Settings.copy(POLISHED_DEEPSLATE)));
 	public static final Block POLISHED_DEEPSLATE_WALL = register("polished_deepslate_wall", new WallBlock(AbstractBlock.Settings.copy(POLISHED_DEEPSLATE)));
 	public static final Block DEEPSLATE_TILES = register(
-		"deepslate_tiles", new Block(AbstractBlock.Settings.copy(COBBLED_DEEPSLATE).strength(1.5F, 6.0F).sounds(BlockSoundGroup.DEEPSLATE_TILES))
+		"deepslate_tiles", new Block(AbstractBlock.Settings.copy(COBBLED_DEEPSLATE).sounds(BlockSoundGroup.DEEPSLATE_TILES))
 	);
 	public static final Block DEEPSLATE_TILE_STAIRS = register(
 		"deepslate_tile_stairs", new StairsBlock(DEEPSLATE_TILES.getDefaultState(), AbstractBlock.Settings.copy(DEEPSLATE_TILES))
@@ -3210,7 +3215,7 @@ public class Blocks {
 	public static final Block DEEPSLATE_TILE_SLAB = register("deepslate_tile_slab", new SlabBlock(AbstractBlock.Settings.copy(DEEPSLATE_TILES)));
 	public static final Block DEEPSLATE_TILE_WALL = register("deepslate_tile_wall", new WallBlock(AbstractBlock.Settings.copy(DEEPSLATE_TILES)));
 	public static final Block DEEPSLATE_BRICKS = register(
-		"deepslate_bricks", new Block(AbstractBlock.Settings.copy(COBBLED_DEEPSLATE).strength(1.5F, 6.0F).sounds(BlockSoundGroup.DEEPSLATE_BRICKS))
+		"deepslate_bricks", new Block(AbstractBlock.Settings.copy(COBBLED_DEEPSLATE).sounds(BlockSoundGroup.DEEPSLATE_BRICKS))
 	);
 	public static final Block DEEPSLATE_BRICK_STAIRS = register(
 		"deepslate_brick_stairs", new StairsBlock(DEEPSLATE_BRICKS.getDefaultState(), AbstractBlock.Settings.copy(DEEPSLATE_BRICKS))
@@ -3218,7 +3223,7 @@ public class Blocks {
 	public static final Block DEEPSLATE_BRICK_SLAB = register("deepslate_brick_slab", new SlabBlock(AbstractBlock.Settings.copy(DEEPSLATE_BRICKS)));
 	public static final Block DEEPSLATE_BRICK_WALL = register("deepslate_brick_wall", new WallBlock(AbstractBlock.Settings.copy(DEEPSLATE_BRICKS)));
 	public static final Block CHISELED_DEEPSLATE = register(
-		"chiseled_deepslate", new Block(AbstractBlock.Settings.copy(COBBLED_DEEPSLATE).strength(1.5F, 6.0F).sounds(BlockSoundGroup.DEEPSLATE_BRICKS))
+		"chiseled_deepslate", new Block(AbstractBlock.Settings.copy(COBBLED_DEEPSLATE).sounds(BlockSoundGroup.DEEPSLATE_BRICKS))
 	);
 	public static final Block CRACKED_DEEPSLATE_BRICKS = register("cracked_deepslate_bricks", new Block(AbstractBlock.Settings.copy(DEEPSLATE_BRICKS)));
 	public static final Block CRACKED_DEEPSLATE_TILES = register("cracked_deepslate_tiles", new Block(AbstractBlock.Settings.copy(DEEPSLATE_TILES)));

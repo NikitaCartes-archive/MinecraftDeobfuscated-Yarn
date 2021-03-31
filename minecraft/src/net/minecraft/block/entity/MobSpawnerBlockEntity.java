@@ -1,7 +1,7 @@
 package net.minecraft.block.entity;
 
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
@@ -24,7 +24,7 @@ public class MobSpawnerBlockEntity extends BlockEntity {
 			super.setSpawnEntry(world, pos, spawnEntry);
 			if (world != null) {
 				BlockState blockState = world.getBlockState(pos);
-				world.updateListeners(pos, blockState, blockState, SetBlockStateFlags.NO_REDRAW);
+				world.updateListeners(pos, blockState, blockState, Block.NO_REDRAW);
 			}
 		}
 	};
@@ -34,16 +34,16 @@ public class MobSpawnerBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void readNbt(NbtCompound tag) {
-		super.readNbt(tag);
-		this.logic.readNbt(this.world, this.pos, tag);
+	public void readNbt(NbtCompound nbt) {
+		super.readNbt(nbt);
+		this.logic.readNbt(this.world, this.pos, nbt);
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound tag) {
-		super.writeNbt(tag);
-		this.logic.writeNbt(this.world, this.pos, tag);
-		return tag;
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		super.writeNbt(nbt);
+		this.logic.writeNbt(this.world, this.pos, nbt);
+		return nbt;
 	}
 
 	public static void clientTick(World world, BlockPos pos, BlockState state, MobSpawnerBlockEntity blockEntity) {
@@ -57,7 +57,7 @@ public class MobSpawnerBlockEntity extends BlockEntity {
 	@Nullable
 	@Override
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, 1, this.toInitialChunkDataNbt());
+		return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.MOB_SPAWNER, this.toInitialChunkDataNbt());
 	}
 
 	@Override

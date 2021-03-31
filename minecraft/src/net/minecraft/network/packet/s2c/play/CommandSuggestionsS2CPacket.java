@@ -4,8 +4,6 @@ import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -52,12 +50,10 @@ public class CommandSuggestionsS2CPacket implements Packet<ClientPlayPacketListe
 		clientPlayPacketListener.onCommandSuggestions(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getCompletionId() {
 		return this.completionId;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Suggestions getSuggestions() {
 		return this.suggestions;
 	}

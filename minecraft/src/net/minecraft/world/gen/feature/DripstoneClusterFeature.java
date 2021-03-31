@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.tag.BlockTags;
@@ -34,11 +34,11 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 		if (!DripstoneHelper.canGenerate(structureWorldAccess, blockPos)) {
 			return false;
 		} else {
-			int i = dripstoneClusterFeatureConfig.height.getValue(random);
+			int i = dripstoneClusterFeatureConfig.height.get(random);
 			float f = dripstoneClusterFeatureConfig.wetness.get(random);
 			float g = dripstoneClusterFeatureConfig.density.get(random);
-			int j = dripstoneClusterFeatureConfig.radius.getValue(random);
-			int k = dripstoneClusterFeatureConfig.radius.getValue(random);
+			int j = dripstoneClusterFeatureConfig.radius.get(random);
+			int k = dripstoneClusterFeatureConfig.radius.get(random);
 
 			for (int l = -j; l <= j; l++) {
 				for (int m = -k; m <= k; m++) {
@@ -76,7 +76,7 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 				if (bl && optionalInt2.isPresent() && this.canWaterSpawn(world, pos.withY(optionalInt2.getAsInt()))) {
 					int i = optionalInt2.getAsInt();
 					caveSurface = ((CaveSurface)optional.get()).withFloor(OptionalInt.of(i - 1));
-					world.setBlockState(pos.withY(i), Blocks.WATER.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+					world.setBlockState(pos.withY(i), Blocks.WATER.getDefaultState(), Block.NOTIFY_LISTENERS);
 				} else {
 					caveSurface = (CaveSurface)optional.get();
 				}
@@ -85,7 +85,7 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 				boolean bl2 = random.nextDouble() < dripstoneChance;
 				int l;
 				if (optionalInt.isPresent() && bl2 && !this.isLava(world, pos.withY(optionalInt.getAsInt()))) {
-					int j = config.dripstoneBlockLayerThickness.getValue(random);
+					int j = config.dripstoneBlockLayerThickness.get(random);
 					this.placeDripstoneBlocks(world, pos.withY(optionalInt.getAsInt()), j, Direction.UP);
 					int k;
 					if (optionalInt3.isPresent()) {
@@ -102,7 +102,7 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 				boolean bl3 = random.nextDouble() < dripstoneChance;
 				int j;
 				if (optionalInt3.isPresent() && bl3 && !this.isLava(world, pos.withY(optionalInt3.getAsInt()))) {
-					int m = config.dripstoneBlockLayerThickness.getValue(random);
+					int m = config.dripstoneBlockLayerThickness.get(random);
 					this.placeDripstoneBlocks(world, pos.withY(optionalInt3.getAsInt()), m, Direction.DOWN);
 					j = Math.max(0, l + MathHelper.nextBetween(random, -config.maxStalagmiteStalactiteHeightDiff, config.maxStalagmiteStalactiteHeightDiff));
 				} else {

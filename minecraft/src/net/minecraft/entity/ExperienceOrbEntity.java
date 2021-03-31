@@ -2,8 +2,6 @@ package net.minecraft.entity;
 
 import java.util.List;
 import java.util.Map.Entry;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.damage.DamageSource;
@@ -23,6 +21,11 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class ExperienceOrbEntity extends Entity {
+	private static final int field_30055 = 6000;
+	private static final int field_30056 = 20;
+	private static final int field_30057 = 8;
+	private static final int field_30058 = 40;
+	private static final double field_30059 = 0.5;
 	private int orbAge;
 	private int health = 5;
 	private int amount;
@@ -187,19 +190,19 @@ public class ExperienceOrbEntity extends Entity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		tag.putShort("Health", (short)this.health);
-		tag.putShort("Age", (short)this.orbAge);
-		tag.putShort("Value", (short)this.amount);
-		tag.putInt("Count", this.pickingCount);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		nbt.putShort("Health", (short)this.health);
+		nbt.putShort("Age", (short)this.orbAge);
+		nbt.putShort("Value", (short)this.amount);
+		nbt.putInt("Count", this.pickingCount);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		this.health = tag.getShort("Health");
-		this.orbAge = tag.getShort("Age");
-		this.amount = tag.getShort("Value");
-		this.pickingCount = Math.max(tag.getInt("Count"), 1);
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		this.health = nbt.getShort("Health");
+		this.orbAge = nbt.getShort("Age");
+		this.amount = nbt.getShort("Value");
+		this.pickingCount = Math.max(nbt.getInt("Count"), 1);
 	}
 
 	@Override
@@ -208,18 +211,9 @@ public class ExperienceOrbEntity extends Entity {
 			if (player.experiencePickUpDelay == 0) {
 				player.experiencePickUpDelay = 2;
 				player.sendPickup(this, 1);
-				Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.chooseEquipmentWith(Enchantments.MENDING, player, ItemStack::isDamaged);
-				if (entry != null) {
-					ItemStack itemStack = (ItemStack)entry.getValue();
-					if (!itemStack.isEmpty() && itemStack.isDamaged()) {
-						int i = Math.min(this.getMendingRepairAmount(this.amount), itemStack.getDamage());
-						this.amount = this.amount - this.getMendingRepairCost(i);
-						itemStack.setDamage(itemStack.getDamage() - i);
-					}
-				}
-
-				if (this.amount > 0) {
-					player.addExperience(this.amount);
+				int i = this.method_35051(player, this.amount);
+				if (i > 0) {
+					player.addExperience(i);
 				}
 
 				this.pickingCount--;
@@ -227,6 +221,19 @@ public class ExperienceOrbEntity extends Entity {
 					this.discard();
 				}
 			}
+		}
+	}
+
+	private int method_35051(PlayerEntity playerEntity, int i) {
+		Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.chooseEquipmentWith(Enchantments.MENDING, playerEntity, ItemStack::isDamaged);
+		if (entry != null) {
+			ItemStack itemStack = (ItemStack)entry.getValue();
+			int j = Math.min(this.getMendingRepairAmount(this.amount), itemStack.getDamage());
+			itemStack.setDamage(itemStack.getDamage() - j);
+			int k = i - this.getMendingRepairCost(j);
+			return k > 0 ? this.method_35051(playerEntity, k) : 0;
+		} else {
+			return i;
 		}
 	}
 
@@ -242,7 +249,6 @@ public class ExperienceOrbEntity extends Entity {
 		return this.amount;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getOrbSize() {
 		if (this.amount >= 2477) {
 			return 10;

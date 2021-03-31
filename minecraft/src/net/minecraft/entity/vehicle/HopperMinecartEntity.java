@@ -18,6 +18,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public class HopperMinecartEntity extends StorageMinecartEntity implements Hopper {
+	public static final int field_30702 = 4;
 	private boolean enabled = true;
 	private int transferCooldown = -1;
 	private final BlockPos currentBlockPos = BlockPos.ORIGIN;
@@ -124,17 +125,17 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	}
 
 	@Override
-	protected void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putInt("TransferCooldown", this.transferCooldown);
-		tag.putBoolean("Enabled", this.enabled);
+	protected void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putInt("TransferCooldown", this.transferCooldown);
+		nbt.putBoolean("Enabled", this.enabled);
 	}
 
 	@Override
-	protected void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.transferCooldown = tag.getInt("TransferCooldown");
-		this.enabled = tag.contains("Enabled") ? tag.getBoolean("Enabled") : true;
+	protected void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.transferCooldown = nbt.getInt("TransferCooldown");
+		this.enabled = nbt.contains("Enabled") ? nbt.getBoolean("Enabled") : true;
 	}
 
 	public void setTransferCooldown(int cooldown) {

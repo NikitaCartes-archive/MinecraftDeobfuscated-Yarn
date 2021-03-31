@@ -6,7 +6,19 @@ import net.minecraft.util.Util;
 import org.apache.commons.lang3.Validate;
 
 public class PackedIntegerArray {
-	private static final int[] field_24078 = new int[]{
+	/**
+	 * Magic constants for faster integer division by a constant.
+	 * 
+	 * <p>This is computed as {@code (n * scale + offset) >> (32 + shift)}. For a divisor n,
+	 * the constants are stored as such:
+	 * 
+	 * <ul>
+	 * <li>scale at 3 * (n - 1)</li>
+	 * <li>offset at 3 * (n - 1) + 1</li>
+	 * <li>shift at 3 * (n - 1) + 2</li>
+	 * </ul>
+	 */
+	private static final int[] INDEX_PARAMETERS = new int[]{
 		-1,
 		-1,
 		0,
@@ -204,10 +216,10 @@ public class PackedIntegerArray {
 	private final int elementBits;
 	private final long maxValue;
 	private final int size;
-	private final int field_24079;
-	private final int field_24080;
-	private final int field_24081;
-	private final int field_24082;
+	private final int elementsPerLong;
+	private final int indexScale;
+	private final int indexOffset;
+	private final int indexShift;
 
 	public PackedIntegerArray(int elementBits, int size) {
 		this(elementBits, size, null);
@@ -218,12 +230,12 @@ public class PackedIntegerArray {
 		this.size = size;
 		this.elementBits = elementBits;
 		this.maxValue = (1L << elementBits) - 1L;
-		this.field_24079 = (char)(64 / elementBits);
-		int i = 3 * (this.field_24079 - 1);
-		this.field_24080 = field_24078[i + 0];
-		this.field_24081 = field_24078[i + 1];
-		this.field_24082 = field_24078[i + 2];
-		int j = (size + this.field_24079 - 1) / this.field_24079;
+		this.elementsPerLong = (char)(64 / elementBits);
+		int i = 3 * (this.elementsPerLong - 1);
+		this.indexScale = INDEX_PARAMETERS[i + 0];
+		this.indexOffset = INDEX_PARAMETERS[i + 1];
+		this.indexShift = INDEX_PARAMETERS[i + 2];
+		int j = (size + this.elementsPerLong - 1) / this.elementsPerLong;
 		if (storage != null) {
 			if (storage.length != j) {
 				throw (RuntimeException)Util.throwOrPause(new RuntimeException("Invalid length given for storage, got: " + storage.length + " but expected: " + j));
@@ -235,18 +247,18 @@ public class PackedIntegerArray {
 		}
 	}
 
-	private int method_27284(int i) {
-		long l = Integer.toUnsignedLong(this.field_24080);
-		long m = Integer.toUnsignedLong(this.field_24081);
-		return (int)((long)i * l + m >> 32 >> this.field_24082);
+	private int getStorageIndex(int index) {
+		long l = Integer.toUnsignedLong(this.indexScale);
+		long m = Integer.toUnsignedLong(this.indexOffset);
+		return (int)((long)index * l + m >> 32 >> this.indexShift);
 	}
 
 	public int setAndGetOldValue(int index, int value) {
 		Validate.inclusiveBetween(0L, (long)(this.size - 1), (long)index);
 		Validate.inclusiveBetween(0L, this.maxValue, (long)value);
-		int i = this.method_27284(index);
+		int i = this.getStorageIndex(index);
 		long l = this.storage[i];
-		int j = (index - i * this.field_24079) * this.elementBits;
+		int j = (index - i * this.elementsPerLong) * this.elementBits;
 		int k = (int)(l >> j & this.maxValue);
 		this.storage[i] = l & ~(this.maxValue << j) | ((long)value & this.maxValue) << j;
 		return k;
@@ -255,17 +267,17 @@ public class PackedIntegerArray {
 	public void set(int index, int value) {
 		Validate.inclusiveBetween(0L, (long)(this.size - 1), (long)index);
 		Validate.inclusiveBetween(0L, this.maxValue, (long)value);
-		int i = this.method_27284(index);
+		int i = this.getStorageIndex(index);
 		long l = this.storage[i];
-		int j = (index - i * this.field_24079) * this.elementBits;
+		int j = (index - i * this.elementsPerLong) * this.elementBits;
 		this.storage[i] = l & ~(this.maxValue << j) | ((long)value & this.maxValue) << j;
 	}
 
 	public int get(int index) {
 		Validate.inclusiveBetween(0L, (long)(this.size - 1), (long)index);
-		int i = this.method_27284(index);
+		int i = this.getStorageIndex(index);
 		long l = this.storage[i];
-		int j = (index - i * this.field_24079) * this.elementBits;
+		int j = (index - i * this.elementsPerLong) * this.elementBits;
 		return (int)(l >> j & this.maxValue);
 	}
 
@@ -277,11 +289,15 @@ public class PackedIntegerArray {
 		return this.size;
 	}
 
+	public int getElementBits() {
+		return this.elementBits;
+	}
+
 	public void forEach(IntConsumer consumer) {
 		int i = 0;
 
 		for (long l : this.storage) {
-			for (int j = 0; j < this.field_24079; j++) {
+			for (int j = 0; j < this.elementsPerLong; j++) {
 				consumer.accept((int)(l & this.maxValue));
 				l >>= this.elementBits;
 				if (++i >= this.size) {

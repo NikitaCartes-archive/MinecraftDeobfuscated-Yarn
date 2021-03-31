@@ -36,14 +36,12 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkRenderDistanceCenterS2CPacket;
@@ -89,11 +87,18 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements ChunkHolder.PlayersWatchingChunkProvider {
+	private static final byte field_29671 = -1;
+	private static final byte field_29672 = 0;
+	private static final byte field_29673 = 1;
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int field_29674 = 200;
+	private static final int field_29675 = 3;
+	public static final int field_29669 = 33;
 	/**
 	 * Specifies the maximum ticket level a chunk can be before a chunk's {@link net.minecraft.server.world.ChunkHolder.LevelType} is {@link net.minecraft.server.world.ChunkHolder.LevelType#BORDER}.
 	 */
 	public static final int MAX_LEVEL = 33 + ChunkStatus.getMaxDistanceFromFull();
+	public static final int field_29670 = 31;
 	private final Long2ObjectLinkedOpenHashMap<ChunkHolder> currentChunkHolders = new Long2ObjectLinkedOpenHashMap<>();
 	private volatile Long2ObjectLinkedOpenHashMap<ChunkHolder> chunkHolders = this.currentChunkHolders.clone();
 	private final Long2ObjectLinkedOpenHashMap<ChunkHolder> chunksToUnload = new Long2ObjectLinkedOpenHashMap<>();
@@ -182,6 +187,10 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return getChebyshevDistance(pos, i, j);
 	}
 
+	private static int method_34869(ChunkPos chunkPos, Entity entity) {
+		return getChebyshevDistance(chunkPos, ChunkSectionPos.getSectionCoord(entity.getBlockX()), ChunkSectionPos.getSectionCoord(entity.getBlockZ()));
+	}
+
 	private static int getChebyshevDistance(ChunkPos pos, int x, int z) {
 		int i = pos.x - x;
 		int j = pos.z - z;
@@ -209,7 +218,6 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		};
 	}
 
-	@Environment(EnvType.CLIENT)
 	public String getChunkLoadingDebugInfo(ChunkPos chunkPos) {
 		ChunkHolder chunkHolder = this.getChunkHolder(chunkPos.toLong());
 		if (chunkHolder == null) {
@@ -477,7 +485,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				this.world.getProfiler().visit("chunkLoad");
 				NbtCompound nbtCompound = this.getUpdatedChunkNbt(pos);
 				if (nbtCompound != null) {
-					boolean bl = nbtCompound.contains("Level", NbtTypeIds.COMPOUND) && nbtCompound.getCompound("Level").contains("Status", NbtTypeIds.STRING);
+					boolean bl = nbtCompound.contains("Level", NbtElement.COMPOUND_TYPE) && nbtCompound.getCompound("Level").contains("Status", NbtElement.STRING_TYPE);
 					if (bl) {
 						Chunk chunk = ChunkSerializer.deserialize(this.world, this.structureManager, this.pointOfInterestStorage, pos, nbtCompound);
 						this.method_27053(pos, chunk.getStatus().getChunkType());
@@ -650,7 +658,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 				this.world.getProfiler().visit("chunkSave");
 				NbtCompound nbtCompound = ChunkSerializer.serialize(this.world, chunk);
-				this.setTagAt(chunkPos, nbtCompound);
+				this.setNbt(chunkPos, nbtCompound);
 				this.method_27053(chunkPos, chunkStatus.getChunkType());
 				return true;
 			} catch (Exception var5) {

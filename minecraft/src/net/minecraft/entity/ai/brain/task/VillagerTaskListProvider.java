@@ -16,6 +16,8 @@ import net.minecraft.village.VillagerProfession;
 import net.minecraft.world.poi.PointOfInterestType;
 
 public class VillagerTaskListProvider {
+	private static final float field_30189 = 0.4F;
+
 	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createCoreTasks(VillagerProfession profession, float speed) {
 		return ImmutableList.of(
 			Pair.of(0, new StayAboveWaterTask(0.8F)),
@@ -240,6 +242,7 @@ public class VillagerTaskListProvider {
 					Pair.of(new FollowMobTask(EntityType.PLAYER, 8.0F), 2),
 					Pair.of(new FollowMobTask(SpawnGroup.CREATURE, 8.0F), 1),
 					Pair.of(new FollowMobTask(SpawnGroup.WATER_CREATURE, 8.0F), 1),
+					Pair.of(new FollowMobTask(SpawnGroup.UNDERGROUND_WATER_CREATURE, 8.0F), 1),
 					Pair.of(new FollowMobTask(SpawnGroup.WATER_AMBIENT, 8.0F), 1),
 					Pair.of(new FollowMobTask(SpawnGroup.MONSTER, 8.0F), 1),
 					Pair.of(new WaitTask(30, 60), 2)

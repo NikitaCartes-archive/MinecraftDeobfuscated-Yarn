@@ -1,7 +1,5 @@
 package net.minecraft.screen;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -16,6 +14,16 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class BrewingStandScreenHandler extends ScreenHandler {
+	private static final int field_30763 = 0;
+	private static final int field_30764 = 2;
+	private static final int field_30765 = 3;
+	private static final int field_30766 = 4;
+	private static final int field_30767 = 5;
+	private static final int field_30768 = 2;
+	private static final int field_30769 = 5;
+	private static final int field_30770 = 32;
+	private static final int field_30771 = 32;
+	private static final int field_30772 = 41;
 	private final Inventory inventory;
 	private final PropertyDelegate propertyDelegate;
 	private final Slot ingredientSlot;
@@ -108,12 +116,10 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 		return itemStack;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getFuel() {
 		return this.propertyDelegate.get(1);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getBrewTime() {
 		return this.propertyDelegate.get(0);
 	}

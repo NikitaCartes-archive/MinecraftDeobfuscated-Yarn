@@ -40,6 +40,8 @@ import org.apache.logging.log4j.Logger;
 
 public class UserCache {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int field_29788 = 1000;
+	private static final int field_29789 = 1;
 	private static boolean useRemote;
 	private final Map<String, UserCache.Entry> byName = Maps.<String, UserCache.Entry>newConcurrentMap();
 	private final Map<UUID, UserCache.Entry> byUuid = Maps.<UUID, UserCache.Entry>newConcurrentMap();

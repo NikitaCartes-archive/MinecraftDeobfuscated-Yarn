@@ -3,8 +3,6 @@ package net.minecraft.block;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.Map;
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.block.entity.BlockEntity;
@@ -37,6 +35,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
 import net.minecraft.util.math.PositionImpl;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 
 public class DispenserBlock extends BlockWithEntity {
@@ -45,6 +44,7 @@ public class DispenserBlock extends BlockWithEntity {
 	private static final Map<Item, DispenserBehavior> BEHAVIORS = Util.make(
 		new Object2ObjectOpenHashMap<>(), object2ObjectOpenHashMap -> object2ObjectOpenHashMap.defaultReturnValue(new ItemDispenserBehavior())
 	);
+	private static final int field_31082 = 4;
 
 	public static void registerBehavior(ItemConvertible provider, DispenserBehavior behavior) {
 		BEHAVIORS.put(provider.asItem(), behavior);
@@ -100,9 +100,9 @@ public class DispenserBlock extends BlockWithEntity {
 		boolean bl2 = (Boolean)state.get(TRIGGERED);
 		if (bl && !bl2) {
 			world.getBlockTickScheduler().schedule(pos, this, 4);
-			world.setBlockState(pos, state.with(TRIGGERED, Boolean.valueOf(true)), SetBlockStateFlags.NO_REDRAW);
+			world.setBlockState(pos, state.with(TRIGGERED, Boolean.valueOf(true)), Block.NO_REDRAW);
 		} else if (!bl && bl2) {
-			world.setBlockState(pos, state.with(TRIGGERED, Boolean.valueOf(false)), SetBlockStateFlags.NO_REDRAW);
+			world.setBlockState(pos, state.with(TRIGGERED, Boolean.valueOf(false)), Block.NO_REDRAW);
 		}
 	}
 

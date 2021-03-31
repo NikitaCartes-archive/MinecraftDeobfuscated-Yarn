@@ -9,7 +9,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -24,6 +24,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 
 public class CloneCommand {
+	private static final int field_33386 = 32768;
 	private static final SimpleCommandExceptionType OVERLAP_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.clone.overlap"));
 	private static final Dynamic2CommandExceptionType TOO_BIG_EXCEPTION = new Dynamic2CommandExceptionType(
 		(maxCount, count) -> new TranslatableText("commands.clone.toobig", maxCount, count)
@@ -235,11 +236,13 @@ public class CloneCommand {
 					List<CloneCommand.BlockInfo> list2 = Lists.<CloneCommand.BlockInfo>newArrayList();
 					List<CloneCommand.BlockInfo> list3 = Lists.<CloneCommand.BlockInfo>newArrayList();
 					Deque<BlockPos> deque = Lists.<BlockPos>newLinkedList();
-					BlockPos blockPos2 = new BlockPos(blockBox2.minX - blockBox.minX, blockBox2.minY - blockBox.minY, blockBox2.minZ - blockBox.minZ);
+					BlockPos blockPos2 = new BlockPos(
+						blockBox2.getMinX() - blockBox.getMinX(), blockBox2.getMinY() - blockBox.getMinY(), blockBox2.getMinZ() - blockBox.getMinZ()
+					);
 
-					for (int j = blockBox.minZ; j <= blockBox.maxZ; j++) {
-						for (int k = blockBox.minY; k <= blockBox.maxY; k++) {
-							for (int l = blockBox.minX; l <= blockBox.maxX; l++) {
+					for (int j = blockBox.getMinZ(); j <= blockBox.getMaxZ(); j++) {
+						for (int k = blockBox.getMinY(); k <= blockBox.getMaxY(); k++) {
+							for (int l = blockBox.getMinX(); l <= blockBox.getMaxX(); l++) {
 								BlockPos blockPos3 = new BlockPos(l, k, j);
 								BlockPos blockPos4 = blockPos3.add(blockPos2);
 								CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(serverWorld, blockPos3, false);
@@ -266,11 +269,11 @@ public class CloneCommand {
 						for (BlockPos blockPos5 : deque) {
 							BlockEntity blockEntity2 = serverWorld.getBlockEntity(blockPos5);
 							Clearable.clear(blockEntity2);
-							serverWorld.setBlockState(blockPos5, Blocks.BARRIER.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+							serverWorld.setBlockState(blockPos5, Blocks.BARRIER.getDefaultState(), Block.NOTIFY_LISTENERS);
 						}
 
 						for (BlockPos blockPos5 : deque) {
-							serverWorld.setBlockState(blockPos5, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT);
+							serverWorld.setBlockState(blockPos5, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
 						}
 					}
 
@@ -283,13 +286,13 @@ public class CloneCommand {
 					for (CloneCommand.BlockInfo blockInfo : list5) {
 						BlockEntity blockEntity3 = serverWorld.getBlockEntity(blockInfo.pos);
 						Clearable.clear(blockEntity3);
-						serverWorld.setBlockState(blockInfo.pos, Blocks.BARRIER.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+						serverWorld.setBlockState(blockInfo.pos, Blocks.BARRIER.getDefaultState(), Block.NOTIFY_LISTENERS);
 					}
 
 					int lx = 0;
 
 					for (CloneCommand.BlockInfo blockInfo2 : list4) {
-						if (serverWorld.setBlockState(blockInfo2.pos, blockInfo2.state, SetBlockStateFlags.NOTIFY_LISTENERS)) {
+						if (serverWorld.setBlockState(blockInfo2.pos, blockInfo2.state, Block.NOTIFY_LISTENERS)) {
 							lx++;
 						}
 					}
@@ -304,7 +307,7 @@ public class CloneCommand {
 							blockEntity4.markDirty();
 						}
 
-						serverWorld.setBlockState(blockInfo2x.pos, blockInfo2x.state, SetBlockStateFlags.NOTIFY_LISTENERS);
+						serverWorld.setBlockState(blockInfo2x.pos, blockInfo2x.state, Block.NOTIFY_LISTENERS);
 					}
 
 					for (CloneCommand.BlockInfo blockInfo2x : list5) {

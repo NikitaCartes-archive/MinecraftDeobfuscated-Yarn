@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -11,6 +9,9 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final int ADD_MODE = 0;
+	public static final int REMOVE_MODE = 1;
+	public static final int UPDATE_MODE = 2;
 	private final String name;
 	private final Text displayName;
 	private final ScoreboardCriterion.RenderType type;
@@ -49,22 +50,18 @@ public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPack
 		clientPlayPacketListener.onScoreboardObjectiveUpdate(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public String getName() {
 		return this.name;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Text getDisplayName() {
 		return this.displayName;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getMode() {
 		return this.mode;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public ScoreboardCriterion.RenderType getType() {
 		return this.type;
 	}

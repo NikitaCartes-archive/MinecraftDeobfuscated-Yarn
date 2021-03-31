@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
@@ -17,10 +15,21 @@ import net.minecraft.util.Formatting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Represents a resource pack in a {@link ResourcePackManager}.
+ * 
+ * <p>Compared to a single-use {@link ResourcePack}, a profile is persistent
+ * and serves as {@linkplain #createResourcePack a factory} for the single-use
+ * packs. It also contains user-friendly information about resource packs.
+ * 
+ * <p>The profiles are registered by {@link ResourcePackProvider}s.
+ * 
+ * <p>Closing the profile doesn't have any effect.
+ */
 public class ResourcePackProfile implements AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final String name;
-	private final Supplier<ResourcePack> packGetter;
+	private final Supplier<ResourcePack> packFactory;
 	private final Text displayName;
 	private final Text description;
 	private final ResourcePackCompatibility compatibility;
@@ -29,21 +38,29 @@ public class ResourcePackProfile implements AutoCloseable {
 	private final boolean pinned;
 	private final ResourcePackSource source;
 
+	/**
+	 * Creates a resource pack profile from the given parameters.
+	 * 
+	 * <p>Compared to calling the factory directly, this utility method obtains the
+	 * pack's metadata information from the pack created by the {@code packFactory}.
+	 * If the created pack doesn't have metadata information, this method returns
+	 * {@code null}.
+	 * 
+	 * @return the created profile, or {@code null} if missing metadata
+	 */
 	@Nullable
 	public static ResourcePackProfile of(
 		String name,
 		boolean alwaysEnabled,
 		Supplier<ResourcePack> packFactory,
-		ResourcePackProfile.Factory containerFactory,
+		ResourcePackProfile.Factory profileFactory,
 		ResourcePackProfile.InsertionPosition insertionPosition,
 		ResourcePackSource packSource
 	) {
 		try (ResourcePack resourcePack = (ResourcePack)packFactory.get()) {
 			PackResourceMetadata packResourceMetadata = resourcePack.parseMetadata(PackResourceMetadata.READER);
 			if (packResourceMetadata != null) {
-				return containerFactory.create(
-					name, new LiteralText(resourcePack.getName()), alwaysEnabled, packFactory, packResourceMetadata, insertionPosition, packSource
-				);
+				return profileFactory.create(name, new LiteralText(resourcePack.getName()), alwaysEnabled, packFactory, packResourceMetadata, insertionPosition, packSource);
 			}
 
 			LOGGER.warn("Couldn't find pack meta for pack {}", name);
@@ -66,7 +83,7 @@ public class ResourcePackProfile implements AutoCloseable {
 		ResourcePackSource source
 	) {
 		this.name = name;
-		this.packGetter = packFactory;
+		this.packFactory = packFactory;
 		this.displayName = displayName;
 		this.description = description;
 		this.compatibility = compatibility;
@@ -89,12 +106,10 @@ public class ResourcePackProfile implements AutoCloseable {
 		this(name, alwaysEnabled, packFactory, displayName, metadata.getDescription(), ResourcePackCompatibility.from(metadata, type), direction, false, source);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Text getDisplayName() {
 		return this.displayName;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Text getDescription() {
 		return this.description;
 	}
@@ -113,7 +128,7 @@ public class ResourcePackProfile implements AutoCloseable {
 	}
 
 	public ResourcePack createResourcePack() {
-		return (ResourcePack)this.packGetter.get();
+		return (ResourcePack)this.packFactory.get();
 	}
 
 	public String getName() {
@@ -132,7 +147,6 @@ public class ResourcePackProfile implements AutoCloseable {
 		return this.position;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public ResourcePackSource getSource() {
 		return this.source;
 	}
@@ -155,8 +169,19 @@ public class ResourcePackProfile implements AutoCloseable {
 	public void close() {
 	}
 
+	/**
+	 * A factory for resource pack profiles, somewhat resembling the constructor
+	 * of {@link ResourcePackProfile} but allowing more customization.
+	 */
 	@FunctionalInterface
 	public interface Factory {
+		/**
+		 * Creates a proper resource pack profile from the given parameters.
+		 * 
+		 * @apiNote Instead of calling this method, users usually call {@link
+		 * ResourcePackProfile#of}, which fills some of the parameters for a call to this
+		 * method.
+		 */
 		@Nullable
 		ResourcePackProfile create(
 			String name,

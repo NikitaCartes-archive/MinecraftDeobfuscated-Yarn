@@ -6,6 +6,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 
 public class RootsBlock extends PlantBlock {
+	protected static final float field_31235 = 6.0F;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 13.0, 14.0);
 
 	protected RootsBlock(AbstractBlock.Settings settings) {

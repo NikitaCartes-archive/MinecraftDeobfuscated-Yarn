@@ -19,20 +19,24 @@ public class MediumPufferfishEntityModel<T extends Entity> extends SinglePartEnt
 
 	public MediumPufferfishEntityModel(ModelPart root) {
 		this.root = root;
-		this.leftBlueFin = root.getChild("left_blue_fin");
-		this.rightBlueFin = root.getChild("right_blue_fin");
+		this.leftBlueFin = root.getChild(EntityModelPartNames.LEFT_BLUE_FIN);
+		this.rightBlueFin = root.getChild(EntityModelPartNames.RIGHT_BLUE_FIN);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
 		int i = 22;
-		modelPartData.addChild("body", ModelPartBuilder.create().uv(12, 22).cuboid(-2.5F, -5.0F, -2.5F, 5.0F, 5.0F, 5.0F), ModelTransform.pivot(0.0F, 22.0F, 0.0F));
 		modelPartData.addChild(
-			"right_blue_fin", ModelPartBuilder.create().uv(24, 0).cuboid(-2.0F, 0.0F, 0.0F, 2.0F, 0.0F, 2.0F), ModelTransform.pivot(-2.5F, 17.0F, -1.5F)
+			EntityModelPartNames.BODY, ModelPartBuilder.create().uv(12, 22).cuboid(-2.5F, -5.0F, -2.5F, 5.0F, 5.0F, 5.0F), ModelTransform.pivot(0.0F, 22.0F, 0.0F)
 		);
 		modelPartData.addChild(
-			"left_blue_fin", ModelPartBuilder.create().uv(24, 3).cuboid(0.0F, 0.0F, 0.0F, 2.0F, 0.0F, 2.0F), ModelTransform.pivot(2.5F, 17.0F, -1.5F)
+			EntityModelPartNames.RIGHT_BLUE_FIN,
+			ModelPartBuilder.create().uv(24, 0).cuboid(-2.0F, 0.0F, 0.0F, 2.0F, 0.0F, 2.0F),
+			ModelTransform.pivot(-2.5F, 17.0F, -1.5F)
+		);
+		modelPartData.addChild(
+			EntityModelPartNames.LEFT_BLUE_FIN, ModelPartBuilder.create().uv(24, 3).cuboid(0.0F, 0.0F, 0.0F, 2.0F, 0.0F, 2.0F), ModelTransform.pivot(2.5F, 17.0F, -1.5F)
 		);
 		modelPartData.addChild(
 			"top_front_fin",

@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.GlowLichenBlock;
@@ -71,7 +71,7 @@ public class GlowLichenFeature extends Feature<GlowLichenFeatureConfig> {
 					return false;
 				}
 
-				world.setBlockState(pos, blockState2, SetBlockStateFlags.DEFAULT);
+				world.setBlockState(pos, blockState2, Block.NOTIFY_ALL);
 				if (random.nextFloat() < config.spreadChance) {
 					glowLichenBlock.trySpreadRandomly(blockState2, world, pos, direction, random);
 				}

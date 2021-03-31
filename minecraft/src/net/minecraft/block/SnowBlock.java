@@ -18,6 +18,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class SnowBlock extends Block {
+	public static final int field_31247 = 8;
 	public static final IntProperty LAYERS = Properties.LAYERS;
 	protected static final VoxelShape[] LAYERS_TO_SHAPE = new VoxelShape[]{
 		VoxelShapes.empty(),
@@ -30,6 +31,7 @@ public class SnowBlock extends Block {
 		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 14.0, 16.0),
 		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 16.0)
 	};
+	public static final int field_31248 = 5;
 
 	protected SnowBlock(AbstractBlock.Settings settings) {
 		super(settings);

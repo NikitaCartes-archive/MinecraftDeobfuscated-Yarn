@@ -10,6 +10,9 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class TextRenderingUtils {
+	private TextRenderingUtils() {
+	}
+
 	@VisibleForTesting
 	protected static List<String> lineBreak(String text) {
 		return Arrays.asList(text.split("\\n"));
@@ -73,6 +76,10 @@ public class TextRenderingUtils {
 	@Environment(EnvType.CLIENT)
 	public static class Line {
 		public final List<TextRenderingUtils.LineSegment> segments;
+
+		Line(TextRenderingUtils.LineSegment... lineSegments) {
+			this(Arrays.asList(lineSegments));
+		}
 
 		Line(List<TextRenderingUtils.LineSegment> segments) {
 			this.segments = segments;

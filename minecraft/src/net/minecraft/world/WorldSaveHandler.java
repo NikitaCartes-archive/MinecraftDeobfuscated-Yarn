@@ -3,10 +3,10 @@ package net.minecraft.world;
 import com.mojang.datafixers.DataFixer;
 import java.io.File;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.util.Util;
@@ -53,7 +53,7 @@ public class WorldSaveHandler {
 		}
 
 		if (nbtCompound != null) {
-			int i = nbtCompound.contains("DataVersion", NbtTypeIds.INT) ? nbtCompound.getInt("DataVersion") : -1;
+			int i = nbtCompound.contains("DataVersion", NbtElement.INT_TYPE) ? nbtCompound.getInt("DataVersion") : -1;
 			player.readNbt(NbtHelper.update(this.dataFixer, DataFixTypes.PLAYER, nbtCompound, i));
 		}
 

@@ -17,6 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class WanderAroundTask extends Task<MobEntity> {
+	private static final int field_30150 = 40;
 	private int pathUpdateCountdownTicks;
 	@Nullable
 	private Path path;

@@ -61,6 +61,10 @@ public class PlayerListEntry {
 		this.latency = latency;
 	}
 
+	public boolean method_35757() {
+		return this.getCapeTexture() != null;
+	}
+
 	/**
 	 * Checks if the player represented by this entry has a custom skin.
 	 * 

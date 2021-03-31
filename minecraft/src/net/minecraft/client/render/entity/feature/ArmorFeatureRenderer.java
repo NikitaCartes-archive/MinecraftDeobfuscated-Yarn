@@ -40,7 +40,7 @@ public class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityM
 		this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, EquipmentSlot.HEAD, i, this.getArmor(EquipmentSlot.HEAD));
 	}
 
-	private void renderArmor(MatrixStack matrices, VertexConsumerProvider vertexConsumers, T entity, EquipmentSlot armorSlot, int i, A model) {
+	private void renderArmor(MatrixStack matrices, VertexConsumerProvider vertexConsumers, T entity, EquipmentSlot armorSlot, int light, A model) {
 		ItemStack itemStack = entity.getEquippedStack(armorSlot);
 		if (itemStack.getItem() instanceof ArmorItem) {
 			ArmorItem armorItem = (ArmorItem)itemStack.getItem();
@@ -50,14 +50,14 @@ public class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityM
 				boolean bl = this.usesSecondLayer(armorSlot);
 				boolean bl2 = itemStack.hasGlint();
 				if (armorItem instanceof DyeableArmorItem) {
-					int j = ((DyeableArmorItem)armorItem).getColor(itemStack);
-					float f = (float)(j >> 16 & 0xFF) / 255.0F;
-					float g = (float)(j >> 8 & 0xFF) / 255.0F;
-					float h = (float)(j & 0xFF) / 255.0F;
-					this.renderArmorParts(matrices, vertexConsumers, i, armorItem, bl2, model, bl, f, g, h, null);
-					this.renderArmorParts(matrices, vertexConsumers, i, armorItem, bl2, model, bl, 1.0F, 1.0F, 1.0F, "overlay");
+					int i = ((DyeableArmorItem)armorItem).getColor(itemStack);
+					float f = (float)(i >> 16 & 0xFF) / 255.0F;
+					float g = (float)(i >> 8 & 0xFF) / 255.0F;
+					float h = (float)(i & 0xFF) / 255.0F;
+					this.renderArmorParts(matrices, vertexConsumers, light, armorItem, bl2, model, bl, f, g, h, null);
+					this.renderArmorParts(matrices, vertexConsumers, light, armorItem, bl2, model, bl, 1.0F, 1.0F, 1.0F, "overlay");
 				} else {
-					this.renderArmorParts(matrices, vertexConsumers, i, armorItem, bl2, model, bl, 1.0F, 1.0F, 1.0F, null);
+					this.renderArmorParts(matrices, vertexConsumers, light, armorItem, bl2, model, bl, 1.0F, 1.0F, 1.0F, null);
 				}
 			}
 		}
@@ -88,21 +88,21 @@ public class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityM
 
 	private void renderArmorParts(
 		MatrixStack matrices,
-		VertexConsumerProvider provider,
-		int i,
+		VertexConsumerProvider vertexConsumers,
+		int light,
 		ArmorItem item,
-		boolean bl,
+		boolean usesSecondLayer,
 		A model,
 		boolean legs,
-		float f,
-		float g,
-		float h,
+		float red,
+		float green,
+		float blue,
 		@Nullable String overlay
 	) {
 		VertexConsumer vertexConsumer = ItemRenderer.getArmorGlintConsumer(
-			provider, RenderLayer.getArmorCutoutNoCull(this.getArmorTexture(item, legs, overlay)), false, bl
+			vertexConsumers, RenderLayer.getArmorCutoutNoCull(this.getArmorTexture(item, legs, overlay)), false, usesSecondLayer
 		);
-		model.render(matrices, vertexConsumer, i, OverlayTexture.DEFAULT_UV, f, g, h, 1.0F);
+		model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, red, green, blue, 1.0F);
 	}
 
 	private A getArmor(EquipmentSlot slot) {

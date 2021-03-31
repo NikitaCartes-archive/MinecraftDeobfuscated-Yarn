@@ -14,9 +14,9 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.Map;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.resource.Resource;
@@ -31,6 +31,9 @@ import org.apache.logging.log4j.Logger;
 
 public class StructureManager {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final String field_31684 = "structures";
+	private static final String field_31685 = ".nbt";
+	private static final String field_31686 = ".snbt";
 	private final Map<Identifier, Structure> structures = Maps.<Identifier, Structure>newHashMap();
 	private final DataFixer dataFixer;
 	private ResourceManager resourceManager;
@@ -148,13 +151,13 @@ public class StructureManager {
 		return this.createStructure(nbtCompound);
 	}
 
-	public Structure createStructure(NbtCompound tag) {
-		if (!tag.contains("DataVersion", NbtTypeIds.NUMBER)) {
-			tag.putInt("DataVersion", 500);
+	public Structure createStructure(NbtCompound nbt) {
+		if (!nbt.contains("DataVersion", NbtElement.NUMBER_TYPE)) {
+			nbt.putInt("DataVersion", 500);
 		}
 
 		Structure structure = new Structure();
-		structure.readNbt(NbtHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, tag, tag.getInt("DataVersion")));
+		structure.readNbt(NbtHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, nbt, nbt.getInt("DataVersion")));
 		return structure;
 	}
 

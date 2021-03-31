@@ -1,12 +1,12 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -17,6 +17,7 @@ import net.minecraft.world.WorldView;
 
 public class SugarCaneBlock extends Block {
 	public static final IntProperty AGE = Properties.AGE_15;
+	protected static final float field_31258 = 6.0F;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0);
 
 	protected SugarCaneBlock(AbstractBlock.Settings settings) {
@@ -49,9 +50,9 @@ public class SugarCaneBlock extends Block {
 				int j = (Integer)state.get(AGE);
 				if (j == 15) {
 					world.setBlockState(pos.up(), this.getDefaultState());
-					world.setBlockState(pos, state.with(AGE, Integer.valueOf(0)), SetBlockStateFlags.NO_REDRAW);
+					world.setBlockState(pos, state.with(AGE, Integer.valueOf(0)), Block.NO_REDRAW);
 				} else {
-					world.setBlockState(pos, state.with(AGE, Integer.valueOf(j + 1)), SetBlockStateFlags.NO_REDRAW);
+					world.setBlockState(pos, state.with(AGE, Integer.valueOf(j + 1)), Block.NO_REDRAW);
 				}
 			}
 		}
@@ -74,12 +75,7 @@ public class SugarCaneBlock extends Block {
 		if (blockState.isOf(this)) {
 			return true;
 		} else {
-			if (blockState.isOf(Blocks.GRASS_BLOCK)
-				|| blockState.isOf(Blocks.DIRT)
-				|| blockState.isOf(Blocks.COARSE_DIRT)
-				|| blockState.isOf(Blocks.PODZOL)
-				|| blockState.isOf(Blocks.SAND)
-				|| blockState.isOf(Blocks.RED_SAND)) {
+			if (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isIn(BlockTags.DIRT) || blockState.isOf(Blocks.SAND) || blockState.isOf(Blocks.RED_SAND)) {
 				BlockPos blockPos = pos.down();
 
 				for (Direction direction : Direction.Type.HORIZONTAL) {

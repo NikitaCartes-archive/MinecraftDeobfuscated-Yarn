@@ -3,8 +3,8 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.tag.BlockTags;
@@ -129,7 +129,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	}
 
 	protected void setBlockState(ModifiableWorld world, BlockPos pos, BlockState state) {
-		world.setBlockState(pos, state, SetBlockStateFlags.DEFAULT);
+		world.setBlockState(pos, state, Block.NOTIFY_ALL);
 	}
 
 	public abstract boolean generate(FeatureContext<FC> context);

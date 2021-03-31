@@ -36,6 +36,10 @@ public class AdvancementRewards {
 		this.function = function;
 	}
 
+	public Identifier[] getRecipes() {
+		return this.recipes;
+	}
+
 	public void apply(ServerPlayerEntity player) {
 		player.addExperience(this.experience);
 		LootContext lootContext = new LootContext.Builder(player.getServerWorld())
@@ -175,12 +179,30 @@ public class AdvancementRewards {
 			return this;
 		}
 
+		public static AdvancementRewards.Builder method_34899(Identifier identifier) {
+			return new AdvancementRewards.Builder().method_34900(identifier);
+		}
+
+		public AdvancementRewards.Builder method_34900(Identifier identifier) {
+			this.loot.add(identifier);
+			return this;
+		}
+
 		public static AdvancementRewards.Builder recipe(Identifier recipe) {
 			return new AdvancementRewards.Builder().addRecipe(recipe);
 		}
 
 		public AdvancementRewards.Builder addRecipe(Identifier recipe) {
 			this.recipes.add(recipe);
+			return this;
+		}
+
+		public static AdvancementRewards.Builder method_34901(Identifier identifier) {
+			return new AdvancementRewards.Builder().method_34902(identifier);
+		}
+
+		public AdvancementRewards.Builder method_34902(Identifier identifier) {
+			this.function = identifier;
 			return this;
 		}
 

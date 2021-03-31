@@ -19,6 +19,13 @@ import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 
 public class WanderingTraderManager implements Spawner {
+	private static final int field_30631 = 1200;
+	public static final int field_30630 = 24000;
+	private static final int field_30632 = 25;
+	private static final int field_30633 = 75;
+	private static final int field_30634 = 25;
+	private static final int field_30635 = 10;
+	private static final int field_30636 = 10;
 	private final Random random = new Random();
 	private final ServerWorldProperties properties;
 	private int spawnTimer;

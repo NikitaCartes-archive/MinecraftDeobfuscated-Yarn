@@ -5,8 +5,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Locale;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
@@ -33,25 +31,23 @@ public class DustColorTransitionParticleEffect extends AbstractDustParticleEffec
 		}
 
 		public DustColorTransitionParticleEffect read(ParticleType<DustColorTransitionParticleEffect> particleType, PacketByteBuf packetByteBuf) {
-			Vec3f vec3f = AbstractDustParticleEffect.method_33466(packetByteBuf);
+			Vec3f vec3f = AbstractDustParticleEffect.readColor(packetByteBuf);
 			float f = packetByteBuf.readFloat();
-			Vec3f vec3f2 = AbstractDustParticleEffect.method_33466(packetByteBuf);
+			Vec3f vec3f2 = AbstractDustParticleEffect.readColor(packetByteBuf);
 			return new DustColorTransitionParticleEffect(vec3f, vec3f2, f);
 		}
 	};
 	private final Vec3f toColor;
 
-	public DustColorTransitionParticleEffect(Vec3f vec3f, Vec3f vec3f2, float scale) {
-		super(vec3f, scale);
-		this.toColor = vec3f2;
+	public DustColorTransitionParticleEffect(Vec3f fromColor, Vec3f toColor, float scale) {
+		super(fromColor, scale);
+		this.toColor = toColor;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Vec3f getFromColor() {
 		return this.color;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Vec3f getToColor() {
 		return this.toColor;
 	}

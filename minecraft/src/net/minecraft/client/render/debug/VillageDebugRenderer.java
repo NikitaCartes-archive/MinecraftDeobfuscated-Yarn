@@ -29,6 +29,38 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class VillageDebugRenderer implements DebugRenderer.Renderer {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final boolean field_32874 = true;
+	private static final boolean field_32875 = false;
+	private static final boolean field_32876 = false;
+	private static final boolean field_32877 = false;
+	private static final boolean field_32878 = false;
+	private static final boolean field_32879 = false;
+	private static final boolean field_32880 = false;
+	private static final boolean field_32881 = false;
+	private static final boolean field_32882 = true;
+	private static final boolean field_32883 = true;
+	private static final boolean field_32884 = true;
+	private static final boolean field_32885 = true;
+	private static final boolean field_32886 = true;
+	private static final boolean field_32887 = true;
+	private static final boolean field_32888 = true;
+	private static final boolean field_32889 = true;
+	private static final boolean field_32890 = true;
+	private static final boolean field_32891 = true;
+	private static final boolean field_32892 = true;
+	private static final boolean field_32893 = true;
+	private static final int field_32894 = 30;
+	private static final int field_32895 = 30;
+	private static final int field_32896 = 8;
+	private static final float field_32897 = 0.02F;
+	private static final int field_32898 = -1;
+	private static final int field_32867 = -256;
+	private static final int field_32868 = -16711681;
+	private static final int field_32869 = -16711936;
+	private static final int field_32870 = -3355444;
+	private static final int field_32871 = -98404;
+	private static final int field_32872 = -65536;
+	private static final int field_32873 = -23296;
 	private final MinecraftClient client;
 	private final Map<BlockPos, VillageDebugRenderer.PointOfInterest> pointsOfInterest = Maps.<BlockPos, VillageDebugRenderer.PointOfInterest>newHashMap();
 	private final Map<UUID, VillageDebugRenderer.Brain> brains = Maps.<UUID, VillageDebugRenderer.Brain>newHashMap();
@@ -65,6 +97,10 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 
 	public void addBrain(VillageDebugRenderer.Brain brain) {
 		this.brains.put(brain.uuid, brain);
+	}
+
+	public void method_35797(int i) {
+		this.brains.values().removeIf(brain -> brain.field_18924 == i);
 	}
 
 	@Override

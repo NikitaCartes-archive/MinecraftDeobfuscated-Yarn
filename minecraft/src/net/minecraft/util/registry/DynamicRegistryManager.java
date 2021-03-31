@@ -46,13 +46,13 @@ public abstract class DynamicRegistryManager {
 		Builder<RegistryKey<? extends Registry<?>>, DynamicRegistryManager.Info<?>> builder = ImmutableMap.builder();
 		register(builder, Registry.DIMENSION_TYPE_KEY, DimensionType.CODEC, DimensionType.CODEC);
 		register(builder, Registry.BIOME_KEY, Biome.CODEC, Biome.field_26633);
-		register(builder, Registry.CONFIGURED_SURFACE_BUILDER_WORLDGEN, ConfiguredSurfaceBuilder.CODEC);
-		register(builder, Registry.CONFIGURED_CARVER_WORLDGEN, ConfiguredCarver.CODEC);
-		register(builder, Registry.CONFIGURED_FEATURE_WORLDGEN, ConfiguredFeature.CODEC);
-		register(builder, Registry.CONFIGURED_STRUCTURE_FEATURE_WORLDGEN, ConfiguredStructureFeature.CODEC);
-		register(builder, Registry.PROCESSOR_LIST_WORLDGEN, StructureProcessorType.field_25876);
-		register(builder, Registry.TEMPLATE_POOL_WORLDGEN, StructurePool.CODEC);
-		register(builder, Registry.NOISE_SETTINGS_WORLDGEN, ChunkGeneratorSettings.CODEC);
+		register(builder, Registry.CONFIGURED_SURFACE_BUILDER_KEY, ConfiguredSurfaceBuilder.CODEC);
+		register(builder, Registry.CONFIGURED_CARVER_KEY, ConfiguredCarver.CODEC);
+		register(builder, Registry.CONFIGURED_FEATURE_KEY, ConfiguredFeature.CODEC);
+		register(builder, Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, ConfiguredStructureFeature.CODEC);
+		register(builder, Registry.STRUCTURE_PROCESSOR_LIST_KEY, StructureProcessorType.field_25876);
+		register(builder, Registry.STRUCTURE_POOL_KEY, StructurePool.CODEC);
+		register(builder, Registry.CHUNK_GENERATOR_SETTINGS_KEY, ChunkGeneratorSettings.CODEC);
 		return builder.build();
 	});
 	private static final DynamicRegistryManager.Impl BUILTIN = Util.make(() -> {
@@ -120,7 +120,7 @@ public abstract class DynamicRegistryManager {
 		DynamicRegistryManager.Impl registryManager, RegistryOps.EntryLoader.Impl entryLoader, DynamicRegistryManager.Info<E> info
 	) {
 		RegistryKey<? extends Registry<E>> registryKey = info.getRegistry();
-		boolean bl = !registryKey.equals(Registry.NOISE_SETTINGS_WORLDGEN) && !registryKey.equals(Registry.DIMENSION_TYPE_KEY);
+		boolean bl = !registryKey.equals(Registry.CHUNK_GENERATOR_SETTINGS_KEY) && !registryKey.equals(Registry.DIMENSION_TYPE_KEY);
 		Registry<E> registry = BUILTIN.get(registryKey);
 		MutableRegistry<E> mutableRegistry = registryManager.getMutable(registryKey);
 

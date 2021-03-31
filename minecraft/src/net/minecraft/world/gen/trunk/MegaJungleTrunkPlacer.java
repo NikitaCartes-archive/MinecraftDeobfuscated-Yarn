@@ -5,11 +5,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
-import net.minecraft.util.math.BlockBox;
+import java.util.function.BiConsumer;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.ModifiableTestableWorld;
+import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 
@@ -29,24 +29,24 @@ public class MegaJungleTrunkPlacer extends GiantTrunkPlacer {
 
 	@Override
 	public List<FoliagePlacer.TreeNode> generate(
-		ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> placedStates, BlockBox box, TreeFeatureConfig config
+		TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, int i, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig
 	) {
 		List<FoliagePlacer.TreeNode> list = Lists.<FoliagePlacer.TreeNode>newArrayList();
-		list.addAll(super.generate(world, random, trunkHeight, pos, placedStates, box, config));
+		list.addAll(super.generate(testableWorld, biConsumer, random, i, blockPos, treeFeatureConfig));
 
-		for (int i = trunkHeight - 2 - random.nextInt(4); i > trunkHeight / 2; i -= 2 + random.nextInt(4)) {
+		for (int j = i - 2 - random.nextInt(4); j > i / 2; j -= 2 + random.nextInt(4)) {
 			float f = random.nextFloat() * (float) (Math.PI * 2);
-			int j = 0;
 			int k = 0;
+			int l = 0;
 
-			for (int l = 0; l < 5; l++) {
-				j = (int)(1.5F + MathHelper.cos(f) * (float)l);
-				k = (int)(1.5F + MathHelper.sin(f) * (float)l);
-				BlockPos blockPos = pos.add(j, i - 3 + l / 2, k);
-				getAndSetState(world, random, blockPos, placedStates, box, config);
+			for (int m = 0; m < 5; m++) {
+				k = (int)(1.5F + MathHelper.cos(f) * (float)m);
+				l = (int)(1.5F + MathHelper.sin(f) * (float)m);
+				BlockPos blockPos2 = blockPos.add(k, j - 3 + m / 2, l);
+				method_35375(testableWorld, biConsumer, random, blockPos2, treeFeatureConfig);
 			}
 
-			list.add(new FoliagePlacer.TreeNode(pos.add(j, i, k), -2, false));
+			list.add(new FoliagePlacer.TreeNode(blockPos.add(k, j, l), -2, false));
 		}
 
 		return list;

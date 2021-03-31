@@ -2,8 +2,6 @@ package net.minecraft.block;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
@@ -69,7 +67,6 @@ public class BannerBlock extends AbstractBannerBlock {
 		builder.add(ROTATION);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static Block getForColor(DyeColor color) {
 		return (Block)COLORED_BANNERS.getOrDefault(color, Blocks.WHITE_BANNER);
 	}

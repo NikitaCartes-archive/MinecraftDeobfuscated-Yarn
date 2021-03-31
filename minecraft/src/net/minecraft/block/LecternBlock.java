@@ -2,8 +2,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LecternBlockEntity;
 import net.minecraft.entity.ItemEntity;
@@ -33,6 +31,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 
 public class LecternBlock extends BlockWithEntity {
@@ -68,6 +67,7 @@ public class LecternBlock extends BlockWithEntity {
 		Block.createCuboidShape(0.0, 14.0, 2.0, 16.0, 18.0, 6.333333),
 		BASE_SHAPE
 	);
+	private static final int field_31113 = 2;
 
 	protected LecternBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -173,7 +173,7 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	public static void setHasBook(World world, BlockPos pos, BlockState state, boolean hasBook) {
-		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)).with(HAS_BOOK, Boolean.valueOf(hasBook)), SetBlockStateFlags.DEFAULT);
+		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)).with(HAS_BOOK, Boolean.valueOf(hasBook)), Block.NOTIFY_ALL);
 		updateNeighborAlways(world, pos, state);
 	}
 
@@ -184,7 +184,7 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	private static void setPowered(World world, BlockPos pos, BlockState state, boolean powered) {
-		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(powered)), SetBlockStateFlags.DEFAULT);
+		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(powered)), Block.NOTIFY_ALL);
 		updateNeighborAlways(world, pos, state);
 	}
 

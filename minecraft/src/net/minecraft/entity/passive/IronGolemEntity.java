@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -47,9 +45,9 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.IntRange;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
@@ -57,9 +55,10 @@ import net.minecraft.world.event.GameEvent;
 
 public class IronGolemEntity extends GolemEntity implements Angerable {
 	protected static final TrackedData<Byte> IRON_GOLEM_FLAGS = DataTracker.registerData(IronGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
+	private static final int field_30338 = 25;
 	private int attackTicksLeft;
 	private int lookingAtVillagerTicksLeft;
-	private static final IntRange ANGER_TIME_RANGE = Durations.betweenSeconds(20, 39);
+	private static final UniformIntProvider ANGER_TIME_RANGE = Durations.betweenSeconds(20, 39);
 	private int angerTime;
 	private UUID angryAt;
 
@@ -161,22 +160,22 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putBoolean("PlayerCreated", this.isPlayerCreated());
-		this.writeAngerToNbt(tag);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putBoolean("PlayerCreated", this.isPlayerCreated());
+		this.writeAngerToNbt(nbt);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.setPlayerCreated(tag.getBoolean("PlayerCreated"));
-		this.readAngerFromNbt(this.world, tag);
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.setPlayerCreated(nbt.getBoolean("PlayerCreated"));
+		this.readAngerFromNbt(this.world, nbt);
 	}
 
 	@Override
 	public void chooseRandomAngerTime() {
-		this.setAngerTime(ANGER_TIME_RANGE.choose(this.random));
+		this.setAngerTime(ANGER_TIME_RANGE.get(this.random));
 	}
 
 	@Override
@@ -234,7 +233,6 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 		return IronGolemEntity.Crack.from(this.getHealth() / this.getMaxHealth());
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void handleStatus(byte status) {
 		if (status == 4) {
@@ -249,7 +247,6 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getAttackTicksLeft() {
 		return this.attackTicksLeft;
 	}
@@ -302,7 +299,6 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 		this.playSound(SoundEvents.ENTITY_IRON_GOLEM_STEP, 1.0F, 1.0F);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getLookingAtVillagerTicks() {
 		return this.lookingAtVillagerTicksLeft;
 	}
@@ -346,7 +342,6 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public Vec3d method_29919() {
 		return new Vec3d(0.0, (double)(0.875F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));

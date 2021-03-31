@@ -27,7 +27,11 @@ import org.apache.logging.log4j.Logger;
 public class ExplorationMapLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final StructureFeature<?> DEFAULT_DESTINATION = StructureFeature.BURIED_TREASURE;
+	public static final String MANSION = "mansion";
 	public static final MapIcon.Type DEFAULT_DECORATION = MapIcon.Type.MANSION;
+	public static final byte field_31851 = 2;
+	public static final int field_31852 = 50;
+	public static final boolean field_31853 = true;
 	private final StructureFeature<?> destination;
 	private final MapIcon.Type decoration;
 	private final byte zoom;
@@ -67,7 +71,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 				if (blockPos != null) {
 					ItemStack itemStack = FilledMapItem.createMap(serverWorld, blockPos.getX(), blockPos.getZ(), this.zoom, true, true);
 					FilledMapItem.fillExplorationMap(serverWorld, itemStack);
-					MapState.addDecorationsTag(itemStack, blockPos, "+", this.decoration);
+					MapState.addDecorationsNbt(itemStack, blockPos, "+", this.decoration);
 					itemStack.setCustomName(new TranslatableText("filled_map." + this.destination.getName().toLowerCase(Locale.ROOT)));
 					return itemStack;
 				}
@@ -104,6 +108,11 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 
 		public ExplorationMapLootFunction.Builder withZoom(byte zoom) {
 			this.zoom = zoom;
+			return this;
+		}
+
+		public ExplorationMapLootFunction.Builder searchRadius(int searchRadius) {
+			this.searchRadius = searchRadius;
 			return this;
 		}
 

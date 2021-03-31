@@ -13,6 +13,7 @@ import net.minecraft.world.explosion.Explosion;
 
 public class TntEntity extends Entity {
 	private static final TrackedData<Integer> FUSE = DataTracker.registerData(TntEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final int DEFAULT_FUSE = 80;
 	@Nullable
 	private LivingEntity causingEntity;
 
@@ -81,13 +82,13 @@ public class TntEntity extends Entity {
 	}
 
 	@Override
-	protected void writeCustomDataToNbt(NbtCompound tag) {
-		tag.putShort("Fuse", (short)this.getFuse());
+	protected void writeCustomDataToNbt(NbtCompound nbt) {
+		nbt.putShort("Fuse", (short)this.getFuse());
 	}
 
 	@Override
-	protected void readCustomDataFromNbt(NbtCompound tag) {
-		this.setFuse(tag.getShort("Fuse"));
+	protected void readCustomDataFromNbt(NbtCompound nbt) {
+		this.setFuse(nbt.getShort("Fuse"));
 	}
 
 	@Nullable

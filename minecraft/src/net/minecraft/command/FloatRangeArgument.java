@@ -1,5 +1,9 @@
 package net.minecraft.command;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
@@ -7,6 +11,7 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.JsonHelper;
 
 public class FloatRangeArgument {
 	public static final FloatRangeArgument ANY = new FloatRangeArgument(null, null);
@@ -14,9 +19,41 @@ public class FloatRangeArgument {
 	private final Float min;
 	private final Float max;
 
-	public FloatRangeArgument(@Nullable Float float_, @Nullable Float float2) {
-		this.min = float_;
-		this.max = float2;
+	public FloatRangeArgument(@Nullable Float min, @Nullable Float max) {
+		this.min = min;
+		this.max = max;
+	}
+
+	public static FloatRangeArgument exactly(float value) {
+		return new FloatRangeArgument(value, value);
+	}
+
+	public static FloatRangeArgument between(float min, float max) {
+		return new FloatRangeArgument(min, max);
+	}
+
+	public static FloatRangeArgument atLeast(float value) {
+		return new FloatRangeArgument(value, null);
+	}
+
+	public static FloatRangeArgument atMost(float value) {
+		return new FloatRangeArgument(null, value);
+	}
+
+	public boolean isInRange(float value) {
+		if (this.min != null && this.max != null && this.min > this.max && this.min > value && this.max < value) {
+			return false;
+		} else {
+			return this.min != null && this.min > value ? false : this.max == null || !(this.max < value);
+		}
+	}
+
+	public boolean isInSquaredRange(double value) {
+		if (this.min != null && this.max != null && this.min > this.max && (double)(this.min * this.min) > value && (double)(this.max * this.max) < value) {
+			return false;
+		} else {
+			return this.min != null && (double)(this.min * this.min) > value ? false : this.max == null || !((double)(this.max * this.max) < value);
+		}
 	}
 
 	@Nullable
@@ -27,6 +64,43 @@ public class FloatRangeArgument {
 	@Nullable
 	public Float getMax() {
 		return this.max;
+	}
+
+	public JsonElement method_35407() {
+		if (this == ANY) {
+			return JsonNull.INSTANCE;
+		} else if (this.min != null && this.max != null && this.min.equals(this.max)) {
+			return new JsonPrimitive(this.min);
+		} else {
+			JsonObject jsonObject = new JsonObject();
+			if (this.min != null) {
+				jsonObject.addProperty("min", this.min);
+			}
+
+			if (this.max != null) {
+				jsonObject.addProperty("max", this.min);
+			}
+
+			return jsonObject;
+		}
+	}
+
+	public static FloatRangeArgument method_35403(@Nullable JsonElement jsonElement) {
+		if (jsonElement == null || jsonElement.isJsonNull()) {
+			return ANY;
+		} else if (JsonHelper.isNumber(jsonElement)) {
+			float f = JsonHelper.asFloat(jsonElement, "value");
+			return new FloatRangeArgument(f, f);
+		} else {
+			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "value");
+			Float float_ = jsonObject.has("min") ? JsonHelper.getFloat(jsonObject, "min") : null;
+			Float float2 = jsonObject.has("max") ? JsonHelper.getFloat(jsonObject, "max") : null;
+			return new FloatRangeArgument(float_, float2);
+		}
+	}
+
+	public static FloatRangeArgument method_35404(StringReader stringReader, boolean bl) throws CommandSyntaxException {
+		return parse(stringReader, bl, float_ -> float_);
 	}
 
 	public static FloatRangeArgument parse(StringReader reader, boolean allowFloats, Function<Float, Float> transform) throws CommandSyntaxException {

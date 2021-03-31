@@ -7,8 +7,6 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -80,6 +78,8 @@ public class DolphinEntity extends WaterCreatureEntity {
 		.includeTeammates()
 		.includeInvulnerable()
 		.includeHidden();
+	public static final int field_30326 = 4800;
+	private static final int field_30327 = 2400;
 	public static final Predicate<ItemEntity> CAN_TAKE = itemEntity -> !itemEntity.cannotPickup() && itemEntity.isAlive() && itemEntity.isTouchingWater();
 
 	public DolphinEntity(EntityType<? extends DolphinEntity> entityType, World world) {
@@ -92,11 +92,11 @@ public class DolphinEntity extends WaterCreatureEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
 		this.setAir(this.getMaxAir());
 		this.pitch = 0.0F;
-		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
 	@Override
@@ -141,24 +141,24 @@ public class DolphinEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putInt("TreasurePosX", this.getTreasurePos().getX());
-		tag.putInt("TreasurePosY", this.getTreasurePos().getY());
-		tag.putInt("TreasurePosZ", this.getTreasurePos().getZ());
-		tag.putBoolean("GotFish", this.hasFish());
-		tag.putInt("Moistness", this.getMoistness());
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putInt("TreasurePosX", this.getTreasurePos().getX());
+		nbt.putInt("TreasurePosY", this.getTreasurePos().getY());
+		nbt.putInt("TreasurePosZ", this.getTreasurePos().getZ());
+		nbt.putBoolean("GotFish", this.hasFish());
+		nbt.putInt("Moistness", this.getMoistness());
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		int i = tag.getInt("TreasurePosX");
-		int j = tag.getInt("TreasurePosY");
-		int k = tag.getInt("TreasurePosZ");
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		int i = nbt.getInt("TreasurePosX");
+		int j = nbt.getInt("TreasurePosY");
+		int k = nbt.getInt("TreasurePosZ");
 		this.setTreasurePos(new BlockPos(i, j, k));
-		super.readCustomDataFromNbt(tag);
-		this.setHasFish(tag.getBoolean("GotFish"));
-		this.setMoistness(tag.getInt("Moistness"));
+		super.readCustomDataFromNbt(nbt);
+		this.setHasFish(nbt.getBoolean("GotFish"));
+		this.setMoistness(nbt.getInt("Moistness"));
 	}
 
 	@Override
@@ -307,7 +307,6 @@ public class DolphinEntity extends WaterCreatureEntity {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void handleStatus(byte status) {
 		if (status == 38) {
@@ -317,7 +316,6 @@ public class DolphinEntity extends WaterCreatureEntity {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	private void spawnParticlesAround(ParticleEffect parameters) {
 		for (int i = 0; i < 7; i++) {
 			double d = this.random.nextGaussian() * 0.01;

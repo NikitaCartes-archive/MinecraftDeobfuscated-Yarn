@@ -44,6 +44,20 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class TradeOffers {
+	private static final int field_30615 = 12;
+	private static final int field_30616 = 16;
+	private static final int field_30617 = 3;
+	private static final int field_30618 = 1;
+	private static final int field_30619 = 2;
+	private static final int field_30620 = 5;
+	private static final int field_30621 = 10;
+	private static final int field_30622 = 10;
+	private static final int field_30623 = 20;
+	private static final int field_30624 = 15;
+	private static final int field_30625 = 30;
+	private static final int field_30626 = 30;
+	private static final float field_30627 = 0.05F;
+	private static final float field_30628 = 0.2F;
 	public static final Map<VillagerProfession, Int2ObjectMap<TradeOffers.Factory[]>> PROFESSION_TO_LEVELED_TRADE = Util.make(
 		Maps.<VillagerProfession, Int2ObjectMap<TradeOffers.Factory[]>>newHashMap(),
 		map -> {
@@ -548,6 +562,7 @@ public class TradeOffers {
 							new TradeOffers.BuyForOneEmeraldFactory(Blocks.GRANITE, 16, 16, 20),
 							new TradeOffers.BuyForOneEmeraldFactory(Blocks.ANDESITE, 16, 16, 20),
 							new TradeOffers.BuyForOneEmeraldFactory(Blocks.DIORITE, 16, 16, 20),
+							new TradeOffers.SellItemFactory(Blocks.DRIPSTONE_BLOCK, 1, 4, 16, 10),
 							new TradeOffers.SellItemFactory(Blocks.POLISHED_ANDESITE, 1, 4, 16, 10),
 							new TradeOffers.SellItemFactory(Blocks.POLISHED_DIORITE, 1, 4, 16, 10),
 							new TradeOffers.SellItemFactory(Blocks.POLISHED_GRANITE, 1, 4, 16, 10)
@@ -659,7 +674,10 @@ public class TradeOffers {
 				new TradeOffers.SellItemFactory(Items.LILY_PAD, 1, 2, 5, 1),
 				new TradeOffers.SellItemFactory(Items.SMALL_DRIPLEAF, 1, 2, 5, 1),
 				new TradeOffers.SellItemFactory(Items.SAND, 1, 8, 8, 1),
-				new TradeOffers.SellItemFactory(Items.RED_SAND, 1, 4, 6, 1)
+				new TradeOffers.SellItemFactory(Items.RED_SAND, 1, 4, 6, 1),
+				new TradeOffers.SellItemFactory(Items.POINTED_DRIPSTONE, 1, 2, 5, 1),
+				new TradeOffers.SellItemFactory(Items.ROOTED_DIRT, 1, 2, 5, 1),
+				new TradeOffers.SellItemFactory(Items.MOSS_BLOCK, 1, 2, 5, 1)
 			},
 			2,
 			new TradeOffers.Factory[]{
@@ -916,7 +934,7 @@ public class TradeOffers {
 				if (blockPos != null) {
 					ItemStack itemStack = FilledMapItem.createMap(serverWorld, blockPos.getX(), blockPos.getZ(), (byte)2, true, true);
 					FilledMapItem.fillExplorationMap(serverWorld, itemStack);
-					MapState.addDecorationsTag(itemStack, blockPos, "+", this.iconType);
+					MapState.addDecorationsNbt(itemStack, blockPos, "+", this.iconType);
 					itemStack.setCustomName(new TranslatableText("filled_map." + this.structure.getName().toLowerCase(Locale.ROOT)));
 					return new TradeOffer(new ItemStack(Items.EMERALD, this.price), new ItemStack(Items.COMPASS), itemStack, this.maxUses, this.experience, 0.2F);
 				} else {

@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.server.network.DebugInfoSender;
@@ -27,6 +27,7 @@ import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 
 public class RaidManager extends PersistentState {
+	private static final String RAIDS = "raids";
 	private final Map<Integer, Raid> raids = Maps.<Integer, Raid>newHashMap();
 	private final ServerWorld world;
 	private int nextAvailableId;
@@ -145,7 +146,7 @@ public class RaidManager extends PersistentState {
 		RaidManager raidManager = new RaidManager(world);
 		raidManager.nextAvailableId = nbt.getInt("NextAvailableID");
 		raidManager.currentTime = nbt.getInt("Tick");
-		NbtList nbtList = nbt.getList("Raids", NbtTypeIds.COMPOUND);
+		NbtList nbtList = nbt.getList("Raids", NbtElement.COMPOUND_TYPE);
 
 		for (int i = 0; i < nbtList.size(); i++) {
 			NbtCompound nbtCompound = nbtList.getCompound(i);
@@ -157,9 +158,9 @@ public class RaidManager extends PersistentState {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound tag) {
-		tag.putInt("NextAvailableID", this.nextAvailableId);
-		tag.putInt("Tick", this.currentTime);
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		nbt.putInt("NextAvailableID", this.nextAvailableId);
+		nbt.putInt("Tick", this.currentTime);
 		NbtList nbtList = new NbtList();
 
 		for (Raid raid : this.raids.values()) {
@@ -168,8 +169,8 @@ public class RaidManager extends PersistentState {
 			nbtList.add(nbtCompound);
 		}
 
-		tag.put("Raids", nbtList);
-		return tag;
+		nbt.put("Raids", nbtList);
+		return nbt;
 	}
 
 	public static String nameFor(DimensionType dimensionType) {

@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.minecraft.util.Util;
+import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import org.apache.logging.log4j.LogManager;
@@ -93,6 +94,12 @@ public class PointOfInterestSet {
 			LOGGER.debug("Removed POI of type {} @ {}", pointOfInterest::getType, pointOfInterest::getPos);
 			this.updateListener.run();
 		}
+	}
+
+	@Deprecated
+	@Debug
+	public int method_35157(BlockPos blockPos) {
+		return (Integer)this.get(blockPos).map(PointOfInterest::getFreeTickets).orElse(0);
 	}
 
 	public boolean releaseTicket(BlockPos pos) {

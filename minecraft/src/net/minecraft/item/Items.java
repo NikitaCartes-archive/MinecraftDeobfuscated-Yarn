@@ -32,6 +32,7 @@ public class Items {
 	public static final Item DIRT = register(Blocks.DIRT, ItemGroup.BUILDING_BLOCKS);
 	public static final Item COARSE_DIRT = register(Blocks.COARSE_DIRT, ItemGroup.BUILDING_BLOCKS);
 	public static final Item PODZOL = register(Blocks.PODZOL, ItemGroup.BUILDING_BLOCKS);
+	public static final Item ROOTED_DIRT = register(Blocks.ROOTED_DIRT, ItemGroup.BUILDING_BLOCKS);
 	public static final Item CRIMSON_NYLIUM = register(Blocks.CRIMSON_NYLIUM, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WARPED_NYLIUM = register(Blocks.WARPED_NYLIUM, ItemGroup.BUILDING_BLOCKS);
 	public static final Item COBBLESTONE = register(Blocks.COBBLESTONE, ItemGroup.BUILDING_BLOCKS);
@@ -165,7 +166,6 @@ public class Items {
 	public static final Item KELP = register(Blocks.KELP, ItemGroup.DECORATIONS);
 	public static final Item MOSS_CARPET = register(Blocks.MOSS_CARPET, ItemGroup.DECORATIONS);
 	public static final Item MOSS_BLOCK = register(Blocks.MOSS_BLOCK, ItemGroup.DECORATIONS);
-	public static final Item ROOTED_DIRT = register(Blocks.ROOTED_DIRT, ItemGroup.DECORATIONS);
 	public static final Item HANGING_ROOTS = register(Blocks.HANGING_ROOTS, ItemGroup.DECORATIONS);
 	public static final Item BIG_DRIPLEAF = register(Blocks.BIG_DRIPLEAF, ItemGroup.DECORATIONS);
 	public static final Item SMALL_DRIPLEAF = register(Blocks.SMALL_DRIPLEAF, ItemGroup.DECORATIONS);
@@ -351,6 +351,7 @@ public class Items {
 	public static final Item RED_TERRACOTTA = register(Blocks.RED_TERRACOTTA, ItemGroup.BUILDING_BLOCKS);
 	public static final Item BLACK_TERRACOTTA = register(Blocks.BLACK_TERRACOTTA, ItemGroup.BUILDING_BLOCKS);
 	public static final Item BARRIER = register(Blocks.BARRIER);
+	public static final Item LIGHT = register(Blocks.LIGHT);
 	public static final Item HAY_BLOCK = register(Blocks.HAY_BLOCK, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WHITE_CARPET = register(Blocks.WHITE_CARPET, ItemGroup.DECORATIONS);
 	public static final Item ORANGE_CARPET = register(Blocks.ORANGE_CARPET, ItemGroup.DECORATIONS);
@@ -971,7 +972,7 @@ public class Items {
 	public static final Item BLAZE_POWDER = register("blaze_powder", new Item(new Item.Settings().group(ItemGroup.BREWING)));
 	public static final Item MAGMA_CREAM = register("magma_cream", new Item(new Item.Settings().group(ItemGroup.BREWING)));
 	public static final Item BREWING_STAND = register(Blocks.BREWING_STAND, ItemGroup.BREWING);
-	public static final Item CAULDRON = register(Blocks.CAULDRON, ItemGroup.BREWING);
+	public static final Item CAULDRON = register(Blocks.CAULDRON, ItemGroup.BREWING, Blocks.WATER_CAULDRON, Blocks.LAVA_CAULDRON, Blocks.POWDER_SNOW_CAULDRON);
 	public static final Item ENDER_EYE = register("ender_eye", new EnderEyeItem(new Item.Settings().group(ItemGroup.MISC)));
 	public static final Item GLISTERING_MELON_SLICE = register("glistering_melon_slice", new Item(new Item.Settings().group(ItemGroup.BREWING)));
 	public static final Item AXOLOTL_SPAWN_EGG = register(
@@ -1033,6 +1034,9 @@ public class Items {
 	);
 	public static final Item GLOW_SQUID_SPAWN_EGG = register(
 		"glow_squid_spawn_egg", new SpawnEggItem(EntityType.GLOW_SQUID, 611926, 8778172, new Item.Settings().group(ItemGroup.MISC))
+	);
+	public static final Item GOAT_SPAWN_EGG = register(
+		"goat_spawn_egg", new SpawnEggItem(EntityType.GOAT, 10851452, 5589310, new Item.Settings().group(ItemGroup.MISC))
 	);
 	public static final Item GUARDIAN_SPAWN_EGG = register(
 		"guardian_spawn_egg", new SpawnEggItem(EntityType.GUARDIAN, 5931634, 15826224, new Item.Settings().group(ItemGroup.MISC))
@@ -1530,6 +1534,16 @@ public class Items {
 
 	private static Item register(Block block, ItemGroup group) {
 		return register(new BlockItem(block, new Item.Settings().group(group)));
+	}
+
+	private static Item register(Block block, ItemGroup itemGroup, Block... blocks) {
+		BlockItem blockItem = new BlockItem(block, new Item.Settings().group(itemGroup));
+
+		for (Block block2 : blocks) {
+			Item.BLOCK_ITEMS.put(block2, blockItem);
+		}
+
+		return register(blockItem);
 	}
 
 	private static Item register(BlockItem item) {

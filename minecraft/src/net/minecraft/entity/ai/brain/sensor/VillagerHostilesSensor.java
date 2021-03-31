@@ -1,12 +1,11 @@
 package net.minecraft.entity.ai.brain.sensor;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.Comparator;
-import java.util.Optional;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
 
-public class VillagerHostilesSensor extends NearestHostileSensor {
+public class VillagerHostilesSensor extends NearestVisibleLivingEntitySensor {
 	private static final ImmutableMap<EntityType<?>, Float> SQUARED_DISTANCES_FOR_DANGER = ImmutableMap.<EntityType<?>, Float>builder()
 		.put(EntityType.DROWNED, 8.0F)
 		.put(EntityType.EVOKER, 12.0F)
@@ -22,20 +21,18 @@ public class VillagerHostilesSensor extends NearestHostileSensor {
 		.build();
 
 	@Override
-	protected Optional<LivingEntity> getNearestHostile(LivingEntity entity) {
-		return this.getVisibleMobs(entity)
-			.flatMap(
-				list -> list.stream()
-						.filter(this::isHostile)
-						.filter(livingEntity2 -> this.isCloseEnoughForDanger(entity, livingEntity2))
-						.min(Comparator.comparingDouble(entity::squaredDistanceTo))
-			);
+	protected boolean matches(LivingEntity entity, LivingEntity target) {
+		return this.isHostile(target) && this.isCloseEnoughForDanger(entity, target);
+	}
+
+	private boolean isCloseEnoughForDanger(LivingEntity villager, LivingEntity target) {
+		float f = SQUARED_DISTANCES_FOR_DANGER.get(target.getType());
+		return target.squaredDistanceTo(villager) <= (double)(f * f);
 	}
 
 	@Override
-	protected boolean isCloseEnoughForDanger(LivingEntity entity, LivingEntity target) {
-		float f = SQUARED_DISTANCES_FOR_DANGER.get(target.getType());
-		return target.squaredDistanceTo(entity) <= (double)(f * f);
+	protected MemoryModuleType<LivingEntity> getOutputMemoryModule() {
+		return MemoryModuleType.NEAREST_HOSTILE;
 	}
 
 	private boolean isHostile(LivingEntity entity) {

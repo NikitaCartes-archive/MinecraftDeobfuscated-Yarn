@@ -1,7 +1,5 @@
 package net.minecraft.screen;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.registry.Registry;
 
@@ -40,13 +38,11 @@ public class ScreenHandlerType<T extends ScreenHandler> {
 		this.factory = factory;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public T create(int syncId, PlayerInventory playerInventory) {
 		return this.factory.create(syncId, playerInventory);
 	}
 
 	interface Factory<T extends ScreenHandler> {
-		@Environment(EnvType.CLIENT)
 		T create(int syncId, PlayerInventory playerInventory);
 	}
 }

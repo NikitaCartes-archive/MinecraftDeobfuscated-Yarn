@@ -21,13 +21,13 @@ import net.minecraft.util.math.BlockPos;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 class StructureTestListener implements TestListener {
-	private final GameTest test;
+	private final GameTestState test;
 	private final TestManager testManager;
 	private final BlockPos pos;
 	int attempt;
 	int successes;
 
-	public StructureTestListener(GameTest test, TestManager testManager, BlockPos pos) {
+	public StructureTestListener(GameTestState test, TestManager testManager, BlockPos pos) {
 		this.test = test;
 		this.testManager = testManager;
 		this.pos = pos;
@@ -36,13 +36,13 @@ class StructureTestListener implements TestListener {
 	}
 
 	@Override
-	public void onStarted(GameTest test) {
+	public void onStarted(GameTestState test) {
 		visualizeTest(this.test, Blocks.LIGHT_GRAY_STAINED_GLASS);
 		this.attempt++;
 	}
 
 	@Override
-	public void onPassed(GameTest test) {
+	public void onPassed(GameTestState test) {
 		this.successes++;
 		if (!test.isFlaky()) {
 			passTest(test, test.getStructurePath() + " passed!");
@@ -59,7 +59,7 @@ class StructureTestListener implements TestListener {
 	}
 
 	@Override
-	public void onFailed(GameTest test) {
+	public void onFailed(GameTestState test) {
 		if (!test.isFlaky()) {
 			failTest(test, test.getThrowable());
 		} else {
@@ -78,23 +78,23 @@ class StructureTestListener implements TestListener {
 		}
 	}
 
-	public static void passTest(GameTest test, String output) {
+	public static void passTest(GameTestState test, String output) {
 		visualizeTest(test, Blocks.LIME_STAINED_GLASS);
 		finishPassedTest(test, output);
 	}
 
-	private static void finishPassedTest(GameTest test, String output) {
+	private static void finishPassedTest(GameTestState test, String output) {
 		sendMessageToAllPlayers(test.getWorld(), Formatting.GREEN, output);
 		TestFailureLogger.passTest(test);
 	}
 
-	protected static void failTest(GameTest test, Throwable output) {
+	protected static void failTest(GameTestState test, Throwable output) {
 		visualizeTest(test, test.isRequired() ? Blocks.RED_STAINED_GLASS : Blocks.ORANGE_STAINED_GLASS);
 		createTestOutputLectern(test, Util.getInnermostMessage(output));
 		finishFailedTest(test, output);
 	}
 
-	protected static void finishFailedTest(GameTest test, Throwable output) {
+	protected static void finishFailedTest(GameTestState test, Throwable output) {
 		String string = output.getMessage() + (output.getCause() == null ? "" : " cause: " + Util.getInnermostMessage(output.getCause()));
 		String string2 = (test.isRequired() ? "" : "(optional) ") + test.getStructurePath() + " failed! " + string;
 		sendMessageToAllPlayers(test.getWorld(), test.isRequired() ? Formatting.RED : Formatting.YELLOW, string2);
@@ -109,14 +109,14 @@ class StructureTestListener implements TestListener {
 
 	private void init() {
 		this.test.clearArea();
-		GameTest gameTest = new GameTest(this.test.getTestFunction(), this.test.getRotation(), this.test.getWorld());
-		gameTest.startCountdown();
-		this.testManager.start(gameTest);
-		gameTest.addListener(this);
-		gameTest.init(this.pos, 2);
+		GameTestState gameTestState = new GameTestState(this.test.getTestFunction(), this.test.getRotation(), this.test.getWorld());
+		gameTestState.startCountdown();
+		this.testManager.start(gameTestState);
+		gameTestState.addListener(this);
+		gameTestState.init(this.pos, 2);
 	}
 
-	protected static void visualizeTest(GameTest test, Block block) {
+	protected static void visualizeTest(GameTestState test, Block block) {
 		ServerWorld serverWorld = test.getWorld();
 		BlockPos blockPos = test.getPos();
 		BlockPos blockPos2 = new BlockPos(-1, -1, -1);
@@ -133,7 +133,7 @@ class StructureTestListener implements TestListener {
 		}
 	}
 
-	private static void createTestOutputLectern(GameTest test, String output) {
+	private static void createTestOutputLectern(GameTestState test, String output) {
 		ServerWorld serverWorld = test.getWorld();
 		BlockPos blockPos = test.getPos();
 		BlockPos blockPos2 = new BlockPos(-1, 1, -1);
@@ -148,7 +148,7 @@ class StructureTestListener implements TestListener {
 		ItemStack itemStack = new ItemStack(Items.WRITABLE_BOOK);
 		NbtList nbtList = new NbtList();
 		StringBuffer stringBuffer = new StringBuffer();
-		Arrays.stream(text.split("\\.")).forEach(string -> stringBuffer.append(string).append('\n'));
+		Arrays.stream(text.split("\\.")).forEach(line -> stringBuffer.append(line).append('\n'));
 		if (!required) {
 			stringBuffer.append("(optional)\n");
 		}

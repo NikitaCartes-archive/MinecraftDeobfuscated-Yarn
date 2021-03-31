@@ -9,8 +9,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
@@ -35,7 +33,6 @@ public class RequiredTagList<T> {
 		return tagWrapper;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void clearAllTags() {
 		this.group = TagGroup.createEmpty();
 		Tag<T> tag = SetTag.empty();

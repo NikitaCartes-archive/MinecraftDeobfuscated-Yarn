@@ -11,6 +11,6 @@ public class GlowstoneDecorator extends AbstractCountDecorator<CountConfig> {
 	}
 
 	protected int getCount(Random random, CountConfig countConfig, BlockPos blockPos) {
-		return random.nextInt(random.nextInt(countConfig.getCount().getValue(random)) + 1);
+		return random.nextInt(random.nextInt(countConfig.getCount().get(random)) + 1);
 	}
 }

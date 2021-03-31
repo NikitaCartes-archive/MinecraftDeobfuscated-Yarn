@@ -48,6 +48,10 @@ public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
 		return stack;
 	}
 
+	public static ConditionalLootFunction.Builder<?> builder(LootContext.EntityTarget target) {
+		return builder(conditions -> new FillPlayerHeadLootFunction(conditions, target));
+	}
+
 	public static class Serializer extends ConditionalLootFunction.Serializer<FillPlayerHeadLootFunction> {
 		public void toJson(JsonObject jsonObject, FillPlayerHeadLootFunction fillPlayerHeadLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, fillPlayerHeadLootFunction, jsonSerializationContext);

@@ -16,6 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.poi.PointOfInterestType;
 
 public class ForgetCompletedPointOfInterestTask extends Task<LivingEntity> {
+	private static final int field_30185 = 16;
 	private final MemoryModuleType<GlobalPos> memoryModule;
 	private final Predicate<PointOfInterestType> condition;
 

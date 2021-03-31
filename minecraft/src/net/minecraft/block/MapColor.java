@@ -1,8 +1,5 @@
 package net.minecraft.block;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-
 /**
  * Represents the surface color of a block when rendered from the {@link net.minecraft.client.render.MapRenderer}.
  * Color names refer to a material or an object which refers to their vanilla Minecraft textures, not their real-world counterparts, eg. "emerald green".
@@ -82,7 +79,6 @@ public class MapColor {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getRenderColor(int shade) {
 		int i = 220;
 		if (shade == 3) {

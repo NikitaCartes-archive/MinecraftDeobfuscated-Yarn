@@ -49,6 +49,7 @@ import net.minecraft.entity.passive.DolphinEntity;
 import net.minecraft.entity.passive.FishEntity;
 import net.minecraft.entity.passive.FoxEntity;
 import net.minecraft.entity.passive.GlowSquidEntity;
+import net.minecraft.entity.passive.GoatEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.LlamaEntity;
@@ -97,6 +98,7 @@ public class DefaultAttributeRegistry {
 		.put(EntityType.GHAST, GhastEntity.createGhastAttributes().build())
 		.put(EntityType.GIANT, GiantEntity.createGiantAttributes().build())
 		.put(EntityType.GLOW_SQUID, GlowSquidEntity.createSquidAttributes().build())
+		.put(EntityType.GOAT, GoatEntity.createGoatAttributes().build())
 		.put(EntityType.GUARDIAN, GuardianEntity.createGuardianAttributes().build())
 		.put(EntityType.HOGLIN, HoglinEntity.createHoglinAttributes().build())
 		.put(EntityType.HORSE, HorseBaseEntity.createBaseHorseAttributes().build())

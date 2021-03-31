@@ -26,6 +26,18 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class AdvancementWidget extends DrawableHelper {
 	private static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/advancements/widgets.png");
+	private static final int field_32286 = 26;
+	private static final int field_32287 = 0;
+	private static final int field_32288 = 200;
+	private static final int field_32289 = 26;
+	private static final int field_32290 = 8;
+	private static final int field_32291 = 5;
+	private static final int field_32292 = 26;
+	private static final int field_32293 = 3;
+	private static final int field_32294 = 5;
+	private static final int field_32295 = 32;
+	private static final int field_32296 = 9;
+	private static final int field_32297 = 163;
 	private static final int[] field_24262 = new int[]{0, 10, -10, 25, -25};
 	private final AdvancementTab tab;
 	private final Advancement advancement;
@@ -146,6 +158,10 @@ public class AdvancementWidget extends DrawableHelper {
 		for (AdvancementWidget advancementWidget : this.children) {
 			advancementWidget.renderWidgets(matrices, x, y);
 		}
+	}
+
+	public int method_35737() {
+		return this.width;
 	}
 
 	public void setProgress(AdvancementProgress progress) {

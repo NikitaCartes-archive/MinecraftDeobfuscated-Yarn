@@ -5,11 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import org.apache.commons.lang3.StringUtils;
 
-@Environment(EnvType.CLIENT)
 public class ShaderParseException extends IOException {
 	private final List<ShaderParseException.JsonStackTrace> traces = Lists.<ShaderParseException.JsonStackTrace>newArrayList();
 	private final String message;
@@ -51,7 +48,6 @@ public class ShaderParseException extends IOException {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static class JsonStackTrace {
 		@Nullable
 		private String fileName;
@@ -62,6 +58,11 @@ public class ShaderParseException extends IOException {
 
 		private void add(String element) {
 			this.faultyElements.add(0, element);
+		}
+
+		@Nullable
+		public String method_36182() {
+			return this.fileName;
 		}
 
 		public String joinStackTrace() {

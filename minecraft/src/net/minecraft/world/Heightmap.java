@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
@@ -104,6 +102,10 @@ public class Heightmap {
 		return this.get(toIndex(x, z));
 	}
 
+	public int method_35334(int i, int j) {
+		return this.get(toIndex(i, j)) - 1;
+	}
+
 	private int get(int index) {
 		return this.storage.get(index) + this.chunk.getBottomY();
 	}
@@ -166,7 +168,6 @@ public class Heightmap {
 			return this.purpose == Heightmap.Purpose.CLIENT;
 		}
 
-		@Environment(EnvType.CLIENT)
 		public boolean isStoredServerSide() {
 			return this.purpose != Heightmap.Purpose.WORLDGEN;
 		}

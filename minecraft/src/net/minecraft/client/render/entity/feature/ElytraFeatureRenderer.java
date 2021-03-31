@@ -25,9 +25,9 @@ public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel
 	private static final Identifier SKIN = new Identifier("textures/entity/elytra.png");
 	private final ElytraEntityModel<T> elytra;
 
-	public ElytraFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext, EntityModelLoader entityModelLoader) {
-		super(featureRendererContext);
-		this.elytra = new ElytraEntityModel<>(entityModelLoader.getModelPart(EntityModelLayers.ELYTRA));
+	public ElytraFeatureRenderer(FeatureRendererContext<T, M> context, EntityModelLoader loader) {
+		super(context);
+		this.elytra = new ElytraEntityModel<>(loader.getModelPart(EntityModelLayers.ELYTRA));
 	}
 
 	public void render(

@@ -9,8 +9,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
@@ -42,6 +40,7 @@ import org.apache.logging.log4j.Logger;
 
 public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	private static final Logger LOGGER = LogManager.getLogger();
+	protected static final String field_31843 = "WorldGenSettings";
 	private LevelInfo levelInfo;
 	private final GeneratorOptions generatorOptions;
 	private final Lifecycle lifecycle;
@@ -225,14 +224,14 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public NbtCompound cloneWorldNbt(DynamicRegistryManager registryManager, @Nullable NbtCompound playerTag) {
+	public NbtCompound cloneWorldNbt(DynamicRegistryManager registryManager, @Nullable NbtCompound playerNbt) {
 		this.loadPlayerData();
-		if (playerTag == null) {
-			playerTag = this.playerData;
+		if (playerNbt == null) {
+			playerNbt = this.playerData;
 		}
 
 		NbtCompound nbtCompound = new NbtCompound();
-		this.updateProperties(registryManager, nbtCompound, playerTag);
+		this.updateProperties(registryManager, nbtCompound, playerNbt);
 		return nbtCompound;
 	}
 
@@ -524,7 +523,6 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		return this.generatorOptions;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public Lifecycle getLifecycle() {
 		return this.lifecycle;
@@ -536,8 +534,8 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public void setDragonFight(NbtCompound tag) {
-		this.dragonFight = tag;
+	public void setDragonFight(NbtCompound nbt) {
+		this.dragonFight = nbt;
 	}
 
 	@Override
@@ -557,8 +555,8 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public void setCustomBossEvents(@Nullable NbtCompound tag) {
-		this.customBossEvents = tag;
+	public void setCustomBossEvents(@Nullable NbtCompound nbt) {
+		this.customBossEvents = nbt;
 	}
 
 	@Override
@@ -579,6 +577,12 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	@Override
 	public void setWanderingTraderSpawnChance(int wanderingTraderSpawnChance) {
 		this.wanderingTraderSpawnChance = wanderingTraderSpawnChance;
+	}
+
+	@Nullable
+	@Override
+	public UUID getWanderingTraderId() {
+		return this.wanderingTraderId;
 	}
 
 	@Override
@@ -607,7 +611,6 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		return this;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public LevelInfo getLevelInfo() {
 		return this.levelInfo.withCopiedGameRules();

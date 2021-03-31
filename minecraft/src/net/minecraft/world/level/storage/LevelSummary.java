@@ -3,8 +3,6 @@ package net.minecraft.world.level.storage;
 import com.mojang.bridge.game.GameVersion;
 import java.io.File;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -24,7 +22,6 @@ public class LevelSummary implements Comparable<LevelSummary> {
 	private final boolean locked;
 	private final File file;
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	private Text details;
 
 	public LevelSummary(LevelInfo levelInfo, SaveVersionInfo versionInfo, String name, boolean requiresConversion, boolean locked, File file) {
@@ -36,27 +33,22 @@ public class LevelSummary implements Comparable<LevelSummary> {
 		this.requiresConversion = requiresConversion;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public String getName() {
 		return this.name;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public String getDisplayName() {
 		return StringUtils.isEmpty(this.levelInfo.getLevelName()) ? this.name : this.levelInfo.getLevelName();
 	}
 
-	@Environment(EnvType.CLIENT)
 	public File getFile() {
 		return this.file;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean requiresConversion() {
 		return this.requiresConversion;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public long getLastPlayed() {
 		return this.versionInfo.getLastPlayed();
 	}
@@ -69,22 +61,22 @@ public class LevelSummary implements Comparable<LevelSummary> {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
+	public LevelInfo getLevelInfo() {
+		return this.levelInfo;
+	}
+
 	public GameMode getGameMode() {
 		return this.levelInfo.getGameMode();
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isHardcore() {
 		return this.levelInfo.isHardcore();
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean hasCheats() {
 		return this.levelInfo.areCommandsAllowed();
 	}
 
-	@Environment(EnvType.CLIENT)
 	public MutableText getVersion() {
 		return (MutableText)(ChatUtil.isEmpty(this.versionInfo.getVersionName())
 			? new TranslatableText("selectWorld.versionUnknown")
@@ -95,17 +87,14 @@ public class LevelSummary implements Comparable<LevelSummary> {
 		return this.versionInfo;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isDifferentVersion() {
 		return this.isFutureLevel() || !SharedConstants.getGameVersion().isStable() && !this.versionInfo.isStable() || this.getConversionWarning().promptsBackup();
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isFutureLevel() {
 		return this.versionInfo.getVersionId() > SharedConstants.getGameVersion().getWorldVersion();
 	}
 
-	@Environment(EnvType.CLIENT)
 	public LevelSummary.ConversionWarning getConversionWarning() {
 		GameVersion gameVersion = SharedConstants.getGameVersion();
 		int i = gameVersion.getWorldVersion();
@@ -117,7 +106,6 @@ public class LevelSummary implements Comparable<LevelSummary> {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isLocked() {
 		return this.locked;
 	}
@@ -131,12 +119,10 @@ public class LevelSummary implements Comparable<LevelSummary> {
 		return this.versionInfo.getVersionId() <= 2692;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isUnavailable() {
 		return this.isLocked() || this.isPreWorldHeightChangeVersion();
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Text getDetails() {
 		if (this.details == null) {
 			this.details = this.createDetails();
@@ -145,7 +131,6 @@ public class LevelSummary implements Comparable<LevelSummary> {
 		return this.details;
 	}
 
-	@Environment(EnvType.CLIENT)
 	private Text createDetails() {
 		if (this.isLocked()) {
 			return new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
@@ -174,7 +159,6 @@ public class LevelSummary implements Comparable<LevelSummary> {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static enum ConversionWarning {
 		NONE(false, false, ""),
 		DOWNGRADE(true, true, "downgrade"),

@@ -2,6 +2,7 @@ package net.minecraft.client;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Queues;
+import com.google.common.hash.Hashing;
 import com.google.gson.JsonElement;
 import com.mojang.authlib.AuthenticationService;
 import com.mojang.authlib.GameProfile;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Proxy;
 import java.net.SocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
@@ -47,10 +49,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5961;
-import net.minecraft.class_5962;
-import net.minecraft.class_5963;
-import net.minecraft.class_5971;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -146,6 +144,7 @@ import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.texture.PaintingManager;
 import net.minecraft.client.texture.PlayerSkinProvider;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.toast.SystemToast;
@@ -153,10 +152,15 @@ import net.minecraft.client.toast.ToastManager;
 import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.client.tutorial.TutorialManager;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.client.util.ScreenshotUtils;
 import net.minecraft.client.util.Session;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.WindowProvider;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.profiler.DebugRecorder;
+import net.minecraft.client.util.profiler.DummyRecorder;
+import net.minecraft.client.util.profiler.ProfilerDumper;
+import net.minecraft.client.util.profiler.Recorder;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.Entity;
@@ -195,6 +199,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.sound.MusicSound;
 import net.minecraft.tag.ItemTags;
+import net.minecraft.text.ClickEvent;
 import net.minecraft.text.KeybindText;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -240,6 +245,7 @@ import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
+import org.apache.commons.io.Charsets;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -290,6 +296,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private static MinecraftClient instance;
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final boolean IS_SYSTEM_MAC = Util.getOperatingSystem() == Util.OperatingSystem.OSX;
+	private static final int field_32145 = 10;
 	public static final Identifier DEFAULT_FONT_ID = new Identifier("default");
 	public static final Identifier UNICODE_FONT_ID = new Identifier("uniform");
 	public static final Identifier ALT_TEXT_RENDERER_ID = new Identifier("alt");
@@ -421,6 +428,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private CrashReport crashReport;
 	private static int currentFps;
 	public String fpsDebugString = "";
+	public boolean field_32144;
 	public boolean debugChunkInfo;
 	public boolean debugChunkOcclusion;
 	public boolean chunkCullingEnabled = true;
@@ -435,7 +443,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final TickTimeTracker tickTimeTracker = new TickTimeTracker(Util.nanoTimeSupplier, () -> this.trackingTick);
 	@Nullable
 	private ProfileResult tickProfilerResult;
-	private class_5962 field_29569 = class_5963.field_29594;
+	private Recorder debugRecorder = DummyRecorder.INSTANCE;
 	private String openProfilerSection = "root";
 
 	public MinecraftClient(RunArgs args) {
@@ -699,9 +707,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					boolean bl2 = this.shouldMonitorTickDuration();
 					this.profiler = this.startMonitor(bl2, tickDurationMonitor);
 					this.profiler.startTick();
-					this.field_29569.method_34771();
+					this.debugRecorder.start();
 					this.render(!bl);
-					this.field_29569.method_34772();
+					this.debugRecorder.read();
 					this.profiler.endTick();
 					this.endMonitor(bl2, tickDurationMonitor);
 				} catch (OutOfMemoryError var4) {
@@ -1137,7 +1145,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	private Profiler startMonitor(boolean active, @Nullable TickDurationMonitor tickDurationMonitor) {
-		if (!active && !this.field_29569.method_34773()) {
+		if (!active && !this.debugRecorder.isActive()) {
 			return (Profiler)(tickDurationMonitor == null ? DummyProfiler.INSTANCE : tickDurationMonitor.nextProfiler());
 		} else if (active) {
 			if (!this.tickTimeTracker.isActive()) {
@@ -1146,8 +1154,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			}
 
 			this.trackingTick++;
-			Profiler profiler = this.field_29569.method_34773()
-				? Profiler.union(this.tickTimeTracker.getProfiler(), this.field_29569.method_34774())
+			Profiler profiler = this.debugRecorder.isActive()
+				? Profiler.union(this.tickTimeTracker.getProfiler(), this.debugRecorder.getProfiler())
 				: this.tickTimeTracker.getProfiler();
 			return TickDurationMonitor.tickProfiler(profiler, tickDurationMonitor);
 		} else {
@@ -1155,7 +1163,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				this.tickTimeTracker.disable();
 			}
 
-			return TickDurationMonitor.tickProfiler(this.field_29569.method_34774(), tickDurationMonitor);
+			return TickDurationMonitor.tickProfiler(this.debugRecorder.getProfiler(), tickDurationMonitor);
 		}
 	}
 
@@ -1216,13 +1224,13 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		System.gc();
 	}
 
-	void method_34745(Runnable runnable, Consumer<Path> consumer) {
-		if (this.field_29569.method_34773()) {
-			this.field_29569.method_34770();
+	void toggleDebugProfiler(Runnable startAction, Consumer<Path> completeAction) {
+		if (this.debugRecorder.isActive()) {
+			this.debugRecorder.sample();
 		} else {
-			Runnable runnable2 = () -> this.field_29569 = class_5963.field_29594;
-			this.field_29569 = class_5961.method_34760(Util.nanoTimeSupplier, Util.getIoWorkerExecutor(), new class_5971(), runnable2, consumer);
-			runnable.run();
+			Runnable runnable = () -> this.debugRecorder = DummyRecorder.INSTANCE;
+			this.debugRecorder = DebugRecorder.create(Util.nanoTimeSupplier, Util.getIoWorkerExecutor(), new ProfilerDumper(), runnable, completeAction);
+			startAction.run();
 		}
 	}
 
@@ -2082,6 +2090,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.multiplayerEnabled && this.socialInteractionsService.serversAllowed();
 	}
 
+	public boolean method_35706() {
+		return this.socialInteractionsService.realmsAllowed();
+	}
+
 	/**
 	 * Checks if the client should block messages from the {@code sender}.
 	 * 
@@ -2122,7 +2134,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public static boolean isFabulousGraphicsOrBetter() {
-		return instance.options.graphicsMode.getId() >= GraphicsMode.FABULOUS.getId();
+		return !instance.gameRenderer.method_35765() && instance.options.graphicsMode.getId() >= GraphicsMode.FABULOUS.getId();
 	}
 
 	public static boolean isAmbientOcclusionEnabled() {
@@ -2319,6 +2331,27 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 	}
 
+	@Override
+	public void method_35034(Snooper snooper) {
+		snooper.addInitialInfo("client_brand", ClientBrandRetriever.getClientModName());
+		snooper.addInitialInfo("launched_version", this.gameVersion);
+		method_35705(snooper);
+		snooper.addInitialInfo("gl_max_texture_size", RenderSystem.maxSupportedTextureSize());
+		GameProfile gameProfile = this.session.getProfile();
+		if (gameProfile.getId() != null) {
+			snooper.addInitialInfo("uuid", Hashing.sha1().hashBytes(gameProfile.getId().toString().getBytes(Charsets.ISO_8859_1)).toString());
+		}
+	}
+
+	private static void method_35705(Snooper snooper) {
+		GlDebugInfo.method_35612(snooper::addInitialInfo);
+	}
+
+	@Override
+	public boolean method_35033() {
+		return this.options.snooperEnabled;
+	}
+
 	public void setCurrentServerEntry(@Nullable ServerInfo serverEntry) {
 		this.currentServerEntry = serverEntry;
 	}
@@ -2498,6 +2531,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.searchManager.get(key);
 	}
 
+	public static int method_35702() {
+		return currentFps;
+	}
+
 	public MetricsData getMetricsData() {
 		return this.metricsData;
 	}
@@ -2563,12 +2600,136 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.windowFocused = focused;
 	}
 
+	public Text method_35698(File file, int i, int j) {
+		int k = this.window.getFramebufferWidth();
+		int l = this.window.getFramebufferHeight();
+		Framebuffer framebuffer = new Framebuffer(i, j, true, IS_SYSTEM_MAC);
+		float f = this.player.pitch;
+		float g = this.player.yaw;
+		float h = this.player.prevPitch;
+		float m = this.player.prevYaw;
+		this.gameRenderer.method_35769(false);
+
+		TranslatableText var12;
+		try {
+			this.gameRenderer.method_35770(true);
+			this.worldRenderer.method_35774();
+			this.window.method_35642(i);
+			this.window.method_35643(j);
+
+			for (int n = 0; n < 6; n++) {
+				switch (n) {
+					case 0:
+						this.player.prevYaw = this.player.yaw = g;
+						this.player.prevPitch = this.player.pitch = 0.0F;
+						break;
+					case 1:
+						this.player.prevYaw = this.player.yaw = (g + 90.0F) % 360.0F;
+						this.player.prevPitch = this.player.pitch = 0.0F;
+						break;
+					case 2:
+						this.player.prevYaw = this.player.yaw = (g + 180.0F) % 360.0F;
+						this.player.prevPitch = this.player.pitch = 0.0F;
+						break;
+					case 3:
+						this.player.prevYaw = this.player.yaw = (g - 90.0F) % 360.0F;
+						this.player.prevPitch = this.player.pitch = 0.0F;
+						break;
+					case 4:
+						this.player.prevYaw = this.player.yaw = g;
+						this.player.prevPitch = this.player.pitch = -90.0F;
+						break;
+					case 5:
+					default:
+						this.player.prevYaw = this.player.yaw = g;
+						this.player.prevPitch = this.player.pitch = 90.0F;
+				}
+
+				framebuffer.beginWrite(true);
+				this.gameRenderer.renderWorld(1.0F, 0L, new MatrixStack());
+
+				try {
+					Thread.sleep(10L);
+				} catch (InterruptedException var17) {
+				}
+
+				ScreenshotUtils.saveScreenshot(file, "panorama_" + n + ".png", i, j, framebuffer, text -> {
+				});
+			}
+
+			Text text = new LiteralText(file.getName())
+				.formatted(Formatting.UNDERLINE)
+				.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file.getAbsolutePath())));
+			return new TranslatableText("screenshot.success", text);
+		} catch (Exception var18) {
+			LOGGER.error("Couldn't save image", (Throwable)var18);
+			var12 = new TranslatableText("screenshot.failure", var18.getMessage());
+		} finally {
+			this.player.pitch = f;
+			this.player.yaw = g;
+			this.player.prevPitch = h;
+			this.player.prevYaw = m;
+			this.gameRenderer.method_35769(true);
+			this.window.method_35642(k);
+			this.window.method_35643(l);
+			framebuffer.delete();
+			this.gameRenderer.method_35770(false);
+			this.worldRenderer.method_35774();
+			this.getFramebuffer().beginWrite(true);
+		}
+
+		return var12;
+	}
+
+	private Text method_35699(File file, int i, int j, int k, int l) {
+		try {
+			ByteBuffer byteBuffer = GlDebugInfo.method_35611(i * j * 3);
+			ScreenshotUtils screenshotUtils = new ScreenshotUtils(file, k, l, j);
+			float f = (float)k / (float)i;
+			float g = (float)l / (float)j;
+			float h = f > g ? f : g;
+
+			for (int m = (l - 1) / j * j; m >= 0; m -= j) {
+				for (int n = 0; n < k; n += i) {
+					RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
+					float o = (float)(k - i) / 2.0F * 2.0F - (float)(n * 2);
+					float p = (float)(l - j) / 2.0F * 2.0F - (float)(m * 2);
+					o /= (float)i;
+					p /= (float)j;
+					this.gameRenderer.method_35766(h, o, p);
+					byteBuffer.clear();
+					RenderSystem.pixelStore(3333, 1);
+					RenderSystem.pixelStore(3317, 1);
+					RenderSystem.readPixels(0, 0, i, j, 32992, 5121, byteBuffer);
+					screenshotUtils.method_35711(byteBuffer, n, m, i, j);
+				}
+
+				screenshotUtils.method_35710();
+			}
+
+			File file2 = screenshotUtils.method_35712();
+			GlDebugInfo.method_35613(byteBuffer);
+			Text text = new LiteralText(file2.getName())
+				.formatted(Formatting.UNDERLINE)
+				.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file2.getAbsolutePath())));
+			return new TranslatableText("screenshot.success", text);
+		} catch (Exception var15) {
+			LOGGER.warn("Couldn't save screenshot", (Throwable)var15);
+			return new TranslatableText("screenshot.failure", var15.getMessage());
+		}
+	}
+
 	public Profiler getProfiler() {
 		return this.profiler;
 	}
 
 	public MinecraftClientGame getGame() {
 		return this.game;
+	}
+
+	@Nullable
+	public WorldGenerationProgressTracker method_35703() {
+		return (WorldGenerationProgressTracker)this.worldGenProgressTracker.get();
 	}
 
 	public SplashTextResourceSupplier getSplashTextLoader() {

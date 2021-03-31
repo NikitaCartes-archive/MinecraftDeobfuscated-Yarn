@@ -9,8 +9,6 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.fabricmc.yarn.constants.NbtTypeIds;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -22,6 +20,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.EightWayDirection;
 import net.minecraft.util.math.BlockPos;
@@ -38,6 +37,7 @@ import org.apache.logging.log4j.Logger;
 public class UpgradeData {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final UpgradeData NO_UPGRADE_DATA = new UpgradeData(EmptyBlockView.INSTANCE);
+	private static final String field_31412 = "Indices";
 	private static final EightWayDirection[] EIGHT_WAYS = EightWayDirection.values();
 	private final EnumSet<EightWayDirection> sidesToUpgrade = EnumSet.noneOf(EightWayDirection.class);
 	private final int[][] centerIndicesToUpgrade;
@@ -48,20 +48,20 @@ public class UpgradeData {
 		this.centerIndicesToUpgrade = new int[world.countVerticalSections()][];
 	}
 
-	public UpgradeData(NbtCompound tag, HeightLimitView world) {
+	public UpgradeData(NbtCompound nbt, HeightLimitView world) {
 		this(world);
-		if (tag.contains("Indices", NbtTypeIds.COMPOUND)) {
-			NbtCompound nbtCompound = tag.getCompound("Indices");
+		if (nbt.contains("Indices", NbtElement.COMPOUND_TYPE)) {
+			NbtCompound nbtCompound = nbt.getCompound("Indices");
 
 			for (int i = 0; i < this.centerIndicesToUpgrade.length; i++) {
 				String string = String.valueOf(i);
-				if (nbtCompound.contains(string, NbtTypeIds.INT_ARRAY)) {
+				if (nbtCompound.contains(string, NbtElement.INT_ARRAY_TYPE)) {
 					this.centerIndicesToUpgrade[i] = nbtCompound.getIntArray(string);
 				}
 			}
 		}
 
-		int j = tag.getInt("Sides");
+		int j = nbt.getInt("Sides");
 
 		for (EightWayDirection eightWayDirection : EightWayDirection.values()) {
 			if ((j & 1 << eightWayDirection.ordinal()) != 0) {
@@ -264,9 +264,7 @@ public class UpgradeData {
 					Direction direction2 = blockState.get(ChestBlock.FACING);
 					if (direction.getAxis() != direction2.getAxis() && direction2 == blockState2.get(ChestBlock.FACING)) {
 						ChestType chestType = direction == direction2.rotateYClockwise() ? ChestType.LEFT : ChestType.RIGHT;
-						world.setBlockState(
-							blockPos2, blockState2.with(ChestBlock.CHEST_TYPE, chestType.getOpposite()), SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.FORCE_STATE
-						);
+						world.setBlockState(blockPos2, blockState2.with(ChestBlock.CHEST_TYPE, chestType.getOpposite()), Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
 						if (direction2 == Direction.NORTH || direction2 == Direction.EAST) {
 							BlockEntity blockEntity = world.getBlockEntity(blockPos);
 							BlockEntity blockEntity2 = world.getBlockEntity(blockPos2);
@@ -318,9 +316,7 @@ public class UpgradeData {
 					for (BlockPos blockPos : objectSet) {
 						BlockState blockState = world.getBlockState(blockPos);
 						if ((Integer)blockState.get(Properties.DISTANCE_1_7) >= j) {
-							world.setBlockState(
-								blockPos, blockState.with(Properties.DISTANCE_1_7, Integer.valueOf(j)), SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.FORCE_STATE
-							);
+							world.setBlockState(blockPos, blockState.with(Properties.DISTANCE_1_7, Integer.valueOf(j)), Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
 							if (i != 7) {
 								for (Direction direction : DIRECTIONS) {
 									mutable.set(blockPos, direction);

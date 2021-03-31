@@ -9,17 +9,15 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.class_5948;
-import net.minecraft.class_5949;
-import net.minecraft.class_5950;
-import net.minecraft.class_5951;
-import net.minecraft.class_5952;
+import net.minecraft.client.util.profiler.Metric;
+import net.minecraft.client.util.profiler.MetricSampler;
+import net.minecraft.client.util.profiler.SamplingChannel;
+import net.minecraft.util.profiler.MetricSamplerSupplier;
+import net.minecraft.util.profiler.MetricSuppliers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class ThreadExecutor<R extends Runnable> implements class_5952, MessageListener<R>, Executor {
+public abstract class ThreadExecutor<R extends Runnable> implements MetricSamplerSupplier, MessageListener<R>, Executor {
 	private final String name;
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Queue<R> tasks = Queues.<R>newConcurrentLinkedQueue();
@@ -27,7 +25,7 @@ public abstract class ThreadExecutor<R extends Runnable> implements class_5952, 
 
 	protected ThreadExecutor(String name) {
 		this.name = name;
-		class_5950.field_29555.method_34702(this);
+		MetricSuppliers.INSTANCE.add(this);
 	}
 
 	protected abstract R createTask(Runnable runnable);
@@ -53,7 +51,6 @@ public abstract class ThreadExecutor<R extends Runnable> implements class_5952, 
 		return this.name;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public <V> CompletableFuture<V> submit(Supplier<V> task) {
 		return this.shouldExecuteAsync() ? CompletableFuture.supplyAsync(task, this) : CompletableFuture.completedFuture(task.get());
 	}
@@ -95,7 +92,6 @@ public abstract class ThreadExecutor<R extends Runnable> implements class_5952, 
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	protected void cancelTasks() {
 		this.tasks.clear();
 	}
@@ -144,9 +140,8 @@ public abstract class ThreadExecutor<R extends Runnable> implements class_5952, 
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
-	public List<class_5948> method_34705() {
-		return ImmutableList.of(new class_5948(new class_5951(this.name + "-tasks-pending"), this::getTaskCount, class_5949.field_29551));
+	public List<MetricSampler> getSamplers() {
+		return ImmutableList.of(new MetricSampler(new Metric(this.name + "-tasks-pending"), this::getTaskCount, SamplingChannel.EVENT_LOOP));
 	}
 }

@@ -3,8 +3,6 @@ package net.minecraft.entity.passive;
 import java.util.Random;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
@@ -30,6 +28,7 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 
 public abstract class AnimalEntity extends PassiveEntity {
+	static final int field_30270 = 6000;
 	private int loveTicks;
 	private UUID lovingPlayer;
 
@@ -82,11 +81,11 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putInt("InLove", this.loveTicks);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putInt("InLove", this.loveTicks);
 		if (this.lovingPlayer != null) {
-			tag.putUuid("LoveCause", this.lovingPlayer);
+			nbt.putUuid("LoveCause", this.lovingPlayer);
 		}
 	}
 
@@ -96,10 +95,10 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.loveTicks = tag.getInt("InLove");
-		this.lovingPlayer = tag.containsUuid("LoveCause") ? tag.getUuid("LoveCause") : null;
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.loveTicks = nbt.getInt("InLove");
+		this.lovingPlayer = nbt.containsUuid("LoveCause") ? nbt.getUuid("LoveCause") : null;
 	}
 
 	public static boolean isValidNaturalSpawn(EntityType<? extends AnimalEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
@@ -232,7 +231,6 @@ public abstract class AnimalEntity extends PassiveEntity {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void handleStatus(byte status) {
 		if (status == 18) {

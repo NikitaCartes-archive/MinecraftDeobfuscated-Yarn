@@ -2,8 +2,6 @@ package net.minecraft.screen;
 
 import com.google.common.collect.Lists;
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -20,6 +18,12 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 
 public class StonecutterScreenHandler extends ScreenHandler {
+	public static final int field_30842 = 0;
+	public static final int field_30843 = 1;
+	private static final int field_30844 = 2;
+	private static final int field_30845 = 29;
+	private static final int field_30846 = 29;
+	private static final int field_30847 = 38;
 	private final ScreenHandlerContext context;
 	private final Property selectedRecipe = Property.create();
 	private final World world;
@@ -88,22 +92,18 @@ public class StonecutterScreenHandler extends ScreenHandler {
 		this.addProperty(this.selectedRecipe);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getSelectedRecipe() {
 		return this.selectedRecipe.get();
 	}
 
-	@Environment(EnvType.CLIENT)
 	public List<StonecuttingRecipe> getAvailableRecipes() {
 		return this.availableRecipes;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getAvailableRecipeCount() {
 		return this.availableRecipes.size();
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean canCraft() {
 		return this.inputSlot.hasStack() && !this.availableRecipes.isEmpty();
 	}
@@ -162,7 +162,6 @@ public class StonecutterScreenHandler extends ScreenHandler {
 		return ScreenHandlerType.STONECUTTER;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void setContentsChangedListener(Runnable runnable) {
 		this.contentsChangedListener = runnable;
 	}

@@ -1,7 +1,5 @@
 package net.minecraft.util;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.Direction;
@@ -52,7 +50,6 @@ public enum BlockMirror {
 		return this.directionTransformation;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Text getName() {
 		return this.name;
 	}

@@ -1,6 +1,5 @@
 package net.minecraft.entity.projectile.thrown;
 
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.LivingEntity;
@@ -11,6 +10,7 @@ import net.minecraft.potion.Potions;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 
 public class ExperienceBottleEntity extends ThrownItemEntity {
 	public ExperienceBottleEntity(EntityType<? extends ExperienceBottleEntity> entityType, World world) {

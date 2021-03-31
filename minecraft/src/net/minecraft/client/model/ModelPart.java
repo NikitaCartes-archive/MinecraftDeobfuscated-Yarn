@@ -69,10 +69,10 @@ public final class ModelPart {
 		this.pivotZ = z;
 	}
 
-	public void method_33425(float f, float g, float h) {
-		this.pitch = f;
-		this.yaw = g;
-		this.roll = h;
+	public void setAngles(float pitch, float yaw, float roll) {
+		this.pitch = pitch;
+		this.yaw = yaw;
+		this.roll = roll;
 	}
 
 	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay) {
@@ -92,6 +92,26 @@ public final class ModelPart {
 
 				matrices.pop();
 			}
+		}
+	}
+
+	public void method_35745(MatrixStack matrixStack, ModelPart.class_6229 arg) {
+		this.method_35746(matrixStack, arg, "");
+	}
+
+	private void method_35746(MatrixStack matrixStack, ModelPart.class_6229 arg, String string) {
+		if (!this.cuboids.isEmpty() || !this.children.isEmpty()) {
+			matrixStack.push();
+			this.rotate(matrixStack);
+			MatrixStack.Entry entry = matrixStack.peek();
+
+			for (int i = 0; i < this.cuboids.size(); i++) {
+				arg.method_35748(entry, string, i, (ModelPart.Cuboid)this.cuboids.get(i));
+			}
+
+			String string2 = string + "/";
+			this.children.forEach((string2x, modelPart) -> modelPart.method_35746(matrixStack, arg, string2 + string2x));
+			matrixStack.pop();
 		}
 	}
 
@@ -283,5 +303,11 @@ public final class ModelPart {
 			this.u = u;
 			this.v = v;
 		}
+	}
+
+	@FunctionalInterface
+	@Environment(EnvType.CLIENT)
+	public interface class_6229 {
+		void method_35748(MatrixStack.Entry entry, String string, int i, ModelPart.Cuboid cuboid);
 	}
 }

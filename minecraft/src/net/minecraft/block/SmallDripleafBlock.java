@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.FluidState;
@@ -27,6 +26,7 @@ import net.minecraft.world.WorldView;
 public class SmallDripleafBlock extends TallPlantBlock implements Fertilizable, Waterloggable {
 	private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
+	protected static final float field_31246 = 6.0F;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 13.0, 14.0);
 
 	public SmallDripleafBlock(AbstractBlock.Settings settings) {
@@ -64,7 +64,7 @@ public class SmallDripleafBlock extends TallPlantBlock implements Fertilizable, 
 		world.setBlockState(
 			pos.up(),
 			this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER).with(WATERLOGGED, Boolean.valueOf(world.isWater(pos.up()))).with(FACING, direction),
-			SetBlockStateFlags.DEFAULT
+			Block.NOTIFY_ALL
 		);
 	}
 
@@ -113,6 +113,7 @@ public class SmallDripleafBlock extends TallPlantBlock implements Fertilizable, 
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
 		if (state.get(TallPlantBlock.HALF) == DoubleBlockHalf.LOWER) {
+			world.setBlockState(pos.up(), Blocks.AIR.getDefaultState(), Block.FORCE_STATE);
 			BigDripleafBlock.grow(world, random, pos, state.get(FACING));
 		} else {
 			BlockPos blockPos = pos.down();

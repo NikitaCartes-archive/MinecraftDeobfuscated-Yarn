@@ -5,10 +5,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
-import net.minecraft.util.math.BlockBox;
+import java.util.function.BiConsumer;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ModifiableTestableWorld;
+import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 
@@ -28,14 +28,14 @@ public class StraightTrunkPlacer extends TrunkPlacer {
 
 	@Override
 	public List<FoliagePlacer.TreeNode> generate(
-		ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> placedStates, BlockBox box, TreeFeatureConfig config
+		TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, int i, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig
 	) {
-		setToDirt(world, random, pos.down(), config);
+		setToDirt(testableWorld, biConsumer, random, blockPos.down(), treeFeatureConfig);
 
-		for (int i = 0; i < trunkHeight; i++) {
-			getAndSetState(world, random, pos.up(i), placedStates, box, config);
+		for (int j = 0; j < i; j++) {
+			method_35375(testableWorld, biConsumer, random, blockPos.up(j), treeFeatureConfig);
 		}
 
-		return ImmutableList.of(new FoliagePlacer.TreeNode(pos.up(trunkHeight), 0, false));
+		return ImmutableList.of(new FoliagePlacer.TreeNode(blockPos.up(i), 0, false));
 	}
 }

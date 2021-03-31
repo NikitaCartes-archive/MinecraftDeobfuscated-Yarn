@@ -1,7 +1,5 @@
 package net.minecraft.resource;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.text.Text;
@@ -38,12 +36,10 @@ public enum ResourcePackCompatibility {
 		return from(metadata.getPackFormat(), type);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Text getNotification() {
 		return this.notification;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Text getConfirmMessage() {
 		return this.confirmMessage;
 	}

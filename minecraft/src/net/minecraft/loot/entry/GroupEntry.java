@@ -1,5 +1,7 @@
 package net.minecraft.loot.entry;
 
+import com.google.common.collect.Lists;
+import java.util.List;
 import net.minecraft.loot.condition.LootCondition;
 
 public class GroupEntry extends CombinedEntry {
@@ -31,6 +33,35 @@ public class GroupEntry extends CombinedEntry {
 
 					return true;
 				};
+		}
+	}
+
+	public static GroupEntry.Builder create(LootPoolEntry.Builder<?>... entries) {
+		return new GroupEntry.Builder(entries);
+	}
+
+	public static class Builder extends LootPoolEntry.Builder<GroupEntry.Builder> {
+		private final List<LootPoolEntry> entries = Lists.<LootPoolEntry>newArrayList();
+
+		public Builder(LootPoolEntry.Builder<?>... entries) {
+			for (LootPoolEntry.Builder<?> builder : entries) {
+				this.entries.add(builder.build());
+			}
+		}
+
+		protected GroupEntry.Builder getThisBuilder() {
+			return this;
+		}
+
+		@Override
+		public GroupEntry.Builder groupEntry(LootPoolEntry.Builder<?> entry) {
+			this.entries.add(entry.build());
+			return this;
+		}
+
+		@Override
+		public LootPoolEntry build() {
+			return new GroupEntry((LootPoolEntry[])this.entries.toArray(new LootPoolEntry[0]), this.getConditions());
 		}
 	}
 }

@@ -2,9 +2,6 @@ package net.minecraft.block;
 
 import java.util.Optional;
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -29,6 +26,7 @@ import net.minecraft.world.WorldView;
 
 public class BubbleColumnBlock extends Block implements FluidDrainable {
 	public static final BooleanProperty DRAG = Properties.DRAG;
+	private static final int field_31038 = 5;
 
 	public BubbleColumnBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -90,11 +88,11 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 	public static void update(WorldAccess world, BlockPos pos, BlockState water, BlockState bubbleSource) {
 		if (isStillWater(water)) {
 			BlockState blockState = getBubbleState(bubbleSource);
-			world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
 			BlockPos.Mutable mutable = pos.mutableCopy().move(Direction.UP);
 
 			while (isStillWater(world.getBlockState(mutable))) {
-				if (!world.setBlockState(mutable, blockState, SetBlockStateFlags.NOTIFY_LISTENERS)) {
+				if (!world.setBlockState(mutable, blockState, Block.NOTIFY_LISTENERS)) {
 					return;
 				}
 
@@ -117,7 +115,6 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		double d = (double)pos.getX();
@@ -187,7 +184,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 
 	@Override
 	public ItemStack tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state) {
-		world.setBlockState(pos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
+		world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
 		return new ItemStack(Items.WATER_BUCKET);
 	}
 

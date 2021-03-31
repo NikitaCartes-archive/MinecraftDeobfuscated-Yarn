@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -54,11 +53,11 @@ public class NetherrackBlock extends Block implements Fertilizable {
 		}
 
 		if (bl2 && bl) {
-			world.setBlockState(pos, random.nextBoolean() ? Blocks.WARPED_NYLIUM.getDefaultState() : Blocks.CRIMSON_NYLIUM.getDefaultState(), SetBlockStateFlags.DEFAULT);
+			world.setBlockState(pos, random.nextBoolean() ? Blocks.WARPED_NYLIUM.getDefaultState() : Blocks.CRIMSON_NYLIUM.getDefaultState(), Block.NOTIFY_ALL);
 		} else if (bl2) {
-			world.setBlockState(pos, Blocks.WARPED_NYLIUM.getDefaultState(), SetBlockStateFlags.DEFAULT);
+			world.setBlockState(pos, Blocks.WARPED_NYLIUM.getDefaultState(), Block.NOTIFY_ALL);
 		} else if (bl) {
-			world.setBlockState(pos, Blocks.CRIMSON_NYLIUM.getDefaultState(), SetBlockStateFlags.DEFAULT);
+			world.setBlockState(pos, Blocks.CRIMSON_NYLIUM.getDefaultState(), Block.NOTIFY_ALL);
 		}
 	}
 }

@@ -6,13 +6,13 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
-import java.util.Set;
+import java.util.function.BiConsumer;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.PillarBlock;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.ModifiableTestableWorld;
+import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
@@ -21,6 +21,10 @@ public class LargeOakTrunkPlacer extends TrunkPlacer {
 	public static final Codec<LargeOakTrunkPlacer> CODEC = RecordCodecBuilder.create(
 		instance -> fillTrunkPlacerFields(instance).apply(instance, LargeOakTrunkPlacer::new)
 	);
+	private static final double field_31524 = 0.618;
+	private static final double field_31525 = 1.382;
+	private static final double field_31526 = 0.381;
+	private static final double field_31527 = 0.328;
 
 	public LargeOakTrunkPlacer(int i, int j, int k) {
 		super(i, j, k);
@@ -33,50 +37,50 @@ public class LargeOakTrunkPlacer extends TrunkPlacer {
 
 	@Override
 	public List<FoliagePlacer.TreeNode> generate(
-		ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> placedStates, BlockBox box, TreeFeatureConfig config
+		TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, int i, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig
 	) {
-		int i = 5;
-		int j = trunkHeight + 2;
-		int k = MathHelper.floor((double)j * 0.618);
-		setToDirt(world, random, pos.down(), config);
+		int j = 5;
+		int k = i + 2;
+		int l = MathHelper.floor((double)k * 0.618);
+		setToDirt(testableWorld, biConsumer, random, blockPos.down(), treeFeatureConfig);
 		double d = 1.0;
-		int l = Math.min(1, MathHelper.floor(1.382 + Math.pow(1.0 * (double)j / 13.0, 2.0)));
-		int m = pos.getY() + k;
-		int n = j - 5;
+		int m = Math.min(1, MathHelper.floor(1.382 + Math.pow(1.0 * (double)k / 13.0, 2.0)));
+		int n = blockPos.getY() + l;
+		int o = k - 5;
 		List<LargeOakTrunkPlacer.BranchPosition> list = Lists.<LargeOakTrunkPlacer.BranchPosition>newArrayList();
-		list.add(new LargeOakTrunkPlacer.BranchPosition(pos.up(n), m));
+		list.add(new LargeOakTrunkPlacer.BranchPosition(blockPos.up(o), n));
 
-		for (; n >= 0; n--) {
-			float f = this.shouldGenerateBranch(j, n);
+		for (; o >= 0; o--) {
+			float f = shouldGenerateBranch(k, o);
 			if (!(f < 0.0F)) {
-				for (int o = 0; o < l; o++) {
+				for (int p = 0; p < m; p++) {
 					double e = 1.0;
 					double g = 1.0 * (double)f * ((double)random.nextFloat() + 0.328);
 					double h = (double)(random.nextFloat() * 2.0F) * Math.PI;
-					double p = g * Math.sin(h) + 0.5;
-					double q = g * Math.cos(h) + 0.5;
-					BlockPos blockPos = pos.add(p, (double)(n - 1), q);
-					BlockPos blockPos2 = blockPos.up(5);
-					if (this.makeOrCheckBranch(world, random, blockPos, blockPos2, false, placedStates, box, config)) {
-						int r = pos.getX() - blockPos.getX();
-						int s = pos.getZ() - blockPos.getZ();
-						double t = (double)blockPos.getY() - Math.sqrt((double)(r * r + s * s)) * 0.381;
-						int u = t > (double)m ? m : (int)t;
-						BlockPos blockPos3 = new BlockPos(pos.getX(), u, pos.getZ());
-						if (this.makeOrCheckBranch(world, random, blockPos3, blockPos, false, placedStates, box, config)) {
-							list.add(new LargeOakTrunkPlacer.BranchPosition(blockPos, blockPos3.getY()));
+					double q = g * Math.sin(h) + 0.5;
+					double r = g * Math.cos(h) + 0.5;
+					BlockPos blockPos2 = blockPos.add(q, (double)(o - 1), r);
+					BlockPos blockPos3 = blockPos2.up(5);
+					if (this.makeOrCheckBranch(testableWorld, biConsumer, random, blockPos2, blockPos3, false, treeFeatureConfig)) {
+						int s = blockPos.getX() - blockPos2.getX();
+						int t = blockPos.getZ() - blockPos2.getZ();
+						double u = (double)blockPos2.getY() - Math.sqrt((double)(s * s + t * t)) * 0.381;
+						int v = u > (double)n ? n : (int)u;
+						BlockPos blockPos4 = new BlockPos(blockPos.getX(), v, blockPos.getZ());
+						if (this.makeOrCheckBranch(testableWorld, biConsumer, random, blockPos4, blockPos2, false, treeFeatureConfig)) {
+							list.add(new LargeOakTrunkPlacer.BranchPosition(blockPos2, blockPos4.getY()));
 						}
 					}
 				}
 			}
 		}
 
-		this.makeOrCheckBranch(world, random, pos, pos.up(k), true, placedStates, box, config);
-		this.makeBranches(world, random, j, pos, list, placedStates, box, config);
+		this.makeOrCheckBranch(testableWorld, biConsumer, random, blockPos, blockPos.up(l), true, treeFeatureConfig);
+		this.makeBranches(testableWorld, biConsumer, random, k, blockPos, list, treeFeatureConfig);
 		List<FoliagePlacer.TreeNode> list2 = Lists.<FoliagePlacer.TreeNode>newArrayList();
 
 		for (LargeOakTrunkPlacer.BranchPosition branchPosition : list) {
-			if (this.isHighEnough(j, branchPosition.getEndY() - pos.getY())) {
+			if (this.isHighEnough(k, branchPosition.getEndY() - blockPos.getY())) {
 				list2.add(branchPosition.node);
 			}
 		}
@@ -85,23 +89,30 @@ public class LargeOakTrunkPlacer extends TrunkPlacer {
 	}
 
 	private boolean makeOrCheckBranch(
-		ModifiableTestableWorld world, Random random, BlockPos start, BlockPos end, boolean make, Set<BlockPos> placedStates, BlockBox box, TreeFeatureConfig config
+		TestableWorld testableWorld,
+		BiConsumer<BlockPos, BlockState> biConsumer,
+		Random random,
+		BlockPos blockPos,
+		BlockPos blockPos2,
+		boolean bl,
+		TreeFeatureConfig treeFeatureConfig
 	) {
-		if (!make && Objects.equals(start, end)) {
+		if (!bl && Objects.equals(blockPos, blockPos2)) {
 			return true;
 		} else {
-			BlockPos blockPos = end.add(-start.getX(), -start.getY(), -start.getZ());
-			int i = this.getLongestSide(blockPos);
-			float f = (float)blockPos.getX() / (float)i;
-			float g = (float)blockPos.getY() / (float)i;
-			float h = (float)blockPos.getZ() / (float)i;
+			BlockPos blockPos3 = blockPos2.add(-blockPos.getX(), -blockPos.getY(), -blockPos.getZ());
+			int i = this.getLongestSide(blockPos3);
+			float f = (float)blockPos3.getX() / (float)i;
+			float g = (float)blockPos3.getY() / (float)i;
+			float h = (float)blockPos3.getZ() / (float)i;
 
 			for (int j = 0; j <= i; j++) {
-				BlockPos blockPos2 = start.add((double)(0.5F + (float)j * f), (double)(0.5F + (float)j * g), (double)(0.5F + (float)j * h));
-				if (make) {
-					setBlockState(world, blockPos2, config.trunkProvider.getBlockState(random, blockPos2).with(PillarBlock.AXIS, this.getLogAxis(start, blockPos2)), box);
-					placedStates.add(blockPos2.toImmutable());
-				} else if (!TreeFeature.canTreeReplace(world, blockPos2)) {
+				BlockPos blockPos4 = blockPos.add((double)(0.5F + (float)j * f), (double)(0.5F + (float)j * g), (double)(0.5F + (float)j * h));
+				if (bl) {
+					TrunkPlacer.getAndSetState(
+						testableWorld, biConsumer, random, blockPos4, treeFeatureConfig, blockState -> blockState.with(PillarBlock.AXIS, this.getLogAxis(blockPos, blockPos4))
+					);
+				} else if (!TreeFeature.canTreeReplace(testableWorld, blockPos4)) {
 					return false;
 				}
 			}
@@ -138,20 +149,19 @@ public class LargeOakTrunkPlacer extends TrunkPlacer {
 	}
 
 	private void makeBranches(
-		ModifiableTestableWorld world,
+		TestableWorld testableWorld,
+		BiConsumer<BlockPos, BlockState> biConsumer,
 		Random random,
-		int treeHeight,
-		BlockPos treePos,
-		List<LargeOakTrunkPlacer.BranchPosition> branches,
-		Set<BlockPos> placedStates,
-		BlockBox box,
-		TreeFeatureConfig config
+		int i,
+		BlockPos blockPos,
+		List<LargeOakTrunkPlacer.BranchPosition> list,
+		TreeFeatureConfig treeFeatureConfig
 	) {
-		for (LargeOakTrunkPlacer.BranchPosition branchPosition : branches) {
-			int i = branchPosition.getEndY();
-			BlockPos blockPos = new BlockPos(treePos.getX(), i, treePos.getZ());
-			if (!blockPos.equals(branchPosition.node.getCenter()) && this.isHighEnough(treeHeight, i - treePos.getY())) {
-				this.makeOrCheckBranch(world, random, blockPos, branchPosition.node.getCenter(), true, placedStates, box, config);
+		for (LargeOakTrunkPlacer.BranchPosition branchPosition : list) {
+			int j = branchPosition.getEndY();
+			BlockPos blockPos2 = new BlockPos(blockPos.getX(), j, blockPos.getZ());
+			if (!blockPos2.equals(branchPosition.node.getCenter()) && this.isHighEnough(i, j - blockPos.getY())) {
+				this.makeOrCheckBranch(testableWorld, biConsumer, random, blockPos2, branchPosition.node.getCenter(), true, treeFeatureConfig);
 			}
 		}
 	}
@@ -159,12 +169,12 @@ public class LargeOakTrunkPlacer extends TrunkPlacer {
 	/**
 	 * If the returned value is greater than or equal to 0, a branch will be generated.
 	 */
-	private float shouldGenerateBranch(int trunkHeight, int y) {
-		if ((float)y < (float)trunkHeight * 0.3F) {
+	private static float shouldGenerateBranch(int i, int j) {
+		if ((float)j < (float)i * 0.3F) {
 			return -1.0F;
 		} else {
-			float f = (float)trunkHeight / 2.0F;
-			float g = f - (float)y;
+			float f = (float)i / 2.0F;
+			float g = f - (float)j;
 			float h = MathHelper.sqrt(f * f - g * g);
 			if (g == 0.0F) {
 				h = f;

@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.c2s.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -9,6 +7,7 @@ import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.util.Arm;
 
 public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener> {
+	public static final int MAX_LANGUAGE_LENGTH = 16;
 	private final String language;
 	private final int viewDistance;
 	private final ChatVisibility chatVisibility;
@@ -17,7 +16,6 @@ public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener>
 	private final Arm mainArm;
 	private final boolean filterText;
 
-	@Environment(EnvType.CLIENT)
 	public ClientSettingsC2SPacket(
 		String language, int viewDistance, ChatVisibility chatVisibility, boolean chatColors, int modelBitMask, Arm mainArm, boolean filterText
 	) {
@@ -53,6 +51,14 @@ public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener>
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onClientSettings(this);
+	}
+
+	public String getLanguage() {
+		return this.language;
+	}
+
+	public int getViewDistance() {
+		return this.viewDistance;
 	}
 
 	public ChatVisibility getChatVisibility() {

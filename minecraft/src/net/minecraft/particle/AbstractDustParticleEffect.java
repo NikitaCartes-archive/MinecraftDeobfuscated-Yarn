@@ -3,19 +3,19 @@ package net.minecraft.particle;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Locale;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
 
 public abstract class AbstractDustParticleEffect implements ParticleEffect {
+	public static final float field_33114 = 0.01F;
+	public static final float field_33115 = 4.0F;
 	protected final Vec3f color;
 	protected final float scale;
 
-	public AbstractDustParticleEffect(Vec3f vec3f, float scale) {
-		this.color = vec3f;
+	public AbstractDustParticleEffect(Vec3f color, float scale) {
+		this.color = color;
 		this.scale = MathHelper.clamp(scale, 0.01F, 4.0F);
 	}
 
@@ -29,8 +29,8 @@ public abstract class AbstractDustParticleEffect implements ParticleEffect {
 		return new Vec3f(f, g, h);
 	}
 
-	public static Vec3f method_33466(PacketByteBuf packetByteBuf) {
-		return new Vec3f(packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat());
+	public static Vec3f readColor(PacketByteBuf buf) {
+		return new Vec3f(buf.readFloat(), buf.readFloat(), buf.readFloat());
 	}
 
 	@Override
@@ -48,12 +48,10 @@ public abstract class AbstractDustParticleEffect implements ParticleEffect {
 		);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Vec3f getColor() {
 		return this.color;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getScale() {
 		return this.scale;
 	}

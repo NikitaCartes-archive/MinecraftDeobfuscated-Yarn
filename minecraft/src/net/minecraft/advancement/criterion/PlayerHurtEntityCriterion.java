@@ -42,8 +42,30 @@ public class PlayerHurtEntityCriterion extends AbstractCriterion<PlayerHurtEntit
 			this.entity = entity;
 		}
 
-		public static PlayerHurtEntityCriterion.Conditions create(DamagePredicate.Builder hurtEntityPredicateBuilder) {
-			return new PlayerHurtEntityCriterion.Conditions(EntityPredicate.Extended.EMPTY, hurtEntityPredicateBuilder.build(), EntityPredicate.Extended.EMPTY);
+		public static PlayerHurtEntityCriterion.Conditions create() {
+			return new PlayerHurtEntityCriterion.Conditions(EntityPredicate.Extended.EMPTY, DamagePredicate.ANY, EntityPredicate.Extended.EMPTY);
+		}
+
+		public static PlayerHurtEntityCriterion.Conditions create(DamagePredicate damagePredicate) {
+			return new PlayerHurtEntityCriterion.Conditions(EntityPredicate.Extended.EMPTY, damagePredicate, EntityPredicate.Extended.EMPTY);
+		}
+
+		public static PlayerHurtEntityCriterion.Conditions create(DamagePredicate.Builder damagePredicateBuilder) {
+			return new PlayerHurtEntityCriterion.Conditions(EntityPredicate.Extended.EMPTY, damagePredicateBuilder.build(), EntityPredicate.Extended.EMPTY);
+		}
+
+		public static PlayerHurtEntityCriterion.Conditions create(EntityPredicate hurtEntityPredicate) {
+			return new PlayerHurtEntityCriterion.Conditions(EntityPredicate.Extended.EMPTY, DamagePredicate.ANY, EntityPredicate.Extended.ofLegacy(hurtEntityPredicate));
+		}
+
+		public static PlayerHurtEntityCriterion.Conditions create(DamagePredicate damagePredicate, EntityPredicate hurtEntityPredicate) {
+			return new PlayerHurtEntityCriterion.Conditions(EntityPredicate.Extended.EMPTY, damagePredicate, EntityPredicate.Extended.ofLegacy(hurtEntityPredicate));
+		}
+
+		public static PlayerHurtEntityCriterion.Conditions create(DamagePredicate.Builder damagePredicateBuilder, EntityPredicate hurtEntityPredicate) {
+			return new PlayerHurtEntityCriterion.Conditions(
+				EntityPredicate.Extended.EMPTY, damagePredicateBuilder.build(), EntityPredicate.Extended.ofLegacy(hurtEntityPredicate)
+			);
 		}
 
 		public boolean matches(ServerPlayerEntity player, LootContext entityContext, DamageSource source, float dealt, float taken, boolean blocked) {

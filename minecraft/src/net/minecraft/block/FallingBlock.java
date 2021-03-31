@@ -1,8 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -58,7 +56,6 @@ public class FallingBlock extends Block implements LandingBlock {
 		return state.isAir() || state.isIn(BlockTags.FIRE) || material.isLiquid() || material.isReplaceable();
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		if (random.nextInt(16) == 0) {
@@ -72,7 +69,6 @@ public class FallingBlock extends Block implements LandingBlock {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getColor(BlockState state, BlockView world, BlockPos pos) {
 		return -16777216;
 	}

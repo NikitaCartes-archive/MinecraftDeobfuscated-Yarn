@@ -3,15 +3,12 @@ package net.minecraft.world;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -27,7 +24,8 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.util.collection.WeightedPicker;
+import net.minecraft.util.annotation.Debug;
+import net.minecraft.util.collection.Pool;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -49,10 +47,16 @@ import org.apache.logging.log4j.Logger;
 
 public final class SpawnHelper {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int field_30974 = 24;
+	public static final int field_30972 = 8;
+	public static final int field_30973 = 128;
 	private static final int CHUNK_AREA = (int)Math.pow(17.0, 2.0);
 	private static final SpawnGroup[] SPAWNABLE_GROUPS = (SpawnGroup[])Stream.of(SpawnGroup.values())
 		.filter(spawnGroup -> spawnGroup != SpawnGroup.MISC)
 		.toArray(SpawnGroup[]::new);
+
+	private SpawnHelper() {
+	}
 
 	public static SpawnHelper.Info setupSpawn(int spawningChunkCount, Iterable<Entity> entities, SpawnHelper.ChunkSource chunkSource) {
 		GravityField gravityField = new GravityField();
@@ -110,6 +114,12 @@ public final class SpawnHelper {
 		if (blockPos.getY() >= world.getBottomY() + 1) {
 			spawnEntitiesInChunk(group, world, chunk, blockPos, checker, runner);
 		}
+	}
+
+	@Debug
+	public static void spawnEntitiesInChunk(SpawnGroup group, ServerWorld world, BlockPos pos) {
+		spawnEntitiesInChunk(group, world, world.getChunk(pos), pos, (type, posx, chunk) -> true, (entity, chunk) -> {
+		});
 	}
 
 	public static void spawnEntitiesInChunk(SpawnGroup group, ServerWorld world, Chunk chunk, BlockPos pos, SpawnHelper.Checker checker, SpawnHelper.Runner runner) {
@@ -245,12 +255,9 @@ public final class SpawnHelper {
 		ServerWorld world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, Random random, BlockPos pos
 	) {
 		Biome biome = world.getBiome(pos);
-		if (spawnGroup == SpawnGroup.WATER_AMBIENT && biome.getCategory() == Biome.Category.RIVER && random.nextFloat() < 0.98F) {
-			return Optional.empty();
-		} else {
-			List<SpawnSettings.SpawnEntry> list = getSpawnEntries(world, structureAccessor, chunkGenerator, spawnGroup, pos, biome);
-			return list.isEmpty() ? Optional.empty() : WeightedPicker.getRandom(random, list);
-		}
+		return spawnGroup == SpawnGroup.WATER_AMBIENT && biome.getCategory() == Biome.Category.RIVER && random.nextFloat() < 0.98F
+			? Optional.empty()
+			: getSpawnEntries(world, structureAccessor, chunkGenerator, spawnGroup, pos, biome).getOrEmpty(random);
 	}
 
 	private static boolean containsSpawnEntry(
@@ -261,10 +268,10 @@ public final class SpawnHelper {
 		SpawnSettings.SpawnEntry spawnEntry,
 		BlockPos pos
 	) {
-		return getSpawnEntries(world, structureAccessor, chunkGenerator, spawnGroup, pos, null).contains(spawnEntry);
+		return getSpawnEntries(world, structureAccessor, chunkGenerator, spawnGroup, pos, null).getEntries().contains(spawnEntry);
 	}
 
-	private static List<SpawnSettings.SpawnEntry> getSpawnEntries(
+	private static Pool<SpawnSettings.SpawnEntry> getSpawnEntries(
 		ServerWorld world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, BlockPos pos, @Nullable Biome biome
 	) {
 		return spawnGroup == SpawnGroup.MONSTER
@@ -325,13 +332,13 @@ public final class SpawnHelper {
 
 	public static void populateEntities(ServerWorldAccess world, Biome biome, ChunkPos chunkPos, Random random) {
 		SpawnSettings spawnSettings = biome.getSpawnSettings();
-		List<SpawnSettings.SpawnEntry> list = spawnSettings.getSpawnEntries(SpawnGroup.CREATURE);
-		if (!list.isEmpty()) {
+		Pool<SpawnSettings.SpawnEntry> pool = spawnSettings.getSpawnEntries(SpawnGroup.CREATURE);
+		if (!pool.isEmpty()) {
 			int i = chunkPos.getStartX();
 			int j = chunkPos.getStartZ();
 
 			while (random.nextFloat() < spawnSettings.getCreatureSpawnProbability()) {
-				Optional<SpawnSettings.SpawnEntry> optional = WeightedPicker.getRandom(random, list);
+				Optional<SpawnSettings.SpawnEntry> optional = pool.getOrEmpty(random);
 				if (optional.isPresent()) {
 					SpawnSettings.SpawnEntry spawnEntry = (SpawnSettings.SpawnEntry)optional.get();
 					int k = spawnEntry.minGroupSize + random.nextInt(1 + spawnEntry.maxGroupSize - spawnEntry.minGroupSize);
@@ -477,7 +484,6 @@ public final class SpawnHelper {
 			this.groupToCount.addTo(entityType.getSpawnGroup(), 1);
 		}
 
-		@Environment(EnvType.CLIENT)
 		public int getSpawningChunkCount() {
 			return this.spawningChunkCount;
 		}

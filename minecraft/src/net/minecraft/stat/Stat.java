@@ -2,8 +2,6 @@ package net.minecraft.stat;
 
 import java.util.Objects;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -36,7 +34,6 @@ public class Stat<T> extends ScoreboardCriterion {
 		return this.value;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public String format(int i) {
 		return this.formatter.format(i);
 	}

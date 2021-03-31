@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
@@ -30,6 +30,15 @@ public class WoodlandMansionGenerator {
 		WoodlandMansionGenerator.MansionParameters mansionParameters = new WoodlandMansionGenerator.MansionParameters(random);
 		WoodlandMansionGenerator.LayoutGenerator layoutGenerator = new WoodlandMansionGenerator.LayoutGenerator(manager, random);
 		layoutGenerator.generate(pos, rotation, pieces, mansionParameters);
+	}
+
+	public static void method_35471(String[] strings) {
+		Random random = new Random();
+		long l = random.nextLong();
+		System.out.println("Seed: " + l);
+		random.setSeed(l);
+		WoodlandMansionGenerator.MansionParameters mansionParameters = new WoodlandMansionGenerator.MansionParameters(random);
+		mansionParameters.method_35472();
 	}
 
 	static class FirstFloorRoomPool extends WoodlandMansionGenerator.RoomPool {
@@ -710,6 +719,22 @@ public class WoodlandMansionGenerator {
 	}
 
 	static class MansionParameters {
+		private static final int field_31665 = 11;
+		private static final int field_31666 = 0;
+		private static final int field_31667 = 1;
+		private static final int field_31668 = 2;
+		private static final int field_31669 = 3;
+		private static final int field_31670 = 4;
+		private static final int field_31671 = 5;
+		private static final int field_31672 = 65536;
+		private static final int field_31673 = 131072;
+		private static final int field_31674 = 262144;
+		private static final int field_31675 = 1048576;
+		private static final int field_31676 = 2097152;
+		private static final int field_31677 = 4194304;
+		private static final int field_31678 = 8388608;
+		private static final int field_31679 = 983040;
+		private static final int field_31680 = 65535;
 		private final Random random;
 		private final WoodlandMansionGenerator.FlagMatrix field_15440;
 		private final WoodlandMansionGenerator.FlagMatrix field_15439;
@@ -993,48 +1018,75 @@ public class WoodlandMansionGenerator {
 				}
 			}
 		}
+
+		public void method_35472() {
+			for (int i = 0; i < 2; i++) {
+				WoodlandMansionGenerator.FlagMatrix flagMatrix = i == 0 ? this.field_15440 : this.field_15439;
+
+				for (int j = 0; j < flagMatrix.m; j++) {
+					for (int k = 0; k < flagMatrix.n; k++) {
+						int l = flagMatrix.get(k, j);
+						if (l == 1) {
+							System.out.print("+");
+						} else if (l == 4) {
+							System.out.print("x");
+						} else if (l == 2) {
+							System.out.print("X");
+						} else if (l == 3) {
+							System.out.print("O");
+						} else if (l == 5) {
+							System.out.print("#");
+						} else {
+							System.out.print(" ");
+						}
+					}
+
+					System.out.println("");
+				}
+
+				System.out.println("");
+			}
+		}
 	}
 
 	public static class Piece extends SimpleStructurePiece {
-		private final String template;
-		private final BlockRotation rotation;
-		private final BlockMirror mirror;
-
 		public Piece(StructureManager structureManager, String template, BlockPos pos, BlockRotation rotation) {
 			this(structureManager, template, pos, rotation, BlockMirror.NONE);
 		}
 
 		public Piece(StructureManager structureManager, String template, BlockPos pos, BlockRotation rotation, BlockMirror mirror) {
-			super(StructurePieceType.WOODLAND_MANSION, 0);
-			this.template = template;
-			this.pos = pos;
-			this.rotation = rotation;
-			this.mirror = mirror;
-			this.setupPlacement(structureManager);
+			super(StructurePieceType.WOODLAND_MANSION, 0, structureManager, method_35474(template), template, method_35473(mirror, rotation), pos);
 		}
 
 		public Piece(ServerWorld serverWorld, NbtCompound nbt) {
-			super(StructurePieceType.WOODLAND_MANSION, nbt);
-			this.template = nbt.getString("Template");
-			this.rotation = BlockRotation.valueOf(nbt.getString("Rot"));
-			this.mirror = BlockMirror.valueOf(nbt.getString("Mi"));
-			this.setupPlacement(serverWorld.getStructureManager());
+			super(
+				StructurePieceType.WOODLAND_MANSION,
+				nbt,
+				serverWorld,
+				identifier -> method_35473(BlockMirror.valueOf(nbt.getString("Mi")), BlockRotation.valueOf(nbt.getString("Rot")))
+			);
 		}
 
-		private void setupPlacement(StructureManager structureManager) {
-			Structure structure = structureManager.getStructureOrBlank(new Identifier("woodland_mansion/" + this.template));
-			StructurePlacementData structurePlacementData = new StructurePlacementData()
+		@Override
+		protected Identifier method_35470() {
+			return method_35474(this.field_31664);
+		}
+
+		private static Identifier method_35474(String string) {
+			return new Identifier("woodland_mansion/" + string);
+		}
+
+		private static StructurePlacementData method_35473(BlockMirror blockMirror, BlockRotation blockRotation) {
+			return new StructurePlacementData()
 				.setIgnoreEntities(true)
-				.setRotation(this.rotation)
-				.setMirror(this.mirror)
+				.setRotation(blockRotation)
+				.setMirror(blockMirror)
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
-			this.setStructureData(structure, this.pos, structurePlacementData);
 		}
 
 		@Override
 		protected void writeNbt(ServerWorld world, NbtCompound nbt) {
 			super.writeNbt(world, nbt);
-			nbt.putString("Template", this.template);
 			nbt.putString("Rot", this.placementData.getRotation().name());
 			nbt.putString("Mi", this.placementData.getMirror().name());
 		}
@@ -1072,7 +1124,7 @@ public class WoodlandMansionGenerator {
 				illagerEntity.refreshPositionAndAngles(pos, 0.0F, 0.0F);
 				illagerEntity.initialize(world, world.getLocalDifficulty(illagerEntity.getBlockPos()), SpawnReason.STRUCTURE, null, null);
 				world.spawnEntityAndPassengers(illagerEntity);
-				world.setBlockState(pos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+				world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
 			}
 		}
 	}

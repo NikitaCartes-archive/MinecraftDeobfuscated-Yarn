@@ -16,6 +16,9 @@ import net.minecraft.datafixer.TypeReferences;
 import org.apache.commons.lang3.math.NumberUtils;
 
 public class LevelFlatGeneratorInfoFix extends DataFix {
+	private static final String field_29905 = "generatorOptions";
+	@VisibleForTesting
+	static final String field_29904 = "minecraft:bedrock,2*minecraft:dirt,minecraft:grass_block;1;village";
 	private static final Splitter SPLIT_ON_SEMICOLON = Splitter.on(';').limit(5);
 	private static final Splitter SPLIT_ON_COMMA = Splitter.on(',');
 	private static final Splitter SPLIT_ON_LOWER_X = Splitter.on('x').limit(2);

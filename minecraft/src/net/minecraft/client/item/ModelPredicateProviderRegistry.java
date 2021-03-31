@@ -6,6 +6,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.LightBlock;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -34,6 +35,7 @@ import net.minecraft.world.World;
 @Environment(EnvType.CLIENT)
 public class ModelPredicateProviderRegistry {
 	private static final Map<Identifier, ModelPredicateProvider> GLOBAL = Maps.<Identifier, ModelPredicateProvider>newHashMap();
+	private static final String field_32947 = "CustomModelData";
 	private static final Identifier DAMAGED_ID = new Identifier("damaged");
 	private static final Identifier DAMAGE_ID = new Identifier("damage");
 	private static final ModelPredicateProvider DAMAGED_PROVIDER = (itemStack, clientWorld, livingEntity, i) -> itemStack.isDamaged() ? 1.0F : 0.0F;
@@ -211,13 +213,13 @@ public class ModelPredicateProviderRegistry {
 				}
 
 				@Nullable
-				private BlockPos getLodestonePos(World world, NbtCompound tag) {
-					boolean bl = tag.contains("LodestonePos");
-					boolean bl2 = tag.contains("LodestoneDimension");
+				private BlockPos getLodestonePos(World world, NbtCompound nbt) {
+					boolean bl = nbt.contains("LodestonePos");
+					boolean bl2 = nbt.contains("LodestoneDimension");
 					if (bl && bl2) {
-						Optional<RegistryKey<World>> optional = CompassItem.getLodestoneDimension(tag);
+						Optional<RegistryKey<World>> optional = CompassItem.getLodestoneDimension(nbt);
 						if (optional.isPresent() && world.getRegistryKey() == optional.get()) {
-							return NbtHelper.toBlockPos(tag.getCompound("LodestonePos"));
+							return NbtHelper.toBlockPos(nbt.getCompound("LodestonePos"));
 						}
 					}
 
@@ -296,6 +298,18 @@ public class ModelPredicateProviderRegistry {
 			new Identifier("throwing"),
 			(itemStack, clientWorld, livingEntity, i) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
 		);
+		register(Items.LIGHT, new Identifier("level"), (itemStack, clientWorld, livingEntity, i) -> {
+			NbtCompound nbtCompound = itemStack.getSubTag("BlockStateTag");
+
+			try {
+				if (nbtCompound != null) {
+					return (float)Integer.parseInt(nbtCompound.getString(LightBlock.LEVEL_15.getName()));
+				}
+			} catch (NumberFormatException var6) {
+			}
+
+			return 15.0F;
+		});
 	}
 
 	@Environment(EnvType.CLIENT)

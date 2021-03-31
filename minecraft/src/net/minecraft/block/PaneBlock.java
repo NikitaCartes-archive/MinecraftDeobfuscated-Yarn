@@ -1,7 +1,5 @@
 package net.minecraft.block;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -71,7 +69,6 @@ public class PaneBlock extends HorizontalConnectingBlock {
 		return VoxelShapes.empty();
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
 		if (stateFrom.isOf(this)) {

@@ -24,13 +24,13 @@ public class RavagerEntityModel extends SinglePartEntityModel<RavagerEntity> {
 
 	public RavagerEntityModel(ModelPart root) {
 		this.root = root;
-		this.neck = root.getChild("neck");
-		this.head = this.neck.getChild("head");
-		this.jaw = this.head.getChild("mouth");
-		this.rightHindLeg = root.getChild("right_hind_leg");
-		this.leftHindLeg = root.getChild("left_hind_leg");
-		this.rightFrontLeg = root.getChild("right_front_leg");
-		this.leftFrontLeg = root.getChild("left_front_leg");
+		this.neck = root.getChild(EntityModelPartNames.NECK);
+		this.head = this.neck.getChild(EntityModelPartNames.HEAD);
+		this.jaw = this.head.getChild(EntityModelPartNames.MOUTH);
+		this.rightHindLeg = root.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
+		this.leftHindLeg = root.getChild(EntityModelPartNames.LEFT_HIND_LEG);
+		this.rightFrontLeg = root.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
+		this.leftFrontLeg = root.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -38,40 +38,50 @@ public class RavagerEntityModel extends SinglePartEntityModel<RavagerEntity> {
 		ModelPartData modelPartData = modelData.getRoot();
 		int i = 16;
 		ModelPartData modelPartData2 = modelPartData.addChild(
-			"neck", ModelPartBuilder.create().uv(68, 73).cuboid(-5.0F, -1.0F, -18.0F, 10.0F, 10.0F, 18.0F), ModelTransform.pivot(0.0F, -7.0F, 5.5F)
+			EntityModelPartNames.NECK, ModelPartBuilder.create().uv(68, 73).cuboid(-5.0F, -1.0F, -18.0F, 10.0F, 10.0F, 18.0F), ModelTransform.pivot(0.0F, -7.0F, 5.5F)
 		);
 		ModelPartData modelPartData3 = modelPartData2.addChild(
-			"head",
+			EntityModelPartNames.HEAD,
 			ModelPartBuilder.create().uv(0, 0).cuboid(-8.0F, -20.0F, -14.0F, 16.0F, 20.0F, 16.0F).uv(0, 0).cuboid(-2.0F, -6.0F, -18.0F, 4.0F, 8.0F, 4.0F),
 			ModelTransform.pivot(0.0F, 16.0F, -17.0F)
 		);
 		modelPartData3.addChild(
-			"right_horn",
+			EntityModelPartNames.RIGHT_HORN,
 			ModelPartBuilder.create().uv(74, 55).cuboid(0.0F, -14.0F, -2.0F, 2.0F, 14.0F, 4.0F),
 			ModelTransform.of(-10.0F, -14.0F, -8.0F, 1.0995574F, 0.0F, 0.0F)
 		);
 		modelPartData3.addChild(
-			"left_horn",
+			EntityModelPartNames.LEFT_HORN,
 			ModelPartBuilder.create().uv(74, 55).mirrored().cuboid(0.0F, -14.0F, -2.0F, 2.0F, 14.0F, 4.0F),
 			ModelTransform.of(8.0F, -14.0F, -8.0F, 1.0995574F, 0.0F, 0.0F)
 		);
-		modelPartData3.addChild("mouth", ModelPartBuilder.create().uv(0, 36).cuboid(-8.0F, 0.0F, -16.0F, 16.0F, 3.0F, 16.0F), ModelTransform.pivot(0.0F, -2.0F, 2.0F));
+		modelPartData3.addChild(
+			EntityModelPartNames.MOUTH, ModelPartBuilder.create().uv(0, 36).cuboid(-8.0F, 0.0F, -16.0F, 16.0F, 3.0F, 16.0F), ModelTransform.pivot(0.0F, -2.0F, 2.0F)
+		);
 		modelPartData.addChild(
-			"body",
+			EntityModelPartNames.BODY,
 			ModelPartBuilder.create().uv(0, 55).cuboid(-7.0F, -10.0F, -7.0F, 14.0F, 16.0F, 20.0F).uv(0, 91).cuboid(-6.0F, 6.0F, -7.0F, 12.0F, 13.0F, 18.0F),
 			ModelTransform.of(0.0F, 1.0F, 2.0F, (float) (Math.PI / 2), 0.0F, 0.0F)
 		);
 		modelPartData.addChild(
-			"right_hind_leg", ModelPartBuilder.create().uv(96, 0).cuboid(-4.0F, 0.0F, -4.0F, 8.0F, 37.0F, 8.0F), ModelTransform.pivot(-8.0F, -13.0F, 18.0F)
+			EntityModelPartNames.RIGHT_HIND_LEG,
+			ModelPartBuilder.create().uv(96, 0).cuboid(-4.0F, 0.0F, -4.0F, 8.0F, 37.0F, 8.0F),
+			ModelTransform.pivot(-8.0F, -13.0F, 18.0F)
 		);
 		modelPartData.addChild(
-			"left_hind_leg", ModelPartBuilder.create().uv(96, 0).mirrored().cuboid(-4.0F, 0.0F, -4.0F, 8.0F, 37.0F, 8.0F), ModelTransform.pivot(8.0F, -13.0F, 18.0F)
+			EntityModelPartNames.LEFT_HIND_LEG,
+			ModelPartBuilder.create().uv(96, 0).mirrored().cuboid(-4.0F, 0.0F, -4.0F, 8.0F, 37.0F, 8.0F),
+			ModelTransform.pivot(8.0F, -13.0F, 18.0F)
 		);
 		modelPartData.addChild(
-			"right_front_leg", ModelPartBuilder.create().uv(64, 0).cuboid(-4.0F, 0.0F, -4.0F, 8.0F, 37.0F, 8.0F), ModelTransform.pivot(-8.0F, -13.0F, -5.0F)
+			EntityModelPartNames.RIGHT_FRONT_LEG,
+			ModelPartBuilder.create().uv(64, 0).cuboid(-4.0F, 0.0F, -4.0F, 8.0F, 37.0F, 8.0F),
+			ModelTransform.pivot(-8.0F, -13.0F, -5.0F)
 		);
 		modelPartData.addChild(
-			"left_front_leg", ModelPartBuilder.create().uv(64, 0).mirrored().cuboid(-4.0F, 0.0F, -4.0F, 8.0F, 37.0F, 8.0F), ModelTransform.pivot(8.0F, -13.0F, -5.0F)
+			EntityModelPartNames.LEFT_FRONT_LEG,
+			ModelPartBuilder.create().uv(64, 0).mirrored().cuboid(-4.0F, 0.0F, -4.0F, 8.0F, 37.0F, 8.0F),
+			ModelTransform.pivot(8.0F, -13.0F, -5.0F)
 		);
 		return TexturedModelData.of(modelData, 128, 128);
 	}

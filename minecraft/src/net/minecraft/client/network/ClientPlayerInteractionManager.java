@@ -9,7 +9,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.OperatorBlock;
@@ -70,6 +69,7 @@ public class ClientPlayerInteractionManager {
 	@Nullable
 	private GameMode previousGameMode;
 	private final Object2ObjectLinkedOpenHashMap<Pair<BlockPos, PlayerActionC2SPacket.Action>, Vec3d> unacknowledgedPlayerActions = new Object2ObjectLinkedOpenHashMap<>();
+	private static final int field_32647 = 50;
 	private int lastSelectedSlot;
 
 	public ClientPlayerInteractionManager(MinecraftClient client, ClientPlayNetworkHandler networkHandler) {
@@ -117,7 +117,7 @@ public class ClientPlayerInteractionManager {
 				} else {
 					block.onBreak(world, pos, blockState, this.client.player);
 					FluidState fluidState = world.getFluidState(pos);
-					boolean bl = world.setBlockState(pos, fluidState.getBlockState(), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
+					boolean bl = world.setBlockState(pos, fluidState.getBlockState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
 					if (bl) {
 						block.onBroken(world, pos, blockState);
 					}
@@ -359,7 +359,7 @@ public class ClientPlayerInteractionManager {
 	/**
 	 * @see net.minecraft.screen.ScreenHandler#onSlotClick(int, int, net.minecraft.screen.slot.SlotActionType, net.minecraft.entity.player.PlayerEntity)
 	 */
-	public void clickSlot(int syncId, int slotId, int clickData, SlotActionType actionType, PlayerEntity playerEntity) {
+	public void clickSlot(int syncId, int slotId, int button, SlotActionType actionType, PlayerEntity playerEntity) {
 		DefaultedList<Slot> defaultedList = playerEntity.currentScreenHandler.slots;
 		int i = defaultedList.size();
 		List<ItemStack> list = Lists.<ItemStack>newArrayListWithCapacity(i);
@@ -368,7 +368,7 @@ public class ClientPlayerInteractionManager {
 			list.add(slot.getStack().copy());
 		}
 
-		playerEntity.currentScreenHandler.onSlotClick(slotId, clickData, actionType, playerEntity);
+		playerEntity.currentScreenHandler.onSlotClick(slotId, button, actionType, playerEntity);
 		Int2ObjectMap<ItemStack> int2ObjectMap = new Int2ObjectOpenHashMap<>();
 
 		for (int j = 0; j < i; j++) {
@@ -380,7 +380,7 @@ public class ClientPlayerInteractionManager {
 		}
 
 		this.networkHandler
-			.sendPacket(new ClickSlotC2SPacket(syncId, slotId, clickData, actionType, playerEntity.currentScreenHandler.getCursorStack().copy(), int2ObjectMap));
+			.sendPacket(new ClickSlotC2SPacket(syncId, slotId, button, actionType, playerEntity.currentScreenHandler.getCursorStack().copy(), int2ObjectMap));
 	}
 
 	public void clickRecipe(int syncId, Recipe<?> recipe, boolean craftAll) {

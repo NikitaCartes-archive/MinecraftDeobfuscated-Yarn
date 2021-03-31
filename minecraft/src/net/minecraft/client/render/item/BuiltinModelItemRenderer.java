@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.AbstractBannerBlock;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.BedBlock;
@@ -48,6 +47,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.ShieldItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
@@ -94,9 +94,9 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloader {
 				GameProfile gameProfile = null;
 				if (stack.hasTag()) {
 					NbtCompound nbtCompound = stack.getTag();
-					if (nbtCompound.contains("SkullOwner", NbtTypeIds.COMPOUND)) {
+					if (nbtCompound.contains("SkullOwner", NbtElement.COMPOUND_TYPE)) {
 						gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
-					} else if (nbtCompound.contains("SkullOwner", NbtTypeIds.STRING) && !StringUtils.isBlank(nbtCompound.getString("SkullOwner"))) {
+					} else if (nbtCompound.contains("SkullOwner", NbtElement.STRING_TYPE) && !StringUtils.isBlank(nbtCompound.getString("SkullOwner"))) {
 						GameProfile var17 = new GameProfile(null, nbtCompound.getString("SkullOwner"));
 						gameProfile = SkullBlockEntity.loadProperties(var17);
 						nbtCompound.remove("SkullOwner");

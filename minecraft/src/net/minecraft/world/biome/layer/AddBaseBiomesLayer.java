@@ -1,5 +1,6 @@
 package net.minecraft.world.biome.layer;
 
+import net.minecraft.world.biome.BiomeIds;
 import net.minecraft.world.biome.layer.type.IdentitySamplingLayer;
 import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
 
@@ -21,7 +22,7 @@ public class AddBaseBiomesLayer implements IdentitySamplingLayer {
 	public int sample(LayerRandomnessSource context, int value) {
 		int i = (value & 3840) >> 8;
 		value &= -3841;
-		if (!BiomeLayers.isOcean(value) && value != 14) {
+		if (!BiomeLayers.isOcean(value) && value != BiomeIds.MUSHROOM_FIELDS) {
 			switch (value) {
 				case 1:
 					if (i > 0) {

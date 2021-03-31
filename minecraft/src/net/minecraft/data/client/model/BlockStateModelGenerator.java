@@ -1118,6 +1118,11 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector.accept(createSingletonBlockState(block, modelFactory.upload(block, this.modelCollector)));
 	}
 
+	private void method_35868(Block block, Texture texture, Model model) {
+		Identifier identifier = model.upload(block, texture, this.modelCollector);
+		this.blockStateCollector.accept(createSingletonBlockState(block, identifier));
+	}
+
 	private BlockStateModelGenerator.BlockTexturePool registerCubeAllModelTexturePool(Block block) {
 		TexturedModel texturedModel = (TexturedModel)this.sandstoneModels.getOrDefault(block, TexturedModel.CUBE_ALL.get(block));
 		return new BlockStateModelGenerator.BlockTexturePool(texturedModel.getTexture()).base(block, texturedModel.getModel());
@@ -1388,7 +1393,7 @@ public class BlockStateModelGenerator {
 	}
 
 	private void registerCarpet(Block wool, Block carpet) {
-		this.registerSingleton(wool, TexturedModel.CUBE_ALL);
+		this.registerSimpleCubeAll(wool);
 		Identifier identifier = TexturedModel.CARPET.get(wool).upload(carpet, this.modelCollector);
 		this.blockStateCollector.accept(createSingletonBlockState(carpet, identifier));
 	}
@@ -3457,69 +3462,71 @@ public class BlockStateModelGenerator {
 		this.registerCarpet(Blocks.MOSS_BLOCK, Blocks.MOSS_CARPET);
 		this.registerBuiltinWithParticle(Blocks.BARRIER, Items.BARRIER);
 		this.registerItemModel(Items.BARRIER);
+		this.registerBuiltinWithParticle(Blocks.LIGHT, Items.LIGHT);
+		this.registerLightModel();
 		this.registerBuiltinWithParticle(Blocks.STRUCTURE_VOID, Items.STRUCTURE_VOID);
 		this.registerItemModel(Items.STRUCTURE_VOID);
 		this.registerBuiltinWithParticle(Blocks.MOVING_PISTON, Texture.getSubId(Blocks.PISTON, "_side"));
-		this.registerSingleton(Blocks.COAL_ORE, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.DEEPSLATE_COAL_ORE, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.COAL_BLOCK, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.DIAMOND_ORE, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.DEEPSLATE_DIAMOND_ORE, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.DIAMOND_BLOCK, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.EMERALD_ORE, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.DEEPSLATE_EMERALD_ORE, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.EMERALD_BLOCK, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.GOLD_ORE, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.NETHER_GOLD_ORE, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.DEEPSLATE_GOLD_ORE, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.GOLD_BLOCK, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.IRON_ORE, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.DEEPSLATE_IRON_ORE, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.IRON_BLOCK, TexturedModel.CUBE_ALL);
+		this.registerSimpleCubeAll(Blocks.COAL_ORE);
+		this.registerSimpleCubeAll(Blocks.DEEPSLATE_COAL_ORE);
+		this.registerSimpleCubeAll(Blocks.COAL_BLOCK);
+		this.registerSimpleCubeAll(Blocks.DIAMOND_ORE);
+		this.registerSimpleCubeAll(Blocks.DEEPSLATE_DIAMOND_ORE);
+		this.registerSimpleCubeAll(Blocks.DIAMOND_BLOCK);
+		this.registerSimpleCubeAll(Blocks.EMERALD_ORE);
+		this.registerSimpleCubeAll(Blocks.DEEPSLATE_EMERALD_ORE);
+		this.registerSimpleCubeAll(Blocks.EMERALD_BLOCK);
+		this.registerSimpleCubeAll(Blocks.GOLD_ORE);
+		this.registerSimpleCubeAll(Blocks.NETHER_GOLD_ORE);
+		this.registerSimpleCubeAll(Blocks.DEEPSLATE_GOLD_ORE);
+		this.registerSimpleCubeAll(Blocks.GOLD_BLOCK);
+		this.registerSimpleCubeAll(Blocks.IRON_ORE);
+		this.registerSimpleCubeAll(Blocks.DEEPSLATE_IRON_ORE);
+		this.registerSimpleCubeAll(Blocks.IRON_BLOCK);
 		this.registerSingleton(Blocks.ANCIENT_DEBRIS, TexturedModel.CUBE_COLUMN);
-		this.registerSingleton(Blocks.NETHERITE_BLOCK, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.LAPIS_ORE, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.DEEPSLATE_LAPIS_ORE, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.LAPIS_BLOCK, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.NETHER_QUARTZ_ORE, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.REDSTONE_ORE, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.DEEPSLATE_REDSTONE_ORE, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.REDSTONE_BLOCK, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.GILDED_BLACKSTONE, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.BLUE_ICE, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.CLAY, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.COARSE_DIRT, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.CRYING_OBSIDIAN, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.END_STONE, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.GLOWSTONE, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.GRAVEL, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.HONEYCOMB_BLOCK, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.ICE, TexturedModel.CUBE_ALL);
+		this.registerSimpleCubeAll(Blocks.NETHERITE_BLOCK);
+		this.registerSimpleCubeAll(Blocks.LAPIS_ORE);
+		this.registerSimpleCubeAll(Blocks.DEEPSLATE_LAPIS_ORE);
+		this.registerSimpleCubeAll(Blocks.LAPIS_BLOCK);
+		this.registerSimpleCubeAll(Blocks.NETHER_QUARTZ_ORE);
+		this.registerSimpleCubeAll(Blocks.REDSTONE_ORE);
+		this.registerSimpleCubeAll(Blocks.DEEPSLATE_REDSTONE_ORE);
+		this.registerSimpleCubeAll(Blocks.REDSTONE_BLOCK);
+		this.registerSimpleCubeAll(Blocks.GILDED_BLACKSTONE);
+		this.registerSimpleCubeAll(Blocks.BLUE_ICE);
+		this.registerSimpleCubeAll(Blocks.CLAY);
+		this.registerSimpleCubeAll(Blocks.COARSE_DIRT);
+		this.registerSimpleCubeAll(Blocks.CRYING_OBSIDIAN);
+		this.registerSimpleCubeAll(Blocks.END_STONE);
+		this.registerSimpleCubeAll(Blocks.GLOWSTONE);
+		this.registerSimpleCubeAll(Blocks.GRAVEL);
+		this.registerSimpleCubeAll(Blocks.HONEYCOMB_BLOCK);
+		this.registerSimpleCubeAll(Blocks.ICE);
 		this.registerSingleton(Blocks.JUKEBOX, TexturedModel.CUBE_TOP);
 		this.registerSingleton(Blocks.LODESTONE, TexturedModel.CUBE_COLUMN);
 		this.registerSingleton(Blocks.MELON, TexturedModel.CUBE_COLUMN);
-		this.registerSingleton(Blocks.NETHER_WART_BLOCK, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.NOTE_BLOCK, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.PACKED_ICE, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.OBSIDIAN, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.QUARTZ_BRICKS, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.SEA_LANTERN, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.SHROOMLIGHT, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.SOUL_SAND, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.SOUL_SOIL, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.SPAWNER, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.SPONGE, TexturedModel.CUBE_ALL);
+		this.registerSimpleCubeAll(Blocks.NETHER_WART_BLOCK);
+		this.registerSimpleCubeAll(Blocks.NOTE_BLOCK);
+		this.registerSimpleCubeAll(Blocks.PACKED_ICE);
+		this.registerSimpleCubeAll(Blocks.OBSIDIAN);
+		this.registerSimpleCubeAll(Blocks.QUARTZ_BRICKS);
+		this.registerSimpleCubeAll(Blocks.SEA_LANTERN);
+		this.registerSimpleCubeAll(Blocks.SHROOMLIGHT);
+		this.registerSimpleCubeAll(Blocks.SOUL_SAND);
+		this.registerSimpleCubeAll(Blocks.SOUL_SOIL);
+		this.registerSimpleCubeAll(Blocks.SPAWNER);
+		this.registerSimpleCubeAll(Blocks.SPONGE);
 		this.registerSingleton(Blocks.SEAGRASS, TexturedModel.TEMPLATE_SEAGRASS);
 		this.registerItemModel(Items.SEAGRASS);
 		this.registerSingleton(Blocks.TNT, TexturedModel.CUBE_BOTTOM_TOP);
 		this.registerSingleton(Blocks.TARGET, TexturedModel.CUBE_COLUMN);
-		this.registerSingleton(Blocks.WARPED_WART_BLOCK, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.WET_SPONGE, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.AMETHYST_BLOCK, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.BUDDING_AMETHYST, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.CALCITE, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.TUFF, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.DRIPSTONE_BLOCK, TexturedModel.CUBE_ALL);
+		this.registerSimpleCubeAll(Blocks.WARPED_WART_BLOCK);
+		this.registerSimpleCubeAll(Blocks.WET_SPONGE);
+		this.registerSimpleCubeAll(Blocks.AMETHYST_BLOCK);
+		this.registerSimpleCubeAll(Blocks.BUDDING_AMETHYST);
+		this.registerSimpleCubeAll(Blocks.CALCITE);
+		this.registerSimpleCubeAll(Blocks.TUFF);
+		this.registerSimpleCubeAll(Blocks.DRIPSTONE_BLOCK);
 		this.registerPetrifiedOakSlab();
 		this.registerSimpleCubeAll(Blocks.COPPER_ORE);
 		this.registerSimpleCubeAll(Blocks.DEEPSLATE_COPPER_ORE);
@@ -3602,6 +3609,7 @@ public class BlockStateModelGenerator {
 		this.registerSimpleCubeAll(Blocks.SMOOTH_BASALT);
 		this.registerAxisRotated(Blocks.BONE_BLOCK, TexturedModel.CUBE_COLUMN);
 		this.registerRotatable(Blocks.DIRT);
+		this.registerRotatable(Blocks.ROOTED_DIRT);
 		this.registerRotatable(Blocks.SAND);
 		this.registerRotatable(Blocks.RED_SAND);
 		this.registerMirrorable(Blocks.BEDROCK);
@@ -3725,7 +3733,6 @@ public class BlockStateModelGenerator {
 		this.registerBuiltin(Blocks.END_PORTAL, Blocks.OBSIDIAN).includeWithItem(Blocks.END_PORTAL, Blocks.END_GATEWAY);
 		this.registerSimpleCubeAll(Blocks.AZALEA_LEAVES);
 		this.registerSimpleCubeAll(Blocks.AZALEA_LEAVES_FLOWERS);
-		this.registerSimpleCubeAll(Blocks.ROOTED_DIRT);
 		this.registerSimpleCubeAll(Blocks.WHITE_CONCRETE);
 		this.registerSimpleCubeAll(Blocks.ORANGE_CONCRETE);
 		this.registerSimpleCubeAll(Blocks.MAGENTA_CONCRETE);
@@ -3993,6 +4000,15 @@ public class BlockStateModelGenerator {
 		this.registerInfested(Blocks.STONE_BRICKS, Blocks.INFESTED_STONE_BRICKS);
 		this.registerInfested(Blocks.DEEPSLATE, Blocks.INFESTED_DEEPSLATE);
 		SpawnEggItem.getAll().forEach(spawnEggItem -> this.registerParentedItemModel(spawnEggItem, ModelIds.getMinecraftNamespacedItem("template_spawn_egg")));
+	}
+
+	private void registerLightModel() {
+		this.excludeFromSimpleItemModelGeneration(Blocks.LIGHT);
+
+		for (int i = 0; i < 16; i++) {
+			String string = String.format("_%02d", i);
+			Models.GENERATED.upload(ModelIds.getItemSubModelId(Items.LIGHT, string), Texture.layer0(Texture.getSubId(Items.LIGHT, string)), this.modelCollector);
+		}
 	}
 
 	private void registerCandle(Block candle, Block cake) {

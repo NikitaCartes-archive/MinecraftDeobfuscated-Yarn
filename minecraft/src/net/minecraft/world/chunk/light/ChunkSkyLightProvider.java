@@ -1,7 +1,5 @@
 package net.minecraft.world.chunk.light;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -173,7 +171,6 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public String displaySectionLevel(long sectionPos) {
 		return super.displaySectionLevel(sectionPos) + (this.lightStorage.isAtOrAboveTopmostSection(sectionPos) ? "*" : "");

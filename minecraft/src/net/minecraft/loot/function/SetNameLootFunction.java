@@ -70,6 +70,14 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 		return stack;
 	}
 
+	public static ConditionalLootFunction.Builder<?> builder(Text name) {
+		return builder(conditions -> new SetNameLootFunction(conditions, name, null));
+	}
+
+	public static ConditionalLootFunction.Builder<?> builder(Text name, LootContext.EntityTarget target) {
+		return builder(conditions -> new SetNameLootFunction(conditions, name, target));
+	}
+
 	public static class Serializer extends ConditionalLootFunction.Serializer<SetNameLootFunction> {
 		public void toJson(JsonObject jsonObject, SetNameLootFunction setNameLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, setNameLootFunction, jsonSerializationContext);

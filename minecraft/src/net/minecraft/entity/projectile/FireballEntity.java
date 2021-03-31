@@ -1,11 +1,11 @@
 package net.minecraft.entity.projectile;
 
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.GameRules;
@@ -50,16 +50,16 @@ public class FireballEntity extends AbstractFireballEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putInt("ExplosionPower", this.explosionPower);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putInt("ExplosionPower", this.explosionPower);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		if (tag.contains("ExplosionPower", NbtTypeIds.NUMBER)) {
-			this.explosionPower = tag.getInt("ExplosionPower");
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		if (nbt.contains("ExplosionPower", NbtElement.NUMBER_TYPE)) {
+			this.explosionPower = nbt.getInt("ExplosionPower");
 		}
 	}
 }

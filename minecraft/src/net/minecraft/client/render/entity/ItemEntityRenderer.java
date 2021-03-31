@@ -19,6 +19,14 @@ import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
+	private static final float field_32924 = 0.15F;
+	private static final int field_32925 = 48;
+	private static final int field_32926 = 32;
+	private static final int field_32927 = 16;
+	private static final int field_32928 = 1;
+	private static final float field_32929 = 0.0F;
+	private static final float field_32930 = 0.0F;
+	private static final float field_32931 = 0.09375F;
 	private final ItemRenderer itemRenderer;
 	private final Random random = new Random();
 

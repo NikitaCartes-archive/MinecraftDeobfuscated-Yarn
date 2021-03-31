@@ -17,14 +17,13 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.util.Util;
+import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -59,10 +58,12 @@ public class ServerChunkManager extends ChunkManager {
 	private long lastMobSpawningTime;
 	private boolean spawnMonsters = true;
 	private boolean spawnAnimals = true;
+	private static final int field_29766 = 4;
 	private final long[] chunkPosCache = new long[4];
 	private final ChunkStatus[] chunkStatusCache = new ChunkStatus[4];
 	private final Chunk[] chunkCache = new Chunk[4];
 	@Nullable
+	@Debug
 	private SpawnHelper.Info spawnEntry;
 
 	public ServerChunkManager(
@@ -209,7 +210,6 @@ public class ServerChunkManager extends ChunkManager {
 		Arrays.fill(this.chunkCache, null);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> getChunkFutureSyncOnMainThread(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {
 		boolean bl = Thread.currentThread() == this.serverThread;
 		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture;
@@ -335,14 +335,15 @@ public class ServerChunkManager extends ChunkManager {
 		this.threadedAnvilChunkStorage.close();
 	}
 
-	public void tick(BooleanSupplier shouldKeepTicking) {
+	@Override
+	public void tick(BooleanSupplier booleanSupplier) {
 		this.world.getProfiler().push("purge");
 		this.ticketManager.purge();
 		this.tick();
 		this.world.getProfiler().swap("chunks");
 		this.tickChunks();
 		this.world.getProfiler().swap("unload");
-		this.threadedAnvilChunkStorage.tick(shouldKeepTicking);
+		this.threadedAnvilChunkStorage.tick(booleanSupplier);
 		this.world.getProfiler().pop();
 		this.initChunkCaches();
 	}
@@ -419,6 +420,7 @@ public class ServerChunkManager extends ChunkManager {
 		return this.chunkGenerator;
 	}
 
+	@Override
 	public int getLoadedChunkCount() {
 		return this.threadedAnvilChunkStorage.getLoadedChunkCount();
 	}
@@ -502,7 +504,6 @@ public class ServerChunkManager extends ChunkManager {
 		this.spawnAnimals = spawnAnimals;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public String getChunkLoadingDebugInfo(ChunkPos pos) {
 		return this.threadedAnvilChunkStorage.getChunkLoadingDebugInfo(pos);
 	}
@@ -516,6 +517,7 @@ public class ServerChunkManager extends ChunkManager {
 	}
 
 	@Nullable
+	@Debug
 	public SpawnHelper.Info getSpawnInfo() {
 		return this.spawnEntry;
 	}

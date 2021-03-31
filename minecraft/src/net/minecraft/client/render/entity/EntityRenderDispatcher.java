@@ -41,6 +41,7 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
@@ -209,10 +210,14 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 
 		Vec3d vec3d = entity.getRotationVec(tickDelta);
 		Matrix4f matrix4f = matrices.peek().getModel();
-		vertices.vertex(matrix4f, 0.0F, entity.getStandingEyeHeight(), 0.0F).color(0, 0, 255, 255).normal((float)vec3d.x, (float)vec3d.y, (float)vec3d.z).next();
+		Matrix3f matrix3f = matrices.peek().getNormal();
+		vertices.vertex(matrix4f, 0.0F, entity.getStandingEyeHeight(), 0.0F)
+			.color(0, 0, 255, 255)
+			.normal(matrix3f, (float)vec3d.x, (float)vec3d.y, (float)vec3d.z)
+			.next();
 		vertices.vertex(matrix4f, (float)(vec3d.x * 2.0), (float)((double)entity.getStandingEyeHeight() + vec3d.y * 2.0), (float)(vec3d.z * 2.0))
 			.color(0, 0, 255, 255)
-			.normal((float)vec3d.x, (float)vec3d.y, (float)vec3d.z)
+			.normal(matrix3f, (float)vec3d.x, (float)vec3d.y, (float)vec3d.z)
 			.next();
 	}
 

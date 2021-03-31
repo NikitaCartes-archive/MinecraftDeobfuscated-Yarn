@@ -76,7 +76,7 @@ public class BlackstoneReplacementStructureProcessor extends StructureProcessor 
 				blockState2 = blockState2.with(SlabBlock.TYPE, blockState.get(SlabBlock.TYPE));
 			}
 
-			return new Structure.StructureBlockInfo(structureBlockInfo2.pos, blockState2, structureBlockInfo2.tag);
+			return new Structure.StructureBlockInfo(structureBlockInfo2.pos, blockState2, structureBlockInfo2.nbt);
 		}
 	}
 
