@@ -14,6 +14,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.dynamic.GlobalPos;
 
 public class MeetVillagerTask extends Task<LivingEntity> {
+	private static final float field_30176 = 0.3F;
+
 	public MeetVillagerTask() {
 		super(
 			ImmutableMap.of(

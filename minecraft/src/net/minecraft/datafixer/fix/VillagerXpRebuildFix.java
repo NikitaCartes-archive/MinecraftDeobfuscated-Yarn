@@ -14,6 +14,7 @@ import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.util.math.MathHelper;
 
 public class VillagerXpRebuildFix extends DataFix {
+	private static final int field_29914 = 2;
 	private static final int[] LEVEL_TO_XP = new int[]{0, 10, 50, 100, 150};
 
 	public static int levelToXp(int level) {

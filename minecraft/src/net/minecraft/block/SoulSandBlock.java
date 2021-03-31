@@ -13,6 +13,7 @@ import net.minecraft.world.WorldAccess;
 
 public class SoulSandBlock extends Block {
 	protected static final VoxelShape COLLISION_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 14.0, 16.0);
+	private static final int field_31249 = 20;
 
 	public SoulSandBlock(AbstractBlock.Settings settings) {
 		super(settings);

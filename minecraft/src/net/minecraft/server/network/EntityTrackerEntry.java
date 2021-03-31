@@ -39,6 +39,7 @@ import org.apache.logging.log4j.Logger;
 
 public class EntityTrackerEntry {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int field_29767 = 1;
 	private final ServerWorld world;
 	private final Entity entity;
 	private final int tickInterval;

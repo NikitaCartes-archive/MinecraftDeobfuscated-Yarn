@@ -2,8 +2,6 @@ package net.minecraft.util.profiler;
 
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 
 public class DummyProfiler implements ReadableProfiler {
 	public static final DummyProfiler INSTANCE = new DummyProfiler();
@@ -35,7 +33,6 @@ public class DummyProfiler implements ReadableProfiler {
 	public void swap(String location) {
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void swap(Supplier<String> locationGetter) {
 	}
@@ -54,9 +51,8 @@ public class DummyProfiler implements ReadableProfiler {
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	@Override
-	public ProfilerSystem.LocatedInfo method_34696(String string) {
+	public ProfilerSystem.LocatedInfo getInfo(String name) {
 		return null;
 	}
 }

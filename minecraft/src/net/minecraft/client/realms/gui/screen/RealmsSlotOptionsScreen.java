@@ -23,7 +23,9 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class RealmsSlotOptionsScreen extends RealmsScreen {
+	private static final int field_32125 = 2;
 	public static final List<Difficulty> DIFFICULTIES = ImmutableList.of(Difficulty.PEACEFUL, Difficulty.EASY, Difficulty.NORMAL, Difficulty.HARD);
+	private static final int field_32126 = 0;
 	public static final List<GameMode> GAME_MODES = ImmutableList.of(GameMode.SURVIVAL, GameMode.CREATIVE, GameMode.ADVENTURE);
 	private static final Text EDIT_SLOT_NAME = new TranslatableText("mco.configure.world.edit.slot.name");
 	private static final Text SPAWN_PROTECTION = new TranslatableText("mco.configure.world.spawnProtection");

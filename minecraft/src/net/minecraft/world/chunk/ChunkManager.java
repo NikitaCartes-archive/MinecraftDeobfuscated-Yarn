@@ -1,6 +1,7 @@
 package net.minecraft.world.chunk;
 
 import java.io.IOException;
+import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -31,7 +32,11 @@ public abstract class ChunkManager implements ChunkProvider, AutoCloseable {
 	@Nullable
 	public abstract Chunk getChunk(int x, int z, ChunkStatus leastStatus, boolean create);
 
+	public abstract void tick(BooleanSupplier booleanSupplier);
+
 	public abstract String getDebugString();
+
+	public abstract int getLoadedChunkCount();
 
 	public void close() throws IOException {
 	}

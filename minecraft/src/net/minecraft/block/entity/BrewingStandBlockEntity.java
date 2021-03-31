@@ -2,8 +2,7 @@ package net.minecraft.block.entity;
 
 import java.util.Arrays;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BrewingStandBlock;
 import net.minecraft.entity.player.PlayerEntity;
@@ -25,11 +24,18 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 
 public class BrewingStandBlockEntity extends LockableContainerBlockEntity implements SidedInventory {
+	private static final int field_31328 = 3;
+	private static final int field_31329 = 4;
 	private static final int[] TOP_SLOTS = new int[]{3};
 	private static final int[] BOTTOM_SLOTS = new int[]{0, 1, 2, 3};
 	private static final int[] SIDE_SLOTS = new int[]{0, 1, 2, 4};
+	public static final int field_31324 = 20;
+	public static final int field_31325 = 0;
+	public static final int field_31326 = 1;
+	public static final int field_31327 = 2;
 	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(5, ItemStack.EMPTY);
 	private int brewTime;
 	private boolean[] slotsEmptyLastTick;
@@ -130,7 +136,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 				blockState = blockState.with(BrewingStandBlock.BOTTLE_PROPERTIES[i], Boolean.valueOf(bls[i]));
 			}
 
-			world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
 		}
 	}
 
@@ -186,21 +192,21 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	}
 
 	@Override
-	public void readNbt(NbtCompound tag) {
-		super.readNbt(tag);
+	public void readNbt(NbtCompound nbt) {
+		super.readNbt(nbt);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-		Inventories.readNbt(tag, this.inventory);
-		this.brewTime = tag.getShort("BrewTime");
-		this.fuel = tag.getByte("Fuel");
+		Inventories.readNbt(nbt, this.inventory);
+		this.brewTime = nbt.getShort("BrewTime");
+		this.fuel = nbt.getByte("Fuel");
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound tag) {
-		super.writeNbt(tag);
-		tag.putShort("BrewTime", (short)this.brewTime);
-		Inventories.writeNbt(tag, this.inventory);
-		tag.putByte("Fuel", (byte)this.fuel);
-		return tag;
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		super.writeNbt(nbt);
+		nbt.putShort("BrewTime", (short)this.brewTime);
+		Inventories.writeNbt(nbt, this.inventory);
+		nbt.putByte("Fuel", (byte)this.fuel);
+		return nbt;
 	}
 
 	@Override

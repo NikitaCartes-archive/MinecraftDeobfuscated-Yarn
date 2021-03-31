@@ -10,8 +10,8 @@ public class PacketDeflater extends MessageToByteEncoder<ByteBuf> {
 	private final Deflater deflater;
 	private int compressionThreshold;
 
-	public PacketDeflater(int i) {
-		this.compressionThreshold = i;
+	public PacketDeflater(int compressionThreshold) {
+		this.compressionThreshold = compressionThreshold;
 		this.deflater = new Deflater();
 	}
 
@@ -35,6 +35,10 @@ public class PacketDeflater extends MessageToByteEncoder<ByteBuf> {
 
 			this.deflater.reset();
 		}
+	}
+
+	public int getCompressionThreshold() {
+		return this.compressionThreshold;
 	}
 
 	public void setCompressionThreshold(int compressionThreshold) {

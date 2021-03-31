@@ -12,9 +12,6 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -47,6 +44,7 @@ import net.minecraft.world.event.GameEvent;
 
 public class Explosion {
 	private static final ExplosionBehavior DEFAULT_BEHAVIOR = new ExplosionBehavior();
+	private static final int field_30960 = 16;
 	private final boolean createFire;
 	private final Explosion.DestructionType destructionType;
 	private final Random random = new Random();
@@ -62,12 +60,14 @@ public class Explosion {
 	private final List<BlockPos> affectedBlocks = Lists.<BlockPos>newArrayList();
 	private final Map<PlayerEntity, Vec3d> affectedPlayers = Maps.<PlayerEntity, Vec3d>newHashMap();
 
-	@Environment(EnvType.CLIENT)
+	public Explosion(World world, @Nullable Entity entity, double x, double y, double z, float power) {
+		this(world, entity, x, y, z, power, false, Explosion.DestructionType.DESTROY);
+	}
+
 	public Explosion(World world, @Nullable Entity entity, double x, double y, double z, float power, List<BlockPos> affectedBlocks) {
 		this(world, entity, x, y, z, power, false, Explosion.DestructionType.DESTROY, affectedBlocks);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Explosion(
 		World world,
 		@Nullable Entity entity,
@@ -83,7 +83,6 @@ public class Explosion {
 		this.affectedBlocks.addAll(affectedBlocks);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Explosion(
 		World world, @Nullable Entity entity, double x, double y, double z, float power, boolean createFire, Explosion.DestructionType destructionType
 	) {
@@ -292,7 +291,7 @@ public class Explosion {
 						blockState.getDroppedStacks(builder).forEach(stack -> tryMergeStack(objectArrayList, stack, blockPos2));
 					}
 
-					this.world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT);
+					this.world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
 					block.onDestroyedByExplosion(this.world, blockPos, this);
 					this.world.getProfiler().pop();
 				}

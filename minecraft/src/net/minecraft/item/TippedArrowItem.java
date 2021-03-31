@@ -2,8 +2,6 @@ package net.minecraft.item;
 
 import java.util.List;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
@@ -34,7 +32,6 @@ public class TippedArrowItem extends ArrowItem {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 		PotionUtil.buildTooltip(stack, tooltip, 0.125F);

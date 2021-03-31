@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -43,27 +41,22 @@ public class VehicleMoveS2CPacket implements Packet<ClientPlayPacketListener> {
 		clientPlayPacketListener.onVehicleMove(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public double getX() {
 		return this.x;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public double getY() {
 		return this.y;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public double getZ() {
 		return this.z;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getYaw() {
 		return this.yaw;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getPitch() {
 		return this.pitch;
 	}

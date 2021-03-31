@@ -43,6 +43,7 @@ public class BlockPos extends Vec3i {
 	private static final long BITS_X = (1L << SIZE_BITS_X) - 1L;
 	private static final long BITS_Y = (1L << SIZE_BITS_Y) - 1L;
 	private static final long BITS_Z = (1L << SIZE_BITS_Z) - 1L;
+	private static final int field_33083 = 0;
 	private static final int BIT_SHIFT_Z = SIZE_BITS_Y;
 	private static final int BIT_SHIFT_X = SIZE_BITS_Y + SIZE_BITS_Z;
 
@@ -105,20 +106,28 @@ public class BlockPos extends Vec3i {
 		return y & -16L;
 	}
 
-	public BlockPos add(double x, double y, double z) {
-		return x == 0.0 && y == 0.0 && z == 0.0 ? this : new BlockPos((double)this.getX() + x, (double)this.getY() + y, (double)this.getZ() + z);
+	public BlockPos add(double d, double e, double f) {
+		return d == 0.0 && e == 0.0 && f == 0.0 ? this : new BlockPos((double)this.getX() + d, (double)this.getY() + e, (double)this.getZ() + f);
 	}
 
 	public BlockPos add(int i, int j, int k) {
 		return i == 0 && j == 0 && k == 0 ? this : new BlockPos(this.getX() + i, this.getY() + j, this.getZ() + k);
 	}
 
-	public BlockPos add(Vec3i pos) {
-		return this.add(pos.getX(), pos.getY(), pos.getZ());
+	public BlockPos add(Vec3i vec3i) {
+		return this.add(vec3i.getX(), vec3i.getY(), vec3i.getZ());
 	}
 
-	public BlockPos subtract(Vec3i pos) {
-		return this.add(-pos.getX(), -pos.getY(), -pos.getZ());
+	public BlockPos subtract(Vec3i vec3i) {
+		return this.add(-vec3i.getX(), -vec3i.getY(), -vec3i.getZ());
+	}
+
+	public BlockPos multiply(int i) {
+		if (i == 1) {
+			return this;
+		} else {
+			return i == 0 ? ORIGIN : new BlockPos(this.getX() * i, this.getY() * i, this.getZ() * i);
+		}
 	}
 
 	public BlockPos up() {
@@ -179,14 +188,14 @@ public class BlockPos extends Vec3i {
 			: new BlockPos(this.getX() + direction.getOffsetX() * i, this.getY() + direction.getOffsetY() * i, this.getZ() + direction.getOffsetZ() * i);
 	}
 
-	public BlockPos offset(Direction.Axis axis, int distance) {
-		if (distance == 0) {
+	public BlockPos offset(Direction.Axis axis, int i) {
+		if (i == 0) {
 			return this;
 		} else {
-			int i = axis == Direction.Axis.X ? distance : 0;
-			int j = axis == Direction.Axis.Y ? distance : 0;
-			int k = axis == Direction.Axis.Z ? distance : 0;
-			return new BlockPos(this.getX() + i, this.getY() + j, this.getZ() + k);
+			int j = axis == Direction.Axis.X ? i : 0;
+			int k = axis == Direction.Axis.Y ? i : 0;
+			int l = axis == Direction.Axis.Z ? i : 0;
+			return new BlockPos(this.getX() + j, this.getY() + k, this.getZ() + l);
 		}
 	}
 
@@ -384,12 +393,12 @@ public class BlockPos extends Vec3i {
 
 	public static Stream<BlockPos> stream(BlockBox box) {
 		return stream(
-			Math.min(box.minX, box.maxX),
-			Math.min(box.minY, box.maxY),
-			Math.min(box.minZ, box.maxZ),
-			Math.max(box.minX, box.maxX),
-			Math.max(box.minY, box.maxY),
-			Math.max(box.minZ, box.maxZ)
+			Math.min(box.getMinX(), box.getMaxX()),
+			Math.min(box.getMinY(), box.getMaxY()),
+			Math.min(box.getMinZ(), box.getMaxZ()),
+			Math.max(box.getMinX(), box.getMaxX()),
+			Math.max(box.getMinY(), box.getMaxY()),
+			Math.max(box.getMinZ(), box.getMaxZ())
 		);
 	}
 
@@ -496,8 +505,8 @@ public class BlockPos extends Vec3i {
 		}
 
 		@Override
-		public BlockPos add(double x, double y, double z) {
-			return super.add(x, y, z).toImmutable();
+		public BlockPos add(double d, double e, double f) {
+			return super.add(d, e, f).toImmutable();
 		}
 
 		@Override
@@ -506,13 +515,18 @@ public class BlockPos extends Vec3i {
 		}
 
 		@Override
+		public BlockPos multiply(int i) {
+			return super.multiply(i).toImmutable();
+		}
+
+		@Override
 		public BlockPos offset(Direction direction, int i) {
 			return super.offset(direction, i).toImmutable();
 		}
 
 		@Override
-		public BlockPos offset(Direction.Axis axis, int distance) {
-			return super.offset(axis, distance).toImmutable();
+		public BlockPos offset(Direction.Axis axis, int i) {
+			return super.offset(axis, i).toImmutable();
 		}
 
 		@Override
@@ -560,6 +574,13 @@ public class BlockPos extends Vec3i {
 		 */
 		public BlockPos.Mutable set(Vec3i pos, int x, int y, int z) {
 			return this.set(pos.getX() + x, pos.getY() + y, pos.getZ() + z);
+		}
+
+		/**
+		 * Sets this mutable block position to the sum of the given vectors.
+		 */
+		public BlockPos.Mutable set(Vec3i vec1, Vec3i vec2) {
+			return this.set(vec1.getX() + vec2.getX(), vec1.getY() + vec2.getY(), vec1.getZ() + vec2.getZ());
 		}
 
 		/**

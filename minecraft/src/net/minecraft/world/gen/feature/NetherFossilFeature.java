@@ -6,7 +6,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.structure.MarginedStructureStart;
 import net.minecraft.structure.NetherFossilGenerator;
 import net.minecraft.structure.StructureManager;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
@@ -28,8 +27,8 @@ public class NetherFossilFeature extends StructureFeature<DefaultFeatureConfig> 
 	}
 
 	public static class Start extends MarginedStructureStart<DefaultFeatureConfig> {
-		public Start(StructureFeature<DefaultFeatureConfig> structureFeature, ChunkPos chunkPos, BlockBox blockBox, int i, long l) {
-			super(structureFeature, chunkPos, blockBox, i, l);
+		public Start(StructureFeature<DefaultFeatureConfig> structureFeature, ChunkPos chunkPos, int i, long l) {
+			super(structureFeature, chunkPos, i, l);
 		}
 
 		public void init(
@@ -57,8 +56,7 @@ public class NetherFossilFeature extends StructureFeature<DefaultFeatureConfig> 
 			}
 
 			if (l > k) {
-				NetherFossilGenerator.addPieces(structureManager, this.children, this.random, new BlockPos(i, l, j));
-				this.setBoundingBoxFromChildren();
+				NetherFossilGenerator.addPieces(structureManager, this, this.random, new BlockPos(i, l, j));
 			}
 		}
 	}

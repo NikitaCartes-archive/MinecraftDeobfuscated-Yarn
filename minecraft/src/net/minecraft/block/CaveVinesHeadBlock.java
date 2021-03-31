@@ -1,9 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -18,6 +15,8 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class CaveVinesHeadBlock extends AbstractPlantStemBlock implements Fertilizable, CaveVines {
+	private static final float field_31053 = 0.11F;
+
 	public CaveVinesHeadBlock(AbstractBlock.Settings settings) {
 		super(settings, Direction.DOWN, SHAPE, false, 0.1);
 		this.setDefaultState(this.stateManager.getDefaultState().with(AGE, Integer.valueOf(0)).with(BERRIES, Boolean.valueOf(false)));
@@ -48,7 +47,6 @@ public class CaveVinesHeadBlock extends AbstractPlantStemBlock implements Fertil
 		return super.age(state, random).with(BERRIES, Boolean.valueOf(random.nextFloat() < 0.11F));
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
 		return new ItemStack(Items.GLOW_BERRIES);
@@ -77,6 +75,6 @@ public class CaveVinesHeadBlock extends AbstractPlantStemBlock implements Fertil
 
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-		world.setBlockState(pos, state.with(BERRIES, Boolean.valueOf(true)), SetBlockStateFlags.NOTIFY_LISTENERS);
+		world.setBlockState(pos, state.with(BERRIES, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
 	}
 }

@@ -46,6 +46,14 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 			this.selectors = messageSelectors;
 		}
 
+		public String method_35691() {
+			return this.contents;
+		}
+
+		public MessageArgumentType.MessageSelector[] method_35692() {
+			return this.selectors;
+		}
+
 		public Text format(ServerCommandSource serverCommandSource, boolean bl) throws CommandSyntaxException {
 			if (this.selectors.length != 0 && bl) {
 				MutableText mutableText = new LiteralText(this.contents.substring(0, this.selectors[0].getStart()));
@@ -135,6 +143,10 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 
 		public int getEnd() {
 			return this.end;
+		}
+
+		public EntitySelector method_35693() {
+			return this.selector;
 		}
 
 		@Nullable

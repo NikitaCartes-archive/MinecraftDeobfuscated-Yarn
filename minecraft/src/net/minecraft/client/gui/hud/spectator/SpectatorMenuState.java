@@ -7,6 +7,7 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class SpectatorMenuState {
+	public static final int field_32444 = -1;
 	private final List<SpectatorMenuCommand> commands;
 	private final int selectedSlot;
 

@@ -1,9 +1,6 @@
 package net.minecraft.block.entity;
 
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -38,10 +35,9 @@ public class CommandBlockBlockEntity extends BlockEntity {
 		@Override
 		public void markDirty() {
 			BlockState blockState = CommandBlockBlockEntity.this.world.getBlockState(CommandBlockBlockEntity.this.pos);
-			this.getWorld().updateListeners(CommandBlockBlockEntity.this.pos, blockState, blockState, SetBlockStateFlags.DEFAULT);
+			this.getWorld().updateListeners(CommandBlockBlockEntity.this.pos, blockState, blockState, Block.NOTIFY_ALL);
 		}
 
-		@Environment(EnvType.CLIENT)
 		@Override
 		public Vec3d getPos() {
 			return Vec3d.ofCenter(CommandBlockBlockEntity.this.pos);
@@ -68,22 +64,22 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound tag) {
-		super.writeNbt(tag);
-		this.commandExecutor.writeNbt(tag);
-		tag.putBoolean("powered", this.isPowered());
-		tag.putBoolean("conditionMet", this.isConditionMet());
-		tag.putBoolean("auto", this.isAuto());
-		return tag;
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		super.writeNbt(nbt);
+		this.commandExecutor.writeNbt(nbt);
+		nbt.putBoolean("powered", this.isPowered());
+		nbt.putBoolean("conditionMet", this.isConditionMet());
+		nbt.putBoolean("auto", this.isAuto());
+		return nbt;
 	}
 
 	@Override
-	public void readNbt(NbtCompound tag) {
-		super.readNbt(tag);
-		this.commandExecutor.readNbt(tag);
-		this.powered = tag.getBoolean("powered");
-		this.conditionMet = tag.getBoolean("conditionMet");
-		this.setAuto(tag.getBoolean("auto"));
+	public void readNbt(NbtCompound nbt) {
+		super.readNbt(nbt);
+		this.commandExecutor.readNbt(nbt);
+		this.powered = nbt.getBoolean("powered");
+		this.conditionMet = nbt.getBoolean("conditionMet");
+		this.setAuto(nbt.getBoolean("auto"));
 	}
 
 	@Nullable
@@ -92,7 +88,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 		if (this.needsUpdatePacket()) {
 			this.setNeedsUpdatePacket(false);
 			NbtCompound nbtCompound = this.writeNbt(new NbtCompound());
-			return new BlockEntityUpdateS2CPacket(this.pos, 2, nbtCompound);
+			return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.COMMAND_BLOCK, nbtCompound);
 		} else {
 			return null;
 		}

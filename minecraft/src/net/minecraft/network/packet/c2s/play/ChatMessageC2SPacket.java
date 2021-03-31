@@ -5,6 +5,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 
 public class ChatMessageC2SPacket implements Packet<ServerPlayPacketListener> {
+	private static final int MAX_LENGTH = 256;
 	private final String chatMessage;
 
 	public ChatMessageC2SPacket(String chatMessage) {

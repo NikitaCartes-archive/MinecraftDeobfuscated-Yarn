@@ -2,9 +2,8 @@ package net.minecraft.client.world;
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -20,7 +19,6 @@ import net.minecraft.world.entity.SimpleEntityLookup;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Environment(EnvType.CLIENT)
 public class ClientEntityManager<T extends EntityLike> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final EntityHandler<T> handler;
@@ -77,6 +75,7 @@ public class ClientEntityManager<T extends EntityLike> {
 		}
 	}
 
+	@Debug
 	public int getEntityCount() {
 		return this.index.size();
 	}
@@ -87,11 +86,11 @@ public class ClientEntityManager<T extends EntityLike> {
 		}
 	}
 
+	@Debug
 	public String getDebugString() {
 		return this.index.size() + "," + this.cache.sectionCount() + "," + this.tickingChunkSections.size();
 	}
 
-	@Environment(EnvType.CLIENT)
 	class Listener implements EntityChangeListener {
 		private final T entity;
 		private long lastSectionPos;

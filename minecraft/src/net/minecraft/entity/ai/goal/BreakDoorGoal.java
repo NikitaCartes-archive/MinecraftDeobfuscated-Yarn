@@ -1,13 +1,14 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.function.Predicate;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.Block;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.WorldEvents;
 
 public class BreakDoorGoal extends DoorInteractGoal {
+	private static final int field_30202 = 240;
 	private final Predicate<Difficulty> difficultySufficientPredicate;
 	protected int breakProgress;
 	protected int prevBreakProgress = -1;

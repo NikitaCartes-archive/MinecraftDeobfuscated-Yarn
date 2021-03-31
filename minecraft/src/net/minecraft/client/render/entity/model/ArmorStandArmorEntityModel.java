@@ -21,16 +21,24 @@ public class ArmorStandArmorEntityModel extends BipedEntityModel<ArmorStandEntit
 		ModelData modelData = BipedEntityModel.getModelData(dilation, 0.0F);
 		ModelPartData modelPartData = modelData.getRoot();
 		modelPartData.addChild(
-			"head", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, dilation), ModelTransform.pivot(0.0F, 1.0F, 0.0F)
+			EntityModelPartNames.HEAD,
+			ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, dilation),
+			ModelTransform.pivot(0.0F, 1.0F, 0.0F)
 		);
 		modelPartData.addChild(
-			"hat", ModelPartBuilder.create().uv(32, 0).cuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, dilation.add(0.5F)), ModelTransform.pivot(0.0F, 1.0F, 0.0F)
+			EntityModelPartNames.HAT,
+			ModelPartBuilder.create().uv(32, 0).cuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, dilation.add(0.5F)),
+			ModelTransform.pivot(0.0F, 1.0F, 0.0F)
 		);
 		modelPartData.addChild(
-			"right_leg", ModelPartBuilder.create().uv(0, 16).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, dilation), ModelTransform.pivot(-1.9F, 11.0F, 0.0F)
+			EntityModelPartNames.RIGHT_LEG,
+			ModelPartBuilder.create().uv(0, 16).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, dilation),
+			ModelTransform.pivot(-1.9F, 11.0F, 0.0F)
 		);
 		modelPartData.addChild(
-			"left_leg", ModelPartBuilder.create().uv(0, 16).mirrored().cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, dilation), ModelTransform.pivot(1.9F, 11.0F, 0.0F)
+			EntityModelPartNames.LEFT_LEG,
+			ModelPartBuilder.create().uv(0, 16).mirrored().cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, dilation),
+			ModelTransform.pivot(1.9F, 11.0F, 0.0F)
 		);
 		return TexturedModelData.of(modelData, 64, 32);
 	}

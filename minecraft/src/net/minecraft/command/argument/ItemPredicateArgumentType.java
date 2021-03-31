@@ -36,7 +36,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 	public ItemPredicateArgumentType.ItemPredicateArgument parse(StringReader stringReader) throws CommandSyntaxException {
 		ItemStringReader itemStringReader = new ItemStringReader(stringReader, true).consume();
 		if (itemStringReader.getItem() != null) {
-			ItemPredicateArgumentType.ItemPredicate itemPredicate = new ItemPredicateArgumentType.ItemPredicate(itemStringReader.getItem(), itemStringReader.getTag());
+			ItemPredicateArgumentType.ItemPredicate itemPredicate = new ItemPredicateArgumentType.ItemPredicate(itemStringReader.getItem(), itemStringReader.getNbt());
 			return commandContext -> itemPredicate;
 		} else {
 			Identifier identifier = itemStringReader.getId();
@@ -45,7 +45,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 					.getMinecraftServer()
 					.getTagManager()
 					.getTag(Registry.ITEM_KEY, identifier, identifierxx -> UNKNOWN_TAG_EXCEPTION.create(identifierxx.toString()));
-				return new ItemPredicateArgumentType.TagPredicate(tag, itemStringReader.getTag());
+				return new ItemPredicateArgumentType.TagPredicate(tag, itemStringReader.getNbt());
 			};
 		}
 	}
@@ -76,15 +76,15 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 	static class ItemPredicate implements Predicate<ItemStack> {
 		private final Item item;
 		@Nullable
-		private final NbtCompound compound;
+		private final NbtCompound nbt;
 
-		public ItemPredicate(Item item, @Nullable NbtCompound nbtCompound) {
+		public ItemPredicate(Item item, @Nullable NbtCompound nbt) {
 			this.item = item;
-			this.compound = nbtCompound;
+			this.nbt = nbt;
 		}
 
 		public boolean test(ItemStack itemStack) {
-			return itemStack.isOf(this.item) && NbtHelper.matches(this.compound, itemStack.getTag(), true);
+			return itemStack.isOf(this.item) && NbtHelper.matches(this.nbt, itemStack.getTag(), true);
 		}
 	}
 
@@ -97,9 +97,9 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 		@Nullable
 		private final NbtCompound compound;
 
-		public TagPredicate(Tag<Item> tag, @Nullable NbtCompound nbtCompound) {
+		public TagPredicate(Tag<Item> tag, @Nullable NbtCompound nbt) {
 			this.tag = tag;
-			this.compound = nbtCompound;
+			this.compound = nbt;
 		}
 
 		public boolean test(ItemStack itemStack) {

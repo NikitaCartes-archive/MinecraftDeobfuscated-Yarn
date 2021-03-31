@@ -2,9 +2,6 @@ package net.minecraft.entity.passive;
 
 import java.util.EnumSet;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -16,6 +13,7 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.TrackTargetGoal;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -27,7 +25,6 @@ public class TraderLlamaEntity extends LlamaEntity {
 		super(entityType, world);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean isTrader() {
 		return true;
@@ -39,16 +36,16 @@ public class TraderLlamaEntity extends LlamaEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putInt("DespawnDelay", this.despawnDelay);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putInt("DespawnDelay", this.despawnDelay);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		if (tag.contains("DespawnDelay", NbtTypeIds.NUMBER)) {
-			this.despawnDelay = tag.getInt("DespawnDelay");
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		if (nbt.contains("DespawnDelay", NbtElement.NUMBER_TYPE)) {
+			this.despawnDelay = nbt.getInt("DespawnDelay");
 		}
 	}
 
@@ -57,6 +54,10 @@ public class TraderLlamaEntity extends LlamaEntity {
 		super.initGoals();
 		this.goalSelector.add(1, new EscapeDangerGoal(this, 2.0));
 		this.targetSelector.add(1, new TraderLlamaEntity.DefendTraderGoal(this));
+	}
+
+	public void method_35189(int i) {
+		this.despawnDelay = i;
 	}
 
 	@Override
@@ -100,7 +101,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
 		if (spawnReason == SpawnReason.EVENT) {
 			this.setBreedingAge(0);
@@ -110,7 +111,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 			entityData = new PassiveEntity.PassiveData(false);
 		}
 
-		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
 	public static class DefendTraderGoal extends TrackTargetGoal {

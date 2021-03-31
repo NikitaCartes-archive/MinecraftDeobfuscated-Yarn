@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.entity.BellBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -50,6 +49,7 @@ public class BellBlock extends BlockWithEntity {
 	private static final VoxelShape NORTH_WALL_SHAPE = VoxelShapes.union(BELL_SHAPE, Block.createCuboidShape(7.0, 13.0, 0.0, 9.0, 15.0, 13.0));
 	private static final VoxelShape SOUTH_WALL_SHAPE = VoxelShapes.union(BELL_SHAPE, Block.createCuboidShape(7.0, 13.0, 3.0, 9.0, 15.0, 16.0));
 	private static final VoxelShape HANGING_SHAPE = VoxelShapes.union(BELL_SHAPE, Block.createCuboidShape(7.0, 13.0, 7.0, 9.0, 16.0, 9.0));
+	public static final int field_31014 = 1;
 
 	public BellBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -66,7 +66,7 @@ public class BellBlock extends BlockWithEntity {
 				this.ring(world, pos, null);
 			}
 
-			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)), SetBlockStateFlags.DEFAULT);
+			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)), Block.NOTIFY_ALL);
 		}
 	}
 

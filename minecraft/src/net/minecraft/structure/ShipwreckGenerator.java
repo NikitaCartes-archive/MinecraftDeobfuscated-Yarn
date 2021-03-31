@@ -1,7 +1,7 @@
 package net.minecraft.structure;
 
-import java.util.List;
 import java.util.Random;
+import net.minecraft.class_6130;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
@@ -61,50 +61,38 @@ public class ShipwreckGenerator {
 	};
 
 	public static void addParts(
-		StructureManager structureManager, BlockPos pos, BlockRotation rotation, List<StructurePiece> children, Random random, ShipwreckFeatureConfig config
+		StructureManager structureManager, BlockPos pos, BlockRotation rotation, class_6130 arg, Random random, ShipwreckFeatureConfig config
 	) {
 		Identifier identifier = Util.getRandom(config.isBeached ? BEACHED_TEMPLATES : REGULAR_TEMPLATES, random);
-		children.add(new ShipwreckGenerator.Piece(structureManager, identifier, pos, rotation, config.isBeached));
+		arg.method_35462(new ShipwreckGenerator.Piece(structureManager, identifier, pos, rotation, config.isBeached));
 	}
 
 	public static class Piece extends SimpleStructurePiece {
-		private final BlockRotation rotation;
-		private final Identifier template;
 		private final boolean grounded;
 
 		public Piece(StructureManager manager, Identifier identifier, BlockPos pos, BlockRotation rotation, boolean grounded) {
-			super(StructurePieceType.SHIPWRECK, 0);
-			this.pos = pos;
-			this.rotation = rotation;
-			this.template = identifier;
+			super(StructurePieceType.SHIPWRECK, 0, manager, identifier, identifier.toString(), method_35452(rotation), pos);
 			this.grounded = grounded;
-			this.initializeStructureData(manager);
 		}
 
-		public Piece(ServerWorld serverWorld, NbtCompound tag) {
-			super(StructurePieceType.SHIPWRECK, tag);
-			this.template = new Identifier(tag.getString("Template"));
-			this.grounded = tag.getBoolean("isBeached");
-			this.rotation = BlockRotation.valueOf(tag.getString("Rot"));
-			this.initializeStructureData(serverWorld.getStructureManager());
+		public Piece(ServerWorld world, NbtCompound nbt) {
+			super(StructurePieceType.SHIPWRECK, nbt, world, identifier -> method_35452(BlockRotation.valueOf(nbt.getString("Rot"))));
+			this.grounded = nbt.getBoolean("isBeached");
 		}
 
 		@Override
 		protected void writeNbt(ServerWorld world, NbtCompound nbt) {
 			super.writeNbt(world, nbt);
-			nbt.putString("Template", this.template.toString());
 			nbt.putBoolean("isBeached", this.grounded);
-			nbt.putString("Rot", this.rotation.name());
+			nbt.putString("Rot", this.placementData.getRotation().name());
 		}
 
-		private void initializeStructureData(StructureManager manager) {
-			Structure structure = manager.getStructureOrBlank(this.template);
-			StructurePlacementData structurePlacementData = new StructurePlacementData()
-				.setRotation(this.rotation)
+		private static StructurePlacementData method_35452(BlockRotation blockRotation) {
+			return new StructurePlacementData()
+				.setRotation(blockRotation)
 				.setMirror(BlockMirror.NONE)
 				.setPosition(ShipwreckGenerator.DEFAULT_POSITION)
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
-			this.setStructureData(structure, this.pos, structurePlacementData);
 		}
 
 		@Override

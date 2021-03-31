@@ -2,8 +2,6 @@ package net.minecraft.world;
 
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -49,7 +47,6 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 		return this.isRegionLoaded(i, k, m, j, l, n) ? this.getStatesInBox(box) : Stream.empty();
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	default int getColor(BlockPos pos, ColorResolver colorResolver) {
 		return colorResolver.getColor(this.getBiome(pos), (double)pos.getX(), (double)pos.getZ());

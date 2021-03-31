@@ -1,9 +1,9 @@
 package net.minecraft.block.entity;
 
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.math.BlockPos;
 
@@ -15,21 +15,21 @@ public class JukeboxBlockEntity extends BlockEntity implements Clearable {
 	}
 
 	@Override
-	public void readNbt(NbtCompound tag) {
-		super.readNbt(tag);
-		if (tag.contains("RecordItem", NbtTypeIds.COMPOUND)) {
-			this.setRecord(ItemStack.fromNbt(tag.getCompound("RecordItem")));
+	public void readNbt(NbtCompound nbt) {
+		super.readNbt(nbt);
+		if (nbt.contains("RecordItem", NbtElement.COMPOUND_TYPE)) {
+			this.setRecord(ItemStack.fromNbt(nbt.getCompound("RecordItem")));
 		}
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound tag) {
-		super.writeNbt(tag);
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		super.writeNbt(nbt);
 		if (!this.getRecord().isEmpty()) {
-			tag.put("RecordItem", this.getRecord().writeNbt(new NbtCompound()));
+			nbt.put("RecordItem", this.getRecord().writeNbt(new NbtCompound()));
 		}
 
-		return tag;
+		return nbt;
 	}
 
 	public ItemStack getRecord() {

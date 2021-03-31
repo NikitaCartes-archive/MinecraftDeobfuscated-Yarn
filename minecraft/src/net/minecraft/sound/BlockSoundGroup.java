@@ -1,8 +1,5 @@
 package net.minecraft.sound;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-
 public class BlockSoundGroup {
 	public static final BlockSoundGroup WOOD = new BlockSoundGroup(
 		1.0F, 1.0F, SoundEvents.BLOCK_WOOD_BREAK, SoundEvents.BLOCK_WOOD_STEP, SoundEvents.BLOCK_WOOD_PLACE, SoundEvents.BLOCK_WOOD_HIT, SoundEvents.BLOCK_WOOD_FALL
@@ -532,7 +529,7 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_MOSS_CARPET_HIT,
 		SoundEvents.BLOCK_MOSS_CARPET_FALL
 	);
-	public static final BlockSoundGroup MOSS = new BlockSoundGroup(
+	public static final BlockSoundGroup MOSS_BLOCK = new BlockSoundGroup(
 		1.0F, 1.0F, SoundEvents.BLOCK_MOSS_BREAK, SoundEvents.BLOCK_MOSS_STEP, SoundEvents.BLOCK_MOSS_PLACE, SoundEvents.BLOCK_MOSS_HIT, SoundEvents.BLOCK_MOSS_FALL
 	);
 	public static final BlockSoundGroup BIG_DRIPLEAF = new BlockSoundGroup(
@@ -662,7 +659,6 @@ public class BlockSoundGroup {
 		return this.pitch;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public SoundEvent getBreakSound() {
 		return this.breakSound;
 	}
@@ -675,7 +671,6 @@ public class BlockSoundGroup {
 		return this.placeSound;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public SoundEvent getHitSound() {
 		return this.hitSound;
 	}

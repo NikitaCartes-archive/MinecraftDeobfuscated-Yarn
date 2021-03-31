@@ -26,6 +26,7 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class NbtText extends BaseText implements ParsableText {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final String field_33289 = ", ";
 	protected final boolean interpret;
 	protected final String rawPath;
 	@Nullable

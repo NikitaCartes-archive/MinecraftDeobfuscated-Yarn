@@ -12,7 +12,10 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 
-public class MoveControl {
+public class MoveControl implements Control {
+	public static final float field_30197 = 5.0E-4F;
+	public static final float field_30198 = 2.5000003E-7F;
+	protected static final int field_30199 = 90;
 	protected final MobEntity entity;
 	protected double targetX;
 	protected double targetY;

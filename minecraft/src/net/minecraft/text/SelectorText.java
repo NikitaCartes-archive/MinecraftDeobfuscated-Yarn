@@ -34,6 +34,11 @@ public class SelectorText extends BaseText implements ParsableText {
 		return this.pattern;
 	}
 
+	@Nullable
+	public EntitySelector getSelector() {
+		return this.selector;
+	}
+
 	@Override
 	public MutableText parse(@Nullable ServerCommandSource source, @Nullable Entity sender, int depth) throws CommandSyntaxException {
 		return (MutableText)(source != null && this.selector != null ? EntitySelector.getNames(this.selector.getEntities(source)) : new LiteralText(""));

@@ -20,6 +20,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkCache;
 
 public abstract class EntityNavigation {
+	private static final int field_30247 = 20;
 	protected final MobEntity entity;
 	protected final World world;
 	@Nullable
@@ -95,26 +96,36 @@ public abstract class EntityNavigation {
 
 	@Nullable
 	public Path findPathToAny(Stream<BlockPos> positions, int distance) {
-		return this.findPathToAny((Set<BlockPos>)positions.collect(Collectors.toSet()), 8, false, distance);
+		return this.method_35142((Set<BlockPos>)positions.collect(Collectors.toSet()), 8, false, distance);
 	}
 
 	@Nullable
 	public Path method_29934(Set<BlockPos> set, int i) {
-		return this.findPathToAny(set, 8, false, i);
+		return this.method_35142(set, 8, false, i);
 	}
 
 	@Nullable
 	public Path findPathTo(BlockPos target, int distance) {
-		return this.findPathToAny(ImmutableSet.of(target), 8, false, distance);
+		return this.method_35142(ImmutableSet.of(target), 8, false, distance);
+	}
+
+	@Nullable
+	public Path method_35141(BlockPos blockPos, int i, int j) {
+		return this.findPathToAny(ImmutableSet.of(blockPos), 8, false, i, (float)j);
 	}
 
 	@Nullable
 	public Path findPathTo(Entity entity, int distance) {
-		return this.findPathToAny(ImmutableSet.of(entity.getBlockPos()), 16, true, distance);
+		return this.method_35142(ImmutableSet.of(entity.getBlockPos()), 16, true, distance);
 	}
 
 	@Nullable
-	protected Path findPathToAny(Set<BlockPos> positions, int range, boolean bl, int distance) {
+	protected Path method_35142(Set<BlockPos> set, int i, boolean bl, int j) {
+		return this.findPathToAny(set, i, bl, j, (float)this.entity.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE));
+	}
+
+	@Nullable
+	protected Path findPathToAny(Set<BlockPos> positions, int range, boolean bl, int distance, float f) {
 		if (positions.isEmpty()) {
 			return null;
 		} else if (this.entity.getY() < (double)this.world.getBottomY()) {
@@ -125,7 +136,6 @@ public abstract class EntityNavigation {
 			return this.currentPath;
 		} else {
 			this.world.getProfiler().push("pathfind");
-			float f = (float)this.entity.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE);
 			BlockPos blockPos = bl ? this.entity.getBlockPos().up() : this.entity.getBlockPos();
 			int i = (int)(f + (float)range);
 			ChunkCache chunkCache = new ChunkCache(this.world, blockPos.add(-i, -i, -i), blockPos.add(i, i, i));
@@ -357,6 +367,10 @@ public abstract class EntityNavigation {
 				this.recalculatePath();
 			}
 		}
+	}
+
+	public float getNodeReachProximity() {
+		return this.nodeReachProximity;
 	}
 
 	public boolean isNearPathStartPos() {

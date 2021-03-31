@@ -274,6 +274,13 @@ public class Properties {
 		RailShape.class,
 		(Predicate)(shape -> shape != RailShape.NORTH_EAST && shape != RailShape.NORTH_WEST && shape != RailShape.SOUTH_EAST && shape != RailShape.SOUTH_WEST)
 	);
+	public static final int AGE_1_MAX = 1;
+	public static final int AGE_2_MAX = 2;
+	public static final int AGE_3_MAX = 3;
+	public static final int AGE_5_MAX = 5;
+	public static final int AGE_7_MAX = 7;
+	public static final int AGE_15_MAX = 15;
+	public static final int AGE_25_MAX = 25;
 	/**
 	 * A property that specifies the age of a block on a scale of 0 to 1.
 	 */
@@ -314,6 +321,7 @@ public class Properties {
 	 * A property that specifies the delay a repeater will apply.
 	 */
 	public static final IntProperty DELAY = IntProperty.of("delay", 1, 4);
+	public static final int DISTANCE_1_7_MAX = 7;
 	/**
 	 * A property that specifies the overhang distance of a block on a scale of 1-7.
 	 */
@@ -330,6 +338,10 @@ public class Properties {
 	 * A property that specifies how many layers of snow are in a snow block.
 	 */
 	public static final IntProperty LAYERS = IntProperty.of("layers", 1, 8);
+	public static final int LEVEL_3_MIN = 0;
+	public static final int LEVEL_1_8_MIN = 1;
+	public static final int LEVEL_3_MAX = 3;
+	public static final int LEVEL_1_8_MAX = 8;
 	/**
 	 * A property that specifies how many levels of water there are in a cauldron.
 	 */
@@ -367,14 +379,18 @@ public class Properties {
 	 * A property that specifies a growth stage on a scale of 0 to 1.
 	 */
 	public static final IntProperty STAGE = IntProperty.of("stage", 0, 1);
+	public static final int DISTANCE_0_7_MAX = 7;
 	/**
 	 * A property that specifies the overhang distance of a scaffolding.
 	 */
 	public static final IntProperty DISTANCE_0_7 = IntProperty.of("distance", 0, 7);
+	public static final int CHARGES_MIN = 0;
+	public static final int CHARGES_MAX = 4;
 	/**
 	 * A property that specifies the amount of charges a respawn anchor has.
 	 */
 	public static final IntProperty CHARGES = IntProperty.of("charges", 0, 4);
+	public static final int ROTATION_MAX = 15;
 	/**
 	 * A property that specifies the rotation of a block on a 0 to 15 scale.
 	 * 

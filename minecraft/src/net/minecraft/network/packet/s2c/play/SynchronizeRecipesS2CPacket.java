@@ -3,8 +3,6 @@ package net.minecraft.network.packet.s2c.play;
 import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -33,7 +31,6 @@ public class SynchronizeRecipesS2CPacket implements Packet<ClientPlayPacketListe
 		clientPlayPacketListener.onSynchronizeRecipes(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public List<Recipe<?>> getRecipes() {
 		return this.recipes;
 	}

@@ -1,6 +1,7 @@
 package net.minecraft.client.util;
 
 import com.mojang.blaze3d.platform.GLX;
+import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,7 +15,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.WindowEventHandler;
 import net.minecraft.client.WindowSettings;
-import net.minecraft.client.texture.TextureUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.PointerBuffer;
@@ -180,7 +180,7 @@ public final class Window implements AutoCloseable {
 
 		ByteBuffer var6;
 		try {
-			byteBuffer = TextureUtil.readAllToByteBuffer(in);
+			byteBuffer = TextureUtil.readResource(in);
 			byteBuffer.rewind();
 			var6 = STBImage.stbi_load_from_memory(byteBuffer, x, y, channels, 0);
 		} finally {
@@ -415,6 +415,14 @@ public final class Window implements AutoCloseable {
 
 	public int getFramebufferHeight() {
 		return this.framebufferHeight;
+	}
+
+	public void method_35642(int i) {
+		this.framebufferWidth = i;
+	}
+
+	public void method_35643(int i) {
+		this.framebufferHeight = i;
 	}
 
 	public int getWidth() {

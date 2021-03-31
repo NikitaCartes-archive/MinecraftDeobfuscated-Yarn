@@ -1,7 +1,5 @@
 package net.minecraft.block;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,6 +26,7 @@ import net.minecraft.world.WorldAccess;
 
 public abstract class AbstractSignBlock extends BlockWithEntity implements Waterloggable {
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+	protected static final float field_31243 = 4.0F;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
 	private final SignType type;
 
@@ -110,7 +109,6 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 		return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public SignType getSignType() {
 		return this.type;
 	}

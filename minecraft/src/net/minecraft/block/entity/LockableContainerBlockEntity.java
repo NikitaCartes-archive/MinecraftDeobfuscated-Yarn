@@ -1,13 +1,13 @@
 package net.minecraft.block.entity;
 
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ContainerLock;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundCategory;
@@ -26,23 +26,23 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 	}
 
 	@Override
-	public void readNbt(NbtCompound tag) {
-		super.readNbt(tag);
-		this.lock = ContainerLock.fromNbt(tag);
-		if (tag.contains("CustomName", NbtTypeIds.STRING)) {
-			this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
+	public void readNbt(NbtCompound nbt) {
+		super.readNbt(nbt);
+		this.lock = ContainerLock.fromNbt(nbt);
+		if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
+			this.customName = Text.Serializer.fromJson(nbt.getString("CustomName"));
 		}
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound tag) {
-		super.writeNbt(tag);
-		this.lock.writeNbt(tag);
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		super.writeNbt(nbt);
+		this.lock.writeNbt(nbt);
 		if (this.customName != null) {
-			tag.putString("CustomName", Text.Serializer.toJson(this.customName));
+			nbt.putString("CustomName", Text.Serializer.toJson(this.customName));
 		}
 
-		return tag;
+		return nbt;
 	}
 
 	public void setCustomName(Text customName) {

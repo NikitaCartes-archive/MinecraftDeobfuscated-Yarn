@@ -1,7 +1,9 @@
 package net.minecraft.world.gen.decorator;
 
+import net.minecraft.util.math.intprovider.ConstantIntProvider;
+import net.minecraft.util.math.intprovider.IntProvider;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.gen.CountConfig;
-import net.minecraft.world.gen.UniformIntDistribution;
 import net.minecraft.world.gen.YOffset;
 
 public interface Decoratable<R> {
@@ -22,7 +24,7 @@ public interface Decoratable<R> {
 	 * 
 	 * @param count the distribution of the repetition count
 	 */
-	default R repeat(UniformIntDistribution count) {
+	default R repeat(IntProvider count) {
 		return this.decorate(Decorator.COUNT.configure(new CountConfig(count)));
 	}
 
@@ -33,7 +35,7 @@ public interface Decoratable<R> {
 	 * @param count the repetition count
 	 */
 	default R repeat(int count) {
-		return this.repeat(UniformIntDistribution.of(count));
+		return this.repeat(ConstantIntProvider.create(count));
 	}
 
 	/**
@@ -43,7 +45,7 @@ public interface Decoratable<R> {
 	 * @param maxCount the maximum repetition count
 	 */
 	default R repeatRandomly(int maxCount) {
-		return this.repeat(UniformIntDistribution.of(0, maxCount));
+		return this.repeat(UniformIntProvider.create(0, maxCount));
 	}
 
 	default R rangeOf(YOffset bottom, YOffset top) {

@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -55,42 +53,34 @@ public class WorldBorderInitializeS2CPacket implements Packet<ClientPlayPacketLi
 		clientPlayPacketListener.onWorldBorderInitialize(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public double getCenterX() {
 		return this.centerX;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public double getCenterZ() {
 		return this.centerZ;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public double getSizeLerpTarget() {
 		return this.sizeLerpTarget;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public double getSize() {
 		return this.size;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public long getSizeLerpTime() {
 		return this.sizeLerpTime;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getMaxRadius() {
 		return this.maxRadius;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getWarningTime() {
 		return this.warningTime;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getWarningBlocks() {
 		return this.warningBlocks;
 	}

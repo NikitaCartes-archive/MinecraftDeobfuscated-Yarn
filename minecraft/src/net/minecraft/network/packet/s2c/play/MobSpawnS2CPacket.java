@@ -1,8 +1,6 @@
 package net.minecraft.network.packet.s2c.play;
 
 import java.util.UUID;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -80,62 +78,50 @@ public class MobSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 		clientPlayPacketListener.onMobSpawn(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getId() {
 		return this.id;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public UUID getUuid() {
 		return this.uuid;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getEntityTypeId() {
 		return this.entityTypeId;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public double getX() {
 		return this.x;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public double getY() {
 		return this.y;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public double getZ() {
 		return this.z;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getVelocityX() {
 		return this.velocityX;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getVelocityY() {
 		return this.velocityY;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getVelocityZ() {
 		return this.velocityZ;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public byte getYaw() {
 		return this.yaw;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public byte getPitch() {
 		return this.pitch;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public byte getHeadYaw() {
 		return this.headYaw;
 	}

@@ -1,7 +1,7 @@
 package net.minecraft.world.gen.feature.util;
 
 import java.util.function.Consumer;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PointedDripstoneBlock;
@@ -81,7 +81,7 @@ public class DripstoneHelper {
 				state = state.with(PointedDripstoneBlock.WATERLOGGED, Boolean.valueOf(world.isWater(mutable)));
 			}
 
-			world.setBlockState(mutable, state, SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(mutable, state, Block.NOTIFY_LISTENERS);
 			mutable.move(direction);
 		});
 	}
@@ -89,7 +89,7 @@ public class DripstoneHelper {
 	public static boolean generateDripstoneBlock(StructureWorldAccess world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos);
 		if (blockState.isIn(BlockTags.DRIPSTONE_REPLACEABLE_BLOCKS)) {
-			world.setBlockState(pos, Blocks.DRIPSTONE_BLOCK.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(pos, Blocks.DRIPSTONE_BLOCK.getDefaultState(), Block.NOTIFY_LISTENERS);
 			return true;
 		} else {
 			return false;

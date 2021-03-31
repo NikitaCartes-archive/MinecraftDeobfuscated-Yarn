@@ -5,6 +5,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 
 public class DeepslateInterpolator implements BlockInterpolator {
+	private static final int field_31468 = -8;
+	private static final int field_31469 = 0;
 	private final ChunkRandom random;
 	private final long seed;
 	private final BlockState defaultBlock;

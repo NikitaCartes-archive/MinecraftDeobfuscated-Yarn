@@ -3,6 +3,7 @@ package net.minecraft.server.rcon;
 import java.nio.charset.StandardCharsets;
 
 public class BufferHelper {
+	public static final int field_29792 = 1460;
 	public static final char[] HEX_CHARS_LOOKUP = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
 	public static String getString(byte[] buf, int i, int j) {

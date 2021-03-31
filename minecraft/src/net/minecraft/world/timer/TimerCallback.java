@@ -24,8 +24,8 @@ public interface TimerCallback<T> {
 			return this.callbackClass;
 		}
 
-		public abstract void serialize(NbtCompound tag, C callback);
+		public abstract void serialize(NbtCompound nbt, C callback);
 
-		public abstract C deserialize(NbtCompound tag);
+		public abstract C deserialize(NbtCompound nbt);
 	}
 }

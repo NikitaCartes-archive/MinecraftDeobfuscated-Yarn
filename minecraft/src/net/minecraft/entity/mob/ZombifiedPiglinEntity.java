@@ -30,7 +30,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.IntRange;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -42,12 +42,13 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	private static final EntityAttributeModifier ATTACKING_SPEED_BOOST = new EntityAttributeModifier(
 		ATTACKING_SPEED_BOOST_ID, "Attacking speed boost", 0.05, EntityAttributeModifier.Operation.ADDITION
 	);
-	private static final IntRange ANGRY_SOUND_DELAY_RANGE = Durations.betweenSeconds(0, 1);
+	private static final UniformIntProvider ANGRY_SOUND_DELAY_RANGE = Durations.betweenSeconds(0, 1);
 	private int angrySoundDelay;
-	private static final IntRange ANGER_TIME_RANGE = Durations.betweenSeconds(20, 39);
+	private static final UniformIntProvider ANGER_TIME_RANGE = Durations.betweenSeconds(20, 39);
 	private int angerTime;
 	private UUID targetUuid;
-	private static final IntRange field_25609 = Durations.betweenSeconds(4, 6);
+	private static final int field_30524 = 10;
+	private static final UniformIntProvider field_25609 = Durations.betweenSeconds(4, 6);
 	private int field_25608;
 
 	public ZombifiedPiglinEntity(EntityType<? extends ZombifiedPiglinEntity> entityType, World world) {
@@ -128,7 +129,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 				this.method_29942();
 			}
 
-			this.field_25608 = field_25609.choose(this.random);
+			this.field_25608 = field_25609.get(this.random);
 		}
 	}
 
@@ -151,8 +152,8 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	@Override
 	public void setTarget(@Nullable LivingEntity target) {
 		if (this.getTarget() == null && target != null) {
-			this.angrySoundDelay = ANGRY_SOUND_DELAY_RANGE.choose(this.random);
-			this.field_25608 = field_25609.choose(this.random);
+			this.angrySoundDelay = ANGRY_SOUND_DELAY_RANGE.get(this.random);
+			this.field_25608 = field_25609.get(this.random);
 		}
 
 		if (target instanceof PlayerEntity) {
@@ -164,7 +165,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 
 	@Override
 	public void chooseRandomAngerTime() {
-		this.setAngerTime(ANGER_TIME_RANGE.choose(this.random));
+		this.setAngerTime(ANGER_TIME_RANGE.get(this.random));
 	}
 
 	public static boolean canSpawn(EntityType<ZombifiedPiglinEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
@@ -177,15 +178,15 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		this.writeAngerToNbt(tag);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		this.writeAngerToNbt(nbt);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.readAngerFromNbt(this.world, tag);
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.readAngerFromNbt(this.world, nbt);
 	}
 
 	@Override

@@ -1,7 +1,5 @@
 package net.minecraft.recipe;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.ItemStack;
@@ -75,7 +73,6 @@ public class ShieldDecorationRecipe extends SpecialCraftingRecipe {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean fits(int width, int height) {
 		return width * height >= 2;

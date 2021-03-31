@@ -4,8 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.inventory.CraftingInventory;
@@ -90,7 +88,6 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 		return ItemStack.EMPTY;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean fits(int width, int height) {
 		return width * height >= 2;

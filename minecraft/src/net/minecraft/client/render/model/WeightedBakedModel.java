@@ -11,25 +11,26 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.util.collection.WeightedPicker;
+import net.minecraft.util.collection.Weighted;
+import net.minecraft.util.collection.Weighting;
 import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
 public class WeightedBakedModel implements BakedModel {
 	private final int totalWeight;
-	private final List<WeightedBakedModel.Entry> models;
+	private final List<Weighted.Present<BakedModel>> models;
 	private final BakedModel defaultModel;
 
-	public WeightedBakedModel(List<WeightedBakedModel.Entry> models) {
+	public WeightedBakedModel(List<Weighted.Present<BakedModel>> models) {
 		this.models = models;
-		this.totalWeight = WeightedPicker.getWeightSum(models);
-		this.defaultModel = ((WeightedBakedModel.Entry)models.get(0)).model;
+		this.totalWeight = Weighting.getWeightSum(models);
+		this.defaultModel = (BakedModel)((Weighted.Present)models.get(0)).getData();
 	}
 
 	@Override
 	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, Random random) {
-		return (List<BakedQuad>)WeightedPicker.getAt(this.models, Math.abs((int)random.nextLong()) % this.totalWeight)
-			.map(entry -> entry.model.getQuads(state, face, random))
+		return (List<BakedQuad>)Weighting.getAt(this.models, Math.abs((int)random.nextLong()) % this.totalWeight)
+			.map(present -> ((BakedModel)present.getData()).getQuads(state, face, random))
 			.orElse(Collections.emptyList());
 	}
 
@@ -70,11 +71,11 @@ public class WeightedBakedModel implements BakedModel {
 
 	@Environment(EnvType.CLIENT)
 	public static class Builder {
-		private final List<WeightedBakedModel.Entry> models = Lists.<WeightedBakedModel.Entry>newArrayList();
+		private final List<Weighted.Present<BakedModel>> models = Lists.<Weighted.Present<BakedModel>>newArrayList();
 
 		public WeightedBakedModel.Builder add(@Nullable BakedModel model, int weight) {
 			if (model != null) {
-				this.models.add(new WeightedBakedModel.Entry(model, weight));
+				this.models.add(Weighted.of(model, weight));
 			}
 
 			return this;
@@ -85,18 +86,8 @@ public class WeightedBakedModel implements BakedModel {
 			if (this.models.isEmpty()) {
 				return null;
 			} else {
-				return (BakedModel)(this.models.size() == 1 ? ((WeightedBakedModel.Entry)this.models.get(0)).model : new WeightedBakedModel(this.models));
+				return (BakedModel)(this.models.size() == 1 ? (BakedModel)((Weighted.Present)this.models.get(0)).getData() : new WeightedBakedModel(this.models));
 			}
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	static class Entry extends WeightedPicker.Entry {
-		protected final BakedModel model;
-
-		public Entry(BakedModel model, int weight) {
-			super(weight);
-			this.model = model;
 		}
 	}
 }

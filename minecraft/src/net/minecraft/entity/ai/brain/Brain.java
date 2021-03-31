@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.brain;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
@@ -30,6 +31,7 @@ import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.logging.log4j.LogManager;
@@ -38,6 +40,7 @@ import org.apache.logging.log4j.Logger;
 public class Brain<E extends LivingEntity> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Supplier<Codec<Brain<E>>> codecSupplier;
+	private static final int field_30096 = 20;
 	private final Map<MemoryModuleType<?>, Optional<? extends Memory<?>>> memories = Maps.newHashMap();
 	private final Map<SensorType<? extends Sensor<? super E>>, Sensor<? super E>> sensors = Maps.<SensorType<? extends Sensor<? super E>>, Sensor<? super E>>newLinkedHashMap(
 		
@@ -183,6 +186,12 @@ public class Brain<E extends LivingEntity> {
 		return ((Optional)this.memories.get(type)).map(Memory::getValue);
 	}
 
+	@Deprecated
+	@Debug
+	public Map<MemoryModuleType<?>, Optional<? extends Memory<?>>> method_35058() {
+		return this.memories;
+	}
+
 	public <U> boolean hasMemoryModuleWithValue(MemoryModuleType<U> type, U value) {
 		return !this.hasMemoryModule(type) ? false : this.getOptionalMemory(type).filter(object2 -> object2.equals(value)).isPresent();
 	}
@@ -211,6 +220,13 @@ public class Brain<E extends LivingEntity> {
 	}
 
 	@Deprecated
+	@Debug
+	public Set<Activity> method_35059() {
+		return this.possibleActivities;
+	}
+
+	@Deprecated
+	@Debug
 	public List<Task<? super E>> getRunningTasks() {
 		List<Task<? super E>> list = new ObjectArrayList<>();
 
@@ -331,6 +347,11 @@ public class Brain<E extends LivingEntity> {
 			((Set)((Map)this.tasks.computeIfAbsent(pair.getFirst(), integer -> Maps.newHashMap())).computeIfAbsent(activity, activityx -> Sets.newLinkedHashSet()))
 				.add(pair.getSecond());
 		}
+	}
+
+	@VisibleForTesting
+	public void method_35060() {
+		this.tasks.clear();
 	}
 
 	public boolean hasActivity(Activity activity) {

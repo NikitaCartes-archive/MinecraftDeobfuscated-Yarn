@@ -2,6 +2,7 @@ package net.minecraft.world.biome.layer;
 
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import net.minecraft.world.biome.BiomeIds;
 import net.minecraft.world.biome.layer.type.CrossSamplingLayer;
 import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
 
@@ -13,7 +14,7 @@ public enum AddEdgeBiomesLayer implements CrossSamplingLayer {
 
 	@Override
 	public int sample(LayerRandomnessSource context, int n, int e, int s, int w, int center) {
-		if (center == 14) {
+		if (center == BiomeIds.MUSHROOM_FIELDS) {
 			if (BiomeLayers.isShallowOcean(n) || BiomeLayers.isShallowOcean(e) || BiomeLayers.isShallowOcean(s) || BiomeLayers.isShallowOcean(w)) {
 				return 15;
 			}
@@ -25,15 +26,15 @@ public enum AddEdgeBiomesLayer implements CrossSamplingLayer {
 			if (BiomeLayers.isOcean(n) || BiomeLayers.isOcean(e) || BiomeLayers.isOcean(s) || BiomeLayers.isOcean(w)) {
 				return 16;
 			}
-		} else if (center != 3 && center != 34 && center != 20) {
+		} else if (center != BiomeIds.MOUNTAINS && center != BiomeIds.WOODED_MOUNTAINS && center != BiomeIds.MOUNTAIN_EDGE) {
 			if (SNOWY_IDS.contains(center)) {
 				if (!BiomeLayers.isOcean(center) && (BiomeLayers.isOcean(n) || BiomeLayers.isOcean(e) || BiomeLayers.isOcean(s) || BiomeLayers.isOcean(w))) {
 					return 26;
 				}
-			} else if (center != 37 && center != 38) {
+			} else if (center != BiomeIds.BADLANDS && center != BiomeIds.WOODED_BADLANDS_PLATEAU) {
 				if (!BiomeLayers.isOcean(center)
-					&& center != 7
-					&& center != 6
+					&& center != BiomeIds.RIVER
+					&& center != BiomeIds.SWAMP
 					&& (BiomeLayers.isOcean(n) || BiomeLayers.isOcean(e) || BiomeLayers.isOcean(s) || BiomeLayers.isOcean(w))) {
 					return 16;
 				}
@@ -52,7 +53,7 @@ public enum AddEdgeBiomesLayer implements CrossSamplingLayer {
 	}
 
 	private static boolean isWooded(int id) {
-		return FOREST_IDS.contains(id) || id == 4 || id == 5 || BiomeLayers.isOcean(id);
+		return FOREST_IDS.contains(id) || id == BiomeIds.FOREST || id == BiomeIds.TAIGA || BiomeLayers.isOcean(id);
 	}
 
 	private boolean isBadlands(int id) {

@@ -1,7 +1,5 @@
 package net.minecraft.entity.ai.pathing;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.PacketByteBuf;
 
 public class TargetPathNode extends PathNode {
@@ -13,7 +11,6 @@ public class TargetPathNode extends PathNode {
 		super(node.x, node.y, node.z);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public TargetPathNode(int i, int j, int k) {
 		super(i, j, k);
 	}
@@ -33,7 +30,10 @@ public class TargetPathNode extends PathNode {
 		this.reached = true;
 	}
 
-	@Environment(EnvType.CLIENT)
+	public boolean method_35501() {
+		return this.reached;
+	}
+
 	public static TargetPathNode fromBuffer(PacketByteBuf buffer) {
 		TargetPathNode targetPathNode = new TargetPathNode(buffer.readInt(), buffer.readInt(), buffer.readInt());
 		targetPathNode.pathLength = buffer.readFloat();

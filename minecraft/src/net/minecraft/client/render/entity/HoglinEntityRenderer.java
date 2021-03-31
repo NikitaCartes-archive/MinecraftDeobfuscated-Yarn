@@ -20,6 +20,6 @@ public class HoglinEntityRenderer extends MobEntityRenderer<HoglinEntity, Hoglin
 	}
 
 	protected boolean isShaking(HoglinEntity hoglinEntity) {
-		return hoglinEntity.canConvert();
+		return super.isShaking(hoglinEntity) || hoglinEntity.canConvert();
 	}
 }

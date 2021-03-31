@@ -46,4 +46,16 @@ public class EulerAngle {
 	public float getRoll() {
 		return this.roll;
 	}
+
+	public float method_35845() {
+		return MathHelper.wrapDegrees(this.pitch);
+	}
+
+	public float method_35846() {
+		return MathHelper.wrapDegrees(this.yaw);
+	}
+
+	public float method_35847() {
+		return MathHelper.wrapDegrees(this.roll);
+	}
 }

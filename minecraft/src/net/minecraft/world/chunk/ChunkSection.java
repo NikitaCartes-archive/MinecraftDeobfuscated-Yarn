@@ -2,8 +2,6 @@ package net.minecraft.world.chunk;
 
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -12,6 +10,9 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.PacketByteBuf;
 
 public class ChunkSection {
+	public static final int field_31406 = 16;
+	public static final int field_31407 = 16;
+	public static final int field_31408 = 4096;
 	private static final Palette<BlockState> PALETTE = new IdListPalette<>(Block.STATE_IDS, Blocks.AIR.getDefaultState());
 	private final int yOffset;
 	private short nonEmptyBlockCount;
@@ -140,7 +141,6 @@ public class ChunkSection {
 		return this.container;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void fromPacket(PacketByteBuf buf) {
 		this.nonEmptyBlockCount = buf.readShort();
 		this.container.fromPacket(buf);

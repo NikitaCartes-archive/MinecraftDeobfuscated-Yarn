@@ -2,14 +2,11 @@ package net.minecraft.client.gui;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.server.WorldGenerationProgressLogger;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.ChunkStatus;
 
-@Environment(EnvType.CLIENT)
 public class WorldGenerationProgressTracker implements WorldGenerationProgressListener {
 	private final WorldGenerationProgressLogger progressLogger;
 	private final Long2ObjectOpenHashMap<ChunkStatus> chunkStatuses;

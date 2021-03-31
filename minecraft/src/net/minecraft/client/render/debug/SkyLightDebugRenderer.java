@@ -17,6 +17,7 @@ import net.minecraft.world.World;
 @Environment(EnvType.CLIENT)
 public class SkyLightDebugRenderer implements DebugRenderer.Renderer {
 	private final MinecraftClient client;
+	private static final int field_32905 = 10;
 
 	public SkyLightDebugRenderer(MinecraftClient client) {
 		this.client = client;

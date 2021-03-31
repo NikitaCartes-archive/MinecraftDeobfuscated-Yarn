@@ -18,9 +18,17 @@ public class FixedLootScoreProvider implements LootScoreProvider {
 		this.name = name;
 	}
 
+	public static LootScoreProvider create(String name) {
+		return new FixedLootScoreProvider(name);
+	}
+
 	@Override
 	public LootScoreProviderType getType() {
 		return LootScoreProviderTypes.FIXED;
+	}
+
+	public String getName() {
+		return this.name;
 	}
 
 	@Nullable

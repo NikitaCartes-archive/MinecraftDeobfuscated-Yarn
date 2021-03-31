@@ -12,6 +12,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 
 @Environment(EnvType.CLIENT)
 public class BiomeColorCache {
+	private static final int field_32164 = 256;
 	private final ThreadLocal<BiomeColorCache.Last> last = ThreadLocal.withInitial(() -> new BiomeColorCache.Last());
 	private final Long2ObjectLinkedOpenHashMap<int[]> colors = new Long2ObjectLinkedOpenHashMap<>(256, 0.25F);
 	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();

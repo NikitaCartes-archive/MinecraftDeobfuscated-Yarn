@@ -79,6 +79,10 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 		return stack;
 	}
 
+	public static EnchantRandomlyLootFunction.Builder create() {
+		return new EnchantRandomlyLootFunction.Builder();
+	}
+
 	public static ConditionalLootFunction.Builder<?> builder() {
 		return builder(conditions -> new EnchantRandomlyLootFunction(conditions, ImmutableList.<Enchantment>of()));
 	}

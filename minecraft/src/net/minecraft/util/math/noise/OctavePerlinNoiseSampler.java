@@ -16,6 +16,7 @@ import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.WorldGenRandom;
 
 public class OctavePerlinNoiseSampler implements NoiseSampler {
+	private static final int field_31704 = 33554432;
 	private final PerlinNoiseSampler[] octaveSamplers;
 	private final DoubleList amplitudes;
 	private final double persistence;
@@ -27,6 +28,10 @@ public class OctavePerlinNoiseSampler implements NoiseSampler {
 
 	public OctavePerlinNoiseSampler(WorldGenRandom random, List<Integer> octaves) {
 		this(random, new IntRBTreeSet(octaves));
+	}
+
+	public static OctavePerlinNoiseSampler method_35480(WorldGenRandom worldGenRandom, int i, double... ds) {
+		return create(worldGenRandom, i, new DoubleArrayList(ds));
 	}
 
 	public static OctavePerlinNoiseSampler create(WorldGenRandom random, int offset, DoubleList amplitudes) {

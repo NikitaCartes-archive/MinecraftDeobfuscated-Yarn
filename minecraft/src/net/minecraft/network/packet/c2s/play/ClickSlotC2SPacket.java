@@ -3,8 +3,6 @@ package net.minecraft.network.packet.c2s.play;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -14,16 +12,15 @@ import net.minecraft.screen.slot.SlotActionType;
 public class ClickSlotC2SPacket implements Packet<ServerPlayPacketListener> {
 	private final int syncId;
 	private final int slot;
-	private final int clickData;
+	private final int button;
 	private final SlotActionType actionType;
 	private final ItemStack stack;
 	private final Int2ObjectMap<ItemStack> modifiedStacks;
 
-	@Environment(EnvType.CLIENT)
-	public ClickSlotC2SPacket(int syncId, int slot, int clickData, SlotActionType actionType, ItemStack stack, Int2ObjectMap<ItemStack> modifiedStacks) {
+	public ClickSlotC2SPacket(int syncId, int slot, int button, SlotActionType actionType, ItemStack stack, Int2ObjectMap<ItemStack> modifiedStacks) {
 		this.syncId = syncId;
 		this.slot = slot;
-		this.clickData = clickData;
+		this.button = button;
 		this.actionType = actionType;
 		this.stack = stack;
 		this.modifiedStacks = Int2ObjectMaps.unmodifiable(modifiedStacks);
@@ -32,7 +29,7 @@ public class ClickSlotC2SPacket implements Packet<ServerPlayPacketListener> {
 	public ClickSlotC2SPacket(PacketByteBuf buf) {
 		this.syncId = buf.readByte();
 		this.slot = buf.readShort();
-		this.clickData = buf.readByte();
+		this.button = buf.readByte();
 		this.actionType = buf.readEnumConstant(SlotActionType.class);
 		this.modifiedStacks = Int2ObjectMaps.unmodifiable(
 			buf.readMap(Int2ObjectOpenHashMap::new, packetByteBuf -> Integer.valueOf(packetByteBuf.readShort()), PacketByteBuf::readItemStack)
@@ -44,7 +41,7 @@ public class ClickSlotC2SPacket implements Packet<ServerPlayPacketListener> {
 	public void write(PacketByteBuf buf) {
 		buf.writeByte(this.syncId);
 		buf.writeShort(this.slot);
-		buf.writeByte(this.clickData);
+		buf.writeByte(this.button);
 		buf.writeEnumConstant(this.actionType);
 		buf.writeMap(this.modifiedStacks, PacketByteBuf::writeShort, PacketByteBuf::writeItemStack);
 		buf.writeItemStack(this.stack);
@@ -62,8 +59,8 @@ public class ClickSlotC2SPacket implements Packet<ServerPlayPacketListener> {
 		return this.slot;
 	}
 
-	public int getClickData() {
-		return this.clickData;
+	public int getButton() {
+		return this.button;
 	}
 
 	public ItemStack getStack() {

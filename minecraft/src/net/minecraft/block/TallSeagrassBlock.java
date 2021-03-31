@@ -1,8 +1,6 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -20,6 +18,7 @@ import net.minecraft.world.WorldView;
 
 public class TallSeagrassBlock extends TallPlantBlock implements FluidFillable {
 	public static final EnumProperty<DoubleBlockHalf> HALF = TallPlantBlock.HALF;
+	protected static final float field_31262 = 6.0F;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0);
 
 	public TallSeagrassBlock(AbstractBlock.Settings settings) {
@@ -36,7 +35,6 @@ public class TallSeagrassBlock extends TallPlantBlock implements FluidFillable {
 		return floor.isSideSolidFullSquare(world, pos, Direction.UP) && !floor.isOf(Blocks.MAGMA_BLOCK);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
 		return new ItemStack(Blocks.SEAGRASS);

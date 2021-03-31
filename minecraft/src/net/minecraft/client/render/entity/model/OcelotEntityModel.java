@@ -14,6 +14,27 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class OcelotEntityModel<T extends Entity> extends AnimalModel<T> {
+	private static final int field_32524 = 0;
+	private static final int field_32525 = 1;
+	private static final int field_32526 = 2;
+	protected static final int field_32520 = 3;
+	private static final float field_32527 = 0.0F;
+	private static final float field_32528 = 16.0F;
+	private static final float field_32529 = -9.0F;
+	private static final float field_32530 = 15.0F;
+	private static final float field_32531 = -9.0F;
+	private static final float field_32532 = 12.0F;
+	private static final float field_32512 = -10.0F;
+	private static final float field_32513 = 15.0F;
+	private static final float field_32514 = 8.0F;
+	private static final float field_32515 = 20.0F;
+	private static final float field_32516 = 14.0F;
+	protected static final float field_32521 = 18.0F;
+	protected static final float field_32522 = 5.0F;
+	protected static final float field_32523 = 14.1F;
+	private static final float field_32517 = -5.0F;
+	private static final String TAIL1 = "tail1";
+	private static final String TAIL2 = "tail2";
 	protected final ModelPart leftHindLeg;
 	protected final ModelPart rightHindLeg;
 	protected final ModelPart leftFrontLeg;
@@ -26,30 +47,30 @@ public class OcelotEntityModel<T extends Entity> extends AnimalModel<T> {
 
 	public OcelotEntityModel(ModelPart root) {
 		super(true, 10.0F, 4.0F);
-		this.head = root.getChild("head");
-		this.body = root.getChild("body");
+		this.head = root.getChild(EntityModelPartNames.HEAD);
+		this.body = root.getChild(EntityModelPartNames.BODY);
 		this.upperTail = root.getChild("tail1");
 		this.lowerTail = root.getChild("tail2");
-		this.leftHindLeg = root.getChild("left_hind_leg");
-		this.rightHindLeg = root.getChild("right_hind_leg");
-		this.leftFrontLeg = root.getChild("left_front_leg");
-		this.rightFrontLeg = root.getChild("right_front_leg");
+		this.leftHindLeg = root.getChild(EntityModelPartNames.LEFT_HIND_LEG);
+		this.rightHindLeg = root.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
+		this.leftFrontLeg = root.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
+		this.rightFrontLeg = root.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
 	}
 
 	public static ModelData getModelData(Dilation dilation) {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
 		modelPartData.addChild(
-			"head",
+			EntityModelPartNames.HEAD,
 			ModelPartBuilder.create()
 				.cuboid("main", -2.5F, -2.0F, -3.0F, 5.0F, 4.0F, 5.0F, dilation)
-				.cuboid("nose", -1.5F, 0.0F, -4.0F, 3, 2, 2, dilation, 0, 24)
+				.cuboid(EntityModelPartNames.NOSE, -1.5F, 0.0F, -4.0F, 3, 2, 2, dilation, 0, 24)
 				.cuboid("ear1", -2.0F, -3.0F, 0.0F, 1, 1, 2, dilation, 0, 10)
 				.cuboid("ear2", 1.0F, -3.0F, 0.0F, 1, 1, 2, dilation, 6, 10),
 			ModelTransform.pivot(0.0F, 15.0F, -9.0F)
 		);
 		modelPartData.addChild(
-			"body",
+			EntityModelPartNames.BODY,
 			ModelPartBuilder.create().uv(20, 0).cuboid(-2.0F, 3.0F, -8.0F, 4.0F, 16.0F, 6.0F, dilation),
 			ModelTransform.of(0.0F, 12.0F, -10.0F, (float) (Math.PI / 2), 0.0F, 0.0F)
 		);
@@ -60,11 +81,11 @@ public class OcelotEntityModel<T extends Entity> extends AnimalModel<T> {
 			"tail2", ModelPartBuilder.create().uv(4, 15).cuboid(-0.5F, 0.0F, 0.0F, 1.0F, 8.0F, 1.0F, dilation), ModelTransform.pivot(0.0F, 20.0F, 14.0F)
 		);
 		ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(8, 13).cuboid(-1.0F, 0.0F, 1.0F, 2.0F, 6.0F, 2.0F, dilation);
-		modelPartData.addChild("left_hind_leg", modelPartBuilder, ModelTransform.pivot(1.1F, 18.0F, 5.0F));
-		modelPartData.addChild("right_hind_leg", modelPartBuilder, ModelTransform.pivot(-1.1F, 18.0F, 5.0F));
+		modelPartData.addChild(EntityModelPartNames.LEFT_HIND_LEG, modelPartBuilder, ModelTransform.pivot(1.1F, 18.0F, 5.0F));
+		modelPartData.addChild(EntityModelPartNames.RIGHT_HIND_LEG, modelPartBuilder, ModelTransform.pivot(-1.1F, 18.0F, 5.0F));
 		ModelPartBuilder modelPartBuilder2 = ModelPartBuilder.create().uv(40, 0).cuboid(-1.0F, 0.0F, 0.0F, 2.0F, 10.0F, 2.0F, dilation);
-		modelPartData.addChild("left_front_leg", modelPartBuilder2, ModelTransform.pivot(1.2F, 14.1F, -5.0F));
-		modelPartData.addChild("right_front_leg", modelPartBuilder2, ModelTransform.pivot(-1.2F, 14.1F, -5.0F));
+		modelPartData.addChild(EntityModelPartNames.LEFT_FRONT_LEG, modelPartBuilder2, ModelTransform.pivot(1.2F, 14.1F, -5.0F));
+		modelPartData.addChild(EntityModelPartNames.RIGHT_FRONT_LEG, modelPartBuilder2, ModelTransform.pivot(-1.2F, 14.1F, -5.0F));
 		return modelData;
 	}
 

@@ -187,8 +187,20 @@ public abstract class NumberRange<T extends Number> {
 			this.squaredMax = square(max);
 		}
 
+		public static NumberRange.FloatRange exactly(float value) {
+			return new NumberRange.FloatRange(value, value);
+		}
+
+		public static NumberRange.FloatRange between(float min, float max) {
+			return new NumberRange.FloatRange(min, max);
+		}
+
 		public static NumberRange.FloatRange atLeast(float value) {
 			return new NumberRange.FloatRange(value, null);
+		}
+
+		public static NumberRange.FloatRange atMost(float value) {
+			return new NumberRange.FloatRange(null, value);
 		}
 
 		public boolean test(float value) {
@@ -248,8 +260,16 @@ public abstract class NumberRange<T extends Number> {
 			return new NumberRange.IntRange(value, value);
 		}
 
+		public static NumberRange.IntRange between(int min, int max) {
+			return new NumberRange.IntRange(min, max);
+		}
+
 		public static NumberRange.IntRange atLeast(int value) {
 			return new NumberRange.IntRange(value, null);
+		}
+
+		public static NumberRange.IntRange atMost(int value) {
+			return new NumberRange.IntRange(null, value);
 		}
 
 		public boolean test(int value) {
@@ -257,6 +277,14 @@ public abstract class NumberRange<T extends Number> {
 				return false;
 			} else {
 				return this.max == null || this.max >= value;
+			}
+		}
+
+		public boolean method_35288(long l) {
+			if (this.minSquared != null && this.minSquared > l) {
+				return false;
+			} else {
+				return this.maxSquared == null || this.maxSquared >= l;
 			}
 		}
 

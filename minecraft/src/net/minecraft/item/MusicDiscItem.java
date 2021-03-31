@@ -4,9 +4,6 @@ import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.JukeboxBlock;
@@ -21,6 +18,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 
 public class MusicDiscItem extends Item {
 	private static final Map<SoundEvent, MusicDiscItem> MUSIC_DISCS = Maps.<SoundEvent, MusicDiscItem>newHashMap();
@@ -61,24 +59,20 @@ public class MusicDiscItem extends Item {
 		return this.comparatorOutput;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 		tooltip.add(this.getDescription().formatted(Formatting.GRAY));
 	}
 
-	@Environment(EnvType.CLIENT)
 	public MutableText getDescription() {
 		return new TranslatableText(this.getTranslationKey() + ".desc");
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public static MusicDiscItem bySound(SoundEvent sound) {
 		return (MusicDiscItem)MUSIC_DISCS.get(sound);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public SoundEvent getSound() {
 		return this.sound;
 	}

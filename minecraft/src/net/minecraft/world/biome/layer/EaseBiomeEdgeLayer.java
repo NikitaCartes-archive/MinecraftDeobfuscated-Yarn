@@ -1,5 +1,6 @@
 package net.minecraft.world.biome.layer;
 
+import net.minecraft.world.biome.BiomeIds;
 import net.minecraft.world.biome.layer.type.CrossSamplingLayer;
 import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
 
@@ -34,7 +35,7 @@ public enum EaseBiomeEdgeLayer implements CrossSamplingLayer {
 	}
 
 	private boolean isMountainBiome(int[] ids, int id) {
-		if (!BiomeLayers.areSimilar(id, 3)) {
+		if (!BiomeLayers.areSimilar(id, BiomeIds.MOUNTAINS)) {
 			return false;
 		} else {
 			ids[0] = id;

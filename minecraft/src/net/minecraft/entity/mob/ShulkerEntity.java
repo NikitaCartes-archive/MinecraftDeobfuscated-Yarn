@@ -4,9 +4,6 @@ import java.util.EnumSet;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -35,6 +32,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
@@ -60,11 +58,19 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	protected static final TrackedData<Direction> ATTACHED_FACE = DataTracker.registerData(ShulkerEntity.class, TrackedDataHandlerRegistry.FACING);
 	protected static final TrackedData<Byte> PEEK_AMOUNT = DataTracker.registerData(ShulkerEntity.class, TrackedDataHandlerRegistry.BYTE);
 	protected static final TrackedData<Byte> COLOR = DataTracker.registerData(ShulkerEntity.class, TrackedDataHandlerRegistry.BYTE);
+	private static final int field_30487 = 6;
+	private static final byte field_30488 = 16;
+	private static final byte field_30489 = 16;
+	private static final int field_30490 = 8;
+	private static final int field_30491 = 8;
+	private static final int field_30492 = 5;
+	private static final float field_30493 = 0.05F;
 	private float prevOpenProgress;
 	private float openProgress;
 	@Nullable
 	private BlockPos prevAttachedBlock;
 	private int teleportLerpTimer;
+	private static final float field_30494 = 1.0F;
 
 	public ShulkerEntity(EntityType<? extends ShulkerEntity> entityType, World world) {
 		super(entityType, world);
@@ -132,21 +138,21 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.dataTracker.set(ATTACHED_FACE, Direction.byId(tag.getByte("AttachFace")));
-		this.dataTracker.set(PEEK_AMOUNT, tag.getByte("Peek"));
-		if (tag.contains("Color", NbtTypeIds.NUMBER)) {
-			this.dataTracker.set(COLOR, tag.getByte("Color"));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.setAttachedFace(Direction.byId(nbt.getByte("AttachFace")));
+		this.dataTracker.set(PEEK_AMOUNT, nbt.getByte("Peek"));
+		if (nbt.contains("Color", NbtElement.NUMBER_TYPE)) {
+			this.dataTracker.set(COLOR, nbt.getByte("Color"));
 		}
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putByte("AttachFace", (byte)this.dataTracker.get(ATTACHED_FACE).getId());
-		tag.putByte("Peek", this.dataTracker.get(PEEK_AMOUNT));
-		tag.putByte("Color", this.dataTracker.get(COLOR));
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putByte("AttachFace", (byte)this.getAttachedFace().getId());
+		nbt.putByte("Peek", this.dataTracker.get(PEEK_AMOUNT));
+		nbt.putByte("Color", this.dataTracker.get(COLOR));
 	}
 
 	@Override
@@ -172,14 +178,14 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	private void method_33348() {
 		Direction direction = this.findAttachSide(this.getBlockPos());
 		if (direction != null) {
-			this.dataTracker.set(ATTACHED_FACE, direction);
+			this.setAttachedFace(direction);
 		} else {
 			this.tryTeleport();
 		}
 	}
 
 	@Override
-	protected Box method_33332() {
+	protected Box calculateBoundingBox() {
 		float f = method_33342(this.openProgress);
 		Direction direction = this.getAttachedFace().getOpposite();
 		float g = this.getType().getWidth() / 2.0F;
@@ -253,7 +259,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 			this.teleportLerpTimer = 0;
 		}
 
-		this.dataTracker.set(ATTACHED_FACE, Direction.DOWN);
+		this.setAttachedFace(Direction.DOWN);
 		return super.startRiding(entity, force);
 	}
 
@@ -271,12 +277,12 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
 		this.yaw = 0.0F;
 		this.headYaw = this.yaw;
 		this.resetPosition();
-		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
 	@Override
@@ -372,7 +378,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 					Direction direction = this.findAttachSide(blockPos2);
 					if (direction != null) {
 						this.detach();
-						this.dataTracker.set(ATTACHED_FACE, direction);
+						this.setAttachedFace(direction);
 						this.playSound(SoundEvents.ENTITY_SHULKER_TELEPORT, 1.0F, 1.0F);
 						this.setPosition((double)blockPos2.getX() + 0.5, (double)blockPos2.getY(), (double)blockPos2.getZ() + 0.5);
 						this.dataTracker.set(PEEK_AMOUNT, (byte)0);
@@ -388,7 +394,6 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
 		this.bodyTrackingIncrements = 0;
@@ -453,6 +458,19 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		return this.dataTracker.get(ATTACHED_FACE);
 	}
 
+	private void setAttachedFace(Direction face) {
+		this.dataTracker.set(ATTACHED_FACE, face);
+	}
+
+	@Override
+	public void onTrackedDataSet(TrackedData<?> data) {
+		if (ATTACHED_FACE.equals(data)) {
+			this.setBoundingBox(this.calculateBoundingBox());
+		}
+
+		super.onTrackedDataSet(data);
+	}
+
 	private int getPeekAmount() {
 		return this.dataTracker.get(PEEK_AMOUNT);
 	}
@@ -473,7 +491,6 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		this.dataTracker.set(PEEK_AMOUNT, (byte)peekAmount);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getOpenProgress(float delta) {
 		return MathHelper.lerp(delta, this.prevOpenProgress, this.openProgress);
 	}
@@ -483,7 +500,6 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		return 0.5F;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void readFromPacket(MobSpawnS2CPacket packet) {
 		super.readFromPacket(packet);
@@ -509,7 +525,6 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		return 0.0F;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Optional<Vec3d> method_33352(float f) {
 		if (this.prevAttachedBlock != null && this.teleportLerpTimer > 0) {
 			double d = (double)((float)this.teleportLerpTimer - f) / 6.0;

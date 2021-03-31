@@ -12,7 +12,7 @@ public abstract class PersistentState {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private boolean dirty;
 
-	public abstract NbtCompound writeNbt(NbtCompound tag);
+	public abstract NbtCompound writeNbt(NbtCompound nbt);
 
 	public void markDirty() {
 		this.setDirty(true);

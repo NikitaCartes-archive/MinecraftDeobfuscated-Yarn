@@ -12,6 +12,9 @@ import net.minecraft.util.Lazy;
 
 @Environment(EnvType.CLIENT)
 public final class MissingSprite extends Sprite {
+	private static final int field_32950 = 16;
+	private static final int field_32951 = 16;
+	private static final String field_32952 = "missingno";
 	private static final Identifier MISSINGNO = new Identifier("missingno");
 	@Nullable
 	private static NativeImageBackedTexture texture;

@@ -28,6 +28,10 @@ public class VariantSetting<T> {
 			this.value = value;
 		}
 
+		public VariantSetting<T> method_35907() {
+			return VariantSetting.this;
+		}
+
 		public void writeTo(JsonObject json) {
 			json.add(VariantSetting.this.key, (JsonElement)VariantSetting.this.writer.apply(this.value));
 		}

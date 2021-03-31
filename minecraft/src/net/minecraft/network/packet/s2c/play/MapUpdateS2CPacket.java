@@ -4,8 +4,6 @@ import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.item.map.MapIcon;
 import net.minecraft.item.map.MapState;
 import net.minecraft.network.Packet;
@@ -92,12 +90,10 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 		clientPlayPacketListener.onMapUpdate(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getId() {
 		return this.id;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void apply(MapState mapState) {
 		if (this.icons != null) {
 			mapState.replaceIcons(this.icons);
@@ -108,12 +104,10 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public byte getScale() {
 		return this.scale;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isLocked() {
 		return this.locked;
 	}

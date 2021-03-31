@@ -9,6 +9,8 @@ import net.minecraft.server.world.ServerWorld;
 
 public abstract class Sensor<E extends LivingEntity> {
 	private static final Random RANDOM = new Random();
+	private static final int field_30259 = 20;
+	protected static final int field_30258 = 16;
 	private static final TargetPredicate TARGET_PREDICATE = new TargetPredicate().setBaseMaxDistance(16.0).includeTeammates().ignoreEntityTargetRules();
 	private static final TargetPredicate TARGET_PREDICATE_IGNORE_DISTANCE_SCALING = new TargetPredicate()
 		.setBaseMaxDistance(16.0)

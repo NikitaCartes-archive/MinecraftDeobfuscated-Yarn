@@ -6,6 +6,7 @@ import net.minecraft.world.biome.source.SeedMixer;
 import net.minecraft.world.gen.SimpleRandom;
 
 public class CachingLayerContext implements LayerSampleContext<CachingLayerSampler> {
+	private static final int field_31730 = 1024;
 	private final Long2IntLinkedOpenHashMap cache;
 	private final int cacheCapacity;
 	private final PerlinNoiseSampler noiseSampler;

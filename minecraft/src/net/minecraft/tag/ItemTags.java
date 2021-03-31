@@ -75,6 +75,9 @@ public final class ItemTags {
 	public static final Tag.Identified<Item> OCCLUDES_VIBRATION_SIGNALS = register("occludes_vibration_signals");
 	public static final Tag.Identified<Item> CLUSTER_MAX_HARVESTABLES = register("cluster_max_harvestables");
 
+	private ItemTags() {
+	}
+
 	private static Tag.Identified<Item> register(String id) {
 		return REQUIRED_TAGS.add(id);
 	}

@@ -23,6 +23,17 @@ import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public abstract class AbstractClientPlayerEntity extends PlayerEntity {
+	private static final String field_32666 = "http://skins.minecraft.net/MinecraftSkins/%s.png";
+	public static final int field_32659 = 8;
+	public static final int field_32660 = 8;
+	public static final int field_32661 = 8;
+	public static final int field_32667 = 8;
+	public static final int field_32668 = 40;
+	public static final int field_32669 = 8;
+	public static final int field_32662 = 8;
+	public static final int field_32663 = 8;
+	public static final int field_32664 = 64;
+	public static final int field_32665 = 64;
 	private PlayerListEntry cachedScoreboardEntry;
 	public float elytraPitch;
 	public float elytraYaw;

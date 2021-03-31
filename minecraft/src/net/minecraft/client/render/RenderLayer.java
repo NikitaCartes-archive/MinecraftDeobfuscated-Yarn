@@ -15,6 +15,12 @@ import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public abstract class RenderLayer extends RenderPhase {
+	private static final int field_32776 = 4;
+	private static final int field_32777 = 1048576;
+	public static final int field_32772 = 2097152;
+	public static final int field_32773 = 262144;
+	public static final int field_32774 = 131072;
+	public static final int field_32775 = 256;
 	private static final RenderLayer SOLID = of(
 		"solid",
 		VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL,
@@ -910,6 +916,10 @@ public abstract class RenderLayer extends RenderPhase {
 		@Override
 		public boolean isOutline() {
 			return this.outline;
+		}
+
+		protected final RenderLayer.MultiPhaseParameters method_35784() {
+			return this.phases;
 		}
 
 		@Override

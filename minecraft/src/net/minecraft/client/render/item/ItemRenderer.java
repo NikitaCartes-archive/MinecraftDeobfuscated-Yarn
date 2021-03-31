@@ -61,6 +61,11 @@ import net.minecraft.world.World;
 public class ItemRenderer implements SynchronousResourceReloader {
 	public static final Identifier ENCHANTED_ITEM_GLINT = new Identifier("textures/misc/enchanted_item_glint.png");
 	private static final Set<Item> WITHOUT_MODELS = Sets.<Item>newHashSet(Items.AIR);
+	private static final int field_32937 = 8;
+	private static final int field_32938 = 8;
+	public static final int field_32934 = 200;
+	public static final float field_32935 = 0.5F;
+	public static final float field_32936 = 0.75F;
 	public float zOffset;
 	private final ItemModels models;
 	private final TextureManager textureManager;

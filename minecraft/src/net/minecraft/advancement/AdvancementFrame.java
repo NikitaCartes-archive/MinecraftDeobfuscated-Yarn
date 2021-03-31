@@ -1,7 +1,5 @@
 package net.minecraft.advancement;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -27,7 +25,6 @@ public enum AdvancementFrame {
 		return this.id;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getTextureV() {
 		return this.textureV;
 	}
@@ -46,7 +43,6 @@ public enum AdvancementFrame {
 		return this.titleFormat;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Text getToastText() {
 		return this.toastText;
 	}

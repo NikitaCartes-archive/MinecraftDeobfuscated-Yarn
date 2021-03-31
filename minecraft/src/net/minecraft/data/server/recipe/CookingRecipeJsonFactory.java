@@ -40,6 +40,10 @@ public class CookingRecipeJsonFactory {
 		return new CookingRecipeJsonFactory(result, ingredient, experience, cookingTime, serializer);
 	}
 
+	public static CookingRecipeJsonFactory method_35916(Ingredient ingredient, ItemConvertible itemConvertible, float f, int i) {
+		return create(ingredient, itemConvertible, f, i, RecipeSerializer.CAMPFIRE_COOKING);
+	}
+
 	public static CookingRecipeJsonFactory createBlasting(Ingredient ingredient, ItemConvertible result, float experience, int cookingTime) {
 		return create(ingredient, result, experience, cookingTime, RecipeSerializer.BLASTING);
 	}
@@ -48,8 +52,17 @@ public class CookingRecipeJsonFactory {
 		return create(ingredient, result, experience, cookingTime, RecipeSerializer.SMELTING);
 	}
 
+	public static CookingRecipeJsonFactory method_35918(Ingredient ingredient, ItemConvertible itemConvertible, float f, int i) {
+		return create(ingredient, itemConvertible, f, i, RecipeSerializer.SMOKING);
+	}
+
 	public CookingRecipeJsonFactory criterion(String criterionName, CriterionConditions conditions) {
 		this.builder.criterion(criterionName, conditions);
+		return this;
+	}
+
+	public CookingRecipeJsonFactory method_35917(String string) {
+		this.group = string;
 		return this;
 	}
 

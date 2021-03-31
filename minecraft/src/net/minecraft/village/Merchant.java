@@ -2,8 +2,6 @@ package net.minecraft.village;
 
 import java.util.OptionalInt;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -21,7 +19,6 @@ public interface Merchant {
 
 	TradeOfferList getOffers();
 
-	@Environment(EnvType.CLIENT)
 	void setOffersFromServer(TradeOfferList offers);
 
 	void trade(TradeOffer offer);

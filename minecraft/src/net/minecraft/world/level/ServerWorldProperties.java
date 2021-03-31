@@ -1,6 +1,7 @@
 package net.minecraft.world.level;
 
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReportSection;
@@ -52,6 +53,9 @@ public interface ServerWorldProperties extends MutableWorldProperties {
 	int getWanderingTraderSpawnChance();
 
 	void setWanderingTraderSpawnChance(int wanderingTraderSpawnChance);
+
+	@Nullable
+	UUID getWanderingTraderId();
 
 	void setWanderingTraderId(UUID uuid);
 

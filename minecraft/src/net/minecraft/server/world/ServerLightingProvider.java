@@ -50,12 +50,12 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	}
 
 	@Override
-	public int doLightUpdates(int maxUpdateCount, boolean doSkylight, boolean skipEdgeLightPropagation) {
+	public int doLightUpdates(int i, boolean bl, boolean bl2) {
 		throw (UnsupportedOperationException)Util.throwOrPause(new UnsupportedOperationException("Ran authomatically on a different thread!"));
 	}
 
 	@Override
-	public void addLightSource(BlockPos pos, int level) {
+	public void addLightSource(BlockPos pos, int i) {
 		throw (UnsupportedOperationException)Util.throwOrPause(new UnsupportedOperationException("Ran authomatically on a different thread!"));
 	}
 
@@ -98,12 +98,12 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	}
 
 	@Override
-	public void setColumnEnabled(ChunkPos pos, boolean lightEnabled) {
+	public void setColumnEnabled(ChunkPos chunkPos, boolean bl) {
 		this.enqueue(
-			pos.x,
-			pos.z,
+			chunkPos.x,
+			chunkPos.z,
 			ServerLightingProvider.Stage.PRE_UPDATE,
-			Util.debugRunnable((Runnable)(() -> super.setColumnEnabled(pos, lightEnabled)), (Supplier<String>)(() -> "enableLight " + pos + " " + lightEnabled))
+			Util.debugRunnable((Runnable)(() -> super.setColumnEnabled(chunkPos, bl)), (Supplier<String>)(() -> "enableLight " + chunkPos + " " + bl))
 		);
 	}
 

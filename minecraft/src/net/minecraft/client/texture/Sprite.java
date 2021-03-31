@@ -143,6 +143,14 @@ public class Sprite implements AutoCloseable {
 		}
 	}
 
+	public int method_35806() {
+		return this.x;
+	}
+
+	public int method_35807() {
+		return this.y;
+	}
+
 	public int getWidth() {
 		return this.width;
 	}
@@ -164,6 +172,11 @@ public class Sprite implements AutoCloseable {
 		return this.uMin + f * (float)frame / 16.0F;
 	}
 
+	public float method_35804(float f) {
+		float g = this.uMax - this.uMin;
+		return (f - this.uMin) / g * 16.0F;
+	}
+
 	public float getMinV() {
 		return this.vMin;
 	}
@@ -175,6 +188,11 @@ public class Sprite implements AutoCloseable {
 	public float getFrameV(double frame) {
 		float f = this.vMax - this.vMin;
 		return this.vMin + f * (float)frame / 16.0F;
+	}
+
+	public float method_35805(float f) {
+		float g = this.vMax - this.vMin;
+		return (f - this.vMin) / g * 16.0F;
 	}
 
 	public Identifier getId() {

@@ -20,7 +20,46 @@ public class Vec2f {
 		this.y = y;
 	}
 
+	public Vec2f method_35582(float f) {
+		return new Vec2f(this.x * f, this.y * f);
+	}
+
+	public float method_35583(Vec2f vec2f) {
+		return this.x * vec2f.x + this.y * vec2f.y;
+	}
+
+	public Vec2f method_35586(Vec2f vec2f) {
+		return new Vec2f(this.x + vec2f.x, this.y + vec2f.y);
+	}
+
+	public Vec2f method_35585(float f) {
+		return new Vec2f(this.x + f, this.y + f);
+	}
+
 	public boolean equals(Vec2f other) {
 		return this.x == other.x && this.y == other.y;
+	}
+
+	public Vec2f method_35581() {
+		float f = MathHelper.sqrt(this.x * this.x + this.y * this.y);
+		return f < 1.0E-4F ? ZERO : new Vec2f(this.x / f, this.y / f);
+	}
+
+	public float method_35584() {
+		return MathHelper.sqrt(this.x * this.x + this.y * this.y);
+	}
+
+	public float method_35587() {
+		return this.x * this.x + this.y * this.y;
+	}
+
+	public float method_35589(Vec2f vec2f) {
+		float f = vec2f.x - this.x;
+		float g = vec2f.y - this.y;
+		return f * f + g * g;
+	}
+
+	public Vec2f method_35588() {
+		return new Vec2f(-this.x, -this.y);
 	}
 }

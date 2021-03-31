@@ -26,6 +26,10 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 		Blocks.CHEST,
 		Blocks.SPAWNER
 	);
+	private static final int field_31495 = 5;
+	private static final int field_31496 = 50;
+	private static final int field_31497 = 8;
+	private static final int field_31498 = 15;
 
 	public BasaltColumnsFeature(Codec<BasaltColumnsFeatureConfig> codec) {
 		super(codec);
@@ -41,7 +45,7 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 		if (!canPlaceAt(structureWorldAccess, i, blockPos.mutableCopy())) {
 			return false;
 		} else {
-			int j = basaltColumnsFeatureConfig.getHeight().getValue(random);
+			int j = basaltColumnsFeatureConfig.getHeight().get(random);
 			boolean bl = random.nextFloat() < 0.9F;
 			int k = Math.min(j, bl ? 5 : 8);
 			int l = bl ? 50 : 15;
@@ -52,7 +56,7 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 			)) {
 				int m = j - blockPos2.getManhattanDistance(blockPos);
 				if (m >= 0) {
-					bl2 |= this.placeBasaltColumn(structureWorldAccess, i, blockPos2, m, basaltColumnsFeatureConfig.getReach().getValue(random));
+					bl2 |= this.placeBasaltColumn(structureWorldAccess, i, blockPos2, m, basaltColumnsFeatureConfig.getReach().get(random));
 				}
 			}
 

@@ -144,19 +144,19 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.jockey = tag.getBoolean("IsChickenJockey");
-		if (tag.contains("EggLayTime")) {
-			this.eggLayTime = tag.getInt("EggLayTime");
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.jockey = nbt.getBoolean("IsChickenJockey");
+		if (nbt.contains("EggLayTime")) {
+			this.eggLayTime = nbt.getInt("EggLayTime");
 		}
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putBoolean("IsChickenJockey", this.jockey);
-		tag.putInt("EggLayTime", this.eggLayTime);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putBoolean("IsChickenJockey", this.jockey);
+		nbt.putInt("EggLayTime", this.eggLayTime);
 	}
 
 	@Override

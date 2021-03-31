@@ -26,7 +26,16 @@ import org.apache.logging.log4j.Logger;
 
 public class RegionFile implements AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int field_31418 = 4096;
+	@VisibleForTesting
+	protected static final int field_31417 = 1024;
+	private static final int field_31419 = 5;
+	private static final int field_31420 = 0;
 	private static final ByteBuffer ZERO = ByteBuffer.allocateDirect(1);
+	private static final String field_31421 = ".mcc";
+	private static final int field_31422 = 128;
+	private static final int field_31423 = 256;
+	private static final int field_31424 = 0;
 	private final FileChannel channel;
 	private final Path directory;
 	private final ChunkStreamVersion outputChunkStreamVersion;

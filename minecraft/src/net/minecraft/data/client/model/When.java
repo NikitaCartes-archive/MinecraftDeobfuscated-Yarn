@@ -20,6 +20,10 @@ public interface When extends Supplier<JsonElement> {
 		return new When.PropertyCondition();
 	}
 
+	static When method_35870(When... whens) {
+		return new When.LogicalCondition(When.LogicalOperator.AND, Arrays.asList(whens));
+	}
+
 	static When anyOf(When... conditions) {
 		return new When.LogicalCondition(When.LogicalOperator.OR, Arrays.asList(conditions));
 	}
@@ -84,6 +88,17 @@ public interface When extends Supplier<JsonElement> {
 		@SafeVarargs
 		public final <T extends Comparable<T>> When.PropertyCondition set(Property<T> property, T value, T... otherValues) {
 			this.set(property, name(property, value, otherValues));
+			return this;
+		}
+
+		public final <T extends Comparable<T>> When.PropertyCondition method_35871(Property<T> property, T comparable) {
+			this.set(property, "!" + property.name(comparable));
+			return this;
+		}
+
+		@SafeVarargs
+		public final <T extends Comparable<T>> When.PropertyCondition method_35872(Property<T> property, T comparable, T... comparables) {
+			this.set(property, "!" + name(property, comparable, comparables));
 			return this;
 		}
 

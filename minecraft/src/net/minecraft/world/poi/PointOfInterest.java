@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.Objects;
+import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 
@@ -34,6 +35,12 @@ public class PointOfInterest {
 
 	public PointOfInterest(BlockPos pos, PointOfInterestType type, Runnable updateListener) {
 		this(pos, type, type.getTicketCount(), updateListener);
+	}
+
+	@Deprecated
+	@Debug
+	public int getFreeTickets() {
+		return this.freeTickets;
 	}
 
 	protected boolean reserveTicket() {

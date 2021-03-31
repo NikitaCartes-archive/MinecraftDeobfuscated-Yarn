@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -13,6 +12,7 @@ import net.minecraft.world.WorldAccess;
 
 public class CoralBlock extends CoralParentBlock {
 	private final Block deadCoralBlock;
+	protected static final float field_31076 = 6.0F;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 15.0, 14.0);
 
 	protected CoralBlock(Block deadCoralBlock, AbstractBlock.Settings settings) {
@@ -28,7 +28,7 @@ public class CoralBlock extends CoralParentBlock {
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (!isInWater(state, world, pos)) {
-			world.setBlockState(pos, this.deadCoralBlock.getDefaultState().with(WATERLOGGED, Boolean.valueOf(false)), SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(pos, this.deadCoralBlock.getDefaultState().with(WATERLOGGED, Boolean.valueOf(false)), Block.NOTIFY_LISTENERS);
 		}
 	}
 

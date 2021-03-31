@@ -3,8 +3,6 @@ package net.minecraft.network.packet.s2c.play;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.Map;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -47,7 +45,6 @@ public class StatisticsS2CPacket implements Packet<ClientPlayPacketListener> {
 		return stat.getType().getRegistry().getRawId(stat.getValue());
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Map<Stat<?>, Integer> getStatMap() {
 		return this.stats;
 	}

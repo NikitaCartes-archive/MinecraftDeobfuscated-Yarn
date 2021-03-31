@@ -20,6 +20,7 @@ public class MeleeAttackGoal extends Goal {
 	private int field_24667;
 	private final int attackIntervalTicks = 20;
 	private long lastUpdateTime;
+	private static final long field_30218 = 20L;
 
 	public MeleeAttackGoal(PathAwareEntity mob, double speed, boolean pauseWhenMobIdle) {
 		this.mob = mob;

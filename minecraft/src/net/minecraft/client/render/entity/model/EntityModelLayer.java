@@ -14,6 +14,14 @@ public final class EntityModelLayer {
 		this.name = name;
 	}
 
+	public Identifier getId() {
+		return this.id;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
 	public boolean equals(Object other) {
 		if (this == other) {
 			return true;

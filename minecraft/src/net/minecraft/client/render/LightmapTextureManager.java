@@ -14,6 +14,9 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class LightmapTextureManager implements AutoCloseable {
+	public static final int field_32767 = 15728880;
+	public static final int field_32768 = 15728640;
+	public static final int field_32769 = 240;
 	private final NativeImageBackedTexture texture;
 	private final NativeImage image;
 	private final Identifier textureIdentifier;

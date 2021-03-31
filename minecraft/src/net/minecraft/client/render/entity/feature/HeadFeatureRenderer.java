@@ -4,7 +4,6 @@ import com.mojang.authlib.GameProfile;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.SkullBlock;
 import net.minecraft.block.entity.SkullBlockEntity;
@@ -27,6 +26,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.Vec3f;
 import org.apache.commons.lang3.StringUtils;
@@ -38,16 +38,16 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 	private final float scaleZ;
 	private final Map<SkullBlock.SkullType, SkullBlockEntityModel> headModels;
 
-	public HeadFeatureRenderer(FeatureRendererContext<T, M> ctx, EntityModelLoader modelLoader) {
-		this(ctx, modelLoader, 1.0F, 1.0F, 1.0F);
+	public HeadFeatureRenderer(FeatureRendererContext<T, M> context, EntityModelLoader loader) {
+		this(context, loader, 1.0F, 1.0F, 1.0F);
 	}
 
-	public HeadFeatureRenderer(FeatureRendererContext<T, M> ctx, EntityModelLoader modelLoader, float scaleX, float scaleY, float scaleZ) {
-		super(ctx);
+	public HeadFeatureRenderer(FeatureRendererContext<T, M> context, EntityModelLoader loader, float scaleX, float scaleY, float scaleZ) {
+		super(context);
 		this.scaleX = scaleX;
 		this.scaleY = scaleY;
 		this.scaleZ = scaleZ;
-		this.headModels = SkullBlockEntityRenderer.getModels(modelLoader);
+		this.headModels = SkullBlockEntityRenderer.getModels(loader);
 	}
 
 	public void render(
@@ -78,9 +78,9 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 				GameProfile gameProfile = null;
 				if (itemStack.hasTag()) {
 					NbtCompound nbtCompound = itemStack.getTag();
-					if (nbtCompound.contains("SkullOwner", NbtTypeIds.COMPOUND)) {
+					if (nbtCompound.contains("SkullOwner", NbtElement.COMPOUND_TYPE)) {
 						gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
-					} else if (nbtCompound.contains("SkullOwner", NbtTypeIds.STRING)) {
+					} else if (nbtCompound.contains("SkullOwner", NbtElement.STRING_TYPE)) {
 						String string = nbtCompound.getString("SkullOwner");
 						if (!StringUtils.isBlank(string)) {
 							gameProfile = SkullBlockEntity.loadProperties(new GameProfile(null, string));

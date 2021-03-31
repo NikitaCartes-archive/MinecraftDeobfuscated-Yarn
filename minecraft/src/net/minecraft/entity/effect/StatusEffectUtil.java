@@ -1,13 +1,10 @@
 package net.minecraft.entity.effect;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.math.MathHelper;
 
 public final class StatusEffectUtil {
-	@Environment(EnvType.CLIENT)
 	public static String durationToString(StatusEffectInstance effect, float multiplier) {
 		if (effect.isPermanent()) {
 			return "**:**";

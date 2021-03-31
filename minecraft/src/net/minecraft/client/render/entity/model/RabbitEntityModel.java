@@ -16,6 +16,10 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
+	private static final float field_32542 = 50.0F;
+	private static final float field_32543 = -40.0F;
+	private static final String LEFT_HAUNCH = "left_haunch";
+	private static final String RIGHT_HAUNCH = "right_haunch";
 	private final ModelPart leftHindLeg;
 	private final ModelPart rightHindLeg;
 	private final ModelPart leftHaunch;
@@ -29,30 +33,35 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 	private final ModelPart tail;
 	private final ModelPart nose;
 	private float jumpProgress;
+	private static final float field_32546 = 0.6F;
 
 	public RabbitEntityModel(ModelPart root) {
-		this.leftHindLeg = root.getChild("left_hind_foot");
-		this.rightHindLeg = root.getChild("right_hind_foot");
+		this.leftHindLeg = root.getChild(EntityModelPartNames.LEFT_HIND_FOOT);
+		this.rightHindLeg = root.getChild(EntityModelPartNames.RIGHT_HIND_FOOT);
 		this.leftHaunch = root.getChild("left_haunch");
 		this.rightHaunch = root.getChild("right_haunch");
-		this.body = root.getChild("body");
-		this.leftFrontLeg = root.getChild("left_front_leg");
-		this.rightFrontLeg = root.getChild("right_front_leg");
-		this.head = root.getChild("head");
-		this.rightEar = root.getChild("right_ear");
-		this.leftEar = root.getChild("left_ear");
-		this.tail = root.getChild("tail");
-		this.nose = root.getChild("nose");
+		this.body = root.getChild(EntityModelPartNames.BODY);
+		this.leftFrontLeg = root.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
+		this.rightFrontLeg = root.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
+		this.head = root.getChild(EntityModelPartNames.HEAD);
+		this.rightEar = root.getChild(EntityModelPartNames.RIGHT_EAR);
+		this.leftEar = root.getChild(EntityModelPartNames.LEFT_EAR);
+		this.tail = root.getChild(EntityModelPartNames.TAIL);
+		this.nose = root.getChild(EntityModelPartNames.NOSE);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
 		modelPartData.addChild(
-			"left_hind_foot", ModelPartBuilder.create().uv(26, 24).cuboid(-1.0F, 5.5F, -3.7F, 2.0F, 1.0F, 7.0F), ModelTransform.pivot(3.0F, 17.5F, 3.7F)
+			EntityModelPartNames.LEFT_HIND_FOOT,
+			ModelPartBuilder.create().uv(26, 24).cuboid(-1.0F, 5.5F, -3.7F, 2.0F, 1.0F, 7.0F),
+			ModelTransform.pivot(3.0F, 17.5F, 3.7F)
 		);
 		modelPartData.addChild(
-			"right_hind_foot", ModelPartBuilder.create().uv(8, 24).cuboid(-1.0F, 5.5F, -3.7F, 2.0F, 1.0F, 7.0F), ModelTransform.pivot(-3.0F, 17.5F, 3.7F)
+			EntityModelPartNames.RIGHT_HIND_FOOT,
+			ModelPartBuilder.create().uv(8, 24).cuboid(-1.0F, 5.5F, -3.7F, 2.0F, 1.0F, 7.0F),
+			ModelTransform.pivot(-3.0F, 17.5F, 3.7F)
 		);
 		modelPartData.addChild(
 			"left_haunch",
@@ -65,35 +74,41 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 			ModelTransform.of(-3.0F, 17.5F, 3.7F, (float) (-Math.PI / 9), 0.0F, 0.0F)
 		);
 		modelPartData.addChild(
-			"body",
+			EntityModelPartNames.BODY,
 			ModelPartBuilder.create().uv(0, 0).cuboid(-3.0F, -2.0F, -10.0F, 6.0F, 5.0F, 10.0F),
 			ModelTransform.of(0.0F, 19.0F, 8.0F, (float) (-Math.PI / 9), 0.0F, 0.0F)
 		);
 		modelPartData.addChild(
-			"left_front_leg",
+			EntityModelPartNames.LEFT_FRONT_LEG,
 			ModelPartBuilder.create().uv(8, 15).cuboid(-1.0F, 0.0F, -1.0F, 2.0F, 7.0F, 2.0F),
 			ModelTransform.of(3.0F, 17.0F, -1.0F, (float) (-Math.PI / 18), 0.0F, 0.0F)
 		);
 		modelPartData.addChild(
-			"right_front_leg",
+			EntityModelPartNames.RIGHT_FRONT_LEG,
 			ModelPartBuilder.create().uv(0, 15).cuboid(-1.0F, 0.0F, -1.0F, 2.0F, 7.0F, 2.0F),
 			ModelTransform.of(-3.0F, 17.0F, -1.0F, (float) (-Math.PI / 18), 0.0F, 0.0F)
 		);
-		modelPartData.addChild("head", ModelPartBuilder.create().uv(32, 0).cuboid(-2.5F, -4.0F, -5.0F, 5.0F, 4.0F, 5.0F), ModelTransform.pivot(0.0F, 16.0F, -1.0F));
 		modelPartData.addChild(
-			"right_ear",
+			EntityModelPartNames.HEAD, ModelPartBuilder.create().uv(32, 0).cuboid(-2.5F, -4.0F, -5.0F, 5.0F, 4.0F, 5.0F), ModelTransform.pivot(0.0F, 16.0F, -1.0F)
+		);
+		modelPartData.addChild(
+			EntityModelPartNames.RIGHT_EAR,
 			ModelPartBuilder.create().uv(52, 0).cuboid(-2.5F, -9.0F, -1.0F, 2.0F, 5.0F, 1.0F),
 			ModelTransform.of(0.0F, 16.0F, -1.0F, 0.0F, (float) (-Math.PI / 12), 0.0F)
 		);
 		modelPartData.addChild(
-			"left_ear",
+			EntityModelPartNames.LEFT_EAR,
 			ModelPartBuilder.create().uv(58, 0).cuboid(0.5F, -9.0F, -1.0F, 2.0F, 5.0F, 1.0F),
 			ModelTransform.of(0.0F, 16.0F, -1.0F, 0.0F, (float) (Math.PI / 12), 0.0F)
 		);
 		modelPartData.addChild(
-			"tail", ModelPartBuilder.create().uv(52, 6).cuboid(-1.5F, -1.5F, 0.0F, 3.0F, 3.0F, 2.0F), ModelTransform.of(0.0F, 20.0F, 7.0F, -0.3490659F, 0.0F, 0.0F)
+			EntityModelPartNames.TAIL,
+			ModelPartBuilder.create().uv(52, 6).cuboid(-1.5F, -1.5F, 0.0F, 3.0F, 3.0F, 2.0F),
+			ModelTransform.of(0.0F, 20.0F, 7.0F, -0.3490659F, 0.0F, 0.0F)
 		);
-		modelPartData.addChild("nose", ModelPartBuilder.create().uv(32, 9).cuboid(-0.5F, -2.5F, -5.5F, 1.0F, 1.0F, 1.0F), ModelTransform.pivot(0.0F, 16.0F, -1.0F));
+		modelPartData.addChild(
+			EntityModelPartNames.NOSE, ModelPartBuilder.create().uv(32, 9).cuboid(-0.5F, -2.5F, -5.5F, 1.0F, 1.0F, 1.0F), ModelTransform.pivot(0.0F, 16.0F, -1.0F)
+		);
 		return TexturedModelData.of(modelData, 64, 32);
 	}
 
@@ -105,13 +120,13 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 			matrices.scale(0.56666666F, 0.56666666F, 0.56666666F);
 			matrices.translate(0.0, 1.375, 0.125);
 			ImmutableList.of(this.head, this.leftEar, this.rightEar, this.nose)
-				.forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
+				.forEach(part -> part.render(matrices, vertices, light, overlay, red, green, blue, alpha));
 			matrices.pop();
 			matrices.push();
 			matrices.scale(0.4F, 0.4F, 0.4F);
 			matrices.translate(0.0, 2.25, 0.0);
 			ImmutableList.of(this.leftHindLeg, this.rightHindLeg, this.leftHaunch, this.rightHaunch, this.body, this.leftFrontLeg, this.rightFrontLeg, this.tail)
-				.forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
+				.forEach(part -> part.render(matrices, vertices, light, overlay, red, green, blue, alpha));
 			matrices.pop();
 		} else {
 			matrices.push();
@@ -131,7 +146,7 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 					this.tail,
 					this.nose
 				)
-				.forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
+				.forEach(part -> part.render(matrices, vertices, light, overlay, red, green, blue, alpha));
 			matrices.pop();
 		}
 	}

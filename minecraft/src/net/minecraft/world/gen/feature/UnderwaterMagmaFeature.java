@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Random;
 import java.util.function.Predicate;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -43,7 +43,7 @@ public class UnderwaterMagmaFeature extends Feature<UnderwaterMagmaFeatureConfig
 					.filter(pos -> random.nextFloat() < underwaterMagmaFeatureConfig.placementProbabilityPerValidPosition)
 					.filter(pos -> this.isValidPosition(structureWorldAccess, pos))
 					.mapToInt(pos -> {
-						structureWorldAccess.setBlockState(pos, Blocks.MAGMA_BLOCK.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+						structureWorldAccess.setBlockState(pos, Blocks.MAGMA_BLOCK.getDefaultState(), Block.NOTIFY_LISTENERS);
 						return 1;
 					})
 					.sum()

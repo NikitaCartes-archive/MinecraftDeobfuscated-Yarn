@@ -1,8 +1,6 @@
 package net.minecraft.network.packet.s2c.play;
 
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -38,18 +36,15 @@ public class OpenScreenS2CPacket implements Packet<ClientPlayPacketListener> {
 		clientPlayPacketListener.onOpenScreen(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getSyncId() {
 		return this.syncId;
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public ScreenHandlerType<?> getScreenHandlerType() {
 		return Registry.SCREEN_HANDLER.get(this.screenHandlerId);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Text getName() {
 		return this.name;
 	}

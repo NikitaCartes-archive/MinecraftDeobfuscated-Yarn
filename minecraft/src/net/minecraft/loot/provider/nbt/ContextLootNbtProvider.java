@@ -21,6 +21,7 @@ import net.minecraft.util.JsonSerializer;
 import net.minecraft.util.JsonSerializing;
 
 public class ContextLootNbtProvider implements LootNbtProvider {
+	private static final String BLOCK_ENTITY_TARGET_NAME = "block_entity";
 	private static final ContextLootNbtProvider.Target BLOCK_ENTITY_TARGET = new ContextLootNbtProvider.Target() {
 		@Override
 		public NbtElement getNbt(LootContext context) {
@@ -80,6 +81,10 @@ public class ContextLootNbtProvider implements LootNbtProvider {
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
 		return this.target.getRequiredParameters();
+	}
+
+	public static LootNbtProvider fromTarget(LootContext.EntityTarget target) {
+		return new ContextLootNbtProvider(getTarget(target));
 	}
 
 	private static ContextLootNbtProvider setTarget(String target) {

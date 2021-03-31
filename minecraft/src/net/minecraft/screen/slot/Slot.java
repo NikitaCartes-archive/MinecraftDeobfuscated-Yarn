@@ -3,8 +3,6 @@ package net.minecraft.screen.slot;
 import com.mojang.datafixers.util.Pair;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -74,7 +72,6 @@ public class Slot {
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public Pair<Identifier, Identifier> getBackgroundSprite() {
 		return null;
 	}
@@ -87,7 +84,6 @@ public class Slot {
 		return true;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean doDrawHoveringEffect() {
 		return true;
 	}
@@ -98,10 +94,6 @@ public class Slot {
 		} else if (!this.canTakePartial(player) && max < this.getStack().getCount()) {
 			return Optional.empty();
 		} else {
-			if (!this.canTakePartial(player)) {
-				min = this.getStack().getCount();
-			}
-
 			min = Math.min(min, max);
 			ItemStack itemStack = this.takeStack(min);
 			if (this.getStack().isEmpty()) {

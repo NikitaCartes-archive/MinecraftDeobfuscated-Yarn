@@ -6,6 +6,7 @@ import java.util.BitSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
+import net.minecraft.class_6108;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -23,8 +24,8 @@ import net.minecraft.world.chunk.Chunk;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public abstract class Carver<C extends CarverConfig> {
-	public static final Carver<CarverConfig> CAVE = register("cave", new CaveCarver(CarverConfig.CONFIG_CODEC));
-	public static final Carver<CarverConfig> NETHER_CAVE = register("nether_cave", new NetherCaveCarver(CarverConfig.CONFIG_CODEC));
+	public static final Carver<class_6108> CAVE = register("cave", new CaveCarver(class_6108.field_31491));
+	public static final Carver<class_6108> NETHER_CAVE = register("nether_cave", new NetherCaveCarver(class_6108.field_31491));
 	public static final Carver<RavineCarverConfig> RAVINE = register("canyon", new RavineCarver(RavineCarverConfig.RAVINE_CODEC));
 	protected static final BlockState AIR = Blocks.AIR.getDefaultState();
 	protected static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
@@ -178,7 +179,7 @@ public abstract class Carver<C extends CarverConfig> {
 		if (!this.canCarveBlock(blockState, blockState2) && !isDebug(config)) {
 			return false;
 		} else {
-			if (pos.getY() < context.getMinY() + 9 && !isDebug(config)) {
+			if (pos.getY() < config.field_31490.getY(context) && !isDebug(config)) {
 				chunk.setBlockState(pos, LAVA.getBlockState(), false);
 			} else {
 				chunk.setBlockState(pos, getState(config), false);
@@ -195,7 +196,7 @@ public abstract class Carver<C extends CarverConfig> {
 	}
 
 	private static BlockState getState(CarverConfig config) {
-		return isDebug(config) ? config.getDebugConfig().getDebugState() : CAVE_AIR;
+		return isDebug(config) ? config.debugConfig.getDebugState() : CAVE_AIR;
 	}
 
 	public abstract boolean carve(
@@ -251,7 +252,7 @@ public abstract class Carver<C extends CarverConfig> {
 	}
 
 	private static boolean isDebug(CarverConfig config) {
-		return config.getDebugConfig().isDebugMode();
+		return config.debugConfig.isDebugMode();
 	}
 
 	public interface SkipPredicate {

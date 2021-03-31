@@ -7,6 +7,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Clearable;
 
 public interface Inventory extends Clearable {
+	int MAX_COUNT_PER_STACK = 64;
+
 	int size();
 
 	boolean isEmpty();

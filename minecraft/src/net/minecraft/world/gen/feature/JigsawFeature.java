@@ -6,7 +6,6 @@ import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.pool.StructurePoolBasedGenerator;
 import net.minecraft.structure.pool.StructurePools;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
@@ -28,14 +27,14 @@ public class JigsawFeature extends StructureFeature<StructurePoolFeatureConfig> 
 
 	@Override
 	public StructureFeature.StructureStartFactory<StructurePoolFeatureConfig> getStructureStartFactory() {
-		return (feature, chunkPos, blockBox, i, l) -> new JigsawFeature.Start(this, chunkPos, blockBox, i, l);
+		return (feature, chunkPos, i, l) -> new JigsawFeature.Start(this, chunkPos, i, l);
 	}
 
 	public static class Start extends MarginedStructureStart<StructurePoolFeatureConfig> {
 		private final JigsawFeature jigsawFeature;
 
-		public Start(JigsawFeature feature, ChunkPos chunkPos, BlockBox blockBox, int i, long l) {
-			super(feature, chunkPos, blockBox, i, l);
+		public Start(JigsawFeature feature, ChunkPos chunkPos, int i, long l) {
+			super(feature, chunkPos, i, l);
 			this.jigsawFeature = feature;
 		}
 
@@ -57,13 +56,12 @@ public class JigsawFeature extends StructureFeature<StructurePoolFeatureConfig> 
 				chunkGenerator,
 				structureManager,
 				blockPos,
-				this.children,
+				this,
 				this.random,
 				this.jigsawFeature.field_25836,
 				this.jigsawFeature.surface,
 				heightLimitView
 			);
-			this.setBoundingBoxFromChildren();
 		}
 	}
 }

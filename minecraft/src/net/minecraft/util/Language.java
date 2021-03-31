@@ -17,8 +17,6 @@ import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextVisitFactory;
 import net.minecraft.text.CharacterVisitor;
 import net.minecraft.text.OrderedText;
@@ -31,6 +29,7 @@ public abstract class Language {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Gson GSON = new Gson();
 	private static final Pattern TOKEN_PATTERN = Pattern.compile("%(\\d+\\$)?[\\d.]*[df]");
+	public static final String DEFAULT_LANGUAGE = "en_us";
 	private static volatile Language instance = create();
 
 	private static Language create() {
@@ -76,13 +75,11 @@ public abstract class Language {
 				return map.containsKey(key);
 			}
 
-			@Environment(EnvType.CLIENT)
 			@Override
 			public boolean isRightToLeft() {
 				return false;
 			}
 
-			@Environment(EnvType.CLIENT)
 			@Override
 			public OrderedText reorder(StringVisitable text) {
 				return visitor -> text.visit(
@@ -106,7 +103,6 @@ public abstract class Language {
 		return instance;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static void setInstance(Language language) {
 		instance = language;
 	}
@@ -115,13 +111,10 @@ public abstract class Language {
 
 	public abstract boolean hasTranslation(String key);
 
-	@Environment(EnvType.CLIENT)
 	public abstract boolean isRightToLeft();
 
-	@Environment(EnvType.CLIENT)
 	public abstract OrderedText reorder(StringVisitable text);
 
-	@Environment(EnvType.CLIENT)
 	public List<OrderedText> reorder(List<StringVisitable> texts) {
 		return (List<OrderedText>)texts.stream().map(this::reorder).collect(ImmutableList.toImmutableList());
 	}

@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
@@ -78,7 +77,7 @@ public abstract class AbstractPressurePlateBlock extends Block {
 		boolean bl2 = i > 0;
 		if (output != i) {
 			BlockState blockState = this.setRedstoneOutput(state, i);
-			world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
 			this.updateNeighbors(world, pos);
 			world.scheduleBlockRerenderIfNeeded(pos, state, blockState);
 		}

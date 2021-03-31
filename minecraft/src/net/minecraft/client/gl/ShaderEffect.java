@@ -27,6 +27,7 @@ import org.apache.commons.io.IOUtils;
 
 @Environment(EnvType.CLIENT)
 public class ShaderEffect implements AutoCloseable {
+	private static final String field_32770 = "minecraft:main";
 	private final Framebuffer mainTarget;
 	private final ResourceManager resourceManager;
 	private final String name;

@@ -9,6 +9,8 @@ import net.minecraft.util.registry.Registry;
 
 public class BlockFamilies {
 	private static final Map<Block, BlockFamily> BASE_BLOCKS_TO_FAMILIES = Maps.<Block, BlockFamily>newHashMap();
+	private static final String field_33117 = "wooden";
+	private static final String field_33118 = "has_planks";
 	public static final BlockFamily ACACIA = register(Blocks.ACACIA_PLANKS)
 		.button(Blocks.ACACIA_BUTTON)
 		.fence(Blocks.ACACIA_FENCE)

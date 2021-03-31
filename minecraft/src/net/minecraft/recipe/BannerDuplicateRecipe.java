@@ -1,7 +1,5 @@
 package net.minecraft.recipe;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.BannerItem;
@@ -97,7 +95,6 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 		return RecipeSerializer.BANNER_DUPLICATE;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean fits(int width, int height) {
 		return width * height >= 2;

@@ -2,8 +2,6 @@ package net.minecraft.recipe;
 
 import com.google.common.collect.Lists;
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
@@ -68,7 +66,6 @@ public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean fits(int width, int height) {
 		return width * height >= 2;

@@ -1,7 +1,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.util.FeatureContext;
@@ -25,7 +25,7 @@ public class FillLayerFeature extends Feature<FillLayerFeatureConfig> {
 				int m = structureWorldAccess.getBottomY() + fillLayerFeatureConfig.height;
 				mutable.set(k, m, l);
 				if (structureWorldAccess.getBlockState(mutable).isAir()) {
-					structureWorldAccess.setBlockState(mutable, fillLayerFeatureConfig.state, SetBlockStateFlags.NOTIFY_LISTENERS);
+					structureWorldAccess.setBlockState(mutable, fillLayerFeatureConfig.state, Block.NOTIFY_LISTENERS);
 				}
 			}
 		}

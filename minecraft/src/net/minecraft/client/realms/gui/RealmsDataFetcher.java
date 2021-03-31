@@ -1,5 +1,6 @@
 package net.minecraft.client.realms.gui;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.time.Duration;
@@ -54,6 +55,13 @@ public class RealmsDataFetcher {
 		this.client = client;
 		this.realms = realms;
 		this.persistence = new RealmsPersistence();
+	}
+
+	@VisibleForTesting
+	protected RealmsDataFetcher(MinecraftClient minecraftClient, RealmsClient realmsClient, RealmsPersistence realmsPersistence) {
+		this.client = minecraftClient;
+		this.realms = realmsClient;
+		this.persistence = realmsPersistence;
 	}
 
 	public boolean isStopped() {

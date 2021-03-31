@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.c2s.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -17,7 +15,6 @@ public class UpdateJigsawC2SPacket implements Packet<ServerPlayPacketListener> {
 	private final String finalState;
 	private final JigsawBlockEntity.Joint jointType;
 
-	@Environment(EnvType.CLIENT)
 	public UpdateJigsawC2SPacket(
 		BlockPos pos, Identifier attachmentType, Identifier targetPool, Identifier pool, String finalState, JigsawBlockEntity.Joint jointType
 	) {

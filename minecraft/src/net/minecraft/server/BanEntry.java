@@ -9,6 +9,7 @@ import net.minecraft.text.Text;
 
 public abstract class BanEntry<T> extends ServerConfigEntry<T> {
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+	public static final String field_29787 = "forever";
 	protected final Date creationDate;
 	protected final String source;
 	protected final Date expiryDate;
@@ -44,6 +45,10 @@ public abstract class BanEntry<T> extends ServerConfigEntry<T> {
 
 		this.expiryDate = date2;
 		this.reason = json.has("reason") ? json.get("reason").getAsString() : "Banned by an operator.";
+	}
+
+	public Date method_34885() {
+		return this.creationDate;
 	}
 
 	public String getSource() {

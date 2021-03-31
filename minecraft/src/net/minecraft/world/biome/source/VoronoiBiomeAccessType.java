@@ -5,6 +5,10 @@ import net.minecraft.world.biome.Biome;
 public enum VoronoiBiomeAccessType implements BiomeAccessType {
 	INSTANCE;
 
+	private static final int field_30979 = 2;
+	private static final int field_30980 = 4;
+	private static final int field_30981 = 3;
+
 	@Override
 	public Biome getBiome(long seed, int x, int y, int z, BiomeAccess.Storage storage) {
 		int i = x - 2;

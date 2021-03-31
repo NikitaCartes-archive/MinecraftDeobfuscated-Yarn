@@ -10,6 +10,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.world.GameRules;
 
 public class UniversalAngerGoal<T extends MobEntity & Angerable> extends Goal {
+	private static final int field_30232 = 10;
 	private final T mob;
 	private final boolean triggerOthers;
 	private int lastAttackedTime;

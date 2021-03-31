@@ -101,9 +101,9 @@ public abstract class SchoolingFishEntity extends FishEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
-		super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 		if (entityData == null) {
 			entityData = new SchoolingFishEntity.FishData(this);
 		} else {

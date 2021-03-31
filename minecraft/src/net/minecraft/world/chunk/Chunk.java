@@ -81,6 +81,8 @@ public interface Chunk extends BlockView, StructureHolder {
 
 	int sampleHeightmap(Heightmap.Type type, int x, int z);
 
+	BlockPos method_35319(Heightmap.Type type);
+
 	ChunkPos getPos();
 
 	Map<StructureFeature<?>, StructureStart<?>> getStructureStarts();
@@ -126,7 +128,7 @@ public interface Chunk extends BlockView, StructureHolder {
 		getList(this.getPostProcessingLists(), index).add(packedPos);
 	}
 
-	default void addPendingBlockEntityNbt(NbtCompound tag) {
+	default void addPendingBlockEntityNbt(NbtCompound nbt) {
 		LogManager.getLogger().warn("Trying to set a BlockEntity, but this operation is not supported.");
 	}
 

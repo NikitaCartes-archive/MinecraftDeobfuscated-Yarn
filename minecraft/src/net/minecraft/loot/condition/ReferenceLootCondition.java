@@ -56,6 +56,10 @@ public class ReferenceLootCondition implements LootCondition {
 		}
 	}
 
+	public static LootCondition.Builder builder(Identifier id) {
+		return () -> new ReferenceLootCondition(id);
+	}
+
 	public static class Serializer implements JsonSerializer<ReferenceLootCondition> {
 		public void toJson(JsonObject jsonObject, ReferenceLootCondition referenceLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.addProperty("name", referenceLootCondition.id.toString());

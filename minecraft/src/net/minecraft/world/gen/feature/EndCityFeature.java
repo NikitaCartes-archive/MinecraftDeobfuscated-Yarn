@@ -1,12 +1,14 @@
 package net.minecraft.world.gen.feature;
 
+import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
+import java.util.List;
 import java.util.Random;
 import net.minecraft.structure.EndCityGenerator;
 import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
@@ -18,6 +20,8 @@ import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
+	private static final int field_31502 = 10387313;
+
 	public EndCityFeature(Codec<DefaultFeatureConfig> codec) {
 		super(codec);
 	}
@@ -70,8 +74,8 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 	}
 
 	public static class Start extends StructureStart<DefaultFeatureConfig> {
-		public Start(StructureFeature<DefaultFeatureConfig> structureFeature, ChunkPos chunkPos, BlockBox blockBox, int i, long l) {
-			super(structureFeature, chunkPos, blockBox, i, l);
+		public Start(StructureFeature<DefaultFeatureConfig> structureFeature, ChunkPos chunkPos, int i, long l) {
+			super(structureFeature, chunkPos, i, l);
 		}
 
 		public void init(
@@ -87,8 +91,9 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 			int i = EndCityFeature.getGenerationHeight(chunkPos, chunkGenerator, heightLimitView);
 			if (i >= 60) {
 				BlockPos blockPos = chunkPos.getCenterAtY(i);
-				EndCityGenerator.addPieces(structureManager, blockPos, blockRotation, this.children, this.random);
-				this.setBoundingBoxFromChildren();
+				List<StructurePiece> list = Lists.<StructurePiece>newArrayList();
+				EndCityGenerator.addPieces(structureManager, blockPos, blockRotation, list, this.random);
+				list.forEach(this::method_35462);
 			}
 		}
 	}

@@ -11,13 +11,17 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
  * an object. When the stack is full on addition, it overrides the earliest
  * content in the stack.
  * 
- * @apiNote This class has final fields but its constructor has been removed
- * by proguard, so it's not easily usable. Vanilla uses this for debugging
- * purpose on paletted container and chunk holder's asynchronous access checks.
+ * @apiNote Vanilla uses this for debugging purpose on paletted container and
+ * chunk holder's asynchronous access checks.
  */
 public class AtomicStack<T> {
 	private final AtomicReferenceArray<T> contents;
 	private final AtomicInteger size;
+
+	public AtomicStack(int maxSize) {
+		this.contents = new AtomicReferenceArray(maxSize);
+		this.size = new AtomicInteger(0);
+	}
 
 	/**
 	 * Adds a value to this stack.

@@ -1,8 +1,6 @@
 package net.minecraft.world.biome.source;
 
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -29,7 +27,6 @@ public class BiomeArray implements BiomeAccess.Storage {
 		this.field_28127 = BiomeCoords.fromBlock(world.getHeight()) - 1;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public BiomeArray(IndexedIterable<Biome> indexedIterable, HeightLimitView world, int[] ids) {
 		this(indexedIterable, world, new Biome[ids.length]);
 

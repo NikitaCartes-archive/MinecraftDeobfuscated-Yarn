@@ -13,6 +13,7 @@ import net.minecraft.recipe.book.RecipeBook;
 
 @Environment(EnvType.CLIENT)
 public class RecipeBookResults {
+	public static final int field_32411 = 20;
 	private final List<AnimatedResultButton> resultButtons = Lists.<AnimatedResultButton>newArrayListWithCapacity(20);
 	private AnimatedResultButton hoveredResultButton;
 	private final RecipeAlternativesWidget alternatesWidget = new RecipeAlternativesWidget();

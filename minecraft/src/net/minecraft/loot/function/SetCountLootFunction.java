@@ -43,6 +43,10 @@ public class SetCountLootFunction extends ConditionalLootFunction {
 		return builder(conditions -> new SetCountLootFunction(conditions, countRange, false));
 	}
 
+	public static ConditionalLootFunction.Builder<?> builder(LootNumberProvider countRange, boolean add) {
+		return builder(conditions -> new SetCountLootFunction(conditions, countRange, add));
+	}
+
 	public static class Serializer extends ConditionalLootFunction.Serializer<SetCountLootFunction> {
 		public void toJson(JsonObject jsonObject, SetCountLootFunction setCountLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, setCountLootFunction, jsonSerializationContext);

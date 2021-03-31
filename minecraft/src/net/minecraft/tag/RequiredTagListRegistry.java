@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
@@ -33,7 +31,6 @@ public class RequiredTagListRegistry {
 		REQUIRED_TAG_LISTS.forEach(list -> list.updateTagManager(tagManager));
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static void clearAllTags() {
 		REQUIRED_TAG_LISTS.forEach(RequiredTagList::clearAllTags);
 	}

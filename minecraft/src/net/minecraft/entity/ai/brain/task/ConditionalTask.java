@@ -32,8 +32,16 @@ public class ConditionalTask<E extends LivingEntity> extends Task<E> {
 		return map;
 	}
 
+	public ConditionalTask(Predicate<E> predicate, Task<? super E> task, boolean bl) {
+		this(ImmutableMap.of(), predicate, task, bl);
+	}
+
 	public ConditionalTask(Predicate<E> condition, Task<? super E> delegate) {
 		this(ImmutableMap.of(), condition, delegate, false);
+	}
+
+	public ConditionalTask(Map<MemoryModuleType<?>, MemoryModuleState> map, Task<? super E> task) {
+		this(map, livingEntity -> true, task, false);
 	}
 
 	@Override

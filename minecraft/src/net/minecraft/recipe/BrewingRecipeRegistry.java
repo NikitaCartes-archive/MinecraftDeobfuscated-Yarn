@@ -13,6 +13,7 @@ import net.minecraft.potion.Potions;
 import net.minecraft.util.registry.Registry;
 
 public class BrewingRecipeRegistry {
+	public static final int field_30942 = 20;
 	private static final List<BrewingRecipeRegistry.Recipe<Potion>> POTION_RECIPES = Lists.<BrewingRecipeRegistry.Recipe<Potion>>newArrayList();
 	private static final List<BrewingRecipeRegistry.Recipe<Item>> ITEM_RECIPES = Lists.<BrewingRecipeRegistry.Recipe<Item>>newArrayList();
 	private static final List<Ingredient> POTION_TYPES = Lists.<Ingredient>newArrayList();

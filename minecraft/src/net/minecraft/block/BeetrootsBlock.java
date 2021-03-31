@@ -1,8 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
@@ -15,6 +13,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class BeetrootsBlock extends CropBlock {
+	public static final int field_31013 = 3;
 	public static final IntProperty AGE = Properties.AGE_3;
 	private static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{
 		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0),
@@ -37,7 +36,6 @@ public class BeetrootsBlock extends CropBlock {
 		return 3;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	protected ItemConvertible getSeedsItem() {
 		return Items.BEETROOT_SEEDS;

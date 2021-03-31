@@ -13,6 +13,12 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SpiderEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
+	private static final String BODY0 = "body0";
+	private static final String BODY1 = "body1";
+	private static final String RIGHT_MIDDLE_FRONT_LEG = "right_middle_front_leg";
+	private static final String LEFT_MIDDLE_FRONT_LEG = "left_middle_front_leg";
+	private static final String RIGHT_MIDDLE_HIND_LEG = "right_middle_hind_leg";
+	private static final String LEFT_MIDDLE_HIND_LEG = "left_middle_hind_leg";
 	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart rightHindLeg;
@@ -26,34 +32,36 @@ public class SpiderEntityModel<T extends Entity> extends SinglePartEntityModel<T
 
 	public SpiderEntityModel(ModelPart root) {
 		this.root = root;
-		this.head = root.getChild("head");
-		this.rightHindLeg = root.getChild("right_hind_leg");
-		this.leftHindLeg = root.getChild("left_hind_leg");
+		this.head = root.getChild(EntityModelPartNames.HEAD);
+		this.rightHindLeg = root.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
+		this.leftHindLeg = root.getChild(EntityModelPartNames.LEFT_HIND_LEG);
 		this.rightMiddleLeg = root.getChild("right_middle_hind_leg");
 		this.leftMiddleLeg = root.getChild("left_middle_hind_leg");
 		this.rightMiddleFrontLeg = root.getChild("right_middle_front_leg");
 		this.leftMiddleFrontLeg = root.getChild("left_middle_front_leg");
-		this.rightFrontLeg = root.getChild("right_front_leg");
-		this.leftFrontLeg = root.getChild("left_front_leg");
+		this.rightFrontLeg = root.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
+		this.leftFrontLeg = root.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
 		int i = 15;
-		modelPartData.addChild("head", ModelPartBuilder.create().uv(32, 4).cuboid(-4.0F, -4.0F, -8.0F, 8.0F, 8.0F, 8.0F), ModelTransform.pivot(0.0F, 15.0F, -3.0F));
+		modelPartData.addChild(
+			EntityModelPartNames.HEAD, ModelPartBuilder.create().uv(32, 4).cuboid(-4.0F, -4.0F, -8.0F, 8.0F, 8.0F, 8.0F), ModelTransform.pivot(0.0F, 15.0F, -3.0F)
+		);
 		modelPartData.addChild("body0", ModelPartBuilder.create().uv(0, 0).cuboid(-3.0F, -3.0F, -3.0F, 6.0F, 6.0F, 6.0F), ModelTransform.pivot(0.0F, 15.0F, 0.0F));
 		modelPartData.addChild("body1", ModelPartBuilder.create().uv(0, 12).cuboid(-5.0F, -4.0F, -6.0F, 10.0F, 8.0F, 12.0F), ModelTransform.pivot(0.0F, 15.0F, 9.0F));
 		ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(18, 0).cuboid(-15.0F, -1.0F, -1.0F, 16.0F, 2.0F, 2.0F);
 		ModelPartBuilder modelPartBuilder2 = ModelPartBuilder.create().uv(18, 0).cuboid(-1.0F, -1.0F, -1.0F, 16.0F, 2.0F, 2.0F);
-		modelPartData.addChild("right_hind_leg", modelPartBuilder, ModelTransform.pivot(-4.0F, 15.0F, 2.0F));
-		modelPartData.addChild("left_hind_leg", modelPartBuilder2, ModelTransform.pivot(4.0F, 15.0F, 2.0F));
+		modelPartData.addChild(EntityModelPartNames.RIGHT_HIND_LEG, modelPartBuilder, ModelTransform.pivot(-4.0F, 15.0F, 2.0F));
+		modelPartData.addChild(EntityModelPartNames.LEFT_HIND_LEG, modelPartBuilder2, ModelTransform.pivot(4.0F, 15.0F, 2.0F));
 		modelPartData.addChild("right_middle_hind_leg", modelPartBuilder, ModelTransform.pivot(-4.0F, 15.0F, 1.0F));
 		modelPartData.addChild("left_middle_hind_leg", modelPartBuilder2, ModelTransform.pivot(4.0F, 15.0F, 1.0F));
 		modelPartData.addChild("right_middle_front_leg", modelPartBuilder, ModelTransform.pivot(-4.0F, 15.0F, 0.0F));
 		modelPartData.addChild("left_middle_front_leg", modelPartBuilder2, ModelTransform.pivot(4.0F, 15.0F, 0.0F));
-		modelPartData.addChild("right_front_leg", modelPartBuilder, ModelTransform.pivot(-4.0F, 15.0F, -1.0F));
-		modelPartData.addChild("left_front_leg", modelPartBuilder2, ModelTransform.pivot(4.0F, 15.0F, -1.0F));
+		modelPartData.addChild(EntityModelPartNames.RIGHT_FRONT_LEG, modelPartBuilder, ModelTransform.pivot(-4.0F, 15.0F, -1.0F));
+		modelPartData.addChild(EntityModelPartNames.LEFT_FRONT_LEG, modelPartBuilder2, ModelTransform.pivot(4.0F, 15.0F, -1.0F));
 		return TexturedModelData.of(modelData, 64, 32);
 	}
 

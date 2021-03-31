@@ -82,6 +82,12 @@ public class InGameHud extends DrawableHelper {
 	private static final Identifier SPYGLASS_SCOPE = new Identifier("textures/misc/spyglass_scope.png");
 	private static final Identifier POWDER_SNOW_OUTLINE = new Identifier("textures/misc/powder_snow_outline.png");
 	private static final Text DEMO_EXPIRED_MESSAGE = new TranslatableText("demo.demoExpired");
+	private static final int field_32167 = 16777215;
+	private static final float field_32168 = 5.0F;
+	private static final int field_32169 = 10;
+	private static final int field_32170 = 10;
+	private static final String field_32171 = ": ";
+	private static final float field_32172 = 0.2F;
 	private final Random random = new Random();
 	private final MinecraftClient client;
 	private final ItemRenderer itemRenderer;
@@ -154,6 +160,7 @@ public class InGameHud extends DrawableHelper {
 			this.renderVignetteOverlay(this.client.getCameraEntity());
 		} else {
 			RenderSystem.enableDepthTest();
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.defaultBlendFunc();
 		}
 

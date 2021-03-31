@@ -61,6 +61,8 @@ public class JsonUnbakedModel implements UnbakedModel {
 		.registerTypeAdapter(ModelTransformation.class, new ModelTransformation.Deserializer())
 		.registerTypeAdapter(ModelOverride.class, new ModelOverride.Deserializer())
 		.create();
+	private static final char field_32793 = '#';
+	public static final String field_32792 = "particle";
 	private final List<ModelElement> elements;
 	@Nullable
 	private final JsonUnbakedModel.GuiLight guiLight;
@@ -115,6 +117,10 @@ public class JsonUnbakedModel implements UnbakedModel {
 		} else {
 			return this.parent != null ? this.parent.getGuiLight() : JsonUnbakedModel.GuiLight.field_21859;
 		}
+	}
+
+	public boolean method_35789() {
+		return this.parentId == null || this.parent != null && this.parent.method_35789();
 	}
 
 	public List<ModelOverride> getOverrides() {
@@ -316,6 +322,8 @@ public class JsonUnbakedModel implements UnbakedModel {
 
 	@Environment(EnvType.CLIENT)
 	public static class Deserializer implements JsonDeserializer<JsonUnbakedModel> {
+		private static final boolean field_32794 = true;
+
 		public JsonUnbakedModel deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			List<ModelElement> list = this.deserializeElements(jsonDeserializationContext, jsonObject);
@@ -425,6 +433,13 @@ public class JsonUnbakedModel implements UnbakedModel {
 
 		public boolean isSide() {
 			return this == field_21859;
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class class_6246 extends RuntimeException {
+		public class_6246(String string) {
+			super(string);
 		}
 	}
 }

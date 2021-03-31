@@ -15,6 +15,8 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ShulkerEntityModel<T extends ShulkerEntity> extends CompositeEntityModel<T> {
+	private static final String LID = "lid";
+	private static final String BASE = "base";
 	private final ModelPart base;
 	private final ModelPart lid;
 	private final ModelPart head;
@@ -23,7 +25,7 @@ public class ShulkerEntityModel<T extends ShulkerEntity> extends CompositeEntity
 		super(RenderLayer::getEntityCutoutNoCullZOffset);
 		this.lid = root.getChild("lid");
 		this.base = root.getChild("base");
-		this.head = root.getChild("head");
+		this.head = root.getChild(EntityModelPartNames.HEAD);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -31,7 +33,9 @@ public class ShulkerEntityModel<T extends ShulkerEntity> extends CompositeEntity
 		ModelPartData modelPartData = modelData.getRoot();
 		modelPartData.addChild("lid", ModelPartBuilder.create().uv(0, 0).cuboid(-8.0F, -16.0F, -8.0F, 16.0F, 12.0F, 16.0F), ModelTransform.pivot(0.0F, 24.0F, 0.0F));
 		modelPartData.addChild("base", ModelPartBuilder.create().uv(0, 28).cuboid(-8.0F, -8.0F, -8.0F, 16.0F, 8.0F, 16.0F), ModelTransform.pivot(0.0F, 24.0F, 0.0F));
-		modelPartData.addChild("head", ModelPartBuilder.create().uv(0, 52).cuboid(-3.0F, 0.0F, -3.0F, 6.0F, 6.0F, 6.0F), ModelTransform.pivot(0.0F, 12.0F, 0.0F));
+		modelPartData.addChild(
+			EntityModelPartNames.HEAD, ModelPartBuilder.create().uv(0, 52).cuboid(-3.0F, 0.0F, -3.0F, 6.0F, 6.0F, 6.0F), ModelTransform.pivot(0.0F, 12.0F, 0.0F)
+		);
 		return TexturedModelData.of(modelData, 64, 64);
 	}
 

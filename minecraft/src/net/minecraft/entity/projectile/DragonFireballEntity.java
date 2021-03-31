@@ -1,7 +1,6 @@
 package net.minecraft.entity.projectile;
 
 import java.util.List;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -14,8 +13,11 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 
 public class DragonFireballEntity extends ExplosiveProjectileEntity {
+	public static final float field_30661 = 4.0F;
+
 	public DragonFireballEntity(EntityType<? extends DragonFireballEntity> entityType, World world) {
 		super(entityType, world);
 	}
@@ -27,7 +29,7 @@ public class DragonFireballEntity extends ExplosiveProjectileEntity {
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		super.onCollision(hitResult);
-		if (hitResult.getType() != HitResult.Type.ENTITY || !this.method_34714(((EntityHitResult)hitResult).getEntity())) {
+		if (hitResult.getType() != HitResult.Type.ENTITY || !this.isOwner(((EntityHitResult)hitResult).getEntity())) {
 			if (!this.world.isClient) {
 				List<LivingEntity> list = this.world.getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox().expand(4.0, 2.0, 4.0));
 				AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.getX(), this.getY(), this.getZ());

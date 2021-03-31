@@ -21,6 +21,10 @@ import org.apache.logging.log4j.Logger;
 
 public class QueryResponseHandler extends RconBase {
 	private static final Logger field_23963 = LogManager.getLogger();
+	private static final String field_29795 = "SMP";
+	private static final String field_29796 = "MINECRAFT";
+	private static final long field_29797 = 30000L;
+	private static final long field_29798 = 5000L;
 	private long lastQueryTime;
 	private final int queryPort;
 	private final int port;
@@ -292,6 +296,10 @@ public class QueryResponseHandler extends RconBase {
 
 		public byte[] getMessageBytes() {
 			return this.messageBytes;
+		}
+
+		public String method_34888() {
+			return this.message;
 		}
 	}
 }

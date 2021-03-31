@@ -1,8 +1,6 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
@@ -34,7 +32,6 @@ public abstract class AbstractSkullBlock extends BlockWithEntity implements Wear
 			: checkType(type, BlockEntityType.SKULL, SkullBlockEntity::tick);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public SkullBlock.SkullType getSkullType() {
 		return this.type;
 	}

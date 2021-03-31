@@ -13,9 +13,17 @@ import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
 public class ChunkOcclusionDataBuilder {
+	private static final int field_32833 = 4;
+	private static final int field_32834 = 16;
+	private static final int field_32835 = 15;
+	private static final int field_32836 = 4096;
+	private static final int field_32837 = 0;
+	private static final int field_32838 = 4;
+	private static final int field_32839 = 8;
 	private static final int STEP_X = (int)Math.pow(16.0, 0.0);
 	private static final int STEP_Z = (int)Math.pow(16.0, 1.0);
 	private static final int STEP_Y = (int)Math.pow(16.0, 2.0);
+	private static final int field_32840 = -1;
 	private static final Direction[] DIRECTIONS = Direction.values();
 	private final BitSet closed = new BitSet(4096);
 	private static final int[] EDGE_POINTS = Util.make(new int[1352], is -> {

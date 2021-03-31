@@ -36,6 +36,14 @@ public class EntityHurtPlayerCriterion extends AbstractCriterion<EntityHurtPlaye
 			this.damage = damage;
 		}
 
+		public static EntityHurtPlayerCriterion.Conditions create() {
+			return new EntityHurtPlayerCriterion.Conditions(EntityPredicate.Extended.EMPTY, DamagePredicate.ANY);
+		}
+
+		public static EntityHurtPlayerCriterion.Conditions create(DamagePredicate predicate) {
+			return new EntityHurtPlayerCriterion.Conditions(EntityPredicate.Extended.EMPTY, predicate);
+		}
+
 		public static EntityHurtPlayerCriterion.Conditions create(DamagePredicate.Builder damageBuilder) {
 			return new EntityHurtPlayerCriterion.Conditions(EntityPredicate.Extended.EMPTY, damageBuilder.build());
 		}

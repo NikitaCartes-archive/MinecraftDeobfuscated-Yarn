@@ -13,6 +13,7 @@ import net.minecraft.entity.Entity;
 @Environment(EnvType.CLIENT)
 public class MinecartEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
 	private final ModelPart root;
+	private static final String CONTENTS = "contents";
 	private final ModelPart contents;
 
 	public MinecartEntityModel(ModelPart root) {

@@ -53,7 +53,7 @@ public class SummonCommand {
 													context.getSource(),
 													EntitySummonArgumentType.getEntitySummon(context, "entity"),
 													Vec3ArgumentType.getVec3(context, "pos"),
-													NbtCompoundTagArgumentType.getCompoundTag(context, "nbt"),
+													NbtCompoundTagArgumentType.getNbtCompound(context, "nbt"),
 													false
 												)
 										)

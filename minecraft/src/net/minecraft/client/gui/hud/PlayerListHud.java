@@ -32,6 +32,15 @@ import net.minecraft.world.GameMode;
 @Environment(EnvType.CLIENT)
 public class PlayerListHud extends DrawableHelper {
 	private static final Ordering<PlayerListEntry> ENTRY_ORDERING = Ordering.from(new PlayerListHud.EntryOrderComparator());
+	public static final int field_32205 = 20;
+	public static final int field_32206 = 16;
+	public static final int field_32207 = 25;
+	public static final int field_32208 = 52;
+	public static final int field_32209 = 61;
+	public static final int field_32210 = 160;
+	public static final int field_32211 = 169;
+	public static final int field_32212 = 70;
+	public static final int field_32213 = 79;
 	private final MinecraftClient client;
 	private final InGameHud inGameHud;
 	private Text footer;

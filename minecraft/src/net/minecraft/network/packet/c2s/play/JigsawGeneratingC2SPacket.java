@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.c2s.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
@@ -12,7 +10,6 @@ public class JigsawGeneratingC2SPacket implements Packet<ServerPlayPacketListene
 	private final int maxDepth;
 	private final boolean keepJigsaws;
 
-	@Environment(EnvType.CLIENT)
 	public JigsawGeneratingC2SPacket(BlockPos pos, int maxDepth, boolean keepJigsaws) {
 		this.pos = pos;
 		this.maxDepth = maxDepth;

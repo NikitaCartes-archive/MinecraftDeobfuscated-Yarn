@@ -2,11 +2,10 @@ package net.minecraft.util.profiler;
 
 import java.nio.file.Path;
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 
 public interface ProfileResult {
-	@Environment(EnvType.CLIENT)
+	char field_29924 = '\u001e';
+
 	List<ProfilerTiming> getTimings(String parentPath);
 
 	boolean save(Path path);
@@ -26,6 +25,8 @@ public interface ProfileResult {
 	default int getTickSpan() {
 		return this.getEndTick() - this.getStartTick();
 	}
+
+	String method_34970();
 
 	static String getHumanReadableName(String path) {
 		return path.replace('\u001e', '.');

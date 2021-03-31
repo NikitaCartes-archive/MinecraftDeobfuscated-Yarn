@@ -35,6 +35,11 @@ public class EntityEffectPredicate {
 		return this;
 	}
 
+	public EntityEffectPredicate withEffect(StatusEffect statusEffect, EntityEffectPredicate.EffectData data) {
+		this.effects.put(statusEffect, data);
+		return this;
+	}
+
 	public boolean test(Entity entity) {
 		if (this == EMPTY) {
 			return true;

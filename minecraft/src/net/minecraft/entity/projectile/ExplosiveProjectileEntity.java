@@ -1,13 +1,11 @@
 package net.minecraft.entity.projectile;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -53,7 +51,6 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 	protected void initDataTracker() {
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean shouldRender(double distance) {
 		double d = this.getBoundingBox().getAverageSideLength() * 4.0;
@@ -121,16 +118,16 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.put("power", this.toListTag(new double[]{this.powerX, this.powerY, this.powerZ}));
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.put("power", this.toNbtList(new double[]{this.powerX, this.powerY, this.powerZ}));
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		if (tag.contains("power", NbtTypeIds.LIST)) {
-			NbtList nbtList = tag.getList("power", NbtTypeIds.DOUBLE);
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		if (nbt.contains("power", NbtElement.LIST_TYPE)) {
+			NbtList nbtList = nbt.getList("power", NbtElement.DOUBLE_TYPE);
 			if (nbtList.size() == 3) {
 				this.powerX = nbtList.getDouble(0);
 				this.powerY = nbtList.getDouble(1);
@@ -193,7 +190,6 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 		);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void onSpawnPacket(EntitySpawnS2CPacket packet) {
 		super.onSpawnPacket(packet);

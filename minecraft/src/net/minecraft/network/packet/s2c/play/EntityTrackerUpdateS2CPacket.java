@@ -2,8 +2,6 @@ package net.minecraft.network.packet.s2c.play;
 
 import java.util.List;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -40,12 +38,10 @@ public class EntityTrackerUpdateS2CPacket implements Packet<ClientPlayPacketList
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public List<DataTracker.Entry<?>> getTrackedValues() {
 		return this.trackedValues;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int id() {
 		return this.id;
 	}

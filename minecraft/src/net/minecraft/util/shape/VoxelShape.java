@@ -6,8 +6,6 @@ import it.unimi.dsi.fastutil.doubles.DoubleList;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.Util;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
@@ -83,7 +81,6 @@ public abstract class VoxelShape {
 		return voxelShapes[0];
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void forEachEdge(VoxelShapes.BoxConsumer boxConsumer) {
 		this.voxels
 			.forEachEdge(
@@ -118,7 +115,15 @@ public abstract class VoxelShape {
 		return list;
 	}
 
-	@Environment(EnvType.CLIENT)
+	public double method_35593(Direction.Axis axis, double d, double e) {
+		Direction.Axis axis2 = AxisCycleDirection.FORWARD.cycle(axis);
+		Direction.Axis axis3 = AxisCycleDirection.BACKWARD.cycle(axis);
+		int i = this.getCoordIndex(axis2, d);
+		int j = this.getCoordIndex(axis3, e);
+		int k = this.voxels.method_35592(axis, i, j);
+		return k >= this.voxels.getSize(axis) ? Double.POSITIVE_INFINITY : this.getPointPosition(axis, k);
+	}
+
 	public double getEndingCoord(Direction.Axis axis, double from, double to) {
 		Direction.Axis axis2 = AxisCycleDirection.FORWARD.cycle(axis);
 		Direction.Axis axis3 = AxisCycleDirection.BACKWARD.cycle(axis);

@@ -22,9 +22,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -94,6 +91,20 @@ public final class ItemStack {
 	public static final DecimalFormat MODIFIER_FORMAT = Util.make(
 		new DecimalFormat("#.##"), decimalFormat -> decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT))
 	);
+	public static final String ENCHANTMENTS_KEY = "Enchantments";
+	public static final String ID_KEY = "id";
+	public static final String LVL_KEY = "lvl";
+	public static final String DISPLAY_KEY = "display";
+	public static final String NAME_KEY = "Name";
+	public static final String LORE_KEY = "Lore";
+	public static final String DAMAGE_KEY = "Damage";
+	public static final String COLOR_KEY = "color";
+	private static final String UNBREAKABLE_KEY = "Unbreakable";
+	private static final String REPAIR_COST_KEY = "RepairCost";
+	private static final String CAN_DESTROY_KEY = "CanDestroy";
+	private static final String CAN_PLACE_ON_KEY = "CanPlaceOn";
+	private static final String HIDE_FLAGS_KEY = "HideFlags";
+	private static final int field_30903 = 0;
 	private static final Style LORE_STYLE = Style.EMPTY.withColor(Formatting.DARK_PURPLE).withItalic(true);
 	private int count;
 	private int cooldown;
@@ -107,7 +118,6 @@ public final class ItemStack {
 	private CachedBlockPosition lastPlaceOnPos;
 	private boolean lastPlaceOnResult;
 
-	@Environment(EnvType.CLIENT)
 	public Optional<TooltipData> getTooltipData() {
 		return this.getItem().getTooltipData(this);
 	}
@@ -139,9 +149,9 @@ public final class ItemStack {
 	private ItemStack(NbtCompound tag) {
 		this.item = Registry.ITEM.get(new Identifier(tag.getString("id")));
 		this.count = tag.getByte("Count");
-		if (tag.contains("tag", NbtTypeIds.COMPOUND)) {
+		if (tag.contains("tag", NbtElement.COMPOUND_TYPE)) {
 			this.tag = tag.getCompound("tag");
-			this.getItem().postProcessTag(tag);
+			this.getItem().postProcessNbt(tag);
 		}
 
 		if (this.getItem().isDamageable()) {
@@ -151,11 +161,11 @@ public final class ItemStack {
 		this.updateEmptyState();
 	}
 
-	public static ItemStack fromNbt(NbtCompound tag) {
+	public static ItemStack fromNbt(NbtCompound nbt) {
 		try {
-			return new ItemStack(tag);
+			return new ItemStack(nbt);
 		} catch (RuntimeException var2) {
-			LOGGER.debug("Tried to load invalid item: {}", tag, var2);
+			LOGGER.debug("Tried to load invalid item: {}", nbt, var2);
 			return EMPTY;
 		}
 	}
@@ -219,15 +229,15 @@ public final class ItemStack {
 		return this.getItem().finishUsing(this, world, user);
 	}
 
-	public NbtCompound writeNbt(NbtCompound tag) {
+	public NbtCompound writeNbt(NbtCompound nbt) {
 		Identifier identifier = Registry.ITEM.getId(this.getItem());
-		tag.putString("id", identifier == null ? "minecraft:air" : identifier.toString());
-		tag.putByte("Count", (byte)this.count);
+		nbt.putString("id", identifier == null ? "minecraft:air" : identifier.toString());
+		nbt.putByte("Count", (byte)this.count);
 		if (this.tag != null) {
-			tag.put("tag", this.tag.copy());
+			nbt.put("tag", this.tag.copy());
 		}
 
-		return tag;
+		return nbt;
 	}
 
 	public int getMaxCount() {
@@ -310,17 +320,14 @@ public final class ItemStack {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isItemBarVisible() {
 		return this.item.isItemBarVisible(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getItemBarStep() {
 		return this.item.getItemBarStep(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getItemBarColor() {
 		return this.item.getItemBarColor(this);
 	}
@@ -499,7 +506,7 @@ public final class ItemStack {
 	}
 
 	public NbtCompound getOrCreateSubTag(String key) {
-		if (this.tag != null && this.tag.contains(key, NbtTypeIds.COMPOUND)) {
+		if (this.tag != null && this.tag.contains(key, NbtElement.COMPOUND_TYPE)) {
 			return this.tag.getCompound(key);
 		} else {
 			NbtCompound nbtCompound = new NbtCompound();
@@ -510,7 +517,7 @@ public final class ItemStack {
 
 	@Nullable
 	public NbtCompound getSubTag(String key) {
-		return this.tag != null && this.tag.contains(key, NbtTypeIds.COMPOUND) ? this.tag.getCompound(key) : null;
+		return this.tag != null && this.tag.contains(key, NbtElement.COMPOUND_TYPE) ? this.tag.getCompound(key) : null;
 	}
 
 	public void removeSubTag(String key) {
@@ -523,7 +530,7 @@ public final class ItemStack {
 	}
 
 	public NbtList getEnchantments() {
-		return this.tag != null ? this.tag.getList("Enchantments", NbtTypeIds.COMPOUND) : new NbtList();
+		return this.tag != null ? this.tag.getList("Enchantments", NbtElement.COMPOUND_TYPE) : new NbtList();
 	}
 
 	public void setTag(@Nullable NbtCompound tag) {
@@ -535,7 +542,7 @@ public final class ItemStack {
 
 	public Text getName() {
 		NbtCompound nbtCompound = this.getSubTag("display");
-		if (nbtCompound != null && nbtCompound.contains("Name", NbtTypeIds.STRING)) {
+		if (nbtCompound != null && nbtCompound.contains("Name", NbtElement.STRING_TYPE)) {
 			try {
 				Text text = Text.Serializer.fromJson(nbtCompound.getString("Name"));
 				if (text != null) {
@@ -578,10 +585,9 @@ public final class ItemStack {
 
 	public boolean hasCustomName() {
 		NbtCompound nbtCompound = this.getSubTag("display");
-		return nbtCompound != null && nbtCompound.contains("Name", NbtTypeIds.STRING);
+		return nbtCompound != null && nbtCompound.contains("Name", NbtElement.STRING_TYPE);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public List<Text> getTooltip(@Nullable PlayerEntity player, TooltipContext context) {
 		List<Text> list = Lists.<Text>newArrayList();
 		MutableText mutableText = new LiteralText("").append(this.getName()).formatted(this.getRarity().formatting);
@@ -607,9 +613,9 @@ public final class ItemStack {
 				appendEnchantments(list, this.getEnchantments());
 			}
 
-			if (this.tag.contains("display", NbtTypeIds.COMPOUND)) {
+			if (this.tag.contains("display", NbtElement.COMPOUND_TYPE)) {
 				NbtCompound nbtCompound = this.tag.getCompound("display");
-				if (isSectionVisible(i, ItemStack.TooltipSection.DYE) && nbtCompound.contains("color", NbtTypeIds.NUMBER)) {
+				if (isSectionVisible(i, ItemStack.TooltipSection.DYE) && nbtCompound.contains("color", NbtElement.NUMBER_TYPE)) {
 					if (context.isAdvanced()) {
 						list.add(new TranslatableText("item.color", String.format("#%06X", nbtCompound.getInt("color"))).formatted(Formatting.GRAY));
 					} else {
@@ -617,8 +623,8 @@ public final class ItemStack {
 					}
 				}
 
-				if (nbtCompound.getType("Lore") == NbtTypeIds.LIST) {
-					NbtList nbtList = nbtCompound.getList("Lore", NbtTypeIds.STRING);
+				if (nbtCompound.getType("Lore") == NbtElement.LIST_TYPE) {
+					NbtList nbtList = nbtCompound.getList("Lore", NbtElement.STRING_TYPE);
 
 					for(int j = 0; j < nbtList.size(); ++j) {
 						String string = nbtList.getString(j);
@@ -710,8 +716,8 @@ public final class ItemStack {
 				list.add(new TranslatableText("item.unbreakable").formatted(Formatting.BLUE));
 			}
 
-			if (isSectionVisible(i, ItemStack.TooltipSection.CAN_DESTROY) && this.tag.contains("CanDestroy", NbtTypeIds.LIST)) {
-				NbtList nbtList2 = this.tag.getList("CanDestroy", NbtTypeIds.STRING);
+			if (isSectionVisible(i, ItemStack.TooltipSection.CAN_DESTROY) && this.tag.contains("CanDestroy", NbtElement.LIST_TYPE)) {
+				NbtList nbtList2 = this.tag.getList("CanDestroy", NbtElement.STRING_TYPE);
 				if (!nbtList2.isEmpty()) {
 					list.add(LiteralText.EMPTY);
 					list.add(new TranslatableText("item.canBreak").formatted(Formatting.GRAY));
@@ -722,8 +728,8 @@ public final class ItemStack {
 				}
 			}
 
-			if (isSectionVisible(i, ItemStack.TooltipSection.CAN_PLACE) && this.tag.contains("CanPlaceOn", NbtTypeIds.LIST)) {
-				NbtList nbtList2 = this.tag.getList("CanPlaceOn", NbtTypeIds.STRING);
+			if (isSectionVisible(i, ItemStack.TooltipSection.CAN_PLACE) && this.tag.contains("CanPlaceOn", NbtElement.LIST_TYPE)) {
+				NbtList nbtList2 = this.tag.getList("CanPlaceOn", NbtElement.STRING_TYPE);
 				if (!nbtList2.isEmpty()) {
 					list.add(LiteralText.EMPTY);
 					list.add(new TranslatableText("item.canPlace").formatted(Formatting.GRAY));
@@ -752,14 +758,12 @@ public final class ItemStack {
 	/**
 	 * Determines whether the given tooltip section will be visible according to the given flags.
 	 */
-	@Environment(EnvType.CLIENT)
 	private static boolean isSectionVisible(int flags, ItemStack.TooltipSection tooltipSection) {
 		return (flags & tooltipSection.getFlag()) == 0;
 	}
 
-	@Environment(EnvType.CLIENT)
 	private int getHideFlags() {
-		return this.hasTag() && this.tag.contains("HideFlags", NbtTypeIds.NUMBER) ? this.tag.getInt("HideFlags") : 0;
+		return this.hasTag() && this.tag.contains("HideFlags", NbtElement.NUMBER_TYPE) ? this.tag.getInt("HideFlags") : 0;
 	}
 
 	public void addHideFlag(ItemStack.TooltipSection tooltipSection) {
@@ -767,7 +771,6 @@ public final class ItemStack {
 		nbtCompound.putInt("HideFlags", nbtCompound.getInt("HideFlags") | tooltipSection.getFlag());
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static void appendEnchantments(List<Text> tooltip, NbtList enchantments) {
 		for(int i = 0; i < enchantments.size(); ++i) {
 			NbtCompound nbtCompound = enchantments.getCompound(i);
@@ -775,7 +778,6 @@ public final class ItemStack {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	private static Collection<Text> parseBlockTag(String tag) {
 		try {
 			BlockArgumentParser blockArgumentParser = new BlockArgumentParser(new StringReader(tag), true).parse(true);
@@ -820,11 +822,11 @@ public final class ItemStack {
 
 	public void addEnchantment(Enchantment enchantment, int level) {
 		this.getOrCreateTag();
-		if (!this.tag.contains("Enchantments", NbtTypeIds.LIST)) {
+		if (!this.tag.contains("Enchantments", NbtElement.LIST_TYPE)) {
 			this.tag.put("Enchantments", new NbtList());
 		}
 
-		NbtList nbtList = this.tag.getList("Enchantments", NbtTypeIds.COMPOUND);
+		NbtList nbtList = this.tag.getList("Enchantments", NbtElement.COMPOUND_TYPE);
 		NbtCompound nbtCompound = new NbtCompound();
 		nbtCompound.putString("id", String.valueOf(Registry.ENCHANTMENT.getId(enchantment)));
 		nbtCompound.putShort("lvl", (short)((byte)level));
@@ -832,8 +834,8 @@ public final class ItemStack {
 	}
 
 	public boolean hasEnchantments() {
-		if (this.tag != null && this.tag.contains("Enchantments", NbtTypeIds.LIST)) {
-			return !this.tag.getList("Enchantments", NbtTypeIds.COMPOUND).isEmpty();
+		if (this.tag != null && this.tag.contains("Enchantments", NbtElement.LIST_TYPE)) {
+			return !this.tag.getList("Enchantments", NbtElement.COMPOUND_TYPE).isEmpty();
 		} else {
 			return false;
 		}
@@ -862,7 +864,7 @@ public final class ItemStack {
 	}
 
 	public int getRepairCost() {
-		return this.hasTag() && this.tag.contains("RepairCost", NbtTypeIds.INT) ? this.tag.getInt("RepairCost") : 0;
+		return this.hasTag() && this.tag.contains("RepairCost", NbtElement.INT_TYPE) ? this.tag.getInt("RepairCost") : 0;
 	}
 
 	public void setRepairCost(int repairCost) {
@@ -871,13 +873,13 @@ public final class ItemStack {
 
 	public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
 		Multimap<EntityAttribute, EntityAttributeModifier> multimap;
-		if (this.hasTag() && this.tag.contains("AttributeModifiers", NbtTypeIds.LIST)) {
+		if (this.hasTag() && this.tag.contains("AttributeModifiers", NbtElement.LIST_TYPE)) {
 			multimap = HashMultimap.create();
-			NbtList nbtList = this.tag.getList("AttributeModifiers", NbtTypeIds.COMPOUND);
+			NbtList nbtList = this.tag.getList("AttributeModifiers", NbtElement.COMPOUND_TYPE);
 
 			for(int i = 0; i < nbtList.size(); ++i) {
 				NbtCompound nbtCompound = nbtList.getCompound(i);
-				if (!nbtCompound.contains("Slot", NbtTypeIds.STRING) || nbtCompound.getString("Slot").equals(slot.getName())) {
+				if (!nbtCompound.contains("Slot", NbtElement.STRING_TYPE) || nbtCompound.getString("Slot").equals(slot.getName())) {
 					Optional<EntityAttribute> optional = Registry.ATTRIBUTE.getOrEmpty(Identifier.tryParse(nbtCompound.getString("AttributeName")));
 					if (optional.isPresent()) {
 						EntityAttributeModifier entityAttributeModifier = EntityAttributeModifier.fromNbt(nbtCompound);
@@ -898,11 +900,11 @@ public final class ItemStack {
 
 	public void addAttributeModifier(EntityAttribute attribute, EntityAttributeModifier modifier, @Nullable EquipmentSlot slot) {
 		this.getOrCreateTag();
-		if (!this.tag.contains("AttributeModifiers", NbtTypeIds.LIST)) {
+		if (!this.tag.contains("AttributeModifiers", NbtElement.LIST_TYPE)) {
 			this.tag.put("AttributeModifiers", new NbtList());
 		}
 
-		NbtList nbtList = this.tag.getList("AttributeModifiers", NbtTypeIds.COMPOUND);
+		NbtList nbtList = this.tag.getList("AttributeModifiers", NbtElement.COMPOUND_TYPE);
 		NbtCompound nbtCompound = modifier.toNbt();
 		nbtCompound.putString("AttributeName", Registry.ATTRIBUTE.getId(attribute).toString());
 		if (slot != null) {
@@ -944,8 +946,8 @@ public final class ItemStack {
 			return this.lastDestroyResult;
 		} else {
 			this.lastDestroyPos = pos;
-			if (this.hasTag() && this.tag.contains("CanDestroy", NbtTypeIds.LIST)) {
-				NbtList nbtList = this.tag.getList("CanDestroy", NbtTypeIds.STRING);
+			if (this.hasTag() && this.tag.contains("CanDestroy", NbtElement.LIST_TYPE)) {
+				NbtList nbtList = this.tag.getList("CanDestroy", NbtElement.STRING_TYPE);
 
 				for(int i = 0; i < nbtList.size(); ++i) {
 					String string = nbtList.getString(i);
@@ -971,8 +973,8 @@ public final class ItemStack {
 			return this.lastPlaceOnResult;
 		} else {
 			this.lastPlaceOnPos = pos;
-			if (this.hasTag() && this.tag.contains("CanPlaceOn", NbtTypeIds.LIST)) {
-				NbtList nbtList = this.tag.getList("CanPlaceOn", NbtTypeIds.STRING);
+			if (this.hasTag() && this.tag.contains("CanPlaceOn", NbtElement.LIST_TYPE)) {
+				NbtList nbtList = this.tag.getList("CanPlaceOn", NbtElement.STRING_TYPE);
 
 				for(int i = 0; i < nbtList.size(); ++i) {
 					String string = nbtList.getString(i);

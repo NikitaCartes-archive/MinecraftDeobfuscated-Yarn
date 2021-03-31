@@ -1,9 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -33,7 +30,6 @@ public class CaveVinesBodyBlock extends AbstractPlantBlock implements Fertilizab
 		return to.with(BERRIES, from.get(BERRIES));
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
 		return new ItemStack(Items.GLOW_BERRIES);
@@ -61,6 +57,6 @@ public class CaveVinesBodyBlock extends AbstractPlantBlock implements Fertilizab
 
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-		world.setBlockState(pos, state.with(BERRIES, Boolean.valueOf(true)), SetBlockStateFlags.NOTIFY_LISTENERS);
+		world.setBlockState(pos, state.with(BERRIES, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
 	}
 }

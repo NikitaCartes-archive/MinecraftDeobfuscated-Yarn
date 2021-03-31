@@ -1,7 +1,5 @@
 package net.minecraft.recipe;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -73,7 +71,6 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 		return itemStack;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean fits(int width, int height) {
 		return width * height >= 2;

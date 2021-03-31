@@ -1,7 +1,6 @@
 package net.minecraft.item;
 
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -47,7 +46,7 @@ public class PowderSnowBucketItem extends BlockItem implements FluidModification
 	public boolean placeFluid(@Nullable PlayerEntity player, World world, BlockPos pos, @Nullable BlockHitResult hitResult) {
 		if (world.isInBuildLimit(pos) && world.isAir(pos)) {
 			if (!world.isClient) {
-				world.setBlockState(pos, this.getBlock().getDefaultState(), SetBlockStateFlags.DEFAULT);
+				world.setBlockState(pos, this.getBlock().getDefaultState(), Block.NOTIFY_ALL);
 			}
 
 			world.playSound(player, pos, this.placeSound, SoundCategory.BLOCKS, 1.0F, 1.0F);

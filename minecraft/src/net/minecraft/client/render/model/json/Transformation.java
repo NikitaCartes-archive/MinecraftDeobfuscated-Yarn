@@ -66,6 +66,8 @@ public class Transformation {
 		private static final Vec3f DEFAULT_ROTATION = new Vec3f(0.0F, 0.0F, 0.0F);
 		private static final Vec3f DEFAULT_TRANSLATION = new Vec3f(0.0F, 0.0F, 0.0F);
 		private static final Vec3f DEFAULT_SCALE = new Vec3f(1.0F, 1.0F, 1.0F);
+		public static final float field_32808 = 5.0F;
+		public static final float field_32809 = 4.0F;
 
 		protected Deserializer() {
 		}

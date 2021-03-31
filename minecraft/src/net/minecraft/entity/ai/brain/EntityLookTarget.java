@@ -36,6 +36,10 @@ public class EntityLookTarget implements LookTarget {
 		}
 	}
 
+	public Entity method_35066() {
+		return this.entity;
+	}
+
 	public String toString() {
 		return "EntityTracker for " + this.entity;
 	}

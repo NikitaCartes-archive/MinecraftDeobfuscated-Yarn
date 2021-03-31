@@ -2,12 +2,12 @@ package net.minecraft.block;
 
 import com.mojang.authlib.GameProfile;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -27,9 +27,9 @@ public class PlayerSkullBlock extends SkullBlock {
 			GameProfile gameProfile = null;
 			if (itemStack.hasTag()) {
 				NbtCompound nbtCompound = itemStack.getTag();
-				if (nbtCompound.contains("SkullOwner", NbtTypeIds.COMPOUND)) {
+				if (nbtCompound.contains("SkullOwner", NbtElement.COMPOUND_TYPE)) {
 					gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
-				} else if (nbtCompound.contains("SkullOwner", NbtTypeIds.STRING) && !StringUtils.isBlank(nbtCompound.getString("SkullOwner"))) {
+				} else if (nbtCompound.contains("SkullOwner", NbtElement.STRING_TYPE) && !StringUtils.isBlank(nbtCompound.getString("SkullOwner"))) {
 					gameProfile = new GameProfile(null, nbtCompound.getString("SkullOwner"));
 				}
 			}

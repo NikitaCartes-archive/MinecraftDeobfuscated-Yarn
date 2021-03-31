@@ -20,9 +20,9 @@ public class BlazeEntityModel<T extends Entity> extends SinglePartEntityModel<T>
 
 	public BlazeEntityModel(ModelPart root) {
 		this.root = root;
-		this.head = root.getChild("head");
+		this.head = root.getChild(EntityModelPartNames.HEAD);
 		this.rods = new ModelPart[12];
-		Arrays.setAll(this.rods, i -> root.getChild(getRodName(i)));
+		Arrays.setAll(this.rods, index -> root.getChild(getRodName(index)));
 	}
 
 	private static String getRodName(int index) {
@@ -32,7 +32,7 @@ public class BlazeEntityModel<T extends Entity> extends SinglePartEntityModel<T>
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
-		modelPartData.addChild("head", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F), ModelTransform.NONE);
+		modelPartData.addChild(EntityModelPartNames.HEAD, ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F), ModelTransform.NONE);
 		float f = 0.0F;
 		ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(0, 16).cuboid(0.0F, 0.0F, 0.0F, 2.0F, 8.0F, 2.0F);
 

@@ -7,6 +7,7 @@ import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.util.math.Vec3d;
 
 public class WanderAroundGoal extends Goal {
+	public static final int field_30226 = 120;
 	protected final PathAwareEntity mob;
 	protected double targetX;
 	protected double targetY;

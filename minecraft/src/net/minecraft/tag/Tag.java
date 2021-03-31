@@ -83,8 +83,16 @@ public interface Tag<T> {
 			return this.add(new Tag.ObjectEntry(id), source);
 		}
 
+		public Tag.Builder addOptional(Identifier id, String source) {
+			return this.add(new Tag.OptionalObjectEntry(id), source);
+		}
+
 		public Tag.Builder addTag(Identifier id, String source) {
 			return this.add(new Tag.TagEntry(id), source);
+		}
+
+		public Tag.Builder addOptionalTag(Identifier id, String source) {
+			return this.add(new Tag.OptionalTagEntry(id), source);
 		}
 
 		public <T> Either<Collection<Tag.TrackedEntry>, Tag<T>> build(Function<Identifier, Tag<T>> tagGetter, Function<Identifier, T> objectGetter) {
@@ -338,6 +346,10 @@ public interface Tag<T> {
 
 		public Tag.Entry getEntry() {
 			return this.entry;
+		}
+
+		public String getSource() {
+			return this.source;
 		}
 
 		public String toString() {

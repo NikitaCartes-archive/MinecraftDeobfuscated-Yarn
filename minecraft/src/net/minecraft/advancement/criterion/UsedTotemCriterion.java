@@ -37,6 +37,10 @@ public class UsedTotemCriterion extends AbstractCriterion<UsedTotemCriterion.Con
 			this.item = item;
 		}
 
+		public static UsedTotemCriterion.Conditions create(ItemPredicate itemPredicate) {
+			return new UsedTotemCriterion.Conditions(EntityPredicate.Extended.EMPTY, itemPredicate);
+		}
+
 		public static UsedTotemCriterion.Conditions create(ItemConvertible item) {
 			return new UsedTotemCriterion.Conditions(EntityPredicate.Extended.EMPTY, ItemPredicate.Builder.create().item(item).build());
 		}

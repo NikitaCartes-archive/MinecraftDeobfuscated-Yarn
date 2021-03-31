@@ -1,8 +1,6 @@
 package net.minecraft.village;
 
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
@@ -141,7 +139,6 @@ public class MerchantInventory implements Inventory {
 		this.inventory.clear();
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getMerchantRewardedExperience() {
 		return this.merchantRewardedExperience;
 	}

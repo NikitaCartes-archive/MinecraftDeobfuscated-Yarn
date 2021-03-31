@@ -10,6 +10,9 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
 
 public class GolemLastSeenSensor extends Sensor<LivingEntity> {
+	private static final int field_30249 = 200;
+	private static final int field_30250 = 600;
+
 	public GolemLastSeenSensor() {
 		this(200);
 	}

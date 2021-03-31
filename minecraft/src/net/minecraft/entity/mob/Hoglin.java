@@ -1,14 +1,13 @@
 package net.minecraft.entity.mob;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.math.Vec3d;
 
 public interface Hoglin {
-	@Environment(EnvType.CLIENT)
+	int field_30546 = 10;
+
 	int getMovementCooldownTicks();
 
 	static boolean tryAttack(LivingEntity attacker, LivingEntity target) {

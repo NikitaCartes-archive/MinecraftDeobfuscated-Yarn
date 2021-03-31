@@ -55,6 +55,12 @@ public class FindEntityTask<E extends LivingEntity, T extends LivingEntity> exte
 		return new FindEntityTask<>(entityType, maxDistance, livingEntity -> true, livingEntity -> true, targetModule, speed, completionRange);
 	}
 
+	public static <T extends LivingEntity> FindEntityTask<LivingEntity, T> method_35071(
+		EntityType<? extends T> entityType, int i, Predicate<T> predicate, MemoryModuleType<T> memoryModuleType, float f, int j
+	) {
+		return new FindEntityTask<>(entityType, i, livingEntity -> true, predicate, memoryModuleType, f, j);
+	}
+
 	@Override
 	protected boolean shouldRun(ServerWorld world, E entity) {
 		return this.shouldRunPredicate.test(entity) && this.anyVisibleTo(entity);

@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 
 public class HopperScreenHandler extends ScreenHandler {
+	public static final int SLOT_COUNT = 5;
 	private final Inventory inventory;
 
 	public HopperScreenHandler(int syncId, PlayerInventory playerInventory) {

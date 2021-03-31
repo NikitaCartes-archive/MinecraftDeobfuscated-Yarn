@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -43,27 +41,22 @@ public class ExperienceOrbSpawnS2CPacket implements Packet<ClientPlayPacketListe
 		clientPlayPacketListener.onExperienceOrbSpawn(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getId() {
 		return this.id;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public double getX() {
 		return this.x;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public double getY() {
 		return this.y;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public double getZ() {
 		return this.z;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getExperience() {
 		return this.experience;
 	}

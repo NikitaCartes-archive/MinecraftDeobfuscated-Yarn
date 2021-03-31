@@ -8,6 +8,17 @@ import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 
 public class AquiferSampler {
+	private static final int field_31451 = 10;
+	private static final int field_31452 = 9;
+	private static final int field_31453 = 10;
+	private static final int field_31454 = 6;
+	private static final int field_31455 = 3;
+	private static final int field_31456 = 6;
+	private static final int field_31457 = 16;
+	private static final int field_31458 = 12;
+	private static final int field_31459 = 16;
+	private static final int field_31460 = 9;
+	public static final int field_31450 = 30;
 	private final DoublePerlinNoiseSampler edgeDensityNoise;
 	private final DoublePerlinNoiseSampler waterLevelNoise;
 	private final ChunkGeneratorSettings settings;
@@ -121,10 +132,10 @@ public class AquiferSampler {
 		double f = this.maxDistance(m, n);
 		this.waterLevel = r;
 		this.needsFluidTick = d > 0.0;
-		if (this.waterLevel >= y && y - this.settings.getGenerationShapeConfig().getMinimumY() <= 9) {
+		if (this.waterLevel >= y && method_35324(y - this.settings.getGenerationShapeConfig().getMinimumY() - 1)) {
 			this.densityAddition = 1.0;
 		} else if (d > -1.0) {
-			double g = 1.0 + (this.edgeDensityNoise.sample((double)x, (double)y, (double)z) + 0.1) / 4.0;
+			double g = 1.0 + (this.edgeDensityNoise.sample((double)x, (double)y, (double)z) + 0.05) / 4.0;
 			double h = this.calculateDensity(y, g, r, s);
 			double ah = this.calculateDensity(y, g, r, t);
 			double ai = this.calculateDensity(y, g, s, t);
@@ -138,13 +149,20 @@ public class AquiferSampler {
 		}
 	}
 
+	public static boolean method_35324(int i) {
+		return i < 9;
+	}
+
 	private double maxDistance(int a, int b) {
 		double d = 25.0;
 		return 1.0 - (double)Math.abs(b - a) / 25.0;
 	}
 
 	private double calculateDensity(int y, double noise, int a, int b) {
-		return 0.5 * (double)Math.abs(a - b) * noise - Math.abs(0.5 * (double)(a + b) - (double)y - 0.5);
+		int i = Math.abs(a - b);
+		double d = 0.5 * (double)(a + b);
+		double e = Math.abs(d - (double)y - 0.5);
+		return 0.5 * (double)i * noise - e;
 	}
 
 	private int getLocalX(int x) {

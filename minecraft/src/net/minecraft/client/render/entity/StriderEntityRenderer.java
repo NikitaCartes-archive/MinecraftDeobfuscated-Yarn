@@ -37,6 +37,6 @@ public class StriderEntityRenderer extends MobEntityRenderer<StriderEntity, Stri
 	}
 
 	protected boolean isShaking(StriderEntity striderEntity) {
-		return striderEntity.isCold();
+		return super.isShaking(striderEntity) || striderEntity.isCold();
 	}
 }

@@ -3,8 +3,6 @@ package net.minecraft.network.packet.s2c.play;
 import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -67,12 +65,10 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 		clientPlayPacketListener.onEntityAttributes(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getEntityId() {
 		return this.entityId;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public List<EntityAttributesS2CPacket.Entry> getEntries() {
 		return this.entries;
 	}

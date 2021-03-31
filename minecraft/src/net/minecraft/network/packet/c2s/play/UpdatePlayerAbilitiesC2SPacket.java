@@ -6,6 +6,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 
 public class UpdatePlayerAbilitiesC2SPacket implements Packet<ServerPlayPacketListener> {
+	private static final int FLYING_MASK = 2;
 	private final boolean flying;
 
 	public UpdatePlayerAbilitiesC2SPacket(PlayerAbilities abilities) {

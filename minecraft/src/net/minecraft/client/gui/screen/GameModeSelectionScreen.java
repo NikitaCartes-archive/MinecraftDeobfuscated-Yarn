@@ -27,6 +27,12 @@ import org.lwjgl.glfw.GLFW;
 @Environment(EnvType.CLIENT)
 public class GameModeSelectionScreen extends Screen {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/gamemode_switcher.png");
+	private static final int field_32310 = 128;
+	private static final int field_32311 = 128;
+	private static final int field_32312 = 26;
+	private static final int field_32313 = 5;
+	private static final int field_32314 = 31;
+	private static final int field_32315 = 5;
 	private static final int UI_WIDTH = GameModeSelectionScreen.GameMode.values().length * 31 - 5;
 	private static final Text SELECT_NEXT_TEXT = new TranslatableText(
 		"debug.gamemodes.select_next", new TranslatableText("debug.gamemodes.press_f4").formatted(Formatting.AQUA)
@@ -197,6 +203,8 @@ public class GameModeSelectionScreen extends Screen {
 		SPECTATOR(new TranslatableText("gameMode.spectator"), "/gamemode spectator", new ItemStack(Items.ENDER_EYE));
 
 		protected static final GameModeSelectionScreen.GameMode[] VALUES = values();
+		private static final int field_32317 = 16;
+		protected static final int field_32316 = 5;
 		final Text text;
 		final String command;
 		final ItemStack icon;

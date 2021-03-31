@@ -16,6 +16,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class MagmaBlock extends Block {
+	private static final int field_31193 = 20;
+
 	public MagmaBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}

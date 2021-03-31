@@ -16,6 +16,7 @@ import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class ItemPotionFix extends DataFix {
+	private static final int field_29885 = 16384;
 	private static final String[] ID_TO_POTIONS = DataFixUtils.make(new String[128], strings -> {
 		strings[0] = "minecraft:water";
 		strings[1] = "minecraft:regeneration";
@@ -146,6 +147,7 @@ public class ItemPotionFix extends DataFix {
 		strings[126] = "minecraft:long_invisibility";
 		strings[127] = null;
 	});
+	public static final String field_29884 = "minecraft:water";
 
 	public ItemPotionFix(Schema outputSchema, boolean changesType) {
 		super(outputSchema, changesType);

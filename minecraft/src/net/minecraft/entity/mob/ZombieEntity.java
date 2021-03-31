@@ -7,8 +7,6 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.NbtTypeIds;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -49,6 +47,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
@@ -65,6 +64,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldEvents;
 
 public class ZombieEntity extends HostileEntity {
 	private static final UUID BABY_SPEED_ID = UUID.fromString("B9766B59-9566-4402-BC1F-2EE2A276D836");
@@ -77,6 +77,11 @@ public class ZombieEntity extends HostileEntity {
 	 */
 	private static final TrackedData<Integer> ZOMBIE_TYPE = DataTracker.registerData(ZombieEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> CONVERTING_IN_WATER = DataTracker.registerData(ZombieEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	public static final float field_30519 = 0.05F;
+	public static final int field_30515 = 50;
+	public static final int field_30516 = 40;
+	public static final int field_30517 = 7;
+	private static final float field_30518 = 0.1F;
 	private static final Predicate<Difficulty> DOOR_BREAK_DIFFICULTY_CHECKER = difficulty -> difficulty == Difficulty.HARD;
 	private final BreakDoorGoal breakDoorsGoal = new BreakDoorGoal(this, DOOR_BREAK_DIFFICULTY_CHECKER);
 	private boolean canBreakDoors;
@@ -378,22 +383,22 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putBoolean("IsBaby", this.isBaby());
-		tag.putBoolean("CanBreakDoors", this.canBreakDoors());
-		tag.putInt("InWaterTime", this.isTouchingWater() ? this.inWaterTime : -1);
-		tag.putInt("DrownedConversionTime", this.isConvertingInWater() ? this.ticksUntilWaterConversion : -1);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putBoolean("IsBaby", this.isBaby());
+		nbt.putBoolean("CanBreakDoors", this.canBreakDoors());
+		nbt.putInt("InWaterTime", this.isTouchingWater() ? this.inWaterTime : -1);
+		nbt.putInt("DrownedConversionTime", this.isConvertingInWater() ? this.ticksUntilWaterConversion : -1);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.setBaby(tag.getBoolean("IsBaby"));
-		this.setCanBreakDoors(tag.getBoolean("CanBreakDoors"));
-		this.inWaterTime = tag.getInt("InWaterTime");
-		if (tag.contains("DrownedConversionTime", NbtTypeIds.NUMBER) && tag.getInt("DrownedConversionTime") > -1) {
-			this.setTicksUntilWaterConversion(tag.getInt("DrownedConversionTime"));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.setBaby(nbt.getBoolean("IsBaby"));
+		this.setCanBreakDoors(nbt.getBoolean("CanBreakDoors"));
+		this.inWaterTime = nbt.getInt("InWaterTime");
+		if (nbt.contains("DrownedConversionTime", NbtElement.NUMBER_TYPE) && nbt.getInt("DrownedConversionTime") > -1) {
+			this.setTicksUntilWaterConversion(nbt.getInt("DrownedConversionTime"));
 		}
 	}
 
@@ -433,9 +438,9 @@ public class ZombieEntity extends HostileEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
-		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 		float f = difficulty.getClampedLocalDifficulty();
 		this.setCanPickUpLoot(this.random.nextFloat() < 0.55F * f);
 		if (entityData == null) {

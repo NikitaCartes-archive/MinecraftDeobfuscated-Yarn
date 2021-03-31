@@ -9,6 +9,10 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.TestableWorld;
 
 public abstract class CaveSurface {
+	public static CaveSurface.Bounded method_35326(int i, int j) {
+		return new CaveSurface.Bounded(i - 1, j + 1);
+	}
+
 	public static CaveSurface.Bounded createBounded(int floor, int ceiling) {
 		return new CaveSurface.Bounded(floor, ceiling);
 	}
@@ -17,8 +21,16 @@ public abstract class CaveSurface {
 		return new CaveSurface.Half(ceiling, false);
 	}
 
+	public static CaveSurface method_35327(int i) {
+		return new CaveSurface.Half(i + 1, false);
+	}
+
 	public static CaveSurface createHalfWithFloor(int floor) {
 		return new CaveSurface.Half(floor, true);
+	}
+
+	public static CaveSurface method_35329(int i) {
+		return new CaveSurface.Half(i - 1, true);
 	}
 
 	public static CaveSurface createEmpty() {
@@ -43,6 +55,10 @@ public abstract class CaveSurface {
 
 	public CaveSurface withFloor(OptionalInt floor) {
 		return create(floor, this.getCeilingHeight());
+	}
+
+	public CaveSurface method_35328(OptionalInt optionalInt) {
+		return create(this.getFloorHeight(), optionalInt);
 	}
 
 	public static Optional<CaveSurface> create(TestableWorld world, BlockPos pos, int height, Predicate<BlockState> canGenerate, Predicate<BlockState> canReplace) {

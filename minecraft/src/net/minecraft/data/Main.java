@@ -23,8 +23,10 @@ import net.minecraft.data.server.ItemTagsProvider;
 import net.minecraft.data.server.LootTablesProvider;
 import net.minecraft.data.server.RecipesProvider;
 import net.minecraft.data.validate.StructureValidatorProvider;
+import net.minecraft.obfuscate.DontObfuscate;
 
 public class Main {
+	@DontObfuscate
 	public static void main(String[] strings) throws IOException {
 		OptionParser optionParser = new OptionParser();
 		OptionSpec<Void> optionSpec = optionParser.accepts("help", "Show the help menu").forHelp();

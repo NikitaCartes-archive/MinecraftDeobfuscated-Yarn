@@ -3,8 +3,6 @@ package net.minecraft.block;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
@@ -108,7 +106,6 @@ public class PistonExtensionBlock extends BlockWithEntity {
 		return blockEntity instanceof PistonBlockEntity ? (PistonBlockEntity)blockEntity : null;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
 		return ItemStack.EMPTY;

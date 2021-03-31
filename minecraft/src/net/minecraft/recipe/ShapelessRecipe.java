@@ -3,8 +3,6 @@ package net.minecraft.recipe;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
@@ -36,7 +34,6 @@ public class ShapelessRecipe implements CraftingRecipe {
 		return RecipeSerializer.SHAPELESS;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public String getGroup() {
 		return this.group;
@@ -71,7 +68,6 @@ public class ShapelessRecipe implements CraftingRecipe {
 		return this.output.copy();
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean fits(int width, int height) {
 		return width * height >= this.input.size();
@@ -86,7 +82,7 @@ public class ShapelessRecipe implements CraftingRecipe {
 			} else if (defaultedList.size() > 9) {
 				throw new JsonParseException("Too many ingredients for shapeless recipe");
 			} else {
-				ItemStack itemStack = ShapedRecipe.getItemStack(JsonHelper.getObject(jsonObject, "result"));
+				ItemStack itemStack = ShapedRecipe.outputFromJson(JsonHelper.getObject(jsonObject, "result"));
 				return new ShapelessRecipe(identifier, string, itemStack, defaultedList);
 			}
 		}

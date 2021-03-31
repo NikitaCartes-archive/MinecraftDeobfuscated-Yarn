@@ -16,46 +16,34 @@ public class WeightedList<U> {
 	private final Random random = new Random();
 
 	public WeightedList() {
-		this(Lists.<WeightedList.Entry<U>>newArrayList());
+		this.entries = Lists.<WeightedList.Entry<U>>newArrayList();
 	}
 
-	private WeightedList(List<WeightedList.Entry<U>> entries) {
-		this.entries = Lists.<WeightedList.Entry<U>>newArrayList(entries);
+	private WeightedList(List<WeightedList.Entry<U>> list) {
+		this.entries = Lists.<WeightedList.Entry<U>>newArrayList(list);
 	}
 
 	public static <U> Codec<WeightedList<U>> createCodec(Codec<U> codec) {
-		return WeightedList.Entry.createCodec(codec).listOf().xmap(WeightedList::new, list -> list.entries);
+		return WeightedList.Entry.createCodec(codec).listOf().xmap(WeightedList::new, weightedList -> weightedList.entries);
 	}
 
-	public WeightedList<U> add(U item, int weight) {
-		this.entries.add(new WeightedList.Entry(item, weight));
+	public WeightedList<U> add(U data, int weight) {
+		this.entries.add(new WeightedList.Entry(data, weight));
 		return this;
 	}
 
 	public WeightedList<U> shuffle() {
-		return this.shuffle(this.random);
-	}
-
-	public WeightedList<U> shuffle(Random random) {
-		this.entries.forEach(entry -> entry.setShuffledOrder(random.nextFloat()));
-		this.entries.sort(Comparator.comparingDouble(object -> ((WeightedList.Entry)object).getShuffledOrder()));
+		this.entries.forEach(entry -> entry.setShuffledOrder(this.random.nextFloat()));
+		this.entries.sort(Comparator.comparingDouble(entry -> ((WeightedList.Entry)entry).getShuffledOrder()));
 		return this;
-	}
-
-	public boolean isEmpty() {
-		return this.entries.isEmpty();
 	}
 
 	public Stream<U> stream() {
 		return this.entries.stream().map(WeightedList.Entry::getElement);
 	}
 
-	public U pickRandom(Random random) {
-		return (U)this.shuffle(random).stream().findFirst().orElseThrow(RuntimeException::new);
-	}
-
 	public String toString() {
-		return "WeightedList[" + this.entries + "]";
+		return "ShufflingList[" + this.entries + "]";
 	}
 
 	public static class Entry<T> {
@@ -80,18 +68,22 @@ public class WeightedList<U> {
 			return this.data;
 		}
 
+		public int getWeight() {
+			return this.weight;
+		}
+
 		public String toString() {
-			return "" + this.weight + ":" + this.data;
+			return this.weight + ":" + this.data;
 		}
 
 		public static <E> Codec<WeightedList.Entry<E>> createCodec(Codec<E> codec) {
 			return new Codec<WeightedList.Entry<E>>() {
 				@Override
-				public <T> DataResult<Pair<WeightedList.Entry<E>, T>> decode(DynamicOps<T> ops, T object) {
-					Dynamic<T> dynamic = new Dynamic<>(ops, object);
+				public <T> DataResult<Pair<WeightedList.Entry<E>, T>> decode(DynamicOps<T> ops, T data) {
+					Dynamic<T> dynamic = new Dynamic<>(ops, data);
 					return dynamic.get("data")
 						.flatMap(codec::parse)
-						.map(objectx -> new WeightedList.Entry(objectx, dynamic.get("weight").asInt(1)))
+						.map(datax -> new WeightedList.Entry(datax, dynamic.get("weight").asInt(1)))
 						.map(entry -> Pair.of(entry, ops.empty()));
 				}
 

@@ -2,11 +2,11 @@ package net.minecraft.client.render.debug;
 
 import java.util.Random;
 import java.util.UUID;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 
-@Environment(EnvType.CLIENT)
 public class NameGenerator {
 	private static final String[] PREFIX = new String[]{
 		"Slim",
@@ -75,6 +75,15 @@ public class NameGenerator {
 		"Shirt",
 		"Fist"
 	};
+
+	public static String method_36154(Entity entity) {
+		if (entity instanceof PlayerEntity) {
+			return entity.getName().getString();
+		} else {
+			Text text = entity.getCustomName();
+			return text != null ? text.getString() : name(entity.getUuid());
+		}
+	}
 
 	public static String name(UUID uuid) {
 		Random random = randomFromUuid(uuid);

@@ -3,10 +3,6 @@ package net.minecraft.item;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -17,6 +13,7 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -33,6 +30,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class BlockItem extends Item {
+	public static final String BLOCK_ENTITY_TAG_KEY = "BlockEntityTag";
+	public static final String BLOCK_STATE_TAG_KEY = "BlockStateTag";
 	@Deprecated
 	private final Block block;
 
@@ -131,7 +130,7 @@ public class BlockItem extends Item {
 		}
 
 		if (blockState != state) {
-			world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
 		}
 
 		return blockState;
@@ -153,7 +152,7 @@ public class BlockItem extends Item {
 	}
 
 	protected boolean place(ItemPlacementContext context, BlockState state) {
-		return context.getWorld().setBlockState(context.getBlockPos(), state, SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
+		return context.getWorld().setBlockState(context.getBlockPos(), state, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
 	}
 
 	public static boolean writeTagToBlockEntity(World world, @Nullable PlayerEntity player, BlockPos pos, ItemStack stack) {
@@ -199,7 +198,6 @@ public class BlockItem extends Item {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 		super.appendTooltip(stack, world, tooltip, context);
@@ -224,7 +222,7 @@ public class BlockItem extends Item {
 		if (this.block instanceof ShulkerBoxBlock) {
 			NbtCompound nbtCompound = entity.getStack().getTag();
 			if (nbtCompound != null) {
-				NbtList nbtList = nbtCompound.getCompound("BlockEntityTag").getList("Items", NbtTypeIds.COMPOUND);
+				NbtList nbtList = nbtCompound.getCompound("BlockEntityTag").getList("Items", NbtElement.COMPOUND_TYPE);
 				ItemUsage.spawnItemContents(entity, nbtList.stream().map(NbtCompound.class::cast).map(ItemStack::fromNbt));
 			}
 		}

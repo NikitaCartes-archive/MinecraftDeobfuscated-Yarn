@@ -35,6 +35,10 @@ public class ValueCheckLootCondition implements LootCondition {
 		return this.range.test(lootContext, this.value.nextInt(lootContext));
 	}
 
+	public static LootCondition.Builder builder(LootNumberProvider value, BoundedIntUnaryOperator range) {
+		return () -> new ValueCheckLootCondition(value, range);
+	}
+
 	public static class Serializer implements JsonSerializer<ValueCheckLootCondition> {
 		public void toJson(JsonObject jsonObject, ValueCheckLootCondition valueCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.add("value", jsonSerializationContext.serialize(valueCheckLootCondition.value));

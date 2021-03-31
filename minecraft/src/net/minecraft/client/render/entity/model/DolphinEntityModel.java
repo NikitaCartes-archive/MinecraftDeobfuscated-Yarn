@@ -20,9 +20,9 @@ public class DolphinEntityModel<T extends Entity> extends SinglePartEntityModel<
 
 	public DolphinEntityModel(ModelPart root) {
 		this.root = root;
-		this.body = root.getChild("body");
-		this.tail = this.body.getChild("tail");
-		this.tailFin = this.tail.getChild("tail_fin");
+		this.body = root.getChild(EntityModelPartNames.BODY);
+		this.tail = this.body.getChild(EntityModelPartNames.TAIL);
+		this.tailFin = this.tail.getChild(EntityModelPartNames.TAIL_FIN);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -31,31 +31,35 @@ public class DolphinEntityModel<T extends Entity> extends SinglePartEntityModel<
 		float f = 18.0F;
 		float g = -8.0F;
 		ModelPartData modelPartData2 = modelPartData.addChild(
-			"body", ModelPartBuilder.create().uv(22, 0).cuboid(-4.0F, -7.0F, 0.0F, 8.0F, 7.0F, 13.0F), ModelTransform.pivot(0.0F, 22.0F, -5.0F)
+			EntityModelPartNames.BODY, ModelPartBuilder.create().uv(22, 0).cuboid(-4.0F, -7.0F, 0.0F, 8.0F, 7.0F, 13.0F), ModelTransform.pivot(0.0F, 22.0F, -5.0F)
 		);
 		modelPartData2.addChild(
-			"back_fin", ModelPartBuilder.create().uv(51, 0).cuboid(-0.5F, 0.0F, 8.0F, 1.0F, 4.0F, 5.0F), ModelTransform.rotation((float) (Math.PI / 3), 0.0F, 0.0F)
+			EntityModelPartNames.BACK_FIN,
+			ModelPartBuilder.create().uv(51, 0).cuboid(-0.5F, 0.0F, 8.0F, 1.0F, 4.0F, 5.0F),
+			ModelTransform.rotation((float) (Math.PI / 3), 0.0F, 0.0F)
 		);
 		modelPartData2.addChild(
-			"left_fin",
+			EntityModelPartNames.LEFT_FIN,
 			ModelPartBuilder.create().uv(48, 20).mirrored().cuboid(-0.5F, -4.0F, 0.0F, 1.0F, 4.0F, 7.0F),
 			ModelTransform.of(2.0F, -2.0F, 4.0F, (float) (Math.PI / 3), 0.0F, (float) (Math.PI * 2.0 / 3.0))
 		);
 		modelPartData2.addChild(
-			"right_fin",
+			EntityModelPartNames.RIGHT_FIN,
 			ModelPartBuilder.create().uv(48, 20).cuboid(-0.5F, -4.0F, 0.0F, 1.0F, 4.0F, 7.0F),
 			ModelTransform.of(-2.0F, -2.0F, 4.0F, (float) (Math.PI / 3), 0.0F, (float) (-Math.PI * 2.0 / 3.0))
 		);
 		ModelPartData modelPartData3 = modelPartData2.addChild(
-			"tail", ModelPartBuilder.create().uv(0, 19).cuboid(-2.0F, -2.5F, 0.0F, 4.0F, 5.0F, 11.0F), ModelTransform.of(0.0F, -2.5F, 11.0F, -0.10471976F, 0.0F, 0.0F)
+			EntityModelPartNames.TAIL,
+			ModelPartBuilder.create().uv(0, 19).cuboid(-2.0F, -2.5F, 0.0F, 4.0F, 5.0F, 11.0F),
+			ModelTransform.of(0.0F, -2.5F, 11.0F, -0.10471976F, 0.0F, 0.0F)
 		);
 		modelPartData3.addChild(
-			"tail_fin", ModelPartBuilder.create().uv(19, 20).cuboid(-5.0F, -0.5F, 0.0F, 10.0F, 1.0F, 6.0F), ModelTransform.pivot(0.0F, 0.0F, 9.0F)
+			EntityModelPartNames.TAIL_FIN, ModelPartBuilder.create().uv(19, 20).cuboid(-5.0F, -0.5F, 0.0F, 10.0F, 1.0F, 6.0F), ModelTransform.pivot(0.0F, 0.0F, 9.0F)
 		);
 		ModelPartData modelPartData4 = modelPartData2.addChild(
-			"head", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -3.0F, -3.0F, 8.0F, 7.0F, 6.0F), ModelTransform.pivot(0.0F, -4.0F, -3.0F)
+			EntityModelPartNames.HEAD, ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -3.0F, -3.0F, 8.0F, 7.0F, 6.0F), ModelTransform.pivot(0.0F, -4.0F, -3.0F)
 		);
-		modelPartData4.addChild("nose", ModelPartBuilder.create().uv(0, 13).cuboid(-1.0F, 2.0F, -7.0F, 2.0F, 2.0F, 4.0F), ModelTransform.NONE);
+		modelPartData4.addChild(EntityModelPartNames.NOSE, ModelPartBuilder.create().uv(0, 13).cuboid(-1.0F, 2.0F, -7.0F, 2.0F, 2.0F, 4.0F), ModelTransform.NONE);
 		return TexturedModelData.of(modelData, 64, 64);
 	}
 

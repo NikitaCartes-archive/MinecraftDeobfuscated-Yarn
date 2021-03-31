@@ -1,8 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EndPortalBlockEntity;
 import net.minecraft.entity.Entity;
@@ -19,7 +17,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class EndPortalBlock extends BlockWithEntity {
-	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 12.0, 16.0);
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 6.0, 0.0, 16.0, 12.0, 16.0);
 
 	protected EndPortalBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -56,7 +54,6 @@ public class EndPortalBlock extends BlockWithEntity {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		double d = (double)pos.getX() + random.nextDouble();
@@ -65,7 +62,6 @@ public class EndPortalBlock extends BlockWithEntity {
 		world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
 		return ItemStack.EMPTY;

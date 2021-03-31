@@ -21,6 +21,9 @@ import net.minecraft.world.WorldView;
 
 public class WallSignBlock extends AbstractSignBlock {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+	protected static final float field_31282 = 2.0F;
+	protected static final float field_31283 = 4.5F;
+	protected static final float field_31284 = 12.5F;
 	private static final Map<Direction, VoxelShape> FACING_TO_SHAPE = Maps.newEnumMap(
 		ImmutableMap.of(
 			Direction.NORTH,

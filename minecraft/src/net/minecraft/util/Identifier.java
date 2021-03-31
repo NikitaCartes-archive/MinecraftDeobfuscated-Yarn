@@ -13,8 +13,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import java.lang.reflect.Type;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.text.TranslatableText;
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,6 +22,9 @@ import org.apache.commons.lang3.StringUtils;
 public class Identifier implements Comparable<Identifier> {
 	public static final Codec<Identifier> CODEC = Codec.STRING.<Identifier>comapFlatMap(Identifier::validate, Identifier::toString).stable();
 	private static final SimpleCommandExceptionType COMMAND_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.id.invalid"));
+	public static final char NAMESPACE_SEPARATOR = ':';
+	public static final String DEFAULT_NAMESPACE = "minecraft";
+	public static final String REALMS_NAMESPACE = "realms";
 	protected final String namespace;
 	protected final String path;
 
@@ -126,6 +127,10 @@ public class Identifier implements Comparable<Identifier> {
 		return i;
 	}
 
+	public String method_36181() {
+		return this.toString().replace('/', '_').replace(':', '_');
+	}
+
 	public static Identifier fromCommandInput(StringReader reader) throws CommandSyntaxException {
 		int i = reader.getCursor();
 
@@ -180,7 +185,6 @@ public class Identifier implements Comparable<Identifier> {
 		return character == '_' || character == '-' || character >= 'a' && character <= 'z' || character >= '0' && character <= '9' || character == '.';
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static boolean isValid(String id) {
 		String[] strings = split(id, ':');
 		return isNamespaceValid(StringUtils.isEmpty(strings[0]) ? "minecraft" : strings[0]) && isPathValid(strings[1]);

@@ -34,6 +34,8 @@ import net.minecraft.world.event.listener.GameEventListener;
 @Environment(EnvType.CLIENT)
 public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 	private final MinecraftClient client;
+	private static final int field_32899 = 32;
+	private static final float field_32900 = 1.0F;
 	private final List<GameEventDebugRenderer.Entry> entries = Lists.<GameEventDebugRenderer.Entry>newArrayList();
 	private final List<GameEventDebugRenderer.Listener> listeners = Lists.<GameEventDebugRenderer.Listener>newArrayList();
 

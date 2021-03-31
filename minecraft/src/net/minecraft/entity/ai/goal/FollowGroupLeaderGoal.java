@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 import net.minecraft.entity.passive.SchoolingFishEntity;
 
 public class FollowGroupLeaderGoal extends Goal {
+	private static final int field_30204 = 200;
 	private final SchoolingFishEntity fish;
 	private int moveDelay;
 	private int checkSurroundingDelay;

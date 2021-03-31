@@ -22,7 +22,7 @@ public class StructureProcessorRule {
 						.optionalFieldOf("position_predicate", AlwaysTruePosRuleTest.INSTANCE)
 						.forGetter(structureProcessorRule -> structureProcessorRule.positionPredicate),
 					BlockState.CODEC.fieldOf("output_state").forGetter(structureProcessorRule -> structureProcessorRule.outputState),
-					NbtCompound.CODEC.optionalFieldOf("output_nbt").forGetter(structureProcessorRule -> Optional.ofNullable(structureProcessorRule.tag))
+					NbtCompound.CODEC.optionalFieldOf("output_nbt").forGetter(structureProcessorRule -> Optional.ofNullable(structureProcessorRule.outputNbt))
 				)
 				.apply(instance, StructureProcessorRule::new)
 	);
@@ -31,7 +31,7 @@ public class StructureProcessorRule {
 	private final PosRuleTest positionPredicate;
 	private final BlockState outputState;
 	@Nullable
-	private final NbtCompound tag;
+	private final NbtCompound outputNbt;
 
 	public StructureProcessorRule(RuleTest inputPredicate, RuleTest locationPredicate, BlockState state) {
 		this(inputPredicate, locationPredicate, AlwaysTruePosRuleTest.INSTANCE, state, Optional.empty());
@@ -42,13 +42,13 @@ public class StructureProcessorRule {
 	}
 
 	public StructureProcessorRule(
-		RuleTest inputPredicate, RuleTest locationPredicate, PosRuleTest positionPredicate, BlockState outputState, Optional<NbtCompound> tag
+		RuleTest inputPredicate, RuleTest locationPredicate, PosRuleTest positionPredicate, BlockState outputState, Optional<NbtCompound> nbt
 	) {
 		this.inputPredicate = inputPredicate;
 		this.locationPredicate = locationPredicate;
 		this.positionPredicate = positionPredicate;
 		this.outputState = outputState;
-		this.tag = (NbtCompound)tag.orElse(null);
+		this.outputNbt = (NbtCompound)nbt.orElse(null);
 	}
 
 	public boolean test(BlockState input, BlockState location, BlockPos blockPos, BlockPos blockPos2, BlockPos blockPos3, Random random) {
@@ -62,7 +62,7 @@ public class StructureProcessorRule {
 	}
 
 	@Nullable
-	public NbtCompound getTag() {
-		return this.tag;
+	public NbtCompound getOutputNbt() {
+		return this.outputNbt;
 	}
 }

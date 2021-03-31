@@ -1,7 +1,5 @@
 package net.minecraft.recipe;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
@@ -37,7 +35,6 @@ public abstract class AbstractCookingRecipe implements Recipe<Inventory> {
 		return this.output.copy();
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean fits(int width, int height) {
 		return true;
@@ -59,7 +56,6 @@ public abstract class AbstractCookingRecipe implements Recipe<Inventory> {
 		return this.output;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public String getGroup() {
 		return this.group;

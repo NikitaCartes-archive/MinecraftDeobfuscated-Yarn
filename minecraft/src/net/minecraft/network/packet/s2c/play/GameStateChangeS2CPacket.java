@@ -2,8 +2,6 @@ package net.minecraft.network.packet.s2c.play;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -21,6 +19,11 @@ public class GameStateChangeS2CPacket implements Packet<ClientPlayPacketListener
 	public static final GameStateChangeS2CPacket.Reason PUFFERFISH_STING = new GameStateChangeS2CPacket.Reason(9);
 	public static final GameStateChangeS2CPacket.Reason ELDER_GUARDIAN_EFFECT = new GameStateChangeS2CPacket.Reason(10);
 	public static final GameStateChangeS2CPacket.Reason IMMEDIATE_RESPAWN = new GameStateChangeS2CPacket.Reason(11);
+	public static final int DEMO_OPEN_SCREEN = 0;
+	public static final int DEMO_MOVEMENT_HELP = 101;
+	public static final int DEMO_JUMP_HELP = 102;
+	public static final int DEMO_INVENTORY_HELP = 103;
+	public static final int DEMO_EXPIRY_NOTICE = 104;
 	private final GameStateChangeS2CPacket.Reason reason;
 	private final float value;
 
@@ -44,12 +47,10 @@ public class GameStateChangeS2CPacket implements Packet<ClientPlayPacketListener
 		clientPlayPacketListener.onGameStateChange(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public GameStateChangeS2CPacket.Reason getReason() {
 		return this.reason;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getValue() {
 		return this.value;
 	}

@@ -1,8 +1,6 @@
 package net.minecraft.network.packet.s2c.play;
 
 import java.util.Map;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -30,7 +28,6 @@ public class SynchronizeTagsS2CPacket implements Packet<ClientPlayPacketListener
 		clientPlayPacketListener.onSynchronizeTags(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Map<RegistryKey<? extends Registry<?>>, TagGroup.Serialized> getGroups() {
 		return this.groups;
 	}

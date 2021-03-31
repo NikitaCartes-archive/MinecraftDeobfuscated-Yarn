@@ -1,12 +1,11 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class ResourcePackSendS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final int MAX_HASH_LENGTH = 40;
 	private final String url;
 	private final String hash;
 	private final boolean required;
@@ -38,17 +37,14 @@ public class ResourcePackSendS2CPacket implements Packet<ClientPlayPacketListene
 		clientPlayPacketListener.onResourcePackSend(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public String getURL() {
 		return this.url;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public String getSHA1() {
 		return this.hash;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isRequired() {
 		return this.required;
 	}

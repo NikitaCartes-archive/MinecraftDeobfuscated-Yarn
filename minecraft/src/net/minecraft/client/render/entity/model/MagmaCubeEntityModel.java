@@ -14,12 +14,13 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class MagmaCubeEntityModel<T extends SlimeEntity> extends SinglePartEntityModel<T> {
+	private static final int SLICES_COUNT = 8;
 	private final ModelPart root;
 	private final ModelPart[] slices = new ModelPart[8];
 
 	public MagmaCubeEntityModel(ModelPart root) {
 		this.root = root;
-		Arrays.setAll(this.slices, i -> root.getChild(getSliceName(i)));
+		Arrays.setAll(this.slices, index -> root.getChild(getSliceName(index)));
 	}
 
 	private static String getSliceName(int index) {

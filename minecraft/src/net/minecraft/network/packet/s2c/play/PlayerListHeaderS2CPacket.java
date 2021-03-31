@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -10,6 +8,11 @@ import net.minecraft.text.Text;
 public class PlayerListHeaderS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final Text header;
 	private final Text footer;
+
+	public PlayerListHeaderS2CPacket(Text header, Text footer) {
+		this.header = header;
+		this.footer = footer;
+	}
 
 	public PlayerListHeaderS2CPacket(PacketByteBuf buf) {
 		this.header = buf.readText();
@@ -26,12 +29,10 @@ public class PlayerListHeaderS2CPacket implements Packet<ClientPlayPacketListene
 		clientPlayPacketListener.onPlayerListHeader(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Text getHeader() {
 		return this.header;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Text getFooter() {
 		return this.footer;
 	}

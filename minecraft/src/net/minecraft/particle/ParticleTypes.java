@@ -8,6 +8,7 @@ public class ParticleTypes {
 	public static final DefaultParticleType AMBIENT_ENTITY_EFFECT = register("ambient_entity_effect", false);
 	public static final DefaultParticleType ANGRY_VILLAGER = register("angry_villager", false);
 	public static final DefaultParticleType BARRIER = register("barrier", false);
+	public static final DefaultParticleType LIGHT = register("light", false);
 	public static final ParticleType<BlockStateParticleEffect> BLOCK = register(
 		"block", BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::method_29128
 	);
@@ -50,7 +51,7 @@ public class ParticleTypes {
 		"item", ItemStackParticleEffect.PARAMETERS_FACTORY, ItemStackParticleEffect::method_29136
 	);
 	public static final ParticleType<VibrationParticleEffect> VIBRATION = register(
-		"vibration", VibrationParticleEffect.field_28278, particleType -> VibrationParticleEffect.field_28277
+		"vibration", VibrationParticleEffect.PARAMETERS_FACTORY, particleType -> VibrationParticleEffect.CODEC
 	);
 	public static final DefaultParticleType ITEM_SLIME = register("item_slime", false);
 	public static final DefaultParticleType ITEM_SNOWBALL = register("item_snowball", false);

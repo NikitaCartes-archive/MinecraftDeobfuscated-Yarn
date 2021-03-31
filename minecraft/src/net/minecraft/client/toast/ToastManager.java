@@ -15,6 +15,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ToastManager extends DrawableHelper {
+	private static final int field_32220 = 5;
 	private final MinecraftClient client;
 	private final ToastManager.Entry<?>[] visibleEntries = new ToastManager.Entry[5];
 	private final Deque<Toast> toastQueue = Queues.<Toast>newArrayDeque();
@@ -70,6 +71,7 @@ public class ToastManager extends DrawableHelper {
 
 	@Environment(EnvType.CLIENT)
 	class Entry<T extends Toast> {
+		private static final long field_32221 = 600L;
 		private final T instance;
 		private long field_2243 = -1L;
 		private long field_2242 = -1L;

@@ -21,7 +21,7 @@ public class PigEntityModel<T extends Entity> extends QuadrupedEntityModel<T> {
 		ModelData modelData = QuadrupedEntityModel.getModelData(6, dilation);
 		ModelPartData modelPartData = modelData.getRoot();
 		modelPartData.addChild(
-			"head",
+			EntityModelPartNames.HEAD,
 			ModelPartBuilder.create()
 				.uv(0, 0)
 				.cuboid(-4.0F, -4.0F, -8.0F, 8.0F, 8.0F, 8.0F, dilation)

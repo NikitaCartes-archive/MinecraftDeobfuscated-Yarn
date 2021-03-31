@@ -4,10 +4,6 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
@@ -47,11 +43,16 @@ import net.minecraft.village.VillagerType;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 
 public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataContainer {
 	private static final TrackedData<Boolean> CONVERTING = DataTracker.registerData(ZombieVillagerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<VillagerData> VILLAGER_DATA = DataTracker.registerData(ZombieVillagerEntity.class, TrackedDataHandlerRegistry.VILLAGER_DATA);
+	private static final int field_30523 = 3600;
+	private static final int field_30520 = 6000;
+	private static final int field_30521 = 14;
+	private static final int field_30522 = 4;
 	private int conversionTimer;
 	private UUID converter;
 	private NbtElement gossipData;
@@ -71,50 +72,50 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
 		VillagerData.CODEC
 			.encodeStart(NbtOps.INSTANCE, this.getVillagerData())
 			.resultOrPartial(LOGGER::error)
-			.ifPresent(nbtElement -> tag.put("VillagerData", nbtElement));
+			.ifPresent(nbtElement -> nbt.put("VillagerData", nbtElement));
 		if (this.offerData != null) {
-			tag.put("Offers", this.offerData);
+			nbt.put("Offers", this.offerData);
 		}
 
 		if (this.gossipData != null) {
-			tag.put("Gossips", this.gossipData);
+			nbt.put("Gossips", this.gossipData);
 		}
 
-		tag.putInt("ConversionTime", this.isConverting() ? this.conversionTimer : -1);
+		nbt.putInt("ConversionTime", this.isConverting() ? this.conversionTimer : -1);
 		if (this.converter != null) {
-			tag.putUuid("ConversionPlayer", this.converter);
+			nbt.putUuid("ConversionPlayer", this.converter);
 		}
 
-		tag.putInt("Xp", this.xp);
+		nbt.putInt("Xp", this.xp);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		if (tag.contains("VillagerData", NbtTypeIds.COMPOUND)) {
-			DataResult<VillagerData> dataResult = VillagerData.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, tag.get("VillagerData")));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		if (nbt.contains("VillagerData", NbtElement.COMPOUND_TYPE)) {
+			DataResult<VillagerData> dataResult = VillagerData.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.get("VillagerData")));
 			dataResult.resultOrPartial(LOGGER::error).ifPresent(this::setVillagerData);
 		}
 
-		if (tag.contains("Offers", NbtTypeIds.COMPOUND)) {
-			this.offerData = tag.getCompound("Offers");
+		if (nbt.contains("Offers", NbtElement.COMPOUND_TYPE)) {
+			this.offerData = nbt.getCompound("Offers");
 		}
 
-		if (tag.contains("Gossips", NbtTypeIds.COMPOUND)) {
-			this.gossipData = tag.getList("Gossips", NbtTypeIds.COMPOUND);
+		if (nbt.contains("Gossips", NbtElement.COMPOUND_TYPE)) {
+			this.gossipData = nbt.getList("Gossips", NbtElement.COMPOUND_TYPE);
 		}
 
-		if (tag.contains("ConversionTime", NbtTypeIds.NUMBER) && tag.getInt("ConversionTime") > -1) {
-			this.setConverting(tag.containsUuid("ConversionPlayer") ? tag.getUuid("ConversionPlayer") : null, tag.getInt("ConversionTime"));
+		if (nbt.contains("ConversionTime", NbtElement.NUMBER_TYPE) && nbt.getInt("ConversionTime") > -1) {
+			this.setConverting(nbt.containsUuid("ConversionPlayer") ? nbt.getUuid("ConversionPlayer") : null, nbt.getInt("ConversionTime"));
 		}
 
-		if (tag.contains("Xp", NbtTypeIds.INT)) {
-			this.xp = tag.getInt("Xp");
+		if (nbt.contains("Xp", NbtElement.INT_TYPE)) {
+			this.xp = nbt.getInt("Xp");
 		}
 	}
 
@@ -177,7 +178,6 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		this.world.sendEntityStatus(this, (byte)16);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void handleStatus(byte status) {
 		if (status == 16) {
@@ -218,7 +218,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 
 		villagerEntity.setVillagerData(this.getVillagerData());
 		if (this.gossipData != null) {
-			villagerEntity.setGossipDataFromNbt(this.gossipData);
+			villagerEntity.readGossipDataNbt(this.gossipData);
 		}
 
 		if (this.offerData != null) {
@@ -307,24 +307,29 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
 		this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiomeKey(this.getBlockPos()))));
-		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
-	public void setVillagerData(VillagerData data) {
-		VillagerData villagerData = this.getVillagerData();
-		if (villagerData.getProfession() != data.getProfession()) {
+	@Override
+	public void setVillagerData(VillagerData villagerData) {
+		VillagerData villagerData2 = this.getVillagerData();
+		if (villagerData2.getProfession() != villagerData.getProfession()) {
 			this.offerData = null;
 		}
 
-		this.dataTracker.set(VILLAGER_DATA, data);
+		this.dataTracker.set(VILLAGER_DATA, villagerData);
 	}
 
 	@Override
 	public VillagerData getVillagerData() {
 		return this.dataTracker.get(VILLAGER_DATA);
+	}
+
+	public int getXp() {
+		return this.xp;
 	}
 
 	public void setXp(int xp) {

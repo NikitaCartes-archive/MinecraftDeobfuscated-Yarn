@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.damage.DamageTracker;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -45,12 +43,14 @@ public class DeathMessageS2CPacket implements Packet<ClientPlayPacketListener> {
 		return true;
 	}
 
-	@Environment(EnvType.CLIENT)
+	public int getKillerId() {
+		return this.killerId;
+	}
+
 	public int getEntityId() {
 		return this.entityId;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Text getMessage() {
 		return this.message;
 	}

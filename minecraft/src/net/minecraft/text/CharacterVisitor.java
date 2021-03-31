@@ -1,8 +1,5 @@
 package net.minecraft.text;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-
 /**
  * A visitor for single characters in a string.
  */
@@ -20,6 +17,5 @@ public interface CharacterVisitor {
 	 * @param style the style of the character, containing formatting and font information
 	 * @param codePoint the code point of the character
 	 */
-	@Environment(EnvType.CLIENT)
 	boolean accept(int index, Style style, int codePoint);
 }

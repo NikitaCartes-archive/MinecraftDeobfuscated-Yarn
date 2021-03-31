@@ -60,6 +60,10 @@ public class TagEntry extends LeafEntry {
 	}
 
 	public static LeafEntry.Builder<?> builder(Tag<Item> name) {
+		return builder((weight, quality, conditions, functions) -> new TagEntry(name, false, weight, quality, conditions, functions));
+	}
+
+	public static LeafEntry.Builder<?> expandBuilder(Tag<Item> name) {
 		return builder((weight, quality, conditions, functions) -> new TagEntry(name, true, weight, quality, conditions, functions));
 	}
 

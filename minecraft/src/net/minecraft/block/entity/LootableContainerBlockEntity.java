@@ -2,7 +2,6 @@ package net.minecraft.block.entity;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,6 +13,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -24,6 +24,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 
 public abstract class LootableContainerBlockEntity extends LockableContainerBlockEntity {
+	public static final String LOOT_TABLE_KEY = "LootTable";
+	public static final String LOOT_TABLE_SEED_KEY = "LootTableSeed";
 	@Nullable
 	protected Identifier lootTableId;
 	protected long lootTableSeed;
@@ -39,23 +41,23 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 		}
 	}
 
-	protected boolean deserializeLootTable(NbtCompound tag) {
-		if (tag.contains("LootTable", NbtTypeIds.STRING)) {
-			this.lootTableId = new Identifier(tag.getString("LootTable"));
-			this.lootTableSeed = tag.getLong("LootTableSeed");
+	protected boolean deserializeLootTable(NbtCompound nbt) {
+		if (nbt.contains("LootTable", NbtElement.STRING_TYPE)) {
+			this.lootTableId = new Identifier(nbt.getString("LootTable"));
+			this.lootTableSeed = nbt.getLong("LootTableSeed");
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	protected boolean serializeLootTable(NbtCompound tag) {
+	protected boolean serializeLootTable(NbtCompound nbt) {
 		if (this.lootTableId == null) {
 			return false;
 		} else {
-			tag.putString("LootTable", this.lootTableId.toString());
+			nbt.putString("LootTable", this.lootTableId.toString());
 			if (this.lootTableSeed != 0L) {
-				tag.putLong("LootTableSeed", this.lootTableSeed);
+				nbt.putLong("LootTableSeed", this.lootTableSeed);
 			}
 
 			return true;

@@ -12,7 +12,12 @@ public final class EntityTypeTags {
 	public static final Tag.Identified<EntityType<?>> IMPACT_PROJECTILES = register("impact_projectiles");
 	public static final Tag.Identified<EntityType<?>> POWDER_SNOW_WALKABLE_MOBS = register("powder_snow_walkable_mobs");
 	public static final Tag.Identified<EntityType<?>> AXOLOTL_ALWAYS_HOSTILES = register("axolotl_always_hostiles");
-	public static final Tag.Identified<EntityType<?>> AXOLOTL_TEMPTED_HOSTILES = register("axolotl_tempted_hostiles");
+	public static final Tag.Identified<EntityType<?>> AXOLOTL_HUNT_TARGETS = register("axolotl_hunt_targets");
+	public static final Tag.Identified<EntityType<?>> FREEZE_IMMUNE_ENTITY_TYPES = register("freeze_immune_entity_types");
+	public static final Tag.Identified<EntityType<?>> FREEZE_HURTS_EXTRA_TYPES = register("freeze_hurts_extra_types");
+
+	private EntityTypeTags() {
+	}
 
 	private static Tag.Identified<EntityType<?>> register(String id) {
 		return REQUIRED_TAGS.add(id);

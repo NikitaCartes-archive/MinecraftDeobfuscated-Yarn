@@ -12,6 +12,13 @@ package net.minecraft.world.biome.source;
  * voxels as a result.
  */
 public final class BiomeCoords {
+	public static final int field_33089 = 2;
+	public static final int field_33090 = 4;
+	private static final int field_33091 = 2;
+
+	private BiomeCoords() {
+	}
+
 	/**
 	 * Converts a block x, y, or z to a biome x, y, or z.
 	 * 

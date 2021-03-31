@@ -1,8 +1,5 @@
 package net.minecraft.block;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.tag.FluidTags;
@@ -23,7 +20,7 @@ public class ConcretePowderBlock extends FallingBlock {
 	@Override
 	public void onLanding(World world, BlockPos pos, BlockState fallingBlockState, BlockState currentStateInPos, FallingBlockEntity fallingBlockEntity) {
 		if (shouldHarden(world, pos, currentStateInPos)) {
-			world.setBlockState(pos, this.hardenedState, SetBlockStateFlags.DEFAULT);
+			world.setBlockState(pos, this.hardenedState, Block.NOTIFY_ALL);
 		}
 	}
 
@@ -69,7 +66,6 @@ public class ConcretePowderBlock extends FallingBlock {
 		return hardensOnAnySide(world, pos) ? this.hardenedState : super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public int getColor(BlockState state, BlockView world, BlockPos pos) {
 		return state.getMapColor(world, pos).color;

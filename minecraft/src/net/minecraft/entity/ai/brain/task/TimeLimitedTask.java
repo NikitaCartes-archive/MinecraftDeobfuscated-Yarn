@@ -2,20 +2,20 @@ package net.minecraft.entity.ai.brain.task;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.IntRange;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 public class TimeLimitedTask<E extends LivingEntity> extends Task<E> {
 	private boolean needsTimeReset;
 	private boolean delegateRunning;
-	private final IntRange timeRange;
+	private final UniformIntProvider timeRange;
 	private final Task<? super E> delegate;
 	private int timeLeft;
 
-	public TimeLimitedTask(Task<? super E> delegate, IntRange timeRange) {
+	public TimeLimitedTask(Task<? super E> delegate, UniformIntProvider timeRange) {
 		this(delegate, false, timeRange);
 	}
 
-	public TimeLimitedTask(Task<? super E> delegate, boolean skipFirstRun, IntRange timeRange) {
+	public TimeLimitedTask(Task<? super E> delegate, boolean skipFirstRun, UniformIntProvider timeRange) {
 		super(delegate.requiredMemoryStates);
 		this.delegate = delegate;
 		this.needsTimeReset = !skipFirstRun;
@@ -63,7 +63,7 @@ public class TimeLimitedTask<E extends LivingEntity> extends Task<E> {
 	}
 
 	private void resetTimeLeft(ServerWorld world) {
-		this.timeLeft = this.timeRange.choose(world.random);
+		this.timeLeft = this.timeRange.get(world.random);
 	}
 
 	@Override

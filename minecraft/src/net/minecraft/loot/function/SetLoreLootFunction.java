@@ -2,6 +2,7 @@ package net.minecraft.loot.function;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
@@ -11,12 +12,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.text.Text;
@@ -75,7 +76,7 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 		}
 
 		NbtCompound nbtCompound2;
-		if (nbtCompound.contains("display", NbtTypeIds.COMPOUND)) {
+		if (nbtCompound.contains("display", NbtElement.COMPOUND_TYPE)) {
 			nbtCompound2 = nbtCompound.getCompound("display");
 		} else {
 			if (!otherLoreExists) {
@@ -86,14 +87,48 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 			nbtCompound.put("display", nbtCompound2);
 		}
 
-		if (nbtCompound2.contains("Lore", NbtTypeIds.LIST)) {
-			return nbtCompound2.getList("Lore", NbtTypeIds.STRING);
+		if (nbtCompound2.contains("Lore", NbtElement.LIST_TYPE)) {
+			return nbtCompound2.getList("Lore", NbtElement.STRING_TYPE);
 		} else if (otherLoreExists) {
 			NbtList nbtList = new NbtList();
 			nbtCompound2.put("Lore", nbtList);
 			return nbtList;
 		} else {
 			return null;
+		}
+	}
+
+	public static SetLoreLootFunction.Builder method_35544() {
+		return new SetLoreLootFunction.Builder();
+	}
+
+	public static class Builder extends ConditionalLootFunction.Builder<SetLoreLootFunction.Builder> {
+		private boolean replace;
+		private LootContext.EntityTarget target;
+		private final List<Text> lore = Lists.<Text>newArrayList();
+
+		public SetLoreLootFunction.Builder replace(boolean replace) {
+			this.replace = replace;
+			return this;
+		}
+
+		public SetLoreLootFunction.Builder target(LootContext.EntityTarget target) {
+			this.target = target;
+			return this;
+		}
+
+		public SetLoreLootFunction.Builder lore(Text lore) {
+			this.lore.add(lore);
+			return this;
+		}
+
+		protected SetLoreLootFunction.Builder getThisBuilder() {
+			return this;
+		}
+
+		@Override
+		public LootFunction build() {
+			return new SetLoreLootFunction(this.getConditions(), this.replace, this.lore, this.target);
 		}
 	}
 

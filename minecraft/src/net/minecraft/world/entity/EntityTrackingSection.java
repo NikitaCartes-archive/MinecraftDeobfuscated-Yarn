@@ -4,6 +4,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.minecraft.util.TypeFilter;
+import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.collection.TypeFilterableList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -64,6 +65,7 @@ public class EntityTrackingSection<T> {
 		return entityTrackingStatus;
 	}
 
+	@Debug
 	public int size() {
 		return this.collection.size();
 	}

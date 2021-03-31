@@ -1,7 +1,7 @@
 package net.minecraft.block.entity;
 
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BarrelBlock;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -57,21 +57,21 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound tag) {
-		super.writeNbt(tag);
-		if (!this.serializeLootTable(tag)) {
-			Inventories.writeNbt(tag, this.inventory);
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		super.writeNbt(nbt);
+		if (!this.serializeLootTable(nbt)) {
+			Inventories.writeNbt(nbt, this.inventory);
 		}
 
-		return tag;
+		return nbt;
 	}
 
 	@Override
-	public void readNbt(NbtCompound tag) {
-		super.readNbt(tag);
+	public void readNbt(NbtCompound nbt) {
+		super.readNbt(nbt);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-		if (!this.deserializeLootTable(tag)) {
-			Inventories.readNbt(tag, this.inventory);
+		if (!this.deserializeLootTable(nbt)) {
+			Inventories.readNbt(nbt, this.inventory);
 		}
 	}
 
@@ -119,7 +119,7 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	private void setOpen(BlockState state, boolean open) {
-		this.world.setBlockState(this.getPos(), state.with(BarrelBlock.OPEN, Boolean.valueOf(open)), SetBlockStateFlags.DEFAULT);
+		this.world.setBlockState(this.getPos(), state.with(BarrelBlock.OPEN, Boolean.valueOf(open)), Block.NOTIFY_ALL);
 	}
 
 	private void playSound(BlockState state, SoundEvent soundEvent) {

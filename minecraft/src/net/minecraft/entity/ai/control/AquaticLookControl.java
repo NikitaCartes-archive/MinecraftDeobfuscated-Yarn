@@ -5,6 +5,8 @@ import net.minecraft.util.math.MathHelper;
 
 public class AquaticLookControl extends LookControl {
 	private final int maxYawDifference;
+	private static final int field_30200 = 10;
+	private static final int field_30201 = 20;
 
 	public AquaticLookControl(MobEntity entity, int maxYawDifference) {
 		super(entity);

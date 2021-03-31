@@ -75,7 +75,7 @@ public abstract class GeneratorType {
 		public GeneratorOptions createDefaultOptions(DynamicRegistryManager.Impl registryManager, long seed, boolean generateStructures, boolean bonusChest) {
 			Registry<Biome> registry = registryManager.get(Registry.BIOME_KEY);
 			Registry<DimensionType> registry2 = registryManager.get(Registry.DIMENSION_TYPE_KEY);
-			Registry<ChunkGeneratorSettings> registry3 = registryManager.get(Registry.NOISE_SETTINGS_WORLDGEN);
+			Registry<ChunkGeneratorSettings> registry3 = registryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY);
 			return new GeneratorOptions(
 				seed,
 				generateStructures,
@@ -172,7 +172,7 @@ public abstract class GeneratorType {
 	) {
 		BiomeSource biomeSource = new FixedBiomeSource(biome);
 		Registry<DimensionType> registry = registryManager.get(Registry.DIMENSION_TYPE_KEY);
-		Registry<ChunkGeneratorSettings> registry2 = registryManager.get(Registry.NOISE_SETTINGS_WORLDGEN);
+		Registry<ChunkGeneratorSettings> registry2 = registryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY);
 		Supplier<ChunkGeneratorSettings> supplier;
 		if (type == SINGLE_BIOME_CAVES) {
 			supplier = () -> registry2.getOrThrow(ChunkGeneratorSettings.CAVES);
@@ -217,7 +217,7 @@ public abstract class GeneratorType {
 	public GeneratorOptions createDefaultOptions(DynamicRegistryManager.Impl registryManager, long seed, boolean generateStructures, boolean bonusChest) {
 		Registry<Biome> registry = registryManager.get(Registry.BIOME_KEY);
 		Registry<DimensionType> registry2 = registryManager.get(Registry.DIMENSION_TYPE_KEY);
-		Registry<ChunkGeneratorSettings> registry3 = registryManager.get(Registry.NOISE_SETTINGS_WORLDGEN);
+		Registry<ChunkGeneratorSettings> registry3 = registryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY);
 		return new GeneratorOptions(
 			seed,
 			generateStructures,

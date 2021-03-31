@@ -7,9 +7,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -33,6 +30,7 @@ import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -194,7 +192,6 @@ public abstract class RaiderEntity extends PatrolEntity {
 		return this.wave;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isCelebrating() {
 		return this.dataTracker.get(CELEBRATING);
 	}
@@ -204,23 +201,23 @@ public abstract class RaiderEntity extends PatrolEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putInt("Wave", this.wave);
-		tag.putBoolean("CanJoinRaid", this.ableToJoinRaid);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putInt("Wave", this.wave);
+		nbt.putBoolean("CanJoinRaid", this.ableToJoinRaid);
 		if (this.raid != null) {
-			tag.putInt("RaidId", this.raid.getRaidId());
+			nbt.putInt("RaidId", this.raid.getRaidId());
 		}
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.wave = tag.getInt("Wave");
-		this.ableToJoinRaid = tag.getBoolean("CanJoinRaid");
-		if (tag.contains("RaidId", NbtTypeIds.INT)) {
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.wave = nbt.getInt("Wave");
+		this.ableToJoinRaid = nbt.getBoolean("CanJoinRaid");
+		if (nbt.contains("RaidId", NbtElement.INT_TYPE)) {
 			if (this.world instanceof ServerWorld) {
-				this.raid = ((ServerWorld)this.world).getRaidManager().getRaid(tag.getInt("RaidId"));
+				this.raid = ((ServerWorld)this.world).getRaidManager().getRaid(nbt.getInt("RaidId"));
 			}
 
 			if (this.raid != null) {
@@ -285,10 +282,10 @@ public abstract class RaiderEntity extends PatrolEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
 		this.setAbleToJoinRaid(this.getType() != EntityType.WITCH || spawnReason != SpawnReason.NATURAL);
-		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
 	public abstract SoundEvent getCelebratingSound();

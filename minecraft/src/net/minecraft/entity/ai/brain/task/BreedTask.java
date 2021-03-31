@@ -13,6 +13,9 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.server.world.ServerWorld;
 
 public class BreedTask extends Task<AnimalEntity> {
+	private static final int field_30104 = 3;
+	private static final int field_30105 = 60;
+	private static final int field_30106 = 110;
 	private final EntityType<? extends AnimalEntity> targetType;
 	private final float speed;
 	private long breedTime;
@@ -29,7 +32,7 @@ public class BreedTask extends Task<AnimalEntity> {
 				MemoryModuleType.LOOK_TARGET,
 				MemoryModuleState.REGISTERED
 			),
-			325
+			110
 		);
 		this.targetType = targetType;
 		this.speed = speed;
@@ -44,7 +47,7 @@ public class BreedTask extends Task<AnimalEntity> {
 		animalEntity.getBrain().remember(MemoryModuleType.BREED_TARGET, animalEntity2);
 		animalEntity2.getBrain().remember(MemoryModuleType.BREED_TARGET, animalEntity);
 		LookTargetUtil.lookAtAndWalkTowardsEachOther(animalEntity, animalEntity2, this.speed);
-		int i = 275 + animalEntity.getRandom().nextInt(50);
+		int i = 60 + animalEntity.getRandom().nextInt(50);
 		this.breedTime = l + (long)i;
 	}
 

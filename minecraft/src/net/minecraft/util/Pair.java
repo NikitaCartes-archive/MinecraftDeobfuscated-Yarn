@@ -13,7 +13,15 @@ public class Pair<A, B> {
 		return this.left;
 	}
 
+	public void setLeft(A left) {
+		this.left = left;
+	}
+
 	public B getRight() {
 		return this.right;
+	}
+
+	public void setRight(B right) {
+		this.right = right;
 	}
 }

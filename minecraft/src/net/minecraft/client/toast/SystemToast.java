@@ -16,6 +16,8 @@ import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class SystemToast implements Toast {
+	private static final long field_32218 = 5000L;
+	private static final int field_32219 = 200;
 	private final SystemToast.Type type;
 	private Text title;
 	private List<OrderedText> lines;

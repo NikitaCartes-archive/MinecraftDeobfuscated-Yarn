@@ -3,8 +3,6 @@ package net.minecraft.network.packet.s2c.play;
 import com.google.common.collect.ImmutableList;
 import java.util.Collection;
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -51,22 +49,18 @@ public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> 
 		clientPlayPacketListener.onUnlockRecipes(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public List<Identifier> getRecipeIdsToChange() {
 		return this.recipeIdsToChange;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public List<Identifier> getRecipeIdsToInit() {
 		return this.recipeIdsToInit;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public RecipeBookOptions getOptions() {
 		return this.options;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public UnlockRecipesS2CPacket.Action getAction() {
 		return this.action;
 	}

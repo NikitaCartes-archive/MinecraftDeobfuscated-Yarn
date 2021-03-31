@@ -6,21 +6,24 @@ import javax.annotation.Nullable;
 import net.minecraft.server.world.ServerWorld;
 
 public class GameTestBatch {
+	public static final String DEFAULT_BATCH = "defaultBatch";
 	private final String id;
 	private final Collection<TestFunction> testFunctions;
 	@Nullable
-	private final Consumer<ServerWorld> worldSetter;
+	private final Consumer<ServerWorld> beforeBatchConsumer;
 	@Nullable
-	private final Consumer<ServerWorld> field_27801;
+	private final Consumer<ServerWorld> afterBatchConsumer;
 
-	public GameTestBatch(String id, Collection<TestFunction> testFunctions, @Nullable Consumer<ServerWorld> worldSetter, @Nullable Consumer<ServerWorld> consumer) {
+	public GameTestBatch(
+		String id, Collection<TestFunction> testFunctions, @Nullable Consumer<ServerWorld> beforeBatchConsumer, @Nullable Consumer<ServerWorld> afterBatchConsumer
+	) {
 		if (testFunctions.isEmpty()) {
 			throw new IllegalArgumentException("A GameTestBatch must include at least one TestFunction!");
 		} else {
 			this.id = id;
 			this.testFunctions = testFunctions;
-			this.worldSetter = worldSetter;
-			this.field_27801 = consumer;
+			this.beforeBatchConsumer = beforeBatchConsumer;
+			this.afterBatchConsumer = afterBatchConsumer;
 		}
 	}
 
@@ -32,15 +35,15 @@ public class GameTestBatch {
 		return this.testFunctions;
 	}
 
-	public void setWorld(ServerWorld world) {
-		if (this.worldSetter != null) {
-			this.worldSetter.accept(world);
+	public void startBatch(ServerWorld world) {
+		if (this.beforeBatchConsumer != null) {
+			this.beforeBatchConsumer.accept(world);
 		}
 	}
 
-	public void method_32237(ServerWorld serverWorld) {
-		if (this.field_27801 != null) {
-			this.field_27801.accept(serverWorld);
+	public void finishBatch(ServerWorld world) {
+		if (this.afterBatchConsumer != null) {
+			this.afterBatchConsumer.accept(world);
 		}
 	}
 }

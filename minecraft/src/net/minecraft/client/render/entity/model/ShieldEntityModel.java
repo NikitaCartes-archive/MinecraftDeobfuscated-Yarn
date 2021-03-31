@@ -15,6 +15,10 @@ import net.minecraft.client.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class ShieldEntityModel extends Model {
+	private static final String PLATE = "plate";
+	private static final String HANDLE = "handle";
+	private static final int field_32551 = 10;
+	private static final int field_32552 = 20;
 	private final ModelPart root;
 	private final ModelPart plate;
 	private final ModelPart handle;

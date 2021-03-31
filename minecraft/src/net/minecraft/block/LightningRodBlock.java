@@ -1,11 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
-import net.minecraft.class_5945;
+import net.minecraft.client.util.ParticleUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
@@ -25,16 +21,20 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.IntRange;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldEvents;
 
 public class LightningRodBlock extends RodBlock implements Waterloggable {
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final BooleanProperty POWERED = Properties.POWERED;
+	private static final int field_31192 = 8;
+	public static final int field_31190 = 128;
+	public static final int field_31191 = 200;
 
 	public LightningRodBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -77,7 +77,7 @@ public class LightningRodBlock extends RodBlock implements Waterloggable {
 	}
 
 	public void setPowered(BlockState state, World world, BlockPos pos) {
-		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), SetBlockStateFlags.DEFAULT);
+		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), Block.NOTIFY_ALL);
 		this.updateNeighbors(state, world, pos);
 		world.getBlockTickScheduler().schedule(pos, this, 8);
 		world.syncWorldEvent(WorldEvents.ELECTRICITY_SPARKS, pos, ((Direction)state.get(FACING)).getAxis().ordinal());
@@ -89,18 +89,22 @@ public class LightningRodBlock extends RodBlock implements Waterloggable {
 
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), SetBlockStateFlags.DEFAULT);
+		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), Block.NOTIFY_ALL);
 		this.updateNeighbors(state, world, pos);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		if (world.isThundering()
 			&& (long)world.random.nextInt(200) <= world.getTime() % 200L
 			&& pos.getY() == world.getTopY(Heightmap.Type.WORLD_SURFACE, pos.getX(), pos.getZ()) - 1) {
-			class_5945.method_34683(((Direction)state.get(FACING)).getAxis(), world, pos, 0.125, ParticleTypes.ELECTRIC_SPARK, IntRange.between(1, 2));
+			ParticleUtil.spawnParticle(((Direction)state.get(FACING)).getAxis(), world, pos, 0.125, ParticleTypes.ELECTRIC_SPARK, UniformIntProvider.create(1, 2));
 		}
+	}
+
+	public static double method_35282(Random random, Direction.Axis axis, double d, Direction.Axis axis2) {
+		double e = axis == axis2 ? 1.0 : 0.25;
+		return d + random.nextDouble() * e - e / 2.0;
 	}
 
 	@Override

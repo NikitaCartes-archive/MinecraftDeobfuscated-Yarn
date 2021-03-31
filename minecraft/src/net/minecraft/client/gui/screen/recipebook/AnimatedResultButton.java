@@ -23,6 +23,9 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class AnimatedResultButton extends AbstractButtonWidget {
 	private static final Identifier BACKGROUND_TEXTURE = new Identifier("textures/gui/recipe_book.png");
+	private static final float field_32414 = 15.0F;
+	private static final int field_32415 = 25;
+	public static final int field_32413 = 30;
 	private static final Text MORE_RECIPES_TEXT = new TranslatableText("gui.recipebook.moreRecipes");
 	private AbstractRecipeScreenHandler<?> craftingScreenHandler;
 	private RecipeBook recipeBook;

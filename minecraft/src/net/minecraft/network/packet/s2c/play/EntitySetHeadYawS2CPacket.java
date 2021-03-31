@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -32,12 +30,10 @@ public class EntitySetHeadYawS2CPacket implements Packet<ClientPlayPacketListene
 		clientPlayPacketListener.onEntitySetHeadYaw(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Entity getEntity(World world) {
 		return world.getEntityById(this.entity);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public byte getHeadYaw() {
 		return this.headYaw;
 	}

@@ -3,8 +3,7 @@ package net.minecraft.block.entity;
 import java.util.Optional;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.NbtTypeIds;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.inventory.Inventories;
@@ -12,6 +11,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.CampfireCookingRecipe;
@@ -25,6 +25,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class CampfireBlockEntity extends BlockEntity implements Clearable {
+	private static final int field_31330 = 2;
+	private static final int field_31331 = 4;
 	private final DefaultedList<ItemStack> itemsBeingCooked = DefaultedList.ofSize(4, ItemStack.EMPTY);
 	private final int[] cookingTimes = new int[4];
 	private final int[] cookingTotalTimes = new int[4];
@@ -49,7 +51,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 						.orElse(itemStack);
 					ItemScatterer.spawn(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), itemStack2);
 					campfire.itemsBeingCooked.set(i, ItemStack.EMPTY);
-					world.updateListeners(pos, state, state, SetBlockStateFlags.DEFAULT);
+					world.updateListeners(pos, state, state, Block.NOTIFY_ALL);
 				}
 			}
 		}
@@ -110,39 +112,39 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 	}
 
 	@Override
-	public void readNbt(NbtCompound tag) {
-		super.readNbt(tag);
+	public void readNbt(NbtCompound nbt) {
+		super.readNbt(nbt);
 		this.itemsBeingCooked.clear();
-		Inventories.readNbt(tag, this.itemsBeingCooked);
-		if (tag.contains("CookingTimes", NbtTypeIds.INT_ARRAY)) {
-			int[] is = tag.getIntArray("CookingTimes");
+		Inventories.readNbt(nbt, this.itemsBeingCooked);
+		if (nbt.contains("CookingTimes", NbtElement.INT_ARRAY_TYPE)) {
+			int[] is = nbt.getIntArray("CookingTimes");
 			System.arraycopy(is, 0, this.cookingTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
 		}
 
-		if (tag.contains("CookingTotalTimes", NbtTypeIds.INT_ARRAY)) {
-			int[] is = tag.getIntArray("CookingTotalTimes");
+		if (nbt.contains("CookingTotalTimes", NbtElement.INT_ARRAY_TYPE)) {
+			int[] is = nbt.getIntArray("CookingTotalTimes");
 			System.arraycopy(is, 0, this.cookingTotalTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
 		}
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound tag) {
-		this.saveInitialChunkData(tag);
-		tag.putIntArray("CookingTimes", this.cookingTimes);
-		tag.putIntArray("CookingTotalTimes", this.cookingTotalTimes);
-		return tag;
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		this.saveInitialChunkData(nbt);
+		nbt.putIntArray("CookingTimes", this.cookingTimes);
+		nbt.putIntArray("CookingTotalTimes", this.cookingTotalTimes);
+		return nbt;
 	}
 
-	private NbtCompound saveInitialChunkData(NbtCompound tag) {
-		super.writeNbt(tag);
-		Inventories.writeNbt(tag, this.itemsBeingCooked, true);
-		return tag;
+	private NbtCompound saveInitialChunkData(NbtCompound nbt) {
+		super.writeNbt(nbt);
+		Inventories.writeNbt(nbt, this.itemsBeingCooked, true);
+		return nbt;
 	}
 
 	@Nullable
 	@Override
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, 13, this.toInitialChunkDataNbt());
+		return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.CAMPFIRE, this.toInitialChunkDataNbt());
 	}
 
 	@Override
@@ -173,7 +175,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 
 	private void updateListeners() {
 		this.markDirty();
-		this.getWorld().updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), SetBlockStateFlags.DEFAULT);
+		this.getWorld().updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.NOTIFY_ALL);
 	}
 
 	@Override

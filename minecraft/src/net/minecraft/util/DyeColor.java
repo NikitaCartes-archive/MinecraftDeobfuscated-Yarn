@@ -6,8 +6,6 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.MapColor;
 
 public enum DyeColor implements StringIdentifiable {
@@ -76,7 +74,6 @@ public enum DyeColor implements StringIdentifiable {
 		return this.fireworkColor;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getSignColor() {
 		return this.signColor;
 	}
@@ -100,7 +97,6 @@ public enum DyeColor implements StringIdentifiable {
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public static DyeColor byFireworkColor(int color) {
 		return BY_FIREWORK_COLOR.get(color);
 	}

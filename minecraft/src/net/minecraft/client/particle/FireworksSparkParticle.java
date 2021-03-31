@@ -3,13 +3,13 @@ package net.minecraft.client.particle;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.FireworkItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
@@ -124,7 +124,7 @@ public class FireworksSparkParticle {
 			double velocityY,
 			double velocityZ,
 			ParticleManager particleManager,
-			@Nullable NbtCompound tag
+			@Nullable NbtCompound nbt
 		) {
 			super(world, x, y, z);
 			this.velocityX = velocityX;
@@ -132,8 +132,8 @@ public class FireworksSparkParticle {
 			this.velocityZ = velocityZ;
 			this.particleManager = particleManager;
 			this.maxAge = 8;
-			if (tag != null) {
-				this.explosions = tag.getList("Explosions", NbtTypeIds.COMPOUND);
+			if (nbt != null) {
+				this.explosions = nbt.getList("Explosions", NbtElement.COMPOUND_TYPE);
 				if (this.explosions.isEmpty()) {
 					this.explosions = null;
 				} else {

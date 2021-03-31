@@ -32,6 +32,8 @@ public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRe
 	private static final ModelIdentifier MAP_FRAME = new ModelIdentifier("item_frame", "map=true");
 	private static final ModelIdentifier GLOW_FRAME = new ModelIdentifier("glow_item_frame", "map=false");
 	private static final ModelIdentifier MAP_GLOW_FRAME = new ModelIdentifier("glow_item_frame", "map=true");
+	public static final int field_32932 = 5;
+	public static final int field_32933 = 30;
 	private final MinecraftClient client = MinecraftClient.getInstance();
 	private final ItemRenderer itemRenderer;
 
@@ -41,7 +43,9 @@ public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRe
 	}
 
 	protected int getBlockLight(T itemFrameEntity, BlockPos blockPos) {
-		return itemFrameEntity.getType() == EntityType.GLOW_ITEM_FRAME ? 5 : super.getBlockLight(itemFrameEntity, blockPos);
+		return itemFrameEntity.getType() == EntityType.GLOW_ITEM_FRAME
+			? Math.max(5, super.getBlockLight(itemFrameEntity, blockPos))
+			: super.getBlockLight(itemFrameEntity, blockPos);
 	}
 
 	public void render(T itemFrameEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {

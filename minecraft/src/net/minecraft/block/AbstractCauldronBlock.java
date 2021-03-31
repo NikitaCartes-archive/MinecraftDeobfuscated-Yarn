@@ -22,6 +22,11 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public abstract class AbstractCauldronBlock extends Block {
+	private static final int field_30989 = 2;
+	private static final int field_30990 = 4;
+	private static final int field_30991 = 3;
+	private static final int field_30992 = 2;
+	protected static final int field_30988 = 4;
 	private static final VoxelShape RAY_TRACE_SHAPE = createCuboidShape(2.0, 4.0, 2.0, 14.0, 16.0, 14.0);
 	protected static final VoxelShape OUTLINE_SHAPE = VoxelShapes.combineAndSimplify(
 		VoxelShapes.fullCube(),
@@ -74,6 +79,8 @@ public abstract class AbstractCauldronBlock extends Block {
 	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
+
+	public abstract boolean isFull(BlockState state);
 
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {

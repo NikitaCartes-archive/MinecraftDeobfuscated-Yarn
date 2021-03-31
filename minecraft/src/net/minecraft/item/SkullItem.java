@@ -1,16 +1,18 @@
 package net.minecraft.item;
 
 import com.mojang.authlib.GameProfile;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import org.apache.commons.lang3.StringUtils;
 
 public class SkullItem extends WallStandingBlockItem {
+	public static final String SKULL_OWNER_KEY = "SkullOwner";
+
 	public SkullItem(Block block, Block block2, Item.Settings settings) {
 		super(block, block2, settings);
 	}
@@ -20,11 +22,11 @@ public class SkullItem extends WallStandingBlockItem {
 		if (stack.isOf(Items.PLAYER_HEAD) && stack.hasTag()) {
 			String string = null;
 			NbtCompound nbtCompound = stack.getTag();
-			if (nbtCompound.contains("SkullOwner", NbtTypeIds.STRING)) {
+			if (nbtCompound.contains("SkullOwner", NbtElement.STRING_TYPE)) {
 				string = nbtCompound.getString("SkullOwner");
-			} else if (nbtCompound.contains("SkullOwner", NbtTypeIds.COMPOUND)) {
+			} else if (nbtCompound.contains("SkullOwner", NbtElement.COMPOUND_TYPE)) {
 				NbtCompound nbtCompound2 = nbtCompound.getCompound("SkullOwner");
-				if (nbtCompound2.contains("Name", NbtTypeIds.STRING)) {
+				if (nbtCompound2.contains("Name", NbtElement.STRING_TYPE)) {
 					string = nbtCompound2.getString("Name");
 				}
 			}
@@ -38,12 +40,12 @@ public class SkullItem extends WallStandingBlockItem {
 	}
 
 	@Override
-	public boolean postProcessTag(NbtCompound tag) {
-		super.postProcessTag(tag);
-		if (tag.contains("SkullOwner", NbtTypeIds.STRING) && !StringUtils.isBlank(tag.getString("SkullOwner"))) {
-			GameProfile gameProfile = new GameProfile(null, tag.getString("SkullOwner"));
+	public boolean postProcessNbt(NbtCompound nbt) {
+		super.postProcessNbt(nbt);
+		if (nbt.contains("SkullOwner", NbtElement.STRING_TYPE) && !StringUtils.isBlank(nbt.getString("SkullOwner"))) {
+			GameProfile gameProfile = new GameProfile(null, nbt.getString("SkullOwner"));
 			gameProfile = SkullBlockEntity.loadProperties(gameProfile);
-			tag.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile));
+			nbt.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile));
 			return true;
 		} else {
 			return false;

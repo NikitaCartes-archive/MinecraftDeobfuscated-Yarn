@@ -12,6 +12,7 @@ import net.minecraft.client.realms.dto.Ops;
 import net.minecraft.client.realms.dto.PendingInvite;
 import net.minecraft.client.realms.dto.PendingInvitesList;
 import net.minecraft.client.realms.dto.PingResult;
+import net.minecraft.client.realms.dto.PlayerActivities;
 import net.minecraft.client.realms.dto.PlayerInfo;
 import net.minecraft.client.realms.dto.RealmsDescriptionDto;
 import net.minecraft.client.realms.dto.RealmsNews;
@@ -39,6 +40,44 @@ public class RealmsClient {
 	private final String sessionId;
 	private final String username;
 	private final MinecraftClient client;
+	private static final String field_32076 = "worlds";
+	private static final String field_32077 = "invites";
+	private static final String field_32078 = "mco";
+	private static final String field_32079 = "subscriptions";
+	private static final String field_32080 = "activities";
+	private static final String field_32081 = "ops";
+	private static final String field_32082 = "regions/ping/stat";
+	private static final String field_32083 = "trial";
+	private static final String field_32084 = "/$WORLD_ID/initialize";
+	private static final String field_32085 = "/$WORLD_ID";
+	private static final String field_32086 = "/liveplayerlist";
+	private static final String field_32087 = "/$WORLD_ID";
+	private static final String field_32088 = "/$WORLD_ID/$PROFILE_UUID";
+	private static final String field_32089 = "/minigames/$MINIGAME_ID/$WORLD_ID";
+	private static final String field_32090 = "/available";
+	private static final String field_32091 = "/templates/$WORLD_TYPE";
+	private static final String field_32092 = "/v1/$ID/join/pc";
+	private static final String field_32093 = "/$ID";
+	private static final String field_32094 = "/$WORLD_ID";
+	private static final String field_32095 = "/$WORLD_ID/invite/$UUID";
+	private static final String field_32058 = "/count/pending";
+	private static final String field_32059 = "/pending";
+	private static final String field_32060 = "/accept/$INVITATION_ID";
+	private static final String field_32061 = "/reject/$INVITATION_ID";
+	private static final String field_32062 = "/$WORLD_ID";
+	private static final String field_32063 = "/$WORLD_ID";
+	private static final String field_32064 = "/$WORLD_ID/slot/$SLOT_ID";
+	private static final String field_32065 = "/$WORLD_ID/open";
+	private static final String field_32066 = "/$WORLD_ID/close";
+	private static final String field_32067 = "/$WORLD_ID/reset";
+	private static final String field_32068 = "/$WORLD_ID";
+	private static final String field_32069 = "/$WORLD_ID/backups";
+	private static final String field_32070 = "/$WORLD_ID/slot/$SLOT_ID/download";
+	private static final String field_32071 = "/$WORLD_ID/backups/upload";
+	private static final String field_32072 = "/client/compatible";
+	private static final String field_32073 = "/tos/agreed";
+	private static final String field_32074 = "/v1/news";
+	private static final String field_32075 = "/stageAvailable";
 	private static final CheckedGson JSON = new CheckedGson();
 
 	public static RealmsClient createRealmsClient() {
@@ -93,6 +132,12 @@ public class RealmsClient {
 		String string = this.url("worlds" + "/$ID".replace("$ID", String.valueOf(worldId)));
 		String string2 = this.execute(Request.get(string));
 		return RealmsServer.parse(string2);
+	}
+
+	public PlayerActivities method_35684(long l) throws RealmsServiceException {
+		String string = this.url("activities" + "/$WORLD_ID".replace("$WORLD_ID", String.valueOf(l)));
+		String string2 = this.execute(Request.get(string));
+		return PlayerActivities.parse(string2);
 	}
 
 	public RealmsServerPlayerLists getLiveStats() throws RealmsServiceException {

@@ -20,6 +20,9 @@ public class BlockAgeStructureProcessor extends StructureProcessor {
 		.fieldOf("mossiness")
 		.<BlockAgeStructureProcessor>xmap(BlockAgeStructureProcessor::new, blockAgeStructureProcessor -> blockAgeStructureProcessor.mossiness)
 		.codec();
+	private static final float field_31681 = 0.5F;
+	private static final float field_31682 = 0.5F;
+	private static final float field_31683 = 0.15F;
 	private static final BlockState[] AGEABLE_SLABS = new BlockState[]{Blocks.STONE_SLAB.getDefaultState(), Blocks.STONE_BRICK_SLAB.getDefaultState()};
 	private final float mossiness;
 
@@ -53,7 +56,7 @@ public class BlockAgeStructureProcessor extends StructureProcessor {
 			blockState2 = this.processObsidian(random);
 		}
 
-		return blockState2 != null ? new Structure.StructureBlockInfo(blockPos2, blockState2, structureBlockInfo2.tag) : structureBlockInfo2;
+		return blockState2 != null ? new Structure.StructureBlockInfo(blockPos2, blockState2, structureBlockInfo2.nbt) : structureBlockInfo2;
 	}
 
 	@Nullable

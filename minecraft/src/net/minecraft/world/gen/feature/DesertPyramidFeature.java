@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import net.minecraft.structure.DesertTempleGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.HeightLimitView;
@@ -22,8 +21,8 @@ public class DesertPyramidFeature extends StructureFeature<DefaultFeatureConfig>
 	}
 
 	public static class Start extends StructureStart<DefaultFeatureConfig> {
-		public Start(StructureFeature<DefaultFeatureConfig> structureFeature, ChunkPos chunkPos, BlockBox blockBox, int i, long l) {
-			super(structureFeature, chunkPos, blockBox, i, l);
+		public Start(StructureFeature<DefaultFeatureConfig> structureFeature, ChunkPos chunkPos, int i, long l) {
+			super(structureFeature, chunkPos, i, l);
 		}
 
 		public void init(
@@ -36,8 +35,7 @@ public class DesertPyramidFeature extends StructureFeature<DefaultFeatureConfig>
 			HeightLimitView heightLimitView
 		) {
 			DesertTempleGenerator desertTempleGenerator = new DesertTempleGenerator(this.random, chunkPos.getStartX(), chunkPos.getStartZ());
-			this.children.add(desertTempleGenerator);
-			this.setBoundingBoxFromChildren();
+			this.method_35462(desertTempleGenerator);
 		}
 	}
 }

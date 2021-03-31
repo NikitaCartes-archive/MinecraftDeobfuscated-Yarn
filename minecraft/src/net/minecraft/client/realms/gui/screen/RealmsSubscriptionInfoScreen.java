@@ -43,6 +43,7 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 	private Text daysLeft;
 	private String startDate;
 	private Subscription.SubscriptionType type;
+	private static final String field_32127 = "https://aka.ms/ExtendJavaRealms";
 
 	public RealmsSubscriptionInfoScreen(Screen parent, RealmsServer serverData, Screen mainScreen) {
 		this.parent = parent;

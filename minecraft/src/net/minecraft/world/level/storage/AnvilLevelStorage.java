@@ -33,6 +33,7 @@ import org.apache.logging.log4j.Logger;
 
 public class AnvilLevelStorage {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final String field_31842 = ".mcr";
 
 	static boolean convertLevel(LevelStorage.Session storageSession, ProgressListener progressListener) {
 		progressListener.progressStagePercentage(0);

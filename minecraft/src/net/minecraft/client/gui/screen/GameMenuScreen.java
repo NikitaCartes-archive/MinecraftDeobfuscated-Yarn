@@ -15,6 +15,9 @@ import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class GameMenuScreen extends Screen {
+	private static final String field_32257 = "https://aka.ms/snapshotfeedback?ref=game";
+	private static final String field_32258 = "https://aka.ms/javafeedback?ref=game";
+	private static final String field_32259 = "https://aka.ms/snapshotbugs?ref=game";
 	private final boolean showMenu;
 
 	public GameMenuScreen(boolean showMenu) {

@@ -19,7 +19,13 @@ public class TickDurationMonitor {
 	private final long overtime;
 	private int tickCount;
 	private final File tickResultsDirectory;
-	private ReadableProfiler profiler;
+	private ReadableProfiler profiler = DummyProfiler.INSTANCE;
+
+	public TickDurationMonitor(LongSupplier longSupplier, String string, long l) {
+		this.timeGetter = longSupplier;
+		this.tickResultsDirectory = new File("debug", string);
+		this.overtime = l;
+	}
 
 	public Profiler nextProfiler() {
 		this.profiler = new ProfilerSystem(this.timeGetter, () -> this.tickCount, false);

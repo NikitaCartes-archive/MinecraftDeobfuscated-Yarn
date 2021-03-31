@@ -1,17 +1,18 @@
 package net.minecraft.client.font;
 
+import com.mojang.blaze3d.platform.TextureUtil;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.TextureUtil;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class GlyphAtlasTexture extends AbstractTexture {
+	private static final int field_32227 = 256;
 	private final Identifier id;
 	private final RenderLayer textLayer;
 	private final RenderLayer seeThroughTextLayer;
@@ -22,7 +23,7 @@ public class GlyphAtlasTexture extends AbstractTexture {
 		this.id = id;
 		this.hasColor = hasColor;
 		this.rootSlot = new GlyphAtlasTexture.Slot(0, 0, 256, 256);
-		TextureUtil.allocate(hasColor ? NativeImage.GLFormat.ABGR : NativeImage.GLFormat.INTENSITY, this.getGlId(), 256, 256);
+		TextureUtil.prepareImage(hasColor ? NativeImage.GLFormat.ABGR : NativeImage.GLFormat.INTENSITY, this.getGlId(), 256, 256);
 		this.textLayer = RenderLayer.getText(id);
 		this.seeThroughTextLayer = RenderLayer.getTextSeeThrough(id);
 	}

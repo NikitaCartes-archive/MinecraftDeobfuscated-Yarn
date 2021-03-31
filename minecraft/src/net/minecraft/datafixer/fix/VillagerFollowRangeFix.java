@@ -7,6 +7,9 @@ import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class VillagerFollowRangeFix extends ChoiceFix {
+	private static final double field_29912 = 16.0;
+	private static final double field_29913 = 48.0;
+
 	public VillagerFollowRangeFix(Schema schema) {
 		super(schema, false, "Villager Follow Range Fix", TypeReferences.ENTITY, "minecraft:villager");
 	}

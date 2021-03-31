@@ -6,6 +6,8 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.text.TranslatableText;
 
 public class WeatherCommand {
+	private static final int field_33398 = 6000;
+
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("weather")

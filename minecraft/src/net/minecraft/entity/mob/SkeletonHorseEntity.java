@@ -23,6 +23,7 @@ import net.minecraft.world.World;
 
 public class SkeletonHorseEntity extends HorseBaseEntity {
 	private final SkeletonHorseTrapTriggerGoal trapTriggerGoal = new SkeletonHorseTrapTriggerGoal(this);
+	private static final int field_30427 = 18000;
 	private boolean trapped;
 	private int trapTime;
 
@@ -118,17 +119,17 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putBoolean("SkeletonTrap", this.isTrapped());
-		tag.putInt("SkeletonTrapTime", this.trapTime);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putBoolean("SkeletonTrap", this.isTrapped());
+		nbt.putInt("SkeletonTrapTime", this.trapTime);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.setTrapped(tag.getBoolean("SkeletonTrap"));
-		this.trapTime = tag.getInt("SkeletonTrapTime");
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.setTrapped(nbt.getBoolean("SkeletonTrap"));
+		this.trapTime = nbt.getInt("SkeletonTrapTime");
 	}
 
 	@Override

@@ -1,8 +1,6 @@
 package net.minecraft.resource;
 
 import java.util.concurrent.CompletableFuture;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.Unit;
 
 /**
@@ -22,19 +20,16 @@ public interface ResourceReload {
 	 * Returns a fraction between 0 and 1 indicating the progress of this
 	 * reload.
 	 */
-	@Environment(EnvType.CLIENT)
 	float getProgress();
 
 	/**
 	 * Returns if this reload has completed, either normally or abnormally.
 	 */
-	@Environment(EnvType.CLIENT)
 	boolean isComplete();
 
 	/**
 	 * Throws an unchecked exception from this reload, if there is any. Does
 	 * nothing if the reload has not completed or terminated.
 	 */
-	@Environment(EnvType.CLIENT)
 	void throwException();
 }

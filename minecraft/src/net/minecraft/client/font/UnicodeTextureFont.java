@@ -22,6 +22,9 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class UnicodeTextureFont implements Font {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int field_32232 = 256;
+	private static final int field_32233 = 256;
+	private static final int field_32234 = 256;
 	private final ResourceManager resourceManager;
 	private final byte[] sizes;
 	private final String template;

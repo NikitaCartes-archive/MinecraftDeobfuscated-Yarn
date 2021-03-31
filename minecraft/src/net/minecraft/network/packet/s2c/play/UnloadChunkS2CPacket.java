@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -30,12 +28,10 @@ public class UnloadChunkS2CPacket implements Packet<ClientPlayPacketListener> {
 		clientPlayPacketListener.onUnloadChunk(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getX() {
 		return this.x;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getZ() {
 		return this.z;
 	}

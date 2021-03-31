@@ -3,12 +3,12 @@ package net.minecraft.world.gen.treedecorator;
 import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.VineBlock;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.StructureWorldAccess;
+import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.Feature;
 
 public class TrunkVineTreeDecorator extends TreeDecorator {
@@ -22,34 +22,34 @@ public class TrunkVineTreeDecorator extends TreeDecorator {
 
 	@Override
 	public void generate(
-		StructureWorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> placedStates, BlockBox box
+		TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, List<BlockPos> leavesPositions, List<BlockPos> list
 	) {
-		logPositions.forEach(pos -> {
+		leavesPositions.forEach(blockPos -> {
 			if (random.nextInt(3) > 0) {
-				BlockPos blockPos = pos.west();
-				if (Feature.isAir(world, blockPos)) {
-					this.placeVine(world, blockPos, VineBlock.EAST, placedStates, box);
+				BlockPos blockPos2 = blockPos.west();
+				if (Feature.isAir(testableWorld, blockPos2)) {
+					placeVine(biConsumer, blockPos2, VineBlock.EAST);
 				}
 			}
 
 			if (random.nextInt(3) > 0) {
-				BlockPos blockPos = pos.east();
-				if (Feature.isAir(world, blockPos)) {
-					this.placeVine(world, blockPos, VineBlock.WEST, placedStates, box);
+				BlockPos blockPos2 = blockPos.east();
+				if (Feature.isAir(testableWorld, blockPos2)) {
+					placeVine(biConsumer, blockPos2, VineBlock.WEST);
 				}
 			}
 
 			if (random.nextInt(3) > 0) {
-				BlockPos blockPos = pos.north();
-				if (Feature.isAir(world, blockPos)) {
-					this.placeVine(world, blockPos, VineBlock.SOUTH, placedStates, box);
+				BlockPos blockPos2 = blockPos.north();
+				if (Feature.isAir(testableWorld, blockPos2)) {
+					placeVine(biConsumer, blockPos2, VineBlock.SOUTH);
 				}
 			}
 
 			if (random.nextInt(3) > 0) {
-				BlockPos blockPos = pos.south();
-				if (Feature.isAir(world, blockPos)) {
-					this.placeVine(world, blockPos, VineBlock.NORTH, placedStates, box);
+				BlockPos blockPos2 = blockPos.south();
+				if (Feature.isAir(testableWorld, blockPos2)) {
+					placeVine(biConsumer, blockPos2, VineBlock.NORTH);
 				}
 			}
 		});

@@ -1,16 +1,21 @@
 package net.minecraft.network.packet.s2c.login;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientLoginPacketListener;
 import net.minecraft.util.Identifier;
 
 public class LoginQueryRequestS2CPacket implements Packet<ClientLoginPacketListener> {
+	private static final int MAX_PAYLOAD_SIZE = 1048576;
 	private final int queryId;
 	private final Identifier channel;
 	private final PacketByteBuf payload;
+
+	public LoginQueryRequestS2CPacket(int queryId, Identifier channel, PacketByteBuf payload) {
+		this.queryId = queryId;
+		this.channel = channel;
+		this.payload = payload;
+	}
 
 	public LoginQueryRequestS2CPacket(PacketByteBuf buf) {
 		this.queryId = buf.readVarInt();
@@ -34,8 +39,15 @@ public class LoginQueryRequestS2CPacket implements Packet<ClientLoginPacketListe
 		clientLoginPacketListener.onQueryRequest(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getQueryId() {
 		return this.queryId;
+	}
+
+	public Identifier getChannel() {
+		return this.channel;
+	}
+
+	public PacketByteBuf getPayload() {
+		return this.payload;
 	}
 }

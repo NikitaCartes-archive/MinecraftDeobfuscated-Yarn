@@ -1,5 +1,6 @@
 package net.minecraft.world.biome.layer;
 
+import net.minecraft.world.biome.BiomeIds;
 import net.minecraft.world.biome.layer.type.DiagonalCrossSamplingLayer;
 import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
 
@@ -14,7 +15,7 @@ public enum AddMushroomIslandLayer implements DiagonalCrossSamplingLayer {
 				&& BiomeLayers.isShallowOcean(ne)
 				&& BiomeLayers.isShallowOcean(se)
 				&& context.nextInt(100) == 0
-			? 14
+			? BiomeIds.MUSHROOM_FIELDS
 			: center;
 	}
 }

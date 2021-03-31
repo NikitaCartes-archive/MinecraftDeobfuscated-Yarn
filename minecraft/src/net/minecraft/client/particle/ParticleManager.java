@@ -62,6 +62,7 @@ import net.minecraft.util.shape.VoxelShape;
 
 @Environment(EnvType.CLIENT)
 public class ParticleManager implements ResourceReloader {
+	private static final int MAX_PARTICLE_COUNT = 16384;
 	private static final List<ParticleTextureSheet> PARTICLE_TEXTURE_SHEETS = ImmutableList.of(
 		ParticleTextureSheet.TERRAIN_SHEET,
 		ParticleTextureSheet.PARTICLE_SHEET_OPAQUE,
@@ -91,7 +92,8 @@ public class ParticleManager implements ResourceReloader {
 	private void registerDefaultFactories() {
 		this.registerFactory(ParticleTypes.AMBIENT_ENTITY_EFFECT, SpellParticle.EntityAmbientFactory::new);
 		this.registerFactory(ParticleTypes.ANGRY_VILLAGER, EmotionParticle.AngryVillagerFactory::new);
-		this.registerFactory(ParticleTypes.BARRIER, new BarrierParticle.Factory());
+		this.registerFactory(ParticleTypes.BARRIER, new ItemBillboardParticle.BarrierFactory());
+		this.registerFactory(ParticleTypes.LIGHT, new ItemBillboardParticle.LightFactory());
 		this.registerFactory(ParticleTypes.BLOCK, new BlockDustParticle.Factory());
 		this.registerFactory(ParticleTypes.BUBBLE, WaterBubbleParticle.Factory::new);
 		this.registerFactory(ParticleTypes.BUBBLE_COLUMN_UP, BubbleColumnUpParticle.Factory::new);

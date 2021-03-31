@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 import net.minecraft.util.registry.Registry;
 
 public class Schedule {
+	public static final int field_30692 = 2000;
+	public static final int field_30693 = 7000;
 	public static final Schedule EMPTY = register("empty").withActivity(0, Activity.IDLE).build();
 	public static final Schedule SIMPLE = register("simple").withActivity(5000, Activity.WORK).withActivity(11000, Activity.REST).build();
 	public static final Schedule VILLAGER_BABY = register("villager_baby")

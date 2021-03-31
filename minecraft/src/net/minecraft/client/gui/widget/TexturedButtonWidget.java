@@ -19,6 +19,10 @@ public class TexturedButtonWidget extends ButtonWidget {
 	private final int textureWidth;
 	private final int textureHeight;
 
+	public TexturedButtonWidget(int i, int j, int k, int l, int m, int n, Identifier identifier, ButtonWidget.PressAction pressAction) {
+		this(i, j, k, l, m, n, l, identifier, 256, 256, pressAction);
+	}
+
 	public TexturedButtonWidget(int x, int y, int width, int height, int u, int v, int hoveredVOffset, Identifier texture, ButtonWidget.PressAction pressAction) {
 		this(x, y, width, height, u, v, hoveredVOffset, texture, 256, 256, pressAction);
 	}

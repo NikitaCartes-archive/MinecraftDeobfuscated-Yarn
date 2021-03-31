@@ -18,8 +18,8 @@ public class DragonHeadEntityModel extends SkullBlockEntityModel {
 	private final ModelPart jaw;
 
 	public DragonHeadEntityModel(ModelPart root) {
-		this.head = root.getChild("head");
-		this.jaw = this.head.getChild("jaw");
+		this.head = root.getChild(EntityModelPartNames.HEAD);
+		this.jaw = this.head.getChild(EntityModelPartNames.JAW);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -27,7 +27,7 @@ public class DragonHeadEntityModel extends SkullBlockEntityModel {
 		ModelPartData modelPartData = modelData.getRoot();
 		float f = -16.0F;
 		ModelPartData modelPartData2 = modelPartData.addChild(
-			"head",
+			EntityModelPartNames.HEAD,
 			ModelPartBuilder.create()
 				.cuboid("upper_lip", -6.0F, -1.0F, -24.0F, 12, 5, 16, 176, 44)
 				.cuboid("upper_head", -8.0F, -8.0F, -10.0F, 16, 16, 16, 112, 30)
@@ -40,7 +40,9 @@ public class DragonHeadEntityModel extends SkullBlockEntityModel {
 			ModelTransform.NONE
 		);
 		modelPartData2.addChild(
-			"jaw", ModelPartBuilder.create().uv(176, 65).cuboid("jaw", -6.0F, 0.0F, -16.0F, 12.0F, 4.0F, 16.0F), ModelTransform.pivot(0.0F, 4.0F, -8.0F)
+			EntityModelPartNames.JAW,
+			ModelPartBuilder.create().uv(176, 65).cuboid(EntityModelPartNames.JAW, -6.0F, 0.0F, -16.0F, 12.0F, 4.0F, 16.0F),
+			ModelTransform.pivot(0.0F, 4.0F, -8.0F)
 		);
 		return TexturedModelData.of(modelData, 256, 256);
 	}

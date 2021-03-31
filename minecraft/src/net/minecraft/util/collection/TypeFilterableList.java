@@ -1,5 +1,6 @@
 package net.minecraft.util.collection;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -92,6 +93,10 @@ public class TypeFilterableList<T> extends AbstractCollection<T> {
 
 	public Iterator<T> iterator() {
 		return (Iterator<T>)(this.allElements.isEmpty() ? Collections.emptyIterator() : Iterators.unmodifiableIterator(this.allElements.iterator()));
+	}
+
+	public List<T> copy() {
+		return ImmutableList.copyOf(this.allElements);
 	}
 
 	public int size() {

@@ -6,8 +6,6 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -63,13 +61,11 @@ public class AdvancementDisplay {
 		return this.description;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public ItemStack getIcon() {
 		return this.icon;
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public Identifier getBackground() {
 		return this.background;
 	}
@@ -78,17 +74,14 @@ public class AdvancementDisplay {
 		return this.frame;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getX() {
 		return this.xPos;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getY() {
 		return this.yPos;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean shouldShowToast() {
 		return this.showToast;
 	}

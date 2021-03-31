@@ -43,6 +43,10 @@ public class ConsumeItemCriterion extends AbstractCriterion<ConsumeItemCriterion
 			return new ConsumeItemCriterion.Conditions(EntityPredicate.Extended.EMPTY, ItemPredicate.ANY);
 		}
 
+		public static ConsumeItemCriterion.Conditions predicate(ItemPredicate predicate) {
+			return new ConsumeItemCriterion.Conditions(EntityPredicate.Extended.EMPTY, predicate);
+		}
+
 		public static ConsumeItemCriterion.Conditions item(ItemConvertible item) {
 			return new ConsumeItemCriterion.Conditions(
 				EntityPredicate.Extended.EMPTY,

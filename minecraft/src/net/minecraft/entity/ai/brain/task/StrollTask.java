@@ -12,6 +12,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 
 public class StrollTask extends Task<PathAwareEntity> {
+	private static final int field_30157 = 10;
+	private static final int field_30158 = 7;
 	private final float speed;
 	protected final int horizontalRadius;
 	protected final int verticalRadius;

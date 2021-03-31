@@ -20,6 +20,11 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> implements ModelWithArms, ModelWithHead {
+	public static final float field_32505 = 0.25F;
+	public static final float field_32506 = 0.5F;
+	private static final float field_32503 = (float) (Math.PI / 12);
+	private static final float field_32504 = 1.9198622F;
+	private static final float field_32507 = (float) (Math.PI / 12);
 	public final ModelPart head;
 	public final ModelPart hat;
 	public final ModelPart body;
@@ -38,46 +43,50 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 
 	public BipedEntityModel(ModelPart root, Function<Identifier, RenderLayer> renderLayerFactory) {
 		super(renderLayerFactory, true, 16.0F, 0.0F, 2.0F, 2.0F, 24.0F);
-		this.head = root.getChild("head");
-		this.hat = root.getChild("hat");
-		this.body = root.getChild("body");
-		this.rightArm = root.getChild("right_arm");
-		this.leftArm = root.getChild("left_arm");
-		this.rightLeg = root.getChild("right_leg");
-		this.leftLeg = root.getChild("left_leg");
+		this.head = root.getChild(EntityModelPartNames.HEAD);
+		this.hat = root.getChild(EntityModelPartNames.HAT);
+		this.body = root.getChild(EntityModelPartNames.BODY);
+		this.rightArm = root.getChild(EntityModelPartNames.RIGHT_ARM);
+		this.leftArm = root.getChild(EntityModelPartNames.LEFT_ARM);
+		this.rightLeg = root.getChild(EntityModelPartNames.RIGHT_LEG);
+		this.leftLeg = root.getChild(EntityModelPartNames.LEFT_LEG);
 	}
 
 	public static ModelData getModelData(Dilation dilation, float pivotOffsetY) {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
 		modelPartData.addChild(
-			"head", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, dilation), ModelTransform.pivot(0.0F, 0.0F + pivotOffsetY, 0.0F)
+			EntityModelPartNames.HEAD,
+			ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, dilation),
+			ModelTransform.pivot(0.0F, 0.0F + pivotOffsetY, 0.0F)
 		);
 		modelPartData.addChild(
-			"hat",
+			EntityModelPartNames.HAT,
 			ModelPartBuilder.create().uv(32, 0).cuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, dilation.add(0.5F)),
 			ModelTransform.pivot(0.0F, 0.0F + pivotOffsetY, 0.0F)
 		);
 		modelPartData.addChild(
-			"body", ModelPartBuilder.create().uv(16, 16).cuboid(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, dilation), ModelTransform.pivot(0.0F, 0.0F + pivotOffsetY, 0.0F)
+			EntityModelPartNames.BODY,
+			ModelPartBuilder.create().uv(16, 16).cuboid(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, dilation),
+			ModelTransform.pivot(0.0F, 0.0F + pivotOffsetY, 0.0F)
 		);
 		modelPartData.addChild(
-			"right_arm",
+			EntityModelPartNames.RIGHT_ARM,
 			ModelPartBuilder.create().uv(40, 16).cuboid(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, dilation),
 			ModelTransform.pivot(-5.0F, 2.0F + pivotOffsetY, 0.0F)
 		);
 		modelPartData.addChild(
-			"left_arm",
+			EntityModelPartNames.LEFT_ARM,
 			ModelPartBuilder.create().uv(40, 16).mirrored().cuboid(-1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, dilation),
 			ModelTransform.pivot(5.0F, 2.0F + pivotOffsetY, 0.0F)
 		);
 		modelPartData.addChild(
-			"right_leg",
+			EntityModelPartNames.RIGHT_LEG,
 			ModelPartBuilder.create().uv(0, 16).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, dilation),
 			ModelTransform.pivot(-1.9F, 12.0F + pivotOffsetY, 0.0F)
 		);
 		modelPartData.addChild(
-			"left_leg",
+			EntityModelPartNames.LEFT_LEG,
 			ModelPartBuilder.create().uv(0, 16).mirrored().cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, dilation),
 			ModelTransform.pivot(1.9F, 12.0F + pivotOffsetY, 0.0F)
 		);
@@ -155,13 +164,22 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 		this.rightArm.yaw = 0.0F;
 		this.leftArm.yaw = 0.0F;
 		boolean bl3 = livingEntity.getMainArm() == Arm.RIGHT;
-		boolean bl4 = bl3 ? this.leftArmPose.isTwoHanded() : this.rightArmPose.isTwoHanded();
-		if (bl3 != bl4) {
-			this.positionLeftArm(livingEntity);
-			this.positionRightArm(livingEntity);
+		if (livingEntity.isUsingItem()) {
+			boolean bl4 = livingEntity.getActiveHand() == Hand.MAIN_HAND;
+			if (bl4 == bl3) {
+				this.positionRightArm(livingEntity);
+			} else {
+				this.positionLeftArm(livingEntity);
+			}
 		} else {
-			this.positionRightArm(livingEntity);
-			this.positionLeftArm(livingEntity);
+			boolean bl4 = bl3 ? this.leftArmPose.isTwoHanded() : this.rightArmPose.isTwoHanded();
+			if (bl3 != bl4) {
+				this.positionLeftArm(livingEntity);
+				this.positionRightArm(livingEntity);
+			} else {
+				this.positionRightArm(livingEntity);
+				this.positionLeftArm(livingEntity);
+			}
 		}
 
 		this.animateArms(livingEntity, h);

@@ -179,6 +179,14 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 
 	@Environment(EnvType.CLIENT)
 	public final class Entry extends AlwaysSelectedEntryListWidget.Entry<WorldListWidget.Entry> implements AutoCloseable {
+		private static final int field_32435 = 32;
+		private static final int field_32436 = 32;
+		private static final int field_32437 = 0;
+		private static final int field_32438 = 32;
+		private static final int field_32439 = 64;
+		private static final int field_32440 = 96;
+		private static final int field_32441 = 0;
+		private static final int field_32442 = 32;
 		private final MinecraftClient client;
 		private final SelectWorldScreen screen;
 		private final LevelSummary level;
@@ -504,6 +512,10 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			if (this.icon != null) {
 				this.icon.close();
 			}
+		}
+
+		public String method_35740() {
+			return this.level.getDisplayName();
 		}
 	}
 }

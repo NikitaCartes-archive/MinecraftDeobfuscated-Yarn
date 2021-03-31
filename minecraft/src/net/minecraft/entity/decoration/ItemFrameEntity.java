@@ -1,9 +1,6 @@
 package net.minecraft.entity.decoration;
 
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -23,6 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.sound.SoundEvent;
@@ -43,6 +41,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	private static final Logger ITEM_FRAME_LOGGER = LogManager.getLogger();
 	private static final TrackedData<ItemStack> ITEM_STACK = DataTracker.registerData(ItemFrameEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 	private static final TrackedData<Integer> ROTATION = DataTracker.registerData(ItemFrameEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	public static final int field_30454 = 8;
 	private float itemDropChance = 1.0F;
 	private boolean fixed;
 
@@ -188,7 +187,6 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 		return 12;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean shouldRender(double distance) {
 		double d = 16.0;
@@ -330,23 +328,23 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
 		if (!this.getHeldItemStack().isEmpty()) {
-			tag.put("Item", this.getHeldItemStack().writeNbt(new NbtCompound()));
-			tag.putByte("ItemRotation", (byte)this.getRotation());
-			tag.putFloat("ItemDropChance", this.itemDropChance);
+			nbt.put("Item", this.getHeldItemStack().writeNbt(new NbtCompound()));
+			nbt.putByte("ItemRotation", (byte)this.getRotation());
+			nbt.putFloat("ItemDropChance", this.itemDropChance);
 		}
 
-		tag.putByte("Facing", (byte)this.facing.getId());
-		tag.putBoolean("Invisible", this.isInvisible());
-		tag.putBoolean("Fixed", this.fixed);
+		nbt.putByte("Facing", (byte)this.facing.getId());
+		nbt.putBoolean("Invisible", this.isInvisible());
+		nbt.putBoolean("Fixed", this.fixed);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		NbtCompound nbtCompound = tag.getCompound("Item");
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		NbtCompound nbtCompound = nbt.getCompound("Item");
 		if (nbtCompound != null && !nbtCompound.isEmpty()) {
 			ItemStack itemStack = ItemStack.fromNbt(nbtCompound);
 			if (itemStack.isEmpty()) {
@@ -359,15 +357,15 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 			}
 
 			this.setHeldItemStack(itemStack, false);
-			this.setRotation(tag.getByte("ItemRotation"), false);
-			if (tag.contains("ItemDropChance", NbtTypeIds.NUMBER)) {
-				this.itemDropChance = tag.getFloat("ItemDropChance");
+			this.setRotation(nbt.getByte("ItemRotation"), false);
+			if (nbt.contains("ItemDropChance", NbtElement.NUMBER_TYPE)) {
+				this.itemDropChance = nbt.getFloat("ItemDropChance");
 			}
 		}
 
-		this.setFacing(Direction.byId(tag.getByte("Facing")));
-		this.setInvisible(tag.getBoolean("Invisible"));
-		this.fixed = tag.getBoolean("Fixed");
+		this.setFacing(Direction.byId(nbt.getByte("Facing")));
+		this.setInvisible(nbt.getBoolean("Invisible"));
+		this.fixed = nbt.getBoolean("Fixed");
 	}
 
 	@Override
@@ -409,14 +407,12 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 		return new EntitySpawnS2CPacket(this, this.getType(), this.facing.getId(), this.getDecorationBlockPos());
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void onSpawnPacket(EntitySpawnS2CPacket packet) {
 		super.onSpawnPacket(packet);
 		this.setFacing(Direction.byId(packet.getEntityData()));
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickBlockStack() {
 		ItemStack itemStack = this.getHeldItemStack();

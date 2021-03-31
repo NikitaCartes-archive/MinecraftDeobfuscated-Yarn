@@ -2,7 +2,6 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CropBlock;
@@ -18,8 +17,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.WorldEvents;
 
 public class BoneMealTask extends Task<VillagerEntity> {
+	private static final int field_30184 = 80;
 	private long startTime;
 	private long lastEndEntityAge;
 	private int duration;

@@ -1,5 +1,6 @@
 package net.minecraft.client.realms.gui;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -21,6 +22,12 @@ public class BasicFetchRateLimiter implements FetchRateLimiter {
 	public BasicFetchRateLimiter(Duration period) {
 		this.period = period;
 		this.clock = Clock::systemUTC;
+	}
+
+	@VisibleForTesting
+	protected BasicFetchRateLimiter(Duration duration, Supplier<Clock> supplier) {
+		this.period = duration;
+		this.clock = supplier;
 	}
 
 	@Override

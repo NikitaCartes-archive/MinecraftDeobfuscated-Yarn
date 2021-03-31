@@ -9,6 +9,11 @@ import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class MovementTutorialStepHandler implements TutorialStepHandler {
+	private static final int field_33029 = 40;
+	private static final int field_33030 = 40;
+	private static final int field_33031 = 100;
+	private static final int field_33032 = 20;
+	private static final int field_33033 = -1;
 	private static final Text MOVE_TITLE = new TranslatableText(
 		"tutorial.move.title",
 		TutorialManager.keyToText("forward"),

@@ -53,6 +53,10 @@ public class SetDamageLootFunction extends ConditionalLootFunction {
 		return builder(conditions -> new SetDamageLootFunction(conditions, durabilityRange, false));
 	}
 
+	public static ConditionalLootFunction.Builder<?> builder(LootNumberProvider durabilityRange, boolean add) {
+		return builder(conditions -> new SetDamageLootFunction(conditions, durabilityRange, add));
+	}
+
 	public static class Serializer extends ConditionalLootFunction.Serializer<SetDamageLootFunction> {
 		public void toJson(JsonObject jsonObject, SetDamageLootFunction setDamageLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, setDamageLootFunction, jsonSerializationContext);

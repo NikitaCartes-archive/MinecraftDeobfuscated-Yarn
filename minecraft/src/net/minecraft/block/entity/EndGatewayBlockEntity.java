@@ -3,9 +3,6 @@ package net.minecraft.block.entity;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -13,6 +10,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -35,6 +33,11 @@ import org.apache.logging.log4j.Logger;
 
 public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int field_31368 = 200;
+	private static final int field_31369 = 40;
+	private static final int field_31370 = 2400;
+	private static final int field_31371 = 1;
+	private static final int field_31372 = 10;
 	private long age;
 	private int teleportCooldown;
 	@Nullable
@@ -46,29 +49,32 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound tag) {
-		super.writeNbt(tag);
-		tag.putLong("Age", this.age);
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		super.writeNbt(nbt);
+		nbt.putLong("Age", this.age);
 		if (this.exitPortalPos != null) {
-			tag.put("ExitPortal", NbtHelper.fromBlockPos(this.exitPortalPos));
+			nbt.put("ExitPortal", NbtHelper.fromBlockPos(this.exitPortalPos));
 		}
 
 		if (this.exactTeleport) {
-			tag.putBoolean("ExactTeleport", this.exactTeleport);
+			nbt.putBoolean("ExactTeleport", this.exactTeleport);
 		}
 
-		return tag;
+		return nbt;
 	}
 
 	@Override
-	public void readNbt(NbtCompound tag) {
-		super.readNbt(tag);
-		this.age = tag.getLong("Age");
-		if (tag.contains("ExitPortal", NbtTypeIds.COMPOUND)) {
-			this.exitPortalPos = NbtHelper.toBlockPos(tag.getCompound("ExitPortal"));
+	public void readNbt(NbtCompound nbt) {
+		super.readNbt(nbt);
+		this.age = nbt.getLong("Age");
+		if (nbt.contains("ExitPortal", NbtElement.COMPOUND_TYPE)) {
+			BlockPos blockPos = NbtHelper.toBlockPos(nbt.getCompound("ExitPortal"));
+			if (World.isValid(blockPos)) {
+				this.exitPortalPos = blockPos;
+			}
 		}
 
-		this.exactTeleport = tag.getBoolean("ExactTeleport");
+		this.exactTeleport = nbt.getBoolean("ExactTeleport");
 	}
 
 	public static void clientTick(World world, BlockPos pos, BlockState state, EndGatewayBlockEntity blockEntity) {
@@ -112,12 +118,10 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 		return this.teleportCooldown > 0;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getRecentlyGeneratedBeamHeight(float tickDelta) {
 		return MathHelper.clamp(((float)this.age + tickDelta) / 200.0F, 0.0F, 1.0F);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getCooldownBeamHeight(float tickDelta) {
 		return 1.0F - MathHelper.clamp(((float)this.teleportCooldown - tickDelta) / 40.0F, 0.0F, 1.0F);
 	}
@@ -125,7 +129,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 	@Nullable
 	@Override
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, 8, this.toInitialChunkDataNbt());
+		return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.END_GATEWAY, this.toInitialChunkDataNbt());
 	}
 
 	@Override
@@ -295,13 +299,11 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 		Feature.END_GATEWAY.configure(endGatewayFeatureConfig).generate(world, world.getChunkManager().getChunkGenerator(), new Random(), pos);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean shouldDrawSide(Direction direction) {
 		return Block.shouldDrawSide(this.getCachedState(), this.world, this.getPos(), direction, this.getPos().offset(direction));
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getDrawnSidesCount() {
 		int i = 0;
 

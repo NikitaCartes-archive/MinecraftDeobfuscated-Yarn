@@ -12,6 +12,7 @@ import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
 public class LlamaSpitEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
+	private static final String MAIN = "main";
 	private final ModelPart root;
 
 	public LlamaSpitEntityModel(ModelPart root) {

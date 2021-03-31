@@ -8,6 +8,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
 
 public class StartRidingTask<E extends LivingEntity> extends Task<E> {
+	private static final int field_30149 = 1;
 	private final float speed;
 
 	public StartRidingTask(float speed) {

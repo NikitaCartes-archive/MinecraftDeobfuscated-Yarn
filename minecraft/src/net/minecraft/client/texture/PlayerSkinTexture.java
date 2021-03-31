@@ -1,5 +1,6 @@
 package net.minecraft.client.texture;
 
+import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.File;
 import java.io.FileInputStream;
@@ -56,7 +57,7 @@ public class PlayerSkinTexture extends ResourceTexture {
 	}
 
 	private void uploadTexture(NativeImage image) {
-		TextureUtil.allocate(this.getGlId(), image.getWidth(), image.getHeight());
+		TextureUtil.prepareImage(this.getGlId(), image.getWidth(), image.getHeight());
 		image.upload(0, 0, 0, true);
 	}
 

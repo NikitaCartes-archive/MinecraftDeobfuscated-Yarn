@@ -9,14 +9,14 @@ import com.mojang.serialization.Keyable;
 import com.mojang.serialization.Lifecycle;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.minecraft.class_6123;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
@@ -70,6 +70,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.util.math.floatprovider.FloatProviderType;
+import net.minecraft.util.math.intprovider.IntProviderType;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.village.VillagerType;
 import net.minecraft.world.World;
@@ -144,8 +145,25 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	public static final RegistryKey<Registry<LootNbtProviderType>> LOOT_NBT_PROVIDER_TYPE_KEY = createRegistryKey("loot_nbt_provider_type");
 	public static final RegistryKey<Registry<LootScoreProviderType>> LOOT_SCORE_PROVIDER_TYPE_KEY = createRegistryKey("loot_score_provider_type");
 	public static final RegistryKey<Registry<DimensionType>> DIMENSION_TYPE_KEY = createRegistryKey("dimension_type");
-	public static final RegistryKey<Registry<World>> DIMENSION = createRegistryKey("dimension");
-	public static final RegistryKey<Registry<DimensionOptions>> DIMENSION_OPTIONS = createRegistryKey("dimension");
+	/**
+	 * A registry key representing the {@link World} type. Can be used to obtain
+	 * registry keys with the {@link World} type, such as that for the overworld.
+	 * 
+	 * <p>Notice that {@code this == Registry.DIMENSION_KEY}.
+	 * 
+	 * @see #DIMENSION_KEY
+	 * @see World#OVERWORLD
+	 * @see net.minecraft.server.MinecraftServer#worlds
+	 */
+	public static final RegistryKey<Registry<World>> WORLD_KEY = createRegistryKey("dimension");
+	/**
+	 * A registry key representing the {@link DimensionOptions} type.
+	 * 
+	 * <p>Notice that {@code this == Registry.WORLD_KEY}.
+	 * 
+	 * @see #WORLD_KEY
+	 */
+	public static final RegistryKey<Registry<DimensionOptions>> DIMENSION_KEY = createRegistryKey("dimension");
 	public static final DefaultedRegistry<GameEvent> GAME_EVENT = create(GAME_EVENT_KEY, "step", () -> GameEvent.STEP);
 	public static final Registry<SoundEvent> SOUND_EVENT = create(SOUND_EVENT_KEY, () -> SoundEvents.ENTITY_ITEM_PICKUP);
 	public static final DefaultedRegistry<Fluid> FLUID = create(FLUID_KEY, "empty", () -> Fluids.EMPTY);
@@ -183,22 +201,26 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	public static final Registry<LootNumberProviderType> LOOT_NUMBER_PROVIDER_TYPE = create(LOOT_NUMBER_PROVIDER_TYPE_KEY, () -> LootNumberProviderTypes.CONSTANT);
 	public static final Registry<LootNbtProviderType> LOOT_NBT_PROVIDER_TYPE = create(LOOT_NBT_PROVIDER_TYPE_KEY, () -> LootNbtProviderTypes.CONTEXT);
 	public static final Registry<LootScoreProviderType> LOOT_SCORE_PROVIDER_TYPE = create(LOOT_SCORE_PROVIDER_TYPE_KEY, () -> LootScoreProviderTypes.CONTEXT);
-	public static final RegistryKey<Registry<ChunkGeneratorSettings>> NOISE_SETTINGS_WORLDGEN = createRegistryKey("worldgen/noise_settings");
-	public static final RegistryKey<Registry<ConfiguredSurfaceBuilder<?>>> CONFIGURED_SURFACE_BUILDER_WORLDGEN = createRegistryKey(
+	public static final RegistryKey<Registry<FloatProviderType<?>>> FLOAT_PROVIDER_TYPE_KEY = createRegistryKey("float_provider_type");
+	public static final Registry<FloatProviderType<?>> FLOAT_PROVIDER_TYPE = create(FLOAT_PROVIDER_TYPE_KEY, () -> FloatProviderType.CONSTANT);
+	public static final RegistryKey<Registry<IntProviderType<?>>> INT_PROVIDER_TYPE_KEY = createRegistryKey("int_provider_type");
+	public static final Registry<IntProviderType<?>> INT_PROVIDER_TYPE = create(INT_PROVIDER_TYPE_KEY, () -> IntProviderType.CONSTANT);
+	public static final RegistryKey<Registry<class_6123<?>>> HEIGHT_PROVIDER_TYPE_KEY = createRegistryKey("height_provider_type");
+	public static final Registry<class_6123<?>> HEIGHT_PROVIDER_TYPE = create(HEIGHT_PROVIDER_TYPE_KEY, () -> class_6123.field_31541);
+	public static final RegistryKey<Registry<ChunkGeneratorSettings>> CHUNK_GENERATOR_SETTINGS_KEY = createRegistryKey("worldgen/noise_settings");
+	public static final RegistryKey<Registry<ConfiguredSurfaceBuilder<?>>> CONFIGURED_SURFACE_BUILDER_KEY = createRegistryKey(
 		"worldgen/configured_surface_builder"
 	);
-	public static final RegistryKey<Registry<ConfiguredCarver<?>>> CONFIGURED_CARVER_WORLDGEN = createRegistryKey("worldgen/configured_carver");
-	public static final RegistryKey<Registry<ConfiguredFeature<?, ?>>> CONFIGURED_FEATURE_WORLDGEN = createRegistryKey("worldgen/configured_feature");
-	public static final RegistryKey<Registry<ConfiguredStructureFeature<?, ?>>> CONFIGURED_STRUCTURE_FEATURE_WORLDGEN = createRegistryKey(
+	public static final RegistryKey<Registry<ConfiguredCarver<?>>> CONFIGURED_CARVER_KEY = createRegistryKey("worldgen/configured_carver");
+	public static final RegistryKey<Registry<ConfiguredFeature<?, ?>>> CONFIGURED_FEATURE_KEY = createRegistryKey("worldgen/configured_feature");
+	public static final RegistryKey<Registry<ConfiguredStructureFeature<?, ?>>> CONFIGURED_STRUCTURE_FEATURE_KEY = createRegistryKey(
 		"worldgen/configured_structure_feature"
 	);
-	public static final RegistryKey<Registry<StructureProcessorList>> PROCESSOR_LIST_WORLDGEN = createRegistryKey("worldgen/processor_list");
-	public static final RegistryKey<Registry<StructurePool>> TEMPLATE_POOL_WORLDGEN = createRegistryKey("worldgen/template_pool");
+	public static final RegistryKey<Registry<StructureProcessorList>> STRUCTURE_PROCESSOR_LIST_KEY = createRegistryKey("worldgen/processor_list");
+	public static final RegistryKey<Registry<StructurePool>> STRUCTURE_POOL_KEY = createRegistryKey("worldgen/template_pool");
 	public static final RegistryKey<Registry<Biome>> BIOME_KEY = createRegistryKey("worldgen/biome");
 	public static final RegistryKey<Registry<SurfaceBuilder<?>>> SURFACE_BUILD_KEY = createRegistryKey("worldgen/surface_builder");
 	public static final Registry<SurfaceBuilder<?>> SURFACE_BUILDER = create(SURFACE_BUILD_KEY, () -> SurfaceBuilder.DEFAULT);
-	public static final RegistryKey<Registry<FloatProviderType<?>>> FLOAT_PROVIDER_TYPE_WORLDGEN = createRegistryKey("worldgen/float_provider_type");
-	public static final Registry<FloatProviderType<?>> FLOAT_PROVIDER_TYPE = create(FLOAT_PROVIDER_TYPE_WORLDGEN, () -> FloatProviderType.CONSTANT);
 	public static final RegistryKey<Registry<Carver<?>>> CARVER_KEY = createRegistryKey("worldgen/carver");
 	public static final Registry<Carver<?>> CARVER = create(CARVER_KEY, () -> Carver.CAVE);
 	public static final RegistryKey<Registry<Feature<?>>> FEATURE_KEY = createRegistryKey("worldgen/feature");
@@ -234,7 +256,8 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 		STRUCTURE_POOL_ELEMENT_KEY, () -> StructurePoolElementType.EMPTY_POOL_ELEMENT
 	);
 	/**
-	 * The {@linkplain RegistryKey} representing the ID of the actual registry.
+	 * The key representing the type of elements held by this registry. It is also the
+	 * key of this registry within the root registry.
 	 */
 	private final RegistryKey<? extends Registry<T>> registryKey;
 	private final Lifecycle lifecycle;
@@ -353,7 +376,6 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 		return Optional.ofNullable(this.get(id));
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Optional<T> getOrEmpty(@Nullable RegistryKey<T> key) {
 		return Optional.ofNullable(this.get(key));
 	}
@@ -376,11 +398,16 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 
 	public abstract Set<Entry<RegistryKey<T>, T>> getEntries();
 
+	@Nullable
+	public abstract T getRandom(Random random);
+
 	public Stream<T> stream() {
 		return StreamSupport.stream(this.spliterator(), false);
 	}
 
 	public abstract boolean containsId(Identifier id);
+
+	public abstract boolean contains(RegistryKey<T> key);
 
 	public static <T> T register(Registry<? super T> registry, String id, T entry) {
 		return register(registry, new Identifier(id), entry);

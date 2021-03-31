@@ -1,7 +1,6 @@
 package net.minecraft.item;
 
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -133,7 +132,7 @@ public class BucketItem extends Item implements FluidModificationItem {
 					world.breakBlock(pos, true);
 				}
 
-				if (!world.setBlockState(pos, this.fluid.getDefaultState().getBlockState(), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD)
+				if (!world.setBlockState(pos, this.fluid.getDefaultState().getBlockState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD)
 					&& !blockState.getFluidState().isStill()) {
 					return false;
 				} else {

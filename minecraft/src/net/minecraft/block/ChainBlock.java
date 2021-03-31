@@ -16,6 +16,8 @@ import net.minecraft.world.WorldAccess;
 
 public class ChainBlock extends PillarBlock implements Waterloggable {
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+	protected static final float field_31054 = 6.5F;
+	protected static final float field_31055 = 9.5F;
 	protected static final VoxelShape Y_SHAPE = Block.createCuboidShape(6.5, 0.0, 6.5, 9.5, 16.0, 9.5);
 	protected static final VoxelShape Z_SHAPE = Block.createCuboidShape(6.5, 6.5, 0.0, 9.5, 9.5, 16.0);
 	protected static final VoxelShape X_SHAPE = Block.createCuboidShape(0.0, 6.5, 6.5, 16.0, 9.5, 9.5);

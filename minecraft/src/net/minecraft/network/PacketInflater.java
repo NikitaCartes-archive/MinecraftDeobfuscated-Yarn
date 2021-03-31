@@ -9,6 +9,10 @@ import java.util.List;
 import java.util.zip.Inflater;
 
 public class PacketInflater extends ByteToMessageDecoder {
+	/**
+	 * The maximum size allowed for a compressed packet. Has value {@value}.
+	 */
+	public static final int MAXIMUM_PACKET_SIZE = 2097152;
 	private final Inflater inflater;
 	private int compressionThreshold;
 
@@ -42,6 +46,10 @@ public class PacketInflater extends ByteToMessageDecoder {
 				this.inflater.reset();
 			}
 		}
+	}
+
+	public int getCompressionThreshold() {
+		return this.compressionThreshold;
 	}
 
 	public void setCompressionThreshold(int compressionThreshold) {

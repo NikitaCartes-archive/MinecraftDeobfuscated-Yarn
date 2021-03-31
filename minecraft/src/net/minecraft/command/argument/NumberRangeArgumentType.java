@@ -21,6 +21,10 @@ public interface NumberRangeArgumentType<T extends NumberRange<?>> extends Argum
 	public static class FloatRangeArgumentType implements NumberRangeArgumentType<NumberRange.FloatRange> {
 		private static final Collection<String> EXAMPLES = Arrays.asList("0..5.2", "0", "-5.4", "-100.76..", "..100");
 
+		public static NumberRange.FloatRange method_35738(CommandContext<ServerCommandSource> commandContext, String string) {
+			return commandContext.getArgument(string, NumberRange.FloatRange.class);
+		}
+
 		public NumberRange.FloatRange parse(StringReader stringReader) throws CommandSyntaxException {
 			return NumberRange.FloatRange.parse(stringReader);
 		}

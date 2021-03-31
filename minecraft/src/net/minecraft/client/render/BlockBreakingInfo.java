@@ -1,10 +1,7 @@
 package net.minecraft.client.render;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.math.BlockPos;
 
-@Environment(EnvType.CLIENT)
 public class BlockBreakingInfo implements Comparable<BlockBreakingInfo> {
 	private final int actorNetworkId;
 	private final BlockPos pos;
@@ -14,6 +11,10 @@ public class BlockBreakingInfo implements Comparable<BlockBreakingInfo> {
 	public BlockBreakingInfo(int breakingEntityId, BlockPos pos) {
 		this.actorNetworkId = breakingEntityId;
 		this.pos = pos;
+	}
+
+	public int method_34868() {
+		return this.actorNetworkId;
 	}
 
 	public BlockPos getPos() {

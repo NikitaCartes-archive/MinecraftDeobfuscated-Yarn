@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.c2s.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -9,6 +7,9 @@ import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.util.math.BlockPos;
 
 public class UpdateCommandBlockC2SPacket implements Packet<ServerPlayPacketListener> {
+	private static final int TRACK_OUTPUT_MASK = 1;
+	private static final int CONDITIONAL_MASK = 2;
+	private static final int ALWAYS_ACTIVE_MASK = 4;
 	private final BlockPos pos;
 	private final String command;
 	private final boolean trackOutput;
@@ -16,7 +17,6 @@ public class UpdateCommandBlockC2SPacket implements Packet<ServerPlayPacketListe
 	private final boolean alwaysActive;
 	private final CommandBlockBlockEntity.Type type;
 
-	@Environment(EnvType.CLIENT)
 	public UpdateCommandBlockC2SPacket(
 		BlockPos pos, String command, CommandBlockBlockEntity.Type type, boolean trackOutput, boolean conditional, boolean alwaysActive
 	) {

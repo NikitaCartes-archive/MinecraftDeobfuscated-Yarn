@@ -3,8 +3,6 @@ package net.minecraft.sound;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 
 public class BiomeMoodSound {
 	public static final Codec<BiomeMoodSound> CODEC = RecordCodecBuilder.create(
@@ -29,7 +27,6 @@ public class BiomeMoodSound {
 		this.extraDistance = extraDistance;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public SoundEvent getSound() {
 		return this.sound;
 	}
@@ -38,7 +35,6 @@ public class BiomeMoodSound {
 	 * Returns the ticks it takes for entering the mood environment (a totally
 	 * dark cave) to playing the mood sound, or the inverse of the per-tick.
 	 */
-	@Environment(EnvType.CLIENT)
 	public int getCultivationTicks() {
 		return this.cultivationTicks;
 	}
@@ -47,7 +43,6 @@ public class BiomeMoodSound {
 	 * Returns the chebyshev distance from which the mood sound can play to
 	 * the player.
 	 */
-	@Environment(EnvType.CLIENT)
 	public int getSpawnRange() {
 		return this.spawnRange;
 	}
@@ -61,7 +56,6 @@ public class BiomeMoodSound {
 	 * is this distance to the mood position and this distance farther from the
 	 * player.
 	 */
-	@Environment(EnvType.CLIENT)
 	public double getExtraDistance() {
 		return this.extraDistance;
 	}

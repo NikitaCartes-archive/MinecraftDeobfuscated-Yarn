@@ -1,9 +1,9 @@
 package net.minecraft.entity.ai;
 
-import net.minecraft.util.math.IntRange;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 public class Durations {
-	public static IntRange betweenSeconds(int min, int max) {
-		return new IntRange(min * 20, max * 20);
+	public static UniformIntProvider betweenSeconds(int min, int max) {
+		return UniformIntProvider.create(min * 20, max * 20);
 	}
 }

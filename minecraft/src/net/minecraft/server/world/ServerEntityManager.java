@@ -20,6 +20,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -388,6 +389,7 @@ public class ServerEntityManager<T extends EntityLike> implements AutoCloseable 
 			);
 	}
 
+	@Debug
 	public String getDebugString() {
 		return this.entityUuids.size()
 			+ ","

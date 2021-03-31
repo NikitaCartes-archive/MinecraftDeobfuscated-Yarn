@@ -3,7 +3,7 @@ package net.minecraft.world.gen.placer;
 import com.mojang.serialization.Codec;
 import java.util.Random;
 import java.util.function.Supplier;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldAccess;
@@ -19,6 +19,6 @@ public class SimpleBlockPlacer extends BlockPlacer {
 
 	@Override
 	public void generate(WorldAccess world, BlockPos pos, BlockState state, Random random) {
-		world.setBlockState(pos, state, SetBlockStateFlags.NOTIFY_LISTENERS);
+		world.setBlockState(pos, state, Block.NOTIFY_LISTENERS);
 	}
 }

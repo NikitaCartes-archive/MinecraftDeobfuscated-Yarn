@@ -10,6 +10,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class MusicTracker {
+	private static final int field_33019 = 100;
 	private final Random random = new Random();
 	private final MinecraftClient client;
 	@Nullable

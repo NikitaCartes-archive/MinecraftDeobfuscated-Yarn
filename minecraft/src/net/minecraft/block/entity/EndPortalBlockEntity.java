@@ -1,7 +1,5 @@
 package net.minecraft.block.entity;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -15,8 +13,7 @@ public class EndPortalBlockEntity extends BlockEntity {
 		this(BlockEntityType.END_PORTAL, pos, state);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean shouldDrawSide(Direction direction) {
-		return direction == Direction.UP;
+		return direction.getAxis() == Direction.Axis.Y;
 	}
 }

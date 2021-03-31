@@ -183,7 +183,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 				)
 				.pool(
 					LootPool.builder()
-						.with(TagEntry.builder(ItemTags.CREEPER_DROP_MUSIC_DISCS))
+						.with(TagEntry.expandBuilder(ItemTags.CREEPER_DROP_MUSIC_DISCS))
 						.conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.KILLER, EntityPredicate.Builder.create().type(EntityTypeTags.SKELETONS)))
 				)
 		);
@@ -267,7 +267,10 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(LootTableEntry.builder(LootTables.FISHING_FISH_GAMEPLAY))
+						.with(
+							LootTableEntry.builder(LootTables.FISHING_FISH_GAMEPLAY)
+								.apply(FurnaceSmeltLootFunction.builder().conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE)))
+						)
 						.conditionally(KilledByPlayerLootCondition.builder())
 						.conditionally(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
 				)
@@ -339,6 +342,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						)
 				)
 		);
+		this.register(EntityType.GOAT, LootTable.builder());
 		this.register(
 			EntityType.GUARDIAN,
 			LootTable.builder()
@@ -366,7 +370,10 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(LootTableEntry.builder(LootTables.FISHING_FISH_GAMEPLAY))
+						.with(
+							LootTableEntry.builder(LootTables.FISHING_FISH_GAMEPLAY)
+								.apply(FurnaceSmeltLootFunction.builder().conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE)))
+						)
 						.conditionally(KilledByPlayerLootCondition.builder())
 						.conditionally(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
 				)
@@ -401,7 +408,10 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.rolls(ConstantLootNumberProvider.create(1.0F))
 						.with(ItemEntry.builder(Items.IRON_INGOT))
 						.with(ItemEntry.builder(Items.CARROT))
-						.with(ItemEntry.builder(Items.POTATO))
+						.with(
+							ItemEntry.builder(Items.POTATO)
+								.apply(FurnaceSmeltLootFunction.builder().conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE)))
+						)
 						.conditionally(KilledByPlayerLootCondition.builder())
 						.conditionally(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
 				)
@@ -553,12 +563,14 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.rolls(ConstantLootNumberProvider.create(1.0F))
 						.with(
 							ItemEntry.builder(Items.COD)
+								.apply(FurnaceSmeltLootFunction.builder().conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE)))
 								.weight(3)
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 2.0F)))
 								.apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
 						)
 						.with(
 							ItemEntry.builder(Items.SALMON)
+								.apply(FurnaceSmeltLootFunction.builder().conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE)))
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 2.0F)))
 								.apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
 						)
@@ -977,7 +989,10 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.rolls(ConstantLootNumberProvider.create(1.0F))
 						.with(ItemEntry.builder(Items.IRON_INGOT))
 						.with(ItemEntry.builder(Items.CARROT))
-						.with(ItemEntry.builder(Items.POTATO))
+						.with(
+							ItemEntry.builder(Items.POTATO)
+								.apply(FurnaceSmeltLootFunction.builder().conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE)))
+						)
 						.conditionally(KilledByPlayerLootCondition.builder())
 						.conditionally(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
 				)
@@ -1066,7 +1081,10 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.rolls(ConstantLootNumberProvider.create(1.0F))
 						.with(ItemEntry.builder(Items.IRON_INGOT))
 						.with(ItemEntry.builder(Items.CARROT))
-						.with(ItemEntry.builder(Items.POTATO))
+						.with(
+							ItemEntry.builder(Items.POTATO)
+								.apply(FurnaceSmeltLootFunction.builder().conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE)))
+						)
 						.conditionally(KilledByPlayerLootCondition.builder())
 						.conditionally(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
 				)

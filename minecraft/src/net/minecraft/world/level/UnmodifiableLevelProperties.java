@@ -205,6 +205,11 @@ public class UnmodifiableLevelProperties implements ServerWorldProperties {
 	}
 
 	@Override
+	public UUID getWanderingTraderId() {
+		return null;
+	}
+
+	@Override
 	public void setWanderingTraderId(UUID uuid) {
 	}
 

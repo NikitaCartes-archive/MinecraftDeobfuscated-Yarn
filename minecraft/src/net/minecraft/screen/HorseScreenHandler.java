@@ -1,7 +1,5 @@
 package net.minecraft.screen;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,7 +26,6 @@ public class HorseScreenHandler extends ScreenHandler {
 				return stack.isOf(Items.SADDLE) && !this.hasStack() && entity.canBeSaddled();
 			}
 
-			@Environment(EnvType.CLIENT)
 			@Override
 			public boolean doDrawHoveringEffect() {
 				return entity.canBeSaddled();
@@ -40,7 +37,6 @@ public class HorseScreenHandler extends ScreenHandler {
 				return entity.isHorseArmor(stack);
 			}
 
-			@Environment(EnvType.CLIENT)
 			@Override
 			public boolean doDrawHoveringEffect() {
 				return entity.hasArmorSlot();

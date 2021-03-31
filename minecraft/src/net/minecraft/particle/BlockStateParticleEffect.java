@@ -3,8 +3,6 @@ package net.minecraft.particle;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.command.argument.BlockArgumentParser;
@@ -50,7 +48,6 @@ public class BlockStateParticleEffect implements ParticleEffect {
 		return this.type;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public BlockState getBlockState() {
 		return this.blockState;
 	}

@@ -23,11 +23,12 @@ import net.minecraft.util.math.Vec3f;
 @Environment(EnvType.CLIENT)
 public class TridentRiptideFeatureRenderer<T extends LivingEntity> extends FeatureRenderer<T, PlayerEntityModel<T>> {
 	public static final Identifier TEXTURE = new Identifier("textures/entity/trident_riptide.png");
+	public static final String BOX = "box";
 	private final ModelPart aura;
 
-	public TridentRiptideFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> featureRendererContext, EntityModelLoader entityModelLoader) {
-		super(featureRendererContext);
-		ModelPart modelPart = entityModelLoader.getModelPart(EntityModelLayers.SPIN_ATTACK);
+	public TridentRiptideFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> context, EntityModelLoader loader) {
+		super(context);
+		ModelPart modelPart = loader.getModelPart(EntityModelLayers.SPIN_ATTACK);
 		this.aura = modelPart.getChild("box");
 	}
 

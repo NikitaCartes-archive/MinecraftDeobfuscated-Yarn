@@ -37,8 +37,10 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public class VexEntity extends HostileEntity {
+	public static final float field_30502 = 45.836624F;
 	public static final int field_28645 = MathHelper.ceil((float) (Math.PI * 5.0 / 4.0));
 	protected static final TrackedData<Byte> VEX_FLAGS = DataTracker.registerData(VexEntity.class, TrackedDataHandlerRegistry.BYTE);
+	private static final int field_30503 = 1;
 	private MobEntity owner;
 	@Nullable
 	private BlockPos bounds;
@@ -98,28 +100,28 @@ public class VexEntity extends HostileEntity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		if (tag.contains("BoundX")) {
-			this.bounds = new BlockPos(tag.getInt("BoundX"), tag.getInt("BoundY"), tag.getInt("BoundZ"));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		if (nbt.contains("BoundX")) {
+			this.bounds = new BlockPos(nbt.getInt("BoundX"), nbt.getInt("BoundY"), nbt.getInt("BoundZ"));
 		}
 
-		if (tag.contains("LifeTicks")) {
-			this.setLifeTicks(tag.getInt("LifeTicks"));
+		if (nbt.contains("LifeTicks")) {
+			this.setLifeTicks(nbt.getInt("LifeTicks"));
 		}
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
 		if (this.bounds != null) {
-			tag.putInt("BoundX", this.bounds.getX());
-			tag.putInt("BoundY", this.bounds.getY());
-			tag.putInt("BoundZ", this.bounds.getZ());
+			nbt.putInt("BoundX", this.bounds.getX());
+			nbt.putInt("BoundY", this.bounds.getY());
+			nbt.putInt("BoundZ", this.bounds.getZ());
 		}
 
 		if (this.alive) {
-			tag.putInt("LifeTicks", this.lifeTicks);
+			nbt.putInt("LifeTicks", this.lifeTicks);
 		}
 	}
 
@@ -192,11 +194,11 @@ public class VexEntity extends HostileEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
 		this.initEquipment(difficulty);
 		this.updateEnchantments(difficulty);
-		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
 	@Override

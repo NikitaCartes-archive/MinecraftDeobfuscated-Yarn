@@ -1,6 +1,8 @@
 package net.minecraft.client.render.model.json;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -13,6 +15,7 @@ import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -54,6 +57,21 @@ public class ModelVariantMap {
 		}
 	}
 
+	@VisibleForTesting
+	public boolean method_35790(String string) {
+		return this.variantMap.get(string) != null;
+	}
+
+	@VisibleForTesting
+	public WeightedUnbakedModel method_35792(String string) {
+		WeightedUnbakedModel weightedUnbakedModel = (WeightedUnbakedModel)this.variantMap.get(string);
+		if (weightedUnbakedModel == null) {
+			throw new ModelVariantMap.class_6247();
+		} else {
+			return weightedUnbakedModel;
+		}
+	}
+
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
@@ -75,6 +93,16 @@ public class ModelVariantMap {
 
 	public Map<String, WeightedUnbakedModel> getVariantMap() {
 		return this.variantMap;
+	}
+
+	@VisibleForTesting
+	public Set<WeightedUnbakedModel> method_35791() {
+		Set<WeightedUnbakedModel> set = Sets.<WeightedUnbakedModel>newHashSet(this.variantMap.values());
+		if (this.hasMultipartModel()) {
+			set.addAll(this.multipartModel.getModels());
+		}
+
+		return set;
 	}
 
 	public boolean hasMultipartModel() {
@@ -139,6 +167,12 @@ public class ModelVariantMap {
 				JsonArray jsonArray = JsonHelper.getArray(object, "multipart");
 				return context.deserialize(jsonArray, MultipartUnbakedModel.class);
 			}
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public class class_6247 extends RuntimeException {
+		protected class_6247() {
 		}
 	}
 }

@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,7 +33,6 @@ public class NamespaceResourceManager implements ResourceManager {
 		this.packList.add(pack);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public Set<String> getAllNamespaces() {
 		return ImmutableSet.of(this.namespace);
@@ -66,7 +63,6 @@ public class NamespaceResourceManager implements ResourceManager {
 		throw new FileNotFoundException(id.toString());
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean containsResource(Identifier id) {
 		if (!this.isPathAbsolute(id)) {
@@ -130,7 +126,6 @@ public class NamespaceResourceManager implements ResourceManager {
 		return list;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public Stream<ResourcePack> streamResourcePacks() {
 		return this.packList.stream();

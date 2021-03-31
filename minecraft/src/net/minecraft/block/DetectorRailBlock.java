@@ -3,7 +3,6 @@ package net.minecraft.block;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
@@ -28,6 +27,7 @@ import net.minecraft.world.World;
 public class DetectorRailBlock extends AbstractRailBlock {
 	public static final EnumProperty<RailShape> SHAPE = Properties.STRAIGHT_RAIL_SHAPE;
 	public static final BooleanProperty POWERED = Properties.POWERED;
+	private static final int field_31081 = 20;
 
 	public DetectorRailBlock(AbstractBlock.Settings settings) {
 		super(true, settings);
@@ -82,7 +82,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 
 			if (bl2 && !bl) {
 				BlockState blockState = state.with(POWERED, Boolean.valueOf(true));
-				world.setBlockState(pos, blockState, SetBlockStateFlags.DEFAULT);
+				world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
 				this.updateNearbyRails(world, pos, blockState, true);
 				world.updateNeighborsAlways(pos, this);
 				world.updateNeighborsAlways(pos.down(), this);
@@ -91,7 +91,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 
 			if (!bl2 && bl) {
 				BlockState blockState = state.with(POWERED, Boolean.valueOf(false));
-				world.setBlockState(pos, blockState, SetBlockStateFlags.DEFAULT);
+				world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
 				this.updateNearbyRails(world, pos, blockState, false);
 				world.updateNeighborsAlways(pos, this);
 				world.updateNeighborsAlways(pos.down(), this);

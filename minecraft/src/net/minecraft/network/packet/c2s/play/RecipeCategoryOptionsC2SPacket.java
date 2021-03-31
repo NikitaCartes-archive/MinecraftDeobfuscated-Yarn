@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.c2s.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
@@ -12,7 +10,6 @@ public class RecipeCategoryOptionsC2SPacket implements Packet<ServerPlayPacketLi
 	private final boolean guiOpen;
 	private final boolean filteringCraftable;
 
-	@Environment(EnvType.CLIENT)
 	public RecipeCategoryOptionsC2SPacket(RecipeBookCategory category, boolean guiOpen, boolean filteringCraftable) {
 		this.category = category;
 		this.guiOpen = guiOpen;

@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Predicate;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.state.property.Properties;
@@ -34,7 +34,7 @@ public class WaterloggedVegetationPatchFeature extends VegetationPatchFeature {
 		}
 
 		for(BlockPos blockPos : set2) {
-			world.setBlockState(blockPos, Blocks.WATER.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+			world.setBlockState(blockPos, Blocks.WATER.getDefaultState(), Block.NOTIFY_LISTENERS);
 		}
 
 		return set2;
@@ -60,7 +60,7 @@ public class WaterloggedVegetationPatchFeature extends VegetationPatchFeature {
 		if (super.generateVegetationFeature(world, config, generator, random, pos.down())) {
 			BlockState blockState = world.getBlockState(pos);
 			if (blockState.contains(Properties.WATERLOGGED) && !blockState.get(Properties.WATERLOGGED)) {
-				world.setBlockState(pos, blockState.with(Properties.WATERLOGGED, Boolean.valueOf(true)), SetBlockStateFlags.NOTIFY_LISTENERS);
+				world.setBlockState(pos, blockState.with(Properties.WATERLOGGED, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
 			}
 
 			return true;

@@ -2,7 +2,6 @@ package net.minecraft.entity.passive;
 
 import java.util.EnumSet;
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
@@ -29,6 +28,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
@@ -46,6 +46,7 @@ import net.minecraft.village.TradeOffers;
 import net.minecraft.world.World;
 
 public class WanderingTraderEntity extends MerchantEntity {
+	private static final int field_30629 = 5;
 	@Nullable
 	private BlockPos wanderTarget;
 	private int despawnDelay;
@@ -145,23 +146,23 @@ public class WanderingTraderEntity extends MerchantEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putInt("DespawnDelay", this.despawnDelay);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putInt("DespawnDelay", this.despawnDelay);
 		if (this.wanderTarget != null) {
-			tag.put("WanderTarget", NbtHelper.fromBlockPos(this.wanderTarget));
+			nbt.put("WanderTarget", NbtHelper.fromBlockPos(this.wanderTarget));
 		}
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		if (tag.contains("DespawnDelay", NbtTypeIds.NUMBER)) {
-			this.despawnDelay = tag.getInt("DespawnDelay");
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		if (nbt.contains("DespawnDelay", NbtElement.NUMBER_TYPE)) {
+			this.despawnDelay = nbt.getInt("DespawnDelay");
 		}
 
-		if (tag.contains("WanderTarget")) {
-			this.wanderTarget = NbtHelper.toBlockPos(tag.getCompound("WanderTarget"));
+		if (nbt.contains("WanderTarget")) {
+			this.wanderTarget = NbtHelper.toBlockPos(nbt.getCompound("WanderTarget"));
 		}
 
 		this.setBreedingAge(Math.max(0, this.getBreedingAge()));

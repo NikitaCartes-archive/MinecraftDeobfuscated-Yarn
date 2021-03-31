@@ -139,8 +139,16 @@ public abstract class DrawableHelper {
 		textRenderer.drawWithShadow(matrices, orderedText, (float)(centerX - textRenderer.getWidth(orderedText) / 2), (float)y, color);
 	}
 
+	public static void method_35719(MatrixStack matrixStack, TextRenderer textRenderer, OrderedText orderedText, int i, int j, int k) {
+		textRenderer.drawWithShadow(matrixStack, orderedText, (float)(i - textRenderer.getWidth(orderedText) / 2), (float)j, k);
+	}
+
 	public static void drawStringWithShadow(MatrixStack matrices, TextRenderer textRenderer, String text, int x, int y, int color) {
 		textRenderer.drawWithShadow(matrices, text, (float)x, (float)y, color);
+	}
+
+	public static void method_35720(MatrixStack matrixStack, TextRenderer textRenderer, OrderedText orderedText, int i, int j, int k) {
+		textRenderer.drawWithShadow(matrixStack, orderedText, (float)i, (float)j, k);
 	}
 
 	public static void drawTextWithShadow(MatrixStack matrices, TextRenderer textRenderer, Text text, int x, int y, int color) {

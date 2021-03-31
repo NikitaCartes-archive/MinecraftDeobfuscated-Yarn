@@ -21,6 +21,9 @@ import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 
 public class OpenDoorsTask extends Task<LivingEntity> {
+	private static final int field_30125 = 20;
+	private static final double field_30126 = 2.0;
+	private static final double field_30127 = 2.0;
 	@Nullable
 	private PathNode field_26387;
 	private int field_26388;

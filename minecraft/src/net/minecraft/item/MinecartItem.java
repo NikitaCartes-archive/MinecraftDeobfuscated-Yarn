@@ -1,6 +1,5 @@
 package net.minecraft.item;
 
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DispenserBlock;
@@ -14,6 +13,7 @@ import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 
 public class MinecartItem extends Item {

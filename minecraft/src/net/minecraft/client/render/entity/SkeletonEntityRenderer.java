@@ -25,4 +25,8 @@ public class SkeletonEntityRenderer extends BipedEntityRenderer<AbstractSkeleton
 	public Identifier getTexture(AbstractSkeletonEntity abstractSkeletonEntity) {
 		return TEXTURE;
 	}
+
+	protected boolean isShaking(AbstractSkeletonEntity abstractSkeletonEntity) {
+		return abstractSkeletonEntity.isShaking();
+	}
 }

@@ -28,6 +28,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class EndermiteEntity extends HostileEntity {
+	private static final int DESPAWN_TIME = 2400;
 	private int lifeTime;
 
 	public EndermiteEntity(EntityType<? extends EndermiteEntity> entityType, World world) {
@@ -84,15 +85,15 @@ public class EndermiteEntity extends HostileEntity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.lifeTime = tag.getInt("Lifetime");
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.lifeTime = nbt.getInt("Lifetime");
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		tag.putInt("Lifetime", this.lifeTime);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putInt("Lifetime", this.lifeTime);
 	}
 
 	@Override

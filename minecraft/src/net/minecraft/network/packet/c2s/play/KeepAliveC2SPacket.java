@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.c2s.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
@@ -9,7 +7,6 @@ import net.minecraft.network.listener.ServerPlayPacketListener;
 public class KeepAliveC2SPacket implements Packet<ServerPlayPacketListener> {
 	private final long id;
 
-	@Environment(EnvType.CLIENT)
 	public KeepAliveC2SPacket(long id) {
 		this.id = id;
 	}

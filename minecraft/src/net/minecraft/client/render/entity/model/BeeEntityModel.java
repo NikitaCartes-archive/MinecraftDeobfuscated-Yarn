@@ -16,6 +16,14 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
+	private static final float BONE_BASE_Y_PIVOT = 19.0F;
+	private static final String BONE = "bone";
+	private static final String STINGER = "stinger";
+	private static final String LEFT_ANTENNA = "left_antenna";
+	private static final String RIGHT_ANTENNA = "right_antenna";
+	private static final String FRONT_LEGS = "front_legs";
+	private static final String MIDDLE_LEGS = "middle_legs";
+	private static final String BACK_LEGS = "back_legs";
 	private final ModelPart bone;
 	private final ModelPart rightWing;
 	private final ModelPart leftWing;
@@ -30,12 +38,12 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 	public BeeEntityModel(ModelPart root) {
 		super(false, 24.0F, 0.0F);
 		this.bone = root.getChild("bone");
-		ModelPart modelPart = this.bone.getChild("body");
+		ModelPart modelPart = this.bone.getChild(EntityModelPartNames.BODY);
 		this.stinger = modelPart.getChild("stinger");
 		this.leftAntenna = modelPart.getChild("left_antenna");
 		this.rightAntenna = modelPart.getChild("right_antenna");
-		this.rightWing = this.bone.getChild("right_wing");
-		this.leftWing = this.bone.getChild("left_wing");
+		this.rightWing = this.bone.getChild(EntityModelPartNames.RIGHT_WING);
+		this.leftWing = this.bone.getChild(EntityModelPartNames.LEFT_WING);
 		this.frontLegs = this.bone.getChild("front_legs");
 		this.middleLegs = this.bone.getChild("middle_legs");
 		this.backLegs = this.bone.getChild("back_legs");
@@ -47,7 +55,7 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 		ModelPartData modelPartData = modelData.getRoot();
 		ModelPartData modelPartData2 = modelPartData.addChild("bone", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 19.0F, 0.0F));
 		ModelPartData modelPartData3 = modelPartData2.addChild(
-			"body", ModelPartBuilder.create().uv(0, 0).cuboid(-3.5F, -4.0F, -5.0F, 7.0F, 7.0F, 10.0F), ModelTransform.NONE
+			EntityModelPartNames.BODY, ModelPartBuilder.create().uv(0, 0).cuboid(-3.5F, -4.0F, -5.0F, 7.0F, 7.0F, 10.0F), ModelTransform.NONE
 		);
 		modelPartData3.addChild("stinger", ModelPartBuilder.create().uv(26, 7).cuboid(0.0F, -1.0F, 5.0F, 0.0F, 1.0F, 2.0F), ModelTransform.NONE);
 		modelPartData3.addChild(
@@ -58,12 +66,12 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 		);
 		Dilation dilation = new Dilation(0.001F);
 		modelPartData2.addChild(
-			"right_wing",
+			EntityModelPartNames.RIGHT_WING,
 			ModelPartBuilder.create().uv(0, 18).cuboid(-9.0F, 0.0F, 0.0F, 9.0F, 0.0F, 6.0F, dilation),
 			ModelTransform.of(-1.5F, -4.0F, -3.0F, 0.0F, -0.2618F, 0.0F)
 		);
 		modelPartData2.addChild(
-			"left_wing",
+			EntityModelPartNames.LEFT_WING,
 			ModelPartBuilder.create().uv(0, 18).mirrored().cuboid(0.0F, 0.0F, 0.0F, 9.0F, 0.0F, 6.0F, dilation),
 			ModelTransform.of(1.5F, -4.0F, -3.0F, 0.0F, 0.2618F, 0.0F)
 		);

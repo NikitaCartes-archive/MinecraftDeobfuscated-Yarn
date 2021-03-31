@@ -54,6 +54,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 	private ButtonWidget changesButton;
 	private Boolean noBackups = false;
 	private final RealmsServer serverData;
+	private static final String field_32119 = "Uploaded";
 	private RealmsLabel titleLabel;
 
 	public RealmsBackupScreen(RealmsConfigureWorldScreen parent, RealmsServer serverData, int slotId) {

@@ -16,6 +16,10 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class BookModel extends Model {
+	private static final String LEFT_PAGES = "left_pages";
+	private static final String RIGHT_PAGES = "right_pages";
+	private static final String FLIP_PAGE1 = "flip_page1";
+	private static final String FLIP_PAGE2 = "flip_page2";
 	private final ModelPart root;
 	private final ModelPart leftCover;
 	private final ModelPart rightCover;
@@ -27,8 +31,8 @@ public class BookModel extends Model {
 	public BookModel(ModelPart root) {
 		super(RenderLayer::getEntitySolid);
 		this.root = root;
-		this.leftCover = root.getChild("left_lid");
-		this.rightCover = root.getChild("right_lid");
+		this.leftCover = root.getChild(EntityModelPartNames.LEFT_LID);
+		this.rightCover = root.getChild(EntityModelPartNames.RIGHT_LID);
 		this.leftPages = root.getChild("left_pages");
 		this.rightPages = root.getChild("right_pages");
 		this.leftPage = root.getChild("flip_page1");
@@ -39,10 +43,14 @@ public class BookModel extends Model {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
 		modelPartData.addChild(
-			"left_lid", ModelPartBuilder.create().uv(0, 0).cuboid(-6.0F, -5.0F, -0.005F, 6.0F, 10.0F, 0.005F), ModelTransform.pivot(0.0F, 0.0F, -1.0F)
+			EntityModelPartNames.LEFT_LID,
+			ModelPartBuilder.create().uv(0, 0).cuboid(-6.0F, -5.0F, -0.005F, 6.0F, 10.0F, 0.005F),
+			ModelTransform.pivot(0.0F, 0.0F, -1.0F)
 		);
 		modelPartData.addChild(
-			"right_lid", ModelPartBuilder.create().uv(16, 0).cuboid(0.0F, -5.0F, -0.005F, 6.0F, 10.0F, 0.005F), ModelTransform.pivot(0.0F, 0.0F, 1.0F)
+			EntityModelPartNames.RIGHT_LID,
+			ModelPartBuilder.create().uv(16, 0).cuboid(0.0F, -5.0F, -0.005F, 6.0F, 10.0F, 0.005F),
+			ModelTransform.pivot(0.0F, 0.0F, 1.0F)
 		);
 		modelPartData.addChild(
 			"seam", ModelPartBuilder.create().uv(12, 0).cuboid(-1.0F, -5.0F, 0.0F, 2.0F, 10.0F, 0.005F), ModelTransform.rotation(0.0F, (float) (Math.PI / 2), 0.0F)

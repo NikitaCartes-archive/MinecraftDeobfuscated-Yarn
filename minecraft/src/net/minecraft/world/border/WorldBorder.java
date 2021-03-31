@@ -3,8 +3,6 @@ package net.minecraft.world.border;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.DynamicLike;
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Util;
@@ -42,6 +40,10 @@ public class WorldBorder {
 			&& (double)pos.getStartZ() < this.getBoundSouth();
 	}
 
+	public boolean contains(double x, double z) {
+		return x > this.getBoundWest() && x < this.getBoundEast() && z > this.getBoundNorth() && z < this.getBoundSouth();
+	}
+
 	public boolean contains(Box box) {
 		return box.maxX > this.getBoundWest() && box.minX < this.getBoundEast() && box.maxZ > this.getBoundNorth() && box.minZ < this.getBoundSouth();
 	}
@@ -64,7 +66,6 @@ public class WorldBorder {
 		return Math.min(h, e);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public WorldBorderStage getStage() {
 		return this.area.getStage();
 	}
@@ -147,6 +148,10 @@ public class WorldBorder {
 		this.listeners.add(listener);
 	}
 
+	public void removeListener(WorldBorderListener listener) {
+		this.listeners.remove(listener);
+	}
+
 	/**
 	 * Sets the maximum radius of this border and notifies its area.
 	 */
@@ -208,7 +213,6 @@ public class WorldBorder {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public double getShrinkingSpeed() {
 		return this.area.getShrinkingSpeed();
 	}
@@ -289,14 +293,12 @@ public class WorldBorder {
 
 		double getSize();
 
-		@Environment(EnvType.CLIENT)
 		double getShrinkingSpeed();
 
 		long getSizeLerpTime();
 
 		double getSizeLerpTarget();
 
-		@Environment(EnvType.CLIENT)
 		WorldBorderStage getStage();
 
 		void onMaxRadiusChanged();
@@ -349,7 +351,6 @@ public class WorldBorder {
 			return d < 1.0 ? MathHelper.lerp(d, this.oldSize, this.newSize) : this.newSize;
 		}
 
-		@Environment(EnvType.CLIENT)
 		@Override
 		public double getShrinkingSpeed() {
 			return Math.abs(this.oldSize - this.newSize) / (double)(this.timeEnd - this.timeStart);
@@ -365,7 +366,6 @@ public class WorldBorder {
 			return this.newSize;
 		}
 
-		@Environment(EnvType.CLIENT)
 		@Override
 		public WorldBorderStage getStage() {
 			return this.newSize < this.oldSize ? WorldBorderStage.SHRINKING : WorldBorderStage.GROWING;
@@ -495,16 +495,16 @@ public class WorldBorder {
 			return new WorldBorder.Properties(d, e, i, h, j, k, f, l, g);
 		}
 
-		public void writeNbt(NbtCompound tag) {
-			tag.putDouble("BorderCenterX", this.centerX);
-			tag.putDouble("BorderCenterZ", this.centerZ);
-			tag.putDouble("BorderSize", this.size);
-			tag.putLong("BorderSizeLerpTime", this.sizeLerpTime);
-			tag.putDouble("BorderSafeZone", this.safeZone);
-			tag.putDouble("BorderDamagePerBlock", this.damagePerBlock);
-			tag.putDouble("BorderSizeLerpTarget", this.sizeLerpTarget);
-			tag.putDouble("BorderWarningBlocks", (double)this.warningBlocks);
-			tag.putDouble("BorderWarningTime", (double)this.warningTime);
+		public void writeNbt(NbtCompound nbt) {
+			nbt.putDouble("BorderCenterX", this.centerX);
+			nbt.putDouble("BorderCenterZ", this.centerZ);
+			nbt.putDouble("BorderSize", this.size);
+			nbt.putLong("BorderSizeLerpTime", this.sizeLerpTime);
+			nbt.putDouble("BorderSafeZone", this.safeZone);
+			nbt.putDouble("BorderDamagePerBlock", this.damagePerBlock);
+			nbt.putDouble("BorderSizeLerpTarget", this.sizeLerpTarget);
+			nbt.putDouble("BorderWarningBlocks", (double)this.warningBlocks);
+			nbt.putDouble("BorderWarningTime", (double)this.warningTime);
 		}
 	}
 
@@ -546,13 +546,11 @@ public class WorldBorder {
 			return this.size;
 		}
 
-		@Environment(EnvType.CLIENT)
 		@Override
 		public WorldBorderStage getStage() {
 			return WorldBorderStage.STATIONARY;
 		}
 
-		@Environment(EnvType.CLIENT)
 		@Override
 		public double getShrinkingSpeed() {
 			return 0.0;

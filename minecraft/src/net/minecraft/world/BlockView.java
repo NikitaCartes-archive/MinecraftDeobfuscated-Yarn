@@ -1,5 +1,6 @@
 package net.minecraft.world;
 
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -7,6 +8,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -22,6 +24,11 @@ import net.minecraft.util.shape.VoxelShape;
 public interface BlockView extends HeightLimitView {
 	@Nullable
 	BlockEntity getBlockEntity(BlockPos pos);
+
+	default <T extends BlockEntity> Optional<T> getBlockEntity(BlockPos pos, BlockEntityType<T> type) {
+		BlockEntity blockEntity = this.getBlockEntity(pos);
+		return blockEntity != null && blockEntity.getType() == type ? Optional.of(blockEntity) : Optional.empty();
+	}
 
 	BlockState getBlockState(BlockPos pos);
 

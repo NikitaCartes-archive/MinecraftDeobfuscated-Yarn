@@ -19,6 +19,7 @@ public class SpectatorMenu {
 	private static final SpectatorMenuCommand PREVIOUS_PAGE_COMMAND = new SpectatorMenu.ChangePageSpectatorMenuCommand(-1, true);
 	private static final SpectatorMenuCommand NEXT_PAGE_COMMAND = new SpectatorMenu.ChangePageSpectatorMenuCommand(1, true);
 	private static final SpectatorMenuCommand DISABLED_NEXT_PAGE_COMMAND = new SpectatorMenu.ChangePageSpectatorMenuCommand(1, false);
+	private static final int field_32443 = 8;
 	private static final Text CLOSE_TEXT = new TranslatableText("spectatorMenu.close");
 	private static final Text PREVIOUS_PAGE_TEXT = new TranslatableText("spectatorMenu.previous_page");
 	private static final Text NEXT_PAGE_TEXT = new TranslatableText("spectatorMenu.next_page");

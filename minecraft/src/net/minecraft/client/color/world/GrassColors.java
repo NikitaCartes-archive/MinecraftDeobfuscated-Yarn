@@ -1,9 +1,5 @@
 package net.minecraft.client.color.world;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-
-@Environment(EnvType.CLIENT)
 public class GrassColors {
 	private static int[] colorMap = new int[65536];
 

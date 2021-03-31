@@ -3,7 +3,6 @@ package net.minecraft.nbt;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 import net.minecraft.util.math.MathHelper;
 
@@ -11,6 +10,7 @@ import net.minecraft.util.math.MathHelper;
  * Represents an NBT 32-bit floating-point number.
  */
 public class NbtFloat extends AbstractNbtNumber {
+	private static final int field_33194 = 96;
 	public static final NbtFloat ZERO = new NbtFloat(0.0F);
 	public static final NbtType<NbtFloat> TYPE = new NbtType<NbtFloat>() {
 		public NbtFloat read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
@@ -50,7 +50,7 @@ public class NbtFloat extends AbstractNbtNumber {
 
 	@Override
 	public byte getType() {
-		return (byte)NbtTypeIds.FLOAT;
+		return NbtElement.FLOAT_TYPE;
 	}
 
 	@Override

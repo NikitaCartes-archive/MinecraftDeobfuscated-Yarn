@@ -130,6 +130,11 @@ public class LootPool {
 			return this;
 		}
 
+		public LootPool.Builder bonusRolls(LootNumberProvider bonusRolls) {
+			this.bonusRollsRange = bonusRolls;
+			return this;
+		}
+
 		public LootPool.Builder with(LootPoolEntry.Builder<?> entry) {
 			this.entries.add(entry.build());
 			return this;

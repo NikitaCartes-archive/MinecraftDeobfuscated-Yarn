@@ -17,8 +17,6 @@ import java.util.ListIterator;
 import java.util.concurrent.ThreadFactory;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
@@ -137,7 +135,7 @@ public class WorldUpdater {
 								}
 
 								if (bl3) {
-									versionedChunkStorage.setTagAt(chunkPos, nbtCompound2);
+									versionedChunkStorage.setNbt(chunkPos, nbtCompound2);
 									bl2 = true;
 								}
 							}
@@ -226,17 +224,14 @@ public class WorldUpdater {
 		return this.done;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public ImmutableSet<RegistryKey<World>> getWorlds() {
 		return this.worlds;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getProgress(RegistryKey<World> world) {
 		return this.dimensionProgress.getFloat(world);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getProgress() {
 		return this.progress;
 	}

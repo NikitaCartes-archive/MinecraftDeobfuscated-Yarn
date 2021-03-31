@@ -6,7 +6,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class LookControl {
+public class LookControl implements Control {
 	protected final MobEntity entity;
 	protected float yawSpeed;
 	protected float pitchSpeed;
@@ -21,6 +21,10 @@ public class LookControl {
 
 	public void lookAt(Vec3d direction) {
 		this.lookAt(direction.x, direction.y, direction.z);
+	}
+
+	public void lookAt(Entity entity) {
+		this.lookAt(entity.getX(), getLookingHeightFor(entity), entity.getZ());
 	}
 
 	public void lookAt(Entity entity, float yawSpeed, float pitchSpeed) {

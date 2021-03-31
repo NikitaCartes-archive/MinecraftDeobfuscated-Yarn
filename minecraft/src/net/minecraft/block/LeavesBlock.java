@@ -1,9 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -21,8 +18,10 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class LeavesBlock extends Block {
+	public static final int field_31111 = 7;
 	public static final IntProperty DISTANCE = Properties.DISTANCE_1_7;
 	public static final BooleanProperty PERSISTENT = Properties.PERSISTENT;
+	private static final int field_31112 = 1;
 
 	public LeavesBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -49,7 +48,7 @@ public class LeavesBlock extends Block {
 
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		world.setBlockState(pos, updateDistanceFromLogs(state, world, pos), SetBlockStateFlags.DEFAULT);
+		world.setBlockState(pos, updateDistanceFromLogs(state, world, pos), Block.NOTIFY_ALL);
 	}
 
 	@Override
@@ -92,7 +91,6 @@ public class LeavesBlock extends Block {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		if (world.hasRain(pos.up())) {

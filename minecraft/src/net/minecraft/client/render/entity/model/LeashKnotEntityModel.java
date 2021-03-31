@@ -12,6 +12,7 @@ import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
 public class LeashKnotEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
+	private static final String KNOT = "knot";
 	private final ModelPart root;
 	private final ModelPart knot;
 

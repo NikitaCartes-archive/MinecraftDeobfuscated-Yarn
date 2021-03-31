@@ -4,8 +4,6 @@ import com.google.common.collect.Lists;
 import java.util.BitSet;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -24,12 +22,15 @@ public class LightUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final BitSet filledBlockLightMask;
 	private final List<byte[]> skyLightUpdates;
 	private final List<byte[]> blockLightUpdates;
-	private final boolean field_25659;
+	/**
+	 * Whether this updated chunk is not on the edge of the map.
+	 */
+	private final boolean nonEdge;
 
-	public LightUpdateS2CPacket(ChunkPos chunkPos, LightingProvider lightProvider, @Nullable BitSet bitSet, @Nullable BitSet bitSet2, boolean bl) {
+	public LightUpdateS2CPacket(ChunkPos chunkPos, LightingProvider lightProvider, @Nullable BitSet bitSet, @Nullable BitSet bitSet2, boolean nonEdge) {
 		this.chunkX = chunkPos.x;
 		this.chunkZ = chunkPos.z;
-		this.field_25659 = bl;
+		this.nonEdge = nonEdge;
 		this.skyLightMask = new BitSet();
 		this.blockLightMask = new BitSet();
 		this.filledSkyLightMask = new BitSet();
@@ -65,7 +66,7 @@ public class LightUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	public LightUpdateS2CPacket(PacketByteBuf buf) {
 		this.chunkX = buf.readVarInt();
 		this.chunkZ = buf.readVarInt();
-		this.field_25659 = buf.readBoolean();
+		this.nonEdge = buf.readBoolean();
 		this.skyLightMask = buf.readBitSet();
 		this.blockLightMask = buf.readBitSet();
 		this.filledSkyLightMask = buf.readBitSet();
@@ -78,7 +79,7 @@ public class LightUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.chunkX);
 		buf.writeVarInt(this.chunkZ);
-		buf.writeBoolean(this.field_25659);
+		buf.writeBoolean(this.nonEdge);
 		buf.writeBitSet(this.skyLightMask);
 		buf.writeBitSet(this.blockLightMask);
 		buf.writeBitSet(this.filledSkyLightMask);
@@ -91,48 +92,39 @@ public class LightUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 		clientPlayPacketListener.onLightUpdate(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getChunkX() {
 		return this.chunkX;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getChunkZ() {
 		return this.chunkZ;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public BitSet getSkyLightMask() {
 		return this.skyLightMask;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public BitSet getFilledSkyLightMask() {
 		return this.filledSkyLightMask;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public List<byte[]> getSkyLightUpdates() {
 		return this.skyLightUpdates;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public BitSet getBlockLightMask() {
 		return this.blockLightMask;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public BitSet getFilledBlockLightMask() {
 		return this.filledBlockLightMask;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public List<byte[]> getBlockLightUpdates() {
 		return this.blockLightUpdates;
 	}
 
-	@Environment(EnvType.CLIENT)
-	public boolean method_30006() {
-		return this.field_25659;
+	public boolean isNotEdge() {
+		return this.nonEdge;
 	}
 }

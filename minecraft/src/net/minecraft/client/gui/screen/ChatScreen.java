@@ -15,6 +15,7 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class ChatScreen extends Screen {
+	public static final int field_32237 = 7;
 	private String chatLastMessage = "";
 	private int messageHistorySize = -1;
 	protected TextFieldWidget chatField;

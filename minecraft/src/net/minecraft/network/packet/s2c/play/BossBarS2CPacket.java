@@ -2,8 +2,6 @@ package net.minecraft.network.packet.s2c.play;
 
 import java.util.UUID;
 import java.util.function.Function;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -11,6 +9,9 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.text.Text;
 
 public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
+	private static final int DARKEN_SKY_MASK = 1;
+	private static final int DRAGON_MUSIC_MASK = 2;
+	private static final int THICKEN_FOG_MASK = 4;
 	private final UUID uuid;
 	private final BossBarS2CPacket.Action action;
 	private static final BossBarS2CPacket.Action REMOVE_ACTION = new BossBarS2CPacket.Action() {
@@ -19,7 +20,6 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 			return BossBarS2CPacket.Type.REMOVE;
 		}
 
-		@Environment(EnvType.CLIENT)
 		@Override
 		public void accept(UUID uuid, BossBarS2CPacket.Consumer consumer) {
 			consumer.remove(uuid);
@@ -93,7 +93,6 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		clientPlayPacketListener.onBossBar(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void accept(BossBarS2CPacket.Consumer consumer) {
 		this.action.accept(this.uuid, consumer);
 	}
@@ -101,7 +100,6 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 	interface Action {
 		BossBarS2CPacket.Type getType();
 
-		@Environment(EnvType.CLIENT)
 		void accept(UUID uuid, BossBarS2CPacket.Consumer consumer);
 
 		void toPacket(PacketByteBuf buf);
@@ -142,7 +140,6 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 			return BossBarS2CPacket.Type.ADD;
 		}
 
-		@Environment(EnvType.CLIENT)
 		@Override
 		public void accept(UUID uuid, BossBarS2CPacket.Consumer consumer) {
 			consumer.add(uuid, this.name, this.percent, this.color, this.style, this.darkenSky, this.dragonMusic, this.thickenFog);
@@ -158,7 +155,6 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public interface Consumer {
 		default void add(UUID uuid, Text name, float percent, BossBar.Color color, BossBar.Style style, boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
 		}
@@ -210,7 +206,6 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 			return BossBarS2CPacket.Type.UPDATE_NAME;
 		}
 
-		@Environment(EnvType.CLIENT)
 		@Override
 		public void accept(UUID uuid, BossBarS2CPacket.Consumer consumer) {
 			consumer.updateName(uuid, this.name);
@@ -238,7 +233,6 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 			return BossBarS2CPacket.Type.UPDATE_PROGRESS;
 		}
 
-		@Environment(EnvType.CLIENT)
 		@Override
 		public void accept(UUID uuid, BossBarS2CPacket.Consumer consumer) {
 			consumer.updateProgress(uuid, this.percent);
@@ -273,7 +267,6 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 			return BossBarS2CPacket.Type.UPDATE_PROPERTIES;
 		}
 
-		@Environment(EnvType.CLIENT)
 		@Override
 		public void accept(UUID uuid, BossBarS2CPacket.Consumer consumer) {
 			consumer.updateProperties(uuid, this.darkenSky, this.dragonMusic, this.thickenFog);
@@ -304,7 +297,6 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 			return BossBarS2CPacket.Type.UPDATE_STYLE;
 		}
 
-		@Environment(EnvType.CLIENT)
 		@Override
 		public void accept(UUID uuid, BossBarS2CPacket.Consumer consumer) {
 			consumer.updateStyle(uuid, this.color, this.style);

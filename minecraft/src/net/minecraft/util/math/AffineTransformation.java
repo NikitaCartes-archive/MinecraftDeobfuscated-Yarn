@@ -3,16 +3,18 @@ package net.minecraft.util.math;
 import com.mojang.datafixers.util.Pair;
 import java.util.Objects;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.tuple.Triple;
 
 /**
- * @implNote Even though this is used only on the client, it accesses protected
- * fields from {@link Matrix4f}, which requires them to be in the same package.
+ * An affine transformation is a decomposition of a 4&times;4 real matrix into
+ * a {@linkplain #rotation1 rotation} quaternion, a {@linkplain #scale scale}
+ * 3-vector, a second {@linkplain #rotation2 rotation} quaternion, and a
+ * {@linkplain #translation translation} 3-vector. It is also known as "TRSR"
+ * transformation, meaning "translation rotation scale rotation".
+ * 
+ * <p>This class is immutable; its matrix is lazily decomposed upon demand.
  */
-@Environment(EnvType.CLIENT)
 public final class AffineTransformation {
 	private final Matrix4f matrix;
 	private boolean initialized;
@@ -116,9 +118,24 @@ public final class AffineTransformation {
 		return this.matrix.copy();
 	}
 
+	public Vec3f getTranslation() {
+		this.init();
+		return this.translation.copy();
+	}
+
 	public Quaternion getRotation2() {
 		this.init();
 		return this.rotation2.copy();
+	}
+
+	public Vec3f getScale() {
+		this.init();
+		return this.scale.copy();
+	}
+
+	public Quaternion getRotation1() {
+		this.init();
+		return this.rotation1.copy();
 	}
 
 	public boolean equals(Object object) {
@@ -134,5 +151,17 @@ public final class AffineTransformation {
 
 	public int hashCode() {
 		return Objects.hash(new Object[]{this.matrix});
+	}
+
+	public AffineTransformation method_35864(AffineTransformation affineTransformation, float f) {
+		Vec3f vec3f = this.getTranslation();
+		Quaternion quaternion = this.getRotation2();
+		Vec3f vec3f2 = this.getScale();
+		Quaternion quaternion2 = this.getRotation1();
+		vec3f.lerp(affineTransformation.getTranslation(), f);
+		quaternion.method_35822(affineTransformation.getRotation2(), f);
+		vec3f2.lerp(affineTransformation.getScale(), f);
+		quaternion2.method_35822(affineTransformation.getRotation1(), f);
+		return new AffineTransformation(vec3f, quaternion, vec3f2, quaternion2);
 	}
 }

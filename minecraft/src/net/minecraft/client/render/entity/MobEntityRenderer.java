@@ -19,6 +19,8 @@ import net.minecraft.world.LightType;
 
 @Environment(EnvType.CLIENT)
 public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityModel<T>> extends LivingEntityRenderer<T, M> {
+	public static final int field_32940 = 24;
+
 	public MobEntityRenderer(EntityRendererFactory.Context context, M entityModel, float f) {
 		super(context, entityModel, f);
 	}

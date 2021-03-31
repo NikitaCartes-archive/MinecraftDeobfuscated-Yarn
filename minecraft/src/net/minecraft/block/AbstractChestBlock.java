@@ -1,8 +1,6 @@
 package net.minecraft.block;
 
 import java.util.function.Supplier;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestBlockEntity;
@@ -17,7 +15,6 @@ public abstract class AbstractChestBlock<E extends BlockEntity> extends BlockWit
 		this.entityTypeRetriever = entityTypeSupplier;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public abstract DoubleBlockProperties.PropertySource<? extends ChestBlockEntity> getBlockEntitySource(
 		BlockState state, World world, BlockPos pos, boolean ignoreBlocked
 	);

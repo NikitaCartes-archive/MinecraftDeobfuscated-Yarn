@@ -1,9 +1,9 @@
 package net.minecraft.inventory;
 
 import javax.annotation.concurrent.Immutable;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 
 @Immutable
 public class ContainerLock {
@@ -11,6 +11,7 @@ public class ContainerLock {
 	 * An empty container lock that can always be opened.
 	 */
 	public static final ContainerLock EMPTY = new ContainerLock("");
+	public static final String LOCK_KEY = "Lock";
 	private final String key;
 
 	public ContainerLock(String key) {
@@ -30,20 +31,20 @@ public class ContainerLock {
 	}
 
 	/**
-	 * Inserts the key string of this lock into the {@code Lock} key of the compound tag.
+	 * Inserts the key string of this lock into the {@code Lock} key of the NBT compound.
 	 */
-	public void writeNbt(NbtCompound tag) {
+	public void writeNbt(NbtCompound nbt) {
 		if (!this.key.isEmpty()) {
-			tag.putString("Lock", this.key);
+			nbt.putString("Lock", this.key);
 		}
 	}
 
 	/**
-	 * Creates a new {@code ContainerLock} from the {@code Lock} key of the compound tag.
+	 * Creates a new {@code ContainerLock} from the {@code Lock} key of the NBT compound.
 	 * <p>
 	 * If the {@code Lock} key is not present, returns an empty lock.
 	 */
-	public static ContainerLock fromNbt(NbtCompound tag) {
-		return tag.contains("Lock", NbtTypeIds.STRING) ? new ContainerLock(tag.getString("Lock")) : EMPTY;
+	public static ContainerLock fromNbt(NbtCompound nbt) {
+		return nbt.contains("Lock", NbtElement.STRING_TYPE) ? new ContainerLock(nbt.getString("Lock")) : EMPTY;
 	}
 }

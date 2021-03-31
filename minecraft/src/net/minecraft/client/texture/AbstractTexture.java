@@ -1,6 +1,7 @@
 package net.minecraft.client.texture;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.util.concurrent.Executor;
@@ -11,6 +12,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public abstract class AbstractTexture implements AutoCloseable {
+	public static final int field_32948 = -1;
 	protected int glId = -1;
 	protected boolean bilinear;
 	protected boolean mipmap;
@@ -30,14 +32,14 @@ public abstract class AbstractTexture implements AutoCloseable {
 		}
 
 		this.bindTexture();
-		GlStateManager.texParameter(3553, 10241, i);
-		GlStateManager.texParameter(3553, 10240, j);
+		GlStateManager._texParameter(3553, 10241, i);
+		GlStateManager._texParameter(3553, 10240, j);
 	}
 
 	public int getGlId() {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
 		if (this.glId == -1) {
-			this.glId = TextureUtil.generateId();
+			this.glId = TextureUtil.generateTextureId();
 		}
 
 		return this.glId;
@@ -47,12 +49,12 @@ public abstract class AbstractTexture implements AutoCloseable {
 		if (!RenderSystem.isOnRenderThread()) {
 			RenderSystem.recordRenderCall(() -> {
 				if (this.glId != -1) {
-					TextureUtil.deleteId(this.glId);
+					TextureUtil.releaseTextureId(this.glId);
 					this.glId = -1;
 				}
 			});
 		} else if (this.glId != -1) {
-			TextureUtil.deleteId(this.glId);
+			TextureUtil.releaseTextureId(this.glId);
 			this.glId = -1;
 		}
 	}
@@ -61,9 +63,9 @@ public abstract class AbstractTexture implements AutoCloseable {
 
 	public void bindTexture() {
 		if (!RenderSystem.isOnRenderThreadOrInit()) {
-			RenderSystem.recordRenderCall(() -> GlStateManager.bindTexture(this.getGlId()));
+			RenderSystem.recordRenderCall(() -> GlStateManager._bindTexture(this.getGlId()));
 		} else {
-			GlStateManager.bindTexture(this.getGlId());
+			GlStateManager._bindTexture(this.getGlId());
 		}
 	}
 

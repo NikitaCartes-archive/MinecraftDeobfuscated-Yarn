@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import java.util.Optional;
+import java.util.function.Predicate;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
@@ -30,6 +31,17 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.dynamic.GlobalPos;
 
 public class PiglinBruteBrain {
+	private static final int field_30589 = 600;
+	private static final int field_30590 = 20;
+	private static final double field_30591 = 0.0125;
+	private static final int field_30592 = 8;
+	private static final int field_30593 = 8;
+	private static final double field_30594 = 12.0;
+	private static final float field_30595 = 0.6F;
+	private static final int field_30596 = 2;
+	private static final int field_30597 = 100;
+	private static final int field_30598 = 5;
+
 	protected static Brain<?> create(PiglinBruteEntity piglinBrute, Brain<PiglinBruteEntity> brain) {
 		addCoreActivities(piglinBrute, brain);
 		addIdleActivities(piglinBrute, brain);
@@ -66,7 +78,9 @@ public class PiglinBruteBrain {
 			Activity.FIGHT,
 			10,
 			ImmutableList.of(
-				new ForgetAttackTargetTask<>(livingEntity -> !method_30248(piglinBrute, livingEntity)), new RangedApproachTask(1.0F), new MeleeAttackTask(20)
+				new ForgetAttackTargetTask<>((Predicate<LivingEntity>)(livingEntity -> !method_30248(piglinBrute, livingEntity))),
+				new RangedApproachTask(1.0F),
+				new MeleeAttackTask(20)
 			),
 			MemoryModuleType.ATTACK_TARGET
 		);
@@ -135,6 +149,11 @@ public class PiglinBruteBrain {
 		if (!(target instanceof AbstractPiglinEntity)) {
 			PiglinBrain.tryRevenge(piglinBrute, target);
 		}
+	}
+
+	protected static void method_35198(PiglinBruteEntity piglinBruteEntity, LivingEntity livingEntity) {
+		piglinBruteEntity.getBrain().forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
+		piglinBruteEntity.getBrain().remember(MemoryModuleType.ANGRY_AT, livingEntity.getUuid(), 600L);
 	}
 
 	protected static void method_30258(PiglinBruteEntity piglinBrute) {

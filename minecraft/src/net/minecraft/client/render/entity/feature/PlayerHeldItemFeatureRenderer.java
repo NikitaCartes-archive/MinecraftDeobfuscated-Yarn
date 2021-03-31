@@ -20,6 +20,9 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class PlayerHeldItemFeatureRenderer<T extends PlayerEntity, M extends EntityModel<T> & ModelWithArms & ModelWithHead>
 	extends HeldItemFeatureRenderer<T, M> {
+	private static final float HEAD_YAW = (float) (-Math.PI / 6);
+	private static final float HEAD_ROLL = (float) (Math.PI / 2);
+
 	public PlayerHeldItemFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
 		super(featureRendererContext);
 	}

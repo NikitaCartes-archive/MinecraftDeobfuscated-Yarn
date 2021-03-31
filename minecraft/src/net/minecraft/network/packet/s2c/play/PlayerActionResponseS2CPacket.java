@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.network.Packet;
@@ -45,22 +43,18 @@ public class PlayerActionResponseS2CPacket implements Packet<ClientPlayPacketLis
 		clientPlayPacketListener.onPlayerActionResponse(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public BlockState getBlockState() {
 		return this.state;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public BlockPos getBlockPos() {
 		return this.pos;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isApproved() {
 		return this.approved;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public PlayerActionC2SPacket.Action getAction() {
 		return this.action;
 	}

@@ -1,8 +1,6 @@
 package net.minecraft.network.packet.s2c.play;
 
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -12,6 +10,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public abstract class EntityS2CPacket implements Packet<ClientPlayPacketListener> {
+	private static final double COORDINATE_SCALE = 4096.0;
 	protected final int id;
 	protected final short deltaX;
 	protected final short deltaY;
@@ -26,12 +25,10 @@ public abstract class EntityS2CPacket implements Packet<ClientPlayPacketListener
 		return MathHelper.lfloor(coord * 4096.0);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static double decodePacketCoordinate(long coord) {
 		return (double)coord / 4096.0;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Vec3d calculateDeltaPosition(Vec3d orig) {
 		double d = this.deltaX == 0 ? orig.x : decodePacketCoordinate(encodePacketCoordinate(orig.x) + (long)this.deltaX);
 		double e = this.deltaY == 0 ? orig.y : decodePacketCoordinate(encodePacketCoordinate(orig.y) + (long)this.deltaY);
@@ -66,32 +63,38 @@ public abstract class EntityS2CPacket implements Packet<ClientPlayPacketListener
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public Entity getEntity(World world) {
 		return world.getEntityById(this.id);
 	}
 
-	@Environment(EnvType.CLIENT)
+	public short getDeltaX() {
+		return this.deltaX;
+	}
+
+	public short getDeltaY() {
+		return this.deltaY;
+	}
+
+	public short getDeltaZ() {
+		return this.deltaZ;
+	}
+
 	public byte getYaw() {
 		return this.yaw;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public byte getPitch() {
 		return this.pitch;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean hasRotation() {
 		return this.rotate;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isPositionChanged() {
 		return this.positionChanged;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean isOnGround() {
 		return this.onGround;
 	}

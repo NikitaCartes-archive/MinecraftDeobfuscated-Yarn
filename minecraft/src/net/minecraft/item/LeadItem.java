@@ -46,6 +46,7 @@ public class LeadItem extends Item {
 			if (mobEntity.getHoldingEntity() == player) {
 				if (leashKnotEntity == null) {
 					leashKnotEntity = LeashKnotEntity.getOrCreate(world, pos);
+					leashKnotEntity.onPlace();
 				}
 
 				mobEntity.attachLeash(leashKnotEntity, true);

@@ -20,6 +20,7 @@ import org.lwjgl.system.MemoryUtil;
 
 @Environment(EnvType.CLIENT)
 public class OggAudioStream implements AudioStream {
+	private static final int field_31898 = 8192;
 	private long pointer;
 	private final AudioFormat format;
 	private final InputStream inputStream;

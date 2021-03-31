@@ -1,8 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
@@ -14,6 +12,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class TorchBlock extends Block {
+	protected static final int field_31265 = 2;
 	protected static final VoxelShape BOUNDING_SHAPE = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 10.0, 10.0);
 	protected final ParticleEffect particle;
 
@@ -41,7 +40,6 @@ public class TorchBlock extends Block {
 		return sideCoversSmallSquare(world, pos.down(), Direction.UP);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		double d = (double)pos.getX() + 0.5;

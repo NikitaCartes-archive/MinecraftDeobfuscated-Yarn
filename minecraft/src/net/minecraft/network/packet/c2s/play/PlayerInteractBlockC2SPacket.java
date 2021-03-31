@@ -1,7 +1,5 @@
 package net.minecraft.network.packet.c2s.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
@@ -12,7 +10,6 @@ public class PlayerInteractBlockC2SPacket implements Packet<ServerPlayPacketList
 	private final BlockHitResult blockHitResult;
 	private final Hand hand;
 
-	@Environment(EnvType.CLIENT)
 	public PlayerInteractBlockC2SPacket(Hand hand, BlockHitResult blockHitResult) {
 		this.hand = hand;
 		this.blockHitResult = blockHitResult;

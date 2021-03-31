@@ -4,8 +4,6 @@ import com.google.common.collect.Sets;
 import java.util.Random;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -69,6 +67,9 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddleable {
+	private static final float field_30499 = 0.23F;
+	private static final float field_30500 = 0.66F;
+	private static final float field_30501 = 0.55F;
 	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.WARPED_FUNGUS);
 	private static final Ingredient ATTRACTING_INGREDIENT = Ingredient.ofItems(Items.WARPED_FUNGUS, Items.WARPED_FUNGUS_ON_A_STICK);
 	private static final TrackedData<Integer> BOOST_TIME = DataTracker.registerData(StriderEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -115,15 +116,15 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
-		this.saddledComponent.writeNbt(tag);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		this.saddledComponent.writeNbt(nbt);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.saddledComponent.readNbt(tag);
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.saddledComponent.readNbt(nbt);
 	}
 
 	@Override
@@ -429,7 +430,6 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public Vec3d method_29919() {
 		return new Vec3d(0.0, (double)(0.6F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));
@@ -438,10 +438,10 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
 		if (this.isBaby()) {
-			return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+			return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 		} else {
 			Object var7;
 			if (this.random.nextInt(30) == 0) {
@@ -457,7 +457,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 				var7 = new PassiveEntity.PassiveData(0.5F);
 			}
 
-			return super.initialize(world, difficulty, spawnReason, (EntityData)var7, entityTag);
+			return super.initialize(world, difficulty, spawnReason, (EntityData)var7, entityNbt);
 		}
 	}
 

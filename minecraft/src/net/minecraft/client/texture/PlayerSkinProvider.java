@@ -28,6 +28,7 @@ import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class PlayerSkinProvider {
+	public static final String field_32970 = "textures";
 	private final TextureManager textureManager;
 	private final File skinCacheDir;
 	private final MinecraftSessionService sessionService;

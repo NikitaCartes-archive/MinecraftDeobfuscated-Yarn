@@ -18,6 +18,7 @@ import net.minecraft.screen.AbstractRecipeScreenHandler;
 @Environment(EnvType.CLIENT)
 public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 	private final RecipeBookGroup category;
+	private static final float field_32412 = 15.0F;
 	private float bounce;
 
 	public RecipeGroupButtonWidget(RecipeBookGroup category) {

@@ -1,17 +1,22 @@
 package net.minecraft.block;
 
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.event.GameEvent;
 
 public class CauldronBlock extends AbstractCauldronBlock {
 	public CauldronBlock(AbstractBlock.Settings settings) {
 		super(settings, CauldronBehavior.EMPTY_CAULDRON_BEHAVIOR);
+	}
+
+	@Override
+	public boolean isFull(BlockState state) {
+		return false;
 	}
 
 	protected static boolean canFillWithPrecipitation(World world) {

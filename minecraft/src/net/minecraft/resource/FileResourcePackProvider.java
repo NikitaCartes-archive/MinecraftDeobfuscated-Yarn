@@ -20,7 +20,7 @@ public class FileResourcePackProvider implements ResourcePackProvider {
 	}
 
 	@Override
-	public void register(Consumer<ResourcePackProfile> consumer, ResourcePackProfile.Factory factory) {
+	public void register(Consumer<ResourcePackProfile> profileAdder, ResourcePackProfile.Factory factory) {
 		if (!this.packsFolder.isDirectory()) {
 			this.packsFolder.mkdirs();
 		}
@@ -33,7 +33,7 @@ public class FileResourcePackProvider implements ResourcePackProvider {
 					string, false, this.createResourcePack(file), factory, ResourcePackProfile.InsertionPosition.TOP, this.source
 				);
 				if (resourcePackProfile != null) {
-					consumer.accept(resourcePackProfile);
+					profileAdder.accept(resourcePackProfile);
 				}
 			}
 		}

@@ -9,6 +9,24 @@ import net.minecraft.util.CuboidBlockIterator;
 import net.minecraft.world.chunk.Chunk;
 
 public class ChunkSectionPos extends Vec3i {
+	public static final int field_33096 = 4;
+	public static final int field_33097 = 16;
+	private static final int field_33100 = 15;
+	public static final int field_33098 = 8;
+	public static final int field_33099 = 15;
+	private static final int field_33101 = 22;
+	private static final int field_33102 = 20;
+	private static final int field_33103 = 22;
+	private static final long field_33104 = 4194303L;
+	private static final long field_33105 = 1048575L;
+	private static final long field_33106 = 4194303L;
+	private static final int field_33107 = 0;
+	private static final int field_33108 = 20;
+	private static final int field_33109 = 42;
+	private static final int field_33110 = 8;
+	private static final int field_33111 = 0;
+	private static final int field_33112 = 4;
+
 	private ChunkSectionPos(int x, int y, int z) {
 		super(x, y, z);
 	}

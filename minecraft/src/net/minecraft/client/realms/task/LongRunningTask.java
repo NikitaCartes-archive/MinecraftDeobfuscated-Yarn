@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public abstract class LongRunningTask implements Errable, Runnable {
+	protected static final int field_32132 = 25;
 	public static final Logger LOGGER = LogManager.getLogger();
 	protected RealmsLongRunningMcoTaskScreen longRunningMcoTaskScreen;
 

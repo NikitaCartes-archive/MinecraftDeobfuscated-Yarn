@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
@@ -87,7 +86,7 @@ public class TntBlock extends Block {
 			return super.onUse(state, world, pos, player, hand, hit);
 		} else {
 			primeTnt(world, pos, player);
-			world.setBlockState(pos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
+			world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
 			if (!player.isCreative()) {
 				if (itemStack.isOf(Items.FLINT_AND_STEEL)) {
 					itemStack.damage(1, player, playerx -> playerx.sendToolBreakStatus(hand));

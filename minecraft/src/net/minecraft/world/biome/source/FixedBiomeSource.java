@@ -8,8 +8,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 
@@ -35,7 +33,6 @@ public class FixedBiomeSource extends BiomeSource {
 		return CODEC;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public BiomeSource withSeed(long seed) {
 		return this;

@@ -23,6 +23,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
 public class EntitySelector {
+	public static final int field_33068 = Integer.MAX_VALUE;
 	private static final TypeFilter<Entity, ?> PASSTHROUGH_FILTER = new TypeFilter<Entity, Entity>() {
 		public Entity downcast(Entity entity) {
 			return entity;
@@ -94,6 +95,10 @@ public class EntitySelector {
 
 	public boolean isLocalWorldOnly() {
 		return this.localWorldOnly;
+	}
+
+	public boolean usesAt() {
+		return this.usesAt;
 	}
 
 	private void checkSourcePermission(ServerCommandSource serverCommandSource) throws CommandSyntaxException {

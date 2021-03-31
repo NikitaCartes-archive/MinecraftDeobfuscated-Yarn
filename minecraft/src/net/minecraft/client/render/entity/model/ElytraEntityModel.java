@@ -20,8 +20,8 @@ public class ElytraEntityModel<T extends LivingEntity> extends AnimalModel<T> {
 	private final ModelPart leftWing;
 
 	public ElytraEntityModel(ModelPart root) {
-		this.leftWing = root.getChild("left_wing");
-		this.rightWing = root.getChild("right_wing");
+		this.leftWing = root.getChild(EntityModelPartNames.LEFT_WING);
+		this.rightWing = root.getChild(EntityModelPartNames.RIGHT_WING);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -29,12 +29,12 @@ public class ElytraEntityModel<T extends LivingEntity> extends AnimalModel<T> {
 		ModelPartData modelPartData = modelData.getRoot();
 		Dilation dilation = new Dilation(1.0F);
 		modelPartData.addChild(
-			"left_wing",
+			EntityModelPartNames.LEFT_WING,
 			ModelPartBuilder.create().uv(22, 0).cuboid(-10.0F, 0.0F, 0.0F, 10.0F, 20.0F, 2.0F, dilation),
 			ModelTransform.of(5.0F, 0.0F, 0.0F, (float) (Math.PI / 12), 0.0F, (float) (-Math.PI / 12))
 		);
 		modelPartData.addChild(
-			"right_wing",
+			EntityModelPartNames.RIGHT_WING,
 			ModelPartBuilder.create().uv(22, 0).mirrored().cuboid(0.0F, 0.0F, 0.0F, 10.0F, 20.0F, 2.0F, dilation),
 			ModelTransform.of(-5.0F, 0.0F, 0.0F, (float) (Math.PI / 12), 0.0F, (float) (Math.PI / 12))
 		);

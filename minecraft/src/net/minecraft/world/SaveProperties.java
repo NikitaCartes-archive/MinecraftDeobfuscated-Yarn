@@ -3,8 +3,6 @@ package net.minecraft.world;
 import com.mojang.serialization.Lifecycle;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.util.crash.CrashCallable;
@@ -15,6 +13,9 @@ import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.ServerWorldProperties;
 
 public interface SaveProperties {
+	int ANVIL_FORMAT_ID = 19133;
+	int MCREGION_FORMAT_ID = 19132;
+
 	DataPackSettings getDataPackSettings();
 
 	void updateLevelInfo(DataPackSettings dataPackSettings);
@@ -48,14 +49,13 @@ public interface SaveProperties {
 	@Nullable
 	NbtCompound getCustomBossEvents();
 
-	void setCustomBossEvents(@Nullable NbtCompound tag);
+	void setCustomBossEvents(@Nullable NbtCompound nbt);
 
 	ServerWorldProperties getMainWorldProperties();
 
-	@Environment(EnvType.CLIENT)
 	LevelInfo getLevelInfo();
 
-	NbtCompound cloneWorldNbt(DynamicRegistryManager registryManager, @Nullable NbtCompound playerTag);
+	NbtCompound cloneWorldNbt(DynamicRegistryManager registryManager, @Nullable NbtCompound playerNbt);
 
 	boolean isHardcore();
 
@@ -83,10 +83,9 @@ public interface SaveProperties {
 
 	NbtCompound getDragonFight();
 
-	void setDragonFight(NbtCompound tag);
+	void setDragonFight(NbtCompound nbt);
 
 	GeneratorOptions getGeneratorOptions();
 
-	@Environment(EnvType.CLIENT)
 	Lifecycle getLifecycle();
 }

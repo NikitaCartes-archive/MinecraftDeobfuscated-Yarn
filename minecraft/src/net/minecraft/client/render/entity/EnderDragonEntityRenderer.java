@@ -16,6 +16,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.util.Identifier;
@@ -200,7 +201,7 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 		ModelPartData modelPartData = modelData.getRoot();
 		float f = -16.0F;
 		ModelPartData modelPartData2 = modelPartData.addChild(
-			"head",
+			EntityModelPartNames.HEAD,
 			ModelPartBuilder.create()
 				.cuboid("upperlip", -6.0F, -1.0F, -24.0F, 12, 5, 16, 176, 44)
 				.cuboid("upperhead", -8.0F, -8.0F, -10.0F, 16, 16, 16, 112, 30)
@@ -212,76 +213,104 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 				.cuboid("nostril", 3.0F, -3.0F, -22.0F, 2, 2, 4, 112, 0),
 			ModelTransform.NONE
 		);
-		modelPartData2.addChild("jaw", ModelPartBuilder.create().cuboid("jaw", -6.0F, 0.0F, -16.0F, 12, 4, 16, 176, 65), ModelTransform.pivot(0.0F, 4.0F, -8.0F));
+		modelPartData2.addChild(
+			EntityModelPartNames.JAW,
+			ModelPartBuilder.create().cuboid(EntityModelPartNames.JAW, -6.0F, 0.0F, -16.0F, 12, 4, 16, 176, 65),
+			ModelTransform.pivot(0.0F, 4.0F, -8.0F)
+		);
 		modelPartData.addChild(
-			"neck",
+			EntityModelPartNames.NECK,
 			ModelPartBuilder.create().cuboid("box", -5.0F, -5.0F, -5.0F, 10, 10, 10, 192, 104).cuboid("scale", -1.0F, -9.0F, -3.0F, 2, 4, 6, 48, 0),
 			ModelTransform.NONE
 		);
 		modelPartData.addChild(
-			"body",
+			EntityModelPartNames.BODY,
 			ModelPartBuilder.create()
-				.cuboid("body", -12.0F, 0.0F, -16.0F, 24, 24, 64, 0, 0)
+				.cuboid(EntityModelPartNames.BODY, -12.0F, 0.0F, -16.0F, 24, 24, 64, 0, 0)
 				.cuboid("scale", -1.0F, -6.0F, -10.0F, 2, 6, 12, 220, 53)
 				.cuboid("scale", -1.0F, -6.0F, 10.0F, 2, 6, 12, 220, 53)
 				.cuboid("scale", -1.0F, -6.0F, 30.0F, 2, 6, 12, 220, 53),
 			ModelTransform.pivot(0.0F, 4.0F, 8.0F)
 		);
 		ModelPartData modelPartData3 = modelPartData.addChild(
-			"left_wing",
+			EntityModelPartNames.LEFT_WING,
 			ModelPartBuilder.create().mirrored().cuboid("bone", 0.0F, -4.0F, -4.0F, 56, 8, 8, 112, 88).cuboid("skin", 0.0F, 0.0F, 2.0F, 56, 0, 56, -56, 88),
 			ModelTransform.pivot(12.0F, 5.0F, 2.0F)
 		);
 		modelPartData3.addChild(
-			"left_wing_tip",
+			EntityModelPartNames.LEFT_WING_TIP,
 			ModelPartBuilder.create().mirrored().cuboid("bone", 0.0F, -2.0F, -2.0F, 56, 4, 4, 112, 136).cuboid("skin", 0.0F, 0.0F, 2.0F, 56, 0, 56, -56, 144),
 			ModelTransform.pivot(56.0F, 0.0F, 0.0F)
 		);
 		ModelPartData modelPartData4 = modelPartData.addChild(
-			"left_front_leg", ModelPartBuilder.create().cuboid("main", -4.0F, -4.0F, -4.0F, 8, 24, 8, 112, 104), ModelTransform.pivot(12.0F, 20.0F, 2.0F)
+			EntityModelPartNames.LEFT_FRONT_LEG,
+			ModelPartBuilder.create().cuboid("main", -4.0F, -4.0F, -4.0F, 8, 24, 8, 112, 104),
+			ModelTransform.pivot(12.0F, 20.0F, 2.0F)
 		);
 		ModelPartData modelPartData5 = modelPartData4.addChild(
-			"left_front_leg_tip", ModelPartBuilder.create().cuboid("main", -3.0F, -1.0F, -3.0F, 6, 24, 6, 226, 138), ModelTransform.pivot(0.0F, 20.0F, -1.0F)
+			EntityModelPartNames.LEFT_FRONT_LEG_TIP,
+			ModelPartBuilder.create().cuboid("main", -3.0F, -1.0F, -3.0F, 6, 24, 6, 226, 138),
+			ModelTransform.pivot(0.0F, 20.0F, -1.0F)
 		);
 		modelPartData5.addChild(
-			"left_front_foot", ModelPartBuilder.create().cuboid("main", -4.0F, 0.0F, -12.0F, 8, 4, 16, 144, 104), ModelTransform.pivot(0.0F, 23.0F, 0.0F)
+			EntityModelPartNames.LEFT_FRONT_FOOT,
+			ModelPartBuilder.create().cuboid("main", -4.0F, 0.0F, -12.0F, 8, 4, 16, 144, 104),
+			ModelTransform.pivot(0.0F, 23.0F, 0.0F)
 		);
 		ModelPartData modelPartData6 = modelPartData.addChild(
-			"left_hind_leg", ModelPartBuilder.create().cuboid("main", -8.0F, -4.0F, -8.0F, 16, 32, 16, 0, 0), ModelTransform.pivot(16.0F, 16.0F, 42.0F)
+			EntityModelPartNames.LEFT_HIND_LEG,
+			ModelPartBuilder.create().cuboid("main", -8.0F, -4.0F, -8.0F, 16, 32, 16, 0, 0),
+			ModelTransform.pivot(16.0F, 16.0F, 42.0F)
 		);
 		ModelPartData modelPartData7 = modelPartData6.addChild(
-			"left_hind_leg_tip", ModelPartBuilder.create().cuboid("main", -6.0F, -2.0F, 0.0F, 12, 32, 12, 196, 0), ModelTransform.pivot(0.0F, 32.0F, -4.0F)
+			EntityModelPartNames.LEFT_HIND_LEG_TIP,
+			ModelPartBuilder.create().cuboid("main", -6.0F, -2.0F, 0.0F, 12, 32, 12, 196, 0),
+			ModelTransform.pivot(0.0F, 32.0F, -4.0F)
 		);
 		modelPartData7.addChild(
-			"left_hind_foot", ModelPartBuilder.create().cuboid("main", -9.0F, 0.0F, -20.0F, 18, 6, 24, 112, 0), ModelTransform.pivot(0.0F, 31.0F, 4.0F)
+			EntityModelPartNames.LEFT_HIND_FOOT,
+			ModelPartBuilder.create().cuboid("main", -9.0F, 0.0F, -20.0F, 18, 6, 24, 112, 0),
+			ModelTransform.pivot(0.0F, 31.0F, 4.0F)
 		);
 		ModelPartData modelPartData8 = modelPartData.addChild(
-			"right_wing",
+			EntityModelPartNames.RIGHT_WING,
 			ModelPartBuilder.create().cuboid("bone", -56.0F, -4.0F, -4.0F, 56, 8, 8, 112, 88).cuboid("skin", -56.0F, 0.0F, 2.0F, 56, 0, 56, -56, 88),
 			ModelTransform.pivot(-12.0F, 5.0F, 2.0F)
 		);
 		modelPartData8.addChild(
-			"right_wing_tip",
+			EntityModelPartNames.RIGHT_WING_TIP,
 			ModelPartBuilder.create().cuboid("bone", -56.0F, -2.0F, -2.0F, 56, 4, 4, 112, 136).cuboid("skin", -56.0F, 0.0F, 2.0F, 56, 0, 56, -56, 144),
 			ModelTransform.pivot(-56.0F, 0.0F, 0.0F)
 		);
 		ModelPartData modelPartData9 = modelPartData.addChild(
-			"right_front_leg", ModelPartBuilder.create().cuboid("main", -4.0F, -4.0F, -4.0F, 8, 24, 8, 112, 104), ModelTransform.pivot(-12.0F, 20.0F, 2.0F)
+			EntityModelPartNames.RIGHT_FRONT_LEG,
+			ModelPartBuilder.create().cuboid("main", -4.0F, -4.0F, -4.0F, 8, 24, 8, 112, 104),
+			ModelTransform.pivot(-12.0F, 20.0F, 2.0F)
 		);
 		ModelPartData modelPartData10 = modelPartData9.addChild(
-			"right_front_leg_tip", ModelPartBuilder.create().cuboid("main", -3.0F, -1.0F, -3.0F, 6, 24, 6, 226, 138), ModelTransform.pivot(0.0F, 20.0F, -1.0F)
+			EntityModelPartNames.RIGHT_FRONT_LEG_TIP,
+			ModelPartBuilder.create().cuboid("main", -3.0F, -1.0F, -3.0F, 6, 24, 6, 226, 138),
+			ModelTransform.pivot(0.0F, 20.0F, -1.0F)
 		);
 		modelPartData10.addChild(
-			"right_front_foot", ModelPartBuilder.create().cuboid("main", -4.0F, 0.0F, -12.0F, 8, 4, 16, 144, 104), ModelTransform.pivot(0.0F, 23.0F, 0.0F)
+			EntityModelPartNames.RIGHT_FRONT_FOOT,
+			ModelPartBuilder.create().cuboid("main", -4.0F, 0.0F, -12.0F, 8, 4, 16, 144, 104),
+			ModelTransform.pivot(0.0F, 23.0F, 0.0F)
 		);
 		ModelPartData modelPartData11 = modelPartData.addChild(
-			"right_hind_leg", ModelPartBuilder.create().cuboid("main", -8.0F, -4.0F, -8.0F, 16, 32, 16, 0, 0), ModelTransform.pivot(-16.0F, 16.0F, 42.0F)
+			EntityModelPartNames.RIGHT_HIND_LEG,
+			ModelPartBuilder.create().cuboid("main", -8.0F, -4.0F, -8.0F, 16, 32, 16, 0, 0),
+			ModelTransform.pivot(-16.0F, 16.0F, 42.0F)
 		);
 		ModelPartData modelPartData12 = modelPartData11.addChild(
-			"right_hind_leg_tip", ModelPartBuilder.create().cuboid("main", -6.0F, -2.0F, 0.0F, 12, 32, 12, 196, 0), ModelTransform.pivot(0.0F, 32.0F, -4.0F)
+			EntityModelPartNames.RIGHT_HIND_LEG_TIP,
+			ModelPartBuilder.create().cuboid("main", -6.0F, -2.0F, 0.0F, 12, 32, 12, 196, 0),
+			ModelTransform.pivot(0.0F, 32.0F, -4.0F)
 		);
 		modelPartData12.addChild(
-			"right_hind_foot", ModelPartBuilder.create().cuboid("main", -9.0F, 0.0F, -20.0F, 18, 6, 24, 112, 0), ModelTransform.pivot(0.0F, 31.0F, 4.0F)
+			EntityModelPartNames.RIGHT_HIND_FOOT,
+			ModelPartBuilder.create().cuboid("main", -9.0F, 0.0F, -20.0F, 18, 6, 24, 112, 0),
+			ModelTransform.pivot(0.0F, 31.0F, 4.0F)
 		);
 		return TexturedModelData.of(modelData, 256, 256);
 	}
@@ -313,26 +342,26 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 		private float tickDelta;
 
 		public DragonEntityModel(ModelPart part) {
-			this.head = part.getChild("head");
-			this.jaw = this.head.getChild("jaw");
-			this.neck = part.getChild("neck");
-			this.body = part.getChild("body");
-			this.leftWing = part.getChild("left_wing");
-			this.leftWingTip = this.leftWing.getChild("left_wing_tip");
-			this.leftFrontLeg = part.getChild("left_front_leg");
-			this.leftFrontLegTip = this.leftFrontLeg.getChild("left_front_leg_tip");
-			this.leftFrontFoot = this.leftFrontLegTip.getChild("left_front_foot");
-			this.leftHindLeg = part.getChild("left_hind_leg");
-			this.leftHindLegTip = this.leftHindLeg.getChild("left_hind_leg_tip");
-			this.leftHindFoot = this.leftHindLegTip.getChild("left_hind_foot");
-			this.rightWing = part.getChild("right_wing");
-			this.rightWingTip = this.rightWing.getChild("right_wing_tip");
-			this.rightFrontLeg = part.getChild("right_front_leg");
-			this.rightFrontLegTip = this.rightFrontLeg.getChild("right_front_leg_tip");
-			this.rightFrontFoot = this.rightFrontLegTip.getChild("right_front_foot");
-			this.rightHindLeg = part.getChild("right_hind_leg");
-			this.rightHindLegTip = this.rightHindLeg.getChild("right_hind_leg_tip");
-			this.rightHindFoot = this.rightHindLegTip.getChild("right_hind_foot");
+			this.head = part.getChild(EntityModelPartNames.HEAD);
+			this.jaw = this.head.getChild(EntityModelPartNames.JAW);
+			this.neck = part.getChild(EntityModelPartNames.NECK);
+			this.body = part.getChild(EntityModelPartNames.BODY);
+			this.leftWing = part.getChild(EntityModelPartNames.LEFT_WING);
+			this.leftWingTip = this.leftWing.getChild(EntityModelPartNames.LEFT_WING_TIP);
+			this.leftFrontLeg = part.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
+			this.leftFrontLegTip = this.leftFrontLeg.getChild(EntityModelPartNames.LEFT_FRONT_LEG_TIP);
+			this.leftFrontFoot = this.leftFrontLegTip.getChild(EntityModelPartNames.LEFT_FRONT_FOOT);
+			this.leftHindLeg = part.getChild(EntityModelPartNames.LEFT_HIND_LEG);
+			this.leftHindLegTip = this.leftHindLeg.getChild(EntityModelPartNames.LEFT_HIND_LEG_TIP);
+			this.leftHindFoot = this.leftHindLegTip.getChild(EntityModelPartNames.LEFT_HIND_FOOT);
+			this.rightWing = part.getChild(EntityModelPartNames.RIGHT_WING);
+			this.rightWingTip = this.rightWing.getChild(EntityModelPartNames.RIGHT_WING_TIP);
+			this.rightFrontLeg = part.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
+			this.rightFrontLegTip = this.rightFrontLeg.getChild(EntityModelPartNames.RIGHT_FRONT_LEG_TIP);
+			this.rightFrontFoot = this.rightFrontLegTip.getChild(EntityModelPartNames.RIGHT_FRONT_FOOT);
+			this.rightHindLeg = part.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
+			this.rightHindLegTip = this.rightHindLeg.getChild(EntityModelPartNames.RIGHT_HIND_LEG_TIP);
+			this.rightHindFoot = this.rightHindLegTip.getChild(EntityModelPartNames.RIGHT_HIND_FOOT);
 		}
 
 		public void animateModel(EnderDragonEntity enderDragonEntity, float f, float g, float h) {

@@ -31,6 +31,7 @@ import org.apache.logging.log4j.Logger;
 public class ConnectScreen extends Screen {
 	private static final AtomicInteger CONNECTOR_THREADS_COUNT = new AtomicInteger(0);
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final long field_32238 = 2000L;
 	/**
 	 * The client connection to the remote server.
 	 * This is not used when connecting to the client's own integrated server.

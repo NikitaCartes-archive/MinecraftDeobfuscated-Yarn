@@ -4,9 +4,6 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -15,6 +12,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -31,6 +29,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 
 public class ShulkerBulletEntity extends ProjectileEntity {
+	private static final double field_30666 = 0.15;
 	private Entity target;
 	@Nullable
 	private Direction direction;
@@ -65,40 +64,45 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 	}
 
 	@Override
-	protected void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
+	protected void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
 		if (this.target != null) {
-			tag.putUuid("Target", this.target.getUuid());
+			nbt.putUuid("Target", this.target.getUuid());
 		}
 
 		if (this.direction != null) {
-			tag.putInt("Dir", this.direction.getId());
+			nbt.putInt("Dir", this.direction.getId());
 		}
 
-		tag.putInt("Steps", this.stepCount);
-		tag.putDouble("TXD", this.targetX);
-		tag.putDouble("TYD", this.targetY);
-		tag.putDouble("TZD", this.targetZ);
+		nbt.putInt("Steps", this.stepCount);
+		nbt.putDouble("TXD", this.targetX);
+		nbt.putDouble("TYD", this.targetY);
+		nbt.putDouble("TZD", this.targetZ);
 	}
 
 	@Override
-	protected void readCustomDataFromNbt(NbtCompound tag) {
-		super.readCustomDataFromNbt(tag);
-		this.stepCount = tag.getInt("Steps");
-		this.targetX = tag.getDouble("TXD");
-		this.targetY = tag.getDouble("TYD");
-		this.targetZ = tag.getDouble("TZD");
-		if (tag.contains("Dir", NbtTypeIds.NUMBER)) {
-			this.direction = Direction.byId(tag.getInt("Dir"));
+	protected void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.stepCount = nbt.getInt("Steps");
+		this.targetX = nbt.getDouble("TXD");
+		this.targetY = nbt.getDouble("TYD");
+		this.targetZ = nbt.getDouble("TZD");
+		if (nbt.contains("Dir", NbtElement.NUMBER_TYPE)) {
+			this.direction = Direction.byId(nbt.getInt("Dir"));
 		}
 
-		if (tag.containsUuid("Target")) {
-			this.targetUuid = tag.getUuid("Target");
+		if (nbt.containsUuid("Target")) {
+			this.targetUuid = nbt.getUuid("Target");
 		}
 	}
 
 	@Override
 	protected void initDataTracker() {
+	}
+
+	@Nullable
+	private Direction getDirection() {
+		return this.direction;
 	}
 
 	private void setDirection(@Nullable Direction direction) {
@@ -256,7 +260,6 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 		return false;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean shouldRender(double distance) {
 		return distance < 16384.0;
@@ -311,7 +314,6 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 		return true;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void onSpawnPacket(EntitySpawnS2CPacket packet) {
 		super.onSpawnPacket(packet);

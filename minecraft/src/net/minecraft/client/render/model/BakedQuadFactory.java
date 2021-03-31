@@ -20,8 +20,12 @@ import net.minecraft.util.math.Vector4f;
 
 @Environment(EnvType.CLIENT)
 public class BakedQuadFactory {
+	public static final int field_32796 = 8;
 	private static final float MIN_SCALE = 1.0F / (float)Math.cos((float) (Math.PI / 8)) - 1.0F;
 	private static final float MAX_SCALE = 1.0F / (float)Math.cos((float) (Math.PI / 4)) - 1.0F;
+	public static final int field_32797 = 4;
+	private static final int field_32799 = 3;
+	public static final int field_32798 = 4;
 
 	public BakedQuad bake(
 		Vec3f from,

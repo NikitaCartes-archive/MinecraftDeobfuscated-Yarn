@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class AnimationFrameResourceMetadata {
+	public static final int field_32973 = -1;
 	private final int index;
 	private final int time;
 

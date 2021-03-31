@@ -2,8 +2,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import java.util.stream.IntStream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.enums.StairShape;
 import net.minecraft.entity.Entity;
@@ -110,7 +108,6 @@ public class StairsBlock extends Block implements Waterloggable {
 		return ((StairShape)state.get(SHAPE)).ordinal() * 4 + ((Direction)state.get(FACING)).getHorizontal();
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		this.baseBlock.randomDisplayTick(state, world, pos, random);

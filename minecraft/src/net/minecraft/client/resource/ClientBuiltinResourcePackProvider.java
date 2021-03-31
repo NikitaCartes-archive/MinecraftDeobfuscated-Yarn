@@ -48,6 +48,12 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 	);
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Pattern ALPHANUMERAL = Pattern.compile("^[a-fA-F0-9]{40}$");
+	private static final int field_32958 = 104857600;
+	private static final int field_32959 = 10;
+	private static final String field_32960 = "vanilla";
+	private static final String field_32961 = "server";
+	private static final String field_32962 = "programer_art";
+	private static final String field_32963 = "Programmer Art";
 	private final DefaultResourcePack pack;
 	private final File serverPacksRoot;
 	private final ReentrantLock lock = new ReentrantLock();
@@ -64,21 +70,21 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 	}
 
 	@Override
-	public void register(Consumer<ResourcePackProfile> consumer, ResourcePackProfile.Factory factory) {
+	public void register(Consumer<ResourcePackProfile> profileAdder, ResourcePackProfile.Factory factory) {
 		ResourcePackProfile resourcePackProfile = ResourcePackProfile.of(
 			"vanilla", true, () -> this.pack, factory, ResourcePackProfile.InsertionPosition.BOTTOM, ResourcePackSource.PACK_SOURCE_BUILTIN
 		);
 		if (resourcePackProfile != null) {
-			consumer.accept(resourcePackProfile);
+			profileAdder.accept(resourcePackProfile);
 		}
 
 		if (this.serverContainer != null) {
-			consumer.accept(this.serverContainer);
+			profileAdder.accept(this.serverContainer);
 		}
 
 		ResourcePackProfile resourcePackProfile2 = this.getProgrammerArtResourcePackProfile(factory);
 		if (resourcePackProfile2 != null) {
-			consumer.accept(resourcePackProfile2);
+			profileAdder.accept(resourcePackProfile2);
 		}
 	}
 
