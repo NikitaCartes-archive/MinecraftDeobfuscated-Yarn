@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -43,18 +41,15 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onOpenScreen(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getSyncId() {
         return this.syncId;
     }
 
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     public ScreenHandlerType<?> getScreenHandlerType() {
         return (ScreenHandlerType)Registry.SCREEN_HANDLER.get(this.screenHandlerId);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Text getName() {
         return this.name;
     }

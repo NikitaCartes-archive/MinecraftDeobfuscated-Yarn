@@ -58,6 +58,8 @@ public class ModelElementTexture {
     @Environment(value=EnvType.CLIENT)
     public static class Deserializer
     implements JsonDeserializer<ModelElementTexture> {
+        private static final int field_32791 = 0;
+
         protected Deserializer() {
         }
 

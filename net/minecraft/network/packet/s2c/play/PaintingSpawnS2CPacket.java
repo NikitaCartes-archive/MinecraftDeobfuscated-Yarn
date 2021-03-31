@@ -4,8 +4,6 @@
 package net.minecraft.network.packet.s2c.play;
 
 import java.util.UUID;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.decoration.painting.PaintingMotive;
 import net.minecraft.network.Packet;
@@ -53,27 +51,22 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onPaintingSpawn(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getId() {
         return this.id;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public UUID getPaintingUuid() {
         return this.uuid;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public BlockPos getPos() {
         return this.pos;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Direction getFacing() {
         return this.facing;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public PaintingMotive getMotive() {
         return Registry.PAINTING_MOTIVE.get(this.motiveId);
     }

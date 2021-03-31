@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 public class ChargingPlayerPhase
 extends AbstractPhase {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final int field_30431 = 10;
     private Vec3d pathTarget;
     private int chargingTicks;
 

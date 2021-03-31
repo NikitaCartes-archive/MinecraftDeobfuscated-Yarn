@@ -5,8 +5,7 @@ package net.minecraft.block.entity;
 
 import java.util.Optional;
 import java.util.Random;
-import net.fabricmc.yarn.constants.NbtTypeIds;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.entity.BlockEntity;
@@ -31,6 +30,8 @@ import org.jetbrains.annotations.Nullable;
 public class CampfireBlockEntity
 extends BlockEntity
 implements Clearable {
+    private static final int field_31330 = 2;
+    private static final int field_31331 = 4;
     private final DefaultedList<ItemStack> itemsBeingCooked = DefaultedList.ofSize(4, ItemStack.EMPTY);
     private final int[] cookingTimes = new int[4];
     private final int[] cookingTotalTimes = new int[4];
@@ -52,7 +53,7 @@ implements Clearable {
             ItemStack itemStack2 = world.getRecipeManager().getFirstMatch(RecipeType.CAMPFIRE_COOKING, inventory, world).map(campfireCookingRecipe -> campfireCookingRecipe.craft(inventory)).orElse(itemStack);
             ItemScatterer.spawn(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), itemStack2);
             campfire.itemsBeingCooked.set(i, ItemStack.EMPTY);
-            world.updateListeners(pos, state, state, SetBlockStateFlags.DEFAULT);
+            world.updateListeners(pos, state, state, Block.NOTIFY_ALL);
         }
         if (bl) {
             CampfireBlockEntity.markDirty(world, pos, state);
@@ -98,39 +99,39 @@ implements Clearable {
     }
 
     @Override
-    public void readNbt(NbtCompound tag) {
+    public void readNbt(NbtCompound nbt) {
         int[] is;
-        super.readNbt(tag);
+        super.readNbt(nbt);
         this.itemsBeingCooked.clear();
-        Inventories.readNbt(tag, this.itemsBeingCooked);
-        if (tag.contains("CookingTimes", NbtTypeIds.INT_ARRAY)) {
-            is = tag.getIntArray("CookingTimes");
+        Inventories.readNbt(nbt, this.itemsBeingCooked);
+        if (nbt.contains("CookingTimes", 11)) {
+            is = nbt.getIntArray("CookingTimes");
             System.arraycopy(is, 0, this.cookingTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
         }
-        if (tag.contains("CookingTotalTimes", NbtTypeIds.INT_ARRAY)) {
-            is = tag.getIntArray("CookingTotalTimes");
+        if (nbt.contains("CookingTotalTimes", 11)) {
+            is = nbt.getIntArray("CookingTotalTimes");
             System.arraycopy(is, 0, this.cookingTotalTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
         }
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound tag) {
-        this.saveInitialChunkData(tag);
-        tag.putIntArray("CookingTimes", this.cookingTimes);
-        tag.putIntArray("CookingTotalTimes", this.cookingTotalTimes);
-        return tag;
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        this.saveInitialChunkData(nbt);
+        nbt.putIntArray("CookingTimes", this.cookingTimes);
+        nbt.putIntArray("CookingTotalTimes", this.cookingTotalTimes);
+        return nbt;
     }
 
-    private NbtCompound saveInitialChunkData(NbtCompound tag) {
-        super.writeNbt(tag);
-        Inventories.writeNbt(tag, this.itemsBeingCooked, true);
-        return tag;
+    private NbtCompound saveInitialChunkData(NbtCompound nbt) {
+        super.writeNbt(nbt);
+        Inventories.writeNbt(nbt, this.itemsBeingCooked, true);
+        return nbt;
     }
 
     @Override
     @Nullable
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(this.pos, 13, this.toInitialChunkDataNbt());
+        return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.CAMPFIRE, this.toInitialChunkDataNbt());
     }
 
     @Override
@@ -160,7 +161,7 @@ implements Clearable {
 
     private void updateListeners() {
         this.markDirty();
-        this.getWorld().updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), SetBlockStateFlags.DEFAULT);
+        this.getWorld().updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.NOTIFY_ALL);
     }
 
     @Override

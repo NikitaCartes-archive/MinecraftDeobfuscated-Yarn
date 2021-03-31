@@ -246,6 +246,10 @@ public class Mouse {
         return this.leftButtonClicked;
     }
 
+    public boolean method_35707() {
+        return this.middleButtonClicked;
+    }
+
     public boolean wasRightButtonClicked() {
         return this.rightButtonClicked;
     }

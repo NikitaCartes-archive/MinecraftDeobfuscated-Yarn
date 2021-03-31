@@ -5,10 +5,6 @@ package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -39,6 +35,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldEvents;
 
 public class GhastEntity
 extends FlyingEntity
@@ -60,7 +57,6 @@ implements Monster {
         this.targetSelector.add(1, new FollowTargetGoal<PlayerEntity>(this, PlayerEntity.class, 10, true, false, livingEntity -> Math.abs(livingEntity.getY() - this.getY()) <= 4.0));
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isShooting() {
         return this.dataTracker.get(SHOOTING);
     }
@@ -135,16 +131,16 @@ implements Monster {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
-        tag.putInt("ExplosionPower", this.fireballStrength);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putInt("ExplosionPower", this.fireballStrength);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        if (tag.contains("ExplosionPower", NbtTypeIds.NUMBER)) {
-            this.fireballStrength = tag.getInt("ExplosionPower");
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        if (nbt.contains("ExplosionPower", 99)) {
+            this.fireballStrength = nbt.getInt("ExplosionPower");
         }
     }
 

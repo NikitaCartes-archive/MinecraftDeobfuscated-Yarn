@@ -7,6 +7,8 @@ import net.minecraft.world.chunk.ChunkNibbleArray;
 
 public class ColumnChunkNibbleArray
 extends ChunkNibbleArray {
+    public static final int field_31707 = 128;
+
     public ColumnChunkNibbleArray() {
         super(128);
     }

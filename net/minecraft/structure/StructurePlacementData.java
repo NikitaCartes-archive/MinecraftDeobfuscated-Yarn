@@ -78,6 +78,11 @@ public class StructurePlacementData {
         return this;
     }
 
+    public StructurePlacementData method_35476(boolean bl) {
+        this.placeFluids = bl;
+        return this;
+    }
+
     public StructurePlacementData setUpdateNeighbors(boolean updateNeighbors) {
         this.updateNeighbors = updateNeighbors;
         return this;

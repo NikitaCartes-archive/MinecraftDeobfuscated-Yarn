@@ -64,6 +64,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class ChunkBuilder {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final int field_32831 = 4;
     private static final VertexFormat field_29500 = VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL;
     private final PriorityQueue<BuiltChunk.Task> rebuildQueue = Queues.newPriorityQueue();
     private final Queue<BlockBufferBuilderStorage> threadBuffers;
@@ -143,15 +144,15 @@ public class ChunkBuilder {
         return String.format("pC: %03d, pU: %02d, aB: %02d", this.queuedTaskCount, this.uploadQueue.size(), this.bufferCount);
     }
 
-    public int method_34845() {
+    public int getToBatchCount() {
         return this.queuedTaskCount;
     }
 
-    public int method_34846() {
+    public int getChunksToUpload() {
         return this.uploadQueue.size();
     }
 
-    public int method_34847() {
+    public int getFreeBufferCount() {
         return this.bufferCount;
     }
 
@@ -259,6 +260,7 @@ public class ChunkBuilder {
 
     @Environment(value=EnvType.CLIENT)
     public class BuiltChunk {
+        public static final int field_32832 = 16;
         public final int field_29641;
         public final AtomicReference<ChunkData> data = new AtomicReference<ChunkData>(ChunkData.EMPTY);
         @Nullable

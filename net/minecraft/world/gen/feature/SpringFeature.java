@@ -4,7 +4,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
@@ -67,7 +67,7 @@ extends Feature<SpringFeatureConfig> {
             ++k;
         }
         if (j == springFeatureConfig.rockCount && k == springFeatureConfig.holeCount) {
-            structureWorldAccess.setBlockState(blockPos, springFeatureConfig.state.getBlockState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+            structureWorldAccess.setBlockState(blockPos, springFeatureConfig.state.getBlockState(), Block.NOTIFY_LISTENERS);
             structureWorldAccess.getFluidTickScheduler().schedule(blockPos, springFeatureConfig.state.getFluid(), 0);
             ++i;
         }

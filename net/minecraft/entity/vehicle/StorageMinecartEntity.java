@@ -3,7 +3,6 @@
  */
 package net.minecraft.entity.vehicle;
 
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -146,27 +145,27 @@ NamedScreenHandlerFactory {
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
+    protected void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
         if (this.lootTableId != null) {
-            tag.putString("LootTable", this.lootTableId.toString());
+            nbt.putString("LootTable", this.lootTableId.toString());
             if (this.lootSeed != 0L) {
-                tag.putLong("LootTableSeed", this.lootSeed);
+                nbt.putLong("LootTableSeed", this.lootSeed);
             }
         } else {
-            Inventories.writeNbt(tag, this.inventory);
+            Inventories.writeNbt(nbt, this.inventory);
         }
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
+    protected void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-        if (tag.contains("LootTable", NbtTypeIds.STRING)) {
-            this.lootTableId = new Identifier(tag.getString("LootTable"));
-            this.lootSeed = tag.getLong("LootTableSeed");
+        if (nbt.contains("LootTable", 8)) {
+            this.lootTableId = new Identifier(nbt.getString("LootTable"));
+            this.lootSeed = nbt.getLong("LootTableSeed");
         } else {
-            Inventories.readNbt(tag, this.inventory);
+            Inventories.readNbt(nbt, this.inventory);
         }
     }
 

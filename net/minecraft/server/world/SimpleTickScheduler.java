@@ -76,6 +76,11 @@ implements TickScheduler<T> {
         this.scheduledTicks.forEach(tick -> scheduler.schedule(tick.pos, ((Tick)tick).object, tick.delay, tick.priority));
     }
 
+    @Override
+    public int getTicks() {
+        return this.scheduledTicks.size();
+    }
+
     static class Tick<T> {
         private final T object;
         public final BlockPos pos;

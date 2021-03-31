@@ -3,8 +3,6 @@
  */
 package net.minecraft.block.entity;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -21,9 +19,8 @@ extends BlockEntity {
         this(BlockEntityType.END_PORTAL, pos, state);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean shouldDrawSide(Direction direction) {
-        return direction == Direction.UP;
+        return direction.getAxis() == Direction.Axis.Y;
     }
 }
 

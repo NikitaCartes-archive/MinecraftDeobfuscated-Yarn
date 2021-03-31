@@ -95,6 +95,12 @@ extends DrawableHelper {
     private static final Identifier SPYGLASS_SCOPE = new Identifier("textures/misc/spyglass_scope.png");
     private static final Identifier POWDER_SNOW_OUTLINE = new Identifier("textures/misc/powder_snow_outline.png");
     private static final Text DEMO_EXPIRED_MESSAGE = new TranslatableText("demo.demoExpired");
+    private static final int field_32167 = 0xFFFFFF;
+    private static final float field_32168 = 5.0f;
+    private static final int field_32169 = 10;
+    private static final int field_32170 = 10;
+    private static final String field_32171 = ": ";
+    private static final float field_32172 = 0.2f;
     private final Random random = new Random();
     private final MinecraftClient client;
     private final ItemRenderer itemRenderer;
@@ -167,6 +173,7 @@ extends DrawableHelper {
             this.renderVignetteOverlay(this.client.getCameraEntity());
         } else {
             RenderSystem.enableDepthTest();
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             RenderSystem.defaultBlendFunc();
         }
         float f = this.client.getLastFrameDuration();
@@ -605,7 +612,7 @@ extends DrawableHelper {
         ArrayList<Pair<ScoreboardPlayerScore, MutableText>> list2 = Lists.newArrayListWithCapacity(collection.size());
         Text text = objective.getDisplayName();
         int j = i = this.getFontRenderer().getWidth(text);
-        int k = this.getFontRenderer().getWidth(": ");
+        int k = this.getFontRenderer().getWidth(field_32171);
         for (ScoreboardPlayerScore scoreboardPlayerScore2 : collection) {
             Team team = scoreboard.getPlayerTeam(scoreboardPlayerScore2.getPlayerName());
             MutableText text2 = Team.decorateName(team, new LiteralText(scoreboardPlayerScore2.getPlayerName()));

@@ -27,18 +27,19 @@ implements BlockEntityRenderer<T> {
 
     @Override
     public void render(T endPortalBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
-        float g = this.getTopYOffset();
         Matrix4f matrix4f = matrixStack.peek().getModel();
-        this.renderSides(endPortalBlockEntity, g, matrix4f, vertexConsumerProvider.getBuffer(this.method_34589()));
+        this.renderSides(endPortalBlockEntity, matrix4f, vertexConsumerProvider.getBuffer(this.method_34589()));
     }
 
-    private void renderSides(T entity, float topYOffset, Matrix4f matrix4f, VertexConsumer vertexConsumer) {
+    private void renderSides(T entity, Matrix4f matrix4f, VertexConsumer vertexConsumer) {
+        float f = this.method_35793();
+        float g = this.getTopYOffset();
         this.renderSide(entity, matrix4f, vertexConsumer, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, Direction.SOUTH);
         this.renderSide(entity, matrix4f, vertexConsumer, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, Direction.NORTH);
         this.renderSide(entity, matrix4f, vertexConsumer, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, Direction.EAST);
         this.renderSide(entity, matrix4f, vertexConsumer, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, Direction.WEST);
-        this.renderSide(entity, matrix4f, vertexConsumer, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, Direction.DOWN);
-        this.renderSide(entity, matrix4f, vertexConsumer, 0.0f, 1.0f, topYOffset, topYOffset, 1.0f, 1.0f, 0.0f, 0.0f, Direction.UP);
+        this.renderSide(entity, matrix4f, vertexConsumer, 0.0f, 1.0f, f, f, 0.0f, 0.0f, 1.0f, 1.0f, Direction.DOWN);
+        this.renderSide(entity, matrix4f, vertexConsumer, 0.0f, 1.0f, g, g, 1.0f, 1.0f, 0.0f, 0.0f, Direction.UP);
     }
 
     private void renderSide(T entity, Matrix4f model, VertexConsumer vertices, float x1, float x2, float y1, float y2, float z1, float z2, float z3, float z4, Direction direction) {
@@ -52,6 +53,10 @@ implements BlockEntityRenderer<T> {
 
     protected float getTopYOffset() {
         return 0.75f;
+    }
+
+    protected float method_35793() {
+        return 0.375f;
     }
 
     protected RenderLayer method_34589() {

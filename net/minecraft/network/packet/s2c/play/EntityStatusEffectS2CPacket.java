@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.network.Packet;
@@ -13,6 +11,9 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class EntityStatusEffectS2CPacket
 implements Packet<ClientPlayPacketListener> {
+    private static final int AMBIENT_MASK = 1;
+    private static final int SHOW_PARTICLES_MASK = 2;
+    private static final int SHOW_ICON_MASK = 4;
     private final int entityId;
     private final byte effectId;
     private final byte amplifier;
@@ -54,7 +55,6 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeByte(this.flags);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isPermanent() {
         return this.duration == Short.MAX_VALUE;
     }
@@ -64,37 +64,30 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onEntityPotionEffect(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getEntityId() {
         return this.entityId;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public byte getEffectId() {
         return this.effectId;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public byte getAmplifier() {
         return this.amplifier;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getDuration() {
         return this.duration;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean shouldShowParticles() {
         return (this.flags & 2) == 2;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isAmbient() {
         return (this.flags & 1) == 1;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean shouldShowIcon() {
         return (this.flags & 4) == 4;
     }

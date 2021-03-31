@@ -20,6 +20,8 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class MinecartInsideSoundInstance
 extends MovingSoundInstance {
+    private static final float field_33006 = 0.0f;
+    private static final float field_33007 = 0.75f;
     private final PlayerEntity player;
     private final AbstractMinecartEntity minecart;
     private final boolean field_27773;

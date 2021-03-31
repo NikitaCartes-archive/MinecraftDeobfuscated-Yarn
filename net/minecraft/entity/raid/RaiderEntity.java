@@ -9,9 +9,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -189,7 +186,6 @@ extends PatrolEntity {
         return this.wave;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isCelebrating() {
         return this.dataTracker.get(CELEBRATING);
     }
@@ -199,23 +195,23 @@ extends PatrolEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
-        tag.putInt("Wave", this.wave);
-        tag.putBoolean("CanJoinRaid", this.ableToJoinRaid);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putInt("Wave", this.wave);
+        nbt.putBoolean("CanJoinRaid", this.ableToJoinRaid);
         if (this.raid != null) {
-            tag.putInt("RaidId", this.raid.getRaidId());
+            nbt.putInt("RaidId", this.raid.getRaidId());
         }
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        this.wave = tag.getInt("Wave");
-        this.ableToJoinRaid = tag.getBoolean("CanJoinRaid");
-        if (tag.contains("RaidId", NbtTypeIds.INT)) {
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.wave = nbt.getInt("Wave");
+        this.ableToJoinRaid = nbt.getBoolean("CanJoinRaid");
+        if (nbt.contains("RaidId", 3)) {
             if (this.world instanceof ServerWorld) {
-                this.raid = ((ServerWorld)this.world).getRaidManager().getRaid(tag.getInt("RaidId"));
+                this.raid = ((ServerWorld)this.world).getRaidManager().getRaid(nbt.getInt("RaidId"));
             }
             if (this.raid != null) {
                 this.raid.addToWave(this.wave, this, false);
@@ -280,9 +276,9 @@ extends PatrolEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         this.setAbleToJoinRaid(this.getType() != EntityType.WITCH || spawnReason != SpawnReason.NATURAL);
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     public abstract SoundEvent getCelebratingSound();

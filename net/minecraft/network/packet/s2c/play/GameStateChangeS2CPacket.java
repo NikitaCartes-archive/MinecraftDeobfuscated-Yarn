@@ -5,8 +5,6 @@ package net.minecraft.network.packet.s2c.play;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -25,6 +23,11 @@ implements Packet<ClientPlayPacketListener> {
     public static final Reason PUFFERFISH_STING = new Reason(9);
     public static final Reason ELDER_GUARDIAN_EFFECT = new Reason(10);
     public static final Reason IMMEDIATE_RESPAWN = new Reason(11);
+    public static final int DEMO_OPEN_SCREEN = 0;
+    public static final int DEMO_MOVEMENT_HELP = 101;
+    public static final int DEMO_JUMP_HELP = 102;
+    public static final int DEMO_INVENTORY_HELP = 103;
+    public static final int DEMO_EXPIRY_NOTICE = 104;
     private final Reason reason;
     private final float value;
 
@@ -49,12 +52,10 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onGameStateChange(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Reason getReason() {
         return this.reason;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getValue() {
         return this.value;
     }

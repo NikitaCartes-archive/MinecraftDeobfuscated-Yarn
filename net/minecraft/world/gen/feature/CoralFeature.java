@@ -5,7 +5,6 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -43,17 +42,17 @@ extends Feature<DefaultFeatureConfig> {
         if (!blockState.isOf(Blocks.WATER) && !blockState.isIn(BlockTags.CORALS) || !world.getBlockState(blockPos).isOf(Blocks.WATER)) {
             return false;
         }
-        world.setBlockState(pos, state, SetBlockStateFlags.DEFAULT);
+        world.setBlockState(pos, state, Block.NOTIFY_ALL);
         if (random.nextFloat() < 0.25f) {
-            world.setBlockState(blockPos, ((Block)BlockTags.CORALS.getRandom(random)).getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+            world.setBlockState(blockPos, ((Block)BlockTags.CORALS.getRandom(random)).getDefaultState(), Block.NOTIFY_LISTENERS);
         } else if (random.nextFloat() < 0.05f) {
-            world.setBlockState(blockPos, (BlockState)Blocks.SEA_PICKLE.getDefaultState().with(SeaPickleBlock.PICKLES, random.nextInt(4) + 1), SetBlockStateFlags.NOTIFY_LISTENERS);
+            world.setBlockState(blockPos, (BlockState)Blocks.SEA_PICKLE.getDefaultState().with(SeaPickleBlock.PICKLES, random.nextInt(4) + 1), Block.NOTIFY_LISTENERS);
         }
         for (Direction direction : Direction.Type.HORIZONTAL) {
             BlockPos blockPos2;
             if (!(random.nextFloat() < 0.2f) || !world.getBlockState(blockPos2 = pos.offset(direction)).isOf(Blocks.WATER)) continue;
             BlockState blockState2 = (BlockState)((Block)BlockTags.WALL_CORALS.getRandom(random)).getDefaultState().with(DeadCoralWallFanBlock.FACING, direction);
-            world.setBlockState(blockPos2, blockState2, SetBlockStateFlags.NOTIFY_LISTENERS);
+            world.setBlockState(blockPos2, blockState2, Block.NOTIFY_LISTENERS);
         }
         return true;
     }

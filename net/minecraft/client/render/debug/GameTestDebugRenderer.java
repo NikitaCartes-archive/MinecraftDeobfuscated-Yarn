@@ -18,6 +18,7 @@ import net.minecraft.util.math.BlockPos;
 @Environment(value=EnvType.CLIENT)
 public class GameTestDebugRenderer
 implements DebugRenderer.Renderer {
+    private static final float field_32901 = 0.02f;
     private final Map<BlockPos, Marker> markers = Maps.newHashMap();
 
     public void addMarker(BlockPos pos, int color, String message, int duration) {

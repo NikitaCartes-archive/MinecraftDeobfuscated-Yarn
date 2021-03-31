@@ -9,8 +9,6 @@ import it.unimi.dsi.fastutil.doubles.DoubleList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.Util;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
@@ -84,7 +82,6 @@ public abstract class VoxelShape {
         return voxelShapes[0];
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void forEachEdge(VoxelShapes.BoxConsumer boxConsumer) {
         this.voxels.forEachEdge((i, j, k, l, m, n) -> boxConsumer.consume(this.getPointPosition(Direction.Axis.X, i), this.getPointPosition(Direction.Axis.Y, j), this.getPointPosition(Direction.Axis.Z, k), this.getPointPosition(Direction.Axis.X, l), this.getPointPosition(Direction.Axis.Y, m), this.getPointPosition(Direction.Axis.Z, n)), true);
     }
@@ -102,7 +99,18 @@ public abstract class VoxelShape {
         return list;
     }
 
-    @Environment(value=EnvType.CLIENT)
+    public double method_35593(Direction.Axis axis, double d, double e) {
+        int j;
+        Direction.Axis axis2 = AxisCycleDirection.FORWARD.cycle(axis);
+        Direction.Axis axis3 = AxisCycleDirection.BACKWARD.cycle(axis);
+        int i = this.getCoordIndex(axis2, d);
+        int k = this.voxels.method_35592(axis, i, j = this.getCoordIndex(axis3, e));
+        if (k >= this.voxels.getSize(axis)) {
+            return Double.POSITIVE_INFINITY;
+        }
+        return this.getPointPosition(axis, k);
+    }
+
     public double getEndingCoord(Direction.Axis axis, double from, double to) {
         int j;
         Direction.Axis axis2 = AxisCycleDirection.FORWARD.cycle(axis);

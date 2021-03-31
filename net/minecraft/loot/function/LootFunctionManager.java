@@ -47,6 +47,10 @@ extends JsonDataLoader {
         return this.functions.get(id);
     }
 
+    public LootFunction getOrDefault(Identifier id, LootFunction fallback) {
+        return this.functions.getOrDefault(id, fallback);
+    }
+
     @Override
     protected void apply(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
         ImmutableMap.Builder builder = ImmutableMap.builder();

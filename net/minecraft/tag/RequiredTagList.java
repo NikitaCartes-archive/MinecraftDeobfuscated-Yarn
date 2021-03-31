@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.tag.SetTag;
 import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagGroup;
@@ -41,7 +39,6 @@ public class RequiredTagList<T> {
         return tagWrapper;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void clearAllTags() {
         this.group = TagGroup.createEmpty();
         SetTag tag2 = SetTag.empty();

@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class OctavePerlinNoiseSampler
 implements NoiseSampler {
+    private static final int field_31704 = 0x2000000;
     private final PerlinNoiseSampler[] octaveSamplers;
     private final DoubleList amplitudes;
     private final double persistence;
@@ -33,6 +34,10 @@ implements NoiseSampler {
 
     public OctavePerlinNoiseSampler(WorldGenRandom random, List<Integer> octaves) {
         this(random, new IntRBTreeSet(octaves));
+    }
+
+    public static OctavePerlinNoiseSampler method_35480(WorldGenRandom worldGenRandom, int i, double ... ds) {
+        return OctavePerlinNoiseSampler.create(worldGenRandom, i, new DoubleArrayList(ds));
     }
 
     public static OctavePerlinNoiseSampler create(WorldGenRandom random, int offset, DoubleList amplitudes) {

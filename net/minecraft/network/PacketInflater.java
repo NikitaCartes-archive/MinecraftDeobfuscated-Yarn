@@ -14,6 +14,10 @@ import net.minecraft.network.PacketByteBuf;
 
 public class PacketInflater
 extends ByteToMessageDecoder {
+    /**
+     * The maximum size allowed for a compressed packet. Has value {@value}.
+     */
+    public static final int MAXIMUM_PACKET_SIZE = 0x200000;
     private final Inflater inflater;
     private int compressionThreshold;
 
@@ -46,6 +50,10 @@ extends ByteToMessageDecoder {
             list.add(Unpooled.wrappedBuffer(cs));
             this.inflater.reset();
         }
+    }
+
+    public int getCompressionThreshold() {
+        return this.compressionThreshold;
     }
 
     public void setCompressionThreshold(int compressionThreshold) {

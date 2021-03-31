@@ -15,8 +15,6 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -171,15 +169,14 @@ public class HoverEvent {
         private final Item item;
         private final int count;
         @Nullable
-        private final NbtCompound tag;
+        private final NbtCompound nbt;
         @Nullable
-        @Environment(value=EnvType.CLIENT)
         private ItemStack stack;
 
-        ItemStackContent(Item item, int count, @Nullable NbtCompound tag) {
+        ItemStackContent(Item item, int count, @Nullable NbtCompound nbt) {
             this.item = item;
             this.count = count;
-            this.tag = tag;
+            this.nbt = nbt;
         }
 
         public ItemStackContent(ItemStack stack) {
@@ -194,22 +191,21 @@ public class HoverEvent {
                 return false;
             }
             ItemStackContent itemStackContent = (ItemStackContent)object;
-            return this.count == itemStackContent.count && this.item.equals(itemStackContent.item) && Objects.equals(this.tag, itemStackContent.tag);
+            return this.count == itemStackContent.count && this.item.equals(itemStackContent.item) && Objects.equals(this.nbt, itemStackContent.nbt);
         }
 
         public int hashCode() {
             int i = this.item.hashCode();
             i = 31 * i + this.count;
-            i = 31 * i + (this.tag != null ? this.tag.hashCode() : 0);
+            i = 31 * i + (this.nbt != null ? this.nbt.hashCode() : 0);
             return i;
         }
 
-        @Environment(value=EnvType.CLIENT)
         public ItemStack asStack() {
             if (this.stack == null) {
                 this.stack = new ItemStack(this.item, this.count);
-                if (this.tag != null) {
-                    this.stack.setTag(this.tag);
+                if (this.nbt != null) {
+                    this.stack.setTag(this.nbt);
                 }
             }
             return this.stack;
@@ -251,8 +247,8 @@ public class HoverEvent {
             if (this.count != 1) {
                 jsonObject.addProperty("count", this.count);
             }
-            if (this.tag != null) {
-                jsonObject.addProperty("tag", this.tag.toString());
+            if (this.nbt != null) {
+                jsonObject.addProperty("tag", this.nbt.toString());
             }
             return jsonObject;
         }
@@ -264,7 +260,6 @@ public class HoverEvent {
         @Nullable
         public final Text name;
         @Nullable
-        @Environment(value=EnvType.CLIENT)
         private List<Text> tooltip;
 
         public EntityContent(EntityType<?> entityType, UUID uuid, @Nullable Text name) {
@@ -308,7 +303,6 @@ public class HoverEvent {
             return jsonObject;
         }
 
-        @Environment(value=EnvType.CLIENT)
         public List<Text> asTooltip() {
             if (this.tooltip == null) {
                 this.tooltip = Lists.newArrayList();

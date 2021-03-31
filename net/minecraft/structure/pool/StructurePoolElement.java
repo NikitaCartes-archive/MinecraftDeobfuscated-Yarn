@@ -26,6 +26,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
@@ -46,6 +47,8 @@ public abstract class StructurePoolElement {
     protected StructurePoolElement(StructurePool.Projection projection) {
         this.projection = projection;
     }
+
+    public abstract Vec3i getStart(StructureManager var1, BlockRotation var2);
 
     public abstract List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager var1, BlockPos var2, BlockRotation var3, Random var4);
 

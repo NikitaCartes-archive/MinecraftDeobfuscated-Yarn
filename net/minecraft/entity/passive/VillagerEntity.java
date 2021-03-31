@@ -3,6 +3,7 @@
  */
 package net.minecraft.entity.passive;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -16,9 +17,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -101,12 +99,24 @@ extends MerchantEntity
 implements InteractionObserver,
 VillagerDataContainer {
     private static final TrackedData<VillagerData> VILLAGER_DATA = DataTracker.registerData(VillagerEntity.class, TrackedDataHandlerRegistry.VILLAGER_DATA);
+    public static final int field_30602 = 12;
     public static final Map<Item, Integer> ITEM_FOOD_VALUES = ImmutableMap.of(Items.BREAD, 4, Items.POTATO, 1, Items.CARROT, 1, Items.BEETROOT, 1);
+    private static final int field_30604 = 2;
     private static final Set<Item> GATHERABLE_ITEMS = ImmutableSet.of(Items.BREAD, Items.POTATO, Items.CARROT, Items.WHEAT, Items.WHEAT_SEEDS, Items.BEETROOT, new Item[]{Items.BEETROOT_SEEDS});
+    private static final int field_30605 = 10;
+    private static final int field_30606 = 1200;
+    private static final int field_30607 = 24000;
+    private static final int field_30608 = 25;
+    private static final int field_30609 = 10;
+    private static final int field_30610 = 5;
+    private static final long field_30611 = 24000L;
+    @VisibleForTesting
+    public static final float field_30603 = 0.5f;
     private int levelUpTimer;
     private boolean levelingUp;
     @Nullable
     private PlayerEntity lastCustomer;
+    private boolean field_30612;
     private byte foodLevel;
     private final VillagerGossips gossip = new VillagerGossips();
     private long gossipStartTime;
@@ -393,47 +403,47 @@ VillagerDataContainer {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
-        VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData()).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> tag.put("VillagerData", (NbtElement)nbtElement));
-        tag.putByte("FoodLevel", this.foodLevel);
-        tag.put("Gossips", this.gossip.serialize(NbtOps.INSTANCE).getValue());
-        tag.putInt("Xp", this.experience);
-        tag.putLong("LastRestock", this.lastRestockTime);
-        tag.putLong("LastGossipDecay", this.lastGossipDecayTime);
-        tag.putInt("RestocksToday", this.restocksToday);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData()).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbt.put("VillagerData", (NbtElement)nbtElement));
+        nbt.putByte("FoodLevel", this.foodLevel);
+        nbt.put("Gossips", this.gossip.serialize(NbtOps.INSTANCE).getValue());
+        nbt.putInt("Xp", this.experience);
+        nbt.putLong("LastRestock", this.lastRestockTime);
+        nbt.putLong("LastGossipDecay", this.lastGossipDecayTime);
+        nbt.putInt("RestocksToday", this.restocksToday);
         if (this.natural) {
-            tag.putBoolean("AssignProfessionWhenSpawned", true);
+            nbt.putBoolean("AssignProfessionWhenSpawned", true);
         }
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        if (tag.contains("VillagerData", NbtTypeIds.COMPOUND)) {
-            DataResult dataResult = VillagerData.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, tag.get("VillagerData")));
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        if (nbt.contains("VillagerData", 10)) {
+            DataResult dataResult = VillagerData.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("VillagerData")));
             dataResult.resultOrPartial(LOGGER::error).ifPresent(this::setVillagerData);
         }
-        if (tag.contains("Offers", NbtTypeIds.COMPOUND)) {
-            this.offers = new TradeOfferList(tag.getCompound("Offers"));
+        if (nbt.contains("Offers", 10)) {
+            this.offers = new TradeOfferList(nbt.getCompound("Offers"));
         }
-        if (tag.contains("FoodLevel", NbtTypeIds.BYTE)) {
-            this.foodLevel = tag.getByte("FoodLevel");
+        if (nbt.contains("FoodLevel", 1)) {
+            this.foodLevel = nbt.getByte("FoodLevel");
         }
-        NbtList nbtList = tag.getList("Gossips", NbtTypeIds.COMPOUND);
+        NbtList nbtList = nbt.getList("Gossips", 10);
         this.gossip.deserialize(new Dynamic<NbtList>(NbtOps.INSTANCE, nbtList));
-        if (tag.contains("Xp", NbtTypeIds.INT)) {
-            this.experience = tag.getInt("Xp");
+        if (nbt.contains("Xp", 3)) {
+            this.experience = nbt.getInt("Xp");
         }
-        this.lastRestockTime = tag.getLong("LastRestock");
-        this.lastGossipDecayTime = tag.getLong("LastGossipDecay");
+        this.lastRestockTime = nbt.getLong("LastRestock");
+        this.lastGossipDecayTime = nbt.getLong("LastGossipDecay");
         this.setCanPickUpLoot(true);
         if (this.world instanceof ServerWorld) {
             this.reinitializeBrain((ServerWorld)this.world);
         }
-        this.restocksToday = tag.getInt("RestocksToday");
-        if (tag.contains("AssignProfessionWhenSpawned")) {
-            this.natural = tag.getBoolean("AssignProfessionWhenSpawned");
+        this.restocksToday = nbt.getInt("RestocksToday");
+        if (nbt.contains("AssignProfessionWhenSpawned")) {
+            this.natural = nbt.getBoolean("AssignProfessionWhenSpawned");
         }
     }
 
@@ -471,6 +481,7 @@ VillagerDataContainer {
         }
     }
 
+    @Override
     public void setVillagerData(VillagerData villagerData) {
         VillagerData villagerData2 = this.getVillagerData();
         if (villagerData2.getProfession() != villagerData.getProfession()) {
@@ -497,6 +508,14 @@ VillagerDataContainer {
         if (offer.shouldRewardPlayerExperience()) {
             this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.getX(), this.getY() + 0.5, this.getZ(), i));
         }
+    }
+
+    public void method_35201(boolean bl) {
+        this.field_30612 = bl;
+    }
+
+    public boolean method_35200() {
+        return this.field_30612;
     }
 
     @Override
@@ -620,7 +639,6 @@ VillagerDataContainer {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void handleStatus(byte status) {
         if (status == 12) {
             this.produceParticles(ParticleTypes.HEART);
@@ -637,7 +655,7 @@ VillagerDataContainer {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         if (spawnReason == SpawnReason.BREEDING) {
             this.setVillagerData(this.getVillagerData().withProfession(VillagerProfession.NONE));
         }
@@ -647,7 +665,7 @@ VillagerDataContainer {
         if (spawnReason == SpawnReason.STRUCTURE) {
             this.natural = true;
         }
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     @Override
@@ -851,8 +869,8 @@ VillagerDataContainer {
         return this.gossip;
     }
 
-    public void setGossipDataFromNbt(NbtElement tag) {
-        this.gossip.deserialize(new Dynamic<NbtElement>(NbtOps.INSTANCE, tag));
+    public void readGossipDataNbt(NbtElement nbt) {
+        this.gossip.deserialize(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt));
     }
 
     @Override

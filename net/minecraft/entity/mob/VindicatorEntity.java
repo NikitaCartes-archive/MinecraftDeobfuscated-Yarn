@@ -7,9 +7,6 @@ import com.google.common.collect.Maps;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.function.Predicate;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -56,6 +53,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class VindicatorEntity
 extends IllagerEntity {
+    private static final String JOHNNY_KEY = "Johnny";
     private static final Predicate<Difficulty> DIFFICULTY_ALLOWS_DOOR_BREAKING_PREDICATE = difficulty -> difficulty == Difficulty.NORMAL || difficulty == Difficulty.HARD;
     private boolean johnny;
 
@@ -95,15 +93,14 @@ extends IllagerEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
         if (this.johnny) {
-            tag.putBoolean("Johnny", true);
+            nbt.putBoolean(JOHNNY_KEY, true);
         }
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public IllagerEntity.State getState() {
         if (this.isAttacking()) {
             return IllagerEntity.State.ATTACKING;
@@ -115,10 +112,10 @@ extends IllagerEntity {
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        if (tag.contains("Johnny", NbtTypeIds.NUMBER)) {
-            this.johnny = tag.getBoolean("Johnny");
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        if (nbt.contains(JOHNNY_KEY, 99)) {
+            this.johnny = nbt.getBoolean(JOHNNY_KEY);
         }
     }
 
@@ -129,8 +126,8 @@ extends IllagerEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
-        EntityData entityData2 = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
+        EntityData entityData2 = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
         ((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
         this.initEquipment(difficulty);
         this.updateEnchantments(difficulty);
@@ -158,7 +155,7 @@ extends IllagerEntity {
     @Override
     public void setCustomName(@Nullable Text name) {
         super.setCustomName(name);
-        if (!this.johnny && name != null && name.getString().equals("Johnny")) {
+        if (!this.johnny && name != null && name.getString().equals(JOHNNY_KEY)) {
             this.johnny = true;
         }
     }

@@ -15,6 +15,7 @@ import net.minecraft.screen.slot.Slot;
 
 public class ShulkerBoxScreenHandler
 extends ScreenHandler {
+    private static final int field_30841 = 27;
     private final Inventory inventory;
 
     public ShulkerBoxScreenHandler(int syncId, PlayerInventory playerInventory) {

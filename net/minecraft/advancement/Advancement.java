@@ -14,8 +14,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.AdvancementDisplay;
 import net.minecraft.advancement.AdvancementFrame;
@@ -99,7 +97,6 @@ public class Advancement {
         return this.criteria;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getRequirementCount() {
         return this.requirements.length;
     }
@@ -205,6 +202,11 @@ public class Advancement {
 
         public Task criteriaMerger(CriterionMerger merger) {
             this.merger = merger;
+            return this;
+        }
+
+        public Task method_34884(String[][] strings) {
+            this.requirements = strings;
             return this;
         }
 

@@ -4,9 +4,6 @@
 package net.minecraft.item;
 
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
@@ -25,6 +22,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class EnchantedBookItem
 extends Item {
+    public static final String STORED_ENCHANTMENTS_KEY = "StoredEnchantments";
+
     public EnchantedBookItem(Item.Settings settings) {
         super(settings);
     }
@@ -42,13 +41,12 @@ extends Item {
     public static NbtList getEnchantmentNbt(ItemStack stack) {
         NbtCompound nbtCompound = stack.getTag();
         if (nbtCompound != null) {
-            return nbtCompound.getList("StoredEnchantments", NbtTypeIds.COMPOUND);
+            return nbtCompound.getList(STORED_ENCHANTMENTS_KEY, 10);
         }
         return new NbtList();
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         super.appendTooltip(stack, world, tooltip, context);
         ItemStack.appendEnchantments(tooltip, EnchantedBookItem.getEnchantmentNbt(stack));
@@ -74,7 +72,7 @@ extends Item {
             nbtCompound2.putShort("lvl", (short)entry.level);
             nbtList.add(nbtCompound2);
         }
-        stack.getOrCreateTag().put("StoredEnchantments", nbtList);
+        stack.getOrCreateTag().put(STORED_ENCHANTMENTS_KEY, nbtList);
     }
 
     public static ItemStack forEnchantment(EnchantmentLevelEntry info) {

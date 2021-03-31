@@ -23,6 +23,11 @@ extends AbstractCauldronBlock {
     }
 
     @Override
+    public boolean isFull(BlockState state) {
+        return true;
+    }
+
+    @Override
     public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         if (this.isEntityTouchingFluid(state, pos, entity)) {
             entity.setOnFireFromLava();

@@ -13,8 +13,15 @@ import org.jetbrains.annotations.Nullable;
 
 public class ChunkPos {
     public static final long MARKER = ChunkPos.toLong(1875016, 1875016);
+    private static final long field_30953 = 32L;
+    private static final long field_30954 = 0xFFFFFFFFL;
+    private static final int field_30955 = 5;
+    private static final int field_30956 = 31;
     public final int x;
     public final int z;
+    private static final int field_30957 = 1664525;
+    private static final int field_30958 = 1013904223;
+    private static final int field_30959 = -559038737;
 
     public ChunkPos(int x, int z) {
         this.x = x;
@@ -102,6 +109,10 @@ public class ChunkPos {
 
     public int getRegionRelativeZ() {
         return this.z & 0x1F;
+    }
+
+    public BlockPos method_35231(int i, int j, int k) {
+        return new BlockPos(this.getOffsetX(i), j, this.getOffsetZ(k));
     }
 
     public int getOffsetX(int offset) {

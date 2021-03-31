@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.function.Predicate;
-import net.fabricmc.yarn.constants.NbtTypeIds;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -51,6 +49,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
@@ -64,6 +63,14 @@ import org.jetbrains.annotations.Nullable;
 
 public class EnderDragonFight {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final int field_31443 = 1200;
+    private static final int field_31444 = 100;
+    private static final int field_31445 = 20;
+    private static final int field_31446 = 8;
+    public static final int field_31441 = 9;
+    private static final int field_31447 = 20;
+    private static final int field_31448 = 96;
+    public static final int field_31442 = 128;
     private static final Predicate<Entity> VALID_ENTITY = EntityPredicates.VALID_ENTITY.and(EntityPredicates.maxDistance(0.0, 128.0, 0.0, 192.0));
     private final ServerBossBar bossBar = (ServerBossBar)new ServerBossBar(new TranslatableText("entity.minecraft.ender_dragon"), BossBar.Color.PINK, BossBar.Style.PROGRESS).setDragonMusic(true).setThickenFog(true);
     private final ServerWorld world;
@@ -82,26 +89,26 @@ public class EnderDragonFight {
     private int spawnStateTimer;
     private List<EndCrystalEntity> crystals;
 
-    public EnderDragonFight(ServerWorld world, long gatewaysSeed, NbtCompound tag) {
+    public EnderDragonFight(ServerWorld world, long gatewaysSeed, NbtCompound nbt) {
         this.world = world;
-        if (tag.contains("DragonKilled", NbtTypeIds.NUMBER)) {
-            if (tag.containsUuid("Dragon")) {
-                this.dragonUuid = tag.getUuid("Dragon");
+        if (nbt.contains("DragonKilled", 99)) {
+            if (nbt.containsUuid("Dragon")) {
+                this.dragonUuid = nbt.getUuid("Dragon");
             }
-            this.dragonKilled = tag.getBoolean("DragonKilled");
-            this.previouslyKilled = tag.getBoolean("PreviouslyKilled");
-            if (tag.getBoolean("IsRespawning")) {
+            this.dragonKilled = nbt.getBoolean("DragonKilled");
+            this.previouslyKilled = nbt.getBoolean("PreviouslyKilled");
+            if (nbt.getBoolean("IsRespawning")) {
                 this.dragonSpawnState = EnderDragonSpawnState.START;
             }
-            if (tag.contains("ExitPortalLocation", NbtTypeIds.COMPOUND)) {
-                this.exitPortalLocation = NbtHelper.toBlockPos(tag.getCompound("ExitPortalLocation"));
+            if (nbt.contains("ExitPortalLocation", 10)) {
+                this.exitPortalLocation = NbtHelper.toBlockPos(nbt.getCompound("ExitPortalLocation"));
             }
         } else {
             this.dragonKilled = true;
             this.previouslyKilled = true;
         }
-        if (tag.contains("Gateways", NbtTypeIds.LIST)) {
-            NbtList nbtList = tag.getList("Gateways", NbtTypeIds.INT);
+        if (nbt.contains("Gateways", 9)) {
+            NbtList nbtList = nbt.getList("Gateways", 3);
             for (int i = 0; i < nbtList.size(); ++i) {
                 this.gateways.add(nbtList.getInt(i));
             }

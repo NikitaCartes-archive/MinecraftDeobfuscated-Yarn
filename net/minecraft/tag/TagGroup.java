@@ -15,8 +15,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.tag.SetTag;
 import net.minecraft.tag.Tag;
@@ -38,7 +36,16 @@ public interface TagGroup<T> {
     public Tag<T> getTagOrEmpty(Identifier var1);
 
     @Nullable
+    default public Identifier method_34894(Tag.Identified<T> identified) {
+        return identified.getId();
+    }
+
+    @Nullable
     public Identifier getUncheckedTagId(Tag<T> var1);
+
+    default public boolean method_34895(Identifier identifier) {
+        return this.getTags().containsKey(identifier);
+    }
 
     default public Collection<Identifier> getTagIds() {
         return this.getTags().keySet();
@@ -47,7 +54,6 @@ public interface TagGroup<T> {
     /**
      * Gets the identifiers of all tags an object is applicable to.
      */
-    @Environment(value=EnvType.CLIENT)
     default public Collection<Identifier> getTagsFor(T object) {
         ArrayList<Identifier> list = Lists.newArrayList();
         for (Map.Entry<Identifier, Tag<T>> entry : this.getTags().entrySet()) {
@@ -77,7 +83,6 @@ public interface TagGroup<T> {
     /**
      * Deserializes a serialized tag group.
      */
-    @Environment(value=EnvType.CLIENT)
     public static <T> TagGroup<T> deserialize(Serialized serialized, Registry<? extends T> registry) {
         HashMap map = Maps.newHashMapWithExpectedSize(serialized.contents.size());
         serialized.contents.forEach((id, entries) -> {

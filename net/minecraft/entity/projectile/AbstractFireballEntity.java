@@ -3,10 +3,6 @@
  */
 package net.minecraft.entity.projectile;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.api.EnvironmentInterface;
-import net.fabricmc.api.EnvironmentInterfaces;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -20,7 +16,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Util;
 import net.minecraft.world.World;
 
-@EnvironmentInterfaces(value={@EnvironmentInterface(value=EnvType.CLIENT, itf=FlyingItemEntity.class)})
 public abstract class AbstractFireballEntity
 extends ExplosiveProjectileEntity
 implements FlyingItemEntity {
@@ -49,7 +44,6 @@ implements FlyingItemEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public ItemStack getStack() {
         ItemStack itemStack = this.getItem();
         return itemStack.isEmpty() ? new ItemStack(Items.FIRE_CHARGE) : itemStack;
@@ -61,18 +55,18 @@ implements FlyingItemEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
         ItemStack itemStack = this.getItem();
         if (!itemStack.isEmpty()) {
-            tag.put("Item", itemStack.writeNbt(new NbtCompound()));
+            nbt.put("Item", itemStack.writeNbt(new NbtCompound()));
         }
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        ItemStack itemStack = ItemStack.fromNbt(tag.getCompound("Item"));
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        ItemStack itemStack = ItemStack.fromNbt(nbt.getCompound("Item"));
         this.setItem(itemStack);
     }
 }

@@ -12,10 +12,16 @@ import net.minecraft.network.PacketByteBuf;
 @ChannelHandler.Sharable
 public class SizePrepender
 extends MessageToByteEncoder<ByteBuf> {
+    /**
+     * The max length, in number of bytes, of the prepending size var int permitted.
+     * Has value {@value}.
+     */
+    private static final int MAX_PREPEND_LENGTH = 3;
+
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, ByteBuf byteBuf2) {
         int i = byteBuf.readableBytes();
-        int j = PacketByteBuf.getVarIntSizeBytes(i);
+        int j = PacketByteBuf.getVarIntLength(i);
         if (j > 3) {
             throw new IllegalArgumentException("unable to fit " + i + " into " + 3);
         }

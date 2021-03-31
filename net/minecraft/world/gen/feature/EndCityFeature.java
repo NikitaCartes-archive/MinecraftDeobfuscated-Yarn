@@ -3,13 +3,15 @@
  */
 package net.minecraft.world.gen.feature;
 
+import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
+import java.util.ArrayList;
 import java.util.Random;
 import net.minecraft.structure.EndCityGenerator;
 import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
@@ -24,6 +26,8 @@ import net.minecraft.world.gen.feature.StructureFeature;
 
 public class EndCityFeature
 extends StructureFeature<DefaultFeatureConfig> {
+    private static final int field_31502 = 10387313;
+
     public EndCityFeature(Codec<DefaultFeatureConfig> codec) {
         super(codec);
     }
@@ -67,8 +71,8 @@ extends StructureFeature<DefaultFeatureConfig> {
 
     public static class Start
     extends StructureStart<DefaultFeatureConfig> {
-        public Start(StructureFeature<DefaultFeatureConfig> structureFeature, ChunkPos chunkPos, BlockBox blockBox, int i, long l) {
-            super(structureFeature, chunkPos, blockBox, i, l);
+        public Start(StructureFeature<DefaultFeatureConfig> structureFeature, ChunkPos chunkPos, int i, long l) {
+            super(structureFeature, chunkPos, i, l);
         }
 
         @Override
@@ -79,8 +83,9 @@ extends StructureFeature<DefaultFeatureConfig> {
                 return;
             }
             BlockPos blockPos = chunkPos.getCenterAtY(i);
-            EndCityGenerator.addPieces(structureManager, blockPos, blockRotation, this.children, this.random);
-            this.setBoundingBoxFromChildren();
+            ArrayList<StructurePiece> list = Lists.newArrayList();
+            EndCityGenerator.addPieces(structureManager, blockPos, blockRotation, list, this.random);
+            list.forEach(this::method_35462);
         }
     }
 }

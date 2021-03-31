@@ -4,8 +4,6 @@
 package net.minecraft.item;
 
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.FireworkItem;
 import net.minecraft.item.Item;
@@ -27,7 +25,6 @@ extends Item {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         NbtCompound nbtCompound = stack.getSubTag("Explosion");
         if (nbtCompound != null) {
@@ -35,27 +32,25 @@ extends Item {
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
-    public static void appendFireworkTooltip(NbtCompound tag, List<Text> tooltip) {
+    public static void appendFireworkTooltip(NbtCompound nbt, List<Text> tooltip) {
         int[] js;
-        FireworkItem.Type type = FireworkItem.Type.byId(tag.getByte("Type"));
+        FireworkItem.Type type = FireworkItem.Type.byId(nbt.getByte("Type"));
         tooltip.add(new TranslatableText("item.minecraft.firework_star.shape." + type.getName()).formatted(Formatting.GRAY));
-        int[] is = tag.getIntArray("Colors");
+        int[] is = nbt.getIntArray("Colors");
         if (is.length > 0) {
             tooltip.add(FireworkChargeItem.appendColors(new LiteralText("").formatted(Formatting.GRAY), is));
         }
-        if ((js = tag.getIntArray("FadeColors")).length > 0) {
+        if ((js = nbt.getIntArray("FadeColors")).length > 0) {
             tooltip.add(FireworkChargeItem.appendColors(new TranslatableText("item.minecraft.firework_star.fade_to").append(" ").formatted(Formatting.GRAY), js));
         }
-        if (tag.getBoolean("Trail")) {
+        if (nbt.getBoolean("Trail")) {
             tooltip.add(new TranslatableText("item.minecraft.firework_star.trail").formatted(Formatting.GRAY));
         }
-        if (tag.getBoolean("Flicker")) {
+        if (nbt.getBoolean("Flicker")) {
             tooltip.add(new TranslatableText("item.minecraft.firework_star.flicker").formatted(Formatting.GRAY));
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     private static Text appendColors(MutableText line, int[] colors) {
         for (int i = 0; i < colors.length; ++i) {
             if (i > 0) {
@@ -66,7 +61,6 @@ extends Item {
         return line;
     }
 
-    @Environment(value=EnvType.CLIENT)
     private static Text getColorText(int color) {
         DyeColor dyeColor = DyeColor.byFireworkColor(color);
         if (dyeColor == null) {

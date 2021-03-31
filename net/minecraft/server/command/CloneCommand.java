@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -34,6 +34,7 @@ import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 public class CloneCommand {
+    private static final int field_33386 = 32768;
     private static final SimpleCommandExceptionType OVERLAP_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.clone.overlap"));
     private static final Dynamic2CommandExceptionType TOO_BIG_EXCEPTION = new Dynamic2CommandExceptionType((maxCount, count) -> new TranslatableText("commands.clone.toobig", maxCount, count));
     private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.clone.failed"));
@@ -62,10 +63,10 @@ public class CloneCommand {
         ArrayList<BlockInfo> list2 = Lists.newArrayList();
         ArrayList<BlockInfo> list3 = Lists.newArrayList();
         LinkedList<BlockPos> deque = Lists.newLinkedList();
-        BlockPos blockPos2 = new BlockPos(blockBox2.minX - blockBox.minX, blockBox2.minY - blockBox.minY, blockBox2.minZ - blockBox.minZ);
-        for (int j = blockBox.minZ; j <= blockBox.maxZ; ++j) {
-            for (int k = blockBox.minY; k <= blockBox.maxY; ++k) {
-                for (int l = blockBox.minX; l <= blockBox.maxX; ++l) {
+        BlockPos blockPos2 = new BlockPos(blockBox2.getMinX() - blockBox.getMinX(), blockBox2.getMinY() - blockBox.getMinY(), blockBox2.getMinZ() - blockBox.getMinZ());
+        for (int j = blockBox.getMinZ(); j <= blockBox.getMaxZ(); ++j) {
+            for (int k = blockBox.getMinY(); k <= blockBox.getMaxY(); ++k) {
+                for (int l = blockBox.getMinX(); l <= blockBox.getMaxX(); ++l) {
                     BlockPos blockPos3 = new BlockPos(l, k, j);
                     BlockPos blockPos4 = blockPos3.add(blockPos2);
                     CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(serverWorld, blockPos3, false);
@@ -92,10 +93,10 @@ public class CloneCommand {
             for (BlockPos blockPos5 : deque) {
                 BlockEntity blockEntity2 = serverWorld.getBlockEntity(blockPos5);
                 Clearable.clear(blockEntity2);
-                serverWorld.setBlockState(blockPos5, Blocks.BARRIER.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+                serverWorld.setBlockState(blockPos5, Blocks.BARRIER.getDefaultState(), Block.NOTIFY_LISTENERS);
             }
             for (BlockPos blockPos5 : deque) {
-                serverWorld.setBlockState(blockPos5, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT);
+                serverWorld.setBlockState(blockPos5, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
             }
         }
         ArrayList<BlockInfo> list4 = Lists.newArrayList();
@@ -106,11 +107,11 @@ public class CloneCommand {
         for (BlockInfo blockInfo : list5) {
             BlockEntity blockEntity3 = serverWorld.getBlockEntity(blockInfo.pos);
             Clearable.clear(blockEntity3);
-            serverWorld.setBlockState(blockInfo.pos, Blocks.BARRIER.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+            serverWorld.setBlockState(blockInfo.pos, Blocks.BARRIER.getDefaultState(), Block.NOTIFY_LISTENERS);
         }
         int l = 0;
         for (BlockInfo blockInfo2 : list4) {
-            if (!serverWorld.setBlockState(blockInfo2.pos, blockInfo2.state, SetBlockStateFlags.NOTIFY_LISTENERS)) continue;
+            if (!serverWorld.setBlockState(blockInfo2.pos, blockInfo2.state, Block.NOTIFY_LISTENERS)) continue;
             ++l;
         }
         for (BlockInfo blockInfo2 : list2) {
@@ -122,7 +123,7 @@ public class CloneCommand {
                 blockEntity4.readNbt(blockInfo2.blockEntityTag);
                 blockEntity4.markDirty();
             }
-            serverWorld.setBlockState(blockInfo2.pos, blockInfo2.state, SetBlockStateFlags.NOTIFY_LISTENERS);
+            serverWorld.setBlockState(blockInfo2.pos, blockInfo2.state, Block.NOTIFY_LISTENERS);
         }
         for (BlockInfo blockInfo2 : list5) {
             serverWorld.updateNeighbors(blockInfo2.pos, blockInfo2.state.getBlock());

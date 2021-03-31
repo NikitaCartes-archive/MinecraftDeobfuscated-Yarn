@@ -4,6 +4,7 @@
 package net.minecraft.entity.ai.control;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.ai.control.Control;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeMaker;
 import net.minecraft.entity.ai.pathing.PathNodeType;
@@ -15,7 +16,11 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 
-public class MoveControl {
+public class MoveControl
+implements Control {
+    public static final float field_30197 = 5.0E-4f;
+    public static final float field_30198 = 2.5000003E-7f;
+    protected static final int field_30199 = 90;
     protected final MobEntity entity;
     protected double targetX;
     protected double targetY;

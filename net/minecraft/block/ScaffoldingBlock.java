@@ -5,7 +5,6 @@ package net.minecraft.block;
 
 import java.util.Iterator;
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -23,6 +22,7 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -33,10 +33,12 @@ import net.minecraft.world.WorldView;
 public class ScaffoldingBlock
 extends Block
 implements Waterloggable {
+    private static final int field_31238 = 1;
     private static final VoxelShape NORMAL_OUTLINE_SHAPE;
     private static final VoxelShape BOTTOM_OUTLINE_SHAPE;
     private static final VoxelShape COLLISION_SHAPE;
     private static final VoxelShape OUTLINE_SHAPE;
+    public static final int field_31237 = 7;
     public static final IntProperty DISTANCE;
     public static final BooleanProperty WATERLOGGED;
     public static final BooleanProperty BOTTOM;
@@ -106,7 +108,7 @@ implements Waterloggable {
                 world.breakBlock(pos, true);
             }
         } else if (state != blockState) {
-            world.setBlockState(pos, blockState, SetBlockStateFlags.DEFAULT);
+            world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
         }
     }
 
@@ -150,7 +152,7 @@ implements Waterloggable {
             return 0;
         }
         Iterator<Direction> iterator = Direction.Type.HORIZONTAL.iterator();
-        while (iterator.hasNext() && (!(blockState2 = world.getBlockState(mutable.set(pos, direction = iterator.next()))).isOf(Blocks.SCAFFOLDING) || (i = Math.min(i, blockState2.get(DISTANCE) + 1)) != 1)) {
+        while (iterator.hasNext() && (!(blockState2 = world.getBlockState(mutable.set((Vec3i)pos, direction = iterator.next()))).isOf(Blocks.SCAFFOLDING) || (i = Math.min(i, blockState2.get(DISTANCE) + 1)) != 1)) {
         }
         return i;
     }

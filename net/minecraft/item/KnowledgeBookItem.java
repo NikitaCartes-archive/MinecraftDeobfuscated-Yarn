@@ -6,7 +6,6 @@ package net.minecraft.item;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Optional;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -24,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 
 public class KnowledgeBookItem
 extends Item {
+    private static final String RECIPES_KEY = "Recipes";
     private static final Logger LOGGER = LogManager.getLogger();
 
     public KnowledgeBookItem(Item.Settings settings) {
@@ -37,12 +37,12 @@ extends Item {
         if (!user.getAbilities().creativeMode) {
             user.setStackInHand(hand, ItemStack.EMPTY);
         }
-        if (nbtCompound == null || !nbtCompound.contains("Recipes", NbtTypeIds.LIST)) {
+        if (nbtCompound == null || !nbtCompound.contains(RECIPES_KEY, 9)) {
             LOGGER.error("Tag not valid: {}", (Object)nbtCompound);
             return TypedActionResult.fail(itemStack);
         }
         if (!world.isClient) {
-            NbtList nbtList = nbtCompound.getList("Recipes", NbtTypeIds.STRING);
+            NbtList nbtList = nbtCompound.getList(RECIPES_KEY, 8);
             ArrayList<Recipe<?>> list = Lists.newArrayList();
             RecipeManager recipeManager = world.getServer().getRecipeManager();
             for (int i = 0; i < nbtList.size(); ++i) {

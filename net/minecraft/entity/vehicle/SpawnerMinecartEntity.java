@@ -3,8 +3,6 @@
  */
 package net.minecraft.entity.vehicle;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
@@ -24,19 +22,19 @@ extends AbstractMinecartEntity {
             world.sendEntityStatus(SpawnerMinecartEntity.this, (byte)i);
         }
     };
-    private final Runnable field_27012;
+    private final Runnable ticker;
 
     public SpawnerMinecartEntity(EntityType<? extends SpawnerMinecartEntity> entityType, World world) {
         super(entityType, world);
-        this.field_27012 = this.method_31553(world);
+        this.ticker = this.getTicker(world);
     }
 
     public SpawnerMinecartEntity(World world, double x, double y, double z) {
         super(EntityType.SPAWNER_MINECART, world, x, y, z);
-        this.field_27012 = this.method_31553(world);
+        this.ticker = this.getTicker(world);
     }
 
-    private Runnable method_31553(World world) {
+    private Runnable getTicker(World world) {
         return world instanceof ServerWorld ? () -> this.logic.serverTick((ServerWorld)world, this.getBlockPos()) : () -> this.logic.clientTick(world, this.getBlockPos());
     }
 
@@ -51,19 +49,18 @@ extends AbstractMinecartEntity {
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        this.logic.readNbt(this.world, this.getBlockPos(), tag);
+    protected void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.logic.readNbt(this.world, this.getBlockPos(), nbt);
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
-        this.logic.writeNbt(this.world, this.getBlockPos(), tag);
+    protected void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        this.logic.writeNbt(this.world, this.getBlockPos(), nbt);
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void handleStatus(byte status) {
         this.logic.method_8275(this.world, status);
     }
@@ -71,7 +68,11 @@ extends AbstractMinecartEntity {
     @Override
     public void tick() {
         super.tick();
-        this.field_27012.run();
+        this.ticker.run();
+    }
+
+    public MobSpawnerLogic getLogic() {
+        return this.logic;
     }
 
     @Override

@@ -72,6 +72,10 @@ implements LootCondition {
         return range.test(context, scoreboard.getPlayerScore(string, scoreboardObjective).getScore());
     }
 
+    public static Builder create(LootContext.EntityTarget target) {
+        return new Builder(target);
+    }
+
     @Override
     public /* synthetic */ boolean test(Object context) {
         return this.test((LootContext)context);
@@ -102,6 +106,26 @@ implements LootCondition {
         @Override
         public /* synthetic */ Object fromJson(JsonObject json, JsonDeserializationContext context) {
             return this.fromJson(json, context);
+        }
+    }
+
+    public static class Builder
+    implements LootCondition.Builder {
+        private final Map<String, BoundedIntUnaryOperator> scores = Maps.newHashMap();
+        private final LootContext.EntityTarget target;
+
+        public Builder(LootContext.EntityTarget target) {
+            this.target = target;
+        }
+
+        public Builder score(String name, BoundedIntUnaryOperator value) {
+            this.scores.put(name, value);
+            return this;
+        }
+
+        @Override
+        public LootCondition build() {
+            return new EntityScoresLootCondition(this.scores, this.target);
         }
     }
 }

@@ -3,8 +3,6 @@
  */
 package net.minecraft.block;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
@@ -45,7 +43,6 @@ implements Wearable {
         return null;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public SkullBlock.SkullType getSkullType() {
         return this.type;
     }

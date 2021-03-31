@@ -3,8 +3,6 @@
  */
 package net.minecraft.world;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -30,7 +28,6 @@ extends WorldView {
      * 
      * <p>This is typically used to determine the size of the moon that should be rendered.
      */
-    @Environment(value=EnvType.CLIENT)
     default public int getMoonPhase() {
         return this.getDimension().getMoonPhase(this.getLunarTime());
     }

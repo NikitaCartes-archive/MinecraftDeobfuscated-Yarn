@@ -3,7 +3,6 @@
  */
 package net.minecraft.block;
 
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -70,7 +69,7 @@ extends BlockWithEntity {
         }
         i = MathHelper.clamp(i, 0, 15);
         if (state.get(POWER) != i) {
-            world.setBlockState(pos, (BlockState)state.with(POWER, i), SetBlockStateFlags.DEFAULT);
+            world.setBlockState(pos, (BlockState)state.with(POWER, i), Block.NOTIFY_ALL);
         }
     }
 
@@ -81,7 +80,7 @@ extends BlockWithEntity {
                 return ActionResult.SUCCESS;
             }
             BlockState blockState = (BlockState)state.cycle(INVERTED);
-            world.setBlockState(pos, blockState, SetBlockStateFlags.NO_REDRAW);
+            world.setBlockState(pos, blockState, Block.NO_REDRAW);
             DaylightDetectorBlock.updateState(blockState, world, pos);
             return ActionResult.CONSUME;
         }

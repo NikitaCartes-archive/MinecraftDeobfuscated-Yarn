@@ -16,13 +16,25 @@ import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Util;
 
 public class TemptTask
 extends Task<PathAwareEntity> {
+    public static final int field_30115 = 100;
+    public static final double field_30116 = 2.5;
     private final Function<LivingEntity, Float> speed;
 
     public TemptTask(Function<LivingEntity, Float> speed) {
-        super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.TEMPTATION_COOLDOWN_TICKS, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.IS_TEMPTED, MemoryModuleState.REGISTERED, MemoryModuleType.TEMPTING_PLAYER, MemoryModuleState.VALUE_PRESENT));
+        super(Util.make(() -> {
+            ImmutableMap.Builder<MemoryModuleType<Object>, MemoryModuleState> builder = ImmutableMap.builder();
+            builder.put(MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED);
+            builder.put(MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED);
+            builder.put(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS, MemoryModuleState.VALUE_ABSENT);
+            builder.put(MemoryModuleType.IS_TEMPTED, MemoryModuleState.REGISTERED);
+            builder.put(MemoryModuleType.TEMPTING_PLAYER, MemoryModuleState.VALUE_PRESENT);
+            builder.put(MemoryModuleType.BREED_TARGET, MemoryModuleState.VALUE_ABSENT);
+            return builder.build();
+        }));
         this.speed = speed;
     }
 
@@ -41,7 +53,7 @@ extends Task<PathAwareEntity> {
 
     @Override
     protected boolean shouldKeepRunning(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
-        return this.getTemptingPlayer(pathAwareEntity).isPresent();
+        return this.getTemptingPlayer(pathAwareEntity).isPresent() && !pathAwareEntity.getBrain().hasMemoryModule(MemoryModuleType.BREED_TARGET);
     }
 
     @Override

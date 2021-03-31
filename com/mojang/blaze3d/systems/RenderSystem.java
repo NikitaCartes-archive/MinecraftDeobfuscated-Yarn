@@ -18,6 +18,7 @@ import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_6177;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.GraphicsMode;
@@ -39,6 +40,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallbackI;
 
 @Environment(value=EnvType.CLIENT)
+@class_6177
 public class RenderSystem {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final ConcurrentLinkedQueue<RenderCall> recordingQueue = Queues.newConcurrentLinkedQueue();
@@ -146,137 +148,137 @@ public class RenderSystem {
 
     public static void disableDepthTest() {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.disableDepthTest();
+        GlStateManager._disableDepthTest();
     }
 
     public static void enableDepthTest() {
         RenderSystem.assertThread(RenderSystem::isOnGameThreadOrInit);
-        GlStateManager.enableDepthTest();
+        GlStateManager._enableDepthTest();
     }
 
     public static void enableScissor(int i, int j, int k, int l) {
         RenderSystem.assertThread(RenderSystem::isOnGameThreadOrInit);
-        GlStateManager.enableScissorTest();
-        GlStateManager.scissor(i, j, k, l);
+        GlStateManager._enableScissorTest();
+        GlStateManager._scissorBox(i, j, k, l);
     }
 
     public static void disableScissor() {
         RenderSystem.assertThread(RenderSystem::isOnGameThreadOrInit);
-        GlStateManager.disableScissorTest();
+        GlStateManager._disableScissorTest();
     }
 
     public static void depthFunc(int func) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.depthFunc(func);
+        GlStateManager._depthFunc(func);
     }
 
     public static void depthMask(boolean mask) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.depthMask(mask);
+        GlStateManager._depthMask(mask);
     }
 
     public static void enableBlend() {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.enableBlend();
+        GlStateManager._enableBlend();
     }
 
     public static void disableBlend() {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.disableBlend();
+        GlStateManager._disableBlend();
     }
 
     public static void blendFunc(GlStateManager.SrcFactor srcFactor, GlStateManager.DstFactor dstFactor) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.blendFunc(srcFactor.field_22545, dstFactor.field_22528);
+        GlStateManager._blendFunc(srcFactor.value, dstFactor.value);
     }
 
     public static void blendFunc(int srcFactor, int dstFactor) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.blendFunc(srcFactor, dstFactor);
+        GlStateManager._blendFunc(srcFactor, dstFactor);
     }
 
     public static void blendFuncSeparate(GlStateManager.SrcFactor srcFactor, GlStateManager.DstFactor dstFactor, GlStateManager.SrcFactor srcAlpha, GlStateManager.DstFactor dstAlpha) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.blendFuncSeparate(srcFactor.field_22545, dstFactor.field_22528, srcAlpha.field_22545, dstAlpha.field_22528);
+        GlStateManager._blendFuncSeparate(srcFactor.value, dstFactor.value, srcAlpha.value, dstAlpha.value);
     }
 
     public static void blendFuncSeparate(int srcFactorRGB, int dstFactorRGB, int srcFactorAlpha, int dstFactorAlpha) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.blendFuncSeparate(srcFactorRGB, dstFactorRGB, srcFactorAlpha, dstFactorAlpha);
+        GlStateManager._blendFuncSeparate(srcFactorRGB, dstFactorRGB, srcFactorAlpha, dstFactorAlpha);
     }
 
     public static void blendEquation(int mode) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.blendEquation(mode);
+        GlStateManager._blendEquation(mode);
     }
 
     public static void enableCull() {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.enableCull();
+        GlStateManager._enableCull();
     }
 
     public static void disableCull() {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.disableCull();
+        GlStateManager._disableCull();
     }
 
     public static void polygonMode(int i, int j) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.polygonMode(i, j);
+        GlStateManager._polygonMode(i, j);
     }
 
     public static void enablePolygonOffset() {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.enablePolygonOffset();
+        GlStateManager._enablePolygonOffset();
     }
 
     public static void disablePolygonOffset() {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.disablePolygonOffset();
+        GlStateManager._disablePolygonOffset();
     }
 
     public static void polygonOffset(float factor, float units) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.polygonOffset(factor, units);
+        GlStateManager._polygonOffset(factor, units);
     }
 
     public static void enableColorLogicOp() {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.enableColorLogicOp();
+        GlStateManager._enableColorLogicOp();
     }
 
     public static void disableColorLogicOp() {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.disableColorLogicOp();
+        GlStateManager._disableColorLogicOp();
     }
 
     public static void logicOp(GlStateManager.LogicOp op) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.logicOp(op.value);
+        GlStateManager._logicOp(op.value);
     }
 
     public static void activeTexture(int texture) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.activeTexture(texture);
+        GlStateManager._activeTexture(texture);
     }
 
     public static void enableTexture() {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.method_34410();
+        GlStateManager._enableTexture();
     }
 
     public static void disableTexture() {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.disableTexture();
+        GlStateManager._disableTexture();
     }
 
     public static void texParameter(int target, int pname, int param) {
-        GlStateManager.texParameter(target, pname, param);
+        GlStateManager._texParameter(target, pname, param);
     }
 
     public static void deleteTexture(int texture) {
         RenderSystem.assertThread(RenderSystem::isOnGameThreadOrInit);
-        GlStateManager.deleteTexture(texture);
+        GlStateManager._deleteTexture(texture);
     }
 
     public static void bindTextureForSetup(int i) {
@@ -284,52 +286,52 @@ public class RenderSystem {
     }
 
     public static void bindTexture(int texture) {
-        GlStateManager.bindTexture(texture);
+        GlStateManager._bindTexture(texture);
     }
 
     public static void viewport(int x, int y, int width, int height) {
         RenderSystem.assertThread(RenderSystem::isOnGameThreadOrInit);
-        GlStateManager.viewport(x, y, width, height);
+        GlStateManager._viewport(x, y, width, height);
     }
 
     public static void colorMask(boolean red, boolean green, boolean blue, boolean alpha) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.colorMask(red, green, blue, alpha);
+        GlStateManager._colorMask(red, green, blue, alpha);
     }
 
     public static void stencilFunc(int func, int ref, int mask) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.stencilFunc(func, ref, mask);
+        GlStateManager._stencilFunc(func, ref, mask);
     }
 
     public static void stencilMask(int i) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.stencilMask(i);
+        GlStateManager._stencilMask(i);
     }
 
     public static void stencilOp(int sfail, int dpfail, int dppass) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.stencilOp(sfail, dpfail, dppass);
+        GlStateManager._stencilOp(sfail, dpfail, dppass);
     }
 
     public static void clearDepth(double depth) {
         RenderSystem.assertThread(RenderSystem::isOnGameThreadOrInit);
-        GlStateManager.clearDepth(depth);
+        GlStateManager._clearDepth(depth);
     }
 
     public static void clearColor(float red, float green, float blue, float alpha) {
         RenderSystem.assertThread(RenderSystem::isOnGameThreadOrInit);
-        GlStateManager.clearColor(red, green, blue, alpha);
+        GlStateManager._clearColor(red, green, blue, alpha);
     }
 
     public static void clearStencil(int i) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.clearStencil(i);
+        GlStateManager._clearStencil(i);
     }
 
     public static void clear(int mask, boolean getError) {
         RenderSystem.assertThread(RenderSystem::isOnGameThreadOrInit);
-        GlStateManager.clear(mask, getError);
+        GlStateManager._clear(mask, getError);
     }
 
     public static void setShaderFogStart(float f) {
@@ -393,11 +395,11 @@ public class RenderSystem {
 
     public static void setupShaderLights(Shader shader) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-        if (shader.field_29475 != null) {
-            shader.field_29475.method_34413(shaderLightDirections[0]);
+        if (shader.light0Direction != null) {
+            shader.light0Direction.set(shaderLightDirections[0]);
         }
-        if (shader.field_29476 != null) {
-            shader.field_29476.method_34413(shaderLightDirections[1]);
+        if (shader.light1Direction != null) {
+            shader.light1Direction.set(shaderLightDirections[1]);
         }
     }
 
@@ -423,7 +425,7 @@ public class RenderSystem {
 
     public static void drawElements(int mode, int first, int count) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.drawElements(mode, first, count, 0L);
+        GlStateManager._drawElements(mode, first, count, 0L);
     }
 
     public static void lineWidth(float width) {
@@ -443,17 +445,17 @@ public class RenderSystem {
 
     public static void pixelStore(int pname, int param) {
         RenderSystem.assertThread(RenderSystem::isOnGameThreadOrInit);
-        GlStateManager.pixelStore(pname, param);
+        GlStateManager._pixelStore(pname, param);
     }
 
     public static void readPixels(int x, int y, int width, int height, int format, int type, ByteBuffer pixels) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.readPixels(x, y, width, height, format, type, pixels);
+        GlStateManager._readPixels(x, y, width, height, format, type, pixels);
     }
 
     public static void getString(int name, Consumer<String> consumer) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        consumer.accept(GlStateManager.getString(name));
+        consumer.accept(GlStateManager._getString(name));
     }
 
     public static String getBackendDescription() {
@@ -493,24 +495,24 @@ public class RenderSystem {
 
     public static void setupDefaultState(int x, int y, int width, int height) {
         RenderSystem.assertThread(RenderSystem::isInInitPhase);
-        GlStateManager.method_34410();
-        GlStateManager.clearDepth(1.0);
-        GlStateManager.enableDepthTest();
-        GlStateManager.depthFunc(515);
+        GlStateManager._enableTexture();
+        GlStateManager._clearDepth(1.0);
+        GlStateManager._enableDepthTest();
+        GlStateManager._depthFunc(515);
         projectionMatrix.loadIdentity();
         savedProjectionMatrix.loadIdentity();
         modelViewMatrix.loadIdentity();
         textureMatrix.loadIdentity();
-        GlStateManager.viewport(x, y, width, height);
+        GlStateManager._viewport(x, y, width, height);
     }
 
     public static int maxSupportedTextureSize() {
         RenderSystem.assertThread(RenderSystem::isInInitPhase);
         if (MAX_SUPPORTED_TEXTURE_SIZE == -1) {
-            int i = GlStateManager.getInteger(3379);
+            int i = GlStateManager._getInteger(3379);
             for (int j = Math.max(32768, i); j >= 1024; j >>= 1) {
-                GlStateManager.texImage2D(32868, 0, 6408, j, j, 0, 6408, 5121, null);
-                int k = GlStateManager.getTexLevelParameter(32868, 0, 4096);
+                GlStateManager._texImage2D(32868, 0, 6408, j, j, 0, 6408, 5121, null);
+                int k = GlStateManager._getTexLevelParameter(32868, 0, 4096);
                 if (k == 0) continue;
                 MAX_SUPPORTED_TEXTURE_SIZE = j;
                 return j;
@@ -522,86 +524,86 @@ public class RenderSystem {
     }
 
     public static void glBindBuffer(int i, IntSupplier intSupplier) {
-        GlStateManager.bindBuffer(i, intSupplier.getAsInt());
+        GlStateManager._glBindBuffer(i, intSupplier.getAsInt());
     }
 
     public static void glBindVertexArray(Supplier<Integer> supplier) {
-        GlStateManager.bindVertexArray(supplier.get());
+        GlStateManager._glBindVertexArray(supplier.get());
     }
 
     public static void glBufferData(int target, ByteBuffer data, int usage) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-        GlStateManager.bufferData(target, data, usage);
+        GlStateManager._glBufferData(target, data, usage);
     }
 
     public static void glDeleteBuffers(int buffer) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.deleteBuffer(buffer);
+        GlStateManager._glDeleteBuffers(buffer);
     }
 
     public static void glDeleteVertexArrays(int i) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.deleteVertexArray(i);
+        GlStateManager._glDeleteVertexArrays(i);
     }
 
     public static void glUniform1i(int location, int value) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.uniform1(location, value);
+        GlStateManager._glUniform1i(location, value);
     }
 
     public static void glUniform1(int location, IntBuffer value) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.uniform1(location, value);
+        GlStateManager._glUniform1(location, value);
     }
 
     public static void glUniform2(int location, IntBuffer value) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.uniform2(location, value);
+        GlStateManager._glUniform2(location, value);
     }
 
     public static void glUniform3(int location, IntBuffer value) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.uniform3(location, value);
+        GlStateManager._glUniform3(location, value);
     }
 
     public static void glUniform4(int location, IntBuffer value) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.uniform4(location, value);
+        GlStateManager._glUniform4(location, value);
     }
 
     public static void glUniform1(int location, FloatBuffer value) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.uniform1(location, value);
+        GlStateManager._glUniform1(location, value);
     }
 
     public static void glUniform2(int location, FloatBuffer value) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.uniform2(location, value);
+        GlStateManager._glUniform2(location, value);
     }
 
     public static void glUniform3(int location, FloatBuffer value) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.uniform3(location, value);
+        GlStateManager._glUniform3(location, value);
     }
 
     public static void glUniform4(int location, FloatBuffer value) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.uniform4(location, value);
+        GlStateManager._glUniform4(location, value);
     }
 
     public static void glUniformMatrix2(int location, boolean transpose, FloatBuffer value) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.uniformMatrix2(location, transpose, value);
+        GlStateManager._glUniformMatrix2(location, transpose, value);
     }
 
     public static void glUniformMatrix3(int location, boolean transpose, FloatBuffer value) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.uniformMatrix3(location, transpose, value);
+        GlStateManager._glUniformMatrix3(location, transpose, value);
     }
 
     public static void glUniformMatrix4(int location, boolean transpose, FloatBuffer value) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.uniformMatrix4(location, transpose, value);
+        GlStateManager._glUniformMatrix4(location, transpose, value);
     }
 
     public static void setupOverlayColor(IntSupplier texture, int size) {
@@ -627,7 +629,7 @@ public class RenderSystem {
 
     public static void setupGui3DDiffuseLighting(Vec3f vec3f, Vec3f vec3f2) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.setupGui3dDiffuseLighting(vec3f, vec3f2);
+        GlStateManager.setupGui3DDiffuseLighting(vec3f, vec3f2);
     }
 
     public static void beginInitialization() {
@@ -646,17 +648,17 @@ public class RenderSystem {
 
     public static void glGenBuffers(Consumer<Integer> consumer) {
         if (!RenderSystem.isOnRenderThread()) {
-            RenderSystem.recordRenderCall(() -> consumer.accept(GlStateManager.genBuffer()));
+            RenderSystem.recordRenderCall(() -> consumer.accept(GlStateManager._glGenBuffers()));
         } else {
-            consumer.accept(GlStateManager.genBuffer());
+            consumer.accept(GlStateManager._glGenBuffers());
         }
     }
 
     public static void glGenVertexArrays(Consumer<Integer> consumer) {
         if (!RenderSystem.isOnRenderThread()) {
-            RenderSystem.recordRenderCall(() -> consumer.accept(GlStateManager.genVertexArray()));
+            RenderSystem.recordRenderCall(() -> consumer.accept(GlStateManager._glGenVertexArrays()));
         } else {
-            consumer.accept(GlStateManager.genVertexArray());
+            consumer.accept(GlStateManager._glGenVertexArrays());
         }
     }
 
@@ -700,7 +702,7 @@ public class RenderSystem {
     }
 
     public static int getTextureId(int i) {
-        return GlStateManager.method_34412(i);
+        return GlStateManager._getTextureId(i);
     }
 
     public static void setShaderTexture(int i, Identifier identifier) {
@@ -849,7 +851,7 @@ public class RenderSystem {
     }
 
     private static /* synthetic */ void lambda$setupGui3DDiffuseLighting$57(Vec3f vec3f, Vec3f vec3f2) {
-        GlStateManager.setupGui3dDiffuseLighting(vec3f, vec3f2);
+        GlStateManager.setupGui3DDiffuseLighting(vec3f, vec3f2);
     }
 
     private static /* synthetic */ void lambda$setupGuiFlatDiffuseLighting$56(Vec3f vec3f, Vec3f vec3f2) {
@@ -870,67 +872,67 @@ public class RenderSystem {
     }
 
     private static /* synthetic */ void lambda$glUniformMatrix4$52(int i, boolean bl, FloatBuffer floatBuffer) {
-        GlStateManager.uniformMatrix4(i, bl, floatBuffer);
+        GlStateManager._glUniformMatrix4(i, bl, floatBuffer);
     }
 
     private static /* synthetic */ void lambda$glUniformMatrix3$51(int i, boolean bl, FloatBuffer floatBuffer) {
-        GlStateManager.uniformMatrix3(i, bl, floatBuffer);
+        GlStateManager._glUniformMatrix3(i, bl, floatBuffer);
     }
 
     private static /* synthetic */ void lambda$glUniformMatrix2$50(int i, boolean bl, FloatBuffer floatBuffer) {
-        GlStateManager.uniformMatrix2(i, bl, floatBuffer);
+        GlStateManager._glUniformMatrix2(i, bl, floatBuffer);
     }
 
     private static /* synthetic */ void lambda$glUniform4$49(int i, FloatBuffer floatBuffer) {
-        GlStateManager.uniform4(i, floatBuffer);
+        GlStateManager._glUniform4(i, floatBuffer);
     }
 
     private static /* synthetic */ void lambda$glUniform3$48(int i, FloatBuffer floatBuffer) {
-        GlStateManager.uniform3(i, floatBuffer);
+        GlStateManager._glUniform3(i, floatBuffer);
     }
 
     private static /* synthetic */ void lambda$glUniform2$47(int i, FloatBuffer floatBuffer) {
-        GlStateManager.uniform2(i, floatBuffer);
+        GlStateManager._glUniform2(i, floatBuffer);
     }
 
     private static /* synthetic */ void lambda$glUniform1$46(int i, FloatBuffer floatBuffer) {
-        GlStateManager.uniform1(i, floatBuffer);
+        GlStateManager._glUniform1(i, floatBuffer);
     }
 
     private static /* synthetic */ void lambda$glUniform4$45(int i, IntBuffer intBuffer) {
-        GlStateManager.uniform4(i, intBuffer);
+        GlStateManager._glUniform4(i, intBuffer);
     }
 
     private static /* synthetic */ void lambda$glUniform3$44(int i, IntBuffer intBuffer) {
-        GlStateManager.uniform3(i, intBuffer);
+        GlStateManager._glUniform3(i, intBuffer);
     }
 
     private static /* synthetic */ void lambda$glUniform2$43(int i, IntBuffer intBuffer) {
-        GlStateManager.uniform2(i, intBuffer);
+        GlStateManager._glUniform2(i, intBuffer);
     }
 
     private static /* synthetic */ void lambda$glUniform1$42(int i, IntBuffer intBuffer) {
-        GlStateManager.uniform1(i, intBuffer);
+        GlStateManager._glUniform1(i, intBuffer);
     }
 
     private static /* synthetic */ void lambda$glUniform1i$41(int i, int j) {
-        GlStateManager.uniform1(i, j);
+        GlStateManager._glUniform1i(i, j);
     }
 
     private static /* synthetic */ void lambda$glDeleteVertexArrays$40(int i) {
-        GlStateManager.deleteVertexArray(i);
+        GlStateManager._glDeleteVertexArrays(i);
     }
 
     private static /* synthetic */ void lambda$glDeleteBuffers$39(int i) {
-        GlStateManager.deleteBuffer(i);
+        GlStateManager._glDeleteBuffers(i);
     }
 
     private static /* synthetic */ void lambda$glBindVertexArray$38(Supplier supplier) {
-        GlStateManager.bindVertexArray((Integer)supplier.get());
+        GlStateManager._glBindVertexArray((Integer)supplier.get());
     }
 
     private static /* synthetic */ void lambda$glBindBuffer$37(int i, IntSupplier intSupplier) {
-        GlStateManager.bindBuffer(i, intSupplier.getAsInt());
+        GlStateManager._glBindBuffer(i, intSupplier.getAsInt());
     }
 
     private static /* synthetic */ void lambda$renderCrosshair$36(int i) {
@@ -938,20 +940,20 @@ public class RenderSystem {
     }
 
     private static /* synthetic */ void lambda$getString$35(int i, Consumer consumer) {
-        String string = GlStateManager.getString(i);
+        String string = GlStateManager._getString(i);
         consumer.accept(string);
     }
 
     private static /* synthetic */ void lambda$readPixels$34(int i, int j, int k, int l, int m, int n, ByteBuffer byteBuffer) {
-        GlStateManager.readPixels(i, j, k, l, m, n, byteBuffer);
+        GlStateManager._readPixels(i, j, k, l, m, n, byteBuffer);
     }
 
     private static /* synthetic */ void lambda$pixelStore$33(int i, int j) {
-        GlStateManager.pixelStore(i, j);
+        GlStateManager._pixelStore(i, j);
     }
 
     private static /* synthetic */ void lambda$drawElements$31(int i, int j, int k) {
-        GlStateManager.drawElements(i, j, k, 0L);
+        GlStateManager._drawElements(i, j, k, 0L);
     }
 
     private static /* synthetic */ void lambda$setShaderLights$29(Vec3f vec3f, Vec3f vec3f2) {
@@ -971,100 +973,100 @@ public class RenderSystem {
     }
 
     private static /* synthetic */ void lambda$clear$25(int i, boolean bl) {
-        GlStateManager.clear(i, bl);
+        GlStateManager._clear(i, bl);
     }
 
     private static /* synthetic */ void lambda$clearStencil$24(int i) {
-        GlStateManager.clearStencil(i);
+        GlStateManager._clearStencil(i);
     }
 
     private static /* synthetic */ void lambda$clearColor$23(float f, float g, float h, float i) {
-        GlStateManager.clearColor(f, g, h, i);
+        GlStateManager._clearColor(f, g, h, i);
     }
 
     private static /* synthetic */ void lambda$clearDepth$22(double d) {
-        GlStateManager.clearDepth(d);
+        GlStateManager._clearDepth(d);
     }
 
     private static /* synthetic */ void lambda$stencilOp$21(int i, int j, int k) {
-        GlStateManager.stencilOp(i, j, k);
+        GlStateManager._stencilOp(i, j, k);
     }
 
     private static /* synthetic */ void lambda$stencilMask$20(int i) {
-        GlStateManager.stencilMask(i);
+        GlStateManager._stencilMask(i);
     }
 
     private static /* synthetic */ void lambda$stencilFunc$19(int i, int j, int k) {
-        GlStateManager.stencilFunc(i, j, k);
+        GlStateManager._stencilFunc(i, j, k);
     }
 
     private static /* synthetic */ void lambda$colorMask$18(boolean bl, boolean bl2, boolean bl3, boolean bl4) {
-        GlStateManager.colorMask(bl, bl2, bl3, bl4);
+        GlStateManager._colorMask(bl, bl2, bl3, bl4);
     }
 
     private static /* synthetic */ void lambda$viewport$17(int i, int j, int k, int l) {
-        GlStateManager.viewport(i, j, k, l);
+        GlStateManager._viewport(i, j, k, l);
     }
 
     private static /* synthetic */ void lambda$bindTexture$16(int i) {
-        GlStateManager.bindTexture(i);
+        GlStateManager._bindTexture(i);
     }
 
     private static /* synthetic */ void lambda$deleteTexture$15(int i) {
-        GlStateManager.deleteTexture(i);
+        GlStateManager._deleteTexture(i);
     }
 
     private static /* synthetic */ void lambda$texParameter$14(int i, int j, int k) {
-        GlStateManager.texParameter(i, j, k);
+        GlStateManager._texParameter(i, j, k);
     }
 
     private static /* synthetic */ void lambda$activeTexture$13(int i) {
-        GlStateManager.activeTexture(i);
+        GlStateManager._activeTexture(i);
     }
 
     private static /* synthetic */ void lambda$logicOp$12(GlStateManager.LogicOp logicOp) {
-        GlStateManager.logicOp(logicOp.value);
+        GlStateManager._logicOp(logicOp.value);
     }
 
     private static /* synthetic */ void lambda$polygonOffset$11(float f, float g) {
-        GlStateManager.polygonOffset(f, g);
+        GlStateManager._polygonOffset(f, g);
     }
 
     private static /* synthetic */ void lambda$polygonMode$10(int i, int j) {
-        GlStateManager.polygonMode(i, j);
+        GlStateManager._polygonMode(i, j);
     }
 
     private static /* synthetic */ void lambda$blendEquation$9(int i) {
-        GlStateManager.blendEquation(i);
+        GlStateManager._blendEquation(i);
     }
 
     private static /* synthetic */ void lambda$blendFuncSeparate$8(int i, int j, int k, int l) {
-        GlStateManager.blendFuncSeparate(i, j, k, l);
+        GlStateManager._blendFuncSeparate(i, j, k, l);
     }
 
     private static /* synthetic */ void lambda$blendFuncSeparate$7(GlStateManager.SrcFactor srcFactor, GlStateManager.DstFactor dstFactor, GlStateManager.SrcFactor srcFactor2, GlStateManager.DstFactor dstFactor2) {
-        GlStateManager.blendFuncSeparate(srcFactor.field_22545, dstFactor.field_22528, srcFactor2.field_22545, dstFactor2.field_22528);
+        GlStateManager._blendFuncSeparate(srcFactor.value, dstFactor.value, srcFactor2.value, dstFactor2.value);
     }
 
     private static /* synthetic */ void lambda$blendFunc$6(int i, int j) {
-        GlStateManager.blendFunc(i, j);
+        GlStateManager._blendFunc(i, j);
     }
 
     private static /* synthetic */ void lambda$blendFunc$5(GlStateManager.SrcFactor srcFactor, GlStateManager.DstFactor dstFactor) {
-        GlStateManager.blendFunc(srcFactor.field_22545, dstFactor.field_22528);
+        GlStateManager._blendFunc(srcFactor.value, dstFactor.value);
     }
 
     private static /* synthetic */ void lambda$depthMask$4(boolean bl) {
-        GlStateManager.depthMask(bl);
+        GlStateManager._depthMask(bl);
     }
 
     private static /* synthetic */ void lambda$depthFunc$3(int i) {
-        GlStateManager.depthFunc(i);
+        GlStateManager._depthFunc(i);
     }
 
     private static /* synthetic */ void lambda$enableScissor$2(int i, int j, int k, int l) {
-        GlStateManager.enableScissorTest();
-        GlStateManager.scissor(i, j, k, l);
+        GlStateManager._enableScissorTest();
+        GlStateManager._scissorBox(i, j, k, l);
     }
 
     static {
@@ -1113,9 +1115,9 @@ public class RenderSystem {
         private VertexFormat.IntType vertexFormat = VertexFormat.IntType.BYTE;
         private int size;
 
-        private IndexBuffer(int i, int j, IndexMapper indexMapper) {
-            this.sizeMultiplier = i;
-            this.increment = j;
+        private IndexBuffer(int sizeMultiplier, int increment, IndexMapper indexMapper) {
+            this.sizeMultiplier = sizeMultiplier;
+            this.increment = increment;
             this.indexMapper = indexMapper;
         }
 
@@ -1125,12 +1127,12 @@ public class RenderSystem {
             }
             LOGGER.debug("Growing IndexBuffer: Old limit {}, new limit {}.", (Object)this.size, (Object)newSize);
             if (this.id == 0) {
-                this.id = GlStateManager.genBuffer();
+                this.id = GlStateManager._glGenBuffers();
             }
             VertexFormat.IntType intType = VertexFormat.IntType.getSmallestTypeFor(newSize);
             int i = MathHelper.roundUpToMultiple(newSize * intType.size, 4);
-            GlStateManager.bindBuffer(34963, this.id);
-            GlStateManager.bufferData(34963, i, 35048);
+            GlStateManager._glBindBuffer(34963, this.id);
+            GlStateManager._glBufferData(34963, i, 35048);
             ByteBuffer byteBuffer = GlStateManager.mapBuffer(34963, 35001);
             if (byteBuffer == null) {
                 throw new RuntimeException("Failed to map GL buffer");
@@ -1140,8 +1142,8 @@ public class RenderSystem {
             for (int j = 0; j < newSize; j += this.increment) {
                 this.indexMapper.accept(intConsumer, j * this.sizeMultiplier / this.increment);
             }
-            GlStateManager.unmapBuffer(34963);
-            GlStateManager.bindBuffer(34963, 0);
+            GlStateManager._glUnmapBuffer(34963);
+            GlStateManager._glBindBuffer(34963, 0);
             this.size = newSize;
             BufferRenderer.unbindElementBuffer();
         }

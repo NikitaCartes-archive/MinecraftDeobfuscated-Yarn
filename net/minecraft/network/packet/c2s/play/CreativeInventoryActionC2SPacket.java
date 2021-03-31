@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.c2s.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -15,7 +13,6 @@ implements Packet<ServerPlayPacketListener> {
     private final int slot;
     private final ItemStack stack;
 
-    @Environment(value=EnvType.CLIENT)
     public CreativeInventoryActionC2SPacket(int slot, ItemStack stack) {
         this.slot = slot;
         this.stack = stack.copy();

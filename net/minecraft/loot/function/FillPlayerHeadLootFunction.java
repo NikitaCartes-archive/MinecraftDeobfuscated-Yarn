@@ -52,6 +52,10 @@ extends ConditionalLootFunction {
         return stack;
     }
 
+    public static ConditionalLootFunction.Builder<?> builder(LootContext.EntityTarget target) {
+        return FillPlayerHeadLootFunction.builder((LootCondition[] conditions) -> new FillPlayerHeadLootFunction((LootCondition[])conditions, target));
+    }
+
     public static class Serializer
     extends ConditionalLootFunction.Serializer<FillPlayerHeadLootFunction> {
         @Override

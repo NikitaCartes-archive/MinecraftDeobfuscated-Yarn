@@ -3,6 +3,7 @@
  */
 package net.minecraft.world.biome.layer;
 
+import net.minecraft.world.biome.BiomeIds;
 import net.minecraft.world.biome.layer.type.SouthEastSamplingLayer;
 import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
 
@@ -13,8 +14,8 @@ public enum AddSunflowerPlainsLayer implements SouthEastSamplingLayer
 
     @Override
     public int sample(LayerRandomnessSource context, int se) {
-        if (context.nextInt(57) == 0 && se == 1) {
-            return 129;
+        if (context.nextInt(57) == 0 && se == BiomeIds.PLAINS) {
+            return BiomeIds.SUNFLOWER_PLAINS;
         }
         return se;
     }

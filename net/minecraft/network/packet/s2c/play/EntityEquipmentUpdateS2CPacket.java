@@ -6,8 +6,6 @@ package net.minecraft.network.packet.s2c.play;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
@@ -16,6 +14,7 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class EntityEquipmentUpdateS2CPacket
 implements Packet<ClientPlayPacketListener> {
+    private static final byte field_33342 = -128;
     private final int id;
     private final List<Pair<EquipmentSlot, ItemStack>> equipmentList;
 
@@ -56,12 +55,10 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onEquipmentUpdate(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getId() {
         return this.id;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public List<Pair<EquipmentSlot, ItemStack>> getEquipmentList() {
         return this.equipmentList;
     }

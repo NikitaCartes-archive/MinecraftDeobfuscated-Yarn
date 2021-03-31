@@ -28,6 +28,24 @@ import net.minecraft.village.VillagerData;
 public class MerchantScreen
 extends HandledScreen<MerchantScreenHandler> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/villager2.png");
+    private static final int field_32354 = 512;
+    private static final int field_32355 = 256;
+    private static final int field_32356 = 99;
+    private static final int field_32357 = 136;
+    private static final int field_32358 = 16;
+    private static final int field_32359 = 5;
+    private static final int field_32360 = 35;
+    private static final int field_32361 = 68;
+    private static final int field_32362 = 6;
+    private static final int field_32363 = 7;
+    private static final int field_32364 = 5;
+    private static final int field_32365 = 20;
+    private static final int field_32366 = 89;
+    private static final int field_32367 = 27;
+    private static final int field_32368 = 6;
+    private static final int field_32369 = 139;
+    private static final int field_32370 = 18;
+    private static final int field_32371 = 94;
     private static final Text TRADES_TEXT = new TranslatableText("merchant.trades");
     private static final Text SEPARATOR_TEXT = new LiteralText(" - ");
     private static final Text DEPRECATED_TEXT = new TranslatableText("merchant.deprecated");
@@ -99,7 +117,7 @@ extends HandledScreen<MerchantScreenHandler> {
             if (tradeOffer.isDisabled()) {
                 RenderSystem.setShaderTexture(0, TEXTURE);
                 RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-                MerchantScreen.drawTexture(matrices, this.x + 83 + 99, this.y + 35, this.getZOffset(), 311.0f, 0.0f, 28, 21, 256, 512);
+                MerchantScreen.drawTexture(matrices, this.field_2776 + 83 + 99, this.field_2800 + 35, this.getZOffset(), 311.0f, 0.0f, 28, 21, 256, 512);
             }
         }
     }
@@ -246,7 +264,7 @@ extends HandledScreen<MerchantScreenHandler> {
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         int i = ((MerchantScreenHandler)this.handler).getRecipes().size();
         if (this.scrolling) {
-            int j = this.y + 18;
+            int j = this.field_2800 + 18;
             int k = j + 139;
             int l = i - 7;
             float f = ((float)mouseY - (float)j - 13.5f) / ((float)(k - j) - 27.0f);

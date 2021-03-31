@@ -24,6 +24,12 @@ import net.minecraft.util.Util;
 @Environment(value=EnvType.CLIENT)
 public abstract class RenderLayer
 extends RenderPhase {
+    private static final int field_32776 = 4;
+    private static final int field_32777 = 0x100000;
+    public static final int field_32772 = 0x200000;
+    public static final int field_32773 = 262144;
+    public static final int field_32774 = 131072;
+    public static final int field_32775 = 256;
     private static final RenderLayer SOLID = RenderLayer.of("solid", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 0x200000, true, false, MultiPhaseParameters.builder().lightmap(ENABLE_LIGHTMAP).shader(SOLID_SHADER).texture(MIPMAP_BLOCK_ATLAS_TEXTURE).build(true));
     private static final RenderLayer CUTOUT_MIPPED = RenderLayer.of("cutout_mipped", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 131072, true, false, MultiPhaseParameters.builder().lightmap(ENABLE_LIGHTMAP).shader(CUTOUT_MIPPED_SHADER).texture(MIPMAP_BLOCK_ATLAS_TEXTURE).build(true));
     private static final RenderLayer CUTOUT = RenderLayer.of("cutout", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 131072, true, false, MultiPhaseParameters.builder().lightmap(ENABLE_LIGHTMAP).shader(CUTOUT_SHADER).texture(BLOCK_ATLAS_TEXTURE).build(true));
@@ -397,6 +403,10 @@ extends RenderPhase {
         @Override
         public boolean isOutline() {
             return this.outline;
+        }
+
+        protected final MultiPhaseParameters method_35784() {
+            return this.phases;
         }
 
         @Override

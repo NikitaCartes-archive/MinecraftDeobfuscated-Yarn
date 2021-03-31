@@ -124,6 +124,10 @@ implements BakedModel {
             return this;
         }
 
+        public Builder method_35809() {
+            return this;
+        }
+
         public BakedModel build() {
             if (this.particleTexture == null) {
                 throw new RuntimeException("Missing particle!");

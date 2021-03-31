@@ -3,7 +3,6 @@
  */
 package net.minecraft.block;
 
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -95,7 +94,7 @@ extends Block {
         ItemStack itemStack = player2.getStackInHand(hand);
         if (itemStack.isOf(Items.FLINT_AND_STEEL) || itemStack.isOf(Items.FIRE_CHARGE)) {
             TntBlock.primeTnt(world, pos, player2);
-            world.setBlockState(pos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
+            world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
             if (!player2.isCreative()) {
                 if (itemStack.isOf(Items.FLINT_AND_STEEL)) {
                     itemStack.damage(1, player2, player -> player.sendToolBreakStatus(hand));

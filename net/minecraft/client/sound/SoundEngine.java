@@ -26,7 +26,9 @@ import org.lwjgl.system.MemoryStack;
 
 @Environment(value=EnvType.CLIENT)
 public class SoundEngine {
+    private static final int field_31896 = 3;
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final int field_31897 = 30;
     private long devicePointer;
     private long contextPointer;
     private static final SourceSet EMPTY_SOURCE_SET = new SourceSet(){

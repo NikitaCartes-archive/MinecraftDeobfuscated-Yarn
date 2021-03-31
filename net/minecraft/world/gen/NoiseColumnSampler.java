@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
  * Samples noise values for use in chunk generation.
  */
 public class NoiseColumnSampler {
+    private static final int field_31470 = 32;
     /**
      * Table of weights used to weight faraway biomes less than nearby biomes.
      */

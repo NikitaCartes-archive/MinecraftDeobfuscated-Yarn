@@ -3,8 +3,6 @@
  */
 package net.minecraft.screen;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -24,13 +22,21 @@ import net.minecraft.village.TradeOfferList;
 
 public class MerchantScreenHandler
 extends ScreenHandler {
+    protected static final int field_30830 = 0;
+    protected static final int field_30831 = 1;
+    protected static final int field_30832 = 2;
+    private static final int field_30833 = 3;
+    private static final int field_30834 = 30;
+    private static final int field_30835 = 30;
+    private static final int field_30836 = 39;
+    private static final int field_30837 = 136;
+    private static final int field_30838 = 162;
+    private static final int field_30839 = 220;
+    private static final int field_30840 = 37;
     private final Merchant merchant;
     private final MerchantInventory merchantInventory;
-    @Environment(value=EnvType.CLIENT)
     private int levelProgress;
-    @Environment(value=EnvType.CLIENT)
     private boolean leveled;
-    @Environment(value=EnvType.CLIENT)
     private boolean canRefreshTrades;
 
     public MerchantScreenHandler(int syncId, PlayerInventory playerInventory) {
@@ -55,7 +61,6 @@ extends ScreenHandler {
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void setCanLevel(boolean canLevel) {
         this.leveled = canLevel;
     }
@@ -75,37 +80,30 @@ extends ScreenHandler {
         return this.merchant.getCurrentCustomer() == player;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getExperience() {
         return this.merchant.getExperience();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getMerchantRewardedExperience() {
         return this.merchantInventory.getMerchantRewardedExperience();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void setExperienceFromServer(int experience) {
         this.merchant.setExperienceFromServer(experience);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getLevelProgress() {
         return this.levelProgress;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void setLevelProgress(int progress) {
         this.levelProgress = progress;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void setRefreshTrades(boolean refreshable) {
         this.canRefreshTrades = refreshable;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean canRefreshTrades() {
         return this.canRefreshTrades;
     }
@@ -216,7 +214,6 @@ extends ScreenHandler {
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void setOffers(TradeOfferList offers) {
         this.merchant.setOffersFromServer(offers);
     }
@@ -225,7 +222,6 @@ extends ScreenHandler {
         return this.merchant.getOffers();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isLeveled() {
         return this.leveled;
     }

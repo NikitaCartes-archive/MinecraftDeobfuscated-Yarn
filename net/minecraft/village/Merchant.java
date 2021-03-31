@@ -4,8 +4,6 @@
 package net.minecraft.village;
 
 import java.util.OptionalInt;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.MerchantScreenHandler;
@@ -25,7 +23,6 @@ public interface Merchant {
 
     public TradeOfferList getOffers();
 
-    @Environment(value=EnvType.CLIENT)
     public void setOffersFromServer(TradeOfferList var1);
 
     public void trade(TradeOffer var1);

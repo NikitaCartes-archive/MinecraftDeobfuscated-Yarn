@@ -28,6 +28,8 @@ import net.minecraft.world.biome.source.BiomeAccess;
 @Environment(value=EnvType.CLIENT)
 public class BiomeEffectSoundPlayer
 implements ClientPlayerTickable {
+    private static final int field_32994 = 40;
+    private static final float field_32995 = 0.001f;
     private final ClientPlayerEntity player;
     private final SoundManager soundManager;
     private final BiomeAccess biomeAccess;

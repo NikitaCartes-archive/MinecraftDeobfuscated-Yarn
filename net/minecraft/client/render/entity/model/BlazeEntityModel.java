@@ -12,6 +12,7 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
@@ -25,9 +26,9 @@ extends SinglePartEntityModel<T> {
 
     public BlazeEntityModel(ModelPart root) {
         this.root = root;
-        this.head = root.getChild("head");
+        this.head = root.getChild(EntityModelPartNames.HEAD);
         this.rods = new ModelPart[12];
-        Arrays.setAll(this.rods, i -> root.getChild(BlazeEntityModel.getRodName(i)));
+        Arrays.setAll(this.rods, index -> root.getChild(BlazeEntityModel.getRodName(index)));
     }
 
     private static String getRodName(int index) {
@@ -41,7 +42,7 @@ extends SinglePartEntityModel<T> {
         int i;
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
-        modelPartData.addChild("head", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0f, -4.0f, -4.0f, 8.0f, 8.0f, 8.0f), ModelTransform.NONE);
+        modelPartData.addChild(EntityModelPartNames.HEAD, ModelPartBuilder.create().uv(0, 0).cuboid(-4.0f, -4.0f, -4.0f, 8.0f, 8.0f, 8.0f), ModelTransform.NONE);
         float f = 0.0f;
         ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(0, 16).cuboid(0.0f, 0.0f, 0.0f, 2.0f, 8.0f, 2.0f);
         for (i = 0; i < 4; ++i) {

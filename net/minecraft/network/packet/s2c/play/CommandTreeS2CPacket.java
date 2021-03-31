@@ -21,8 +21,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.ArgumentTypes;
 import net.minecraft.command.suggestion.SuggestionProviders;
@@ -33,6 +31,13 @@ import org.jetbrains.annotations.Nullable;
 
 public class CommandTreeS2CPacket
 implements Packet<ClientPlayPacketListener> {
+    private static final byte field_33317 = 3;
+    private static final byte field_33318 = 4;
+    private static final byte field_33319 = 8;
+    private static final byte field_33320 = 16;
+    private static final byte field_33321 = 0;
+    private static final byte field_33322 = 1;
+    private static final byte field_33323 = 2;
     private final RootCommandNode<CommandSource> commandTree;
 
     public CommandTreeS2CPacket(RootCommandNode<CommandSource> commandTree) {
@@ -162,7 +167,6 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onCommandTree(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public RootCommandNode<CommandSource> getCommandTree() {
         return this.commandTree;
     }

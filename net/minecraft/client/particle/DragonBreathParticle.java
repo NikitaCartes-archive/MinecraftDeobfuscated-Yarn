@@ -17,6 +17,14 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class DragonBreathParticle
 extends SpriteBillboardParticle {
+    private static final int field_32654 = 11993298;
+    private static final int field_32655 = 14614777;
+    private static final float field_32648 = 0.7176471f;
+    private static final float field_32649 = 0.0f;
+    private static final float field_32650 = 0.8235294f;
+    private static final float field_32651 = 0.8745098f;
+    private static final float field_32652 = 0.0f;
+    private static final float field_32653 = 0.9764706f;
     private boolean reachedGround;
     private final SpriteProvider spriteProvider;
 

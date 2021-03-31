@@ -8,10 +8,9 @@ import com.mojang.serialization.Codec;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Set;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.structure.StructureManager;
-import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.structure.WoodlandMansionGenerator;
 import net.minecraft.util.BlockRotation;
@@ -58,8 +57,8 @@ extends StructureFeature<DefaultFeatureConfig> {
 
     public static class Start
     extends StructureStart<DefaultFeatureConfig> {
-        public Start(StructureFeature<DefaultFeatureConfig> structureFeature, ChunkPos chunkPos, BlockBox blockBox, int i, long l) {
-            super(structureFeature, chunkPos, blockBox, i, l);
+        public Start(StructureFeature<DefaultFeatureConfig> structureFeature, ChunkPos chunkPos, int i, long l) {
+            super(structureFeature, chunkPos, i, l);
         }
 
         @Override
@@ -88,28 +87,21 @@ extends StructureFeature<DefaultFeatureConfig> {
             BlockPos blockPos = new BlockPos(chunkPos.getOffsetX(8), q + 1, chunkPos.getOffsetZ(8));
             LinkedList<WoodlandMansionGenerator.Piece> list = Lists.newLinkedList();
             WoodlandMansionGenerator.addPieces(structureManager, blockPos, blockRotation, list, this.random);
-            this.children.addAll(list);
-            this.setBoundingBoxFromChildren();
+            list.forEach(this::method_35462);
         }
 
         @Override
         public void generateStructure(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox box, ChunkPos chunkPos) {
             super.generateStructure(world, structureAccessor, chunkGenerator, random, box, chunkPos);
-            int i = this.boundingBox.minY;
-            for (int j = box.minX; j <= box.maxX; ++j) {
-                for (int k = box.minZ; k <= box.maxZ; ++k) {
+            BlockBox blockBox = this.setBoundingBoxFromChildren();
+            int i = blockBox.getMinY();
+            for (int j = box.getMinX(); j <= box.getMaxX(); ++j) {
+                for (int k = box.getMinZ(); k <= box.getMaxZ(); ++k) {
                     BlockPos blockPos2;
                     BlockPos blockPos = new BlockPos(j, i, k);
-                    if (world.isAir(blockPos) || !this.boundingBox.contains(blockPos)) continue;
-                    boolean bl = false;
-                    for (StructurePiece structurePiece : this.children) {
-                        if (!structurePiece.getBoundingBox().contains(blockPos)) continue;
-                        bl = true;
-                        break;
-                    }
-                    if (!bl) continue;
+                    if (world.isAir(blockPos) || !blockBox.contains(blockPos) || !this.contains(blockPos)) continue;
                     for (int l = i - 1; l > 1 && (world.isAir(blockPos2 = new BlockPos(j, l, k)) || world.getBlockState(blockPos2).getMaterial().isLiquid()); --l) {
-                        world.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+                        world.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), Block.NOTIFY_LISTENERS);
                     }
                 }
             }

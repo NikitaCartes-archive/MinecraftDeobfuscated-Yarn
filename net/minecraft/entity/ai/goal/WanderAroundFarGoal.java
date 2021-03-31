@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class WanderAroundFarGoal
 extends WanderAroundGoal {
+    public static final float field_30229 = 0.001f;
     protected final float probability;
 
     public WanderAroundFarGoal(PathAwareEntity pathAwareEntity, double d) {

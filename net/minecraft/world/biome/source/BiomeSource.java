@@ -16,8 +16,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -49,7 +47,6 @@ implements BiomeAccess.Storage {
 
     protected abstract Codec<? extends BiomeSource> getCodec();
 
-    @Environment(value=EnvType.CLIENT)
     public abstract BiomeSource withSeed(long var1);
 
     public List<Biome> getBiomes() {

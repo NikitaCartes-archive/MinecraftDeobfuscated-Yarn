@@ -10,6 +10,7 @@ import net.minecraft.command.argument.Vec3ArgumentType;
 import net.minecraft.text.TranslatableText;
 
 public class CoordinateArgument {
+    private static final char field_32972 = '~';
     public static final SimpleCommandExceptionType MISSING_COORDINATE = new SimpleCommandExceptionType(new TranslatableText("argument.pos.missing.double"));
     public static final SimpleCommandExceptionType MISSING_BLOCK_POSITION = new SimpleCommandExceptionType(new TranslatableText("argument.pos.missing.int"));
     private final boolean relative;

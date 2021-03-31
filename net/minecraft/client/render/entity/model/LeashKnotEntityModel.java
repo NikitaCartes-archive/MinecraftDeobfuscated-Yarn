@@ -17,18 +17,19 @@ import net.minecraft.entity.Entity;
 @Environment(value=EnvType.CLIENT)
 public class LeashKnotEntityModel<T extends Entity>
 extends SinglePartEntityModel<T> {
+    private static final String KNOT = "knot";
     private final ModelPart root;
     private final ModelPart knot;
 
     public LeashKnotEntityModel(ModelPart root) {
         this.root = root;
-        this.knot = root.getChild("knot");
+        this.knot = root.getChild(KNOT);
     }
 
     public static TexturedModelData getTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
-        modelPartData.addChild("knot", ModelPartBuilder.create().uv(0, 0).cuboid(-3.0f, -8.0f, -3.0f, 6.0f, 8.0f, 6.0f), ModelTransform.NONE);
+        modelPartData.addChild(KNOT, ModelPartBuilder.create().uv(0, 0).cuboid(-3.0f, -8.0f, -3.0f, 6.0f, 8.0f, 6.0f), ModelTransform.NONE);
         return TexturedModelData.of(modelData, 32, 32);
     }
 

@@ -60,12 +60,24 @@ extends DrawableHelper {
         this.addWidget(this.rootWidget, root);
     }
 
+    public AdvancementTabType method_35734() {
+        return this.type;
+    }
+
+    public int method_35735() {
+        return this.index;
+    }
+
     public Advancement getRoot() {
         return this.root;
     }
 
     public Text getTitle() {
         return this.title;
+    }
+
+    public AdvancementDisplay method_35736() {
+        return this.display;
     }
 
     public void drawBackground(MatrixStack matrices, int i, int j, boolean bl) {

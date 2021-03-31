@@ -3,11 +3,6 @@
  */
 package net.minecraft.entity;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.api.EnvironmentInterface;
-import net.fabricmc.api.EnvironmentInterfaces;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingItemEntity;
@@ -28,8 +23,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 
-@EnvironmentInterfaces(value={@EnvironmentInterface(value=EnvType.CLIENT, itf=FlyingItemEntity.class)})
 public class EyeOfEnderEntity
 extends Entity
 implements FlyingItemEntity {
@@ -71,7 +66,6 @@ implements FlyingItemEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public boolean shouldRender(double distance) {
         double d = this.getBoundingBox().getAverageSideLength() * 4.0;
         if (Double.isNaN(d)) {
@@ -107,7 +101,6 @@ implements FlyingItemEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void setVelocityClient(double x, double y, double z) {
         this.setVelocity(x, y, z);
         if (this.prevPitch == 0.0f && this.prevYaw == 0.0f) {
@@ -170,16 +163,16 @@ implements FlyingItemEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
+    public void writeCustomDataToNbt(NbtCompound nbt) {
         ItemStack itemStack = this.getTrackedItem();
         if (!itemStack.isEmpty()) {
-            tag.put("Item", itemStack.writeNbt(new NbtCompound()));
+            nbt.put("Item", itemStack.writeNbt(new NbtCompound()));
         }
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        ItemStack itemStack = ItemStack.fromNbt(tag.getCompound("Item"));
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        ItemStack itemStack = ItemStack.fromNbt(nbt.getCompound("Item"));
         this.setItem(itemStack);
     }
 

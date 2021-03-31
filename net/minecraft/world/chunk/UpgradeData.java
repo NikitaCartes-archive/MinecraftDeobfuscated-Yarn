@@ -12,8 +12,6 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.fabricmc.yarn.constants.NbtTypeIds;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -31,6 +29,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.World;
@@ -44,6 +43,7 @@ import org.apache.logging.log4j.Logger;
 public class UpgradeData {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final UpgradeData NO_UPGRADE_DATA = new UpgradeData(EmptyBlockView.INSTANCE);
+    private static final String field_31412 = "Indices";
     private static final EightWayDirection[] EIGHT_WAYS = EightWayDirection.values();
     private final EnumSet<EightWayDirection> sidesToUpgrade = EnumSet.noneOf(EightWayDirection.class);
     private final int[][] centerIndicesToUpgrade;
@@ -54,17 +54,17 @@ public class UpgradeData {
         this.centerIndicesToUpgrade = new int[world.countVerticalSections()][];
     }
 
-    public UpgradeData(NbtCompound tag, HeightLimitView world) {
+    public UpgradeData(NbtCompound nbt, HeightLimitView world) {
         this(world);
-        if (tag.contains("Indices", NbtTypeIds.COMPOUND)) {
-            NbtCompound nbtCompound = tag.getCompound("Indices");
+        if (nbt.contains(field_31412, 10)) {
+            NbtCompound nbtCompound = nbt.getCompound(field_31412);
             for (int i = 0; i < this.centerIndicesToUpgrade.length; ++i) {
                 String string = String.valueOf(i);
-                if (!nbtCompound.contains(string, NbtTypeIds.INT_ARRAY)) continue;
+                if (!nbtCompound.contains(string, 11)) continue;
                 this.centerIndicesToUpgrade[i] = nbtCompound.getIntArray(string);
             }
         }
-        int j = tag.getInt("Sides");
+        int j = nbt.getInt("Sides");
         for (EightWayDirection eightWayDirection : EightWayDirection.values()) {
             if ((j & 1 << eightWayDirection.ordinal()) == 0) continue;
             this.sidesToUpgrade.add(eightWayDirection);
@@ -104,7 +104,7 @@ public class UpgradeData {
             BlockState blockState;
             BlockState blockState2 = blockState = world.getBlockState(blockPos);
             for (Direction direction : directions) {
-                mutable.set(blockPos, direction);
+                mutable.set((Vec3i)blockPos, direction);
                 blockState2 = UpgradeData.applyAdjacentBlock(blockState2, direction, world, blockPos, mutable);
             }
             Block.replace(blockState, blockState2, world, blockPos, 18);
@@ -136,7 +136,7 @@ public class UpgradeData {
                 mutable.set(chunkPos.getStartX() + k, chunkSection.getYOffset() + l, chunkPos.getStartZ() + m);
                 BlockState blockState2 = blockState = palettedContainer.get(j);
                 for (Direction direction : directions) {
-                    mutable2.set(mutable, direction);
+                    mutable2.set((Vec3i)mutable, direction);
                     if (ChunkSectionPos.getSectionCoord(mutable.getX()) != chunkPos.x || ChunkSectionPos.getSectionCoord(mutable.getZ()) != chunkPos.z) continue;
                     blockState2 = UpgradeData.applyAdjacentBlock(blockState2, direction, worldAccess, mutable, mutable2);
                 }
@@ -169,7 +169,7 @@ public class UpgradeData {
             nbtCompound2.putIntArray(string, this.centerIndicesToUpgrade[i]);
         }
         if (!nbtCompound2.isEmpty()) {
-            nbtCompound.put("Indices", nbtCompound2);
+            nbtCompound.put(field_31412, nbtCompound2);
         }
         i = 0;
         for (EightWayDirection eightWayDirection : this.sidesToUpgrade) {
@@ -205,7 +205,7 @@ public class UpgradeData {
                     Direction direction2 = blockState.get(ChestBlock.FACING);
                     if (direction.getAxis() != direction2.getAxis() && direction2 == blockState2.get(ChestBlock.FACING)) {
                         ChestType chestType = direction == direction2.rotateYClockwise() ? ChestType.LEFT : ChestType.RIGHT;
-                        world.setBlockState(blockPos2, (BlockState)blockState2.with(ChestBlock.CHEST_TYPE, chestType.getOpposite()), SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.FORCE_STATE);
+                        world.setBlockState(blockPos2, (BlockState)blockState2.with(ChestBlock.CHEST_TYPE, chestType.getOpposite()), Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
                         if (direction2 == Direction.NORTH || direction2 == Direction.EAST) {
                             BlockEntity blockEntity = world.getBlockEntity(blockPos);
                             BlockEntity blockEntity2 = world.getBlockEntity(blockPos2);
@@ -250,10 +250,10 @@ public class UpgradeData {
                     for (BlockPos blockPos : objectSet) {
                         BlockState blockState = world.getBlockState(blockPos);
                         if (blockState.get(Properties.DISTANCE_1_7) < j) continue;
-                        world.setBlockState(blockPos, (BlockState)blockState.with(Properties.DISTANCE_1_7, j), SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.FORCE_STATE);
+                        world.setBlockState(blockPos, (BlockState)blockState.with(Properties.DISTANCE_1_7, j), Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
                         if (i == 7) continue;
                         for (Direction direction : DIRECTIONS) {
-                            mutable.set(blockPos, direction);
+                            mutable.set((Vec3i)blockPos, direction);
                             BlockState blockState2 = world.getBlockState(mutable);
                             if (!blockState2.contains(Properties.DISTANCE_1_7) || blockState.get(Properties.DISTANCE_1_7) <= i) continue;
                             objectSet2.add(mutable.toImmutable());

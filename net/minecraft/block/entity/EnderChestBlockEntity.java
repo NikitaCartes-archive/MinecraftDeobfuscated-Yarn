@@ -3,10 +3,6 @@
  */
 package net.minecraft.block.entity;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.api.EnvironmentInterface;
-import net.fabricmc.api.EnvironmentInterfaces;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -20,7 +16,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-@EnvironmentInterfaces(value={@EnvironmentInterface(value=EnvType.CLIENT, itf=ChestAnimationProgress.class)})
 public class EnderChestBlockEntity
 extends BlockEntity
 implements ChestAnimationProgress {
@@ -44,7 +39,7 @@ implements ChestAnimationProgress {
 
         @Override
         protected boolean isPlayerViewing(PlayerEntity player) {
-            return player.getEnderChestInventory().method_31556(EnderChestBlockEntity.this);
+            return player.getEnderChestInventory().isActiveBlockEntity(EnderChestBlockEntity.this);
         }
     };
 
@@ -89,7 +84,6 @@ implements ChestAnimationProgress {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public float getAnimationProgress(float tickDelta) {
         return this.lidAnimator.getProgress(tickDelta);
     }

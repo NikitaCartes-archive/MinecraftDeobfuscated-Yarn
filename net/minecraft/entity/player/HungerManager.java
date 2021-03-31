@@ -3,9 +3,6 @@
  */
 package net.minecraft.entity.player;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
@@ -74,24 +71,28 @@ public class HungerManager {
         }
     }
 
-    public void readNbt(NbtCompound tag) {
-        if (tag.contains("foodLevel", NbtTypeIds.NUMBER)) {
-            this.foodLevel = tag.getInt("foodLevel");
-            this.foodStarvationTimer = tag.getInt("foodTickTimer");
-            this.foodSaturationLevel = tag.getFloat("foodSaturationLevel");
-            this.exhaustion = tag.getFloat("foodExhaustionLevel");
+    public void readNbt(NbtCompound nbt) {
+        if (nbt.contains("foodLevel", 99)) {
+            this.foodLevel = nbt.getInt("foodLevel");
+            this.foodStarvationTimer = nbt.getInt("foodTickTimer");
+            this.foodSaturationLevel = nbt.getFloat("foodSaturationLevel");
+            this.exhaustion = nbt.getFloat("foodExhaustionLevel");
         }
     }
 
-    public void writeNbt(NbtCompound tag) {
-        tag.putInt("foodLevel", this.foodLevel);
-        tag.putInt("foodTickTimer", this.foodStarvationTimer);
-        tag.putFloat("foodSaturationLevel", this.foodSaturationLevel);
-        tag.putFloat("foodExhaustionLevel", this.exhaustion);
+    public void writeNbt(NbtCompound nbt) {
+        nbt.putInt("foodLevel", this.foodLevel);
+        nbt.putInt("foodTickTimer", this.foodStarvationTimer);
+        nbt.putFloat("foodSaturationLevel", this.foodSaturationLevel);
+        nbt.putFloat("foodExhaustionLevel", this.exhaustion);
     }
 
     public int getFoodLevel() {
         return this.foodLevel;
+    }
+
+    public int getPrevFoodLevel() {
+        return this.prevFoodLevel;
     }
 
     public boolean isNotFull() {
@@ -102,6 +103,10 @@ public class HungerManager {
         this.exhaustion = Math.min(this.exhaustion + exhaustion, 40.0f);
     }
 
+    public float getExhaustion() {
+        return this.exhaustion;
+    }
+
     public float getSaturationLevel() {
         return this.foodSaturationLevel;
     }
@@ -110,9 +115,12 @@ public class HungerManager {
         this.foodLevel = foodLevel;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void setSaturationLevelClient(float saturationLevel) {
         this.foodSaturationLevel = saturationLevel;
+    }
+
+    public void setExhaustion(float exhaustion) {
+        this.exhaustion = exhaustion;
     }
 }
 

@@ -5,8 +5,6 @@ package net.minecraft.recipe.book;
 
 import com.google.common.collect.Sets;
 import java.util.Set;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.recipe.book.RecipeBookOptions;
@@ -48,7 +46,6 @@ public class RecipeBook {
         return this.recipes.contains(id);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void remove(Recipe<?> recipe) {
         this.remove(recipe.getId());
     }
@@ -58,7 +55,6 @@ public class RecipeBook {
         this.toBeDisplayed.remove(id);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean shouldDisplay(Recipe<?> recipe) {
         return this.toBeDisplayed.contains(recipe.getId());
     }
@@ -75,27 +71,22 @@ public class RecipeBook {
         this.toBeDisplayed.add(id);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isGuiOpen(RecipeBookCategory category) {
         return this.options.isGuiOpen(category);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void setGuiOpen(RecipeBookCategory category, boolean open) {
         this.options.setGuiOpen(category, open);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isFilteringCraftable(AbstractRecipeScreenHandler<?> handler) {
         return this.isFilteringCraftable(handler.getCategory());
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isFilteringCraftable(RecipeBookCategory category) {
         return this.options.isFilteringCraftable(category);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void setFilteringCraftable(RecipeBookCategory category, boolean filteringCraftable) {
         this.options.setFilteringCraftable(category, filteringCraftable);
     }

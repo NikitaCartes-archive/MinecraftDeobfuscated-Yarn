@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -14,6 +12,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class PlaySoundIdS2CPacket
 implements Packet<ClientPlayPacketListener> {
+    public static final float COORDINATE_SCALE = 8.0f;
     private final Identifier id;
     private final SoundCategory category;
     private final int fixedX;
@@ -53,37 +52,30 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeFloat(this.pitch);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Identifier getSoundId() {
         return this.id;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public SoundCategory getCategory() {
         return this.category;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public double getX() {
         return (float)this.fixedX / 8.0f;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public double getY() {
         return (float)this.fixedY / 8.0f;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public double getZ() {
         return (float)this.fixedZ / 8.0f;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getVolume() {
         return this.volume;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getPitch() {
         return this.pitch;
     }

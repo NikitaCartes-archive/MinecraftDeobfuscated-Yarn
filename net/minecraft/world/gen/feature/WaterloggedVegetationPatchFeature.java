@@ -8,12 +8,13 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Predicate;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.VegetationPatchFeature;
@@ -35,7 +36,7 @@ extends VegetationPatchFeature {
             set2.add(blockPos);
         }
         for (BlockPos blockPos : set2) {
-            world.setBlockState(blockPos, Blocks.WATER.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+            world.setBlockState(blockPos, Blocks.WATER.getDefaultState(), Block.NOTIFY_LISTENERS);
         }
         return set2;
     }
@@ -45,7 +46,7 @@ extends VegetationPatchFeature {
     }
 
     private static boolean isSolidBlockSide(StructureWorldAccess world, BlockPos pos, BlockPos.Mutable mutablePos, Direction direction) {
-        mutablePos.set(pos, direction);
+        mutablePos.set((Vec3i)pos, direction);
         return !world.getBlockState(mutablePos).isSideSolidFullSquare(world, mutablePos, direction.getOpposite());
     }
 
@@ -54,7 +55,7 @@ extends VegetationPatchFeature {
         if (super.generateVegetationFeature(world, config, generator, random, pos.down())) {
             BlockState blockState = world.getBlockState(pos);
             if (blockState.contains(Properties.WATERLOGGED) && !blockState.get(Properties.WATERLOGGED).booleanValue()) {
-                world.setBlockState(pos, (BlockState)blockState.with(Properties.WATERLOGGED, true), SetBlockStateFlags.NOTIFY_LISTENERS);
+                world.setBlockState(pos, (BlockState)blockState.with(Properties.WATERLOGGED, true), Block.NOTIFY_LISTENERS);
             }
             return true;
         }

@@ -11,6 +11,7 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.entity.passive.StriderEntity;
 import net.minecraft.util.math.MathHelper;
@@ -18,6 +19,12 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class StriderEntityModel<T extends StriderEntity>
 extends SinglePartEntityModel<T> {
+    private static final String RIGHT_BOTTOM_BRISTLE = "right_bottom_bristle";
+    private static final String RIGHT_MIDDLE_BRISTLE = "right_middle_bristle";
+    private static final String RIGHT_TOP_BRISTLE = "right_top_bristle";
+    private static final String LEFT_TOP_BRISTLE = "left_top_bristle";
+    private static final String LEFT_MIDDLE_BRISTLE = "left_middle_bristle";
+    private static final String LEFT_BOTTOM_BRISTLE = "left_bottom_bristle";
     private final ModelPart root;
     private final ModelPart rightLeg;
     private final ModelPart leftLeg;
@@ -31,29 +38,29 @@ extends SinglePartEntityModel<T> {
 
     public StriderEntityModel(ModelPart root) {
         this.root = root;
-        this.rightLeg = root.getChild("right_leg");
-        this.leftLeg = root.getChild("left_leg");
-        this.body = root.getChild("body");
-        this.rightBottomBristle = this.body.getChild("right_bottom_bristle");
-        this.rightMiddleBristle = this.body.getChild("right_middle_bristle");
-        this.rightTopBristle = this.body.getChild("right_top_bristle");
-        this.leftTopBristle = this.body.getChild("left_top_bristle");
-        this.leftMiddleBristle = this.body.getChild("left_middle_bristle");
-        this.leftBottomBristle = this.body.getChild("left_bottom_bristle");
+        this.rightLeg = root.getChild(EntityModelPartNames.RIGHT_LEG);
+        this.leftLeg = root.getChild(EntityModelPartNames.LEFT_LEG);
+        this.body = root.getChild(EntityModelPartNames.BODY);
+        this.rightBottomBristle = this.body.getChild(RIGHT_BOTTOM_BRISTLE);
+        this.rightMiddleBristle = this.body.getChild(RIGHT_MIDDLE_BRISTLE);
+        this.rightTopBristle = this.body.getChild(RIGHT_TOP_BRISTLE);
+        this.leftTopBristle = this.body.getChild(LEFT_TOP_BRISTLE);
+        this.leftMiddleBristle = this.body.getChild(LEFT_MIDDLE_BRISTLE);
+        this.leftBottomBristle = this.body.getChild(LEFT_BOTTOM_BRISTLE);
     }
 
     public static TexturedModelData getTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
-        modelPartData.addChild("right_leg", ModelPartBuilder.create().uv(0, 32).cuboid(-2.0f, 0.0f, -2.0f, 4.0f, 16.0f, 4.0f), ModelTransform.pivot(-4.0f, 8.0f, 0.0f));
-        modelPartData.addChild("left_leg", ModelPartBuilder.create().uv(0, 55).cuboid(-2.0f, 0.0f, -2.0f, 4.0f, 16.0f, 4.0f), ModelTransform.pivot(4.0f, 8.0f, 0.0f));
-        ModelPartData modelPartData2 = modelPartData.addChild("body", ModelPartBuilder.create().uv(0, 0).cuboid(-8.0f, -6.0f, -8.0f, 16.0f, 14.0f, 16.0f), ModelTransform.pivot(0.0f, 1.0f, 0.0f));
-        modelPartData2.addChild("right_bottom_bristle", ModelPartBuilder.create().uv(16, 65).cuboid(-12.0f, 0.0f, 0.0f, 12.0f, 0.0f, 16.0f, true), ModelTransform.of(-8.0f, 4.0f, -8.0f, 0.0f, 0.0f, -1.2217305f));
-        modelPartData2.addChild("right_middle_bristle", ModelPartBuilder.create().uv(16, 49).cuboid(-12.0f, 0.0f, 0.0f, 12.0f, 0.0f, 16.0f, true), ModelTransform.of(-8.0f, -1.0f, -8.0f, 0.0f, 0.0f, -1.134464f));
-        modelPartData2.addChild("right_top_bristle", ModelPartBuilder.create().uv(16, 33).cuboid(-12.0f, 0.0f, 0.0f, 12.0f, 0.0f, 16.0f, true), ModelTransform.of(-8.0f, -5.0f, -8.0f, 0.0f, 0.0f, -0.87266463f));
-        modelPartData2.addChild("left_top_bristle", ModelPartBuilder.create().uv(16, 33).cuboid(0.0f, 0.0f, 0.0f, 12.0f, 0.0f, 16.0f), ModelTransform.of(8.0f, -6.0f, -8.0f, 0.0f, 0.0f, 0.87266463f));
-        modelPartData2.addChild("left_middle_bristle", ModelPartBuilder.create().uv(16, 49).cuboid(0.0f, 0.0f, 0.0f, 12.0f, 0.0f, 16.0f), ModelTransform.of(8.0f, -2.0f, -8.0f, 0.0f, 0.0f, 1.134464f));
-        modelPartData2.addChild("left_bottom_bristle", ModelPartBuilder.create().uv(16, 65).cuboid(0.0f, 0.0f, 0.0f, 12.0f, 0.0f, 16.0f), ModelTransform.of(8.0f, 3.0f, -8.0f, 0.0f, 0.0f, 1.2217305f));
+        modelPartData.addChild(EntityModelPartNames.RIGHT_LEG, ModelPartBuilder.create().uv(0, 32).cuboid(-2.0f, 0.0f, -2.0f, 4.0f, 16.0f, 4.0f), ModelTransform.pivot(-4.0f, 8.0f, 0.0f));
+        modelPartData.addChild(EntityModelPartNames.LEFT_LEG, ModelPartBuilder.create().uv(0, 55).cuboid(-2.0f, 0.0f, -2.0f, 4.0f, 16.0f, 4.0f), ModelTransform.pivot(4.0f, 8.0f, 0.0f));
+        ModelPartData modelPartData2 = modelPartData.addChild(EntityModelPartNames.BODY, ModelPartBuilder.create().uv(0, 0).cuboid(-8.0f, -6.0f, -8.0f, 16.0f, 14.0f, 16.0f), ModelTransform.pivot(0.0f, 1.0f, 0.0f));
+        modelPartData2.addChild(RIGHT_BOTTOM_BRISTLE, ModelPartBuilder.create().uv(16, 65).cuboid(-12.0f, 0.0f, 0.0f, 12.0f, 0.0f, 16.0f, true), ModelTransform.of(-8.0f, 4.0f, -8.0f, 0.0f, 0.0f, -1.2217305f));
+        modelPartData2.addChild(RIGHT_MIDDLE_BRISTLE, ModelPartBuilder.create().uv(16, 49).cuboid(-12.0f, 0.0f, 0.0f, 12.0f, 0.0f, 16.0f, true), ModelTransform.of(-8.0f, -1.0f, -8.0f, 0.0f, 0.0f, -1.134464f));
+        modelPartData2.addChild(RIGHT_TOP_BRISTLE, ModelPartBuilder.create().uv(16, 33).cuboid(-12.0f, 0.0f, 0.0f, 12.0f, 0.0f, 16.0f, true), ModelTransform.of(-8.0f, -5.0f, -8.0f, 0.0f, 0.0f, -0.87266463f));
+        modelPartData2.addChild(LEFT_TOP_BRISTLE, ModelPartBuilder.create().uv(16, 33).cuboid(0.0f, 0.0f, 0.0f, 12.0f, 0.0f, 16.0f), ModelTransform.of(8.0f, -6.0f, -8.0f, 0.0f, 0.0f, 0.87266463f));
+        modelPartData2.addChild(LEFT_MIDDLE_BRISTLE, ModelPartBuilder.create().uv(16, 49).cuboid(0.0f, 0.0f, 0.0f, 12.0f, 0.0f, 16.0f), ModelTransform.of(8.0f, -2.0f, -8.0f, 0.0f, 0.0f, 1.134464f));
+        modelPartData2.addChild(LEFT_BOTTOM_BRISTLE, ModelPartBuilder.create().uv(16, 65).cuboid(0.0f, 0.0f, 0.0f, 12.0f, 0.0f, 16.0f), ModelTransform.of(8.0f, 3.0f, -8.0f, 0.0f, 0.0f, 1.2217305f));
         return TexturedModelData.of(modelData, 64, 128);
     }
 

@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.c2s.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -16,7 +14,6 @@ implements Packet<ServerPlayPacketListener> {
     private final boolean signed;
     private final int slot;
 
-    @Environment(value=EnvType.CLIENT)
     public BookUpdateC2SPacket(ItemStack book, boolean signed, int slot) {
         this.book = book.copy();
         this.signed = signed;

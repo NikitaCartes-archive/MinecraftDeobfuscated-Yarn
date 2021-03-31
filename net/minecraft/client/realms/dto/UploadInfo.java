@@ -22,6 +22,8 @@ import org.jetbrains.annotations.Nullable;
 public class UploadInfo
 extends ValueObject {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final String field_32116 = "http://";
+    private static final int field_32117 = 8080;
     private static final Pattern field_26467 = Pattern.compile("^[a-zA-Z][-a-zA-Z0-9+.]+:");
     private final boolean worldClosed;
     @Nullable
@@ -85,7 +87,7 @@ extends ValueObject {
         if (matcher.find()) {
             return string;
         }
-        return "http://" + string;
+        return field_32116 + string;
     }
 
     public static String createRequestContent(@Nullable String token) {

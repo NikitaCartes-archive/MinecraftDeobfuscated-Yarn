@@ -54,6 +54,10 @@ extends AbstractCriterion<Conditions> {
             this.delta = delta;
         }
 
+        public static Conditions create(ItemPredicate item, NumberRange.IntRange durability) {
+            return Conditions.create(EntityPredicate.Extended.EMPTY, item, durability);
+        }
+
         public static Conditions create(EntityPredicate.Extended player, ItemPredicate item, NumberRange.IntRange durability) {
             return new Conditions(player, item, durability, NumberRange.IntRange.ANY);
         }

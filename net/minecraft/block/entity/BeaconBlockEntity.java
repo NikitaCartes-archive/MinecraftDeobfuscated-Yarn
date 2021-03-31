@@ -9,9 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -49,8 +46,14 @@ import org.jetbrains.annotations.Nullable;
 public class BeaconBlockEntity
 extends BlockEntity
 implements NamedScreenHandlerFactory {
+    private static final int field_31304 = 4;
     public static final StatusEffect[][] EFFECTS_BY_LEVEL = new StatusEffect[][]{{StatusEffects.SPEED, StatusEffects.HASTE}, {StatusEffects.RESISTANCE, StatusEffects.JUMP_BOOST}, {StatusEffects.STRENGTH}, {StatusEffects.REGENERATION}};
     private static final Set<StatusEffect> EFFECTS = Arrays.stream(EFFECTS_BY_LEVEL).flatMap(Arrays::stream).collect(Collectors.toSet());
+    public static final int field_31300 = 0;
+    public static final int field_31301 = 1;
+    public static final int field_31302 = 2;
+    public static final int field_31303 = 3;
+    private static final int field_31305 = 10;
     private List<BeamSegment> beamSegments = Lists.newArrayList();
     private List<BeamSegment> field_19178 = Lists.newArrayList();
     private int level;
@@ -240,7 +243,6 @@ implements NamedScreenHandlerFactory {
         world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0f, 1.0f);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public List<BeamSegment> getBeamSegments() {
         return this.level == 0 ? ImmutableList.of() : this.beamSegments;
     }
@@ -248,7 +250,7 @@ implements NamedScreenHandlerFactory {
     @Override
     @Nullable
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(this.pos, 3, this.toInitialChunkDataNbt());
+        return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.BEACON, this.toInitialChunkDataNbt());
     }
 
     @Override
@@ -263,27 +265,27 @@ implements NamedScreenHandlerFactory {
     }
 
     @Override
-    public void readNbt(NbtCompound tag) {
-        super.readNbt(tag);
-        this.primary = BeaconBlockEntity.getPotionEffectById(tag.getInt("Primary"));
-        this.secondary = BeaconBlockEntity.getPotionEffectById(tag.getInt("Secondary"));
-        if (tag.contains("CustomName", NbtTypeIds.STRING)) {
-            this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
+    public void readNbt(NbtCompound nbt) {
+        super.readNbt(nbt);
+        this.primary = BeaconBlockEntity.getPotionEffectById(nbt.getInt("Primary"));
+        this.secondary = BeaconBlockEntity.getPotionEffectById(nbt.getInt("Secondary"));
+        if (nbt.contains("CustomName", 8)) {
+            this.customName = Text.Serializer.fromJson(nbt.getString("CustomName"));
         }
-        this.lock = ContainerLock.fromNbt(tag);
+        this.lock = ContainerLock.fromNbt(nbt);
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound tag) {
-        super.writeNbt(tag);
-        tag.putInt("Primary", StatusEffect.getRawId(this.primary));
-        tag.putInt("Secondary", StatusEffect.getRawId(this.secondary));
-        tag.putInt("Levels", this.level);
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
+        nbt.putInt("Primary", StatusEffect.getRawId(this.primary));
+        nbt.putInt("Secondary", StatusEffect.getRawId(this.secondary));
+        nbt.putInt("Levels", this.level);
         if (this.customName != null) {
-            tag.putString("CustomName", Text.Serializer.toJson(this.customName));
+            nbt.putString("CustomName", Text.Serializer.toJson(this.customName));
         }
-        this.lock.writeNbt(tag);
-        return tag;
+        this.lock.writeNbt(nbt);
+        return nbt;
     }
 
     public void setCustomName(@Nullable Text customName) {
@@ -323,12 +325,10 @@ implements NamedScreenHandlerFactory {
             ++this.height;
         }
 
-        @Environment(value=EnvType.CLIENT)
         public float[] getColor() {
             return this.color;
         }
 
-        @Environment(value=EnvType.CLIENT)
         public int getHeight() {
             return this.height;
         }

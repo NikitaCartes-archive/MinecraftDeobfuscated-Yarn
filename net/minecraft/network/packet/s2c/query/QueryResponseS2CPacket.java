@@ -6,8 +6,6 @@ package net.minecraft.network.packet.s2c.query;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.lang.reflect.Type;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientQueryPacketListener;
@@ -27,7 +25,7 @@ implements Packet<ClientQueryPacketListener> {
     }
 
     public QueryResponseS2CPacket(PacketByteBuf buf) {
-        this.metadata = JsonHelper.deserialize(GSON, buf.readString(Short.MAX_VALUE), ServerMetadata.class);
+        this.metadata = JsonHelper.deserialize(GSON, buf.readString(PacketByteBuf.DEFAULT_MAX_STRING_LENGTH), ServerMetadata.class);
     }
 
     @Override
@@ -40,7 +38,6 @@ implements Packet<ClientQueryPacketListener> {
         clientQueryPacketListener.onResponse(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public ServerMetadata getServerMetadata() {
         return this.metadata;
     }

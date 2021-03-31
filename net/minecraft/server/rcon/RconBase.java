@@ -13,6 +13,7 @@ public abstract class RconBase
 implements Runnable {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final AtomicInteger THREAD_COUNTER = new AtomicInteger(0);
+    private static final int field_29794 = 5;
     protected volatile boolean running;
     protected final String description;
     @Nullable

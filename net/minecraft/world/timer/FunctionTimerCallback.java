@@ -43,8 +43,8 @@ implements TimerCallback<MinecraftServer> {
         }
 
         @Override
-        public /* synthetic */ TimerCallback deserialize(NbtCompound tag) {
-            return this.deserialize(tag);
+        public /* synthetic */ TimerCallback deserialize(NbtCompound nbt) {
+            return this.deserialize(nbt);
         }
     }
 }

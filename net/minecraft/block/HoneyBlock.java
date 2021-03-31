@@ -3,8 +3,6 @@
  */
 package net.minecraft.block;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -30,6 +28,10 @@ import net.minecraft.world.World;
 
 public class HoneyBlock
 extends TransparentBlock {
+    private static final double field_31101 = 0.13;
+    private static final double field_31102 = 0.08;
+    private static final double field_31103 = 0.05;
+    private static final int field_31104 = 20;
     protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 15.0, 15.0);
 
     public HoneyBlock(AbstractBlock.Settings settings) {
@@ -110,17 +112,14 @@ extends TransparentBlock {
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static void addRegularParticles(Entity entity) {
         HoneyBlock.addParticles(entity, 5);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static void addRichParticles(Entity entity) {
         HoneyBlock.addParticles(entity, 10);
     }
 
-    @Environment(value=EnvType.CLIENT)
     private static void addParticles(Entity entity, int count) {
         if (!entity.world.isClient) {
             return;

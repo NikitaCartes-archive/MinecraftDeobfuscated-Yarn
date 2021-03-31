@@ -7,10 +7,7 @@ import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.yarn.constants.CatTypes;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -83,11 +80,27 @@ import org.jetbrains.annotations.Nullable;
  */
 public class CatEntity
 extends TameableEntity {
+    public static final double field_30310 = 0.6;
+    public static final double field_30311 = 0.8;
+    public static final double field_30312 = 1.33;
     private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.COD, Items.SALMON);
     private static final TrackedData<Integer> CAT_TYPE = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Boolean> SLEEPING_WITH_OWNER = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> HEAD_DOWN = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> COLLAR_COLOR = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    public static final int field_30313 = 0;
+    public static final int field_30314 = 1;
+    public static final int field_30315 = 2;
+    public static final int field_30316 = 3;
+    public static final int field_30317 = 4;
+    public static final int field_30318 = 5;
+    public static final int field_30319 = 6;
+    public static final int field_30320 = 7;
+    public static final int field_30321 = 8;
+    public static final int field_30322 = 9;
+    public static final int field_30323 = 10;
+    private static final int field_30324 = 11;
+    private static final int field_30325 = 10;
     public static final Map<Integer, Identifier> TEXTURES = Util.make(Maps.newHashMap(), hashMap -> {
         hashMap.put(0, new Identifier("textures/entity/cat/tabby.png"));
         hashMap.put(1, new Identifier("textures/entity/cat/black.png"));
@@ -182,18 +195,18 @@ extends TameableEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
-        tag.putInt("CatType", this.getCatType());
-        tag.putByte("CollarColor", (byte)this.getCollarColor().getId());
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putInt("CatType", this.getCatType());
+        nbt.putByte("CollarColor", (byte)this.getCollarColor().getId());
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        this.setCatType(tag.getInt("CatType"));
-        if (tag.contains("CollarColor", NbtTypeIds.NUMBER)) {
-            this.setCollarColor(DyeColor.byId(tag.getInt("CollarColor")));
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.setCatType(nbt.getInt("CatType"));
+        if (nbt.contains("CollarColor", 99)) {
+            this.setCollarColor(DyeColor.byId(nbt.getInt("CollarColor")));
         }
     }
 
@@ -311,17 +324,14 @@ extends TameableEntity {
         this.headDownAnimation = this.isHeadDown() ? Math.min(1.0f, this.headDownAnimation + 0.1f) : Math.max(0.0f, this.headDownAnimation - 0.13f);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getSleepAnimation(float tickDelta) {
         return MathHelper.lerp(tickDelta, this.prevSleepAnimation, this.sleepAnimation);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getTailCurlAnimation(float tickDelta) {
         return MathHelper.lerp(tickDelta, this.prevTailCurlAnimation, this.tailCurlAnimation);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getHeadDownAnimation(float tickDelta) {
         return MathHelper.lerp(tickDelta, this.prevHeadDownAnimation, this.headDownAnimation);
     }
@@ -362,8 +372,8 @@ extends TameableEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
-        entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
+        entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
         if (world.getMoonSize() > 0.9f) {
             this.setCatType(this.random.nextInt(11));
         } else {

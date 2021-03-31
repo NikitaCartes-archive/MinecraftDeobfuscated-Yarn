@@ -25,6 +25,8 @@ import org.apache.commons.lang3.ArrayUtils;
 
 public abstract class LeafEntry
 extends LootPoolEntry {
+    public static final int field_31847 = 1;
+    public static final int field_31848 = 0;
     protected final int weight;
     protected final int quality;
     protected final LootFunction[] functions;

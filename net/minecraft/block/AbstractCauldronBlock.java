@@ -31,6 +31,11 @@ import net.minecraft.world.World;
 
 public abstract class AbstractCauldronBlock
 extends Block {
+    private static final int field_30989 = 2;
+    private static final int field_30990 = 4;
+    private static final int field_30991 = 3;
+    private static final int field_30992 = 2;
+    protected static final int field_30988 = 4;
     private static final VoxelShape RAY_TRACE_SHAPE = AbstractCauldronBlock.createCuboidShape(2.0, 4.0, 2.0, 14.0, 16.0, 14.0);
     protected static final VoxelShape OUTLINE_SHAPE = VoxelShapes.combineAndSimplify(VoxelShapes.fullCube(), VoxelShapes.union(AbstractCauldronBlock.createCuboidShape(0.0, 0.0, 4.0, 16.0, 3.0, 12.0), AbstractCauldronBlock.createCuboidShape(4.0, 0.0, 0.0, 12.0, 3.0, 16.0), AbstractCauldronBlock.createCuboidShape(2.0, 0.0, 2.0, 14.0, 3.0, 14.0), RAY_TRACE_SHAPE), BooleanBiFunction.ONLY_FIRST);
     private final Map<Item, CauldronBehavior> behaviorMap;
@@ -74,6 +79,8 @@ extends Block {
     public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
         return false;
     }
+
+    public abstract boolean isFull(BlockState var1);
 
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {

@@ -35,6 +35,8 @@ implements ArgumentType<EntitySelector> {
     public static final SimpleCommandExceptionType ENTITY_NOT_FOUND_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.entity.notfound.entity"));
     public static final SimpleCommandExceptionType PLAYER_NOT_FOUND_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.entity.notfound.player"));
     public static final SimpleCommandExceptionType NOT_ALLOWED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.entity.selector.not_allowed"));
+    private static final byte field_32098 = 1;
+    private static final byte field_32099 = 2;
     private final boolean singleTarget;
     private final boolean playersOnly;
 

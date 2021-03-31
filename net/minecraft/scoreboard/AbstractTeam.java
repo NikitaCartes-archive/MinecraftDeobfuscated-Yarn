@@ -7,8 +7,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -32,15 +30,12 @@ public abstract class AbstractTeam {
      */
     public abstract MutableText decorateName(Text var1);
 
-    @Environment(value=EnvType.CLIENT)
     public abstract boolean shouldShowFriendlyInvisibles();
 
     public abstract boolean isFriendlyFireAllowed();
 
-    @Environment(value=EnvType.CLIENT)
     public abstract VisibilityRule getNameTagVisibilityRule();
 
-    @Environment(value=EnvType.CLIENT)
     public abstract Formatting getColor();
 
     public abstract Collection<String> getPlayerList();
@@ -87,6 +82,10 @@ public abstract class AbstractTeam {
         private static final Map<String, VisibilityRule> VISIBILITY_RULES;
         public final String name;
         public final int value;
+
+        public static String[] method_35595() {
+            return VISIBILITY_RULES.keySet().toArray(new String[VISIBILITY_RULES.size()]);
+        }
 
         @Nullable
         public static VisibilityRule getRule(String name) {

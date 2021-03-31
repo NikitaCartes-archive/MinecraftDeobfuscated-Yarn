@@ -8,9 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
@@ -34,6 +31,17 @@ import org.jetbrains.annotations.Nullable;
 
 public class FireworkItem
 extends Item {
+    public static final String FIREWORKS_KEY = "Fireworks";
+    public static final String EXPLOSION_KEY = "Explosion";
+    public static final String EXPLOSIONS_KEY = "Explosions";
+    public static final String FLIGHT_KEY = "Flight";
+    public static final String TYPE_KEY = "Type";
+    public static final String TRAIL_KEY = "Trail";
+    public static final String FLICKER_KEY = "Flicker";
+    public static final String COLORS_KEY = "Colors";
+    public static final String FADE_COLORS_KEY = "FadeColors";
+    public static final double field_30884 = 0.15;
+
     public FireworkItem(Item.Settings settings) {
         super(settings);
     }
@@ -69,17 +77,16 @@ extends Item {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         NbtList nbtList;
-        NbtCompound nbtCompound = stack.getSubTag("Fireworks");
+        NbtCompound nbtCompound = stack.getSubTag(FIREWORKS_KEY);
         if (nbtCompound == null) {
             return;
         }
-        if (nbtCompound.contains("Flight", NbtTypeIds.NUMBER)) {
-            tooltip.add(new TranslatableText("item.minecraft.firework_rocket.flight").append(" ").append(String.valueOf(nbtCompound.getByte("Flight"))).formatted(Formatting.GRAY));
+        if (nbtCompound.contains(FLIGHT_KEY, 99)) {
+            tooltip.add(new TranslatableText("item.minecraft.firework_rocket.flight").append(" ").append(String.valueOf(nbtCompound.getByte(FLIGHT_KEY))).formatted(Formatting.GRAY));
         }
-        if (!(nbtList = nbtCompound.getList("Explosions", NbtTypeIds.COMPOUND)).isEmpty()) {
+        if (!(nbtList = nbtCompound.getList(EXPLOSIONS_KEY, 10)).isEmpty()) {
             for (int i = 0; i < nbtList.size(); ++i) {
                 NbtCompound nbtCompound2 = nbtList.getCompound(i);
                 ArrayList<Text> list = Lists.newArrayList();
@@ -96,7 +103,7 @@ extends Item {
     @Override
     public ItemStack getDefaultStack() {
         ItemStack itemStack = new ItemStack(this);
-        itemStack.getOrCreateTag().putByte("Flight", (byte)1);
+        itemStack.getOrCreateTag().putByte(FLIGHT_KEY, (byte)1);
         return itemStack;
     }
 
@@ -120,12 +127,10 @@ extends Item {
             return this.id;
         }
 
-        @Environment(value=EnvType.CLIENT)
         public String getName() {
             return this.name;
         }
 
-        @Environment(value=EnvType.CLIENT)
         public static Type byId(int id) {
             if (id < 0 || id >= TYPES.length) {
                 return SMALL_BALL;

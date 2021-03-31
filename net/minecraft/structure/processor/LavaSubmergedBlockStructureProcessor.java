@@ -25,7 +25,7 @@ extends StructureProcessor {
         BlockPos blockPos2 = structureBlockInfo2.pos;
         boolean bl = world.getBlockState(blockPos2).isOf(Blocks.LAVA);
         if (bl && !Block.isShapeFullCube(structureBlockInfo2.state.getOutlineShape(world, blockPos2))) {
-            return new Structure.StructureBlockInfo(blockPos2, Blocks.LAVA.getDefaultState(), structureBlockInfo2.tag);
+            return new Structure.StructureBlockInfo(blockPos2, Blocks.LAVA.getDefaultState(), structureBlockInfo2.nbt);
         }
         return structureBlockInfo2;
     }

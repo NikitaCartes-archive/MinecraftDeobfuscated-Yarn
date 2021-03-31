@@ -17,10 +17,6 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.UUID;
 import java.util.function.Predicate;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.SharedConstants;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BedBlock;
@@ -123,8 +119,19 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class PlayerEntity
 extends LivingEntity {
+    public static final String field_30642 = "OfflinePlayer:";
+    public static final int field_30643 = 16;
+    public static final int field_30644 = 20;
+    public static final int field_30645 = 100;
+    public static final int field_30646 = 10;
+    public static final int field_30647 = 200;
+    public static final float field_30648 = 1.5f;
+    public static final float field_30649 = 0.6f;
+    public static final float field_30650 = 0.6f;
+    public static final float field_30651 = 1.62f;
     public static final EntityDimensions STANDING_DIMENSIONS = EntityDimensions.changing(0.6f, 1.8f);
     private static final Map<EntityPose, EntityDimensions> POSE_DIMENSIONS = ImmutableMap.builder().put(EntityPose.STANDING, STANDING_DIMENSIONS).put(EntityPose.SLEEPING, SLEEPING_DIMENSIONS).put(EntityPose.FALL_FLYING, EntityDimensions.changing(0.6f, 0.6f)).put(EntityPose.SWIMMING, EntityDimensions.changing(0.6f, 0.6f)).put(EntityPose.SPIN_ATTACK, EntityDimensions.changing(0.6f, 0.6f)).put(EntityPose.CROUCHING, EntityDimensions.changing(0.6f, 1.5f)).put(EntityPose.DYING, EntityDimensions.fixed(0.2f, 0.2f)).build();
+    private static final int field_30652 = 25;
     private static final TrackedData<Float> ABSORPTION_AMOUNT = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Integer> SCORE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
     protected static final TrackedData<Byte> PLAYER_MODEL_PARTS = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BYTE);
@@ -157,7 +164,6 @@ extends LivingEntity {
     protected final float field_7509 = 0.02f;
     private int lastPlayedLevelUpSoundTime;
     private final GameProfile gameProfile;
-    @Environment(value=EnvType.CLIENT)
     private boolean reducedDebugInfo;
     private ItemStack selectedItem = ItemStack.EMPTY;
     private final ItemCooldownManager itemCooldownManager = this.createCooldownManager();
@@ -377,7 +383,6 @@ extends LivingEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void handleStatus(byte status) {
         if (status == 9) {
             this.consumeItem();
@@ -392,7 +397,6 @@ extends LivingEntity {
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     private void spawnParticles(ParticleEffect parameters) {
         for (int i = 0; i < 5; ++i) {
             double d = this.random.nextGaussian() * 0.02;
@@ -476,9 +480,9 @@ extends LivingEntity {
         }
     }
 
-    private void updateShoulderEntity(@Nullable NbtCompound tag) {
-        if (!(tag == null || tag.contains("Silent") && tag.getBoolean("Silent") || this.world.random.nextInt(200) != 0)) {
-            String string = tag.getString("id");
+    private void updateShoulderEntity(@Nullable NbtCompound entityNbt) {
+        if (!(entityNbt == null || entityNbt.contains("Silent") && entityNbt.getBoolean("Silent") || this.world.random.nextInt(200) != 0)) {
+            String string = entityNbt.getString("id");
             EntityType.get(string).filter(entityType -> entityType == EntityType.PARROT).ifPresent(entityType -> {
                 if (!ParrotEntity.imitateNearbyMob(this.world, this)) {
                     this.world.playSound(null, this.getX(), this.getY(), this.getZ(), ParrotEntity.getRandomSound(this.world, this.world.random), this.getSoundCategory(), 1.0f, ParrotEntity.getSoundPitch(this.world.random));
@@ -660,55 +664,55 @@ extends LivingEntity {
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
         this.setUuid(PlayerEntity.getUuidFromProfile(this.gameProfile));
-        NbtList nbtList = tag.getList("Inventory", NbtTypeIds.COMPOUND);
-        this.inventory.deserialize(nbtList);
-        this.inventory.selectedSlot = tag.getInt("SelectedItemSlot");
-        this.sleepTimer = tag.getShort("SleepTimer");
-        this.experienceProgress = tag.getFloat("XpP");
-        this.experienceLevel = tag.getInt("XpLevel");
-        this.totalExperience = tag.getInt("XpTotal");
-        this.enchantmentTableSeed = tag.getInt("XpSeed");
+        NbtList nbtList = nbt.getList("Inventory", 10);
+        this.inventory.readNbt(nbtList);
+        this.inventory.selectedSlot = nbt.getInt("SelectedItemSlot");
+        this.sleepTimer = nbt.getShort("SleepTimer");
+        this.experienceProgress = nbt.getFloat("XpP");
+        this.experienceLevel = nbt.getInt("XpLevel");
+        this.totalExperience = nbt.getInt("XpTotal");
+        this.enchantmentTableSeed = nbt.getInt("XpSeed");
         if (this.enchantmentTableSeed == 0) {
             this.enchantmentTableSeed = this.random.nextInt();
         }
-        this.setScore(tag.getInt("Score"));
-        this.hungerManager.readNbt(tag);
-        this.abilities.deserialize(tag);
+        this.setScore(nbt.getInt("Score"));
+        this.hungerManager.readNbt(nbt);
+        this.abilities.readNbt(nbt);
         this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(this.abilities.getWalkSpeed());
-        if (tag.contains("EnderItems", NbtTypeIds.LIST)) {
-            this.enderChestInventory.readTags(tag.getList("EnderItems", NbtTypeIds.COMPOUND));
+        if (nbt.contains("EnderItems", 9)) {
+            this.enderChestInventory.readNbtList(nbt.getList("EnderItems", 10));
         }
-        if (tag.contains("ShoulderEntityLeft", NbtTypeIds.COMPOUND)) {
-            this.setShoulderEntityLeft(tag.getCompound("ShoulderEntityLeft"));
+        if (nbt.contains("ShoulderEntityLeft", 10)) {
+            this.setShoulderEntityLeft(nbt.getCompound("ShoulderEntityLeft"));
         }
-        if (tag.contains("ShoulderEntityRight", NbtTypeIds.COMPOUND)) {
-            this.setShoulderEntityRight(tag.getCompound("ShoulderEntityRight"));
+        if (nbt.contains("ShoulderEntityRight", 10)) {
+            this.setShoulderEntityRight(nbt.getCompound("ShoulderEntityRight"));
         }
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
-        tag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
-        tag.put("Inventory", this.inventory.serialize(new NbtList()));
-        tag.putInt("SelectedItemSlot", this.inventory.selectedSlot);
-        tag.putShort("SleepTimer", (short)this.sleepTimer);
-        tag.putFloat("XpP", this.experienceProgress);
-        tag.putInt("XpLevel", this.experienceLevel);
-        tag.putInt("XpTotal", this.totalExperience);
-        tag.putInt("XpSeed", this.enchantmentTableSeed);
-        tag.putInt("Score", this.getScore());
-        this.hungerManager.writeNbt(tag);
-        this.abilities.serialize(tag);
-        tag.put("EnderItems", this.enderChestInventory.getTags());
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
+        nbt.put("Inventory", this.inventory.writeNbt(new NbtList()));
+        nbt.putInt("SelectedItemSlot", this.inventory.selectedSlot);
+        nbt.putShort("SleepTimer", (short)this.sleepTimer);
+        nbt.putFloat("XpP", this.experienceProgress);
+        nbt.putInt("XpLevel", this.experienceLevel);
+        nbt.putInt("XpTotal", this.totalExperience);
+        nbt.putInt("XpSeed", this.enchantmentTableSeed);
+        nbt.putInt("Score", this.getScore());
+        this.hungerManager.writeNbt(nbt);
+        this.abilities.writeNbt(nbt);
+        nbt.put("EnderItems", this.enderChestInventory.toNbtList());
         if (!this.getShoulderEntityLeft().isEmpty()) {
-            tag.put("ShoulderEntityLeft", this.getShoulderEntityLeft());
+            nbt.put("ShoulderEntityLeft", this.getShoulderEntityLeft());
         }
         if (!this.getShoulderEntityRight().isEmpty()) {
-            tag.put("ShoulderEntityRight", this.getShoulderEntityRight());
+            nbt.put("ShoulderEntityRight", this.getShoulderEntityRight());
         }
     }
 
@@ -1147,7 +1151,6 @@ extends LivingEntity {
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void requestRespawn() {
     }
 
@@ -1214,7 +1217,7 @@ extends LivingEntity {
         if (block instanceof RespawnAnchorBlock && blockState.get(RespawnAnchorBlock.CHARGES) > 0 && RespawnAnchorBlock.isNether(world)) {
             Optional<Vec3d> optional = RespawnAnchorBlock.findRespawnPosition(EntityType.PLAYER, world, pos);
             if (!bl2 && optional.isPresent()) {
-                world.setBlockState(pos, (BlockState)blockState.with(RespawnAnchorBlock.CHARGES, blockState.get(RespawnAnchorBlock.CHARGES) - 1), SetBlockStateFlags.DEFAULT);
+                world.setBlockState(pos, (BlockState)blockState.with(RespawnAnchorBlock.CHARGES, blockState.get(RespawnAnchorBlock.CHARGES) - 1), Block.NOTIFY_ALL);
             }
             return optional;
         }
@@ -1572,7 +1575,6 @@ extends LivingEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public boolean shouldRenderName() {
         return true;
     }
@@ -1637,17 +1639,17 @@ extends LivingEntity {
         return this.inventory.armor;
     }
 
-    public boolean addShoulderEntity(NbtCompound tag) {
+    public boolean addShoulderEntity(NbtCompound entityNbt) {
         if (this.hasVehicle() || !this.onGround || this.isTouchingWater()) {
             return false;
         }
         if (this.getShoulderEntityLeft().isEmpty()) {
-            this.setShoulderEntityLeft(tag);
+            this.setShoulderEntityLeft(entityNbt);
             this.shoulderEntityAddedTime = this.world.getTime();
             return true;
         }
         if (this.getShoulderEntityRight().isEmpty()) {
-            this.setShoulderEntityRight(tag);
+            this.setShoulderEntityRight(entityNbt);
             this.shoulderEntityAddedTime = this.world.getTime();
             return true;
         }
@@ -1750,10 +1752,9 @@ extends LivingEntity {
     }
 
     public static UUID getOfflinePlayerUuid(String nickname) {
-        return UUID.nameUUIDFromBytes(("OfflinePlayer:" + nickname).getBytes(StandardCharsets.UTF_8));
+        return UUID.nameUUIDFromBytes((field_30642 + nickname).getBytes(StandardCharsets.UTF_8));
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isPartVisible(PlayerModelPart modelPart) {
         return (this.getDataTracker().get(PLAYER_MODEL_PARTS) & modelPart.getBitFlag()) == modelPart.getBitFlag();
     }
@@ -1770,12 +1771,10 @@ extends LivingEntity {
         return super.getCommandItemSlot(mappedIndex);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean hasReducedDebugInfo() {
         return this.reducedDebugInfo;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void setReducedDebugInfo(boolean reducedDebugInfo) {
         this.reducedDebugInfo = reducedDebugInfo;
     }
@@ -1798,16 +1797,16 @@ extends LivingEntity {
         return this.dataTracker.get(LEFT_SHOULDER_ENTITY);
     }
 
-    protected void setShoulderEntityLeft(NbtCompound entityTag) {
-        this.dataTracker.set(LEFT_SHOULDER_ENTITY, entityTag);
+    protected void setShoulderEntityLeft(NbtCompound entityNbt) {
+        this.dataTracker.set(LEFT_SHOULDER_ENTITY, entityNbt);
     }
 
     public NbtCompound getShoulderEntityRight() {
         return this.dataTracker.get(RIGHT_SHOULDER_ENTITY);
     }
 
-    protected void setShoulderEntityRight(NbtCompound entityTag) {
-        this.dataTracker.set(RIGHT_SHOULDER_ENTITY, entityTag);
+    protected void setShoulderEntityRight(NbtCompound entityNbt) {
+        this.dataTracker.set(RIGHT_SHOULDER_ENTITY, entityNbt);
     }
 
     public float getAttackCooldownProgressPerTick() {
@@ -1891,7 +1890,6 @@ extends LivingEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public Vec3d method_30951(float f) {
         double d = 0.22 * (this.getMainArm() == Arm.RIGHT ? -1.0 : 1.0);
         float g = MathHelper.lerp(f * 0.5f, this.pitch, this.prevPitch) * ((float)Math.PI / 180);
@@ -1924,7 +1922,6 @@ extends LivingEntity {
         return true;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isUsingSpyglass() {
         return this.isUsingItem() && this.getActiveItem().isOf(Items.SPYGLASS);
     }

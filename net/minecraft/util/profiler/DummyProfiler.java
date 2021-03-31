@@ -4,8 +4,6 @@
 package net.minecraft.util.profiler;
 
 import java.util.function.Supplier;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.profiler.EmptyProfileResult;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.ProfilerSystem;
@@ -44,7 +42,6 @@ implements ReadableProfiler {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void swap(Supplier<String> locationGetter) {
     }
 
@@ -63,8 +60,7 @@ implements ReadableProfiler {
 
     @Override
     @Nullable
-    @Environment(value=EnvType.CLIENT)
-    public ProfilerSystem.LocatedInfo method_34696(String string) {
+    public ProfilerSystem.LocatedInfo getInfo(String name) {
         return null;
     }
 }

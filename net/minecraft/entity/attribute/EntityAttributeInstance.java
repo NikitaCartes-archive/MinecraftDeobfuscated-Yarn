@@ -14,9 +14,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.nbt.NbtCompound;
@@ -130,7 +127,6 @@ public class EntityAttributeInstance {
         return false;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void clearModifiers() {
         for (EntityAttributeModifier entityAttributeModifier : this.getModifiers()) {
             this.removeModifier(entityAttributeModifier);
@@ -203,10 +199,10 @@ public class EntityAttributeInstance {
         return nbtCompound;
     }
 
-    public void readNbt(NbtCompound tag) {
-        this.baseValue = tag.getDouble("Base");
-        if (tag.contains("Modifiers", NbtTypeIds.LIST)) {
-            NbtList nbtList = tag.getList("Modifiers", NbtTypeIds.COMPOUND);
+    public void readNbt(NbtCompound nbt) {
+        this.baseValue = nbt.getDouble("Base");
+        if (nbt.contains("Modifiers", 9)) {
+            NbtList nbtList = nbt.getList("Modifiers", 10);
             for (int i = 0; i < nbtList.size(); ++i) {
                 EntityAttributeModifier entityAttributeModifier = EntityAttributeModifier.fromNbt(nbtList.getCompound(i));
                 if (entityAttributeModifier == null) continue;

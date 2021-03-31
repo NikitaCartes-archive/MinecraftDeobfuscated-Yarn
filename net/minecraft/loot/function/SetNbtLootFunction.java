@@ -20,11 +20,11 @@ import net.minecraft.util.JsonHelper;
 
 public class SetNbtLootFunction
 extends ConditionalLootFunction {
-    private final NbtCompound tag;
+    private final NbtCompound nbt;
 
-    private SetNbtLootFunction(LootCondition[] conditions, NbtCompound tag) {
+    private SetNbtLootFunction(LootCondition[] conditions, NbtCompound nbt) {
         super(conditions);
-        this.tag = tag;
+        this.nbt = nbt;
     }
 
     @Override
@@ -34,12 +34,12 @@ extends ConditionalLootFunction {
 
     @Override
     public ItemStack process(ItemStack stack, LootContext context) {
-        stack.getOrCreateTag().copyFrom(this.tag);
+        stack.getOrCreateTag().copyFrom(this.nbt);
         return stack;
     }
 
-    public static ConditionalLootFunction.Builder<?> builder(NbtCompound tag) {
-        return SetNbtLootFunction.builder((LootCondition[] conditions) -> new SetNbtLootFunction((LootCondition[])conditions, tag));
+    public static ConditionalLootFunction.Builder<?> builder(NbtCompound nbt) {
+        return SetNbtLootFunction.builder((LootCondition[] conditions) -> new SetNbtLootFunction((LootCondition[])conditions, nbt));
     }
 
     public static class Serializer
@@ -47,7 +47,7 @@ extends ConditionalLootFunction {
         @Override
         public void toJson(JsonObject jsonObject, SetNbtLootFunction setNbtLootFunction, JsonSerializationContext jsonSerializationContext) {
             super.toJson(jsonObject, setNbtLootFunction, jsonSerializationContext);
-            jsonObject.addProperty("tag", setNbtLootFunction.tag.toString());
+            jsonObject.addProperty("tag", setNbtLootFunction.nbt.toString());
         }
 
         @Override

@@ -11,6 +11,7 @@ import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.SkeletonEntityModel;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.util.Identifier;
 
@@ -31,6 +32,16 @@ extends BipedEntityRenderer<AbstractSkeletonEntity, SkeletonEntityModel<Abstract
     @Override
     public Identifier getTexture(AbstractSkeletonEntity abstractSkeletonEntity) {
         return TEXTURE;
+    }
+
+    @Override
+    protected boolean isShaking(AbstractSkeletonEntity abstractSkeletonEntity) {
+        return abstractSkeletonEntity.isShaking();
+    }
+
+    @Override
+    protected /* synthetic */ boolean isShaking(LivingEntity entity) {
+        return this.isShaking((AbstractSkeletonEntity)entity);
     }
 }
 

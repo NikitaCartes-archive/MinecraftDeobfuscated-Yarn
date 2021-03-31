@@ -3,7 +3,6 @@
  */
 package net.minecraft.item;
 
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -138,7 +137,7 @@ implements FluidModificationItem {
         if (!world.isClient && bl && !material.isLiquid()) {
             world.breakBlock(pos, true);
         }
-        if (world.setBlockState(pos, this.fluid.getDefaultState().getBlockState(), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD) || blockState.getFluidState().isStill()) {
+        if (world.setBlockState(pos, this.fluid.getDefaultState().getBlockState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD) || blockState.getFluidState().isStill()) {
             this.playEmptyingSound(player, world, pos);
             return true;
         }

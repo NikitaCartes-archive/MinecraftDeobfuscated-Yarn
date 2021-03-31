@@ -9,7 +9,6 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.nbt.AbstractNbtList;
 import net.minecraft.nbt.AbstractNbtNumber;
 import net.minecraft.nbt.NbtElement;
@@ -24,6 +23,7 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 public class NbtLongArray
 extends AbstractNbtList<NbtLong> {
+    private static final int field_33200 = 192;
     public static final NbtType<NbtLongArray> TYPE = new NbtType<NbtLongArray>(){
 
         @Override
@@ -86,7 +86,7 @@ extends AbstractNbtList<NbtLong> {
 
     @Override
     public byte getType() {
-        return (byte)NbtTypeIds.LONG_ARRAY;
+        return 12;
     }
 
     public NbtType<NbtLongArray> getNbtType() {
@@ -175,7 +175,7 @@ extends AbstractNbtList<NbtLong> {
 
     @Override
     public byte getHeldType() {
-        return (byte)NbtTypeIds.LONG;
+        return 4;
     }
 
     @Override

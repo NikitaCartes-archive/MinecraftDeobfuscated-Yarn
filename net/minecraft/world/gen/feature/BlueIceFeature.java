@@ -5,7 +5,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
@@ -42,7 +42,7 @@ extends Feature<DefaultFeatureConfig> {
         if (!bl) {
             return false;
         }
-        structureWorldAccess.setBlockState(blockPos, Blocks.BLUE_ICE.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+        structureWorldAccess.setBlockState(blockPos, Blocks.BLUE_ICE.getDefaultState(), Block.NOTIFY_LISTENERS);
         block1: for (int i = 0; i < 200; ++i) {
             BlockPos blockPos2;
             BlockState blockState;
@@ -55,7 +55,7 @@ extends Feature<DefaultFeatureConfig> {
             for (Direction direction2 : Direction.values()) {
                 BlockState blockState2 = structureWorldAccess.getBlockState(blockPos2.offset(direction2));
                 if (!blockState2.isOf(Blocks.BLUE_ICE)) continue;
-                structureWorldAccess.setBlockState(blockPos2, Blocks.BLUE_ICE.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+                structureWorldAccess.setBlockState(blockPos2, Blocks.BLUE_ICE.getDefaultState(), Block.NOTIFY_LISTENERS);
                 continue block1;
             }
         }

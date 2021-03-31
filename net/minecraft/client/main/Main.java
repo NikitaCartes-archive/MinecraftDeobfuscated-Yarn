@@ -31,6 +31,7 @@ import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.util.GlException;
 import net.minecraft.client.util.Session;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.obfuscate.DontObfuscate;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
@@ -47,6 +48,7 @@ public class Main {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
+    @DontObfuscate
     public static void main(String[] args) {
         Thread thread2;
         MinecraftClient minecraftClient;

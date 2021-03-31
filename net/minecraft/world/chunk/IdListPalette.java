@@ -4,8 +4,6 @@
 package net.minecraft.world.chunk;
 
 import java.util.function.Predicate;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.collection.IdList;
@@ -39,7 +37,6 @@ implements Palette<T> {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void fromPacket(PacketByteBuf buf) {
     }
 
@@ -49,11 +46,16 @@ implements Palette<T> {
 
     @Override
     public int getPacketSize() {
-        return PacketByteBuf.getVarIntSizeBytes(0);
+        return PacketByteBuf.getVarIntLength(0);
     }
 
     @Override
-    public void readNbt(NbtList tag) {
+    public int getIndexBits() {
+        return this.idList.size();
+    }
+
+    @Override
+    public void readNbt(NbtList nbt) {
     }
 }
 

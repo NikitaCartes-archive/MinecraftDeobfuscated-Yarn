@@ -51,12 +51,12 @@ implements AutoCloseable {
     }
 
     @Override
-    public int doLightUpdates(int maxUpdateCount, boolean doSkylight, boolean skipEdgeLightPropagation) {
+    public int doLightUpdates(int i, boolean bl, boolean bl2) {
         throw Util.throwOrPause(new UnsupportedOperationException("Ran authomatically on a different thread!"));
     }
 
     @Override
-    public void addLightSource(BlockPos pos, int level) {
+    public void addLightSource(BlockPos pos, int i) {
         throw Util.throwOrPause(new UnsupportedOperationException("Ran authomatically on a different thread!"));
     }
 
@@ -87,8 +87,8 @@ implements AutoCloseable {
     }
 
     @Override
-    public void setColumnEnabled(ChunkPos pos, boolean lightEnabled) {
-        this.enqueue(pos.x, pos.z, Stage.PRE_UPDATE, Util.debugRunnable(() -> super.setColumnEnabled(pos, lightEnabled), () -> "enableLight " + pos + " " + lightEnabled));
+    public void setColumnEnabled(ChunkPos chunkPos, boolean bl) {
+        this.enqueue(chunkPos.x, chunkPos.z, Stage.PRE_UPDATE, Util.debugRunnable(() -> super.setColumnEnabled(chunkPos, bl), () -> "enableLight " + chunkPos + " " + bl));
     }
 
     @Override

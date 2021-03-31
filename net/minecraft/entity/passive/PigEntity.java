@@ -3,8 +3,6 @@
  */
 package net.minecraft.entity.passive;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.Entity;
@@ -116,15 +114,15 @@ Saddleable {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
-        this.saddledComponent.writeNbt(tag);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        this.saddledComponent.writeNbt(nbt);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        this.saddledComponent.readNbt(tag);
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.saddledComponent.readNbt(nbt);
     }
 
     @Override
@@ -267,7 +265,6 @@ Saddleable {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public Vec3d method_29919() {
         return new Vec3d(0.0, 0.6f * this.getStandingEyeHeight(), this.getWidth() * 0.4f);
     }

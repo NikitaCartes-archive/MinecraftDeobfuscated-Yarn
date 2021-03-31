@@ -5,8 +5,8 @@ package net.minecraft.world.dimension;
 
 import java.util.Optional;
 import java.util.function.Predicate;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.NetherPortalBlock;
@@ -24,6 +24,10 @@ import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public class AreaHelper {
+    private static final int field_31825 = 2;
+    public static final int field_31823 = 21;
+    private static final int field_31826 = 3;
+    public static final int field_31824 = 21;
     private static final AbstractBlock.ContextPredicate IS_VALID_FRAME_BLOCK = (state, world, pos) -> state.isOf(Blocks.OBSIDIAN);
     private final WorldAccess world;
     private final Direction.Axis axis;
@@ -152,7 +156,7 @@ public class AreaHelper {
 
     public void createPortal() {
         BlockState blockState = (BlockState)Blocks.NETHER_PORTAL.getDefaultState().with(NetherPortalBlock.AXIS, this.axis);
-        BlockPos.iterate(this.lowerCorner, this.lowerCorner.offset(Direction.UP, this.height - 1).offset(this.negativeDir, this.width - 1)).forEach(blockPos -> this.world.setBlockState((BlockPos)blockPos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.FORCE_STATE));
+        BlockPos.iterate(this.lowerCorner, this.lowerCorner.offset(Direction.UP, this.height - 1).offset(this.negativeDir, this.width - 1)).forEach(blockPos -> this.world.setBlockState((BlockPos)blockPos, blockState, Block.NOTIFY_LISTENERS | Block.FORCE_STATE));
     }
 
     public boolean wasAlreadyValid() {

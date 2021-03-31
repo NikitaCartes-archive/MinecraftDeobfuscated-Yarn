@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
  * @see Style
  */
 public final class TextColor {
+    private static final String RGB_PREFIX = "#";
     private static final Map<Formatting, TextColor> FORMATTING_TO_COLOR = Stream.of(Formatting.values()).filter(Formatting::isColor).collect(ImmutableMap.toImmutableMap(Function.identity(), formatting -> new TextColor(formatting.getColorValue(), formatting.getName())));
     private static final Map<String, TextColor> BY_NAME = FORMATTING_TO_COLOR.values().stream().collect(ImmutableMap.toImmutableMap(textColor -> textColor.name, Function.identity()));
     private final int rgb;
@@ -43,7 +42,6 @@ public final class TextColor {
      * <p>The red bits can be obtained by {@code (rgb >> 16) & 0xFF}, green bits
      * by {@code (rgb >> 8) & 0xFF}, blue bits by {@code rgb & 0xFF}.</p>
      */
-    @Environment(value=EnvType.CLIENT)
     public int getRgb() {
         return this.rgb;
     }
@@ -107,7 +105,7 @@ public final class TextColor {
      */
     @Nullable
     public static TextColor parse(String name) {
-        if (name.startsWith("#")) {
+        if (name.startsWith(RGB_PREFIX)) {
             try {
                 int i = Integer.parseInt(name.substring(1), 16);
                 return TextColor.fromRgb(i);

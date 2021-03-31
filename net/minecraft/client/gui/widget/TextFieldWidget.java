@@ -39,6 +39,16 @@ public class TextFieldWidget
 extends AbstractButtonWidget
 implements Drawable,
 Element {
+    public static final int field_32194 = -1;
+    public static final int field_32195 = 1;
+    private static final int field_32197 = 1;
+    private static final int field_32198 = -3092272;
+    private static final String field_32199 = "_";
+    private static final long field_32200 = 500L;
+    public static final int field_32196 = 0xE0E0E0;
+    private static final int field_32201 = -1;
+    private static final int field_32202 = -6250336;
+    private static final int field_32203 = -16777216;
     private final TextRenderer textRenderer;
     private String text = "";
     private int maxLength = 32;
@@ -403,7 +413,7 @@ Element {
             if (bl3) {
                 DrawableHelper.fill(matrices, o, m - 1, o + 1, m + 1 + this.textRenderer.fontHeight, -3092272);
             } else {
-                this.textRenderer.drawWithShadow(matrices, "_", (float)o, (float)m, i);
+                this.textRenderer.drawWithShadow(matrices, field_32199, (float)o, (float)m, i);
             }
         }
         if (k != j) {

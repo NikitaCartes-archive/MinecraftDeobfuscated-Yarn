@@ -25,8 +25,8 @@ import net.minecraft.command.DataCommandObject;
 import net.minecraft.command.EntityDataObject;
 import net.minecraft.command.StorageDataObject;
 import net.minecraft.command.argument.NbtCompoundTagArgumentType;
+import net.minecraft.command.argument.NbtElementArgumentType;
 import net.minecraft.command.argument.NbtPathArgumentType;
-import net.minecraft.command.argument.NbtTagArgumentType;
 import net.minecraft.nbt.AbstractNbtList;
 import net.minecraft.nbt.AbstractNbtNumber;
 import net.minecraft.nbt.NbtCompound;
@@ -53,11 +53,11 @@ public class DataCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder literalArgumentBuilder = (LiteralArgumentBuilder)CommandManager.literal("data").requires(source -> source.hasPermissionLevel(2));
         for (ObjectType objectType : TARGET_OBJECT_TYPES) {
-            ((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)literalArgumentBuilder.then(objectType.addArgumentsToBuilder(CommandManager.literal("merge"), builder -> builder.then(CommandManager.argument("nbt", NbtCompoundTagArgumentType.nbtCompound()).executes(context -> DataCommand.executeMerge((ServerCommandSource)context.getSource(), objectType.getObject(context), NbtCompoundTagArgumentType.getCompoundTag(context, "nbt"))))))).then(objectType.addArgumentsToBuilder(CommandManager.literal("get"), builder -> ((ArgumentBuilder)builder.executes(context -> DataCommand.executeGet((ServerCommandSource)context.getSource(), objectType.getObject(context)))).then(((RequiredArgumentBuilder)CommandManager.argument("path", NbtPathArgumentType.nbtPath()).executes(context -> DataCommand.executeGet((ServerCommandSource)context.getSource(), objectType.getObject(context), NbtPathArgumentType.getNbtPath(context, "path")))).then(CommandManager.argument("scale", DoubleArgumentType.doubleArg()).executes(context -> DataCommand.executeGet((ServerCommandSource)context.getSource(), objectType.getObject(context), NbtPathArgumentType.getNbtPath(context, "path"), DoubleArgumentType.getDouble(context, "scale")))))))).then(objectType.addArgumentsToBuilder(CommandManager.literal("remove"), builder -> builder.then(CommandManager.argument("path", NbtPathArgumentType.nbtPath()).executes(context -> DataCommand.executeRemove((ServerCommandSource)context.getSource(), objectType.getObject(context), NbtPathArgumentType.getNbtPath(context, "path"))))))).then(DataCommand.addModifyArgument((builder, modifier) -> ((ArgumentBuilder)((ArgumentBuilder)((ArgumentBuilder)((ArgumentBuilder)builder.then(CommandManager.literal("insert").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("index", IntegerArgumentType.integer()).then(modifier.create((context, sourceTag, path, tags) -> {
+            ((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)literalArgumentBuilder.then(objectType.addArgumentsToBuilder(CommandManager.literal("merge"), builder -> builder.then(CommandManager.argument("nbt", NbtCompoundTagArgumentType.nbtCompound()).executes(context -> DataCommand.executeMerge((ServerCommandSource)context.getSource(), objectType.getObject(context), NbtCompoundTagArgumentType.getNbtCompound(context, "nbt"))))))).then(objectType.addArgumentsToBuilder(CommandManager.literal("get"), builder -> ((ArgumentBuilder)builder.executes(context -> DataCommand.executeGet((ServerCommandSource)context.getSource(), objectType.getObject(context)))).then(((RequiredArgumentBuilder)CommandManager.argument("path", NbtPathArgumentType.nbtPath()).executes(context -> DataCommand.executeGet((ServerCommandSource)context.getSource(), objectType.getObject(context), NbtPathArgumentType.getNbtPath(context, "path")))).then(CommandManager.argument("scale", DoubleArgumentType.doubleArg()).executes(context -> DataCommand.executeGet((ServerCommandSource)context.getSource(), objectType.getObject(context), NbtPathArgumentType.getNbtPath(context, "path"), DoubleArgumentType.getDouble(context, "scale")))))))).then(objectType.addArgumentsToBuilder(CommandManager.literal("remove"), builder -> builder.then(CommandManager.argument("path", NbtPathArgumentType.nbtPath()).executes(context -> DataCommand.executeRemove((ServerCommandSource)context.getSource(), objectType.getObject(context), NbtPathArgumentType.getNbtPath(context, "path"))))))).then(DataCommand.addModifyArgument((builder, modifier) -> ((ArgumentBuilder)((ArgumentBuilder)((ArgumentBuilder)((ArgumentBuilder)builder.then(CommandManager.literal("insert").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("index", IntegerArgumentType.integer()).then(modifier.create((context, sourceNbt, path, elements) -> {
                 int i = IntegerArgumentType.getInteger(context, "index");
-                return DataCommand.executeInsert(i, sourceTag, path, tags);
-            }))))).then(CommandManager.literal("prepend").then(modifier.create((context, sourceTag, path, tags) -> DataCommand.executeInsert(0, sourceTag, path, tags))))).then(CommandManager.literal("append").then(modifier.create((context, sourceTag, path, tags) -> DataCommand.executeInsert(-1, sourceTag, path, tags))))).then(CommandManager.literal("set").then(modifier.create((context, sourceTag, path, tags) -> path.put(sourceTag, ((NbtElement)Iterables.getLast(tags))::copy))))).then(CommandManager.literal("merge").then(modifier.create((context, sourceTag, path, tags) -> {
-                List<NbtElement> collection = path.getOrInit(sourceTag, NbtCompound::new);
+                return DataCommand.executeInsert(i, sourceNbt, path, elements);
+            }))))).then(CommandManager.literal("prepend").then(modifier.create((context, sourceNbt, path, elements) -> DataCommand.executeInsert(0, sourceNbt, path, elements))))).then(CommandManager.literal("append").then(modifier.create((context, sourceNbt, path, elements) -> DataCommand.executeInsert(-1, sourceNbt, path, elements))))).then(CommandManager.literal("set").then(modifier.create((context, sourceNbt, path, elements) -> path.put(sourceNbt, ((NbtElement)Iterables.getLast(elements))::copy))))).then(CommandManager.literal("merge").then(modifier.create((context, sourceNbt, path, elements) -> {
+                List<NbtElement> collection = path.getOrInit(sourceNbt, NbtCompound::new);
                 int i = 0;
                 for (NbtElement nbtElement : collection) {
                     if (!(nbtElement instanceof NbtCompound)) {
@@ -65,7 +65,7 @@ public class DataCommand {
                     }
                     NbtCompound nbtCompound = (NbtCompound)nbtElement;
                     NbtCompound nbtCompound2 = nbtCompound.copy();
-                    for (NbtElement nbtElement2 : tags) {
+                    for (NbtElement nbtElement2 : elements) {
                         if (!(nbtElement2 instanceof NbtCompound)) {
                             throw MODIFY_EXPECTED_OBJECT_EXCEPTION.create(nbtElement2);
                         }
@@ -79,8 +79,8 @@ public class DataCommand {
         dispatcher.register(literalArgumentBuilder);
     }
 
-    private static int executeInsert(int integer, NbtCompound sourceTag, NbtPathArgumentType.NbtPath path, List<NbtElement> tags) throws CommandSyntaxException {
-        List<NbtElement> collection = path.getOrInit(sourceTag, NbtList::new);
+    private static int executeInsert(int integer, NbtCompound sourceNbt, NbtPathArgumentType.NbtPath path, List<NbtElement> elements) throws CommandSyntaxException {
+        List<NbtElement> collection = path.getOrInit(sourceNbt, NbtList::new);
         int i = 0;
         for (NbtElement nbtElement : collection) {
             if (!(nbtElement instanceof AbstractNbtList)) {
@@ -89,7 +89,7 @@ public class DataCommand {
             boolean bl = false;
             AbstractNbtList abstractNbtList = (AbstractNbtList)nbtElement;
             int j = integer < 0 ? abstractNbtList.size() + integer + 1 : integer;
-            for (NbtElement nbtElement2 : tags) {
+            for (NbtElement nbtElement2 : elements) {
                 try {
                     if (!abstractNbtList.addElement(j, nbtElement2.copy())) continue;
                     ++j;
@@ -110,17 +110,17 @@ public class DataCommand {
                 RequiredArgumentBuilder<ServerCommandSource, NbtPathArgumentType.NbtPath> argumentBuilder = CommandManager.argument("targetPath", NbtPathArgumentType.nbtPath());
                 for (ObjectType objectType2 : SOURCE_OBJECT_TYPES) {
                     subArgumentAdder.accept(argumentBuilder, modifier -> objectType2.addArgumentsToBuilder(CommandManager.literal("from"), builder -> ((ArgumentBuilder)builder.executes(context -> {
-                        List<NbtElement> list = Collections.singletonList(objectType2.getObject(context).getTag());
+                        List<NbtElement> list = Collections.singletonList(objectType2.getObject(context).getNbt());
                         return DataCommand.executeModify(context, objectType, modifier, list);
                     })).then(CommandManager.argument("sourcePath", NbtPathArgumentType.nbtPath()).executes(context -> {
                         DataCommandObject dataCommandObject = objectType2.getObject(context);
                         NbtPathArgumentType.NbtPath nbtPath = NbtPathArgumentType.getNbtPath(context, "sourcePath");
-                        List<NbtElement> list = nbtPath.get(dataCommandObject.getTag());
+                        List<NbtElement> list = nbtPath.get(dataCommandObject.getNbt());
                         return DataCommand.executeModify(context, objectType, modifier, list);
                     }))));
                 }
-                subArgumentAdder.accept(argumentBuilder, modifier -> (LiteralArgumentBuilder)CommandManager.literal("value").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("value", NbtTagArgumentType.nbtTag()).executes(context -> {
-                    List<NbtElement> list = Collections.singletonList(NbtTagArgumentType.getTag(context, "value"));
+                subArgumentAdder.accept(argumentBuilder, modifier -> (LiteralArgumentBuilder)CommandManager.literal("value").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("value", NbtElementArgumentType.nbtElement()).executes(context -> {
+                    List<NbtElement> list = Collections.singletonList(NbtElementArgumentType.getNbtElement(context, "value"));
                     return DataCommand.executeModify(context, objectType, modifier, list);
                 })));
                 return builder.then(argumentBuilder);
@@ -129,32 +129,32 @@ public class DataCommand {
         return literalArgumentBuilder;
     }
 
-    private static int executeModify(CommandContext<ServerCommandSource> context, ObjectType objectType, ModifyOperation modifier, List<NbtElement> tags) throws CommandSyntaxException {
+    private static int executeModify(CommandContext<ServerCommandSource> context, ObjectType objectType, ModifyOperation modifier, List<NbtElement> elements) throws CommandSyntaxException {
         DataCommandObject dataCommandObject = objectType.getObject(context);
         NbtPathArgumentType.NbtPath nbtPath = NbtPathArgumentType.getNbtPath(context, "targetPath");
-        NbtCompound nbtCompound = dataCommandObject.getTag();
-        int i = modifier.modify(context, nbtCompound, nbtPath, tags);
+        NbtCompound nbtCompound = dataCommandObject.getNbt();
+        int i = modifier.modify(context, nbtCompound, nbtPath, elements);
         if (i == 0) {
             throw MERGE_FAILED_EXCEPTION.create();
         }
-        dataCommandObject.setTag(nbtCompound);
+        dataCommandObject.setNbt(nbtCompound);
         context.getSource().sendFeedback(dataCommandObject.feedbackModify(), true);
         return i;
     }
 
     private static int executeRemove(ServerCommandSource source, DataCommandObject object, NbtPathArgumentType.NbtPath path) throws CommandSyntaxException {
-        NbtCompound nbtCompound = object.getTag();
+        NbtCompound nbtCompound = object.getNbt();
         int i = path.remove(nbtCompound);
         if (i == 0) {
             throw MERGE_FAILED_EXCEPTION.create();
         }
-        object.setTag(nbtCompound);
+        object.setNbt(nbtCompound);
         source.sendFeedback(object.feedbackModify(), true);
         return i;
     }
 
     private static NbtElement getNbt(NbtPathArgumentType.NbtPath path, DataCommandObject object) throws CommandSyntaxException {
-        List<NbtElement> collection = path.get(object.getTag());
+        List<NbtElement> collection = path.get(object.getNbt());
         Iterator iterator = collection.iterator();
         NbtElement nbtElement = (NbtElement)iterator.next();
         if (iterator.hasNext()) {
@@ -192,17 +192,17 @@ public class DataCommand {
     }
 
     private static int executeGet(ServerCommandSource source, DataCommandObject object) throws CommandSyntaxException {
-        source.sendFeedback(object.feedbackQuery(object.getTag()), false);
+        source.sendFeedback(object.feedbackQuery(object.getNbt()), false);
         return 1;
     }
 
-    private static int executeMerge(ServerCommandSource source, DataCommandObject object, NbtCompound tag) throws CommandSyntaxException {
+    private static int executeMerge(ServerCommandSource source, DataCommandObject object, NbtCompound nbt) throws CommandSyntaxException {
         NbtCompound nbtCompound2;
-        NbtCompound nbtCompound = object.getTag();
-        if (nbtCompound.equals(nbtCompound2 = nbtCompound.copy().copyFrom(tag))) {
+        NbtCompound nbtCompound = object.getNbt();
+        if (nbtCompound.equals(nbtCompound2 = nbtCompound.copy().copyFrom(nbt))) {
             throw MERGE_FAILED_EXCEPTION.create();
         }
-        object.setTag(nbtCompound2);
+        object.setNbt(nbtCompound2);
         source.sendFeedback(object.feedbackModify(), true);
         return 1;
     }

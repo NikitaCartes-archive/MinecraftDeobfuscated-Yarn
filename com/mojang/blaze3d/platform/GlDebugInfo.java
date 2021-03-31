@@ -5,13 +5,28 @@ package com.mojang.blaze3d.platform;
 
 import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_6184;
+import org.lwjgl.system.MemoryUtil;
 
 @Environment(value=EnvType.CLIENT)
 public class GlDebugInfo {
+    public static void method_35612(class_6184 arg) {
+    }
+
+    public static ByteBuffer method_35611(int i) {
+        return MemoryUtil.memAlloc(i);
+    }
+
+    public static void method_35613(Buffer buffer) {
+        MemoryUtil.memFree(buffer);
+    }
+
     public static String getVendor() {
-        return GlStateManager.getString(7936);
+        return GlStateManager._getString(7936);
     }
 
     public static String getCpuInfo() {
@@ -19,11 +34,11 @@ public class GlDebugInfo {
     }
 
     public static String getRenderer() {
-        return GlStateManager.getString(7937);
+        return GlStateManager._getString(7937);
     }
 
     public static String getVersion() {
-        return GlStateManager.getString(7938);
+        return GlStateManager._getString(7938);
     }
 }
 

@@ -4,8 +4,6 @@
 package net.minecraft.network.packet.s2c.play;
 
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -55,12 +53,10 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onInventory(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getSyncId() {
         return this.syncId;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public List<ItemStack> getContents() {
         return this.contents;
     }

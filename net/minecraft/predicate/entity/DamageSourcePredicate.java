@@ -146,13 +146,58 @@ public class DamageSourcePredicate {
             return this;
         }
 
+        public Builder explosion(Boolean explosion) {
+            this.isExplosion = explosion;
+            return this;
+        }
+
+        public Builder bypassesArmor(Boolean bypassesArmor) {
+            this.bypassesArmor = bypassesArmor;
+            return this;
+        }
+
+        public Builder bypassesInvulnerability(Boolean bypassesInvulnerability) {
+            this.bypassesInvulnerability = bypassesInvulnerability;
+            return this;
+        }
+
+        public Builder bypassesMagic(Boolean bypassesMagic) {
+            this.bypassesMagic = bypassesMagic;
+            return this;
+        }
+
+        public Builder fire(Boolean fire) {
+            this.isFire = fire;
+            return this;
+        }
+
+        public Builder magic(Boolean magic) {
+            this.isMagic = magic;
+            return this;
+        }
+
         public Builder lightning(Boolean lightning) {
             this.isLightning = lightning;
             return this;
         }
 
+        public Builder directEntity(EntityPredicate entity) {
+            this.directEntity = entity;
+            return this;
+        }
+
         public Builder directEntity(EntityPredicate.Builder entity) {
             this.directEntity = entity.build();
+            return this;
+        }
+
+        public Builder sourceEntity(EntityPredicate entity) {
+            this.sourceEntity = entity;
+            return this;
+        }
+
+        public Builder sourceEntity(EntityPredicate.Builder entity) {
+            this.sourceEntity = entity.build();
             return this;
         }
 

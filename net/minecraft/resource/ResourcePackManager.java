@@ -26,6 +26,11 @@ import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * A resource pack manager manages a list of {@link ResourcePackProfile}s and
+ * builds {@linkplain #createResourcePacks() a list of resource packs} when the
+ * resource manager reloads.
+ */
 public class ResourcePackManager
 implements AutoCloseable {
     private final Set<ResourcePackProvider> providers;

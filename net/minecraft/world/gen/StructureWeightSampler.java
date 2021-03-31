@@ -25,6 +25,8 @@ import net.minecraft.world.gen.feature.StructureFeature;
  */
 public class StructureWeightSampler {
     public static final StructureWeightSampler INSTANCE = new StructureWeightSampler();
+    public static final int field_31461 = 12;
+    private static final int field_31462 = 24;
     private static final float[] STRUCTURE_WEIGHT_TABLE = Util.make(new float[13824], array -> {
         for (int i = 0; i < 24; ++i) {
             for (int j = 0; j < 24; ++j) {
@@ -88,9 +90,9 @@ public class StructureWeightSampler {
         while (this.pieceIterator.hasNext()) {
             StructurePiece structurePiece = (StructurePiece)this.pieceIterator.next();
             BlockBox blockBox = structurePiece.getBoundingBox();
-            i = Math.max(0, Math.max(blockBox.minX - x, x - blockBox.maxX));
-            j = y - (blockBox.minY + (structurePiece instanceof PoolStructurePiece ? ((PoolStructurePiece)structurePiece).getGroundLevelDelta() : 0));
-            int k = Math.max(0, Math.max(blockBox.minZ - z, z - blockBox.maxZ));
+            i = Math.max(0, Math.max(blockBox.getMinX() - x, x - blockBox.getMaxX()));
+            j = y - (blockBox.getMinY() + (structurePiece instanceof PoolStructurePiece ? ((PoolStructurePiece)structurePiece).getGroundLevelDelta() : 0));
+            int k = Math.max(0, Math.max(blockBox.getMinZ() - z, z - blockBox.getMaxZ()));
             StructureWeightType structureWeightType = structurePiece.method_33882();
             if (structureWeightType == StructureWeightType.BURY) {
                 d += StructureWeightSampler.getMagnitudeWeight(i, j, k);

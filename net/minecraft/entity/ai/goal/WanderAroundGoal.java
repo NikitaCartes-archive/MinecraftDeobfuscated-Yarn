@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class WanderAroundGoal
 extends Goal {
+    public static final int field_30226 = 120;
     protected final PathAwareEntity mob;
     protected double targetX;
     protected double targetY;

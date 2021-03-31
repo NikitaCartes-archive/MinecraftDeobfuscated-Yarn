@@ -45,6 +45,11 @@ extends EndPortalBlockEntityRenderer<EndGatewayBlockEntity> {
     }
 
     @Override
+    protected float method_35793() {
+        return 0.0f;
+    }
+
+    @Override
     protected RenderLayer method_34589() {
         return RenderLayer.method_34571();
     }

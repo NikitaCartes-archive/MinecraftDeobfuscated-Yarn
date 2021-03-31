@@ -3,8 +3,6 @@
  */
 package net.minecraft.block;
 
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -28,6 +26,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldEvents;
 import org.jetbrains.annotations.Nullable;
 
 public class JukeboxBlock
@@ -45,7 +44,7 @@ extends BlockWithEntity {
         super.onPlaced(world, pos, state, placer, itemStack);
         NbtCompound nbtCompound = itemStack.getOrCreateTag();
         if (nbtCompound.contains("BlockEntityTag") && (nbtCompound2 = nbtCompound.getCompound("BlockEntityTag")).contains("RecordItem")) {
-            world.setBlockState(pos, (BlockState)state.with(HAS_RECORD, true), SetBlockStateFlags.NOTIFY_LISTENERS);
+            world.setBlockState(pos, (BlockState)state.with(HAS_RECORD, true), Block.NOTIFY_LISTENERS);
         }
     }
 
@@ -54,7 +53,7 @@ extends BlockWithEntity {
         if (state.get(HAS_RECORD).booleanValue()) {
             this.removeRecord(world, pos);
             state = (BlockState)state.with(HAS_RECORD, false);
-            world.setBlockState(pos, state, SetBlockStateFlags.NOTIFY_LISTENERS);
+            world.setBlockState(pos, state, Block.NOTIFY_LISTENERS);
             return ActionResult.success(world.isClient);
         }
         return ActionResult.PASS;
@@ -66,7 +65,7 @@ extends BlockWithEntity {
             return;
         }
         ((JukeboxBlockEntity)blockEntity).setRecord(stack.copy());
-        world.setBlockState(pos, (BlockState)state.with(HAS_RECORD, true), SetBlockStateFlags.NOTIFY_LISTENERS);
+        world.setBlockState(pos, (BlockState)state.with(HAS_RECORD, true), Block.NOTIFY_LISTENERS);
     }
 
     private void removeRecord(World world, BlockPos pos) {

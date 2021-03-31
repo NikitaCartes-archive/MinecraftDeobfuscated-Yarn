@@ -3,8 +3,6 @@
  */
 package net.minecraft.block;
 
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -30,6 +28,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import org.jetbrains.annotations.Nullable;
 
 public class WitherSkullBlock
@@ -70,7 +69,7 @@ extends SkullBlock {
         for (int i = 0; i < blockPattern.getWidth(); ++i) {
             for (int j = 0; j < blockPattern.getHeight(); ++j) {
                 CachedBlockPosition cachedBlockPosition = result.translate(i, j, 0);
-                world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.AIR.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+                world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
                 world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
             }
         }

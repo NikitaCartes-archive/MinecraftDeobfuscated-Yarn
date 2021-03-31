@@ -11,6 +11,8 @@ import net.minecraft.util.Clearable;
 
 public interface Inventory
 extends Clearable {
+    public static final int MAX_COUNT_PER_STACK = 64;
+
     public int size();
 
     public boolean isEmpty();

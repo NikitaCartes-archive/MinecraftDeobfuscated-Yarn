@@ -56,11 +56,8 @@ import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.util.CharPredicate;
@@ -171,14 +168,12 @@ public class Util {
         });
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static <T> CompletableFuture<T> completeExceptionally(Throwable throwable) {
         CompletableFuture completableFuture = new CompletableFuture();
         completableFuture.completeExceptionally(throwable);
         return completableFuture;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static void throwUnchecked(Throwable t) {
         throw t instanceof RuntimeException ? (RuntimeException)t : new RuntimeException(t);
     }
@@ -546,7 +541,6 @@ public class Util {
      * Moves the {@code cursor} in the {@code string} by a {@code delta} amount.
      * Skips surrogate characters.
      */
-    @Environment(value=EnvType.CLIENT)
     public static int moveCursor(String string, int cursor, int delta) {
         int i = string.length();
         if (delta >= 0) {
@@ -579,16 +573,15 @@ public class Util {
         return DataResult.success(is);
     }
 
-    public static DataResult<double[]> toArray(DoubleStream stream, int length) {
-        double[] ds = stream.limit(length + 1).toArray();
-        if (ds.length != length) {
-            String string = "Input is not a list of " + length + " doubles";
-            if (ds.length >= length) {
-                return DataResult.error(string, Arrays.copyOf(ds, length));
+    public static <T> DataResult<List<T>> toArray(List<T> list, int length) {
+        if (list.size() != length) {
+            String string = "Input is not a list of " + length + " elements";
+            if (list.size() >= length) {
+                return DataResult.error(string, list.subList(0, length));
             }
             return DataResult.error(string);
         }
-        return DataResult.success(ds);
+        return DataResult.success(list);
     }
 
     public static void startTimerHack() {
@@ -615,19 +608,16 @@ public class Util {
      * Copies a file contained in the folder {@code src} to the folder {@code dest}.
      * This will replicate any path structure that may exist between {@code src} and {@code toCopy}.
      */
-    @Environment(value=EnvType.CLIENT)
     public static void relativeCopy(Path src, Path dest, Path toCopy) throws IOException {
         Path path = src.relativize(toCopy);
         Path path2 = dest.resolve(path);
         Files.copy(toCopy, path2, new CopyOption[0]);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static String replaceInvalidChars(String string, CharPredicate predicate) {
         return string.toLowerCase(Locale.ROOT).chars().mapToObj(charCode -> predicate.test((char)charCode) ? Character.toString((char)charCode) : "_").collect(Collectors.joining());
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static <T, R> Function<T, R> memoize(final Function<T, R> function) {
         return new Function<T, R>(){
             private final Map<T, R> cache = Maps.newHashMap();
@@ -643,7 +633,6 @@ public class Util {
         };
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static <T, U, R> BiFunction<T, U, R> memoize(final BiFunction<T, U, R> biFunction) {
         return new BiFunction<T, U, R>(){
             private final Map<Pair<T, U>, R> cache = Maps.newHashMap();
@@ -681,7 +670,6 @@ public class Util {
         WINDOWS{
 
             @Override
-            @Environment(value=EnvType.CLIENT)
             protected String[] getURLOpenCommand(URL url) {
                 return new String[]{"rundll32", "url.dll,FileProtocolHandler", url.toString()};
             }
@@ -690,7 +678,6 @@ public class Util {
         OSX{
 
             @Override
-            @Environment(value=EnvType.CLIENT)
             protected String[] getURLOpenCommand(URL url) {
                 return new String[]{"open", url.toString()};
             }
@@ -699,7 +686,6 @@ public class Util {
         UNKNOWN;
 
 
-        @Environment(value=EnvType.CLIENT)
         public void open(URL url) {
             try {
                 Process process = AccessController.doPrivileged(() -> Runtime.getRuntime().exec(this.getURLOpenCommand(url)));
@@ -714,7 +700,6 @@ public class Util {
             }
         }
 
-        @Environment(value=EnvType.CLIENT)
         public void open(URI uri) {
             try {
                 this.open(uri.toURL());
@@ -723,7 +708,6 @@ public class Util {
             }
         }
 
-        @Environment(value=EnvType.CLIENT)
         public void open(File file) {
             try {
                 this.open(file.toURI().toURL());
@@ -732,7 +716,6 @@ public class Util {
             }
         }
 
-        @Environment(value=EnvType.CLIENT)
         protected String[] getURLOpenCommand(URL url) {
             String string = url.toString();
             if ("file".equals(url.getProtocol())) {
@@ -741,7 +724,6 @@ public class Util {
             return new String[]{"xdg-open", string};
         }
 
-        @Environment(value=EnvType.CLIENT)
         public void open(String uri) {
             try {
                 this.open(new URI(uri).toURL());

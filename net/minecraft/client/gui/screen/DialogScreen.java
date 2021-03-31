@@ -18,6 +18,9 @@ import net.minecraft.text.Text;
 @Environment(value=EnvType.CLIENT)
 public class DialogScreen
 extends Screen {
+    private static final int field_32260 = 20;
+    private static final int field_32261 = 5;
+    private static final int field_32262 = 20;
     private final StringVisitable message;
     private final ImmutableList<ChoiceButton> choiceButtons;
     private MultilineText lines = MultilineText.EMPTY;

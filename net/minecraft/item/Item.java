@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -63,6 +61,9 @@ implements ItemConvertible {
     public static final Map<Block, Item> BLOCK_ITEMS = Maps.newHashMap();
     protected static final UUID ATTACK_DAMAGE_MODIFIER_ID = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
     protected static final UUID ATTACK_SPEED_MODIFIER_ID = UUID.fromString("FA233E1C-4180-4865-B01B-BCCE9785ACA3");
+    public static final int DEFAULT_MAX_COUNT = 64;
+    public static final int field_30888 = 32;
+    public static final int field_30889 = 13;
     protected final ItemGroup group;
     private final Rarity rarity;
     private final int maxCount;
@@ -110,7 +111,7 @@ implements ItemConvertible {
     public void onItemEntityDestroyed(ItemEntity entity) {
     }
 
-    public boolean postProcessTag(NbtCompound tag) {
+    public boolean postProcessNbt(NbtCompound nbt) {
         return false;
     }
 
@@ -189,17 +190,14 @@ implements ItemConvertible {
         return this.maxDamage > 0;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isItemBarVisible(ItemStack stack) {
         return stack.isDamaged();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getItemBarStep(ItemStack stack) {
         return Math.round(13.0f - (float)stack.getDamage() * 13.0f / (float)this.maxDamage);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getItemBarColor(ItemStack stack) {
         float f = Math.max(0.0f, ((float)this.maxDamage - (float)stack.getDamage()) / (float)this.maxDamage);
         return MathHelper.hsvToRgb(f / 3.0f, 1.0f, 1.0f);
@@ -239,7 +237,6 @@ implements ItemConvertible {
         return ActionResult.PASS;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Text getName() {
         return new TranslatableText(this.getTranslationKey());
     }
@@ -320,11 +317,9 @@ implements ItemConvertible {
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Optional<TooltipData> getTooltipData(ItemStack stack) {
         return Optional.empty();
     }

@@ -3,11 +3,8 @@
  */
 package net.minecraft.client.util;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.math.MathHelper;
 
-@Environment(value=EnvType.CLIENT)
 public class SmoothUtil {
     private double actualSum;
     private double smoothedSum;

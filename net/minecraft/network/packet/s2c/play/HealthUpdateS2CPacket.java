@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -39,17 +37,14 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onHealthUpdate(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getHealth() {
         return this.health;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getFood() {
         return this.food;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getSaturation() {
         return this.saturation;
     }

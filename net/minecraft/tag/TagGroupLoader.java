@@ -39,6 +39,7 @@ import org.apache.logging.log4j.Logger;
 public class TagGroupLoader<T> {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Gson GSON = new Gson();
+    private static final String JSON_EXTENSION = ".json";
     private static final int JSON_EXTENSION_LENGTH = ".json".length();
     private final Function<Identifier, Optional<T>> registryGetter;
     private final String dataType;
@@ -53,7 +54,7 @@ public class TagGroupLoader<T> {
      */
     public Map<Identifier, Tag.Builder> loadTags(ResourceManager manager) {
         HashMap<Identifier, Tag.Builder> map = Maps.newHashMap();
-        for (Identifier identifier2 : manager.findResources(this.dataType, string -> string.endsWith(".json"))) {
+        for (Identifier identifier2 : manager.findResources(this.dataType, string -> string.endsWith(JSON_EXTENSION))) {
             String string2 = identifier2.getPath();
             Identifier identifier22 = new Identifier(identifier2.getNamespace(), string2.substring(this.dataType.length() + 1, string2.length() - JSON_EXTENSION_LENGTH));
             try {

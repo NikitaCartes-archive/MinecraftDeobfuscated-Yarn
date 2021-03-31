@@ -12,19 +12,17 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.class_5948;
-import net.minecraft.class_5949;
-import net.minecraft.class_5950;
-import net.minecraft.class_5951;
-import net.minecraft.class_5952;
+import net.minecraft.client.util.profiler.Metric;
+import net.minecraft.client.util.profiler.MetricSampler;
+import net.minecraft.client.util.profiler.SamplingChannel;
+import net.minecraft.util.profiler.MetricSamplerSupplier;
+import net.minecraft.util.profiler.MetricSuppliers;
 import net.minecraft.util.thread.MessageListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public abstract class ThreadExecutor<R extends Runnable>
-implements class_5952,
+implements MetricSamplerSupplier,
 MessageListener<R>,
 Executor {
     private final String name;
@@ -34,7 +32,7 @@ Executor {
 
     protected ThreadExecutor(String name) {
         this.name = name;
-        class_5950.field_29555.method_34702(this);
+        MetricSuppliers.INSTANCE.add(this);
     }
 
     protected abstract R createTask(Runnable var1);
@@ -60,7 +58,6 @@ Executor {
         return this.name;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public <V> CompletableFuture<V> submit(Supplier<V> task) {
         if (this.shouldExecuteAsync()) {
             return CompletableFuture.supplyAsync(task, this);
@@ -106,7 +103,6 @@ Executor {
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     protected void cancelTasks() {
         this.tasks.clear();
     }
@@ -154,9 +150,8 @@ Executor {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
-    public List<class_5948> method_34705() {
-        return ImmutableList.of(new class_5948(new class_5951(this.name + "-tasks-pending"), this::getTaskCount, class_5949.field_29551));
+    public List<MetricSampler> getSamplers() {
+        return ImmutableList.of(new MetricSampler(new Metric(this.name + "-tasks-pending"), this::getTaskCount, SamplingChannel.EVENT_LOOP));
     }
 
     @Override

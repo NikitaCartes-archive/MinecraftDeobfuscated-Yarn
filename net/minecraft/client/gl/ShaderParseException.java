@@ -7,12 +7,9 @@ import com.google.common.collect.Lists;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-@Environment(value=EnvType.CLIENT)
 public class ShaderParseException
 extends IOException {
     private final List<JsonStackTrace> traces = Lists.newArrayList();
@@ -54,7 +51,6 @@ extends IOException {
         return new ShaderParseException(string, cause);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static class JsonStackTrace {
         @Nullable
         private String fileName;
@@ -65,6 +61,11 @@ extends IOException {
 
         private void add(String element) {
             this.faultyElements.add(0, element);
+        }
+
+        @Nullable
+        public String method_36182() {
+            return this.fileName;
         }
 
         public String joinStackTrace() {

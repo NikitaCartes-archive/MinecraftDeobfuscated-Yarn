@@ -31,6 +31,7 @@ import org.apache.logging.log4j.Logger;
 public abstract class JsonDataLoader
 extends SinglePreparationResourceReloader<Map<Identifier, JsonElement>> {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final String FILE_SUFFIX = ".json";
     private static final int FILE_SUFFIX_LENGTH = ".json".length();
     private final Gson gson;
     private final String dataType;
@@ -44,7 +45,7 @@ extends SinglePreparationResourceReloader<Map<Identifier, JsonElement>> {
     protected Map<Identifier, JsonElement> prepare(ResourceManager resourceManager, Profiler profiler) {
         HashMap<Identifier, JsonElement> map = Maps.newHashMap();
         int i = this.dataType.length() + 1;
-        for (Identifier identifier : resourceManager.findResources(this.dataType, string -> string.endsWith(".json"))) {
+        for (Identifier identifier : resourceManager.findResources(this.dataType, string -> string.endsWith(FILE_SUFFIX))) {
             String string2 = identifier.getPath();
             Identifier identifier2 = new Identifier(identifier.getNamespace(), string2.substring(i, string2.length() - FILE_SUFFIX_LENGTH));
             try {

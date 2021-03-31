@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.c2s.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
@@ -15,7 +13,6 @@ implements Packet<ServerPlayPacketListener> {
     private final int transactionId;
     private final BlockPos pos;
 
-    @Environment(value=EnvType.CLIENT)
     public QueryBlockNbtC2SPacket(int transactionId, BlockPos pos) {
         this.transactionId = transactionId;
         this.pos = pos;

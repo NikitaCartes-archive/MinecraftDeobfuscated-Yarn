@@ -5,6 +5,7 @@ package net.minecraft.client.texture;
 
 import com.google.common.base.Charsets;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -22,7 +24,6 @@ import java.util.EnumSet;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.texture.TextureUtil;
 import net.minecraft.client.util.Untracker;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -41,6 +42,10 @@ import org.lwjgl.system.MemoryUtil;
 public final class NativeImage
 implements AutoCloseable {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final int field_32031 = 24;
+    private static final int field_32032 = 16;
+    private static final int field_32033 = 8;
+    private static final int field_32034 = 0;
     private static final Set<StandardOpenOption> WRITE_TO_FILE_OPEN_OPTIONS = EnumSet.of(StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
     private final Format format;
     private final int width;
@@ -85,7 +90,7 @@ implements AutoCloseable {
     public static NativeImage read(@Nullable Format format, InputStream inputStream) throws IOException {
         ByteBuffer byteBuffer = null;
         try {
-            byteBuffer = TextureUtil.readAllToByteBuffer(inputStream);
+            byteBuffer = TextureUtil.readResource(inputStream);
             byteBuffer.rewind();
             NativeImage nativeImage = NativeImage.read(format, byteBuffer);
             return nativeImage;
@@ -122,11 +127,11 @@ implements AutoCloseable {
     private static void setTextureFilter(boolean blur, boolean mipmap) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
         if (blur) {
-            GlStateManager.texParameter(3553, 10241, mipmap ? 9987 : 9729);
-            GlStateManager.texParameter(3553, 10240, 9729);
+            GlStateManager._texParameter(3553, 10241, mipmap ? 9987 : 9729);
+            GlStateManager._texParameter(3553, 10240, 9729);
         } else {
-            GlStateManager.texParameter(3553, 10241, mipmap ? 9986 : 9728);
-            GlStateManager.texParameter(3553, 10240, 9728);
+            GlStateManager._texParameter(3553, 10241, mipmap ? 9986 : 9728);
+            GlStateManager._texParameter(3553, 10240, 9728);
         }
     }
 
@@ -196,6 +201,55 @@ implements AutoCloseable {
         MemoryUtil.memPutInt(this.pointer + l, color);
     }
 
+    public void method_35621(int i, int j, byte b) {
+        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+        if (!this.format.method_35631()) {
+            throw new IllegalArgumentException(String.format("setPixelLuminance only works on image with luminance; have %s", new Object[]{this.format}));
+        }
+        if (i > this.width || j > this.height) {
+            throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", i, j, this.width, this.height));
+        }
+        this.checkAllocated();
+        long l = (i + j * this.width) * this.format.getChannelCount() + this.format.method_35635() / 8;
+        MemoryUtil.memPutByte(this.pointer + l, b);
+    }
+
+    public byte method_35623(int i, int j) {
+        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+        if (!this.format.method_35636()) {
+            throw new IllegalArgumentException(String.format("no red or luminance in %s", new Object[]{this.format}));
+        }
+        if (i > this.width || j > this.height) {
+            throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", i, j, this.width, this.height));
+        }
+        int k = (i + j * this.width) * this.format.getChannelCount() + this.format.method_35639() / 8;
+        return MemoryUtil.memGetByte(this.pointer + (long)k);
+    }
+
+    public byte method_35625(int i, int j) {
+        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+        if (!this.format.method_35637()) {
+            throw new IllegalArgumentException(String.format("no green or luminance in %s", new Object[]{this.format}));
+        }
+        if (i > this.width || j > this.height) {
+            throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", i, j, this.width, this.height));
+        }
+        int k = (i + j * this.width) * this.format.getChannelCount() + this.format.method_35640() / 8;
+        return MemoryUtil.memGetByte(this.pointer + (long)k);
+    }
+
+    public byte method_35626(int i, int j) {
+        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+        if (!this.format.method_35638()) {
+            throw new IllegalArgumentException(String.format("no blue or luminance in %s", new Object[]{this.format}));
+        }
+        if (i > this.width || j > this.height) {
+            throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", i, j, this.width, this.height));
+        }
+        int k = (i + j * this.width) * this.format.getChannelCount() + this.format.method_35641() / 8;
+        return MemoryUtil.memGetByte(this.pointer + (long)k);
+    }
+
     public byte getPixelOpacity(int x, int y) {
         if (!this.format.hasOpacityChannel()) {
             throw new IllegalArgumentException(String.format("no luminance or alpha in %s", new Object[]{this.format}));
@@ -205,6 +259,44 @@ implements AutoCloseable {
         }
         int i = (x + y * this.width) * this.format.getChannelCount() + this.format.getOpacityOffset() / 8;
         return MemoryUtil.memGetByte(this.pointer + (long)i);
+    }
+
+    public void method_35624(int i, int j, int k) {
+        if (this.format != Format.ABGR) {
+            throw new UnsupportedOperationException("Can only call blendPixel with RGBA format");
+        }
+        int l = this.getPixelColor(i, j);
+        float f = (float)NativeImage.getAlpha(k) / 255.0f;
+        float g = (float)NativeImage.getBlue(k) / 255.0f;
+        float h = (float)NativeImage.getGreen(k) / 255.0f;
+        float m = (float)NativeImage.getRed(k) / 255.0f;
+        float n = (float)NativeImage.getAlpha(l) / 255.0f;
+        float o = (float)NativeImage.getBlue(l) / 255.0f;
+        float p = (float)NativeImage.getGreen(l) / 255.0f;
+        float q = (float)NativeImage.getRed(l) / 255.0f;
+        float r = f;
+        float s = 1.0f - f;
+        float t = f * r + n * s;
+        float u = g * r + o * s;
+        float v = h * r + p * s;
+        float w = m * r + q * s;
+        if (t > 1.0f) {
+            t = 1.0f;
+        }
+        if (u > 1.0f) {
+            u = 1.0f;
+        }
+        if (v > 1.0f) {
+            v = 1.0f;
+        }
+        if (w > 1.0f) {
+            w = 1.0f;
+        }
+        int x = (int)(t * 255.0f);
+        int y = (int)(u * 255.0f);
+        int z = (int)(v * 255.0f);
+        int aa = (int)(w * 255.0f);
+        this.setPixelColor(i, j, NativeImage.getAbgrColor(x, y, z, aa));
     }
 
     @Deprecated
@@ -249,17 +341,17 @@ implements AutoCloseable {
         this.checkAllocated();
         NativeImage.setTextureFilter(blur, mipmap);
         if (width == this.getWidth()) {
-            GlStateManager.pixelStore(3314, 0);
+            GlStateManager._pixelStore(3314, 0);
         } else {
-            GlStateManager.pixelStore(3314, this.getWidth());
+            GlStateManager._pixelStore(3314, this.getWidth());
         }
-        GlStateManager.pixelStore(3316, unpackSkipPixels);
-        GlStateManager.pixelStore(3315, unpackSkipRows);
+        GlStateManager._pixelStore(3316, unpackSkipPixels);
+        GlStateManager._pixelStore(3315, unpackSkipRows);
         this.format.setUnpackAlignment();
-        GlStateManager.texSubImage2D(3553, level, xOffset, yOffset, width, height, this.format.getPixelDataFormat(), 5121, this.pointer);
+        GlStateManager._texSubImage2D(3553, level, xOffset, yOffset, width, height, this.format.getPixelDataFormat(), 5121, this.pointer);
         if (clamp) {
-            GlStateManager.texParameter(3553, 10242, 33071);
-            GlStateManager.texParameter(3553, 10242, 33071);
+            GlStateManager._texParameter(3553, 10242, 33071);
+            GlStateManager._texParameter(3553, 10243, 33071);
         }
         if (close) {
             this.close();
@@ -270,7 +362,7 @@ implements AutoCloseable {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         this.checkAllocated();
         this.format.setPackAlignment();
-        GlStateManager.getTexImage(3553, level, this.format.getPixelDataFormat(), 5121, this.pointer);
+        GlStateManager._getTexImage(3553, level, this.format.getPixelDataFormat(), 5121, this.pointer);
         if (removeAlpha && this.format.hasAlphaChannel()) {
             for (int i = 0; i < this.getHeight(); ++i) {
                 for (int j = 0; j < this.getWidth(); ++j) {
@@ -278,6 +370,26 @@ implements AutoCloseable {
                 }
             }
         }
+    }
+
+    public void method_35620(float f) {
+        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+        if (this.format.getChannelCount() != 1) {
+            throw new IllegalStateException("Depth buffer must be stored in NativeImage with 1 component.");
+        }
+        this.checkAllocated();
+        this.format.setPackAlignment();
+        GlStateManager._readPixels(0, 0, this.width, this.height, 6402, 5121, this.pointer);
+    }
+
+    public void method_35627() {
+        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+        this.format.setUnpackAlignment();
+        GlStateManager._glDrawPixels(this.width, this.height, this.format.getPixelDataFormat(), 5121, this.pointer);
+    }
+
+    public void method_35622(String string) throws IOException {
+        this.writeFile(FileSystems.getDefault().getPath(string, new String[0]));
     }
 
     public void writeFile(File file) throws IOException {
@@ -526,28 +638,84 @@ implements AutoCloseable {
 
         public void setPackAlignment() {
             RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-            GlStateManager.pixelStore(3333, this.getChannelCount());
+            GlStateManager._pixelStore(3333, this.getChannelCount());
         }
 
         public void setUnpackAlignment() {
             RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-            GlStateManager.pixelStore(3317, this.getChannelCount());
+            GlStateManager._pixelStore(3317, this.getChannelCount());
         }
 
         public int getPixelDataFormat() {
             return this.pixelDataFormat;
         }
 
+        public boolean method_35628() {
+            return this.hasRed;
+        }
+
+        public boolean method_35629() {
+            return this.hasGreen;
+        }
+
+        public boolean method_35630() {
+            return this.hasBlue;
+        }
+
+        public boolean method_35631() {
+            return this.hasLuminance;
+        }
+
         public boolean hasAlphaChannel() {
             return this.hasAlpha;
+        }
+
+        public int method_35632() {
+            return this.redOffset;
+        }
+
+        public int method_35633() {
+            return this.greenOffset;
+        }
+
+        public int method_35634() {
+            return this.blueOffset;
+        }
+
+        public int method_35635() {
+            return this.luminanceChannelOffset;
         }
 
         public int getAlphaChannelOffset() {
             return this.alphaChannelOffset;
         }
 
+        public boolean method_35636() {
+            return this.hasLuminance || this.hasRed;
+        }
+
+        public boolean method_35637() {
+            return this.hasLuminance || this.hasGreen;
+        }
+
+        public boolean method_35638() {
+            return this.hasLuminance || this.hasBlue;
+        }
+
         public boolean hasOpacityChannel() {
             return this.hasLuminance || this.hasAlpha;
+        }
+
+        public int method_35639() {
+            return this.hasLuminance ? this.luminanceChannelOffset : this.redOffset;
+        }
+
+        public int method_35640() {
+            return this.hasLuminance ? this.luminanceChannelOffset : this.greenOffset;
+        }
+
+        public int method_35641() {
+            return this.hasLuminance ? this.luminanceChannelOffset : this.blueOffset;
         }
 
         public int getOpacityOffset() {
@@ -588,7 +756,7 @@ implements AutoCloseable {
             this.glConstant = glConstant;
         }
 
-        int getGlConstant() {
+        public int getGlConstant() {
             return this.glConstant;
         }
     }

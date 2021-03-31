@@ -4,9 +4,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -20,6 +17,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -28,8 +26,10 @@ import net.minecraft.world.WorldAccess;
 
 public class LeavesBlock
 extends Block {
+    public static final int field_31111 = 7;
     public static final IntProperty DISTANCE = Properties.DISTANCE_1_7;
     public static final BooleanProperty PERSISTENT = Properties.PERSISTENT;
+    private static final int field_31112 = 1;
 
     public LeavesBlock(AbstractBlock.Settings settings) {
         super(settings);
@@ -56,7 +56,7 @@ extends Block {
 
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        world.setBlockState(pos, LeavesBlock.updateDistanceFromLogs(state, world, pos), SetBlockStateFlags.DEFAULT);
+        world.setBlockState(pos, LeavesBlock.updateDistanceFromLogs(state, world, pos), Block.NOTIFY_ALL);
     }
 
     @Override
@@ -77,7 +77,7 @@ extends Block {
         int i = 7;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (Direction direction : Direction.values()) {
-            mutable.set(pos, direction);
+            mutable.set((Vec3i)pos, direction);
             i = Math.min(i, LeavesBlock.getDistanceFromLog(world.getBlockState(mutable)) + 1);
             if (i == 1) break;
         }
@@ -95,7 +95,6 @@ extends Block {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         if (!world.hasRain(pos.up())) {
             return;

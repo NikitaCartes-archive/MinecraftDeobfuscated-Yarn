@@ -26,6 +26,7 @@ extends Screen {
     private final Text subtitle;
     private final boolean showEraseCacheCheckbox;
     private MultilineText wrappedText = MultilineText.EMPTY;
+    protected int field_32236;
     private CheckboxWidget eraseCacheCheckbox;
 
     public BackupPromptScreen(@Nullable Screen parent, Callback callback, Text title, Text subtitle, boolean showEraseCacheCheckBox) {

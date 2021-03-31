@@ -17,8 +17,6 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -75,6 +73,7 @@ public final class Biome {
     private static final OctaveSimplexNoiseSampler TEMPERATURE_NOISE = new OctaveSimplexNoiseSampler((WorldGenRandom)new ChunkRandom(1234L), ImmutableList.of(Integer.valueOf(0)));
     private static final OctaveSimplexNoiseSampler FROZEN_OCEAN_NOISE = new OctaveSimplexNoiseSampler((WorldGenRandom)new ChunkRandom(3456L), ImmutableList.of(Integer.valueOf(-2), Integer.valueOf(-1), Integer.valueOf(0)));
     public static final OctaveSimplexNoiseSampler FOLIAGE_NOISE = new OctaveSimplexNoiseSampler((WorldGenRandom)new ChunkRandom(2345L), ImmutableList.of(Integer.valueOf(0)));
+    private static final int field_30978 = 1024;
     private final Weather weather;
     private final GenerationSettings generationSettings;
     private final SpawnSettings spawnSettings;
@@ -103,7 +102,6 @@ public final class Biome {
         this.effects = effects;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getSkyColor() {
         return this.effects.getSkyColor();
     }
@@ -226,30 +224,25 @@ public final class Biome {
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getFogColor() {
         return this.effects.getFogColor();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getGrassColorAt(double x, double z) {
         int i = this.effects.getGrassColor().orElseGet(this::getDefaultGrassColor);
         return this.effects.getGrassColorModifier().getModifiedGrassColor(x, z, i);
     }
 
-    @Environment(value=EnvType.CLIENT)
     private int getDefaultGrassColor() {
         double d = MathHelper.clamp(this.weather.temperature, 0.0f, 1.0f);
         double e = MathHelper.clamp(this.weather.downfall, 0.0f, 1.0f);
         return GrassColors.getColor(d, e);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getFoliageColor() {
         return this.effects.getFoliageColor().orElseGet(this::getDefaultFoliageColor);
     }
 
-    @Environment(value=EnvType.CLIENT)
     private int getDefaultFoliageColor() {
         double d = MathHelper.clamp(this.weather.temperature, 0.0f, 1.0f);
         double e = MathHelper.clamp(this.weather.downfall, 0.0f, 1.0f);
@@ -282,37 +275,30 @@ public final class Biome {
         return this.effects;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public final int getWaterColor() {
         return this.effects.getWaterColor();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public final int getWaterFogColor() {
         return this.effects.getWaterFogColor();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Optional<BiomeParticleConfig> getParticleConfig() {
         return this.effects.getParticleConfig();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Optional<SoundEvent> getLoopSound() {
         return this.effects.getLoopSound();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Optional<BiomeMoodSound> getMoodSound() {
         return this.effects.getMoodSound();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Optional<BiomeAdditionsSound> getAdditionsSound() {
         return this.effects.getAdditionsSound();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Optional<MusicSound> getMusic() {
         return this.effects.getMusic();
     }

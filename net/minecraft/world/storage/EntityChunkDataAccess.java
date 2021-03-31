@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.Entity;
@@ -33,6 +32,8 @@ import org.apache.logging.log4j.Logger;
 public class EntityChunkDataAccess
 implements ChunkDataAccess<Entity> {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final String ENTITIES_KEY = "Entities";
+    private static final String POSITION_KEY = "Position";
     private final ServerWorld world;
     private final StorageIoWorker dataLoadWorker;
     private final LongSet emptyChunks = new LongOpenHashSet();
@@ -65,19 +66,19 @@ implements ChunkDataAccess<Entity> {
                 LOGGER.warn("Failed to parse chunk {} position info", (Object)pos, (Object)exception);
             }
             NbtCompound nbtCompound2 = this.fixChunkData((NbtCompound)nbtCompound);
-            NbtList nbtList = nbtCompound2.getList("Entities", NbtTypeIds.COMPOUND);
+            NbtList nbtList = nbtCompound2.getList(ENTITIES_KEY, 10);
             List list = EntityType.streamFromNbt(nbtList, this.world).collect(ImmutableList.toImmutableList());
             return new ChunkDataList(pos, list);
         }, this.executor);
     }
 
     private static ChunkPos getChunkPos(NbtCompound chunkTag) {
-        int[] is = chunkTag.getIntArray("Position");
+        int[] is = chunkTag.getIntArray(POSITION_KEY);
         return new ChunkPos(is[0], is[1]);
     }
 
     private static void putChunkPos(NbtCompound chunkTag, ChunkPos pos) {
-        chunkTag.put("Position", new NbtIntArray(new int[]{pos.x, pos.z}));
+        chunkTag.put(POSITION_KEY, new NbtIntArray(new int[]{pos.x, pos.z}));
     }
 
     private static ChunkDataList<Entity> emptyDataList(ChunkPos pos) {
@@ -96,13 +97,13 @@ implements ChunkDataAccess<Entity> {
         NbtList nbtList = new NbtList();
         dataList.stream().forEach(entity -> {
             NbtCompound nbtCompound = new NbtCompound();
-            if (entity.saveToTag(nbtCompound)) {
+            if (entity.saveNbt(nbtCompound)) {
                 nbtList.add(nbtCompound);
             }
         });
         NbtCompound nbtCompound = new NbtCompound();
         nbtCompound.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
-        nbtCompound.put("Entities", nbtList);
+        nbtCompound.put(ENTITIES_KEY, nbtList);
         EntityChunkDataAccess.putChunkPos(nbtCompound, chunkPos);
         this.dataLoadWorker.setResult(chunkPos, nbtCompound).exceptionally(throwable -> {
             LOGGER.error("Failed to store chunk {}", (Object)chunkPos, throwable);
@@ -122,7 +123,7 @@ implements ChunkDataAccess<Entity> {
     }
 
     public static int getChunkDataVersion(NbtCompound chunkTag) {
-        return chunkTag.contains("DataVersion", NbtTypeIds.NUMBER) ? chunkTag.getInt("DataVersion") : -1;
+        return chunkTag.contains("DataVersion", 99) ? chunkTag.getInt("DataVersion") : -1;
     }
 
     @Override

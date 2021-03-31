@@ -25,9 +25,9 @@ public class ShoulderParrotFeatureRenderer<T extends PlayerEntity>
 extends FeatureRenderer<T, PlayerEntityModel<T>> {
     private final ParrotEntityModel model;
 
-    public ShoulderParrotFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> featureRendererContext, EntityModelLoader entityModelLoader) {
-        super(featureRendererContext);
-        this.model = new ParrotEntityModel(entityModelLoader.getModelPart(EntityModelLayers.PARROT));
+    public ShoulderParrotFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> context, EntityModelLoader loader) {
+        super(context);
+        this.model = new ParrotEntityModel(loader.getModelPart(EntityModelLayers.PARROT));
     }
 
     @Override
@@ -38,7 +38,7 @@ extends FeatureRenderer<T, PlayerEntityModel<T>> {
 
     private void renderShoulderParrot(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T player, float limbAngle, float limbDistance, float headYaw, float headPitch, boolean leftShoulder) {
         NbtCompound nbtCompound = leftShoulder ? ((PlayerEntity)player).getShoulderEntityLeft() : ((PlayerEntity)player).getShoulderEntityRight();
-        EntityType.get(nbtCompound.getString("id")).filter(entityType -> entityType == EntityType.PARROT).ifPresent(entityType -> {
+        EntityType.get(nbtCompound.getString("id")).filter(type -> type == EntityType.PARROT).ifPresent(type -> {
             matrices.push();
             matrices.translate(leftShoulder ? (double)0.4f : (double)-0.4f, player.isInSneakingPose() ? (double)-1.3f : -1.5, 0.0);
             VertexConsumer vertexConsumer = vertexConsumers.getBuffer(this.model.getLayer(ParrotEntityRenderer.TEXTURES[nbtCompound.getInt("Variant")]));

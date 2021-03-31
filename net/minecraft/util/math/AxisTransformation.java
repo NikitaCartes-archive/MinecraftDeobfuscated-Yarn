@@ -17,6 +17,7 @@ public enum AxisTransformation {
 
     private final int[] mappings;
     private final Matrix3f matrix;
+    private static final int field_33113 = 3;
     private static final AxisTransformation[][] COMBINATIONS;
 
     private AxisTransformation(int xMapping, int yMapping, int zMapping) {

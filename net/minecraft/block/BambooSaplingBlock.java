@@ -4,9 +4,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BambooBlock;
 import net.minecraft.block.Block;
@@ -33,6 +30,7 @@ import net.minecraft.world.WorldView;
 public class BambooSaplingBlock
 extends Block
 implements Fertilizable {
+    protected static final float field_31005 = 4.0f;
     protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 12.0, 12.0);
 
     public BambooSaplingBlock(AbstractBlock.Settings settings) {
@@ -68,13 +66,12 @@ implements Fertilizable {
             return Blocks.AIR.getDefaultState();
         }
         if (direction == Direction.UP && neighborState.isOf(Blocks.BAMBOO)) {
-            world.setBlockState(pos, Blocks.BAMBOO.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+            world.setBlockState(pos, Blocks.BAMBOO.getDefaultState(), Block.NOTIFY_LISTENERS);
         }
         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
         return new ItemStack(Items.BAMBOO);
     }
@@ -103,7 +100,7 @@ implements Fertilizable {
     }
 
     protected void grow(World world, BlockPos pos) {
-        world.setBlockState(pos.up(), (BlockState)Blocks.BAMBOO.getDefaultState().with(BambooBlock.LEAVES, BambooLeaves.SMALL), SetBlockStateFlags.DEFAULT);
+        world.setBlockState(pos.up(), (BlockState)Blocks.BAMBOO.getDefaultState().with(BambooBlock.LEAVES, BambooLeaves.SMALL), Block.NOTIFY_ALL);
     }
 }
 

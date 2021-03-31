@@ -12,6 +12,7 @@ import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProviderType;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
+import net.minecraft.loot.provider.score.ContextLootScoreProvider;
 import net.minecraft.loot.provider.score.LootScoreProvider;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ServerScoreboard;
@@ -38,6 +39,14 @@ implements LootNumberProvider {
     @Override
     public Set<LootContextParameter<?>> getRequiredParameters() {
         return this.target.getRequiredParameters();
+    }
+
+    public static ScoreLootNumberProvider create(LootContext.EntityTarget target, String score) {
+        return ScoreLootNumberProvider.create(target, score, 1.0f);
+    }
+
+    public static ScoreLootNumberProvider create(LootContext.EntityTarget target, String score, float scale) {
+        return new ScoreLootNumberProvider(ContextLootScoreProvider.create(target), score, scale);
     }
 
     @Override

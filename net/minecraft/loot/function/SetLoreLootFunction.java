@@ -5,6 +5,7 @@ package net.minecraft.loot.function;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
@@ -13,12 +14,12 @@ import com.google.gson.JsonSerializationContext;
 import java.util.List;
 import java.util.Set;
 import java.util.function.UnaryOperator;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.function.ConditionalLootFunction;
+import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.loot.function.SetNameLootFunction;
@@ -78,7 +79,7 @@ extends ConditionalLootFunction {
         } else {
             return null;
         }
-        if (nbtCompound.contains("display", NbtTypeIds.COMPOUND)) {
+        if (nbtCompound.contains("display", 10)) {
             nbtCompound2 = nbtCompound.getCompound("display");
         } else if (otherLoreExists) {
             nbtCompound2 = new NbtCompound();
@@ -86,8 +87,8 @@ extends ConditionalLootFunction {
         } else {
             return null;
         }
-        if (nbtCompound2.contains("Lore", NbtTypeIds.LIST)) {
-            return nbtCompound2.getList("Lore", NbtTypeIds.STRING);
+        if (nbtCompound2.contains("Lore", 9)) {
+            return nbtCompound2.getList("Lore", 8);
         }
         if (otherLoreExists) {
             NbtList nbtList = new NbtList();
@@ -95,6 +96,10 @@ extends ConditionalLootFunction {
             return nbtList;
         }
         return null;
+    }
+
+    public static Builder method_35544() {
+        return new Builder();
     }
 
     public static class Serializer
@@ -124,6 +129,43 @@ extends ConditionalLootFunction {
         @Override
         public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
             return this.fromJson(json, context, conditions);
+        }
+    }
+
+    public static class Builder
+    extends ConditionalLootFunction.Builder<Builder> {
+        private boolean replace;
+        private LootContext.EntityTarget target;
+        private final List<Text> lore = Lists.newArrayList();
+
+        public Builder replace(boolean replace) {
+            this.replace = replace;
+            return this;
+        }
+
+        public Builder target(LootContext.EntityTarget target) {
+            this.target = target;
+            return this;
+        }
+
+        public Builder lore(Text lore) {
+            this.lore.add(lore);
+            return this;
+        }
+
+        @Override
+        protected Builder getThisBuilder() {
+            return this;
+        }
+
+        @Override
+        public LootFunction build() {
+            return new SetLoreLootFunction(this.getConditions(), this.replace, this.lore, this.target);
+        }
+
+        @Override
+        protected /* synthetic */ ConditionalLootFunction.Builder getThisBuilder() {
+            return this.getThisBuilder();
         }
     }
 }

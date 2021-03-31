@@ -12,6 +12,7 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.entity.Entity;
 
@@ -23,7 +24,7 @@ extends SinglePartEntityModel<T> {
 
     public SquidEntityModel(ModelPart root) {
         this.root = root;
-        Arrays.setAll(this.tentacles, i -> root.getChild(SquidEntityModel.getTentacleName(i)));
+        Arrays.setAll(this.tentacles, index -> root.getChild(SquidEntityModel.getTentacleName(index)));
     }
 
     private static String getTentacleName(int index) {
@@ -34,7 +35,7 @@ extends SinglePartEntityModel<T> {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
         int i = -16;
-        modelPartData.addChild("body", ModelPartBuilder.create().uv(0, 0).cuboid(-6.0f, -8.0f, -6.0f, 12.0f, 16.0f, 12.0f), ModelTransform.pivot(0.0f, 8.0f, 0.0f));
+        modelPartData.addChild(EntityModelPartNames.BODY, ModelPartBuilder.create().uv(0, 0).cuboid(-6.0f, -8.0f, -6.0f, 12.0f, 16.0f, 12.0f), ModelTransform.pivot(0.0f, 8.0f, 0.0f));
         int j = 8;
         ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(48, 0).cuboid(-1.0f, 0.0f, -1.0f, 2.0f, 18.0f, 2.0f);
         for (int k = 0; k < 8; ++k) {

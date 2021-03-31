@@ -25,6 +25,7 @@ public abstract class AbstractPlantStemBlock
 extends AbstractPlantPartBlock
 implements Fertilizable {
     public static final IntProperty AGE = Properties.AGE_25;
+    public static final int MAX_AGE = 25;
     private final double growthChance;
 
     protected AbstractPlantStemBlock(AbstractBlock.Settings settings, Direction growthDirection, VoxelShape outlineShape, boolean tickWater, double growthChance) {

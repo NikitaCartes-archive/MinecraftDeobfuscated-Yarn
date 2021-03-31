@@ -3,7 +3,6 @@
  */
 package net.minecraft.block.dispenser;
 
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -13,6 +12,7 @@ import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 
 public abstract class ProjectileDispenserBehavior
 extends ItemDispenserBehavior {

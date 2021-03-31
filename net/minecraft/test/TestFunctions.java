@@ -6,22 +6,62 @@ package net.minecraft.test;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.test.AfterBatch;
+import net.minecraft.test.BeforeBatch;
+import net.minecraft.test.CustomTestProvider;
+import net.minecraft.test.GameTest;
+import net.minecraft.test.StructureTestUtil;
 import net.minecraft.test.TestFunction;
+import net.minecraft.util.BlockRotation;
 import org.jetbrains.annotations.Nullable;
 
 public class TestFunctions {
     private static final Collection<TestFunction> TEST_FUNCTIONS = Lists.newArrayList();
     private static final Set<String> testClasses = Sets.newHashSet();
-    private static final Map<String, Consumer<ServerWorld>> WORLD_SETTERS = Maps.newHashMap();
-    private static final Map<String, Consumer<ServerWorld>> field_27806 = Maps.newHashMap();
+    private static final Map<String, Consumer<ServerWorld>> BEFORE_BATCH_CONSUMERS = Maps.newHashMap();
+    private static final Map<String, Consumer<ServerWorld>> AFTER_BATCH_CONSUMERS = Maps.newHashMap();
     private static final Collection<TestFunction> FAILED_TEST_FUNCTIONS = Sets.newHashSet();
+
+    public static void register(Class<?> testClass) {
+        Arrays.stream(testClass.getDeclaredMethods()).forEach(TestFunctions::register);
+    }
+
+    public static void register(Method method) {
+        CustomTestProvider customTestProvider;
+        String string = method.getDeclaringClass().getSimpleName();
+        GameTest gameTest = method.getAnnotation(GameTest.class);
+        if (gameTest != null) {
+            TEST_FUNCTIONS.add(TestFunctions.getTestFunction(method));
+            testClasses.add(string);
+        }
+        if ((customTestProvider = method.getAnnotation(CustomTestProvider.class)) != null) {
+            TEST_FUNCTIONS.addAll(TestFunctions.getCustomTestFunctions(method));
+            testClasses.add(string);
+        }
+        TestFunctions.registerBatchConsumers(method, BeforeBatch.class, BeforeBatch::batchId, BEFORE_BATCH_CONSUMERS);
+        TestFunctions.registerBatchConsumers(method, AfterBatch.class, AfterBatch::batchId, AFTER_BATCH_CONSUMERS);
+    }
+
+    private static <T extends Annotation> void registerBatchConsumers(Method method, Class<T> clazz, Function<T, String> batchIdFunction, Map<String, Consumer<ServerWorld>> batchConsumerMap) {
+        String string;
+        Consumer<?> consumer;
+        T annotation = method.getAnnotation(clazz);
+        if (annotation != null && (consumer = batchConsumerMap.putIfAbsent(string = batchIdFunction.apply(annotation), TestFunctions.getInvoker(method))) != null) {
+            throw new RuntimeException("Hey, there should only be one " + clazz + " method per batch. Batch '" + string + "' has more than one!");
+        }
+    }
 
     public static Collection<TestFunction> getTestFunctions(String testClass) {
         return TEST_FUNCTIONS.stream().filter(testFunction -> TestFunctions.isInClass(testFunction, testClass)).collect(Collectors.toList());
@@ -40,13 +80,13 @@ public class TestFunctions {
     }
 
     @Nullable
-    public static Consumer<ServerWorld> getWorldSetter(String batchId) {
-        return WORLD_SETTERS.get(batchId);
+    public static Consumer<ServerWorld> getAfterBatchConsumer(String batchId) {
+        return BEFORE_BATCH_CONSUMERS.get(batchId);
     }
 
     @Nullable
-    public static Consumer<ServerWorld> method_32244(String batchId) {
-        return field_27806.get(batchId);
+    public static Consumer<ServerWorld> getBeforeBatchConsumer(String batchId) {
+        return AFTER_BATCH_CONSUMERS.get(batchId);
     }
 
     public static Optional<TestFunction> getTestFunction(String structurePath) {
@@ -59,6 +99,42 @@ public class TestFunctions {
             throw new IllegalArgumentException("Can't find the test function for " + structurePath);
         }
         return optional.get();
+    }
+
+    private static Collection<TestFunction> getCustomTestFunctions(Method method) {
+        try {
+            Object object = method.getDeclaringClass().newInstance();
+            return (Collection)method.invoke(object, new Object[0]);
+        } catch (ReflectiveOperationException reflectiveOperationException) {
+            throw new RuntimeException(reflectiveOperationException);
+        }
+    }
+
+    private static TestFunction getTestFunction(Method method) {
+        GameTest gameTest = method.getAnnotation(GameTest.class);
+        String string = method.getDeclaringClass().getSimpleName();
+        String string2 = string.toLowerCase();
+        String string3 = string2 + "." + method.getName().toLowerCase();
+        String string4 = gameTest.structureName().isEmpty() ? string3 : string2 + "." + gameTest.structureName();
+        String string5 = gameTest.batchId();
+        BlockRotation blockRotation = StructureTestUtil.getRotation(gameTest.rotation());
+        return new TestFunction(string5, string3, string4, blockRotation, gameTest.tickLimit(), gameTest.duration(), gameTest.required(), gameTest.requiredSuccesses(), gameTest.maxAttempts(), TestFunctions.getInvoker(method));
+    }
+
+    private static Consumer<?> getInvoker(Method method) {
+        return args -> {
+            try {
+                Object object = method.getDeclaringClass().newInstance();
+                method.invoke(object, args);
+            } catch (InvocationTargetException invocationTargetException) {
+                if (invocationTargetException.getCause() instanceof RuntimeException) {
+                    throw (RuntimeException)invocationTargetException.getCause();
+                }
+                throw new RuntimeException(invocationTargetException.getCause());
+            } catch (ReflectiveOperationException reflectiveOperationException) {
+                throw new RuntimeException(reflectiveOperationException);
+            }
+        };
     }
 
     private static boolean isInClass(TestFunction testFunction, String testClass) {

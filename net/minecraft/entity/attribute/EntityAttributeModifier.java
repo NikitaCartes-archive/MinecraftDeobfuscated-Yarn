@@ -80,11 +80,11 @@ public class EntityAttributeModifier {
     }
 
     @Nullable
-    public static EntityAttributeModifier fromNbt(NbtCompound tag) {
+    public static EntityAttributeModifier fromNbt(NbtCompound nbt) {
         try {
-            UUID uUID = tag.getUuid("UUID");
-            Operation operation = Operation.fromId(tag.getInt("Operation"));
-            return new EntityAttributeModifier(uUID, tag.getString("Name"), tag.getDouble("Amount"), operation);
+            UUID uUID = nbt.getUuid("UUID");
+            Operation operation = Operation.fromId(nbt.getInt("Operation"));
+            return new EntityAttributeModifier(uUID, nbt.getString("Name"), nbt.getDouble("Amount"), operation);
         } catch (Exception exception) {
             LOGGER.warn("Unable to create attribute: {}", (Object)exception.getMessage());
             return null;

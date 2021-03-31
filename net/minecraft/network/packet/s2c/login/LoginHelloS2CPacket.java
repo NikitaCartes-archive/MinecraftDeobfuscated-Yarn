@@ -4,8 +4,6 @@
 package net.minecraft.network.packet.s2c.login;
 
 import java.security.PublicKey;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.encryption.NetworkEncryptionException;
@@ -42,17 +40,14 @@ implements Packet<ClientLoginPacketListener> {
         clientLoginPacketListener.onHello(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public String getServerId() {
         return this.serverId;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public PublicKey getPublicKey() throws NetworkEncryptionException {
         return NetworkEncryptionUtils.readEncodedPublicKey(this.publicKey);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public byte[] getNonce() {
         return this.nonce;
     }

@@ -21,9 +21,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -78,6 +75,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.HoverEvent;
@@ -102,6 +100,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -113,6 +112,7 @@ import net.minecraft.world.PortalUtil;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.dimension.AreaHelper;
@@ -131,9 +131,22 @@ implements Nameable,
 EntityLike,
 CommandOutput {
     protected static final Logger LOGGER = LogManager.getLogger();
+    public static final String ID_KEY = "id";
+    public static final String PASSENGERS_KEY = "Passengers";
     private static final AtomicInteger ENTITY_ID_COUNTER = new AtomicInteger();
     private static final List<ItemStack> EMPTY_STACK_LIST = Collections.emptyList();
+    public static final int field_29987 = 60;
+    public static final int field_29988 = 300;
+    public static final int field_29989 = 1024;
+    public static final double field_29990 = 0.5000001;
+    public static final float field_29991 = 0.11111111f;
+    public static final int field_29992 = 140;
+    public static final int field_29993 = 40;
     private static final Box NULL_BOX = new Box(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+    private static final double field_29984 = 0.014;
+    private static final double field_29982 = 0.007;
+    private static final double field_29983 = 0.0023333333333333335;
+    public static final String UUID_KEY = "UUID";
     private static double renderDistanceMultiplier = 1.0;
     private final EntityType<?> type;
     private int entityId = ENTITY_ID_COUNTER.incrementAndGet();
@@ -161,6 +174,8 @@ CommandOutput {
     protected Vec3d movementMultiplier = Vec3d.ZERO;
     @Nullable
     private RemovalReason removalReason;
+    public static final float field_29973 = 0.6f;
+    public static final float field_29974 = 1.8f;
     public float prevHorizontalSpeed;
     public float horizontalSpeed;
     public float distanceTraveled;
@@ -184,6 +199,13 @@ CommandOutput {
     protected boolean firstUpdate = true;
     protected final DataTracker dataTracker;
     protected static final TrackedData<Byte> FLAGS = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BYTE);
+    protected static final int field_29979 = 0;
+    private static final int field_29975 = 1;
+    private static final int field_29976 = 3;
+    private static final int field_29977 = 4;
+    private static final int field_29978 = 5;
+    protected static final int field_29980 = 6;
+    protected static final int field_29981 = 7;
     private static final TrackedData<Integer> AIR = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Optional<Text>> CUSTOM_NAME = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.OPTIONAL_TEXT_COMPONENT);
     private static final TrackedData<Boolean> NAME_VISIBLE = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -210,7 +232,7 @@ CommandOutput {
     private float standingEyeHeight;
     public boolean inPowderSnow;
     public boolean wasInPowderSnow;
-    public boolean field_28629;
+    public boolean wasOnFire;
     private float field_26997;
     private int prevAge;
 
@@ -235,14 +257,12 @@ CommandOutput {
         this.standingEyeHeight = this.getEyeHeight(EntityPose.STANDING, this.dimensions);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean collidesWithStateAtPos(BlockPos pos, BlockState state) {
         VoxelShape voxelShape = state.getCollisionShape(this.world, pos, ShapeContext.of(this));
         VoxelShape voxelShape2 = voxelShape.offset(pos.getX(), pos.getY(), pos.getZ());
         return VoxelShapes.matchesAnywhere(voxelShape2, VoxelShapes.cuboid(this.getBoundingBox()), BooleanBiFunction.AND);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getTeamColorValue() {
         AbstractTeam abstractTeam = this.getScoreboardTeam();
         if (abstractTeam != null && abstractTeam.getColor().getColorValue() != null) {
@@ -275,7 +295,6 @@ CommandOutput {
         this.trackedPosition = pos;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Vec3d getTrackedPosition() {
         return this.trackedPosition;
     }
@@ -364,16 +383,16 @@ CommandOutput {
         this.pitch = pitch % 360.0f;
     }
 
-    public final void method_33574(Vec3d vec3d) {
-        this.setPosition(vec3d.getX(), vec3d.getY(), vec3d.getZ());
+    public final void setPosition(Vec3d pos) {
+        this.setPosition(pos.getX(), pos.getY(), pos.getZ());
     }
 
     public void setPosition(double x, double y, double z) {
         this.setPos(x, y, z);
-        this.setBoundingBox(this.method_33332());
+        this.setBoundingBox(this.calculateBoundingBox());
     }
 
-    protected Box method_33332() {
+    protected Box calculateBoundingBox() {
         return this.dimensions.getBoxAt(this.pos);
     }
 
@@ -381,7 +400,6 @@ CommandOutput {
         this.setPosition(this.pos.x, this.pos.y, this.pos.z);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void changeLookDirection(double cursorDeltaX, double cursorDeltaY) {
         double d = cursorDeltaY * 0.15;
         double e = cursorDeltaX * 0.15;
@@ -437,7 +455,10 @@ CommandOutput {
                 }
                 this.setFireTicks(this.fireTicks - 1);
             }
-            this.setFrozenTicks(0);
+            if (this.getFrozenTicks() > 0) {
+                this.setFrozenTicks(0);
+                this.world.syncWorldEvent(null, WorldEvents.FIRE_EXTINGUISHED, this.blockPos, 1);
+            }
         }
         if (this.isInLava()) {
             this.setOnFireFromLava();
@@ -546,7 +567,7 @@ CommandOutput {
             this.setPosition(this.getX() + movement.x, this.getY() + movement.y, this.getZ() + movement.z);
             return;
         }
-        this.field_28629 = this.isOnFire();
+        this.wasOnFire = this.isOnFire();
         if (movementType == MovementType.PISTON && (movement = this.adjustMovementForPiston(movement)).equals(Vec3d.ZERO)) {
             return;
         }
@@ -633,7 +654,7 @@ CommandOutput {
             this.setFireTicks(-this.getBurningDuration());
         }
         if ((this.isWet() || this.inPowderSnow) && this.isOnFire()) {
-            if (this.field_28629) {
+            if (this.wasOnFire) {
                 this.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.7f, 1.6f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
             }
             this.setFireTicks(-this.getBurningDuration());
@@ -1333,12 +1354,10 @@ CommandOutput {
         return new Vec3d(d, e, f);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Vec3d getClientCameraPosVec(float tickDelta) {
         return this.getCameraPosVec(tickDelta);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public final Vec3d getLerpedPos(float delta) {
         double d = MathHelper.lerp((double)delta, this.prevX, this.getX());
         double e = MathHelper.lerp((double)delta, this.prevY, this.getY());
@@ -1367,7 +1386,6 @@ CommandOutput {
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean shouldRender(double cameraX, double cameraY, double cameraZ) {
         double d = this.getX() - cameraX;
         double e = this.getY() - cameraY;
@@ -1376,7 +1394,6 @@ CommandOutput {
         return this.shouldRender(g);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean shouldRender(double distance) {
         double d = this.getBoundingBox().getAverageSideLength();
         if (Double.isNaN(d)) {
@@ -1385,7 +1402,7 @@ CommandOutput {
         return distance < (d *= 64.0 * renderDistanceMultiplier) * d;
     }
 
-    public boolean saveSelfToTag(NbtCompound tag) {
+    public boolean saveSelfNbt(NbtCompound nbt) {
         if (this.removalReason != null && !this.removalReason.shouldSave()) {
             return false;
         }
@@ -1393,73 +1410,73 @@ CommandOutput {
         if (string == null) {
             return false;
         }
-        tag.putString("id", string);
-        this.writeNbt(tag);
+        nbt.putString(ID_KEY, string);
+        this.writeNbt(nbt);
         return true;
     }
 
-    public boolean saveToTag(NbtCompound tag) {
+    public boolean saveNbt(NbtCompound nbt) {
         if (this.hasVehicle()) {
             return false;
         }
-        return this.saveSelfToTag(tag);
+        return this.saveSelfNbt(nbt);
     }
 
-    public NbtCompound writeNbt(NbtCompound tag) {
+    public NbtCompound writeNbt(NbtCompound nbt) {
         try {
             NbtList nbtList;
             int i;
             if (this.vehicle != null) {
-                tag.put("Pos", this.toListTag(this.vehicle.getX(), this.getY(), this.vehicle.getZ()));
+                nbt.put("Pos", this.toNbtList(this.vehicle.getX(), this.getY(), this.vehicle.getZ()));
             } else {
-                tag.put("Pos", this.toListTag(this.getX(), this.getY(), this.getZ()));
+                nbt.put("Pos", this.toNbtList(this.getX(), this.getY(), this.getZ()));
             }
             Vec3d vec3d = this.getVelocity();
-            tag.put("Motion", this.toListTag(vec3d.x, vec3d.y, vec3d.z));
-            tag.put("Rotation", this.toListTag(this.yaw, this.pitch));
-            tag.putFloat("FallDistance", this.fallDistance);
-            tag.putShort("Fire", (short)this.fireTicks);
-            tag.putShort("Air", (short)this.getAir());
-            tag.putBoolean("OnGround", this.onGround);
-            tag.putBoolean("Invulnerable", this.invulnerable);
-            tag.putInt("PortalCooldown", this.netherPortalCooldown);
-            tag.putUuid("UUID", this.getUuid());
+            nbt.put("Motion", this.toNbtList(vec3d.x, vec3d.y, vec3d.z));
+            nbt.put("Rotation", this.toNbtList(this.yaw, this.pitch));
+            nbt.putFloat("FallDistance", this.fallDistance);
+            nbt.putShort("Fire", (short)this.fireTicks);
+            nbt.putShort("Air", (short)this.getAir());
+            nbt.putBoolean("OnGround", this.onGround);
+            nbt.putBoolean("Invulnerable", this.invulnerable);
+            nbt.putInt("PortalCooldown", this.netherPortalCooldown);
+            nbt.putUuid(UUID_KEY, this.getUuid());
             Text text = this.getCustomName();
             if (text != null) {
-                tag.putString("CustomName", Text.Serializer.toJson(text));
+                nbt.putString("CustomName", Text.Serializer.toJson(text));
             }
             if (this.isCustomNameVisible()) {
-                tag.putBoolean("CustomNameVisible", this.isCustomNameVisible());
+                nbt.putBoolean("CustomNameVisible", this.isCustomNameVisible());
             }
             if (this.isSilent()) {
-                tag.putBoolean("Silent", this.isSilent());
+                nbt.putBoolean("Silent", this.isSilent());
             }
             if (this.hasNoGravity()) {
-                tag.putBoolean("NoGravity", this.hasNoGravity());
+                nbt.putBoolean("NoGravity", this.hasNoGravity());
             }
             if (this.glowing) {
-                tag.putBoolean("Glowing", this.glowing);
+                nbt.putBoolean("Glowing", this.glowing);
             }
             if ((i = this.getFrozenTicks()) > 0) {
-                tag.putInt("TicksFrozen", this.getFrozenTicks());
+                nbt.putInt("TicksFrozen", this.getFrozenTicks());
             }
             if (!this.scoreboardTags.isEmpty()) {
                 nbtList = new NbtList();
                 for (String string : this.scoreboardTags) {
                     nbtList.add(NbtString.of(string));
                 }
-                tag.put("Tags", nbtList);
+                nbt.put("Tags", nbtList);
             }
-            this.writeCustomDataToNbt(tag);
+            this.writeCustomDataToNbt(nbt);
             if (this.hasPassengers()) {
                 nbtList = new NbtList();
                 for (Entity entity : this.getPassengerList()) {
                     NbtCompound nbtCompound;
-                    if (!entity.saveSelfToTag(nbtCompound = new NbtCompound())) continue;
+                    if (!entity.saveSelfNbt(nbtCompound = new NbtCompound())) continue;
                     nbtList.add(nbtCompound);
                 }
                 if (!nbtList.isEmpty()) {
-                    tag.put("Passengers", nbtList);
+                    nbt.put(PASSENGERS_KEY, nbtList);
                 }
             }
         } catch (Throwable throwable) {
@@ -1468,14 +1485,14 @@ CommandOutput {
             this.populateCrashReport(crashReportSection);
             throw new CrashException(crashReport);
         }
-        return tag;
+        return nbt;
     }
 
-    public void readNbt(NbtCompound tag) {
+    public void readNbt(NbtCompound nbt) {
         try {
-            NbtList nbtList = tag.getList("Pos", NbtTypeIds.DOUBLE);
-            NbtList nbtList2 = tag.getList("Motion", NbtTypeIds.DOUBLE);
-            NbtList nbtList3 = tag.getList("Rotation", NbtTypeIds.FLOAT);
+            NbtList nbtList = nbt.getList("Pos", 6);
+            NbtList nbtList2 = nbt.getList("Motion", 6);
+            NbtList nbtList3 = nbt.getList("Rotation", 5);
             double d = nbtList2.getDouble(0);
             double e = nbtList2.getDouble(1);
             double f = nbtList2.getDouble(2);
@@ -1486,16 +1503,16 @@ CommandOutput {
             this.resetPosition();
             this.setHeadYaw(this.yaw);
             this.setYaw(this.yaw);
-            this.fallDistance = tag.getFloat("FallDistance");
-            this.fireTicks = tag.getShort("Fire");
-            if (tag.contains("Air")) {
-                this.setAir(tag.getShort("Air"));
+            this.fallDistance = nbt.getFloat("FallDistance");
+            this.fireTicks = nbt.getShort("Fire");
+            if (nbt.contains("Air")) {
+                this.setAir(nbt.getShort("Air"));
             }
-            this.onGround = tag.getBoolean("OnGround");
-            this.invulnerable = tag.getBoolean("Invulnerable");
-            this.netherPortalCooldown = tag.getInt("PortalCooldown");
-            if (tag.containsUuid("UUID")) {
-                this.uuid = tag.getUuid("UUID");
+            this.onGround = nbt.getBoolean("OnGround");
+            this.invulnerable = nbt.getBoolean("Invulnerable");
+            this.netherPortalCooldown = nbt.getInt("PortalCooldown");
+            if (nbt.containsUuid(UUID_KEY)) {
+                this.uuid = nbt.getUuid(UUID_KEY);
                 this.uuidString = this.uuid.toString();
             }
             if (!(Double.isFinite(this.getX()) && Double.isFinite(this.getY()) && Double.isFinite(this.getZ()))) {
@@ -1506,28 +1523,28 @@ CommandOutput {
             }
             this.refreshPosition();
             this.setRotation(this.yaw, this.pitch);
-            if (tag.contains("CustomName", NbtTypeIds.STRING)) {
-                String string = tag.getString("CustomName");
+            if (nbt.contains("CustomName", 8)) {
+                String string = nbt.getString("CustomName");
                 try {
                     this.setCustomName(Text.Serializer.fromJson(string));
                 } catch (Exception exception) {
                     LOGGER.warn("Failed to parse entity custom name {}", (Object)string, (Object)exception);
                 }
             }
-            this.setCustomNameVisible(tag.getBoolean("CustomNameVisible"));
-            this.setSilent(tag.getBoolean("Silent"));
-            this.setNoGravity(tag.getBoolean("NoGravity"));
-            this.setGlowing(tag.getBoolean("Glowing"));
-            this.setFrozenTicks(tag.getInt("TicksFrozen"));
-            if (tag.contains("Tags", NbtTypeIds.LIST)) {
+            this.setCustomNameVisible(nbt.getBoolean("CustomNameVisible"));
+            this.setSilent(nbt.getBoolean("Silent"));
+            this.setNoGravity(nbt.getBoolean("NoGravity"));
+            this.setGlowing(nbt.getBoolean("Glowing"));
+            this.setFrozenTicks(nbt.getInt("TicksFrozen"));
+            if (nbt.contains("Tags", 9)) {
                 this.scoreboardTags.clear();
-                NbtList nbtList4 = tag.getList("Tags", NbtTypeIds.STRING);
+                NbtList nbtList4 = nbt.getList("Tags", 8);
                 int i = Math.min(nbtList4.size(), 1024);
                 for (int j = 0; j < i; ++j) {
                     this.scoreboardTags.add(nbtList4.getString(j));
                 }
             }
-            this.readCustomDataFromNbt(tag);
+            this.readCustomDataFromNbt(nbt);
             if (this.shouldSetPositionOnLoad()) {
                 this.refreshPosition();
             }
@@ -1554,7 +1571,7 @@ CommandOutput {
 
     protected abstract void writeCustomDataToNbt(NbtCompound var1);
 
-    protected NbtList toListTag(double ... values) {
+    protected NbtList toNbtList(double ... values) {
         NbtList nbtList = new NbtList();
         for (double d : values) {
             nbtList.add(NbtDouble.of(d));
@@ -1562,7 +1579,7 @@ CommandOutput {
         return nbtList;
     }
 
-    protected NbtList toListTag(float ... values) {
+    protected NbtList toNbtList(float ... values) {
         NbtList nbtList = new NbtList();
         for (float f : values) {
             nbtList.add(NbtFloat.of(f));
@@ -1651,7 +1668,6 @@ CommandOutput {
         positionUpdater.accept(passenger, this.getX(), d, this.getZ());
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void onPassengerLookAround(Entity passenger) {
     }
 
@@ -1667,7 +1683,6 @@ CommandOutput {
         return this.startRiding(entity, false);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isLiving() {
         return this instanceof LivingEntity;
     }
@@ -1754,13 +1769,11 @@ CommandOutput {
         return this.passengerList.isEmpty();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
         this.setPosition(x, y, z);
         this.setRotation(yaw, pitch);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void updateTrackedHeadRotation(float yaw, int interpolationSteps) {
         this.setHeadYaw(yaw);
     }
@@ -1777,7 +1790,6 @@ CommandOutput {
         return new Vec2f(this.pitch, this.yaw);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Vec3d getRotationVecClient() {
         return Vec3d.fromPolar(this.getRotationClient());
     }
@@ -1826,12 +1838,10 @@ CommandOutput {
         return 300;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void setVelocityClient(double x, double y, double z) {
         this.setVelocity(x, y, z);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void handleStatus(byte status) {
         switch (status) {
             case 53: {
@@ -1840,7 +1850,6 @@ CommandOutput {
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void animateDamage() {
     }
 
@@ -1930,7 +1939,6 @@ CommandOutput {
         return this.getPose() == EntityPose.SWIMMING;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean shouldLeaveSwimmingPose() {
         return this.isInSwimmingPose() && !this.isTouchingWater();
     }
@@ -1954,7 +1962,6 @@ CommandOutput {
         return this.getFlag(5);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isInvisibleTo(PlayerEntity player) {
         if (player.isSpectator()) {
             return false;
@@ -2043,7 +2050,7 @@ CommandOutput {
     }
 
     public int getMinFreezeDamageTicks() {
-        return 300;
+        return 140;
     }
 
     public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
@@ -2078,7 +2085,7 @@ CommandOutput {
         double d = Double.MAX_VALUE;
         for (Direction direction2 : new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, Direction.UP}) {
             double f;
-            mutable.set(blockPos, direction2);
+            mutable.set((Vec3i)blockPos, direction2);
             if (this.world.getBlockState(mutable).isFullCube(this.world, mutable)) continue;
             double e = vec3d.getComponentAlongAxis(direction2.getAxis());
             double d2 = f = direction2.getDirection() == Direction.AxisDirection.POSITIVE ? 1.0 - e : e;
@@ -2293,7 +2300,6 @@ CommandOutput {
         section.add("Entity's Vehicle", () -> this.getVehicle().toString());
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean doesRenderOnFire() {
         return this.isOnFire() && !this.isSpectator();
     }
@@ -2320,12 +2326,10 @@ CommandOutput {
         return true;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static double getRenderDistanceMultiplier() {
         return renderDistanceMultiplier;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static void setRenderDistanceMultiplier(double value) {
         renderDistanceMultiplier = value;
     }
@@ -2384,7 +2388,6 @@ CommandOutput {
         });
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean shouldRenderName() {
         return this.isCustomNameVisible();
     }
@@ -2407,7 +2410,7 @@ CommandOutput {
             double d = (double)Math.max(0.0f, entityDimensions2.width - entityDimensions.width) + 1.0E-6;
             double e = (double)Math.max(0.0f, entityDimensions2.height - entityDimensions.height) + 1.0E-6;
             VoxelShape voxelShape = VoxelShapes.cuboid(Box.of(vec3d2, d, e, d));
-            this.world.method_33594(this, voxelShape, vec3d2, entityDimensions2.width, entityDimensions2.height, entityDimensions2.width).ifPresent(vec3d -> this.method_33574(vec3d.add(0.0, (double)(-entityDimensions.height) / 2.0, 0.0)));
+            this.world.method_33594(this, voxelShape, vec3d2, entityDimensions2.width, entityDimensions2.height, entityDimensions2.width).ifPresent(vec3d -> this.setPosition(vec3d.add(0.0, (double)(-entityDimensions.height) / 2.0, 0.0)));
         }
     }
 
@@ -2432,7 +2435,6 @@ CommandOutput {
         return this.entityBounds;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Box getVisibilityBoundingBox() {
         return this.getBoundingBox();
     }
@@ -2453,7 +2455,6 @@ CommandOutput {
         return dimensions.height * 0.85f;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getEyeHeight(EntityPose pose) {
         return this.getEyeHeight(pose, this.getDimensions(pose));
     }
@@ -2462,7 +2463,6 @@ CommandOutput {
         return this.standingEyeHeight;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Vec3d method_29919() {
         return new Vec3d(0.0, this.getStandingEyeHeight(), this.getWidth() * 0.4f);
     }
@@ -2576,18 +2576,6 @@ CommandOutput {
         return this.passengerList.stream().flatMap(Entity::streamSelfAndPassengers);
     }
 
-    /**
-     * Returns a stream consisting of this entity and its passengers recursively.
-     * Each entity will appear before any of its passengers.
-     * 
-     * <p>This may be less costly than {@link #streamPassengersAndSelf()} if the
-     * stream's iteration would terminates fast, such as finding an arbitrary
-     * match of entity in the passengers tree.
-     * 
-     * @implNote The default implementation is not very efficient.
-     * 
-     * @see #streamPassengersAndSelf()
-     */
     public Stream<Entity> streamSelfAndPassengers() {
         return Stream.concat(Stream.of(this), this.streamIntoPassengers());
     }
@@ -2624,7 +2612,6 @@ CommandOutput {
         return this.getRootVehicle() == entity.getRootVehicle();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean hasPassengerDeep(Entity passenger) {
         return this.streamIntoPassengers().anyMatch(entity2 -> entity2 == passenger);
     }
@@ -2918,12 +2905,10 @@ CommandOutput {
     public void checkDespawn() {
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Vec3d method_30951(float f) {
         return this.getLerpedPos(f).add(0.0, (double)this.standingEyeHeight * 0.7, 0.0);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void onSpawnPacket(EntitySpawnS2CPacket packet) {
         int i = packet.getId();
         double d = packet.getX();
@@ -2938,7 +2923,6 @@ CommandOutput {
     }
 
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     public ItemStack getPickBlockStack() {
         return null;
     }
@@ -2948,11 +2932,16 @@ CommandOutput {
     }
 
     public boolean canFreeze() {
-        return false;
+        return !EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES.contains(this.getType());
     }
 
     public final boolean isRemoved() {
         return this.removalReason != null;
+    }
+
+    @Nullable
+    public RemovalReason getRemovalReason() {
+        return this.removalReason;
     }
 
     @Override

@@ -22,6 +22,8 @@ import net.minecraft.state.property.Property;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class State<O, S> {
+    public static final String NAME = "Name";
+    public static final String PROPERTIES = "Properties";
     private static final Function<Map.Entry<Property<?>, Comparable<?>>, String> PROPERTY_MAP_PRINTER = new Function<Map.Entry<Property<?>, Comparable<?>>, String>(){
 
         @Override
@@ -145,12 +147,12 @@ public abstract class State<O, S> {
     }
 
     protected static <O, S extends State<O, S>> Codec<S> createCodec(Codec<O> codec, Function<O, S> ownerToStateFunction) {
-        return codec.dispatch("Name", state -> state.owner, object -> {
+        return codec.dispatch(NAME, state -> state.owner, object -> {
             State state = (State)ownerToStateFunction.apply(object);
             if (state.getEntries().isEmpty()) {
                 return Codec.unit(state);
             }
-            return state.codec.fieldOf("Properties").codec();
+            return state.codec.fieldOf(PROPERTIES).codec();
         });
     }
 }

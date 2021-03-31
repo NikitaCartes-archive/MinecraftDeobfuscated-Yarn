@@ -12,6 +12,7 @@ import net.minecraft.client.option.GameOptions;
 public class KeyboardInput
 extends Input {
     private final GameOptions settings;
+    private static final double field_32670 = 0.3;
 
     public KeyboardInput(GameOptions settings) {
         this.settings = settings;

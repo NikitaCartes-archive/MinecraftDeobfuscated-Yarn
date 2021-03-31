@@ -39,6 +39,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class LandPathNodeMaker
 extends PathNodeMaker {
+    public static final double field_31809 = 0.5;
     protected float waterPathNodeTypeWeight;
     private final Long2ObjectMap<PathNodeType> field_25190 = new Long2ObjectOpenHashMap<PathNodeType>();
     private final Object2BooleanMap<Box> field_25191 = new Object2BooleanOpenHashMap<Box>();
@@ -418,7 +419,7 @@ extends PathNodeMaker {
         if (blockState.isAir()) {
             return PathNodeType.OPEN;
         }
-        if (blockState.isIn(BlockTags.TRAPDOORS) || blockState.isOf(Blocks.LILY_PAD)) {
+        if (blockState.isIn(BlockTags.TRAPDOORS) || blockState.isOf(Blocks.LILY_PAD) || blockState.isOf(Blocks.POWDER_SNOW)) {
             return PathNodeType.TRAPDOOR;
         }
         if (blockState.isOf(Blocks.CACTUS)) {

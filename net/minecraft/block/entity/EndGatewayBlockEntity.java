@@ -5,9 +5,6 @@ package net.minecraft.block.entity;
 
 import java.util.List;
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -42,6 +39,11 @@ import org.jetbrains.annotations.Nullable;
 public class EndGatewayBlockEntity
 extends EndPortalBlockEntity {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final int field_31368 = 200;
+    private static final int field_31369 = 40;
+    private static final int field_31370 = 2400;
+    private static final int field_31371 = 1;
+    private static final int field_31372 = 10;
     private long age;
     private int teleportCooldown;
     @Nullable
@@ -53,26 +55,27 @@ extends EndPortalBlockEntity {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound tag) {
-        super.writeNbt(tag);
-        tag.putLong("Age", this.age);
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
+        nbt.putLong("Age", this.age);
         if (this.exitPortalPos != null) {
-            tag.put("ExitPortal", NbtHelper.fromBlockPos(this.exitPortalPos));
+            nbt.put("ExitPortal", NbtHelper.fromBlockPos(this.exitPortalPos));
         }
         if (this.exactTeleport) {
-            tag.putBoolean("ExactTeleport", this.exactTeleport);
+            nbt.putBoolean("ExactTeleport", this.exactTeleport);
         }
-        return tag;
+        return nbt;
     }
 
     @Override
-    public void readNbt(NbtCompound tag) {
-        super.readNbt(tag);
-        this.age = tag.getLong("Age");
-        if (tag.contains("ExitPortal", NbtTypeIds.COMPOUND)) {
-            this.exitPortalPos = NbtHelper.toBlockPos(tag.getCompound("ExitPortal"));
+    public void readNbt(NbtCompound nbt) {
+        BlockPos blockPos;
+        super.readNbt(nbt);
+        this.age = nbt.getLong("Age");
+        if (nbt.contains("ExitPortal", 10) && World.isValid(blockPos = NbtHelper.toBlockPos(nbt.getCompound("ExitPortal")))) {
+            this.exitPortalPos = blockPos;
         }
-        this.exactTeleport = tag.getBoolean("ExactTeleport");
+        this.exactTeleport = nbt.getBoolean("ExactTeleport");
     }
 
     public static void clientTick(World world, BlockPos pos, BlockState state, EndGatewayBlockEntity blockEntity) {
@@ -114,12 +117,10 @@ extends EndPortalBlockEntity {
         return this.teleportCooldown > 0;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getRecentlyGeneratedBeamHeight(float tickDelta) {
         return MathHelper.clamp(((float)this.age + tickDelta) / 200.0f, 0.0f, 1.0f);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getCooldownBeamHeight(float tickDelta) {
         return 1.0f - MathHelper.clamp(((float)this.teleportCooldown - tickDelta) / 40.0f, 0.0f, 1.0f);
     }
@@ -127,7 +128,7 @@ extends EndPortalBlockEntity {
     @Override
     @Nullable
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(this.pos, 8, this.toInitialChunkDataNbt());
+        return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.END_GATEWAY, this.toInitialChunkDataNbt());
     }
 
     @Override
@@ -286,12 +287,10 @@ extends EndPortalBlockEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public boolean shouldDrawSide(Direction direction) {
         return Block.shouldDrawSide(this.getCachedState(), this.world, this.getPos(), direction, this.getPos().offset(direction));
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getDrawnSidesCount() {
         int i = 0;
         for (Direction direction : Direction.values()) {

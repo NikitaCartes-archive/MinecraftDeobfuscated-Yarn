@@ -56,6 +56,10 @@ public interface MultilineText {
         return MultilineText.create(renderer, Arrays.stream(texts).map(Text::asOrderedText).map(orderedText -> new Line((OrderedText)orderedText, renderer.getWidth((OrderedText)orderedText))).collect(ImmutableList.toImmutableList()));
     }
 
+    public static MultilineText method_35726(TextRenderer textRenderer, List<Text> list) {
+        return MultilineText.create(textRenderer, list.stream().map(Text::asOrderedText).map(orderedText -> new Line((OrderedText)orderedText, textRenderer.getWidth((OrderedText)orderedText))).collect(ImmutableList.toImmutableList()));
+    }
+
     public static MultilineText create(final TextRenderer renderer, final List<Line> lines) {
         if (lines.isEmpty()) {
             return EMPTY;

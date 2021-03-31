@@ -39,12 +39,12 @@ public class FeaturePoolElement
 extends StructurePoolElement {
     public static final Codec<FeaturePoolElement> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)ConfiguredFeature.REGISTRY_CODEC.fieldOf("feature")).forGetter(featurePoolElement -> featurePoolElement.feature), FeaturePoolElement.method_28883()).apply((Applicative<FeaturePoolElement, ?>)instance, FeaturePoolElement::new));
     private final Supplier<ConfiguredFeature<?, ?>> feature;
-    private final NbtCompound tag;
+    private final NbtCompound nbt;
 
     protected FeaturePoolElement(Supplier<ConfiguredFeature<?, ?>> feature, StructurePool.Projection projection) {
         super(projection);
         this.feature = feature;
-        this.tag = this.createDefaultJigsawNbt();
+        this.nbt = this.createDefaultJigsawNbt();
     }
 
     private NbtCompound createDefaultJigsawNbt() {
@@ -57,14 +57,15 @@ extends StructurePoolElement {
         return nbtCompound;
     }
 
-    public Vec3i getStart(StructureManager structureManager, BlockRotation rotation) {
+    @Override
+    public Vec3i getStart(StructureManager structureManager, BlockRotation blockRotation) {
         return Vec3i.ZERO;
     }
 
     @Override
     public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random) {
         ArrayList<Structure.StructureBlockInfo> list = Lists.newArrayList();
-        list.add(new Structure.StructureBlockInfo(pos, (BlockState)Blocks.JIGSAW.getDefaultState().with(JigsawBlock.ORIENTATION, JigsawOrientation.byDirections(Direction.DOWN, Direction.SOUTH)), this.tag));
+        list.add(new Structure.StructureBlockInfo(pos, (BlockState)Blocks.JIGSAW.getDefaultState().with(JigsawBlock.ORIENTATION, JigsawOrientation.byDirections(Direction.DOWN, Direction.SOUTH)), this.nbt));
         return list;
     }
 

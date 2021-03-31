@@ -12,6 +12,7 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
@@ -19,6 +20,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class SnowGolemEntityModel<T extends Entity>
 extends SinglePartEntityModel<T> {
+    private static final String UPPER_BODY = "upper_body";
     private final ModelPart root;
     private final ModelPart upperBody;
     private final ModelPart head;
@@ -27,10 +29,10 @@ extends SinglePartEntityModel<T> {
 
     public SnowGolemEntityModel(ModelPart root) {
         this.root = root;
-        this.head = root.getChild("head");
-        this.leftArm = root.getChild("left_arm");
-        this.rightArm = root.getChild("right_arm");
-        this.upperBody = root.getChild("upper_body");
+        this.head = root.getChild(EntityModelPartNames.HEAD);
+        this.leftArm = root.getChild(EntityModelPartNames.LEFT_ARM);
+        this.rightArm = root.getChild(EntityModelPartNames.RIGHT_ARM);
+        this.upperBody = root.getChild(UPPER_BODY);
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -38,11 +40,11 @@ extends SinglePartEntityModel<T> {
         ModelPartData modelPartData = modelData.getRoot();
         float f = 4.0f;
         Dilation dilation = new Dilation(-0.5f);
-        modelPartData.addChild("head", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, dilation), ModelTransform.pivot(0.0f, 4.0f, 0.0f));
+        modelPartData.addChild(EntityModelPartNames.HEAD, ModelPartBuilder.create().uv(0, 0).cuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, dilation), ModelTransform.pivot(0.0f, 4.0f, 0.0f));
         ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(32, 0).cuboid(-1.0f, 0.0f, -1.0f, 12.0f, 2.0f, 2.0f, dilation);
-        modelPartData.addChild("left_arm", modelPartBuilder, ModelTransform.of(5.0f, 6.0f, 1.0f, 0.0f, 0.0f, 1.0f));
-        modelPartData.addChild("right_arm", modelPartBuilder, ModelTransform.of(-5.0f, 6.0f, -1.0f, 0.0f, (float)Math.PI, -1.0f));
-        modelPartData.addChild("upper_body", ModelPartBuilder.create().uv(0, 16).cuboid(-5.0f, -10.0f, -5.0f, 10.0f, 10.0f, 10.0f, dilation), ModelTransform.pivot(0.0f, 13.0f, 0.0f));
+        modelPartData.addChild(EntityModelPartNames.LEFT_ARM, modelPartBuilder, ModelTransform.of(5.0f, 6.0f, 1.0f, 0.0f, 0.0f, 1.0f));
+        modelPartData.addChild(EntityModelPartNames.RIGHT_ARM, modelPartBuilder, ModelTransform.of(-5.0f, 6.0f, -1.0f, 0.0f, (float)Math.PI, -1.0f));
+        modelPartData.addChild(UPPER_BODY, ModelPartBuilder.create().uv(0, 16).cuboid(-5.0f, -10.0f, -5.0f, 10.0f, 10.0f, 10.0f, dilation), ModelTransform.pivot(0.0f, 13.0f, 0.0f));
         modelPartData.addChild("lower_body", ModelPartBuilder.create().uv(0, 36).cuboid(-6.0f, -12.0f, -6.0f, 12.0f, 12.0f, 12.0f, dilation), ModelTransform.pivot(0.0f, 24.0f, 0.0f));
         return TexturedModelData.of(modelData, 64, 64);
     }

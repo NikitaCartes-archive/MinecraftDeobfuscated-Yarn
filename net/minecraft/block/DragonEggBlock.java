@@ -3,7 +3,6 @@
  */
 package net.minecraft.block;
 
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -61,7 +60,7 @@ extends FallingBlock {
                     world.addParticle(ParticleTypes.PORTAL, e, k, l, f, g, h);
                 }
             } else {
-                world.setBlockState(blockPos, state, SetBlockStateFlags.NOTIFY_LISTENERS);
+                world.setBlockState(blockPos, state, Block.NOTIFY_LISTENERS);
                 world.removeBlock(pos, false);
             }
             return;

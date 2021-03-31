@@ -13,16 +13,14 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.FileAttribute;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import org.apache.commons.io.FilenameUtils;
 
 public class FileNameUtil {
     private static final Pattern FILE_NAME_WITH_COUNT = Pattern.compile("(<name>.*) \\((<count>\\d*)\\)", 66);
+    private static final int field_33384 = 255;
     private static final Pattern RESERVED_WINDOWS_NAMES = Pattern.compile(".*\\.|(?:COM|CLOCK\\$|CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\\..*)?", 2);
 
-    @Environment(value=EnvType.CLIENT)
     public static String getNextUniqueName(Path path, String name, String extension) throws IOException {
         for (char c : SharedConstants.INVALID_CHARS_LEVEL_NAME) {
             name = name.replace(c, '_');
@@ -85,12 +83,10 @@ public class FileNameUtil {
         return path.resolve(path2);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static String getPosixFullPath(String path) {
         return FilenameUtils.getFullPath(path).replace(File.separator, "/");
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static String normalizeToPosix(String path) {
         return FilenameUtils.normalize(path).replace(File.separator, "/");
     }

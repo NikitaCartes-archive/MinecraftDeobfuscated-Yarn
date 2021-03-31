@@ -37,6 +37,7 @@ public abstract class NbtText
 extends BaseText
 implements ParsableText {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final String field_33289 = ", ";
     protected final boolean interpret;
     protected final String rawPath;
     @Nullable
@@ -92,9 +93,9 @@ implements ParsableText {
                     LOGGER.warn("Failed to parse component: {}", text, (Object)exception);
                     return Stream.of(new MutableText[0]);
                 }
-            }).reduce((a, b) -> a.append(", ").append((Text)b)).orElse(new LiteralText(""));
+            }).reduce((a, b) -> a.append(field_33289).append((Text)b)).orElse(new LiteralText(""));
         }
-        return new LiteralText(Joiner.on(", ").join(stream.iterator()));
+        return new LiteralText(Joiner.on(field_33289).join(stream.iterator()));
     }
 
     public static class StorageNbtText

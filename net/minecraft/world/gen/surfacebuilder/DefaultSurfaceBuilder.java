@@ -15,6 +15,8 @@ import net.minecraft.world.gen.surfacebuilder.TernarySurfaceConfig;
 
 public class DefaultSurfaceBuilder
 extends SurfaceBuilder<TernarySurfaceConfig> {
+    private static final int field_31700 = 50;
+
     public DefaultSurfaceBuilder(Codec<TernarySurfaceConfig> codec) {
         super(codec);
     }

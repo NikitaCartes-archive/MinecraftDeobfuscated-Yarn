@@ -31,6 +31,15 @@ import org.apache.commons.lang3.mutable.MutableInt;
 
 public class StructureSeparationDataFix
 extends DataFix {
+    private static final String field_29915 = "minecraft:village";
+    private static final String field_29916 = "minecraft:desert_pyramid";
+    private static final String field_29917 = "minecraft:igloo";
+    private static final String field_29918 = "minecraft:jungle_pyramid";
+    private static final String field_29919 = "minecraft:swamp_hut";
+    private static final String field_29920 = "minecraft:pillager_outpost";
+    private static final String field_29921 = "minecraft:endcity";
+    private static final String field_29922 = "minecraft:mansion";
+    private static final String field_29923 = "minecraft:monument";
     private static final ImmutableMap<String, Information> STRUCTURE_SPACING = ImmutableMap.builder().put("minecraft:village", new Information(32, 8, 10387312)).put("minecraft:desert_pyramid", new Information(32, 8, 14357617)).put("minecraft:igloo", new Information(32, 8, 14357618)).put("minecraft:jungle_pyramid", new Information(32, 8, 14357619)).put("minecraft:swamp_hut", new Information(32, 8, 14357620)).put("minecraft:pillager_outpost", new Information(32, 8, 165745296)).put("minecraft:monument", new Information(32, 5, 10387313)).put("minecraft:endcity", new Information(20, 11, 10387313)).put("minecraft:mansion", new Information(80, 20, 10387319)).build();
 
     public StructureSeparationDataFix(Schema schema) {
@@ -141,7 +150,7 @@ extends DataFix {
         HashMap<String, Information> map = Maps.newHashMap();
         if (!optionalDynamic.result().isPresent()) {
             mutableBoolean.setTrue();
-            map.put("minecraft:village", STRUCTURE_SPACING.get("minecraft:village"));
+            map.put(field_29915, STRUCTURE_SPACING.get(field_29915));
         }
         optionalDynamic.get("structures").flatMap(Dynamic::getMapValues).result().ifPresent(map2 -> map2.forEach((dynamic, dynamic2) -> dynamic2.getMapValues().result().ifPresent(map2 -> map2.forEach((dynamic2, dynamic3) -> {
             String string = dynamic.asString("");
@@ -169,23 +178,23 @@ extends DataFix {
                 case "distance": {
                     switch (string) {
                         case "village": {
-                            StructureSeparationDataFix.method_28281(map, "minecraft:village", string3, 9);
+                            StructureSeparationDataFix.method_28281(map, field_29915, string3, 9);
                             return;
                         }
                         case "biome_1": {
-                            StructureSeparationDataFix.method_28281(map, "minecraft:desert_pyramid", string3, 9);
-                            StructureSeparationDataFix.method_28281(map, "minecraft:igloo", string3, 9);
-                            StructureSeparationDataFix.method_28281(map, "minecraft:jungle_pyramid", string3, 9);
-                            StructureSeparationDataFix.method_28281(map, "minecraft:swamp_hut", string3, 9);
-                            StructureSeparationDataFix.method_28281(map, "minecraft:pillager_outpost", string3, 9);
+                            StructureSeparationDataFix.method_28281(map, field_29916, string3, 9);
+                            StructureSeparationDataFix.method_28281(map, field_29917, string3, 9);
+                            StructureSeparationDataFix.method_28281(map, field_29918, string3, 9);
+                            StructureSeparationDataFix.method_28281(map, field_29919, string3, 9);
+                            StructureSeparationDataFix.method_28281(map, field_29920, string3, 9);
                             return;
                         }
                         case "endcity": {
-                            StructureSeparationDataFix.method_28281(map, "minecraft:endcity", string3, 1);
+                            StructureSeparationDataFix.method_28281(map, field_29921, string3, 1);
                             return;
                         }
                         case "mansion": {
-                            StructureSeparationDataFix.method_28281(map, "minecraft:mansion", string3, 1);
+                            StructureSeparationDataFix.method_28281(map, field_29922, string3, 1);
                             return;
                         }
                     }
@@ -193,15 +202,15 @@ extends DataFix {
                 }
                 case "separation": {
                     if ("oceanmonument".equals(string)) {
-                        Information information = map.getOrDefault("minecraft:monument", STRUCTURE_SPACING.get("minecraft:monument"));
+                        Information information = map.getOrDefault(field_29923, STRUCTURE_SPACING.get(field_29923));
                         int i = StructureSeparationDataFix.method_28280(string3, information.separation, 1);
-                        map.put("minecraft:monument", new Information(i, information.separation, information.salt));
+                        map.put(field_29923, new Information(i, information.separation, information.salt));
                     }
                     return;
                 }
                 case "spacing": {
                     if ("oceanmonument".equals(string)) {
-                        StructureSeparationDataFix.method_28281(map, "minecraft:monument", string3, 1);
+                        StructureSeparationDataFix.method_28281(map, field_29923, string3, 1);
                     }
                     return;
                 }

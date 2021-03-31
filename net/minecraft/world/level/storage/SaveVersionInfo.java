@@ -5,8 +5,6 @@ package net.minecraft.world.level.storage;
 
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.OptionalDynamic;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 
 public class SaveVersionInfo {
@@ -42,7 +40,6 @@ public class SaveVersionInfo {
         return this.lastPlayed;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public String getVersionName() {
         return this.versionName;
     }
@@ -51,7 +48,6 @@ public class SaveVersionInfo {
         return this.versionId;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isStable() {
         return this.stable;
     }

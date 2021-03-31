@@ -3,6 +3,7 @@
  */
 package net.minecraft.network;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
@@ -37,8 +38,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -50,6 +49,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
@@ -90,7 +90,10 @@ import org.jetbrains.annotations.Nullable;
  *  <td>{@link BlockPos}</td><td>{@link #readBlockPos()}</td><td>{@link #writeBlockPos(BlockPos)}</td>
  * </tr>
  * <tr>
- *  <td>{@link ChunkSectionPos}</td><td>{@link #readChunkSectionPos()}</td><td>(removed by proguard)</td>
+ *  <td>{@link ChunkPos}</td><td>{@link #readChunkPos()}</td><td>{@link #writeChunkPos(ChunkPos)}</td>
+ * </tr>
+ * <tr>
+ *  <td>{@link ChunkSectionPos}</td><td>{@link #readChunkSectionPos()}</td><td>{@link #writeChunkSectionPos(ChunkSectionPos)}</td>
  * </tr>
  * <tr>
  *  <td>{@link Text}</td><td>{@link #readText()}</td><td>{@link #writeText(Text)}</td>
@@ -108,7 +111,7 @@ import org.jetbrains.annotations.Nullable;
  *  <td>{@link UUID}</td><td>{@link #readUuid()}</td><td>{@link #writeUuid(UUID)}</td>
  * </tr>
  * <tr>
- *  <td>{@link NbtCompound}</td><td>{@link #readCompound()}</td><td>{@link #writeCompound(NbtCompound)}</td>
+ *  <td>{@link NbtCompound}</td><td>{@link #readNbt()}</td><td>{@link #writeNbt(NbtCompound)}</td>
  * </tr>
  * <tr>
  *  <td>{@link ItemStack}</td><td>{@link #readItemStack()}</td><td>{@link #writeItemStack(ItemStack)}</td>
@@ -136,7 +139,40 @@ import org.jetbrains.annotations.Nullable;
  */
 public class PacketByteBuf
 extends ByteBuf {
+    /**
+     * The max number of bytes an encoded var int value may use.
+     * 
+     * <p>Its value is {@value}. A regular int value always use 4 bytes in contrast.
+     * 
+     * @see #getVarIntLength(int)
+     */
+    private static final int MAX_VAR_INT_LENGTH = 5;
+    /**
+     * The max number of bytes an encoded var long value may use.
+     * 
+     * <p>Its value is {@value}. A regular long value always use 8 bytes in contrast.
+     * 
+     * @see #getVarLongLength(long)
+     */
+    private static final int MAX_VAR_LONG_LENGTH = 10;
+    /**
+     * The maximum size, in number of bytes, allowed of the NBT compound read by
+     * {@link #readNbt()}.
+     */
+    private static final int MAX_READ_NBT_SIZE = 0x200000;
     private final ByteBuf parent;
+    /**
+     * The default max length of strings {@linkplain #readString() read} or {@linkplain
+     * #writeString(String) written}. This is also the max length of identifiers
+     * {@linkplain #readIdentifier() read} or {@linkplain #writeIdentifier(Identifier)
+     * written} in their string form.
+     */
+    public static final short DEFAULT_MAX_STRING_LENGTH = Short.MAX_VALUE;
+    /**
+     * The maximum size, in terms of JSON string length, allowed of the text read by
+     * {@link #readText()} or written by {@link #writeText(Text)}.
+     */
+    public static final int MAX_TEXT_LENGTH = 262144;
 
     /**
      * Creates a packet byte buf that delegates its operations to the {@code
@@ -151,18 +187,35 @@ extends ByteBuf {
     /**
      * Returns the number of bytes needed to encode {@code value} as a
      * {@linkplain #writeVarInt(int) var int}. Guaranteed to be between {@code
-     * 1} and {@code 5}.
+     * 1} and {@value #MAX_VAR_INT_LENGTH}.
      * 
      * @return the number of bytes a var int {@code value} uses
      * 
      * @param value the value to encode
      */
-    public static int getVarIntSizeBytes(int value) {
-        for (int i = 1; i < 5; ++i) {
+    public static int getVarIntLength(int value) {
+        for (int i = 1; i < MAX_VAR_INT_LENGTH; ++i) {
             if ((value & -1 << i * 7) != 0) continue;
             return i;
         }
-        return 5;
+        return MAX_VAR_INT_LENGTH;
+    }
+
+    /**
+     * Returns the number of bytes needed to encode {@code value} as a
+     * {@linkplain #writeVarLong(int) var long}. Guaranteed to be between {@code
+     * 1} and {@value #MAX_VAR_LONG_LENGTH}.
+     * 
+     * @return the number of bytes a var long {@code value} uses
+     * 
+     * @param value the value to encode
+     */
+    public static int getVarLongLength(long value) {
+        for (int i = 1; i < MAX_VAR_LONG_LENGTH; ++i) {
+            if ((value & -1L << i * 7) != 0L) continue;
+            return i;
+        }
+        return MAX_VAR_LONG_LENGTH;
     }
 
     /**
@@ -171,13 +224,13 @@ extends ByteBuf {
      * @param <T> the decoded object's type
      * @return the read object
      * @throws io.netty.handler.codec.EncoderException if the {@code codec} fails
-     * to decode the compound tag
+     * to decode the compound NBT
      * @see #encode(Codec, Object)
      * 
      * @param codec the codec to decode the object
      */
     public <T> T decode(Codec<T> codec) {
-        NbtCompound nbtCompound = this.readUnlimitedCompound();
+        NbtCompound nbtCompound = this.readUnlimitedNbt();
         DataResult dataResult = codec.parse(NbtOps.INSTANCE, nbtCompound);
         dataResult.error().ifPresent(partialResult -> {
             throw new EncoderException("Failed to decode: " + partialResult.message() + " " + nbtCompound);
@@ -190,7 +243,7 @@ extends ByteBuf {
      * 
      * @param <T> the encoded object's type
      * @throws io.netty.handler.codec.EncoderException if the {@code codec} fails
-     * to encode the compound tag
+     * to encode the compound NBT
      * @see #decode(Codec)
      * 
      * @param codec the codec to encode the object
@@ -201,7 +254,7 @@ extends ByteBuf {
         dataResult.error().ifPresent(partialResult -> {
             throw new EncoderException("Failed to encode: " + partialResult.message() + " " + object);
         });
-        this.writeCompound((NbtCompound)dataResult.result().get());
+        this.writeNbt((NbtCompound)dataResult.result().get());
     }
 
     /**
@@ -578,6 +631,18 @@ extends ByteBuf {
     }
 
     /**
+     * Returns an array of bytes of contents in this buf between index {@code 0} and
+     * the {@link #writerIndex()}.
+     */
+    @VisibleForTesting
+    public byte[] getWrittenBytes() {
+        int i = this.writerIndex();
+        byte[] bs = new byte[i];
+        this.getBytes(0, bs);
+        return bs;
+    }
+
+    /**
      * Reads a block position from this buf. A block position is represented by
      * a regular long.
      * 
@@ -603,46 +668,83 @@ extends ByteBuf {
     }
 
     /**
+     * Reads a chunk position from this buf. A chunk position is represented by
+     * a regular long.
+     * 
+     * @return the read chunk position
+     * @see #writeChunkPos(ChunkPos)
+     */
+    public ChunkPos readChunkPos() {
+        return new ChunkPos(this.readLong());
+    }
+
+    /**
+     * Writes a chunk position to this buf. A chunk position is represented by
+     * a regular long.
+     * 
+     * @return this buf, for chaining
+     * @see #readChunkPos()
+     * 
+     * @param pos the chunk position to write
+     */
+    public PacketByteBuf writeChunkPos(ChunkPos pos) {
+        this.writeLong(pos.toLong());
+        return this;
+    }
+
+    /**
      * Reads a chunk section position from this buf. A chunk section position is
      * represented by a regular long.
      * 
-     * @apiNote The writing equivalent has been removed by proguard as chunk
-     * section writing is only used by debug rendering. The writing equivalent
-     * would be {@code buf.writeLong(chunkSectionPos.toLong())}.
-     * 
      * @return the read chunk section pos
+     * @see #writeChunkSectionPos(ChunkSectionPos)
      */
-    @Environment(value=EnvType.CLIENT)
     public ChunkSectionPos readChunkSectionPos() {
         return ChunkSectionPos.from(this.readLong());
     }
 
     /**
+     * Reads a chunk section position from this buf. A chunk section position is
+     * represented by a regular long.
+     * 
+     * @return this buf, for chaining
+     * @see #readChunkSectionPos()
+     * 
+     * @param pos the section position to write
+     */
+    public PacketByteBuf writeChunkSectionPos(ChunkSectionPos pos) {
+        this.writeLong(pos.asLong());
+        return this;
+    }
+
+    /**
      * Reads a text from this buf. A text is represented by a JSON string with
-     * max length {@code 262144}.
+     * max length {@value #MAX_TEXT_LENGTH}.
      * 
      * @return the read text
      * @throws io.netty.handler.codec.DecoderException if the JSON string read
-     * exceeds {@code 262144} in length
+     * exceeds {@value #MAX_TEXT_LENGTH} in length
      * @see #writeText(Text)
+     * @see #MAX_TEXT_LENGTH
      */
     public Text readText() {
-        return Text.Serializer.fromJson(this.readString(262144));
+        return Text.Serializer.fromJson(this.readString(MAX_TEXT_LENGTH));
     }
 
     /**
      * Writes a text to this buf. A text is represented by a JSON string with
-     * max length {@code 262144}.
+     * max length {@value #MAX_TEXT_LENGTH}.
      * 
      * @return this buf, for chaining
      * @throws io.netty.handler.codec.EncoderException if the JSON string
-     * written exceeds {@code 262144} in length
+     * written exceeds {@value #MAX_TEXT_LENGTH} in length
      * @see #readText()
+     * @see #MAX_TEXT_LENGTH
      * 
      * @param text the text to write
      */
     public PacketByteBuf writeText(Text text) {
-        return this.writeString(Text.Serializer.toJson(text), 262144);
+        return this.writeString(Text.Serializer.toJson(text), MAX_TEXT_LENGTH);
     }
 
     /**
@@ -744,6 +846,7 @@ extends ByteBuf {
      * 
      * @return this buf, for chaining
      * @see #readVarInt()
+     * @see #getVarIntLength(int)
      * 
      * @param value the value to write
      */
@@ -766,6 +869,7 @@ extends ByteBuf {
      * 
      * @return this buf, for chaining
      * @see #readVarLong()
+     * @see #getVarLongLength(long)
      * 
      * @param value the value to write
      */
@@ -783,18 +887,18 @@ extends ByteBuf {
     /**
      * Writes an NBT compound to this buf. The binary representation of NBT is
      * handled by {@link net.minecraft.nbt.NbtIo}. If {@code compound} is {@code
-     * null}, it is treated as an END tag.
+     * null}, it is treated as an NBT null.
      * 
      * @return this buf, for chaining
      * @throws io.netty.handler.codec.EncoderException if the NBT cannot be
      * written
-     * @see #readCompound()
-     * @see #readUnlimitedCompound()
-     * @see #readCompound(NbtTagSizeTracker)
+     * @see #readNbt()
+     * @see #readUnlimitedNbt()
+     * @see #readNbt(NbtTagSizeTracker)
      * 
      * @param compound the compound to write
      */
-    public PacketByteBuf writeCompound(@Nullable NbtCompound compound) {
+    public PacketByteBuf writeNbt(@Nullable NbtCompound compound) {
         if (compound == null) {
             this.writeByte(0);
         } else {
@@ -809,25 +913,26 @@ extends ByteBuf {
 
     /**
      * Reads an NBT compound from this buf. The binary representation of NBT is
-     * handled by {@link net.minecraft.nbt.NbtIo}. If an END tag is encountered,
+     * handled by {@link net.minecraft.nbt.NbtIo}. If an NBT null is encountered,
      * this method returns {@code null}. The compound can have a maximum size of
-     * {@code 2097152} bytes.
+     * {@value #MAX_READ_NBT_SIZE} bytes.
      * 
      * @return the read compound, may be {@code null}
      * @throws io.netty.handler.codec.EncoderException if the NBT cannot be read
      * @throws RuntimeException if the compound exceeds the allowed maximum size
-     * @see #writeCompound(NbtCompound)
-     * @see #readUnlimitedCompound()
-     * @see #readCompound(NbtTagSizeTracker)
+     * @see #writeNbt(NbtCompound)
+     * @see #readUnlimitedNbt()
+     * @see #readNbt(NbtTagSizeTracker)
+     * @see #MAX_READ_NBT_SIZE
      */
     @Nullable
-    public NbtCompound readCompound() {
-        return this.readCompound(new NbtTagSizeTracker(0x200000L));
+    public NbtCompound readNbt() {
+        return this.readNbt(new NbtTagSizeTracker(0x200000L));
     }
 
     /**
      * Reads an NBT compound from this buf. The binary representation of NBT is
-     * handled by {@link net.minecraft.nbt.NbtIo}. If an END tag is encountered,
+     * handled by {@link net.minecraft.nbt.NbtIo}. If an NBT null is encountered,
      * this method returns {@code null}. The compound does not have a size limit.
      * 
      * @apiNote Since this version does not have a size limit, it may be
@@ -835,30 +940,30 @@ extends ByteBuf {
      * 
      * @return the read compound, may be {@code null}
      * @throws io.netty.handler.codec.EncoderException if the NBT cannot be read
-     * @see #writeCompound(NbtCompound)
-     * @see #readCompound()
-     * @see #readCompound(NbtTagSizeTracker)
+     * @see #writeNbt(NbtCompound)
+     * @see #readNbt()
+     * @see #readNbt(NbtTagSizeTracker)
      */
     @Nullable
-    public NbtCompound readUnlimitedCompound() {
-        return this.readCompound(NbtTagSizeTracker.EMPTY);
+    public NbtCompound readUnlimitedNbt() {
+        return this.readNbt(NbtTagSizeTracker.EMPTY);
     }
 
     /**
      * Reads an NBT compound from this buf. The binary representation of NBT is
-     * handled by {@link net.minecraft.nbt.NbtIo}. If an END tag is encountered,
+     * handled by {@link net.minecraft.nbt.NbtIo}. If an NBT null is encountered,
      * this method returns {@code null}. The compound can have a maximum size
      * controlled by the {@code sizeTracker}.
      * 
      * @return the read compound, may be {@code null}
      * @throws io.netty.handler.codec.EncoderException if the NBT cannot be read
      * @throws RuntimeException if the compound exceeds the allowed maximum size
-     * @see #writeCompound(NbtCompound)
-     * @see #readCompound()
-     * @see #readUnlimitedCompound()
+     * @see #writeNbt(NbtCompound)
+     * @see #readNbt()
+     * @see #readUnlimitedNbt()
      */
     @Nullable
-    public NbtCompound readCompound(NbtTagSizeTracker sizeTracker) {
+    public NbtCompound readNbt(NbtTagSizeTracker sizeTracker) {
         int i = this.readerIndex();
         byte b = this.readByte();
         if (b == 0) {
@@ -895,7 +1000,7 @@ extends ByteBuf {
             if (item.isDamageable() || item.shouldSyncTagToClient()) {
                 nbtCompound = stack.getTag();
             }
-            this.writeCompound(nbtCompound);
+            this.writeNbt(nbtCompound);
         }
         return this;
     }
@@ -916,13 +1021,14 @@ extends ByteBuf {
         int i = this.readVarInt();
         byte j = this.readByte();
         ItemStack itemStack = new ItemStack(Item.byRawId(i), j);
-        itemStack.setTag(this.readCompound());
+        itemStack.setTag(this.readNbt());
         return itemStack;
     }
 
     /**
      * Reads a string from this buf. A string is represented by a byte array of
-     * its UTF-8 data. The string can have a maximum length of {@code 32767}.
+     * its UTF-8 data. The string can have a maximum length of {@value
+     * #DEFAULT_MAX_STRING_LENGTH}.
      * 
      * @return the string read
      * @throws io.netty.handler.codec.DecoderException if the string read
@@ -932,7 +1038,7 @@ extends ByteBuf {
      * @see #writeString(String, int)
      */
     public String readString() {
-        return this.readString(Short.MAX_VALUE);
+        return this.readString(DEFAULT_MAX_STRING_LENGTH);
     }
 
     /**
@@ -967,11 +1073,11 @@ extends ByteBuf {
     /**
      * Writes a string to this buf. A string is represented by a byte array of
      * its UTF-8 data. That byte array can have a maximum length of
-     * {@code 32767}.
+     * {@value #DEFAULT_MAX_STRING_LENGTH}.
      * 
      * @return this buf, for chaining
      * @throws io.netty.handler.codec.EncoderException if the byte array of the
-     * string to write is longer than {@code 32767}
+     * string to write is longer than {@value #DEFAULT_MAX_STRING_LENGTH}
      * @see #readString()
      * @see #readString(int)
      * @see #writeString(String, int)
@@ -979,7 +1085,7 @@ extends ByteBuf {
      * @param string the string to write
      */
     public PacketByteBuf writeString(String string) {
-        return this.writeString(string, Short.MAX_VALUE);
+        return this.writeString(string, DEFAULT_MAX_STRING_LENGTH);
     }
 
     /**
@@ -1010,25 +1116,25 @@ extends ByteBuf {
     /**
      * Reads an identifier from this buf. An identifier is represented by its
      * string form. The read identifier's string form can have a max length of
-     * {@code 32767}.
+     * {@value #DEFAULT_MAX_STRING_LENGTH}.
      * 
      * @return the read identifier
      * @throws io.netty.handler.codec.DecoderException if the identifier's
-     * string form is longer than {@code 32767}
+     * string form is longer than {@value #DEFAULT_MAX_STRING_LENGTH}
      * @see #writeIdentifier(Identifier)
      */
     public Identifier readIdentifier() {
-        return new Identifier(this.readString(Short.MAX_VALUE));
+        return new Identifier(this.readString(DEFAULT_MAX_STRING_LENGTH));
     }
 
     /**
      * Writes an identifier to this buf. An identifier is represented by its
      * string form. The written identifier's byte array can have a max length of
-     * {@code 32767}.
+     * {@value #DEFAULT_MAX_STRING_LENGTH}.
      * 
      * @return the read identifier
      * @throws io.netty.handler.codec.EncoderException if the {@code id}'s
-     * byte array is longer than {@code 32767}
+     * byte array is longer than {@value #DEFAULT_MAX_STRING_LENGTH}
      * @see #readIdentifier()
      * 
      * @param id the identifier to write

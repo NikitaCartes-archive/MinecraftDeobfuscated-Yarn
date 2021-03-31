@@ -3,9 +3,6 @@
  */
 package net.minecraft.entity.passive;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -63,6 +60,8 @@ import org.jetbrains.annotations.Nullable;
 public class LlamaEntity
 extends AbstractDonkeyEntity
 implements RangedAttackMob {
+    private static final int field_30425 = 5;
+    private static final int field_30426 = 4;
     private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.WHEAT, Blocks.HAY_BLOCK.asItem());
     private static final TrackedData<Integer> STRENGTH = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> CARPET_COLOR = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -77,7 +76,6 @@ implements RangedAttackMob {
         super((EntityType<? extends AbstractDonkeyEntity>)entityType, world);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isTrader() {
         return false;
     }
@@ -96,22 +94,22 @@ implements RangedAttackMob {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
-        tag.putInt("Variant", this.getVariant());
-        tag.putInt("Strength", this.getStrength());
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putInt("Variant", this.getVariant());
+        nbt.putInt("Strength", this.getStrength());
         if (!this.items.getStack(1).isEmpty()) {
-            tag.put("DecorItem", this.items.getStack(1).writeNbt(new NbtCompound()));
+            nbt.put("DecorItem", this.items.getStack(1).writeNbt(new NbtCompound()));
         }
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        this.setStrength(tag.getInt("Strength"));
-        super.readCustomDataFromNbt(tag);
-        this.setVariant(tag.getInt("Variant"));
-        if (tag.contains("DecorItem", NbtTypeIds.COMPOUND)) {
-            this.items.setStack(1, ItemStack.fromNbt(tag.getCompound("DecorItem")));
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        this.setStrength(nbt.getInt("Strength"));
+        super.readCustomDataFromNbt(nbt);
+        this.setVariant(nbt.getInt("Variant"));
+        if (nbt.contains("DecorItem", 10)) {
+            this.items.setStack(1, ItemStack.fromNbt(nbt.getCompound("DecorItem")));
         }
         this.updateSaddle();
     }
@@ -239,7 +237,7 @@ implements RangedAttackMob {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         int i;
         this.initializeStrength();
         if (entityData instanceof LlamaData) {
@@ -249,7 +247,7 @@ implements RangedAttackMob {
             entityData = new LlamaData(i);
         }
         this.setVariant(i);
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     @Override
@@ -471,7 +469,6 @@ implements RangedAttackMob {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public Vec3d method_29919() {
         return new Vec3d(0.0, 0.75 * (double)this.getStandingEyeHeight(), (double)this.getWidth() * 0.5);
     }

@@ -31,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 public class BufferBuilder
 extends FixedColorVertexConsumer
 implements BufferVertexConsumer {
+    private static final int field_32050 = 0x200000;
     private static final Logger LOGGER = LogManager.getLogger();
     private ByteBuffer buffer;
     private final List<DrawArrayParameters> parameters = Lists.newArrayList();

@@ -4,9 +4,6 @@
 package net.minecraft.item;
 
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Bucketable;
 import net.minecraft.entity.Entity;
@@ -58,15 +55,16 @@ extends BucketItem {
     private void spawnEntity(ServerWorld world, ItemStack stack, BlockPos pos) {
         Entity entity = this.entityType.spawnFromItemStack(world, stack, null, pos, SpawnReason.BUCKET, true, false);
         if (entity instanceof Bucketable) {
-            ((Bucketable)((Object)entity)).setFromBucket(true);
+            Bucketable bucketable = (Bucketable)((Object)entity);
+            bucketable.copyDataFromNbt(stack.getOrCreateTag());
+            bucketable.setFromBucket(true);
         }
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         NbtCompound nbtCompound;
-        if (this.entityType == EntityType.TROPICAL_FISH && (nbtCompound = stack.getTag()) != null && nbtCompound.contains("BucketVariantTag", NbtTypeIds.INT)) {
+        if (this.entityType == EntityType.TROPICAL_FISH && (nbtCompound = stack.getTag()) != null && nbtCompound.contains("BucketVariantTag", 3)) {
             int i = nbtCompound.getInt("BucketVariantTag");
             Formatting[] formattings = new Formatting[]{Formatting.ITALIC, Formatting.GRAY};
             String string = "color.minecraft." + TropicalFishEntity.getBaseDyeColor(i);

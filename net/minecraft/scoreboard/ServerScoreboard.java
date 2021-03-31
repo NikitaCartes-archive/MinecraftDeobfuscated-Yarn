@@ -106,7 +106,7 @@ extends Scoreboard {
     public void updateExistingObjective(ScoreboardObjective objective) {
         super.updateExistingObjective(objective);
         if (this.objectives.contains(objective)) {
-            this.server.getPlayerManager().sendToAll(new ScoreboardObjectiveUpdateS2CPacket(objective, 2));
+            this.server.getPlayerManager().sendToAll(new ScoreboardObjectiveUpdateS2CPacket(objective, ScoreboardObjectiveUpdateS2CPacket.UPDATE_MODE));
         }
         this.runUpdateListeners();
     }
@@ -153,7 +153,7 @@ extends Scoreboard {
 
     public List<Packet<?>> createChangePackets(ScoreboardObjective objective) {
         ArrayList<Packet<?>> list = Lists.newArrayList();
-        list.add(new ScoreboardObjectiveUpdateS2CPacket(objective, 0));
+        list.add(new ScoreboardObjectiveUpdateS2CPacket(objective, ScoreboardObjectiveUpdateS2CPacket.ADD_MODE));
         for (int i = 0; i < 19; ++i) {
             if (this.getObjectiveForSlot(i) != objective) continue;
             list.add(new ScoreboardDisplayS2CPacket(i, objective));
@@ -176,7 +176,7 @@ extends Scoreboard {
 
     public List<Packet<?>> createRemovePackets(ScoreboardObjective objective) {
         ArrayList<Packet<?>> list = Lists.newArrayList();
-        list.add(new ScoreboardObjectiveUpdateS2CPacket(objective, 1));
+        list.add(new ScoreboardObjectiveUpdateS2CPacket(objective, ScoreboardObjectiveUpdateS2CPacket.REMOVE_MODE));
         for (int i = 0; i < 19; ++i) {
             if (this.getObjectiveForSlot(i) != objective) continue;
             list.add(new ScoreboardDisplayS2CPacket(i, objective));

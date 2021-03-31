@@ -24,7 +24,6 @@ import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.nbt.AbstractNbtList;
 import net.minecraft.nbt.AbstractNbtNumber;
 import net.minecraft.nbt.NbtByte;
@@ -185,13 +184,13 @@ implements DynamicOps<NbtElement> {
     }
 
     private static AbstractNbtList<?> method_29144(byte b, byte c) {
-        if (NbtOps.method_29145(b, c, (byte)NbtTypeIds.LONG)) {
+        if (NbtOps.method_29145(b, c, (byte)4)) {
             return new NbtLongArray(new long[0]);
         }
-        if (NbtOps.method_29145(b, c, (byte)NbtTypeIds.BYTE)) {
+        if (NbtOps.method_29145(b, c, (byte)1)) {
             return new NbtByteArray(new byte[0]);
         }
-        if (NbtOps.method_29145(b, c, (byte)NbtTypeIds.INT)) {
+        if (NbtOps.method_29145(b, c, (byte)3)) {
             return new NbtIntArray(new int[0]);
         }
         return new NbtList();
@@ -222,7 +221,7 @@ implements DynamicOps<NbtElement> {
         if (!(nbtElement instanceof AbstractNbtList) && !(nbtElement instanceof NbtNull)) {
             return DataResult.error("mergeToList called with not a list: " + nbtElement, nbtElement);
         }
-        AbstractNbtList<?> abstractNbtList = NbtOps.method_29144((byte)(nbtElement instanceof AbstractNbtList ? (int)((AbstractNbtList)nbtElement).getHeldType() : NbtTypeIds.NULL), nbtElement2.getType());
+        AbstractNbtList<?> abstractNbtList = NbtOps.method_29144(nbtElement instanceof AbstractNbtList ? ((AbstractNbtList)nbtElement).getHeldType() : (byte)0, nbtElement2.getType());
         NbtOps.method_29151(abstractNbtList, nbtElement, nbtElement2);
         return DataResult.success(abstractNbtList);
     }
@@ -232,7 +231,7 @@ implements DynamicOps<NbtElement> {
         if (!(nbtElement instanceof AbstractNbtList) && !(nbtElement instanceof NbtNull)) {
             return DataResult.error("mergeToList called with not a list: " + nbtElement, nbtElement);
         }
-        AbstractNbtList<?> abstractNbtList = NbtOps.method_29144((byte)(nbtElement instanceof AbstractNbtList ? (int)((AbstractNbtList)nbtElement).getHeldType() : NbtTypeIds.NULL), list.stream().findFirst().map(NbtElement::getType).orElse((byte)0));
+        AbstractNbtList<?> abstractNbtList = NbtOps.method_29144(nbtElement instanceof AbstractNbtList ? ((AbstractNbtList)nbtElement).getHeldType() : (byte)0, list.stream().findFirst().map(NbtElement::getType).orElse((byte)0));
         NbtOps.method_29150(abstractNbtList, nbtElement, list);
         return DataResult.success(abstractNbtList);
     }

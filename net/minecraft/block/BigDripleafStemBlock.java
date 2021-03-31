@@ -5,7 +5,6 @@ package net.minecraft.block;
 
 import java.util.Optional;
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BigDripleafBlock;
 import net.minecraft.block.Block;
@@ -17,6 +16,7 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.block.Waterloggable;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -35,10 +35,11 @@ extends HorizontalFacingBlock
 implements Fertilizable,
 Waterloggable {
     private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
-    private static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(5.0, 0.0, 8.0, 11.0, 16.0, 14.0);
-    private static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(5.0, 0.0, 2.0, 11.0, 16.0, 8.0);
-    private static final VoxelShape EAST_SHAPE = Block.createCuboidShape(2.0, 0.0, 5.0, 8.0, 16.0, 11.0);
-    private static final VoxelShape WEST_SHAPE = Block.createCuboidShape(8.0, 0.0, 5.0, 14.0, 16.0, 11.0);
+    private static final int field_31021 = 6;
+    protected static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(5.0, 0.0, 9.0, 11.0, 16.0, 15.0);
+    protected static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(5.0, 0.0, 1.0, 11.0, 16.0, 7.0);
+    protected static final VoxelShape EAST_SHAPE = Block.createCuboidShape(1.0, 0.0, 5.0, 7.0, 16.0, 11.0);
+    protected static final VoxelShape WEST_SHAPE = Block.createCuboidShape(9.0, 0.0, 5.0, 15.0, 16.0, 11.0);
 
     protected BigDripleafStemBlock(AbstractBlock.Settings settings) {
         super(settings);
@@ -84,7 +85,7 @@ Waterloggable {
 
     protected static boolean placeStemAt(WorldAccess world, BlockPos pos, FluidState fluidState, Direction direction) {
         BlockState blockState = (BlockState)((BlockState)Blocks.BIG_DRIPLEAF_STEM.getDefaultState().with(WATERLOGGED, fluidState.isEqualAndStill(Fluids.WATER))).with(FACING, direction);
-        return world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
+        return world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
     }
 
     @Override
@@ -133,6 +134,11 @@ Waterloggable {
         Direction direction = state.get(FACING);
         BigDripleafStemBlock.placeStemAt(world, blockPos, state.getFluidState(), direction);
         BigDripleafBlock.placeDripleafAt(world, blockPos2, fluidState, direction);
+    }
+
+    @Override
+    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+        return new ItemStack(Blocks.BIG_DRIPLEAF);
     }
 }
 

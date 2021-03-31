@@ -14,6 +14,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class ElytraSoundInstance
 extends MovingSoundInstance {
+    public static final int field_32996 = 20;
     private final ClientPlayerEntity player;
     private int tickCount;
 

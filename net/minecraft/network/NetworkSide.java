@@ -7,5 +7,9 @@ public enum NetworkSide {
     SERVERBOUND,
     CLIENTBOUND;
 
+
+    public NetworkSide getOpposite() {
+        return this == CLIENTBOUND ? SERVERBOUND : CLIENTBOUND;
+    }
 }
 

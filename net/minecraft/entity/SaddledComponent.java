@@ -9,6 +9,8 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.nbt.NbtCompound;
 
 public class SaddledComponent {
+    private static final int field_30060 = 140;
+    private static final int field_30061 = 700;
     private final DataTracker dataTracker;
     private final TrackedData<Integer> boostTime;
     private final TrackedData<Boolean> saddled;
@@ -39,12 +41,12 @@ public class SaddledComponent {
         return true;
     }
 
-    public void writeNbt(NbtCompound tag) {
-        tag.putBoolean("Saddle", this.isSaddled());
+    public void writeNbt(NbtCompound nbt) {
+        nbt.putBoolean("Saddle", this.isSaddled());
     }
 
-    public void readNbt(NbtCompound tag) {
-        this.setSaddled(tag.getBoolean("Saddle"));
+    public void readNbt(NbtCompound nbt) {
+        this.setSaddled(nbt.getBoolean("Saddle"));
     }
 
     public void setSaddled(boolean saddled) {

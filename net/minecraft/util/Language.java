@@ -19,8 +19,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextVisitFactory;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
@@ -33,6 +31,7 @@ public abstract class Language {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Gson GSON = new Gson();
     private static final Pattern TOKEN_PATTERN = Pattern.compile("%(\\d+\\$)?[\\d.]*[df]");
+    public static final String DEFAULT_LANGUAGE = "en_us";
     private static volatile Language instance = Language.create();
 
     private static Language create() {
@@ -58,13 +57,11 @@ public abstract class Language {
             }
 
             @Override
-            @Environment(value=EnvType.CLIENT)
             public boolean isRightToLeft() {
                 return false;
             }
 
             @Override
-            @Environment(value=EnvType.CLIENT)
             public OrderedText reorder(StringVisitable text) {
                 return visitor -> text.visit((style, string) -> TextVisitFactory.visitFormatted(string, style, visitor) ? Optional.empty() : StringVisitable.TERMINATE_VISIT, Style.EMPTY).isPresent();
             }
@@ -83,7 +80,6 @@ public abstract class Language {
         return instance;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static void setInstance(Language language) {
         instance = language;
     }
@@ -92,13 +88,10 @@ public abstract class Language {
 
     public abstract boolean hasTranslation(String var1);
 
-    @Environment(value=EnvType.CLIENT)
     public abstract boolean isRightToLeft();
 
-    @Environment(value=EnvType.CLIENT)
     public abstract OrderedText reorder(StringVisitable var1);
 
-    @Environment(value=EnvType.CLIENT)
     public List<OrderedText> reorder(List<StringVisitable> texts) {
         return texts.stream().map(this::reorder).collect(ImmutableList.toImmutableList());
     }

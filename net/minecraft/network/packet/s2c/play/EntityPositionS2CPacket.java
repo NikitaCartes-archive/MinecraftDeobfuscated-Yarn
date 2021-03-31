@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -56,37 +54,30 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onEntityPosition(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getId() {
         return this.id;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public double getX() {
         return this.x;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public double getY() {
         return this.y;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public double getZ() {
         return this.z;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public byte getYaw() {
         return this.yaw;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public byte getPitch() {
         return this.pitch;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isOnGround() {
         return this.onGround;
     }

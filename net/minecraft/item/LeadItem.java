@@ -49,6 +49,7 @@ extends Item {
             if (mobEntity.getHoldingEntity() != player) continue;
             if (leashKnotEntity == null) {
                 leashKnotEntity = LeashKnotEntity.getOrCreate(world, pos);
+                leashKnotEntity.onPlace();
             }
             mobEntity.attachLeash(leashKnotEntity, true);
             bl = true;

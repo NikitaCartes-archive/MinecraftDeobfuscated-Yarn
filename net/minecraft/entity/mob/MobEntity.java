@@ -10,9 +10,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -87,6 +84,15 @@ import org.jetbrains.annotations.Nullable;
 public abstract class MobEntity
 extends LivingEntity {
     private static final TrackedData<Byte> MOB_FLAGS = DataTracker.registerData(MobEntity.class, TrackedDataHandlerRegistry.BYTE);
+    private static final int field_30088 = 1;
+    private static final int field_30089 = 2;
+    private static final int field_30090 = 4;
+    public static final float field_30091 = 0.15f;
+    public static final float field_30083 = 0.55f;
+    public static final float field_30084 = 0.5f;
+    public static final float field_30085 = 0.25f;
+    public static final String LEASH_KEY = "Leash";
+    private static final int field_30087 = 1;
     public int ambientSoundChance;
     protected int experiencePoints;
     protected LookControl lookControl;
@@ -111,7 +117,7 @@ extends LivingEntity {
     private Entity holdingEntity;
     private int holdingEntityId;
     @Nullable
-    private NbtCompound leashTag;
+    private NbtCompound leashNbt;
     private BlockPos positionTarget = BlockPos.ORIGIN;
     private float positionTargetRange = -1.0f;
 
@@ -288,7 +294,6 @@ extends LivingEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void handleStatus(byte status) {
         if (status == 20) {
             this.playSpawnEffects();
@@ -328,10 +333,10 @@ extends LivingEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
-        tag.putBoolean("CanPickUpLoot", this.canPickUpLoot());
-        tag.putBoolean("PersistenceRequired", this.persistent);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putBoolean("CanPickUpLoot", this.canPickUpLoot());
+        nbt.putBoolean("PersistenceRequired", this.persistent);
         NbtList nbtList = new NbtList();
         for (ItemStack itemStack : this.armorItems) {
             NbtCompound nbtCompound = new NbtCompound();
@@ -340,7 +345,7 @@ extends LivingEntity {
             }
             nbtList.add(nbtCompound);
         }
-        tag.put("ArmorItems", nbtList);
+        nbt.put("ArmorItems", nbtList);
         NbtList nbtList2 = new NbtList();
         for (ItemStack itemStack : this.handItems) {
             NbtCompound nbtCompound2 = new NbtCompound();
@@ -349,17 +354,17 @@ extends LivingEntity {
             }
             nbtList2.add(nbtCompound2);
         }
-        tag.put("HandItems", nbtList2);
+        nbt.put("HandItems", nbtList2);
         NbtList nbtList3 = new NbtList();
         for (float f : this.armorDropChances) {
             nbtList3.add(NbtFloat.of(f));
         }
-        tag.put("ArmorDropChances", nbtList3);
+        nbt.put("ArmorDropChances", nbtList3);
         NbtList nbtList4 = new NbtList();
         for (float g : this.handDropChances) {
             nbtList4.add(NbtFloat.of(g));
         }
-        tag.put("HandDropChances", nbtList4);
+        nbt.put("HandDropChances", nbtList4);
         if (this.holdingEntity != null) {
             Object nbtCompound2 = new NbtCompound();
             if (this.holdingEntity instanceof LivingEntity) {
@@ -371,64 +376,64 @@ extends LivingEntity {
                 ((NbtCompound)nbtCompound2).putInt("Y", blockPos.getY());
                 ((NbtCompound)nbtCompound2).putInt("Z", blockPos.getZ());
             }
-            tag.put("Leash", (NbtElement)nbtCompound2);
-        } else if (this.leashTag != null) {
-            tag.put("Leash", this.leashTag.copy());
+            nbt.put(LEASH_KEY, (NbtElement)nbtCompound2);
+        } else if (this.leashNbt != null) {
+            nbt.put(LEASH_KEY, this.leashNbt.copy());
         }
-        tag.putBoolean("LeftHanded", this.isLeftHanded());
+        nbt.putBoolean("LeftHanded", this.isLeftHanded());
         if (this.lootTable != null) {
-            tag.putString("DeathLootTable", this.lootTable.toString());
+            nbt.putString("DeathLootTable", this.lootTable.toString());
             if (this.lootTableSeed != 0L) {
-                tag.putLong("DeathLootTableSeed", this.lootTableSeed);
+                nbt.putLong("DeathLootTableSeed", this.lootTableSeed);
             }
         }
         if (this.isAiDisabled()) {
-            tag.putBoolean("NoAI", this.isAiDisabled());
+            nbt.putBoolean("NoAI", this.isAiDisabled());
         }
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
+    public void readCustomDataFromNbt(NbtCompound nbt) {
         int i;
         NbtList nbtList;
-        super.readCustomDataFromNbt(tag);
-        if (tag.contains("CanPickUpLoot", NbtTypeIds.BYTE)) {
-            this.setCanPickUpLoot(tag.getBoolean("CanPickUpLoot"));
+        super.readCustomDataFromNbt(nbt);
+        if (nbt.contains("CanPickUpLoot", 1)) {
+            this.setCanPickUpLoot(nbt.getBoolean("CanPickUpLoot"));
         }
-        this.persistent = tag.getBoolean("PersistenceRequired");
-        if (tag.contains("ArmorItems", NbtTypeIds.LIST)) {
-            nbtList = tag.getList("ArmorItems", NbtTypeIds.COMPOUND);
+        this.persistent = nbt.getBoolean("PersistenceRequired");
+        if (nbt.contains("ArmorItems", 9)) {
+            nbtList = nbt.getList("ArmorItems", 10);
             for (i = 0; i < this.armorItems.size(); ++i) {
                 this.armorItems.set(i, ItemStack.fromNbt(nbtList.getCompound(i)));
             }
         }
-        if (tag.contains("HandItems", NbtTypeIds.LIST)) {
-            nbtList = tag.getList("HandItems", NbtTypeIds.COMPOUND);
+        if (nbt.contains("HandItems", 9)) {
+            nbtList = nbt.getList("HandItems", 10);
             for (i = 0; i < this.handItems.size(); ++i) {
                 this.handItems.set(i, ItemStack.fromNbt(nbtList.getCompound(i)));
             }
         }
-        if (tag.contains("ArmorDropChances", NbtTypeIds.LIST)) {
-            nbtList = tag.getList("ArmorDropChances", NbtTypeIds.FLOAT);
+        if (nbt.contains("ArmorDropChances", 9)) {
+            nbtList = nbt.getList("ArmorDropChances", 5);
             for (i = 0; i < nbtList.size(); ++i) {
                 this.armorDropChances[i] = nbtList.getFloat(i);
             }
         }
-        if (tag.contains("HandDropChances", NbtTypeIds.LIST)) {
-            nbtList = tag.getList("HandDropChances", NbtTypeIds.FLOAT);
+        if (nbt.contains("HandDropChances", 9)) {
+            nbtList = nbt.getList("HandDropChances", 5);
             for (i = 0; i < nbtList.size(); ++i) {
                 this.handDropChances[i] = nbtList.getFloat(i);
             }
         }
-        if (tag.contains("Leash", NbtTypeIds.COMPOUND)) {
-            this.leashTag = tag.getCompound("Leash");
+        if (nbt.contains(LEASH_KEY, 10)) {
+            this.leashNbt = nbt.getCompound(LEASH_KEY);
         }
-        this.setLeftHanded(tag.getBoolean("LeftHanded"));
-        if (tag.contains("DeathLootTable", NbtTypeIds.STRING)) {
-            this.lootTable = new Identifier(tag.getString("DeathLootTable"));
-            this.lootTableSeed = tag.getLong("DeathLootTableSeed");
+        this.setLeftHanded(nbt.getBoolean("LeftHanded"));
+        if (nbt.contains("DeathLootTable", 8)) {
+            this.lootTable = new Identifier(nbt.getString("DeathLootTable"));
+            this.lootTableSeed = nbt.getLong("DeathLootTableSeed");
         }
-        this.setAiDisabled(tag.getBoolean("NoAI"));
+        this.setAiDisabled(nbt.getBoolean("NoAI"));
     }
 
     @Override
@@ -943,7 +948,7 @@ extends LivingEntity {
     }
 
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE).addPersistentModifier(new EntityAttributeModifier("Random spawn bonus", this.random.nextGaussian() * 0.05, EntityAttributeModifier.Operation.MULTIPLY_BASE));
         if (this.random.nextFloat() < 0.05f) {
             this.setLeftHanded(true);
@@ -1065,6 +1070,10 @@ extends LivingEntity {
         return this.positionTargetRange;
     }
 
+    public void method_35055() {
+        this.positionTargetRange = -1.0f;
+    }
+
     public boolean hasPositionTarget() {
         return this.positionTargetRange != -1.0f;
     }
@@ -1116,8 +1125,8 @@ extends LivingEntity {
     }
 
     protected void updateLeash() {
-        if (this.leashTag != null) {
-            this.deserializeLeashTag();
+        if (this.leashNbt != null) {
+            this.readLeashNbt();
         }
         if (this.holdingEntity == null) {
             return;
@@ -1130,7 +1139,7 @@ extends LivingEntity {
     public void detachLeash(boolean sendPacket, boolean dropItem) {
         if (this.holdingEntity != null) {
             this.holdingEntity = null;
-            this.leashTag = null;
+            this.leashNbt = null;
             if (!this.world.isClient && dropItem) {
                 this.dropItem(Items.LEAD);
             }
@@ -1158,7 +1167,7 @@ extends LivingEntity {
 
     public void attachLeash(Entity entity, boolean sendPacket) {
         this.holdingEntity = entity;
-        this.leashTag = null;
+        this.leashNbt = null;
         if (!this.world.isClient && sendPacket && this.world instanceof ServerWorld) {
             ((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(this, new EntityAttachS2CPacket(this, this.holdingEntity));
         }
@@ -1167,7 +1176,6 @@ extends LivingEntity {
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void setHoldingEntityId(int id) {
         this.holdingEntityId = id;
         this.detachLeash(false, false);
@@ -1182,23 +1190,23 @@ extends LivingEntity {
         return bl;
     }
 
-    private void deserializeLeashTag() {
-        if (this.leashTag != null && this.world instanceof ServerWorld) {
-            if (this.leashTag.containsUuid("UUID")) {
-                UUID uUID = this.leashTag.getUuid("UUID");
+    private void readLeashNbt() {
+        if (this.leashNbt != null && this.world instanceof ServerWorld) {
+            if (this.leashNbt.containsUuid("UUID")) {
+                UUID uUID = this.leashNbt.getUuid("UUID");
                 Entity entity = ((ServerWorld)this.world).getEntity(uUID);
                 if (entity != null) {
                     this.attachLeash(entity, true);
                     return;
                 }
-            } else if (this.leashTag.contains("X", NbtTypeIds.NUMBER) && this.leashTag.contains("Y", NbtTypeIds.NUMBER) && this.leashTag.contains("Z", NbtTypeIds.NUMBER)) {
-                BlockPos blockPos = new BlockPos(this.leashTag.getInt("X"), this.leashTag.getInt("Y"), this.leashTag.getInt("Z"));
+            } else if (this.leashNbt.contains("X", 99) && this.leashNbt.contains("Y", 99) && this.leashNbt.contains("Z", 99)) {
+                BlockPos blockPos = new BlockPos(this.leashNbt.getInt("X"), this.leashNbt.getInt("Y"), this.leashNbt.getInt("Z"));
                 this.attachLeash(LeashKnotEntity.getOrCreate(this.world, blockPos), true);
                 return;
             }
             if (this.age > 100) {
                 this.dropItem(Items.LEAD);
-                this.leashTag = null;
+                this.leashNbt = null;
             }
         }
     }
@@ -1323,6 +1331,11 @@ extends LivingEntity {
         }
     }
 
+    public void method_35056() {
+        this.goalSelector.method_35113();
+        this.getBrain().method_35060();
+    }
+
     @Override
     protected void removeFromDimension() {
         super.removeFromDimension();
@@ -1331,7 +1344,6 @@ extends LivingEntity {
 
     @Override
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     public ItemStack getPickBlockStack() {
         SpawnEggItem spawnEggItem = SpawnEggItem.forEntity(this.getType());
         if (spawnEggItem == null) {

@@ -10,6 +10,7 @@ import net.minecraft.client.realms.exception.RealmsServiceException;
 @Environment(value=EnvType.CLIENT)
 public class RetryCallException
 extends RealmsServiceException {
+    public static final int field_32118 = 5;
     public final int delaySeconds;
 
     public RetryCallException(int delaySeconds, int httpResultCode) {

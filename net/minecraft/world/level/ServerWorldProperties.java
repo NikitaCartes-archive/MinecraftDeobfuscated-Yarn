@@ -11,6 +11,7 @@ import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.timer.Timer;
+import org.jetbrains.annotations.Nullable;
 
 public interface ServerWorldProperties
 extends MutableWorldProperties {
@@ -45,6 +46,9 @@ extends MutableWorldProperties {
     public int getWanderingTraderSpawnChance();
 
     public void setWanderingTraderSpawnChance(int var1);
+
+    @Nullable
+    public UUID getWanderingTraderId();
 
     public void setWanderingTraderId(UUID var1);
 

@@ -9,9 +9,6 @@ import com.google.common.collect.Sets;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -38,6 +35,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -54,6 +52,11 @@ extends Block {
     public static final EnumProperty<WireConnection> WIRE_CONNECTION_WEST = Properties.WEST_WIRE_CONNECTION;
     public static final IntProperty POWER = Properties.POWER;
     public static final Map<Direction, EnumProperty<WireConnection>> DIRECTION_TO_WIRE_CONNECTION_PROPERTY = Maps.newEnumMap(ImmutableMap.of(Direction.NORTH, WIRE_CONNECTION_NORTH, Direction.EAST, WIRE_CONNECTION_EAST, Direction.SOUTH, WIRE_CONNECTION_SOUTH, Direction.WEST, WIRE_CONNECTION_WEST));
+    protected static final int field_31222 = 1;
+    protected static final int field_31223 = 3;
+    protected static final int field_31224 = 13;
+    protected static final int field_31225 = 3;
+    protected static final int field_31226 = 13;
     private static final VoxelShape DOT_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 1.0, 13.0);
     private static final Map<Direction, VoxelShape> field_24414 = Maps.newEnumMap(ImmutableMap.of(Direction.NORTH, Block.createCuboidShape(3.0, 0.0, 0.0, 13.0, 1.0, 13.0), Direction.SOUTH, Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 1.0, 16.0), Direction.EAST, Block.createCuboidShape(3.0, 0.0, 3.0, 16.0, 1.0, 13.0), Direction.WEST, Block.createCuboidShape(0.0, 0.0, 3.0, 13.0, 1.0, 13.0)));
     private static final Map<Direction, VoxelShape> field_24415 = Maps.newEnumMap(ImmutableMap.of(Direction.NORTH, VoxelShapes.union(field_24414.get(Direction.NORTH), Block.createCuboidShape(3.0, 0.0, 0.0, 13.0, 16.0, 1.0)), Direction.SOUTH, VoxelShapes.union(field_24414.get(Direction.SOUTH), Block.createCuboidShape(3.0, 0.0, 15.0, 13.0, 16.0, 16.0)), Direction.EAST, VoxelShapes.union(field_24414.get(Direction.EAST), Block.createCuboidShape(15.0, 0.0, 3.0, 16.0, 16.0, 13.0)), Direction.WEST, VoxelShapes.union(field_24414.get(Direction.WEST), Block.createCuboidShape(0.0, 0.0, 3.0, 1.0, 16.0, 13.0))));
@@ -67,6 +70,7 @@ extends Block {
             vec3ds[i] = new Vec3d(g, h, j);
         }
     });
+    private static final float field_31221 = 0.2f;
     private final BlockState dotState;
     private boolean wiresGivePower = true;
 
@@ -170,19 +174,19 @@ extends Block {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (Direction direction : Direction.Type.HORIZONTAL) {
             WireConnection wireConnection = (WireConnection)state.get(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction));
-            if (wireConnection == WireConnection.NONE || world.getBlockState(mutable.set(pos, direction)).isOf(this)) continue;
+            if (wireConnection == WireConnection.NONE || world.getBlockState(mutable.set((Vec3i)pos, direction)).isOf(this)) continue;
             mutable.move(Direction.DOWN);
             BlockState blockState = world.getBlockState(mutable);
             if (!blockState.isOf(Blocks.OBSERVER)) {
-                BlockPos blockPos = mutable.offset(direction.getOpposite());
-                BlockState blockState2 = blockState.getStateForNeighborUpdate(direction.getOpposite(), world.getBlockState(blockPos), world, mutable, blockPos);
+                Vec3i blockPos = mutable.offset(direction.getOpposite());
+                BlockState blockState2 = blockState.getStateForNeighborUpdate(direction.getOpposite(), world.getBlockState((BlockPos)blockPos), world, mutable, (BlockPos)blockPos);
                 RedstoneWireBlock.replace(blockState, blockState2, world, mutable, flags, maxUpdateDepth);
             }
-            mutable.set(pos, direction).move(Direction.UP);
+            mutable.set((Vec3i)pos, direction).move(Direction.UP);
             BlockState blockState3 = world.getBlockState(mutable);
             if (blockState3.isOf(Blocks.OBSERVER)) continue;
-            BlockPos blockPos2 = mutable.offset(direction.getOpposite());
-            BlockState blockState4 = blockState3.getStateForNeighborUpdate(direction.getOpposite(), world.getBlockState(blockPos2), world, mutable, blockPos2);
+            Vec3i blockPos2 = mutable.offset(direction.getOpposite());
+            BlockState blockState4 = blockState3.getStateForNeighborUpdate(direction.getOpposite(), world.getBlockState((BlockPos)blockPos2), world, mutable, (BlockPos)blockPos2);
             RedstoneWireBlock.replace(blockState3, blockState4, world, mutable, flags, maxUpdateDepth);
         }
     }
@@ -222,7 +226,7 @@ extends Block {
         int i = this.getReceivedRedstonePower(world, pos);
         if (state.get(POWER) != i) {
             if (world.getBlockState(pos) == state) {
-                world.setBlockState(pos, (BlockState)state.with(POWER, i), SetBlockStateFlags.NOTIFY_LISTENERS);
+                world.setBlockState(pos, (BlockState)state.with(POWER, i), Block.NOTIFY_LISTENERS);
             }
             HashSet<BlockPos> set = Sets.newHashSet();
             set.add(pos);
@@ -372,13 +376,11 @@ extends Block {
         return this.wiresGivePower;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static int getWireColor(int powerLevel) {
         Vec3d vec3d = COLORS[powerLevel];
         return MathHelper.packRgb((float)vec3d.getX(), (float)vec3d.getY(), (float)vec3d.getZ());
     }
 
-    @Environment(value=EnvType.CLIENT)
     private void addPoweredParticles(World world, Random random, BlockPos pos, Vec3d color, Direction direction, Direction direction2, float f, float g) {
         float h = g - f;
         if (random.nextFloat() >= 0.2f * h) {
@@ -393,7 +395,6 @@ extends Block {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         int i = state.get(POWER);
         if (i == 0) {
@@ -457,7 +458,7 @@ extends Block {
             BlockState blockState = RedstoneWireBlock.isFullyConnected(state) ? this.getDefaultState() : this.dotState;
             blockState = (BlockState)blockState.with(POWER, state.get(POWER));
             if ((blockState = this.getPlacementState(world, blockState, pos)) != state) {
-                world.setBlockState(pos, blockState, SetBlockStateFlags.DEFAULT);
+                world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
                 this.updateForNewState(world, pos, state, blockState);
                 return ActionResult.SUCCESS;
             }

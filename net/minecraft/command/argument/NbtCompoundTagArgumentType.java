@@ -23,7 +23,7 @@ implements ArgumentType<NbtCompound> {
         return new NbtCompoundTagArgumentType();
     }
 
-    public static <S> NbtCompound getCompoundTag(CommandContext<S> context, String name) {
+    public static <S> NbtCompound getNbtCompound(CommandContext<S> context, String name) {
         return context.getArgument(name, NbtCompound.class);
     }
 

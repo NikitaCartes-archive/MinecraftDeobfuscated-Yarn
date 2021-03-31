@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
@@ -24,9 +22,7 @@ implements Resource {
     private final Identifier id;
     private final InputStream inputStream;
     private final InputStream metaInputStream;
-    @Environment(value=EnvType.CLIENT)
     private boolean readMetadata;
-    @Environment(value=EnvType.CLIENT)
     private JsonObject metadata;
 
     public ResourceImpl(String packName, Identifier id, InputStream inputStream, @Nullable InputStream metaInputStream) {
@@ -37,7 +33,6 @@ implements Resource {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public Identifier getId() {
         return this.id;
     }
@@ -47,14 +42,13 @@ implements Resource {
         return this.inputStream;
     }
 
-    @Environment(value=EnvType.CLIENT)
+    @Override
     public boolean hasMetadata() {
         return this.metaInputStream != null;
     }
 
     @Override
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     public <T> T getMetadata(ResourceMetadataReader<T> metaReader) {
         if (!this.hasMetadata()) {
             return null;

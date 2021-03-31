@@ -4,8 +4,6 @@
 package net.minecraft.entity.decoration;
 
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -31,6 +29,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class LeashKnotEntity
 extends AbstractDecorationEntity {
+    public static final double field_30455 = 0.375;
+
     public LeashKnotEntity(EntityType<? extends LeashKnotEntity> entityType, World world) {
         super((EntityType<? extends AbstractDecorationEntity>)entityType, world);
     }
@@ -68,7 +68,6 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public boolean shouldRender(double distance) {
         return distance < 1024.0;
     }
@@ -79,11 +78,11 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
+    public void writeCustomDataToNbt(NbtCompound nbt) {
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
+    public void readCustomDataFromNbt(NbtCompound nbt) {
     }
 
     @Override
@@ -127,7 +126,6 @@ extends AbstractDecorationEntity {
         }
         LeashKnotEntity leashKnotEntity2 = new LeashKnotEntity(world, pos);
         world.spawnEntity(leashKnotEntity2);
-        leashKnotEntity2.onPlace();
         return leashKnotEntity2;
     }
 
@@ -142,13 +140,11 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public Vec3d method_30951(float f) {
         return this.getLerpedPos(f).add(0.0, 0.2, 0.0);
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public ItemStack getPickBlockStack() {
         return new ItemStack(Items.LEAD);
     }

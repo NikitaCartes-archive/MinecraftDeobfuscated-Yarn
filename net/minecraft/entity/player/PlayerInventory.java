@@ -6,8 +6,6 @@ package net.minecraft.entity.player;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.function.Predicate;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.damage.DamageSource;
@@ -34,6 +32,11 @@ import net.minecraft.util.crash.CrashReportSection;
 public class PlayerInventory
 implements Inventory,
 Nameable {
+    public static final int field_30637 = 5;
+    public static final int MAIN_SIZE = 36;
+    private static final int HOTBAR_SIZE = 9;
+    public static final int field_30639 = 40;
+    public static final int field_30640 = -1;
     public final DefaultedList<ItemStack> main = DefaultedList.ofSize(36, ItemStack.EMPTY);
     public final DefaultedList<ItemStack> armor = DefaultedList.ofSize(4, ItemStack.EMPTY);
     public final DefaultedList<ItemStack> offHand = DefaultedList.ofSize(1, ItemStack.EMPTY);
@@ -69,7 +72,6 @@ Nameable {
         return -1;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void addPickBlock(ItemStack stack) {
         int i = this.getSlotWithStack(stack);
         if (PlayerInventory.isValidHotbarIndex(i)) {
@@ -99,7 +101,6 @@ Nameable {
         return slot >= 0 && slot < 9;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getSlotWithStack(ItemStack stack) {
         for (int i = 0; i < this.main.size(); ++i) {
             if (this.main.get(i).isEmpty() || !ItemStack.canCombine(stack, this.main.get(i))) continue;
@@ -133,7 +134,6 @@ Nameable {
         return this.selectedSlot;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void scrollInHotbar(double scrollAmount) {
         if (scrollAmount > 0.0) {
             scrollAmount = 1.0;
@@ -288,7 +288,7 @@ Nameable {
             }
             int j = itemStack.getMaxCount() - this.getStack(i).getCount();
             if (!this.insertStack(i, itemStack.split(j)) || !bl || !(this.player instanceof ServerPlayerEntity)) continue;
-            ((ServerPlayerEntity)this.player).networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, i, this.getStack(i)));
+            ((ServerPlayerEntity)this.player).networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(ScreenHandlerSlotUpdateS2CPacket.UPDATE_PLAYER_INVENTORY_SYNC_ID, i, this.getStack(i)));
         }
     }
 
@@ -355,7 +355,7 @@ Nameable {
         return this.main.get(this.selectedSlot).getMiningSpeedMultiplier(block);
     }
 
-    public NbtList serialize(NbtList tag) {
+    public NbtList writeNbt(NbtList nbtList) {
         NbtCompound nbtCompound;
         int i;
         for (i = 0; i < this.main.size(); ++i) {
@@ -363,31 +363,31 @@ Nameable {
             nbtCompound = new NbtCompound();
             nbtCompound.putByte("Slot", (byte)i);
             this.main.get(i).writeNbt(nbtCompound);
-            tag.add(nbtCompound);
+            nbtList.add(nbtCompound);
         }
         for (i = 0; i < this.armor.size(); ++i) {
             if (this.armor.get(i).isEmpty()) continue;
             nbtCompound = new NbtCompound();
             nbtCompound.putByte("Slot", (byte)(i + 100));
             this.armor.get(i).writeNbt(nbtCompound);
-            tag.add(nbtCompound);
+            nbtList.add(nbtCompound);
         }
         for (i = 0; i < this.offHand.size(); ++i) {
             if (this.offHand.get(i).isEmpty()) continue;
             nbtCompound = new NbtCompound();
             nbtCompound.putByte("Slot", (byte)(i + 150));
             this.offHand.get(i).writeNbt(nbtCompound);
-            tag.add(nbtCompound);
+            nbtList.add(nbtCompound);
         }
-        return tag;
+        return nbtList;
     }
 
-    public void deserialize(NbtList tag) {
+    public void readNbt(NbtList nbtList) {
         this.main.clear();
         this.armor.clear();
         this.offHand.clear();
-        for (int i = 0; i < tag.size(); ++i) {
-            NbtCompound nbtCompound = tag.getCompound(i);
+        for (int i = 0; i < nbtList.size(); ++i) {
+            NbtCompound nbtCompound = nbtList.getCompound(i);
             int j = nbtCompound.getByte("Slot") & 0xFF;
             ItemStack itemStack = ItemStack.fromNbt(nbtCompound);
             if (itemStack.isEmpty()) continue;
@@ -444,7 +444,6 @@ Nameable {
         return new TranslatableText("container.inventory");
     }
 
-    @Environment(value=EnvType.CLIENT)
     public ItemStack getArmorStack(int slot) {
         return this.armor.get(slot);
     }
@@ -480,7 +479,6 @@ Nameable {
         ++this.changeCount;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getChangeCount() {
         return this.changeCount;
     }
@@ -503,7 +501,6 @@ Nameable {
         return false;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean contains(Tag<Item> tag) {
         for (List list : this.combinedInventory) {
             for (ItemStack itemStack : list) {

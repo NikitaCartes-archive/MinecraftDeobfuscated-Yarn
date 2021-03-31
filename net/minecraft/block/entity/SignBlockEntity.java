@@ -5,10 +5,7 @@ package net.minecraft.block.entity;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.function.Function;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -34,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class SignBlockEntity
 extends BlockEntity {
+    public static final int field_31362 = 4;
     private static final String[] TEXT_KEYS = new String[]{"Text1", "Text2", "Text3", "Text4"};
     private static final String[] FILTERED_TEXT_KEYS = new String[]{"FilteredText1", "FilteredText2", "FilteredText3", "FilteredText4"};
     private final Text[] texts = new Text[]{LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY};
@@ -42,7 +40,6 @@ extends BlockEntity {
     private PlayerEntity editor;
     @Nullable
     private OrderedText[] textsBeingEdited;
-    @Environment(value=EnvType.CLIENT)
     private boolean filterText;
     private DyeColor textColor = DyeColor.BLACK;
     private boolean glowingText;
@@ -52,35 +49,35 @@ extends BlockEntity {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound tag) {
-        super.writeNbt(tag);
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
         for (int i = 0; i < 4; ++i) {
             Text text = this.texts[i];
             String string = Text.Serializer.toJson(text);
-            tag.putString(TEXT_KEYS[i], string);
+            nbt.putString(TEXT_KEYS[i], string);
             Text text2 = this.filteredTexts[i];
             if (text2.equals(text)) continue;
-            tag.putString(FILTERED_TEXT_KEYS[i], Text.Serializer.toJson(text2));
+            nbt.putString(FILTERED_TEXT_KEYS[i], Text.Serializer.toJson(text2));
         }
-        tag.putString("Color", this.textColor.getName());
-        tag.putBoolean("GlowingText", this.glowingText);
-        return tag;
+        nbt.putString("Color", this.textColor.getName());
+        nbt.putBoolean("GlowingText", this.glowingText);
+        return nbt;
     }
 
     @Override
-    public void readNbt(NbtCompound tag) {
+    public void readNbt(NbtCompound nbt) {
         this.editable = false;
-        super.readNbt(tag);
-        this.textColor = DyeColor.byName(tag.getString("Color"), DyeColor.BLACK);
+        super.readNbt(nbt);
+        this.textColor = DyeColor.byName(nbt.getString("Color"), DyeColor.BLACK);
         for (int i = 0; i < 4; ++i) {
             Text text;
-            String string = tag.getString(TEXT_KEYS[i]);
+            String string = nbt.getString(TEXT_KEYS[i]);
             this.texts[i] = text = this.parseTextFromJson(string);
             String string2 = FILTERED_TEXT_KEYS[i];
-            this.filteredTexts[i] = tag.contains(string2, NbtTypeIds.STRING) ? this.parseTextFromJson(tag.getString(string2)) : text;
+            this.filteredTexts[i] = nbt.contains(string2, 8) ? this.parseTextFromJson(nbt.getString(string2)) : text;
         }
         this.textsBeingEdited = null;
-        this.glowingText = tag.getBoolean("GlowingText");
+        this.glowingText = nbt.getBoolean("GlowingText");
     }
 
     private Text parseTextFromJson(String json) {
@@ -107,7 +104,6 @@ extends BlockEntity {
         return LiteralText.EMPTY;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Text getTextOnRow(int row, boolean filtered) {
         return this.getTexts(filtered)[row];
     }
@@ -122,7 +118,6 @@ extends BlockEntity {
         this.textsBeingEdited = null;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public OrderedText[] updateSign(boolean filterText, Function<Text, OrderedText> textOrderingFunction) {
         if (this.textsBeingEdited == null || this.filterText != filterText) {
             this.filterText = filterText;
@@ -141,7 +136,7 @@ extends BlockEntity {
     @Override
     @Nullable
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(this.pos, 9, this.toInitialChunkDataNbt());
+        return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.SIGN, this.toInitialChunkDataNbt());
     }
 
     @Override
@@ -158,7 +153,6 @@ extends BlockEntity {
         return this.editable;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void setEditable(boolean editable) {
         this.editable = editable;
         if (!editable) {
@@ -218,7 +212,7 @@ extends BlockEntity {
 
     private void updateListeners() {
         this.markDirty();
-        this.world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), SetBlockStateFlags.DEFAULT);
+        this.world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.NOTIFY_ALL);
     }
 }
 

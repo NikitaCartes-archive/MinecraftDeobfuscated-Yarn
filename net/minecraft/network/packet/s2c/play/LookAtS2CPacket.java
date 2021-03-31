@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
@@ -78,13 +76,11 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onLookAt(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public EntityAnchorArgumentType.EntityAnchor getSelfAnchor() {
         return this.selfAnchor;
     }
 
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     public Vec3d getTargetPosition(World world) {
         if (this.lookAtEntity) {
             Entity entity = world.getEntityById(this.entityId);

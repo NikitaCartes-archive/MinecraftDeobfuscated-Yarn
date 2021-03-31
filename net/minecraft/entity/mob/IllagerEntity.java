@@ -3,8 +3,6 @@
  */
 package net.minecraft.entity.mob;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.raid.RaiderEntity;
@@ -26,7 +24,6 @@ extends RaiderEntity {
         return EntityGroup.ILLAGER;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public State getState() {
         return State.CROSSED;
     }
@@ -43,7 +40,6 @@ extends RaiderEntity {
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static enum State {
         CROSSED,
         ATTACKING,

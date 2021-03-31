@@ -8,9 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -50,8 +47,16 @@ import org.jetbrains.annotations.Nullable;
 public class CrossbowItem
 extends RangedWeaponItem
 implements Vanishable {
+    private static final String CHARGED_KEY = "Charged";
+    private static final String CHARGED_PROJECTILES_KEY = "ChargedProjectiles";
+    private static final int field_30866 = 25;
+    public static final int RANGE = 8;
     private boolean charged = false;
     private boolean loaded = false;
+    private static final float field_30867 = 0.2f;
+    private static final float field_30868 = 0.5f;
+    private static final float field_30869 = 3.15f;
+    private static final float field_30870 = 1.6f;
 
     public CrossbowItem(Item.Settings settings) {
         super(settings);
@@ -145,28 +150,28 @@ implements Vanishable {
 
     public static boolean isCharged(ItemStack stack) {
         NbtCompound nbtCompound = stack.getTag();
-        return nbtCompound != null && nbtCompound.getBoolean("Charged");
+        return nbtCompound != null && nbtCompound.getBoolean(CHARGED_KEY);
     }
 
     public static void setCharged(ItemStack stack, boolean charged) {
         NbtCompound nbtCompound = stack.getOrCreateTag();
-        nbtCompound.putBoolean("Charged", charged);
+        nbtCompound.putBoolean(CHARGED_KEY, charged);
     }
 
     private static void putProjectile(ItemStack crossbow, ItemStack projectile) {
         NbtCompound nbtCompound = crossbow.getOrCreateTag();
-        NbtList nbtList = nbtCompound.contains("ChargedProjectiles", NbtTypeIds.LIST) ? nbtCompound.getList("ChargedProjectiles", NbtTypeIds.COMPOUND) : new NbtList();
+        NbtList nbtList = nbtCompound.contains(CHARGED_PROJECTILES_KEY, 9) ? nbtCompound.getList(CHARGED_PROJECTILES_KEY, 10) : new NbtList();
         NbtCompound nbtCompound2 = new NbtCompound();
         projectile.writeNbt(nbtCompound2);
         nbtList.add(nbtCompound2);
-        nbtCompound.put("ChargedProjectiles", nbtList);
+        nbtCompound.put(CHARGED_PROJECTILES_KEY, nbtList);
     }
 
     private static List<ItemStack> getProjectiles(ItemStack crossbow) {
         NbtList nbtList;
         ArrayList<ItemStack> list = Lists.newArrayList();
         NbtCompound nbtCompound = crossbow.getTag();
-        if (nbtCompound != null && nbtCompound.contains("ChargedProjectiles", NbtTypeIds.LIST) && (nbtList = nbtCompound.getList("ChargedProjectiles", NbtTypeIds.COMPOUND)) != null) {
+        if (nbtCompound != null && nbtCompound.contains(CHARGED_PROJECTILES_KEY, 9) && (nbtList = nbtCompound.getList(CHARGED_PROJECTILES_KEY, 10)) != null) {
             for (int i = 0; i < nbtList.size(); ++i) {
                 NbtCompound nbtCompound2 = nbtList.getCompound(i);
                 list.add(ItemStack.fromNbt(nbtCompound2));
@@ -178,9 +183,9 @@ implements Vanishable {
     private static void clearProjectiles(ItemStack crossbow) {
         NbtCompound nbtCompound = crossbow.getTag();
         if (nbtCompound != null) {
-            NbtList nbtList = nbtCompound.getList("ChargedProjectiles", NbtTypeIds.LIST);
+            NbtList nbtList = nbtCompound.getList(CHARGED_PROJECTILES_KEY, 9);
             nbtList.clear();
-            nbtCompound.put("ChargedProjectiles", nbtList);
+            nbtCompound.put(CHARGED_PROJECTILES_KEY, nbtList);
         }
     }
 
@@ -337,7 +342,6 @@ implements Vanishable {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         List<ItemStack> list = CrossbowItem.getProjectiles(stack);
         if (!CrossbowItem.isCharged(stack) || list.isEmpty()) {

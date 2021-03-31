@@ -24,6 +24,9 @@ import net.minecraft.util.Util;
 @Environment(value=EnvType.CLIENT)
 public class GameMenuScreen
 extends Screen {
+    private static final String field_32257 = "https://aka.ms/snapshotfeedback?ref=game";
+    private static final String field_32258 = "https://aka.ms/javafeedback?ref=game";
+    private static final String field_32259 = "https://aka.ms/snapshotbugs?ref=game";
     private final boolean showMenu;
 
     public GameMenuScreen(boolean showMenu) {
@@ -47,7 +50,7 @@ extends Screen {
         }));
         this.addButton(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 48 + -16, 98, 20, new TranslatableText("gui.advancements"), buttonWidget -> this.client.openScreen(new AdvancementsScreen(this.client.player.networkHandler.getAdvancementHandler()))));
         this.addButton(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 48 + -16, 98, 20, new TranslatableText("gui.stats"), buttonWidget -> this.client.openScreen(new StatsScreen(this, this.client.player.getStatHandler()))));
-        String string = SharedConstants.getGameVersion().isStable() ? "https://aka.ms/javafeedback?ref=game" : "https://aka.ms/snapshotfeedback?ref=game";
+        String string = SharedConstants.getGameVersion().isStable() ? field_32258 : field_32257;
         this.addButton(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 72 + -16, 98, 20, new TranslatableText("menu.sendFeedback"), buttonWidget -> this.client.openScreen(new ConfirmChatLinkScreen(bl -> {
             if (bl) {
                 Util.getOperatingSystem().open(string);
@@ -56,10 +59,10 @@ extends Screen {
         }, string, true))));
         this.addButton(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 72 + -16, 98, 20, new TranslatableText("menu.reportBugs"), buttonWidget -> this.client.openScreen(new ConfirmChatLinkScreen(bl -> {
             if (bl) {
-                Util.getOperatingSystem().open("https://aka.ms/snapshotbugs?ref=game");
+                Util.getOperatingSystem().open(field_32259);
             }
             this.client.openScreen(this);
-        }, "https://aka.ms/snapshotbugs?ref=game", true))));
+        }, field_32259, true))));
         this.addButton(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 96 + -16, 98, 20, new TranslatableText("menu.options"), buttonWidget -> this.client.openScreen(new OptionsScreen(this, this.client.options))));
         ButtonWidget buttonWidget2 = this.addButton(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 96 + -16, 98, 20, new TranslatableText("menu.shareToLan"), buttonWidget -> this.client.openScreen(new OpenToLanScreen(this))));
         buttonWidget2.active = this.client.isIntegratedServerRunning() && !this.client.getServer().isRemote();

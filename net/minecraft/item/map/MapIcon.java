@@ -4,8 +4,6 @@
 package net.minecraft.item.map;
 
 import java.util.Objects;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +24,6 @@ public class MapIcon {
         this.text = text;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public byte getTypeId() {
         return this.type.getId();
     }
@@ -47,7 +44,6 @@ public class MapIcon {
         return this.rotation;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isAlwaysRendered() {
         return this.type.isAlwaysRendered();
     }
@@ -123,7 +119,6 @@ public class MapIcon {
             return this.id;
         }
 
-        @Environment(value=EnvType.CLIENT)
         public boolean isAlwaysRendered() {
             return this.alwaysRender;
         }

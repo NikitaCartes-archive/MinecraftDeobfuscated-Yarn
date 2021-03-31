@@ -21,6 +21,8 @@ import net.minecraft.util.math.Vec3f;
 @Environment(value=EnvType.CLIENT)
 public class CampfireBlockEntityRenderer
 implements BlockEntityRenderer<CampfireBlockEntity> {
+    private static final float field_32824 = 0.375f;
+
     public CampfireBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
     }
 

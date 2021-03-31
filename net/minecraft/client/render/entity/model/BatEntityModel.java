@@ -11,6 +11,7 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.util.math.MathHelper;
@@ -28,25 +29,25 @@ extends SinglePartEntityModel<BatEntity> {
 
     public BatEntityModel(ModelPart root) {
         this.root = root;
-        this.head = root.getChild("head");
-        this.body = root.getChild("body");
-        this.rightWing = this.body.getChild("right_wing");
-        this.rightWingTip = this.rightWing.getChild("right_wing_tip");
-        this.leftWing = this.body.getChild("left_wing");
-        this.leftWingTip = this.leftWing.getChild("left_wing_tip");
+        this.head = root.getChild(EntityModelPartNames.HEAD);
+        this.body = root.getChild(EntityModelPartNames.BODY);
+        this.rightWing = this.body.getChild(EntityModelPartNames.RIGHT_WING);
+        this.rightWingTip = this.rightWing.getChild(EntityModelPartNames.RIGHT_WING_TIP);
+        this.leftWing = this.body.getChild(EntityModelPartNames.LEFT_WING);
+        this.leftWingTip = this.leftWing.getChild(EntityModelPartNames.LEFT_WING_TIP);
     }
 
     public static TexturedModelData getTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
-        ModelPartData modelPartData2 = modelPartData.addChild("head", ModelPartBuilder.create().uv(0, 0).cuboid(-3.0f, -3.0f, -3.0f, 6.0f, 6.0f, 6.0f), ModelTransform.NONE);
-        modelPartData2.addChild("right_ear", ModelPartBuilder.create().uv(24, 0).cuboid(-4.0f, -6.0f, -2.0f, 3.0f, 4.0f, 1.0f), ModelTransform.NONE);
-        modelPartData2.addChild("left_ear", ModelPartBuilder.create().uv(24, 0).mirrored().cuboid(1.0f, -6.0f, -2.0f, 3.0f, 4.0f, 1.0f), ModelTransform.NONE);
-        ModelPartData modelPartData3 = modelPartData.addChild("body", ModelPartBuilder.create().uv(0, 16).cuboid(-3.0f, 4.0f, -3.0f, 6.0f, 12.0f, 6.0f).uv(0, 34).cuboid(-5.0f, 16.0f, 0.0f, 10.0f, 6.0f, 1.0f), ModelTransform.NONE);
-        ModelPartData modelPartData4 = modelPartData3.addChild("right_wing", ModelPartBuilder.create().uv(42, 0).cuboid(-12.0f, 1.0f, 1.5f, 10.0f, 16.0f, 1.0f), ModelTransform.NONE);
-        modelPartData4.addChild("right_wing_tip", ModelPartBuilder.create().uv(24, 16).cuboid(-8.0f, 1.0f, 0.0f, 8.0f, 12.0f, 1.0f), ModelTransform.pivot(-12.0f, 1.0f, 1.5f));
-        ModelPartData modelPartData5 = modelPartData3.addChild("left_wing", ModelPartBuilder.create().uv(42, 0).mirrored().cuboid(2.0f, 1.0f, 1.5f, 10.0f, 16.0f, 1.0f), ModelTransform.NONE);
-        modelPartData5.addChild("left_wing_tip", ModelPartBuilder.create().uv(24, 16).mirrored().cuboid(0.0f, 1.0f, 0.0f, 8.0f, 12.0f, 1.0f), ModelTransform.pivot(12.0f, 1.0f, 1.5f));
+        ModelPartData modelPartData2 = modelPartData.addChild(EntityModelPartNames.HEAD, ModelPartBuilder.create().uv(0, 0).cuboid(-3.0f, -3.0f, -3.0f, 6.0f, 6.0f, 6.0f), ModelTransform.NONE);
+        modelPartData2.addChild(EntityModelPartNames.RIGHT_EAR, ModelPartBuilder.create().uv(24, 0).cuboid(-4.0f, -6.0f, -2.0f, 3.0f, 4.0f, 1.0f), ModelTransform.NONE);
+        modelPartData2.addChild(EntityModelPartNames.LEFT_EAR, ModelPartBuilder.create().uv(24, 0).mirrored().cuboid(1.0f, -6.0f, -2.0f, 3.0f, 4.0f, 1.0f), ModelTransform.NONE);
+        ModelPartData modelPartData3 = modelPartData.addChild(EntityModelPartNames.BODY, ModelPartBuilder.create().uv(0, 16).cuboid(-3.0f, 4.0f, -3.0f, 6.0f, 12.0f, 6.0f).uv(0, 34).cuboid(-5.0f, 16.0f, 0.0f, 10.0f, 6.0f, 1.0f), ModelTransform.NONE);
+        ModelPartData modelPartData4 = modelPartData3.addChild(EntityModelPartNames.RIGHT_WING, ModelPartBuilder.create().uv(42, 0).cuboid(-12.0f, 1.0f, 1.5f, 10.0f, 16.0f, 1.0f), ModelTransform.NONE);
+        modelPartData4.addChild(EntityModelPartNames.RIGHT_WING_TIP, ModelPartBuilder.create().uv(24, 16).cuboid(-8.0f, 1.0f, 0.0f, 8.0f, 12.0f, 1.0f), ModelTransform.pivot(-12.0f, 1.0f, 1.5f));
+        ModelPartData modelPartData5 = modelPartData3.addChild(EntityModelPartNames.LEFT_WING, ModelPartBuilder.create().uv(42, 0).mirrored().cuboid(2.0f, 1.0f, 1.5f, 10.0f, 16.0f, 1.0f), ModelTransform.NONE);
+        modelPartData5.addChild(EntityModelPartNames.LEFT_WING_TIP, ModelPartBuilder.create().uv(24, 16).mirrored().cuboid(0.0f, 1.0f, 0.0f, 8.0f, 12.0f, 1.0f), ModelTransform.pivot(12.0f, 1.0f, 1.5f));
         return TexturedModelData.of(modelData, 64, 64);
     }
 

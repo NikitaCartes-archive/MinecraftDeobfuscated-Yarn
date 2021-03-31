@@ -11,8 +11,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import org.jetbrains.annotations.Nullable;
 
 public enum Formatting {
@@ -39,6 +37,7 @@ public enum Formatting {
     ITALIC("ITALIC", 'o', true),
     RESET("RESET", 'r', -1, null);
 
+    public static final char field_33292 = '\u00a7';
     private static final Map<String, Formatting> BY_NAME;
     private static final Pattern FORMATTING_CODE_PATTERN;
     private final String name;
@@ -68,6 +67,10 @@ public enum Formatting {
         this.colorIndex = colorIndex;
         this.colorValue = colorValue;
         this.stringValue = "\u00a7" + code;
+    }
+
+    public char getCode() {
+        return this.code;
     }
 
     public int getColorIndex() {
@@ -121,7 +124,6 @@ public enum Formatting {
     }
 
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     public static Formatting byCode(char code) {
         char c = Character.toString(code).toLowerCase(Locale.ROOT).charAt(0);
         for (Formatting formatting : Formatting.values()) {

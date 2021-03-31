@@ -3,6 +3,7 @@
  */
 package net.minecraft.world.biome.layer;
 
+import net.minecraft.world.biome.BiomeIds;
 import net.minecraft.world.biome.layer.BiomeLayers;
 import net.minecraft.world.biome.layer.type.CrossSamplingLayer;
 import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
@@ -29,19 +30,19 @@ public enum AddDeepOceanLayer implements CrossSamplingLayer
                 ++i;
             }
             if (i > 3) {
-                if (center == 44) {
+                if (center == BiomeIds.WARM_OCEAN) {
                     return 47;
                 }
-                if (center == 45) {
+                if (center == BiomeIds.LUKEWARM_OCEAN) {
                     return 48;
                 }
                 if (center == 0) {
                     return 24;
                 }
-                if (center == 46) {
+                if (center == BiomeIds.COLD_OCEAN) {
                     return 49;
                 }
-                if (center == 10) {
+                if (center == BiomeIds.FROZEN_OCEAN) {
                     return 50;
                 }
                 return 24;

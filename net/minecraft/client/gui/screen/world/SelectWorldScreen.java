@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.gui.screen.world;
 
+import java.io.IOException;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -13,8 +14,17 @@ import net.minecraft.client.gui.screen.world.WorldListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.world.GeneratorType;
+import net.minecraft.resource.DataPackSettings;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.FileNameUtil;
+import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.GameMode;
+import net.minecraft.world.GameRules;
+import net.minecraft.world.gen.GeneratorOptions;
+import net.minecraft.world.level.LevelInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -109,6 +119,24 @@ extends Screen {
     public void removed() {
         if (this.levelList != null) {
             this.levelList.children().forEach(WorldListWidget.Entry::close);
+        }
+    }
+
+    private /* synthetic */ void method_35739(ButtonWidget buttonWidget) {
+        try {
+            WorldListWidget.Entry entry;
+            String string = "DEBUG world";
+            if (!this.levelList.children().isEmpty() && (entry = (WorldListWidget.Entry)this.levelList.children().get(0)).method_35740().equals("DEBUG world")) {
+                entry.method_33685();
+            }
+            DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
+            long l = "test1".hashCode();
+            GeneratorOptions generatorOptions = GeneratorType.DEFAULT.createDefaultOptions(impl, l, true, false);
+            LevelInfo levelInfo = new LevelInfo("DEBUG world", GameMode.SPECTATOR, false, Difficulty.NORMAL, true, new GameRules(), DataPackSettings.SAFE_MODE);
+            String string2 = FileNameUtil.getNextUniqueName(this.client.getLevelStorage().getSavesDirectory(), "DEBUG world", "");
+            this.client.method_29607(string2, levelInfo, impl, generatorOptions);
+        } catch (IOException iOException) {
+            field_28783.error("Failed to recreate the debug world", (Throwable)iOException);
         }
     }
 }

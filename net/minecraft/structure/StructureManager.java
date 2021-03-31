@@ -16,7 +16,6 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
 import java.util.Map;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
@@ -35,6 +34,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class StructureManager {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final String field_31684 = "structures";
+    private static final String field_31685 = ".nbt";
+    private static final String field_31686 = ".snbt";
     private final Map<Identifier, Structure> structures = Maps.newHashMap();
     private final DataFixer dataFixer;
     private ResourceManager resourceManager;
@@ -75,7 +77,7 @@ public class StructureManager {
      */
     @Nullable
     private Structure loadStructureFromResource(Identifier id) {
-        Identifier identifier = new Identifier(id.getNamespace(), "structures/" + id.getPath() + ".nbt");
+        Identifier identifier = new Identifier(id.getNamespace(), "structures/" + id.getPath() + field_31685);
         try (Resource resource = this.resourceManager.getResource(identifier);){
             Structure structure = this.readStructure(resource.getInputStream());
             return structure;
@@ -97,7 +99,7 @@ public class StructureManager {
         if (!this.generatedPath.toFile().isDirectory()) {
             return null;
         }
-        Path path = this.getAndCheckStructurePath(id, ".nbt");
+        Path path = this.getAndCheckStructurePath(id, field_31685);
         try (FileInputStream inputStream = new FileInputStream(path.toFile());){
             Structure structure = this.readStructure(inputStream);
             return structure;
@@ -114,12 +116,12 @@ public class StructureManager {
         return this.createStructure(nbtCompound);
     }
 
-    public Structure createStructure(NbtCompound tag) {
-        if (!tag.contains("DataVersion", NbtTypeIds.NUMBER)) {
-            tag.putInt("DataVersion", 500);
+    public Structure createStructure(NbtCompound nbt) {
+        if (!nbt.contains("DataVersion", 99)) {
+            nbt.putInt("DataVersion", 500);
         }
         Structure structure = new Structure();
-        structure.readNbt(NbtHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, tag, tag.getInt("DataVersion")));
+        structure.readNbt(NbtHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, nbt, nbt.getInt("DataVersion")));
         return structure;
     }
 
@@ -128,7 +130,7 @@ public class StructureManager {
         if (structure == null) {
             return false;
         }
-        Path path = this.getAndCheckStructurePath(id, ".nbt");
+        Path path = this.getAndCheckStructurePath(id, field_31685);
         Path path2 = path.getParent();
         if (path2 == null) {
             return false;
@@ -151,7 +153,7 @@ public class StructureManager {
     public Path getStructurePath(Identifier id, String extension) {
         try {
             Path path = this.generatedPath.resolve(id.getNamespace());
-            Path path2 = path.resolve("structures");
+            Path path2 = path.resolve(field_31684);
             return FileNameUtil.getResourcePath(path2, id.getPath(), extension);
         } catch (InvalidPathException invalidPathException) {
             throw new InvalidIdentifierException("Invalid resource path: " + id, invalidPathException);

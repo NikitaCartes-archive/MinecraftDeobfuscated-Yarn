@@ -30,8 +30,8 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.advancement.Advancement;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BeaconBlockEntity;
@@ -191,6 +191,7 @@ import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.NbtQueryResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
@@ -224,7 +225,6 @@ import net.minecraft.network.packet.s2c.play.StopSoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeTagsS2CPacket;
-import net.minecraft.network.packet.s2c.play.TagQueryResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
@@ -602,7 +602,7 @@ implements ClientPlayPacketListener {
     @Override
     public void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        int i = SetBlockStateFlags.DEFAULT | SetBlockStateFlags.FORCE_STATE | (packet.method_31179() ? SetBlockStateFlags.SKIP_LIGHTING_UPDATES : 0);
+        int i = Block.NOTIFY_ALL | Block.FORCE_STATE | (packet.shouldSkipLightingUpdates() ? Block.SKIP_LIGHTING_UPDATES : 0);
         packet.visitUpdates((blockPos, blockState) -> this.world.setBlockState((BlockPos)blockPos, (BlockState)blockState, i));
     }
 
@@ -719,17 +719,17 @@ implements ClientPlayPacketListener {
         if (packet.getAnimationId() == 0) {
             LivingEntity livingEntity = (LivingEntity)entity;
             livingEntity.swingHand(Hand.MAIN_HAND);
-        } else if (packet.getAnimationId() == 3) {
+        } else if (packet.getAnimationId() == EntityAnimationS2CPacket.SWING_OFF_HAND) {
             LivingEntity livingEntity = (LivingEntity)entity;
             livingEntity.swingHand(Hand.OFF_HAND);
-        } else if (packet.getAnimationId() == 1) {
+        } else if (packet.getAnimationId() == EntityAnimationS2CPacket.DAMAGE) {
             entity.animateDamage();
-        } else if (packet.getAnimationId() == 2) {
+        } else if (packet.getAnimationId() == EntityAnimationS2CPacket.WAKE_UP) {
             PlayerEntity playerEntity = (PlayerEntity)entity;
             playerEntity.wakeUp(false, false);
-        } else if (packet.getAnimationId() == 4) {
+        } else if (packet.getAnimationId() == EntityAnimationS2CPacket.CRIT) {
             this.client.particleManager.addEmitter(entity, ParticleTypes.CRIT);
-        } else if (packet.getAnimationId() == 5) {
+        } else if (packet.getAnimationId() == EntityAnimationS2CPacket.ENCHANTED_HIT) {
             this.client.particleManager.addEmitter(entity, ParticleTypes.ENCHANTED_HIT);
         }
     }
@@ -846,11 +846,13 @@ implements ClientPlayPacketListener {
         if (registryKey != clientPlayerEntity.world.getRegistryKey()) {
             ClientWorld.Properties properties;
             Scoreboard scoreboard = this.world.getScoreboard();
+            Map<String, MapState> map = this.world.method_35754();
             boolean bl = packet.isDebugWorld();
             boolean bl2 = packet.isFlatWorld();
             this.worldProperties = properties = new ClientWorld.Properties(this.worldProperties.getDifficulty(), this.worldProperties.isHardcore(), bl2);
             this.world = new ClientWorld(this, properties, registryKey, dimensionType, this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer, bl, packet.getSha256Seed());
             this.world.setScoreboard(scoreboard);
+            this.world.method_35753(map);
             this.client.joinWorld(this.world);
             this.client.openScreen(new DownloadingTerrainScreen());
         }
@@ -916,11 +918,11 @@ implements ClientPlayPacketListener {
         ItemStack itemStack = packet.getItemStack();
         int i = packet.getSlot();
         this.client.getTutorialManager().onSlotUpdate(itemStack);
-        if (packet.getSyncId() == -1) {
+        if (packet.getSyncId() == ScreenHandlerSlotUpdateS2CPacket.UPDATE_CURSOR_SYNC_ID) {
             if (!(this.client.currentScreen instanceof CreativeInventoryScreen)) {
                 playerEntity.currentScreenHandler.setCursorStack(itemStack);
             }
-        } else if (packet.getSyncId() == -2) {
+        } else if (packet.getSyncId() == ScreenHandlerSlotUpdateS2CPacket.UPDATE_PLAYER_INVENTORY_SYNC_ID) {
             playerEntity.getInventory().setStack(i, itemStack);
         } else {
             boolean bl = false;
@@ -971,9 +973,9 @@ implements ClientPlayPacketListener {
         BlockPos blockPos = packet.getPos();
         BlockEntity blockEntity = this.client.world.getBlockEntity(blockPos);
         int i = packet.getBlockEntityType();
-        boolean bl2 = bl = i == 2 && blockEntity instanceof CommandBlockBlockEntity;
-        if (i == 1 && blockEntity instanceof MobSpawnerBlockEntity || bl || i == 3 && blockEntity instanceof BeaconBlockEntity || i == 4 && blockEntity instanceof SkullBlockEntity || i == 6 && blockEntity instanceof BannerBlockEntity || i == 7 && blockEntity instanceof StructureBlockBlockEntity || i == 8 && blockEntity instanceof EndGatewayBlockEntity || i == 9 && blockEntity instanceof SignBlockEntity || i == 11 && blockEntity instanceof BedBlockEntity || i == 5 && blockEntity instanceof ConduitBlockEntity || i == 12 && blockEntity instanceof JigsawBlockEntity || i == 13 && blockEntity instanceof CampfireBlockEntity || i == 14 && blockEntity instanceof BeehiveBlockEntity) {
-            blockEntity.readNbt(packet.getCompoundTag());
+        boolean bl2 = bl = i == BlockEntityUpdateS2CPacket.COMMAND_BLOCK && blockEntity instanceof CommandBlockBlockEntity;
+        if (i == BlockEntityUpdateS2CPacket.MOB_SPAWNER && blockEntity instanceof MobSpawnerBlockEntity || bl || i == BlockEntityUpdateS2CPacket.BEACON && blockEntity instanceof BeaconBlockEntity || i == BlockEntityUpdateS2CPacket.SKULL && blockEntity instanceof SkullBlockEntity || i == BlockEntityUpdateS2CPacket.BANNER && blockEntity instanceof BannerBlockEntity || i == BlockEntityUpdateS2CPacket.STRUCTURE && blockEntity instanceof StructureBlockBlockEntity || i == BlockEntityUpdateS2CPacket.END_GATEWAY && blockEntity instanceof EndGatewayBlockEntity || i == BlockEntityUpdateS2CPacket.SIGN && blockEntity instanceof SignBlockEntity || i == BlockEntityUpdateS2CPacket.BED && blockEntity instanceof BedBlockEntity || i == BlockEntityUpdateS2CPacket.CONDUIT && blockEntity instanceof ConduitBlockEntity || i == BlockEntityUpdateS2CPacket.JIGSAW && blockEntity instanceof JigsawBlockEntity || i == BlockEntityUpdateS2CPacket.CAMPFIRE && blockEntity instanceof CampfireBlockEntity || i == BlockEntityUpdateS2CPacket.BEEHIVE && blockEntity instanceof BeehiveBlockEntity) {
+            blockEntity.readNbt(packet.getNbt());
         }
         if (bl && this.client.currentScreen instanceof CommandBlockScreen) {
             ((CommandBlockScreen)this.client.currentScreen).updateCommandBlock();
@@ -1042,15 +1044,15 @@ implements ClientPlayPacketListener {
             }
         } else if (reason == GameStateChangeS2CPacket.DEMO_MESSAGE_SHOWN) {
             GameOptions gameOptions = this.client.options;
-            if (f == 0.0f) {
+            if (f == GameStateChangeS2CPacket.DEMO_OPEN_SCREEN) {
                 this.client.openScreen(new DemoScreen());
-            } else if (f == 101.0f) {
+            } else if (f == GameStateChangeS2CPacket.DEMO_MOVEMENT_HELP) {
                 this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.help.movement", gameOptions.keyForward.getBoundKeyLocalizedText(), gameOptions.keyLeft.getBoundKeyLocalizedText(), gameOptions.keyBack.getBoundKeyLocalizedText(), gameOptions.keyRight.getBoundKeyLocalizedText()));
-            } else if (f == 102.0f) {
+            } else if (f == GameStateChangeS2CPacket.DEMO_JUMP_HELP) {
                 this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.help.jump", gameOptions.keyJump.getBoundKeyLocalizedText()));
-            } else if (f == 103.0f) {
+            } else if (f == GameStateChangeS2CPacket.DEMO_INVENTORY_HELP) {
                 this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.help.inventory", gameOptions.keyInventory.getBoundKeyLocalizedText()));
-            } else if (f == 104.0f) {
+            } else if (f == GameStateChangeS2CPacket.DEMO_EXPIRY_NOTICE) {
                 this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.day.6", gameOptions.keyScreenshot.getBoundKeyLocalizedText()));
             }
         } else if (reason == GameStateChangeS2CPacket.PROJECTILE_HIT_PLAYER) {
@@ -1067,7 +1069,7 @@ implements ClientPlayPacketListener {
                 this.world.playSound(playerEntity, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.HOSTILE, 1.0f, 1.0f);
             }
         } else if (reason == GameStateChangeS2CPacket.IMMEDIATE_RESPAWN) {
-            this.client.player.setShowsDeathScreen(f == 0.0f);
+            this.client.player.setShowsDeathScreen(f == GameStateChangeS2CPacket.DEMO_OPEN_SCREEN);
         }
     }
 
@@ -1079,10 +1081,7 @@ implements ClientPlayPacketListener {
         String string = FilledMapItem.getMapName(i);
         MapState mapState = this.client.world.getMapState(string);
         if (mapState == null) {
-            mapState = mapRenderer.getMapTextureFromId(i);
-            if (mapState == null) {
-                mapState = MapState.of(packet.getScale(), packet.isLocked(), this.client.world.getRegistryKey());
-            }
+            mapState = MapState.of(packet.getScale(), packet.isLocked(), this.client.world.getRegistryKey());
             this.client.world.putMapState(string, mapState);
         }
         packet.apply(mapState);
@@ -1157,9 +1156,9 @@ implements ClientPlayPacketListener {
     }
 
     @Override
-    public void onTagQuery(TagQueryResponseS2CPacket packet) {
+    public void onTagQuery(NbtQueryResponseS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        if (!this.dataQueryHandler.handleQueryResponse(packet.getTransactionId(), packet.getTag())) {
+        if (!this.dataQueryHandler.handleQueryResponse(packet.getTransactionId(), packet.getNbt())) {
             LOGGER.debug("Got unhandled response to tag query {}", (Object)packet.getTransactionId());
         }
     }
@@ -1673,32 +1672,32 @@ implements ClientPlayPacketListener {
                 Path path2 = bl2 ? Path.fromBuffer(packetByteBuf) : null;
                 boolean bl3 = packetByteBuf.readBoolean();
                 VillageDebugRenderer.Brain brain = new VillageDebugRenderer.Brain(uUID, o, string3, string4, p, h, q, position, string5, path2, bl3);
-                int r = packetByteBuf.readInt();
+                int r = packetByteBuf.readVarInt();
                 for (s = 0; s < r; ++s) {
                     String string6 = packetByteBuf.readString();
                     brain.field_18927.add(string6);
                 }
-                s = packetByteBuf.readInt();
+                s = packetByteBuf.readVarInt();
                 for (t = 0; t < s; ++t) {
                     String string7 = packetByteBuf.readString();
                     brain.field_18928.add(string7);
                 }
-                t = packetByteBuf.readInt();
+                t = packetByteBuf.readVarInt();
                 for (u = 0; u < t; ++u) {
                     String string8 = packetByteBuf.readString();
                     brain.field_19374.add(string8);
                 }
-                u = packetByteBuf.readInt();
+                u = packetByteBuf.readVarInt();
                 for (v = 0; v < u; ++v) {
                     BlockPos blockPos3 = packetByteBuf.readBlockPos();
                     brain.pointsOfInterest.add(blockPos3);
                 }
-                v = packetByteBuf.readInt();
+                v = packetByteBuf.readVarInt();
                 for (w = 0; w < v; ++w) {
                     BlockPos blockPos4 = packetByteBuf.readBlockPos();
                     brain.field_25287.add(blockPos4);
                 }
-                w = packetByteBuf.readInt();
+                w = packetByteBuf.readVarInt();
                 for (int x = 0; x < w; ++x) {
                     String string9 = packetByteBuf.readString();
                     brain.field_19375.add(string9);
@@ -1729,12 +1728,12 @@ implements ClientPlayPacketListener {
                     path3 = Path.fromBuffer(packetByteBuf);
                 }
                 BeeDebugRenderer.Bee bee = new BeeDebugRenderer.Bee(uUID, o, position, path3, blockPos5, blockPos6, y);
-                int z = packetByteBuf.readInt();
+                int z = packetByteBuf.readVarInt();
                 for (aa = 0; aa < z; ++aa) {
                     String string10 = packetByteBuf.readString();
                     bee.labels.add(string10);
                 }
-                aa = packetByteBuf.readInt();
+                aa = packetByteBuf.readVarInt();
                 for (int r = 0; r < aa; ++r) {
                     BlockPos blockPos7 = packetByteBuf.readBlockPos();
                     bee.blacklist.add(blockPos7);
@@ -1784,9 +1783,9 @@ implements ClientPlayPacketListener {
             scoreboard.addObjective(string, ScoreboardCriterion.DUMMY, packet.getDisplayName(), packet.getType());
         } else if (scoreboard.containsObjective(string)) {
             ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(string);
-            if (packet.getMode() == 1) {
+            if (packet.getMode() == ScoreboardObjectiveUpdateS2CPacket.REMOVE_MODE) {
                 scoreboard.removeObjective(scoreboardObjective);
-            } else if (packet.getMode() == 2) {
+            } else if (packet.getMode() == ScoreboardObjectiveUpdateS2CPacket.UPDATE_MODE) {
                 scoreboardObjective.setRenderType(packet.getType());
                 scoreboardObjective.setDisplayName(packet.getDisplayName());
             }
@@ -1937,11 +1936,11 @@ implements ClientPlayPacketListener {
         BitSet bitSet = packet.getSkyLightMask();
         BitSet bitSet2 = packet.getFilledSkyLightMask();
         Iterator<byte[]> iterator = packet.getSkyLightUpdates().iterator();
-        this.updateLighting(i, j, lightingProvider, LightType.SKY, bitSet, bitSet2, iterator, packet.method_30006());
+        this.updateLighting(i, j, lightingProvider, LightType.SKY, bitSet, bitSet2, iterator, packet.isNotEdge());
         BitSet bitSet3 = packet.getBlockLightMask();
         BitSet bitSet4 = packet.getFilledBlockLightMask();
         Iterator<byte[]> iterator2 = packet.getBlockLightUpdates().iterator();
-        this.updateLighting(i, j, lightingProvider, LightType.BLOCK, bitSet3, bitSet4, iterator2, packet.method_30006());
+        this.updateLighting(i, j, lightingProvider, LightType.BLOCK, bitSet3, bitSet4, iterator2, packet.isNotEdge());
     }
 
     @Override

@@ -19,6 +19,8 @@ import net.minecraft.world.World;
 
 public class SecondaryPointsOfInterestSensor
 extends Sensor<VillagerEntity> {
+    private static final int field_30257 = 40;
+
     public SecondaryPointsOfInterestSensor() {
         super(40);
     }

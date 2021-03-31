@@ -3,8 +3,6 @@
  */
 package net.minecraft.screen;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.AnvilScreenHandler;
 import net.minecraft.screen.BeaconScreenHandler;
@@ -63,13 +61,11 @@ public class ScreenHandlerType<T extends ScreenHandler> {
         this.factory = factory;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public T create(int syncId, PlayerInventory playerInventory) {
         return this.factory.create(syncId, playerInventory);
     }
 
     static interface Factory<T extends ScreenHandler> {
-        @Environment(value=EnvType.CLIENT)
         public T create(int var1, PlayerInventory var2);
     }
 }

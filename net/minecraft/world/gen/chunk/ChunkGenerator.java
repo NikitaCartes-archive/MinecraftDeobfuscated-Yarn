@@ -14,13 +14,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
+import net.minecraft.util.collection.Pool;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -130,7 +129,6 @@ public abstract class ChunkGenerator {
 
     protected abstract Codec<? extends ChunkGenerator> getCodec();
 
-    @Environment(value=EnvType.CLIENT)
     public abstract ChunkGenerator withSeed(long var1);
 
     public void populateBiomes(Registry<Biome> biomeRegistry, Chunk chunk) {
@@ -248,7 +246,7 @@ public abstract class ChunkGenerator {
         return 384;
     }
 
-    public List<SpawnSettings.SpawnEntry> getEntitySpawnList(Biome biome, StructureAccessor accessor, SpawnGroup group, BlockPos pos) {
+    public Pool<SpawnSettings.SpawnEntry> getEntitySpawnList(Biome biome, StructureAccessor accessor, SpawnGroup group, BlockPos pos) {
         return biome.getSpawnSettings().getSpawnEntries(group);
     }
 
@@ -292,7 +290,7 @@ public abstract class ChunkGenerator {
                 long p = ChunkPos.toLong(n, o);
                 for (StructureStart<?> structureStart : world.getChunk(n, o).getStructureStarts().values()) {
                     try {
-                        if (structureStart == StructureStart.DEFAULT || !structureStart.getBoundingBox().intersectsXZ(l, m, l + 15, m + 15)) continue;
+                        if (!structureStart.hasChildren() || !structureStart.setBoundingBoxFromChildren().intersectsXZ(l, m, l + 15, m + 15)) continue;
                         accessor.addStructureReference(chunkSectionPos, structureStart.getFeature(), p, chunk);
                         DebugInfoSender.sendStructureStart(world, structureStart);
                     } catch (Exception exception) {

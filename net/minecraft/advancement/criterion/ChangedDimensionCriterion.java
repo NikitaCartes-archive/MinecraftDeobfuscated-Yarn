@@ -28,8 +28,8 @@ extends AbstractCriterion<Conditions> {
 
     @Override
     public Conditions conditionsFromJson(JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer) {
-        RegistryKey<World> registryKey = jsonObject.has("from") ? RegistryKey.of(Registry.DIMENSION, new Identifier(JsonHelper.getString(jsonObject, "from"))) : null;
-        RegistryKey<World> registryKey2 = jsonObject.has("to") ? RegistryKey.of(Registry.DIMENSION, new Identifier(JsonHelper.getString(jsonObject, "to"))) : null;
+        RegistryKey<World> registryKey = jsonObject.has("from") ? RegistryKey.of(Registry.WORLD_KEY, new Identifier(JsonHelper.getString(jsonObject, "from"))) : null;
+        RegistryKey<World> registryKey2 = jsonObject.has("to") ? RegistryKey.of(Registry.WORLD_KEY, new Identifier(JsonHelper.getString(jsonObject, "to"))) : null;
         return new Conditions(extended, registryKey, registryKey2);
     }
 
@@ -55,8 +55,20 @@ extends AbstractCriterion<Conditions> {
             this.to = to;
         }
 
+        public static Conditions create() {
+            return new Conditions(EntityPredicate.Extended.EMPTY, null, null);
+        }
+
+        public static Conditions create(RegistryKey<World> from, RegistryKey<World> to) {
+            return new Conditions(EntityPredicate.Extended.EMPTY, from, to);
+        }
+
         public static Conditions to(RegistryKey<World> to) {
             return new Conditions(EntityPredicate.Extended.EMPTY, null, to);
+        }
+
+        public static Conditions from(RegistryKey<World> from) {
+            return new Conditions(EntityPredicate.Extended.EMPTY, from, null);
         }
 
         public boolean matches(RegistryKey<World> from, RegistryKey<World> to) {

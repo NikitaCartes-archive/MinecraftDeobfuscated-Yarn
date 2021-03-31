@@ -14,11 +14,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -95,6 +90,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
@@ -104,6 +100,13 @@ public class FoxEntity
 extends AnimalEntity {
     private static final TrackedData<Integer> TYPE = DataTracker.registerData(FoxEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Byte> FOX_FLAGS = DataTracker.registerData(FoxEntity.class, TrackedDataHandlerRegistry.BYTE);
+    private static final int field_30331 = 1;
+    public static final int field_30328 = 4;
+    public static final int field_30329 = 8;
+    public static final int field_30330 = 16;
+    private static final int field_30332 = 32;
+    private static final int field_30333 = 64;
+    private static final int field_30334 = 128;
     private static final TrackedData<Optional<UUID>> OWNER = DataTracker.registerData(FoxEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
     private static final TrackedData<Optional<UUID>> OTHER_TRUSTED = DataTracker.registerData(FoxEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
     private static final Predicate<ItemEntity> PICKABLE_DROP_FILTER = item -> !item.cannotPickup() && item.isAlive();
@@ -116,6 +119,7 @@ extends AnimalEntity {
     };
     private static final Predicate<Entity> CHICKEN_AND_RABBIT_FILTER = entity -> entity instanceof ChickenEntity || entity instanceof RabbitEntity;
     private static final Predicate<Entity> NOTICEABLE_PLAYER_FILTER = entity -> !entity.isSneaky() && EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test((Entity)entity);
+    private static final int field_30335 = 600;
     private Goal followChickenAndRabbitGoal;
     private Goal followBabyTurtleGoal;
     private Goal followFishGoal;
@@ -229,7 +233,6 @@ extends AnimalEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void handleStatus(byte status) {
         if (status == 45) {
             ItemStack itemStack = this.getEquippedStack(EquipmentSlot.MAINHAND);
@@ -257,7 +260,7 @@ extends AnimalEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         Optional<RegistryKey<Biome>> optional = world.getBiomeKey(this.getBlockPos());
         Type type = Type.fromBiome(optional);
         boolean bl = false;
@@ -277,7 +280,7 @@ extends AnimalEntity {
             this.addTypeSpecificGoals();
         }
         this.initEquipment(difficulty);
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     private void addTypeSpecificGoals() {
@@ -332,32 +335,32 @@ extends AnimalEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
         List<UUID> list = this.getTrustedUuids();
         NbtList nbtList = new NbtList();
         for (UUID uUID : list) {
             if (uUID == null) continue;
             nbtList.add(NbtHelper.fromUuid(uUID));
         }
-        tag.put("Trusted", nbtList);
-        tag.putBoolean("Sleeping", this.isSleeping());
-        tag.putString("Type", this.getFoxType().getKey());
-        tag.putBoolean("Sitting", this.isSitting());
-        tag.putBoolean("Crouching", this.isInSneakingPose());
+        nbt.put("Trusted", nbtList);
+        nbt.putBoolean("Sleeping", this.isSleeping());
+        nbt.putString("Type", this.getFoxType().getKey());
+        nbt.putBoolean("Sitting", this.isSitting());
+        nbt.putBoolean("Crouching", this.isInSneakingPose());
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        NbtList nbtList = tag.getList("Trusted", NbtTypeIds.INT_ARRAY);
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        NbtList nbtList = nbt.getList("Trusted", 11);
         for (int i = 0; i < nbtList.size(); ++i) {
             this.addTrustedUuid(NbtHelper.toUuid(nbtList.get(i)));
         }
-        this.setSleeping(tag.getBoolean("Sleeping"));
-        this.setType(Type.byName(tag.getString("Type")));
-        this.setSitting(tag.getBoolean("Sitting"));
-        this.setCrouching(tag.getBoolean("Crouching"));
+        this.setSleeping(nbt.getBoolean("Sleeping"));
+        this.setType(Type.byName(nbt.getString("Type")));
+        this.setSitting(nbt.getBoolean("Sitting"));
+        this.setCrouching(nbt.getBoolean("Crouching"));
         if (this.world instanceof ServerWorld) {
             this.addTypeSpecificGoals();
         }
@@ -506,6 +509,10 @@ extends AnimalEntity {
         this.setFoxFlag(16, chasing);
     }
 
+    public boolean method_35172() {
+        return this.jumping;
+    }
+
     public boolean isFullyCrouched() {
         return this.extraRollingHeight == 3.0f;
     }
@@ -527,12 +534,10 @@ extends AnimalEntity {
         return this.getFoxFlag(8);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getHeadRoll(float tickDelta) {
         return MathHelper.lerp(tickDelta, this.lastHeadRollProgress, this.headRollProgress) * 0.11f * (float)Math.PI;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getBodyRotationHeightOffset(float tickDelta) {
         return MathHelper.lerp(tickDelta, this.lastExtraRollingHeight, this.extraRollingHeight);
     }
@@ -633,7 +638,6 @@ extends AnimalEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public Vec3d method_29919() {
         return new Vec3d(0.0, 0.55f * this.getStandingEyeHeight(), this.getWidth() * 0.4f);
     }
@@ -893,6 +897,7 @@ extends AnimalEntity {
 
     public class EatSweetBerriesGoal
     extends MoveToTargetPosGoal {
+        private static final int field_30336 = 40;
         protected int timer;
 
         public EatSweetBerriesGoal(double speed, int range, int maxYDifference) {
@@ -958,7 +963,7 @@ extends AnimalEntity {
                 Block.dropStack(FoxEntity.this.world, this.targetPos, new ItemStack(Items.SWEET_BERRIES, j));
             }
             FoxEntity.this.playSound(SoundEvents.ITEM_SWEET_BERRIES_PICK_FROM_BUSH, 1.0f, 1.0f);
-            FoxEntity.this.world.setBlockState(this.targetPos, (BlockState)blockState.with(SweetBerryBushBlock.AGE, 1), SetBlockStateFlags.NOTIFY_LISTENERS);
+            FoxEntity.this.world.setBlockState(this.targetPos, (BlockState)blockState.with(SweetBerryBushBlock.AGE, 1), Block.NOTIFY_LISTENERS);
         }
 
         @Override
@@ -1028,6 +1033,7 @@ extends AnimalEntity {
 
     class DelayedCalmDownGoal
     extends CalmDownGoal {
+        private static final int field_30337 = 140;
         private int timer;
 
         public DelayedCalmDownGoal() {

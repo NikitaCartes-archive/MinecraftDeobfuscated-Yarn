@@ -12,6 +12,7 @@ import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.ModelUtil;
 import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.render.entity.model.QuadrupedEntityModel;
 import net.minecraft.entity.passive.PandaEntity;
 import net.minecraft.entity.passive.PassiveEntity;
@@ -31,15 +32,15 @@ extends QuadrupedEntityModel<T> {
     public static TexturedModelData getTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
-        modelPartData.addChild("head", ModelPartBuilder.create().uv(0, 6).cuboid(-6.5f, -5.0f, -4.0f, 13.0f, 10.0f, 9.0f).uv(45, 16).cuboid("nose", -3.5f, 0.0f, -6.0f, 7.0f, 5.0f, 2.0f).uv(52, 25).cuboid("left_ear", 3.5f, -8.0f, -1.0f, 5.0f, 4.0f, 1.0f).uv(52, 25).cuboid("right_ear", -8.5f, -8.0f, -1.0f, 5.0f, 4.0f, 1.0f), ModelTransform.pivot(0.0f, 11.5f, -17.0f));
-        modelPartData.addChild("body", ModelPartBuilder.create().uv(0, 25).cuboid(-9.5f, -13.0f, -6.5f, 19.0f, 26.0f, 13.0f), ModelTransform.of(0.0f, 10.0f, 0.0f, 1.5707964f, 0.0f, 0.0f));
+        modelPartData.addChild(EntityModelPartNames.HEAD, ModelPartBuilder.create().uv(0, 6).cuboid(-6.5f, -5.0f, -4.0f, 13.0f, 10.0f, 9.0f).uv(45, 16).cuboid(EntityModelPartNames.NOSE, -3.5f, 0.0f, -6.0f, 7.0f, 5.0f, 2.0f).uv(52, 25).cuboid(EntityModelPartNames.LEFT_EAR, 3.5f, -8.0f, -1.0f, 5.0f, 4.0f, 1.0f).uv(52, 25).cuboid(EntityModelPartNames.RIGHT_EAR, -8.5f, -8.0f, -1.0f, 5.0f, 4.0f, 1.0f), ModelTransform.pivot(0.0f, 11.5f, -17.0f));
+        modelPartData.addChild(EntityModelPartNames.BODY, ModelPartBuilder.create().uv(0, 25).cuboid(-9.5f, -13.0f, -6.5f, 19.0f, 26.0f, 13.0f), ModelTransform.of(0.0f, 10.0f, 0.0f, 1.5707964f, 0.0f, 0.0f));
         int i = 9;
         int j = 6;
         ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(40, 0).cuboid(-3.0f, 0.0f, -3.0f, 6.0f, 9.0f, 6.0f);
-        modelPartData.addChild("right_hind_leg", modelPartBuilder, ModelTransform.pivot(-5.5f, 15.0f, 9.0f));
-        modelPartData.addChild("left_hind_leg", modelPartBuilder, ModelTransform.pivot(5.5f, 15.0f, 9.0f));
-        modelPartData.addChild("right_front_leg", modelPartBuilder, ModelTransform.pivot(-5.5f, 15.0f, -9.0f));
-        modelPartData.addChild("left_front_leg", modelPartBuilder, ModelTransform.pivot(5.5f, 15.0f, -9.0f));
+        modelPartData.addChild(EntityModelPartNames.RIGHT_HIND_LEG, modelPartBuilder, ModelTransform.pivot(-5.5f, 15.0f, 9.0f));
+        modelPartData.addChild(EntityModelPartNames.LEFT_HIND_LEG, modelPartBuilder, ModelTransform.pivot(5.5f, 15.0f, 9.0f));
+        modelPartData.addChild(EntityModelPartNames.RIGHT_FRONT_LEG, modelPartBuilder, ModelTransform.pivot(-5.5f, 15.0f, -9.0f));
+        modelPartData.addChild(EntityModelPartNames.LEFT_FRONT_LEG, modelPartBuilder, ModelTransform.pivot(5.5f, 15.0f, -9.0f));
         return TexturedModelData.of(modelData, 64, 64);
     }
 

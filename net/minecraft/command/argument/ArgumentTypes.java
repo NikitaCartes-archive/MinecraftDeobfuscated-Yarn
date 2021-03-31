@@ -38,8 +38,8 @@ import net.minecraft.command.argument.ItemSlotArgumentType;
 import net.minecraft.command.argument.ItemStackArgumentType;
 import net.minecraft.command.argument.MessageArgumentType;
 import net.minecraft.command.argument.NbtCompoundTagArgumentType;
+import net.minecraft.command.argument.NbtElementArgumentType;
 import net.minecraft.command.argument.NbtPathArgumentType;
-import net.minecraft.command.argument.NbtTagArgumentType;
 import net.minecraft.command.argument.NumberRangeArgumentType;
 import net.minecraft.command.argument.OperationArgumentType;
 import net.minecraft.command.argument.ParticleEffectArgumentType;
@@ -105,7 +105,7 @@ public class ArgumentTypes {
         ArgumentTypes.register("component", TextArgumentType.class, new ConstantArgumentSerializer<TextArgumentType>(TextArgumentType::text));
         ArgumentTypes.register("message", MessageArgumentType.class, new ConstantArgumentSerializer<MessageArgumentType>(MessageArgumentType::message));
         ArgumentTypes.register("nbt_compound_tag", NbtCompoundTagArgumentType.class, new ConstantArgumentSerializer<NbtCompoundTagArgumentType>(NbtCompoundTagArgumentType::nbtCompound));
-        ArgumentTypes.register("nbt_tag", NbtTagArgumentType.class, new ConstantArgumentSerializer<NbtTagArgumentType>(NbtTagArgumentType::nbtTag));
+        ArgumentTypes.register("nbt_tag", NbtElementArgumentType.class, new ConstantArgumentSerializer<NbtElementArgumentType>(NbtElementArgumentType::nbtElement));
         ArgumentTypes.register("nbt_path", NbtPathArgumentType.class, new ConstantArgumentSerializer<NbtPathArgumentType>(NbtPathArgumentType::nbtPath));
         ArgumentTypes.register("objective", ScoreboardObjectiveArgumentType.class, new ConstantArgumentSerializer<ScoreboardObjectiveArgumentType>(ScoreboardObjectiveArgumentType::scoreboardObjective));
         ArgumentTypes.register("objective_criteria", ScoreboardCriterionArgumentType.class, new ConstantArgumentSerializer<ScoreboardCriterionArgumentType>(ScoreboardCriterionArgumentType::scoreboardCriterion));

@@ -8,8 +8,6 @@ import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
 import java.util.EnumMap;
 import java.util.Map;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.book.RecipeBookCategory;
@@ -31,7 +29,6 @@ public final class RecipeBookOptions {
         }));
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isGuiOpen(RecipeBookCategory category) {
         return this.categoryOptions.get((Object)category).guiOpen;
     }
@@ -40,7 +37,6 @@ public final class RecipeBookOptions {
         this.categoryOptions.get((Object)category).guiOpen = open;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isFilteringCraftable(RecipeBookCategory category) {
         return this.categoryOptions.get((Object)category).filteringCraftable;
     }
@@ -72,21 +68,21 @@ public final class RecipeBookOptions {
         }
     }
 
-    public static RecipeBookOptions fromNbt(NbtCompound tag) {
+    public static RecipeBookOptions fromNbt(NbtCompound nbt) {
         EnumMap<RecipeBookCategory, CategoryOption> map = Maps.newEnumMap(RecipeBookCategory.class);
         CATEGORY_OPTION_NAMES.forEach((category, pair) -> {
-            boolean bl = tag.getBoolean((String)pair.getFirst());
-            boolean bl2 = tag.getBoolean((String)pair.getSecond());
+            boolean bl = nbt.getBoolean((String)pair.getFirst());
+            boolean bl2 = nbt.getBoolean((String)pair.getSecond());
             map.put((RecipeBookCategory)((Object)category), new CategoryOption(bl, bl2));
         });
         return new RecipeBookOptions(map);
     }
 
-    public void writeNbt(NbtCompound tag) {
+    public void writeNbt(NbtCompound nbt) {
         CATEGORY_OPTION_NAMES.forEach((category, pair) -> {
             CategoryOption categoryOption = this.categoryOptions.get(category);
-            tag.putBoolean((String)pair.getFirst(), categoryOption.guiOpen);
-            tag.putBoolean((String)pair.getSecond(), categoryOption.filteringCraftable);
+            nbt.putBoolean((String)pair.getFirst(), categoryOption.guiOpen);
+            nbt.putBoolean((String)pair.getSecond(), categoryOption.filteringCraftable);
         });
     }
 

@@ -26,6 +26,13 @@ import org.jetbrains.annotations.Nullable;
 
 public class PlayWithVillagerBabiesTask
 extends Task<PathAwareEntity> {
+    private static final int field_30151 = 20;
+    private static final int field_30152 = 8;
+    private static final float field_30153 = 0.6f;
+    private static final float field_30154 = 0.6f;
+    private static final int field_30155 = 5;
+    private static final int field_30156 = 10;
+
     public PlayWithVillagerBabiesTask() {
         super(ImmutableMap.of(MemoryModuleType.VISIBLE_VILLAGER_BABIES, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.INTERACTION_TARGET, MemoryModuleState.REGISTERED));
     }

@@ -11,6 +11,8 @@ import net.minecraft.client.render.BufferRenderer;
 
 @Environment(value=EnvType.CLIENT)
 public class Tessellator {
+    private static final int field_32051 = 0x800000;
+    private static final int field_32052 = 0x200000;
     private final BufferBuilder buffer;
     private static final Tessellator INSTANCE = new Tessellator();
 

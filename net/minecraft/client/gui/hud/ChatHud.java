@@ -30,6 +30,7 @@ import org.jetbrains.annotations.Nullable;
 public class ChatHud
 extends DrawableHelper {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final int field_32180 = 100;
     private final MinecraftClient client;
     private final List<String> messageHistory = Lists.newArrayList();
     private final List<ChatHudLine<Text>> messages = Lists.newArrayList();

@@ -15,8 +15,6 @@ import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.Tag;
@@ -50,6 +48,7 @@ public class DimensionType {
     public static final Identifier THE_NETHER_ID = new Identifier("the_nether");
     public static final Identifier THE_END_ID = new Identifier("the_end");
     public static final Codec<DimensionType> CODEC = RecordCodecBuilder.create(instance -> instance.group(Codec.LONG.optionalFieldOf("fixed_time").xmap(optional -> optional.map(OptionalLong::of).orElseGet(OptionalLong::empty), optionalLong -> optionalLong.isPresent() ? Optional.of(optionalLong.getAsLong()) : Optional.empty()).forGetter(dimensionType -> dimensionType.fixedTime), ((MapCodec)Codec.BOOL.fieldOf("has_skylight")).forGetter(DimensionType::hasSkyLight), ((MapCodec)Codec.BOOL.fieldOf("has_ceiling")).forGetter(DimensionType::hasCeiling), ((MapCodec)Codec.BOOL.fieldOf("ultrawarm")).forGetter(DimensionType::isUltrawarm), ((MapCodec)Codec.BOOL.fieldOf("natural")).forGetter(DimensionType::isNatural), ((MapCodec)Codec.doubleRange(1.0E-5f, 3.0E7).fieldOf("coordinate_scale")).forGetter(DimensionType::getCoordinateScale), ((MapCodec)Codec.BOOL.fieldOf("piglin_safe")).forGetter(DimensionType::isPiglinSafe), ((MapCodec)Codec.BOOL.fieldOf("bed_works")).forGetter(DimensionType::isBedWorking), ((MapCodec)Codec.BOOL.fieldOf("respawn_anchor_works")).forGetter(DimensionType::isRespawnAnchorWorking), ((MapCodec)Codec.BOOL.fieldOf("has_raids")).forGetter(DimensionType::hasRaids), ((MapCodec)Codec.intRange(MIN_HEIGHT, MAX_COLUMN_HEIGHT).fieldOf("min_y")).forGetter(DimensionType::getMinimumY), ((MapCodec)Codec.intRange(0, MAX_HEIGHT).fieldOf("height")).forGetter(DimensionType::getHeight), ((MapCodec)Codec.intRange(0, MAX_HEIGHT).fieldOf("logical_height")).forGetter(DimensionType::getLogicalHeight), ((MapCodec)Identifier.CODEC.fieldOf("infiniburn")).forGetter(dimensionType -> dimensionType.infiniburn), ((MapCodec)Identifier.CODEC.fieldOf("effects")).orElse(OVERWORLD_ID).forGetter(dimensionType -> dimensionType.skyProperties), ((MapCodec)Codec.FLOAT.fieldOf("ambient_light")).forGetter(dimensionType -> Float.valueOf(dimensionType.ambientLight))).apply((Applicative<DimensionType, ?>)instance, DimensionType::new)).comapFlatMap(DimensionType::checkHeight, Function.identity());
+    private static final int field_31440 = 8;
     public static final float[] MOON_SIZES = new float[]{1.0f, 0.75f, 0.5f, 0.25f, 0.0f, 0.25f, 0.5f, 0.75f};
     public static final RegistryKey<DimensionType> OVERWORLD_REGISTRY_KEY = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, new Identifier("overworld"));
     public static final RegistryKey<DimensionType> THE_NETHER_REGISTRY_KEY = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, new Identifier("the_nether"));
@@ -142,8 +141,8 @@ public class DimensionType {
     }
 
     @Deprecated
-    public static DataResult<RegistryKey<World>> worldFromDimensionTag(Dynamic<?> tag) {
-        Optional<Number> optional = tag.asNumber().result();
+    public static DataResult<RegistryKey<World>> worldFromDimensionNbt(Dynamic<?> nbt) {
+        Optional<Number> optional = nbt.asNumber().result();
         if (optional.isPresent()) {
             int i = optional.get().intValue();
             if (i == -1) {
@@ -156,7 +155,7 @@ public class DimensionType {
                 return DataResult.success(World.END);
             }
         }
-        return World.CODEC.parse(tag);
+        return World.CODEC.parse(nbt);
     }
 
     public static DynamicRegistryManager.Impl addRegistryDefaults(DynamicRegistryManager.Impl registryManager) {
@@ -177,7 +176,7 @@ public class DimensionType {
     }
 
     public static SimpleRegistry<DimensionOptions> createDefaultDimensionOptions(Registry<DimensionType> dimensionRegistry, Registry<Biome> biomeRegistry, Registry<ChunkGeneratorSettings> chunkGeneratorSettingsRegistry, long seed) {
-        SimpleRegistry<DimensionOptions> simpleRegistry = new SimpleRegistry<DimensionOptions>(Registry.DIMENSION_OPTIONS, Lifecycle.experimental());
+        SimpleRegistry<DimensionOptions> simpleRegistry = new SimpleRegistry<DimensionOptions>(Registry.DIMENSION_KEY, Lifecycle.experimental());
         simpleRegistry.add(DimensionOptions.NETHER, new DimensionOptions(() -> dimensionRegistry.getOrThrow(THE_NETHER_REGISTRY_KEY), DimensionType.createNetherGenerator(biomeRegistry, chunkGeneratorSettingsRegistry, seed)), Lifecycle.stable());
         simpleRegistry.add(DimensionOptions.END, new DimensionOptions(() -> dimensionRegistry.getOrThrow(THE_END_REGISTRY_KEY), DimensionType.createEndGenerator(biomeRegistry, chunkGeneratorSettingsRegistry, seed)), Lifecycle.stable());
         return simpleRegistry;
@@ -296,7 +295,6 @@ public class DimensionType {
         return tag != null ? tag : BlockTags.INFINIBURN_OVERWORLD;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Identifier getSkyProperties() {
         return this.skyProperties;
     }

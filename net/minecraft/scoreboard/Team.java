@@ -6,8 +6,6 @@ package net.minecraft.scoreboard;
 import com.google.common.collect.Sets;
 import java.util.Collection;
 import java.util.Set;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.text.HoverEvent;
@@ -21,6 +19,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class Team
 extends AbstractTeam {
+    public static final int field_31883 = 16;
+    private static final int field_31884 = 0;
+    private static final int field_31885 = 1;
     private final Scoreboard scoreboard;
     private final String name;
     private final Set<String> playerList = Sets.newHashSet();
@@ -40,6 +41,10 @@ extends AbstractTeam {
         this.name = name;
         this.displayName = new LiteralText(name);
         this.nameStyle = Style.EMPTY.withInsertion(name).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(name)));
+    }
+
+    public Scoreboard getScoreboard() {
+        return this.scoreboard;
     }
 
     @Override
@@ -176,7 +181,6 @@ extends AbstractTeam {
         return i;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void setFriendlyFlagsBitwise(int flags) {
         this.setFriendlyFireAllowed((flags & 1) > 0);
         this.setShowFriendlyInvisibles((flags & 2) > 0);

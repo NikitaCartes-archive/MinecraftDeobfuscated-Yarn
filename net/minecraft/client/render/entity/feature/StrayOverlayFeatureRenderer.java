@@ -22,9 +22,9 @@ extends FeatureRenderer<T, M> {
     private static final Identifier SKIN = new Identifier("textures/entity/skeleton/stray_overlay.png");
     private final SkeletonEntityModel<T> model;
 
-    public StrayOverlayFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext, EntityModelLoader entityModelLoader) {
-        super(featureRendererContext);
-        this.model = new SkeletonEntityModel(entityModelLoader.getModelPart(EntityModelLayers.STRAY_OUTER));
+    public StrayOverlayFeatureRenderer(FeatureRendererContext<T, M> context, EntityModelLoader loader) {
+        super(context);
+        this.model = new SkeletonEntityModel(loader.getModelPart(EntityModelLayers.STRAY_OUTER));
     }
 
     @Override

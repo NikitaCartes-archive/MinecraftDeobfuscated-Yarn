@@ -63,6 +63,14 @@ extends ConditionalLootFunction {
         }
     }
 
+    public static ConditionalLootFunction.Builder<?> builder(Identifier id) {
+        return SetLootTableLootFunction.builder((LootCondition[] conditions) -> new SetLootTableLootFunction((LootCondition[])conditions, id, 0L));
+    }
+
+    public static ConditionalLootFunction.Builder<?> builder(Identifier id, long seed) {
+        return SetLootTableLootFunction.builder((LootCondition[] conditions) -> new SetLootTableLootFunction((LootCondition[])conditions, id, seed));
+    }
+
     public static class Serializer
     extends ConditionalLootFunction.Serializer<SetLootTableLootFunction> {
         @Override

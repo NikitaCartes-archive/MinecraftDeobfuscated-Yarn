@@ -4,8 +4,6 @@
 package net.minecraft.entity.passive;
 
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -209,7 +207,6 @@ extends WaterCreatureEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void handleStatus(byte status) {
         if (status == 19) {
             this.thrustTimer = 0.0f;
@@ -233,6 +230,9 @@ extends WaterCreatureEntity {
 
     class EscapeAttackerGoal
     extends Goal {
+        private static final float field_30375 = 3.0f;
+        private static final float field_30376 = 5.0f;
+        private static final float field_30377 = 10.0f;
         private int timer;
 
         private EscapeAttackerGoal() {

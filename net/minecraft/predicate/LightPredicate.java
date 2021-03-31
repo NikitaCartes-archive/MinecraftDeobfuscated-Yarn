@@ -47,5 +47,22 @@ public class LightPredicate {
         NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("light"));
         return new LightPredicate(intRange);
     }
+
+    public static class Builder {
+        private NumberRange.IntRange light = NumberRange.IntRange.ANY;
+
+        public static Builder create() {
+            return new Builder();
+        }
+
+        public Builder light(NumberRange.IntRange light) {
+            this.light = light;
+            return this;
+        }
+
+        public LightPredicate build() {
+            return new LightPredicate(this.light);
+        }
+    }
 }
 

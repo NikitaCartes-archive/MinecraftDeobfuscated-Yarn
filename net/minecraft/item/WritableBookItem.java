@@ -3,7 +3,6 @@
  */
 package net.minecraft.item;
 
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LecternBlock;
@@ -46,14 +45,14 @@ extends Item {
         return TypedActionResult.success(itemStack, world.isClient());
     }
 
-    public static boolean isValid(@Nullable NbtCompound tag) {
-        if (tag == null) {
+    public static boolean isValid(@Nullable NbtCompound nbt) {
+        if (nbt == null) {
             return false;
         }
-        if (!tag.contains("pages", NbtTypeIds.LIST)) {
+        if (!nbt.contains("pages", 9)) {
             return false;
         }
-        NbtList nbtList = tag.getList("pages", NbtTypeIds.STRING);
+        NbtList nbtList = nbt.getList("pages", 8);
         for (int i = 0; i < nbtList.size(); ++i) {
             String string = nbtList.getString(i);
             if (string.length() <= Short.MAX_VALUE) continue;

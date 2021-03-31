@@ -5,33 +5,33 @@ package net.minecraft.world;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.PersistentState;
 
 public class IdCountsState
 extends PersistentState {
+    public static final String field_31830 = "idcounts";
     private final Object2IntMap<String> idCounts = new Object2IntOpenHashMap<String>();
 
     public IdCountsState() {
         this.idCounts.defaultReturnValue(-1);
     }
 
-    public static IdCountsState fromNbt(NbtCompound tag) {
+    public static IdCountsState fromNbt(NbtCompound nbt) {
         IdCountsState idCountsState = new IdCountsState();
-        for (String string : tag.getKeys()) {
-            if (!tag.contains(string, NbtTypeIds.NUMBER)) continue;
-            idCountsState.idCounts.put(string, tag.getInt(string));
+        for (String string : nbt.getKeys()) {
+            if (!nbt.contains(string, 99)) continue;
+            idCountsState.idCounts.put(string, nbt.getInt(string));
         }
         return idCountsState;
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound tag) {
+    public NbtCompound writeNbt(NbtCompound nbt) {
         for (Object2IntMap.Entry entry : this.idCounts.object2IntEntrySet()) {
-            tag.putInt((String)entry.getKey(), entry.getIntValue());
+            nbt.putInt((String)entry.getKey(), entry.getIntValue());
         }
-        return tag;
+        return nbt;
     }
 
     public int getNextMapId() {

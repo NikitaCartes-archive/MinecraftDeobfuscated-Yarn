@@ -4,9 +4,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -35,6 +32,7 @@ import net.minecraft.world.WorldView;
 public class CropBlock
 extends PlantBlock
 implements Fertilizable {
+    public static final int field_31079 = 7;
     public static final IntProperty AGE = Properties.AGE_7;
     private static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 4.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 6.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 10.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 12.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 14.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 16.0)};
 
@@ -83,7 +81,7 @@ implements Fertilizable {
         float f;
         int i;
         if (world.getBaseLightLevel(pos, 0) >= 9 && (i = this.getAge(state)) < this.getMaxAge() && random.nextInt((int)(25.0f / (f = CropBlock.getAvailableMoisture(this, world, pos))) + 1) == 0) {
-            world.setBlockState(pos, this.withAge(i + 1), SetBlockStateFlags.NOTIFY_LISTENERS);
+            world.setBlockState(pos, this.withAge(i + 1), Block.NOTIFY_LISTENERS);
         }
     }
 
@@ -93,7 +91,7 @@ implements Fertilizable {
         if (i > (j = this.getMaxAge())) {
             i = j;
         }
-        world.setBlockState(pos, this.withAge(i), SetBlockStateFlags.NOTIFY_LISTENERS);
+        world.setBlockState(pos, this.withAge(i), Block.NOTIFY_LISTENERS);
     }
 
     protected int getGrowthAmount(World world) {
@@ -151,13 +149,11 @@ implements Fertilizable {
         super.onEntityCollision(state, world, pos, entity);
     }
 
-    @Environment(value=EnvType.CLIENT)
     protected ItemConvertible getSeedsItem() {
         return Items.WHEAT_SEEDS;
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
         return new ItemStack(this.getSeedsItem());
     }

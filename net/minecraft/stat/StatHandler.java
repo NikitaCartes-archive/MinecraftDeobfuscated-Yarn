@@ -6,8 +6,6 @@ package net.minecraft.stat;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.StatType;
@@ -28,7 +26,6 @@ public class StatHandler {
         this.statMap.put(stat, value);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public <T> int getStat(StatType<T> type, T stat) {
         return type.hasStat(stat) ? this.getStat(type.getOrCreateStat(stat)) : 0;
     }

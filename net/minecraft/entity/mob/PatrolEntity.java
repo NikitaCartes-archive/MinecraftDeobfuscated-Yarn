@@ -46,23 +46,23 @@ extends HostileEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
         if (this.patrolTarget != null) {
-            tag.put("PatrolTarget", NbtHelper.fromBlockPos(this.patrolTarget));
+            nbt.put("PatrolTarget", NbtHelper.fromBlockPos(this.patrolTarget));
         }
-        tag.putBoolean("PatrolLeader", this.patrolLeader);
-        tag.putBoolean("Patrolling", this.patrolling);
+        nbt.putBoolean("PatrolLeader", this.patrolLeader);
+        nbt.putBoolean("Patrolling", this.patrolling);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        if (tag.contains("PatrolTarget")) {
-            this.patrolTarget = NbtHelper.toBlockPos(tag.getCompound("PatrolTarget"));
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        if (nbt.contains("PatrolTarget")) {
+            this.patrolTarget = NbtHelper.toBlockPos(nbt.getCompound("PatrolTarget"));
         }
-        this.patrolLeader = tag.getBoolean("PatrolLeader");
-        this.patrolling = tag.getBoolean("Patrolling");
+        this.patrolLeader = nbt.getBoolean("PatrolLeader");
+        this.patrolling = nbt.getBoolean("Patrolling");
     }
 
     @Override
@@ -76,7 +76,7 @@ extends HostileEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         if (spawnReason != SpawnReason.PATROL && spawnReason != SpawnReason.EVENT && spawnReason != SpawnReason.STRUCTURE && this.random.nextFloat() < 0.06f && this.canLead()) {
             this.patrolLeader = true;
         }
@@ -87,7 +87,7 @@ extends HostileEntity {
         if (spawnReason == SpawnReason.PATROL) {
             this.patrolling = true;
         }
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     public static boolean canSpawn(EntityType<? extends PatrolEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
@@ -146,6 +146,7 @@ extends HostileEntity {
 
     public static class PatrolGoal<T extends PatrolEntity>
     extends Goal {
+        private static final int field_30474 = 200;
         private final T entity;
         private final double leaderSpeed;
         private final double followSpeed;

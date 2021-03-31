@@ -28,5 +28,7 @@ extends Registry<T> {
      * next available ID.</p>
      */
     public abstract <V extends T> V replace(OptionalInt var1, RegistryKey<T> var2, V var3, Lifecycle var4);
+
+    public abstract boolean method_35863();
 }
 

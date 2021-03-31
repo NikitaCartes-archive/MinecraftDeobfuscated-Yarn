@@ -15,6 +15,7 @@ import net.minecraft.util.SignType;
 
 @Environment(value=EnvType.CLIENT)
 public class EntityModelLayers {
+    private static final String MAIN = "main";
     private static final Set<EntityModelLayer> LAYERS = Sets.newHashSet();
     public static final EntityModelLayer ARMOR_STAND = EntityModelLayers.registerMain("armor_stand");
     public static final EntityModelLayer ARMOR_STAND_INNER_ARMOR = EntityModelLayers.createInnerArmor("armor_stand");
@@ -68,6 +69,7 @@ public class EntityModelLayers {
     public static final EntityModelLayer GIANT_INNER_ARMOR = EntityModelLayers.createInnerArmor("giant");
     public static final EntityModelLayer GIANT_OUTER_ARMOR = EntityModelLayers.createOuterArmor("giant");
     public static final EntityModelLayer GLOW_SQUID = EntityModelLayers.registerMain("glow_squid");
+    public static final EntityModelLayer GOAT = EntityModelLayers.registerMain("goat");
     public static final EntityModelLayer GUARDIAN = EntityModelLayers.registerMain("guardian");
     public static final EntityModelLayer HOGLIN = EntityModelLayers.registerMain("hoglin");
     public static final EntityModelLayer HOPPER_MINECART = EntityModelLayers.registerMain("hopper_minecart");
@@ -172,7 +174,7 @@ public class EntityModelLayers {
     public static final EntityModelLayer ZOMBIFIED_PIGLIN_OUTER_ARMOR = EntityModelLayers.createOuterArmor("zombified_piglin");
 
     private static EntityModelLayer registerMain(String id) {
-        return EntityModelLayers.register(id, "main");
+        return EntityModelLayers.register(id, MAIN);
     }
 
     private static EntityModelLayer register(String id, String layer) {
@@ -196,11 +198,11 @@ public class EntityModelLayers {
     }
 
     public static EntityModelLayer createBoat(BoatEntity.Type type) {
-        return EntityModelLayers.create("boat/" + type.getName(), "main");
+        return EntityModelLayers.create("boat/" + type.getName(), MAIN);
     }
 
     public static EntityModelLayer createSign(SignType type) {
-        return EntityModelLayers.create("sign/" + type.getName(), "main");
+        return EntityModelLayers.create("sign/" + type.getName(), MAIN);
     }
 
     public static Stream<EntityModelLayer> getLayers() {

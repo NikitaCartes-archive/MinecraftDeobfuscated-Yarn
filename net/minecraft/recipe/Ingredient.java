@@ -19,13 +19,12 @@ import java.util.Collections;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.RecipeFinder;
+import net.minecraft.recipe.ShapedRecipe;
 import net.minecraft.tag.ServerTagManagerHolder;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
@@ -44,7 +43,6 @@ implements Predicate<ItemStack> {
         this.entries = (Entry[])entries.toArray(Entry[]::new);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public ItemStack[] getMatchingStacksClient() {
         this.cacheMatchingStacks();
         return this.matchingStacks;
@@ -109,11 +107,14 @@ implements Predicate<ItemStack> {
         return ingredient.entries.length == 0 ? EMPTY : ingredient;
     }
 
+    public static Ingredient method_35226() {
+        return EMPTY;
+    }
+
     public static Ingredient ofItems(ItemConvertible ... items) {
         return Ingredient.ofStacks(Arrays.stream(items).map(ItemStack::new));
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static Ingredient ofStacks(ItemStack ... stacks) {
         return Ingredient.ofStacks(Arrays.stream(stacks));
     }
@@ -152,13 +153,12 @@ implements Predicate<ItemStack> {
             throw new JsonParseException("An ingredient entry is either a tag or an item, not both");
         }
         if (json.has("item")) {
-            Identifier identifier = new Identifier(JsonHelper.getString(json, "item"));
-            Item item = Registry.ITEM.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown item '" + identifier + "'"));
+            Item item = ShapedRecipe.getItemStack(json);
             return new StackEntry(new ItemStack(item));
         }
         if (json.has("tag")) {
-            Identifier identifier = new Identifier(JsonHelper.getString(json, "tag"));
-            Tag<Item> tag = ServerTagManagerHolder.getTagManager().getTag(Registry.ITEM_KEY, identifier, id -> new JsonSyntaxException("Unknown item tag '" + id + "'"));
+            Identifier identifier2 = new Identifier(JsonHelper.getString(json, "tag"));
+            Tag<Item> tag = ServerTagManagerHolder.getTagManager().getTag(Registry.ITEM_KEY, identifier2, identifier -> new JsonSyntaxException("Unknown item tag '" + identifier + "'"));
             return new TagEntry(tag);
         }
         throw new JsonParseException("An ingredient entry needs either a tag or an item");

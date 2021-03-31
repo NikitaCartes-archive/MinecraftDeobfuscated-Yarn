@@ -5,8 +5,6 @@ package net.minecraft.fluid;
 
 import java.util.Optional;
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.Item;
@@ -53,7 +51,6 @@ public abstract class Fluid {
 
     public abstract Item getBucketItem();
 
-    @Environment(value=EnvType.CLIENT)
     protected void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
     }
 
@@ -64,7 +61,6 @@ public abstract class Fluid {
     }
 
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     protected ParticleEffect getParticle() {
         return null;
     }

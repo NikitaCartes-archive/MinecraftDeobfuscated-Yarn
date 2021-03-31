@@ -3,8 +3,6 @@
  */
 package net.minecraft.entity.mob;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityGroup;
@@ -52,6 +50,9 @@ import org.jetbrains.annotations.Nullable;
 public class IllusionerEntity
 extends SpellcastingIllagerEntity
 implements RangedAttackMob {
+    private static final int field_30473 = 4;
+    private static final int field_30471 = 3;
+    private static final int field_30472 = 3;
     private int field_7296;
     private final Vec3d[][] field_7297;
 
@@ -69,7 +70,7 @@ implements RangedAttackMob {
     protected void initGoals() {
         super.initGoals();
         this.goalSelector.add(0, new SwimGoal(this));
-        this.goalSelector.add(1, new SpellcastingIllagerEntity.LookAtTargetGoal(this));
+        this.goalSelector.add(1, new SpellcastingIllagerEntity.LookAtTargetGoal());
         this.goalSelector.add(4, new GiveInvisibilityGoal());
         this.goalSelector.add(5, new BlindTargetGoal());
         this.goalSelector.add(6, new BowAttackGoal<IllusionerEntity>(this, 0.5, 20, 15.0f));
@@ -87,9 +88,9 @@ implements RangedAttackMob {
     }
 
     @Override
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     @Override
@@ -98,7 +99,6 @@ implements RangedAttackMob {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public Box getVisibilityBoundingBox() {
         return this.getBoundingBox().expand(3.0, 0.0, 3.0);
     }
@@ -139,7 +139,6 @@ implements RangedAttackMob {
         return SoundEvents.ENTITY_ILLUSIONER_AMBIENT;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Vec3d[] method_7065(float f) {
         if (this.field_7296 <= 0) {
             return this.field_7297[1];
@@ -202,7 +201,6 @@ implements RangedAttackMob {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public IllagerEntity.State getState() {
         if (this.isSpellcasting()) {
             return IllagerEntity.State.SPELLCASTING;
@@ -218,7 +216,6 @@ implements RangedAttackMob {
         private int targetId;
 
         private BlindTargetGoal() {
-            super(IllusionerEntity.this);
         }
 
         @Override
@@ -270,7 +267,6 @@ implements RangedAttackMob {
     class GiveInvisibilityGoal
     extends SpellcastingIllagerEntity.CastSpellGoal {
         private GiveInvisibilityGoal() {
-            super(IllusionerEntity.this);
         }
 
         @Override

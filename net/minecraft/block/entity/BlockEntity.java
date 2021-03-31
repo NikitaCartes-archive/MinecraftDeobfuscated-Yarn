@@ -44,28 +44,28 @@ public abstract class BlockEntity {
         return this.world != null;
     }
 
-    public void readNbt(NbtCompound tag) {
+    public void readNbt(NbtCompound nbt) {
     }
 
-    public NbtCompound writeNbt(NbtCompound tag) {
-        return this.writeIdentifyingData(tag);
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        return this.writeIdentifyingData(nbt);
     }
 
-    private NbtCompound writeIdentifyingData(NbtCompound tag) {
+    private NbtCompound writeIdentifyingData(NbtCompound nbt) {
         Identifier identifier = BlockEntityType.getId(this.getType());
         if (identifier == null) {
             throw new RuntimeException(this.getClass() + " is missing a mapping! This is a bug!");
         }
-        tag.putString("id", identifier.toString());
-        tag.putInt("x", this.pos.getX());
-        tag.putInt("y", this.pos.getY());
-        tag.putInt("z", this.pos.getZ());
-        return tag;
+        nbt.putString("id", identifier.toString());
+        nbt.putInt("x", this.pos.getX());
+        nbt.putInt("y", this.pos.getY());
+        nbt.putInt("z", this.pos.getZ());
+        return nbt;
     }
 
     @Nullable
-    public static BlockEntity createFromNbt(BlockPos pos, BlockState state, NbtCompound tag) {
-        String string = tag.getString("id");
+    public static BlockEntity createFromNbt(BlockPos pos, BlockState state, NbtCompound nbt) {
+        String string = nbt.getString("id");
         return Registry.BLOCK_ENTITY_TYPE.getOrEmpty(new Identifier(string)).map(blockEntityType -> {
             try {
                 return blockEntityType.instantiate(pos, state);
@@ -75,7 +75,7 @@ public abstract class BlockEntity {
             }
         }).map(blockEntity -> {
             try {
-                blockEntity.readNbt(tag);
+                blockEntity.readNbt(nbt);
                 return blockEntity;
             } catch (Throwable throwable) {
                 LOGGER.error("Failed to load data for block entity {}", (Object)string, (Object)throwable);

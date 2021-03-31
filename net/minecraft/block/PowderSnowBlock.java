@@ -5,10 +5,6 @@ package net.minecraft.block;
 
 import java.util.Optional;
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -20,6 +16,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
@@ -34,16 +31,22 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldEvents;
 
 public class PowderSnowBlock
 extends Block
 implements FluidDrainable {
+    private static final int field_31216 = 12;
+    private static final float field_31217 = 0.9f;
+    private static final float field_31218 = 1.5f;
+    private static final float field_31219 = 2.5f;
+    private static final VoxelShape field_31220 = VoxelShapes.cuboid(0.0, 0.0, 0.0, 1.0, 0.9f, 1.0);
+
     public PowderSnowBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
         if (stateFrom.isOf(this)) {
             return true;
@@ -59,9 +62,13 @@ implements FluidDrainable {
     @Override
     public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         if (!(entity instanceof LivingEntity) || ((LivingEntity)entity).getBlockState().isOf(Blocks.POWDER_SNOW)) {
-            entity.slowMovement(state, new Vec3d(0.9f, 0.99f, 0.9f));
+            entity.slowMovement(state, new Vec3d(0.9f, 1.5, 0.9f));
         }
         entity.setInPowderSnow(true);
+        if (entity.isOnFire()) {
+            world.setBlockState(pos, Blocks.AIR.getDefaultState());
+            world.addBlockBreakParticles(pos, state);
+        }
         if (world.isClient) {
             entity.extinguish();
         } else {
@@ -74,12 +81,15 @@ implements FluidDrainable {
 
     @Override
     public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        if (context instanceof EntityShapeContext) {
-            boolean bl;
-            EntityShapeContext entityShapeContext = (EntityShapeContext)context;
-            Optional<Entity> optional = entityShapeContext.getEntity();
-            boolean bl2 = bl = optional.isPresent() && optional.get() instanceof FallingBlockEntity;
-            if (bl || optional.isPresent() && PowderSnowBlock.canWalkOnPowderSnow(optional.get()) && context.isAbove(VoxelShapes.fullCube(), pos, false) && !context.isDescending()) {
+        EntityShapeContext entityShapeContext;
+        Optional<Entity> optional;
+        if (context instanceof EntityShapeContext && (optional = (entityShapeContext = (EntityShapeContext)context).getEntity()).isPresent()) {
+            Entity entity = optional.get();
+            if (entity.fallDistance > 2.5f) {
+                return field_31220;
+            }
+            boolean bl = entity instanceof FallingBlockEntity;
+            if (bl || PowderSnowBlock.canWalkOnPowderSnow(entity) && context.isAbove(VoxelShapes.fullCube(), pos, false) && !context.isDescending()) {
                 return super.getCollisionShape(state, world, pos, context);
             }
         }
@@ -114,7 +124,7 @@ implements FluidDrainable {
 
     @Override
     public ItemStack tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state) {
-        world.setBlockState(pos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
+        world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
         if (!world.isClient()) {
             world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
         }
@@ -124,6 +134,11 @@ implements FluidDrainable {
     @Override
     public Optional<SoundEvent> getBucketFillSound() {
         return Optional.of(SoundEvents.ITEM_BUCKET_FILL_POWDER_SNOW);
+    }
+
+    @Override
+    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+        return true;
     }
 }
 

@@ -5,8 +5,6 @@ package net.minecraft.network.packet.s2c.play;
 
 import java.util.UUID;
 import java.util.function.Function;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -15,6 +13,9 @@ import net.minecraft.text.Text;
 
 public class BossBarS2CPacket
 implements Packet<ClientPlayPacketListener> {
+    private static final int DARKEN_SKY_MASK = 1;
+    private static final int DRAGON_MUSIC_MASK = 2;
+    private static final int THICKEN_FOG_MASK = 4;
     private final UUID uuid;
     private final Action action;
     private static final Action REMOVE_ACTION = new Action(){
@@ -25,7 +26,6 @@ implements Packet<ClientPlayPacketListener> {
         }
 
         @Override
-        @Environment(value=EnvType.CLIENT)
         public void accept(UUID uuid, Consumer consumer) {
             consumer.remove(uuid);
         }
@@ -96,7 +96,6 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onBossBar(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void accept(Consumer consumer) {
         this.action.accept(this.uuid, consumer);
     }
@@ -126,7 +125,6 @@ implements Packet<ClientPlayPacketListener> {
         }
 
         @Override
-        @Environment(value=EnvType.CLIENT)
         public void accept(UUID uuid, Consumer consumer) {
             consumer.updateProperties(uuid, this.darkenSky, this.dragonMusic, this.thickenFog);
         }
@@ -158,7 +156,6 @@ implements Packet<ClientPlayPacketListener> {
         }
 
         @Override
-        @Environment(value=EnvType.CLIENT)
         public void accept(UUID uuid, Consumer consumer) {
             consumer.updateStyle(uuid, this.color, this.style);
         }
@@ -188,7 +185,6 @@ implements Packet<ClientPlayPacketListener> {
         }
 
         @Override
-        @Environment(value=EnvType.CLIENT)
         public void accept(UUID uuid, Consumer consumer) {
             consumer.updateName(uuid, this.name);
         }
@@ -217,7 +213,6 @@ implements Packet<ClientPlayPacketListener> {
         }
 
         @Override
-        @Environment(value=EnvType.CLIENT)
         public void accept(UUID uuid, Consumer consumer) {
             consumer.updateProgress(uuid, this.percent);
         }
@@ -265,7 +260,6 @@ implements Packet<ClientPlayPacketListener> {
         }
 
         @Override
-        @Environment(value=EnvType.CLIENT)
         public void accept(UUID uuid, Consumer consumer) {
             consumer.add(uuid, this.name, this.percent, this.color, this.style, this.darkenSky, this.dragonMusic, this.thickenFog);
         }
@@ -283,13 +277,11 @@ implements Packet<ClientPlayPacketListener> {
     static interface Action {
         public Type getType();
 
-        @Environment(value=EnvType.CLIENT)
         public void accept(UUID var1, Consumer var2);
 
         public void toPacket(PacketByteBuf var1);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static interface Consumer {
         default public void add(UUID uuid, Text name, float percent, BossBar.Color color, BossBar.Style style, boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
         }

@@ -29,7 +29,7 @@ extends MobEntityRenderer<HoglinEntity, HoglinEntityModel<HoglinEntity>> {
 
     @Override
     protected boolean isShaking(HoglinEntity hoglinEntity) {
-        return hoglinEntity.canConvert();
+        return super.isShaking(hoglinEntity) || hoglinEntity.canConvert();
     }
 
     @Override

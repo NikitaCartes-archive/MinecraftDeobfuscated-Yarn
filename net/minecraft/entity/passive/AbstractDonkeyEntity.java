@@ -3,7 +3,6 @@
  */
 package net.minecraft.entity.passive;
 
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -26,6 +25,7 @@ import net.minecraft.world.World;
 public abstract class AbstractDonkeyEntity
 extends HorseBaseEntity {
     private static final TrackedData<Boolean> CHEST = DataTracker.registerData(AbstractDonkeyEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    public static final int field_30412 = 15;
 
     protected AbstractDonkeyEntity(EntityType<? extends AbstractDonkeyEntity> entityType, World world) {
         super((EntityType<? extends HorseBaseEntity>)entityType, world);
@@ -80,9 +80,9 @@ extends HorseBaseEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
-        tag.putBoolean("ChestedHorse", this.hasChest());
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putBoolean("ChestedHorse", this.hasChest());
         if (this.hasChest()) {
             NbtList nbtList = new NbtList();
             for (int i = 2; i < this.items.size(); ++i) {
@@ -93,17 +93,17 @@ extends HorseBaseEntity {
                 itemStack.writeNbt(nbtCompound);
                 nbtList.add(nbtCompound);
             }
-            tag.put("Items", nbtList);
+            nbt.put("Items", nbtList);
         }
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        this.setHasChest(tag.getBoolean("ChestedHorse"));
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.setHasChest(nbt.getBoolean("ChestedHorse"));
         this.onChestedStatusChanged();
         if (this.hasChest()) {
-            NbtList nbtList = tag.getList("Items", NbtTypeIds.COMPOUND);
+            NbtList nbtList = nbt.getList("Items", 10);
             for (int i = 0; i < nbtList.size(); ++i) {
                 NbtCompound nbtCompound = nbtList.getCompound(i);
                 int j = nbtCompound.getByte("Slot") & 0xFF;

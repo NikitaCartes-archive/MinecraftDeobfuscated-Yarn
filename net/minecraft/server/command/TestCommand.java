@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
@@ -38,7 +37,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.test.GameTest;
+import net.minecraft.test.GameTestState;
 import net.minecraft.test.StructureTestUtil;
 import net.minecraft.test.TestFunction;
 import net.minecraft.test.TestFunctions;
@@ -65,6 +64,16 @@ import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
 
 public class TestCommand {
+    private static final int field_33178 = 200;
+    private static final int field_33179 = 1024;
+    private static final int field_33180 = 15;
+    private static final int field_33181 = 200;
+    private static final int field_33182 = 3;
+    private static final int field_33183 = 10000;
+    private static final int field_33184 = 5;
+    private static final int field_33185 = 5;
+    private static final int field_33186 = 5;
+
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("test").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("runthis").executes(context -> TestCommand.executeRunThis((ServerCommandSource)context.getSource())))).then(CommandManager.literal("runthese").executes(context -> TestCommand.executeRunThese((ServerCommandSource)context.getSource())))).then(((LiteralArgumentBuilder)CommandManager.literal("runfailed").executes(context -> TestCommand.executeRerunFailed((ServerCommandSource)context.getSource(), false, 0, 8))).then(((RequiredArgumentBuilder)CommandManager.argument("onlyRequiredTests", BoolArgumentType.bool()).executes(context -> TestCommand.executeRerunFailed((ServerCommandSource)context.getSource(), BoolArgumentType.getBool(context, "onlyRequiredTests"), 0, 8))).then(((RequiredArgumentBuilder)CommandManager.argument("rotationSteps", IntegerArgumentType.integer()).executes(context -> TestCommand.executeRerunFailed((ServerCommandSource)context.getSource(), BoolArgumentType.getBool(context, "onlyRequiredTests"), IntegerArgumentType.getInteger(context, "rotationSteps"), 8))).then(CommandManager.argument("testsPerRow", IntegerArgumentType.integer()).executes(context -> TestCommand.executeRerunFailed((ServerCommandSource)context.getSource(), BoolArgumentType.getBool(context, "onlyRequiredTests"), IntegerArgumentType.getInteger(context, "rotationSteps"), IntegerArgumentType.getInteger(context, "testsPerRow")))))))).then(CommandManager.literal("run").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("testName", TestFunctionArgumentType.testFunction()).executes(context -> TestCommand.executeRun((ServerCommandSource)context.getSource(), TestFunctionArgumentType.getFunction(context, "testName"), 0))).then(CommandManager.argument("rotationSteps", IntegerArgumentType.integer()).executes(context -> TestCommand.executeRun((ServerCommandSource)context.getSource(), TestFunctionArgumentType.getFunction(context, "testName"), IntegerArgumentType.getInteger(context, "rotationSteps"))))))).then(((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("runall").executes(context -> TestCommand.executeRunAll((ServerCommandSource)context.getSource(), 0, 8))).then(((RequiredArgumentBuilder)CommandManager.argument("testClassName", TestClassArgumentType.testClass()).executes(context -> TestCommand.executeRunAll((ServerCommandSource)context.getSource(), TestClassArgumentType.getTestClass(context, "testClassName"), 0, 8))).then(((RequiredArgumentBuilder)CommandManager.argument("rotationSteps", IntegerArgumentType.integer()).executes(context -> TestCommand.executeRunAll((ServerCommandSource)context.getSource(), TestClassArgumentType.getTestClass(context, "testClassName"), IntegerArgumentType.getInteger(context, "rotationSteps"), 8))).then(CommandManager.argument("testsPerRow", IntegerArgumentType.integer()).executes(context -> TestCommand.executeRunAll((ServerCommandSource)context.getSource(), TestClassArgumentType.getTestClass(context, "testClassName"), IntegerArgumentType.getInteger(context, "rotationSteps"), IntegerArgumentType.getInteger(context, "testsPerRow"))))))).then(((RequiredArgumentBuilder)CommandManager.argument("rotationSteps", IntegerArgumentType.integer()).executes(context -> TestCommand.executeRunAll((ServerCommandSource)context.getSource(), IntegerArgumentType.getInteger(context, "rotationSteps"), 8))).then(CommandManager.argument("testsPerRow", IntegerArgumentType.integer()).executes(context -> TestCommand.executeRunAll((ServerCommandSource)context.getSource(), IntegerArgumentType.getInteger(context, "rotationSteps"), IntegerArgumentType.getInteger(context, "testsPerRow"))))))).then(CommandManager.literal("export").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("testName", StringArgumentType.word()).executes(context -> TestCommand.executeExport((ServerCommandSource)context.getSource(), StringArgumentType.getString(context, "testName")))))).then(CommandManager.literal("exportthis").executes(context -> TestCommand.executeExport((ServerCommandSource)context.getSource())))).then(CommandManager.literal("import").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("testName", StringArgumentType.word()).executes(context -> TestCommand.executeImport((ServerCommandSource)context.getSource(), StringArgumentType.getString(context, "testName")))))).then(((LiteralArgumentBuilder)CommandManager.literal("pos").executes(context -> TestCommand.executePos((ServerCommandSource)context.getSource(), "pos"))).then(CommandManager.argument("var", StringArgumentType.word()).executes(context -> TestCommand.executePos((ServerCommandSource)context.getSource(), StringArgumentType.getString(context, "var")))))).then(CommandManager.literal("create").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("testName", StringArgumentType.word()).executes(context -> TestCommand.executeCreate((ServerCommandSource)context.getSource(), StringArgumentType.getString(context, "testName"), 5, 5, 5))).then(((RequiredArgumentBuilder)CommandManager.argument("width", IntegerArgumentType.integer()).executes(context -> TestCommand.executeCreate((ServerCommandSource)context.getSource(), StringArgumentType.getString(context, "testName"), IntegerArgumentType.getInteger(context, "width"), IntegerArgumentType.getInteger(context, "width"), IntegerArgumentType.getInteger(context, "width")))).then(CommandManager.argument("height", IntegerArgumentType.integer()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("depth", IntegerArgumentType.integer()).executes(context -> TestCommand.executeCreate((ServerCommandSource)context.getSource(), StringArgumentType.getString(context, "testName"), IntegerArgumentType.getInteger(context, "width"), IntegerArgumentType.getInteger(context, "height"), IntegerArgumentType.getInteger(context, "depth"))))))))).then(((LiteralArgumentBuilder)CommandManager.literal("clearall").executes(context -> TestCommand.executeClearAll((ServerCommandSource)context.getSource(), 200))).then(CommandManager.argument("radius", IntegerArgumentType.integer()).executes(context -> TestCommand.executeClearAll((ServerCommandSource)context.getSource(), IntegerArgumentType.getInteger(context, "radius"))))));
     }
@@ -82,7 +91,7 @@ public class TestCommand {
                 BlockPos blockPos3 = new BlockPos(blockPos2.getX() + i, blockPos2.getY() + 1, blockPos2.getZ() + j);
                 Block block = Blocks.POLISHED_ANDESITE;
                 BlockStateArgument blockStateArgument = new BlockStateArgument(block.getDefaultState(), Collections.emptySet(), null);
-                blockStateArgument.setBlockState(serverWorld, blockPos3, SetBlockStateFlags.NOTIFY_LISTENERS);
+                blockStateArgument.setBlockState(serverWorld, blockPos3, Block.NOTIFY_LISTENERS);
             }
         }
         StructureTestUtil.placeStartButton(blockPos2, new BlockPos(1, 0, -1), BlockRotation.NONE, serverWorld);
@@ -143,15 +152,15 @@ public class TestCommand {
         StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)world.getBlockEntity(pos);
         String string = structureBlockBlockEntity.getStructurePath();
         TestFunction testFunction = TestFunctions.getTestFunctionOrThrow(string);
-        GameTest gameTest = new GameTest(testFunction, structureBlockBlockEntity.getRotation(), world);
+        GameTestState gameTestState = new GameTestState(testFunction, structureBlockBlockEntity.getRotation(), world);
         if (tests != null) {
-            tests.add(gameTest);
-            gameTest.addListener(new Listener(world, tests));
+            tests.add(gameTestState);
+            gameTestState.addListener(new Listener(world, tests));
         }
         TestCommand.setWorld(testFunction, world);
         Box box = StructureTestUtil.getStructureBoundingBox(structureBlockBlockEntity);
         BlockPos blockPos = new BlockPos(box.minX, box.minY, box.minZ);
-        TestUtil.startTest(gameTest, blockPos, TestManager.INSTANCE);
+        TestUtil.startTest(gameTestState, blockPos, TestManager.INSTANCE);
     }
 
     private static void onCompletion(ServerWorld world, TestSet tests) {
@@ -184,13 +193,13 @@ public class TestCommand {
         TestUtil.clearDebugMarkers(serverWorld);
         TestCommand.setWorld(testFunction, serverWorld);
         BlockRotation blockRotation = StructureTestUtil.getRotation(rotationSteps);
-        GameTest gameTest = new GameTest(testFunction, blockRotation, serverWorld);
-        TestUtil.startTest(gameTest, blockPos2, TestManager.INSTANCE);
+        GameTestState gameTestState = new GameTestState(testFunction, blockRotation, serverWorld);
+        TestUtil.startTest(gameTestState, blockPos2, TestManager.INSTANCE);
         return 1;
     }
 
     private static void setWorld(TestFunction testFunction, ServerWorld world) {
-        Consumer<ServerWorld> consumer = TestFunctions.getWorldSetter(testFunction.getBatchId());
+        Consumer<ServerWorld> consumer = TestFunctions.getAfterBatchConsumer(testFunction.getBatchId());
         if (consumer != null) {
             consumer.accept(world);
         }
@@ -231,7 +240,7 @@ public class TestCommand {
         BlockPos blockPos2 = new BlockPos(blockPos.getX(), source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY(), blockPos.getZ() + 3);
         ServerWorld serverWorld = source.getWorld();
         BlockRotation blockRotation = StructureTestUtil.getRotation(rotationSteps);
-        Collection<GameTest> collection = TestUtil.runTestFunctions(testFunctions, blockPos2, blockRotation, serverWorld, TestManager.INSTANCE, i);
+        Collection<GameTestState> collection = TestUtil.runTestFunctions(testFunctions, blockPos2, blockRotation, serverWorld, TestManager.INSTANCE, i);
         TestSet testSet = new TestSet(collection);
         testSet.addListener(new Listener(serverWorld, testSet));
         testSet.addListener(test -> TestFunctions.addFailedTestFunction(test.getTestFunction()));
@@ -309,16 +318,16 @@ public class TestCommand {
         }
 
         @Override
-        public void onStarted(GameTest test) {
+        public void onStarted(GameTestState test) {
         }
 
         @Override
-        public void onPassed(GameTest test) {
+        public void onPassed(GameTestState test) {
             TestCommand.onCompletion(this.world, this.tests);
         }
 
         @Override
-        public void onFailed(GameTest test) {
+        public void onFailed(GameTestState test) {
             TestCommand.onCompletion(this.world, this.tests);
         }
     }

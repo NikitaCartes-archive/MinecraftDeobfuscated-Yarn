@@ -7,12 +7,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.minecraft.util.math.BlockBox;
+import java.util.function.BiConsumer;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ModifiableTestableWorld;
-import net.minecraft.world.StructureWorldAccess;
+import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 import net.minecraft.world.gen.treedecorator.TreeDecorator;
@@ -33,40 +31,40 @@ extends TreeDecorator {
     }
 
     @Override
-    public void generate(StructureWorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> placedStates, BlockBox box) {
-        int i = logPositions.get(0).getY();
-        logPositions.stream().filter(pos -> pos.getY() == i).forEach(pos -> {
-            this.setArea(world, random, pos.west().north());
-            this.setArea(world, random, pos.east(2).north());
-            this.setArea(world, random, pos.west().south(2));
-            this.setArea(world, random, pos.east(2).south(2));
+    public void generate(TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, List<BlockPos> leavesPositions, List<BlockPos> list) {
+        int i = leavesPositions.get(0).getY();
+        leavesPositions.stream().filter(pos -> pos.getY() == i).forEach(blockPos -> {
+            this.setArea(testableWorld, biConsumer, random, blockPos.west().north());
+            this.setArea(testableWorld, biConsumer, random, blockPos.east(2).north());
+            this.setArea(testableWorld, biConsumer, random, blockPos.west().south(2));
+            this.setArea(testableWorld, biConsumer, random, blockPos.east(2).south(2));
             for (int i = 0; i < 5; ++i) {
                 int j = random.nextInt(64);
                 int k = j % 8;
                 int l = j / 8;
                 if (k != 0 && k != 7 && l != 0 && l != 7) continue;
-                this.setArea(world, random, pos.add(-3 + k, 0, -3 + l));
+                this.setArea(testableWorld, biConsumer, random, blockPos.add(-3 + k, 0, -3 + l));
             }
         });
     }
 
-    private void setArea(ModifiableTestableWorld world, Random random, BlockPos pos) {
+    private void setArea(TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, BlockPos blockPos) {
         for (int i = -2; i <= 2; ++i) {
             for (int j = -2; j <= 2; ++j) {
                 if (Math.abs(i) == 2 && Math.abs(j) == 2) continue;
-                this.setColumn(world, random, pos.add(i, 0, j));
+                this.setColumn(testableWorld, biConsumer, random, blockPos.add(i, 0, j));
             }
         }
     }
 
-    private void setColumn(ModifiableTestableWorld world, Random random, BlockPos pos) {
+    private void setColumn(TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, BlockPos blockPos) {
         for (int i = 2; i >= -3; --i) {
-            BlockPos blockPos = pos.up(i);
-            if (Feature.isSoil(world, blockPos)) {
-                world.setBlockState(blockPos, this.provider.getBlockState(random, pos), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.FORCE_STATE);
+            BlockPos blockPos2 = blockPos.up(i);
+            if (Feature.isSoil(testableWorld, blockPos2)) {
+                biConsumer.accept(blockPos2, this.provider.getBlockState(random, blockPos));
                 break;
             }
-            if (!Feature.isAir(world, blockPos) && i < 0) break;
+            if (!Feature.isAir(testableWorld, blockPos2) && i < 0) break;
         }
     }
 }

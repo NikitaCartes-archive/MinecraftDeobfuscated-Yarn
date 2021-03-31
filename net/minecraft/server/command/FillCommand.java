@@ -14,7 +14,6 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.function.Predicate;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -34,6 +33,7 @@ import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 public class FillCommand {
+    private static final int field_33391 = 32768;
     private static final Dynamic2CommandExceptionType TOO_BIG_EXCEPTION = new Dynamic2CommandExceptionType((maxCount, count) -> new TranslatableText("commands.fill.toobig", maxCount, count));
     private static final BlockStateArgument AIR_BLOCK_ARGUMENT = new BlockStateArgument(Blocks.AIR.getDefaultState(), Collections.emptySet(), null);
     private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.fill.failed"));
@@ -50,12 +50,12 @@ public class FillCommand {
         ArrayList<BlockPos> list = Lists.newArrayList();
         ServerWorld serverWorld = source.getWorld();
         int j = 0;
-        for (BlockPos blockPos : BlockPos.iterate(range.minX, range.minY, range.minZ, range.maxX, range.maxY, range.maxZ)) {
+        for (BlockPos blockPos : BlockPos.iterate(range.getMinX(), range.getMinY(), range.getMinZ(), range.getMaxX(), range.getMaxY(), range.getMaxZ())) {
             BlockStateArgument blockStateArgument;
             if (filter != null && !filter.test(new CachedBlockPosition(serverWorld, blockPos, true)) || (blockStateArgument = mode.filter.filter(range, blockPos, block, serverWorld)) == null) continue;
             BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
             Clearable.clear(blockEntity);
-            if (!blockStateArgument.setBlockState(serverWorld, blockPos, SetBlockStateFlags.NOTIFY_LISTENERS)) continue;
+            if (!blockStateArgument.setBlockState(serverWorld, blockPos, Block.NOTIFY_LISTENERS)) continue;
             list.add(blockPos.toImmutable());
             ++j;
         }
@@ -73,13 +73,13 @@ public class FillCommand {
     static enum Mode {
         REPLACE((range, pos, block, world) -> block),
         OUTLINE((range, pos, block, world) -> {
-            if (pos.getX() == range.minX || pos.getX() == range.maxX || pos.getY() == range.minY || pos.getY() == range.maxY || pos.getZ() == range.minZ || pos.getZ() == range.maxZ) {
+            if (pos.getX() == range.getMinX() || pos.getX() == range.getMaxX() || pos.getY() == range.getMinY() || pos.getY() == range.getMaxY() || pos.getZ() == range.getMinZ() || pos.getZ() == range.getMaxZ()) {
                 return block;
             }
             return null;
         }),
         HOLLOW((range, pos, block, world) -> {
-            if (pos.getX() == range.minX || pos.getX() == range.maxX || pos.getY() == range.minY || pos.getY() == range.maxY || pos.getZ() == range.minZ || pos.getZ() == range.maxZ) {
+            if (pos.getX() == range.getMinX() || pos.getX() == range.getMaxX() || pos.getY() == range.getMinY() || pos.getY() == range.getMaxY() || pos.getZ() == range.getMinZ() || pos.getZ() == range.getMaxZ()) {
                 return block;
             }
             return AIR_BLOCK_ARGUMENT;

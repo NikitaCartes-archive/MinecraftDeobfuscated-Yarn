@@ -6,6 +6,7 @@ package net.minecraft.client.realms.util;
 import com.google.common.collect.Maps;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.util.UUIDTypeAdapter;
 import java.awt.image.BufferedImage;
@@ -26,7 +27,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.realms.util.RealmsUtil;
 import net.minecraft.client.realms.util.SkinProcessor;
-import net.minecraft.client.texture.TextureUtil;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.util.Identifier;
 import org.apache.commons.codec.binary.Base64;
@@ -154,7 +154,7 @@ public class RealmsTextureManager {
             RenderSystem.deleteTexture(realmsTexture.textureId);
             i = realmsTexture.textureId;
         } else {
-            i = GlStateManager.genTextures();
+            i = GlStateManager._genTexture();
         }
         IntBuffer intBuffer = null;
         int j = 0;
@@ -179,7 +179,7 @@ public class RealmsTextureManager {
         }
         RenderSystem.activeTexture(33984);
         RenderSystem.bindTextureForSetup(i);
-        TextureUtil.uploadImage(intBuffer, j, k);
+        TextureUtil.initTexture(intBuffer, j, k);
         textures.put(id, new RealmsTexture(image, i));
         return i;
     }

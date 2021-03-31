@@ -13,18 +13,18 @@ import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.IntRange;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 public class WalkTowardClosestAdultTask<E extends PassiveEntity>
 extends Task<E> {
-    private final IntRange executionRange;
+    private final UniformIntProvider executionRange;
     private final Function<LivingEntity, Float> speed;
 
-    public WalkTowardClosestAdultTask(IntRange executionRange, float speed) {
-        this(executionRange, livingEntity -> Float.valueOf(speed));
+    public WalkTowardClosestAdultTask(UniformIntProvider executionRange, float speed) {
+        this(executionRange, entity -> Float.valueOf(speed));
     }
 
-    public WalkTowardClosestAdultTask(IntRange executionRange, Function<LivingEntity, Float> speed) {
+    public WalkTowardClosestAdultTask(UniformIntProvider executionRange, Function<LivingEntity, Float> speed) {
         super(ImmutableMap.of(MemoryModuleType.NEAREST_VISIBLE_ADULT, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT));
         this.executionRange = executionRange;
         this.speed = speed;

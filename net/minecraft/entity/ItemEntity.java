@@ -6,8 +6,6 @@ package net.minecraft.entity;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
@@ -40,6 +38,9 @@ import org.jetbrains.annotations.Nullable;
 public class ItemEntity
 extends Entity {
     private static final TrackedData<ItemStack> STACK = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
+    private static final int field_30456 = 6000;
+    private static final int field_30457 = Short.MAX_VALUE;
+    private static final int field_30458 = Short.MIN_VALUE;
     /**
      * The number of ticks since this item entity has been created.
      * It is a short value with key {@code Age} in the NBT structure.
@@ -70,7 +71,6 @@ extends Entity {
         this.setStack(stack);
     }
 
-    @Environment(value=EnvType.CLIENT)
     private ItemEntity(ItemEntity entity) {
         super(entity.getType(), entity.world);
         this.setStack(entity.getStack().copy());
@@ -265,35 +265,35 @@ extends Entity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        tag.putShort("Health", (short)this.health);
-        tag.putShort("Age", (short)this.itemAge);
-        tag.putShort("PickupDelay", (short)this.pickupDelay);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        nbt.putShort("Health", (short)this.health);
+        nbt.putShort("Age", (short)this.itemAge);
+        nbt.putShort("PickupDelay", (short)this.pickupDelay);
         if (this.getThrower() != null) {
-            tag.putUuid("Thrower", this.getThrower());
+            nbt.putUuid("Thrower", this.getThrower());
         }
         if (this.getOwner() != null) {
-            tag.putUuid("Owner", this.getOwner());
+            nbt.putUuid("Owner", this.getOwner());
         }
         if (!this.getStack().isEmpty()) {
-            tag.put("Item", this.getStack().writeNbt(new NbtCompound()));
+            nbt.put("Item", this.getStack().writeNbt(new NbtCompound()));
         }
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        this.health = tag.getShort("Health");
-        this.itemAge = tag.getShort("Age");
-        if (tag.contains("PickupDelay")) {
-            this.pickupDelay = tag.getShort("PickupDelay");
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        this.health = nbt.getShort("Health");
+        this.itemAge = nbt.getShort("Age");
+        if (nbt.contains("PickupDelay")) {
+            this.pickupDelay = nbt.getShort("PickupDelay");
         }
-        if (tag.containsUuid("Owner")) {
-            this.owner = tag.getUuid("Owner");
+        if (nbt.containsUuid("Owner")) {
+            this.owner = nbt.getUuid("Owner");
         }
-        if (tag.containsUuid("Thrower")) {
-            this.thrower = tag.getUuid("Thrower");
+        if (nbt.containsUuid("Thrower")) {
+            this.thrower = nbt.getUuid("Thrower");
         }
-        NbtCompound nbtCompound = tag.getCompound("Item");
+        NbtCompound nbtCompound = nbt.getCompound("Item");
         this.setStack(ItemStack.fromNbt(nbtCompound));
         if (this.getStack().isEmpty()) {
             this.discard();
@@ -414,7 +414,6 @@ extends Entity {
      * 
      * @see #tick()
      */
-    @Environment(value=EnvType.CLIENT)
     public int getItemAge() {
         return this.itemAge;
     }
@@ -459,6 +458,10 @@ extends Entity {
         return this.pickupDelay > 0;
     }
 
+    public void method_35190() {
+        this.itemAge = Short.MIN_VALUE;
+    }
+
     public void setCovetedItem() {
         this.itemAge = -6000;
     }
@@ -468,7 +471,6 @@ extends Entity {
         this.itemAge = 5999;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getRotation(float tickDelta) {
         return ((float)this.getItemAge() + tickDelta) / 20.0f + this.uniqueOffset;
     }
@@ -478,7 +480,6 @@ extends Entity {
         return new EntitySpawnS2CPacket(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public ItemEntity copy() {
         return new ItemEntity(this);
     }

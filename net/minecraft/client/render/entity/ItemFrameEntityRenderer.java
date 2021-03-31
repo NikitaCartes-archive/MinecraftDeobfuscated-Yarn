@@ -40,6 +40,8 @@ extends EntityRenderer<T> {
     private static final ModelIdentifier MAP_FRAME = new ModelIdentifier("item_frame", "map=true");
     private static final ModelIdentifier GLOW_FRAME = new ModelIdentifier("glow_item_frame", "map=false");
     private static final ModelIdentifier MAP_GLOW_FRAME = new ModelIdentifier("glow_item_frame", "map=true");
+    public static final int field_32932 = 5;
+    public static final int field_32933 = 30;
     private final MinecraftClient client = MinecraftClient.getInstance();
     private final ItemRenderer itemRenderer;
 
@@ -50,7 +52,10 @@ extends EntityRenderer<T> {
 
     @Override
     protected int getBlockLight(T itemFrameEntity, BlockPos blockPos) {
-        return ((Entity)itemFrameEntity).getType() == EntityType.GLOW_ITEM_FRAME ? 5 : super.getBlockLight(itemFrameEntity, blockPos);
+        if (((Entity)itemFrameEntity).getType() == EntityType.GLOW_ITEM_FRAME) {
+            return Math.max(5, super.getBlockLight(itemFrameEntity, blockPos));
+        }
+        return super.getBlockLight(itemFrameEntity, blockPos);
     }
 
     @Override

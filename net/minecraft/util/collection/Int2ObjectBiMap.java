@@ -13,7 +13,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class Int2ObjectBiMap<K>
 implements IndexedIterable<K> {
+    public static final int field_29828 = -1;
     private static final Object EMPTY = null;
+    private static final float field_29829 = 0.8f;
     private K[] values;
     private int[] ids;
     private K[] idToValues;
@@ -46,6 +48,14 @@ implements IndexedIterable<K> {
             return -1;
         }
         return this.ids[index];
+    }
+
+    public boolean method_34904(K object) {
+        return this.getRawId(object) != -1;
+    }
+
+    public boolean containsKey(int index) {
+        return this.get(index) != null;
     }
 
     public int add(K value) {

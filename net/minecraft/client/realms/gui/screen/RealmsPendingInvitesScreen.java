@@ -186,6 +186,7 @@ extends RealmsScreen {
     @Environment(value=EnvType.CLIENT)
     class PendingInvitationSelectionListEntry
     extends AlwaysSelectedEntryListWidget.Entry<PendingInvitationSelectionListEntry> {
+        private static final int field_32123 = 38;
         private final PendingInvite mPendingInvite;
         private final List<RealmsAcceptRejectButton> buttons;
 

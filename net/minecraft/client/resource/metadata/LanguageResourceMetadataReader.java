@@ -19,6 +19,8 @@ import net.minecraft.util.JsonHelper;
 @Environment(value=EnvType.CLIENT)
 public class LanguageResourceMetadataReader
 implements ResourceMetadataReader<LanguageResourceMetadata> {
+    private static final int field_32979 = 16;
+
     @Override
     public LanguageResourceMetadata fromJson(JsonObject jsonObject) {
         HashSet<LanguageDefinition> set = Sets.newHashSet();

@@ -90,6 +90,7 @@ public class ModelLoader {
     public static final SpriteIdentifier BANNER_BASE = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("entity/banner_base"));
     public static final SpriteIdentifier SHIELD_BASE = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("entity/shield_base"));
     public static final SpriteIdentifier SHIELD_BASE_NO_PATTERN = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("entity/shield_base_nopattern"));
+    public static final int field_32983 = 10;
     public static final List<Identifier> BLOCK_DESTRUCTION_STAGES = IntStream.range(0, 10).mapToObj(i -> new Identifier("block/destroy_stage_" + i)).collect(Collectors.toList());
     public static final List<Identifier> BLOCK_DESTRUCTION_STAGE_TEXTURES = BLOCK_DESTRUCTION_STAGES.stream().map(identifier -> new Identifier("textures/" + identifier.getPath() + ".png")).collect(Collectors.toList());
     public static final List<RenderLayer> BLOCK_DESTRUCTION_RENDER_LAYERS = BLOCK_DESTRUCTION_STAGE_TEXTURES.stream().map(RenderLayer::getBlockBreaking).collect(Collectors.toList());
@@ -120,7 +121,13 @@ public class ModelLoader {
         hashSet.add(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, PlayerScreenHandler.EMPTY_OFFHAND_ARMOR_SLOT));
         TexturedRenderLayers.addDefaultTextures(hashSet::add);
     });
+    static final int field_32984 = -1;
+    private static final int field_32985 = 0;
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final String field_32986 = "builtin/";
+    private static final String field_32987 = "builtin/generated";
+    private static final String field_32988 = "builtin/entity";
+    private static final String field_32989 = "missing";
     public static final ModelIdentifier MISSING = new ModelIdentifier("builtin/missing", "missing");
     private static final String field_21773 = MISSING.toString();
     @VisibleForTesting
@@ -461,7 +468,7 @@ public class ModelLoader {
                 resource = null;
                 try {
                     string = id.getPath();
-                    if (!"builtin/generated".equals(string)) break block7;
+                    if (!field_32987.equals(string)) break block7;
                     jsonUnbakedModel = GENERATION_MARKER;
                 } catch (Throwable throwable) {
                     IOUtils.closeQuietly(reader);
@@ -472,14 +479,14 @@ public class ModelLoader {
                 IOUtils.closeQuietly(resource);
                 return jsonUnbakedModel;
             }
-            if (!"builtin/entity".equals(string)) break block8;
+            if (!field_32988.equals(string)) break block8;
             JsonUnbakedModel jsonUnbakedModel = BLOCK_ENTITY_MARKER;
             IOUtils.closeQuietly(reader);
             IOUtils.closeQuietly(resource);
             return jsonUnbakedModel;
         }
-        if (string.startsWith("builtin/")) {
-            String string2 = string.substring("builtin/".length());
+        if (string.startsWith(field_32986)) {
+            String string2 = string.substring(field_32986.length());
             String string3 = BUILTIN_MODEL_DEFINITIONS.get(string2);
             if (string3 == null) {
                 throw new FileNotFoundException(id.toString());

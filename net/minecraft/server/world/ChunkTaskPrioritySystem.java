@@ -42,6 +42,10 @@ AutoCloseable {
         this.controlActor = new TaskExecutor<TaskQueue.PrioritizedTask>(new TaskQueue.Prioritized(4), executor, "sorter");
     }
 
+    public static <T> Task<T> method_34871(Function<MessageListener<Unit>, T> function, long l, IntSupplier intSupplier) {
+        return new Task(function, l, intSupplier);
+    }
+
     public static Task<Runnable> createMessage(Runnable task, long pos, IntSupplier lastLevelUpdatedToProvider) {
         return new Task<Runnable>(yield -> () -> {
             task.run();
@@ -51,6 +55,10 @@ AutoCloseable {
 
     public static Task<Runnable> createMessage(ChunkHolder holder, Runnable task) {
         return ChunkTaskPrioritySystem.createMessage(task, holder.getPos().toLong(), holder::getCompletedLevel);
+    }
+
+    public static <T> Task<T> method_34870(ChunkHolder chunkHolder, Function<MessageListener<Unit>, T> function) {
+        return ChunkTaskPrioritySystem.method_34871(function, chunkHolder.getPos().toLong(), chunkHolder::getCompletedLevel);
     }
 
     public static UnblockingMessage createUnblockingMessage(Runnable task, long pos, boolean removeTask) {

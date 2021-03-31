@@ -6,8 +6,6 @@ package net.minecraft.entity.mob;
 import java.util.EnumSet;
 import java.util.Random;
 import java.util.function.Predicate;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
@@ -53,6 +51,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class GuardianEntity
 extends HostileEntity {
+    protected static final int field_30470 = 80;
     private static final TrackedData<Boolean> SPIKES_RETRACTED = DataTracker.registerData(GuardianEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> BEAM_TARGET_ID = DataTracker.registerData(GuardianEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private float tailAngle;
@@ -267,12 +266,10 @@ extends HostileEntity {
         return SoundEvents.ENTITY_GUARDIAN_FLOP;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getTailAngle(float tickDelta) {
         return MathHelper.lerp(tickDelta, this.prevTailAngle, this.tailAngle);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getSpikesExtension(float tickDelta) {
         return MathHelper.lerp(tickDelta, this.prevSpikesExtension, this.spikesExtension);
     }

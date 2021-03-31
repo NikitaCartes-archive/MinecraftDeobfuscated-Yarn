@@ -3,7 +3,6 @@
  */
 package net.minecraft.data.validate;
 
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.data.SnbtProvider;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.Schemas;
@@ -20,30 +19,30 @@ implements SnbtProvider.Tweaker {
     @Override
     public NbtCompound write(String name, NbtCompound nbt) {
         if (name.startsWith("data/minecraft/structures/")) {
-            return StructureValidatorProvider.method_32235(name, nbt);
+            return StructureValidatorProvider.update(name, nbt);
         }
         return nbt;
     }
 
-    public static NbtCompound method_32235(String string, NbtCompound nbtCompound) {
-        return StructureValidatorProvider.update(string, StructureValidatorProvider.addDataVersion(nbtCompound));
+    public static NbtCompound update(String name, NbtCompound nbt) {
+        return StructureValidatorProvider.internalUpdate(name, StructureValidatorProvider.addDataVersion(nbt));
     }
 
     private static NbtCompound addDataVersion(NbtCompound nbt) {
-        if (!nbt.contains("DataVersion", NbtTypeIds.NUMBER)) {
+        if (!nbt.contains("DataVersion", 99)) {
             nbt.putInt("DataVersion", 500);
         }
         return nbt;
     }
 
-    private static NbtCompound update(String name, NbtCompound tag) {
+    private static NbtCompound internalUpdate(String name, NbtCompound nbt) {
         Structure structure = new Structure();
-        int i = tag.getInt("DataVersion");
+        int i = nbt.getInt("DataVersion");
         int j = 2678;
         if (i < 2678) {
             LOGGER.warn("SNBT Too old, do not forget to update: {} < {}: {}", (Object)i, (Object)2678, (Object)name);
         }
-        NbtCompound nbtCompound = NbtHelper.update(Schemas.getFixer(), DataFixTypes.STRUCTURE, tag, i);
+        NbtCompound nbtCompound = NbtHelper.update(Schemas.getFixer(), DataFixTypes.STRUCTURE, nbt, i);
         structure.readNbt(nbtCompound);
         return structure.writeNbt(new NbtCompound());
     }

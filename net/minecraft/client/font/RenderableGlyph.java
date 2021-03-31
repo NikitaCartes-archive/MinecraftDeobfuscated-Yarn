@@ -36,6 +36,7 @@ extends Glyph {
         return this.getYMin() + (float)this.getHeight() / this.getOversample();
     }
 
+    @Override
     default public float getAscent() {
         return 3.0f;
     }

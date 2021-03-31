@@ -4,35 +4,38 @@
 package net.minecraft.item;
 
 import java.util.List;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 
 public interface DyeableItem {
+    public static final String COLOR_KEY = "color";
+    public static final String DISPLAY_KEY = "display";
+    public static final int DEFAULT_COLOR = 10511680;
+
     default public boolean hasColor(ItemStack stack) {
-        NbtCompound nbtCompound = stack.getSubTag("display");
-        return nbtCompound != null && nbtCompound.contains("color", NbtTypeIds.NUMBER);
+        NbtCompound nbtCompound = stack.getSubTag(DISPLAY_KEY);
+        return nbtCompound != null && nbtCompound.contains(COLOR_KEY, 99);
     }
 
     default public int getColor(ItemStack stack) {
-        NbtCompound nbtCompound = stack.getSubTag("display");
-        if (nbtCompound != null && nbtCompound.contains("color", NbtTypeIds.NUMBER)) {
-            return nbtCompound.getInt("color");
+        NbtCompound nbtCompound = stack.getSubTag(DISPLAY_KEY);
+        if (nbtCompound != null && nbtCompound.contains(COLOR_KEY, 99)) {
+            return nbtCompound.getInt(COLOR_KEY);
         }
         return 10511680;
     }
 
     default public void removeColor(ItemStack stack) {
-        NbtCompound nbtCompound = stack.getSubTag("display");
-        if (nbtCompound != null && nbtCompound.contains("color")) {
-            nbtCompound.remove("color");
+        NbtCompound nbtCompound = stack.getSubTag(DISPLAY_KEY);
+        if (nbtCompound != null && nbtCompound.contains(COLOR_KEY)) {
+            nbtCompound.remove(COLOR_KEY);
         }
     }
 
     default public void setColor(ItemStack stack, int color) {
-        stack.getOrCreateSubTag("display").putInt("color", color);
+        stack.getOrCreateSubTag(DISPLAY_KEY).putInt(COLOR_KEY, color);
     }
 
     public static ItemStack blendAndSetColor(ItemStack stack, List<DyeItem> colors) {

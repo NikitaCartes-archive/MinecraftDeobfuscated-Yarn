@@ -46,6 +46,10 @@ public class VillagerProfession {
         this.workSound = workSound;
     }
 
+    public String getId() {
+        return this.id;
+    }
+
     public PointOfInterestType getWorkStation() {
         return this.workStation;
     }

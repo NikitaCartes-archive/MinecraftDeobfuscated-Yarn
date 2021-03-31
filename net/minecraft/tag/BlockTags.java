@@ -63,6 +63,7 @@ public final class BlockTags {
     public static final Tag.Identified<Block> COPPER_ORES = BlockTags.register("copper_ores");
     public static final Tag.Identified<Block> NON_FLAMMABLE_WOOD = BlockTags.register("non_flammable_wood");
     public static final Tag.Identified<Block> CANDLES = BlockTags.register("candles");
+    public static final Tag.Identified<Block> DIRT = BlockTags.register("dirt");
     public static final Tag.Identified<Block> FLOWER_POTS = BlockTags.register("flower_pots");
     public static final Tag.Identified<Block> ENDERMAN_HOLDABLE = BlockTags.register("enderman_holdable");
     public static final Tag.Identified<Block> ICE = BlockTags.register("ice");
@@ -117,6 +118,10 @@ public final class BlockTags {
     public static final Tag.Identified<Block> CAVE_VINES = BlockTags.register("cave_vines");
     public static final Tag.Identified<Block> LUSH_PLANTS_REPLACEABLE = BlockTags.register("lush_plants_replaceable");
     public static final Tag.Identified<Block> LUSH_GROUND_REPLACEABLE = BlockTags.register("lush_ground_replaceable");
+    public static final Tag.Identified<Block> SNOW = BlockTags.register("snow");
+
+    private BlockTags() {
+    }
 
     private static Tag.Identified<Block> register(String id) {
         return REQUIRED_TAGS.add(id);

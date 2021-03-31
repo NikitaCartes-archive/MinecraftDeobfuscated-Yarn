@@ -10,12 +10,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.GlowLichenBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.GlowLichenFeatureConfig;
@@ -45,7 +46,7 @@ extends Feature<GlowLichenFeatureConfig> {
             mutable.set(blockPos);
             List<Direction> list2 = GlowLichenFeature.shuffleDirections(glowLichenFeatureConfig, random, direction.getOpposite());
             for (int i = 0; i < glowLichenFeatureConfig.searchRange; ++i) {
-                mutable.set(blockPos, direction);
+                mutable.set((Vec3i)blockPos, direction);
                 BlockState blockState = structureWorldAccess.getBlockState(mutable);
                 if (!GlowLichenFeature.isAirOrWater(blockState) && !blockState.isOf(Blocks.GLOW_LICHEN)) continue block0;
                 if (!GlowLichenFeature.generate(structureWorldAccess, mutable, blockState, glowLichenFeatureConfig, random, list2)) continue;
@@ -58,14 +59,14 @@ extends Feature<GlowLichenFeatureConfig> {
     public static boolean generate(StructureWorldAccess world, BlockPos pos, BlockState state, GlowLichenFeatureConfig config, Random random, List<Direction> directions) {
         BlockPos.Mutable mutable = pos.mutableCopy();
         for (Direction direction : directions) {
-            BlockState blockState = world.getBlockState(mutable.set(pos, direction));
+            BlockState blockState = world.getBlockState(mutable.set((Vec3i)pos, direction));
             if (!config.canGrowOn(blockState.getBlock())) continue;
             GlowLichenBlock glowLichenBlock = (GlowLichenBlock)Blocks.GLOW_LICHEN;
             BlockState blockState2 = glowLichenBlock.withDirection(state, world, pos, direction);
             if (blockState2 == null) {
                 return false;
             }
-            world.setBlockState(pos, blockState2, SetBlockStateFlags.DEFAULT);
+            world.setBlockState(pos, blockState2, Block.NOTIFY_ALL);
             if (random.nextFloat() < config.spreadChance) {
                 glowLichenBlock.trySpreadRandomly(blockState2, world, pos, direction, random);
             }

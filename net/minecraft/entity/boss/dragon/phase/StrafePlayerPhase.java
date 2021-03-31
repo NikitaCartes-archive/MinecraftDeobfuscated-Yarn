@@ -3,7 +3,6 @@
  */
 package net.minecraft.entity.boss.dragon.phase;
 
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
@@ -14,6 +13,7 @@ import net.minecraft.entity.projectile.DragonFireballEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.WorldEvents;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 public class StrafePlayerPhase
 extends AbstractPhase {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final int field_30440 = 5;
     private int seenTargetTimes;
     private Path path;
     private Vec3d pathTarget;

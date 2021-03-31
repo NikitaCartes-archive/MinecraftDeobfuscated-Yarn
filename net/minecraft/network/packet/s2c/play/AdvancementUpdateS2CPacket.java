@@ -9,8 +9,6 @@ import com.google.common.collect.Sets;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.network.Packet;
@@ -56,22 +54,18 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onAdvancements(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Map<Identifier, Advancement.Task> getAdvancementsToEarn() {
         return this.toEarn;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Set<Identifier> getAdvancementIdsToRemove() {
         return this.toRemove;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Map<Identifier, AdvancementProgress> getAdvancementsToProgress() {
         return this.toSetProgress;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean shouldClearCurrent() {
         return this.clearCurrent;
     }

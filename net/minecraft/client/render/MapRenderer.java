@@ -23,13 +23,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
-import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class MapRenderer
 implements AutoCloseable {
     private static final Identifier MAP_ICONS_TEXTURE = new Identifier("textures/map/map_icons.png");
     private static final RenderLayer MAP_ICONS_RENDER_LAYER = RenderLayer.getText(MAP_ICONS_TEXTURE);
+    private static final int field_32173 = 128;
+    private static final int field_32174 = 128;
     private final TextureManager textureManager;
     private final Int2ObjectMap<MapTexture> mapTextures = new Int2ObjectOpenHashMap<MapTexture>();
 
@@ -47,12 +48,6 @@ implements AutoCloseable {
 
     private MapTexture getMapTexture(int id, MapState state) {
         return this.mapTextures.computeIfAbsent(id, i -> new MapTexture(i, state));
-    }
-
-    @Nullable
-    public MapState getMapTextureFromId(int id) {
-        MapTexture mapTexture = (MapTexture)this.mapTextures.get(id);
-        return mapTexture != null ? mapTexture.state : null;
     }
 
     public void clearStateTextures() {

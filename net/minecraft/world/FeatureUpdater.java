@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Util;
@@ -45,7 +44,7 @@ public class FeatureUpdater {
         hashMap.put("TeSH", "Swamp_Hut");
     });
     private final boolean needsUpdate;
-    private final Map<String, Long2ObjectMap<NbtCompound>> featureIdToChunkTag = Maps.newHashMap();
+    private final Map<String, Long2ObjectMap<NbtCompound>> featureIdToChunkNbt = Maps.newHashMap();
     private final Map<String, ChunkUpdateState> updateStates = Maps.newHashMap();
     private final List<String> field_17658;
     private final List<String> field_17659;
@@ -56,7 +55,7 @@ public class FeatureUpdater {
         this.init(persistentStateManager);
         boolean bl = false;
         for (String string : this.field_17659) {
-            bl |= this.featureIdToChunkTag.get(string) != null;
+            bl |= this.featureIdToChunkNbt.get(string) != null;
         }
         this.needsUpdate = bl;
     }
@@ -80,7 +79,7 @@ public class FeatureUpdater {
         NbtCompound nbtCompound4 = nbtCompound3.getCompound("References");
         for (String string : this.field_17659) {
             StructureFeature structureFeature = (StructureFeature)StructureFeature.STRUCTURES.get(string.toLowerCase(Locale.ROOT));
-            if (nbtCompound4.contains(string, NbtTypeIds.LONG_ARRAY) || structureFeature == null) continue;
+            if (nbtCompound4.contains(string, 12) || structureFeature == null) continue;
             int i = 8;
             LongArrayList longList = new LongArrayList();
             for (int j = chunkPos.x - 8; j <= chunkPos.x + 8; ++j) {
@@ -101,7 +100,7 @@ public class FeatureUpdater {
         if (!this.needsUpdate) {
             return false;
         }
-        return this.featureIdToChunkTag.get(id) != null && this.updateStates.get(OLD_TO_NEW.get(id)).contains(ChunkPos.toLong(chunkX, chunkZ));
+        return this.featureIdToChunkNbt.get(id) != null && this.updateStates.get(OLD_TO_NEW.get(id)).contains(ChunkPos.toLong(chunkX, chunkZ));
     }
 
     private boolean needsUpdate(int chunkX, int chunkZ) {
@@ -109,19 +108,19 @@ public class FeatureUpdater {
             return false;
         }
         for (String string : this.field_17659) {
-            if (this.featureIdToChunkTag.get(string) == null || !this.updateStates.get(OLD_TO_NEW.get(string)).isRemaining(ChunkPos.toLong(chunkX, chunkZ))) continue;
+            if (this.featureIdToChunkNbt.get(string) == null || !this.updateStates.get(OLD_TO_NEW.get(string)).isRemaining(ChunkPos.toLong(chunkX, chunkZ))) continue;
             return true;
         }
         return false;
     }
 
-    private NbtCompound getUpdatedStarts(NbtCompound tag, ChunkPos pos) {
-        NbtCompound nbtCompound = tag.getCompound("Level");
+    private NbtCompound getUpdatedStarts(NbtCompound nbt, ChunkPos pos) {
+        NbtCompound nbtCompound = nbt.getCompound("Level");
         NbtCompound nbtCompound2 = nbtCompound.getCompound("Structures");
         NbtCompound nbtCompound3 = nbtCompound2.getCompound("Starts");
         for (String string : this.field_17659) {
             NbtCompound nbtCompound4;
-            Long2ObjectMap<NbtCompound> long2ObjectMap = this.featureIdToChunkTag.get(string);
+            Long2ObjectMap<NbtCompound> long2ObjectMap = this.featureIdToChunkNbt.get(string);
             if (long2ObjectMap == null) continue;
             long l = pos.toLong();
             if (!this.updateStates.get(OLD_TO_NEW.get(string)).isRemaining(l) || (nbtCompound4 = (NbtCompound)long2ObjectMap.get(l)) == null) continue;
@@ -129,8 +128,8 @@ public class FeatureUpdater {
         }
         nbtCompound2.put("Starts", nbtCompound3);
         nbtCompound.put("Structures", nbtCompound2);
-        tag.put("Level", nbtCompound);
-        return tag;
+        nbt.put("Level", nbtCompound);
+        return nbt;
     }
 
     private void init(@Nullable PersistentStateManager persistentStateManager) {
@@ -152,12 +151,12 @@ public class FeatureUpdater {
                 String string4;
                 NbtCompound nbtCompound2 = nbtCompound.getCompound(string22);
                 long l = ChunkPos.toLong(nbtCompound2.getInt("ChunkX"), nbtCompound2.getInt("ChunkZ"));
-                NbtList nbtList = nbtCompound2.getList("Children", NbtTypeIds.COMPOUND);
+                NbtList nbtList = nbtCompound2.getList("Children", 10);
                 if (!nbtList.isEmpty() && (string4 = ANCIENT_TO_OLD.get(string3 = nbtList.getCompound(0).getString("id"))) != null) {
                     nbtCompound2.putString("id", string4);
                 }
                 string3 = nbtCompound2.getString("id");
-                this.featureIdToChunkTag.computeIfAbsent(string3, string -> new Long2ObjectOpenHashMap()).put(l, nbtCompound2);
+                this.featureIdToChunkNbt.computeIfAbsent(string3, string -> new Long2ObjectOpenHashMap()).put(l, nbtCompound2);
             }
             String string5 = string2 + "_index";
             ChunkUpdateState chunkUpdateState = persistentStateManager.getOrCreate(ChunkUpdateState::fromNbt, ChunkUpdateState::new, string5);

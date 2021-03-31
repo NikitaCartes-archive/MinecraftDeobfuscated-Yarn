@@ -33,6 +33,8 @@ extends DrawableHelper
 implements Drawable,
 Element {
     private static final Identifier BACKGROUND_TEXTURE = new Identifier("textures/gui/recipe_book.png");
+    private static final int field_32406 = 4;
+    private static final int field_32407 = 5;
     private final List<AlternativeButtonWidget> alternativeButtons = Lists.newArrayList();
     private boolean visible;
     private int buttonX;

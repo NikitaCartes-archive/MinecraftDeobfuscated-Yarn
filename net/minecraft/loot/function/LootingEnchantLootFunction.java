@@ -26,6 +26,7 @@ import net.minecraft.util.JsonHelper;
 
 public class LootingEnchantLootFunction
 extends ConditionalLootFunction {
+    public static final int field_31854 = 0;
     private final LootNumberProvider countRange;
     private final int limit;
 

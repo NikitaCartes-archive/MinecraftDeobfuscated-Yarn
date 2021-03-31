@@ -3,8 +3,6 @@
  */
 package net.minecraft.world.event;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.registry.Registry;
 
 public class GameEvent {
@@ -53,6 +51,7 @@ public class GameEvent {
     public static final GameEvent STEP = GameEvent.register("step");
     public static final GameEvent SWIM = GameEvent.register("swim");
     public static final GameEvent WOLF_SHAKING = GameEvent.register("wolf_shaking");
+    public static final int DEFAULT_RANGE = 16;
     private final String id;
     private final int range;
 
@@ -61,7 +60,6 @@ public class GameEvent {
         this.range = range;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public String getId() {
         return this.id;
     }

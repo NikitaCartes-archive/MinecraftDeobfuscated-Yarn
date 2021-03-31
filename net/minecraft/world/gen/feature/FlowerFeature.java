@@ -5,7 +5,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
@@ -31,7 +31,7 @@ extends Feature<U> {
         for (int j = 0; j < this.getFlowerAmount(featureConfig); ++j) {
             BlockPos blockPos2 = this.getPos(random, blockPos, featureConfig);
             if (!structureWorldAccess.isAir(blockPos2) || !blockState.canPlaceAt(structureWorldAccess, blockPos2) || !this.isPosValid(structureWorldAccess, blockPos2, featureConfig)) continue;
-            structureWorldAccess.setBlockState(blockPos2, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
+            structureWorldAccess.setBlockState(blockPos2, blockState, Block.NOTIFY_LISTENERS);
             ++i;
         }
         return i > 0;

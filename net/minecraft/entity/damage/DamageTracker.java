@@ -21,6 +21,8 @@ import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 public class DamageTracker {
+    public static final int field_29967 = 100;
+    public static final int field_29968 = 300;
     private final List<DamageRecord> recentDamage = Lists.newArrayList();
     private final LivingEntity entity;
     private int ageOnLastDamage;
@@ -142,6 +144,16 @@ public class DamageTracker {
         return damageRecord.getFallDeathSuffix() == null ? "generic" : damageRecord.getFallDeathSuffix();
     }
 
+    public boolean method_35039() {
+        this.update();
+        return this.hasDamage;
+    }
+
+    public boolean method_35040() {
+        this.update();
+        return this.recentlyAttacked;
+    }
+
     public int getTimeSinceLastAttack() {
         if (this.recentlyAttacked) {
             return this.entity.age - this.ageOnLastAttacked;
@@ -170,6 +182,14 @@ public class DamageTracker {
 
     public LivingEntity getEntity() {
         return this.entity;
+    }
+
+    @Nullable
+    public DamageRecord method_35041() {
+        if (this.recentDamage.isEmpty()) {
+            return null;
+        }
+        return this.recentDamage.get(this.recentDamage.size() - 1);
     }
 
     /**

@@ -22,6 +22,8 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class SystemToast
 implements Toast {
+    private static final long field_32218 = 5000L;
+    private static final int field_32219 = 200;
     private final Type type;
     private Text title;
     private List<OrderedText> lines;

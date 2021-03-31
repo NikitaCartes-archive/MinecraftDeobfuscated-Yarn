@@ -7,9 +7,6 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -37,6 +34,12 @@ import org.jetbrains.annotations.Nullable;
 
 public class ConduitBlockEntity
 extends BlockEntity {
+    private static final int field_31333 = 2;
+    private static final int field_31334 = 13;
+    private static final float field_31335 = -0.0375f;
+    private static final int field_31336 = 16;
+    private static final int field_31337 = 42;
+    private static final int field_31338 = 8;
     private static final Block[] ACTIVATING_BLOCKS = new Block[]{Blocks.PRISMARINE, Blocks.PRISMARINE_BRICKS, Blocks.SEA_LANTERN, Blocks.DARK_PRISMARINE};
     public int ticks;
     private float ticksActive;
@@ -54,24 +57,24 @@ extends BlockEntity {
     }
 
     @Override
-    public void readNbt(NbtCompound tag) {
-        super.readNbt(tag);
-        this.targetUuid = tag.containsUuid("Target") ? tag.getUuid("Target") : null;
+    public void readNbt(NbtCompound nbt) {
+        super.readNbt(nbt);
+        this.targetUuid = nbt.containsUuid("Target") ? nbt.getUuid("Target") : null;
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound tag) {
-        super.writeNbt(tag);
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
         if (this.targetEntity != null) {
-            tag.putUuid("Target", this.targetEntity.getUuid());
+            nbt.putUuid("Target", this.targetEntity.getUuid());
         }
-        return tag;
+        return nbt;
     }
 
     @Override
     @Nullable
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(this.pos, 5, this.toInitialChunkDataNbt());
+        return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.CONDUIT, this.toInitialChunkDataNbt());
     }
 
     @Override
@@ -197,7 +200,7 @@ extends BlockEntity {
             blockEntity.targetEntity.damage(DamageSource.MAGIC, 4.0f);
         }
         if (livingEntity2 != blockEntity.targetEntity) {
-            world.updateListeners(pos, state, state, SetBlockStateFlags.NOTIFY_LISTENERS);
+            world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
         }
     }
 
@@ -256,7 +259,6 @@ extends BlockEntity {
         return this.active;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isEyeOpen() {
         return this.eyeOpen;
     }
@@ -265,7 +267,6 @@ extends BlockEntity {
         this.eyeOpen = eyeOpen;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getRotation(float tickDelta) {
         return (this.ticksActive + tickDelta) * -0.0375f;
     }

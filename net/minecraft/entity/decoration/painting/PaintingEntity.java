@@ -6,8 +6,6 @@ package net.minecraft.entity.decoration.painting;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Iterator;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
@@ -62,7 +60,6 @@ extends AbstractDecorationEntity {
         this.setFacing(direction);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public PaintingEntity(World world, BlockPos pos, Direction direction, PaintingMotive motive) {
         this(world, pos, direction);
         this.motive = motive;
@@ -70,17 +67,17 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        tag.putString("Motive", Registry.PAINTING_MOTIVE.getId(this.motive).toString());
-        tag.putByte("Facing", (byte)this.facing.getHorizontal());
-        super.writeCustomDataToNbt(tag);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        nbt.putString("Motive", Registry.PAINTING_MOTIVE.getId(this.motive).toString());
+        nbt.putByte("Facing", (byte)this.facing.getHorizontal());
+        super.writeCustomDataToNbt(nbt);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        this.motive = Registry.PAINTING_MOTIVE.get(Identifier.tryParse(tag.getString("Motive")));
-        this.facing = Direction.fromHorizontal(tag.getByte("Facing"));
-        super.readCustomDataFromNbt(tag);
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        this.motive = Registry.PAINTING_MOTIVE.get(Identifier.tryParse(nbt.getString("Motive")));
+        this.facing = Direction.fromHorizontal(nbt.getByte("Facing"));
+        super.readCustomDataFromNbt(nbt);
         this.setFacing(this.facing);
     }
 
@@ -126,7 +123,6 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
         BlockPos blockPos = this.attachmentPos.add(x - this.getX(), y - this.getY(), z - this.getZ());
         this.setPosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());
@@ -138,7 +134,6 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public ItemStack getPickBlockStack() {
         return new ItemStack(Items.PAINTING);
     }

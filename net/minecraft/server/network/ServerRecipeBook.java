@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
@@ -28,6 +27,7 @@ import org.apache.logging.log4j.Logger;
 
 public class ServerRecipeBook
 extends RecipeBook {
+    public static final String field_29820 = "recipeBook";
     private static final Logger LOGGER = LogManager.getLogger();
 
     public int unlockRecipes(Collection<Recipe<?>> recipes, ServerPlayerEntity player) {
@@ -80,11 +80,11 @@ extends RecipeBook {
         return nbtCompound;
     }
 
-    public void readNbt(NbtCompound tag, RecipeManager recipeManager) {
-        this.setOptions(RecipeBookOptions.fromNbt(tag));
-        NbtList nbtList = tag.getList("recipes", NbtTypeIds.STRING);
+    public void readNbt(NbtCompound nbt, RecipeManager recipeManager) {
+        this.setOptions(RecipeBookOptions.fromNbt(nbt));
+        NbtList nbtList = nbt.getList("recipes", 8);
         this.handleList(nbtList, this::add, recipeManager);
-        NbtList nbtList2 = tag.getList("toBeDisplayed", NbtTypeIds.STRING);
+        NbtList nbtList2 = nbt.getList("toBeDisplayed", 8);
         this.handleList(nbtList2, this::display, recipeManager);
     }
 

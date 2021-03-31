@@ -5,7 +5,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.TallSeagrassBlock;
@@ -43,11 +43,11 @@ extends Feature<ProbabilityConfig> {
                     BlockState blockState22 = (BlockState)blockState.with(TallSeagrassBlock.HALF, DoubleBlockHalf.UPPER);
                     BlockPos blockPos3 = blockPos2.up();
                     if (structureWorldAccess.getBlockState(blockPos3).isOf(Blocks.WATER)) {
-                        structureWorldAccess.setBlockState(blockPos2, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
-                        structureWorldAccess.setBlockState(blockPos3, blockState22, SetBlockStateFlags.NOTIFY_LISTENERS);
+                        structureWorldAccess.setBlockState(blockPos2, blockState, Block.NOTIFY_LISTENERS);
+                        structureWorldAccess.setBlockState(blockPos3, blockState22, Block.NOTIFY_LISTENERS);
                     }
                 } else {
-                    structureWorldAccess.setBlockState(blockPos2, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
+                    structureWorldAccess.setBlockState(blockPos2, blockState, Block.NOTIFY_LISTENERS);
                 }
                 bl = true;
             }

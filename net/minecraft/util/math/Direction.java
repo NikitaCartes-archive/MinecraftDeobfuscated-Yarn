@@ -16,8 +16,6 @@ import java.util.Random;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
@@ -107,7 +105,6 @@ public enum Direction implements StringIdentifiable
         return new Direction[]{first, second, third, third.getOpposite(), second.getOpposite(), first.getOpposite()};
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static Direction transform(Matrix4f matrix, Direction direction) {
         Vec3i vec3i = direction.getVector();
         Vector4f vector4f = new Vector4f(vec3i.getX(), vec3i.getY(), vec3i.getZ(), 0.0f);
@@ -115,7 +112,6 @@ public enum Direction implements StringIdentifiable
         return Direction.getFacing(vector4f.getX(), vector4f.getY(), vector4f.getZ());
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Quaternion getRotationQuaternion() {
         Quaternion quaternion = Vec3f.POSITIVE_X.getDegreesQuaternion(90.0f);
         switch (this) {
@@ -169,6 +165,54 @@ public enum Direction implements StringIdentifiable
         return Direction.byId(this.idOpposite);
     }
 
+    public Direction method_35833(Axis axis) {
+        switch (axis) {
+            case X: {
+                if (this == WEST || this == EAST) {
+                    return this;
+                }
+                return this.method_35835();
+            }
+            case Y: {
+                if (this == UP || this == DOWN) {
+                    return this;
+                }
+                return this.rotateYClockwise();
+            }
+            case Z: {
+                if (this == NORTH || this == SOUTH) {
+                    return this;
+                }
+                return this.method_35837();
+            }
+        }
+        throw new IllegalStateException("Unable to get CW facing for axis " + axis);
+    }
+
+    public Direction method_35834(Axis axis) {
+        switch (axis) {
+            case X: {
+                if (this == WEST || this == EAST) {
+                    return this;
+                }
+                return this.method_35836();
+            }
+            case Y: {
+                if (this == UP || this == DOWN) {
+                    return this;
+                }
+                return this.rotateYCounterclockwise();
+            }
+            case Z: {
+                if (this == NORTH || this == SOUTH) {
+                    return this;
+                }
+                return this.method_35838();
+            }
+        }
+        throw new IllegalStateException("Unable to get CW facing for axis " + axis);
+    }
+
     public Direction rotateYClockwise() {
         switch (this) {
             case NORTH: {
@@ -185,6 +229,78 @@ public enum Direction implements StringIdentifiable
             }
         }
         throw new IllegalStateException("Unable to get Y-rotated facing of " + this);
+    }
+
+    private Direction method_35835() {
+        switch (this) {
+            case UP: {
+                return NORTH;
+            }
+            case NORTH: {
+                return DOWN;
+            }
+            case DOWN: {
+                return SOUTH;
+            }
+            case SOUTH: {
+                return UP;
+            }
+        }
+        throw new IllegalStateException("Unable to get X-rotated facing of " + this);
+    }
+
+    private Direction method_35836() {
+        switch (this) {
+            case UP: {
+                return SOUTH;
+            }
+            case SOUTH: {
+                return DOWN;
+            }
+            case DOWN: {
+                return NORTH;
+            }
+            case NORTH: {
+                return UP;
+            }
+        }
+        throw new IllegalStateException("Unable to get X-rotated facing of " + this);
+    }
+
+    private Direction method_35837() {
+        switch (this) {
+            case UP: {
+                return EAST;
+            }
+            case EAST: {
+                return DOWN;
+            }
+            case DOWN: {
+                return WEST;
+            }
+            case WEST: {
+                return UP;
+            }
+        }
+        throw new IllegalStateException("Unable to get Z-rotated facing of " + this);
+    }
+
+    private Direction method_35838() {
+        switch (this) {
+            case UP: {
+                return WEST;
+            }
+            case WEST: {
+                return DOWN;
+            }
+            case DOWN: {
+                return EAST;
+            }
+            case EAST: {
+                return UP;
+            }
+        }
+        throw new IllegalStateException("Unable to get Z-rotated facing of " + this);
     }
 
     public Direction rotateYCounterclockwise() {
@@ -217,7 +333,6 @@ public enum Direction implements StringIdentifiable
         return this.vector.getZ();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Vec3f getUnitVector() {
         return new Vec3f(this.getOffsetX(), this.getOffsetY(), this.getOffsetZ());
     }
@@ -244,6 +359,11 @@ public enum Direction implements StringIdentifiable
 
     public static Direction fromHorizontal(int value) {
         return HORIZONTAL[MathHelper.abs(value % HORIZONTAL.length)];
+    }
+
+    @Nullable
+    public static Direction method_35832(BlockPos blockPos) {
+        return (Direction)VECTOR_TO_DIRECTION.get(blockPos.asLong());
     }
 
     @Nullable
@@ -386,6 +506,10 @@ public enum Direction implements StringIdentifiable
 
         public int offset() {
             return this.offset;
+        }
+
+        public String method_35839() {
+            return this.description;
         }
 
         public String toString() {

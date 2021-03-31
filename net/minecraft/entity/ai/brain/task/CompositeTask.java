@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -44,7 +45,7 @@ extends Task<E> {
     @Override
     protected void run(ServerWorld world, E entity, long time) {
         this.order.apply(this.tasks);
-        this.runMode.run(this.tasks, world, entity, time);
+        this.runMode.run(this.tasks.stream(), world, entity, time);
     }
 
     @Override
@@ -68,21 +69,21 @@ extends Task<E> {
         RUN_ONE{
 
             @Override
-            public <E extends LivingEntity> void run(WeightedList<Task<? super E>> tasks, ServerWorld world, E entity, long time) {
-                tasks.stream().filter(task -> task.getStatus() == Task.Status.STOPPED).filter(task -> task.tryStarting(world, entity, time)).findFirst();
+            public <E extends LivingEntity> void run(Stream<Task<? super E>> stream, ServerWorld world, E entity, long time) {
+                stream.filter(task -> task.getStatus() == Task.Status.STOPPED).filter(task -> task.tryStarting(world, entity, time)).findFirst();
             }
         }
         ,
         TRY_ALL{
 
             @Override
-            public <E extends LivingEntity> void run(WeightedList<Task<? super E>> tasks, ServerWorld world, E entity, long time) {
-                tasks.stream().filter(task -> task.getStatus() == Task.Status.STOPPED).forEach(task -> task.tryStarting(world, entity, time));
+            public <E extends LivingEntity> void run(Stream<Task<? super E>> stream, ServerWorld world, E entity, long time) {
+                stream.filter(task -> task.getStatus() == Task.Status.STOPPED).forEach(task -> task.tryStarting(world, entity, time));
             }
         };
 
 
-        public abstract <E extends LivingEntity> void run(WeightedList<Task<? super E>> var1, ServerWorld var2, E var3, long var4);
+        public abstract <E extends LivingEntity> void run(Stream<Task<? super E>> var1, ServerWorld var2, E var3, long var4);
     }
 
     public static enum Order {

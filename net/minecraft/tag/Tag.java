@@ -242,8 +242,16 @@ public interface Tag<T> {
             return this.add(new ObjectEntry(id), source);
         }
 
+        public Builder addOptional(Identifier id, String ource) {
+            return this.add(new OptionalObjectEntry(id), ource);
+        }
+
         public Builder addTag(Identifier id, String source) {
             return this.add(new TagEntry(id), source);
+        }
+
+        public Builder addOptionalTag(Identifier id, String source) {
+            return this.add(new OptionalTagEntry(id), source);
         }
 
         public <T> Either<Collection<TrackedEntry>, Tag<T>> build(Function<Identifier, Tag<T>> tagGetter, Function<Identifier, T> objectGetter) {
@@ -324,6 +332,10 @@ public interface Tag<T> {
 
         public Entry getEntry() {
             return this.entry;
+        }
+
+        public String getSource() {
+            return this.source;
         }
 
         public String toString() {

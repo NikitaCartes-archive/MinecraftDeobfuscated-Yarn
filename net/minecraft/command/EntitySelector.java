@@ -27,6 +27,7 @@ import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
 public class EntitySelector {
+    public static final int field_33068 = Integer.MAX_VALUE;
     private static final TypeFilter<Entity, ?> PASSTHROUGH_FILTER = new TypeFilter<Entity, Entity>(){
 
         @Override
@@ -86,6 +87,10 @@ public class EntitySelector {
 
     public boolean isLocalWorldOnly() {
         return this.localWorldOnly;
+    }
+
+    public boolean usesAt() {
+        return this.usesAt;
     }
 
     private void checkSourcePermission(ServerCommandSource serverCommandSource) throws CommandSyntaxException {

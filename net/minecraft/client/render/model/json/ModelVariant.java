@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.render.model.json;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -77,6 +78,15 @@ implements ModelBakeSettings {
     @Environment(value=EnvType.CLIENT)
     public static class Deserializer
     implements JsonDeserializer<ModelVariant> {
+        @VisibleForTesting
+        static final boolean field_32810 = false;
+        @VisibleForTesting
+        static final int field_32811 = 1;
+        @VisibleForTesting
+        static final int field_32812 = 0;
+        @VisibleForTesting
+        static final int field_32813 = 0;
+
         @Override
         public ModelVariant deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();

@@ -4,8 +4,6 @@
 package net.minecraft.world.chunk.light;
 
 import java.util.Arrays;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -28,12 +26,14 @@ import org.jetbrains.annotations.Nullable;
 public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S extends LightStorage<M>>
 extends LevelPropagator
 implements ChunkLightingView {
+    public static final long field_31708 = Long.MAX_VALUE;
     private static final Direction[] DIRECTIONS = Direction.values();
     protected final ChunkProvider chunkProvider;
     protected final LightType type;
     protected final S lightStorage;
     private boolean field_15794;
     protected final BlockPos.Mutable reusableBlockPos = new BlockPos.Mutable();
+    private static final int field_31709 = 2;
     private final long[] cachedChunkPositions = new long[2];
     private final BlockView[] cachedChunks = new BlockView[2];
 
@@ -153,28 +153,30 @@ implements ChunkLightingView {
         return 0;
     }
 
+    @Override
     public boolean hasUpdates() {
         return this.hasPendingUpdates() || ((LevelPropagator)this.lightStorage).hasPendingUpdates() || ((LightStorage)this.lightStorage).hasLightUpdates();
     }
 
-    public int doLightUpdates(int maxSteps, boolean doSkylight, boolean skipEdgeLightPropagation) {
+    @Override
+    public int doLightUpdates(int i, boolean bl, boolean bl2) {
         if (!this.field_15794) {
-            if (((LevelPropagator)this.lightStorage).hasPendingUpdates() && (maxSteps = ((LevelPropagator)this.lightStorage).applyPendingUpdates(maxSteps)) == 0) {
-                return maxSteps;
+            if (((LevelPropagator)this.lightStorage).hasPendingUpdates() && (i = ((LevelPropagator)this.lightStorage).applyPendingUpdates(i)) == 0) {
+                return i;
             }
-            ((LightStorage)this.lightStorage).updateLight(this, doSkylight, skipEdgeLightPropagation);
+            ((LightStorage)this.lightStorage).updateLight(this, bl, bl2);
         }
         this.field_15794 = true;
         if (this.hasPendingUpdates()) {
-            maxSteps = this.applyPendingUpdates(maxSteps);
+            i = this.applyPendingUpdates(i);
             this.clearChunkCache();
-            if (maxSteps == 0) {
-                return maxSteps;
+            if (i == 0) {
+                return i;
             }
         }
         this.field_15794 = false;
         ((LightStorage)this.lightStorage).notifyChanges();
-        return maxSteps;
+        return i;
     }
 
     protected void enqueueSectionData(long sectionPos, @Nullable ChunkNibbleArray lightArray, boolean bl) {
@@ -192,11 +194,11 @@ implements ChunkLightingView {
         return ((LightStorage)this.lightStorage).getLight(pos.asLong());
     }
 
-    @Environment(value=EnvType.CLIENT)
     public String displaySectionLevel(long sectionPos) {
         return "" + ((LightStorage)this.lightStorage).getLevel(sectionPos);
     }
 
+    @Override
     public void checkBlock(BlockPos pos) {
         long l = pos.asLong();
         this.resetLevel(l);
@@ -205,7 +207,8 @@ implements ChunkLightingView {
         }
     }
 
-    public void addLightSource(BlockPos pos, int level) {
+    @Override
+    public void addLightSource(BlockPos pos, int i) {
     }
 
     @Override
@@ -213,9 +216,10 @@ implements ChunkLightingView {
         ((LightStorage)this.lightStorage).setSectionStatus(pos.asLong(), notReady);
     }
 
-    public void setColumnEnabled(ChunkPos pos, boolean enabled) {
-        long l = ChunkSectionPos.withZeroY(ChunkSectionPos.asLong(pos.x, 0, pos.z));
-        ((LightStorage)this.lightStorage).setColumnEnabled(l, enabled);
+    @Override
+    public void setColumnEnabled(ChunkPos chunkPos, boolean bl) {
+        long l = ChunkSectionPos.withZeroY(ChunkSectionPos.asLong(chunkPos.x, 0, chunkPos.z));
+        ((LightStorage)this.lightStorage).setColumnEnabled(l, bl);
     }
 
     public void setRetainColumn(ChunkPos pos, boolean retainData) {

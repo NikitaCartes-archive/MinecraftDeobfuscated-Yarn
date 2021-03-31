@@ -19,6 +19,7 @@ import net.minecraft.world.chunk.ChunkStatus;
 @Environment(value=EnvType.CLIENT)
 public class LevelLoadingScreen
 extends Screen {
+    private static final long field_32246 = 2000L;
     private final WorldGenerationProgressTracker progressProvider;
     private long field_19101 = -1L;
     private static final Object2IntMap<ChunkStatus> STATUS_TO_COLOR = Util.make(new Object2IntOpenHashMap(), map -> {

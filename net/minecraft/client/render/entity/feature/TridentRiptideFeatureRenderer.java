@@ -29,18 +29,19 @@ import net.minecraft.util.math.Vec3f;
 public class TridentRiptideFeatureRenderer<T extends LivingEntity>
 extends FeatureRenderer<T, PlayerEntityModel<T>> {
     public static final Identifier TEXTURE = new Identifier("textures/entity/trident_riptide.png");
+    public static final String BOX = "box";
     private final ModelPart aura;
 
-    public TridentRiptideFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> featureRendererContext, EntityModelLoader entityModelLoader) {
-        super(featureRendererContext);
-        ModelPart modelPart = entityModelLoader.getModelPart(EntityModelLayers.SPIN_ATTACK);
-        this.aura = modelPart.getChild("box");
+    public TridentRiptideFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> context, EntityModelLoader loader) {
+        super(context);
+        ModelPart modelPart = loader.getModelPart(EntityModelLayers.SPIN_ATTACK);
+        this.aura = modelPart.getChild(BOX);
     }
 
     public static TexturedModelData getTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
-        modelPartData.addChild("box", ModelPartBuilder.create().uv(0, 0).cuboid(-8.0f, -16.0f, -8.0f, 16.0f, 32.0f, 16.0f), ModelTransform.NONE);
+        modelPartData.addChild(BOX, ModelPartBuilder.create().uv(0, 0).cuboid(-8.0f, -16.0f, -8.0f, 16.0f, 32.0f, 16.0f), ModelTransform.NONE);
         return TexturedModelData.of(modelData, 64, 64);
     }
 

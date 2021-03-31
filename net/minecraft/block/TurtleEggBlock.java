@@ -4,8 +4,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -33,10 +31,14 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import org.jetbrains.annotations.Nullable;
 
 public class TurtleEggBlock
 extends Block {
+    public static final int field_31272 = 2;
+    public static final int field_31273 = 1;
+    public static final int field_31274 = 4;
     private static final VoxelShape SMALL_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 12.0, 7.0, 12.0);
     private static final VoxelShape LARGE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 7.0, 15.0);
     public static final IntProperty HATCH = Properties.HATCH;
@@ -77,7 +79,7 @@ extends Block {
         if (i <= 1) {
             world.breakBlock(pos, false);
         } else {
-            world.setBlockState(pos, (BlockState)state.with(EGGS, i - 1), SetBlockStateFlags.NOTIFY_LISTENERS);
+            world.setBlockState(pos, (BlockState)state.with(EGGS, i - 1), Block.NOTIFY_LISTENERS);
             world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
         }
     }
@@ -88,7 +90,7 @@ extends Block {
             int i = state.get(HATCH);
             if (i < 2) {
                 world.playSound(null, pos, SoundEvents.ENTITY_TURTLE_EGG_CRACK, SoundCategory.BLOCKS, 0.7f, 0.9f + random.nextFloat() * 0.2f);
-                world.setBlockState(pos, (BlockState)state.with(HATCH, i + 1), SetBlockStateFlags.NOTIFY_LISTENERS);
+                world.setBlockState(pos, (BlockState)state.with(HATCH, i + 1), Block.NOTIFY_LISTENERS);
             } else {
                 world.playSound(null, pos, SoundEvents.ENTITY_TURTLE_EGG_HATCH, SoundCategory.BLOCKS, 0.7f, 0.9f + random.nextFloat() * 0.2f);
                 world.removeBlock(pos, false);
@@ -135,7 +137,7 @@ extends Block {
 
     @Override
     public boolean canReplace(BlockState state, ItemPlacementContext context) {
-        if (context.getStack().isOf(this.asItem()) && state.get(EGGS) < 4) {
+        if (!context.shouldCancelInteraction() && context.getStack().isOf(this.asItem()) && state.get(EGGS) < 4) {
             return true;
         }
         return super.canReplace(state, context);

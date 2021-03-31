@@ -4,8 +4,6 @@
 package net.minecraft.network.packet.s2c.play;
 
 import java.util.UUID;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.network.Packet;
@@ -18,6 +16,7 @@ import net.minecraft.util.registry.Registry;
 
 public class EntitySpawnS2CPacket
 implements Packet<ClientPlayPacketListener> {
+    public static final double VELOCITY_SCALE = 8000.0;
     private final int id;
     private final UUID uuid;
     private final double x;
@@ -30,6 +29,11 @@ implements Packet<ClientPlayPacketListener> {
     private final int yaw;
     private final EntityType<?> entityTypeId;
     private final int entityData;
+    /**
+     * The maximum absolute value allowed for each scalar value (velocity x, y, z)
+     * in the velocity vector sent by this packet.
+     */
+    public static final double MAX_ABSOLUTE_VELOCITY = 3.9;
 
     public EntitySpawnS2CPacket(int id, UUID uuid, double x, double y, double z, float pitch, float yaw, EntityType<?> entityTypeId, int entityData, Vec3d velocity) {
         this.id = id;
@@ -94,62 +98,50 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onEntitySpawn(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getId() {
         return this.id;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public UUID getUuid() {
         return this.uuid;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public double getX() {
         return this.x;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public double getY() {
         return this.y;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public double getZ() {
         return this.z;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public double getVelocityX() {
         return (double)this.velocityX / 8000.0;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public double getVelocityY() {
         return (double)this.velocityY / 8000.0;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public double getVelocityZ() {
         return (double)this.velocityZ / 8000.0;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getPitch() {
         return this.pitch;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getYaw() {
         return this.yaw;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public EntityType<?> getEntityTypeId() {
         return this.entityTypeId;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getEntityData() {
         return this.entityData;
     }

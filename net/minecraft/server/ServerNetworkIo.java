@@ -10,6 +10,8 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelException;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.MultithreadEventLoopGroup;
@@ -21,14 +23,16 @@ import io.netty.channel.local.LocalServerChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
+import io.netty.util.Timer;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketAddress;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import java.util.concurrent.TimeUnit;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.DecoderHandler;
 import net.minecraft.network.LegacyQueryHandler;
@@ -103,7 +107,6 @@ public class ServerNetworkIo {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    @Environment(value=EnvType.CLIENT)
     public SocketAddress bindLocal() {
         ChannelFuture channelFuture;
         List<ChannelFuture> list = this.channels;
@@ -166,6 +169,45 @@ public class ServerNetworkIo {
 
     public MinecraftServer getServer() {
         return this.server;
+    }
+
+    static class class_5980
+    extends ChannelInboundHandlerAdapter {
+        private static final Timer field_29772 = new HashedWheelTimer();
+        private final int field_29773;
+        private final int field_29774;
+        private final List<class_5981> field_29775 = Lists.newArrayList();
+
+        public class_5980(int i, int j) {
+            this.field_29773 = i;
+            this.field_29774 = j;
+        }
+
+        @Override
+        public void channelRead(ChannelHandlerContext channelHandlerContext, Object object) {
+            this.method_34880(channelHandlerContext, object);
+        }
+
+        private void method_34880(ChannelHandlerContext channelHandlerContext, Object object) {
+            int i = this.field_29773 + (int)(Math.random() * (double)this.field_29774);
+            this.field_29775.add(new class_5981(channelHandlerContext, object));
+            field_29772.newTimeout(this::method_34881, i, TimeUnit.MILLISECONDS);
+        }
+
+        private void method_34881(Timeout timeout) {
+            class_5981 lv = this.field_29775.remove(0);
+            lv.field_29776.fireChannelRead(lv.field_29777);
+        }
+
+        static class class_5981 {
+            public final ChannelHandlerContext field_29776;
+            public final Object field_29777;
+
+            public class_5981(ChannelHandlerContext channelHandlerContext, Object object) {
+                this.field_29776 = channelHandlerContext;
+                this.field_29777 = object;
+            }
+        }
     }
 }
 

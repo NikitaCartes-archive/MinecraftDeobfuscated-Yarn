@@ -3,8 +3,6 @@
  */
 package net.minecraft.sound;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 
@@ -73,7 +71,7 @@ public class BlockSoundGroup {
     public static final BlockSoundGroup AZALEA = new BlockSoundGroup(1.0f, 1.0f, SoundEvents.BLOCK_AZALEA_BREAK, SoundEvents.BLOCK_AZALEA_STEP, SoundEvents.BLOCK_AZALEA_PLACE, SoundEvents.BLOCK_AZALEA_HIT, SoundEvents.BLOCK_AZALEA_FALL);
     public static final BlockSoundGroup FLOWERING_AZALEA = new BlockSoundGroup(1.0f, 1.0f, SoundEvents.BLOCK_FLOWERING_AZALEA_BREAK, SoundEvents.BLOCK_FLOWERING_AZALEA_STEP, SoundEvents.BLOCK_FLOWERING_AZALEA_PLACE, SoundEvents.BLOCK_FLOWERING_AZALEA_HIT, SoundEvents.BLOCK_FLOWERING_AZALEA_FALL);
     public static final BlockSoundGroup MOSS_CARPET = new BlockSoundGroup(1.0f, 1.0f, SoundEvents.BLOCK_MOSS_CARPET_BREAK, SoundEvents.BLOCK_MOSS_CARPET_STEP, SoundEvents.BLOCK_MOSS_CARPET_PLACE, SoundEvents.BLOCK_MOSS_CARPET_HIT, SoundEvents.BLOCK_MOSS_CARPET_FALL);
-    public static final BlockSoundGroup MOSS = new BlockSoundGroup(1.0f, 1.0f, SoundEvents.BLOCK_MOSS_BREAK, SoundEvents.BLOCK_MOSS_STEP, SoundEvents.BLOCK_MOSS_PLACE, SoundEvents.BLOCK_MOSS_HIT, SoundEvents.BLOCK_MOSS_FALL);
+    public static final BlockSoundGroup MOSS_BLOCK = new BlockSoundGroup(1.0f, 1.0f, SoundEvents.BLOCK_MOSS_BREAK, SoundEvents.BLOCK_MOSS_STEP, SoundEvents.BLOCK_MOSS_PLACE, SoundEvents.BLOCK_MOSS_HIT, SoundEvents.BLOCK_MOSS_FALL);
     public static final BlockSoundGroup BIG_DRIPLEAF = new BlockSoundGroup(1.0f, 1.0f, SoundEvents.BLOCK_BIG_DRIPLEAF_BREAK, SoundEvents.BLOCK_BIG_DRIPLEAF_STEP, SoundEvents.BLOCK_BIG_DRIPLEAF_PLACE, SoundEvents.BLOCK_BIG_DRIPLEAF_HIT, SoundEvents.BLOCK_BIG_DRIPLEAF_FALL);
     public static final BlockSoundGroup SMALL_DRIPLEAF = new BlockSoundGroup(1.0f, 1.0f, SoundEvents.BLOCK_SMALL_DRIPLEAF_BREAK, SoundEvents.BLOCK_SMALL_DRIPLEAF_STEP, SoundEvents.BLOCK_SMALL_DRIPLEAF_PLACE, SoundEvents.BLOCK_SMALL_DRIPLEAF_HIT, SoundEvents.BLOCK_SMALL_DRIPLEAF_FALL);
     public static final BlockSoundGroup ROOTED_DIRT = new BlockSoundGroup(1.0f, 1.0f, SoundEvents.BLOCK_ROOTED_DIRT_BREAK, SoundEvents.BLOCK_ROOTED_DIRT_STEP, SoundEvents.BLOCK_ROOTED_DIRT_PLACE, SoundEvents.BLOCK_ROOTED_DIRT_HIT, SoundEvents.BLOCK_ROOTED_DIRT_FALL);
@@ -111,7 +109,6 @@ public class BlockSoundGroup {
         return this.pitch;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public SoundEvent getBreakSound() {
         return this.breakSound;
     }
@@ -124,7 +121,6 @@ public class BlockSoundGroup {
         return this.placeSound;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public SoundEvent getHitSound() {
         return this.hitSound;
     }

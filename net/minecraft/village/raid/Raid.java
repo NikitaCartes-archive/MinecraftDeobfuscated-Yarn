@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
@@ -62,11 +61,32 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class Raid {
+    private static final int field_30676 = 2;
+    private static final int field_30677 = 0;
+    private static final int field_30678 = 1;
+    private static final int field_30679 = 2;
+    private static final int field_30680 = 32;
+    private static final int field_30681 = 48000;
+    private static final int field_30682 = 3;
+    private static final String OMNIOUS_BANNER_TRANSLATION_KEY = "block.minecraft.ominous_banner";
+    private static final String RAIDERS_REMAINING_TRANSLATION_KEY = "event.minecraft.raid.raiders_remaining";
+    public static final int field_30669 = 16;
+    private static final int field_30685 = 40;
+    private static final int field_30686 = 300;
+    public static final int field_30670 = 2400;
+    public static final int field_30671 = 600;
+    private static final int field_30687 = 30;
+    public static final int field_30672 = 24000;
+    public static final int field_30673 = 5;
+    private static final int field_30688 = 2;
     private static final Text EVENT_TEXT = new TranslatableText("event.minecraft.raid");
     private static final Text VICTORY_SUFFIX_TEXT = new TranslatableText("event.minecraft.raid.victory");
     private static final Text DEFEAT_SUFFIX_TEXT = new TranslatableText("event.minecraft.raid.defeat");
     private static final Text VICTORY_TITLE = EVENT_TEXT.shallowCopy().append(" - ").append(VICTORY_SUFFIX_TEXT);
     private static final Text DEFEAT_TITLE = EVENT_TEXT.shallowCopy().append(" - ").append(DEFEAT_SUFFIX_TEXT);
+    private static final int field_30689 = 48000;
+    public static final int field_30674 = 9216;
+    public static final int field_30675 = 12544;
     private final Map<Integer, RaiderEntity> waveToCaptain = Maps.newHashMap();
     private final Map<Integer, Set<RaiderEntity>> waveToRaiders = Maps.newHashMap();
     private final Set<UUID> heroesOfTheVillage = Sets.newHashSet();
@@ -99,23 +119,23 @@ public class Raid {
         this.status = Status.ONGOING;
     }
 
-    public Raid(ServerWorld world, NbtCompound tag) {
+    public Raid(ServerWorld world, NbtCompound nbt) {
         this.world = world;
-        this.id = tag.getInt("Id");
-        this.started = tag.getBoolean("Started");
-        this.active = tag.getBoolean("Active");
-        this.ticksActive = tag.getLong("TicksActive");
-        this.badOmenLevel = tag.getInt("BadOmenLevel");
-        this.wavesSpawned = tag.getInt("GroupsSpawned");
-        this.preRaidTicks = tag.getInt("PreRaidTicks");
-        this.postRaidTicks = tag.getInt("PostRaidTicks");
-        this.totalHealth = tag.getFloat("TotalHealth");
-        this.center = new BlockPos(tag.getInt("CX"), tag.getInt("CY"), tag.getInt("CZ"));
-        this.waveCount = tag.getInt("NumGroups");
-        this.status = Status.fromName(tag.getString("Status"));
+        this.id = nbt.getInt("Id");
+        this.started = nbt.getBoolean("Started");
+        this.active = nbt.getBoolean("Active");
+        this.ticksActive = nbt.getLong("TicksActive");
+        this.badOmenLevel = nbt.getInt("BadOmenLevel");
+        this.wavesSpawned = nbt.getInt("GroupsSpawned");
+        this.preRaidTicks = nbt.getInt("PreRaidTicks");
+        this.postRaidTicks = nbt.getInt("PostRaidTicks");
+        this.totalHealth = nbt.getFloat("TotalHealth");
+        this.center = new BlockPos(nbt.getInt("CX"), nbt.getInt("CY"), nbt.getInt("CZ"));
+        this.waveCount = nbt.getInt("NumGroups");
+        this.status = Status.fromName(nbt.getString("Status"));
         this.heroesOfTheVillage.clear();
-        if (tag.contains("HeroesOfTheVillage", NbtTypeIds.LIST)) {
-            NbtList nbtList = tag.getList("HeroesOfTheVillage", NbtTypeIds.INT_ARRAY);
+        if (nbt.contains("HeroesOfTheVillage", 9)) {
+            NbtList nbtList = nbt.getList("HeroesOfTheVillage", 11);
             for (int i = 0; i < nbtList.size(); ++i) {
                 this.heroesOfTheVillage.add(NbtHelper.toUuid(nbtList.get(i)));
             }
@@ -144,6 +164,18 @@ public class Raid {
 
     public boolean hasLost() {
         return this.status == Status.LOSS;
+    }
+
+    public float getTotalHealth() {
+        return this.totalHealth;
+    }
+
+    public Set<RaiderEntity> getAllRaiders() {
+        HashSet<RaiderEntity> set = Sets.newHashSet();
+        for (Set<RaiderEntity> set2 : this.waveToRaiders.values()) {
+            set.addAll(set2);
+        }
+        return set;
     }
 
     public World getWorld() {
@@ -184,6 +216,10 @@ public class Raid {
 
     public int getBadOmenLevel() {
         return this.badOmenLevel;
+    }
+
+    public void setBadOmenLevel(int level) {
+        this.badOmenLevel = level;
     }
 
     public void start(PlayerEntity player) {
@@ -267,7 +303,7 @@ public class Raid {
                 this.removeObsoleteRaiders();
                 if (i > 0) {
                     if (i <= 2) {
-                        this.bar.setName(EVENT_TEXT.shallowCopy().append(" - ").append(new TranslatableText("event.minecraft.raid.raiders_remaining", i)));
+                        this.bar.setName(EVENT_TEXT.shallowCopy().append(" - ").append(new TranslatableText(RAIDERS_REMAINING_TRANSLATION_KEY, i)));
                     } else {
                         this.bar.setName(EVENT_TEXT);
                     }
@@ -509,7 +545,7 @@ public class Raid {
         NbtList nbtList = new BannerPattern.Patterns().add(BannerPattern.RHOMBUS_MIDDLE, DyeColor.CYAN).add(BannerPattern.STRIPE_BOTTOM, DyeColor.LIGHT_GRAY).add(BannerPattern.STRIPE_CENTER, DyeColor.GRAY).add(BannerPattern.BORDER, DyeColor.LIGHT_GRAY).add(BannerPattern.STRIPE_MIDDLE, DyeColor.BLACK).add(BannerPattern.HALF_HORIZONTAL, DyeColor.LIGHT_GRAY).add(BannerPattern.CIRCLE_MIDDLE, DyeColor.LIGHT_GRAY).add(BannerPattern.BORDER, DyeColor.BLACK).toNbt();
         nbtCompound.put("Patterns", nbtList);
         itemStack.addHideFlag(ItemStack.TooltipSection.ADDITIONAL);
-        itemStack.setCustomName(new TranslatableText("block.minecraft.ominous_banner").formatted(Formatting.GOLD));
+        itemStack.setCustomName(new TranslatableText(OMNIOUS_BANNER_TRANSLATION_KEY).formatted(Formatting.GOLD));
         return itemStack;
     }
 
@@ -540,9 +576,9 @@ public class Raid {
         return this.addToWave(wave, entity, true);
     }
 
-    public boolean addToWave(int wave, RaiderEntity entity, boolean countHealth) {
-        this.waveToRaiders.computeIfAbsent(wave, integer -> Sets.newHashSet());
-        Set<RaiderEntity> set = this.waveToRaiders.get(wave);
+    public boolean addToWave(int wave2, RaiderEntity entity, boolean countHealth) {
+        this.waveToRaiders.computeIfAbsent(wave2, wave -> Sets.newHashSet());
+        Set<RaiderEntity> set = this.waveToRaiders.get(wave2);
         RaiderEntity raiderEntity = null;
         for (RaiderEntity raiderEntity2 : set) {
             if (!raiderEntity2.getUuid().equals(entity.getUuid())) continue;
@@ -629,27 +665,27 @@ public class Raid {
         return this.active;
     }
 
-    public NbtCompound writeNbt(NbtCompound tag) {
-        tag.putInt("Id", this.id);
-        tag.putBoolean("Started", this.started);
-        tag.putBoolean("Active", this.active);
-        tag.putLong("TicksActive", this.ticksActive);
-        tag.putInt("BadOmenLevel", this.badOmenLevel);
-        tag.putInt("GroupsSpawned", this.wavesSpawned);
-        tag.putInt("PreRaidTicks", this.preRaidTicks);
-        tag.putInt("PostRaidTicks", this.postRaidTicks);
-        tag.putFloat("TotalHealth", this.totalHealth);
-        tag.putInt("NumGroups", this.waveCount);
-        tag.putString("Status", this.status.getName());
-        tag.putInt("CX", this.center.getX());
-        tag.putInt("CY", this.center.getY());
-        tag.putInt("CZ", this.center.getZ());
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        nbt.putInt("Id", this.id);
+        nbt.putBoolean("Started", this.started);
+        nbt.putBoolean("Active", this.active);
+        nbt.putLong("TicksActive", this.ticksActive);
+        nbt.putInt("BadOmenLevel", this.badOmenLevel);
+        nbt.putInt("GroupsSpawned", this.wavesSpawned);
+        nbt.putInt("PreRaidTicks", this.preRaidTicks);
+        nbt.putInt("PostRaidTicks", this.postRaidTicks);
+        nbt.putFloat("TotalHealth", this.totalHealth);
+        nbt.putInt("NumGroups", this.waveCount);
+        nbt.putString("Status", this.status.getName());
+        nbt.putInt("CX", this.center.getX());
+        nbt.putInt("CY", this.center.getY());
+        nbt.putInt("CZ", this.center.getZ());
         NbtList nbtList = new NbtList();
         for (UUID uUID : this.heroesOfTheVillage) {
             nbtList.add(NbtHelper.fromUuid(uUID));
         }
-        tag.put("HeroesOfTheVillage", nbtList);
-        return tag;
+        nbt.put("HeroesOfTheVillage", nbtList);
+        return nbt;
     }
 
     public int getMaxWaves(Difficulty difficulty) {

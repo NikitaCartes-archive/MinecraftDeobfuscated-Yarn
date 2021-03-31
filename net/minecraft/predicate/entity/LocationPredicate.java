@@ -149,7 +149,7 @@ public class LocationPredicate {
         NumberRange.FloatRange floatRange = NumberRange.FloatRange.fromJson(jsonObject2.get("x"));
         NumberRange.FloatRange floatRange2 = NumberRange.FloatRange.fromJson(jsonObject2.get("y"));
         NumberRange.FloatRange floatRange3 = NumberRange.FloatRange.fromJson(jsonObject2.get("z"));
-        RegistryKey registryKey = jsonObject.has("dimension") ? (RegistryKey)Identifier.CODEC.parse(JsonOps.INSTANCE, jsonObject.get("dimension")).resultOrPartial(LOGGER::error).map(identifier -> RegistryKey.of(Registry.DIMENSION, identifier)).orElse(null) : null;
+        RegistryKey registryKey = jsonObject.has("dimension") ? (RegistryKey)Identifier.CODEC.parse(JsonOps.INSTANCE, jsonObject.get("dimension")).resultOrPartial(LOGGER::error).map(identifier -> RegistryKey.of(Registry.WORLD_KEY, identifier)).orElse(null) : null;
         StructureFeature structureFeature = jsonObject.has("feature") ? (StructureFeature)StructureFeature.STRUCTURES.get(JsonHelper.getString(jsonObject, "feature")) : null;
         RegistryKey<Biome> registryKey2 = null;
         if (jsonObject.has("biome")) {
@@ -183,13 +183,48 @@ public class LocationPredicate {
             return new Builder();
         }
 
+        public Builder x(NumberRange.FloatRange x) {
+            this.x = x;
+            return this;
+        }
+
+        public Builder y(NumberRange.FloatRange y) {
+            this.y = y;
+            return this;
+        }
+
+        public Builder z(NumberRange.FloatRange z) {
+            this.z = z;
+            return this;
+        }
+
         public Builder biome(@Nullable RegistryKey<Biome> biome) {
             this.biome = biome;
             return this;
         }
 
+        public Builder feature(@Nullable StructureFeature<?> feature) {
+            this.feature = feature;
+            return this;
+        }
+
+        public Builder dimension(@Nullable RegistryKey<World> dimension) {
+            this.dimension = dimension;
+            return this;
+        }
+
+        public Builder light(LightPredicate light) {
+            this.light = light;
+            return this;
+        }
+
         public Builder block(BlockPredicate block) {
             this.block = block;
+            return this;
+        }
+
+        public Builder fluid(FluidPredicate fluid) {
+            this.fluid = fluid;
             return this;
         }
 

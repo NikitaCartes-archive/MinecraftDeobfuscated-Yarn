@@ -33,8 +33,6 @@ import java.net.InetAddress;
 import java.net.SocketAddress;
 import java.util.Queue;
 import javax.crypto.Cipher;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.DecoderHandler;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.network.NetworkState;
@@ -71,6 +69,15 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ClientConnection
 extends SimpleChannelInboundHandler<Packet<?>> {
+    /**
+     * Represents when the average packet counter is updated, what percent of the
+     * value of the average counter is set from the current counter.
+     * 
+     * <p>The formula is {@link #averagePacketsSent averagePacketsSent} = {@value}
+     * &times; {@link #packetsSentCounter packetsSentCounter} + (1 - {@value}) &times;
+     * {@code averagePacketsSent}.
+     */
+    private static final float CURRENT_PACKET_COUNTER_WEIGHT = 0.75f;
     private static final Logger LOGGER = LogManager.getLogger();
     public static final Marker NETWORK_MARKER = MarkerManager.getMarker("NETWORK");
     public static final Marker NETWORK_PACKETS_MARKER = MarkerManager.getMarker("NETWORK_PACKETS", NETWORK_MARKER);
@@ -289,7 +296,22 @@ extends SimpleChannelInboundHandler<Packet<?>> {
         return this.channel instanceof LocalChannel || this.channel instanceof LocalServerChannel;
     }
 
-    @Environment(value=EnvType.CLIENT)
+    /**
+     * Returns the side of this connection, or the direction of the packets received
+     * by this connection.
+     */
+    public NetworkSide getSide() {
+        return this.side;
+    }
+
+    /**
+     * Returns the opposite side of this connection, or the direction of the packets
+     * sent by this connection.
+     */
+    public NetworkSide getOppositeSide() {
+        return this.side.getOpposite();
+    }
+
     public static ClientConnection connect(InetAddress address, int port, boolean shouldUseNativeTransport) {
         Lazy<MultithreadEventLoopGroup> lazy;
         Class class_;
@@ -316,7 +338,6 @@ extends SimpleChannelInboundHandler<Packet<?>> {
         return clientConnection;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static ClientConnection connectLocal(SocketAddress address) {
         final ClientConnection clientConnection = new ClientConnection(NetworkSide.CLIENTBOUND);
         ((Bootstrap)((Bootstrap)((Bootstrap)new Bootstrap().group(LOCAL_CLIENT_IO_GROUP.get())).handler(new ChannelInitializer<Channel>(){
@@ -335,7 +356,6 @@ extends SimpleChannelInboundHandler<Packet<?>> {
         this.channel.pipeline().addBefore("prepender", "encrypt", new PacketEncryptor(cipher2));
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isEncrypted() {
         return this.encrypted;
     }
@@ -403,7 +423,6 @@ extends SimpleChannelInboundHandler<Packet<?>> {
         return this.averagePacketsReceived;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getAveragePacketsSent() {
         return this.averagePacketsSent;
     }

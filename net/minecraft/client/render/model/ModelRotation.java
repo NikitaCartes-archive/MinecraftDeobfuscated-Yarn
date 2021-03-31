@@ -35,6 +35,7 @@ public enum ModelRotation implements ModelBakeSettings
     X270_Y180(270, 180),
     X270_Y270(270, 270);
 
+    private static final int field_32982 = 360;
     private static final Map<Integer, ModelRotation> BY_INDEX;
     private final AffineTransformation rotation;
     private final DirectionTransformation directionTransformation;
@@ -67,6 +68,10 @@ public enum ModelRotation implements ModelBakeSettings
 
     public static ModelRotation get(int x, int y) {
         return BY_INDEX.get(ModelRotation.getIndex(MathHelper.floorMod(x, 360), MathHelper.floorMod(y, 360)));
+    }
+
+    public DirectionTransformation method_35808() {
+        return this.directionTransformation;
     }
 
     static {

@@ -39,6 +39,7 @@ import org.apache.logging.log4j.Logger;
 public class RegistryOps<T>
 extends ForwardingDynamicOps<T> {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final String field_33379 = ".json";
     private final EntryLoader entryLoader;
     private final DynamicRegistryManager registryManager;
     private final Map<RegistryKey<? extends Registry<?>>, ValueHolder<?>> valueHolders;
@@ -97,7 +98,7 @@ extends ForwardingDynamicOps<T> {
         String string = key.getValue().getPath() + "/";
         for (Identifier identifier : collection) {
             String string2 = identifier.getPath();
-            if (!string2.endsWith(".json")) {
+            if (!string2.endsWith(field_33379)) {
                 LOGGER.warn("Skipping resource {} since it is not a json file", (Object)identifier);
                 continue;
             }
@@ -105,7 +106,7 @@ extends ForwardingDynamicOps<T> {
                 LOGGER.warn("Skipping resource {} since it does not have a registry name prefix", (Object)identifier);
                 continue;
             }
-            String string3 = string2.substring(string.length(), string2.length() - ".json".length());
+            String string3 = string2.substring(string.length(), string2.length() - field_33379.length());
             Identifier identifier2 = new Identifier(identifier.getNamespace(), string3);
             dataResult = dataResult.flatMap(simpleRegistry -> this.readSupplier(key, (MutableRegistry)simpleRegistry, codec, identifier2).map(supplier -> simpleRegistry));
         }
@@ -161,7 +162,7 @@ extends ForwardingDynamicOps<T> {
 
                 @Override
                 public Collection<Identifier> getKnownEntryPaths(RegistryKey<? extends Registry<?>> key) {
-                    return resourceManager.findResources(key.getValue().getPath(), name -> name.endsWith(".json"));
+                    return resourceManager.findResources(key.getValue().getPath(), name -> name.endsWith(RegistryOps.field_33379));
                 }
 
                 /*
@@ -252,7 +253,7 @@ extends ForwardingDynamicOps<T> {
 
             @Override
             public Collection<Identifier> getKnownEntryPaths(RegistryKey<? extends Registry<?>> key) {
-                return this.values.keySet().stream().filter(registryKey2 -> registryKey2.isOf(key)).map(registryKey2 -> new Identifier(registryKey2.getValue().getNamespace(), key.getValue().getPath() + "/" + registryKey2.getValue().getPath() + ".json")).collect(Collectors.toList());
+                return this.values.keySet().stream().filter(registryKey2 -> registryKey2.isOf(key)).map(registryKey2 -> new Identifier(registryKey2.getValue().getNamespace(), key.getValue().getPath() + "/" + registryKey2.getValue().getPath() + RegistryOps.field_33379)).collect(Collectors.toList());
             }
 
             @Override

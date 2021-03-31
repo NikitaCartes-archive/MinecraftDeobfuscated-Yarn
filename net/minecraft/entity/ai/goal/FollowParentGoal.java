@@ -9,6 +9,9 @@ import net.minecraft.entity.passive.AnimalEntity;
 
 public class FollowParentGoal
 extends Goal {
+    public static final int field_30209 = 8;
+    public static final int field_30210 = 4;
+    public static final int field_30211 = 3;
     private final AnimalEntity animal;
     private AnimalEntity parent;
     private final double speed;

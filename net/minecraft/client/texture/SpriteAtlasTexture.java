@@ -6,6 +6,7 @@ package net.minecraft.client.texture;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import java.io.IOException;
@@ -28,7 +29,6 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.TextureStitcher;
 import net.minecraft.client.texture.TextureStitcherCannotFitException;
 import net.minecraft.client.texture.TextureTickListener;
-import net.minecraft.client.texture.TextureUtil;
 import net.minecraft.client.util.PngFile;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
@@ -53,6 +53,7 @@ implements TextureTickListener {
     public static final Identifier BLOCK_ATLAS_TEXTURE = PlayerScreenHandler.BLOCK_ATLAS_TEXTURE;
     @Deprecated
     public static final Identifier PARTICLE_ATLAS_TEXTURE = new Identifier("textures/atlas/particles.png");
+    private static final String field_32957 = ".png";
     private final List<TextureTickListener> animatedSprites = Lists.newArrayList();
     private final Set<Identifier> spritesToLoad = Sets.newHashSet();
     private final Map<Identifier, Sprite> sprites = Maps.newHashMap();
@@ -72,7 +73,7 @@ implements TextureTickListener {
         this.spritesToLoad.clear();
         this.spritesToLoad.addAll(data.spriteIds);
         LOGGER.info("Created: {}x{}x{} {}-atlas", (Object)data.width, (Object)data.height, (Object)data.maxLevel, (Object)this.id);
-        TextureUtil.allocate(this.getGlId(), data.maxLevel, data.width, data.height);
+        TextureUtil.prepareImage(this.getGlId(), data.maxLevel, data.width, data.height);
         this.clear();
         for (Sprite sprite : data.sprites) {
             this.sprites.put(sprite.getId(), sprite);
@@ -211,7 +212,7 @@ implements TextureTickListener {
     }
 
     private Identifier getTexturePath(Identifier id) {
-        return new Identifier(id.getNamespace(), String.format("textures/%s%s", id.getPath(), ".png"));
+        return new Identifier(id.getNamespace(), String.format("textures/%s%s", id.getPath(), field_32957));
     }
 
     public void tickAnimatedSprites() {

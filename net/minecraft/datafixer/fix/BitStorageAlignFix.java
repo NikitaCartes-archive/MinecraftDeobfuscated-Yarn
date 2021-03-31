@@ -21,6 +21,13 @@ import net.minecraft.util.math.MathHelper;
 
 public class BitStorageAlignFix
 extends DataFix {
+    private static final int field_29863 = 6;
+    private static final int field_29864 = 16;
+    private static final int field_29865 = 16;
+    private static final int field_29866 = 4096;
+    private static final int field_29867 = 9;
+    private static final int field_29868 = 256;
+
     public BitStorageAlignFix(Schema outputSchema) {
         super(outputSchema, false);
     }

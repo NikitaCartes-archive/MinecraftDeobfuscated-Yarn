@@ -5,7 +5,6 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.AnimatedParticle;
 import net.minecraft.client.particle.NoRenderParticle;
@@ -158,15 +157,15 @@ public class FireworksSparkParticle {
         private NbtList explosions;
         private boolean flicker;
 
-        public FireworkParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, ParticleManager particleManager, @Nullable NbtCompound tag) {
+        public FireworkParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, ParticleManager particleManager, @Nullable NbtCompound nbt) {
             super(world, x, y, z);
             this.velocityX = velocityX;
             this.velocityY = velocityY;
             this.velocityZ = velocityZ;
             this.particleManager = particleManager;
             this.maxAge = 8;
-            if (tag != null) {
-                this.explosions = tag.getList("Explosions", NbtTypeIds.COMPOUND);
+            if (nbt != null) {
+                this.explosions = nbt.getList("Explosions", 10);
                 if (this.explosions.isEmpty()) {
                     this.explosions = null;
                 } else {

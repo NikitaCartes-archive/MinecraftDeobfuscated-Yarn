@@ -19,6 +19,10 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -41,7 +45,9 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class ChunkTicketManager {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final int field_29764 = 2;
     private static final int NEARBY_PLAYER_TICKET_LEVEL = 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.FULL) - 2;
+    private static final int field_29765 = 4;
     private final Long2ObjectMap<ObjectSet<ServerPlayerEntity>> playersByChunkPos = new Long2ObjectOpenHashMap<ObjectSet<ServerPlayerEntity>>();
     private final Long2ObjectOpenHashMap<SortedArraySet<ChunkTicket<?>>> ticketsByPosition = new Long2ObjectOpenHashMap();
     private final TicketDistanceLevelPropagator distanceFromTicketTracker = new TicketDistanceLevelPropagator();
@@ -214,6 +220,19 @@ public abstract class ChunkTicketManager {
         return this.levelUpdateListener.getDebugString();
     }
 
+    private void method_34876(String string) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(new File(string));){
+            for (Long2ObjectMap.Entry entry : this.ticketsByPosition.long2ObjectEntrySet()) {
+                ChunkPos chunkPos = new ChunkPos(entry.getLongKey());
+                for (ChunkTicket chunkTicket : (SortedArraySet)entry.getValue()) {
+                    fileOutputStream.write(("" + chunkPos.x + "\t" + chunkPos.z + "\t" + chunkTicket.getType() + "\t" + chunkTicket.getLevel() + "\t\n").getBytes(StandardCharsets.UTF_8));
+                }
+            }
+        } catch (IOException iOException) {
+            LOGGER.error(iOException);
+        }
+    }
+
     class TicketDistanceLevelPropagator
     extends ChunkPosDistanceLevelPropagator {
         public TicketDistanceLevelPropagator() {
@@ -371,6 +390,18 @@ public abstract class ChunkTicketManager {
 
         public void updateLevels() {
             this.applyPendingUpdates(Integer.MAX_VALUE);
+        }
+
+        private void method_34878(String string) {
+            try (FileOutputStream fileOutputStream = new FileOutputStream(new File(string));){
+                for (Long2ByteMap.Entry entry : this.distanceFromNearestPlayer.long2ByteEntrySet()) {
+                    ChunkPos chunkPos = new ChunkPos(entry.getLongKey());
+                    String string2 = Byte.toString(entry.getByteValue());
+                    fileOutputStream.write(("" + chunkPos.x + "\t" + chunkPos.z + "\t" + string2 + "\n").getBytes(StandardCharsets.UTF_8));
+                }
+            } catch (IOException iOException) {
+                LOGGER.error(iOException);
+            }
         }
     }
 }

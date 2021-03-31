@@ -26,6 +26,7 @@ import net.minecraft.loot.function.ConditionalLootFunction;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
+import net.minecraft.loot.provider.nbt.ContextLootNbtProvider;
 import net.minecraft.loot.provider.nbt.LootNbtProvider;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -72,6 +73,10 @@ extends ConditionalLootFunction {
 
     public static Builder builder(LootNbtProvider source) {
         return new Builder(source);
+    }
+
+    public static Builder builder(LootContext.EntityTarget target) {
+        return new Builder(ContextLootNbtProvider.fromTarget(target));
     }
 
     public static class Serializer

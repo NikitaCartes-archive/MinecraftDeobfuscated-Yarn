@@ -117,6 +117,12 @@ public class TextHandler {
         return text.substring(mutableInt.intValue());
     }
 
+    public int method_35715(String string, int i, Style style) {
+        WidthLimitingVisitor widthLimitingVisitor = new WidthLimitingVisitor(i);
+        TextVisitFactory.visitFormatted(string, style, (CharacterVisitor)widthLimitingVisitor);
+        return widthLimitingVisitor.getLength();
+    }
+
     /**
      * Gets the style at the {@code x} position in a text.
      * 
@@ -151,6 +157,10 @@ public class TextHandler {
         return (Style)mutableObject.getValue();
     }
 
+    public String method_35716(String string, int i, Style style) {
+        return string.substring(0, this.method_35715(string, i, style));
+    }
+
     public StringVisitable trimToWidth(StringVisitable text, int width, Style style) {
         final WidthLimitingVisitor widthLimitingVisitor = new WidthLimitingVisitor(width);
         return text.visit(new StringVisitable.StyledVisitor<StringVisitable>(){
@@ -172,6 +182,12 @@ public class TextHandler {
                 return Optional.empty();
             }
         }, style).orElse(text);
+    }
+
+    public int method_35717(String string, int i, Style style) {
+        LineBreakingVisitor lineBreakingVisitor = new LineBreakingVisitor(i);
+        TextVisitFactory.visitFormatted(string, style, (CharacterVisitor)lineBreakingVisitor);
+        return lineBreakingVisitor.getEndingIndex();
     }
 
     public static int moveCursorByWords(String text, int offset, int cursor, boolean consumeSpaceOrBreak) {
@@ -232,6 +248,12 @@ public class TextHandler {
     public List<StringVisitable> wrapLines(StringVisitable text, int maxWidth, Style style) {
         ArrayList<StringVisitable> list = Lists.newArrayList();
         this.wrapLines(text, maxWidth, style, (stringVisitable, boolean_) -> list.add((StringVisitable)stringVisitable));
+        return list;
+    }
+
+    public List<StringVisitable> method_35714(StringVisitable stringVisitable, int i, Style style, StringVisitable stringVisitable22) {
+        ArrayList<StringVisitable> list = Lists.newArrayList();
+        this.wrapLines(stringVisitable, i, style, (stringVisitable2, boolean_) -> list.add(boolean_ != false ? StringVisitable.concat(stringVisitable22, stringVisitable2) : stringVisitable2));
         return list;
     }
 

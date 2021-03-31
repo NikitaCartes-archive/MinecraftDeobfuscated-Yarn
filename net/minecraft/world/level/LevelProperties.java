@@ -11,8 +11,6 @@ import com.mojang.serialization.Lifecycle;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
@@ -49,6 +47,7 @@ public class LevelProperties
 implements ServerWorldProperties,
 SaveProperties {
     private static final Logger LOGGER = LogManager.getLogger();
+    protected static final String field_31843 = "WorldGenSettings";
     private LevelInfo levelInfo;
     private final GeneratorOptions generatorOptions;
     private final Lifecycle lifecycle;
@@ -127,13 +126,13 @@ SaveProperties {
     }
 
     @Override
-    public NbtCompound cloneWorldNbt(DynamicRegistryManager registryManager, @Nullable NbtCompound playerTag) {
+    public NbtCompound cloneWorldNbt(DynamicRegistryManager registryManager, @Nullable NbtCompound playerNbt) {
         this.loadPlayerData();
-        if (playerTag == null) {
-            playerTag = this.playerData;
+        if (playerNbt == null) {
+            playerNbt = this.playerData;
         }
         NbtCompound nbtCompound = new NbtCompound();
-        this.updateProperties(registryManager, nbtCompound, playerTag);
+        this.updateProperties(registryManager, nbtCompound, playerNbt);
         return nbtCompound;
     }
 
@@ -149,7 +148,7 @@ SaveProperties {
         levelTag.put("Version", nbtCompound);
         levelTag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
         RegistryReadingOps<NbtElement> registryReadingOps = RegistryReadingOps.of(NbtOps.INSTANCE, registryManager);
-        GeneratorOptions.CODEC.encodeStart(registryReadingOps, this.generatorOptions).resultOrPartial(Util.addPrefix("WorldGenSettings: ", LOGGER::error)).ifPresent(nbtElement -> levelTag.put("WorldGenSettings", (NbtElement)nbtElement));
+        GeneratorOptions.CODEC.encodeStart(registryReadingOps, this.generatorOptions).resultOrPartial(Util.addPrefix("WorldGenSettings: ", LOGGER::error)).ifPresent(nbtElement -> levelTag.put(field_31843, (NbtElement)nbtElement));
         levelTag.putInt("GameType", this.levelInfo.getGameMode().getId());
         levelTag.putInt("SpawnX", this.spawnX);
         levelTag.putInt("SpawnY", this.spawnY);
@@ -417,7 +416,6 @@ SaveProperties {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public Lifecycle getLifecycle() {
         return this.lifecycle;
     }
@@ -428,8 +426,8 @@ SaveProperties {
     }
 
     @Override
-    public void setDragonFight(NbtCompound tag) {
-        this.dragonFight = tag;
+    public void setDragonFight(NbtCompound nbt) {
+        this.dragonFight = nbt;
     }
 
     @Override
@@ -449,8 +447,8 @@ SaveProperties {
     }
 
     @Override
-    public void setCustomBossEvents(@Nullable NbtCompound tag) {
-        this.customBossEvents = tag;
+    public void setCustomBossEvents(@Nullable NbtCompound nbt) {
+        this.customBossEvents = nbt;
     }
 
     @Override
@@ -471,6 +469,12 @@ SaveProperties {
     @Override
     public void setWanderingTraderSpawnChance(int wanderingTraderSpawnChance) {
         this.wanderingTraderSpawnChance = wanderingTraderSpawnChance;
+    }
+
+    @Override
+    @Nullable
+    public UUID getWanderingTraderId() {
+        return this.wanderingTraderId;
     }
 
     @Override
@@ -500,7 +504,6 @@ SaveProperties {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public LevelInfo getLevelInfo() {
         return this.levelInfo.withCopiedGameRules();
     }

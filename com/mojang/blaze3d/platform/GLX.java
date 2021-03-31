@@ -13,6 +13,7 @@ import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_6177;
 import net.minecraft.client.gl.GlDebug;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GameRenderer;
@@ -31,6 +32,7 @@ import oshi.SystemInfo;
 import oshi.hardware.Processor;
 
 @Environment(value=EnvType.CLIENT)
+@class_6177
 public class GLX {
     private static final Logger LOGGER = LogManager.getLogger();
     private static String cpuInfo;
@@ -40,7 +42,7 @@ public class GLX {
         if (GLFW.glfwGetCurrentContext() == 0L) {
             return "NO CONTEXT";
         }
-        return GlStateManager.getString(7937) + " GL version " + GlStateManager.getString(7938) + ", " + GlStateManager.getString(7936);
+        return GlStateManager._getString(7937) + " GL version " + GlStateManager._getString(7938) + ", " + GlStateManager._getString(7936);
     }
 
     public static int _getRefreshRate(Window window) {
@@ -107,8 +109,9 @@ public class GLX {
 
     public static void _renderCrosshair(int size, boolean drawX, boolean drawY, boolean drawZ) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-        GlStateManager.disableTexture();
-        GlStateManager.depthMask(false);
+        GlStateManager._disableTexture();
+        GlStateManager._depthMask(false);
+        GlStateManager._disableCull();
         RenderSystem.setShader(GameRenderer::getRenderTypeLinesShader);
         Tessellator tessellator = RenderSystem.renderThreadTesselator();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
@@ -143,8 +146,9 @@ public class GLX {
         }
         tessellator.draw();
         RenderSystem.lineWidth(1.0f);
-        GlStateManager.depthMask(true);
-        GlStateManager.method_34410();
+        GlStateManager._enableCull();
+        GlStateManager._depthMask(true);
+        GlStateManager._enableTexture();
     }
 
     public static <T> T make(Supplier<T> factory) {

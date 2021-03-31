@@ -7,9 +7,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -66,11 +63,19 @@ implements Monster {
     protected static final TrackedData<Direction> ATTACHED_FACE = DataTracker.registerData(ShulkerEntity.class, TrackedDataHandlerRegistry.FACING);
     protected static final TrackedData<Byte> PEEK_AMOUNT = DataTracker.registerData(ShulkerEntity.class, TrackedDataHandlerRegistry.BYTE);
     protected static final TrackedData<Byte> COLOR = DataTracker.registerData(ShulkerEntity.class, TrackedDataHandlerRegistry.BYTE);
+    private static final int field_30487 = 6;
+    private static final byte field_30488 = 16;
+    private static final byte field_30489 = 16;
+    private static final int field_30490 = 8;
+    private static final int field_30491 = 8;
+    private static final int field_30492 = 5;
+    private static final float field_30493 = 0.05f;
     private float prevOpenProgress;
     private float openProgress;
     @Nullable
     private BlockPos prevAttachedBlock;
     private int teleportLerpTimer;
+    private static final float field_30494 = 1.0f;
 
     public ShulkerEntity(EntityType<? extends ShulkerEntity> entityType, World world) {
         super((EntityType<? extends GolemEntity>)entityType, world);
@@ -141,21 +146,21 @@ implements Monster {
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        this.dataTracker.set(ATTACHED_FACE, Direction.byId(tag.getByte("AttachFace")));
-        this.dataTracker.set(PEEK_AMOUNT, tag.getByte("Peek"));
-        if (tag.contains("Color", NbtTypeIds.NUMBER)) {
-            this.dataTracker.set(COLOR, tag.getByte("Color"));
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.setAttachedFace(Direction.byId(nbt.getByte("AttachFace")));
+        this.dataTracker.set(PEEK_AMOUNT, nbt.getByte("Peek"));
+        if (nbt.contains("Color", 99)) {
+            this.dataTracker.set(COLOR, nbt.getByte("Color"));
         }
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
-        tag.putByte("AttachFace", (byte)this.dataTracker.get(ATTACHED_FACE).getId());
-        tag.putByte("Peek", this.dataTracker.get(PEEK_AMOUNT));
-        tag.putByte("Color", this.dataTracker.get(COLOR));
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putByte("AttachFace", (byte)this.getAttachedFace().getId());
+        nbt.putByte("Peek", this.dataTracker.get(PEEK_AMOUNT));
+        nbt.putByte("Color", this.dataTracker.get(COLOR));
     }
 
     @Override
@@ -179,14 +184,14 @@ implements Monster {
     private void method_33348() {
         Direction direction = this.findAttachSide(this.getBlockPos());
         if (direction != null) {
-            this.dataTracker.set(ATTACHED_FACE, direction);
+            this.setAttachedFace(direction);
         } else {
             this.tryTeleport();
         }
     }
 
     @Override
-    protected Box method_33332() {
+    protected Box calculateBoundingBox() {
         float f = ShulkerEntity.method_33342(this.openProgress);
         Direction direction = this.getAttachedFace().getOpposite();
         float g = this.getType().getWidth() / 2.0f;
@@ -244,7 +249,7 @@ implements Monster {
             this.prevAttachedBlock = null;
             this.teleportLerpTimer = 0;
         }
-        this.dataTracker.set(ATTACHED_FACE, Direction.DOWN);
+        this.setAttachedFace(Direction.DOWN);
         return super.startRiding(entity, force);
     }
 
@@ -260,10 +265,10 @@ implements Monster {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         this.headYaw = this.yaw = 0.0f;
         this.resetPosition();
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     @Override
@@ -349,7 +354,7 @@ implements Monster {
             BlockPos blockPos2 = blockPos.add(MathHelper.nextBetween(this.random, -8, 8), MathHelper.nextBetween(this.random, -8, 8), MathHelper.nextBetween(this.random, -8, 8));
             if (blockPos2.getY() <= this.world.getBottomY() || !this.world.isAir(blockPos2) || !this.world.getWorldBorder().contains(blockPos2) || !this.world.isSpaceEmpty(this, new Box(blockPos2).contract(1.0E-6)) || (direction = this.findAttachSide(blockPos2)) == null) continue;
             this.detach();
-            this.dataTracker.set(ATTACHED_FACE, direction);
+            this.setAttachedFace(direction);
             this.playSound(SoundEvents.ENTITY_SHULKER_TELEPORT, 1.0f, 1.0f);
             this.setPosition((double)blockPos2.getX() + 0.5, blockPos2.getY(), (double)blockPos2.getZ() + 0.5);
             this.dataTracker.set(PEEK_AMOUNT, (byte)0);
@@ -360,7 +365,6 @@ implements Monster {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
         this.bodyTrackingIncrements = 0;
         this.setPosition(x, y, z);
@@ -417,6 +421,18 @@ implements Monster {
         return this.dataTracker.get(ATTACHED_FACE);
     }
 
+    private void setAttachedFace(Direction face) {
+        this.dataTracker.set(ATTACHED_FACE, face);
+    }
+
+    @Override
+    public void onTrackedDataSet(TrackedData<?> data) {
+        if (ATTACHED_FACE.equals(data)) {
+            this.setBoundingBox(this.calculateBoundingBox());
+        }
+        super.onTrackedDataSet(data);
+    }
+
     private int getPeekAmount() {
         return this.dataTracker.get(PEEK_AMOUNT).byteValue();
     }
@@ -436,7 +452,6 @@ implements Monster {
         this.dataTracker.set(PEEK_AMOUNT, (byte)peekAmount);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getOpenProgress(float delta) {
         return MathHelper.lerp(delta, this.prevOpenProgress, this.openProgress);
     }
@@ -447,7 +462,6 @@ implements Monster {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void readFromPacket(MobSpawnS2CPacket packet) {
         super.readFromPacket(packet);
         this.bodyYaw = 0.0f;
@@ -472,7 +486,6 @@ implements Monster {
         return 0.0f;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Optional<Vec3d> method_33352(float f) {
         if (this.prevAttachedBlock == null || this.teleportLerpTimer <= 0) {
             return Optional.empty();

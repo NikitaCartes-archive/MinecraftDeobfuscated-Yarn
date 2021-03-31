@@ -3,6 +3,7 @@
  */
 package net.minecraft.world.biome.layer;
 
+import net.minecraft.world.biome.BiomeIds;
 import net.minecraft.world.biome.layer.BiomeLayers;
 import net.minecraft.world.biome.layer.type.MergingLayer;
 import net.minecraft.world.biome.layer.util.IdentityCoordinateTransformer;
@@ -22,12 +23,12 @@ IdentityCoordinateTransformer
         if (BiomeLayers.isOcean(i)) {
             return i;
         }
-        if (j == 7) {
-            if (i == 12) {
-                return 11;
+        if (j == BiomeIds.RIVER) {
+            if (i == BiomeIds.SNOWY_TUNDRA) {
+                return BiomeIds.FROZEN_RIVER;
             }
-            if (i == 14 || i == 15) {
-                return 15;
+            if (i == BiomeIds.MUSHROOM_FIELDS || i == BiomeIds.MUSHROOM_FIELD_SHORE) {
+                return BiomeIds.MUSHROOM_FIELD_SHORE;
             }
             return j & 0xFF;
         }

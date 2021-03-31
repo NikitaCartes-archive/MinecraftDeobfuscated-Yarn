@@ -8,7 +8,6 @@ import net.minecraft.structure.ShipwreckGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
@@ -31,16 +30,15 @@ extends StructureFeature<ShipwreckFeatureConfig> {
 
     public static class Start
     extends StructureStart<ShipwreckFeatureConfig> {
-        public Start(StructureFeature<ShipwreckFeatureConfig> structureFeature, ChunkPos chunkPos, BlockBox blockBox, int i, long l) {
-            super(structureFeature, chunkPos, blockBox, i, l);
+        public Start(StructureFeature<ShipwreckFeatureConfig> structureFeature, ChunkPos chunkPos, int i, long l) {
+            super(structureFeature, chunkPos, i, l);
         }
 
         @Override
         public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, ChunkPos chunkPos, Biome biome, ShipwreckFeatureConfig shipwreckFeatureConfig, HeightLimitView heightLimitView) {
             BlockRotation blockRotation = BlockRotation.random(this.random);
             BlockPos blockPos = new BlockPos(chunkPos.getStartX(), 90, chunkPos.getStartZ());
-            ShipwreckGenerator.addParts(structureManager, blockPos, blockRotation, this.children, this.random, shipwreckFeatureConfig);
-            this.setBoundingBoxFromChildren();
+            ShipwreckGenerator.addParts(structureManager, blockPos, blockRotation, this, this.random, shipwreckFeatureConfig);
         }
     }
 }

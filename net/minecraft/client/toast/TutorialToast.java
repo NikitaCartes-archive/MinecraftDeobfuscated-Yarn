@@ -17,6 +17,10 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class TutorialToast
 implements Toast {
+    public static final int field_32222 = 154;
+    public static final int field_32223 = 1;
+    public static final int field_32224 = 3;
+    public static final int field_32225 = 28;
     private final Type type;
     private final Text title;
     private final Text description;

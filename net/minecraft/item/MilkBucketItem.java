@@ -19,6 +19,8 @@ import net.minecraft.world.World;
 
 public class MilkBucketItem
 extends Item {
+    private static final int MAX_USE_TIME = 32;
+
     public MilkBucketItem(Item.Settings settings) {
         super(settings);
     }

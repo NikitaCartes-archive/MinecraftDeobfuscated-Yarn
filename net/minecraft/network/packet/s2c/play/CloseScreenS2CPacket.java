@@ -28,5 +28,9 @@ implements Packet<ClientPlayPacketListener> {
     public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onCloseScreen(this);
     }
+
+    public int getSyncId() {
+        return this.syncId;
+    }
 }
 

@@ -7,7 +7,6 @@ import com.mojang.datafixers.DataFixer;
 import java.io.File;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.option.HotbarStorageEntry;
 import net.minecraft.datafixer.DataFixTypes;
@@ -20,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 @Environment(value=EnvType.CLIENT)
 public class HotbarStorage {
     private static final Logger LOGGER = LogManager.getLogger();
+    public static final int field_32135 = 9;
     private final File file;
     private final DataFixer dataFixer;
     private final HotbarStorageEntry[] entries = new HotbarStorageEntry[9];
@@ -39,12 +39,12 @@ public class HotbarStorage {
             if (nbtCompound == null) {
                 return;
             }
-            if (!nbtCompound.contains("DataVersion", NbtTypeIds.NUMBER)) {
+            if (!nbtCompound.contains("DataVersion", 99)) {
                 nbtCompound.putInt("DataVersion", 1343);
             }
             nbtCompound = NbtHelper.update(this.dataFixer, DataFixTypes.HOTBAR, nbtCompound, nbtCompound.getInt("DataVersion"));
             for (int i = 0; i < 9; ++i) {
-                this.entries[i].fromListTag(nbtCompound.getList(String.valueOf(i), NbtTypeIds.COMPOUND));
+                this.entries[i].readNbtList(nbtCompound.getList(String.valueOf(i), 10));
             }
         } catch (Exception exception) {
             LOGGER.error("Failed to load creative mode options", (Throwable)exception);
@@ -56,7 +56,7 @@ public class HotbarStorage {
             NbtCompound nbtCompound = new NbtCompound();
             nbtCompound.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
             for (int i = 0; i < 9; ++i) {
-                nbtCompound.put(String.valueOf(i), this.getSavedHotbar(i).toListTag());
+                nbtCompound.put(String.valueOf(i), this.getSavedHotbar(i).toNbtList());
             }
             NbtIo.write(nbtCompound, this.file);
         } catch (Exception exception) {

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.BuddingAmethystBlock;
@@ -110,31 +110,31 @@ extends Feature<GeodeFeatureConfig> {
             if (s < h) continue;
             if (bl && t >= l && s < e) {
                 if (!structureWorldAccess.getFluidState(blockPos3).isEmpty()) continue;
-                structureWorldAccess.setBlockState(blockPos3, Blocks.AIR.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+                structureWorldAccess.setBlockState(blockPos3, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
                 continue;
             }
             if (s >= e) {
-                structureWorldAccess.setBlockState(blockPos3, geodeLayerConfig.fillingProvider.getBlockState(random, blockPos3), SetBlockStateFlags.NOTIFY_LISTENERS);
+                structureWorldAccess.setBlockState(blockPos3, geodeLayerConfig.fillingProvider.getBlockState(random, blockPos3), Block.NOTIFY_LISTENERS);
                 continue;
             }
             if (s >= f) {
                 boolean bl2;
                 boolean bl3 = bl2 = (double)random.nextFloat() < geodeFeatureConfig.useAlternateLayer0Chance;
                 if (bl2) {
-                    structureWorldAccess.setBlockState(blockPos3, geodeLayerConfig.alternateInnerLayerProvider.getBlockState(random, blockPos3), SetBlockStateFlags.NOTIFY_LISTENERS);
+                    structureWorldAccess.setBlockState(blockPos3, geodeLayerConfig.alternateInnerLayerProvider.getBlockState(random, blockPos3), Block.NOTIFY_LISTENERS);
                 } else {
-                    structureWorldAccess.setBlockState(blockPos3, geodeLayerConfig.innerLayerProvider.getBlockState(random, blockPos3), SetBlockStateFlags.NOTIFY_LISTENERS);
+                    structureWorldAccess.setBlockState(blockPos3, geodeLayerConfig.innerLayerProvider.getBlockState(random, blockPos3), Block.NOTIFY_LISTENERS);
                 }
                 if (geodeFeatureConfig.placementsRequireLayer0Alternate && !bl2 || !((double)random.nextFloat() < geodeFeatureConfig.usePotentialPlacementsChance)) continue;
                 list3.add(blockPos3.toImmutable());
                 continue;
             }
             if (s >= g) {
-                structureWorldAccess.setBlockState(blockPos3, geodeLayerConfig.middleLayerProvider.getBlockState(random, blockPos3), SetBlockStateFlags.NOTIFY_LISTENERS);
+                structureWorldAccess.setBlockState(blockPos3, geodeLayerConfig.middleLayerProvider.getBlockState(random, blockPos3), Block.NOTIFY_LISTENERS);
                 continue;
             }
             if (!(s >= h)) continue;
-            structureWorldAccess.setBlockState(blockPos3, geodeLayerConfig.outerLayerProvider.getBlockState(random, blockPos3), SetBlockStateFlags.NOTIFY_LISTENERS);
+            structureWorldAccess.setBlockState(blockPos3, geodeLayerConfig.outerLayerProvider.getBlockState(random, blockPos3), Block.NOTIFY_LISTENERS);
         }
         List<BlockState> list4 = geodeLayerConfig.innerBlocks;
         block4: for (BlockPos blockPos5 : list3) {
@@ -149,7 +149,7 @@ extends Feature<GeodeFeatureConfig> {
                     blockState2 = (BlockState)blockState2.with(Properties.WATERLOGGED, blockState.getFluidState().isStill());
                 }
                 if (!BuddingAmethystBlock.canGrowIn(blockState)) continue;
-                structureWorldAccess.setBlockState(blockPos6, blockState2, SetBlockStateFlags.NOTIFY_LISTENERS);
+                structureWorldAccess.setBlockState(blockPos6, blockState2, Block.NOTIFY_LISTENERS);
                 continue block4;
             }
         }

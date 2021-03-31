@@ -3,8 +3,6 @@
  */
 package net.minecraft.world;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -17,6 +15,7 @@ public enum GameMode {
     SPECTATOR(3, "spectator");
 
     public static final GameMode DEFAULT;
+    private static final int field_30964 = -1;
     private final int id;
     private final String name;
     private final Text simpleTranslatableName;
@@ -41,7 +40,6 @@ public enum GameMode {
         return this.translatableName;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Text getSimpleTranslatableName() {
         return this.simpleTranslatableName;
     }

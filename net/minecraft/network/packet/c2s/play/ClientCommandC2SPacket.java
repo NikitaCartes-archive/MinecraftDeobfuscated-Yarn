@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.c2s.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -16,12 +14,10 @@ implements Packet<ServerPlayPacketListener> {
     private final Mode mode;
     private final int mountJumpHeight;
 
-    @Environment(value=EnvType.CLIENT)
     public ClientCommandC2SPacket(Entity entity, Mode mode) {
         this(entity, mode, 0);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public ClientCommandC2SPacket(Entity entity, Mode mode, int mountJumpHeight) {
         this.entityId = entity.getId();
         this.mode = mode;
@@ -44,6 +40,10 @@ implements Packet<ServerPlayPacketListener> {
     @Override
     public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onClientCommand(this);
+    }
+
+    public int getEntityId() {
+        return this.entityId;
     }
 
     public Mode getMode() {

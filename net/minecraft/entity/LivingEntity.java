@@ -22,13 +22,10 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import java.util.function.Predicate;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.BedBlock;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HoneyBlock;
@@ -114,6 +111,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
@@ -144,6 +142,23 @@ extends Entity {
     private static final UUID SOUL_SPEED_BOOST_ID = UUID.fromString("87f46a96-686f-4796-b035-22e16ee9e038");
     private static final UUID POWDER_SNOW_SLOW_ID = UUID.fromString("1eaf83ff-7207-4596-b37a-d7a07b3ec4ce");
     private static final EntityAttributeModifier SPRINTING_SPEED_BOOST = new EntityAttributeModifier(SPRINTING_SPEED_BOOST_ID, "Sprinting speed boost", (double)0.3f, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
+    public static final int field_30069 = 2;
+    public static final int field_30070 = 4;
+    public static final int field_30071 = 98;
+    public static final int field_30072 = 100;
+    public static final int field_30073 = 6;
+    public static final int field_30074 = 100;
+    private static final int field_30078 = 40;
+    public static final double field_30075 = 0.003;
+    public static final double field_30076 = 0.08;
+    public static final int field_30077 = 20;
+    private static final int field_30079 = 7;
+    private static final int field_30080 = 10;
+    private static final int field_30081 = 2;
+    public static final int field_30063 = 4;
+    protected static final int field_30064 = 1;
+    protected static final int field_30065 = 2;
+    protected static final int field_30066 = 4;
     protected static final TrackedData<Byte> LIVING_FLAGS = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.BYTE);
     private static final TrackedData<Float> HEALTH = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Integer> POTION_SWIRLS_COLOR = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -151,13 +166,16 @@ extends Entity {
     private static final TrackedData<Integer> STUCK_ARROW_COUNT = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> STINGER_COUNT = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Optional<BlockPos>> SLEEPING_POSITION = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_POS);
+    protected static final float field_30067 = 1.74f;
     protected static final EntityDimensions SLEEPING_DIMENSIONS = EntityDimensions.fixed(0.2f, 0.2f);
+    public static final float field_30068 = 0.5f;
     private final AttributeContainer attributes;
     private final DamageTracker damageTracker = new DamageTracker(this);
     private final Map<StatusEffect, StatusEffectInstance> activeStatusEffects = Maps.newHashMap();
     private final DefaultedList<ItemStack> equippedHand = DefaultedList.ofSize(2, ItemStack.EMPTY);
     private final DefaultedList<ItemStack> equippedArmor = DefaultedList.ofSize(4, ItemStack.EMPTY);
     public boolean handSwinging;
+    private boolean field_30082 = false;
     public Hand preferredHand;
     public int handSwingTicks;
     public int stuckArrowTimer;
@@ -300,7 +318,6 @@ extends Entity {
         return this.getGroup() == EntityGroup.UNDEAD;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getLeaningPitch(float tickDelta) {
         return MathHelper.lerp(tickDelta, this.lastLeaningPitch, this.leaningPitch);
     }
@@ -615,6 +632,14 @@ extends Entity {
         this.despawnCounter = despawnCounter;
     }
 
+    public boolean method_35053() {
+        return this.field_30082;
+    }
+
+    public void method_35054(boolean bl) {
+        this.field_30082 = bl;
+    }
+
     protected void onEquipStack(ItemStack stack) {
         SoundEvent soundEvent = stack.getEquipSound();
         if (stack.isEmpty() || soundEvent == null || this.isSpectator()) {
@@ -625,38 +650,38 @@ extends Entity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        tag.putFloat("Health", this.getHealth());
-        tag.putShort("HurtTime", (short)this.hurtTime);
-        tag.putInt("HurtByTimestamp", this.lastAttackedTime);
-        tag.putShort("DeathTime", (short)this.deathTime);
-        tag.putFloat("AbsorptionAmount", this.getAbsorptionAmount());
-        tag.put("Attributes", this.getAttributes().toNbt());
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        nbt.putFloat("Health", this.getHealth());
+        nbt.putShort("HurtTime", (short)this.hurtTime);
+        nbt.putInt("HurtByTimestamp", this.lastAttackedTime);
+        nbt.putShort("DeathTime", (short)this.deathTime);
+        nbt.putFloat("AbsorptionAmount", this.getAbsorptionAmount());
+        nbt.put("Attributes", this.getAttributes().toNbt());
         if (!this.activeStatusEffects.isEmpty()) {
             NbtList nbtList = new NbtList();
             for (StatusEffectInstance statusEffectInstance : this.activeStatusEffects.values()) {
                 nbtList.add(statusEffectInstance.writeNbt(new NbtCompound()));
             }
-            tag.put("ActiveEffects", nbtList);
+            nbt.put("ActiveEffects", nbtList);
         }
-        tag.putBoolean("FallFlying", this.isFallFlying());
+        nbt.putBoolean("FallFlying", this.isFallFlying());
         this.getSleepingPosition().ifPresent(blockPos -> {
-            tag.putInt("SleepingX", blockPos.getX());
-            tag.putInt("SleepingY", blockPos.getY());
-            tag.putInt("SleepingZ", blockPos.getZ());
+            nbt.putInt("SleepingX", blockPos.getX());
+            nbt.putInt("SleepingY", blockPos.getY());
+            nbt.putInt("SleepingZ", blockPos.getZ());
         });
         DataResult<NbtElement> dataResult = this.brain.encode(NbtOps.INSTANCE);
-        dataResult.resultOrPartial(LOGGER::error).ifPresent(nbtElement -> tag.put("Brain", (NbtElement)nbtElement));
+        dataResult.resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbt.put("Brain", (NbtElement)nbtElement));
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        this.setAbsorptionAmount(tag.getFloat("AbsorptionAmount"));
-        if (tag.contains("Attributes", NbtTypeIds.LIST) && this.world != null && !this.world.isClient) {
-            this.getAttributes().readNbt(tag.getList("Attributes", NbtTypeIds.COMPOUND));
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        this.setAbsorptionAmount(nbt.getFloat("AbsorptionAmount"));
+        if (nbt.contains("Attributes", 9) && this.world != null && !this.world.isClient) {
+            this.getAttributes().readNbt(nbt.getList("Attributes", 10));
         }
-        if (tag.contains("ActiveEffects", NbtTypeIds.LIST)) {
-            NbtList nbtList = tag.getList("ActiveEffects", NbtTypeIds.COMPOUND);
+        if (nbt.contains("ActiveEffects", 9)) {
+            NbtList nbtList = nbt.getList("ActiveEffects", 10);
             for (int i = 0; i < nbtList.size(); ++i) {
                 NbtCompound nbtCompound = nbtList.getCompound(i);
                 StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromNbt(nbtCompound);
@@ -664,34 +689,34 @@ extends Entity {
                 this.activeStatusEffects.put(statusEffectInstance.getEffectType(), statusEffectInstance);
             }
         }
-        if (tag.contains("Health", NbtTypeIds.NUMBER)) {
-            this.setHealth(tag.getFloat("Health"));
+        if (nbt.contains("Health", 99)) {
+            this.setHealth(nbt.getFloat("Health"));
         }
-        this.hurtTime = tag.getShort("HurtTime");
-        this.deathTime = tag.getShort("DeathTime");
-        this.lastAttackedTime = tag.getInt("HurtByTimestamp");
-        if (tag.contains("Team", NbtTypeIds.STRING)) {
+        this.hurtTime = nbt.getShort("HurtTime");
+        this.deathTime = nbt.getShort("DeathTime");
+        this.lastAttackedTime = nbt.getInt("HurtByTimestamp");
+        if (nbt.contains("Team", 8)) {
             boolean bl;
-            String string = tag.getString("Team");
+            String string = nbt.getString("Team");
             Team team = this.world.getScoreboard().getTeam(string);
             boolean bl2 = bl = team != null && this.world.getScoreboard().addPlayerToTeam(this.getUuidAsString(), team);
             if (!bl) {
                 LOGGER.warn("Unable to add mob to team \"{}\" (that team probably doesn't exist)", (Object)string);
             }
         }
-        if (tag.getBoolean("FallFlying")) {
+        if (nbt.getBoolean("FallFlying")) {
             this.setFlag(7, true);
         }
-        if (tag.contains("SleepingX", NbtTypeIds.NUMBER) && tag.contains("SleepingY", NbtTypeIds.NUMBER) && tag.contains("SleepingZ", NbtTypeIds.NUMBER)) {
-            BlockPos blockPos = new BlockPos(tag.getInt("SleepingX"), tag.getInt("SleepingY"), tag.getInt("SleepingZ"));
+        if (nbt.contains("SleepingX", 99) && nbt.contains("SleepingY", 99) && nbt.contains("SleepingZ", 99)) {
+            BlockPos blockPos = new BlockPos(nbt.getInt("SleepingX"), nbt.getInt("SleepingY"), nbt.getInt("SleepingZ"));
             this.setSleepingPosition(blockPos);
             this.dataTracker.set(POSE, EntityPose.SLEEPING);
             if (!this.firstUpdate) {
                 this.setPositionInBed(blockPos);
             }
         }
-        if (tag.contains("Brain", NbtTypeIds.COMPOUND)) {
-            this.brain = this.deserializeBrain(new Dynamic<NbtElement>(NbtOps.INSTANCE, tag.get("Brain")));
+        if (nbt.contains("Brain", 10)) {
+            this.brain = this.deserializeBrain(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("Brain")));
         }
     }
 
@@ -847,7 +872,6 @@ extends Entity {
         return this.getGroup() != EntityGroup.UNDEAD || (statusEffect = effect.getEffectType()) != StatusEffects.REGENERATION && statusEffect != StatusEffects.POISON;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void applyStatusEffect(StatusEffectInstance effect) {
         if (!this.canHaveStatusEffect(effect)) {
             return;
@@ -1131,7 +1155,6 @@ extends Entity {
         return false;
     }
 
-    @Environment(value=EnvType.CLIENT)
     private void playEquipmentBreakEffects(ItemStack stack) {
         if (!stack.isEmpty()) {
             if (!this.isSilent()) {
@@ -1183,7 +1206,7 @@ extends Entity {
                 BlockPos blockPos = this.getBlockPos();
                 BlockState blockState = Blocks.WITHER_ROSE.getDefaultState();
                 if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
-                    this.world.setBlockState(blockPos, blockState, SetBlockStateFlags.DEFAULT);
+                    this.world.setBlockState(blockPos, blockState, Block.NOTIFY_ALL);
                     bl = true;
                 }
             }
@@ -1357,7 +1380,6 @@ extends Entity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void animateDamage() {
         this.hurtTime = this.maxHurtTime = 10;
         this.knockbackVelocity = 0.0f;
@@ -1487,7 +1509,7 @@ extends Entity {
             this.handSwinging = true;
             this.preferredHand = hand;
             if (this.world instanceof ServerWorld) {
-                EntityAnimationS2CPacket entityAnimationS2CPacket = new EntityAnimationS2CPacket(this, hand == Hand.MAIN_HAND ? 0 : 3);
+                EntityAnimationS2CPacket entityAnimationS2CPacket = new EntityAnimationS2CPacket(this, hand == Hand.MAIN_HAND ? EntityAnimationS2CPacket.SWING_MAIN_HAND : EntityAnimationS2CPacket.SWING_OFF_HAND);
                 ServerChunkManager serverChunkManager = ((ServerWorld)this.world).getChunkManager();
                 if (bl) {
                     serverChunkManager.sendToNearbyPlayers(this, entityAnimationS2CPacket);
@@ -1499,7 +1521,6 @@ extends Entity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void handleStatus(byte status) {
         switch (status) {
             case 2: 
@@ -1595,7 +1616,6 @@ extends Entity {
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     private void swapHandStacks() {
         ItemStack itemStack = this.getEquippedStack(EquipmentSlot.OFFHAND);
         this.equipStack(EquipmentSlot.OFFHAND, this.getEquippedStack(EquipmentSlot.MAINHAND));
@@ -1753,7 +1773,6 @@ extends Entity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public boolean shouldRenderName() {
         return this.isCustomNameVisible();
     }
@@ -1776,7 +1795,6 @@ extends Entity {
         this.velocityDirty = true;
     }
 
-    @Environment(value=EnvType.CLIENT)
     protected void knockDownwards() {
         this.setVelocity(this.getVelocity().add(0.0, -0.04f, 0.0));
     }
@@ -1904,7 +1922,11 @@ extends Entity {
                 } else {
                     q = this.getY() > (double)this.world.getBottomY() ? -0.1 : 0.0;
                 }
-                this.setVelocity(vec3d6.x * (double)f, q * (double)0.98f, vec3d6.z * (double)f);
+                if (this.method_35053()) {
+                    this.setVelocity(vec3d6.x, q, vec3d6.z);
+                } else {
+                    this.setVelocity(vec3d6.x * (double)f, q * (double)0.98f, vec3d6.z * (double)f);
+                }
             }
         }
         this.updateLimbs(this, this instanceof Flutterer);
@@ -2012,6 +2034,7 @@ extends Entity {
                 if (this.getFlag(6) != bl) {
                     this.setFlag(6, bl);
                 }
+                this.glowing = bl;
             }
             if (this.isSleeping() && !this.isSleepingInBed()) {
                 this.wakeUp();
@@ -2078,9 +2101,9 @@ extends Entity {
     private void method_30128() {
         Map<EquipmentSlot, ItemStack> map = this.method_30129();
         if (map != null) {
-            this.method_30121(map);
+            this.swapHandStacks(map);
             if (!map.isEmpty()) {
-                this.method_30123(map);
+                this.setEquipment(map);
             }
         }
     }
@@ -2118,30 +2141,30 @@ extends Entity {
         return map;
     }
 
-    private void method_30121(Map<EquipmentSlot, ItemStack> map) {
-        ItemStack itemStack = map.get((Object)EquipmentSlot.MAINHAND);
-        ItemStack itemStack2 = map.get((Object)EquipmentSlot.OFFHAND);
+    private void swapHandStacks(Map<EquipmentSlot, ItemStack> equipment) {
+        ItemStack itemStack = equipment.get((Object)EquipmentSlot.MAINHAND);
+        ItemStack itemStack2 = equipment.get((Object)EquipmentSlot.OFFHAND);
         if (itemStack != null && itemStack2 != null && ItemStack.areEqual(itemStack, this.getStackInHandSlot(EquipmentSlot.OFFHAND)) && ItemStack.areEqual(itemStack2, this.getStackInHandSlot(EquipmentSlot.MAINHAND))) {
             ((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(this, new EntityStatusS2CPacket(this, 55));
-            map.remove((Object)EquipmentSlot.MAINHAND);
-            map.remove((Object)EquipmentSlot.OFFHAND);
+            equipment.remove((Object)EquipmentSlot.MAINHAND);
+            equipment.remove((Object)EquipmentSlot.OFFHAND);
             this.setStackInHandSlot(EquipmentSlot.MAINHAND, itemStack.copy());
             this.setStackInHandSlot(EquipmentSlot.OFFHAND, itemStack2.copy());
         }
     }
 
-    private void method_30123(Map<EquipmentSlot, ItemStack> map) {
-        ArrayList<Pair<EquipmentSlot, ItemStack>> list = Lists.newArrayListWithCapacity(map.size());
-        map.forEach((equipmentSlot, itemStack) -> {
-            ItemStack itemStack2 = itemStack.copy();
-            list.add(Pair.of(equipmentSlot, itemStack2));
-            switch (equipmentSlot.getType()) {
+    private void setEquipment(Map<EquipmentSlot, ItemStack> equipment) {
+        ArrayList<Pair<EquipmentSlot, ItemStack>> list = Lists.newArrayListWithCapacity(equipment.size());
+        equipment.forEach((slot, stack) -> {
+            ItemStack itemStack = stack.copy();
+            list.add(Pair.of(slot, itemStack));
+            switch (slot.getType()) {
                 case HAND: {
-                    this.setStackInHandSlot((EquipmentSlot)((Object)equipmentSlot), itemStack2);
+                    this.setStackInHandSlot((EquipmentSlot)((Object)slot), itemStack);
                     break;
                 }
                 case ARMOR: {
-                    this.setArmorInSlot((EquipmentSlot)((Object)equipmentSlot), itemStack2);
+                    this.setArmorInSlot((EquipmentSlot)((Object)slot), itemStack);
                 }
             }
         });
@@ -2187,6 +2210,7 @@ extends Entity {
     }
 
     public void tickMovement() {
+        int m;
         if (this.jumpingCooldown > 0) {
             --this.jumpingCooldown;
         }
@@ -2261,16 +2285,20 @@ extends Entity {
         this.travel(new Vec3d(this.sidewaysSpeed, this.upwardSpeed, this.forwardSpeed));
         this.world.getProfiler().pop();
         this.world.getProfiler().push("freezing");
-        int m = this.getFrozenTicks();
-        if (this.inPowderSnow && this.canFreeze()) {
-            this.setFrozenTicks(Math.min(this.getMinFreezeDamageTicks(), m + 1));
-        } else {
-            this.setFrozenTicks(Math.max(0, m - 2));
+        boolean bl2 = this.getType().isIn(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES);
+        if (!this.world.isClient) {
+            m = this.getFrozenTicks();
+            if (this.inPowderSnow && this.canFreeze()) {
+                this.setFrozenTicks(Math.min(this.getMinFreezeDamageTicks(), m + 1));
+            } else {
+                this.setFrozenTicks(Math.max(0, m - 2));
+            }
         }
         this.removePowderSnowSlow();
         this.addPowderSnowSlowIfNeeded();
-        if (this.age % 60 == 0 && this.isFreezing() && this.canFreeze()) {
-            this.damage(DamageSource.FREEZE, 1.0f);
+        if (!this.world.isClient && this.age % 40 == 0 && this.isFreezing() && this.canFreeze()) {
+            m = bl2 ? 5 : 1;
+            this.damage(DamageSource.FREEZE, m);
         }
         this.world.getProfiler().pop();
         this.world.getProfiler().push("push");
@@ -2395,7 +2423,6 @@ extends Entity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
         this.serverX = x;
         this.serverY = y;
@@ -2406,7 +2433,6 @@ extends Entity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void updateTrackedHeadRotation(float yaw, int interpolationSteps) {
         this.serverHeadYaw = yaw;
         this.headTrackingIncrements = interpolationSteps;
@@ -2448,7 +2474,6 @@ extends Entity {
         return MathHelper.lerp(tickDelta, this.prevHeadYaw, this.headYaw);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getHandSwingProgress(float tickDelta) {
         float f = this.handSwingProgress - this.lastHandSwingProgress;
         if (f < 0.0f) {
@@ -2493,11 +2518,11 @@ extends Entity {
 
     @Override
     protected Vec3d positionInPortal(Direction.Axis portalAxis, PortalUtil.Rectangle portalRect) {
-        return LivingEntity.method_31079(super.positionInPortal(portalAxis, portalRect));
+        return LivingEntity.positionInPortal(super.positionInPortal(portalAxis, portalRect));
     }
 
-    public static Vec3d method_31079(Vec3d vec3d) {
-        return new Vec3d(vec3d.x, vec3d.y, 0.0);
+    public static Vec3d positionInPortal(Vec3d pos) {
+        return new Vec3d(pos.x, pos.y, 0.0);
     }
 
     public float getAbsorptionAmount() {
@@ -2710,7 +2735,6 @@ extends Entity {
         return super.isInSwimmingPose() || !this.isFallFlying() && this.getPose() == EntityPose.FALL_FLYING;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getRoll() {
         return this.roll;
     }
@@ -2763,7 +2787,6 @@ extends Entity {
         return true;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void setNearbySongPlaying(BlockPos songPosition, boolean playing) {
     }
 
@@ -2812,7 +2835,7 @@ extends Entity {
             this.stopRiding();
         }
         if ((blockState = this.world.getBlockState(pos)).getBlock() instanceof BedBlock) {
-            this.world.setBlockState(pos, (BlockState)blockState.with(BedBlock.OCCUPIED, true), SetBlockStateFlags.DEFAULT);
+            this.world.setBlockState(pos, (BlockState)blockState.with(BedBlock.OCCUPIED, true), Block.NOTIFY_ALL);
         }
         this.setPose(EntityPose.SLEEPING);
         this.setPositionInBed(pos);
@@ -2833,7 +2856,7 @@ extends Entity {
         this.getSleepingPosition().filter(this.world::isChunkLoaded).ifPresent(blockPos -> {
             BlockState blockState = this.world.getBlockState((BlockPos)blockPos);
             if (blockState.getBlock() instanceof BedBlock) {
-                this.world.setBlockState((BlockPos)blockPos, (BlockState)blockState.with(BedBlock.OCCUPIED, false), SetBlockStateFlags.DEFAULT);
+                this.world.setBlockState((BlockPos)blockPos, (BlockState)blockState.with(BedBlock.OCCUPIED, false), Block.NOTIFY_ALL);
                 Vec3d vec3d = BedBlock.findWakeUpPosition(this.getType(), this.world, blockPos, this.yaw).orElseGet(() -> {
                     BlockPos blockPos2 = blockPos.up();
                     return new Vec3d((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.1, (double)blockPos2.getZ() + 0.5);
@@ -2852,7 +2875,6 @@ extends Entity {
     }
 
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     public Direction getSleepingDirection() {
         BlockPos blockPos = this.getSleepingPosition().orElse(null);
         return blockPos != null ? BedBlock.getDirection(this.world, blockPos) : null;
@@ -2933,7 +2955,6 @@ extends Entity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public Box getVisibilityBoundingBox() {
         if (this.getEquippedStack(EquipmentSlot.HEAD).isOf(Items.DRAGON_HEAD)) {
             float f = 0.5f;
@@ -2959,11 +2980,11 @@ extends Entity {
         return EquipmentSlot.MAINHAND;
     }
 
-    private static CommandItemSlot method_32321(LivingEntity livingEntity, EquipmentSlot equipmentSlot) {
-        if (equipmentSlot == EquipmentSlot.HEAD || equipmentSlot == EquipmentSlot.MAINHAND || equipmentSlot == EquipmentSlot.OFFHAND) {
-            return CommandItemSlot.of(livingEntity, equipmentSlot);
+    private static CommandItemSlot getCommandItemSlot(LivingEntity entity, EquipmentSlot slot) {
+        if (slot == EquipmentSlot.HEAD || slot == EquipmentSlot.MAINHAND || slot == EquipmentSlot.OFFHAND) {
+            return CommandItemSlot.of(entity, slot);
         }
-        return CommandItemSlot.of(livingEntity, equipmentSlot, itemStack -> itemStack.isEmpty() || MobEntity.getPreferredEquipmentSlot(itemStack) == equipmentSlot);
+        return CommandItemSlot.of(entity, slot, itemStack -> itemStack.isEmpty() || MobEntity.getPreferredEquipmentSlot(itemStack) == slot);
     }
 
     @Nullable
@@ -2993,7 +3014,7 @@ extends Entity {
     public CommandItemSlot getCommandItemSlot(int mappedIndex) {
         EquipmentSlot equipmentSlot = LivingEntity.getEquipmentSlot(mappedIndex);
         if (equipmentSlot != null) {
-            return LivingEntity.method_32321(this, equipmentSlot);
+            return LivingEntity.getCommandItemSlot(this, equipmentSlot);
         }
         return super.getCommandItemSlot(mappedIndex);
     }
@@ -3003,10 +3024,10 @@ extends Entity {
         if (this.isSpectator()) {
             return false;
         }
-        return !this.getEquippedStack(EquipmentSlot.HEAD).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES) && !this.getEquippedStack(EquipmentSlot.CHEST).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES) && !this.getEquippedStack(EquipmentSlot.LEGS).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES) && !this.getEquippedStack(EquipmentSlot.FEET).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES);
+        boolean bl = !this.getEquippedStack(EquipmentSlot.HEAD).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES) && !this.getEquippedStack(EquipmentSlot.CHEST).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES) && !this.getEquippedStack(EquipmentSlot.LEGS).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES) && !this.getEquippedStack(EquipmentSlot.FEET).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES);
+        return bl && super.canFreeze();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void readFromPacket(MobSpawnS2CPacket packet) {
         double d = packet.getX();
         double e = packet.getY();

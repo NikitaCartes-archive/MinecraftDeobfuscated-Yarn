@@ -9,9 +9,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffect;
@@ -31,6 +28,10 @@ import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class PotionUtil {
+    public static final String CUSTOM_POTION_EFFECTS_KEY = "CustomPotionEffects";
+    public static final String CUSTOM_POTION_COLOR_KEY = "CustomPotionColor";
+    public static final String POTION_KEY = "Potion";
+    private static final int DEFAULT_COLOR = 0xF800F8;
     private static final Text NONE_TEXT = new TranslatableText("effect.none").formatted(Formatting.GRAY);
 
     public static List<StatusEffectInstance> getPotionEffects(ItemStack stack) {
@@ -44,10 +45,10 @@ public class PotionUtil {
         return list;
     }
 
-    public static List<StatusEffectInstance> getPotionEffects(@Nullable NbtCompound tag) {
+    public static List<StatusEffectInstance> getPotionEffects(@Nullable NbtCompound nbt) {
         ArrayList<StatusEffectInstance> list = Lists.newArrayList();
-        list.addAll(PotionUtil.getPotion(tag).getEffects());
-        PotionUtil.getCustomPotionEffects(tag, list);
+        list.addAll(PotionUtil.getPotion(nbt).getEffects());
+        PotionUtil.getCustomPotionEffects(nbt, list);
         return list;
     }
 
@@ -55,15 +56,15 @@ public class PotionUtil {
         return PotionUtil.getCustomPotionEffects(stack.getTag());
     }
 
-    public static List<StatusEffectInstance> getCustomPotionEffects(@Nullable NbtCompound tag) {
+    public static List<StatusEffectInstance> getCustomPotionEffects(@Nullable NbtCompound nbt) {
         ArrayList<StatusEffectInstance> list = Lists.newArrayList();
-        PotionUtil.getCustomPotionEffects(tag, list);
+        PotionUtil.getCustomPotionEffects(nbt, list);
         return list;
     }
 
-    public static void getCustomPotionEffects(@Nullable NbtCompound tag, List<StatusEffectInstance> list) {
-        if (tag != null && tag.contains("CustomPotionEffects", NbtTypeIds.LIST)) {
-            NbtList nbtList = tag.getList("CustomPotionEffects", NbtTypeIds.COMPOUND);
+    public static void getCustomPotionEffects(@Nullable NbtCompound nbt, List<StatusEffectInstance> list) {
+        if (nbt != null && nbt.contains(CUSTOM_POTION_EFFECTS_KEY, 9)) {
+            NbtList nbtList = nbt.getList(CUSTOM_POTION_EFFECTS_KEY, 10);
             for (int i = 0; i < nbtList.size(); ++i) {
                 NbtCompound nbtCompound = nbtList.getCompound(i);
                 StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromNbt(nbtCompound);
@@ -75,8 +76,8 @@ public class PotionUtil {
 
     public static int getColor(ItemStack stack) {
         NbtCompound nbtCompound = stack.getTag();
-        if (nbtCompound != null && nbtCompound.contains("CustomPotionColor", NbtTypeIds.NUMBER)) {
-            return nbtCompound.getInt("CustomPotionColor");
+        if (nbtCompound != null && nbtCompound.contains(CUSTOM_POTION_COLOR_KEY, 99)) {
+            return nbtCompound.getInt(CUSTOM_POTION_COLOR_KEY);
         }
         return PotionUtil.getPotion(stack) == Potions.EMPTY ? 0xF800F8 : PotionUtil.getColor(PotionUtil.getPotionEffects(stack));
     }
@@ -120,15 +121,15 @@ public class PotionUtil {
         if (compound == null) {
             return Potions.EMPTY;
         }
-        return Potion.byId(compound.getString("Potion"));
+        return Potion.byId(compound.getString(POTION_KEY));
     }
 
     public static ItemStack setPotion(ItemStack stack, Potion potion) {
         Identifier identifier = Registry.POTION.getId(potion);
         if (potion == Potions.EMPTY) {
-            stack.removeSubTag("Potion");
+            stack.removeSubTag(POTION_KEY);
         } else {
-            stack.getOrCreateTag().putString("Potion", identifier.toString());
+            stack.getOrCreateTag().putString(POTION_KEY, identifier.toString());
         }
         return stack;
     }
@@ -138,15 +139,14 @@ public class PotionUtil {
             return stack;
         }
         NbtCompound nbtCompound = stack.getOrCreateTag();
-        NbtList nbtList = nbtCompound.getList("CustomPotionEffects", NbtTypeIds.LIST);
+        NbtList nbtList = nbtCompound.getList(CUSTOM_POTION_EFFECTS_KEY, 9);
         for (StatusEffectInstance statusEffectInstance : effects) {
             nbtList.add(statusEffectInstance.writeNbt(new NbtCompound()));
         }
-        nbtCompound.put("CustomPotionEffects", nbtList);
+        nbtCompound.put(CUSTOM_POTION_EFFECTS_KEY, nbtList);
         return stack;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static void buildTooltip(ItemStack stack, List<Text> list, float f) {
         List<StatusEffectInstance> list2 = PotionUtil.getPotionEffects(stack);
         ArrayList<Pair<EntityAttribute, EntityAttributeModifier>> list3 = Lists.newArrayList();

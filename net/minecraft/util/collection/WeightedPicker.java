@@ -16,9 +16,7 @@ public class WeightedPicker {
 
     public static int getWeightSum(List<? extends Entry> list) {
         long l = 0L;
-        int j = list.size();
-        for (int i = 0; i < j; ++i) {
-            Entry entry = list.get(i);
+        for (Entry entry : list) {
             l += (long)entry.weight;
         }
         if (l > Integer.MAX_VALUE) {
@@ -39,9 +37,7 @@ public class WeightedPicker {
     }
 
     public static <T extends Entry> Optional<T> getAt(List<T> list, int weightMark) {
-        int j = list.size();
-        for (int i = 0; i < j; ++i) {
-            Entry entry = (Entry)list.get(i);
+        for (Entry entry : list) {
             if ((weightMark -= entry.weight) >= 0) continue;
             return Optional.of(entry);
         }

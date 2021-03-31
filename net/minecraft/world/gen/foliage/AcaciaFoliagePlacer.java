@@ -6,11 +6,11 @@ package net.minecraft.world.gen.foliage;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
-import java.util.Set;
-import net.minecraft.util.math.BlockBox;
+import java.util.function.BiConsumer;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ModifiableTestableWorld;
-import net.minecraft.world.gen.UniformIntDistribution;
+import net.minecraft.util.math.intprovider.IntProvider;
+import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 import net.minecraft.world.gen.foliage.FoliagePlacerType;
@@ -19,8 +19,8 @@ public class AcaciaFoliagePlacer
 extends FoliagePlacer {
     public static final Codec<AcaciaFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> AcaciaFoliagePlacer.fillFoliagePlacerFields(instance).apply(instance, AcaciaFoliagePlacer::new));
 
-    public AcaciaFoliagePlacer(UniformIntDistribution uniformIntDistribution, UniformIntDistribution uniformIntDistribution2) {
-        super(uniformIntDistribution, uniformIntDistribution2);
+    public AcaciaFoliagePlacer(IntProvider intProvider, IntProvider intProvider2) {
+        super(intProvider, intProvider2);
     }
 
     @Override
@@ -29,12 +29,12 @@ extends FoliagePlacer {
     }
 
     @Override
-    protected void generate(ModifiableTestableWorld world, Random random, TreeFeatureConfig config, int trunkHeight, FoliagePlacer.TreeNode treeNode, int foliageHeight, int radius, Set<BlockPos> leaves, int offset, BlockBox box) {
+    protected void generate(TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, TreeFeatureConfig treeFeatureConfig, int i, FoliagePlacer.TreeNode treeNode, int radius, int j, int offset) {
         boolean bl = treeNode.isGiantTrunk();
         BlockPos blockPos = treeNode.getCenter().up(offset);
-        this.generateSquare(world, random, config, blockPos, radius + treeNode.getFoliageRadius(), leaves, -1 - foliageHeight, bl, box);
-        this.generateSquare(world, random, config, blockPos, radius - 1, leaves, -foliageHeight, bl, box);
-        this.generateSquare(world, random, config, blockPos, radius + treeNode.getFoliageRadius() - 1, leaves, 0, bl, box);
+        this.generateSquare(testableWorld, biConsumer, random, treeFeatureConfig, blockPos, j + treeNode.getFoliageRadius(), -1 - radius, bl);
+        this.generateSquare(testableWorld, biConsumer, random, treeFeatureConfig, blockPos, j - 1, -radius, bl);
+        this.generateSquare(testableWorld, biConsumer, random, treeFeatureConfig, blockPos, j + treeNode.getFoliageRadius() - 1, 0, bl);
     }
 
     @Override

@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.c2s.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.network.Packet;
@@ -18,6 +16,9 @@ import net.minecraft.util.math.Vec3i;
 
 public class UpdateStructureBlockC2SPacket
 implements Packet<ServerPlayPacketListener> {
+    private static final int IGNORE_ENTITIES_MASK = 1;
+    private static final int SHOW_AIR_MASK = 2;
+    private static final int SHOW_BOUNDING_BOX_MASK = 4;
     private final BlockPos pos;
     private final StructureBlockBlockEntity.Action action;
     private final StructureBlockMode mode;
@@ -33,14 +34,13 @@ implements Packet<ServerPlayPacketListener> {
     private final float integrity;
     private final long seed;
 
-    @Environment(value=EnvType.CLIENT)
-    public UpdateStructureBlockC2SPacket(BlockPos pos, StructureBlockBlockEntity.Action action, StructureBlockMode mode, String structureName, BlockPos offset, Vec3i vec3i, BlockMirror mirror, BlockRotation rotation, String metadata, boolean ignoreEntities, boolean showAir, boolean showBoundingBox, float integrity, long seed) {
+    public UpdateStructureBlockC2SPacket(BlockPos pos, StructureBlockBlockEntity.Action action, StructureBlockMode mode, String structureName, BlockPos offset, Vec3i size, BlockMirror mirror, BlockRotation rotation, String metadata, boolean ignoreEntities, boolean showAir, boolean showBoundingBox, float integrity, long seed) {
         this.pos = pos;
         this.action = action;
         this.mode = mode;
         this.structureName = structureName;
         this.offset = offset;
-        this.size = vec3i;
+        this.size = size;
         this.mirror = mirror;
         this.rotation = rotation;
         this.metadata = metadata;

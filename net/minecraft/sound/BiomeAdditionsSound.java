@@ -7,8 +7,6 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.sound.SoundEvent;
 
 /**
@@ -24,7 +22,6 @@ public class BiomeAdditionsSound {
         this.chance = chance;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public SoundEvent getSound() {
         return this.sound;
     }
@@ -32,7 +29,6 @@ public class BiomeAdditionsSound {
     /**
      * Returns the chance of this addition sound to play at any tick.
      */
-    @Environment(value=EnvType.CLIENT)
     public double getChance() {
         return this.chance;
     }

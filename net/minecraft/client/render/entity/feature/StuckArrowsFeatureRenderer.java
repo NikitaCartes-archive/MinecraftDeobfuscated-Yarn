@@ -22,8 +22,8 @@ public class StuckArrowsFeatureRenderer<T extends LivingEntity, M extends Player
 extends StuckObjectsFeatureRenderer<T, M> {
     private final EntityRenderDispatcher dispatcher;
 
-    public StuckArrowsFeatureRenderer(EntityRendererFactory.Context context, LivingEntityRenderer<T, M> livingEntityRenderer) {
-        super(livingEntityRenderer);
+    public StuckArrowsFeatureRenderer(EntityRendererFactory.Context context, LivingEntityRenderer<T, M> entityRenderer) {
+        super(entityRenderer);
         this.dispatcher = context.getRenderDispatcher();
     }
 

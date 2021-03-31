@@ -15,11 +15,16 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.tag.Tag;
 
 public class FollowMobTask
 extends Task<LivingEntity> {
     private final Predicate<LivingEntity> predicate;
     private final float maxDistanceSquared;
+
+    public FollowMobTask(Tag<EntityType<?>> tag, float f) {
+        this((LivingEntity livingEntity) -> livingEntity.getType().isIn(tag), f);
+    }
 
     public FollowMobTask(SpawnGroup spawnGroup, float maxDistance) {
         this((LivingEntity livingEntity) -> spawnGroup.equals(livingEntity.getType().getSpawnGroup()), maxDistance);

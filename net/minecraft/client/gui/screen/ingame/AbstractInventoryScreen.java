@@ -38,10 +38,10 @@ extends HandledScreen<T> {
 
     protected void applyStatusEffectOffset() {
         if (this.client.player.getStatusEffects().isEmpty()) {
-            this.x = (this.width - this.backgroundWidth) / 2;
+            this.field_2776 = (this.width - this.backgroundWidth) / 2;
             this.drawStatusEffects = false;
         } else {
-            this.x = 160 + (this.width - this.backgroundWidth - 200) / 2;
+            this.field_2776 = 160 + (this.width - this.backgroundWidth - 200) / 2;
             this.drawStatusEffects = true;
         }
     }
@@ -55,7 +55,7 @@ extends HandledScreen<T> {
     }
 
     private void drawStatusEffects(MatrixStack matrices) {
-        int i = this.x - 124;
+        int i = this.field_2776 - 124;
         Collection<StatusEffectInstance> collection = this.client.player.getStatusEffects();
         if (collection.isEmpty()) {
             return;
@@ -73,7 +73,7 @@ extends HandledScreen<T> {
 
     private void drawStatusEffectBackgrounds(MatrixStack matrices, int i, int j, Iterable<StatusEffectInstance> iterable) {
         RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
-        int k = this.y;
+        int k = this.field_2800;
         for (StatusEffectInstance statusEffectInstance : iterable) {
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             this.drawTexture(matrices, i, k, 0, 166, 140, 32);
@@ -83,7 +83,7 @@ extends HandledScreen<T> {
 
     private void drawStatusEffectSprites(MatrixStack matrices, int i, int j, Iterable<StatusEffectInstance> iterable) {
         StatusEffectSpriteManager statusEffectSpriteManager = this.client.getStatusEffectSpriteManager();
-        int k = this.y;
+        int k = this.field_2800;
         for (StatusEffectInstance statusEffectInstance : iterable) {
             StatusEffect statusEffect = statusEffectInstance.getEffectType();
             Sprite sprite = statusEffectSpriteManager.getSprite(statusEffect);
@@ -94,7 +94,7 @@ extends HandledScreen<T> {
     }
 
     private void drawStatusEffectDescriptions(MatrixStack matrices, int i, int j, Iterable<StatusEffectInstance> iterable) {
-        int k = this.y;
+        int k = this.field_2800;
         for (StatusEffectInstance statusEffectInstance : iterable) {
             String string = I18n.translate(statusEffectInstance.getEffectType().getTranslationKey(), new Object[0]);
             if (statusEffectInstance.getAmplifier() >= 1 && statusEffectInstance.getAmplifier() <= 9) {

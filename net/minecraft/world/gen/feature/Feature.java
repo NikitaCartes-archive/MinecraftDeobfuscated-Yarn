@@ -7,13 +7,14 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ModifiableWorld;
 import net.minecraft.world.TestableWorld;
@@ -199,7 +200,7 @@ public abstract class Feature<FC extends FeatureConfig> {
     }
 
     protected void setBlockState(ModifiableWorld world, BlockPos pos, BlockState state) {
-        world.setBlockState(pos, state, SetBlockStateFlags.DEFAULT);
+        world.setBlockState(pos, state, Block.NOTIFY_ALL);
     }
 
     public abstract boolean generate(FeatureContext<FC> var1);
@@ -223,7 +224,7 @@ public abstract class Feature<FC extends FeatureConfig> {
     public static boolean testAdjacentStates(Function<BlockPos, BlockState> posToState, BlockPos pos, Predicate<BlockState> predicate) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (Direction direction : Direction.values()) {
-            mutable.set(pos, direction);
+            mutable.set((Vec3i)pos, direction);
             if (!predicate.test(posToState.apply(mutable))) continue;
             return true;
         }

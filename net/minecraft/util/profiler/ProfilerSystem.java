@@ -16,8 +16,6 @@ import java.util.Map;
 import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiler.ProfileLocationInfo;
 import net.minecraft.util.profiler.ProfileResult;
@@ -128,7 +126,6 @@ implements ReadableProfiler {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void swap(Supplier<String> locationGetter) {
         this.pop();
         this.push(locationGetter);
@@ -158,9 +155,8 @@ implements ReadableProfiler {
 
     @Override
     @Nullable
-    @Environment(value=EnvType.CLIENT)
-    public LocatedInfo method_34696(String string) {
-        return this.locationInfos.get(string);
+    public LocatedInfo getInfo(String name) {
+        return this.locationInfos.get(name);
     }
 
     public static class LocatedInfo

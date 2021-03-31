@@ -4,8 +4,6 @@
 package net.minecraft.item;
 
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
@@ -34,6 +32,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class PotionItem
 extends Item {
+    private static final int MAX_USE_TIME = 32;
+
     public PotionItem(Item.Settings settings) {
         super(settings);
     }
@@ -99,7 +99,6 @@ extends Item {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         PotionUtil.buildTooltip(stack, tooltip, 1.0f);
     }

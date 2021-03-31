@@ -24,7 +24,7 @@ extends ForwardingList<ItemStack> {
         return this.delegate;
     }
 
-    public NbtList toListTag() {
+    public NbtList toNbtList() {
         NbtList nbtList = new NbtList();
         for (ItemStack itemStack : this.delegate()) {
             nbtList.add(itemStack.writeNbt(new NbtCompound()));
@@ -32,10 +32,10 @@ extends ForwardingList<ItemStack> {
         return nbtList;
     }
 
-    public void fromListTag(NbtList tag) {
-        Collection list = this.delegate();
-        for (int i = 0; i < list.size(); ++i) {
-            list.set(i, ItemStack.fromNbt(tag.getCompound(i)));
+    public void readNbtList(NbtList list) {
+        Collection list2 = this.delegate();
+        for (int i = 0; i < list2.size(); ++i) {
+            list2.set(i, ItemStack.fromNbt(list.getCompound(i)));
         }
     }
 

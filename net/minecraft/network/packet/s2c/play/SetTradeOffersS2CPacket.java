@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -52,32 +50,26 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onSetTradeOffers(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getSyncId() {
         return this.syncId;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public TradeOfferList getOffers() {
         return this.recipes;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getLevelProgress() {
         return this.levelProgress;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getExperience() {
         return this.experience;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isLeveled() {
         return this.leveled;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isRefreshable() {
         return this.refreshable;
     }

@@ -98,6 +98,9 @@ public class RecipeBookGhostSlots {
 
         public ItemStack getCurrentItemStack() {
             ItemStack[] itemStacks = this.ingredient.getMatchingStacksClient();
+            if (itemStacks.length == 0) {
+                return ItemStack.EMPTY;
+            }
             return itemStacks[MathHelper.floor(RecipeBookGhostSlots.this.time / 30.0f) % itemStacks.length];
         }
     }

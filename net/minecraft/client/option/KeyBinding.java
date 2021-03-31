@@ -23,14 +23,21 @@ implements Comparable<KeyBinding> {
     private static final Map<String, KeyBinding> keysById = Maps.newHashMap();
     private static final Map<InputUtil.Key, KeyBinding> keyToBindings = Maps.newHashMap();
     private static final Set<String> keyCategories = Sets.newHashSet();
+    public static final String field_32136 = "key.categories.movement";
+    public static final String field_32137 = "key.categories.misc";
+    public static final String field_32138 = "key.categories.multiplayer";
+    public static final String field_32139 = "key.categories.gameplay";
+    public static final String field_32140 = "key.categories.inventory";
+    public static final String field_32141 = "key.categories.ui";
+    public static final String field_32142 = "key.categories.creative";
     private static final Map<String, Integer> categoryOrderMap = Util.make(Maps.newHashMap(), hashMap -> {
-        hashMap.put("key.categories.movement", 1);
-        hashMap.put("key.categories.gameplay", 2);
-        hashMap.put("key.categories.inventory", 3);
-        hashMap.put("key.categories.creative", 4);
-        hashMap.put("key.categories.multiplayer", 5);
-        hashMap.put("key.categories.ui", 6);
-        hashMap.put("key.categories.misc", 7);
+        hashMap.put(field_32136, 1);
+        hashMap.put(field_32139, 2);
+        hashMap.put(field_32140, 3);
+        hashMap.put(field_32142, 4);
+        hashMap.put(field_32138, 5);
+        hashMap.put(field_32141, 6);
+        hashMap.put(field_32137, 7);
     });
     private final String translationKey;
     private final InputUtil.Key defaultKey;

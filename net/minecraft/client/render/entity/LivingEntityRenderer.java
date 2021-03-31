@@ -40,6 +40,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 extends EntityRenderer<T>
 implements FeatureRendererContext<T, M> {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final float field_32939 = 0.1f;
     protected M model;
     protected final List<FeatureRenderer<T, M>> features = Lists.newArrayList();
 
@@ -182,7 +183,7 @@ implements FeatureRendererContext<T, M> {
      * husk, or piglin are undergoing conversion.
      */
     protected boolean isShaking(T entity) {
-        return false;
+        return ((Entity)entity).isFreezing();
     }
 
     protected void setupTransforms(T entity, MatrixStack matrices, float animationProgress, float bodyYaw, float tickDelta) {

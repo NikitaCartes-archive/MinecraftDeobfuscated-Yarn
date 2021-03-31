@@ -54,6 +54,10 @@ extends AbstractCriterion<Conditions> {
             return new Conditions(EntityPredicate.Extended.EMPTY, ItemPredicate.ANY);
         }
 
+        public static Conditions predicate(ItemPredicate predicate) {
+            return new Conditions(EntityPredicate.Extended.EMPTY, predicate);
+        }
+
         public static Conditions item(ItemConvertible item) {
             return new Conditions(EntityPredicate.Extended.EMPTY, new ItemPredicate(null, item.asItem(), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, EnchantmentPredicate.ARRAY_OF_ANY, EnchantmentPredicate.ARRAY_OF_ANY, null, NbtPredicate.ANY));
         }

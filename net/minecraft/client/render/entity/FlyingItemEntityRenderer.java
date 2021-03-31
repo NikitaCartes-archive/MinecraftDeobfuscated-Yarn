@@ -22,6 +22,7 @@ import net.minecraft.util.math.Vec3f;
 @Environment(value=EnvType.CLIENT)
 public class FlyingItemEntityRenderer<T extends Entity>
 extends EntityRenderer<T> {
+    private static final float field_32943 = 12.25f;
     private final ItemRenderer itemRenderer;
     private final float scale;
     private final boolean lit;

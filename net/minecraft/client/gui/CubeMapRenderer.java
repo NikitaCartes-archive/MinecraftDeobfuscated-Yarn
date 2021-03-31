@@ -22,6 +22,7 @@ import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class CubeMapRenderer {
+    private static final int field_32680 = 6;
     private final Identifier[] faces = new Identifier[6];
 
     public CubeMapRenderer(Identifier faces) {

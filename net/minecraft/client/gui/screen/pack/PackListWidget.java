@@ -62,6 +62,15 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
     @Environment(value=EnvType.CLIENT)
     public static class ResourcePackEntry
     extends AlwaysSelectedEntryListWidget.Entry<ResourcePackEntry> {
+        private static final int field_32397 = 0;
+        private static final int field_32398 = 32;
+        private static final int field_32399 = 64;
+        private static final int field_32400 = 96;
+        private static final int field_32401 = 0;
+        private static final int field_32402 = 32;
+        private static final int field_32403 = 157;
+        private static final int field_32404 = 157;
+        private static final String field_32405 = "...";
         private final PackListWidget widget;
         protected final MinecraftClient client;
         protected final Screen screen;
@@ -85,7 +94,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
         private static OrderedText trimTextToWidth(MinecraftClient client, Text text) {
             int i = client.textRenderer.getWidth(text);
             if (i > 157) {
-                StringVisitable stringVisitable = StringVisitable.concat(client.textRenderer.trimToWidth(text, 157 - client.textRenderer.getWidth("...")), StringVisitable.plain("..."));
+                StringVisitable stringVisitable = StringVisitable.concat(client.textRenderer.trimToWidth(text, 157 - client.textRenderer.getWidth(field_32405)), StringVisitable.plain(field_32405));
                 return Language.getInstance().reorder(stringVisitable);
             }
             return text.asOrderedText();

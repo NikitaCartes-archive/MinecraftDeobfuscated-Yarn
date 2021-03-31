@@ -14,9 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -52,6 +49,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class Explosion {
     private static final ExplosionBehavior DEFAULT_BEHAVIOR = new ExplosionBehavior();
+    private static final int field_30960 = 16;
     private final boolean createFire;
     private final DestructionType destructionType;
     private final Random random = new Random();
@@ -67,18 +65,19 @@ public class Explosion {
     private final List<BlockPos> affectedBlocks = Lists.newArrayList();
     private final Map<PlayerEntity, Vec3d> affectedPlayers = Maps.newHashMap();
 
-    @Environment(value=EnvType.CLIENT)
+    public Explosion(World world, @Nullable Entity entity, double x, double y, double z, float power) {
+        this(world, entity, x, y, z, power, false, DestructionType.DESTROY);
+    }
+
     public Explosion(World world, @Nullable Entity entity, double x, double y, double z, float power, List<BlockPos> affectedBlocks) {
         this(world, entity, x, y, z, power, false, DestructionType.DESTROY, affectedBlocks);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Explosion(World world, @Nullable Entity entity, double x, double y, double z, float power, boolean createFire, DestructionType destructionType, List<BlockPos> affectedBlocks) {
         this(world, entity, x, y, z, power, createFire, destructionType);
         this.affectedBlocks.addAll(affectedBlocks);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Explosion(World world, @Nullable Entity entity, double x, double y, double z, float power, boolean createFire, DestructionType destructionType) {
         this(world, entity, null, null, x, y, z, power, createFire, destructionType);
     }
@@ -242,7 +241,7 @@ public class Explosion {
                     }
                     blockState.getDroppedStacks(builder).forEach(stack -> Explosion.tryMergeStack(objectArrayList, stack, blockPos2));
                 }
-                this.world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT);
+                this.world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
                 block.onDestroyedByExplosion(this.world, blockPos, this);
                 this.world.getProfiler().pop();
             }

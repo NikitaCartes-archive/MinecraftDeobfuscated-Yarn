@@ -7,6 +7,7 @@ import com.mojang.serialization.Codec;
 import java.util.BitSet;
 import java.util.Random;
 import java.util.function.Function;
+import net.minecraft.class_6108;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -14,47 +15,46 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.carver.Carver;
-import net.minecraft.world.gen.carver.CarverConfig;
 import net.minecraft.world.gen.carver.CarverContext;
 
 public class CaveCarver
-extends Carver<CarverConfig> {
-    public CaveCarver(Codec<CarverConfig> codec) {
+extends Carver<class_6108> {
+    public CaveCarver(Codec<class_6108> codec) {
         super(codec);
     }
 
     @Override
-    public boolean shouldCarve(CarverConfig config, Random random) {
-        return random.nextFloat() <= config.probability;
+    public boolean shouldCarve(class_6108 arg, Random random) {
+        return random.nextFloat() <= arg.probability;
     }
 
     @Override
-    public boolean carve(CarverContext context2, CarverConfig config, Chunk chunk, Function<BlockPos, Biome> posToBiome, Random random, int seaLevel, ChunkPos pos, BitSet carvingMask) {
-        int i = ChunkSectionPos.getBlockCoord(this.getBranchFactor() * 2 - 1);
-        int j = random.nextInt(random.nextInt(random.nextInt(this.getMaxCaveCount()) + 1) + 1);
-        for (int k = 0; k < j; ++k) {
-            float o;
-            double d = pos.getOffsetX(random.nextInt(16));
-            double e = this.getCaveY(context2, random);
-            double f = pos.getOffsetZ(random.nextInt(16));
-            double g = MathHelper.nextBetween(random, 0.3f, 1.8f);
-            double h = MathHelper.nextBetween(random, 0.3f, 1.8f);
-            double l = MathHelper.nextBetween(random, -1.0f, 0.0f);
-            Carver.SkipPredicate skipPredicate = (context, scaledRelativeX, scaledRelativeY, scaledRelativeZ, y) -> CaveCarver.isPositionExcluded(scaledRelativeX, scaledRelativeY, scaledRelativeZ, l);
-            int m = 1;
+    public boolean carve(CarverContext carverContext, class_6108 arg, Chunk chunk, Function<BlockPos, Biome> function, Random random, int i, ChunkPos chunkPos, BitSet bitSet) {
+        int j = ChunkSectionPos.getBlockCoord(this.getBranchFactor() * 2 - 1);
+        int k = random.nextInt(random.nextInt(random.nextInt(this.getMaxCaveCount()) + 1) + 1);
+        for (int l = 0; l < k; ++l) {
+            float p;
+            double d = chunkPos.getOffsetX(random.nextInt(16));
+            double e = arg.field_31488.method_35391(random, carverContext);
+            double f = chunkPos.getOffsetZ(random.nextInt(16));
+            double g = arg.field_31492.get(random);
+            double h = arg.field_31493.get(random);
+            double m = arg.field_31494.get(random);
+            Carver.SkipPredicate skipPredicate = (context, scaledRelativeX, scaledRelativeY, scaledRelativeZ, y) -> CaveCarver.isPositionExcluded(scaledRelativeX, scaledRelativeY, scaledRelativeZ, m);
+            int n = 1;
             if (random.nextInt(4) == 0) {
-                double n = MathHelper.nextBetween(random, 0.1f, 0.9f);
-                o = 1.0f + random.nextFloat() * 6.0f;
-                this.carveCave(context2, config, chunk, posToBiome, random.nextLong(), seaLevel, d, e, f, o, n, carvingMask, skipPredicate);
-                m += random.nextInt(4);
+                double o = arg.field_31489.get(random);
+                p = 1.0f + random.nextFloat() * 6.0f;
+                this.carveCave(carverContext, arg, chunk, function, random.nextLong(), i, d, e, f, p, o, bitSet, skipPredicate);
+                n += random.nextInt(4);
             }
-            for (int p = 0; p < m; ++p) {
-                float q = random.nextFloat() * ((float)Math.PI * 2);
-                o = (random.nextFloat() - 0.5f) / 4.0f;
-                float r = this.getTunnelSystemWidth(random);
-                int s = i - random.nextInt(i / 4);
-                boolean t = false;
-                this.carveTunnels(context2, config, chunk, posToBiome, random.nextLong(), seaLevel, d, e, f, g, h, r, q, o, 0, s, this.getTunnelSystemHeightWidthRatio(), carvingMask, skipPredicate);
+            for (int q = 0; q < n; ++q) {
+                float r = random.nextFloat() * ((float)Math.PI * 2);
+                p = (random.nextFloat() - 0.5f) / 4.0f;
+                float s = this.getTunnelSystemWidth(random);
+                int t = j - random.nextInt(j / 4);
+                boolean u = false;
+                this.carveTunnels(carverContext, arg, chunk, function, random.nextLong(), i, d, e, f, g, h, s, r, p, 0, t, this.getTunnelSystemHeightWidthRatio(), bitSet, skipPredicate);
             }
         }
         return true;
@@ -76,22 +76,13 @@ extends Carver<CarverConfig> {
         return 1.0;
     }
 
-    protected int getCaveY(CarverContext context, Random random) {
-        int i = context.getMinY() + 8;
-        int j = 126;
-        if (i > 126) {
-            return i;
-        }
-        return MathHelper.nextBetween(random, i, 126);
-    }
-
-    protected void carveCave(CarverContext context, CarverConfig config, Chunk chunk, Function<BlockPos, Biome> posToBiome, long seed, int seaLevel, double x, double y, double z, float yaw, double yawPitchRatio, BitSet carvingMask, Carver.SkipPredicate skipPredicate) {
+    protected void carveCave(CarverContext context, class_6108 config, Chunk chunk, Function<BlockPos, Biome> posToBiome, long seed, int seaLevel, double x, double y, double z, float yaw, double yawPitchRatio, BitSet carvingMask, Carver.SkipPredicate skipPredicate) {
         double d = 1.5 + (double)(MathHelper.sin(1.5707964f) * yaw);
         double e = d * yawPitchRatio;
         this.carveRegion(context, config, chunk, posToBiome, seed, seaLevel, x + 1.0, y, z, d, e, carvingMask, skipPredicate);
     }
 
-    protected void carveTunnels(CarverContext context, CarverConfig config, Chunk chunk, Function<BlockPos, Biome> posToBiome, long seed, int seaLevel, double x, double y, double z, double horizontalScale, double verticalScale, float width, float yaw, float pitch, int branchStartIndex, int branchCount, double yawPitchRatio, BitSet carvingMask, Carver.SkipPredicate skipPredicate) {
+    protected void carveTunnels(CarverContext context, class_6108 config, Chunk chunk, Function<BlockPos, Biome> posToBiome, long seed, int seaLevel, double x, double y, double z, double horizontalScale, double verticalScale, float width, float yaw, float pitch, int branchStartIndex, int branchCount, double yawPitchRatio, BitSet carvingMask, Carver.SkipPredicate skipPredicate) {
         Random random = new Random(seed);
         int i = random.nextInt(branchCount / 2) + branchCount / 4;
         boolean bl = random.nextInt(6) == 0;

@@ -10,14 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextVisitFactory;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
 
-@Environment(value=EnvType.CLIENT)
 public class TextReorderingProcessor {
     private final String string;
     private final List<Style> styles;
@@ -54,6 +51,10 @@ public class TextReorderingProcessor {
             list.add(reverse ? OrderedText.styledStringMapped(string2, style, this.reverser) : OrderedText.styledString(string2, style));
         }
         return reverse ? Lists.reverse(list) : list;
+    }
+
+    public static TextReorderingProcessor method_36144(StringVisitable stringVisitable) {
+        return TextReorderingProcessor.create(stringVisitable, i -> i, string -> string);
     }
 
     public static TextReorderingProcessor create(StringVisitable visitable, Int2IntFunction reverser, UnaryOperator<String> unaryOperator) {

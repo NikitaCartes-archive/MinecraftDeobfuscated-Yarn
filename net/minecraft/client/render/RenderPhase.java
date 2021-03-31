@@ -25,6 +25,7 @@ import org.apache.commons.lang3.tuple.Triple;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class RenderPhase {
+    private static final float field_32771 = 0.99975586f;
     protected final String name;
     private final Runnable beginAction;
     private final Runnable endAction;

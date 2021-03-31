@@ -3,8 +3,6 @@
  */
 package net.minecraft.server;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
@@ -46,7 +44,6 @@ implements WorldGenerationProgressListener {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void start() {
     }
 

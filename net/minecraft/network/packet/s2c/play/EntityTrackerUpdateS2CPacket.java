@@ -4,8 +4,6 @@
 package net.minecraft.network.packet.s2c.play;
 
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -45,12 +43,10 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     public List<DataTracker.Entry<?>> getTrackedValues() {
         return this.trackedValues;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int id() {
         return this.id;
     }

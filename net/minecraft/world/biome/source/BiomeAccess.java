@@ -4,8 +4,6 @@
 package net.minecraft.world.biome.source;
 
 import com.google.common.hash.Hashing;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -38,7 +36,6 @@ public class BiomeAccess {
         return this.type.getBiome(this.seed, pos.getX(), pos.getY(), pos.getZ(), this.storage);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Biome getBiomeForNoiseGen(double x, double y, double z) {
         int i = BiomeCoords.fromBlock(MathHelper.floor(x));
         int j = BiomeCoords.fromBlock(MathHelper.floor(y));
@@ -46,7 +43,6 @@ public class BiomeAccess {
         return this.getBiomeForNoiseGen(i, j, k);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Biome getBiomeForNoiseGen(BlockPos pos) {
         int i = BiomeCoords.fromBlock(pos.getX());
         int j = BiomeCoords.fromBlock(pos.getY());
@@ -54,7 +50,6 @@ public class BiomeAccess {
         return this.getBiomeForNoiseGen(i, j, k);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
         return this.storage.getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
     }

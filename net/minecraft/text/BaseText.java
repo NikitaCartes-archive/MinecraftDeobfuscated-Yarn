@@ -6,8 +6,6 @@ package net.minecraft.text;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Objects;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
@@ -20,7 +18,6 @@ implements MutableText {
     protected final List<Text> siblings = Lists.newArrayList();
     private OrderedText orderedText = OrderedText.EMPTY;
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     private Language previousLanguage;
     private Style style = Style.EMPTY;
 
@@ -63,7 +60,6 @@ implements MutableText {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public OrderedText asOrderedText() {
         Language language = Language.getInstance();
         if (this.previousLanguage != language) {

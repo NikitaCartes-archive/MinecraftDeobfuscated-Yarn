@@ -5,8 +5,6 @@ package net.minecraft.entity.mob;
 
 import java.util.List;
 import java.util.function.Predicate;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
@@ -55,6 +53,14 @@ import org.jetbrains.annotations.Nullable;
 public class RavagerEntity
 extends RaiderEntity {
     private static final Predicate<Entity> IS_NOT_RAVAGER = entity -> entity.isAlive() && !(entity instanceof RavagerEntity);
+    private static final double field_30480 = 0.3;
+    private static final double field_30481 = 0.35;
+    private static final int field_30482 = 8356754;
+    private static final double field_30483 = 0.5725490196078431;
+    private static final double field_30484 = 0.5137254901960784;
+    private static final double field_30485 = 0.4980392156862745;
+    private static final int field_30486 = 10;
+    public static final int field_30479 = 40;
     private int attackTick;
     private int stunTick;
     private int roarTick;
@@ -94,19 +100,19 @@ extends RaiderEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
-        tag.putInt("AttackTick", this.attackTick);
-        tag.putInt("StunTick", this.stunTick);
-        tag.putInt("RoarTick", this.roarTick);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putInt("AttackTick", this.attackTick);
+        nbt.putInt("StunTick", this.stunTick);
+        nbt.putInt("RoarTick", this.roarTick);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        this.attackTick = tag.getInt("AttackTick");
-        this.stunTick = tag.getInt("StunTick");
-        this.roarTick = tag.getInt("RoarTick");
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.attackTick = nbt.getInt("AttackTick");
+        this.stunTick = nbt.getInt("StunTick");
+        this.roarTick = nbt.getInt("RoarTick");
     }
 
     @Override
@@ -256,7 +262,6 @@ extends RaiderEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void handleStatus(byte status) {
         if (status == 4) {
             this.attackTick = 10;
@@ -267,17 +272,14 @@ extends RaiderEntity {
         super.handleStatus(status);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getAttackTick() {
         return this.attackTick;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getStunTick() {
         return this.stunTick;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getRoarTick() {
         return this.roarTick;
     }

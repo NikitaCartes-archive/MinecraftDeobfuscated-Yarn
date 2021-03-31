@@ -25,6 +25,9 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class PlayerHeldItemFeatureRenderer<T extends PlayerEntity, M extends EntityModel<T> & ModelWithHead>
 extends HeldItemFeatureRenderer<T, M> {
+    private static final float HEAD_YAW = -0.5235988f;
+    private static final float HEAD_ROLL = 1.5707964f;
+
     public PlayerHeldItemFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
         super(featureRendererContext);
     }

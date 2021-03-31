@@ -33,6 +33,8 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class SocialInteractionsPlayerListEntry
 extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
+    private static final int field_32418 = 10;
+    private static final int field_32419 = 150;
     private final MinecraftClient client;
     private final List<Element> buttons;
     private final UUID uuid;
@@ -51,6 +53,11 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
     private static final Text OFFLINE_TEXT = new TranslatableText("gui.socialInteractions.status_offline").formatted(Formatting.ITALIC);
     private static final Text HIDDEN_OFFLINE_TEXT = new TranslatableText("gui.socialInteractions.status_hidden_offline").formatted(Formatting.ITALIC);
     private static final Text BLOCKED_OFFLINE_TEXT = new TranslatableText("gui.socialInteractions.status_blocked_offline").formatted(Formatting.ITALIC);
+    private static final int field_32420 = 24;
+    private static final int field_32421 = 4;
+    private static final int field_32422 = 20;
+    private static final int field_32416 = 0;
+    private static final int field_32417 = 38;
     public static final int BLACK_COLOR = BackgroundHelper.ColorMixer.getArgb(190, 0, 0, 0);
     public static final int GRAY_COLOR = BackgroundHelper.ColorMixer.getArgb(255, 74, 74, 74);
     public static final int DARK_GRAY_COLOR = BackgroundHelper.ColorMixer.getArgb(255, 48, 48, 48);

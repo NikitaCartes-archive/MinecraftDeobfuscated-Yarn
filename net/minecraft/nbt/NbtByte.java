@@ -6,7 +6,6 @@ package net.minecraft.nbt;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.nbt.AbstractNbtNumber;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtTagSizeTracker;
@@ -18,6 +17,7 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
  */
 public class NbtByte
 extends AbstractNbtNumber {
+    private static final int field_33189 = 72;
     public static final NbtType<NbtByte> TYPE = new NbtType<NbtByte>(){
 
         @Override
@@ -69,7 +69,7 @@ extends AbstractNbtNumber {
 
     @Override
     public byte getType() {
-        return (byte)NbtTypeIds.BYTE;
+        return 1;
     }
 
     public NbtType<NbtByte> getNbtType() {
@@ -139,6 +139,9 @@ extends AbstractNbtNumber {
 
     static class Cache {
         private static final NbtByte[] VALUES = new NbtByte[256];
+
+        private Cache() {
+        }
 
         static {
             for (int i = 0; i < VALUES.length; ++i) {

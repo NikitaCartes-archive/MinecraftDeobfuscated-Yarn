@@ -14,6 +14,7 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSyntaxException;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -26,6 +27,7 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.function.ConditionalLootFunction;
+import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.loot.provider.number.LootNumberProvider;
@@ -51,7 +53,7 @@ extends ConditionalLootFunction {
 
     @Override
     public Set<LootContextParameter<?>> getRequiredParameters() {
-        return this.attributes.stream().flatMap(attribute -> ((Attribute)attribute).amountRange.getRequiredParameters().stream()).collect(ImmutableSet.toImmutableSet());
+        return this.attributes.stream().flatMap(attribute -> ((Attribute)attribute).amount.getRequiredParameters().stream()).collect(ImmutableSet.toImmutableSet());
     }
 
     @Override
@@ -63,25 +65,33 @@ extends ConditionalLootFunction {
                 uUID = UUID.randomUUID();
             }
             EquipmentSlot equipmentSlot = Util.getRandom(attribute.slots, random);
-            stack.addAttributeModifier(attribute.attribute, new EntityAttributeModifier(uUID, attribute.name, (double)attribute.amountRange.nextFloat(context), attribute.operation), equipmentSlot);
+            stack.addAttributeModifier(attribute.attribute, new EntityAttributeModifier(uUID, attribute.name, (double)attribute.amount.nextFloat(context), attribute.operation), equipmentSlot);
         }
         return stack;
+    }
+
+    public static AttributeBuilder create(String name, EntityAttribute attribute, EntityAttributeModifier.Operation operation, LootNumberProvider amountRange) {
+        return new AttributeBuilder(name, attribute, operation, amountRange);
+    }
+
+    public static Builder create() {
+        return new Builder();
     }
 
     static class Attribute {
         private final String name;
         private final EntityAttribute attribute;
         private final EntityAttributeModifier.Operation operation;
-        private final LootNumberProvider amountRange;
+        private final LootNumberProvider amount;
         @Nullable
         private final UUID id;
         private final EquipmentSlot[] slots;
 
-        private Attribute(String name, EntityAttribute attribute, EntityAttributeModifier.Operation operation, LootNumberProvider amountRange, EquipmentSlot[] slots, @Nullable UUID id) {
+        private Attribute(String name, EntityAttribute attribute, EntityAttributeModifier.Operation operation, LootNumberProvider amount, EquipmentSlot[] slots, @Nullable UUID id) {
             this.name = name;
             this.attribute = attribute;
             this.operation = operation;
-            this.amountRange = amountRange;
+            this.amount = amount;
             this.id = id;
             this.slots = slots;
         }
@@ -91,7 +101,7 @@ extends ConditionalLootFunction {
             jsonObject.addProperty("name", this.name);
             jsonObject.addProperty("attribute", Registry.ATTRIBUTE.getId(this.attribute).toString());
             jsonObject.addProperty("operation", Attribute.getName(this.operation));
-            jsonObject.add("amount", context.serialize(this.amountRange));
+            jsonObject.add("amount", context.serialize(this.amount));
             if (this.id != null) {
                 jsonObject.addProperty("id", this.id.toString());
             }
@@ -203,6 +213,62 @@ extends ConditionalLootFunction {
         @Override
         public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
             return this.fromJson(json, context, conditions);
+        }
+    }
+
+    public static class Builder
+    extends ConditionalLootFunction.Builder<Builder> {
+        private final List<Attribute> attributes = Lists.newArrayList();
+
+        @Override
+        protected Builder getThisBuilder() {
+            return this;
+        }
+
+        public Builder attribute(AttributeBuilder attribute) {
+            this.attributes.add(attribute.build());
+            return this;
+        }
+
+        @Override
+        public LootFunction build() {
+            return new SetAttributesLootFunction(this.getConditions(), this.attributes);
+        }
+
+        @Override
+        protected /* synthetic */ ConditionalLootFunction.Builder getThisBuilder() {
+            return this.getThisBuilder();
+        }
+    }
+
+    public static class AttributeBuilder {
+        private final String name;
+        private final EntityAttribute attribute;
+        private final EntityAttributeModifier.Operation operation;
+        private final LootNumberProvider amount;
+        @Nullable
+        private UUID uuid;
+        private final Set<EquipmentSlot> slots = EnumSet.noneOf(EquipmentSlot.class);
+
+        public AttributeBuilder(String name, EntityAttribute attribute, EntityAttributeModifier.Operation operation, LootNumberProvider amount) {
+            this.name = name;
+            this.attribute = attribute;
+            this.operation = operation;
+            this.amount = amount;
+        }
+
+        public AttributeBuilder slot(EquipmentSlot slot) {
+            this.slots.add(slot);
+            return this;
+        }
+
+        public AttributeBuilder uuid(UUID uuid) {
+            this.uuid = uuid;
+            return this;
+        }
+
+        public Attribute build() {
+            return new Attribute(this.name, this.attribute, this.operation, this.amount, this.slots.toArray(new EquipmentSlot[0]), this.uuid);
         }
     }
 }

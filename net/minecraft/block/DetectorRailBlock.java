@@ -6,7 +6,6 @@ package net.minecraft.block;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.Block;
@@ -37,6 +36,7 @@ public class DetectorRailBlock
 extends AbstractRailBlock {
     public static final EnumProperty<RailShape> SHAPE = Properties.STRAIGHT_RAIL_SHAPE;
     public static final BooleanProperty POWERED = Properties.POWERED;
+    private static final int field_31081 = 20;
 
     public DetectorRailBlock(AbstractBlock.Settings settings) {
         super(true, settings);
@@ -93,7 +93,7 @@ extends AbstractRailBlock {
         }
         if (bl2 && !bl) {
             blockState = (BlockState)state.with(POWERED, true);
-            world.setBlockState(pos, blockState, SetBlockStateFlags.DEFAULT);
+            world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
             this.updateNearbyRails(world, pos, blockState, true);
             world.updateNeighborsAlways(pos, this);
             world.updateNeighborsAlways(pos.down(), this);
@@ -101,7 +101,7 @@ extends AbstractRailBlock {
         }
         if (!bl2 && bl) {
             blockState = (BlockState)state.with(POWERED, false);
-            world.setBlockState(pos, blockState, SetBlockStateFlags.DEFAULT);
+            world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
             this.updateNearbyRails(world, pos, blockState, false);
             world.updateNeighborsAlways(pos, this);
             world.updateNeighborsAlways(pos.down(), this);

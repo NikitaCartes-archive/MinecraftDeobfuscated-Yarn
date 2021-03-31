@@ -4,7 +4,6 @@
 package net.minecraft.scoreboard;
 
 import java.util.Collection;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
@@ -20,30 +19,31 @@ import net.minecraft.world.PersistentState;
 
 public class ScoreboardState
 extends PersistentState {
+    public static final String field_31893 = "scoreboard";
     private final Scoreboard scoreboard;
 
     public ScoreboardState(Scoreboard scoreboard) {
         this.scoreboard = scoreboard;
     }
 
-    public ScoreboardState readNbt(NbtCompound tag) {
-        this.readObjectivesFromNbt(tag.getList("Objectives", NbtTypeIds.COMPOUND));
-        this.scoreboard.readNbt(tag.getList("PlayerScores", NbtTypeIds.COMPOUND));
-        if (tag.contains("DisplaySlots", NbtTypeIds.COMPOUND)) {
-            this.readDisplaySlotsFromNbt(tag.getCompound("DisplaySlots"));
+    public ScoreboardState readNbt(NbtCompound nbt) {
+        this.readObjectivesNbt(nbt.getList("Objectives", 10));
+        this.scoreboard.readNbt(nbt.getList("PlayerScores", 10));
+        if (nbt.contains("DisplaySlots", 10)) {
+            this.readDisplaySlotsNbt(nbt.getCompound("DisplaySlots"));
         }
-        if (tag.contains("Teams", NbtTypeIds.LIST)) {
-            this.readTeamsFromNbt(tag.getList("Teams", NbtTypeIds.COMPOUND));
+        if (nbt.contains("Teams", 9)) {
+            this.readTeamsNbt(nbt.getList("Teams", 10));
         }
         return this;
     }
 
-    private void readTeamsFromNbt(NbtList tag) {
-        for (int i = 0; i < tag.size(); ++i) {
+    private void readTeamsNbt(NbtList nbt) {
+        for (int i = 0; i < nbt.size(); ++i) {
             AbstractTeam.CollisionRule collisionRule;
             AbstractTeam.VisibilityRule visibilityRule;
             MutableText text2;
-            NbtCompound nbtCompound = tag.getCompound(i);
+            NbtCompound nbtCompound = nbt.getCompound(i);
             String string = nbtCompound.getString("Name");
             if (string.length() > 16) {
                 string = string.substring(0, 16);
@@ -53,52 +53,52 @@ extends PersistentState {
             if (text != null) {
                 team.setDisplayName(text);
             }
-            if (nbtCompound.contains("TeamColor", NbtTypeIds.STRING)) {
+            if (nbtCompound.contains("TeamColor", 8)) {
                 team.setColor(Formatting.byName(nbtCompound.getString("TeamColor")));
             }
-            if (nbtCompound.contains("AllowFriendlyFire", NbtTypeIds.NUMBER)) {
+            if (nbtCompound.contains("AllowFriendlyFire", 99)) {
                 team.setFriendlyFireAllowed(nbtCompound.getBoolean("AllowFriendlyFire"));
             }
-            if (nbtCompound.contains("SeeFriendlyInvisibles", NbtTypeIds.NUMBER)) {
+            if (nbtCompound.contains("SeeFriendlyInvisibles", 99)) {
                 team.setShowFriendlyInvisibles(nbtCompound.getBoolean("SeeFriendlyInvisibles"));
             }
-            if (nbtCompound.contains("MemberNamePrefix", NbtTypeIds.STRING) && (text2 = Text.Serializer.fromJson(nbtCompound.getString("MemberNamePrefix"))) != null) {
+            if (nbtCompound.contains("MemberNamePrefix", 8) && (text2 = Text.Serializer.fromJson(nbtCompound.getString("MemberNamePrefix"))) != null) {
                 team.setPrefix(text2);
             }
-            if (nbtCompound.contains("MemberNameSuffix", NbtTypeIds.STRING) && (text2 = Text.Serializer.fromJson(nbtCompound.getString("MemberNameSuffix"))) != null) {
+            if (nbtCompound.contains("MemberNameSuffix", 8) && (text2 = Text.Serializer.fromJson(nbtCompound.getString("MemberNameSuffix"))) != null) {
                 team.setSuffix(text2);
             }
-            if (nbtCompound.contains("NameTagVisibility", NbtTypeIds.STRING) && (visibilityRule = AbstractTeam.VisibilityRule.getRule(nbtCompound.getString("NameTagVisibility"))) != null) {
+            if (nbtCompound.contains("NameTagVisibility", 8) && (visibilityRule = AbstractTeam.VisibilityRule.getRule(nbtCompound.getString("NameTagVisibility"))) != null) {
                 team.setNameTagVisibilityRule(visibilityRule);
             }
-            if (nbtCompound.contains("DeathMessageVisibility", NbtTypeIds.STRING) && (visibilityRule = AbstractTeam.VisibilityRule.getRule(nbtCompound.getString("DeathMessageVisibility"))) != null) {
+            if (nbtCompound.contains("DeathMessageVisibility", 8) && (visibilityRule = AbstractTeam.VisibilityRule.getRule(nbtCompound.getString("DeathMessageVisibility"))) != null) {
                 team.setDeathMessageVisibilityRule(visibilityRule);
             }
-            if (nbtCompound.contains("CollisionRule", NbtTypeIds.STRING) && (collisionRule = AbstractTeam.CollisionRule.getRule(nbtCompound.getString("CollisionRule"))) != null) {
+            if (nbtCompound.contains("CollisionRule", 8) && (collisionRule = AbstractTeam.CollisionRule.getRule(nbtCompound.getString("CollisionRule"))) != null) {
                 team.setCollisionRule(collisionRule);
             }
-            this.readTeamPlayersFromNbt(team, nbtCompound.getList("Players", NbtTypeIds.STRING));
+            this.readTeamPlayersNbt(team, nbtCompound.getList("Players", 8));
         }
     }
 
-    private void readTeamPlayersFromNbt(Team team, NbtList tag) {
-        for (int i = 0; i < tag.size(); ++i) {
-            this.scoreboard.addPlayerToTeam(tag.getString(i), team);
+    private void readTeamPlayersNbt(Team team, NbtList nbt) {
+        for (int i = 0; i < nbt.size(); ++i) {
+            this.scoreboard.addPlayerToTeam(nbt.getString(i), team);
         }
     }
 
-    private void readDisplaySlotsFromNbt(NbtCompound tag) {
+    private void readDisplaySlotsNbt(NbtCompound nbt) {
         for (int i = 0; i < 19; ++i) {
-            if (!tag.contains("slot_" + i, NbtTypeIds.STRING)) continue;
-            String string = tag.getString("slot_" + i);
+            if (!nbt.contains("slot_" + i, 8)) continue;
+            String string = nbt.getString("slot_" + i);
             ScoreboardObjective scoreboardObjective = this.scoreboard.getNullableObjective(string);
             this.scoreboard.setObjectiveSlot(i, scoreboardObjective);
         }
     }
 
-    private void readObjectivesFromNbt(NbtList tag) {
-        for (int i = 0; i < tag.size(); ++i) {
-            NbtCompound nbtCompound = tag.getCompound(i);
+    private void readObjectivesNbt(NbtList nbt) {
+        for (int i = 0; i < nbt.size(); ++i) {
+            NbtCompound nbtCompound = nbt.getCompound(i);
             ScoreboardCriterion.getOrCreateStatCriterion(nbtCompound.getString("CriteriaName")).ifPresent(scoreboardCriterion -> {
                 String string = nbtCompound.getString("Name");
                 if (string.length() > 16) {
@@ -112,12 +112,12 @@ extends PersistentState {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound tag) {
-        tag.put("Objectives", this.objectivesToNbt());
-        tag.put("PlayerScores", this.scoreboard.toNbt());
-        tag.put("Teams", this.teamsToNbt());
-        this.writeDisplaySlotsToNbt(tag);
-        return tag;
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        nbt.put("Objectives", this.objectivesToNbt());
+        nbt.put("PlayerScores", this.scoreboard.toNbt());
+        nbt.put("Teams", this.teamsToNbt());
+        this.writeDisplaySlotsNbt(nbt);
+        return nbt;
     }
 
     private NbtList teamsToNbt() {
@@ -147,7 +147,7 @@ extends PersistentState {
         return nbtList;
     }
 
-    private void writeDisplaySlotsToNbt(NbtCompound tag) {
+    private void writeDisplaySlotsNbt(NbtCompound nbt) {
         NbtCompound nbtCompound = new NbtCompound();
         boolean bl = false;
         for (int i = 0; i < 19; ++i) {
@@ -157,7 +157,7 @@ extends PersistentState {
             bl = true;
         }
         if (bl) {
-            tag.put("DisplaySlots", nbtCompound);
+            nbt.put("DisplaySlots", nbtCompound);
         }
     }
 

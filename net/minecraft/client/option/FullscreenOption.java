@@ -18,6 +18,8 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class FullscreenOption
 extends DoubleOption {
+    private static final double field_32134 = -1.0;
+
     public FullscreenOption(Window window) {
         this(window, window.getMonitor());
     }

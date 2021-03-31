@@ -8,8 +8,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import java.util.Optional;
 import java.util.function.Supplier;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -19,6 +17,7 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 
 public class HoneycombItem
 extends Item {
@@ -36,7 +35,7 @@ extends Item {
         BlockState blockState = world.getBlockState(blockPos);
         return HoneycombItem.getWaxedState(blockState).map(state -> {
             context.getStack().decrement(1);
-            world.setBlockState(blockPos, (BlockState)state, SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
+            world.setBlockState(blockPos, (BlockState)state, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
             PlayerEntity playerEntity = context.getPlayer();
             world.syncWorldEvent(playerEntity, WorldEvents.BLOCK_WAXED, blockPos, 0);
             return ActionResult.success(world.isClient);

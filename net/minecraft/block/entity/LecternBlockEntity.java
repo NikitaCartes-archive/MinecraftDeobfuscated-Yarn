@@ -3,7 +3,6 @@
  */
 package net.minecraft.block.entity;
 
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LecternBlock;
 import net.minecraft.block.entity.BlockEntity;
@@ -36,6 +35,10 @@ public class LecternBlockEntity
 extends BlockEntity
 implements Clearable,
 NamedScreenHandlerFactory {
+    public static final int field_31348 = 0;
+    public static final int field_31349 = 1;
+    public static final int field_31350 = 0;
+    public static final int field_31351 = 1;
     private final Inventory inventory = new Inventory(){
 
         @Override
@@ -207,21 +210,21 @@ NamedScreenHandlerFactory {
     }
 
     @Override
-    public void readNbt(NbtCompound tag) {
-        super.readNbt(tag);
-        this.book = tag.contains("Book", NbtTypeIds.COMPOUND) ? this.resolveBook(ItemStack.fromNbt(tag.getCompound("Book")), null) : ItemStack.EMPTY;
+    public void readNbt(NbtCompound nbt) {
+        super.readNbt(nbt);
+        this.book = nbt.contains("Book", 10) ? this.resolveBook(ItemStack.fromNbt(nbt.getCompound("Book")), null) : ItemStack.EMPTY;
         this.pageCount = WrittenBookItem.getPageCount(this.book);
-        this.currentPage = MathHelper.clamp(tag.getInt("Page"), 0, this.pageCount - 1);
+        this.currentPage = MathHelper.clamp(nbt.getInt("Page"), 0, this.pageCount - 1);
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound tag) {
-        super.writeNbt(tag);
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
         if (!this.getBook().isEmpty()) {
-            tag.put("Book", this.getBook().writeNbt(new NbtCompound()));
-            tag.putInt("Page", this.currentPage);
+            nbt.put("Book", this.getBook().writeNbt(new NbtCompound()));
+            nbt.putInt("Page", this.currentPage);
         }
-        return tag;
+        return nbt;
     }
 
     @Override

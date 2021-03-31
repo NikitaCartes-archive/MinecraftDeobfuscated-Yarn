@@ -28,6 +28,7 @@ implements DebugRenderer.Renderer {
     private final Map<DimensionType, Map<String, BlockBox>> field_4626 = Maps.newIdentityHashMap();
     private final Map<DimensionType, Map<String, BlockBox>> field_4627 = Maps.newIdentityHashMap();
     private final Map<DimensionType, Map<String, Boolean>> field_4625 = Maps.newIdentityHashMap();
+    private static final int field_32916 = 500;
 
     public StructureDebugRenderer(MinecraftClient client) {
         this.client = client;
@@ -43,7 +44,7 @@ implements DebugRenderer.Renderer {
         if (this.field_4626.containsKey(dimensionType)) {
             for (BlockBox blockBox : this.field_4626.get(dimensionType).values()) {
                 if (!blockPos.isWithinDistance(blockBox.getCenter(), 500.0)) continue;
-                WorldRenderer.drawBox(matrices, vertexConsumer, (double)blockBox.minX - cameraX, (double)blockBox.minY - cameraY, (double)blockBox.minZ - cameraZ, (double)(blockBox.maxX + 1) - cameraX, (double)(blockBox.maxY + 1) - cameraY, (double)(blockBox.maxZ + 1) - cameraZ, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+                WorldRenderer.drawBox(matrices, vertexConsumer, (double)blockBox.getMinX() - cameraX, (double)blockBox.getMinY() - cameraY, (double)blockBox.getMinZ() - cameraZ, (double)(blockBox.getMaxX() + 1) - cameraX, (double)(blockBox.getMaxY() + 1) - cameraY, (double)(blockBox.getMaxZ() + 1) - cameraZ, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
             }
         }
         if (this.field_4627.containsKey(dimensionType)) {
@@ -53,10 +54,10 @@ implements DebugRenderer.Renderer {
                 Boolean boolean_ = this.field_4625.get(dimensionType).get(string);
                 if (!blockPos.isWithinDistance(blockBox2.getCenter(), 500.0)) continue;
                 if (boolean_.booleanValue()) {
-                    WorldRenderer.drawBox(matrices, vertexConsumer, (double)blockBox2.minX - cameraX, (double)blockBox2.minY - cameraY, (double)blockBox2.minZ - cameraZ, (double)(blockBox2.maxX + 1) - cameraX, (double)(blockBox2.maxY + 1) - cameraY, (double)(blockBox2.maxZ + 1) - cameraZ, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f);
+                    WorldRenderer.drawBox(matrices, vertexConsumer, (double)blockBox2.getMinX() - cameraX, (double)blockBox2.getMinY() - cameraY, (double)blockBox2.getMinZ() - cameraZ, (double)(blockBox2.getMaxX() + 1) - cameraX, (double)(blockBox2.getMaxY() + 1) - cameraY, (double)(blockBox2.getMaxZ() + 1) - cameraZ, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f);
                     continue;
                 }
-                WorldRenderer.drawBox(matrices, vertexConsumer, (double)blockBox2.minX - cameraX, (double)blockBox2.minY - cameraY, (double)blockBox2.minZ - cameraZ, (double)(blockBox2.maxX + 1) - cameraX, (double)(blockBox2.maxY + 1) - cameraY, (double)(blockBox2.maxZ + 1) - cameraZ, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f);
+                WorldRenderer.drawBox(matrices, vertexConsumer, (double)blockBox2.getMinX() - cameraX, (double)blockBox2.getMinY() - cameraY, (double)blockBox2.getMinZ() - cameraZ, (double)(blockBox2.getMaxX() + 1) - cameraX, (double)(blockBox2.getMaxY() + 1) - cameraY, (double)(blockBox2.getMaxZ() + 1) - cameraZ, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f);
             }
         }
     }

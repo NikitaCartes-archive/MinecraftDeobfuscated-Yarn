@@ -24,7 +24,7 @@ extends SchoolingFishEntity {
     }
 
     @Override
-    protected ItemStack getFishBucketItem() {
+    public ItemStack getBucketItem() {
         return new ItemStack(Items.SALMON_BUCKET);
     }
 

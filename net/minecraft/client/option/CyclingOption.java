@@ -33,6 +33,10 @@ extends Option {
         this.buttonBuilderFactory = buttonBuilderFactory;
     }
 
+    public static <T> CyclingOption<T> method_35694(String string, List<T> list, Function<T, Text> function, Function<GameOptions, T> function2, Setter<T> setter) {
+        return new CyclingOption<T>(string, function2, setter, () -> CyclingButtonWidget.builder(function).values(list));
+    }
+
     public static <T> CyclingOption<T> create(String key, Supplier<List<T>> valuesSupplier, Function<T, Text> valueToText, Function<GameOptions, T> getter, Setter<T> setter) {
         return new CyclingOption<T>(key, getter, setter, () -> CyclingButtonWidget.builder(valueToText).values((List)valuesSupplier.get()));
     }

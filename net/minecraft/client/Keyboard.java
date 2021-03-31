@@ -5,6 +5,7 @@ package net.minecraft.client;
 
 import com.google.common.base.MoreObjects;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
@@ -52,6 +53,7 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(value=EnvType.CLIENT)
 public class Keyboard {
+    public static final int field_32143 = 10000;
     private final MinecraftClient client;
     private boolean repeatEvents;
     private final Clipboard clipboard = new Clipboard();
@@ -64,12 +66,52 @@ public class Keyboard {
         this.client = client;
     }
 
+    private boolean method_35696(int i) {
+        switch (i) {
+            case 69: {
+                this.client.debugChunkInfo = !this.client.debugChunkInfo;
+                this.method_35697("ChunkPath: {0}", this.client.debugChunkInfo ? "shown" : "hidden");
+                return true;
+            }
+            case 76: {
+                this.client.chunkCullingEnabled = !this.client.chunkCullingEnabled;
+                this.method_35697("SmartCull: {0}", this.client.chunkCullingEnabled ? "enabled" : "disabled");
+                return true;
+            }
+            case 85: {
+                if (Screen.hasShiftDown()) {
+                    this.client.worldRenderer.method_35776();
+                    this.method_35697("Killed frustum", new Object[0]);
+                } else {
+                    this.client.worldRenderer.method_35775();
+                    this.method_35697("Captured frustum", new Object[0]);
+                }
+                return true;
+            }
+            case 86: {
+                this.client.debugChunkOcclusion = !this.client.debugChunkOcclusion;
+                this.method_35697("ChunkVisibility: {0}", this.client.debugChunkOcclusion ? "enabled" : "disabled");
+                return true;
+            }
+            case 87: {
+                this.client.field_32144 = !this.client.field_32144;
+                this.method_35697("WireFrame: {0}", this.client.field_32144 ? "enabled" : "disabled");
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void debugWarn(String string, Object ... objects) {
         this.client.inGameHud.getChatHud().addMessage(new LiteralText("").append(new TranslatableText("debug.prefix").formatted(Formatting.YELLOW, Formatting.BOLD)).append(" ").append(new TranslatableText(string, objects)));
     }
 
     private void debugError(String string, Object ... objects) {
         this.client.inGameHud.getChatHud().addMessage(new LiteralText("").append(new TranslatableText("debug.prefix").formatted(Formatting.RED, Formatting.BOLD)).append(" ").append(new TranslatableText(string, objects)));
+    }
+
+    private void method_35697(String string, Object ... objects) {
+        this.client.inGameHud.getChatHud().addMessage(new LiteralText("").append(new TranslatableText("debug.prefix").formatted(Formatting.YELLOW, Formatting.BOLD)).append(" ").append(MessageFormat.format(string, objects)));
     }
 
     private boolean processF3(int key) {
@@ -168,7 +210,7 @@ public class Keyboard {
             case 76: {
                 Runnable runnable = () -> this.debugWarn("debug.profiling.start", 10);
                 Consumer<Path> consumer = path -> this.debugWarn("debug.profiling.stop", path.toAbsolutePath());
-                this.client.method_34745(runnable, consumer);
+                this.client.toggleDebugProfiler(runnable, consumer);
                 return true;
             }
             case 67: {
@@ -237,28 +279,28 @@ public class Keyboard {
         }
     }
 
-    private void copyBlock(BlockState state, BlockPos pos, @Nullable NbtCompound tag) {
-        if (tag != null) {
-            tag.remove("x");
-            tag.remove("y");
-            tag.remove("z");
-            tag.remove("id");
+    private void copyBlock(BlockState state, BlockPos pos, @Nullable NbtCompound nbt) {
+        if (nbt != null) {
+            nbt.remove("x");
+            nbt.remove("y");
+            nbt.remove("z");
+            nbt.remove("id");
         }
         StringBuilder stringBuilder = new StringBuilder(BlockArgumentParser.stringifyBlockState(state));
-        if (tag != null) {
-            stringBuilder.append(tag);
+        if (nbt != null) {
+            stringBuilder.append(nbt);
         }
         String string = String.format(Locale.ROOT, "/setblock %d %d %d %s", pos.getX(), pos.getY(), pos.getZ(), stringBuilder);
         this.setClipboard(string);
     }
 
-    private void copyEntity(Identifier id, Vec3d pos, @Nullable NbtCompound tag) {
+    private void copyEntity(Identifier id, Vec3d pos, @Nullable NbtCompound nbt) {
         String string2;
-        if (tag != null) {
-            tag.remove("UUID");
-            tag.remove("Pos");
-            tag.remove("Dimension");
-            String string = NbtHelper.toPrettyPrintedText(tag).getString();
+        if (nbt != null) {
+            nbt.remove("UUID");
+            nbt.remove("Pos");
+            nbt.remove("Dimension");
+            String string = NbtHelper.toPrettyPrintedText(nbt).getString();
             string2 = String.format(Locale.ROOT, "/summon %s %.2f %.2f %.2f %s", id.toString(), pos.x, pos.y, pos.z, string);
         } else {
             string2 = String.format(Locale.ROOT, "/summon %s %.2f %.2f %.2f", id.toString(), pos.x, pos.y, pos.z);
@@ -396,7 +438,9 @@ public class Keyboard {
     }
 
     public void setClipboard(String clipboard) {
-        this.clipboard.setClipboard(this.client.getWindow().getHandle(), clipboard);
+        if (!clipboard.isEmpty()) {
+            this.clipboard.setClipboard(this.client.getWindow().getHandle(), clipboard);
+        }
     }
 
     public void pollDebugCrash() {

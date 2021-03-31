@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.AbstractBannerBlock;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.BedBlock;
@@ -97,9 +96,9 @@ implements SynchronousResourceReloader {
                 GameProfile gameProfile = null;
                 if (stack.hasTag()) {
                     NbtCompound nbtCompound = stack.getTag();
-                    if (nbtCompound.contains("SkullOwner", NbtTypeIds.COMPOUND)) {
+                    if (nbtCompound.contains("SkullOwner", 10)) {
                         gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
-                    } else if (nbtCompound.contains("SkullOwner", NbtTypeIds.STRING) && !StringUtils.isBlank(nbtCompound.getString("SkullOwner"))) {
+                    } else if (nbtCompound.contains("SkullOwner", 8) && !StringUtils.isBlank(nbtCompound.getString("SkullOwner"))) {
                         gameProfile = new GameProfile(null, nbtCompound.getString("SkullOwner"));
                         gameProfile = SkullBlockEntity.loadProperties(gameProfile);
                         nbtCompound.remove("SkullOwner");

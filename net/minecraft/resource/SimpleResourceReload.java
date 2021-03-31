@@ -12,8 +12,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReload;
 import net.minecraft.resource.ResourceReloader;
@@ -28,6 +26,20 @@ import net.minecraft.util.profiler.DummyProfiler;
  */
 public class SimpleResourceReload<S>
 implements ResourceReload {
+    /**
+     * The weight of either prepare or apply stages' progress in the total progress
+     * calculation. Has value {@value}.
+     */
+    private static final int FIRST_PREPARE_APPLY_WEIGHT = 2;
+    /**
+     * The weight of either prepare or apply stages' progress in the total progress
+     * calculation. Has value {@value}.
+     */
+    private static final int SECOND_PREPARE_APPLY_WEIGHT = 2;
+    /**
+     * The weight of reloaders' progress in the total progress calculation. Has value {@value}.
+     */
+    private static final int RELOADER_WEIGHT = 1;
     protected final ResourceManager manager;
     protected final CompletableFuture<Unit> prepareStageFuture = new CompletableFuture();
     protected final CompletableFuture<List<S>> applyStageFuture;
@@ -92,7 +104,6 @@ implements ResourceReload {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public float getProgress() {
         int i = this.reloaderCount - this.waitingReloaders.size();
         float f = this.preparedCount.get() * 2 + this.appliedCount * 2 + i * 1;
@@ -101,13 +112,11 @@ implements ResourceReload {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public boolean isComplete() {
         return this.applyStageFuture.isDone();
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void throwException() {
         if (this.applyStageFuture.isCompletedExceptionally()) {
             this.applyStageFuture.join();

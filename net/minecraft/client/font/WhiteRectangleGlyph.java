@@ -14,6 +14,8 @@ public enum WhiteRectangleGlyph implements RenderableGlyph
 {
     INSTANCE;
 
+    private static final int field_32230 = 5;
+    private static final int field_32231 = 8;
     private static final NativeImage IMAGE;
 
     @Override

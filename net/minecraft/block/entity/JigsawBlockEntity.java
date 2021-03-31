@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.block.entity.BlockEntity;
@@ -37,6 +35,11 @@ import org.jetbrains.annotations.Nullable;
 
 public class JigsawBlockEntity
 extends BlockEntity {
+    public static final String TARGET_KEY = "target";
+    public static final String POOL_KEY = "pool";
+    public static final String JOINT_KEY = "joint";
+    public static final String NAME_KEY = "name";
+    public static final String FINAL_STATE_KEY = "final_state";
     private Identifier name = new Identifier("empty");
     private Identifier target = new Identifier("empty");
     private Identifier pool = new Identifier("empty");
@@ -47,27 +50,22 @@ extends BlockEntity {
         super(BlockEntityType.JIGSAW, pos, state);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Identifier getName() {
         return this.name;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Identifier getTarget() {
         return this.target;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Identifier getPool() {
         return this.pool;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public String getFinalState() {
         return this.finalState;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Joint getJoint() {
         return this.joint;
     }
@@ -93,30 +91,30 @@ extends BlockEntity {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound tag) {
-        super.writeNbt(tag);
-        tag.putString("name", this.name.toString());
-        tag.putString("target", this.target.toString());
-        tag.putString("pool", this.pool.toString());
-        tag.putString("final_state", this.finalState);
-        tag.putString("joint", this.joint.asString());
-        return tag;
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
+        nbt.putString(NAME_KEY, this.name.toString());
+        nbt.putString(TARGET_KEY, this.target.toString());
+        nbt.putString(POOL_KEY, this.pool.toString());
+        nbt.putString(FINAL_STATE_KEY, this.finalState);
+        nbt.putString(JOINT_KEY, this.joint.asString());
+        return nbt;
     }
 
     @Override
-    public void readNbt(NbtCompound tag) {
-        super.readNbt(tag);
-        this.name = new Identifier(tag.getString("name"));
-        this.target = new Identifier(tag.getString("target"));
-        this.pool = new Identifier(tag.getString("pool"));
-        this.finalState = tag.getString("final_state");
-        this.joint = Joint.byName(tag.getString("joint")).orElseGet(() -> JigsawBlock.getFacing(this.getCachedState()).getAxis().isHorizontal() ? Joint.ALIGNED : Joint.ROLLABLE);
+    public void readNbt(NbtCompound nbt) {
+        super.readNbt(nbt);
+        this.name = new Identifier(nbt.getString(NAME_KEY));
+        this.target = new Identifier(nbt.getString(TARGET_KEY));
+        this.pool = new Identifier(nbt.getString(POOL_KEY));
+        this.finalState = nbt.getString(FINAL_STATE_KEY);
+        this.joint = Joint.byName(nbt.getString(JOINT_KEY)).orElseGet(() -> JigsawBlock.getFacing(this.getCachedState()).getAxis().isHorizontal() ? Joint.ALIGNED : Joint.ROLLABLE);
     }
 
     @Override
     @Nullable
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(this.pos, 12, this.toInitialChunkDataNbt());
+        return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.JIGSAW, this.toInitialChunkDataNbt());
     }
 
     @Override
@@ -137,7 +135,7 @@ extends BlockEntity {
         PoolStructurePiece poolStructurePiece = new PoolStructurePiece(structureManager, structurePoolElement, blockPos, 1, BlockRotation.NONE, new BlockBox(blockPos));
         StructurePoolBasedGenerator.method_27230(world.getRegistryManager(), poolStructurePiece, maxDepth, PoolStructurePiece::new, chunkGenerator, structureManager, list, random, world);
         for (PoolStructurePiece poolStructurePiece2 : list) {
-            poolStructurePiece2.generate((StructureWorldAccess)world, structureAccessor, chunkGenerator, random, BlockBox.infinite(), blockPos, keepJigsaws);
+            poolStructurePiece2.generate((StructureWorldAccess)world, structureAccessor, chunkGenerator, random, BlockBox.empty(), blockPos, keepJigsaws);
         }
     }
 
@@ -161,7 +159,6 @@ extends BlockEntity {
             return Arrays.stream(Joint.values()).filter(joint -> joint.asString().equals(name)).findFirst();
         }
 
-        @Environment(value=EnvType.CLIENT)
         public Text asText() {
             return new TranslatableText("jigsaw_block.joint." + this.name);
         }

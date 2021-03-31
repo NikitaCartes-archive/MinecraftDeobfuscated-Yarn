@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.c2s.handshake;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.Packet;
@@ -13,12 +11,12 @@ import net.minecraft.network.listener.ServerHandshakePacketListener;
 
 public class HandshakeC2SPacket
 implements Packet<ServerHandshakePacketListener> {
+    private static final int MAX_ADDRESS_LENGTH = 255;
     private final int protocolVersion;
     private final String address;
     private final int port;
     private final NetworkState intendedState;
 
-    @Environment(value=EnvType.CLIENT)
     public HandshakeC2SPacket(String address, int port, NetworkState intendedState) {
         this.protocolVersion = SharedConstants.getGameVersion().getProtocolVersion();
         this.address = address;
@@ -52,6 +50,14 @@ implements Packet<ServerHandshakePacketListener> {
 
     public int getProtocolVersion() {
         return this.protocolVersion;
+    }
+
+    public String getAddress() {
+        return this.address;
+    }
+
+    public int getPort() {
+        return this.port;
     }
 }
 

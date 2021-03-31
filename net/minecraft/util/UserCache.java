@@ -45,6 +45,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class UserCache {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final int field_29788 = 1000;
+    private static final int field_29789 = 1;
     private static boolean useRemote;
     private final Map<String, Entry> byName = Maps.newConcurrentMap();
     private final Map<UUID, Entry> byUuid = Maps.newConcurrentMap();

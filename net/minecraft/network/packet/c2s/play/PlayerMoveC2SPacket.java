@@ -58,6 +58,14 @@ implements Packet<ServerPlayPacketListener> {
         return this.onGround;
     }
 
+    public boolean changesPosition() {
+        return this.changePosition;
+    }
+
+    public boolean changesLook() {
+        return this.changeLook;
+    }
+
     public static class OnGroundOnly
     extends PlayerMoveC2SPacket {
         public OnGroundOnly(boolean onGround) {

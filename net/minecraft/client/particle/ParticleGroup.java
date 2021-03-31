@@ -3,9 +3,6 @@
  */
 package net.minecraft.client.particle;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-
 /**
  * A group for particles. This group imposes a limit on the numbers of
  * particles from this group rendered in a particle manager. Additional
@@ -13,7 +10,6 @@ import net.fabricmc.api.Environment;
  * 
  * @see Particle#getGroup()
  */
-@Environment(value=EnvType.CLIENT)
 public class ParticleGroup {
     private final int maxCount;
     /**

@@ -36,6 +36,17 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.dynamic.GlobalPos;
 
 public class PiglinBruteBrain {
+    private static final int field_30589 = 600;
+    private static final int field_30590 = 20;
+    private static final double field_30591 = 0.0125;
+    private static final int field_30592 = 8;
+    private static final int field_30593 = 8;
+    private static final double field_30594 = 12.0;
+    private static final float field_30595 = 0.6f;
+    private static final int field_30596 = 2;
+    private static final int field_30597 = 100;
+    private static final int field_30598 = 5;
+
     protected static Brain<?> create(PiglinBruteEntity piglinBrute, Brain<PiglinBruteEntity> brain) {
         PiglinBruteBrain.addCoreActivities(piglinBrute, brain);
         PiglinBruteBrain.addIdleActivities(piglinBrute, brain);
@@ -111,6 +122,11 @@ public class PiglinBruteBrain {
             return;
         }
         PiglinBrain.tryRevenge(piglinBrute, target);
+    }
+
+    protected static void method_35198(PiglinBruteEntity piglinBruteEntity, LivingEntity livingEntity) {
+        piglinBruteEntity.getBrain().forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
+        piglinBruteEntity.getBrain().remember(MemoryModuleType.ANGRY_AT, livingEntity.getUuid(), 600L);
     }
 
     protected static void method_30258(PiglinBruteEntity piglinBrute) {

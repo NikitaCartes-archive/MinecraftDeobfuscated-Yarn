@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 public class ScoreText
 extends BaseText
 implements ParsableText {
+    private static final String field_33290 = "*";
     private final String name;
     @Nullable
     private final EntitySelector selector;
@@ -50,6 +51,11 @@ implements ParsableText {
 
     public String getName() {
         return this.name;
+    }
+
+    @Nullable
+    public EntitySelector getSelector() {
+        return this.selector;
     }
 
     public String getObjective() {
@@ -89,7 +95,7 @@ implements ParsableText {
             return new LiteralText("");
         }
         String string = this.getPlayerName(source);
-        String string2 = sender != null && string.equals("*") ? sender.getEntityName() : string;
+        String string2 = sender != null && string.equals(field_33290) ? sender.getEntityName() : string;
         return new LiteralText(this.getScore(string2, source));
     }
 

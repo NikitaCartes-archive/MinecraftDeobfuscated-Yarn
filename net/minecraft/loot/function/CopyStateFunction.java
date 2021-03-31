@@ -11,7 +11,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import java.util.HashSet;
 import java.util.Set;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
@@ -57,7 +56,7 @@ extends ConditionalLootFunction {
         if (blockState != null) {
             NbtCompound nbtCompound2;
             NbtCompound nbtCompound = stack.getOrCreateTag();
-            if (nbtCompound.contains("BlockStateTag", NbtTypeIds.COMPOUND)) {
+            if (nbtCompound.contains("BlockStateTag", 10)) {
                 nbtCompound2 = nbtCompound.getCompound("BlockStateTag");
             } else {
                 nbtCompound2 = new NbtCompound();

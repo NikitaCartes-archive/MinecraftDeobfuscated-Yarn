@@ -7,6 +7,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeIds;
 import net.minecraft.world.biome.BuiltinBiomes;
 import net.minecraft.world.biome.layer.util.CachingLayerSampler;
 import net.minecraft.world.biome.layer.util.LayerFactory;
@@ -30,7 +31,7 @@ public class BiomeLayerSampler {
         Biome biome = biomeRegistry.get(registryKey);
         if (biome == null) {
             Util.error("Unknown biome id: " + i);
-            return biomeRegistry.get(BuiltinBiomes.fromRawId(0));
+            return biomeRegistry.get(BuiltinBiomes.fromRawId(BiomeIds.OCEAN));
         }
         return biome;
     }

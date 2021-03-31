@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class RaidGoal<T extends LivingEntity>
 extends FollowTargetGoal<T> {
+    private static final int field_30231 = 200;
     private int cooldown = 0;
 
     public RaidGoal(RaiderEntity raider, Class<T> targetEntityClass, boolean checkVisibility, @Nullable Predicate<LivingEntity> targetPredicate) {

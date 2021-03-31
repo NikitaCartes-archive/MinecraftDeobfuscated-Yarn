@@ -4,6 +4,7 @@
 package net.minecraft.world.chunk.light;
 
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.light.LightingView;
@@ -33,7 +34,29 @@ extends LightingView {
         }
 
         @Override
+        public void checkBlock(BlockPos pos) {
+        }
+
+        @Override
+        public void addLightSource(BlockPos pos, int i) {
+        }
+
+        @Override
+        public boolean hasUpdates() {
+            return false;
+        }
+
+        @Override
+        public int doLightUpdates(int i, boolean bl, boolean bl2) {
+            return i;
+        }
+
+        @Override
         public void setSectionStatus(ChunkSectionPos pos, boolean notReady) {
+        }
+
+        @Override
+        public void setColumnEnabled(ChunkPos chunkPos, boolean bl) {
         }
     }
 }

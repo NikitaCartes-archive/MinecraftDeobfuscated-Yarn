@@ -3,6 +3,7 @@
  */
 package net.minecraft.entity.ai.brain;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
@@ -35,6 +36,7 @@ import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Util;
+import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.logging.log4j.LogManager;
@@ -44,6 +46,7 @@ import org.jetbrains.annotations.Nullable;
 public class Brain<E extends LivingEntity> {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Supplier<Codec<Brain<E>>> codecSupplier;
+    private static final int field_30096 = 20;
     private final Map<MemoryModuleType<?>, Optional<? extends Memory<?>>> memories = Maps.newHashMap();
     private final Map<SensorType<? extends Sensor<? super E>>, Sensor<? super E>> sensors = Maps.newLinkedHashMap();
     private final Map<Integer, Map<Activity, Set<Task<? super E>>>> tasks = Maps.newTreeMap();
@@ -162,6 +165,12 @@ public class Brain<E extends LivingEntity> {
         return this.memories.get(type).map(Memory::getValue);
     }
 
+    @Deprecated
+    @Debug
+    public Map<MemoryModuleType<?>, Optional<? extends Memory<?>>> method_35058() {
+        return this.memories;
+    }
+
     public <U> boolean hasMemoryModuleWithValue(MemoryModuleType<U> type, U value) {
         if (!this.hasMemoryModule(type)) {
             return false;
@@ -190,6 +199,13 @@ public class Brain<E extends LivingEntity> {
     }
 
     @Deprecated
+    @Debug
+    public Set<Activity> method_35059() {
+        return this.possibleActivities;
+    }
+
+    @Deprecated
+    @Debug
     public List<Task<? super E>> getRunningTasks() {
         ObjectArrayList<Task<Task<E>>> list = new ObjectArrayList<Task<Task<E>>>();
         for (Map<Activity, Set<Task<E>>> map : this.tasks.values()) {
@@ -291,6 +307,11 @@ public class Brain<E extends LivingEntity> {
         for (Pair pair : indexedTasks) {
             this.tasks.computeIfAbsent((Integer)pair.getFirst(), (Function<Integer, Map<Activity, Set<Task<E>>>>)((Function<Integer, Map>)integer -> Maps.newHashMap())).computeIfAbsent(activity2, activity -> Sets.newLinkedHashSet()).add(pair.getSecond());
         }
+    }
+
+    @VisibleForTesting
+    public void method_35060() {
+        this.tasks.clear();
     }
 
     public boolean hasActivity(Activity activity) {

@@ -45,6 +45,17 @@ extends Screen {
     private static final Text EMPTY_HIDDEN_TEXT = new TranslatableText("gui.socialInteractions.empty_hidden").formatted(Formatting.GRAY);
     private static final Text EMPTY_BLOCKED_TEXT = new TranslatableText("gui.socialInteractions.empty_blocked").formatted(Formatting.GRAY);
     private static final Text BLOCKING_TEXT = new TranslatableText("gui.socialInteractions.blocking_hint");
+    private static final String field_32423 = "https://aka.ms/javablocking";
+    private static final int field_32424 = 8;
+    private static final int field_32425 = 16;
+    private static final int field_32426 = 236;
+    private static final int field_32427 = 16;
+    private static final int field_32428 = 64;
+    public static final int field_32432 = 88;
+    public static final int field_32433 = 78;
+    private static final int field_32429 = 238;
+    private static final int field_32430 = 20;
+    private static final int field_32431 = 36;
     private SocialInteractionsPlayerListWidget playerList;
     private TextFieldWidget searchBox;
     private String currentSearch = "";
@@ -111,10 +122,10 @@ extends Screen {
         this.blockedTabButton = this.addButton(new ButtonWidget(k - i + 1, 45, i, 20, BLOCKED_TAB_TITLE, buttonWidget -> this.setCurrentTab(Tab.BLOCKED)));
         this.blockingButton = this.addButton(new ButtonWidget(n, m, l, 20, BLOCKING_TEXT, buttonWidget -> this.client.openScreen(new ConfirmChatLinkScreen(bl -> {
             if (bl) {
-                Util.getOperatingSystem().open("https://aka.ms/javablocking");
+                Util.getOperatingSystem().open(field_32423);
             }
             this.client.openScreen(this);
-        }, "https://aka.ms/javablocking", true))));
+        }, field_32423, true))));
         String string = this.searchBox != null ? this.searchBox.getText() : "";
         this.searchBox = new TextFieldWidget(this.textRenderer, this.method_31362() + 28, 78, 196, 16, SEARCH_TEXT){
 

@@ -69,6 +69,8 @@ implements UnbakedModel {
     private static final BakedQuadFactory QUAD_FACTORY = new BakedQuadFactory();
     @VisibleForTesting
     static final Gson GSON = new GsonBuilder().registerTypeAdapter((Type)((Object)JsonUnbakedModel.class), new Deserializer()).registerTypeAdapter((Type)((Object)ModelElement.class), new ModelElement.Deserializer()).registerTypeAdapter((Type)((Object)ModelElementFace.class), new ModelElementFace.Deserializer()).registerTypeAdapter((Type)((Object)ModelElementTexture.class), new ModelElementTexture.Deserializer()).registerTypeAdapter((Type)((Object)Transformation.class), new Transformation.Deserializer()).registerTypeAdapter((Type)((Object)ModelTransformation.class), new ModelTransformation.Deserializer()).registerTypeAdapter((Type)((Object)ModelOverride.class), new ModelOverride.Deserializer()).create();
+    private static final char field_32793 = '#';
+    public static final String field_32792 = "particle";
     private final List<ModelElement> elements;
     @Nullable
     private final GuiLight guiLight;
@@ -125,6 +127,10 @@ implements UnbakedModel {
         return GuiLight.field_21859;
     }
 
+    public boolean method_35789() {
+        return this.parentId == null || this.parent != null && this.parent.method_35789();
+    }
+
     public List<ModelOverride> getOverrides() {
         return this.overrides;
     }
@@ -172,7 +178,7 @@ implements UnbakedModel {
             jsonUnbakedModel.parent = (JsonUnbakedModel)unbakedModel;
             jsonUnbakedModel = jsonUnbakedModel.parent;
         }
-        HashSet<SpriteIdentifier> set2 = Sets.newHashSet(this.resolveSprite("particle"));
+        HashSet<SpriteIdentifier> set2 = Sets.newHashSet(this.resolveSprite(field_32792));
         for (ModelElement modelElement : this.getElements()) {
             for (ModelElementFace modelElementFace : modelElement.faces.values()) {
                 SpriteIdentifier spriteIdentifier = this.resolveSprite(modelElementFace.textureId);
@@ -201,7 +207,7 @@ implements UnbakedModel {
     }
 
     public BakedModel bake(ModelLoader loader, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings settings, Identifier id, boolean hasDepth) {
-        Sprite sprite = textureGetter.apply(this.resolveSprite("particle"));
+        Sprite sprite = textureGetter.apply(this.resolveSprite(field_32792));
         if (this.getRootModel() == ModelLoader.BLOCK_ENTITY_MARKER) {
             return new BuiltinBakedModel(this.getTransformations(), this.compileOverrides(loader, parent), sprite, this.getGuiLight().isSide());
         }
@@ -314,8 +320,18 @@ implements UnbakedModel {
     }
 
     @Environment(value=EnvType.CLIENT)
+    public static class class_6246
+    extends RuntimeException {
+        public class_6246(String string) {
+            super(string);
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
     public static class Deserializer
     implements JsonDeserializer<JsonUnbakedModel> {
+        private static final boolean field_32794 = true;
+
         @Override
         public JsonUnbakedModel deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();

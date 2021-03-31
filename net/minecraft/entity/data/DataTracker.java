@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandler;
@@ -33,6 +31,8 @@ import org.jetbrains.annotations.Nullable;
 public class DataTracker {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Object2IntMap<Class<? extends Entity>> TRACKED_ENTITIES = new Object2IntOpenHashMap<Class<? extends Entity>>();
+    private static final int field_33377 = 255;
+    private static final int field_33378 = 254;
     private final Entity trackedEntity;
     private final Int2ObjectMap<Entry<?>> entries = new Int2ObjectOpenHashMap();
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
@@ -205,7 +205,6 @@ public class DataTracker {
         return new Entry<T>(trackedDataHandler.create(i), trackedDataHandler.read(buf));
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void writeUpdatedEntries(List<Entry<?>> list) {
         this.lock.writeLock().lock();
         for (Entry<?> entry : list) {
@@ -218,7 +217,6 @@ public class DataTracker {
         this.dirty = true;
     }
 
-    @Environment(value=EnvType.CLIENT)
     private <T> void copyToFrom(Entry<T> entry, Entry<?> entry2) {
         if (!Objects.equals(((Entry)entry2).data.getType(), ((Entry)entry).data.getType())) {
             throw new IllegalStateException(String.format("Invalid entity data item type for field %d on entity %s: old=%s(%s), new=%s(%s)", ((Entry)entry).data.getId(), this.trackedEntity, ((Entry)entry).value, ((Entry)entry).value.getClass(), ((Entry)entry2).value, ((Entry)entry2).value.getClass()));

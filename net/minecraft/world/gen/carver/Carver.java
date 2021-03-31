@@ -13,6 +13,7 @@ import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_6108;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -21,6 +22,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
@@ -34,8 +36,8 @@ import net.minecraft.world.gen.carver.RavineCarverConfig;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public abstract class Carver<C extends CarverConfig> {
-    public static final Carver<CarverConfig> CAVE = Carver.register("cave", new CaveCarver(CarverConfig.CONFIG_CODEC));
-    public static final Carver<CarverConfig> NETHER_CAVE = Carver.register("nether_cave", new NetherCaveCarver(CarverConfig.CONFIG_CODEC));
+    public static final Carver<class_6108> CAVE = Carver.register("cave", new CaveCarver(class_6108.field_31491));
+    public static final Carver<class_6108> NETHER_CAVE = Carver.register("nether_cave", new NetherCaveCarver(class_6108.field_31491));
     public static final Carver<RavineCarverConfig> RAVINE = Carver.register("canyon", new RavineCarver(RavineCarverConfig.RAVINE_CODEC));
     protected static final BlockState AIR = Blocks.AIR.getDefaultState();
     protected static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
@@ -114,19 +116,19 @@ public abstract class Carver<C extends CarverConfig> {
 
     protected boolean carveAtPoint(CarverContext context, C config, Chunk chunk, Function<BlockPos, Biome> posToBiome, BitSet carvingMask, Random random, BlockPos.Mutable pos, BlockPos.Mutable downPos, int mainChunkX, MutableBoolean foundSurface) {
         BlockState blockState = chunk.getBlockState(pos);
-        BlockState blockState2 = chunk.getBlockState(downPos.set(pos, Direction.UP));
+        BlockState blockState2 = chunk.getBlockState(downPos.set((Vec3i)pos, Direction.UP));
         if (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isOf(Blocks.MYCELIUM)) {
             foundSurface.setTrue();
         }
         if (!this.canCarveBlock(blockState, blockState2) && !Carver.isDebug(config)) {
             return false;
         }
-        if (pos.getY() < context.getMinY() + 9 && !Carver.isDebug(config)) {
+        if (pos.getY() < ((CarverConfig)config).field_31490.getY(context) && !Carver.isDebug(config)) {
             chunk.setBlockState(pos, LAVA.getBlockState(), false);
         } else {
             chunk.setBlockState(pos, Carver.getState(config), false);
             if (foundSurface.isTrue()) {
-                downPos.set(pos, Direction.DOWN);
+                downPos.set((Vec3i)pos, Direction.DOWN);
                 if (chunk.getBlockState(downPos).isOf(Blocks.DIRT)) {
                     chunk.setBlockState(downPos, posToBiome.apply(pos).getGenerationSettings().getSurfaceConfig().getTopMaterial(), false);
                 }
@@ -136,7 +138,7 @@ public abstract class Carver<C extends CarverConfig> {
     }
 
     private static BlockState getState(CarverConfig config) {
-        return Carver.isDebug(config) ? config.getDebugConfig().getDebugState() : CAVE_AIR;
+        return Carver.isDebug(config) ? config.debugConfig.getDebugState() : CAVE_AIR;
     }
 
     public abstract boolean carve(CarverContext var1, C var2, Chunk var3, Function<BlockPos, Biome> var4, Random var5, int var6, ChunkPos var7, BitSet var8);
@@ -186,7 +188,7 @@ public abstract class Carver<C extends CarverConfig> {
     }
 
     private static boolean isDebug(CarverConfig config) {
-        return config.getDebugConfig().isDebugMode();
+        return config.debugConfig.isDebugMode();
     }
 
     public static interface SkipPredicate {

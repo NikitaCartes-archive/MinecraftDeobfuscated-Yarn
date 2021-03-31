@@ -392,12 +392,12 @@ public class TrackedDataHandlerRegistry {
 
         @Override
         public void write(PacketByteBuf packetByteBuf, NbtCompound nbtCompound) {
-            packetByteBuf.writeCompound(nbtCompound);
+            packetByteBuf.writeNbt(nbtCompound);
         }
 
         @Override
         public NbtCompound read(PacketByteBuf packetByteBuf) {
-            return packetByteBuf.readCompound();
+            return packetByteBuf.readNbt();
         }
 
         @Override
@@ -491,6 +491,9 @@ public class TrackedDataHandlerRegistry {
 
     public static int getId(TrackedDataHandler<?> handler) {
         return DATA_HANDLERS.getRawId(handler);
+    }
+
+    private TrackedDataHandlerRegistry() {
     }
 
     static {

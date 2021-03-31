@@ -59,6 +59,10 @@ extends ConditionalLootFunction {
         return SetDamageLootFunction.builder((LootCondition[] conditions) -> new SetDamageLootFunction((LootCondition[])conditions, durabilityRange, false));
     }
 
+    public static ConditionalLootFunction.Builder<?> builder(LootNumberProvider durabilityRange, boolean add) {
+        return SetDamageLootFunction.builder((LootCondition[] conditions) -> new SetDamageLootFunction((LootCondition[])conditions, durabilityRange, add));
+    }
+
     public static class Serializer
     extends ConditionalLootFunction.Serializer<SetDamageLootFunction> {
         @Override

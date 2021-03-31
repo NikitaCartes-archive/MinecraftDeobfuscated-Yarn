@@ -21,6 +21,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class SleepTask
 extends Task<LivingEntity> {
+    public static final int field_30175 = 100;
     private long startTime;
 
     public SleepTask() {

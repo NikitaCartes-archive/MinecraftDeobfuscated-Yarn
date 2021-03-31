@@ -5,7 +5,6 @@ package net.minecraft.client.color.item;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.color.block.BlockColors;
@@ -26,6 +25,7 @@ import net.minecraft.util.registry.Registry;
 
 @Environment(value=EnvType.CLIENT)
 public class ItemColors {
+    private static final int field_32165 = -1;
     private final IdList<ItemColorProvider> providers = new IdList(32);
 
     public static ItemColors create(BlockColors blockColors) {
@@ -38,7 +38,7 @@ public class ItemColors {
                 return -1;
             }
             NbtCompound nbtCompound = stack.getSubTag("Explosion");
-            int[] nArray = is = nbtCompound != null && nbtCompound.contains("Colors", NbtTypeIds.INT_ARRAY) ? nbtCompound.getIntArray("Colors") : null;
+            int[] nArray = is = nbtCompound != null && nbtCompound.contains("Colors", 11) ? nbtCompound.getIntArray("Colors") : null;
             if (is == null || is.length == 0) {
                 return 0x8A8A8A;
             }

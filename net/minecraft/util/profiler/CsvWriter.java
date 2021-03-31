@@ -13,6 +13,8 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.jetbrains.annotations.Nullable;
 
 public class CsvWriter {
+    private static final String field_29836 = "\r\n";
+    private static final String field_29837 = ",";
     private final Writer writer;
     private final int column;
 
@@ -34,7 +36,7 @@ public class CsvWriter {
     }
 
     private void printRow(Stream<?> columns) throws IOException {
-        this.writer.write(columns.map(CsvWriter::print).collect(Collectors.joining(",")) + "\r\n");
+        this.writer.write(columns.map(CsvWriter::print).collect(Collectors.joining(field_29837)) + field_29836);
     }
 
     private static String print(@Nullable Object o) {

@@ -7,8 +7,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.stream.Collectors;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.MapColor;
 import net.minecraft.util.StringIdentifiable;
 import org.jetbrains.annotations.Nullable;
@@ -78,7 +76,6 @@ public enum DyeColor implements StringIdentifiable
         return this.fireworkColor;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getSignColor() {
         return this.signColor;
     }
@@ -99,7 +96,6 @@ public enum DyeColor implements StringIdentifiable
     }
 
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     public static DyeColor byFireworkColor(int color) {
         return BY_FIREWORK_COLOR.get(color);
     }

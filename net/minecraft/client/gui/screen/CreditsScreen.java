@@ -42,6 +42,7 @@ extends Screen {
     private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
     private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
     private static final Identifier VIGNETTE_TEXTURE = new Identifier("textures/misc/vignette.png");
+    private static final String field_32273 = "[C]";
     private static final String OBFUSCATION_PLACEHOLDER = "" + (Object)((Object)Formatting.WHITE) + (Object)((Object)Formatting.OBFUSCATED) + (Object)((Object)Formatting.GREEN) + (Object)((Object)Formatting.AQUA);
     private final boolean endCredits;
     private final Runnable finishAction;
@@ -123,7 +124,7 @@ extends Screen {
             while ((string4 = bufferedReader.readLine()) != null) {
                 boolean bl;
                 string4 = string4.replaceAll("PLAYERNAME", this.client.getSession().getUsername());
-                if ((string4 = string4.replaceAll("\t", "    ")).startsWith("[C]")) {
+                if ((string4 = string4.replaceAll("\t", "    ")).startsWith(field_32273)) {
                     string4 = string4.substring(3);
                     bl = true;
                 } else {

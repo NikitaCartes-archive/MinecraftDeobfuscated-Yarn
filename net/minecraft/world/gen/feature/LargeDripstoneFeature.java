@@ -6,7 +6,6 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import java.util.Optional;
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.tag.BlockTags;
@@ -47,8 +46,8 @@ extends Feature<LargeDripstoneFeatureConfig> {
             return false;
         }
         int i = (int)((float)bounded.getHeight() * largeDripstoneFeatureConfig.maxColumnRadiusToCaveHeightRatio);
-        int j = MathHelper.clamp(i, largeDripstoneFeatureConfig.columnRadius.minValue(), largeDripstoneFeatureConfig.columnRadius.maxValue());
-        int k = MathHelper.nextBetween(random, largeDripstoneFeatureConfig.columnRadius.minValue(), j);
+        int j = MathHelper.clamp(i, largeDripstoneFeatureConfig.columnRadius.getMin(), largeDripstoneFeatureConfig.columnRadius.getMax());
+        int k = MathHelper.nextBetween(random, largeDripstoneFeatureConfig.columnRadius.getMin(), j);
         DripstoneGenerator dripstoneGenerator = LargeDripstoneFeature.createGenerator(blockPos.withY(bounded.getCeiling() - 1), false, random, k, largeDripstoneFeatureConfig.stalactiteBluntness, largeDripstoneFeatureConfig.heightScale);
         DripstoneGenerator dripstoneGenerator2 = LargeDripstoneFeature.createGenerator(blockPos.withY(bounded.getFloor() + 1), true, random, k, largeDripstoneFeatureConfig.stalagmiteBluntness, largeDripstoneFeatureConfig.heightScale);
         WindModifier windModifier = dripstoneGenerator.generateWind(largeDripstoneFeatureConfig) && dripstoneGenerator2.generateWind(largeDripstoneFeatureConfig) ? new WindModifier(blockPos.getY(), random, largeDripstoneFeatureConfig.windSpeed) : WindModifier.create();
@@ -65,6 +64,19 @@ extends Feature<LargeDripstoneFeatureConfig> {
 
     private static DripstoneGenerator createGenerator(BlockPos pos, boolean isStalagmite, Random random, int scale, FloatProvider bluntness, FloatProvider heightScale) {
         return new DripstoneGenerator(pos, isStalagmite, scale, bluntness.get(random), heightScale.get(random));
+    }
+
+    private void method_35360(StructureWorldAccess structureWorldAccess, BlockPos blockPos, CaveSurface.Bounded bounded, WindModifier windModifier) {
+        structureWorldAccess.setBlockState(windModifier.modify(blockPos.withY(bounded.getCeiling() - 1)), Blocks.DIAMOND_BLOCK.getDefaultState(), Block.NOTIFY_LISTENERS);
+        structureWorldAccess.setBlockState(windModifier.modify(blockPos.withY(bounded.getFloor() + 1)), Blocks.GOLD_BLOCK.getDefaultState(), Block.NOTIFY_LISTENERS);
+        BlockPos.Mutable mutable = blockPos.withY(bounded.getFloor() + 2).mutableCopy();
+        while (mutable.getY() < bounded.getCeiling() - 1) {
+            BlockPos blockPos2 = windModifier.modify(mutable);
+            if (DripstoneHelper.canGenerate(structureWorldAccess, blockPos2) || structureWorldAccess.getBlockState(blockPos2).isOf(Blocks.DRIPSTONE_BLOCK)) {
+                structureWorldAccess.setBlockState(blockPos2, Blocks.CREEPER_HEAD.getDefaultState(), Block.NOTIFY_LISTENERS);
+            }
+            mutable.move(Direction.UP);
+        }
     }
 
     static final class WindModifier {
@@ -117,6 +129,20 @@ extends Feature<LargeDripstoneFeatureConfig> {
             return this.scale(0.0f);
         }
 
+        private int method_35361() {
+            if (this.isStalagmite) {
+                return this.pos.getY();
+            }
+            return this.pos.getY() - this.getBaseScale();
+        }
+
+        private int method_35362() {
+            if (!this.isStalagmite) {
+                return this.pos.getY();
+            }
+            return this.pos.getY() + this.getBaseScale();
+        }
+
         private boolean canGenerate(StructureWorldAccess world, WindModifier wind) {
             while (this.scale > 1) {
                 BlockPos.Mutable mutable = this.pos.mutableCopy();
@@ -156,7 +182,7 @@ extends Feature<LargeDripstoneFeatureConfig> {
                         if (DripstoneHelper.canGenerateOrLava(world, blockPos)) {
                             bl = true;
                             Block block = Blocks.DRIPSTONE_BLOCK;
-                            world.setBlockState(blockPos, block.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+                            world.setBlockState(blockPos, block.getDefaultState(), Block.NOTIFY_LISTENERS);
                         } else if (bl && world.getBlockState(blockPos).isIn(BlockTags.BASE_STONE_OVERWORLD)) continue block1;
                         mutable.move(this.isStalagmite ? Direction.UP : Direction.DOWN);
                     }

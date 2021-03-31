@@ -4,7 +4,6 @@
 package net.minecraft.item;
 
 import java.util.Collection;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -77,7 +76,7 @@ extends Item {
                 property = collection.iterator().next();
             }
             BlockState blockState = DebugStickItem.cycle(state, property, player.shouldCancelInteraction());
-            world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.FORCE_STATE);
+            world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
             DebugStickItem.sendMessage(player, new TranslatableText(this.getTranslationKey() + ".update", property.getName(), DebugStickItem.getValueString(blockState, property)));
         } else {
             property = DebugStickItem.cycle(collection, property, player.shouldCancelInteraction());

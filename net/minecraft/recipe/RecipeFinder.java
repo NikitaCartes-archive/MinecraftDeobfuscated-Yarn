@@ -22,6 +22,7 @@ import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class RecipeFinder {
+    private static final int field_30653 = 0;
     public final Int2IntMap idToAmountMap = new Int2IntOpenHashMap();
 
     public void addNormalItem(ItemStack stack) {

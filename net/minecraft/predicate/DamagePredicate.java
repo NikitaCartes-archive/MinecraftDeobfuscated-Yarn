@@ -96,8 +96,28 @@ public class DamagePredicate {
             return new Builder();
         }
 
+        public Builder dealt(NumberRange.FloatRange dealt) {
+            this.dealt = dealt;
+            return this;
+        }
+
+        public Builder taken(NumberRange.FloatRange taken) {
+            this.taken = taken;
+            return this;
+        }
+
+        public Builder sourceEntity(EntityPredicate sourceEntity) {
+            this.sourceEntity = sourceEntity;
+            return this;
+        }
+
         public Builder blocked(Boolean blocked) {
             this.blocked = blocked;
+            return this;
+        }
+
+        public Builder type(DamageSourcePredicate type) {
+            this.type = type;
             return this;
         }
 

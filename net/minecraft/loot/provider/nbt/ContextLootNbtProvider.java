@@ -28,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class ContextLootNbtProvider
 implements LootNbtProvider {
+    private static final String BLOCK_ENTITY_TARGET_NAME = "block_entity";
     private static final Target BLOCK_ENTITY_TARGET = new Target(){
 
         @Override
@@ -38,7 +39,7 @@ implements LootNbtProvider {
 
         @Override
         public String getName() {
-            return "block_entity";
+            return ContextLootNbtProvider.BLOCK_ENTITY_TARGET_NAME;
         }
 
         @Override
@@ -91,8 +92,12 @@ implements LootNbtProvider {
         return this.target.getRequiredParameters();
     }
 
+    public static LootNbtProvider fromTarget(LootContext.EntityTarget target) {
+        return new ContextLootNbtProvider(ContextLootNbtProvider.getTarget(target));
+    }
+
     private static ContextLootNbtProvider setTarget(String target) {
-        if (target.equals("block_entity")) {
+        if (target.equals(BLOCK_ENTITY_TARGET_NAME)) {
             return new ContextLootNbtProvider(BLOCK_ENTITY_TARGET);
         }
         LootContext.EntityTarget entityTarget = LootContext.EntityTarget.fromString(target);

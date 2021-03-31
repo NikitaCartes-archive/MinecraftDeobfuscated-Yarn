@@ -34,12 +34,12 @@ import net.minecraft.village.VillagerType;
 @Environment(value=EnvType.CLIENT)
 public class VillagerClothingFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>>
 extends FeatureRenderer<T, M> {
-    private static final Int2ObjectMap<Identifier> LEVEL_TO_ID = Util.make(new Int2ObjectOpenHashMap(), int2ObjectOpenHashMap -> {
-        int2ObjectOpenHashMap.put(1, new Identifier("stone"));
-        int2ObjectOpenHashMap.put(2, new Identifier("iron"));
-        int2ObjectOpenHashMap.put(3, new Identifier("gold"));
-        int2ObjectOpenHashMap.put(4, new Identifier("emerald"));
-        int2ObjectOpenHashMap.put(5, new Identifier("diamond"));
+    private static final Int2ObjectMap<Identifier> LEVEL_TO_ID = Util.make(new Int2ObjectOpenHashMap(), levelToId -> {
+        levelToId.put(1, new Identifier("stone"));
+        levelToId.put(2, new Identifier("iron"));
+        levelToId.put(3, new Identifier("gold"));
+        levelToId.put(4, new Identifier("emerald"));
+        levelToId.put(5, new Identifier("diamond"));
     });
     private final Object2ObjectMap<VillagerType, VillagerResourceMetadata.HatType> villagerTypeToHat = new Object2ObjectOpenHashMap<VillagerType, VillagerResourceMetadata.HatType>();
     private final Object2ObjectMap<VillagerProfession, VillagerResourceMetadata.HatType> professionToHat = new Object2ObjectOpenHashMap<VillagerProfession, VillagerResourceMetadata.HatType>();
@@ -82,7 +82,7 @@ extends FeatureRenderer<T, M> {
     }
 
     public <K> VillagerResourceMetadata.HatType getHatType(Object2ObjectMap<K, VillagerResourceMetadata.HatType> hatLookUp, String keyType, DefaultedRegistry<K> registry, K key) {
-        return hatLookUp.computeIfAbsent(key, object2 -> {
+        return hatLookUp.computeIfAbsent(key, k -> {
             try (Resource resource = this.resourceManager.getResource(this.findTexture(keyType, registry.getId(key)));){
                 VillagerResourceMetadata villagerResourceMetadata = resource.getMetadata(VillagerResourceMetadata.READER);
                 if (villagerResourceMetadata == null) return VillagerResourceMetadata.HatType.NONE;

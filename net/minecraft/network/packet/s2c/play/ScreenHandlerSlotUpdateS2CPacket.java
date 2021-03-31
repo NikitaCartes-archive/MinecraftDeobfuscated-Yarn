@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -12,6 +10,8 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class ScreenHandlerSlotUpdateS2CPacket
 implements Packet<ClientPlayPacketListener> {
+    public static final int UPDATE_CURSOR_SYNC_ID = -1;
+    public static final int UPDATE_PLAYER_INVENTORY_SYNC_ID = -2;
     private final int syncId;
     private final int slot;
     private final ItemStack stack;
@@ -40,17 +40,14 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onScreenHandlerSlotUpdate(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getSyncId() {
         return this.syncId;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getSlot() {
         return this.slot;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public ItemStack getItemStack() {
         return this.stack;
     }

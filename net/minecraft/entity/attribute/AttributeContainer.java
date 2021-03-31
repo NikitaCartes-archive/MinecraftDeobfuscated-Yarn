@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -98,7 +96,6 @@ public class AttributeContainer {
         });
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void setFrom(AttributeContainer other) {
         other.custom.values().forEach(entityAttributeInstance -> {
             EntityAttributeInstance entityAttributeInstance2 = this.getCustomInstance(entityAttributeInstance.getAttribute());
@@ -116,9 +113,9 @@ public class AttributeContainer {
         return nbtList;
     }
 
-    public void readNbt(NbtList tag) {
-        for (int i = 0; i < tag.size(); ++i) {
-            NbtCompound nbtCompound = tag.getCompound(i);
+    public void readNbt(NbtList nbt) {
+        for (int i = 0; i < nbt.size(); ++i) {
+            NbtCompound nbtCompound = nbt.getCompound(i);
             String string = nbtCompound.getString("Name");
             Util.ifPresentOrElse(Registry.ATTRIBUTE.getOrEmpty(Identifier.tryParse(string)), entityAttribute -> {
                 EntityAttributeInstance entityAttributeInstance = this.getCustomInstance((EntityAttribute)entityAttribute);

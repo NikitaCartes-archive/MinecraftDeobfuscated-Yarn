@@ -6,8 +6,6 @@ package net.minecraft.text;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.text.BaseText;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -25,7 +23,6 @@ extends BaseText {
         this.key = key;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static void setTranslator(Function<String, Supplier<Text>> translator) {
         KeybindText.translator = translator;
     }
@@ -43,7 +40,6 @@ extends BaseText {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public <T> Optional<T> visitSelf(StringVisitable.StyledVisitor<T> visitor, Style style) {
         return this.getTranslated().visit(visitor, style);
     }

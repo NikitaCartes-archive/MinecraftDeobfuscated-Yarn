@@ -18,6 +18,10 @@ implements WorldGenRandom {
         super(seed);
     }
 
+    public int method_35335() {
+        return this.sampleCount;
+    }
+
     @Override
     public int next(int count) {
         ++this.sampleCount;

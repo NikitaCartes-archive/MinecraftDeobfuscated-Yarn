@@ -3,29 +3,61 @@
  */
 package net.minecraft.server.network;
 
+import com.google.common.collect.Lists;
 import io.netty.buffer.Unpooled;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BeehiveBlockEntity;
+import net.minecraft.client.render.debug.NameGenerator;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.brain.BlockPosLookTarget;
+import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.EntityLookTarget;
+import net.minecraft.entity.ai.brain.Memory;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.WalkTarget;
+import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.ai.goal.GoalSelector;
+import net.minecraft.entity.ai.goal.PrioritizedGoal;
 import net.minecraft.entity.ai.pathing.Path;
+import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.BeeEntity;
+import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureStart;
+import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Nameable;
+import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.village.VillageGossipType;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.GameEventListener;
+import net.minecraft.world.poi.PointOfInterest;
+import net.minecraft.world.poi.PointOfInterestType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -98,11 +130,149 @@ public class DebugInfoSender {
     public static void sendBeehiveDebugData(World world, BlockPos pos, BlockState state, BeehiveBlockEntity blockEntity) {
     }
 
+    private static void method_36158(LivingEntity livingEntity, PacketByteBuf packetByteBuf2) {
+        Brain<Path> brain = livingEntity.getBrain();
+        long l = livingEntity.world.getTime();
+        if (livingEntity instanceof InventoryOwner) {
+            Inventory inventory = ((InventoryOwner)((Object)livingEntity)).getInventory();
+            packetByteBuf2.writeString(inventory.isEmpty() ? "" : inventory.toString());
+        } else {
+            packetByteBuf2.writeString("");
+        }
+        if (brain.hasMemoryModule(MemoryModuleType.PATH)) {
+            packetByteBuf2.writeBoolean(true);
+            Path path = brain.getOptionalMemory(MemoryModuleType.PATH).get();
+            path.method_35498(packetByteBuf2);
+        } else {
+            packetByteBuf2.writeBoolean(false);
+        }
+        if (livingEntity instanceof VillagerEntity) {
+            VillagerEntity villagerEntity = (VillagerEntity)livingEntity;
+            boolean bl = villagerEntity.canSummonGolem(l);
+            packetByteBuf2.writeBoolean(bl);
+        } else {
+            packetByteBuf2.writeBoolean(false);
+        }
+        packetByteBuf2.writeCollection(brain.method_35059(), (packetByteBuf, activity) -> packetByteBuf.writeString(activity.getId()));
+        Set set = brain.getRunningTasks().stream().map(Task::toString).collect(Collectors.toSet());
+        packetByteBuf2.writeCollection(set, PacketByteBuf::writeString);
+        packetByteBuf2.writeCollection(DebugInfoSender.method_36157(livingEntity, l), (packetByteBuf, string) -> {
+            String string2 = ChatUtil.truncate(string, 255, true);
+            packetByteBuf.writeString(string2);
+        });
+        if (livingEntity instanceof VillagerEntity) {
+            Set set2 = Stream.of(MemoryModuleType.JOB_SITE, MemoryModuleType.HOME, MemoryModuleType.MEETING_POINT).map(brain::getOptionalMemory).flatMap(Util::stream).map(GlobalPos::getPos).collect(Collectors.toSet());
+            packetByteBuf2.writeCollection(set2, PacketByteBuf::writeBlockPos);
+        } else {
+            packetByteBuf2.writeVarInt(0);
+        }
+        if (livingEntity instanceof VillagerEntity) {
+            Set set2 = Stream.of(MemoryModuleType.POTENTIAL_JOB_SITE).map(brain::getOptionalMemory).flatMap(Util::stream).map(GlobalPos::getPos).collect(Collectors.toSet());
+            packetByteBuf2.writeCollection(set2, PacketByteBuf::writeBlockPos);
+        } else {
+            packetByteBuf2.writeVarInt(0);
+        }
+        if (livingEntity instanceof VillagerEntity) {
+            Map<UUID, Object2IntMap<VillageGossipType>> map = ((VillagerEntity)livingEntity).getGossip().method_35120();
+            ArrayList list = Lists.newArrayList();
+            map.forEach((uUID, object2IntMap) -> {
+                String string = NameGenerator.name(uUID);
+                object2IntMap.forEach((villageGossipType, integer) -> list.add(string + ": " + (Object)villageGossipType + ": " + integer));
+            });
+            packetByteBuf2.writeCollection(list, PacketByteBuf::writeString);
+        } else {
+            packetByteBuf2.writeVarInt(0);
+        }
+    }
+
+    private static List<String> method_36157(LivingEntity livingEntity, long l) {
+        Map<MemoryModuleType<?>, Optional<Memory<?>>> map = livingEntity.getBrain().method_35058();
+        ArrayList<String> list = Lists.newArrayList();
+        for (Map.Entry<MemoryModuleType<?>, Optional<Memory<?>>> entry : map.entrySet()) {
+            String string;
+            MemoryModuleType<?> memoryModuleType = entry.getKey();
+            Optional<Memory<?>> optional = entry.getValue();
+            if (optional.isPresent()) {
+                Memory<?> memory = optional.get();
+                Object object = memory.getValue();
+                if (memoryModuleType == MemoryModuleType.HEARD_BELL_TIME) {
+                    long m = l - (Long)object;
+                    string = "" + m + " ticks ago";
+                } else {
+                    string = memory.isTimed() ? DebugInfoSender.method_36156((ServerWorld)livingEntity.world, object) + " (ttl: " + memory.method_35127() + ")" : DebugInfoSender.method_36156((ServerWorld)livingEntity.world, object);
+                }
+            } else {
+                string = "-";
+            }
+            list.add(Registry.MEMORY_MODULE_TYPE.getId(memoryModuleType).getPath() + ": " + string);
+        }
+        list.sort(String::compareTo);
+        return list;
+    }
+
+    private static String method_36156(ServerWorld serverWorld, @Nullable Object object) {
+        if (object == null) {
+            return "-";
+        }
+        if (object instanceof UUID) {
+            return DebugInfoSender.method_36156(serverWorld, serverWorld.getEntity((UUID)object));
+        }
+        if (object instanceof LivingEntity) {
+            Entity entity = (Entity)object;
+            return NameGenerator.method_36154(entity);
+        }
+        if (object instanceof Nameable) {
+            return ((Nameable)object).getName().getString();
+        }
+        if (object instanceof WalkTarget) {
+            return DebugInfoSender.method_36156(serverWorld, ((WalkTarget)object).getLookTarget());
+        }
+        if (object instanceof EntityLookTarget) {
+            return DebugInfoSender.method_36156(serverWorld, ((EntityLookTarget)object).method_35066());
+        }
+        if (object instanceof GlobalPos) {
+            return DebugInfoSender.method_36156(serverWorld, ((GlobalPos)object).getPos());
+        }
+        if (object instanceof BlockPosLookTarget) {
+            return DebugInfoSender.method_36156(serverWorld, ((BlockPosLookTarget)object).getBlockPos());
+        }
+        if (object instanceof EntityDamageSource) {
+            Entity entity = ((EntityDamageSource)object).getAttacker();
+            return entity == null ? object.toString() : DebugInfoSender.method_36156(serverWorld, entity);
+        }
+        if (object instanceof Collection) {
+            ArrayList<String> list = Lists.newArrayList();
+            for (Object object2 : (Iterable)object) {
+                list.add(DebugInfoSender.method_36156(serverWorld, object2));
+            }
+            return ((Object)list).toString();
+        }
+        return object.toString();
+    }
+
     private static void sendToAll(ServerWorld world, PacketByteBuf buf, Identifier channel) {
         CustomPayloadS2CPacket packet = new CustomPayloadS2CPacket(channel, buf);
         for (PlayerEntity playerEntity : world.toServerWorld().getPlayers()) {
             ((ServerPlayerEntity)playerEntity).networkHandler.sendPacket(packet);
         }
+    }
+
+    private static /* synthetic */ void method_36163(PacketByteBuf packetByteBuf, Raid raid) {
+        packetByteBuf.writeBlockPos(raid.getCenter());
+    }
+
+    private static /* synthetic */ void method_36162(PacketByteBuf packetByteBuf, PrioritizedGoal prioritizedGoal) {
+        packetByteBuf.writeInt(prioritizedGoal.getPriority());
+        packetByteBuf.writeBoolean(prioritizedGoal.isRunning());
+        packetByteBuf.writeString(prioritizedGoal.getGoal().getClass().getSimpleName());
+    }
+
+    private static /* synthetic */ void method_36155(ServerWorld serverWorld, PointOfInterest pointOfInterest) {
+        DebugInfoSender.sendPoiAddition(serverWorld, pointOfInterest.getPos());
+    }
+
+    private static /* synthetic */ boolean method_36159(PointOfInterestType pointOfInterestType) {
+        return true;
     }
 }
 

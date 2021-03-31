@@ -70,6 +70,10 @@ public abstract class YOffset {
         public int getY(HeightContext context) {
             return context.getMaxY() - 1 + context.getMinY() - this.getOffset();
         }
+
+        public String toString() {
+            return this.getOffset() + " below top";
+        }
     }
 
     static final class AboveBottom
@@ -84,6 +88,10 @@ public abstract class YOffset {
         public int getY(HeightContext context) {
             return context.getMinY() + this.getOffset();
         }
+
+        public String toString() {
+            return this.getOffset() + " above bottom";
+        }
     }
 
     static final class Fixed
@@ -97,6 +105,10 @@ public abstract class YOffset {
         @Override
         public int getY(HeightContext context) {
             return this.getOffset();
+        }
+
+        public String toString() {
+            return this.getOffset() + " absolute";
         }
     }
 }

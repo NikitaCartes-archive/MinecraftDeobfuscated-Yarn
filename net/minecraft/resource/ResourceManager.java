@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceFactory;
 import net.minecraft.resource.ResourcePack;
@@ -27,7 +25,6 @@ extends ResourceFactory {
     /**
      * Gets a set of all namespaces offered by the resource packs loaded by this manager.
      */
-    @Environment(value=EnvType.CLIENT)
     public Set<String> getAllNamespaces();
 
     /**
@@ -38,7 +35,6 @@ extends ResourceFactory {
      * 
      * @param id the resource identifier to search for
      */
-    @Environment(value=EnvType.CLIENT)
     public boolean containsResource(Identifier var1);
 
     /**
@@ -46,6 +42,8 @@ extends ResourceFactory {
      * 
      * <p>Resources are returned in load order, or ascending order of priority, so the last element in the returned
      * list is what would be returned normally by {@link #getResource}
+     * 
+     * <p>Each resource in this returned list must be closed to avoid resource leaks.
      * 
      * @throws java.io.FileNotFoundException if no matching resources could be found (i.e. if the list would be empty)
      * @throws IOException if resources were found, but any one of them could not be opened to be read.
@@ -73,7 +71,6 @@ extends ResourceFactory {
     /**
      * Gets a stream of loaded resource packs in increasing order of priority.
      */
-    @Environment(value=EnvType.CLIENT)
     public Stream<ResourcePack> streamResourcePacks();
 
     public static enum Empty implements ResourceManager
@@ -82,7 +79,6 @@ extends ResourceFactory {
 
 
         @Override
-        @Environment(value=EnvType.CLIENT)
         public Set<String> getAllNamespaces() {
             return ImmutableSet.of();
         }
@@ -93,7 +89,6 @@ extends ResourceFactory {
         }
 
         @Override
-        @Environment(value=EnvType.CLIENT)
         public boolean containsResource(Identifier id) {
             return false;
         }
@@ -109,7 +104,6 @@ extends ResourceFactory {
         }
 
         @Override
-        @Environment(value=EnvType.CLIENT)
         public Stream<ResourcePack> streamResourcePacks() {
             return Stream.of(new ResourcePack[0]);
         }

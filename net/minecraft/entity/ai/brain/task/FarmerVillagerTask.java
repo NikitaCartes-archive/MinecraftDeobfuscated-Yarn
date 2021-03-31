@@ -6,7 +6,6 @@ package net.minecraft.entity.ai.brain.task;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import java.util.List;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -32,6 +31,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class FarmerVillagerTask
 extends Task<VillagerEntity> {
+    private static final int field_30124 = 200;
+    public static final float field_30123 = 0.5f;
     @Nullable
     private BlockPos currentTarget;
     private long nextResponseTime;
@@ -112,16 +113,16 @@ extends Task<VillagerEntity> {
                     boolean bl = false;
                     if (!itemStack.isEmpty()) {
                         if (itemStack.isOf(Items.WHEAT_SEEDS)) {
-                            serverWorld.setBlockState(this.currentTarget, Blocks.WHEAT.getDefaultState(), SetBlockStateFlags.DEFAULT);
+                            serverWorld.setBlockState(this.currentTarget, Blocks.WHEAT.getDefaultState(), Block.NOTIFY_ALL);
                             bl = true;
                         } else if (itemStack.isOf(Items.POTATO)) {
-                            serverWorld.setBlockState(this.currentTarget, Blocks.POTATOES.getDefaultState(), SetBlockStateFlags.DEFAULT);
+                            serverWorld.setBlockState(this.currentTarget, Blocks.POTATOES.getDefaultState(), Block.NOTIFY_ALL);
                             bl = true;
                         } else if (itemStack.isOf(Items.CARROT)) {
-                            serverWorld.setBlockState(this.currentTarget, Blocks.CARROTS.getDefaultState(), SetBlockStateFlags.DEFAULT);
+                            serverWorld.setBlockState(this.currentTarget, Blocks.CARROTS.getDefaultState(), Block.NOTIFY_ALL);
                             bl = true;
                         } else if (itemStack.isOf(Items.BEETROOT_SEEDS)) {
-                            serverWorld.setBlockState(this.currentTarget, Blocks.BEETROOTS.getDefaultState(), SetBlockStateFlags.DEFAULT);
+                            serverWorld.setBlockState(this.currentTarget, Blocks.BEETROOTS.getDefaultState(), Block.NOTIFY_ALL);
                             bl = true;
                         }
                     }

@@ -37,6 +37,12 @@ public class StringNbtReader {
     public static final Dynamic2CommandExceptionType LIST_MIXED = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableText("argument.nbt.list.mixed", object, object2));
     public static final Dynamic2CommandExceptionType ARRAY_MIXED = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableText("argument.nbt.array.mixed", object, object2));
     public static final DynamicCommandExceptionType ARRAY_INVALID = new DynamicCommandExceptionType(object -> new TranslatableText("argument.nbt.array.invalid", object));
+    public static final char field_33265 = ',';
+    public static final char field_33266 = ':';
+    private static final char field_33267 = '[';
+    private static final char field_33268 = ']';
+    private static final char field_33269 = '}';
+    private static final char field_33270 = '{';
     private static final Pattern DOUBLE_PATTERN_IMPLICIT = Pattern.compile("[-+]?(?:[0-9]+[.]|[0-9]*[.][0-9]+)(?:e[-+]?[0-9]+)?", 2);
     private static final Pattern DOUBLE_PATTERN = Pattern.compile("[-+]?(?:[0-9]+[.]?|[0-9]*[.][0-9]+)(?:e[-+]?[0-9]+)?d", 2);
     private static final Pattern FLOAT_PATTERN = Pattern.compile("[-+]?(?:[0-9]+[.]?|[0-9]*[.][0-9]+)(?:e[-+]?[0-9]+)?f", 2);

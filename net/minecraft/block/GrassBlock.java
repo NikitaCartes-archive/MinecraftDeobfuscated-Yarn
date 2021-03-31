@@ -5,8 +5,8 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Fertilizable;
@@ -59,7 +59,7 @@ implements Fertilizable {
                 blockState3 = blockState;
             }
             if (!blockState3.canPlaceAt(world, blockPos2)) continue;
-            world.setBlockState(blockPos2, blockState3, SetBlockStateFlags.DEFAULT);
+            world.setBlockState(blockPos2, blockState3, Block.NOTIFY_ALL);
         }
     }
 

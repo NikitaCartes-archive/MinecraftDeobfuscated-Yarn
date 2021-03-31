@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.player.PlayerEntity;
@@ -44,6 +43,7 @@ import org.apache.logging.log4j.Logger;
 public class ServerStatHandler
 extends StatHandler {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final int field_29821 = 300;
     private final MinecraftServer server;
     private final File file;
     private final Set<Stat<?>> pendingStats = Sets.newHashSet();
@@ -92,17 +92,17 @@ extends StatHandler {
                 return;
             }
             NbtCompound nbtCompound = ServerStatHandler.jsonToCompound(jsonElement.getAsJsonObject());
-            if (!nbtCompound.contains("DataVersion", NbtTypeIds.NUMBER)) {
+            if (!nbtCompound.contains("DataVersion", 99)) {
                 nbtCompound.putInt("DataVersion", 1343);
             }
-            if ((nbtCompound = NbtHelper.update(dataFixer, DataFixTypes.STATS, nbtCompound, nbtCompound.getInt("DataVersion"))).contains("stats", NbtTypeIds.COMPOUND)) {
+            if ((nbtCompound = NbtHelper.update(dataFixer, DataFixTypes.STATS, nbtCompound, nbtCompound.getInt("DataVersion"))).contains("stats", 10)) {
                 NbtCompound nbtCompound2 = nbtCompound.getCompound("stats");
                 for (String string : nbtCompound2.getKeys()) {
-                    if (!nbtCompound2.contains(string, NbtTypeIds.COMPOUND)) continue;
+                    if (!nbtCompound2.contains(string, 10)) continue;
                     Util.ifPresentOrElse(Registry.STAT_TYPE.getOrEmpty(new Identifier(string)), statType -> {
                         NbtCompound nbtCompound2 = nbtCompound2.getCompound(string);
                         for (String string2 : nbtCompound2.getKeys()) {
-                            if (nbtCompound2.contains(string2, NbtTypeIds.NUMBER)) {
+                            if (nbtCompound2.contains(string2, 99)) {
                                 Util.ifPresentOrElse(this.createStat((StatType)statType, string2), stat -> this.statMap.put(stat, nbtCompound2.getInt(string2)), () -> LOGGER.warn("Invalid statistic in {}: Don't know what {} is", (Object)this.file, (Object)string2));
                                 continue;
                             }
@@ -120,9 +120,9 @@ extends StatHandler {
         return Optional.ofNullable(Identifier.tryParse(id)).flatMap(type.getRegistry()::getOrEmpty).map(type::getOrCreateStat);
     }
 
-    private static NbtCompound jsonToCompound(JsonObject jsonObject) {
+    private static NbtCompound jsonToCompound(JsonObject json) {
         NbtCompound nbtCompound = new NbtCompound();
-        for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+        for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
             JsonPrimitive jsonPrimitive;
             JsonElement jsonElement = entry.getValue();
             if (jsonElement.isJsonObject()) {

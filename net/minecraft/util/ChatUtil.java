@@ -5,8 +5,6 @@ package net.minecraft.util;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,7 +12,6 @@ public class ChatUtil {
     private static final Pattern PATTERN = Pattern.compile("(?i)\\u00A7[0-9A-FK-OR]");
     private static final Pattern LINE_BREAK = Pattern.compile("\r\n|[\n\r\u2028\u2029\u0085]");
 
-    @Environment(value=EnvType.CLIENT)
     public static String ticksToString(int ticks) {
         int i = ticks / 20;
         int j = i / 60;
@@ -24,7 +21,6 @@ public class ChatUtil {
         return j + ":" + i;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static String stripTextFormat(String text) {
         return PATTERN.matcher(text).replaceAll("");
     }
@@ -33,7 +29,16 @@ public class ChatUtil {
         return StringUtils.isEmpty(text);
     }
 
-    @Environment(value=EnvType.CLIENT)
+    public static String truncate(String text, int maxLength, boolean addEllipsis) {
+        if (text.length() <= maxLength) {
+            return text;
+        }
+        if (addEllipsis && maxLength > 3) {
+            return text.substring(0, maxLength - 3) + "...";
+        }
+        return text.substring(0, maxLength);
+    }
+
     public static int countLines(String text) {
         if (text.isEmpty()) {
             return 0;

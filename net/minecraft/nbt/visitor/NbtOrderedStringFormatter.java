@@ -55,6 +55,13 @@ implements NbtElementVisitor {
     private static final Pattern SIMPLE_NAME = Pattern.compile("[A-Za-z0-9._+-]+");
     private static final String KEY_VALUE_SEPARATOR = String.valueOf(':');
     private static final String ENTRY_SEPARATOR = String.valueOf(',');
+    private static final String field_33234 = "[";
+    private static final String field_33235 = "]";
+    private static final String field_33236 = ";";
+    private static final String field_33237 = " ";
+    private static final String field_33238 = "{";
+    private static final String field_33239 = "}";
+    private static final String field_33240 = "\n";
     private final String prefix;
     private final int indentationLevel;
     private final List<String> pathParts;
@@ -112,41 +119,41 @@ implements NbtElementVisitor {
 
     @Override
     public void visitByteArray(NbtByteArray element) {
-        StringBuilder stringBuilder = new StringBuilder("[").append("B").append(";");
+        StringBuilder stringBuilder = new StringBuilder(field_33234).append("B").append(field_33236);
         byte[] bs = element.getByteArray();
         for (int i = 0; i < bs.length; ++i) {
-            stringBuilder.append(" ").append(bs[i]).append("B");
+            stringBuilder.append(field_33237).append(bs[i]).append("B");
             if (i == bs.length - 1) continue;
             stringBuilder.append(ENTRY_SEPARATOR);
         }
-        stringBuilder.append("]");
+        stringBuilder.append(field_33235);
         this.result = stringBuilder.toString();
     }
 
     @Override
     public void visitIntArray(NbtIntArray element) {
-        StringBuilder stringBuilder = new StringBuilder("[").append("I").append(";");
+        StringBuilder stringBuilder = new StringBuilder(field_33234).append("I").append(field_33236);
         int[] is = element.getIntArray();
         for (int i = 0; i < is.length; ++i) {
-            stringBuilder.append(" ").append(is[i]);
+            stringBuilder.append(field_33237).append(is[i]);
             if (i == is.length - 1) continue;
             stringBuilder.append(ENTRY_SEPARATOR);
         }
-        stringBuilder.append("]");
+        stringBuilder.append(field_33235);
         this.result = stringBuilder.toString();
     }
 
     @Override
     public void visitLongArray(NbtLongArray element) {
         String string = "L";
-        StringBuilder stringBuilder = new StringBuilder("[").append("L").append(";");
+        StringBuilder stringBuilder = new StringBuilder(field_33234).append("L").append(field_33236);
         long[] ls = element.getLongArray();
         for (int i = 0; i < ls.length; ++i) {
-            stringBuilder.append(" ").append(ls[i]).append("L");
+            stringBuilder.append(field_33237).append(ls[i]).append("L");
             if (i == ls.length - 1) continue;
             stringBuilder.append(ENTRY_SEPARATOR);
         }
-        stringBuilder.append("]");
+        stringBuilder.append(field_33235);
         this.result = stringBuilder.toString();
     }
 
@@ -157,22 +164,22 @@ implements NbtElementVisitor {
             this.result = "[]";
             return;
         }
-        StringBuilder stringBuilder = new StringBuilder("[");
+        StringBuilder stringBuilder = new StringBuilder(field_33234);
         this.pushPathPart("[]");
         String string2 = string = IGNORED_PATHS.contains(this.joinPath()) ? "" : this.prefix;
         if (!string.isEmpty()) {
-            stringBuilder.append("\n");
+            stringBuilder.append(field_33240);
         }
         for (int i = 0; i < element.size(); ++i) {
             stringBuilder.append(Strings.repeat(string, this.indentationLevel + 1));
             stringBuilder.append(new NbtOrderedStringFormatter(string, this.indentationLevel + 1, this.pathParts).apply(element.get(i)));
             if (i == element.size() - 1) continue;
-            stringBuilder.append(ENTRY_SEPARATOR).append(string.isEmpty() ? " " : "\n");
+            stringBuilder.append(ENTRY_SEPARATOR).append(string.isEmpty() ? field_33237 : field_33240);
         }
         if (!string.isEmpty()) {
-            stringBuilder.append("\n").append(Strings.repeat(string, this.indentationLevel));
+            stringBuilder.append(field_33240).append(Strings.repeat(string, this.indentationLevel));
         }
-        stringBuilder.append("]");
+        stringBuilder.append(field_33235);
         this.result = stringBuilder.toString();
         this.popPathPart();
     }
@@ -184,11 +191,11 @@ implements NbtElementVisitor {
             this.result = "{}";
             return;
         }
-        StringBuilder stringBuilder = new StringBuilder("{");
+        StringBuilder stringBuilder = new StringBuilder(field_33238);
         this.pushPathPart("{}");
         String string2 = string = IGNORED_PATHS.contains(this.joinPath()) ? "" : this.prefix;
         if (!string.isEmpty()) {
-            stringBuilder.append("\n");
+            stringBuilder.append(field_33240);
         }
         List<String> collection = this.getSortedNames(compound);
         Iterator iterator = collection.iterator();
@@ -196,15 +203,15 @@ implements NbtElementVisitor {
             String string22 = (String)iterator.next();
             NbtElement nbtElement = compound.get(string22);
             this.pushPathPart(string22);
-            stringBuilder.append(Strings.repeat(string, this.indentationLevel + 1)).append(NbtOrderedStringFormatter.escapeName(string22)).append(KEY_VALUE_SEPARATOR).append(" ").append(new NbtOrderedStringFormatter(string, this.indentationLevel + 1, this.pathParts).apply(nbtElement));
+            stringBuilder.append(Strings.repeat(string, this.indentationLevel + 1)).append(NbtOrderedStringFormatter.escapeName(string22)).append(KEY_VALUE_SEPARATOR).append(field_33237).append(new NbtOrderedStringFormatter(string, this.indentationLevel + 1, this.pathParts).apply(nbtElement));
             this.popPathPart();
             if (!iterator.hasNext()) continue;
-            stringBuilder.append(ENTRY_SEPARATOR).append(string.isEmpty() ? " " : "\n");
+            stringBuilder.append(ENTRY_SEPARATOR).append(string.isEmpty() ? field_33237 : field_33240);
         }
         if (!string.isEmpty()) {
-            stringBuilder.append("\n").append(Strings.repeat(string, this.indentationLevel));
+            stringBuilder.append(field_33240).append(Strings.repeat(string, this.indentationLevel));
         }
-        stringBuilder.append("}");
+        stringBuilder.append(field_33239);
         this.result = stringBuilder.toString();
         this.popPathPart();
     }

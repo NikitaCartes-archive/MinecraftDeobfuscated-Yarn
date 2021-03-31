@@ -6,9 +6,6 @@ package net.minecraft.entity.passive;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -51,6 +48,7 @@ public class MooshroomEntity
 extends CowEntity
 implements Shearable {
     private static final TrackedData<String> TYPE = DataTracker.registerData(MooshroomEntity.class, TrackedDataHandlerRegistry.STRING);
+    private static final int field_30339 = 1024;
     private StatusEffect stewEffect;
     private int stewEffectDuration;
     private UUID lightningId;
@@ -173,24 +171,24 @@ implements Shearable {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
-        tag.putString("Type", this.getMooshroomType().name);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putString("Type", this.getMooshroomType().name);
         if (this.stewEffect != null) {
-            tag.putByte("EffectId", (byte)StatusEffect.getRawId(this.stewEffect));
-            tag.putInt("EffectDuration", this.stewEffectDuration);
+            nbt.putByte("EffectId", (byte)StatusEffect.getRawId(this.stewEffect));
+            nbt.putInt("EffectDuration", this.stewEffectDuration);
         }
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        this.setType(Type.fromName(tag.getString("Type")));
-        if (tag.contains("EffectId", NbtTypeIds.BYTE)) {
-            this.stewEffect = StatusEffect.byRawId(tag.getByte("EffectId"));
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.setType(Type.fromName(nbt.getString("Type")));
+        if (nbt.contains("EffectId", 1)) {
+            this.stewEffect = StatusEffect.byRawId(nbt.getByte("EffectId"));
         }
-        if (tag.contains("EffectDuration", NbtTypeIds.INT)) {
-            this.stewEffectDuration = tag.getInt("EffectDuration");
+        if (nbt.contains("EffectDuration", 3)) {
+            this.stewEffectDuration = nbt.getInt("EffectDuration");
         }
     }
 
@@ -248,7 +246,6 @@ implements Shearable {
             this.mushroom = mushroom;
         }
 
-        @Environment(value=EnvType.CLIENT)
         public BlockState getMushroomState() {
             return this.mushroom;
         }

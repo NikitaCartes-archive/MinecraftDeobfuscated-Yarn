@@ -10,6 +10,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
 
 public abstract class Task<E extends LivingEntity> {
+    private static final int field_30112 = 60;
     protected final Map<MemoryModuleType<?>, MemoryModuleState> requiredMemoryStates;
     private Status status = Status.STOPPED;
     private long endTime;

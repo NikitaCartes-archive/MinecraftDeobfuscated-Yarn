@@ -3,8 +3,6 @@
  */
 package net.minecraft.util.math;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Quaternion;
@@ -14,7 +12,6 @@ import net.minecraft.util.math.Vec3f;
  * @implNote Even though this is used only on the client, it accesses protected
  * fields from {@link Matrix4f}, which requires them to be in the same package.
  */
-@Environment(value=EnvType.CLIENT)
 public class Vector4f {
     private float x;
     private float y;
@@ -79,6 +76,13 @@ public class Vector4f {
         return this.w;
     }
 
+    public void method_35927(float f) {
+        this.x *= f;
+        this.y *= f;
+        this.z *= f;
+        this.w *= f;
+    }
+
     public void multiplyComponentwise(Vec3f vector) {
         this.x *= vector.getX();
         this.y *= vector.getY();
@@ -90,6 +94,13 @@ public class Vector4f {
         this.y = y;
         this.z = z;
         this.w = w;
+    }
+
+    public void method_35929(float f, float g, float h, float i) {
+        this.x += f;
+        this.y += g;
+        this.z += h;
+        this.w += i;
     }
 
     public float dotProduct(Vector4f other) {
@@ -134,6 +145,14 @@ public class Vector4f {
         this.y /= this.w;
         this.z /= this.w;
         this.w = 1.0f;
+    }
+
+    public void method_35928(Vector4f vector4f, float f) {
+        float g = 1.0f - f;
+        this.x = this.x * g + vector4f.x * f;
+        this.y = this.y * g + vector4f.y * f;
+        this.z = this.z * g + vector4f.z * f;
+        this.w = this.w * g + vector4f.w * f;
     }
 
     public String toString() {

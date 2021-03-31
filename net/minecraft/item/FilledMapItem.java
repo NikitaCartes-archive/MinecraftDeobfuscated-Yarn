@@ -7,9 +7,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.LinkedHashMultiset;
 import com.google.common.collect.Multisets;
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.MapColor;
@@ -44,6 +41,11 @@ import org.jetbrains.annotations.Nullable;
 
 public class FilledMapItem
 extends NetworkSyncedItem {
+    public static final int field_30907 = 128;
+    public static final int field_30908 = 128;
+    private static final int DEFAULT_MAP_COLOR = -12173266;
+    private static final String MAP_KEY = "map";
+
     public FilledMapItem(Item.Settings settings) {
         super(settings);
     }
@@ -68,7 +70,7 @@ extends NetworkSyncedItem {
     @Nullable
     public static Integer getMapId(ItemStack stack) {
         NbtCompound nbtCompound = stack.getTag();
-        return nbtCompound != null && nbtCompound.contains("map", NbtTypeIds.NUMBER) ? Integer.valueOf(nbtCompound.getInt("map")) : null;
+        return nbtCompound != null && nbtCompound.contains(MAP_KEY, 99) ? Integer.valueOf(nbtCompound.getInt(MAP_KEY)) : null;
     }
 
     private static int allocateMapId(World world, int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<World> dimension) {
@@ -79,7 +81,7 @@ extends NetworkSyncedItem {
     }
 
     private static void setMapId(ItemStack stack, int id) {
-        stack.getOrCreateTag().putInt("map", id);
+        stack.getOrCreateTag().putInt(MAP_KEY, id);
     }
 
     private static void createMapState(ItemStack stack, World world, int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<World> dimension) {
@@ -315,10 +317,10 @@ extends NetworkSyncedItem {
     @Override
     public void onCraft(ItemStack stack, World world, PlayerEntity player) {
         NbtCompound nbtCompound = stack.getTag();
-        if (nbtCompound != null && nbtCompound.contains("map_scale_direction", NbtTypeIds.NUMBER)) {
+        if (nbtCompound != null && nbtCompound.contains("map_scale_direction", 99)) {
             FilledMapItem.scale(stack, world, nbtCompound.getInt("map_scale_direction"));
             nbtCompound.remove("map_scale_direction");
-        } else if (nbtCompound != null && nbtCompound.contains("map_to_lock", NbtTypeIds.BYTE) && nbtCompound.getBoolean("map_to_lock")) {
+        } else if (nbtCompound != null && nbtCompound.contains("map_to_lock", 1) && nbtCompound.getBoolean("map_to_lock")) {
             FilledMapItem.copyMap(world, stack);
             nbtCompound.remove("map_to_lock");
         }
@@ -345,7 +347,6 @@ extends NetworkSyncedItem {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         MapState mapState;
         Integer integer = FilledMapItem.getMapId(stack);
@@ -364,10 +365,9 @@ extends NetworkSyncedItem {
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static int getMapColor(ItemStack stack) {
         NbtCompound nbtCompound = stack.getSubTag("display");
-        if (nbtCompound != null && nbtCompound.contains("MapColor", NbtTypeIds.NUMBER)) {
+        if (nbtCompound != null && nbtCompound.contains("MapColor", 99)) {
             int i = nbtCompound.getInt("MapColor");
             return 0xFF000000 | i & 0xFFFFFF;
         }

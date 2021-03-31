@@ -30,7 +30,7 @@ extends BipedEntityRenderer<T, M> {
 
     @Override
     protected boolean isShaking(T zombieEntity) {
-        return ((ZombieEntity)zombieEntity).isConvertingInWater();
+        return super.isShaking(zombieEntity) || ((ZombieEntity)zombieEntity).isConvertingInWater();
     }
 
     @Override

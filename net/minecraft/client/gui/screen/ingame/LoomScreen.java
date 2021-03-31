@@ -8,7 +8,6 @@ import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.MinecraftClient;
@@ -42,7 +41,16 @@ import org.jetbrains.annotations.Nullable;
 public class LoomScreen
 extends HandledScreen<LoomScreenHandler> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/loom.png");
+    private static final int field_32345 = 1;
+    private static final int field_32346 = 4;
+    private static final int field_32347 = 4;
     private static final int PATTERN_BUTTON_ROW_COUNT = (BannerPattern.COUNT - BannerPattern.HAS_PATTERN_ITEM_COUNT - 1 + 4 - 1) / 4;
+    private static final int field_32348 = 12;
+    private static final int field_32349 = 15;
+    private static final int field_32350 = 14;
+    private static final int field_32351 = 56;
+    private static final int field_32352 = 60;
+    private static final int field_32353 = 13;
     private ModelPart bannerField;
     @Nullable
     private List<Pair<BannerPattern, DyeColor>> bannerPatterns;
@@ -79,8 +87,8 @@ extends HandledScreen<LoomScreenHandler> {
         this.renderBackground(matrices);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, TEXTURE);
-        int i = this.x;
-        int j = this.y;
+        int i = this.field_2776;
+        int j = this.field_2800;
         this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
         Slot slot = ((LoomScreenHandler)this.handler).getBannerSlot();
         Slot slot2 = ((LoomScreenHandler)this.handler).getDyeSlot();
@@ -169,8 +177,8 @@ extends HandledScreen<LoomScreenHandler> {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         this.scrollbarClicked = false;
         if (this.canApplyDyePattern) {
-            int i = this.x + 60;
-            int j = this.y + 13;
+            int i = this.field_2776 + 60;
+            int j = this.field_2800 + 13;
             int k = this.firstPatternButtonId + 16;
             for (int l = this.firstPatternButtonId; l < k; ++l) {
                 int m = l - this.firstPatternButtonId;
@@ -181,8 +189,8 @@ extends HandledScreen<LoomScreenHandler> {
                 this.client.interactionManager.clickButton(((LoomScreenHandler)this.handler).syncId, l);
                 return true;
             }
-            i = this.x + 119;
-            j = this.y + 9;
+            i = this.field_2776 + 119;
+            j = this.field_2800 + 9;
             if (mouseX >= (double)i && mouseX < (double)(i + 12) && mouseY >= (double)j && mouseY < (double)(j + 56)) {
                 this.scrollbarClicked = true;
             }
@@ -193,7 +201,7 @@ extends HandledScreen<LoomScreenHandler> {
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         if (this.scrollbarClicked && this.canApplyDyePattern) {
-            int i = this.y + 13;
+            int i = this.field_2800 + 13;
             int j = i + 56;
             this.scrollPosition = ((float)mouseY - (float)i - 7.5f) / ((float)(j - i) - 15.0f);
             this.scrollPosition = MathHelper.clamp(this.scrollPosition, 0.0f, 1.0f);
@@ -231,7 +239,7 @@ extends HandledScreen<LoomScreenHandler> {
         ItemStack itemStack3 = ((LoomScreenHandler)this.handler).getDyeSlot().getStack();
         ItemStack itemStack4 = ((LoomScreenHandler)this.handler).getPatternSlot().getStack();
         NbtCompound nbtCompound = itemStack2.getOrCreateSubTag("BlockEntityTag");
-        boolean bl = this.hasTooManyPatterns = nbtCompound.contains("Patterns", NbtTypeIds.LIST) && !itemStack2.isEmpty() && nbtCompound.getList("Patterns", NbtTypeIds.COMPOUND).size() >= 6;
+        boolean bl = this.hasTooManyPatterns = nbtCompound.contains("Patterns", 9) && !itemStack2.isEmpty() && nbtCompound.getList("Patterns", 10).size() >= 6;
         if (this.hasTooManyPatterns) {
             this.bannerPatterns = null;
         }

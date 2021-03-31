@@ -16,6 +16,9 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public abstract class AbstractBeeSoundInstance
 extends MovingSoundInstance {
+    private static final float field_32991 = 0.0f;
+    private static final float field_32992 = 1.2f;
+    private static final float field_32993 = 0.0f;
     protected final BeeEntity bee;
     private boolean replaced;
 

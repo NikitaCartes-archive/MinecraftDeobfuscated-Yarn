@@ -4,8 +4,6 @@
 package net.minecraft.block;
 
 import java.util.function.Supplier;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
@@ -25,7 +23,6 @@ extends BlockWithEntity {
         this.entityTypeRetriever = entityTypeSupplier;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public abstract DoubleBlockProperties.PropertySource<? extends ChestBlockEntity> getBlockEntitySource(BlockState var1, World var2, BlockPos var3, boolean var4);
 }
 

@@ -17,8 +17,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtNull;
@@ -56,7 +54,6 @@ public class NbtIo {
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static void write(NbtCompound compound, File file) throws IOException {
         try (FileOutputStream fileOutputStream = new FileOutputStream(file);
              DataOutputStream dataOutputStream = new DataOutputStream(fileOutputStream);){
@@ -68,7 +65,6 @@ public class NbtIo {
      * Exception decompiling
      */
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     public static NbtCompound read(File file) throws IOException {
         /*
          * This method has failed to decompile.  When submitting a bug report, please provide this stack trace, and (if you hold appropriate legal rights) the relevant class file.

@@ -11,7 +11,6 @@ import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
@@ -41,6 +40,9 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class BookScreen
 extends Screen {
+    public static final int field_32328 = 16;
+    public static final int field_32329 = 36;
+    public static final int field_32330 = 30;
     public static final Contents EMPTY_PROVIDER = new Contents(){
 
         @Override
@@ -54,6 +56,10 @@ extends Screen {
         }
     };
     public static final Identifier BOOK_TEXTURE = new Identifier("textures/gui/book.png");
+    protected static final int field_32331 = 114;
+    protected static final int field_32332 = 128;
+    protected static final int field_32333 = 192;
+    protected static final int field_32334 = 192;
     private Contents contents;
     private int pageIndex;
     private List<OrderedText> cachedPage = Collections.emptyList();
@@ -244,20 +250,20 @@ extends Screen {
         return null;
     }
 
-    private static List<String> readPages(NbtCompound tag) {
+    private static List<String> readPages(NbtCompound nbt) {
         ImmutableList.Builder builder = ImmutableList.builder();
-        BookScreen.method_33888(tag, builder::add);
+        BookScreen.method_33888(nbt, builder::add);
         return builder.build();
     }
 
-    public static void method_33888(NbtCompound nbtCompound, Consumer<String> consumer) {
+    public static void method_33888(NbtCompound nbt, Consumer<String> consumer) {
         IntFunction<String> intFunction;
-        NbtList nbtList = nbtCompound.getList("pages", NbtTypeIds.STRING).copy();
-        if (MinecraftClient.getInstance().shouldFilterText() && nbtCompound.contains("filtered_pages", NbtTypeIds.COMPOUND)) {
-            NbtCompound nbtCompound2 = nbtCompound.getCompound("filtered_pages");
+        NbtList nbtList = nbt.getList("pages", 8).copy();
+        if (MinecraftClient.getInstance().shouldFilterText() && nbt.contains("filtered_pages", 10)) {
+            NbtCompound nbtCompound = nbt.getCompound("filtered_pages");
             intFunction = i -> {
                 String string = String.valueOf(i);
-                return nbtCompound2.contains(string) ? nbtCompound2.getString(string) : nbtList.getString(i);
+                return nbtCompound.contains(string) ? nbtCompound.getString(string) : nbtList.getString(i);
             };
         } else {
             intFunction = nbtList::getString;

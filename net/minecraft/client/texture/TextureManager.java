@@ -5,6 +5,7 @@ package net.minecraft.client.texture;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.util.Iterator;
@@ -24,7 +25,6 @@ import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.ResourceTexture;
 import net.minecraft.client.texture.TextureTickListener;
-import net.minecraft.client.texture.TextureUtil;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.util.Identifier;
@@ -160,7 +160,7 @@ AutoCloseable {
     public void destroyTexture(Identifier id) {
         AbstractTexture abstractTexture = this.method_34590(id, MissingSprite.getMissingSpriteTexture());
         if (abstractTexture != MissingSprite.getMissingSpriteTexture()) {
-            TextureUtil.deleteId(abstractTexture.getGlId());
+            TextureUtil.releaseTextureId(abstractTexture.getGlId());
         }
     }
 

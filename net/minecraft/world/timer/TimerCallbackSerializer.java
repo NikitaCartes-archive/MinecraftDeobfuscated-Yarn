@@ -45,17 +45,17 @@ public class TimerCallbackSerializer<C> {
     }
 
     @Nullable
-    public TimerCallback<C> deserialize(NbtCompound tag) {
-        Identifier identifier = Identifier.tryParse(tag.getString("Type"));
+    public TimerCallback<C> deserialize(NbtCompound nbt) {
+        Identifier identifier = Identifier.tryParse(nbt.getString("Type"));
         TimerCallback.Serializer<C, ?> serializer = this.serializersByType.get(identifier);
         if (serializer == null) {
-            LOGGER.error("Failed to deserialize timer callback: {}", (Object)tag);
+            LOGGER.error("Failed to deserialize timer callback: {}", (Object)nbt);
             return null;
         }
         try {
-            return serializer.deserialize(tag);
+            return serializer.deserialize(nbt);
         } catch (Exception exception) {
-            LOGGER.error("Failed to deserialize timer callback: {}", (Object)tag, (Object)exception);
+            LOGGER.error("Failed to deserialize timer callback: {}", (Object)nbt, (Object)exception);
             return null;
         }
     }

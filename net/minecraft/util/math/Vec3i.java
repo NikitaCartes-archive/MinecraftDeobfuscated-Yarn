@@ -6,8 +6,6 @@ package net.minecraft.util.math;
 import com.google.common.base.MoreObjects;
 import com.mojang.serialization.Codec;
 import java.util.stream.IntStream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -95,6 +93,13 @@ implements Comparable<Vec3i> {
         return this;
     }
 
+    public Vec3i add(double x, double y, double z) {
+        if (x == 0.0 && y == 0.0 && z == 0.0) {
+            return this;
+        }
+        return new Vec3i((double)this.getX() + x, (double)this.getY() + y, (double)this.getZ() + z);
+    }
+
     /**
      * Returns another Vec3i whose coordinates have the parameter x, y, and z
      * added to the coordinates of this vector.
@@ -106,6 +111,24 @@ implements Comparable<Vec3i> {
             return this;
         }
         return new Vec3i(this.getX() + x, this.getY() + y, this.getZ() + z);
+    }
+
+    public Vec3i add(Vec3i vec) {
+        return this.add(vec.getX(), vec.getY(), vec.getZ());
+    }
+
+    public Vec3i subtract(Vec3i vec) {
+        return this.add(-vec.getX(), -vec.getY(), -vec.getZ());
+    }
+
+    public Vec3i multiply(int scale) {
+        if (scale == 1) {
+            return this;
+        }
+        if (scale == 0) {
+            return ZERO;
+        }
+        return new Vec3i(this.getX() * scale, this.getY() * scale, this.getZ() * scale);
     }
 
     public Vec3i up() {
@@ -124,11 +147,57 @@ implements Comparable<Vec3i> {
         return this.offset(Direction.DOWN, distance);
     }
 
+    public Vec3i north() {
+        return this.north(1);
+    }
+
+    public Vec3i north(int distance) {
+        return this.offset(Direction.NORTH, distance);
+    }
+
+    public Vec3i south() {
+        return this.south(1);
+    }
+
+    public Vec3i south(int distance) {
+        return this.offset(Direction.SOUTH, distance);
+    }
+
+    public Vec3i west() {
+        return this.west(1);
+    }
+
+    public Vec3i west(int distance) {
+        return this.offset(Direction.WEST, distance);
+    }
+
+    public Vec3i east() {
+        return this.east(1);
+    }
+
+    public Vec3i east(int distance) {
+        return this.offset(Direction.EAST, distance);
+    }
+
+    public Vec3i offset(Direction direction) {
+        return this.offset(direction, 1);
+    }
+
     public Vec3i offset(Direction direction, int distance) {
         if (distance == 0) {
             return this;
         }
         return new Vec3i(this.getX() + direction.getOffsetX() * distance, this.getY() + direction.getOffsetY() * distance, this.getZ() + direction.getOffsetZ() * distance);
+    }
+
+    public Vec3i offset(Direction.Axis axis, int distance) {
+        if (distance == 0) {
+            return this;
+        }
+        int i = axis == Direction.Axis.X ? distance : 0;
+        int j = axis == Direction.Axis.Y ? distance : 0;
+        int k = axis == Direction.Axis.Z ? distance : 0;
+        return new Vec3i(this.getX() + i, this.getY() + j, this.getZ() + k);
     }
 
     public Vec3i crossProduct(Vec3i vec) {
@@ -178,14 +247,13 @@ implements Comparable<Vec3i> {
         return MoreObjects.toStringHelper(this).add("x", this.getX()).add("y", this.getY()).add("z", this.getZ()).toString();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public String toShortString() {
         return "" + this.getX() + ", " + this.getY() + ", " + this.getZ();
     }
 
     @Override
-    public /* synthetic */ int compareTo(Object object) {
-        return this.compareTo((Vec3i)object);
+    public /* synthetic */ int compareTo(Object vec) {
+        return this.compareTo((Vec3i)vec);
     }
 }
 

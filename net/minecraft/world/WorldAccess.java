@@ -9,6 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -38,6 +39,9 @@ LunarWorldView {
 
     public LocalDifficulty getLocalDifficulty(BlockPos var1);
 
+    @Nullable
+    public MinecraftServer getServer();
+
     default public Difficulty getDifficulty() {
         return this.getLevelProperties().getDifficulty();
     }
@@ -59,6 +63,10 @@ LunarWorldView {
     public void addParticle(ParticleEffect var1, double var2, double var4, double var6, double var8, double var10, double var12);
 
     public void syncWorldEvent(@Nullable PlayerEntity var1, int var2, BlockPos var3, int var4);
+
+    default public int getLogicalHeight() {
+        return this.getDimension().getLogicalHeight();
+    }
 
     default public void syncWorldEvent(int eventId, BlockPos pos, int data) {
         this.syncWorldEvent(null, eventId, pos, data);

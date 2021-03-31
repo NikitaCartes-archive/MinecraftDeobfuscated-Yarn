@@ -13,12 +13,34 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.render.entity.model.AnimalModel;
+import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class OcelotEntityModel<T extends Entity>
 extends AnimalModel<T> {
+    private static final int field_32524 = 0;
+    private static final int field_32525 = 1;
+    private static final int field_32526 = 2;
+    protected static final int field_32520 = 3;
+    private static final float field_32527 = 0.0f;
+    private static final float field_32528 = 16.0f;
+    private static final float field_32529 = -9.0f;
+    private static final float field_32530 = 15.0f;
+    private static final float field_32531 = -9.0f;
+    private static final float field_32532 = 12.0f;
+    private static final float field_32512 = -10.0f;
+    private static final float field_32513 = 15.0f;
+    private static final float field_32514 = 8.0f;
+    private static final float field_32515 = 20.0f;
+    private static final float field_32516 = 14.0f;
+    protected static final float field_32521 = 18.0f;
+    protected static final float field_32522 = 5.0f;
+    protected static final float field_32523 = 14.1f;
+    private static final float field_32517 = -5.0f;
+    private static final String TAIL1 = "tail1";
+    private static final String TAIL2 = "tail2";
     protected final ModelPart leftHindLeg;
     protected final ModelPart rightHindLeg;
     protected final ModelPart leftFrontLeg;
@@ -31,29 +53,29 @@ extends AnimalModel<T> {
 
     public OcelotEntityModel(ModelPart root) {
         super(true, 10.0f, 4.0f);
-        this.head = root.getChild("head");
-        this.body = root.getChild("body");
-        this.upperTail = root.getChild("tail1");
-        this.lowerTail = root.getChild("tail2");
-        this.leftHindLeg = root.getChild("left_hind_leg");
-        this.rightHindLeg = root.getChild("right_hind_leg");
-        this.leftFrontLeg = root.getChild("left_front_leg");
-        this.rightFrontLeg = root.getChild("right_front_leg");
+        this.head = root.getChild(EntityModelPartNames.HEAD);
+        this.body = root.getChild(EntityModelPartNames.BODY);
+        this.upperTail = root.getChild(TAIL1);
+        this.lowerTail = root.getChild(TAIL2);
+        this.leftHindLeg = root.getChild(EntityModelPartNames.LEFT_HIND_LEG);
+        this.rightHindLeg = root.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
+        this.leftFrontLeg = root.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
+        this.rightFrontLeg = root.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
     }
 
     public static ModelData getModelData(Dilation dilation) {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
-        modelPartData.addChild("head", ModelPartBuilder.create().cuboid("main", -2.5f, -2.0f, -3.0f, 5.0f, 4.0f, 5.0f, dilation).cuboid("nose", -1.5f, 0.0f, -4.0f, 3, 2, 2, dilation, 0, 24).cuboid("ear1", -2.0f, -3.0f, 0.0f, 1, 1, 2, dilation, 0, 10).cuboid("ear2", 1.0f, -3.0f, 0.0f, 1, 1, 2, dilation, 6, 10), ModelTransform.pivot(0.0f, 15.0f, -9.0f));
-        modelPartData.addChild("body", ModelPartBuilder.create().uv(20, 0).cuboid(-2.0f, 3.0f, -8.0f, 4.0f, 16.0f, 6.0f, dilation), ModelTransform.of(0.0f, 12.0f, -10.0f, 1.5707964f, 0.0f, 0.0f));
-        modelPartData.addChild("tail1", ModelPartBuilder.create().uv(0, 15).cuboid(-0.5f, 0.0f, 0.0f, 1.0f, 8.0f, 1.0f, dilation), ModelTransform.of(0.0f, 15.0f, 8.0f, 0.9f, 0.0f, 0.0f));
-        modelPartData.addChild("tail2", ModelPartBuilder.create().uv(4, 15).cuboid(-0.5f, 0.0f, 0.0f, 1.0f, 8.0f, 1.0f, dilation), ModelTransform.pivot(0.0f, 20.0f, 14.0f));
+        modelPartData.addChild(EntityModelPartNames.HEAD, ModelPartBuilder.create().cuboid("main", -2.5f, -2.0f, -3.0f, 5.0f, 4.0f, 5.0f, dilation).cuboid(EntityModelPartNames.NOSE, -1.5f, 0.0f, -4.0f, 3, 2, 2, dilation, 0, 24).cuboid("ear1", -2.0f, -3.0f, 0.0f, 1, 1, 2, dilation, 0, 10).cuboid("ear2", 1.0f, -3.0f, 0.0f, 1, 1, 2, dilation, 6, 10), ModelTransform.pivot(0.0f, 15.0f, -9.0f));
+        modelPartData.addChild(EntityModelPartNames.BODY, ModelPartBuilder.create().uv(20, 0).cuboid(-2.0f, 3.0f, -8.0f, 4.0f, 16.0f, 6.0f, dilation), ModelTransform.of(0.0f, 12.0f, -10.0f, 1.5707964f, 0.0f, 0.0f));
+        modelPartData.addChild(TAIL1, ModelPartBuilder.create().uv(0, 15).cuboid(-0.5f, 0.0f, 0.0f, 1.0f, 8.0f, 1.0f, dilation), ModelTransform.of(0.0f, 15.0f, 8.0f, 0.9f, 0.0f, 0.0f));
+        modelPartData.addChild(TAIL2, ModelPartBuilder.create().uv(4, 15).cuboid(-0.5f, 0.0f, 0.0f, 1.0f, 8.0f, 1.0f, dilation), ModelTransform.pivot(0.0f, 20.0f, 14.0f));
         ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(8, 13).cuboid(-1.0f, 0.0f, 1.0f, 2.0f, 6.0f, 2.0f, dilation);
-        modelPartData.addChild("left_hind_leg", modelPartBuilder, ModelTransform.pivot(1.1f, 18.0f, 5.0f));
-        modelPartData.addChild("right_hind_leg", modelPartBuilder, ModelTransform.pivot(-1.1f, 18.0f, 5.0f));
+        modelPartData.addChild(EntityModelPartNames.LEFT_HIND_LEG, modelPartBuilder, ModelTransform.pivot(1.1f, 18.0f, 5.0f));
+        modelPartData.addChild(EntityModelPartNames.RIGHT_HIND_LEG, modelPartBuilder, ModelTransform.pivot(-1.1f, 18.0f, 5.0f));
         ModelPartBuilder modelPartBuilder2 = ModelPartBuilder.create().uv(40, 0).cuboid(-1.0f, 0.0f, 0.0f, 2.0f, 10.0f, 2.0f, dilation);
-        modelPartData.addChild("left_front_leg", modelPartBuilder2, ModelTransform.pivot(1.2f, 14.1f, -5.0f));
-        modelPartData.addChild("right_front_leg", modelPartBuilder2, ModelTransform.pivot(-1.2f, 14.1f, -5.0f));
+        modelPartData.addChild(EntityModelPartNames.LEFT_FRONT_LEG, modelPartBuilder2, ModelTransform.pivot(1.2f, 14.1f, -5.0f));
+        modelPartData.addChild(EntityModelPartNames.RIGHT_FRONT_LEG, modelPartBuilder2, ModelTransform.pivot(-1.2f, 14.1f, -5.0f));
         return modelData;
     }
 

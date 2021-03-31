@@ -4,7 +4,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.TallPlantBlock;
 import net.minecraft.util.math.BlockPos;
@@ -36,7 +36,7 @@ extends Feature<SimpleBlockFeatureConfig> {
             tallPlantBlock.placeAt(structureWorldAccess, blockState, blockPos, 2);
             return true;
         } else {
-            structureWorldAccess.setBlockState(blockPos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
+            structureWorldAccess.setBlockState(blockPos, blockState, Block.NOTIFY_LISTENERS);
         }
         return true;
     }

@@ -216,7 +216,7 @@ implements Chunk {
             return;
         }
         NbtCompound nbtCompound = new NbtCompound();
-        entity.saveToTag(nbtCompound);
+        entity.saveNbt(nbtCompound);
         this.addEntity(nbtCompound);
     }
 
@@ -282,6 +282,21 @@ implements Chunk {
             heightmap = this.heightmaps.get(type);
         }
         return heightmap.get(x & 0xF, z & 0xF) - 1;
+    }
+
+    @Override
+    public BlockPos method_35319(Heightmap.Type type) {
+        int i = this.getBottomY();
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        for (int j = this.pos.getStartX(); j <= this.pos.getEndX(); ++j) {
+            for (int k = this.pos.getStartZ(); k <= this.pos.getEndZ(); ++k) {
+                int l = this.sampleHeightmap(type, j & 0xF, k & 0xF);
+                if (l <= i) continue;
+                i = l;
+                mutable.set(j, i, k);
+            }
+        }
+        return mutable.toImmutable();
     }
 
     @Override
@@ -394,11 +409,11 @@ implements Chunk {
     }
 
     @Override
-    public void addPendingBlockEntityNbt(NbtCompound tag) {
-        this.blockEntityTags.put(new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")), tag);
+    public void addPendingBlockEntityNbt(NbtCompound nbt) {
+        this.blockEntityTags.put(new BlockPos(nbt.getInt("x"), nbt.getInt("y"), nbt.getInt("z")), nbt);
     }
 
-    public Map<BlockPos, NbtCompound> getBlockEntityTags() {
+    public Map<BlockPos, NbtCompound> getBlockEntityNbts() {
         return Collections.unmodifiableMap(this.blockEntityTags);
     }
 

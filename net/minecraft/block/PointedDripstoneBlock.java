@@ -7,9 +7,6 @@ import com.google.common.annotations.VisibleForTesting;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractCauldronBlock;
 import net.minecraft.block.Block;
@@ -49,6 +46,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,12 +57,28 @@ Waterloggable {
     public static final DirectionProperty VERTICAL_DIRECTION = Properties.VERTICAL_DIRECTION;
     public static final EnumProperty<Thickness> THICKNESS = Properties.THICKNESS;
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+    private static final int field_31205 = 10;
+    private static final int field_31206 = Integer.MAX_VALUE;
+    private static final int field_31207 = 2;
+    private static final float field_31208 = 0.02f;
+    private static final float field_31209 = 0.12f;
+    private static final int field_31210 = 10;
+    private static final float field_31211 = 0.17578125f;
+    private static final float field_31212 = 0.05859375f;
+    private static final double field_31213 = 0.6;
+    private static final float field_31214 = 1.0f;
+    private static final int field_31215 = 40;
+    private static final int field_31200 = 6;
+    private static final float field_31201 = 2.0f;
+    private static final int field_31202 = 2;
+    private static final float field_31203 = 0.6875f;
     private static final VoxelShape TIP_MERGE_SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 16.0, 11.0);
     private static final VoxelShape UP_TIP_SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 11.0, 11.0);
     private static final VoxelShape DOWN_TIP_SHAPE = Block.createCuboidShape(5.0, 5.0, 5.0, 11.0, 16.0, 11.0);
     private static final VoxelShape BASE_SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
     private static final VoxelShape FRUSTUM_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 16.0, 13.0);
     private static final VoxelShape MIDDLE_SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0);
+    private static final float field_31204 = 0.125f;
 
     public PointedDripstoneBlock(AbstractBlock.Settings settings) {
         super(settings);
@@ -89,27 +103,21 @@ Waterloggable {
         if (direction != Direction.UP && direction != Direction.DOWN) {
             return state;
         }
-        if (world.getBlockTickScheduler().isScheduled(pos, this)) {
+        Direction direction2 = state.get(VERTICAL_DIRECTION);
+        if (direction2 == Direction.DOWN && world.getBlockTickScheduler().isScheduled(pos, this)) {
             return state;
         }
-        Direction direction2 = state.get(VERTICAL_DIRECTION);
-        if (direction == direction2.getOpposite() && !PointedDripstoneBlock.canPlaceAtWithDirection(world, pos, direction2)) {
+        if (direction == direction2.getOpposite() && !this.canPlaceAt(state, world, pos)) {
             if (direction2 == Direction.DOWN) {
                 this.scheduleFall(state, world, pos);
-                return state;
+            } else {
+                world.getBlockTickScheduler().schedule(pos, this, 1);
             }
-            return PointedDripstoneBlock.getFluidBlockState(state);
+            return state;
         }
         boolean bl = state.get(THICKNESS) == Thickness.TIP_MERGE;
         Thickness thickness = PointedDripstoneBlock.getThickness(world, pos, direction2, bl);
-        if (thickness == null) {
-            return PointedDripstoneBlock.getFluidBlockState(state);
-        }
         return (BlockState)state.with(THICKNESS, thickness);
-    }
-
-    private static BlockState getFluidBlockState(BlockState state) {
-        return state.get(WATERLOGGED) != false ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState();
     }
 
     @Override
@@ -130,7 +138,6 @@ Waterloggable {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         if (!PointedDripstoneBlock.canDrip(state)) {
             return;
@@ -144,7 +151,11 @@ Waterloggable {
 
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        PointedDripstoneBlock.spawnFallingBlock(state, world, pos);
+        if (PointedDripstoneBlock.method_35283(state) && !this.canPlaceAt(state, world, pos)) {
+            world.breakBlock(pos, true);
+        } else {
+            PointedDripstoneBlock.spawnFallingBlock(state, world, pos);
+        }
     }
 
     @Override
@@ -290,12 +301,10 @@ Waterloggable {
         world.spawnEntity(fallingBlockEntity);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static void createParticle(World world, BlockPos pos, BlockState state) {
         PointedDripstoneBlock.getFluid(world, pos, state).ifPresent(fluid -> PointedDripstoneBlock.createParticle(world, pos, state, fluid));
     }
 
-    @Environment(value=EnvType.CLIENT)
     private static void createParticle(World world, BlockPos pos, BlockState state, Fluid fluid) {
         Vec3d vec3d = state.getModelOffset(world, pos);
         double d = 0.0625;
@@ -330,7 +339,6 @@ Waterloggable {
         return direction2;
     }
 
-    @Nullable
     private static Thickness getThickness(WorldView world, BlockPos pos, Direction direction, boolean tryMerge) {
         Direction direction2 = direction.getOpposite();
         BlockState blockState = world.getBlockState(pos.offset(direction));
@@ -382,6 +390,10 @@ Waterloggable {
         return PointedDripstoneBlock.isPointedDripstoneFacingDirection(state, Direction.DOWN);
     }
 
+    private static boolean method_35283(BlockState blockState) {
+        return PointedDripstoneBlock.isPointedDripstoneFacingDirection(blockState, Direction.UP);
+    }
+
     private static boolean isHeldByPointedDripstone(BlockState state, WorldView world, BlockPos pos) {
         return PointedDripstoneBlock.isPointingDown(state) && !world.getBlockState(pos.up()).isOf(Blocks.POINTED_DRIPSTONE);
     }
@@ -424,7 +436,6 @@ Waterloggable {
         return fluid == Fluids.LAVA || fluid == Fluids.WATER;
     }
 
-    @Environment(value=EnvType.CLIENT)
     private static Fluid getDripFluid(World world, Fluid fluid) {
         if (fluid.matchesType(Fluids.EMPTY)) {
             return world.getDimension().isUltrawarm() ? Fluids.LAVA : Fluids.WATER;

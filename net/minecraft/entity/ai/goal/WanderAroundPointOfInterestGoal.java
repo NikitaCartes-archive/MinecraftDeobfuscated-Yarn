@@ -15,6 +15,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class WanderAroundPointOfInterestGoal
 extends WanderAroundGoal {
+    private static final int field_30219 = 10;
+    private static final int field_30220 = 7;
+
     public WanderAroundPointOfInterestGoal(PathAwareEntity entity, double speed, boolean bl) {
         super(entity, speed, 10, bl);
     }

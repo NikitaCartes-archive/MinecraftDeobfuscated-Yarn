@@ -8,7 +8,6 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.nbt.AbstractNbtList;
 import net.minecraft.nbt.AbstractNbtNumber;
 import net.minecraft.nbt.NbtByte;
@@ -23,6 +22,7 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 public class NbtByteArray
 extends AbstractNbtList<NbtByte> {
+    private static final int field_33188 = 192;
     public static final NbtType<NbtByteArray> TYPE = new NbtType<NbtByteArray>(){
 
         @Override
@@ -77,7 +77,7 @@ extends AbstractNbtList<NbtByte> {
 
     @Override
     public byte getType() {
-        return (byte)NbtTypeIds.BYTE_ARRAY;
+        return 7;
     }
 
     public NbtType<NbtByteArray> getNbtType() {
@@ -165,7 +165,7 @@ extends AbstractNbtList<NbtByte> {
 
     @Override
     public byte getHeldType() {
-        return (byte)NbtTypeIds.BYTE;
+        return 1;
     }
 
     @Override

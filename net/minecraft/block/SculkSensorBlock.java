@@ -7,9 +7,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -50,6 +47,8 @@ import org.jetbrains.annotations.Nullable;
 public class SculkSensorBlock
 extends BlockWithEntity
 implements Waterloggable {
+    public static final int field_31239 = 40;
+    public static final int field_31240 = 1;
     public static final Object2IntMap<GameEvent> FREQUENCIES = Object2IntMaps.unmodifiable(Util.make(new Object2IntOpenHashMap(), map -> {
         map.put(GameEvent.STEP, 1);
         map.put(GameEvent.FLAP, 2);
@@ -133,7 +132,7 @@ implements Waterloggable {
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (SculkSensorBlock.getPhase(state) != SculkSensorPhase.ACTIVE) {
             if (SculkSensorBlock.getPhase(state) == SculkSensorPhase.COOLDOWN) {
-                world.setBlockState(pos, (BlockState)state.with(SCULK_SENSOR_PHASE, SculkSensorPhase.INACTIVE), SetBlockStateFlags.DEFAULT);
+                world.setBlockState(pos, (BlockState)state.with(SCULK_SENSOR_PHASE, SculkSensorPhase.INACTIVE), Block.NOTIFY_ALL);
             }
             return;
         }
@@ -146,7 +145,7 @@ implements Waterloggable {
             return;
         }
         if (state.get(POWER) > 0 && !world.getBlockTickScheduler().isScheduled(pos, this)) {
-            world.setBlockState(pos, (BlockState)state.with(POWER, 0), SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.FORCE_STATE);
+            world.setBlockState(pos, (BlockState)state.with(POWER, 0), Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
         }
         world.getBlockTickScheduler().schedule(new BlockPos(pos), state.getBlock(), 1);
     }
@@ -228,7 +227,7 @@ implements Waterloggable {
     }
 
     public static void setCooldown(World world, BlockPos pos, BlockState state) {
-        world.setBlockState(pos, (BlockState)((BlockState)state.with(SCULK_SENSOR_PHASE, SculkSensorPhase.COOLDOWN)).with(POWER, 0), SetBlockStateFlags.DEFAULT);
+        world.setBlockState(pos, (BlockState)((BlockState)state.with(SCULK_SENSOR_PHASE, SculkSensorPhase.COOLDOWN)).with(POWER, 0), Block.NOTIFY_ALL);
         world.getBlockTickScheduler().schedule(new BlockPos(pos), state.getBlock(), 1);
         if (!state.get(WATERLOGGED).booleanValue()) {
             world.playSound(null, pos, SoundEvents.BLOCK_SCULK_SENSOR_CLICKING_STOP, SoundCategory.BLOCKS, 1.0f, world.random.nextFloat() * 0.2f + 0.8f);
@@ -237,7 +236,7 @@ implements Waterloggable {
     }
 
     public static void setActive(World world, BlockPos pos, BlockState state, int power) {
-        world.setBlockState(pos, (BlockState)((BlockState)state.with(SCULK_SENSOR_PHASE, SculkSensorPhase.ACTIVE)).with(POWER, power), SetBlockStateFlags.DEFAULT);
+        world.setBlockState(pos, (BlockState)((BlockState)state.with(SCULK_SENSOR_PHASE, SculkSensorPhase.ACTIVE)).with(POWER, power), Block.NOTIFY_ALL);
         world.getBlockTickScheduler().schedule(new BlockPos(pos), state.getBlock(), 40);
         SculkSensorBlock.updateNeighbors(world, pos);
         if (!state.get(WATERLOGGED).booleanValue()) {
@@ -246,7 +245,6 @@ implements Waterloggable {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         if (SculkSensorBlock.getPhase(state) != SculkSensorPhase.ACTIVE) {
             return;

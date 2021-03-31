@@ -7,6 +7,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.mojang.blaze3d.platform.TextureUtil;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import net.fabricmc.api.EnvType;
@@ -14,7 +15,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.font.Font;
 import net.minecraft.client.font.FontLoader;
 import net.minecraft.client.font.TrueTypeFont;
-import net.minecraft.client.texture.TextureUtil;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -86,7 +86,7 @@ implements FontLoader {
         try (Resource resource = manager.getResource(new Identifier(this.filename.getNamespace(), "font/" + this.filename.getPath()));){
             LOGGER.debug("Loading font {}", (Object)this.filename);
             sTBTTFontinfo = STBTTFontinfo.malloc();
-            byteBuffer = TextureUtil.readAllToByteBuffer(resource.getInputStream());
+            byteBuffer = TextureUtil.readResource(resource.getInputStream());
             byteBuffer.flip();
             LOGGER.debug("Reading font {}", (Object)this.filename);
             if (!STBTruetype.stbtt_InitFont((STBTTFontinfo)sTBTTFontinfo, byteBuffer)) {

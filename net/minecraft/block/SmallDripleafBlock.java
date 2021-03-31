@@ -4,7 +4,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BigDripleafBlock;
 import net.minecraft.block.Block;
@@ -42,6 +41,7 @@ implements Fertilizable,
 Waterloggable {
     private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
+    protected static final float field_31246 = 6.0f;
     protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 13.0, 14.0);
 
     public SmallDripleafBlock(AbstractBlock.Settings settings) {
@@ -73,7 +73,7 @@ Waterloggable {
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
         Direction direction = state.get(FACING);
-        world.setBlockState(pos.up(), (BlockState)((BlockState)((BlockState)this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER)).with(WATERLOGGED, world.isWater(pos.up()))).with(FACING, direction), SetBlockStateFlags.DEFAULT);
+        world.setBlockState(pos.up(), (BlockState)((BlockState)((BlockState)this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER)).with(WATERLOGGED, world.isWater(pos.up()))).with(FACING, direction), Block.NOTIFY_ALL);
     }
 
     @Override
@@ -120,6 +120,7 @@ Waterloggable {
     @Override
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
         if (state.get(TallPlantBlock.HALF) == DoubleBlockHalf.LOWER) {
+            world.setBlockState(pos.up(), Blocks.AIR.getDefaultState(), Block.FORCE_STATE);
             BigDripleafBlock.grow(world, random, pos, state.get(FACING));
         } else {
             BlockPos blockPos = pos.down();

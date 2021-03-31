@@ -3,8 +3,6 @@
  */
 package net.minecraft.block.entity;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -29,15 +27,13 @@ extends BlockEntity {
 
     @Override
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(this.pos, 11, this.toInitialChunkDataNbt());
+        return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.BED, this.toInitialChunkDataNbt());
     }
 
-    @Environment(value=EnvType.CLIENT)
     public DyeColor getColor() {
         return this.color;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void setColor(DyeColor color) {
         this.color = color;
     }

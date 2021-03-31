@@ -22,8 +22,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.RegistryLookupCodec;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
@@ -56,6 +54,10 @@ extends BiomeSource {
     private final long seed;
     private final Optional<Pair<Registry<Biome>, Preset>> instance;
 
+    public MultiNoiseBiomeSource(long l, List<Pair<Biome.MixedNoisePoint, Supplier<Biome>>> list) {
+        this(l, list, Optional.empty());
+    }
+
     private MultiNoiseBiomeSource(long seed, List<Pair<Biome.MixedNoisePoint, Supplier<Biome>>> biomePoints, Optional<Pair<Registry<Biome>, Preset>> instance) {
         this(seed, biomePoints, DEFAULT_NOISE_PARAMETERS, DEFAULT_NOISE_PARAMETERS, DEFAULT_NOISE_PARAMETERS, DEFAULT_NOISE_PARAMETERS, instance);
     }
@@ -80,13 +82,21 @@ extends BiomeSource {
         this.threeDimensionalSampling = false;
     }
 
+    public static MultiNoiseBiomeSource method_35242(Registry<Biome> registry, long l) {
+        ImmutableList<Pair<Biome.MixedNoisePoint, Supplier<Biome>>> immutableList = MultiNoiseBiomeSource.method_35241(registry);
+        NoiseParameters noiseParameters = new NoiseParameters(-9, 1.0, 0.0, 3.0, 3.0, 3.0, 3.0);
+        NoiseParameters noiseParameters2 = new NoiseParameters(-7, 1.0, 2.0, 4.0, 4.0);
+        NoiseParameters noiseParameters3 = new NoiseParameters(-9, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0);
+        NoiseParameters noiseParameters4 = new NoiseParameters(-8, 1.2, 0.6, 0.0, 0.0, 1.0, 0.0);
+        return new MultiNoiseBiomeSource(l, immutableList, noiseParameters, noiseParameters2, noiseParameters3, noiseParameters4, Optional.empty());
+    }
+
     @Override
     protected Codec<? extends BiomeSource> getCodec() {
         return CODEC;
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public BiomeSource withSeed(long seed) {
         return new MultiNoiseBiomeSource(seed, this.biomePoints, this.temperatureNoiseParameters, this.humidityNoiseParameters, this.altitudeNoiseParameters, this.weirdnessNoiseParameters, this.instance);
     }
@@ -100,6 +110,10 @@ extends BiomeSource {
         int i = this.threeDimensionalSampling ? biomeY : 0;
         Biome.MixedNoisePoint mixedNoisePoint = new Biome.MixedNoisePoint((float)this.temperatureNoise.sample(biomeX, i, biomeZ), (float)this.humidityNoise.sample(biomeX, i, biomeZ), (float)this.altitudeNoise.sample(biomeX, i, biomeZ), (float)this.weirdnessNoise.sample(biomeX, i, biomeZ), 0.0f);
         return this.biomePoints.stream().min(Comparator.comparing(pair -> Float.valueOf(((Biome.MixedNoisePoint)pair.getFirst()).calculateDistanceTo(mixedNoisePoint)))).map(Pair::getSecond).map(Supplier::get).orElse(BuiltinBiomes.THE_VOID);
+    }
+
+    public static ImmutableList<Pair<Biome.MixedNoisePoint, Supplier<Biome>>> method_35241(Registry<Biome> registry) {
+        return ImmutableList.of(Pair.of(new Biome.MixedNoisePoint(0.0f, 0.0f, 0.0f, 0.0f, 0.0f), () -> registry.getOrThrow(BiomeKeys.PLAINS)));
     }
 
     public boolean matchesInstance(long seed) {
@@ -160,6 +174,11 @@ extends BiomeSource {
         public NoiseParameters(int firstOctave, List<Double> amplitudes) {
             this.firstOctave = firstOctave;
             this.amplitudes = new DoubleArrayList(amplitudes);
+        }
+
+        public NoiseParameters(int i, double ... ds) {
+            this.firstOctave = i;
+            this.amplitudes = new DoubleArrayList(ds);
         }
 
         public int getFirstOctave() {

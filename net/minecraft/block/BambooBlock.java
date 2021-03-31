@@ -4,7 +4,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -36,12 +35,20 @@ import org.jetbrains.annotations.Nullable;
 public class BambooBlock
 extends Block
 implements Fertilizable {
+    protected static final float field_30997 = 3.0f;
+    protected static final float field_30998 = 5.0f;
+    protected static final float field_30999 = 1.5f;
     protected static final VoxelShape SMALL_LEAVES_SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 16.0, 11.0);
     protected static final VoxelShape LARGE_LEAVES_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 16.0, 13.0);
     protected static final VoxelShape NO_LEAVES_SHAPE = Block.createCuboidShape(6.5, 0.0, 6.5, 9.5, 16.0, 9.5);
     public static final IntProperty AGE = Properties.AGE_1;
     public static final EnumProperty<BambooLeaves> LEAVES = Properties.BAMBOO_LEAVES;
     public static final IntProperty STAGE = Properties.STAGE;
+    public static final int field_31000 = 16;
+    public static final int field_31001 = 0;
+    public static final int field_31002 = 1;
+    public static final int field_31003 = 0;
+    public static final int field_31004 = 1;
 
     public BambooBlock(AbstractBlock.Settings settings) {
         super(settings);
@@ -140,7 +147,7 @@ implements Fertilizable {
             world.getBlockTickScheduler().schedule(pos, this, 1);
         }
         if (direction == Direction.UP && neighborState.isOf(Blocks.BAMBOO) && neighborState.get(AGE) > state.get(AGE)) {
-            world.setBlockState(pos, (BlockState)state.cycle(AGE), SetBlockStateFlags.NOTIFY_LISTENERS);
+            world.setBlockState(pos, (BlockState)state.cycle(AGE), Block.NOTIFY_LISTENERS);
         }
         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
@@ -194,14 +201,14 @@ implements Fertilizable {
             } else if (blockState.isOf(Blocks.BAMBOO) && blockState.get(LEAVES) != BambooLeaves.NONE) {
                 bambooLeaves = BambooLeaves.LARGE;
                 if (blockState2.isOf(Blocks.BAMBOO)) {
-                    world.setBlockState(pos.down(), (BlockState)blockState.with(LEAVES, BambooLeaves.SMALL), SetBlockStateFlags.DEFAULT);
-                    world.setBlockState(blockPos, (BlockState)blockState2.with(LEAVES, BambooLeaves.NONE), SetBlockStateFlags.DEFAULT);
+                    world.setBlockState(pos.down(), (BlockState)blockState.with(LEAVES, BambooLeaves.SMALL), Block.NOTIFY_ALL);
+                    world.setBlockState(blockPos, (BlockState)blockState2.with(LEAVES, BambooLeaves.NONE), Block.NOTIFY_ALL);
                 }
             }
         }
         int i = state.get(AGE) == 1 || blockState2.isOf(Blocks.BAMBOO) ? 1 : 0;
         int j = height >= 11 && random.nextFloat() < 0.25f || height == 15 ? 1 : 0;
-        world.setBlockState(pos.up(), (BlockState)((BlockState)((BlockState)this.getDefaultState().with(AGE, i)).with(LEAVES, bambooLeaves)).with(STAGE, j), SetBlockStateFlags.DEFAULT);
+        world.setBlockState(pos.up(), (BlockState)((BlockState)((BlockState)this.getDefaultState().with(AGE, i)).with(LEAVES, bambooLeaves)).with(STAGE, j), Block.NOTIFY_ALL);
     }
 
     protected int countBambooAbove(BlockView world, BlockPos pos) {

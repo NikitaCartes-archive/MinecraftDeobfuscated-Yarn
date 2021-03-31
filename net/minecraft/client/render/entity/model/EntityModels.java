@@ -46,6 +46,7 @@ import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.EvokerFangsEntityModel;
 import net.minecraft.client.render.entity.model.FoxEntityModel;
 import net.minecraft.client.render.entity.model.GhastEntityModel;
+import net.minecraft.client.render.entity.model.GoatEntityModel;
 import net.minecraft.client.render.entity.model.GuardianEntityModel;
 import net.minecraft.client.render.entity.model.HoglinEntityModel;
 import net.minecraft.client.render.entity.model.HorseEntityModel;
@@ -174,6 +175,7 @@ public class EntityModels {
         builder.put(EntityModelLayers.GIANT_INNER_ARMOR, texturedModelData4);
         builder.put(EntityModelLayers.GIANT_OUTER_ARMOR, texturedModelData2);
         builder.put(EntityModelLayers.GLOW_SQUID, SquidEntityModel.getTexturedModelData());
+        builder.put(EntityModelLayers.GOAT, GoatEntityModel.getTexturedModelData());
         builder.put(EntityModelLayers.GUARDIAN, GuardianEntityModel.getTexturedModelData());
         builder.put(EntityModelLayers.HOGLIN, texturedModelData15);
         builder.put(EntityModelLayers.HOPPER_MINECART, texturedModelData5);

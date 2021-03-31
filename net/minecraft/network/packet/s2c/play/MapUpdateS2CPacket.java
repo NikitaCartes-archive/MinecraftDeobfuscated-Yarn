@@ -6,8 +6,6 @@ package net.minecraft.network.packet.s2c.play;
 import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.item.map.MapIcon;
 import net.minecraft.item.map.MapState;
 import net.minecraft.network.Packet;
@@ -91,13 +89,11 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onMapUpdate(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getId() {
         return this.id;
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void apply(MapState mapState) {
         if (this.icons != null) {
             mapState.replaceIcons(this.icons);
@@ -107,12 +103,10 @@ implements Packet<ClientPlayPacketListener> {
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     public byte getScale() {
         return this.scale;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isLocked() {
         return this.locked;
     }

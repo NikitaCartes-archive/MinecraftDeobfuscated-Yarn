@@ -64,6 +64,10 @@ implements ArgumentType<MessageFormat> {
             return this.end;
         }
 
+        public EntitySelector method_35693() {
+            return this.selector;
+        }
+
         @Nullable
         public Text format(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
             return EntitySelector.getNames(this.selector.getEntities(serverCommandSource));
@@ -77,6 +81,14 @@ implements ArgumentType<MessageFormat> {
         public MessageFormat(String string, MessageSelector[] messageSelectors) {
             this.contents = string;
             this.selectors = messageSelectors;
+        }
+
+        public String method_35691() {
+            return this.contents;
+        }
+
+        public MessageSelector[] method_35692() {
+            return this.selectors;
         }
 
         public Text format(ServerCommandSource serverCommandSource, boolean bl) throws CommandSyntaxException {

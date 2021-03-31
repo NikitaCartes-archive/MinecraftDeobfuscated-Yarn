@@ -49,6 +49,10 @@ implements LootCondition {
         return this.value.test(lootContext, (int)l);
     }
 
+    public static Builder create(BoundedIntUnaryOperator value) {
+        return new Builder(value);
+    }
+
     @Override
     public /* synthetic */ boolean test(Object context) {
         return this.test((LootContext)context);
@@ -72,6 +76,32 @@ implements LootCondition {
         @Override
         public /* synthetic */ Object fromJson(JsonObject json, JsonDeserializationContext context) {
             return this.fromJson(json, context);
+        }
+    }
+
+    public static class Builder
+    implements LootCondition.Builder {
+        @Nullable
+        private Long period;
+        private final BoundedIntUnaryOperator value;
+
+        public Builder(BoundedIntUnaryOperator value) {
+            this.value = value;
+        }
+
+        public Builder period(long period) {
+            this.period = period;
+            return this;
+        }
+
+        @Override
+        public TimeCheckLootCondition build() {
+            return new TimeCheckLootCondition(this.period, this.value);
+        }
+
+        @Override
+        public /* synthetic */ LootCondition build() {
+            return this.build();
         }
     }
 }

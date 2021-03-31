@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ChunkHolder;
+import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -358,6 +359,7 @@ implements AutoCloseable {
         });
     }
 
+    @Debug
     public String getDebugString() {
         return this.entityUuids.size() + "," + this.index.size() + "," + this.cache.sectionCount() + "," + this.managedStatuses.size() + "," + this.trackingStatuses.size() + "," + this.loadingQueue.size() + "," + this.pendingUnloads.size();
     }

@@ -21,6 +21,10 @@ import org.jetbrains.annotations.Nullable;
 public class BasaltColumnsFeature
 extends Feature<BasaltColumnsFeatureConfig> {
     private static final ImmutableList<Block> BLOCKS = ImmutableList.of(Blocks.LAVA, Blocks.BEDROCK, Blocks.MAGMA_BLOCK, Blocks.SOUL_SAND, Blocks.NETHER_BRICKS, Blocks.NETHER_BRICK_FENCE, Blocks.NETHER_BRICK_STAIRS, Blocks.NETHER_WART, Blocks.CHEST, Blocks.SPAWNER);
+    private static final int field_31495 = 5;
+    private static final int field_31496 = 50;
+    private static final int field_31497 = 8;
+    private static final int field_31498 = 15;
 
     public BasaltColumnsFeature(Codec<BasaltColumnsFeatureConfig> codec) {
         super(codec);
@@ -36,7 +40,7 @@ extends Feature<BasaltColumnsFeatureConfig> {
         if (!BasaltColumnsFeature.canPlaceAt(structureWorldAccess, i, blockPos.mutableCopy())) {
             return false;
         }
-        int j = basaltColumnsFeatureConfig.getHeight().getValue(random);
+        int j = basaltColumnsFeatureConfig.getHeight().get(random);
         boolean bl = random.nextFloat() < 0.9f;
         int k = Math.min(j, bl ? 5 : 8);
         int l = bl ? 50 : 15;
@@ -44,7 +48,7 @@ extends Feature<BasaltColumnsFeatureConfig> {
         for (BlockPos blockPos2 : BlockPos.iterateRandomly(random, l, blockPos.getX() - k, blockPos.getY(), blockPos.getZ() - k, blockPos.getX() + k, blockPos.getY(), blockPos.getZ() + k)) {
             int m = j - blockPos2.getManhattanDistance(blockPos);
             if (m < 0) continue;
-            bl2 |= this.placeBasaltColumn(structureWorldAccess, i, blockPos2, m, basaltColumnsFeatureConfig.getReach().getValue(random));
+            bl2 |= this.placeBasaltColumn(structureWorldAccess, i, blockPos2, m, basaltColumnsFeatureConfig.getReach().get(random));
         }
         return bl2;
     }

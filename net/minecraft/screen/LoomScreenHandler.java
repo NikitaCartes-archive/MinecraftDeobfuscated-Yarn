@@ -3,9 +3,6 @@
  */
 package net.minecraft.screen;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.entity.player.PlayerEntity;
@@ -30,6 +27,10 @@ import net.minecraft.util.math.BlockPos;
 
 public class LoomScreenHandler
 extends ScreenHandler {
+    private static final int field_30826 = 4;
+    private static final int field_30827 = 31;
+    private static final int field_30828 = 31;
+    private static final int field_30829 = 40;
     private final ScreenHandlerContext context;
     private final Property selectedPattern = Property.create();
     private Runnable inventoryChangeListener = () -> {};
@@ -120,7 +121,6 @@ extends ScreenHandler {
         this.addProperty(this.selectedPattern);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getSelectedPattern() {
         return this.selectedPattern.get();
     }
@@ -152,7 +152,7 @@ extends ScreenHandler {
         } else if (!itemStack3.isEmpty() && itemStack3.getItem() instanceof BannerPatternItem) {
             boolean bl;
             NbtCompound nbtCompound = itemStack.getOrCreateSubTag("BlockEntityTag");
-            boolean bl2 = bl = nbtCompound.contains("Patterns", NbtTypeIds.LIST) && !itemStack.isEmpty() && nbtCompound.getList("Patterns", NbtTypeIds.COMPOUND).size() >= 6;
+            boolean bl2 = bl = nbtCompound.contains("Patterns", 9) && !itemStack.isEmpty() && nbtCompound.getList("Patterns", 10).size() >= 6;
             if (bl) {
                 this.selectedPattern.set(0);
             } else {
@@ -163,7 +163,6 @@ extends ScreenHandler {
         this.sendContentUpdates();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void setInventoryChangeListener(Runnable inventoryChangeListener) {
         this.inventoryChangeListener = inventoryChangeListener;
     }
@@ -214,8 +213,8 @@ extends ScreenHandler {
                 BannerPattern bannerPattern = BannerPattern.values()[this.selectedPattern.get()];
                 DyeColor dyeColor = ((DyeItem)itemStack2.getItem()).getColor();
                 NbtCompound nbtCompound = itemStack3.getOrCreateSubTag("BlockEntityTag");
-                if (nbtCompound.contains("Patterns", NbtTypeIds.LIST)) {
-                    nbtList = nbtCompound.getList("Patterns", NbtTypeIds.COMPOUND);
+                if (nbtCompound.contains("Patterns", 9)) {
+                    nbtList = nbtCompound.getList("Patterns", 10);
                 } else {
                     nbtList = new NbtList();
                     nbtCompound.put("Patterns", nbtList);
@@ -231,22 +230,18 @@ extends ScreenHandler {
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Slot getBannerSlot() {
         return this.bannerSlot;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Slot getDyeSlot() {
         return this.dyeSlot;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Slot getPatternSlot() {
         return this.patternSlot;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Slot getOutputSlot() {
         return this.outputSlot;
     }

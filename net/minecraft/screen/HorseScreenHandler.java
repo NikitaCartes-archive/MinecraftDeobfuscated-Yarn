@@ -3,8 +3,6 @@
  */
 package net.minecraft.screen;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -37,7 +35,6 @@ extends ScreenHandler {
             }
 
             @Override
-            @Environment(value=EnvType.CLIENT)
             public boolean doDrawHoveringEffect() {
                 return entity.canBeSaddled();
             }
@@ -50,7 +47,6 @@ extends ScreenHandler {
             }
 
             @Override
-            @Environment(value=EnvType.CLIENT)
             public boolean doDrawHoveringEffect() {
                 return entity.hasArmorSlot();
             }

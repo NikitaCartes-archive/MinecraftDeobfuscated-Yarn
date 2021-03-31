@@ -43,6 +43,10 @@ implements LootCondition {
         return this.range.test(lootContext, this.value.nextInt(lootContext));
     }
 
+    public static LootCondition.Builder builder(LootNumberProvider value, BoundedIntUnaryOperator range) {
+        return () -> new ValueCheckLootCondition(value, range);
+    }
+
     @Override
     public /* synthetic */ boolean test(Object context) {
         return this.test((LootContext)context);

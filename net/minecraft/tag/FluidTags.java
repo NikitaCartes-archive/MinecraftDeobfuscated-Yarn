@@ -9,6 +9,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.tag.RequiredTagList;
 import net.minecraft.tag.RequiredTagListRegistry;
 import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagGroup;
 import net.minecraft.util.registry.Registry;
 
 public final class FluidTags {
@@ -17,10 +18,17 @@ public final class FluidTags {
     public static final Tag.Identified<Fluid> WATER = FluidTags.register("water");
     public static final Tag.Identified<Fluid> LAVA = FluidTags.register("lava");
 
+    private FluidTags() {
+    }
+
     private static Tag.Identified<Fluid> register(String id) {
         Tag.Identified<Fluid> identified = REQUIRED_TAGS.add(id);
         TAGS.add(identified);
         return identified;
+    }
+
+    public static TagGroup<Fluid> getTagGroup() {
+        return REQUIRED_TAGS.getGroup();
     }
 
     @Deprecated

@@ -5,7 +5,6 @@ package net.minecraft.world;
 
 import com.mojang.datafixers.DataFixer;
 import java.io.File;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -54,7 +53,7 @@ public class WorldSaveHandler {
             LOGGER.warn("Failed to load player data for {}", (Object)player.getName().getString());
         }
         if (nbtCompound != null) {
-            int i = nbtCompound.contains("DataVersion", NbtTypeIds.INT) ? nbtCompound.getInt("DataVersion") : -1;
+            int i = nbtCompound.contains("DataVersion", 3) ? nbtCompound.getInt("DataVersion") : -1;
             player.readNbt(NbtHelper.update(this.dataFixer, DataFixTypes.PLAYER, nbtCompound, i));
         }
         return nbtCompound;

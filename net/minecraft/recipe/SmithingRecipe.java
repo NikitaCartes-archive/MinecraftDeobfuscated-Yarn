@@ -5,8 +5,6 @@ package net.minecraft.recipe;
 
 import com.google.gson.JsonObject;
 import java.util.stream.Stream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -51,7 +49,6 @@ implements Recipe<Inventory> {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public boolean fits(int width, int height) {
         return width * height >= 2;
     }
@@ -66,7 +63,6 @@ implements Recipe<Inventory> {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public ItemStack getRecipeKindIcon() {
         return new ItemStack(Blocks.SMITHING_TABLE);
     }
@@ -87,7 +83,6 @@ implements Recipe<Inventory> {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public boolean isEmpty() {
         return Stream.of(this.base, this.addition).anyMatch(ingredient -> ingredient.getMatchingStacksClient().length == 0);
     }
@@ -98,7 +93,7 @@ implements Recipe<Inventory> {
         public SmithingRecipe read(Identifier identifier, JsonObject jsonObject) {
             Ingredient ingredient = Ingredient.fromJson(JsonHelper.getObject(jsonObject, "base"));
             Ingredient ingredient2 = Ingredient.fromJson(JsonHelper.getObject(jsonObject, "addition"));
-            ItemStack itemStack = ShapedRecipe.getItemStack(JsonHelper.getObject(jsonObject, "result"));
+            ItemStack itemStack = ShapedRecipe.outputFromJson(JsonHelper.getObject(jsonObject, "result"));
             return new SmithingRecipe(identifier, ingredient, ingredient2, itemStack);
         }
 

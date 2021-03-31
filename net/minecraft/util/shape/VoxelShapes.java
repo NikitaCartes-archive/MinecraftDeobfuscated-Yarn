@@ -12,8 +12,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.stream.Stream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ShapeContext;
@@ -39,13 +37,15 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.WorldView;
 
 public final class VoxelShapes {
+    public static final double field_31880 = 1.0E-7;
+    public static final double field_31881 = 1.0E-6;
     private static final VoxelShape FULL_CUBE = Util.make(() -> {
         BitSetVoxelSet voxelSet = new BitSetVoxelSet(1, 1, 1);
         ((VoxelSet)voxelSet).set(0, 0, 0);
         return new SimpleVoxelShape(voxelSet);
     });
     public static final VoxelShape UNBOUNDED = VoxelShapes.cuboid(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
-    private static final VoxelShape EMPTY = new ArrayVoxelShape(new BitSetVoxelSet(0, 0, 0), new DoubleArrayList(new double[]{0.0}), new DoubleArrayList(new double[]{0.0}), new DoubleArrayList(new double[]{0.0}));
+    private static final VoxelShape EMPTY = new ArrayVoxelShape((VoxelSet)new BitSetVoxelSet(0, 0, 0), new DoubleArrayList(new double[]{0.0}), new DoubleArrayList(new double[]{0.0}), new DoubleArrayList(new double[]{0.0}));
 
     public static VoxelShape empty() {
         return EMPTY;
@@ -142,7 +142,7 @@ public final class VoxelShapes {
         if (pairList instanceof FractionalPairList && pairList2 instanceof FractionalPairList && pairList3 instanceof FractionalPairList) {
             return new SimpleVoxelShape(bitSetVoxelSet);
         }
-        return new ArrayVoxelShape(bitSetVoxelSet, pairList.getPairs(), pairList2.getPairs(), pairList3.getPairs());
+        return new ArrayVoxelShape((VoxelSet)bitSetVoxelSet, pairList.getPairs(), pairList2.getPairs(), pairList3.getPairs());
     }
 
     public static boolean matchesAnywhere(VoxelShape shape1, VoxelShape shape2, BooleanBiFunction predicate) {
@@ -251,7 +251,6 @@ public final class VoxelShapes {
         return value > 0.0 ? MathHelper.floor(max + value) + 1 : MathHelper.floor(min + value) - 1;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static boolean isSideCovered(VoxelShape shape, VoxelShape neighbor, Direction direction) {
         if (shape == VoxelShapes.fullCube() && neighbor == VoxelShapes.fullCube()) {
             return true;

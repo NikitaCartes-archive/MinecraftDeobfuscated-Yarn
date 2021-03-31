@@ -112,9 +112,9 @@ public final class Material {
     public static final Material BARRIER = new Builder(MapColor.CLEAR).blocksPistons().build();
     public static final Material PISTON = new Builder(MapColor.STONE_GRAY).blocksPistons().build();
     /**
-     * Not in use, but has foliage color.
+     * Material for full sized moss blocks.
      */
-    public static final Material UNUSED_PLANT = new Builder(MapColor.DARK_GREEN).destroyedByPiston().build();
+    public static final Material MOSS_BLOCK = new Builder(MapColor.DARK_GREEN).destroyedByPiston().build();
     /**
      * Material for gourds. Includes the carved pumpkin and jack o' lantern.
      */

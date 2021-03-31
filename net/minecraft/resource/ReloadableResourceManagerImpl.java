@@ -20,8 +20,6 @@ import java.util.concurrent.Executor;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.resource.NamespaceResourceManager;
 import net.minecraft.resource.ProfiledResourceReload;
 import net.minecraft.resource.ReloadableResourceManager;
@@ -64,7 +62,6 @@ implements ReloadableResourceManager {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public Set<String> getAllNamespaces() {
         return this.namespaces;
     }
@@ -79,7 +76,6 @@ implements ReloadableResourceManager {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public boolean containsResource(Identifier id) {
         ResourceManager resourceManager = this.namespaceManagers.get(id.getNamespace());
         if (resourceManager != null) {
@@ -144,7 +140,6 @@ implements ReloadableResourceManager {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public Stream<ResourcePack> streamResourcePacks() {
         return this.packs.stream();
     }
@@ -166,19 +161,16 @@ implements ReloadableResourceManager {
         }
 
         @Override
-        @Environment(value=EnvType.CLIENT)
         public float getProgress() {
             return 0.0f;
         }
 
         @Override
-        @Environment(value=EnvType.CLIENT)
         public boolean isComplete() {
             return true;
         }
 
         @Override
-        @Environment(value=EnvType.CLIENT)
         public void throwException() {
             throw this.exception;
         }
@@ -193,7 +185,6 @@ implements ReloadableResourceManager {
             this.pack = pack;
         }
 
-        @Environment(value=EnvType.CLIENT)
         public ResourcePack getPack() {
             return this.pack;
         }

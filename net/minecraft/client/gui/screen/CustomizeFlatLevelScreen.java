@@ -32,6 +32,13 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class CustomizeFlatLevelScreen
 extends Screen {
+    private static final int field_32239 = 128;
+    private static final int field_32240 = 18;
+    private static final int field_32241 = 20;
+    private static final int field_32242 = 1;
+    private static final int field_32243 = 1;
+    private static final int field_32244 = 2;
+    private static final int field_32245 = 2;
     protected final CreateWorldScreen parent;
     private final Consumer<FlatChunkGeneratorConfig> configConsumer;
     private FlatChunkGeneratorConfig config;

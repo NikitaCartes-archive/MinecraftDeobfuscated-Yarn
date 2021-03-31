@@ -3,8 +3,6 @@
  */
 package net.minecraft.world;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
@@ -14,12 +12,10 @@ import net.minecraft.world.level.ColorResolver;
 
 public interface BlockRenderView
 extends BlockView {
-    @Environment(value=EnvType.CLIENT)
     public float getBrightness(Direction var1, boolean var2);
 
     public LightingProvider getLightingProvider();
 
-    @Environment(value=EnvType.CLIENT)
     public int getColor(BlockPos var1, ColorResolver var2);
 
     default public int getLightLevel(LightType type, BlockPos pos) {

@@ -87,6 +87,10 @@ public class TexturedModel {
         default public Identifier upload(Block block, String suffix, BiConsumer<Identifier, Supplier<JsonElement>> writer) {
             return this.get(block).upload(block, suffix, writer);
         }
+
+        default public Factory method_35912(Consumer<Texture> consumer) {
+            return block -> this.get(block).texture(consumer);
+        }
     }
 }
 

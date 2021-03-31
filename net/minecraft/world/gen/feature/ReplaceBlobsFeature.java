@@ -32,9 +32,9 @@ extends Feature<ReplaceBlobsFeatureConfig> {
         if (blockPos == null) {
             return false;
         }
-        int i = replaceBlobsFeatureConfig.getRadius().getValue(random);
-        int j = replaceBlobsFeatureConfig.getRadius().getValue(random);
-        int k = replaceBlobsFeatureConfig.getRadius().getValue(random);
+        int i = replaceBlobsFeatureConfig.getRadius().get(random);
+        int j = replaceBlobsFeatureConfig.getRadius().get(random);
+        int k = replaceBlobsFeatureConfig.getRadius().get(random);
         int l = Math.max(i, Math.max(j, k));
         boolean bl = false;
         for (BlockPos blockPos2 : BlockPos.iterateOutwards(blockPos, i, j, k)) {

@@ -24,18 +24,18 @@ extends SimpleInventory {
         this.activeBlockEntity = blockEntity;
     }
 
-    public boolean method_31556(EnderChestBlockEntity enderChestBlockEntity) {
-        return this.activeBlockEntity == enderChestBlockEntity;
+    public boolean isActiveBlockEntity(EnderChestBlockEntity blockEntity) {
+        return this.activeBlockEntity == blockEntity;
     }
 
     @Override
-    public void readTags(NbtList tags) {
+    public void readNbtList(NbtList nbtList) {
         int i;
         for (i = 0; i < this.size(); ++i) {
             this.setStack(i, ItemStack.EMPTY);
         }
-        for (i = 0; i < tags.size(); ++i) {
-            NbtCompound nbtCompound = tags.getCompound(i);
+        for (i = 0; i < nbtList.size(); ++i) {
+            NbtCompound nbtCompound = nbtList.getCompound(i);
             int j = nbtCompound.getByte("Slot") & 0xFF;
             if (j < 0 || j >= this.size()) continue;
             this.setStack(j, ItemStack.fromNbt(nbtCompound));
@@ -43,7 +43,7 @@ extends SimpleInventory {
     }
 
     @Override
-    public NbtList getTags() {
+    public NbtList toNbtList() {
         NbtList nbtList = new NbtList();
         for (int i = 0; i < this.size(); ++i) {
             ItemStack itemStack = this.getStack(i);

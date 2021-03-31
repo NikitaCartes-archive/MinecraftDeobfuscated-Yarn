@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -54,22 +52,18 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onVelocityUpdate(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getId() {
         return this.id;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getVelocityX() {
         return this.velocityX;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getVelocityY() {
         return this.velocityY;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getVelocityZ() {
         return this.velocityZ;
     }

@@ -986,6 +986,10 @@ implements DataProvider {
         return ShapedRecipeJsonFactory.create(outputItem, 6).input(Character.valueOf('#'), inputItem).pattern("###");
     }
 
+    private static void method_35915(Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2) {
+        RecipesProvider.createStairsRecipe(itemConvertible, Ingredient.ofItems(itemConvertible2)).criterion(RecipesProvider.hasItem(itemConvertible2), RecipesProvider.conditionsFromItem(itemConvertible2)).offerTo(consumer);
+    }
+
     private static CraftingRecipeJsonFactory createStairsRecipe(ItemConvertible outputItem, Ingredient inputItem) {
         return ShapedRecipeJsonFactory.create(outputItem, 4).input(Character.valueOf('#'), inputItem).pattern("#  ").pattern("## ").pattern("###");
     }
@@ -1141,6 +1145,10 @@ implements DataProvider {
 
     private static EnterBlockCriterion.Conditions requireEnteringFluid(Block block) {
         return new EnterBlockCriterion.Conditions(EntityPredicate.Extended.EMPTY, block, StatePredicate.ANY);
+    }
+
+    private static InventoryChangedCriterion.Conditions method_35914(NumberRange.IntRange intRange, ItemConvertible itemConvertible) {
+        return RecipesProvider.conditionsFromItemPredicates(ItemPredicate.Builder.create().item(itemConvertible).count(intRange).build());
     }
 
     private static InventoryChangedCriterion.Conditions conditionsFromItem(ItemConvertible item) {

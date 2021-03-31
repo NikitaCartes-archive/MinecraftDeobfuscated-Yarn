@@ -5,8 +5,6 @@ package net.minecraft.world;
 
 import com.mojang.serialization.Lifecycle;
 import java.util.Set;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.util.crash.CrashReportSection;
@@ -20,6 +18,9 @@ import net.minecraft.world.level.ServerWorldProperties;
 import org.jetbrains.annotations.Nullable;
 
 public interface SaveProperties {
+    public static final int ANVIL_FORMAT_ID = 19133;
+    public static final int MCREGION_FORMAT_ID = 19132;
+
     public DataPackSettings getDataPackSettings();
 
     public void updateLevelInfo(DataPackSettings var1);
@@ -58,7 +59,6 @@ public interface SaveProperties {
 
     public ServerWorldProperties getMainWorldProperties();
 
-    @Environment(value=EnvType.CLIENT)
     public LevelInfo getLevelInfo();
 
     public NbtCompound cloneWorldNbt(DynamicRegistryManager var1, @Nullable NbtCompound var2);
@@ -93,7 +93,6 @@ public interface SaveProperties {
 
     public GeneratorOptions getGeneratorOptions();
 
-    @Environment(value=EnvType.CLIENT)
     public Lifecycle getLifecycle();
 }
 

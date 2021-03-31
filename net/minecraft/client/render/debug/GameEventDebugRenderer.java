@@ -41,6 +41,8 @@ import org.jetbrains.annotations.Nullable;
 public class GameEventDebugRenderer
 implements DebugRenderer.Renderer {
     private final MinecraftClient client;
+    private static final int field_32899 = 32;
+    private static final float field_32900 = 1.0f;
     private final List<Entry> entries = Lists.newArrayList();
     private final List<Listener> listeners = Lists.newArrayList();
 

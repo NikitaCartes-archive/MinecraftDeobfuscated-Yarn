@@ -4,9 +4,6 @@
 package net.minecraft.entity.effect;
 
 import com.google.common.collect.ComparisonChain;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.nbt.NbtCompound;
@@ -21,7 +18,6 @@ implements Comparable<StatusEffectInstance> {
     private int duration;
     private int amplifier;
     private boolean ambient;
-    @Environment(value=EnvType.CLIENT)
     private boolean permanent;
     private boolean showParticles;
     private boolean showIcon;
@@ -203,60 +199,58 @@ implements Comparable<StatusEffectInstance> {
         return i;
     }
 
-    public NbtCompound writeNbt(NbtCompound tag) {
-        tag.putByte("Id", (byte)StatusEffect.getRawId(this.getEffectType()));
-        this.writeTypelessToNbt(tag);
-        return tag;
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        nbt.putByte("Id", (byte)StatusEffect.getRawId(this.getEffectType()));
+        this.writeTypelessNbt(nbt);
+        return nbt;
     }
 
-    private void writeTypelessToNbt(NbtCompound tag) {
-        tag.putByte("Amplifier", (byte)this.getAmplifier());
-        tag.putInt("Duration", this.getDuration());
-        tag.putBoolean("Ambient", this.isAmbient());
-        tag.putBoolean("ShowParticles", this.shouldShowParticles());
-        tag.putBoolean("ShowIcon", this.shouldShowIcon());
+    private void writeTypelessNbt(NbtCompound nbt) {
+        nbt.putByte("Amplifier", (byte)this.getAmplifier());
+        nbt.putInt("Duration", this.getDuration());
+        nbt.putBoolean("Ambient", this.isAmbient());
+        nbt.putBoolean("ShowParticles", this.shouldShowParticles());
+        nbt.putBoolean("ShowIcon", this.shouldShowIcon());
         if (this.hiddenEffect != null) {
             NbtCompound nbtCompound = new NbtCompound();
             this.hiddenEffect.writeNbt(nbtCompound);
-            tag.put("HiddenEffect", nbtCompound);
+            nbt.put("HiddenEffect", nbtCompound);
         }
     }
 
     @Nullable
-    public static StatusEffectInstance fromNbt(NbtCompound tag) {
-        byte i = tag.getByte("Id");
+    public static StatusEffectInstance fromNbt(NbtCompound nbt) {
+        byte i = nbt.getByte("Id");
         StatusEffect statusEffect = StatusEffect.byRawId(i);
         if (statusEffect == null) {
             return null;
         }
-        return StatusEffectInstance.fromNbt(statusEffect, tag);
+        return StatusEffectInstance.fromNbt(statusEffect, nbt);
     }
 
-    private static StatusEffectInstance fromNbt(StatusEffect type, NbtCompound tag) {
-        byte i = tag.getByte("Amplifier");
-        int j = tag.getInt("Duration");
-        boolean bl = tag.getBoolean("Ambient");
+    private static StatusEffectInstance fromNbt(StatusEffect type, NbtCompound nbt) {
+        byte i = nbt.getByte("Amplifier");
+        int j = nbt.getInt("Duration");
+        boolean bl = nbt.getBoolean("Ambient");
         boolean bl2 = true;
-        if (tag.contains("ShowParticles", NbtTypeIds.BYTE)) {
-            bl2 = tag.getBoolean("ShowParticles");
+        if (nbt.contains("ShowParticles", 1)) {
+            bl2 = nbt.getBoolean("ShowParticles");
         }
         boolean bl3 = bl2;
-        if (tag.contains("ShowIcon", NbtTypeIds.BYTE)) {
-            bl3 = tag.getBoolean("ShowIcon");
+        if (nbt.contains("ShowIcon", 1)) {
+            bl3 = nbt.getBoolean("ShowIcon");
         }
         StatusEffectInstance statusEffectInstance = null;
-        if (tag.contains("HiddenEffect", NbtTypeIds.COMPOUND)) {
-            statusEffectInstance = StatusEffectInstance.fromNbt(type, tag.getCompound("HiddenEffect"));
+        if (nbt.contains("HiddenEffect", 10)) {
+            statusEffectInstance = StatusEffectInstance.fromNbt(type, nbt.getCompound("HiddenEffect"));
         }
         return new StatusEffectInstance(type, j, i < 0 ? (byte)0 : i, bl, bl2, bl3, statusEffectInstance);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void setPermanent(boolean permanent) {
         this.permanent = permanent;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isPermanent() {
         return this.permanent;
     }

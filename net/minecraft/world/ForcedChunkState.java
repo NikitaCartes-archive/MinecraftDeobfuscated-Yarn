@@ -10,6 +10,8 @@ import net.minecraft.world.PersistentState;
 
 public class ForcedChunkState
 extends PersistentState {
+    public static final String field_30961 = "chunks";
+    private static final String FORCED_KEY = "Forced";
     private final LongSet chunks;
 
     private ForcedChunkState(LongSet chunks) {
@@ -20,14 +22,14 @@ extends PersistentState {
         this(new LongOpenHashSet());
     }
 
-    public static ForcedChunkState fromNbt(NbtCompound tag) {
-        return new ForcedChunkState(new LongOpenHashSet(tag.getLongArray("Forced")));
+    public static ForcedChunkState fromNbt(NbtCompound nbt) {
+        return new ForcedChunkState(new LongOpenHashSet(nbt.getLongArray(FORCED_KEY)));
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound tag) {
-        tag.putLongArray("Forced", this.chunks.toLongArray());
-        return tag;
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        nbt.putLongArray(FORCED_KEY, this.chunks.toLongArray());
+        return nbt;
     }
 
     public LongSet getChunks() {

@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -39,6 +38,7 @@ extends Block {
     public static final BooleanProperty SOUTH = ConnectingBlock.SOUTH;
     public static final BooleanProperty WEST = ConnectingBlock.WEST;
     public static final Map<Direction, BooleanProperty> FACING_PROPERTIES = ConnectingBlock.FACING_PROPERTIES.entrySet().stream().filter(entry -> entry.getKey() != Direction.DOWN).collect(Util.toMap());
+    protected static final float field_31275 = 1.0f;
     private static final VoxelShape UP_SHAPE = Block.createCuboidShape(0.0, 15.0, 0.0, 16.0, 16.0, 16.0);
     private static final VoxelShape EAST_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 1.0, 16.0, 16.0);
     private static final VoxelShape WEST_SHAPE = Block.createCuboidShape(15.0, 0.0, 0.0, 16.0, 16.0, 16.0);
@@ -174,27 +174,27 @@ extends Block {
                 BlockPos blockPos3 = blockPos22.offset(direction2);
                 BlockPos blockPos4 = blockPos22.offset(direction3);
                 if (bl && VineBlock.shouldConnectTo(world, blockPos3, direction2)) {
-                    world.setBlockState(blockPos22, (BlockState)this.getDefaultState().with(VineBlock.getFacingProperty(direction2), true), SetBlockStateFlags.NOTIFY_LISTENERS);
+                    world.setBlockState(blockPos22, (BlockState)this.getDefaultState().with(VineBlock.getFacingProperty(direction2), true), Block.NOTIFY_LISTENERS);
                 } else if (bl2 && VineBlock.shouldConnectTo(world, blockPos4, direction3)) {
-                    world.setBlockState(blockPos22, (BlockState)this.getDefaultState().with(VineBlock.getFacingProperty(direction3), true), SetBlockStateFlags.NOTIFY_LISTENERS);
+                    world.setBlockState(blockPos22, (BlockState)this.getDefaultState().with(VineBlock.getFacingProperty(direction3), true), Block.NOTIFY_LISTENERS);
                 } else {
                     Direction direction4 = direction.getOpposite();
                     if (bl && world.isAir(blockPos3) && VineBlock.shouldConnectTo(world, pos.offset(direction2), direction4)) {
-                        world.setBlockState(blockPos3, (BlockState)this.getDefaultState().with(VineBlock.getFacingProperty(direction4), true), SetBlockStateFlags.NOTIFY_LISTENERS);
+                        world.setBlockState(blockPos3, (BlockState)this.getDefaultState().with(VineBlock.getFacingProperty(direction4), true), Block.NOTIFY_LISTENERS);
                     } else if (bl2 && world.isAir(blockPos4) && VineBlock.shouldConnectTo(world, pos.offset(direction3), direction4)) {
-                        world.setBlockState(blockPos4, (BlockState)this.getDefaultState().with(VineBlock.getFacingProperty(direction4), true), SetBlockStateFlags.NOTIFY_LISTENERS);
+                        world.setBlockState(blockPos4, (BlockState)this.getDefaultState().with(VineBlock.getFacingProperty(direction4), true), Block.NOTIFY_LISTENERS);
                     } else if ((double)random.nextFloat() < 0.05 && VineBlock.shouldConnectTo(world, blockPos22.up(), Direction.UP)) {
-                        world.setBlockState(blockPos22, (BlockState)this.getDefaultState().with(UP, true), SetBlockStateFlags.NOTIFY_LISTENERS);
+                        world.setBlockState(blockPos22, (BlockState)this.getDefaultState().with(UP, true), Block.NOTIFY_LISTENERS);
                     }
                 }
             } else if (VineBlock.shouldConnectTo(world, blockPos22, direction)) {
-                world.setBlockState(pos, (BlockState)state.with(VineBlock.getFacingProperty(direction), true), SetBlockStateFlags.NOTIFY_LISTENERS);
+                world.setBlockState(pos, (BlockState)state.with(VineBlock.getFacingProperty(direction), true), Block.NOTIFY_LISTENERS);
             }
             return;
         }
         if (direction == Direction.UP && pos.getY() < world.getTopY() - 1) {
             if (this.shouldHaveSide(world, pos, direction)) {
-                world.setBlockState(pos, (BlockState)state.with(UP, true), SetBlockStateFlags.NOTIFY_LISTENERS);
+                world.setBlockState(pos, (BlockState)state.with(UP, true), Block.NOTIFY_LISTENERS);
                 return;
             }
             if (world.isAir(blockPos)) {
@@ -207,13 +207,13 @@ extends Block {
                     blockState2 = (BlockState)blockState2.with(VineBlock.getFacingProperty(direction2), false);
                 }
                 if (this.hasHorizontalSide(blockState2)) {
-                    world.setBlockState(blockPos, blockState2, SetBlockStateFlags.NOTIFY_LISTENERS);
+                    world.setBlockState(blockPos, blockState2, Block.NOTIFY_LISTENERS);
                 }
                 return;
             }
         }
         if (pos.getY() > world.getBottomY() && ((blockState = world.getBlockState(blockPos2 = pos.down())).isAir() || blockState.isOf(this)) && (blockState3 = blockState.isAir() ? this.getDefaultState() : blockState) != (blockState4 = this.getGrownState(state, blockState3, random)) && this.hasHorizontalSide(blockState4)) {
-            world.setBlockState(blockPos2, blockState4, SetBlockStateFlags.NOTIFY_LISTENERS);
+            world.setBlockState(blockPos2, blockState4, Block.NOTIFY_LISTENERS);
         }
     }
 

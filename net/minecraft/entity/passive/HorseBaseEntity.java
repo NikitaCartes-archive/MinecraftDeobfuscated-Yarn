@@ -6,9 +6,6 @@ package net.minecraft.entity.passive;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -79,11 +76,23 @@ extends AnimalEntity
 implements InventoryChangedListener,
 JumpingMount,
 Saddleable {
+    public static final int field_30413 = 400;
+    public static final int field_30414 = 499;
+    public static final int field_30415 = 500;
     private static final Predicate<LivingEntity> IS_BRED_HORSE = entity -> entity instanceof HorseBaseEntity && ((HorseBaseEntity)entity).isBred();
     private static final TargetPredicate PARENT_HORSE_PREDICATE = new TargetPredicate().setBaseMaxDistance(16.0).includeInvulnerable().includeTeammates().includeHidden().setPredicate(IS_BRED_HORSE);
     private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.WHEAT, Items.SUGAR, Blocks.HAY_BLOCK.asItem(), Items.APPLE, Items.GOLDEN_CARROT, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE);
     private static final TrackedData<Byte> HORSE_FLAGS = DataTracker.registerData(HorseBaseEntity.class, TrackedDataHandlerRegistry.BYTE);
     private static final TrackedData<Optional<UUID>> OWNER_UUID = DataTracker.registerData(HorseBaseEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
+    private static final int field_30419 = 2;
+    private static final int field_30420 = 4;
+    private static final int field_30421 = 8;
+    private static final int field_30422 = 16;
+    private static final int field_30423 = 32;
+    private static final int field_30424 = 64;
+    public static final int field_30416 = 0;
+    public static final int field_30417 = 1;
+    public static final int field_30418 = 2;
     private int eatingGrassTicks;
     private int eatingTicks;
     private int angryTicks;
@@ -701,39 +710,39 @@ Saddleable {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
-        tag.putBoolean("EatingHaystack", this.isEatingGrass());
-        tag.putBoolean("Bred", this.isBred());
-        tag.putInt("Temper", this.getTemper());
-        tag.putBoolean("Tame", this.isTame());
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putBoolean("EatingHaystack", this.isEatingGrass());
+        nbt.putBoolean("Bred", this.isBred());
+        nbt.putInt("Temper", this.getTemper());
+        nbt.putBoolean("Tame", this.isTame());
         if (this.getOwnerUuid() != null) {
-            tag.putUuid("Owner", this.getOwnerUuid());
+            nbt.putUuid("Owner", this.getOwnerUuid());
         }
         if (!this.items.getStack(0).isEmpty()) {
-            tag.put("SaddleItem", this.items.getStack(0).writeNbt(new NbtCompound()));
+            nbt.put("SaddleItem", this.items.getStack(0).writeNbt(new NbtCompound()));
         }
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
+    public void readCustomDataFromNbt(NbtCompound nbt) {
         ItemStack itemStack;
         UUID uUID;
-        super.readCustomDataFromNbt(tag);
-        this.setEatingGrass(tag.getBoolean("EatingHaystack"));
-        this.setBred(tag.getBoolean("Bred"));
-        this.setTemper(tag.getInt("Temper"));
-        this.setTame(tag.getBoolean("Tame"));
-        if (tag.containsUuid("Owner")) {
-            uUID = tag.getUuid("Owner");
+        super.readCustomDataFromNbt(nbt);
+        this.setEatingGrass(nbt.getBoolean("EatingHaystack"));
+        this.setBred(nbt.getBoolean("Bred"));
+        this.setTemper(nbt.getInt("Temper"));
+        this.setTame(nbt.getBoolean("Tame"));
+        if (nbt.containsUuid("Owner")) {
+            uUID = nbt.getUuid("Owner");
         } else {
-            String string = tag.getString("Owner");
+            String string = nbt.getString("Owner");
             uUID = ServerConfigHandler.getPlayerUuidByName(this.getServer(), string);
         }
         if (uUID != null) {
             this.setOwnerUuid(uUID);
         }
-        if (tag.contains("SaddleItem", NbtTypeIds.COMPOUND) && (itemStack = ItemStack.fromNbt(tag.getCompound("SaddleItem"))).isOf(Items.SADDLE)) {
+        if (nbt.contains("SaddleItem", 10) && (itemStack = ItemStack.fromNbt(nbt.getCompound("SaddleItem"))).isOf(Items.SADDLE)) {
             this.items.setStack(0, itemStack);
         }
         this.updateSaddle();
@@ -768,23 +777,19 @@ Saddleable {
         return this.getPrimaryPassenger() instanceof LivingEntity;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getEatingGrassAnimationProgress(float tickDelta) {
         return MathHelper.lerp(tickDelta, this.lastEatingGrassAnimationProgress, this.eatingGrassAnimationProgress);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getAngryAnimationProgress(float tickDelta) {
         return MathHelper.lerp(tickDelta, this.lastAngryAnimationProgress, this.angryAnimationProgress);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getEatingAnimationProgress(float tickDelta) {
         return MathHelper.lerp(tickDelta, this.lastEatingAnimationProgress, this.eatingAnimationProgress);
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void setJumpStrength(int strength) {
         if (!this.isSaddled()) {
             return;
@@ -814,7 +819,6 @@ Saddleable {
     public void stopJumping() {
     }
 
-    @Environment(value=EnvType.CLIENT)
     protected void spawnPlayerReactionParticles(boolean positive) {
         DefaultParticleType particleEffect = positive ? ParticleTypes.HEART : ParticleTypes.SMOKE;
         for (int i = 0; i < 7; ++i) {
@@ -826,7 +830,6 @@ Saddleable {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void handleStatus(byte status) {
         if (status == 7) {
             this.spawnPlayerReactionParticles(true);
@@ -1002,12 +1005,12 @@ Saddleable {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         if (entityData == null) {
             entityData = new PassiveEntity.PassiveData(0.2f);
         }
         this.initAttributes();
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     public boolean method_33338(Inventory inventory) {

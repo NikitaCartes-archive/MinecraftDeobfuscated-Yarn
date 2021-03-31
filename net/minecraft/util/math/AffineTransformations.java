@@ -6,8 +6,6 @@ package net.minecraft.util.math;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.function.Supplier;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.Direction;
@@ -16,7 +14,6 @@ import net.minecraft.util.math.Vec3f;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Environment(value=EnvType.CLIENT)
 public class AffineTransformations {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final Map<Direction, AffineTransformation> DIRECTION_ROTATIONS = Util.make(Maps.newEnumMap(Direction.class), enumMap -> {
@@ -37,6 +34,13 @@ public class AffineTransformations {
         Matrix4f matrix4f = Matrix4f.translate(0.5f, 0.5f, 0.5f);
         matrix4f.multiply(affineTransformation.getMatrix());
         matrix4f.multiply(Matrix4f.translate(-0.5f, -0.5f, -0.5f));
+        return new AffineTransformation(matrix4f);
+    }
+
+    public static AffineTransformation method_35829(AffineTransformation affineTransformation) {
+        Matrix4f matrix4f = Matrix4f.translate(-0.5f, -0.5f, -0.5f);
+        matrix4f.multiply(affineTransformation.getMatrix());
+        matrix4f.multiply(Matrix4f.translate(0.5f, 0.5f, 0.5f));
         return new AffineTransformation(matrix4f);
     }
 

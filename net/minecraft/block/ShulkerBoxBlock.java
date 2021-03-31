@@ -4,9 +4,6 @@
 package net.minecraft.block;
 
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -135,7 +132,7 @@ extends BlockWithEntity {
             ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
             if (!world.isClient && player.isCreative() && !shulkerBoxBlockEntity.isEmpty()) {
                 ItemStack itemStack = ShulkerBoxBlock.getItemStack(this.getColor());
-                NbtCompound nbtCompound = shulkerBoxBlockEntity.serializeInventory(new NbtCompound());
+                NbtCompound nbtCompound = shulkerBoxBlockEntity.writeInventoryNbt(new NbtCompound());
                 if (!nbtCompound.isEmpty()) {
                     itemStack.putSubTag("BlockEntityTag", nbtCompound);
                 }
@@ -187,15 +184,14 @@ extends BlockWithEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
         super.appendTooltip(stack, world, tooltip, options);
         NbtCompound nbtCompound = stack.getSubTag("BlockEntityTag");
         if (nbtCompound != null) {
-            if (nbtCompound.contains("LootTable", NbtTypeIds.STRING)) {
+            if (nbtCompound.contains("LootTable", 8)) {
                 tooltip.add(new LiteralText("???????"));
             }
-            if (nbtCompound.contains("Items", NbtTypeIds.LIST)) {
+            if (nbtCompound.contains("Items", 9)) {
                 DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(27, ItemStack.EMPTY);
                 Inventories.readNbt(nbtCompound, defaultedList);
                 int i = 0;
@@ -241,11 +237,10 @@ extends BlockWithEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
         ItemStack itemStack = super.getPickStack(world, pos, state);
         ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)world.getBlockEntity(pos);
-        NbtCompound nbtCompound = shulkerBoxBlockEntity.serializeInventory(new NbtCompound());
+        NbtCompound nbtCompound = shulkerBoxBlockEntity.writeInventoryNbt(new NbtCompound());
         if (!nbtCompound.isEmpty()) {
             itemStack.putSubTag("BlockEntityTag", nbtCompound);
         }
@@ -253,7 +248,6 @@ extends BlockWithEntity {
     }
 
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     public static DyeColor getColor(Item item) {
         return ShulkerBoxBlock.getColor(Block.getBlockFromItem(item));
     }

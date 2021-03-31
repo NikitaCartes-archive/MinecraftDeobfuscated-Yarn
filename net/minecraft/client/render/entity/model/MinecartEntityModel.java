@@ -18,11 +18,12 @@ import net.minecraft.entity.Entity;
 public class MinecartEntityModel<T extends Entity>
 extends SinglePartEntityModel<T> {
     private final ModelPart root;
+    private static final String CONTENTS = "contents";
     private final ModelPart contents;
 
     public MinecartEntityModel(ModelPart root) {
         this.root = root;
-        this.contents = root.getChild("contents");
+        this.contents = root.getChild(CONTENTS);
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -37,7 +38,7 @@ extends SinglePartEntityModel<T> {
         modelPartData.addChild("back", ModelPartBuilder.create().uv(0, 0).cuboid(-8.0f, -9.0f, -1.0f, 16.0f, 8.0f, 2.0f), ModelTransform.of(9.0f, 4.0f, 0.0f, 0.0f, 1.5707964f, 0.0f));
         modelPartData.addChild("left", ModelPartBuilder.create().uv(0, 0).cuboid(-8.0f, -9.0f, -1.0f, 16.0f, 8.0f, 2.0f), ModelTransform.of(0.0f, 4.0f, -7.0f, 0.0f, (float)Math.PI, 0.0f));
         modelPartData.addChild("right", ModelPartBuilder.create().uv(0, 0).cuboid(-8.0f, -9.0f, -1.0f, 16.0f, 8.0f, 2.0f), ModelTransform.pivot(0.0f, 4.0f, 7.0f));
-        modelPartData.addChild("contents", ModelPartBuilder.create().uv(44, 10).cuboid(-9.0f, -7.0f, -1.0f, 18.0f, 14.0f, 1.0f), ModelTransform.of(0.0f, 4.0f, 0.0f, -1.5707964f, 0.0f, 0.0f));
+        modelPartData.addChild(CONTENTS, ModelPartBuilder.create().uv(44, 10).cuboid(-9.0f, -7.0f, -1.0f, 18.0f, 14.0f, 1.0f), ModelTransform.of(0.0f, 4.0f, 0.0f, -1.5707964f, 0.0f, 0.0f));
         return TexturedModelData.of(modelData, 64, 32);
     }
 

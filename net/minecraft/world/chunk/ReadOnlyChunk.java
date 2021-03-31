@@ -109,6 +109,11 @@ extends ProtoChunk {
     }
 
     @Override
+    public BlockPos method_35319(Heightmap.Type type) {
+        return this.wrapped.method_35319(this.transformHeightmapType(type));
+    }
+
+    @Override
     public ChunkPos getPos() {
         return this.wrapped.getPos();
     }
@@ -178,7 +183,7 @@ extends ProtoChunk {
     }
 
     @Override
-    public void addPendingBlockEntityNbt(NbtCompound tag) {
+    public void addPendingBlockEntityNbt(NbtCompound nbt) {
     }
 
     @Override

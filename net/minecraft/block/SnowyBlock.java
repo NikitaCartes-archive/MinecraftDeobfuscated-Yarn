@@ -6,11 +6,11 @@ package net.minecraft.block;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldAccess;
@@ -27,7 +27,7 @@ extends Block {
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (direction == Direction.UP) {
-            return (BlockState)state.with(SNOWY, neighborState.isOf(Blocks.SNOW_BLOCK) || neighborState.isOf(Blocks.SNOW));
+            return (BlockState)state.with(SNOWY, SnowyBlock.method_35291(neighborState));
         }
         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
@@ -35,7 +35,11 @@ extends Block {
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos().up());
-        return (BlockState)this.getDefaultState().with(SNOWY, blockState.isOf(Blocks.SNOW_BLOCK) || blockState.isOf(Blocks.SNOW));
+        return (BlockState)this.getDefaultState().with(SNOWY, SnowyBlock.method_35291(blockState));
+    }
+
+    private static boolean method_35291(BlockState blockState) {
+        return blockState.isIn(BlockTags.SNOW);
     }
 
     @Override

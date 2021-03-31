@@ -49,6 +49,11 @@ implements ShapeContext {
     }
 
     @Override
+    public boolean isWearingOnFeet(Item item) {
+        return this.boots.isOf(item);
+    }
+
+    @Override
     public boolean isHolding(Item item) {
         return this.heldItem.isOf(item);
     }

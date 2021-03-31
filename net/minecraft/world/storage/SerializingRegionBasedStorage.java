@@ -37,6 +37,7 @@ import org.jetbrains.annotations.Nullable;
 public class SerializingRegionBasedStorage<R>
 implements AutoCloseable {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final String field_31427 = "Sections";
     private final StorageIoWorker worker;
     private final Long2ObjectMap<Optional<R>> loadedElements = new Long2ObjectOpenHashMap<Optional<R>>();
     private final LongLinkedOpenHashSet unsavedElements = new LongLinkedOpenHashSet();
@@ -126,7 +127,7 @@ implements AutoCloseable {
             int j = SerializingRegionBasedStorage.getDataVersion(dynamic2);
             boolean bl = j != (k = SharedConstants.getGameVersion().getWorldVersion());
             Dynamic<T> dynamic22 = this.dataFixer.update(this.dataFixTypes.getTypeReference(), dynamic2, j, k);
-            OptionalDynamic<T> optionalDynamic = dynamic22.get("Sections");
+            OptionalDynamic<T> optionalDynamic = dynamic22.get(field_31427);
             for (int l = this.world.getBottomSectionCoord(); l < this.world.getTopSectionCoord(); ++l) {
                 long m = SerializingRegionBasedStorage.method_33637(pos, l);
                 Optional optional = optionalDynamic.get(Integer.toString(l)).result().flatMap(dynamic -> this.codecFactory.apply(() -> this.onUpdate(m)).parse(dynamic).resultOrPartial(LOGGER::error));
@@ -162,7 +163,7 @@ implements AutoCloseable {
             String string = Integer.toString(i);
             dataResult.resultOrPartial(LOGGER::error).ifPresent(object -> map.put(dynamicOps.createString(string), object));
         }
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("Sections"), dynamicOps.createMap(map), dynamicOps.createString("DataVersion"), dynamicOps.createInt(SharedConstants.getGameVersion().getWorldVersion()))));
+        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString(field_31427), dynamicOps.createMap(map), dynamicOps.createString("DataVersion"), dynamicOps.createInt(SharedConstants.getGameVersion().getWorldVersion()))));
     }
 
     private static long method_33637(ChunkPos chunkPos, int i) {

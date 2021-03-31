@@ -4,7 +4,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -88,7 +87,7 @@ extends Block {
         boolean bl3 = bl2 = i > 0;
         if (output != i) {
             BlockState blockState = this.setRedstoneOutput(state, i);
-            world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
+            world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
             this.updateNeighbors(world, pos);
             world.scheduleBlockRerenderIfNeeded(pos, state, blockState);
         }

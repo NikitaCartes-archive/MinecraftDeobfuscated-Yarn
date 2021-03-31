@@ -3,9 +3,6 @@
  */
 package net.minecraft.entity.projectile;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -56,7 +53,6 @@ extends ProjectileEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public boolean shouldRender(double distance) {
         double d = this.getBoundingBox().getAverageSideLength() * 4.0;
         if (Double.isNaN(d)) {
@@ -117,16 +113,16 @@ extends ProjectileEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
-        tag.put("power", this.toListTag(this.powerX, this.powerY, this.powerZ));
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.put("power", this.toNbtList(this.powerX, this.powerY, this.powerZ));
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
+    public void readCustomDataFromNbt(NbtCompound nbt) {
         NbtList nbtList;
-        super.readCustomDataFromNbt(tag);
-        if (tag.contains("power", NbtTypeIds.LIST) && (nbtList = tag.getList("power", NbtTypeIds.DOUBLE)).size() == 3) {
+        super.readCustomDataFromNbt(nbt);
+        if (nbt.contains("power", 9) && (nbtList = nbt.getList("power", 6)).size() == 3) {
             this.powerX = nbtList.getDouble(0);
             this.powerY = nbtList.getDouble(1);
             this.powerZ = nbtList.getDouble(2);
@@ -175,7 +171,6 @@ extends ProjectileEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void onSpawnPacket(EntitySpawnS2CPacket packet) {
         super.onSpawnPacket(packet);
         double d = packet.getVelocityX();

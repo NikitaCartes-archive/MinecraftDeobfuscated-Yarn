@@ -13,6 +13,7 @@ import net.minecraft.client.render.entity.feature.VillagerResourceMetadataReader
 @Environment(value=EnvType.CLIENT)
 public class VillagerResourceMetadata {
     public static final VillagerResourceMetadataReader READER = new VillagerResourceMetadataReader();
+    public static final String KEY = "villager";
     private final HatType hatType;
 
     public VillagerResourceMetadata(HatType hatType) {

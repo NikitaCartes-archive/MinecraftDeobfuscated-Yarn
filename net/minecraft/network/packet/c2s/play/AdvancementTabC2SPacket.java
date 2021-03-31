@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.c2s.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -18,18 +16,15 @@ implements Packet<ServerPlayPacketListener> {
     @Nullable
     private final Identifier tabToOpen;
 
-    @Environment(value=EnvType.CLIENT)
     public AdvancementTabC2SPacket(Action action, @Nullable Identifier tab) {
         this.action = action;
         this.tabToOpen = tab;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static AdvancementTabC2SPacket open(Advancement advancement) {
         return new AdvancementTabC2SPacket(Action.OPENED_TAB, advancement.getId());
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static AdvancementTabC2SPacket close() {
         return new AdvancementTabC2SPacket(Action.CLOSED_SCREEN, null);
     }

@@ -18,13 +18,13 @@ import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 public class StructureProcessorRule {
-    public static final Codec<StructureProcessorRule> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)RuleTest.TYPE_CODEC.fieldOf("input_predicate")).forGetter(structureProcessorRule -> structureProcessorRule.inputPredicate), ((MapCodec)RuleTest.TYPE_CODEC.fieldOf("location_predicate")).forGetter(structureProcessorRule -> structureProcessorRule.locationPredicate), PosRuleTest.field_25007.optionalFieldOf("position_predicate", AlwaysTruePosRuleTest.INSTANCE).forGetter(structureProcessorRule -> structureProcessorRule.positionPredicate), ((MapCodec)BlockState.CODEC.fieldOf("output_state")).forGetter(structureProcessorRule -> structureProcessorRule.outputState), NbtCompound.CODEC.optionalFieldOf("output_nbt").forGetter(structureProcessorRule -> Optional.ofNullable(structureProcessorRule.tag))).apply((Applicative<StructureProcessorRule, ?>)instance, StructureProcessorRule::new));
+    public static final Codec<StructureProcessorRule> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)RuleTest.TYPE_CODEC.fieldOf("input_predicate")).forGetter(structureProcessorRule -> structureProcessorRule.inputPredicate), ((MapCodec)RuleTest.TYPE_CODEC.fieldOf("location_predicate")).forGetter(structureProcessorRule -> structureProcessorRule.locationPredicate), PosRuleTest.field_25007.optionalFieldOf("position_predicate", AlwaysTruePosRuleTest.INSTANCE).forGetter(structureProcessorRule -> structureProcessorRule.positionPredicate), ((MapCodec)BlockState.CODEC.fieldOf("output_state")).forGetter(structureProcessorRule -> structureProcessorRule.outputState), NbtCompound.CODEC.optionalFieldOf("output_nbt").forGetter(structureProcessorRule -> Optional.ofNullable(structureProcessorRule.outputNbt))).apply((Applicative<StructureProcessorRule, ?>)instance, StructureProcessorRule::new));
     private final RuleTest inputPredicate;
     private final RuleTest locationPredicate;
     private final PosRuleTest positionPredicate;
     private final BlockState outputState;
     @Nullable
-    private final NbtCompound tag;
+    private final NbtCompound outputNbt;
 
     public StructureProcessorRule(RuleTest inputPredicate, RuleTest locationPredicate, BlockState state) {
         this(inputPredicate, locationPredicate, AlwaysTruePosRuleTest.INSTANCE, state, Optional.empty());
@@ -34,12 +34,12 @@ public class StructureProcessorRule {
         this(inputPredicate, locationPredicate, positionPredicate, state, Optional.empty());
     }
 
-    public StructureProcessorRule(RuleTest inputPredicate, RuleTest locationPredicate, PosRuleTest positionPredicate, BlockState outputState, Optional<NbtCompound> tag) {
+    public StructureProcessorRule(RuleTest inputPredicate, RuleTest locationPredicate, PosRuleTest positionPredicate, BlockState outputState, Optional<NbtCompound> nbt) {
         this.inputPredicate = inputPredicate;
         this.locationPredicate = locationPredicate;
         this.positionPredicate = positionPredicate;
         this.outputState = outputState;
-        this.tag = tag.orElse(null);
+        this.outputNbt = nbt.orElse(null);
     }
 
     public boolean test(BlockState input, BlockState location, BlockPos blockPos, BlockPos blockPos2, BlockPos blockPos3, Random random) {
@@ -51,8 +51,8 @@ public class StructureProcessorRule {
     }
 
     @Nullable
-    public NbtCompound getTag() {
-        return this.tag;
+    public NbtCompound getOutputNbt() {
+        return this.outputNbt;
     }
 }
 

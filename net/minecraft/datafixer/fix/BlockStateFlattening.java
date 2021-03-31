@@ -19,6 +19,7 @@ public class BlockStateFlattening {
     private static final Dynamic<?>[] field_24646 = new Dynamic[256];
     private static final Object2IntMap<Dynamic<?>> OLD_STATE_TO_ID = DataFixUtils.make(new Object2IntOpenHashMap(), object2IntOpenHashMap -> object2IntOpenHashMap.defaultReturnValue(-1));
     private static final Object2IntMap<String> OLD_BLOCK_TO_ID = DataFixUtils.make(new Object2IntOpenHashMap(), object2IntOpenHashMap -> object2IntOpenHashMap.defaultReturnValue(-1));
+    static final String field_29869 = "%%FILTER_ME%%";
 
     private static void putStates(int oldId, String newStateStr, String ... oldStateStrings) {
         Dynamic<?> dynamic = BlockStateFlattening.parseState(newStateStr);

@@ -14,6 +14,10 @@ import net.minecraft.sound.SoundEvents;
 @Environment(value=EnvType.CLIENT)
 public class AmbientSoundPlayer
 implements ClientPlayerTickable {
+    public static final float field_33008 = 0.01f;
+    public static final float field_33009 = 0.001f;
+    public static final float field_33010 = 1.0E-4f;
+    private static final int field_33011 = 0;
     private final ClientPlayerEntity player;
     private final SoundManager soundManager;
     private int ticksUntilPlay = 0;

@@ -62,6 +62,7 @@ implements TickableElement,
 Drawable {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Set<String> ALLOWED_PROTOCOLS = Sets.newHashSet("http", "https");
+    private static final int field_32270 = 2;
     protected final Text title;
     protected final List<Element> children = Lists.newArrayList();
     @Nullable
@@ -382,7 +383,7 @@ Drawable {
      */
     public void renderBackground(MatrixStack matrices, int vOffset) {
         if (this.client.world != null) {
-            this.fillGradient(matrices, 0, 0, this.width, this.height, -2146430960, -1609560048);
+            this.fillGradient(matrices, 0, 0, this.width, this.height, -1072689136, -804253680);
         } else {
             this.renderBackgroundTexture(vOffset);
         }

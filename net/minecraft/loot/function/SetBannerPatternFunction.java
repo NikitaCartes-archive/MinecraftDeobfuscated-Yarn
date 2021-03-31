@@ -11,12 +11,12 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Pair;
 import java.util.List;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.ConditionalLootFunction;
+import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.nbt.NbtCompound;
@@ -43,7 +43,7 @@ extends ConditionalLootFunction {
         this.patterns.forEach(patterns::add);
         NbtList nbtList = patterns.toNbt();
         if (this.append) {
-            nbtList2 = nbtCompound.getList("Patterns", NbtTypeIds.COMPOUND).copy();
+            nbtList2 = nbtCompound.getList("Patterns", 10).copy();
             nbtList2.addAll(nbtList);
         } else {
             nbtList2 = nbtList;
@@ -55,6 +55,10 @@ extends ConditionalLootFunction {
     @Override
     public LootFunctionType getType() {
         return LootFunctionTypes.SET_BANNER_PATTERN;
+    }
+
+    public static Builder method_35531(boolean bl) {
+        return new Builder(bl);
     }
 
     public static class Serializer
@@ -98,6 +102,36 @@ extends ConditionalLootFunction {
         @Override
         public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
             return this.fromJson(json, context, conditions);
+        }
+    }
+
+    public static class Builder
+    extends ConditionalLootFunction.Builder<Builder> {
+        private final ImmutableList.Builder<Pair<BannerPattern, DyeColor>> patterns = ImmutableList.builder();
+        private final boolean append;
+
+        private Builder(boolean append) {
+            this.append = append;
+        }
+
+        @Override
+        protected Builder getThisBuilder() {
+            return this;
+        }
+
+        @Override
+        public LootFunction build() {
+            return new SetBannerPatternFunction(this.getConditions(), (List)((Object)this.patterns.build()), this.append);
+        }
+
+        public Builder pattern(BannerPattern pattern, DyeColor color) {
+            this.patterns.add((Object)Pair.of(pattern, color));
+            return this;
+        }
+
+        @Override
+        protected /* synthetic */ ConditionalLootFunction.Builder getThisBuilder() {
+            return this.getThisBuilder();
         }
     }
 }

@@ -16,6 +16,7 @@ import net.minecraft.world.BlockView;
 
 public class FlowerBlock
 extends PlantBlock {
+    protected static final float field_31094 = 3.0f;
     protected static final VoxelShape SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 10.0, 11.0);
     private final StatusEffect effectInStew;
     private final int effectInStewDuration;

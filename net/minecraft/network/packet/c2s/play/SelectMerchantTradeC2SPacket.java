@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.c2s.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
@@ -13,7 +11,6 @@ public class SelectMerchantTradeC2SPacket
 implements Packet<ServerPlayPacketListener> {
     private final int tradeId;
 
-    @Environment(value=EnvType.CLIENT)
     public SelectMerchantTradeC2SPacket(int tradeId) {
         this.tradeId = tradeId;
     }

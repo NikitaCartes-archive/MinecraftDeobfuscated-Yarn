@@ -97,8 +97,18 @@ implements DataProvider {
             return this;
         }
 
+        public ObjectBuilder<T> method_35922(Identifier identifier) {
+            this.builder.addOptional(identifier, this.source);
+            return this;
+        }
+
         public ObjectBuilder<T> addTag(Tag.Identified<T> identifiedTag) {
             this.builder.addTag(identifiedTag.getId(), this.source);
+            return this;
+        }
+
+        public ObjectBuilder<T> method_35923(Identifier identifier) {
+            this.builder.addOptionalTag(identifier, this.source);
             return this;
         }
 

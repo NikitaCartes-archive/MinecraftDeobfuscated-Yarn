@@ -3,6 +3,7 @@
  */
 package net.minecraft.world.biome.layer;
 
+import net.minecraft.world.biome.BiomeIds;
 import net.minecraft.world.biome.layer.BiomeLayers;
 import net.minecraft.world.biome.layer.type.SouthEastSamplingLayer;
 import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
@@ -19,12 +20,12 @@ public enum AddColdClimatesLayer implements SouthEastSamplingLayer
         }
         int i = context.nextInt(6);
         if (i == 0) {
-            return 4;
+            return BiomeIds.FOREST;
         }
         if (i == 1) {
-            return 3;
+            return BiomeIds.MOUNTAINS;
         }
-        return 1;
+        return BiomeIds.PLAINS;
     }
 }
 

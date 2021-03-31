@@ -7,9 +7,6 @@ import com.google.common.collect.Iterables;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.properties.Property;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -24,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class SkullBlockEntity
 extends BlockEntity {
+    public static final String SKULL_OWNER_KEY = "SkullOwner";
     @Nullable
     private static UserCache userCache;
     @Nullable
@@ -46,23 +44,23 @@ extends BlockEntity {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound tag) {
-        super.writeNbt(tag);
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
         if (this.owner != null) {
             NbtCompound nbtCompound = new NbtCompound();
             NbtHelper.writeGameProfile(nbtCompound, this.owner);
-            tag.put("SkullOwner", nbtCompound);
+            nbt.put(SKULL_OWNER_KEY, nbtCompound);
         }
-        return tag;
+        return nbt;
     }
 
     @Override
-    public void readNbt(NbtCompound tag) {
+    public void readNbt(NbtCompound nbt) {
         String string;
-        super.readNbt(tag);
-        if (tag.contains("SkullOwner", NbtTypeIds.COMPOUND)) {
-            this.setOwner(NbtHelper.toGameProfile(tag.getCompound("SkullOwner")));
-        } else if (tag.contains("ExtraType", NbtTypeIds.STRING) && !ChatUtil.isEmpty(string = tag.getString("ExtraType"))) {
+        super.readNbt(nbt);
+        if (nbt.contains(SKULL_OWNER_KEY, 10)) {
+            this.setOwner(NbtHelper.toGameProfile(nbt.getCompound(SKULL_OWNER_KEY)));
+        } else if (nbt.contains("ExtraType", 8) && !ChatUtil.isEmpty(string = nbt.getString("ExtraType"))) {
             this.setOwner(new GameProfile(null, string));
         }
     }
@@ -76,7 +74,6 @@ extends BlockEntity {
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getTicksPowered(float tickDelta) {
         if (this.powered) {
             return (float)this.ticksPowered + tickDelta;
@@ -85,7 +82,6 @@ extends BlockEntity {
     }
 
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     public GameProfile getOwner() {
         return this.owner;
     }
@@ -93,7 +89,7 @@ extends BlockEntity {
     @Override
     @Nullable
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(this.pos, 4, this.toInitialChunkDataNbt());
+        return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.SKULL, this.toInitialChunkDataNbt());
     }
 
     @Override

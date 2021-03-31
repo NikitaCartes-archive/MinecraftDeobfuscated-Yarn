@@ -16,8 +16,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Util;
@@ -104,12 +102,10 @@ public class FlatChunkGeneratorConfig {
         this.layerBlocks = Lists.newArrayList();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public FlatChunkGeneratorConfig withStructuresConfig(StructuresConfig structuresConfig) {
         return this.withLayers(this.layers, structuresConfig);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public FlatChunkGeneratorConfig withLayers(List<FlatChunkGeneratorLayer> layers, StructuresConfig structuresConfig) {
         FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(structuresConfig, this.biomeRegistry);
         for (FlatChunkGeneratorLayer flatChunkGeneratorLayer : layers) {
@@ -177,7 +173,6 @@ public class FlatChunkGeneratorConfig {
         return this.biome.get();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void setBiome(Supplier<Biome> biome) {
         this.biome = biome;
     }

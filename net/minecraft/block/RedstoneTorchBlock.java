@@ -8,10 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.WeakHashMap;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -25,11 +21,16 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 
 public class RedstoneTorchBlock
 extends TorchBlock {
     public static final BooleanProperty LIT = Properties.LIT;
     private static final Map<BlockView, List<BurnoutEntry>> BURNOUT_MAP = new WeakHashMap<BlockView, List<BurnoutEntry>>();
+    public static final int field_31227 = 60;
+    public static final int field_31228 = 8;
+    public static final int field_31229 = 160;
+    private static final int field_31230 = 2;
 
     protected RedstoneTorchBlock(AbstractBlock.Settings settings) {
         super(settings, DustParticleEffect.DEFAULT);
@@ -74,14 +75,14 @@ extends TorchBlock {
         }
         if (state.get(LIT).booleanValue()) {
             if (bl) {
-                world.setBlockState(pos, (BlockState)state.with(LIT, false), SetBlockStateFlags.DEFAULT);
+                world.setBlockState(pos, (BlockState)state.with(LIT, false), Block.NOTIFY_ALL);
                 if (RedstoneTorchBlock.isBurnedOut(world, pos, true)) {
                     world.syncWorldEvent(WorldEvents.REDSTONE_TORCH_BURNS_OUT, pos, 0);
                     world.getBlockTickScheduler().schedule(pos, world.getBlockState(pos).getBlock(), 160);
                 }
             }
         } else if (!bl && !RedstoneTorchBlock.isBurnedOut(world, pos, false)) {
-            world.setBlockState(pos, (BlockState)state.with(LIT, true), SetBlockStateFlags.DEFAULT);
+            world.setBlockState(pos, (BlockState)state.with(LIT, true), Block.NOTIFY_ALL);
         }
     }
 
@@ -106,7 +107,6 @@ extends TorchBlock {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         if (!state.get(LIT).booleanValue()) {
             return;

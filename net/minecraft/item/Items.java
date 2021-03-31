@@ -123,6 +123,7 @@ public class Items {
     public static final Item DIRT = Items.register(Blocks.DIRT, ItemGroup.BUILDING_BLOCKS);
     public static final Item COARSE_DIRT = Items.register(Blocks.COARSE_DIRT, ItemGroup.BUILDING_BLOCKS);
     public static final Item PODZOL = Items.register(Blocks.PODZOL, ItemGroup.BUILDING_BLOCKS);
+    public static final Item ROOTED_DIRT = Items.register(Blocks.ROOTED_DIRT, ItemGroup.BUILDING_BLOCKS);
     public static final Item CRIMSON_NYLIUM = Items.register(Blocks.CRIMSON_NYLIUM, ItemGroup.BUILDING_BLOCKS);
     public static final Item WARPED_NYLIUM = Items.register(Blocks.WARPED_NYLIUM, ItemGroup.BUILDING_BLOCKS);
     public static final Item COBBLESTONE = Items.register(Blocks.COBBLESTONE, ItemGroup.BUILDING_BLOCKS);
@@ -256,7 +257,6 @@ public class Items {
     public static final Item KELP = Items.register(Blocks.KELP, ItemGroup.DECORATIONS);
     public static final Item MOSS_CARPET = Items.register(Blocks.MOSS_CARPET, ItemGroup.DECORATIONS);
     public static final Item MOSS_BLOCK = Items.register(Blocks.MOSS_BLOCK, ItemGroup.DECORATIONS);
-    public static final Item ROOTED_DIRT = Items.register(Blocks.ROOTED_DIRT, ItemGroup.DECORATIONS);
     public static final Item HANGING_ROOTS = Items.register(Blocks.HANGING_ROOTS, ItemGroup.DECORATIONS);
     public static final Item BIG_DRIPLEAF = Items.register(Blocks.BIG_DRIPLEAF, ItemGroup.DECORATIONS);
     public static final Item SMALL_DRIPLEAF = Items.register(Blocks.SMALL_DRIPLEAF, ItemGroup.DECORATIONS);
@@ -440,6 +440,7 @@ public class Items {
     public static final Item RED_TERRACOTTA = Items.register(Blocks.RED_TERRACOTTA, ItemGroup.BUILDING_BLOCKS);
     public static final Item BLACK_TERRACOTTA = Items.register(Blocks.BLACK_TERRACOTTA, ItemGroup.BUILDING_BLOCKS);
     public static final Item BARRIER = Items.register(Blocks.BARRIER);
+    public static final Item LIGHT = Items.register(Blocks.LIGHT);
     public static final Item HAY_BLOCK = Items.register(Blocks.HAY_BLOCK, ItemGroup.BUILDING_BLOCKS);
     public static final Item WHITE_CARPET = Items.register(Blocks.WHITE_CARPET, ItemGroup.DECORATIONS);
     public static final Item ORANGE_CARPET = Items.register(Blocks.ORANGE_CARPET, ItemGroup.DECORATIONS);
@@ -917,7 +918,7 @@ public class Items {
     public static final Item BLAZE_POWDER = Items.register("blaze_powder", new Item(new Item.Settings().group(ItemGroup.BREWING)));
     public static final Item MAGMA_CREAM = Items.register("magma_cream", new Item(new Item.Settings().group(ItemGroup.BREWING)));
     public static final Item BREWING_STAND = Items.register(Blocks.BREWING_STAND, ItemGroup.BREWING);
-    public static final Item CAULDRON = Items.register(Blocks.CAULDRON, ItemGroup.BREWING);
+    public static final Item CAULDRON = Items.register(Blocks.CAULDRON, ItemGroup.BREWING, Blocks.WATER_CAULDRON, Blocks.LAVA_CAULDRON, Blocks.POWDER_SNOW_CAULDRON);
     public static final Item ENDER_EYE = Items.register("ender_eye", (Item)new EnderEyeItem(new Item.Settings().group(ItemGroup.MISC)));
     public static final Item GLISTERING_MELON_SLICE = Items.register("glistering_melon_slice", new Item(new Item.Settings().group(ItemGroup.BREWING)));
     public static final Item AXOLOTL_SPAWN_EGG = Items.register("axolotl_spawn_egg", (Item)new SpawnEggItem(EntityType.AXOLOTL, 16499171, 10890612, new Item.Settings().group(ItemGroup.MISC)));
@@ -940,6 +941,7 @@ public class Items {
     public static final Item FOX_SPAWN_EGG = Items.register("fox_spawn_egg", (Item)new SpawnEggItem(EntityType.FOX, 14005919, 13396256, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item GHAST_SPAWN_EGG = Items.register("ghast_spawn_egg", (Item)new SpawnEggItem(EntityType.GHAST, 0xF9F9F9, 0xBCBCBC, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item GLOW_SQUID_SPAWN_EGG = Items.register("glow_squid_spawn_egg", (Item)new SpawnEggItem(EntityType.GLOW_SQUID, 611926, 8778172, new Item.Settings().group(ItemGroup.MISC)));
+    public static final Item GOAT_SPAWN_EGG = Items.register("goat_spawn_egg", (Item)new SpawnEggItem(EntityType.GOAT, 10851452, 5589310, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item GUARDIAN_SPAWN_EGG = Items.register("guardian_spawn_egg", (Item)new SpawnEggItem(EntityType.GUARDIAN, 5931634, 15826224, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item HOGLIN_SPAWN_EGG = Items.register("hoglin_spawn_egg", (Item)new SpawnEggItem(EntityType.HOGLIN, 13004373, 6251620, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item HORSE_SPAWN_EGG = Items.register("horse_spawn_egg", (Item)new SpawnEggItem(EntityType.HORSE, 12623485, 0xEEE500, new Item.Settings().group(ItemGroup.MISC)));
@@ -1201,6 +1203,14 @@ public class Items {
 
     private static Item register(Block block, ItemGroup group) {
         return Items.register(new BlockItem(block, new Item.Settings().group(group)));
+    }
+
+    private static Item register(Block block, ItemGroup itemGroup, Block ... blocks) {
+        BlockItem blockItem = new BlockItem(block, new Item.Settings().group(itemGroup));
+        for (Block block2 : blocks) {
+            Item.BLOCK_ITEMS.put(block2, blockItem);
+        }
+        return Items.register(blockItem);
     }
 
     private static Item register(BlockItem item) {

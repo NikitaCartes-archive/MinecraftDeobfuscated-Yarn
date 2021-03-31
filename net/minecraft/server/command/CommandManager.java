@@ -111,6 +111,11 @@ import org.jetbrains.annotations.Nullable;
 
 public class CommandManager {
     private static final Logger LOGGER = LogManager.getLogger();
+    public static final int field_31837 = 0;
+    public static final int field_31838 = 1;
+    public static final int field_31839 = 2;
+    public static final int field_31840 = 3;
+    public static final int field_31841 = 4;
     private final CommandDispatcher<ServerCommandSource> dispatcher = new CommandDispatcher();
 
     public CommandManager(RegistrationEnvironment environment) {

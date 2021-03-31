@@ -16,8 +16,6 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import java.lang.reflect.Type;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.JsonHelper;
@@ -31,11 +29,14 @@ public class Identifier
 implements Comparable<Identifier> {
     public static final Codec<Identifier> CODEC = Codec.STRING.comapFlatMap(Identifier::validate, Identifier::toString).stable();
     private static final SimpleCommandExceptionType COMMAND_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.id.invalid"));
+    public static final char NAMESPACE_SEPARATOR = ':';
+    public static final String DEFAULT_NAMESPACE = "minecraft";
+    public static final String REALMS_NAMESPACE = "realms";
     protected final String namespace;
     protected final String path;
 
     protected Identifier(String[] id) {
-        this.namespace = StringUtils.isEmpty(id[0]) ? "minecraft" : id[0];
+        this.namespace = StringUtils.isEmpty(id[0]) ? DEFAULT_NAMESPACE : id[0];
         this.path = id[1];
         if (!Identifier.isNamespaceValid(this.namespace)) {
             throw new InvalidIdentifierException("Non [a-z0-9_.-] character in namespace of location: " + this.namespace + ':' + this.path);
@@ -78,7 +79,7 @@ implements Comparable<Identifier> {
     }
 
     protected static String[] split(String id, char delimiter) {
-        String[] strings = new String[]{"minecraft", id};
+        String[] strings = new String[]{DEFAULT_NAMESPACE, id};
         int i = id.indexOf(delimiter);
         if (i >= 0) {
             strings[1] = id.substring(i + 1, id.length());
@@ -133,6 +134,10 @@ implements Comparable<Identifier> {
         return i;
     }
 
+    public String method_36181() {
+        return this.toString().replace('/', '_').replace(':', '_');
+    }
+
     public static Identifier fromCommandInput(StringReader reader) throws CommandSyntaxException {
         int i = reader.getCursor();
         while (reader.canRead() && Identifier.isCharValid(reader.peek())) {
@@ -175,10 +180,9 @@ implements Comparable<Identifier> {
         return character == '_' || character == '-' || character >= 'a' && character <= 'z' || character >= '0' && character <= '9' || character == '.';
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static boolean isValid(String id) {
         String[] strings = Identifier.split(id, ':');
-        return Identifier.isNamespaceValid(StringUtils.isEmpty(strings[0]) ? "minecraft" : strings[0]) && Identifier.isPathValid(strings[1]);
+        return Identifier.isNamespaceValid(StringUtils.isEmpty(strings[0]) ? DEFAULT_NAMESPACE : strings[0]) && Identifier.isPathValid(strings[1]);
     }
 
     @Override

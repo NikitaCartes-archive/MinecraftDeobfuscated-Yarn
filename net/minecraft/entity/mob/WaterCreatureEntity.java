@@ -3,13 +3,19 @@
  */
 package net.minecraft.entity.mob;
 
+import java.util.Random;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public abstract class WaterCreatureEntity
@@ -71,6 +77,10 @@ extends PathAwareEntity {
     @Override
     public boolean canBeLeashedBy(PlayerEntity player) {
         return false;
+    }
+
+    public static boolean canSpawnUnderground(EntityType<? extends LivingEntity> entityType, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+        return pos.getY() < world.getSeaLevel() && pos.getY() < world.getTopY(Heightmap.Type.OCEAN_FLOOR, pos.getX(), pos.getZ());
     }
 }
 

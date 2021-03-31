@@ -5,8 +5,6 @@ package net.minecraft.fluid;
 
 import java.util.Optional;
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -51,7 +49,6 @@ extends FlowableFluid {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
         if (!state.isStill() && !state.get(FALLING).booleanValue()) {
             if (random.nextInt(64) == 0) {
@@ -64,7 +61,6 @@ extends FlowableFluid {
 
     @Override
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     public ParticleEffect getParticle() {
         return ParticleTypes.DRIPPING_WATER;
     }

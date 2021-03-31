@@ -18,6 +18,7 @@ import net.minecraft.util.math.Direction;
 
 public class BuddingAmethystBlock
 extends AmethystBlock {
+    public static final int field_31039 = 5;
     private static final Direction[] DIRECTIONS = Direction.values();
 
     public BuddingAmethystBlock(AbstractBlock.Settings settings) {

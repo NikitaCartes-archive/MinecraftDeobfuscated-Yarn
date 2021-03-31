@@ -21,6 +21,8 @@ import org.jetbrains.annotations.Nullable;
 public abstract class PassiveEntity
 extends PathAwareEntity {
     private static final TrackedData<Boolean> CHILD = DataTracker.registerData(PassiveEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    public static final int field_29969 = -24000;
+    private static final int field_29970 = 40;
     protected int breedingAge;
     protected int forcedAge;
     protected int happyTicksRemaining;
@@ -30,7 +32,7 @@ extends PathAwareEntity {
     }
 
     @Override
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         PassiveData passiveData;
         if (entityData == null) {
             entityData = new PassiveData(true);
@@ -39,7 +41,7 @@ extends PathAwareEntity {
             this.setBreedingAge(-24000);
         }
         passiveData.countSpawned();
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     @Nullable
@@ -95,17 +97,17 @@ extends PathAwareEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
-        tag.putInt("Age", this.getBreedingAge());
-        tag.putInt("ForcedAge", this.forcedAge);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putInt("Age", this.getBreedingAge());
+        nbt.putInt("ForcedAge", this.forcedAge);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        this.setBreedingAge(tag.getInt("Age"));
-        this.forcedAge = tag.getInt("ForcedAge");
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.setBreedingAge(nbt.getInt("Age"));
+        this.forcedAge = nbt.getInt("ForcedAge");
     }
 
     @Override

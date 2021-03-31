@@ -6,8 +6,6 @@ package net.minecraft.util.crash;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Locale;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReport;
@@ -27,7 +25,6 @@ public class CrashReportSection {
         this.title = title;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static String createPositionString(HeightLimitView world, double x, double y, double z) {
         return String.format(Locale.ROOT, "%.2f,%.2f,%.2f - %s", x, y, z, CrashReportSection.createPositionString(world, new BlockPos(x, y, z)));
     }

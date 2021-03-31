@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.LightBlock;
 import net.minecraft.client.item.ModelPredicateProvider;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -38,6 +39,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class ModelPredicateProviderRegistry {
     private static final Map<Identifier, ModelPredicateProvider> GLOBAL = Maps.newHashMap();
+    private static final String field_32947 = "CustomModelData";
     private static final Identifier DAMAGED_ID = new Identifier("damaged");
     private static final Identifier DAMAGE_ID = new Identifier("damage");
     private static final ModelPredicateProvider DAMAGED_PROVIDER = (itemStack, clientWorld, livingEntity, i) -> itemStack.isDamaged() ? 1.0f : 0.0f;
@@ -77,7 +79,7 @@ public class ModelPredicateProviderRegistry {
     static {
         ModelPredicateProviderRegistry.register(new Identifier("lefthanded"), (itemStack, clientWorld, livingEntity, i) -> livingEntity == null || livingEntity.getMainArm() == Arm.RIGHT ? 0.0f : 1.0f);
         ModelPredicateProviderRegistry.register(new Identifier("cooldown"), (itemStack, clientWorld, livingEntity, i) -> livingEntity instanceof PlayerEntity ? ((PlayerEntity)livingEntity).getItemCooldownManager().getCooldownProgress(itemStack.getItem(), 0.0f) : 0.0f);
-        ModelPredicateProviderRegistry.register(new Identifier("custom_model_data"), (itemStack, clientWorld, livingEntity, i) -> itemStack.hasTag() ? (float)itemStack.getTag().getInt("CustomModelData") : 0.0f);
+        ModelPredicateProviderRegistry.register(new Identifier("custom_model_data"), (itemStack, clientWorld, livingEntity, i) -> itemStack.hasTag() ? (float)itemStack.getTag().getInt(field_32947) : 0.0f);
         ModelPredicateProviderRegistry.register(Items.BOW, new Identifier("pull"), (itemStack, clientWorld, livingEntity, i) -> {
             if (livingEntity == null) {
                 return 0.0f;
@@ -182,12 +184,12 @@ public class ModelPredicateProviderRegistry {
             }
 
             @Nullable
-            private BlockPos getLodestonePos(World world, NbtCompound tag) {
+            private BlockPos getLodestonePos(World world, NbtCompound nbt) {
                 Optional<RegistryKey<World>> optional;
-                boolean bl = tag.contains("LodestonePos");
-                boolean bl2 = tag.contains("LodestoneDimension");
-                if (bl && bl2 && (optional = CompassItem.getLodestoneDimension(tag)).isPresent() && world.getRegistryKey() == optional.get()) {
-                    return NbtHelper.toBlockPos(tag.getCompound("LodestonePos"));
+                boolean bl = nbt.contains("LodestonePos");
+                boolean bl2 = nbt.contains("LodestoneDimension");
+                if (bl && bl2 && (optional = CompassItem.getLodestoneDimension(nbt)).isPresent() && world.getRegistryKey() == optional.get()) {
+                    return NbtHelper.toBlockPos(nbt.getCompound("LodestonePos"));
                 }
                 return null;
             }
@@ -229,6 +231,17 @@ public class ModelPredicateProviderRegistry {
         });
         ModelPredicateProviderRegistry.register(Items.SHIELD, new Identifier("blocking"), (itemStack, clientWorld, livingEntity, i) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0f : 0.0f);
         ModelPredicateProviderRegistry.register(Items.TRIDENT, new Identifier("throwing"), (itemStack, clientWorld, livingEntity, i) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0f : 0.0f);
+        ModelPredicateProviderRegistry.register(Items.LIGHT, new Identifier("level"), (itemStack, clientWorld, livingEntity, i) -> {
+            NbtCompound nbtCompound = itemStack.getSubTag("BlockStateTag");
+            try {
+                if (nbtCompound != null) {
+                    return Integer.parseInt(nbtCompound.getString(LightBlock.LEVEL_15.getName()));
+                }
+            } catch (NumberFormatException numberFormatException) {
+                // empty catch block
+            }
+            return 15.0f;
+        });
     }
 
     @Environment(value=EnvType.CLIENT)

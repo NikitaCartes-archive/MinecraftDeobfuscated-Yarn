@@ -18,6 +18,8 @@ public enum ScaleLayer implements ParentedLayer
         }
     };
 
+    private static final int field_31805 = 1;
+    private static final int field_31806 = 1;
 
     @Override
     public int transformX(int x) {

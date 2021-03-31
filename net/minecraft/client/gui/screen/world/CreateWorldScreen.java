@@ -68,6 +68,7 @@ import org.lwjgl.glfw.GLFW;
 public class CreateWorldScreen
 extends Screen {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final String field_32434 = "mcworld-";
     private static final Text GAME_MODE_TEXT = new TranslatableText("selectWorld.gameMode");
     private static final Text ENTER_SEED_TEXT = new TranslatableText("selectWorld.enterSeed");
     private static final Text SEED_INFO_TEXT = new TranslatableText("selectWorld.seedInfo");
@@ -122,7 +123,7 @@ extends Screen {
 
     public static CreateWorldScreen create(@Nullable Screen parent) {
         DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
-        return new CreateWorldScreen(parent, DataPackSettings.SAFE_MODE, new MoreOptionsDialog(impl, GeneratorOptions.getDefaultOptions(impl.get(Registry.DIMENSION_TYPE_KEY), impl.get(Registry.BIOME_KEY), impl.get(Registry.NOISE_SETTINGS_WORLDGEN)), Optional.of(GeneratorType.DEFAULT), OptionalLong.empty()));
+        return new CreateWorldScreen(parent, DataPackSettings.SAFE_MODE, new MoreOptionsDialog(impl, GeneratorOptions.getDefaultOptions(impl.get(Registry.DIMENSION_TYPE_KEY), impl.get(Registry.BIOME_KEY), impl.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY)), Optional.of(GeneratorType.DEFAULT), OptionalLong.empty()));
     }
 
     private CreateWorldScreen(@Nullable Screen parent, DataPackSettings dataPackSettings, MoreOptionsDialog moreOptionsDialog) {
@@ -363,7 +364,7 @@ extends Screen {
     protected Path getDataPackTempDir() {
         if (this.dataPackTempDir == null) {
             try {
-                this.dataPackTempDir = Files.createTempDirectory("mcworld-", new FileAttribute[0]);
+                this.dataPackTempDir = Files.createTempDirectory(field_32434, new FileAttribute[0]);
             } catch (IOException iOException) {
                 LOGGER.warn("Failed to create temporary dir", (Throwable)iOException);
                 SystemToast.addPackCopyFailure(this.client, this.saveDirectoryName);
@@ -463,7 +464,7 @@ extends Screen {
                 Path path3 = (Path)mutableObject.getValue();
                 if (path3 == null) {
                     try {
-                        path3 = Files.createTempDirectory("mcworld-", new FileAttribute[0]);
+                        path3 = Files.createTempDirectory(field_32434, new FileAttribute[0]);
                     } catch (IOException iOException) {
                         LOGGER.warn("Failed to create temporary dir");
                         throw new WorldCreationException(iOException);

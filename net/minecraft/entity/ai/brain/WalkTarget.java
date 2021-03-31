@@ -3,7 +3,9 @@
  */
 package net.minecraft.entity.ai.brain;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.brain.BlockPosLookTarget;
+import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.LookTarget;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -19,6 +21,10 @@ public class WalkTarget {
 
     public WalkTarget(Vec3d pos, float speed, int completionRange) {
         this(new BlockPosLookTarget(new BlockPos(pos)), speed, completionRange);
+    }
+
+    public WalkTarget(Entity entity, float f, int i) {
+        this(new EntityLookTarget(entity, false), f, i);
     }
 
     public WalkTarget(LookTarget lookTarget, float speed, int completionRange) {

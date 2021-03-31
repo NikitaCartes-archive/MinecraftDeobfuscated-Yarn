@@ -13,17 +13,16 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.FileAttribute;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 
 public class SessionLock
 implements AutoCloseable {
+    public static final String SESSION_LOCK = "session.lock";
     private final FileChannel channel;
     private final FileLock lock;
     private static final ByteBuffer SNOWMAN;
 
     public static SessionLock create(Path path) throws IOException {
-        Path path2 = path.resolve("session.lock");
+        Path path2 = path.resolve(SESSION_LOCK);
         if (!Files.isDirectory(path, new LinkOption[0])) {
             Files.createDirectories(path, new FileAttribute[0]);
         }
@@ -71,7 +70,6 @@ implements AutoCloseable {
     /*
      * Exception decompiling
      */
-    @Environment(value=EnvType.CLIENT)
     public static boolean isLocked(Path path) throws IOException {
         /*
          * This method has failed to decompile.  When submitting a bug report, please provide this stack trace, and (if you hold appropriate legal rights) the relevant class file.

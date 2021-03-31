@@ -3,7 +3,6 @@
  */
 package net.minecraft.block;
 
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -37,8 +36,11 @@ import net.minecraft.world.event.GameEvent;
 
 public class CakeBlock
 extends Block {
+    public static final int field_31046 = 6;
     public static final IntProperty BITES = Properties.BITES;
     public static final int DEFAULT_COMPARATOR_OUTPUT = CakeBlock.getComparatorOutput(0);
+    protected static final float field_31047 = 1.0f;
+    protected static final float field_31048 = 2.0f;
     protected static final VoxelShape[] BITES_TO_SHAPE = new VoxelShape[]{Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 8.0, 15.0), Block.createCuboidShape(3.0, 0.0, 1.0, 15.0, 8.0, 15.0), Block.createCuboidShape(5.0, 0.0, 1.0, 15.0, 8.0, 15.0), Block.createCuboidShape(7.0, 0.0, 1.0, 15.0, 8.0, 15.0), Block.createCuboidShape(9.0, 0.0, 1.0, 15.0, 8.0, 15.0), Block.createCuboidShape(11.0, 0.0, 1.0, 15.0, 8.0, 15.0), Block.createCuboidShape(13.0, 0.0, 1.0, 15.0, 8.0, 15.0)};
 
     protected CakeBlock(AbstractBlock.Settings settings) {
@@ -85,7 +87,7 @@ extends Block {
         int i = state.get(BITES);
         world.emitGameEvent((Entity)player, GameEvent.EAT, pos);
         if (i < 6) {
-            world.setBlockState(pos, (BlockState)state.with(BITES, i + 1), SetBlockStateFlags.DEFAULT);
+            world.setBlockState(pos, (BlockState)state.with(BITES, i + 1), Block.NOTIFY_ALL);
         } else {
             world.removeBlock(pos, false);
             world.emitGameEvent((Entity)player, GameEvent.BLOCK_DESTROY, pos);

@@ -42,6 +42,7 @@ import org.apache.logging.log4j.Logger;
 public class NbtTextFormatter
 implements NbtElementVisitor {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final int field_33271 = 8;
     private static final ByteCollection SINGLE_LINE_ELEMENT_TYPES = new ByteOpenHashSet(Arrays.asList((byte)1, (byte)2, (byte)3, (byte)4, (byte)5, (byte)6));
     private static final Formatting NAME_COLOR = Formatting.AQUA;
     private static final Formatting STRING_COLOR = Formatting.GREEN;
@@ -50,6 +51,13 @@ implements NbtElementVisitor {
     private static final Pattern SIMPLE_NAME = Pattern.compile("[A-Za-z0-9._+-]+");
     private static final String KEY_VALUE_SEPARATOR = String.valueOf(':');
     private static final String ENTRY_SEPARATOR = String.valueOf(',');
+    private static final String field_33272 = "[";
+    private static final String field_33273 = "]";
+    private static final String field_33274 = ";";
+    private static final String field_33275 = " ";
+    private static final String field_33276 = "{";
+    private static final String field_33277 = "}";
+    private static final String field_33278 = "\n";
     private final String prefix;
     private final int indentationLevel;
     private Text result;
@@ -110,44 +118,44 @@ implements NbtElementVisitor {
     @Override
     public void visitByteArray(NbtByteArray element) {
         MutableText text = new LiteralText("B").formatted(TYPE_SUFFIX_COLOR);
-        MutableText mutableText = new LiteralText("[").append(text).append(";");
+        MutableText mutableText = new LiteralText(field_33272).append(text).append(field_33274);
         byte[] bs = element.getByteArray();
         for (int i = 0; i < bs.length; ++i) {
             MutableText mutableText2 = new LiteralText(String.valueOf(bs[i])).formatted(NUMBER_COLOR);
-            mutableText.append(" ").append(mutableText2).append(text);
+            mutableText.append(field_33275).append(mutableText2).append(text);
             if (i == bs.length - 1) continue;
             mutableText.append(ENTRY_SEPARATOR);
         }
-        mutableText.append("]");
+        mutableText.append(field_33273);
         this.result = mutableText;
     }
 
     @Override
     public void visitIntArray(NbtIntArray element) {
         MutableText text = new LiteralText("I").formatted(TYPE_SUFFIX_COLOR);
-        MutableText mutableText = new LiteralText("[").append(text).append(";");
+        MutableText mutableText = new LiteralText(field_33272).append(text).append(field_33274);
         int[] is = element.getIntArray();
         for (int i = 0; i < is.length; ++i) {
-            mutableText.append(" ").append(new LiteralText(String.valueOf(is[i])).formatted(NUMBER_COLOR));
+            mutableText.append(field_33275).append(new LiteralText(String.valueOf(is[i])).formatted(NUMBER_COLOR));
             if (i == is.length - 1) continue;
             mutableText.append(ENTRY_SEPARATOR);
         }
-        mutableText.append("]");
+        mutableText.append(field_33273);
         this.result = mutableText;
     }
 
     @Override
     public void visitLongArray(NbtLongArray element) {
         MutableText text = new LiteralText("L").formatted(TYPE_SUFFIX_COLOR);
-        MutableText mutableText = new LiteralText("[").append(text).append(";");
+        MutableText mutableText = new LiteralText(field_33272).append(text).append(field_33274);
         long[] ls = element.getLongArray();
         for (int i = 0; i < ls.length; ++i) {
             MutableText text2 = new LiteralText(String.valueOf(ls[i])).formatted(NUMBER_COLOR);
-            mutableText.append(" ").append(text2).append(text);
+            mutableText.append(field_33275).append(text2).append(text);
             if (i == ls.length - 1) continue;
             mutableText.append(ENTRY_SEPARATOR);
         }
-        mutableText.append("]");
+        mutableText.append(field_33273);
         this.result = mutableText;
     }
 
@@ -158,34 +166,34 @@ implements NbtElementVisitor {
             return;
         }
         if (SINGLE_LINE_ELEMENT_TYPES.contains(element.getHeldType()) && element.size() <= 8) {
-            String string = ENTRY_SEPARATOR + " ";
-            LiteralText mutableText = new LiteralText("[");
+            String string = ENTRY_SEPARATOR + field_33275;
+            LiteralText mutableText = new LiteralText(field_33272);
             for (int i = 0; i < element.size(); ++i) {
                 if (i != 0) {
                     mutableText.append(string);
                 }
                 mutableText.append(new NbtTextFormatter(this.prefix, this.indentationLevel).apply(element.get(i)));
             }
-            mutableText.append("]");
+            mutableText.append(field_33273);
             this.result = mutableText;
             return;
         }
-        LiteralText mutableText2 = new LiteralText("[");
+        LiteralText mutableText2 = new LiteralText(field_33272);
         if (!this.prefix.isEmpty()) {
-            mutableText2.append("\n");
+            mutableText2.append(field_33278);
         }
         for (int j = 0; j < element.size(); ++j) {
             LiteralText mutableText3 = new LiteralText(Strings.repeat(this.prefix, this.indentationLevel + 1));
             mutableText3.append(new NbtTextFormatter(this.prefix, this.indentationLevel + 1).apply(element.get(j)));
             if (j != element.size() - 1) {
-                mutableText3.append(ENTRY_SEPARATOR).append(this.prefix.isEmpty() ? " " : "\n");
+                mutableText3.append(ENTRY_SEPARATOR).append(this.prefix.isEmpty() ? field_33275 : field_33278);
             }
             mutableText2.append(mutableText3);
         }
         if (!this.prefix.isEmpty()) {
-            mutableText2.append("\n").append(Strings.repeat(this.prefix, this.indentationLevel));
+            mutableText2.append(field_33278).append(Strings.repeat(this.prefix, this.indentationLevel));
         }
-        mutableText2.append("]");
+        mutableText2.append(field_33273);
         this.result = mutableText2;
     }
 
@@ -195,7 +203,7 @@ implements NbtElementVisitor {
             this.result = new LiteralText("{}");
             return;
         }
-        LiteralText mutableText = new LiteralText("{");
+        LiteralText mutableText = new LiteralText(field_33276);
         Collection<String> collection = compound.getKeys();
         if (LOGGER.isDebugEnabled()) {
             ArrayList<String> list = Lists.newArrayList(compound.getKeys());
@@ -203,21 +211,21 @@ implements NbtElementVisitor {
             collection = list;
         }
         if (!this.prefix.isEmpty()) {
-            mutableText.append("\n");
+            mutableText.append(field_33278);
         }
         Iterator iterator = collection.iterator();
         while (iterator.hasNext()) {
             String string = (String)iterator.next();
-            MutableText mutableText2 = new LiteralText(Strings.repeat(this.prefix, this.indentationLevel + 1)).append(NbtTextFormatter.escapeName(string)).append(KEY_VALUE_SEPARATOR).append(" ").append(new NbtTextFormatter(this.prefix, this.indentationLevel + 1).apply(compound.get(string)));
+            MutableText mutableText2 = new LiteralText(Strings.repeat(this.prefix, this.indentationLevel + 1)).append(NbtTextFormatter.escapeName(string)).append(KEY_VALUE_SEPARATOR).append(field_33275).append(new NbtTextFormatter(this.prefix, this.indentationLevel + 1).apply(compound.get(string)));
             if (iterator.hasNext()) {
-                mutableText2.append(ENTRY_SEPARATOR).append(this.prefix.isEmpty() ? " " : "\n");
+                mutableText2.append(ENTRY_SEPARATOR).append(this.prefix.isEmpty() ? field_33275 : field_33278);
             }
             mutableText.append(mutableText2);
         }
         if (!this.prefix.isEmpty()) {
-            mutableText.append("\n").append(Strings.repeat(this.prefix, this.indentationLevel));
+            mutableText.append(field_33278).append(Strings.repeat(this.prefix, this.indentationLevel));
         }
-        mutableText.append("}");
+        mutableText.append(field_33277);
         this.result = mutableText;
     }
 

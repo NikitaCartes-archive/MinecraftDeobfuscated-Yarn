@@ -12,6 +12,7 @@ import net.minecraft.client.resource.metadata.LanguageResourceMetadataReader;
 @Environment(value=EnvType.CLIENT)
 public class LanguageResourceMetadata {
     public static final LanguageResourceMetadataReader READER = new LanguageResourceMetadataReader();
+    public static final boolean field_32978 = false;
     private final Collection<LanguageDefinition> definitions;
 
     public LanguageResourceMetadata(Collection<LanguageDefinition> definitions) {

@@ -4,7 +4,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AttachedStemBlock;
 import net.minecraft.block.Block;
@@ -38,6 +37,7 @@ public class FarmlandBlock
 extends Block {
     public static final IntProperty MOISTURE = Properties.MOISTURE;
     protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 15.0, 16.0);
+    public static final int field_31084 = 7;
 
     protected FarmlandBlock(AbstractBlock.Settings settings) {
         super(settings);
@@ -88,10 +88,10 @@ extends Block {
         int i = state.get(MOISTURE);
         if (FarmlandBlock.isWaterNearby(world, pos) || world.hasRain(pos.up())) {
             if (i < 7) {
-                world.setBlockState(pos, (BlockState)state.with(MOISTURE, 7), SetBlockStateFlags.NOTIFY_LISTENERS);
+                world.setBlockState(pos, (BlockState)state.with(MOISTURE, 7), Block.NOTIFY_LISTENERS);
             }
         } else if (i > 0) {
-            world.setBlockState(pos, (BlockState)state.with(MOISTURE, i - 1), SetBlockStateFlags.NOTIFY_LISTENERS);
+            world.setBlockState(pos, (BlockState)state.with(MOISTURE, i - 1), Block.NOTIFY_LISTENERS);
         } else if (!FarmlandBlock.hasCrop(world, pos)) {
             FarmlandBlock.setToDirt(state, world, pos);
         }

@@ -32,8 +32,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.resource.AbstractFileResourcePack;
 import net.minecraft.resource.DirectoryResourcePack;
 import net.minecraft.resource.Resource;
@@ -240,7 +238,6 @@ ResourceFactory {
             }
 
             @Override
-            @Environment(value=EnvType.CLIENT)
             public Identifier getId() {
                 return id;
             }
@@ -256,8 +253,12 @@ ResourceFactory {
             }
 
             @Override
+            public boolean hasMetadata() {
+                return false;
+            }
+
+            @Override
             @Nullable
-            @Environment(value=EnvType.CLIENT)
             public <T> T getMetadata(ResourceMetadataReader<T> metaReader) {
                 return null;
             }

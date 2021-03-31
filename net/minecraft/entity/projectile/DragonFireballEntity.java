@@ -4,7 +4,6 @@
 package net.minecraft.entity.projectile;
 
 import java.util.List;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -18,9 +17,12 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 
 public class DragonFireballEntity
 extends ExplosiveProjectileEntity {
+    public static final float field_30661 = 4.0f;
+
     public DragonFireballEntity(EntityType<? extends DragonFireballEntity> entityType, World world) {
         super((EntityType<? extends ExplosiveProjectileEntity>)entityType, world);
     }
@@ -32,7 +34,7 @@ extends ExplosiveProjectileEntity {
     @Override
     protected void onCollision(HitResult hitResult) {
         super.onCollision(hitResult);
-        if (hitResult.getType() == HitResult.Type.ENTITY && this.method_34714(((EntityHitResult)hitResult).getEntity())) {
+        if (hitResult.getType() == HitResult.Type.ENTITY && this.isOwner(((EntityHitResult)hitResult).getEntity())) {
             return;
         }
         if (!this.world.isClient) {

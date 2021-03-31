@@ -177,6 +177,12 @@ extends MutableRegistry<T> {
         return Collections.unmodifiableMap(this.keyToEntry).entrySet();
     }
 
+    @Override
+    public boolean method_35863() {
+        return this.idToEntry.isEmpty();
+    }
+
+    @Override
     @Nullable
     public T getRandom(Random random) {
         if (this.randomEntries == null) {
@@ -192,6 +198,11 @@ extends MutableRegistry<T> {
     @Override
     public boolean containsId(Identifier id) {
         return this.idToEntry.containsKey(id);
+    }
+
+    @Override
+    public boolean contains(RegistryKey<T> key) {
+        return this.keyToEntry.containsKey(key);
     }
 
     public static <T> Codec<SimpleRegistry<T>> createRegistryManagerCodec(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, Codec<T> entryCodec) {

@@ -3,6 +3,8 @@
  */
 package net.minecraft.loot.entry;
 
+import com.google.common.collect.Lists;
+import java.util.List;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.entry.CombinedEntry;
 import net.minecraft.loot.entry.EntryCombiner;
@@ -46,6 +48,42 @@ extends CombinedEntry {
             }
             return true;
         };
+    }
+
+    public static Builder create(LootPoolEntry.Builder<?> ... entries) {
+        return new Builder(entries);
+    }
+
+    public static class Builder
+    extends LootPoolEntry.Builder<Builder> {
+        private final List<LootPoolEntry> entries = Lists.newArrayList();
+
+        public Builder(LootPoolEntry.Builder<?> ... entries) {
+            for (LootPoolEntry.Builder<?> builder : entries) {
+                this.entries.add(builder.build());
+            }
+        }
+
+        @Override
+        protected Builder getThisBuilder() {
+            return this;
+        }
+
+        @Override
+        public Builder sequenceEntry(LootPoolEntry.Builder<?> entry) {
+            this.entries.add(entry.build());
+            return this;
+        }
+
+        @Override
+        public LootPoolEntry build() {
+            return new SequenceEntry(this.entries.toArray(new LootPoolEntry[0]), this.getConditions());
+        }
+
+        @Override
+        protected /* synthetic */ LootPoolEntry.Builder getThisBuilder() {
+            return this.getThisBuilder();
+        }
     }
 }
 

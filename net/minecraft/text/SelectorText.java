@@ -41,6 +41,11 @@ implements ParsableText {
         return this.pattern;
     }
 
+    @Nullable
+    public EntitySelector getSelector() {
+        return this.selector;
+    }
+
     @Override
     public MutableText parse(@Nullable ServerCommandSource source, @Nullable Entity sender, int depth) throws CommandSyntaxException {
         if (source == null || this.selector == null) {

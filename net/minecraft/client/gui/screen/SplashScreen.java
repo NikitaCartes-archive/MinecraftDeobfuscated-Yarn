@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.IntSupplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -30,8 +31,17 @@ import net.minecraft.util.math.MathHelper;
 public class SplashScreen
 extends Overlay {
     private static final Identifier LOGO = new Identifier("textures/gui/title/mojangstudios.png");
-    private static final int BRAND_ARGB = BackgroundHelper.ColorMixer.getArgb(255, 239, 50, 61);
-    private static final int BRAND_RGB = BRAND_ARGB & 0xFFFFFF;
+    private static final int field_32249 = BackgroundHelper.ColorMixer.getArgb(255, 239, 50, 61);
+    private static final int field_32250 = BackgroundHelper.ColorMixer.getArgb(255, 0, 0, 0);
+    private static final IntSupplier BRAND_ARGB = () -> MinecraftClient.getInstance().options.monochromeLogo ? field_32250 : field_32249;
+    private static final int field_32251 = 240;
+    private static final float field_32252 = 60.0f;
+    private static final int field_32253 = 60;
+    private static final int field_32254 = 120;
+    private static final float field_32255 = 0.0625f;
+    private static final float field_32256 = 0.95f;
+    public static final long field_32247 = 1000L;
+    public static final long field_32248 = 500L;
     private final MinecraftClient client;
     private final ResourceReload reload;
     private final Consumer<Optional<Throwable>> exceptionHandler;
@@ -49,6 +59,10 @@ extends Overlay {
 
     public static void init(MinecraftClient client) {
         client.getTextureManager().registerTexture(LOGO, new LogoTexture());
+    }
+
+    private static int method_35732(int i, int j) {
+        return i & 0xFFFFFF | j << 24;
     }
 
     @Override
@@ -69,17 +83,17 @@ extends Overlay {
                 this.client.currentScreen.render(matrices, 0, 0, delta);
             }
             k = MathHelper.ceil((1.0f - MathHelper.clamp(f - 1.0f, 0.0f, 1.0f)) * 255.0f);
-            SplashScreen.fill(matrices, 0, 0, i, j, BRAND_RGB | k << 24);
+            SplashScreen.fill(matrices, 0, 0, i, j, SplashScreen.method_35732(BRAND_ARGB.getAsInt(), k));
             h = 1.0f - MathHelper.clamp(f - 1.0f, 0.0f, 1.0f);
         } else if (this.reloading) {
             if (this.client.currentScreen != null && g < 1.0f) {
                 this.client.currentScreen.render(matrices, mouseX, mouseY, delta);
             }
             k = MathHelper.ceil(MathHelper.clamp((double)g, 0.15, 1.0) * 255.0);
-            SplashScreen.fill(matrices, 0, 0, i, j, BRAND_RGB | k << 24);
+            SplashScreen.fill(matrices, 0, 0, i, j, SplashScreen.method_35732(BRAND_ARGB.getAsInt(), k));
             h = MathHelper.clamp(g, 0.0f, 1.0f);
         } else {
-            SplashScreen.fill(matrices, 0, 0, i, j, BRAND_ARGB);
+            SplashScreen.fill(matrices, 0, 0, i, j, BRAND_ARGB.getAsInt());
             h = 1.0f;
         }
         k = (int)((double)this.client.getWindow().getScaledWidth() * 0.5);

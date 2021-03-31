@@ -41,10 +41,15 @@ import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.tag.ItemTags;
-import net.minecraft.util.math.IntRange;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 public class AxolotlBrain {
-    private static final IntRange WALK_TOWARD_ADULT_RANGE = IntRange.between(5, 16);
+    private static final UniformIntProvider WALK_TOWARD_ADULT_RANGE = UniformIntProvider.create(5, 16);
+    private static final float field_30394 = 0.2f;
+    private static final float field_30395 = 0.15f;
+    private static final float field_30396 = 0.5f;
+    private static final float field_30397 = 0.6f;
+    private static final float field_30398 = 0.6f;
 
     protected static Brain<?> create(Brain<AxolotlEntity> brain) {
         AxolotlBrain.addCoreActivities(brain);
@@ -62,15 +67,15 @@ public class AxolotlBrain {
     }
 
     private static void addFightActivities(Brain<AxolotlEntity> brain) {
-        brain.setTaskList(Activity.FIGHT, 0, ImmutableList.of(new ForgetAttackTargetTask(), new RangedApproachTask(AxolotlBrain::method_33242), new MeleeAttackTask(20), new ForgetTask<AxolotlEntity>(AxolotlBrain::hasBreedTarget, MemoryModuleType.ATTACK_TARGET)), MemoryModuleType.ATTACK_TARGET);
+        brain.setTaskList(Activity.FIGHT, 0, ImmutableList.of(new ForgetAttackTargetTask<AxolotlEntity>(AxolotlEntity::method_35175), new RangedApproachTask(AxolotlBrain::method_33242), new MeleeAttackTask(20), new ForgetTask<AxolotlEntity>(AxolotlBrain::hasBreedTarget, MemoryModuleType.ATTACK_TARGET)), MemoryModuleType.ATTACK_TARGET);
     }
 
     private static void addCoreActivities(Brain<AxolotlEntity> brain) {
-        brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new LookAroundTask(45, 90), new WanderAroundTask(), new PlayDeadTimerTask(), new TemptationCooldownTask()));
+        brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new LookAroundTask(45, 90), new WanderAroundTask(), new PlayDeadTimerTask(), new TemptationCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS)));
     }
 
     private static void addIdleActivities(Brain<AxolotlEntity> brain) {
-        brain.setTaskList(Activity.IDLE, ImmutableList.of(Pair.of(0, new TimeLimitedTask<LivingEntity>(new FollowMobTask(EntityType.PLAYER, 6.0f), IntRange.between(30, 60))), Pair.of(1, new RandomTask(ImmutableList.of(Pair.of(new BreedTask(EntityType.AXOLOTL, 0.2f), 1), Pair.of(new TemptTask(AxolotlBrain::method_33248), 1), Pair.of(new WalkTowardClosestAdultTask(WALK_TOWARD_ADULT_RANGE, AxolotlBrain::method_33245), 1)))), Pair.of(2, new UpdateAttackTargetTask<AxolotlEntity>(AxolotlBrain::getAttackTarget)), Pair.of(2, new SeekWaterTask(6, 0.15f)), Pair.of(3, new CompositeTask(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT), ImmutableSet.of(), CompositeTask.Order.ORDERED, CompositeTask.RunMode.TRY_ALL, ImmutableList.of(Pair.of(new AquaticStrollTask(0.5f), 2), Pair.of(new StrollTask(0.15f), 2), Pair.of(new GoTowardsLookTarget(AxolotlBrain::method_33248, 3), 3), Pair.of(new ConditionalTask<LivingEntity>(Entity::isInsideWaterOrBubbleColumn, new WaitTask(30, 60)), 5), Pair.of(new ConditionalTask<LivingEntity>(Entity::isOnGround, new WaitTask(200, 400)), 5))))));
+        brain.setTaskList(Activity.IDLE, ImmutableList.of(Pair.of(0, new TimeLimitedTask<LivingEntity>(new FollowMobTask(EntityType.PLAYER, 6.0f), UniformIntProvider.create(30, 60))), Pair.of(1, new BreedTask(EntityType.AXOLOTL, 0.2f)), Pair.of(2, new RandomTask(ImmutableList.of(Pair.of(new TemptTask(AxolotlBrain::method_33248), 1), Pair.of(new WalkTowardClosestAdultTask(WALK_TOWARD_ADULT_RANGE, AxolotlBrain::method_33245), 1)))), Pair.of(3, new UpdateAttackTargetTask<AxolotlEntity>(AxolotlBrain::getAttackTarget)), Pair.of(3, new SeekWaterTask(6, 0.15f)), Pair.of(4, new CompositeTask(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT), ImmutableSet.of(), CompositeTask.Order.ORDERED, CompositeTask.RunMode.TRY_ALL, ImmutableList.of(Pair.of(new AquaticStrollTask(0.5f), 2), Pair.of(new StrollTask(0.15f), 2), Pair.of(new GoTowardsLookTarget(AxolotlBrain::method_33248, 3), 3), Pair.of(new ConditionalTask<LivingEntity>(Entity::isInsideWaterOrBubbleColumn, new WaitTask(30, 60)), 5), Pair.of(new ConditionalTask<LivingEntity>(Entity::isOnGround, new WaitTask(200, 400)), 5))))));
     }
 
     public static void method_33244(AxolotlEntity axolotl) {
@@ -78,6 +83,9 @@ public class AxolotlBrain {
         Activity activity = brain.getFirstPossibleNonCoreActivity().orElse(null);
         if (activity != Activity.PLAY_DEAD) {
             brain.resetPossibleActivities(ImmutableList.of(Activity.PLAY_DEAD, Activity.FIGHT, Activity.IDLE));
+            if (activity == Activity.FIGHT && brain.getFirstPossibleNonCoreActivity().orElse(null) != Activity.FIGHT) {
+                brain.remember(MemoryModuleType.HAS_HUNTING_COOLDOWN, true, 2400L);
+            }
         }
     }
 
@@ -97,7 +105,7 @@ public class AxolotlBrain {
         if (AxolotlBrain.hasBreedTarget(axolotl)) {
             return Optional.empty();
         }
-        return axolotl.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_HOSTILE);
+        return axolotl.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE);
     }
 
     private static boolean hasBreedTarget(AxolotlEntity axolotl) {

@@ -3,12 +3,12 @@
  */
 package net.minecraft.client.texture;
 
+import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.TextureUtil;
 import net.minecraft.resource.ResourceManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,11 +25,11 @@ extends AbstractTexture {
         this.image = image;
         if (!RenderSystem.isOnRenderThread()) {
             RenderSystem.recordRenderCall(() -> {
-                TextureUtil.allocate(this.getGlId(), this.image.getWidth(), this.image.getHeight());
+                TextureUtil.prepareImage(this.getGlId(), this.image.getWidth(), this.image.getHeight());
                 this.upload();
             });
         } else {
-            TextureUtil.allocate(this.getGlId(), this.image.getWidth(), this.image.getHeight());
+            TextureUtil.prepareImage(this.getGlId(), this.image.getWidth(), this.image.getHeight());
             this.upload();
         }
     }
@@ -37,7 +37,7 @@ extends AbstractTexture {
     public NativeImageBackedTexture(int width, int height, boolean useStb) {
         RenderSystem.assertThread(RenderSystem::isOnGameThreadOrInit);
         this.image = new NativeImage(width, height, useStb);
-        TextureUtil.allocate(this.getGlId(), this.image.getWidth(), this.image.getHeight());
+        TextureUtil.prepareImage(this.getGlId(), this.image.getWidth(), this.image.getHeight());
     }
 
     @Override

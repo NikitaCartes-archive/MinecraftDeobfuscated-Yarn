@@ -257,6 +257,10 @@ implements OrderableTooltip {
             return this;
         }
 
+        public CyclingButtonWidget<T> method_35723(int i, int j, int k, int l, Text text) {
+            return this.build(i, j, k, l, text, (cyclingButtonWidget, object) -> {});
+        }
+
         public CyclingButtonWidget<T> build(int x, int y, int width, int height, Text optionText, UpdateCallback<T> callback) {
             List<T> list = this.values.getDefaults();
             if (list.isEmpty()) {

@@ -4,7 +4,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -31,7 +30,17 @@ import org.jetbrains.annotations.Nullable;
 public class CocoaBlock
 extends HorizontalFacingBlock
 implements Fertilizable {
+    public static final int field_31061 = 2;
     public static final IntProperty AGE = Properties.AGE_2;
+    protected static final int field_31062 = 4;
+    protected static final int field_31063 = 5;
+    protected static final int field_31064 = 2;
+    protected static final int field_31065 = 6;
+    protected static final int field_31066 = 7;
+    protected static final int field_31067 = 3;
+    protected static final int field_31068 = 8;
+    protected static final int field_31069 = 9;
+    protected static final int field_31070 = 4;
     protected static final VoxelShape[] AGE_TO_EAST_SHAPE = new VoxelShape[]{Block.createCuboidShape(11.0, 7.0, 6.0, 15.0, 12.0, 10.0), Block.createCuboidShape(9.0, 5.0, 5.0, 15.0, 12.0, 11.0), Block.createCuboidShape(7.0, 3.0, 4.0, 15.0, 12.0, 12.0)};
     protected static final VoxelShape[] AGE_TO_WEST_SHAPE = new VoxelShape[]{Block.createCuboidShape(1.0, 7.0, 6.0, 5.0, 12.0, 10.0), Block.createCuboidShape(1.0, 5.0, 5.0, 7.0, 12.0, 11.0), Block.createCuboidShape(1.0, 3.0, 4.0, 9.0, 12.0, 12.0)};
     protected static final VoxelShape[] AGE_TO_NORTH_SHAPE = new VoxelShape[]{Block.createCuboidShape(6.0, 7.0, 1.0, 10.0, 12.0, 5.0), Block.createCuboidShape(5.0, 5.0, 1.0, 11.0, 12.0, 7.0), Block.createCuboidShape(4.0, 3.0, 1.0, 12.0, 12.0, 9.0)};
@@ -51,7 +60,7 @@ implements Fertilizable {
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         int i;
         if (world.random.nextInt(5) == 0 && (i = state.get(AGE).intValue()) < 2) {
-            world.setBlockState(pos, (BlockState)state.with(AGE, i + 1), SetBlockStateFlags.NOTIFY_LISTENERS);
+            world.setBlockState(pos, (BlockState)state.with(AGE, i + 1), Block.NOTIFY_LISTENERS);
         }
     }
 
@@ -112,7 +121,7 @@ implements Fertilizable {
 
     @Override
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-        world.setBlockState(pos, (BlockState)state.with(AGE, state.get(AGE) + 1), SetBlockStateFlags.NOTIFY_LISTENERS);
+        world.setBlockState(pos, (BlockState)state.with(AGE, state.get(AGE) + 1), Block.NOTIFY_LISTENERS);
     }
 
     @Override

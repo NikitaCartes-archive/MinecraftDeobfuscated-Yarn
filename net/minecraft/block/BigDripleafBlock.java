@@ -8,7 +8,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import java.util.Map;
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BigDripleafStemBlock;
 import net.minecraft.block.Block;
@@ -33,6 +32,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Util;
+import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -53,14 +53,20 @@ implements Fertilizable,
 Waterloggable {
     private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
     private static final EnumProperty<Tilt> TILT = Properties.TILT;
+    private static final int field_31015 = -1;
     private static final Object2IntMap<Tilt> NEXT_TILT_DELAYS = Util.make(new Object2IntArrayMap(), delays -> {
         delays.defaultReturnValue(-1);
         delays.put(Tilt.UNSTABLE, 10);
         delays.put(Tilt.PARTIAL, 10);
         delays.put(Tilt.FULL, 100);
     });
+    private static final int field_31016 = 5;
+    private static final int field_31017 = 6;
+    private static final int field_31018 = 11;
+    private static final int field_31019 = 13;
     private static final Map<Tilt, VoxelShape> SHAPES_FOR_TILT = ImmutableMap.of(Tilt.NONE, Block.createCuboidShape(0.0, 11.0, 0.0, 16.0, 15.0, 16.0), Tilt.UNSTABLE, Block.createCuboidShape(0.0, 11.0, 0.0, 16.0, 15.0, 16.0), Tilt.PARTIAL, Block.createCuboidShape(0.0, 11.0, 0.0, 16.0, 13.0, 16.0), Tilt.FULL, VoxelShapes.empty());
-    private static final Map<Direction, VoxelShape> SHAPES_FOR_DIRECTION = ImmutableMap.of(Direction.NORTH, Block.createCuboidShape(5.0, 0.0, 8.0, 11.0, 11.0, 14.0), Direction.SOUTH, Block.createCuboidShape(5.0, 0.0, 2.0, 11.0, 11.0, 8.0), Direction.EAST, Block.createCuboidShape(2.0, 0.0, 5.0, 8.0, 11.0, 11.0), Direction.WEST, Block.createCuboidShape(8.0, 0.0, 5.0, 14.0, 11.0, 11.0));
+    private static final VoxelShape field_31020 = Block.createCuboidShape(0.0, 13.0, 0.0, 16.0, 16.0, 16.0);
+    private static final Map<Direction, VoxelShape> SHAPES_FOR_DIRECTION = ImmutableMap.of(Direction.NORTH, VoxelShapes.combine(BigDripleafStemBlock.NORTH_SHAPE, field_31020, BooleanBiFunction.ONLY_FIRST), Direction.SOUTH, VoxelShapes.combine(BigDripleafStemBlock.SOUTH_SHAPE, field_31020, BooleanBiFunction.ONLY_FIRST), Direction.EAST, VoxelShapes.combine(BigDripleafStemBlock.EAST_SHAPE, field_31020, BooleanBiFunction.ONLY_FIRST), Direction.WEST, VoxelShapes.combine(BigDripleafStemBlock.WEST_SHAPE, field_31020, BooleanBiFunction.ONLY_FIRST));
     private final Map<BlockState, VoxelShape> shapes;
 
     protected BigDripleafBlock(AbstractBlock.Settings settings) {
@@ -70,15 +76,7 @@ Waterloggable {
     }
 
     private static VoxelShape getShapeForState(BlockState state) {
-        return VoxelShapes.union(BigDripleafBlock.getShapeForStateTilt(state), BigDripleafBlock.getShapeForStateDirection(state));
-    }
-
-    private static VoxelShape getShapeForStateDirection(BlockState state) {
-        return SHAPES_FOR_DIRECTION.get(state.get(FACING));
-    }
-
-    private static VoxelShape getShapeForStateTilt(BlockState state) {
-        return SHAPES_FOR_TILT.get(state.get(TILT));
+        return VoxelShapes.union(SHAPES_FOR_TILT.get(state.get(TILT)), SHAPES_FOR_DIRECTION.get(state.get(FACING)));
     }
 
     public static void grow(WorldAccess world, Random random, BlockPos pos, Direction direction) {
@@ -107,7 +105,7 @@ Waterloggable {
 
     protected static boolean placeDripleafAt(WorldAccess world, BlockPos pos, FluidState fluidState, Direction direction) {
         BlockState blockState = (BlockState)((BlockState)Blocks.BIG_DRIPLEAF.getDefaultState().with(WATERLOGGED, fluidState.isEqualAndStill(Fluids.WATER))).with(FACING, direction);
-        return world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
+        return world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
     }
 
     @Override
@@ -133,7 +131,7 @@ Waterloggable {
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (direction == Direction.DOWN && !state.canPlaceAt(world, pos)) {
-            return state.get(WATERLOGGED) != false ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState();
+            return Blocks.AIR.getDefaultState();
         }
         if (state.get(WATERLOGGED).booleanValue()) {
             world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
@@ -168,7 +166,7 @@ Waterloggable {
         if (world.isClient) {
             return;
         }
-        if (state.get(TILT) == Tilt.NONE && BigDripleafBlock.isEntityAbove(pos, entity)) {
+        if (state.get(TILT) == Tilt.NONE && BigDripleafBlock.isEntityAbove(pos, entity) && !world.isReceivingRedstonePower(pos)) {
             this.changeTilt(state, world, pos, Tilt.UNSTABLE, null);
         }
     }
@@ -218,11 +216,13 @@ Waterloggable {
 
     private static void resetTilt(BlockState state, World world, BlockPos pos) {
         BigDripleafBlock.changeTilt(state, world, pos, Tilt.NONE);
-        BigDripleafBlock.playTiltSound(world, pos, SoundEvents.BLOCK_BIG_DRIPLEAF_TILT_UP);
+        if (state.get(TILT) != Tilt.NONE) {
+            BigDripleafBlock.playTiltSound(world, pos, SoundEvents.BLOCK_BIG_DRIPLEAF_TILT_UP);
+        }
     }
 
     private static void changeTilt(BlockState state, World world, BlockPos pos, Tilt tilt) {
-        world.setBlockState(pos, (BlockState)state.with(TILT, tilt), SetBlockStateFlags.NOTIFY_LISTENERS);
+        world.setBlockState(pos, (BlockState)state.with(TILT, tilt), Block.NOTIFY_LISTENERS);
         if (tilt.isStable()) {
             world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos);
         }
@@ -230,7 +230,7 @@ Waterloggable {
 
     @Override
     public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return BigDripleafBlock.getShapeForStateTilt(state);
+        return SHAPES_FOR_TILT.get(state.get(TILT));
     }
 
     @Override
@@ -241,7 +241,9 @@ Waterloggable {
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
-        return (BlockState)((BlockState)this.getDefaultState().with(WATERLOGGED, fluidState.isEqualAndStill(Fluids.WATER))).with(FACING, ctx.getPlayerFacing().getOpposite());
+        BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos().down());
+        Direction direction = blockState.isOf(Blocks.BIG_DRIPLEAF_STEM) ? blockState.get(BigDripleafStemBlock.FACING) : ctx.getPlayerFacing().getOpposite();
+        return (BlockState)((BlockState)this.getDefaultState().with(WATERLOGGED, fluidState.isEqualAndStill(Fluids.WATER))).with(FACING, direction);
     }
 
     @Override

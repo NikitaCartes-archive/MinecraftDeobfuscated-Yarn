@@ -28,6 +28,20 @@ public interface EntityLike {
     public void setListener(EntityChangeListener var1);
 
     /**
+     * Returns a stream consisting of this entity and its passengers recursively.
+     * Each entity will appear before any of its passengers.
+     * 
+     * <p>This may be less costly than {@link #streamPassengersAndSelf()} if the
+     * stream's iteration would terminates fast, such as finding an arbitrary
+     * match of entity in the passengers tree.
+     * 
+     * @implNote The default implementation is not very efficient.
+     * 
+     * @see #streamPassengersAndSelf()
+     */
+    public Stream<? extends EntityLike> streamSelfAndPassengers();
+
+    /**
      * Returns a stream consisting of this entity and its passengers in which
      * this entity's passengers are iterated before this entity.
      * 
@@ -38,7 +52,7 @@ public interface EntityLike {
      * 
      * @implNote The default implementation is very costly.
      * 
-     * @see net.minecraft.entity.Entity#streamSelfAndPassengers()
+     * @see #streamSelfAndPassengers()
      */
     public Stream<? extends EntityLike> streamPassengersAndSelf();
 

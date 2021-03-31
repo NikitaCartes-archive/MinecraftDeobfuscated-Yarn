@@ -4,10 +4,6 @@
 package net.minecraft.entity;
 
 import java.util.function.Predicate;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -83,7 +79,6 @@ extends Entity {
         this.dataTracker.set(BLOCK_POS, pos);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public BlockPos getFallingBlockPos() {
         return this.dataTracker.get(BLOCK_POS);
     }
@@ -148,7 +143,7 @@ extends Entity {
                             if (this.block.contains(Properties.WATERLOGGED) && this.world.getFluidState(blockPos).getFluid() == Fluids.WATER) {
                                 this.block = (BlockState)this.block.with(Properties.WATERLOGGED, true);
                             }
-                            if (this.world.setBlockState(blockPos, this.block, SetBlockStateFlags.DEFAULT)) {
+                            if (this.world.setBlockState(blockPos, this.block, Block.NOTIFY_ALL)) {
                                 BlockEntity blockEntity;
                                 if (block instanceof LandingBlock) {
                                     ((LandingBlock)((Object)block)).onLanding(this.world, blockPos, this.block, blockState, this);
@@ -225,41 +220,40 @@ extends Entity {
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound tag) {
-        tag.put("BlockState", NbtHelper.fromBlockState(this.block));
-        tag.putInt("Time", this.timeFalling);
-        tag.putBoolean("DropItem", this.dropItem);
-        tag.putBoolean("HurtEntities", this.hurtEntities);
-        tag.putFloat("FallHurtAmount", this.fallHurtAmount);
-        tag.putInt("FallHurtMax", this.fallHurtMax);
+    protected void writeCustomDataToNbt(NbtCompound nbt) {
+        nbt.put("BlockState", NbtHelper.fromBlockState(this.block));
+        nbt.putInt("Time", this.timeFalling);
+        nbt.putBoolean("DropItem", this.dropItem);
+        nbt.putBoolean("HurtEntities", this.hurtEntities);
+        nbt.putFloat("FallHurtAmount", this.fallHurtAmount);
+        nbt.putInt("FallHurtMax", this.fallHurtMax);
         if (this.blockEntityData != null) {
-            tag.put("TileEntityData", this.blockEntityData);
+            nbt.put("TileEntityData", this.blockEntityData);
         }
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound tag) {
-        this.block = NbtHelper.toBlockState(tag.getCompound("BlockState"));
-        this.timeFalling = tag.getInt("Time");
-        if (tag.contains("HurtEntities", NbtTypeIds.NUMBER)) {
-            this.hurtEntities = tag.getBoolean("HurtEntities");
-            this.fallHurtAmount = tag.getFloat("FallHurtAmount");
-            this.fallHurtMax = tag.getInt("FallHurtMax");
+    protected void readCustomDataFromNbt(NbtCompound nbt) {
+        this.block = NbtHelper.toBlockState(nbt.getCompound("BlockState"));
+        this.timeFalling = nbt.getInt("Time");
+        if (nbt.contains("HurtEntities", 99)) {
+            this.hurtEntities = nbt.getBoolean("HurtEntities");
+            this.fallHurtAmount = nbt.getFloat("FallHurtAmount");
+            this.fallHurtMax = nbt.getInt("FallHurtMax");
         } else if (this.block.isIn(BlockTags.ANVIL)) {
             this.hurtEntities = true;
         }
-        if (tag.contains("DropItem", NbtTypeIds.NUMBER)) {
-            this.dropItem = tag.getBoolean("DropItem");
+        if (nbt.contains("DropItem", 99)) {
+            this.dropItem = nbt.getBoolean("DropItem");
         }
-        if (tag.contains("TileEntityData", NbtTypeIds.COMPOUND)) {
-            this.blockEntityData = tag.getCompound("TileEntityData");
+        if (nbt.contains("TileEntityData", 10)) {
+            this.blockEntityData = nbt.getCompound("TileEntityData");
         }
         if (this.block.isAir()) {
             this.block = Blocks.SAND.getDefaultState();
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     public World getWorldClient() {
         return this.world;
     }
@@ -271,7 +265,6 @@ extends Entity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public boolean doesRenderOnFire() {
         return false;
     }
@@ -297,7 +290,6 @@ extends Entity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void onSpawnPacket(EntitySpawnS2CPacket packet) {
         super.onSpawnPacket(packet);
         this.block = Block.getStateFromRawId(packet.getEntityData());

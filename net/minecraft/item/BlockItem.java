@@ -5,10 +5,6 @@ package net.minecraft.item;
 
 import java.util.List;
 import java.util.Map;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -44,6 +40,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class BlockItem
 extends Item {
+    public static final String BLOCK_ENTITY_TAG_KEY = "BlockEntityTag";
+    public static final String BLOCK_STATE_TAG_KEY = "BlockStateTag";
     @Deprecated
     private final Block block;
 
@@ -121,7 +119,7 @@ extends Item {
         BlockState blockState = state;
         NbtCompound nbtCompound = stack.getTag();
         if (nbtCompound != null) {
-            NbtCompound nbtCompound2 = nbtCompound.getCompound("BlockStateTag");
+            NbtCompound nbtCompound2 = nbtCompound.getCompound(BLOCK_STATE_TAG_KEY);
             StateManager<Block, BlockState> stateManager = blockState.getBlock().getStateManager();
             for (String string : nbtCompound2.getKeys()) {
                 Property<?> property = stateManager.getProperty(string);
@@ -131,7 +129,7 @@ extends Item {
             }
         }
         if (blockState != state) {
-            world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
+            world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
         }
         return blockState;
     }
@@ -151,7 +149,7 @@ extends Item {
     }
 
     protected boolean place(ItemPlacementContext context, BlockState state) {
-        return context.getWorld().setBlockState(context.getBlockPos(), state, SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
+        return context.getWorld().setBlockState(context.getBlockPos(), state, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
     }
 
     public static boolean writeTagToBlockEntity(World world, @Nullable PlayerEntity player, BlockPos pos, ItemStack stack) {
@@ -160,7 +158,7 @@ extends Item {
         if (minecraftServer == null) {
             return false;
         }
-        NbtCompound nbtCompound = stack.getSubTag("BlockEntityTag");
+        NbtCompound nbtCompound = stack.getSubTag(BLOCK_ENTITY_TAG_KEY);
         if (nbtCompound != null && (blockEntity = world.getBlockEntity(pos)) != null) {
             if (!(world.isClient || !blockEntity.copyItemDataRequiresOperator() || player != null && player.isCreativeLevelTwoOp())) {
                 return false;
@@ -193,7 +191,6 @@ extends Item {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         super.appendTooltip(stack, world, tooltip, context);
         this.getBlock().appendTooltip(stack, world, tooltip, context);
@@ -216,7 +213,7 @@ extends Item {
     public void onItemEntityDestroyed(ItemEntity entity) {
         NbtCompound nbtCompound;
         if (this.block instanceof ShulkerBoxBlock && (nbtCompound = entity.getStack().getTag()) != null) {
-            NbtList nbtList = nbtCompound.getCompound("BlockEntityTag").getList("Items", NbtTypeIds.COMPOUND);
+            NbtList nbtList = nbtCompound.getCompound(BLOCK_ENTITY_TAG_KEY).getList("Items", 10);
             ItemUsage.spawnItemContents(entity, nbtList.stream().map(NbtCompound.class::cast).map(ItemStack::fromNbt));
         }
     }

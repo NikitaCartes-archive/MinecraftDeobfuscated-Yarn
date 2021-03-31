@@ -17,7 +17,6 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -45,6 +44,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class AbstractLichenBlock
 extends Block {
+    private static final float field_31194 = 1.0f;
     private static final VoxelShape UP_SHAPE = Block.createCuboidShape(0.0, 15.0, 0.0, 16.0, 16.0, 16.0);
     private static final VoxelShape DOWN_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 1.0, 16.0);
     private static final VoxelShape EAST_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 1.0, 16.0, 16.0);
@@ -234,7 +234,7 @@ extends Block {
         BlockState blockState = world.getBlockState(pos);
         BlockState blockState2 = this.withDirection(blockState, world, pos, direction);
         if (blockState2 != null) {
-            return world.setBlockState(pos, blockState2, SetBlockStateFlags.NOTIFY_LISTENERS);
+            return world.setBlockState(pos, blockState2, Block.NOTIFY_LISTENERS);
         }
         return false;
     }

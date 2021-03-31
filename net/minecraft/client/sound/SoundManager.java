@@ -49,6 +49,7 @@ public class SoundManager
 extends SinglePreparationResourceReloader<SoundList> {
     public static final Sound MISSING_SOUND = new Sound("meta:missing_sound", 1.0f, 1.0f, 1, Sound.RegistrationType.FILE, false, false, 16);
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final String field_33026 = "sounds.json";
     private static final Gson GSON = new GsonBuilder().registerTypeHierarchyAdapter(Text.class, new Text.Serializer()).registerTypeAdapter((Type)((Object)SoundEntry.class), new SoundEntryDeserializer()).create();
     private static final TypeToken<Map<String, SoundEntry>> TYPE = new TypeToken<Map<String, SoundEntry>>(){};
     private final Map<Identifier, WeightedSoundSet> sounds = Maps.newHashMap();
@@ -65,7 +66,7 @@ extends SinglePreparationResourceReloader<SoundList> {
         for (String string : resourceManager.getAllNamespaces()) {
             profiler.push(string);
             try {
-                List<Resource> list = resourceManager.getAllResources(new Identifier(string, "sounds.json"));
+                List<Resource> list = resourceManager.getAllResources(new Identifier(string, field_33026));
                 for (Resource resource : list) {
                     profiler.push(resource.getResourcePackName());
                     try (InputStream inputStream = resource.getInputStream();
@@ -78,7 +79,7 @@ extends SinglePreparationResourceReloader<SoundList> {
                         }
                         profiler.pop();
                     } catch (RuntimeException runtimeException) {
-                        LOGGER.warn("Invalid {} in resourcepack: '{}'", (Object)"sounds.json", (Object)resource.getResourcePackName(), (Object)runtimeException);
+                        LOGGER.warn("Invalid {} in resourcepack: '{}'", (Object)field_33026, (Object)resource.getResourcePackName(), (Object)runtimeException);
                     }
                     profiler.pop();
                 }

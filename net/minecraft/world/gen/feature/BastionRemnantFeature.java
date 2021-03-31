@@ -15,6 +15,8 @@ import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
 
 public class BastionRemnantFeature
 extends JigsawFeature {
+    private static final int field_31499 = 33;
+
     public BastionRemnantFeature(Codec<StructurePoolFeatureConfig> codec) {
         super(codec, 33, false, false);
     }

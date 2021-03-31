@@ -7,9 +7,6 @@ import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import java.util.Arrays;
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -52,8 +49,12 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class PersistentProjectileEntity
 extends ProjectileEntity {
+    private static final double field_30657 = 2.0;
     private static final TrackedData<Byte> PROJECTILE_FLAGS = DataTracker.registerData(PersistentProjectileEntity.class, TrackedDataHandlerRegistry.BYTE);
     private static final TrackedData<Byte> PIERCE_LEVEL = DataTracker.registerData(PersistentProjectileEntity.class, TrackedDataHandlerRegistry.BYTE);
+    private static final int field_30654 = 1;
+    private static final int field_30655 = 2;
+    private static final int field_30656 = 4;
     @Nullable
     private BlockState inBlockState;
     protected boolean inGround;
@@ -89,7 +90,6 @@ extends ProjectileEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public boolean shouldRender(double distance) {
         double d = this.getBoundingBox().getAverageSideLength() * 10.0;
         if (Double.isNaN(d)) {
@@ -111,14 +111,12 @@ extends ProjectileEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
         this.setPosition(x, y, z);
         this.setRotation(yaw, pitch);
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void setVelocityClient(double x, double y, double z) {
         super.setVelocityClient(x, y, z);
         this.life = 0;
@@ -317,7 +315,7 @@ extends ProjectileEntity {
                 }
                 this.onHit(livingEntity);
                 if (entity2 != null && livingEntity != entity2 && livingEntity instanceof PlayerEntity && entity2 instanceof ServerPlayerEntity && !this.isSilent()) {
-                    ((ServerPlayerEntity)entity2).networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.PROJECTILE_HIT_PLAYER, 0.0f));
+                    ((ServerPlayerEntity)entity2).networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.PROJECTILE_HIT_PLAYER, GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
                 }
                 if (!entity.isAlive() && this.piercingKilledEntities != null) {
                     this.piercingKilledEntities.add(livingEntity);
@@ -389,41 +387,41 @@ extends ProjectileEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
-        tag.putShort("life", (short)this.life);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putShort("life", (short)this.life);
         if (this.inBlockState != null) {
-            tag.put("inBlockState", NbtHelper.fromBlockState(this.inBlockState));
+            nbt.put("inBlockState", NbtHelper.fromBlockState(this.inBlockState));
         }
-        tag.putByte("shake", (byte)this.shake);
-        tag.putBoolean("inGround", this.inGround);
-        tag.putByte("pickup", (byte)this.pickupType.ordinal());
-        tag.putDouble("damage", this.damage);
-        tag.putBoolean("crit", this.isCritical());
-        tag.putByte("PierceLevel", this.getPierceLevel());
-        tag.putString("SoundEvent", Registry.SOUND_EVENT.getId(this.sound).toString());
-        tag.putBoolean("ShotFromCrossbow", this.isShotFromCrossbow());
+        nbt.putByte("shake", (byte)this.shake);
+        nbt.putBoolean("inGround", this.inGround);
+        nbt.putByte("pickup", (byte)this.pickupType.ordinal());
+        nbt.putDouble("damage", this.damage);
+        nbt.putBoolean("crit", this.isCritical());
+        nbt.putByte("PierceLevel", this.getPierceLevel());
+        nbt.putString("SoundEvent", Registry.SOUND_EVENT.getId(this.sound).toString());
+        nbt.putBoolean("ShotFromCrossbow", this.isShotFromCrossbow());
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        this.life = tag.getShort("life");
-        if (tag.contains("inBlockState", NbtTypeIds.COMPOUND)) {
-            this.inBlockState = NbtHelper.toBlockState(tag.getCompound("inBlockState"));
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.life = nbt.getShort("life");
+        if (nbt.contains("inBlockState", 10)) {
+            this.inBlockState = NbtHelper.toBlockState(nbt.getCompound("inBlockState"));
         }
-        this.shake = tag.getByte("shake") & 0xFF;
-        this.inGround = tag.getBoolean("inGround");
-        if (tag.contains("damage", NbtTypeIds.NUMBER)) {
-            this.damage = tag.getDouble("damage");
+        this.shake = nbt.getByte("shake") & 0xFF;
+        this.inGround = nbt.getBoolean("inGround");
+        if (nbt.contains("damage", 99)) {
+            this.damage = nbt.getDouble("damage");
         }
-        this.pickupType = PickupPermission.fromOrdinal(tag.getByte("pickup"));
-        this.setCritical(tag.getBoolean("crit"));
-        this.setPierceLevel(tag.getByte("PierceLevel"));
-        if (tag.contains("SoundEvent", NbtTypeIds.STRING)) {
-            this.sound = Registry.SOUND_EVENT.getOrEmpty(new Identifier(tag.getString("SoundEvent"))).orElse(this.getHitSound());
+        this.pickupType = PickupPermission.fromOrdinal(nbt.getByte("pickup"));
+        this.setCritical(nbt.getBoolean("crit"));
+        this.setPierceLevel(nbt.getByte("PierceLevel"));
+        if (nbt.contains("SoundEvent", 8)) {
+            this.sound = Registry.SOUND_EVENT.getOrEmpty(new Identifier(nbt.getString("SoundEvent"))).orElse(this.getHitSound());
         }
-        this.setShotFromCrossbow(tag.getBoolean("ShotFromCrossbow"));
+        this.setShotFromCrossbow(nbt.getBoolean("ShotFromCrossbow"));
     }
 
     @Override
@@ -439,19 +437,19 @@ extends ProjectileEntity {
         if (this.world.isClient || !this.inGround && !this.isNoClip() || this.shake > 0) {
             return;
         }
-        if (this.method_34713(player)) {
+        if (this.tryPickup(player)) {
             player.sendPickup(this, 1);
             this.discard();
         }
     }
 
-    protected boolean method_34713(PlayerEntity playerEntity) {
+    protected boolean tryPickup(PlayerEntity player) {
         switch (this.pickupType) {
             case ALLOWED: {
-                return playerEntity.getInventory().insertStack(this.asItemStack());
+                return player.getInventory().insertStack(this.asItemStack());
             }
             case CREATIVE_ONLY: {
-                return playerEntity.getAbilities().creativeMode;
+                return player.getAbilities().creativeMode;
             }
         }
         return false;
@@ -474,6 +472,10 @@ extends ProjectileEntity {
 
     public void setPunch(int punch) {
         this.punch = punch;
+    }
+
+    public int getPunch() {
+        return this.punch;
     }
 
     @Override

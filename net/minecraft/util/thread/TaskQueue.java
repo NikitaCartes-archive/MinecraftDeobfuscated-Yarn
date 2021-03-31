@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Queue;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import org.jetbrains.annotations.Nullable;
 
 public interface TaskQueue<T, F> {
@@ -21,8 +19,7 @@ public interface TaskQueue<T, F> {
 
     public boolean isEmpty();
 
-    @Environment(value=EnvType.CLIENT)
-    public int method_34706();
+    public int getSize();
 
     public static final class Prioritized
     implements TaskQueue<PrioritizedTask, Runnable> {
@@ -56,8 +53,7 @@ public interface TaskQueue<T, F> {
         }
 
         @Override
-        @Environment(value=EnvType.CLIENT)
-        public int method_34706() {
+        public int getSize() {
             int i = 0;
             for (Queue<Runnable> queue : this.queues) {
                 i += queue.size();
@@ -117,8 +113,7 @@ public interface TaskQueue<T, F> {
         }
 
         @Override
-        @Environment(value=EnvType.CLIENT)
-        public int method_34706() {
+        public int getSize() {
             return this.queue.size();
         }
     }

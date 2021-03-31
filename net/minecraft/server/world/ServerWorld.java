@@ -34,8 +34,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -162,6 +160,7 @@ extends World
 implements StructureWorldAccess {
     public static final BlockPos END_SPAWN_POS = new BlockPos(100, 50, 0);
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final int field_29768 = 300;
     private final List<ServerPlayerEntity> players = Lists.newArrayList();
     private final ServerChunkManager serverChunkManager;
     private final MinecraftServer server;
@@ -285,9 +284,9 @@ implements StructureWorldAccess {
         }
         if (bl != this.isRaining()) {
             if (bl) {
-                this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_STOPPED, 0.0f));
+                this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_STOPPED, GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
             } else {
-                this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_STARTED, 0.0f));
+                this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_STARTED, GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
             }
             this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_GRADIENT_CHANGED, this.rainGradient));
             this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.THUNDER_GRADIENT_CHANGED, this.thunderGradient));
@@ -742,6 +741,7 @@ implements StructureWorldAccess {
         this.server.getPlayerManager().sendToAround(player, pos.getX(), pos.getY(), pos.getZ(), 64.0, this.getRegistryKey(), new WorldEventS2CPacket(eventId, pos, data, false));
     }
 
+    @Override
     public int getLogicalHeight() {
         return this.getDimension().getLogicalHeight();
     }
@@ -1158,7 +1158,6 @@ implements StructureWorldAccess {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public float getBrightness(Direction direction, boolean shaded) {
         return 1.0f;
     }
@@ -1197,7 +1196,7 @@ implements StructureWorldAccess {
 
     @VisibleForTesting
     public String getDebugString() {
-        return String.format("players: %s, entities: %s [%s], block_entities: %d [%s], block_ticks: %d, fluid_ticks: %d, chunk_source: %s", this.players.size(), this.entityManager.getDebugString(), ServerWorld.getTopFive(this.entityManager.getLookup().iterate(), entity -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()), this.blockEntityTickers.size(), ServerWorld.getTopFive(this.blockEntityTickers, BlockEntityTickInvoker::getName), ((ServerTickScheduler)this.getBlockTickScheduler()).getTicks(), ((ServerTickScheduler)this.getFluidTickScheduler()).getTicks(), this.getChunkSourceDebugString());
+        return String.format("players: %s, entities: %s [%s], block_entities: %d [%s], block_ticks: %d, fluid_ticks: %d, chunk_source: %s", this.players.size(), this.entityManager.getDebugString(), ServerWorld.getTopFive(this.entityManager.getLookup().iterate(), entity -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()), this.blockEntityTickers.size(), ServerWorld.getTopFive(this.blockEntityTickers, BlockEntityTickInvoker::getName), ((ServerTickScheduler)this.getBlockTickScheduler()).getTicks(), ((ServerTickScheduler)this.getFluidTickScheduler()).getTicks(), this.asString());
     }
 
     /**
@@ -1248,7 +1247,8 @@ implements StructureWorldAccess {
         this.entityManager.close();
     }
 
-    public String getChunkSourceDebugString() {
+    @Override
+    public String asString() {
         return "Chunks[S] W: " + this.serverChunkManager.getDebugString() + " E: " + this.entityManager.getDebugString();
     }
 

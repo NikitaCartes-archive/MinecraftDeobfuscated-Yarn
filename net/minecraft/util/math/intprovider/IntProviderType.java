@@ -1,0 +1,22 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.util.math.intprovider;
+
+import com.mojang.serialization.Codec;
+import net.minecraft.util.math.intprovider.ConstantIntProvider;
+import net.minecraft.util.math.intprovider.IntProvider;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
+import net.minecraft.util.registry.Registry;
+
+public interface IntProviderType<P extends IntProvider> {
+    public static final IntProviderType<ConstantIntProvider> CONSTANT = IntProviderType.register("constant", ConstantIntProvider.CODEC);
+    public static final IntProviderType<UniformIntProvider> UNIFORM = IntProviderType.register("uniform", UniformIntProvider.CODEC);
+
+    public Codec<P> codec();
+
+    public static <P extends IntProvider> IntProviderType<P> register(String id, Codec<P> codec) {
+        return Registry.register(Registry.INT_PROVIDER_TYPE, id, () -> codec);
+    }
+}
+

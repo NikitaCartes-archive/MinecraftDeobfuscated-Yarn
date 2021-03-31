@@ -5,9 +5,6 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -67,6 +64,8 @@ extends BlockWithEntity {
     private static final Direction[] GENERATE_DIRECTIONS = new Direction[]{Direction.WEST, Direction.EAST, Direction.SOUTH};
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     public static final IntProperty HONEY_LEVEL = Properties.HONEY_LEVEL;
+    public static final int FULL_HONEY_LEVEL = 5;
+    private static final int DROPPED_HONEYCOMB_COUNT = 3;
 
     public BeehiveBlock(AbstractBlock.Settings settings) {
         super(settings);
@@ -170,11 +169,10 @@ extends BlockWithEntity {
     }
 
     public void takeHoney(World world, BlockState state, BlockPos pos) {
-        world.setBlockState(pos, (BlockState)state.with(HONEY_LEVEL, 0), SetBlockStateFlags.DEFAULT);
+        world.setBlockState(pos, (BlockState)state.with(HONEY_LEVEL, 0), Block.NOTIFY_ALL);
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         if (state.get(HONEY_LEVEL) >= 5) {
             for (int i = 0; i < random.nextInt(1) + 1; ++i) {
@@ -183,7 +181,6 @@ extends BlockWithEntity {
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     private void spawnHoneyParticles(World world, BlockPos pos, BlockState state) {
         if (!state.getFluidState().isEmpty() || world.random.nextFloat() < 0.3f) {
             return;
@@ -206,12 +203,10 @@ extends BlockWithEntity {
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     private void addHoneyParticle(World world, BlockPos pos, VoxelShape shape, double height) {
         this.addHoneyParticle(world, (double)pos.getX() + shape.getMin(Direction.Axis.X), (double)pos.getX() + shape.getMax(Direction.Axis.X), (double)pos.getZ() + shape.getMin(Direction.Axis.Z), (double)pos.getZ() + shape.getMax(Direction.Axis.Z), height);
     }
 
-    @Environment(value=EnvType.CLIENT)
     private void addHoneyParticle(World world, double minX, double maxX, double minZ, double maxZ, double height) {
         world.addParticle(ParticleTypes.DRIPPING_HONEY, MathHelper.lerp(world.random.nextDouble(), minX, maxX), height, MathHelper.lerp(world.random.nextDouble(), minZ, maxZ), 0.0, 0.0, 0.0);
     }

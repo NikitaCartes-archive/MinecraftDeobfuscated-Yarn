@@ -7,6 +7,7 @@ import java.util.EnumSet;
 import net.minecraft.entity.CrossbowUser;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.Durations;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.HostileEntity;
@@ -15,11 +16,11 @@ import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.math.IntRange;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 public class CrossbowAttackGoal<T extends HostileEntity & CrossbowUser>
 extends Goal {
-    public static final IntRange field_25696 = new IntRange(20, 40);
+    public static final UniformIntProvider field_25696 = Durations.betweenSeconds(1, 2);
     private final T actor;
     private Stage stage = Stage.UNCHARGED;
     private final double speed;
@@ -86,7 +87,7 @@ extends Goal {
             --this.field_25697;
             if (this.field_25697 <= 0) {
                 ((MobEntity)this.actor).getNavigation().startMovingTo(livingEntity, this.isUncharged() ? this.speed : this.speed * 0.5);
-                this.field_25697 = field_25696.choose(((LivingEntity)this.actor).getRandom());
+                this.field_25697 = field_25696.get(((LivingEntity)this.actor).getRandom());
             }
         } else {
             this.field_25697 = 0;

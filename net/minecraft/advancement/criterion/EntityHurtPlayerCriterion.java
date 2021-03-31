@@ -47,6 +47,14 @@ extends AbstractCriterion<Conditions> {
             this.damage = damage;
         }
 
+        public static Conditions create() {
+            return new Conditions(EntityPredicate.Extended.EMPTY, DamagePredicate.ANY);
+        }
+
+        public static Conditions create(DamagePredicate predicate) {
+            return new Conditions(EntityPredicate.Extended.EMPTY, predicate);
+        }
+
         public static Conditions create(DamagePredicate.Builder damageBuilder) {
             return new Conditions(EntityPredicate.Extended.EMPTY, damageBuilder.build());
         }

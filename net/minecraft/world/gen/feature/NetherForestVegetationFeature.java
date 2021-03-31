@@ -5,7 +5,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -39,7 +39,7 @@ extends Feature<BlockPileFeatureConfig> {
             BlockPos blockPos = pos.add(random.nextInt(i) - random.nextInt(i), random.nextInt(j) - random.nextInt(j), random.nextInt(i) - random.nextInt(i));
             BlockState blockState2 = config.stateProvider.getBlockState(random, blockPos);
             if (!world.isAir(blockPos) || blockPos.getY() <= world.getBottomY() || !blockState2.canPlaceAt(world, blockPos)) continue;
-            world.setBlockState(blockPos, blockState2, SetBlockStateFlags.NOTIFY_LISTENERS);
+            world.setBlockState(blockPos, blockState2, Block.NOTIFY_LISTENERS);
             ++l;
         }
         return l > 0;

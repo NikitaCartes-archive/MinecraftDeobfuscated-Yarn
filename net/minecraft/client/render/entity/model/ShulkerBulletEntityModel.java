@@ -17,18 +17,19 @@ import net.minecraft.entity.Entity;
 @Environment(value=EnvType.CLIENT)
 public class ShulkerBulletEntityModel<T extends Entity>
 extends SinglePartEntityModel<T> {
+    private static final String MAIN = "main";
     private final ModelPart root;
     private final ModelPart bullet;
 
     public ShulkerBulletEntityModel(ModelPart root) {
         this.root = root;
-        this.bullet = root.getChild("main");
+        this.bullet = root.getChild(MAIN);
     }
 
     public static TexturedModelData getTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
-        modelPartData.addChild("main", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0f, -4.0f, -1.0f, 8.0f, 8.0f, 2.0f).uv(0, 10).cuboid(-1.0f, -4.0f, -4.0f, 2.0f, 8.0f, 8.0f).uv(20, 0).cuboid(-4.0f, -1.0f, -4.0f, 8.0f, 2.0f, 8.0f), ModelTransform.NONE);
+        modelPartData.addChild(MAIN, ModelPartBuilder.create().uv(0, 0).cuboid(-4.0f, -4.0f, -1.0f, 8.0f, 8.0f, 2.0f).uv(0, 10).cuboid(-1.0f, -4.0f, -4.0f, 2.0f, 8.0f, 8.0f).uv(20, 0).cuboid(-4.0f, -1.0f, -4.0f, 8.0f, 2.0f, 8.0f), ModelTransform.NONE);
         return TexturedModelData.of(modelData, 64, 32);
     }
 

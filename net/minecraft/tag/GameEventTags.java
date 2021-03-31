@@ -6,6 +6,7 @@ package net.minecraft.tag;
 import net.minecraft.tag.RequiredTagList;
 import net.minecraft.tag.RequiredTagListRegistry;
 import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagGroup;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.event.GameEvent;
 
@@ -16,6 +17,10 @@ public class GameEventTags {
 
     private static Tag.Identified<GameEvent> register(String id) {
         return REQUIRED_TAGS.add(id);
+    }
+
+    public static TagGroup<GameEvent> getTagGroup() {
+        return REQUIRED_TAGS.getGroup();
     }
 }
 

@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class TargetPredicate {
     public static final TargetPredicate DEFAULT = new TargetPredicate();
+    private static final double field_30263 = 2.0;
     private double baseMaxDistance = -1.0;
     private boolean includeInvulnerable;
     private boolean includeTeammates;

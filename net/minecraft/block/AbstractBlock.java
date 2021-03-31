@@ -12,8 +12,6 @@ import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockRenderType;
@@ -61,6 +59,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -138,7 +137,6 @@ public abstract class AbstractBlock {
     }
 
     @Deprecated
-    @Environment(value=EnvType.CLIENT)
     public boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
         return false;
     }
@@ -261,7 +259,6 @@ public abstract class AbstractBlock {
     }
 
     @Deprecated
-    @Environment(value=EnvType.CLIENT)
     public long getRenderingSeed(BlockState state, BlockPos pos) {
         return MathHelper.hashCode(pos);
     }
@@ -301,7 +298,6 @@ public abstract class AbstractBlock {
     }
 
     @Deprecated
-    @Environment(value=EnvType.CLIENT)
     public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
         return state.isFullCube(world, pos) ? 0.2f : 1.0f;
     }
@@ -506,12 +502,10 @@ public abstract class AbstractBlock {
             return this.getBlock().getRenderType(this.asBlockState());
         }
 
-        @Environment(value=EnvType.CLIENT)
         public boolean hasEmissiveLighting(BlockView world, BlockPos pos) {
             return this.emissiveLightingPredicate.test(this.asBlockState(), world, pos);
         }
 
-        @Environment(value=EnvType.CLIENT)
         public float getAmbientOcclusionLightLevel(BlockView world, BlockPos pos) {
             return this.getBlock().getAmbientOcclusionLightLevel(this.asBlockState(), world, pos);
         }
@@ -567,7 +561,6 @@ public abstract class AbstractBlock {
             return this.opaque;
         }
 
-        @Environment(value=EnvType.CLIENT)
         public boolean isSideInvisible(BlockState state, Direction direction) {
             return this.getBlock().isSideInvisible(this.asBlockState(), state, direction);
         }
@@ -641,7 +634,7 @@ public abstract class AbstractBlock {
             this.getBlock();
             BlockPos.Mutable mutable = new BlockPos.Mutable();
             for (Direction direction : DIRECTIONS) {
-                mutable.set(pos, direction);
+                mutable.set((Vec3i)pos, direction);
                 BlockState blockState = world.getBlockState(mutable);
                 BlockState blockState2 = blockState.getStateForNeighborUpdate(direction.getOpposite(), this.asBlockState(), world, mutable, pos);
                 Block.replace(blockState, blockState2, world, mutable, flags, maxUpdateDepth);
@@ -696,7 +689,6 @@ public abstract class AbstractBlock {
             return this.suffocationPredicate.test(this.asBlockState(), world, pos);
         }
 
-        @Environment(value=EnvType.CLIENT)
         public boolean shouldBlockVision(BlockView world, BlockPos pos) {
             return this.blockVisionPredicate.test(this.asBlockState(), world, pos);
         }
@@ -762,7 +754,6 @@ public abstract class AbstractBlock {
             return this.getBlock().hasRandomTicks(this.asBlockState());
         }
 
-        @Environment(value=EnvType.CLIENT)
         public long getRenderingSeed(BlockPos pos) {
             return this.getBlock().getRenderingSeed(this.asBlockState(), pos);
         }

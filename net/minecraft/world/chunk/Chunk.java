@@ -85,6 +85,8 @@ StructureHolder {
 
     public int sampleHeightmap(Heightmap.Type var1, int var2, int var3);
 
+    public BlockPos method_35319(Heightmap.Type var1);
+
     public ChunkPos getPos();
 
     public Map<StructureFeature<?>, StructureStart<?>> getStructureStarts();
@@ -126,7 +128,7 @@ StructureHolder {
         Chunk.getList(this.getPostProcessingLists(), index).add(packedPos);
     }
 
-    default public void addPendingBlockEntityNbt(NbtCompound tag) {
+    default public void addPendingBlockEntityNbt(NbtCompound nbt) {
         LogManager.getLogger().warn("Trying to set a BlockEntity, but this operation is not supported.");
     }
 

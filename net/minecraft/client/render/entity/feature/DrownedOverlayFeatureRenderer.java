@@ -21,9 +21,9 @@ extends FeatureRenderer<T, DrownedEntityModel<T>> {
     private static final Identifier SKIN = new Identifier("textures/entity/zombie/drowned_outer_layer.png");
     private final DrownedEntityModel<T> model;
 
-    public DrownedOverlayFeatureRenderer(FeatureRendererContext<T, DrownedEntityModel<T>> featureRendererContext, EntityModelLoader entityModelLoader) {
-        super(featureRendererContext);
-        this.model = new DrownedEntityModel(entityModelLoader.getModelPart(EntityModelLayers.DROWNED_OUTER));
+    public DrownedOverlayFeatureRenderer(FeatureRendererContext<T, DrownedEntityModel<T>> context, EntityModelLoader loader) {
+        super(context);
+        this.model = new DrownedEntityModel(loader.getModelPart(EntityModelLayers.DROWNED_OUTER));
     }
 
     @Override

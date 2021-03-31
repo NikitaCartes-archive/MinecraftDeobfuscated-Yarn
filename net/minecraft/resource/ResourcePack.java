@@ -8,17 +8,23 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Set;
 import java.util.function.Predicate;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * A resource pack, providing resources to resource managers.
+ * 
+ * <p>They are single-use in each reload cycle of a reloadable resource manager.
+ * {@link ResourcePackProfile} is a persistent version of the resource packs.
+ */
 public interface ResourcePack
 extends AutoCloseable {
+    public static final String METADATA_PATH_SUFFIX = ".mcmeta";
+    public static final String PACK_METADATA_NAME = "pack.mcmeta";
+
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     public InputStream openRoot(String var1) throws IOException;
 
     public InputStream open(ResourceType var1, Identifier var2) throws IOException;

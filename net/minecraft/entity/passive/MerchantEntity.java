@@ -5,15 +5,13 @@ package net.minecraft.entity.passive;
 
 import com.google.common.collect.Sets;
 import java.util.HashSet;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.Npc;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.pathing.PathNodeType;
@@ -24,6 +22,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.CommandItemSlot;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -45,9 +44,12 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class MerchantEntity
 extends PassiveEntity
-implements Npc,
+implements InventoryOwner,
+Npc,
 Merchant {
     private static final TrackedData<Integer> HEAD_ROLLING_TIME_LEFT = DataTracker.registerData(MerchantEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    public static final int field_30599 = 300;
+    private static final int field_30600 = 8;
     @Nullable
     private PlayerEntity customer;
     @Nullable
@@ -61,11 +63,11 @@ Merchant {
     }
 
     @Override
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         if (entityData == null) {
             entityData = new PassiveEntity.PassiveData(false);
         }
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     public int getHeadRollingTimeLeft() {
@@ -120,7 +122,6 @@ Merchant {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void setOffersFromServer(@Nullable TradeOfferList offers) {
     }
 
@@ -167,22 +168,22 @@ Merchant {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
         TradeOfferList tradeOfferList = this.getOffers();
         if (!tradeOfferList.isEmpty()) {
-            tag.put("Offers", tradeOfferList.toNbt());
+            nbt.put("Offers", tradeOfferList.toNbt());
         }
-        tag.put("Inventory", this.inventory.getTags());
+        nbt.put("Inventory", this.inventory.toNbtList());
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        if (tag.contains("Offers", NbtTypeIds.COMPOUND)) {
-            this.offers = new TradeOfferList(tag.getCompound("Offers"));
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        if (nbt.contains("Offers", 10)) {
+            this.offers = new TradeOfferList(nbt.getCompound("Offers"));
         }
-        this.inventory.readTags(tag.getList("Inventory", NbtTypeIds.COMPOUND));
+        this.inventory.readNbtList(nbt.getList("Inventory", 10));
     }
 
     @Override
@@ -202,7 +203,6 @@ Merchant {
         this.resetCustomer();
     }
 
-    @Environment(value=EnvType.CLIENT)
     protected void produceParticles(ParticleEffect parameters) {
         for (int i = 0; i < 5; ++i) {
             double d = this.random.nextGaussian() * 0.02;
@@ -217,6 +217,7 @@ Merchant {
         return false;
     }
 
+    @Override
     public SimpleInventory getInventory() {
         return this.inventory;
     }
@@ -257,11 +258,15 @@ Merchant {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public Vec3d method_30951(float f) {
         float g = MathHelper.lerp(f, this.prevBodyYaw, this.bodyYaw) * ((float)Math.PI / 180);
         Vec3d vec3d = new Vec3d(0.0, this.getBoundingBox().getYLength() - 1.0, 0.2);
         return this.getLerpedPos(f).add(vec3d.rotateY(-g));
+    }
+
+    @Override
+    public /* synthetic */ Inventory getInventory() {
+        return this.getInventory();
     }
 }
 

@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.network.Packet;
@@ -50,22 +48,18 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onPlayerActionResponse(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public BlockState getBlockState() {
         return this.state;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public BlockPos getBlockPos() {
         return this.pos;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isApproved() {
         return this.approved;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public PlayerActionC2SPacket.Action getAction() {
         return this.action;
     }

@@ -3,6 +3,7 @@
  */
 package net.minecraft.text;
 
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -20,11 +21,10 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.text.KeybindText;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -107,11 +107,9 @@ StringVisitable {
      */
     public MutableText shallowCopy();
 
-    @Environment(value=EnvType.CLIENT)
     public OrderedText asOrderedText();
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     default public <T> Optional<T> visit(StringVisitable.StyledVisitor<T> styledVisitor, Style style) {
         Style style2 = this.getStyle().withParent(style);
         Optional<T> optional = this.visitSelf(styledVisitor, style2);
@@ -149,7 +147,6 @@ StringVisitable {
      * @param visitor the visitor
      * @param style the current style
      */
-    @Environment(value=EnvType.CLIENT)
     default public <T> Optional<T> visitSelf(StringVisitable.StyledVisitor<T> visitor, Style style) {
         return visitor.accept(style, this.asString());
     }
@@ -166,10 +163,20 @@ StringVisitable {
         return visitor.accept(this.asString());
     }
 
+    default public List<Text> method_36136(Style style2) {
+        ArrayList<Text> list = Lists.newArrayList();
+        this.visit((style, string) -> {
+            if (!string.isEmpty()) {
+                list.add(new LiteralText(string).fillStyle(style));
+            }
+            return Optional.empty();
+        }, style2);
+        return list;
+    }
+
     /**
      * Creates a literal text with the given string as content.
      */
-    @Environment(value=EnvType.CLIENT)
     public static Text of(@Nullable String string) {
         return string != null ? new LiteralText(string) : LiteralText.EMPTY;
     }

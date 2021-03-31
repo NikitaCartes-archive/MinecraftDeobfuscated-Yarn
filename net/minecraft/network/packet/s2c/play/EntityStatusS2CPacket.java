@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -39,12 +37,10 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     public Entity getEntity(World world) {
         return world.getEntityById(this.id);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public byte getStatus() {
         return this.status;
     }

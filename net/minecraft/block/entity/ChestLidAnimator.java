@@ -3,8 +3,6 @@
  */
 package net.minecraft.block.entity;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -25,7 +23,6 @@ public class ChestLidAnimator {
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getProgress(float delta) {
         return MathHelper.lerp(delta, this.lastProgress, this.progress);
     }

@@ -4,8 +4,6 @@
 package net.minecraft.entity.projectile;
 
 import java.util.UUID;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -47,27 +45,27 @@ extends Entity {
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound tag) {
+    protected void writeCustomDataToNbt(NbtCompound nbt) {
         if (this.ownerUuid != null) {
-            tag.putUuid("Owner", this.ownerUuid);
+            nbt.putUuid("Owner", this.ownerUuid);
         }
         if (this.leftOwner) {
-            tag.putBoolean("LeftOwner", true);
+            nbt.putBoolean("LeftOwner", true);
         }
-        tag.putBoolean("HasBeenShot", this.shot);
+        nbt.putBoolean("HasBeenShot", this.shot);
     }
 
-    protected boolean method_34714(Entity entity) {
+    protected boolean isOwner(Entity entity) {
         return entity.getUuid().equals(this.ownerUuid);
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound tag) {
-        if (tag.containsUuid("Owner")) {
-            this.ownerUuid = tag.getUuid("Owner");
+    protected void readCustomDataFromNbt(NbtCompound nbt) {
+        if (nbt.containsUuid("Owner")) {
+            this.ownerUuid = nbt.getUuid("Owner");
         }
-        this.leftOwner = tag.getBoolean("LeftOwner");
-        this.shot = tag.getBoolean("HasBeenShot");
+        this.leftOwner = nbt.getBoolean("LeftOwner");
+        this.shot = nbt.getBoolean("HasBeenShot");
     }
 
     @Override
@@ -134,7 +132,6 @@ extends Entity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void setVelocityClient(double x, double y, double z) {
         this.setVelocity(x, y, z);
         if (this.prevPitch == 0.0f && this.prevYaw == 0.0f) {
@@ -179,7 +176,6 @@ extends Entity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void onSpawnPacket(EntitySpawnS2CPacket packet) {
         super.onSpawnPacket(packet);
         Entity entity = this.world.getEntityById(packet.getEntityData());

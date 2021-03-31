@@ -77,6 +77,8 @@ implements SynchronousResourceReloader,
 AutoCloseable {
     private static final Identifier NAUSEA_OVERLAY = new Identifier("textures/misc/nausea.png");
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final boolean field_32688 = false;
+    public static final float field_32686 = 0.05f;
     private final MinecraftClient client;
     private final ResourceManager resourceManager;
     private final Random random = new Random();
@@ -99,6 +101,7 @@ AutoCloseable {
     private float zoom = 1.0f;
     private float zoomX;
     private float zoomY;
+    public static final int field_32687 = 40;
     @Nullable
     private ItemStack floatingItem;
     private int floatingItemTimeLeft;
@@ -240,6 +243,22 @@ AutoCloseable {
         }
     }
 
+    public void method_35768(boolean bl) {
+        this.renderHand = bl;
+    }
+
+    public void method_35769(boolean bl) {
+        this.blockOutlineEnabled = bl;
+    }
+
+    public void method_35770(boolean bl) {
+        this.renderingPanorama = bl;
+    }
+
+    public boolean method_35765() {
+        return this.renderingPanorama;
+    }
+
     public void disableShader() {
         if (this.shader != null) {
             this.shader.close();
@@ -263,6 +282,21 @@ AutoCloseable {
             this.loadShader(new Identifier("shaders/post/spider.json"));
         } else if (entity instanceof EndermanEntity) {
             this.loadShader(new Identifier("shaders/post/invert.json"));
+        }
+    }
+
+    public void method_35771() {
+        if (!(this.client.getCameraEntity() instanceof PlayerEntity)) {
+            return;
+        }
+        if (this.shader != null) {
+            this.shader.close();
+        }
+        this.forcedShaderIndex = (this.forcedShaderIndex + 1) % (SHADERS_LOCATIONS.length + 1);
+        if (this.forcedShaderIndex == SHADER_COUNT) {
+            this.shader = null;
+        } else {
+            this.loadShader(SHADERS_LOCATIONS[this.forcedShaderIndex]);
         }
     }
 
@@ -386,6 +420,14 @@ AutoCloseable {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         this.shaders.values().forEach(Shader::close);
         this.shaders.clear();
+    }
+
+    @Nullable
+    public Shader method_35767(@Nullable String string) {
+        if (string == null) {
+            return null;
+        }
+        return this.shaders.get(string);
     }
 
     public void tick() {
@@ -544,6 +586,16 @@ AutoCloseable {
         matrices.translate(MathHelper.sin(h * (float)Math.PI) * i * 0.5f, -Math.abs(MathHelper.cos(h * (float)Math.PI) * i), 0.0);
         matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.sin(h * (float)Math.PI) * i * 3.0f));
         matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(Math.abs(MathHelper.cos(h * (float)Math.PI - 0.2f) * i) * 5.0f));
+    }
+
+    public void method_35766(float f, float g, float h) {
+        this.zoom = f;
+        this.zoomX = g;
+        this.zoomY = h;
+        this.method_35769(false);
+        this.method_35768(false);
+        this.renderWorld(1.0f, 0L, new MatrixStack());
+        this.zoom = 1.0f;
     }
 
     private void renderHand(MatrixStack matrices, Camera camera, float tickDelta) {
@@ -856,6 +908,10 @@ AutoCloseable {
         RenderSystem.enableDepthTest();
     }
 
+    public MinecraftClient method_35772() {
+        return this.client;
+    }
+
     public float getSkyDarkness(float tickDelta) {
         return MathHelper.lerp(tickDelta, this.lastSkyDarkness, this.skyDarkness);
     }
@@ -929,6 +985,11 @@ AutoCloseable {
     @Nullable
     public static Shader getPositionTexColorNormalShader() {
         return positionTexColorNormalShader;
+    }
+
+    @Nullable
+    public static Shader method_35764() {
+        return positionTexLightmapColorShader;
     }
 
     @Nullable

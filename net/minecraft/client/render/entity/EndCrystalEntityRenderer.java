@@ -20,6 +20,7 @@ import net.minecraft.client.render.entity.EnderDragonEntityRenderer;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.util.Identifier;
@@ -34,6 +35,8 @@ extends EntityRenderer<EndCrystalEntity> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/end_crystal/end_crystal.png");
     private static final RenderLayer END_CRYSTAL = RenderLayer.getEntityCutoutNoCull(TEXTURE);
     private static final float SINE_45_DEGREES = (float)Math.sin(0.7853981633974483);
+    private static final String field_32919 = "glass";
+    private static final String field_32920 = "base";
     private final ModelPart core;
     private final ModelPart frame;
     private final ModelPart bottom;
@@ -42,17 +45,17 @@ extends EntityRenderer<EndCrystalEntity> {
         super(context);
         this.shadowRadius = 0.5f;
         ModelPart modelPart = context.getPart(EntityModelLayers.END_CRYSTAL);
-        this.frame = modelPart.getChild("glass");
-        this.core = modelPart.getChild("cube");
-        this.bottom = modelPart.getChild("base");
+        this.frame = modelPart.getChild(field_32919);
+        this.core = modelPart.getChild(EntityModelPartNames.CUBE);
+        this.bottom = modelPart.getChild(field_32920);
     }
 
     public static TexturedModelData getTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
-        modelPartData.addChild("glass", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0f, -4.0f, -4.0f, 8.0f, 8.0f, 8.0f), ModelTransform.NONE);
-        modelPartData.addChild("cube", ModelPartBuilder.create().uv(32, 0).cuboid(-4.0f, -4.0f, -4.0f, 8.0f, 8.0f, 8.0f), ModelTransform.NONE);
-        modelPartData.addChild("base", ModelPartBuilder.create().uv(0, 16).cuboid(-6.0f, 0.0f, -6.0f, 12.0f, 4.0f, 12.0f), ModelTransform.NONE);
+        modelPartData.addChild(field_32919, ModelPartBuilder.create().uv(0, 0).cuboid(-4.0f, -4.0f, -4.0f, 8.0f, 8.0f, 8.0f), ModelTransform.NONE);
+        modelPartData.addChild(EntityModelPartNames.CUBE, ModelPartBuilder.create().uv(32, 0).cuboid(-4.0f, -4.0f, -4.0f, 8.0f, 8.0f, 8.0f), ModelTransform.NONE);
+        modelPartData.addChild(field_32920, ModelPartBuilder.create().uv(0, 16).cuboid(-6.0f, 0.0f, -6.0f, 12.0f, 4.0f, 12.0f), ModelTransform.NONE);
         return TexturedModelData.of(modelData, 64, 32);
     }
 

@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -16,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class EntityS2CPacket
 implements Packet<ClientPlayPacketListener> {
+    private static final double COORDINATE_SCALE = 4096.0;
     protected final int id;
     protected final short deltaX;
     protected final short deltaY;
@@ -30,12 +29,10 @@ implements Packet<ClientPlayPacketListener> {
         return MathHelper.lfloor(coord * 4096.0);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static double decodePacketCoordinate(long coord) {
         return (double)coord / 4096.0;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Vec3d calculateDeltaPosition(Vec3d orig) {
         double d = this.deltaX == 0 ? orig.x : EntityS2CPacket.decodePacketCoordinate(EntityS2CPacket.encodePacketCoordinate(orig.x) + (long)this.deltaX);
         double e = this.deltaY == 0 ? orig.y : EntityS2CPacket.decodePacketCoordinate(EntityS2CPacket.encodePacketCoordinate(orig.y) + (long)this.deltaY);
@@ -69,32 +66,38 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     public Entity getEntity(World world) {
         return world.getEntityById(this.id);
     }
 
-    @Environment(value=EnvType.CLIENT)
+    public short getDeltaX() {
+        return this.deltaX;
+    }
+
+    public short getDeltaY() {
+        return this.deltaY;
+    }
+
+    public short getDeltaZ() {
+        return this.deltaZ;
+    }
+
     public byte getYaw() {
         return this.yaw;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public byte getPitch() {
         return this.pitch;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean hasRotation() {
         return this.rotate;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isPositionChanged() {
         return this.positionChanged;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isOnGround() {
         return this.onGround;
     }

@@ -14,12 +14,17 @@ import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class BookModel
 extends Model {
+    private static final String LEFT_PAGES = "left_pages";
+    private static final String RIGHT_PAGES = "right_pages";
+    private static final String FLIP_PAGE1 = "flip_page1";
+    private static final String FLIP_PAGE2 = "flip_page2";
     private final ModelPart root;
     private final ModelPart leftCover;
     private final ModelPart rightCover;
@@ -31,25 +36,25 @@ extends Model {
     public BookModel(ModelPart root) {
         super(RenderLayer::getEntitySolid);
         this.root = root;
-        this.leftCover = root.getChild("left_lid");
-        this.rightCover = root.getChild("right_lid");
-        this.leftPages = root.getChild("left_pages");
-        this.rightPages = root.getChild("right_pages");
-        this.leftPage = root.getChild("flip_page1");
-        this.rightPage = root.getChild("flip_page2");
+        this.leftCover = root.getChild(EntityModelPartNames.LEFT_LID);
+        this.rightCover = root.getChild(EntityModelPartNames.RIGHT_LID);
+        this.leftPages = root.getChild(LEFT_PAGES);
+        this.rightPages = root.getChild(RIGHT_PAGES);
+        this.leftPage = root.getChild(FLIP_PAGE1);
+        this.rightPage = root.getChild(FLIP_PAGE2);
     }
 
     public static TexturedModelData getTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
-        modelPartData.addChild("left_lid", ModelPartBuilder.create().uv(0, 0).cuboid(-6.0f, -5.0f, -0.005f, 6.0f, 10.0f, 0.005f), ModelTransform.pivot(0.0f, 0.0f, -1.0f));
-        modelPartData.addChild("right_lid", ModelPartBuilder.create().uv(16, 0).cuboid(0.0f, -5.0f, -0.005f, 6.0f, 10.0f, 0.005f), ModelTransform.pivot(0.0f, 0.0f, 1.0f));
+        modelPartData.addChild(EntityModelPartNames.LEFT_LID, ModelPartBuilder.create().uv(0, 0).cuboid(-6.0f, -5.0f, -0.005f, 6.0f, 10.0f, 0.005f), ModelTransform.pivot(0.0f, 0.0f, -1.0f));
+        modelPartData.addChild(EntityModelPartNames.RIGHT_LID, ModelPartBuilder.create().uv(16, 0).cuboid(0.0f, -5.0f, -0.005f, 6.0f, 10.0f, 0.005f), ModelTransform.pivot(0.0f, 0.0f, 1.0f));
         modelPartData.addChild("seam", ModelPartBuilder.create().uv(12, 0).cuboid(-1.0f, -5.0f, 0.0f, 2.0f, 10.0f, 0.005f), ModelTransform.rotation(0.0f, 1.5707964f, 0.0f));
-        modelPartData.addChild("left_pages", ModelPartBuilder.create().uv(0, 10).cuboid(0.0f, -4.0f, -0.99f, 5.0f, 8.0f, 1.0f), ModelTransform.NONE);
-        modelPartData.addChild("right_pages", ModelPartBuilder.create().uv(12, 10).cuboid(0.0f, -4.0f, -0.01f, 5.0f, 8.0f, 1.0f), ModelTransform.NONE);
+        modelPartData.addChild(LEFT_PAGES, ModelPartBuilder.create().uv(0, 10).cuboid(0.0f, -4.0f, -0.99f, 5.0f, 8.0f, 1.0f), ModelTransform.NONE);
+        modelPartData.addChild(RIGHT_PAGES, ModelPartBuilder.create().uv(12, 10).cuboid(0.0f, -4.0f, -0.01f, 5.0f, 8.0f, 1.0f), ModelTransform.NONE);
         ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(24, 10).cuboid(0.0f, -4.0f, 0.0f, 5.0f, 8.0f, 0.005f);
-        modelPartData.addChild("flip_page1", modelPartBuilder, ModelTransform.NONE);
-        modelPartData.addChild("flip_page2", modelPartBuilder, ModelTransform.NONE);
+        modelPartData.addChild(FLIP_PAGE1, modelPartBuilder, ModelTransform.NONE);
+        modelPartData.addChild(FLIP_PAGE2, modelPartBuilder, ModelTransform.NONE);
         return TexturedModelData.of(modelData, 64, 32);
     }
 

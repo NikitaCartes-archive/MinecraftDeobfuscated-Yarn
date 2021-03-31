@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class RecipeBookResults {
+    public static final int field_32411 = 20;
     private final List<AnimatedResultButton> resultButtons = Lists.newArrayListWithCapacity(20);
     private AnimatedResultButton hoveredResultButton;
     private final RecipeAlternativesWidget alternatesWidget = new RecipeAlternativesWidget();

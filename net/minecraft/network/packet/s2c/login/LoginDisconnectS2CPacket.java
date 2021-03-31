@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.login;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientLoginPacketListener;
@@ -19,7 +17,7 @@ implements Packet<ClientLoginPacketListener> {
     }
 
     public LoginDisconnectS2CPacket(PacketByteBuf buf) {
-        this.reason = Text.Serializer.fromLenientJson(buf.readString(262144));
+        this.reason = Text.Serializer.fromLenientJson(buf.readString(PacketByteBuf.MAX_TEXT_LENGTH));
     }
 
     @Override
@@ -32,7 +30,6 @@ implements Packet<ClientLoginPacketListener> {
         clientLoginPacketListener.onDisconnect(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Text getReason() {
         return this.reason;
     }

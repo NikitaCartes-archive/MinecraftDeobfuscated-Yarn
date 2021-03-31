@@ -8,22 +8,22 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
-import java.util.Set;
-import net.minecraft.util.math.BlockBox;
+import java.util.function.BiConsumer;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ModifiableTestableWorld;
-import net.minecraft.world.gen.UniformIntDistribution;
+import net.minecraft.util.math.intprovider.IntProvider;
+import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 import net.minecraft.world.gen.foliage.FoliagePlacerType;
 
 public class RandomSpreadFoliagePlacer
 extends FoliagePlacer {
-    public static final Codec<RandomSpreadFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> RandomSpreadFoliagePlacer.fillFoliagePlacerFields(instance).and(instance.group(((MapCodec)UniformIntDistribution.createValidatedCodec(1, 256, 256).fieldOf("foliage_height")).forGetter(randomSpreadFoliagePlacer -> randomSpreadFoliagePlacer.foliageHeight), ((MapCodec)Codec.intRange(0, 256).fieldOf("leaf_placement_attempts")).forGetter(randomSpreadFoliagePlacer -> randomSpreadFoliagePlacer.leafPlacementAttempts))).apply((Applicative<RandomSpreadFoliagePlacer, ?>)instance, RandomSpreadFoliagePlacer::new));
-    private final UniformIntDistribution foliageHeight;
+    public static final Codec<RandomSpreadFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> RandomSpreadFoliagePlacer.fillFoliagePlacerFields(instance).and(instance.group(((MapCodec)IntProvider.createValidatingCodec(1, 512).fieldOf("foliage_height")).forGetter(randomSpreadFoliagePlacer -> randomSpreadFoliagePlacer.foliageHeight), ((MapCodec)Codec.intRange(0, 256).fieldOf("leaf_placement_attempts")).forGetter(randomSpreadFoliagePlacer -> randomSpreadFoliagePlacer.leafPlacementAttempts))).apply((Applicative<RandomSpreadFoliagePlacer, ?>)instance, RandomSpreadFoliagePlacer::new));
+    private final IntProvider foliageHeight;
     private final int leafPlacementAttempts;
 
-    public RandomSpreadFoliagePlacer(UniformIntDistribution radius, UniformIntDistribution offset, UniformIntDistribution foliageHeight, int leafPlacementAttempts) {
+    public RandomSpreadFoliagePlacer(IntProvider radius, IntProvider offset, IntProvider foliageHeight, int leafPlacementAttempts) {
         super(radius, offset);
         this.foliageHeight = foliageHeight;
         this.leafPlacementAttempts = leafPlacementAttempts;
@@ -35,18 +35,18 @@ extends FoliagePlacer {
     }
 
     @Override
-    protected void generate(ModifiableTestableWorld world, Random random, TreeFeatureConfig config, int trunkHeight, FoliagePlacer.TreeNode treeNode, int foliageHeight, int radius, Set<BlockPos> leaves, int offset, BlockBox box) {
+    protected void generate(TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, TreeFeatureConfig treeFeatureConfig, int i, FoliagePlacer.TreeNode treeNode, int radius, int j, int offset) {
         BlockPos blockPos = treeNode.getCenter();
         BlockPos.Mutable mutable = blockPos.mutableCopy();
-        for (int i = 0; i < this.leafPlacementAttempts; ++i) {
-            mutable.set(blockPos, random.nextInt(radius) - random.nextInt(radius), random.nextInt(foliageHeight) - random.nextInt(foliageHeight), random.nextInt(radius) - random.nextInt(radius));
-            this.placeFoliageBlock(world, random, config, leaves, box, mutable);
+        for (int k = 0; k < this.leafPlacementAttempts; ++k) {
+            mutable.set(blockPos, random.nextInt(j) - random.nextInt(j), random.nextInt(radius) - random.nextInt(radius), random.nextInt(j) - random.nextInt(j));
+            RandomSpreadFoliagePlacer.placeFoliageBlock(testableWorld, biConsumer, random, treeFeatureConfig, mutable);
         }
     }
 
     @Override
     public int getRandomHeight(Random random, int trunkHeight, TreeFeatureConfig config) {
-        return this.foliageHeight.getValue(random);
+        return this.foliageHeight.get(random);
     }
 
     @Override

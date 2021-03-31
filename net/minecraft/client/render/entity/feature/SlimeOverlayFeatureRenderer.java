@@ -24,9 +24,9 @@ public class SlimeOverlayFeatureRenderer<T extends LivingEntity>
 extends FeatureRenderer<T, SlimeEntityModel<T>> {
     private final EntityModel<T> model;
 
-    public SlimeOverlayFeatureRenderer(FeatureRendererContext<T, SlimeEntityModel<T>> featureRendererContext, EntityModelLoader entityModelLoader) {
-        super(featureRendererContext);
-        this.model = new SlimeEntityModel(entityModelLoader.getModelPart(EntityModelLayers.SLIME_OUTER));
+    public SlimeOverlayFeatureRenderer(FeatureRendererContext<T, SlimeEntityModel<T>> context, EntityModelLoader loader) {
+        super(context);
+        this.model = new SlimeEntityModel(loader.getModelPart(EntityModelLayers.SLIME_OUTER));
     }
 
     @Override

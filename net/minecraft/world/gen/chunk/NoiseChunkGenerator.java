@@ -10,7 +10,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.HashSet;
-import java.util.List;
 import java.util.OptionalInt;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
@@ -18,12 +17,11 @@ import java.util.concurrent.Executor;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.util.Util;
+import net.minecraft.util.collection.Pool;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -131,7 +129,6 @@ extends ChunkGenerator {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public ChunkGenerator withSeed(long seed) {
         return new NoiseChunkGenerator(this.populationSource.withSeed(seed), seed, this.settings);
     }
@@ -224,7 +221,7 @@ extends ChunkGenerator {
         }
         if (d > 0.0) {
             blockState = blockInterpolator.sample(x, y, z, this.settings.get());
-        } else if (this.hasAquifers && y < this.getMinimumY() + 9) {
+        } else if (this.hasAquifers && AquiferSampler.method_35324(y - this.getMinimumY())) {
             blockState = Blocks.LAVA.getDefaultState();
         } else {
             int i = aquiferSampler == null ? this.getSeaLevel() : aquiferSampler.getWaterLevel();
@@ -398,7 +395,7 @@ extends ChunkGenerator {
     }
 
     @Override
-    public List<SpawnSettings.SpawnEntry> getEntitySpawnList(Biome biome, StructureAccessor accessor, SpawnGroup group, BlockPos pos) {
+    public Pool<SpawnSettings.SpawnEntry> getEntitySpawnList(Biome biome, StructureAccessor accessor, SpawnGroup group, BlockPos pos) {
         if (accessor.getStructureAt(pos, true, StructureFeature.SWAMP_HUT).hasChildren()) {
             if (group == SpawnGroup.MONSTER) {
                 return StructureFeature.SWAMP_HUT.getMonsterSpawns();

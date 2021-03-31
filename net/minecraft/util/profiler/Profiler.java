@@ -4,11 +4,11 @@
 package net.minecraft.util.profiler;
 
 import java.util.function.Supplier;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.profiler.DummyProfiler;
 
 public interface Profiler {
+    public static final String field_29925 = "root";
+
     public void startTick();
 
     public void endTick();
@@ -21,7 +21,6 @@ public interface Profiler {
 
     public void swap(String var1);
 
-    @Environment(value=EnvType.CLIENT)
     public void swap(Supplier<String> var1);
 
     /**
@@ -93,7 +92,6 @@ public interface Profiler {
             }
 
             @Override
-            @Environment(value=EnvType.CLIENT)
             public void swap(Supplier<String> locationGetter) {
                 profiler.swap(locationGetter);
                 profiler2.swap(locationGetter);

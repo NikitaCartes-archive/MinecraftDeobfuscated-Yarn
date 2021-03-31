@@ -18,6 +18,8 @@ import net.minecraft.item.ItemStack;
 
 public class ThornsEnchantment
 extends Enchantment {
+    private static final float ATTACK_CHANCE_PER_LEVEL = 0.15f;
+
     public ThornsEnchantment(Enchantment.Rarity weight, EquipmentSlot ... slotTypes) {
         super(weight, EnchantmentTarget.ARMOR_CHEST, slotTypes);
     }

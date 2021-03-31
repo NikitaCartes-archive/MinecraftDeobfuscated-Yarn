@@ -8,7 +8,6 @@ import java.io.File;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.nbt.NbtCompound;
@@ -36,7 +35,7 @@ public class ServerList {
             if (nbtCompound == null) {
                 return;
             }
-            NbtList nbtList = nbtCompound.getList("servers", NbtTypeIds.COMPOUND);
+            NbtList nbtList = nbtCompound.getList("servers", 10);
             for (int i = 0; i < nbtList.size(); ++i) {
                 this.servers.add(ServerInfo.fromNbt(nbtList.getCompound(i)));
             }

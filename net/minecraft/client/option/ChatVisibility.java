@@ -5,8 +5,6 @@ package net.minecraft.client.option;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.math.MathHelper;
 
 public enum ChatVisibility {
@@ -27,12 +25,10 @@ public enum ChatVisibility {
         return this.id;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public String getTranslationKey() {
         return this.translationKey;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static ChatVisibility byId(int id) {
         return VALUES[MathHelper.floorMod(id, VALUES.length)];
     }

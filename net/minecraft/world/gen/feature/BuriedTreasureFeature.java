@@ -7,7 +7,6 @@ import com.mojang.serialization.Codec;
 import net.minecraft.structure.BuriedTreasureGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
@@ -21,6 +20,8 @@ import net.minecraft.world.gen.feature.StructureFeature;
 
 public class BuriedTreasureFeature
 extends StructureFeature<ProbabilityConfig> {
+    private static final int field_31500 = 10387320;
+
     public BuriedTreasureFeature(Codec<ProbabilityConfig> codec) {
         super(codec);
     }
@@ -38,15 +39,14 @@ extends StructureFeature<ProbabilityConfig> {
 
     public static class Start
     extends StructureStart<ProbabilityConfig> {
-        public Start(StructureFeature<ProbabilityConfig> structureFeature, ChunkPos chunkPos, BlockBox blockBox, int i, long l) {
-            super(structureFeature, chunkPos, blockBox, i, l);
+        public Start(StructureFeature<ProbabilityConfig> structureFeature, ChunkPos chunkPos, int i, long l) {
+            super(structureFeature, chunkPos, i, l);
         }
 
         @Override
         public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, ChunkPos chunkPos, Biome biome, ProbabilityConfig probabilityConfig, HeightLimitView heightLimitView) {
             BlockPos blockPos = new BlockPos(chunkPos.getOffsetX(9), 90, chunkPos.getOffsetZ(9));
-            this.children.add(new BuriedTreasureGenerator.Piece(blockPos));
-            this.setBoundingBoxFromChildren();
+            this.method_35462(new BuriedTreasureGenerator.Piece(blockPos));
         }
 
         @Override

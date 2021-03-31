@@ -25,9 +25,9 @@ public class HorseArmorFeatureRenderer
 extends FeatureRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
     private final HorseEntityModel<HorseEntity> model;
 
-    public HorseArmorFeatureRenderer(FeatureRendererContext<HorseEntity, HorseEntityModel<HorseEntity>> featureRendererContext, EntityModelLoader entityModelLoader) {
-        super(featureRendererContext);
-        this.model = new HorseEntityModel(entityModelLoader.getModelPart(EntityModelLayers.HORSE_ARMOR));
+    public HorseArmorFeatureRenderer(FeatureRendererContext<HorseEntity, HorseEntityModel<HorseEntity>> context, EntityModelLoader loader) {
+        super(context);
+        this.model = new HorseEntityModel(loader.getModelPart(EntityModelLayers.HORSE_ARMOR));
     }
 
     @Override

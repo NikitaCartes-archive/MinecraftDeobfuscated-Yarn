@@ -33,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class ServerTickScheduler<T>
 implements TickScheduler<T> {
+    public static final int field_30975 = 65536;
     protected final Predicate<T> invalidObjPredicate;
     private final Function<T, Identifier> idToName;
     private final Set<ScheduledTick<T>> scheduledTickActions = Sets.newHashSet();
@@ -122,7 +123,7 @@ implements TickScheduler<T> {
         while (iterator.hasNext()) {
             ScheduledTick<T> scheduledTick = iterator.next();
             BlockPos blockPos = scheduledTick.pos;
-            if (blockPos.getX() < bounds.minX || blockPos.getX() >= bounds.maxX || blockPos.getZ() < bounds.minZ || blockPos.getZ() >= bounds.maxZ) continue;
+            if (blockPos.getX() < bounds.getMinX() || blockPos.getX() >= bounds.getMaxX() || blockPos.getZ() < bounds.getMinZ() || blockPos.getZ() >= bounds.getMaxZ()) continue;
             if (move) {
                 iterator.remove();
             }
@@ -183,6 +184,7 @@ implements TickScheduler<T> {
         }
     }
 
+    @Override
     public int getTicks() {
         return this.scheduledTickActions.size();
     }

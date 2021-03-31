@@ -19,6 +19,7 @@ public class ParticleTypes {
     public static final DefaultParticleType AMBIENT_ENTITY_EFFECT = ParticleTypes.register("ambient_entity_effect", false);
     public static final DefaultParticleType ANGRY_VILLAGER = ParticleTypes.register("angry_villager", false);
     public static final DefaultParticleType BARRIER = ParticleTypes.register("barrier", false);
+    public static final DefaultParticleType LIGHT = ParticleTypes.register("light", false);
     public static final ParticleType<BlockStateParticleEffect> BLOCK = ParticleTypes.register("block", BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::method_29128);
     public static final DefaultParticleType BUBBLE = ParticleTypes.register("bubble", false);
     public static final DefaultParticleType CLOUD = ParticleTypes.register("cloud", false);
@@ -52,7 +53,7 @@ public class ParticleTypes {
     public static final DefaultParticleType HEART = ParticleTypes.register("heart", false);
     public static final DefaultParticleType INSTANT_EFFECT = ParticleTypes.register("instant_effect", false);
     public static final ParticleType<ItemStackParticleEffect> ITEM = ParticleTypes.register("item", ItemStackParticleEffect.PARAMETERS_FACTORY, ItemStackParticleEffect::method_29136);
-    public static final ParticleType<VibrationParticleEffect> VIBRATION = ParticleTypes.register("vibration", VibrationParticleEffect.field_28278, particleType -> VibrationParticleEffect.field_28277);
+    public static final ParticleType<VibrationParticleEffect> VIBRATION = ParticleTypes.register("vibration", VibrationParticleEffect.PARAMETERS_FACTORY, particleType -> VibrationParticleEffect.CODEC);
     public static final DefaultParticleType ITEM_SLIME = ParticleTypes.register("item_slime", false);
     public static final DefaultParticleType ITEM_SNOWBALL = ParticleTypes.register("item_snowball", false);
     public static final DefaultParticleType LARGE_SMOKE = ParticleTypes.register("large_smoke", false);

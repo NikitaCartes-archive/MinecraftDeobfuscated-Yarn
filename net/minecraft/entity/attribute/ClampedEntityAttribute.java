@@ -29,6 +29,14 @@ extends EntityAttribute {
         }
     }
 
+    public double method_35061() {
+        return this.minValue;
+    }
+
+    public double method_35062() {
+        return this.maxValue;
+    }
+
     @Override
     public double clamp(double value) {
         value = MathHelper.clamp(value, this.minValue, this.maxValue);

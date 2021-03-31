@@ -28,6 +28,10 @@ import org.jetbrains.annotations.Nullable;
 public class QueryResponseHandler
 extends RconBase {
     private static final Logger field_23963 = LogManager.getLogger();
+    private static final String field_29795 = "SMP";
+    private static final String field_29796 = "MINECRAFT";
+    private static final long field_29797 = 30000L;
+    private static final long field_29798 = 5000L;
     private long lastQueryTime;
     private final int queryPort;
     private final int port;
@@ -117,7 +121,7 @@ extends RconBase {
                 dataStreamHelper.write(0);
                 dataStreamHelper.write(this.getMessageBytes(packet.getSocketAddress()));
                 dataStreamHelper.writeBytes(this.motd);
-                dataStreamHelper.writeBytes("SMP");
+                dataStreamHelper.writeBytes(field_29795);
                 dataStreamHelper.writeBytes(this.levelName);
                 dataStreamHelper.writeBytes(Integer.toString(this.server.getCurrentPlayerCount()));
                 dataStreamHelper.writeBytes(Integer.toString(this.maxPlayerCount));
@@ -152,9 +156,9 @@ extends RconBase {
         this.data.writeBytes("hostname");
         this.data.writeBytes(this.motd);
         this.data.writeBytes("gametype");
-        this.data.writeBytes("SMP");
+        this.data.writeBytes(field_29795);
         this.data.writeBytes("game_id");
-        this.data.writeBytes("MINECRAFT");
+        this.data.writeBytes(field_29796);
         this.data.writeBytes("version");
         this.data.writeBytes(this.server.getVersion());
         this.data.writeBytes("plugins");
@@ -301,6 +305,10 @@ extends RconBase {
 
         public byte[] getMessageBytes() {
             return this.messageBytes;
+        }
+
+        public String method_34888() {
+            return this.message;
         }
     }
 }

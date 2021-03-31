@@ -9,5 +9,7 @@ public interface SurfaceConfig {
     public BlockState getTopMaterial();
 
     public BlockState getUnderMaterial();
+
+    public BlockState getUnderwaterMaterial();
 }
 

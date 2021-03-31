@@ -5,7 +5,6 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.Block;
@@ -121,7 +120,7 @@ implements BlockEntityProvider {
         }
         float f = (state = (BlockState)state.cycle(MODE)).get(MODE) == ComparatorMode.SUBTRACT ? 0.55f : 0.5f;
         world.playSound(player, pos, SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.BLOCKS, 0.3f, f);
-        world.setBlockState(pos, state, SetBlockStateFlags.NOTIFY_LISTENERS);
+        world.setBlockState(pos, state, Block.NOTIFY_LISTENERS);
         this.update(world, pos, state);
         return ActionResult.success(world.isClient);
     }
@@ -154,9 +153,9 @@ implements BlockEntityProvider {
             boolean bl = this.hasPower(world, pos, state);
             boolean bl2 = state.get(POWERED);
             if (bl2 && !bl) {
-                world.setBlockState(pos, (BlockState)state.with(POWERED, false), SetBlockStateFlags.NOTIFY_LISTENERS);
+                world.setBlockState(pos, (BlockState)state.with(POWERED, false), Block.NOTIFY_LISTENERS);
             } else if (!bl2 && bl) {
-                world.setBlockState(pos, (BlockState)state.with(POWERED, true), SetBlockStateFlags.NOTIFY_LISTENERS);
+                world.setBlockState(pos, (BlockState)state.with(POWERED, true), Block.NOTIFY_LISTENERS);
             }
             this.updateTarget(world, pos, state);
         }

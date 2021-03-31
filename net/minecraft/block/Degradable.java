@@ -12,6 +12,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
 public interface Degradable<T extends Enum<T>> {
+    public static final int field_31056 = 4;
+
     public Optional<BlockState> getDegradationResult(BlockState var1);
 
     public float getDegradationChanceMultiplier();

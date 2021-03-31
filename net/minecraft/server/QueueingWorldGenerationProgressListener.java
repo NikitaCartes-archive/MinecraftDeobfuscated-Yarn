@@ -4,15 +4,12 @@
 package net.minecraft.server;
 
 import java.util.concurrent.Executor;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.thread.TaskExecutor;
 import net.minecraft.world.chunk.ChunkStatus;
 import org.jetbrains.annotations.Nullable;
 
-@Environment(value=EnvType.CLIENT)
 public class QueueingWorldGenerationProgressListener
 implements WorldGenerationProgressListener {
     private final WorldGenerationProgressListener progressListener;

@@ -25,9 +25,11 @@ import net.minecraft.world.chunk.ChunkCache;
 import org.jetbrains.annotations.Nullable;
 
 public class PathNodeNavigator {
+    private static final float field_31807 = 1.5f;
     private final PathNode[] successors = new PathNode[32];
     private final int range;
     private final PathNodeMaker pathNodeMaker;
+    private static final boolean field_31808 = false;
     private final PathMinHeap minHeap = new PathMinHeap();
 
     public PathNodeNavigator(PathNodeMaker pathNodeMaker, int range) {

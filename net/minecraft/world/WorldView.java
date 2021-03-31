@@ -4,8 +4,6 @@
 package net.minecraft.world;
 
 import java.util.stream.Stream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -63,7 +61,6 @@ BiomeAccess.Storage {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     default public int getColor(BlockPos pos, ColorResolver colorResolver) {
         return colorResolver.getColor(this.getBiome(pos), pos.getX(), pos.getZ());
     }

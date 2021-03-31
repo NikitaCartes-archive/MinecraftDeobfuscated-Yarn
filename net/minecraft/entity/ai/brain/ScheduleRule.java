@@ -3,8 +3,10 @@
  */
 package net.minecraft.entity.ai.brain;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.ints.Int2ObjectAVLTreeMap;
+import java.util.Collection;
 import java.util.List;
 import net.minecraft.entity.ai.brain.ScheduleRuleEntry;
 
@@ -12,8 +14,18 @@ public class ScheduleRule {
     private final List<ScheduleRuleEntry> entries = Lists.newArrayList();
     private int prioritizedEntryIndex;
 
+    public ImmutableList<ScheduleRuleEntry> method_35214() {
+        return ImmutableList.copyOf(this.entries);
+    }
+
     public ScheduleRule add(int startTime, float priority) {
         this.entries.add(new ScheduleRuleEntry(startTime, priority));
+        this.sort();
+        return this;
+    }
+
+    public ScheduleRule method_35215(Collection<ScheduleRuleEntry> collection) {
+        this.entries.addAll(collection);
         this.sort();
         return this;
     }

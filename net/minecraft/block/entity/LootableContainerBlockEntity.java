@@ -4,7 +4,6 @@
 package net.minecraft.block.entity;
 
 import java.util.Random;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -31,6 +30,8 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class LootableContainerBlockEntity
 extends LockableContainerBlockEntity {
+    public static final String LOOT_TABLE_KEY = "LootTable";
+    public static final String LOOT_TABLE_SEED_KEY = "LootTableSeed";
     @Nullable
     protected Identifier lootTableId;
     protected long lootTableSeed;
@@ -46,22 +47,22 @@ extends LockableContainerBlockEntity {
         }
     }
 
-    protected boolean deserializeLootTable(NbtCompound tag) {
-        if (tag.contains("LootTable", NbtTypeIds.STRING)) {
-            this.lootTableId = new Identifier(tag.getString("LootTable"));
-            this.lootTableSeed = tag.getLong("LootTableSeed");
+    protected boolean deserializeLootTable(NbtCompound nbt) {
+        if (nbt.contains(LOOT_TABLE_KEY, 8)) {
+            this.lootTableId = new Identifier(nbt.getString(LOOT_TABLE_KEY));
+            this.lootTableSeed = nbt.getLong(LOOT_TABLE_SEED_KEY);
             return true;
         }
         return false;
     }
 
-    protected boolean serializeLootTable(NbtCompound tag) {
+    protected boolean serializeLootTable(NbtCompound nbt) {
         if (this.lootTableId == null) {
             return false;
         }
-        tag.putString("LootTable", this.lootTableId.toString());
+        nbt.putString(LOOT_TABLE_KEY, this.lootTableId.toString());
         if (this.lootTableSeed != 0L) {
-            tag.putLong("LootTableSeed", this.lootTableSeed);
+            nbt.putLong(LOOT_TABLE_SEED_KEY, this.lootTableSeed);
         }
         return true;
     }

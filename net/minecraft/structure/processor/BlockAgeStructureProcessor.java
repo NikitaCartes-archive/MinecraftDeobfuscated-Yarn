@@ -24,6 +24,9 @@ import org.jetbrains.annotations.Nullable;
 public class BlockAgeStructureProcessor
 extends StructureProcessor {
     public static final Codec<BlockAgeStructureProcessor> CODEC = ((MapCodec)Codec.FLOAT.fieldOf("mossiness")).xmap(BlockAgeStructureProcessor::new, blockAgeStructureProcessor -> Float.valueOf(blockAgeStructureProcessor.mossiness)).codec();
+    private static final float field_31681 = 0.5f;
+    private static final float field_31682 = 0.5f;
+    private static final float field_31683 = 0.15f;
     private static final BlockState[] AGEABLE_SLABS = new BlockState[]{Blocks.STONE_SLAB.getDefaultState(), Blocks.STONE_BRICK_SLAB.getDefaultState()};
     private final float mossiness;
 
@@ -50,7 +53,7 @@ extends StructureProcessor {
             blockState2 = this.processObsidian(random);
         }
         if (blockState2 != null) {
-            return new Structure.StructureBlockInfo(blockPos2, blockState2, structureBlockInfo2.tag);
+            return new Structure.StructureBlockInfo(blockPos2, blockState2, structureBlockInfo2.nbt);
         }
         return structureBlockInfo2;
     }

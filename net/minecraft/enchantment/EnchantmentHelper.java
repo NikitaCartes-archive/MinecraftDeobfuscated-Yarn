@@ -31,7 +31,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.collection.WeightedPicker;
+import net.minecraft.util.collection.Weighting;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.mutable.MutableFloat;
@@ -74,10 +74,10 @@ public class EnchantmentHelper {
     /**
      * Loads enchantments from an NBT list.
      */
-    public static Map<Enchantment, Integer> fromNbt(NbtList tag) {
+    public static Map<Enchantment, Integer> fromNbt(NbtList list) {
         LinkedHashMap<Enchantment, Integer> map = Maps.newLinkedHashMap();
-        for (int i = 0; i < tag.size(); ++i) {
-            NbtCompound nbtCompound = tag.getCompound(i);
+        for (int i = 0; i < list.size(); ++i) {
+            NbtCompound nbtCompound = list.getCompound(i);
             Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(nbtCompound.getString("id"))).ifPresent(enchantment -> map.put((Enchantment)enchantment, nbtCompound.getInt("lvl")));
         }
         return map;
@@ -363,13 +363,13 @@ public class EnchantmentHelper {
         float f = (random.nextFloat() + random.nextFloat() - 1.0f) * 0.15f;
         List<EnchantmentLevelEntry> list2 = EnchantmentHelper.getPossibleEntries(level = MathHelper.clamp(Math.round((float)level + (float)level * f), 1, Integer.MAX_VALUE), stack, treasureAllowed);
         if (!list2.isEmpty()) {
-            WeightedPicker.getRandom(random, list2).ifPresent(list::add);
+            Weighting.getRandom(random, list2).ifPresent(list::add);
             while (random.nextInt(50) <= level) {
                 if (!list.isEmpty()) {
                     EnchantmentHelper.removeConflicts(list2, Util.getLast(list));
                 }
                 if (list2.isEmpty()) break;
-                WeightedPicker.getRandom(random, list2).ifPresent(list::add);
+                Weighting.getRandom(random, list2).ifPresent(list::add);
                 level /= 2;
             }
         }

@@ -54,6 +54,10 @@ public class Session {
         }
     }
 
+    public AccountType method_35718() {
+        return this.accountType;
+    }
+
     @Environment(value=EnvType.CLIENT)
     public static enum AccountType {
         LEGACY("legacy"),

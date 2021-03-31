@@ -23,6 +23,8 @@ import net.minecraft.world.poi.PointOfInterestType;
 
 public class VillagerBreedTask
 extends Task<VillagerEntity> {
+    private static final int field_30190 = 5;
+    private static final float field_30191 = 0.5f;
     private long breedEndTime;
 
     public VillagerBreedTask() {

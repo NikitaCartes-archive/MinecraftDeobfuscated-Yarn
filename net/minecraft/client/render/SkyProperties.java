@@ -121,8 +121,10 @@ public abstract class SkyProperties {
     @Environment(value=EnvType.CLIENT)
     public static class Overworld
     extends SkyProperties {
+        public static final int field_32681 = 128;
+
         public Overworld() {
-            super(192.0f, true, SkyType.NORMAL, false, false);
+            super(128.0f, true, SkyType.NORMAL, false, false);
         }
 
         @Override

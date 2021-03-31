@@ -50,6 +50,7 @@ extends Vec3i {
     private static final long BITS_X;
     private static final long BITS_Y;
     private static final long BITS_Z;
+    private static final int field_33083 = 0;
     private static final int BIT_SHIFT_Z;
     private static final int BIT_SHIFT_X;
 
@@ -112,11 +113,12 @@ extends Vec3i {
         return y & 0xFFFFFFFFFFFFFFF0L;
     }
 
-    public BlockPos add(double x, double y, double z) {
-        if (x == 0.0 && y == 0.0 && z == 0.0) {
+    @Override
+    public BlockPos add(double d, double e, double f) {
+        if (d == 0.0 && e == 0.0 && f == 0.0) {
             return this;
         }
-        return new BlockPos((double)this.getX() + x, (double)this.getY() + y, (double)this.getZ() + z);
+        return new BlockPos((double)this.getX() + d, (double)this.getY() + e, (double)this.getZ() + f);
     }
 
     @Override
@@ -127,12 +129,25 @@ extends Vec3i {
         return new BlockPos(this.getX() + i, this.getY() + j, this.getZ() + k);
     }
 
-    public BlockPos add(Vec3i pos) {
-        return this.add(pos.getX(), pos.getY(), pos.getZ());
+    @Override
+    public BlockPos add(Vec3i vec3i) {
+        return this.add(vec3i.getX(), vec3i.getY(), vec3i.getZ());
     }
 
-    public BlockPos subtract(Vec3i pos) {
-        return this.add(-pos.getX(), -pos.getY(), -pos.getZ());
+    @Override
+    public BlockPos subtract(Vec3i vec3i) {
+        return this.add(-vec3i.getX(), -vec3i.getY(), -vec3i.getZ());
+    }
+
+    @Override
+    public BlockPos multiply(int i) {
+        if (i == 1) {
+            return this;
+        }
+        if (i == 0) {
+            return ORIGIN;
+        }
+        return new BlockPos(this.getX() * i, this.getY() * i, this.getZ() * i);
     }
 
     @Override
@@ -155,38 +170,47 @@ extends Vec3i {
         return this.offset(Direction.DOWN, i);
     }
 
+    @Override
     public BlockPos north() {
         return this.offset(Direction.NORTH);
     }
 
+    @Override
     public BlockPos north(int distance) {
         return this.offset(Direction.NORTH, distance);
     }
 
+    @Override
     public BlockPos south() {
         return this.offset(Direction.SOUTH);
     }
 
+    @Override
     public BlockPos south(int distance) {
         return this.offset(Direction.SOUTH, distance);
     }
 
+    @Override
     public BlockPos west() {
         return this.offset(Direction.WEST);
     }
 
+    @Override
     public BlockPos west(int distance) {
         return this.offset(Direction.WEST, distance);
     }
 
+    @Override
     public BlockPos east() {
         return this.offset(Direction.EAST);
     }
 
+    @Override
     public BlockPos east(int distance) {
         return this.offset(Direction.EAST, distance);
     }
 
+    @Override
     public BlockPos offset(Direction direction) {
         return new BlockPos(this.getX() + direction.getOffsetX(), this.getY() + direction.getOffsetY(), this.getZ() + direction.getOffsetZ());
     }
@@ -199,14 +223,15 @@ extends Vec3i {
         return new BlockPos(this.getX() + direction.getOffsetX() * i, this.getY() + direction.getOffsetY() * i, this.getZ() + direction.getOffsetZ() * i);
     }
 
-    public BlockPos offset(Direction.Axis axis, int distance) {
-        if (distance == 0) {
+    @Override
+    public BlockPos offset(Direction.Axis axis, int i) {
+        if (i == 0) {
             return this;
         }
-        int i = axis == Direction.Axis.X ? distance : 0;
-        int j = axis == Direction.Axis.Y ? distance : 0;
-        int k = axis == Direction.Axis.Z ? distance : 0;
-        return new BlockPos(this.getX() + i, this.getY() + j, this.getZ() + k);
+        int j = axis == Direction.Axis.X ? i : 0;
+        int k = axis == Direction.Axis.Y ? i : 0;
+        int l = axis == Direction.Axis.Z ? i : 0;
+        return new BlockPos(this.getX() + j, this.getY() + k, this.getZ() + l);
     }
 
     public BlockPos rotate(BlockRotation rotation) {
@@ -399,7 +424,7 @@ extends Vec3i {
     }
 
     public static Stream<BlockPos> stream(BlockBox box) {
-        return BlockPos.stream(Math.min(box.minX, box.maxX), Math.min(box.minY, box.maxY), Math.min(box.minZ, box.maxZ), Math.max(box.minX, box.maxX), Math.max(box.minY, box.maxY), Math.max(box.minZ, box.maxZ));
+        return BlockPos.stream(Math.min(box.getMinX(), box.getMaxX()), Math.min(box.getMinY(), box.getMaxY()), Math.min(box.getMinZ(), box.getMaxZ()), Math.max(box.getMinX(), box.getMaxX()), Math.max(box.getMinY(), box.getMaxY()), Math.max(box.getMinZ(), box.getMaxZ()));
     }
 
     public static Stream<BlockPos> stream(Box box) {
@@ -508,8 +533,58 @@ extends Vec3i {
     }
 
     @Override
+    public /* synthetic */ Vec3i offset(Direction.Axis axis, int distance) {
+        return this.offset(axis, distance);
+    }
+
+    @Override
     public /* synthetic */ Vec3i offset(Direction direction, int distance) {
         return this.offset(direction, distance);
+    }
+
+    @Override
+    public /* synthetic */ Vec3i offset(Direction direction) {
+        return this.offset(direction);
+    }
+
+    @Override
+    public /* synthetic */ Vec3i east(int distance) {
+        return this.east(distance);
+    }
+
+    @Override
+    public /* synthetic */ Vec3i east() {
+        return this.east();
+    }
+
+    @Override
+    public /* synthetic */ Vec3i west(int distance) {
+        return this.west(distance);
+    }
+
+    @Override
+    public /* synthetic */ Vec3i west() {
+        return this.west();
+    }
+
+    @Override
+    public /* synthetic */ Vec3i south(int distance) {
+        return this.south(distance);
+    }
+
+    @Override
+    public /* synthetic */ Vec3i south() {
+        return this.south();
+    }
+
+    @Override
+    public /* synthetic */ Vec3i north(int distance) {
+        return this.north(distance);
+    }
+
+    @Override
+    public /* synthetic */ Vec3i north() {
+        return this.north();
     }
 
     @Override
@@ -533,7 +608,27 @@ extends Vec3i {
     }
 
     @Override
+    public /* synthetic */ Vec3i multiply(int scale) {
+        return this.multiply(scale);
+    }
+
+    @Override
+    public /* synthetic */ Vec3i subtract(Vec3i vec) {
+        return this.subtract(vec);
+    }
+
+    @Override
+    public /* synthetic */ Vec3i add(Vec3i vec) {
+        return this.add(vec);
+    }
+
+    @Override
     public /* synthetic */ Vec3i add(int x, int y, int z) {
+        return this.add(x, y, z);
+    }
+
+    @Override
+    public /* synthetic */ Vec3i add(double x, double y, double z) {
         return this.add(x, y, z);
     }
 
@@ -562,8 +657,8 @@ extends Vec3i {
         }
 
         @Override
-        public BlockPos add(double x, double y, double z) {
-            return super.add(x, y, z).toImmutable();
+        public BlockPos add(double d, double e, double f) {
+            return super.add(d, e, f).toImmutable();
         }
 
         @Override
@@ -572,13 +667,18 @@ extends Vec3i {
         }
 
         @Override
+        public BlockPos multiply(int i) {
+            return super.multiply(i).toImmutable();
+        }
+
+        @Override
         public BlockPos offset(Direction direction, int i) {
             return super.offset(direction, i).toImmutable();
         }
 
         @Override
-        public BlockPos offset(Direction.Axis axis, int distance) {
-            return super.offset(axis, distance).toImmutable();
+        public BlockPos offset(Direction.Axis axis, int i) {
+            return super.offset(axis, i).toImmutable();
         }
 
         @Override
@@ -615,6 +715,10 @@ extends Vec3i {
 
         public Mutable set(Vec3i pos, int x, int y, int z) {
             return this.set(pos.getX() + x, pos.getY() + y, pos.getZ() + z);
+        }
+
+        public Mutable set(Vec3i vec1, Vec3i vec2) {
+            return this.set(vec1.getX() + vec2.getX(), vec1.getY() + vec2.getY(), vec1.getZ() + vec2.getZ());
         }
 
         public Mutable move(Direction direction) {
@@ -677,8 +781,58 @@ extends Vec3i {
         }
 
         @Override
+        public /* synthetic */ Vec3i offset(Direction.Axis axis, int distance) {
+            return this.offset(axis, distance);
+        }
+
+        @Override
         public /* synthetic */ Vec3i offset(Direction direction, int distance) {
             return this.offset(direction, distance);
+        }
+
+        @Override
+        public /* synthetic */ Vec3i offset(Direction direction) {
+            return super.offset(direction);
+        }
+
+        @Override
+        public /* synthetic */ Vec3i east(int distance) {
+            return super.east(distance);
+        }
+
+        @Override
+        public /* synthetic */ Vec3i east() {
+            return super.east();
+        }
+
+        @Override
+        public /* synthetic */ Vec3i west(int distance) {
+            return super.west(distance);
+        }
+
+        @Override
+        public /* synthetic */ Vec3i west() {
+            return super.west();
+        }
+
+        @Override
+        public /* synthetic */ Vec3i south(int distance) {
+            return super.south(distance);
+        }
+
+        @Override
+        public /* synthetic */ Vec3i south() {
+            return super.south();
+        }
+
+        @Override
+        public /* synthetic */ Vec3i north(int distance) {
+            return super.north(distance);
+        }
+
+        @Override
+        public /* synthetic */ Vec3i north() {
+            return super.north();
         }
 
         @Override
@@ -702,7 +856,27 @@ extends Vec3i {
         }
 
         @Override
+        public /* synthetic */ Vec3i multiply(int scale) {
+            return this.multiply(scale);
+        }
+
+        @Override
+        public /* synthetic */ Vec3i subtract(Vec3i vec) {
+            return super.subtract(vec);
+        }
+
+        @Override
+        public /* synthetic */ Vec3i add(Vec3i vec) {
+            return super.add(vec);
+        }
+
+        @Override
         public /* synthetic */ Vec3i add(int x, int y, int z) {
+            return this.add(x, y, z);
+        }
+
+        @Override
+        public /* synthetic */ Vec3i add(double x, double y, double z) {
             return this.add(x, y, z);
         }
 

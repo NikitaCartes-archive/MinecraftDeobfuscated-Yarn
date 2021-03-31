@@ -9,6 +9,9 @@ import org.jetbrains.annotations.Unmodifiable;
 
 @Unmodifiable
 public class LocalDifficulty {
+    private static final float field_29953 = -72000.0f;
+    private static final float field_29954 = 1440000.0f;
+    private static final float field_29955 = 3600000.0f;
     private final Difficulty globalDifficulty;
     private final float localDifficulty;
 
@@ -23,6 +26,10 @@ public class LocalDifficulty {
 
     public float getLocalDifficulty() {
         return this.localDifficulty;
+    }
+
+    public boolean isAtLeastHard() {
+        return this.localDifficulty >= (float)Difficulty.HARD.ordinal();
     }
 
     public boolean isHarderThan(float difficulty) {

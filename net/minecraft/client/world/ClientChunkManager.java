@@ -3,6 +3,10 @@
  */
 package net.minecraft.client.world;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.BitSet;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.function.BooleanSupplier;
@@ -88,7 +92,7 @@ extends ChunkManager {
     }
 
     @Nullable
-    public WorldChunk loadChunkFromPacket(int x, int z, BiomeArray biomes, PacketByteBuf buf, NbtCompound tag, BitSet bitSet) {
+    public WorldChunk loadChunkFromPacket(int x, int z, BiomeArray biomes, PacketByteBuf buf, NbtCompound nbt, BitSet bitSet) {
         if (!this.chunks.isInRadius(x, z)) {
             LOGGER.warn("Ignoring chunk since it's not in the view range: {}, {}", (Object)x, (Object)z);
             return null;
@@ -98,10 +102,10 @@ extends ChunkManager {
         ChunkPos chunkPos = new ChunkPos(x, z);
         if (!ClientChunkManager.positionEquals(worldChunk, x, z)) {
             worldChunk = new WorldChunk(this.world, chunkPos, biomes);
-            worldChunk.loadFromPacket(biomes, buf, tag, bitSet);
+            worldChunk.loadFromPacket(biomes, buf, nbt, bitSet);
             this.chunks.set(i, worldChunk);
         } else {
-            worldChunk.loadFromPacket(biomes, buf, tag, bitSet);
+            worldChunk.loadFromPacket(biomes, buf, nbt, bitSet);
         }
         ChunkSection[] chunkSections = worldChunk.getSectionArray();
         LightingProvider lightingProvider = this.getLightingProvider();
@@ -115,7 +119,8 @@ extends ChunkManager {
         return worldChunk;
     }
 
-    public void tick(BooleanSupplier shouldKeepTicking) {
+    @Override
+    public void tick(BooleanSupplier booleanSupplier) {
     }
 
     public void setChunkMapCenter(int x, int z) {
@@ -150,6 +155,7 @@ extends ChunkManager {
         return this.chunks.chunks.length() + ", " + this.getLoadedChunkCount();
     }
 
+    @Override
     public int getLoadedChunkCount() {
         return this.chunks.loadedChunkCount;
     }
@@ -220,6 +226,22 @@ extends ChunkManager {
         @Nullable
         protected WorldChunk getChunk(int index) {
             return this.chunks.get(index);
+        }
+
+        private void method_35751(String string) {
+            try (FileOutputStream fileOutputStream = new FileOutputStream(new File(string));){
+                int i = ((ClientChunkManager)ClientChunkManager.this).chunks.radius;
+                for (int j = this.centerChunkZ - i; j <= this.centerChunkZ + i; ++j) {
+                    for (int k = this.centerChunkX - i; k <= this.centerChunkX + i; ++k) {
+                        WorldChunk worldChunk = ((ClientChunkManager)ClientChunkManager.this).chunks.chunks.get(ClientChunkManager.this.chunks.getIndex(k, j));
+                        if (worldChunk == null) continue;
+                        ChunkPos chunkPos = worldChunk.getPos();
+                        fileOutputStream.write((chunkPos.x + "\t" + chunkPos.z + "\t" + worldChunk.isEmpty() + "\n").getBytes(StandardCharsets.UTF_8));
+                    }
+                }
+            } catch (IOException iOException) {
+                LOGGER.error(iOException);
+            }
         }
     }
 }

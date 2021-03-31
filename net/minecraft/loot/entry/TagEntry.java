@@ -70,6 +70,10 @@ extends LeafEntry {
     }
 
     public static LeafEntry.Builder<?> builder(Tag<Item> name) {
+        return TagEntry.builder((int weight, int quality, LootCondition[] conditions, LootFunction[] functions) -> new TagEntry(name, false, weight, quality, conditions, functions));
+    }
+
+    public static LeafEntry.Builder<?> expandBuilder(Tag<Item> name) {
         return TagEntry.builder((int weight, int quality, LootCondition[] conditions, LootFunction[] functions) -> new TagEntry(name, true, weight, quality, conditions, functions));
     }
 

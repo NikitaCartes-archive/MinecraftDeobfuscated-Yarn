@@ -106,6 +106,21 @@ public class EntityFlagsPredicate {
             return this;
         }
 
+        public Builder sneaking(@Nullable Boolean sneaking) {
+            this.isSneaking = sneaking;
+            return this;
+        }
+
+        public Builder sprinting(@Nullable Boolean sprinting) {
+            this.isSprinting = sprinting;
+            return this;
+        }
+
+        public Builder swimming(@Nullable Boolean swimming) {
+            this.isSwimming = swimming;
+            return this;
+        }
+
         public Builder isBaby(@Nullable Boolean isBaby) {
             this.isBaby = isBaby;
             return this;

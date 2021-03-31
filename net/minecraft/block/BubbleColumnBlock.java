@@ -5,9 +5,6 @@ package net.minecraft.block;
 
 import java.util.Optional;
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -41,6 +38,7 @@ public class BubbleColumnBlock
 extends Block
 implements FluidDrainable {
     public static final BooleanProperty DRAG = Properties.DRAG;
+    private static final int field_31038 = 5;
 
     public BubbleColumnBlock(AbstractBlock.Settings settings) {
         super(settings);
@@ -83,10 +81,10 @@ implements FluidDrainable {
             return;
         }
         BlockState blockState = BubbleColumnBlock.getBubbleState(bubbleSource);
-        world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
+        world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
         BlockPos.Mutable mutable = pos.mutableCopy().move(Direction.UP);
         while (BubbleColumnBlock.isStillWater(world.getBlockState(mutable))) {
-            if (!world.setBlockState(mutable, blockState, SetBlockStateFlags.NOTIFY_LISTENERS)) {
+            if (!world.setBlockState(mutable, blockState, Block.NOTIFY_LISTENERS)) {
                 return;
             }
             mutable.move(Direction.UP);
@@ -111,7 +109,6 @@ implements FluidDrainable {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         double d = pos.getX();
         double e = pos.getY();
@@ -162,7 +159,7 @@ implements FluidDrainable {
 
     @Override
     public ItemStack tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state) {
-        world.setBlockState(pos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
+        world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
         return new ItemStack(Items.WATER_BUCKET);
     }
 

@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.tag.RequiredTagListRegistry;
 import net.minecraft.tag.Tag;
@@ -96,14 +94,12 @@ public class TagManager {
         return map;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static TagManager fromPacket(DynamicRegistryManager registryManager, Map<RegistryKey<? extends Registry<?>>, TagGroup.Serialized> groups) {
         Builder builder = new Builder();
         groups.forEach((type, group) -> TagManager.tryAdd(registryManager, builder, type, group));
         return builder.build();
     }
 
-    @Environment(value=EnvType.CLIENT)
     private static <T> void tryAdd(DynamicRegistryManager registryManager, Builder builder, RegistryKey<? extends Registry<? extends T>> type, TagGroup.Serialized group) {
         Optional optional = registryManager.getOptional(type);
         if (optional.isPresent()) {

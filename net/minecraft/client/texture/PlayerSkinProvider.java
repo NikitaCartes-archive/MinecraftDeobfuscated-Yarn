@@ -35,6 +35,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class PlayerSkinProvider {
+    public static final String field_32970 = "textures";
     private final TextureManager textureManager;
     private final File skinCacheDir;
     private final MinecraftSessionService sessionService;
@@ -49,7 +50,7 @@ public class PlayerSkinProvider {
             @Override
             public Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> load(String string) {
                 GameProfile gameProfile = new GameProfile(null, "dummy_mcdummyface");
-                gameProfile.getProperties().put("textures", new Property("textures", string, ""));
+                gameProfile.getProperties().put(PlayerSkinProvider.field_32970, new Property(PlayerSkinProvider.field_32970, string, ""));
                 try {
                     return sessionService.getTextures(gameProfile, false);
                 } catch (Throwable throwable) {
@@ -119,7 +120,7 @@ public class PlayerSkinProvider {
     }
 
     public Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> getTextures(GameProfile gameProfile) {
-        Property property = Iterables.getFirst(gameProfile.getProperties().get("textures"), null);
+        Property property = Iterables.getFirst(gameProfile.getProperties().get(field_32970), null);
         if (property == null) {
             return ImmutableMap.of();
         }

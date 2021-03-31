@@ -4,9 +4,6 @@
 package net.minecraft.entity.decoration;
 
 import java.util.Optional;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -68,20 +65,20 @@ extends Entity {
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound tag) {
+    protected void writeCustomDataToNbt(NbtCompound nbt) {
         if (this.getBeamTarget() != null) {
-            tag.put("BeamTarget", NbtHelper.fromBlockPos(this.getBeamTarget()));
+            nbt.put("BeamTarget", NbtHelper.fromBlockPos(this.getBeamTarget()));
         }
-        tag.putBoolean("ShowBottom", this.shouldShowBottom());
+        nbt.putBoolean("ShowBottom", this.shouldShowBottom());
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound tag) {
-        if (tag.contains("BeamTarget", NbtTypeIds.COMPOUND)) {
-            this.setBeamTarget(NbtHelper.toBlockPos(tag.getCompound("BeamTarget")));
+    protected void readCustomDataFromNbt(NbtCompound nbt) {
+        if (nbt.contains("BeamTarget", 10)) {
+            this.setBeamTarget(NbtHelper.toBlockPos(nbt.getCompound("BeamTarget")));
         }
-        if (tag.contains("ShowBottom", NbtTypeIds.BYTE)) {
-            this.setShowBottom(tag.getBoolean("ShowBottom"));
+        if (nbt.contains("ShowBottom", 1)) {
+            this.setShowBottom(nbt.getBoolean("ShowBottom"));
         }
     }
 
@@ -139,13 +136,11 @@ extends Entity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public boolean shouldRender(double distance) {
         return super.shouldRender(distance) || this.getBeamTarget() != null;
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public ItemStack getPickBlockStack() {
         return new ItemStack(Items.END_CRYSTAL);
     }

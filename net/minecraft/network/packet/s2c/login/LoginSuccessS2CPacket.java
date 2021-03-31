@@ -5,8 +5,6 @@ package net.minecraft.network.packet.s2c.login;
 
 import com.mojang.authlib.GameProfile;
 import java.util.UUID;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientLoginPacketListener;
@@ -43,7 +41,6 @@ implements Packet<ClientLoginPacketListener> {
         clientLoginPacketListener.onLoginSuccess(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public GameProfile getProfile() {
         return this.profile;
     }

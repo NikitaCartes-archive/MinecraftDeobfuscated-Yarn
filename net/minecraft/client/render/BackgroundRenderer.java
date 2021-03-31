@@ -25,6 +25,8 @@ import net.minecraft.world.biome.source.BiomeAccess;
 
 @Environment(value=EnvType.CLIENT)
 public class BackgroundRenderer {
+    private static final int field_32685 = 192;
+    public static final float field_32684 = 5000.0f;
     private static float red;
     private static float green;
     private static float blue;
@@ -142,23 +144,11 @@ public class BackgroundRenderer {
             green = green * (1.0f - f) + green * 0.6f * f;
             blue = blue * (1.0f - f) + blue * 0.6f * f;
         }
-        if (cameraSubmersionType == CameraSubmersionType.WATER) {
-            float u = 0.0f;
-            if (entity instanceof ClientPlayerEntity) {
-                ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)entity;
-                u = clientPlayerEntity.getUnderwaterVisibility();
-            }
-            float v = Math.min(1.0f / red, Math.min(1.0f / green, 1.0f / blue));
-            red = red * (1.0f - u) + red * v * u;
-            green = green * (1.0f - u) + green * v * u;
-            blue = blue * (1.0f - u) + blue * v * u;
-        } else if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.NIGHT_VISION)) {
-            float u = GameRenderer.getNightVisionStrength((LivingEntity)entity, tickDelta);
-            float v = Math.min(1.0f / red, Math.min(1.0f / green, 1.0f / blue));
-            red = red * (1.0f - u) + red * v * u;
-            green = green * (1.0f - u) + green * v * u;
-            blue = blue * (1.0f - u) + blue * v * u;
-        }
+        float u = cameraSubmersionType == CameraSubmersionType.WATER ? (entity instanceof ClientPlayerEntity ? ((ClientPlayerEntity)entity).getUnderwaterVisibility() : 1.0f) : (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.NIGHT_VISION) ? GameRenderer.getNightVisionStrength((LivingEntity)entity, tickDelta) : 0.0f);
+        float v = Math.min(1.0f / red, Math.min(1.0f / green, 1.0f / blue));
+        red = red * (1.0f - u) + red * v * u;
+        green = green * (1.0f - u) + green * v * u;
+        blue = blue * (1.0f - u) + blue * v * u;
         RenderSystem.clearColor(red, green, blue, 0.0f);
     }
 
@@ -170,9 +160,9 @@ public class BackgroundRenderer {
         CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
         Entity entity = camera.getFocusedEntity();
         if (cameraSubmersionType == CameraSubmersionType.WATER) {
-            float f = viewDistance;
-            ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)entity;
+            float f = 192.0f;
             if (entity instanceof ClientPlayerEntity) {
+                ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)entity;
                 f *= Math.max(0.25f, clientPlayerEntity.getUnderwaterVisibility());
                 Biome biome = clientPlayerEntity.world.getBiome(clientPlayerEntity.getBlockPos());
                 if (biome.getCategory() == Biome.Category.SWAMP) {

@@ -4,8 +4,6 @@
 package net.minecraft.network.packet.s2c.play;
 
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -41,12 +39,10 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onEntityPassengersSet(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int[] getPassengerIds() {
         return this.passengerIds;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getId() {
         return this.id;
     }

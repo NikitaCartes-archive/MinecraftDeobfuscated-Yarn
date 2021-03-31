@@ -6,9 +6,6 @@ package net.minecraft.item;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.client.item.BundleTooltipData;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.item.TooltipData;
@@ -36,13 +33,15 @@ import net.minecraft.world.World;
 
 public class BundleItem
 extends Item {
+    private static final String ITEMS_KEY = "Items";
+    public static final int MAX_STORAGE = 64;
+    private static final int field_30859 = 4;
     private static final int ITEM_BAR_COLOR = MathHelper.packRgb(0.4f, 0.4f, 1.0f);
 
     public BundleItem(Item.Settings settings) {
         super(settings);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static float getAmountFilled(ItemStack stack) {
         return (float)BundleItem.getBundleOccupancy(stack) / 64.0f;
     }
@@ -86,19 +85,16 @@ extends Item {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public boolean isItemBarVisible(ItemStack stack) {
         return BundleItem.getBundleOccupancy(stack) > 0;
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public int getItemBarStep(ItemStack stack) {
         return Math.min(1 + 12 * BundleItem.getBundleOccupancy(stack) / 64, 13);
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public int getItemBarColor(ItemStack stack) {
         return ITEM_BAR_COLOR;
     }
@@ -108,8 +104,8 @@ extends Item {
             return 0;
         }
         NbtCompound nbtCompound = bundle.getOrCreateTag();
-        if (!nbtCompound.contains("Items")) {
-            nbtCompound.put("Items", new NbtList());
+        if (!nbtCompound.contains(ITEMS_KEY)) {
+            nbtCompound.put(ITEMS_KEY, new NbtList());
         }
         int i = BundleItem.getBundleOccupancy(bundle);
         int j = BundleItem.getItemOccupancy(stack);
@@ -117,7 +113,7 @@ extends Item {
         if (k == 0) {
             return 0;
         }
-        NbtList nbtList = nbtCompound.getList("Items", NbtTypeIds.COMPOUND);
+        NbtList nbtList = nbtCompound.getList(ITEMS_KEY, 10);
         Optional<NbtCompound> optional = BundleItem.canMergeStack(stack, nbtList);
         if (optional.isPresent()) {
             NbtCompound nbtCompound2 = optional.get();
@@ -156,10 +152,10 @@ extends Item {
 
     private static Optional<ItemStack> removeFirstStack(ItemStack stack) {
         NbtCompound nbtCompound = stack.getOrCreateTag();
-        if (!nbtCompound.contains("Items")) {
+        if (!nbtCompound.contains(ITEMS_KEY)) {
             return Optional.empty();
         }
-        NbtList nbtList = nbtCompound.getList("Items", NbtTypeIds.COMPOUND);
+        NbtList nbtList = nbtCompound.getList(ITEMS_KEY, 10);
         if (nbtList.isEmpty()) {
             return Optional.empty();
         }
@@ -168,25 +164,25 @@ extends Item {
         ItemStack itemStack = ItemStack.fromNbt(nbtCompound2);
         nbtList.remove(0);
         if (nbtList.isEmpty()) {
-            stack.removeSubTag("Items");
+            stack.removeSubTag(ITEMS_KEY);
         }
         return Optional.of(itemStack);
     }
 
     private static boolean dropAllBundledItems(ItemStack stack, PlayerEntity player) {
         NbtCompound nbtCompound = stack.getOrCreateTag();
-        if (!nbtCompound.contains("Items")) {
+        if (!nbtCompound.contains(ITEMS_KEY)) {
             return false;
         }
         if (player instanceof ServerPlayerEntity) {
-            NbtList nbtList = nbtCompound.getList("Items", NbtTypeIds.COMPOUND);
+            NbtList nbtList = nbtCompound.getList(ITEMS_KEY, 10);
             for (int i = 0; i < nbtList.size(); ++i) {
                 NbtCompound nbtCompound2 = nbtList.getCompound(i);
                 ItemStack itemStack = ItemStack.fromNbt(nbtCompound2);
                 player.dropItem(itemStack, true);
             }
         }
-        stack.removeSubTag("Items");
+        stack.removeSubTag(ITEMS_KEY);
         return true;
     }
 
@@ -195,12 +191,11 @@ extends Item {
         if (nbtCompound == null) {
             return Stream.empty();
         }
-        NbtList nbtList = nbtCompound.getList("Items", NbtTypeIds.COMPOUND);
+        NbtList nbtList = nbtCompound.getList(ITEMS_KEY, 10);
         return nbtList.stream().map(NbtCompound.class::cast).map(ItemStack::fromNbt);
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public Optional<TooltipData> getTooltipData(ItemStack stack) {
         DefaultedList<ItemStack> defaultedList = DefaultedList.of();
         BundleItem.getBundledStacks(stack).forEach(defaultedList::add);
@@ -208,7 +203,6 @@ extends Item {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {
         tooltip.add(new TranslatableText("item.minecraft.bundle.fullness", BundleItem.getBundleOccupancy(stack), 64).formatted(Formatting.GRAY));
     }

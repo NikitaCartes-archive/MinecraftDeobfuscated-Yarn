@@ -30,11 +30,11 @@ extends Entity {
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound tag) {
+    protected void readCustomDataFromNbt(NbtCompound nbt) {
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound tag) {
+    protected void writeCustomDataToNbt(NbtCompound nbt) {
     }
 
     @Override

@@ -3,8 +3,6 @@
  */
 package net.minecraft.util;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
@@ -18,7 +16,6 @@ public enum Arm {
         this.optionName = optionName;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Arm getOpposite() {
         if (this == LEFT) {
             return RIGHT;
@@ -30,7 +27,6 @@ public enum Arm {
         return this.optionName.getString();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Text getOptionName() {
         return this.optionName;
     }

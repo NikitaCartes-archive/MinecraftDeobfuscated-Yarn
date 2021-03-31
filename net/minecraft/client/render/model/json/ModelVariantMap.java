@@ -3,7 +3,9 @@
  */
 package net.minecraft.client.render.model.json;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -15,8 +17,10 @@ import com.google.gson.JsonParseException;
 import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
@@ -57,6 +61,20 @@ public class ModelVariantMap {
         }
     }
 
+    @VisibleForTesting
+    public boolean method_35790(String string) {
+        return this.variantMap.get(string) != null;
+    }
+
+    @VisibleForTesting
+    public WeightedUnbakedModel method_35792(String string) {
+        WeightedUnbakedModel weightedUnbakedModel = this.variantMap.get(string);
+        if (weightedUnbakedModel == null) {
+            throw new class_6247();
+        }
+        return weightedUnbakedModel;
+    }
+
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -78,12 +96,28 @@ public class ModelVariantMap {
         return this.variantMap;
     }
 
+    @VisibleForTesting
+    public Set<WeightedUnbakedModel> method_35791() {
+        HashSet<WeightedUnbakedModel> set = Sets.newHashSet(this.variantMap.values());
+        if (this.hasMultipartModel()) {
+            set.addAll(this.multipartModel.getModels());
+        }
+        return set;
+    }
+
     public boolean hasMultipartModel() {
         return this.multipartModel != null;
     }
 
     public MultipartUnbakedModel getMultipartModel() {
         return this.multipartModel;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public class class_6247
+    extends RuntimeException {
+        protected class_6247() {
+        }
     }
 
     @Environment(value=EnvType.CLIENT)

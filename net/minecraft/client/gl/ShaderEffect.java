@@ -36,6 +36,7 @@ import org.apache.commons.io.IOUtils;
 @Environment(value=EnvType.CLIENT)
 public class ShaderEffect
 implements AutoCloseable {
+    private static final String field_32770 = "minecraft:main";
     private final Framebuffer mainTarget;
     private final ResourceManager resourceManager;
     private final String name;
@@ -339,7 +340,7 @@ implements AutoCloseable {
         if (name == null) {
             return null;
         }
-        if (name.equals("minecraft:main")) {
+        if (name.equals(field_32770)) {
             return this.mainTarget;
         }
         return this.targetsByName.get(name);

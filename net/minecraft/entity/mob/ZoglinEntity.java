@@ -9,8 +9,6 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Dynamic;
 import java.util.List;
 import java.util.Optional;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
@@ -53,7 +51,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.IntRange;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.World;
 
 public class ZoglinEntity
@@ -61,6 +59,16 @@ extends HostileEntity
 implements Monster,
 Hoglin {
     private static final TrackedData<Boolean> BABY = DataTracker.registerData(ZoglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final int field_30514 = 40;
+    private static final int field_30505 = 1;
+    private static final float field_30506 = 0.6f;
+    private static final int field_30507 = 6;
+    private static final float field_30508 = 0.5f;
+    private static final int field_30509 = 40;
+    private static final int field_30510 = 15;
+    private static final int field_30511 = 200;
+    private static final float field_30512 = 0.3f;
+    private static final float field_30513 = 0.4f;
     private int movementCooldownTicks;
     protected static final ImmutableList<? extends SensorType<? extends Sensor<? super ZoglinEntity>>> USED_SENSORS = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS);
     protected static final ImmutableList<? extends MemoryModuleType<?>> USED_MEMORY_MODULES = ImmutableList.of(MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.LOOK_TARGET, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.PATH, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.ATTACK_COOLING_DOWN);
@@ -91,7 +99,7 @@ Hoglin {
     }
 
     private static void addIdleTasks(Brain<ZoglinEntity> brain) {
-        brain.setTaskList(Activity.IDLE, 10, ImmutableList.of(new UpdateAttackTargetTask<ZoglinEntity>(ZoglinEntity::getHoglinTarget), new TimeLimitedTask<LivingEntity>(new FollowMobTask(8.0f), IntRange.between(30, 60)), new RandomTask(ImmutableList.of(Pair.of(new StrollTask(0.4f), 2), Pair.of(new GoTowardsLookTarget(0.4f, 3), 2), Pair.of(new WaitTask(30, 60), 1)))));
+        brain.setTaskList(Activity.IDLE, 10, ImmutableList.of(new UpdateAttackTargetTask<ZoglinEntity>(ZoglinEntity::getHoglinTarget), new TimeLimitedTask<LivingEntity>(new FollowMobTask(8.0f), UniformIntProvider.create(30, 60)), new RandomTask(ImmutableList.of(Pair.of(new StrollTask(0.4f), 2), Pair.of(new GoTowardsLookTarget(0.4f, 3), 2), Pair.of(new WaitTask(30, 60), 1)))));
     }
 
     private static void addFightTasks(Brain<ZoglinEntity> brain) {
@@ -222,7 +230,6 @@ Hoglin {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void handleStatus(byte status) {
         if (status == 4) {
             this.movementCooldownTicks = 10;
@@ -233,7 +240,6 @@ Hoglin {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public int getMovementCooldownTicks() {
         return this.movementCooldownTicks;
     }
@@ -280,17 +286,17 @@ Hoglin {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
         if (this.isBaby()) {
-            tag.putBoolean("IsBaby", true);
+            nbt.putBoolean("IsBaby", true);
         }
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        if (tag.getBoolean("IsBaby")) {
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        if (nbt.getBoolean("IsBaby")) {
             this.setBaby(true);
         }
     }

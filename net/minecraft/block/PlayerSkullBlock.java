@@ -4,7 +4,6 @@
 package net.minecraft.block;
 
 import com.mojang.authlib.GameProfile;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SkullBlock;
@@ -34,9 +33,9 @@ extends SkullBlock {
             GameProfile gameProfile = null;
             if (itemStack.hasTag()) {
                 NbtCompound nbtCompound = itemStack.getTag();
-                if (nbtCompound.contains("SkullOwner", NbtTypeIds.COMPOUND)) {
+                if (nbtCompound.contains("SkullOwner", 10)) {
                     gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
-                } else if (nbtCompound.contains("SkullOwner", NbtTypeIds.STRING) && !StringUtils.isBlank(nbtCompound.getString("SkullOwner"))) {
+                } else if (nbtCompound.contains("SkullOwner", 8) && !StringUtils.isBlank(nbtCompound.getString("SkullOwner"))) {
                     gameProfile = new GameProfile(null, nbtCompound.getString("SkullOwner"));
                 }
             }

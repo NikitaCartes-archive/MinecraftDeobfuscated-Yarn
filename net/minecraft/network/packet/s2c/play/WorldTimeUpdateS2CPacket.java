@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -39,12 +37,10 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onWorldTimeUpdate(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public long getTime() {
         return this.time;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public long getTimeOfDay() {
         return this.timeOfDay;
     }

@@ -3,9 +3,6 @@
  */
 package net.minecraft.entity.player;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.nbt.NbtCompound;
 
 public class PlayerAbilities {
@@ -17,7 +14,7 @@ public class PlayerAbilities {
     private float flySpeed = 0.05f;
     private float walkSpeed = 0.1f;
 
-    public void serialize(NbtCompound tag) {
+    public void writeNbt(NbtCompound nbt) {
         NbtCompound nbtCompound = new NbtCompound();
         nbtCompound.putBoolean("invulnerable", this.invulnerable);
         nbtCompound.putBoolean("flying", this.flying);
@@ -26,21 +23,21 @@ public class PlayerAbilities {
         nbtCompound.putBoolean("mayBuild", this.allowModifyWorld);
         nbtCompound.putFloat("flySpeed", this.flySpeed);
         nbtCompound.putFloat("walkSpeed", this.walkSpeed);
-        tag.put("abilities", nbtCompound);
+        nbt.put("abilities", nbtCompound);
     }
 
-    public void deserialize(NbtCompound tag) {
-        if (tag.contains("abilities", NbtTypeIds.COMPOUND)) {
-            NbtCompound nbtCompound = tag.getCompound("abilities");
+    public void readNbt(NbtCompound nbt) {
+        if (nbt.contains("abilities", 10)) {
+            NbtCompound nbtCompound = nbt.getCompound("abilities");
             this.invulnerable = nbtCompound.getBoolean("invulnerable");
             this.flying = nbtCompound.getBoolean("flying");
             this.allowFlying = nbtCompound.getBoolean("mayfly");
             this.creativeMode = nbtCompound.getBoolean("instabuild");
-            if (nbtCompound.contains("flySpeed", NbtTypeIds.NUMBER)) {
+            if (nbtCompound.contains("flySpeed", 99)) {
                 this.flySpeed = nbtCompound.getFloat("flySpeed");
                 this.walkSpeed = nbtCompound.getFloat("walkSpeed");
             }
-            if (nbtCompound.contains("mayBuild", NbtTypeIds.BYTE)) {
+            if (nbtCompound.contains("mayBuild", 1)) {
                 this.allowModifyWorld = nbtCompound.getBoolean("mayBuild");
             }
         }
@@ -50,7 +47,6 @@ public class PlayerAbilities {
         return this.flySpeed;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void setFlySpeed(float flySpeed) {
         this.flySpeed = flySpeed;
     }
@@ -59,7 +55,6 @@ public class PlayerAbilities {
         return this.walkSpeed;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void setWalkSpeed(float walkSpeed) {
         this.walkSpeed = walkSpeed;
     }

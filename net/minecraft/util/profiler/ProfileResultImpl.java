@@ -202,6 +202,13 @@ implements ProfileResult {
         return stringBuilder.toString();
     }
 
+    @Override
+    public String method_34970() {
+        StringBuilder stringBuilder = new StringBuilder();
+        this.appendTiming(0, "root", stringBuilder);
+        return stringBuilder.toString();
+    }
+
     private static StringBuilder indent(StringBuilder sb, int size) {
         sb.append(String.format("[%02d] ", size));
         for (int i = 0; i < size; ++i) {

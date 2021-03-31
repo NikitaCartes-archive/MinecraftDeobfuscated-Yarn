@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -12,6 +10,7 @@ import net.minecraft.util.Identifier;
 
 public class CustomPayloadS2CPacket
 implements Packet<ClientPlayPacketListener> {
+    private static final int MAX_PAYLOAD_SIZE = 0x100000;
     public static final Identifier BRAND = new Identifier("brand");
     public static final Identifier DEBUG_PATH = new Identifier("debug/path");
     public static final Identifier DEBUG_NEIGHBORS_UPDATE = new Identifier("debug/neighbors_update");
@@ -61,12 +60,10 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onCustomPayload(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Identifier getChannel() {
         return this.channel;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public PacketByteBuf getData() {
         return new PacketByteBuf(this.data.copy());
     }

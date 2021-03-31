@@ -18,6 +18,8 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 
 public class GameModeCommand {
+    public static final int field_33393 = 2;
+
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder literalArgumentBuilder = (LiteralArgumentBuilder)CommandManager.literal("gamemode").requires(source -> source.hasPermissionLevel(2));
         for (GameMode gameMode : GameMode.values()) {

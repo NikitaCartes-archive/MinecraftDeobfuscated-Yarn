@@ -50,6 +50,10 @@ extends ConditionalLootFunction {
         return SetCountLootFunction.builder((LootCondition[] conditions) -> new SetCountLootFunction((LootCondition[])conditions, countRange, false));
     }
 
+    public static ConditionalLootFunction.Builder<?> builder(LootNumberProvider countRange, boolean add) {
+        return SetCountLootFunction.builder((LootCondition[] conditions) -> new SetCountLootFunction((LootCondition[])conditions, countRange, add));
+    }
+
     public static class Serializer
     extends ConditionalLootFunction.Serializer<SetCountLootFunction> {
         @Override

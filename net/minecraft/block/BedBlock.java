@@ -5,10 +5,6 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Optional;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
@@ -52,6 +48,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.CollisionView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.explosion.Explosion;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
@@ -61,7 +58,9 @@ extends HorizontalFacingBlock
 implements BlockEntityProvider {
     public static final EnumProperty<BedPart> PART = Properties.BED_PART;
     public static final BooleanProperty OCCUPIED = Properties.OCCUPIED;
+    protected static final int field_31009 = 9;
     protected static final VoxelShape TOP_SHAPE = Block.createCuboidShape(0.0, 3.0, 0.0, 16.0, 9.0, 16.0);
+    private static final int field_31010 = 3;
     protected static final VoxelShape LEG_1_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 3.0, 3.0, 3.0);
     protected static final VoxelShape LEG_2_SHAPE = Block.createCuboidShape(0.0, 0.0, 13.0, 3.0, 3.0, 16.0);
     protected static final VoxelShape LEG_3_SHAPE = Block.createCuboidShape(13.0, 0.0, 0.0, 16.0, 3.0, 3.0);
@@ -79,7 +78,6 @@ implements BlockEntityProvider {
     }
 
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     public static Direction getDirection(BlockView world, BlockPos pos) {
         BlockState blockState = world.getBlockState(pos);
         return blockState.getBlock() instanceof BedBlock ? blockState.get(FACING) : null;
@@ -172,7 +170,7 @@ implements BlockEntityProvider {
         BlockState blockState;
         BedPart bedPart;
         if (!world.isClient && player.isCreative() && (bedPart = state.get(PART)) == BedPart.FOOT && (blockState = world.getBlockState(blockPos = pos.offset(BedBlock.getDirectionTowardsOtherPart(bedPart, state.get(FACING))))).isOf(this) && blockState.get(PART) == BedPart.HEAD) {
-            world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.SKIP_DROPS);
+            world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL | Block.SKIP_DROPS);
             world.syncWorldEvent(player, WorldEvents.BLOCK_BROKEN, blockPos, Block.getRawIdFromState(blockState));
         }
         super.onBreak(world, pos, state, player);
@@ -212,7 +210,6 @@ implements BlockEntityProvider {
         return state.get(PART) == BedPart.HEAD ? direction.getOpposite() : direction;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static DoubleBlockProperties.Type getBedPart(BlockState state) {
         BedPart bedPart = state.get(PART);
         if (bedPart == BedPart.HEAD) {
@@ -304,9 +301,9 @@ implements BlockEntityProvider {
         super.onPlaced(world, pos, state, placer, itemStack);
         if (!world.isClient) {
             BlockPos blockPos = pos.offset(state.get(FACING));
-            world.setBlockState(blockPos, (BlockState)state.with(PART, BedPart.HEAD), SetBlockStateFlags.DEFAULT);
+            world.setBlockState(blockPos, (BlockState)state.with(PART, BedPart.HEAD), Block.NOTIFY_ALL);
             world.updateNeighbors(pos, Blocks.AIR);
-            state.updateNeighbors(world, pos, SetBlockStateFlags.DEFAULT);
+            state.updateNeighbors(world, pos, Block.NOTIFY_ALL);
         }
     }
 
@@ -315,7 +312,6 @@ implements BlockEntityProvider {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public long getRenderingSeed(BlockState state, BlockPos pos) {
         BlockPos blockPos = pos.offset(state.get(FACING), state.get(PART) == BedPart.HEAD ? 0 : 1);
         return MathHelper.hashCode(blockPos.getX(), pos.getY(), blockPos.getZ());

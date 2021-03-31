@@ -26,6 +26,9 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class ModelElement {
+    private static final boolean field_32785 = false;
+    private static final float field_32786 = -16.0f;
+    private static final float field_32787 = 32.0f;
     public final Vec3f from;
     public final Vec3f to;
     public final Map<Direction, ModelElementFace> faces;
@@ -73,6 +76,8 @@ public class ModelElement {
     @Environment(value=EnvType.CLIENT)
     public static class Deserializer
     implements JsonDeserializer<ModelElement> {
+        private static final boolean field_32788 = true;
+
         protected Deserializer() {
         }
 

@@ -48,6 +48,10 @@ extends AbstractCriterion<Conditions> {
             this.item = item;
         }
 
+        public static Conditions create(ItemPredicate itemPredicate) {
+            return new Conditions(EntityPredicate.Extended.EMPTY, itemPredicate);
+        }
+
         public static Conditions create(ItemConvertible item) {
             return new Conditions(EntityPredicate.Extended.EMPTY, ItemPredicate.Builder.create().item(item).build());
         }

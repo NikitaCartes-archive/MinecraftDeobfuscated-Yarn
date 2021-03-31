@@ -3,8 +3,6 @@
  */
 package net.minecraft.entity.mob;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.NavigationConditions;
@@ -30,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class AbstractPiglinEntity
 extends HostileEntity {
     protected static final TrackedData<Boolean> IMMUNE_TO_ZOMBIFICATION = DataTracker.registerData(AbstractPiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    protected static final int TIME_TO_ZOMBIFY = 300;
     protected int timeInOverworld;
 
     public AbstractPiglinEntity(EntityType<? extends AbstractPiglinEntity> entityType, World world) {
@@ -63,12 +62,12 @@ extends HostileEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
         if (this.isImmuneToZombification()) {
-            tag.putBoolean("IsImmuneToZombification", true);
+            nbt.putBoolean("IsImmuneToZombification", true);
         }
-        tag.putInt("TimeInOverworld", this.timeInOverworld);
+        nbt.putInt("TimeInOverworld", this.timeInOverworld);
     }
 
     @Override
@@ -77,10 +76,10 @@ extends HostileEntity {
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        this.setImmuneToZombification(tag.getBoolean("IsImmuneToZombification"));
-        this.timeInOverworld = tag.getInt("TimeInOverworld");
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.setImmuneToZombification(nbt.getBoolean("IsImmuneToZombification"));
+        this.timeInOverworld = nbt.getInt("TimeInOverworld");
     }
 
     @Override
@@ -108,7 +107,6 @@ extends HostileEntity {
         return !this.isBaby();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public abstract PiglinActivity getActivity();
 
     @Override

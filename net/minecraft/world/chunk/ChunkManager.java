@@ -4,6 +4,7 @@
 package net.minecraft.world.chunk;
 
 import java.io.IOException;
+import java.util.function.BooleanSupplier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.BlockView;
@@ -40,7 +41,11 @@ AutoCloseable {
     @Nullable
     public abstract Chunk getChunk(int var1, int var2, ChunkStatus var3, boolean var4);
 
+    public abstract void tick(BooleanSupplier var1);
+
     public abstract String getDebugString();
+
+    public abstract int getLoadedChunkCount();
 
     @Override
     public void close() throws IOException {

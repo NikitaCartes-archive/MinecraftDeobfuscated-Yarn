@@ -12,10 +12,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
@@ -55,6 +51,7 @@ import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -62,6 +59,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.event.GameEvent;
@@ -87,12 +85,54 @@ implements ItemConvertible {
             return this.load((VoxelShape)shape);
         }
     });
+    /**
+     * Sends a neighbor update event to surrounding blocks.
+     */
+    public static final int NOTIFY_NEIGHBORS = 1;
+    /**
+     * Notifies listeners and clients who need to react when the block changes.
+     */
+    public static final int NOTIFY_LISTENERS = 2;
+    /**
+     * Used in conjunction with {@link #NOTIFY_LISTENERS} to suppress the render pass on clients.
+     */
+    public static final int NO_REDRAW = 4;
+    /**
+     * Forces a synchronous redraw on clients.
+     */
+    public static final int REDRAW_ON_MAIN_THREAD = 8;
+    /**
+     * Bypass virtual block state changes and forces the passed state to be stored as-is.
+     */
+    public static final int FORCE_STATE = 16;
+    /**
+     * Prevents the previous block (container) from dropping items when destroyed.
+     */
+    public static final int SKIP_DROPS = 32;
+    /**
+     * Signals that the current block is being moved to a different location, usually because of a piston.
+     */
+    public static final int MOVED = 64;
+    /**
+     * Signals that lighting updates should be skipped.
+     */
+    public static final int SKIP_LIGHTING_UPDATES = 128;
+    public static final int field_31035 = 4;
+    /**
+     * The default setBlockState behavior. Same as {@code NOTIFY_NEIGHBORS | NOTIFY_LISTENERS}.
+     */
+    public static final int NOTIFY_ALL = 3;
+    public static final int field_31022 = 11;
+    public static final float field_31023 = -1.0f;
+    public static final float field_31024 = 0.0f;
+    public static final int field_31025 = 512;
     protected final StateManager<Block, BlockState> stateManager;
     private BlockState defaultState;
     @Nullable
     private String translationKey;
     @Nullable
     private Item cachedItem;
+    private static final int field_31026 = 2048;
     private static final ThreadLocal<Object2ByteLinkedOpenHashMap<NeighborGroup>> FACE_CULL_MAP = ThreadLocal.withInitial(() -> {
         Object2ByteLinkedOpenHashMap<NeighborGroup> object2ByteLinkedOpenHashMap = new Object2ByteLinkedOpenHashMap<NeighborGroup>(2048, 0.25f){
 
@@ -145,7 +185,7 @@ implements ItemConvertible {
         BlockState blockState = state;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (Direction direction : DIRECTIONS) {
-            mutable.set(pos, direction);
+            mutable.set((Vec3i)pos, direction);
             blockState = blockState.getStateForNeighborUpdate(direction, world.getBlockState(mutable), world, pos, mutable);
         }
         return blockState;
@@ -188,10 +228,10 @@ implements ItemConvertible {
         if (newState != state) {
             if (newState.isAir()) {
                 if (!world.isClient()) {
-                    world.breakBlock(pos, (flags & SetBlockStateFlags.SKIP_DROPS) == 0, null, maxUpdateDepth);
+                    world.breakBlock(pos, (flags & SKIP_DROPS) == 0, null, maxUpdateDepth);
                 }
             } else {
-                world.setBlockState(pos, newState, flags & ~SetBlockStateFlags.SKIP_DROPS, maxUpdateDepth);
+                world.setBlockState(pos, newState, flags & ~SKIP_DROPS, maxUpdateDepth);
             }
         }
     }
@@ -216,7 +256,6 @@ implements ItemConvertible {
         return this.randomTicks;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static boolean shouldDrawSide(BlockState state, BlockView world, BlockPos pos, Direction side, BlockPos blockPos) {
         BlockState blockState = world.getBlockState(blockPos);
         if (state.isSideInvisible(blockState, side)) {
@@ -269,7 +308,6 @@ implements ItemConvertible {
         return !Block.isShapeFullCube(state.getOutlineShape(world, pos)) && state.getFluidState().isEmpty();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
     }
 
@@ -284,6 +322,13 @@ implements ItemConvertible {
     public static List<ItemStack> getDroppedStacks(BlockState state, ServerWorld world, BlockPos pos, @Nullable BlockEntity blockEntity, @Nullable Entity entity, ItemStack stack) {
         LootContext.Builder builder = new LootContext.Builder(world).random(world.random).parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos)).parameter(LootContextParameters.TOOL, stack).optionalParameter(LootContextParameters.THIS_ENTITY, entity).optionalParameter(LootContextParameters.BLOCK_ENTITY, blockEntity);
         return state.getDroppedStacks(builder);
+    }
+
+    public static void dropStacks(BlockState state, LootContext.Builder lootContext) {
+        ServerWorld serverWorld = lootContext.getWorld();
+        BlockPos blockPos = new BlockPos(lootContext.get(LootContextParameters.ORIGIN));
+        state.getDroppedStacks(lootContext).forEach(stack -> Block.dropStack(serverWorld, blockPos, stack));
+        state.onStacksDropped(serverWorld, blockPos, ItemStack.EMPTY);
     }
 
     public static void dropStacks(BlockState state, World world, BlockPos pos) {
@@ -360,7 +405,6 @@ implements ItemConvertible {
         return !this.material.isSolid() && !this.material.isLiquid();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public MutableText getName() {
         return new TranslatableText(this.getTranslationKey());
     }
@@ -380,7 +424,6 @@ implements ItemConvertible {
         entity.setVelocity(entity.getVelocity().multiply(1.0, 0.0, 1.0));
     }
 
-    @Environment(value=EnvType.CLIENT)
     public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
         return new ItemStack(this);
     }
@@ -438,13 +481,13 @@ implements ItemConvertible {
     /**
      * Gets a block state with all properties that both this block and the source block state have.
      */
-    public final BlockState getStateWithProperties(BlockState blockState) {
-        BlockState blockState2 = this.getDefaultState();
-        for (Property<?> property : blockState.getBlock().getStateManager().getProperties()) {
-            if (!blockState2.contains(property)) continue;
-            blockState2 = Block.copyProperty(blockState, blockState2, property);
+    public final BlockState getStateWithProperties(BlockState state) {
+        BlockState blockState = this.getDefaultState();
+        for (Property<?> property : state.getBlock().getStateManager().getProperties()) {
+            if (!blockState.contains(property)) continue;
+            blockState = Block.copyProperty(state, blockState, property);
         }
-        return blockState2;
+        return blockState;
     }
 
     private static <T extends Comparable<T>> BlockState copyProperty(BlockState source, BlockState target, Property<T> property) {
@@ -471,7 +514,6 @@ implements ItemConvertible {
         return "Block{" + Registry.BLOCK.getId(this) + "}";
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
     }
 

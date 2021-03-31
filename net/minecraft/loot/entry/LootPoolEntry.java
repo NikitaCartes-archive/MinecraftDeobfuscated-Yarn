@@ -16,7 +16,9 @@ import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.entry.AlternativeEntry;
 import net.minecraft.loot.entry.EntryCombiner;
+import net.minecraft.loot.entry.GroupEntry;
 import net.minecraft.loot.entry.LootPoolEntryType;
+import net.minecraft.loot.entry.SequenceEntry;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.JsonSerializer;
 import org.apache.commons.lang3.ArrayUtils;
@@ -97,6 +99,14 @@ implements EntryCombiner {
 
         public AlternativeEntry.Builder alternatively(Builder<?> builder) {
             return new AlternativeEntry.Builder(this, builder);
+        }
+
+        public SequenceEntry.Builder sequenceEntry(Builder<?> entry) {
+            return new SequenceEntry.Builder(this, entry);
+        }
+
+        public GroupEntry.Builder groupEntry(Builder<?> entry) {
+            return new GroupEntry.Builder(this, entry);
         }
 
         public abstract LootPoolEntry build();

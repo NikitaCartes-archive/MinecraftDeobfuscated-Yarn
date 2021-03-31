@@ -46,7 +46,7 @@ extends FeatureRenderer<T, M> {
         this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, EquipmentSlot.HEAD, i, this.getArmor(EquipmentSlot.HEAD));
     }
 
-    private void renderArmor(MatrixStack matrices, VertexConsumerProvider vertexConsumers, T entity, EquipmentSlot armorSlot, int i, A model) {
+    private void renderArmor(MatrixStack matrices, VertexConsumerProvider vertexConsumers, T entity, EquipmentSlot armorSlot, int light, A model) {
         ItemStack itemStack = ((LivingEntity)entity).getEquippedStack(armorSlot);
         if (!(itemStack.getItem() instanceof ArmorItem)) {
             return;
@@ -60,14 +60,14 @@ extends FeatureRenderer<T, M> {
         boolean bl = this.usesSecondLayer(armorSlot);
         boolean bl2 = itemStack.hasGlint();
         if (armorItem instanceof DyeableArmorItem) {
-            int j = ((DyeableArmorItem)armorItem).getColor(itemStack);
-            float f = (float)(j >> 16 & 0xFF) / 255.0f;
-            float g = (float)(j >> 8 & 0xFF) / 255.0f;
-            float h = (float)(j & 0xFF) / 255.0f;
-            this.renderArmorParts(matrices, vertexConsumers, i, armorItem, bl2, model, bl, f, g, h, null);
-            this.renderArmorParts(matrices, vertexConsumers, i, armorItem, bl2, model, bl, 1.0f, 1.0f, 1.0f, "overlay");
+            int i = ((DyeableArmorItem)armorItem).getColor(itemStack);
+            float f = (float)(i >> 16 & 0xFF) / 255.0f;
+            float g = (float)(i >> 8 & 0xFF) / 255.0f;
+            float h = (float)(i & 0xFF) / 255.0f;
+            this.renderArmorParts(matrices, vertexConsumers, light, armorItem, bl2, model, bl, f, g, h, null);
+            this.renderArmorParts(matrices, vertexConsumers, light, armorItem, bl2, model, bl, 1.0f, 1.0f, 1.0f, "overlay");
         } else {
-            this.renderArmorParts(matrices, vertexConsumers, i, armorItem, bl2, model, bl, 1.0f, 1.0f, 1.0f, null);
+            this.renderArmorParts(matrices, vertexConsumers, light, armorItem, bl2, model, bl, 1.0f, 1.0f, 1.0f, null);
         }
     }
 
@@ -98,9 +98,9 @@ extends FeatureRenderer<T, M> {
         }
     }
 
-    private void renderArmorParts(MatrixStack matrices, VertexConsumerProvider provider, int i, ArmorItem item, boolean bl, A model, boolean legs, float f, float g, float h, @Nullable String overlay) {
-        VertexConsumer vertexConsumer = ItemRenderer.getArmorGlintConsumer(provider, RenderLayer.getArmorCutoutNoCull(this.getArmorTexture(item, legs, overlay)), false, bl);
-        ((AnimalModel)model).render(matrices, vertexConsumer, i, OverlayTexture.DEFAULT_UV, f, g, h, 1.0f);
+    private void renderArmorParts(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, ArmorItem item, boolean usesSecondLayer, A model, boolean legs, float red, float green, float blue, @Nullable String overlay) {
+        VertexConsumer vertexConsumer = ItemRenderer.getArmorGlintConsumer(vertexConsumers, RenderLayer.getArmorCutoutNoCull(this.getArmorTexture(item, legs, overlay)), false, usesSecondLayer);
+        ((AnimalModel)model).render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, red, green, blue, 1.0f);
     }
 
     private A getArmor(EquipmentSlot slot) {

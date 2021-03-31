@@ -32,7 +32,7 @@ extends StructureProcessor {
         if (!blockState.isOf(Blocks.JIGSAW)) {
             return structureBlockInfo2;
         }
-        String string = structureBlockInfo2.tag.getString("final_state");
+        String string = structureBlockInfo2.nbt.getString("final_state");
         BlockArgumentParser blockArgumentParser = new BlockArgumentParser(new StringReader(string), false);
         try {
             blockArgumentParser.parse(true);

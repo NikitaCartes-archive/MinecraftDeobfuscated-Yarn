@@ -13,6 +13,7 @@ import net.minecraft.datafixer.fix.ChoiceFix;
 
 public class EntityZombieVillagerTypeFix
 extends ChoiceFix {
+    private static final int field_29883 = 6;
     private static final Random RANDOM = new Random();
 
     public EntityZombieVillagerTypeFix(Schema outputSchema, boolean changesType) {

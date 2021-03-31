@@ -3,8 +3,6 @@
  */
 package net.minecraft.text;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.text.Style;
 
 /**
@@ -24,7 +22,6 @@ public interface CharacterVisitor {
      * @param style the style of the character, containing formatting and font information
      * @param codePoint the code point of the character
      */
-    @Environment(value=EnvType.CLIENT)
     public boolean accept(int var1, Style var2, int var3);
 }
 

@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class ToastManager
 extends DrawableHelper {
+    private static final int field_32220 = 5;
     private final MinecraftClient client;
     private final Entry<?>[] visibleEntries = new Entry[5];
     private final Deque<Toast> toastQueue = Queues.newArrayDeque();
@@ -70,6 +71,7 @@ extends DrawableHelper {
 
     @Environment(value=EnvType.CLIENT)
     static class Entry<T extends Toast> {
+        private static final long field_32221 = 600L;
         private final T instance;
         private long field_2243 = -1L;
         private long field_2242 = -1L;

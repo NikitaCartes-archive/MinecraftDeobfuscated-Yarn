@@ -24,6 +24,10 @@ extends Supplier<JsonElement> {
         return new PropertyCondition();
     }
 
+    public static When method_35870(When ... whens) {
+        return new LogicalCondition(LogicalOperator.AND, Arrays.asList(whens));
+    }
+
     public static When anyOf(When ... conditions) {
         return new LogicalCondition(LogicalOperator.OR, Arrays.asList(conditions));
     }
@@ -55,6 +59,17 @@ extends Supplier<JsonElement> {
         @SafeVarargs
         public final <T extends Comparable<T>> PropertyCondition set(Property<T> property, T value, T ... otherValues) {
             this.set(property, PropertyCondition.name(property, value, otherValues));
+            return this;
+        }
+
+        public final <T extends Comparable<T>> PropertyCondition method_35871(Property<T> property, T comparable) {
+            this.set(property, "!" + property.name(comparable));
+            return this;
+        }
+
+        @SafeVarargs
+        public final <T extends Comparable<T>> PropertyCondition method_35872(Property<T> property, T comparable, T ... comparables) {
+            this.set(property, "!" + PropertyCondition.name(property, comparable, comparables));
             return this;
         }
 

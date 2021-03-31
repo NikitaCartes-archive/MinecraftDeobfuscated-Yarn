@@ -4,7 +4,7 @@
 package net.minecraft.block;
 
 import java.util.Optional;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidDrainable;
 import net.minecraft.block.FluidFillable;
@@ -31,7 +31,7 @@ FluidFillable {
     default public boolean tryFillWithFluid(WorldAccess world, BlockPos pos, BlockState state, FluidState fluidState) {
         if (!state.get(Properties.WATERLOGGED).booleanValue() && fluidState.getFluid() == Fluids.WATER) {
             if (!world.isClient()) {
-                world.setBlockState(pos, (BlockState)state.with(Properties.WATERLOGGED, true), SetBlockStateFlags.DEFAULT);
+                world.setBlockState(pos, (BlockState)state.with(Properties.WATERLOGGED, true), Block.NOTIFY_ALL);
                 world.getFluidTickScheduler().schedule(pos, fluidState.getFluid(), fluidState.getFluid().getTickRate(world));
             }
             return true;
@@ -42,7 +42,7 @@ FluidFillable {
     @Override
     default public ItemStack tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state) {
         if (state.get(Properties.WATERLOGGED).booleanValue()) {
-            world.setBlockState(pos, (BlockState)state.with(Properties.WATERLOGGED, false), SetBlockStateFlags.DEFAULT);
+            world.setBlockState(pos, (BlockState)state.with(Properties.WATERLOGGED, false), Block.NOTIFY_ALL);
             return new ItemStack(Items.WATER_BUCKET);
         }
         return ItemStack.EMPTY;

@@ -6,9 +6,6 @@ package net.minecraft.block;
 import com.google.common.collect.ImmutableList;
 import java.util.Optional;
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -45,6 +42,8 @@ import net.minecraft.world.explosion.ExplosionBehavior;
 
 public class RespawnAnchorBlock
 extends Block {
+    public static final int field_31231 = 0;
+    public static final int field_31232 = 4;
     public static final IntProperty CHARGES = Properties.CHARGES;
     private static final ImmutableList<Vec3i> VALID_HORIZONTAL_SPAWN_OFFSETS = ImmutableList.of(new Vec3i(0, 0, -1), new Vec3i(-1, 0, 0), new Vec3i(0, 0, 1), new Vec3i(1, 0, 0), new Vec3i(-1, 0, -1), new Vec3i(1, 0, -1), new Vec3i(-1, 0, 1), new Vec3i(1, 0, 1));
     private static final ImmutableList<Vec3i> VALID_SPAWN_OFFSETS = ((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)new ImmutableList.Builder().addAll(VALID_HORIZONTAL_SPAWN_OFFSETS)).addAll(VALID_HORIZONTAL_SPAWN_OFFSETS.stream().map(Vec3i::down).iterator())).addAll(VALID_HORIZONTAL_SPAWN_OFFSETS.stream().map(Vec3i::up).iterator())).add(new Vec3i(0, 1, 0))).build();
@@ -131,12 +130,11 @@ extends Block {
     }
 
     public static void charge(World world, BlockPos pos, BlockState state) {
-        world.setBlockState(pos, (BlockState)state.with(CHARGES, state.get(CHARGES) + 1), SetBlockStateFlags.DEFAULT);
+        world.setBlockState(pos, (BlockState)state.with(CHARGES, state.get(CHARGES) + 1), Block.NOTIFY_ALL);
         world.playSound(null, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, SoundEvents.BLOCK_RESPAWN_ANCHOR_CHARGE, SoundCategory.BLOCKS, 1.0f, 1.0f);
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         if (state.get(CHARGES) == 0) {
             return;

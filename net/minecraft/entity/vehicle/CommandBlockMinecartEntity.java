@@ -3,8 +3,6 @@
  */
 package net.minecraft.entity.vehicle;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
@@ -29,6 +27,7 @@ extends AbstractMinecartEntity {
     private static final TrackedData<String> COMMAND = DataTracker.registerData(CommandBlockMinecartEntity.class, TrackedDataHandlerRegistry.STRING);
     private static final TrackedData<Text> LAST_OUTPUT = DataTracker.registerData(CommandBlockMinecartEntity.class, TrackedDataHandlerRegistry.TEXT_COMPONENT);
     private final CommandBlockExecutor commandExecutor = new CommandExecutor();
+    private static final int field_30701 = 4;
     private int lastExecuted;
 
     public CommandBlockMinecartEntity(EntityType<? extends CommandBlockMinecartEntity> entityType, World world) {
@@ -47,17 +46,17 @@ extends AbstractMinecartEntity {
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        this.commandExecutor.readNbt(tag);
+    protected void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.commandExecutor.readNbt(nbt);
         this.getDataTracker().set(COMMAND, this.getCommandExecutor().getCommand());
         this.getDataTracker().set(LAST_OUTPUT, this.getCommandExecutor().getLastOutput());
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
-        this.commandExecutor.writeNbt(tag);
+    protected void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        this.commandExecutor.writeNbt(nbt);
     }
 
     @Override
@@ -118,12 +117,10 @@ extends AbstractMinecartEntity {
         }
 
         @Override
-        @Environment(value=EnvType.CLIENT)
         public Vec3d getPos() {
             return CommandBlockMinecartEntity.this.getPos();
         }
 
-        @Environment(value=EnvType.CLIENT)
         public CommandBlockMinecartEntity getMinecart() {
             return CommandBlockMinecartEntity.this;
         }

@@ -12,7 +12,6 @@ import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
@@ -69,16 +68,15 @@ extends StructureFeature<OceanRuinFeatureConfig> {
 
     public static class Start
     extends StructureStart<OceanRuinFeatureConfig> {
-        public Start(StructureFeature<OceanRuinFeatureConfig> structureFeature, ChunkPos chunkPos, BlockBox blockBox, int i, long l) {
-            super(structureFeature, chunkPos, blockBox, i, l);
+        public Start(StructureFeature<OceanRuinFeatureConfig> structureFeature, ChunkPos chunkPos, int i, long l) {
+            super(structureFeature, chunkPos, i, l);
         }
 
         @Override
         public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, ChunkPos chunkPos, Biome biome, OceanRuinFeatureConfig oceanRuinFeatureConfig, HeightLimitView heightLimitView) {
             BlockPos blockPos = new BlockPos(chunkPos.getStartX(), 90, chunkPos.getStartZ());
             BlockRotation blockRotation = BlockRotation.random(this.random);
-            OceanRuinGenerator.addPieces(structureManager, blockPos, blockRotation, this.children, this.random, oceanRuinFeatureConfig);
-            this.setBoundingBoxFromChildren();
+            OceanRuinGenerator.addPieces(structureManager, blockPos, blockRotation, this, this.random, oceanRuinFeatureConfig);
         }
     }
 }

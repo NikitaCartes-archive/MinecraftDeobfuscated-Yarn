@@ -5,12 +5,11 @@ package net.minecraft.entity.passive;
 
 import java.util.Optional;
 import java.util.UUID;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Tameable;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -29,7 +28,8 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class TameableEntity
-extends AnimalEntity {
+extends AnimalEntity
+implements Tameable {
     protected static final TrackedData<Byte> TAMEABLE_FLAGS = DataTracker.registerData(TameableEntity.class, TrackedDataHandlerRegistry.BYTE);
     protected static final TrackedData<Optional<UUID>> OWNER_UUID = DataTracker.registerData(TameableEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
     private boolean sitting;
@@ -47,22 +47,22 @@ extends AnimalEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
         if (this.getOwnerUuid() != null) {
-            tag.putUuid("Owner", this.getOwnerUuid());
+            nbt.putUuid("Owner", this.getOwnerUuid());
         }
-        tag.putBoolean("Sitting", this.sitting);
+        nbt.putBoolean("Sitting", this.sitting);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
+    public void readCustomDataFromNbt(NbtCompound nbt) {
         UUID uUID;
-        super.readCustomDataFromNbt(tag);
-        if (tag.containsUuid("Owner")) {
-            uUID = tag.getUuid("Owner");
+        super.readCustomDataFromNbt(nbt);
+        if (nbt.containsUuid("Owner")) {
+            uUID = nbt.getUuid("Owner");
         } else {
-            String string = tag.getString("Owner");
+            String string = nbt.getString("Owner");
             uUID = ServerConfigHandler.getPlayerUuidByName(this.getServer(), string);
         }
         if (uUID != null) {
@@ -73,7 +73,7 @@ extends AnimalEntity {
                 this.setTamed(false);
             }
         }
-        this.sitting = tag.getBoolean("Sitting");
+        this.sitting = nbt.getBoolean("Sitting");
         this.setInSittingPose(this.sitting);
     }
 
@@ -82,7 +82,6 @@ extends AnimalEntity {
         return !this.isLeashed();
     }
 
-    @Environment(value=EnvType.CLIENT)
     protected void showEmoteParticle(boolean positive) {
         DefaultParticleType particleEffect = ParticleTypes.HEART;
         if (!positive) {
@@ -97,7 +96,6 @@ extends AnimalEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void handleStatus(byte status) {
         if (status == 7) {
             this.showEmoteParticle(true);
@@ -138,6 +136,7 @@ extends AnimalEntity {
         }
     }
 
+    @Override
     @Nullable
     public UUID getOwnerUuid() {
         return this.dataTracker.get(OWNER_UUID).orElse(null);
@@ -155,6 +154,7 @@ extends AnimalEntity {
         }
     }
 
+    @Override
     @Nullable
     public LivingEntity getOwner() {
         try {
@@ -221,6 +221,12 @@ extends AnimalEntity {
 
     public void setSitting(boolean sitting) {
         this.sitting = sitting;
+    }
+
+    @Override
+    @Nullable
+    public /* synthetic */ Entity getOwner() {
+        return this.getOwner();
     }
 }
 

@@ -5,8 +5,6 @@ package net.minecraft.entity.projectile;
 
 import java.util.Optional;
 import java.util.function.Predicate;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
@@ -43,7 +41,6 @@ public final class ProjectileUtil {
     }
 
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     public static EntityHitResult raycast(Entity entity, Vec3d vec3d, Vec3d vec3d2, Box box, Predicate<Entity> predicate, double d) {
         World world = entity.world;
         double e = d;

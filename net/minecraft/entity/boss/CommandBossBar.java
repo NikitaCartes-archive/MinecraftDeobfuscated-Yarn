@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.nbt.NbtCompound;
@@ -140,17 +139,17 @@ extends ServerBossBar {
         return nbtCompound;
     }
 
-    public static CommandBossBar fromNbt(NbtCompound tag, Identifier id) {
-        CommandBossBar commandBossBar = new CommandBossBar(id, Text.Serializer.fromJson(tag.getString("Name")));
-        commandBossBar.setVisible(tag.getBoolean("Visible"));
-        commandBossBar.setValue(tag.getInt("Value"));
-        commandBossBar.setMaxValue(tag.getInt("Max"));
-        commandBossBar.setColor(BossBar.Color.byName(tag.getString("Color")));
-        commandBossBar.setStyle(BossBar.Style.byName(tag.getString("Overlay")));
-        commandBossBar.setDarkenSky(tag.getBoolean("DarkenScreen"));
-        commandBossBar.setDragonMusic(tag.getBoolean("PlayBossMusic"));
-        commandBossBar.setThickenFog(tag.getBoolean("CreateWorldFog"));
-        NbtList nbtList = tag.getList("Players", NbtTypeIds.INT_ARRAY);
+    public static CommandBossBar fromNbt(NbtCompound nbt, Identifier id) {
+        CommandBossBar commandBossBar = new CommandBossBar(id, Text.Serializer.fromJson(nbt.getString("Name")));
+        commandBossBar.setVisible(nbt.getBoolean("Visible"));
+        commandBossBar.setValue(nbt.getInt("Value"));
+        commandBossBar.setMaxValue(nbt.getInt("Max"));
+        commandBossBar.setColor(BossBar.Color.byName(nbt.getString("Color")));
+        commandBossBar.setStyle(BossBar.Style.byName(nbt.getString("Overlay")));
+        commandBossBar.setDarkenSky(nbt.getBoolean("DarkenScreen"));
+        commandBossBar.setDragonMusic(nbt.getBoolean("PlayBossMusic"));
+        commandBossBar.setThickenFog(nbt.getBoolean("CreateWorldFog"));
+        NbtList nbtList = nbt.getList("Players", 11);
         for (int i = 0; i < nbtList.size(); ++i) {
             commandBossBar.addPlayer(NbtHelper.toUuid(nbtList.get(i)));
         }

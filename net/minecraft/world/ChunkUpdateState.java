@@ -10,6 +10,8 @@ import net.minecraft.world.PersistentState;
 
 public class ChunkUpdateState
 extends PersistentState {
+    private static final String REMAINING_KEY = "Remaining";
+    private static final String ALL_KEY = "All";
     private final LongSet all;
     private final LongSet remaining;
 
@@ -22,15 +24,15 @@ extends PersistentState {
         this(new LongOpenHashSet(), new LongOpenHashSet());
     }
 
-    public static ChunkUpdateState fromNbt(NbtCompound tag) {
-        return new ChunkUpdateState(new LongOpenHashSet(tag.getLongArray("All")), new LongOpenHashSet(tag.getLongArray("Remaining")));
+    public static ChunkUpdateState fromNbt(NbtCompound nbt) {
+        return new ChunkUpdateState(new LongOpenHashSet(nbt.getLongArray(ALL_KEY)), new LongOpenHashSet(nbt.getLongArray(REMAINING_KEY)));
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound tag) {
-        tag.putLongArray("All", this.all.toLongArray());
-        tag.putLongArray("Remaining", this.remaining.toLongArray());
-        return tag;
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        nbt.putLongArray(ALL_KEY, this.all.toLongArray());
+        nbt.putLongArray(REMAINING_KEY, this.remaining.toLongArray());
+        return nbt;
     }
 
     public void add(long l) {

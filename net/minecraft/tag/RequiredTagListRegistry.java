@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.tag.FluidTags;
@@ -42,7 +40,6 @@ public class RequiredTagListRegistry {
         REQUIRED_TAG_LISTS.forEach(list -> list.updateTagManager(tagManager));
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static void clearAllTags() {
         REQUIRED_TAG_LISTS.forEach(RequiredTagList::clearAllTags);
     }

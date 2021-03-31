@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.login;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientLoginPacketListener;
@@ -31,7 +29,6 @@ implements Packet<ClientLoginPacketListener> {
         clientLoginPacketListener.onCompression(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getCompressionThreshold() {
         return this.compressionThreshold;
     }

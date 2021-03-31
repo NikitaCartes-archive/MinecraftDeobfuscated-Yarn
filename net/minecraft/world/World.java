@@ -13,10 +13,6 @@ import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -60,6 +56,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldProperties;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
@@ -82,11 +79,18 @@ public abstract class World
 implements WorldAccess,
 AutoCloseable {
     protected static final Logger LOGGER = LogManager.getLogger();
-    public static final Codec<RegistryKey<World>> CODEC = Identifier.CODEC.xmap(RegistryKey.createKeyFactory(Registry.DIMENSION), RegistryKey::getValue);
-    public static final RegistryKey<World> OVERWORLD = RegistryKey.of(Registry.DIMENSION, new Identifier("overworld"));
-    public static final RegistryKey<World> NETHER = RegistryKey.of(Registry.DIMENSION, new Identifier("the_nether"));
-    public static final RegistryKey<World> END = RegistryKey.of(Registry.DIMENSION, new Identifier("the_end"));
+    public static final Codec<RegistryKey<World>> CODEC = Identifier.CODEC.xmap(RegistryKey.createKeyFactory(Registry.WORLD_KEY), RegistryKey::getValue);
+    public static final RegistryKey<World> OVERWORLD = RegistryKey.of(Registry.WORLD_KEY, new Identifier("overworld"));
+    public static final RegistryKey<World> NETHER = RegistryKey.of(Registry.WORLD_KEY, new Identifier("the_nether"));
+    public static final RegistryKey<World> END = RegistryKey.of(Registry.WORLD_KEY, new Identifier("the_end"));
+    public static final int field_30965 = 30000000;
+    public static final int field_30966 = 512;
+    public static final int field_30967 = 32;
     private static final Direction[] DIRECTIONS = Direction.values();
+    public static final int field_30968 = 15;
+    public static final int field_30969 = 24000;
+    public static final int field_30970 = 20000000;
+    public static final int field_30971 = -20000000;
     protected final List<BlockEntityTickInvoker> blockEntityTickers = Lists.newArrayList();
     private final List<BlockEntityTickInvoker> pendingBlockEntityTickers = Lists.newArrayList();
     private boolean iteratingTickingBlockEntities;
@@ -136,6 +140,7 @@ AutoCloseable {
         return this.isClient;
     }
 
+    @Override
     @Nullable
     public MinecraftServer getServer() {
         return null;
@@ -191,10 +196,10 @@ AutoCloseable {
         }
         WorldChunk worldChunk = this.getWorldChunk(pos);
         Block block = state.getBlock();
-        BlockState blockState = worldChunk.setBlockState(pos, state, (flags & SetBlockStateFlags.MOVED) != 0);
+        BlockState blockState = worldChunk.setBlockState(pos, state, (flags & Block.MOVED) != 0);
         if (blockState != null) {
             BlockState blockState2 = this.getBlockState(pos);
-            if ((flags & SetBlockStateFlags.SKIP_LIGHTING_UPDATES) == 0 && blockState2 != blockState && (blockState2.getOpacity(this, pos) != blockState.getOpacity(this, pos) || blockState2.getLuminance() != blockState.getLuminance() || blockState2.hasSidedTransparency() || blockState.hasSidedTransparency())) {
+            if ((flags & Block.SKIP_LIGHTING_UPDATES) == 0 && blockState2 != blockState && (blockState2.getOpacity(this, pos) != blockState.getOpacity(this, pos) || blockState2.getLuminance() != blockState.getLuminance() || blockState2.hasSidedTransparency() || blockState.hasSidedTransparency())) {
                 this.getProfiler().push("queueCheckLight");
                 this.getChunkManager().getLightingProvider().checkBlock(pos);
                 this.getProfiler().pop();
@@ -203,17 +208,17 @@ AutoCloseable {
                 if (blockState != blockState2) {
                     this.scheduleBlockRerenderIfNeeded(pos, blockState, blockState2);
                 }
-                if ((flags & SetBlockStateFlags.NOTIFY_LISTENERS) != 0 && (!this.isClient || (flags & SetBlockStateFlags.NO_REDRAW) == 0) && (this.isClient || worldChunk.getLevelType() != null && worldChunk.getLevelType().isAfter(ChunkHolder.LevelType.TICKING))) {
+                if ((flags & Block.NOTIFY_LISTENERS) != 0 && (!this.isClient || (flags & Block.NO_REDRAW) == 0) && (this.isClient || worldChunk.getLevelType() != null && worldChunk.getLevelType().isAfter(ChunkHolder.LevelType.TICKING))) {
                     this.updateListeners(pos, blockState, state, flags);
                 }
-                if ((flags & SetBlockStateFlags.PROPAGATE_CHANGE) != 0) {
+                if ((flags & Block.NOTIFY_NEIGHBORS) != 0) {
                     this.updateNeighbors(pos, blockState.getBlock());
                     if (!this.isClient && state.hasComparatorOutput()) {
                         this.updateComparators(pos, block);
                     }
                 }
-                if ((flags & SetBlockStateFlags.FORCE_STATE) == 0 && maxUpdateDepth > 0) {
-                    int i = flags & ~(SetBlockStateFlags.PROPAGATE_CHANGE | SetBlockStateFlags.SKIP_DROPS);
+                if ((flags & Block.FORCE_STATE) == 0 && maxUpdateDepth > 0) {
+                    int i = flags & ~(Block.NOTIFY_NEIGHBORS | Block.SKIP_DROPS);
                     blockState.prepare(this, pos, i, maxUpdateDepth - 1);
                     state.updateNeighbors(this, pos, i, maxUpdateDepth - 1);
                     state.prepare(this, pos, i, maxUpdateDepth - 1);
@@ -231,7 +236,7 @@ AutoCloseable {
     @Override
     public boolean removeBlock(BlockPos pos, boolean move) {
         FluidState fluidState = this.getFluidState(pos);
-        return this.setBlockState(pos, fluidState.getBlockState(), SetBlockStateFlags.DEFAULT | (move ? SetBlockStateFlags.MOVED : 0));
+        return this.setBlockState(pos, fluidState.getBlockState(), Block.NOTIFY_ALL | (move ? Block.MOVED : 0));
     }
 
     @Override
@@ -249,7 +254,7 @@ AutoCloseable {
             BlockEntity blockEntity = blockState.hasBlockEntity() ? this.getBlockEntity(pos) : null;
             Block.dropStacks(blockState, this, pos, blockEntity, breakingEntity, ItemStack.EMPTY);
         }
-        if (bl = this.setBlockState(pos, fluidState.getBlockState(), SetBlockStateFlags.DEFAULT, maxUpdateDepth)) {
+        if (bl = this.setBlockState(pos, fluidState.getBlockState(), Block.NOTIFY_ALL, maxUpdateDepth)) {
             this.emitGameEvent(breakingEntity, GameEvent.BLOCK_DESTROY, pos);
         }
         return bl;
@@ -259,7 +264,7 @@ AutoCloseable {
     }
 
     public boolean setBlockState(BlockPos pos, BlockState state) {
-        return this.setBlockState(pos, state, SetBlockStateFlags.DEFAULT);
+        return this.setBlockState(pos, state, Block.NOTIFY_ALL);
     }
 
     public abstract void updateListeners(BlockPos var1, BlockState var2, BlockState var3, int var4);
@@ -372,7 +377,6 @@ AutoCloseable {
     public void addParticle(ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void addParticle(ParticleEffect parameters, boolean alwaysSpawn, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
     }
 
@@ -437,6 +441,8 @@ AutoCloseable {
         explosion.affectWorld(true);
         return explosion;
     }
+
+    public abstract String asString();
 
     @Override
     @Nullable
@@ -637,7 +643,6 @@ AutoCloseable {
         return i;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void disconnect() {
     }
 
@@ -673,7 +678,6 @@ AutoCloseable {
         return MathHelper.lerp(delta, this.thunderGradientPrev, this.thunderGradient) * this.getRainGradient(delta);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void setThunderGradient(float thunderGradient) {
         this.thunderGradientPrev = thunderGradient;
         this.thunderGradient = thunderGradient;
@@ -683,7 +687,6 @@ AutoCloseable {
         return MathHelper.lerp(delta, this.rainGradientPrev, this.rainGradient);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void setRainGradient(float rainGradient) {
         this.rainGradientPrev = rainGradient;
         this.rainGradient = rainGradient;
@@ -744,8 +747,7 @@ AutoCloseable {
 
     public abstract void setBlockBreakingInfo(int var1, BlockPos var2, int var3);
 
-    @Environment(value=EnvType.CLIENT)
-    public void addFireworkParticle(double x, double y, double z, double velocityX, double velocityY, double velocityZ, @Nullable NbtCompound tag) {
+    public void addFireworkParticle(double x, double y, double z, double velocityX, double velocityY, double velocityZ, @Nullable NbtCompound nbt) {
     }
 
     public abstract Scoreboard getScoreboard();
@@ -809,6 +811,11 @@ AutoCloseable {
     @Override
     public boolean testBlockState(BlockPos pos, Predicate<BlockState> state) {
         return state.test(this.getBlockState(pos));
+    }
+
+    @Override
+    public boolean testFluidState(BlockPos pos, Predicate<FluidState> state) {
+        return state.test(this.getFluidState(pos));
     }
 
     public abstract RecipeManager getRecipeManager();

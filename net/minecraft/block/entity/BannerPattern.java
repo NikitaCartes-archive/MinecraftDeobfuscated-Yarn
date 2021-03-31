@@ -7,8 +7,6 @@ import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 import java.util.Arrays;
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.DyeColor;
@@ -76,7 +74,6 @@ public enum BannerPattern {
         this.hasPatternItem = hasPatternItem;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Identifier getSpriteId(boolean banner) {
         String string = banner ? "banner" : "shield";
         return new Identifier("entity/" + string + "/" + this.getName());
@@ -91,7 +88,6 @@ public enum BannerPattern {
     }
 
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     public static BannerPattern byId(String id) {
         for (BannerPattern bannerPattern : BannerPattern.values()) {
             if (!bannerPattern.id.equals(id)) continue;

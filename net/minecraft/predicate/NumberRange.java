@@ -169,8 +169,20 @@ public abstract class NumberRange<T extends Number> {
             this.squaredMax = FloatRange.square(max);
         }
 
+        public static FloatRange exactly(float value) {
+            return new FloatRange(Float.valueOf(value), Float.valueOf(value));
+        }
+
+        public static FloatRange between(float min, float max) {
+            return new FloatRange(Float.valueOf(min), Float.valueOf(max));
+        }
+
         public static FloatRange atLeast(float value) {
             return new FloatRange(Float.valueOf(value), null);
+        }
+
+        public static FloatRange atMost(float value) {
+            return new FloatRange(null, Float.valueOf(value));
         }
 
         public boolean test(float value) {
@@ -228,8 +240,16 @@ public abstract class NumberRange<T extends Number> {
             return new IntRange(value, value);
         }
 
+        public static IntRange between(int min, int max) {
+            return new IntRange(min, max);
+        }
+
         public static IntRange atLeast(int value) {
             return new IntRange(value, null);
+        }
+
+        public static IntRange atMost(int value) {
+            return new IntRange(null, value);
         }
 
         public boolean test(int value) {
@@ -237,6 +257,13 @@ public abstract class NumberRange<T extends Number> {
                 return false;
             }
             return this.max == null || (Integer)this.max >= value;
+        }
+
+        public boolean method_35288(long l) {
+            if (this.minSquared != null && this.minSquared > l) {
+                return false;
+            }
+            return this.maxSquared == null || this.maxSquared >= l;
         }
 
         public static IntRange fromJson(@Nullable JsonElement element) {

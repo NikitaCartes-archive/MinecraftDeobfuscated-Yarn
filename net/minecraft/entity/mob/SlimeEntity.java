@@ -53,6 +53,8 @@ public class SlimeEntity
 extends MobEntity
 implements Monster {
     private static final TrackedData<Integer> SLIME_SIZE = DataTracker.registerData(SlimeEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    public static final int field_30496 = 1;
+    public static final int field_30497 = 127;
     public float targetStretch;
     public float stretch;
     public float lastStretch;
@@ -98,17 +100,17 @@ implements Monster {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
-        tag.putInt("Size", this.getSize() - 1);
-        tag.putBoolean("wasOnGround", this.onGroundLastTick);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putInt("Size", this.getSize() - 1);
+        nbt.putBoolean("wasOnGround", this.onGroundLastTick);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        this.setSize(tag.getInt("Size") + 1, false);
-        super.readCustomDataFromNbt(tag);
-        this.onGroundLastTick = tag.getBoolean("wasOnGround");
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        this.setSize(nbt.getInt("Size") + 1, false);
+        super.readCustomDataFromNbt(nbt);
+        this.onGroundLastTick = nbt.getBoolean("wasOnGround");
     }
 
     public boolean isSmall() {
@@ -315,14 +317,14 @@ implements Monster {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         int i = this.random.nextInt(3);
         if (i < 2 && this.random.nextFloat() < 0.5f * difficulty.getClampedLocalDifficulty()) {
             ++i;
         }
         int j = 1 << i;
         this.setSize(j, true);
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     private float getJumpSoundPitch() {

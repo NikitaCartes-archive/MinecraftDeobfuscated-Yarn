@@ -25,6 +25,9 @@ public class LanServerPinger
 extends Thread {
     private static final AtomicInteger THREAD_ID = new AtomicInteger(0);
     private static final Logger LOGGER = LogManager.getLogger();
+    public static final String field_33016 = "224.0.2.60";
+    public static final int field_33017 = 4445;
+    private static final long field_33018 = 1500L;
     private final String motd;
     private final DatagramSocket socket;
     private boolean running = true;
@@ -45,7 +48,7 @@ extends Thread {
         byte[] bs = string.getBytes(StandardCharsets.UTF_8);
         while (!this.isInterrupted() && this.running) {
             try {
-                InetAddress inetAddress = InetAddress.getByName("224.0.2.60");
+                InetAddress inetAddress = InetAddress.getByName(field_33016);
                 DatagramPacket datagramPacket = new DatagramPacket(bs, bs.length, inetAddress, 4445);
                 this.socket.send(datagramPacket);
             } catch (IOException iOException) {

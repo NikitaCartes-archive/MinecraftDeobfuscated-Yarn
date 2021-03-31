@@ -54,6 +54,8 @@ import org.jetbrains.annotations.Nullable;
 public class TitleScreen
 extends Screen {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final String field_32272 = "Demo_World";
+    public static final String field_32271 = "Copyright Mojang AB. Do not distribute!";
     public static final CubeMapRenderer PANORAMA_CUBE_MAP = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
     private static final Identifier PANORAMA_OVERLAY = new Identifier("textures/gui/title/background/panorama_overlay.png");
     private static final Identifier ACCESSIBILITY_ICON_TEXTURE = new Identifier("textures/gui/accessibility.png");
@@ -111,7 +113,7 @@ extends Screen {
         if (this.splashText == null) {
             this.splashText = this.client.getSplashTextLoader().get();
         }
-        this.copyrightTextWidth = this.textRenderer.getWidth("Copyright Mojang AB. Do not distribute!");
+        this.copyrightTextWidth = this.textRenderer.getWidth(field_32271);
         this.copyrightTextX = this.width - this.copyrightTextWidth - 2;
         int i = 24;
         int j = this.height / 4 + 48;
@@ -151,21 +153,21 @@ extends Screen {
         boolean bl = this.canReadDemoWorldData();
         this.addButton(new ButtonWidget(this.width / 2 - 100, y, 200, 20, new TranslatableText("menu.playdemo"), buttonWidget -> {
             if (bl) {
-                this.client.startIntegratedServer("Demo_World");
+                this.client.startIntegratedServer(field_32272);
             } else {
                 DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
-                this.client.method_29607("Demo_World", MinecraftServer.DEMO_LEVEL_INFO, impl, GeneratorOptions.createDemo(impl));
+                this.client.method_29607(field_32272, MinecraftServer.DEMO_LEVEL_INFO, impl, GeneratorOptions.createDemo(impl));
             }
         }));
         this.buttonResetDemo = this.addButton(new ButtonWidget(this.width / 2 - 100, y + spacingY * 1, 200, 20, new TranslatableText("menu.resetdemo"), buttonWidget -> {
             LevelStorage levelStorage = this.client.getLevelStorage();
-            try (LevelStorage.Session session = levelStorage.createSession("Demo_World");){
+            try (LevelStorage.Session session = levelStorage.createSession(field_32272);){
                 LevelSummary levelSummary = session.getLevelSummary();
                 if (levelSummary != null) {
                     this.client.openScreen(new ConfirmScreen(this::onDemoDeletionConfirmed, new TranslatableText("selectWorld.deleteQuestion"), new TranslatableText("selectWorld.deleteWarning", levelSummary.getDisplayName()), new TranslatableText("selectWorld.deleteButton"), ScreenTexts.CANCEL));
                 }
             } catch (IOException iOException) {
-                SystemToast.addWorldAccessFailureToast(this.client, "Demo_World");
+                SystemToast.addWorldAccessFailureToast(this.client, field_32272);
                 LOGGER.warn("Failed to access demo world", (Throwable)iOException);
             }
         }));
@@ -178,11 +180,11 @@ extends Screen {
      * Enabled aggressive exception aggregation
      */
     private boolean canReadDemoWorldData() {
-        try (LevelStorage.Session session = this.client.getLevelStorage().createSession("Demo_World");){
+        try (LevelStorage.Session session = this.client.getLevelStorage().createSession(field_32272);){
             boolean bl = session.getLevelSummary() != null;
             return bl;
         } catch (IOException iOException) {
-            SystemToast.addWorldAccessFailureToast(this.client, "Demo_World");
+            SystemToast.addWorldAccessFailureToast(this.client, field_32272);
             LOGGER.warn("Failed to read demo world data", (Throwable)iOException);
             return false;
         }
@@ -249,7 +251,7 @@ extends Screen {
             string = string + I18n.translate("menu.modded", new Object[0]);
         }
         TitleScreen.drawStringWithShadow(matrices, this.textRenderer, string, 2, this.height - 10, 0xFFFFFF | l);
-        TitleScreen.drawStringWithShadow(matrices, this.textRenderer, "Copyright Mojang AB. Do not distribute!", this.copyrightTextX, this.height - 10, 0xFFFFFF | l);
+        TitleScreen.drawStringWithShadow(matrices, this.textRenderer, field_32271, this.copyrightTextX, this.height - 10, 0xFFFFFF | l);
         if (mouseX > this.copyrightTextX && mouseX < this.copyrightTextX + this.copyrightTextWidth && mouseY > this.height - 10 && mouseY < this.height) {
             TitleScreen.fill(matrices, this.copyrightTextX, this.height - 1, this.copyrightTextX + this.copyrightTextWidth, this.height, 0xFFFFFF | l);
         }
@@ -285,10 +287,10 @@ extends Screen {
 
     private void onDemoDeletionConfirmed(boolean delete) {
         if (delete) {
-            try (LevelStorage.Session session = this.client.getLevelStorage().createSession("Demo_World");){
+            try (LevelStorage.Session session = this.client.getLevelStorage().createSession(field_32272);){
                 session.deleteSessionLock();
             } catch (IOException iOException) {
-                SystemToast.addWorldDeleteFailureToast(this.client, "Demo_World");
+                SystemToast.addWorldDeleteFailureToast(this.client, field_32272);
                 LOGGER.warn("Failed to delete demo world", (Throwable)iOException);
             }
         }

@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -39,17 +37,14 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onScreenHandlerPropertyUpdate(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getSyncId() {
         return this.syncId;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getPropertyId() {
         return this.propertyId;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getValue() {
         return this.value;
     }

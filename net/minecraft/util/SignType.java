@@ -6,8 +6,6 @@ package net.minecraft.util;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import java.util.Set;
 import java.util.stream.Stream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 
 public class SignType {
     private static final Set<SignType> VALUES = new ObjectArraySet<SignType>();
@@ -30,12 +28,10 @@ public class SignType {
         return type;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static Stream<SignType> stream() {
         return VALUES.stream();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public String getName() {
         return this.name;
     }

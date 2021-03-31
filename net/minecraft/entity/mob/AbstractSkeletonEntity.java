@@ -144,8 +144,8 @@ implements RangedAttackMob {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
-        entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
+        entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
         this.initEquipment(difficulty);
         this.updateEnchantments(difficulty);
         this.updateAttackType();
@@ -204,8 +204,8 @@ implements RangedAttackMob {
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
         this.updateAttackType();
     }
 
@@ -225,6 +225,10 @@ implements RangedAttackMob {
     @Override
     public double getHeightOffset() {
         return -0.6;
+    }
+
+    public boolean isShaking() {
+        return this.isFreezing();
     }
 }
 

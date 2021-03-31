@@ -4,8 +4,6 @@
 package net.minecraft.network.packet.c2s.play;
 
 import java.util.function.Function;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -37,24 +35,20 @@ implements Packet<ServerPlayPacketListener> {
         }
     };
 
-    @Environment(value=EnvType.CLIENT)
     private PlayerInteractEntityC2SPacket(int entityId, boolean playerSneaking, InteractTypeHandler type) {
         this.entityId = entityId;
         this.type = type;
         this.playerSneaking = playerSneaking;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static PlayerInteractEntityC2SPacket attack(Entity entity, boolean playerSneaking) {
         return new PlayerInteractEntityC2SPacket(entity.getId(), playerSneaking, ATTACK);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static PlayerInteractEntityC2SPacket interact(Entity entity, boolean playerSneaking, Hand hand) {
         return new PlayerInteractEntityC2SPacket(entity.getId(), playerSneaking, new InteractHandler(hand));
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static PlayerInteractEntityC2SPacket interactAt(Entity entity, boolean playerSneaking, Hand hand, Vec3d pos) {
         return new PlayerInteractEntityC2SPacket(entity.getId(), playerSneaking, new InteractAtHandler(hand, pos));
     }
@@ -97,7 +91,6 @@ implements Packet<ServerPlayPacketListener> {
         private final Hand hand;
         private final Vec3d pos;
 
-        @Environment(value=EnvType.CLIENT)
         private InteractAtHandler(Hand hand, Vec3d pos) {
             this.hand = hand;
             this.pos = pos;
@@ -131,7 +124,6 @@ implements Packet<ServerPlayPacketListener> {
     implements InteractTypeHandler {
         private final Hand hand;
 
-        @Environment(value=EnvType.CLIENT)
         private InteractHandler(Hand hand) {
             this.hand = hand;
         }

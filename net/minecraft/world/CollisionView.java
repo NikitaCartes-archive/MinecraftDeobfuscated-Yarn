@@ -8,8 +8,6 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
@@ -70,7 +68,6 @@ extends BlockView {
         return StreamSupport.stream(new BlockCollisionSpliterator(this, entity, box), false);
     }
 
-    @Environment(value=EnvType.CLIENT)
     default public boolean isBlockSpaceEmpty(@Nullable Entity entity, Box box, BiPredicate<BlockState, BlockPos> biPredicate) {
         return !this.getBlockCollisions(entity, box, biPredicate).allMatch(VoxelShape::isEmpty);
     }

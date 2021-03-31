@@ -16,8 +16,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
@@ -72,6 +70,12 @@ public class CrashReport {
 
     public Throwable getCause() {
         return this.cause;
+    }
+
+    public String method_36147() {
+        StringBuilder stringBuilder = new StringBuilder();
+        this.addStackTrace(stringBuilder);
+        return stringBuilder.toString();
     }
 
     public void addStackTrace(StringBuilder crashReportBuilder) {
@@ -150,7 +154,6 @@ public class CrashReport {
         return stringBuilder.toString();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public File getFile() {
         return this.file;
     }

@@ -35,6 +35,18 @@ import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
 public class EntitySelectorReader {
+    public static final char SELECTOR_PREFIX = '@';
+    private static final char ARGUMENTS_OPENING = '[';
+    private static final char ARGUMENTS_CLOSING = ']';
+    public static final char ARGUMENT_DEFINER = '=';
+    private static final char ARGUMENT_SEPARATOR = ',';
+    public static final char INVERT_MODIFIER = '!';
+    public static final char TAG_MODIFIER = '#';
+    private static final char NEAREST_PLAYER = 'p';
+    private static final char ALL_PLAYERS = 'a';
+    private static final char RANDOM_PLAYER = 'r';
+    private static final char SELF = 's';
+    private static final char ALL_ENTITIES = 'e';
     public static final SimpleCommandExceptionType INVALID_ENTITY_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.entity.invalid"));
     public static final DynamicCommandExceptionType UNKNOWN_SELECTOR_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("argument.entity.selector.unknown", object));
     public static final SimpleCommandExceptionType NOT_ALLOWED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.entity.selector.not_allowed"));
@@ -307,16 +319,16 @@ public class EntitySelectorReader {
         return this.pitchRange;
     }
 
-    public void setPitchRange(FloatRangeArgument floatRangeArgument) {
-        this.pitchRange = floatRangeArgument;
+    public void setPitchRange(FloatRangeArgument pitchRange) {
+        this.pitchRange = pitchRange;
     }
 
     public FloatRangeArgument getYawRange() {
         return this.yawRange;
     }
 
-    public void setYawRange(FloatRangeArgument floatRangeArgument) {
-        this.yawRange = floatRangeArgument;
+    public void setYawRange(FloatRangeArgument yawRange) {
+        this.yawRange = yawRange;
     }
 
     @Nullable
@@ -379,6 +391,10 @@ public class EntitySelectorReader {
 
     public void setIncludesNonPlayers(boolean includesNonPlayers) {
         this.includesNonPlayers = includesNonPlayers;
+    }
+
+    public BiConsumer<Vec3d, List<? extends Entity>> getSorter() {
+        return this.sorter;
     }
 
     public void setSorter(BiConsumer<Vec3d, List<? extends Entity>> sorter) {
@@ -452,12 +468,17 @@ public class EntitySelectorReader {
         return builder.buildFuture();
     }
 
+    private CompletableFuture<Suggestions> suggestDefinerNext(SuggestionsBuilder builder, Consumer<SuggestionsBuilder> consumer) {
+        builder.suggest(String.valueOf('='));
+        return builder.buildFuture();
+    }
+
     public boolean isSenderOnly() {
         return this.senderOnly;
     }
 
-    public void setSuggestionProvider(BiFunction<SuggestionsBuilder, Consumer<SuggestionsBuilder>, CompletableFuture<Suggestions>> biFunction) {
-        this.suggestionProvider = biFunction;
+    public void setSuggestionProvider(BiFunction<SuggestionsBuilder, Consumer<SuggestionsBuilder>, CompletableFuture<Suggestions>> suggestionProvider) {
+        this.suggestionProvider = suggestionProvider;
     }
 
     public CompletableFuture<Suggestions> listSuggestions(SuggestionsBuilder builder, Consumer<SuggestionsBuilder> consumer) {
@@ -518,6 +539,10 @@ public class EntitySelectorReader {
 
     public void setSelectsTeam(boolean selectsTeam) {
         this.selectsTeam = selectsTeam;
+    }
+
+    public boolean method_35816() {
+        return this.excludesTeam;
     }
 
     public void setExcludesTeam(boolean excludesTeam) {

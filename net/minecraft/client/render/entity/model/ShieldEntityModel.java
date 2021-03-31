@@ -19,6 +19,10 @@ import net.minecraft.client.util.math.MatrixStack;
 @Environment(value=EnvType.CLIENT)
 public class ShieldEntityModel
 extends Model {
+    private static final String PLATE = "plate";
+    private static final String HANDLE = "handle";
+    private static final int field_32551 = 10;
+    private static final int field_32552 = 20;
     private final ModelPart root;
     private final ModelPart plate;
     private final ModelPart handle;
@@ -26,15 +30,15 @@ extends Model {
     public ShieldEntityModel(ModelPart root) {
         super(RenderLayer::getEntitySolid);
         this.root = root;
-        this.plate = root.getChild("plate");
-        this.handle = root.getChild("handle");
+        this.plate = root.getChild(PLATE);
+        this.handle = root.getChild(HANDLE);
     }
 
     public static TexturedModelData getTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
-        modelPartData.addChild("plate", ModelPartBuilder.create().uv(0, 0).cuboid(-6.0f, -11.0f, -2.0f, 12.0f, 22.0f, 1.0f), ModelTransform.NONE);
-        modelPartData.addChild("handle", ModelPartBuilder.create().uv(26, 0).cuboid(-1.0f, -3.0f, -1.0f, 2.0f, 6.0f, 6.0f), ModelTransform.NONE);
+        modelPartData.addChild(PLATE, ModelPartBuilder.create().uv(0, 0).cuboid(-6.0f, -11.0f, -2.0f, 12.0f, 22.0f, 1.0f), ModelTransform.NONE);
+        modelPartData.addChild(HANDLE, ModelPartBuilder.create().uv(26, 0).cuboid(-1.0f, -3.0f, -1.0f, 2.0f, 6.0f, 6.0f), ModelTransform.NONE);
         return TexturedModelData.of(modelData, 64, 64);
     }
 

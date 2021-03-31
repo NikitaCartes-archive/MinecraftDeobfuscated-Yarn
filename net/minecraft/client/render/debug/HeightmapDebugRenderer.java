@@ -29,6 +29,8 @@ import net.minecraft.world.chunk.Chunk;
 public class HeightmapDebugRenderer
 implements DebugRenderer.Renderer {
     private final MinecraftClient client;
+    private static final int field_32903 = 2;
+    private static final float field_32904 = 0.09375f;
 
     public HeightmapDebugRenderer(MinecraftClient client) {
         this.client = client;

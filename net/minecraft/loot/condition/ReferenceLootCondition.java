@@ -64,6 +64,10 @@ implements LootCondition {
         return false;
     }
 
+    public static LootCondition.Builder builder(Identifier id) {
+        return () -> new ReferenceLootCondition(id);
+    }
+
     @Override
     public /* synthetic */ boolean test(Object context) {
         return this.test((LootContext)context);

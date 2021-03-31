@@ -4,8 +4,6 @@
 package net.minecraft.particle;
 
 import com.mojang.serialization.Codec;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.particle.ParticleEffect;
 
 public abstract class ParticleType<T extends ParticleEffect> {
@@ -20,7 +18,6 @@ public abstract class ParticleType<T extends ParticleEffect> {
         this.parametersFactory = parametersFactory;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean shouldAlwaysSpawn() {
         return this.alwaysShow;
     }

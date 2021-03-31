@@ -4,7 +4,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -30,6 +29,8 @@ import net.minecraft.world.WorldView;
 public class CactusBlock
 extends Block {
     public static final IntProperty AGE = Properties.AGE_15;
+    public static final int field_31044 = 15;
+    protected static final int field_31045 = 1;
     protected static final VoxelShape COLLISION_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 15.0, 15.0);
     protected static final VoxelShape OUTLINE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 16.0, 15.0);
 
@@ -62,10 +63,10 @@ extends Block {
         if (j == 15) {
             world.setBlockState(blockPos, this.getDefaultState());
             BlockState blockState = (BlockState)state.with(AGE, 0);
-            world.setBlockState(pos, blockState, SetBlockStateFlags.NO_REDRAW);
+            world.setBlockState(pos, blockState, Block.NO_REDRAW);
             blockState.neighborUpdate(world, blockPos, this, pos, false);
         } else {
-            world.setBlockState(pos, (BlockState)state.with(AGE, j + 1), SetBlockStateFlags.NO_REDRAW);
+            world.setBlockState(pos, (BlockState)state.with(AGE, j + 1), Block.NO_REDRAW);
         }
     }
 

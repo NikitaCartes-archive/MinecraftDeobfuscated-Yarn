@@ -81,6 +81,10 @@ extends ConditionalLootFunction {
         return stack;
     }
 
+    public static Builder create() {
+        return new Builder();
+    }
+
     public static ConditionalLootFunction.Builder<?> builder() {
         return EnchantRandomlyLootFunction.builder(conditions -> new EnchantRandomlyLootFunction((LootCondition[])conditions, (Collection<Enchantment>)ImmutableList.of()));
     }

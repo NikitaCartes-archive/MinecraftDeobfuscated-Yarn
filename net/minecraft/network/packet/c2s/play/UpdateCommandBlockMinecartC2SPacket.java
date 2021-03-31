@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.c2s.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.vehicle.CommandBlockMinecartEntity;
 import net.minecraft.network.Packet;
@@ -20,7 +18,6 @@ implements Packet<ServerPlayPacketListener> {
     private final String command;
     private final boolean trackOutput;
 
-    @Environment(value=EnvType.CLIENT)
     public UpdateCommandBlockMinecartC2SPacket(int entityId, String command, boolean trackOutput) {
         this.entityId = entityId;
         this.command = command;

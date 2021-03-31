@@ -15,6 +15,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class ForgetBellRingTask
 extends Task<LivingEntity> {
+    private static final int field_30165 = 300;
     private final int distance;
     private final int maxHiddenTicks;
     private int hiddenTicks;

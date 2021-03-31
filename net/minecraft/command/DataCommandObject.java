@@ -10,9 +10,9 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.text.Text;
 
 public interface DataCommandObject {
-    public void setTag(NbtCompound var1) throws CommandSyntaxException;
+    public void setNbt(NbtCompound var1) throws CommandSyntaxException;
 
-    public NbtCompound getTag() throws CommandSyntaxException;
+    public NbtCompound getNbt() throws CommandSyntaxException;
 
     public Text feedbackModify();
 

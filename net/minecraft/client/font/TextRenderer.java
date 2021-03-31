@@ -46,6 +46,7 @@ import org.jetbrains.annotations.Nullable;
  */
 @Environment(value=EnvType.CLIENT)
 public class TextRenderer {
+    private static final float field_32166 = 0.01f;
     private static final Vec3f FORWARD_SHIFT = new Vec3f(0.0f, 0.0f, 0.03f);
     /**
      * The font height of the text that is rendered by the text renderer.

@@ -5,7 +5,7 @@ package net.minecraft.world;
 
 import java.util.Comparator;
 import java.util.Optional;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.NetherPortalBlock;
@@ -24,6 +24,19 @@ import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 
 public class PortalForcer {
+    private static final int field_31810 = 3;
+    private static final int field_31811 = 128;
+    private static final int field_31812 = 16;
+    private static final int field_31813 = 5;
+    private static final int field_31814 = 4;
+    private static final int field_31815 = 3;
+    private static final int field_31816 = -1;
+    private static final int field_31817 = 4;
+    private static final int field_31818 = -1;
+    private static final int field_31819 = 3;
+    private static final int field_31820 = -1;
+    private static final int field_31821 = 2;
+    private static final int field_31822 = -1;
     private final ServerWorld world;
 
     public PortalForcer(ServerWorld world) {
@@ -104,14 +117,14 @@ public class PortalForcer {
             for (int o = -1; o < 4; ++o) {
                 if (p != -1 && p != 2 && o != -1 && o != 3) continue;
                 mutable.set(blockPos2, p * direction.getOffsetX(), o, p * direction.getOffsetZ());
-                this.world.setBlockState(mutable, Blocks.OBSIDIAN.getDefaultState(), SetBlockStateFlags.DEFAULT);
+                this.world.setBlockState(mutable, Blocks.OBSIDIAN.getDefaultState(), Block.NOTIFY_ALL);
             }
         }
         BlockState blockState2 = (BlockState)Blocks.NETHER_PORTAL.getDefaultState().with(NetherPortalBlock.AXIS, axis);
         for (int o = 0; o < 2; ++o) {
             for (j = 0; j < 3; ++j) {
                 mutable.set(blockPos2, o * direction.getOffsetX(), j, o * direction.getOffsetZ());
-                this.world.setBlockState(mutable, blockState2, SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.FORCE_STATE);
+                this.world.setBlockState(mutable, blockState2, Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
             }
         }
         return Optional.of(new PortalUtil.Rectangle(blockPos2.toImmutable(), 2, 3));

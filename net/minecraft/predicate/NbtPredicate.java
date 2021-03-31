@@ -21,10 +21,10 @@ import org.jetbrains.annotations.Nullable;
 public class NbtPredicate {
     public static final NbtPredicate ANY = new NbtPredicate(null);
     @Nullable
-    private final NbtCompound tag;
+    private final NbtCompound nbt;
 
-    public NbtPredicate(@Nullable NbtCompound tag) {
-        this.tag = tag;
+    public NbtPredicate(@Nullable NbtCompound nbt) {
+        this.nbt = nbt;
     }
 
     public boolean test(ItemStack stack) {
@@ -41,18 +41,18 @@ public class NbtPredicate {
         return this.test(NbtPredicate.entityToNbt(entity));
     }
 
-    public boolean test(@Nullable NbtElement tag) {
-        if (tag == null) {
+    public boolean test(@Nullable NbtElement element) {
+        if (element == null) {
             return this == ANY;
         }
-        return this.tag == null || NbtHelper.matches(this.tag, tag, true);
+        return this.nbt == null || NbtHelper.matches(this.nbt, element, true);
     }
 
     public JsonElement toJson() {
-        if (this == ANY || this.tag == null) {
+        if (this == ANY || this.nbt == null) {
             return JsonNull.INSTANCE;
         }
-        return new JsonPrimitive(this.tag.toString());
+        return new JsonPrimitive(this.nbt.toString());
     }
 
     public static NbtPredicate fromJson(@Nullable JsonElement json) {

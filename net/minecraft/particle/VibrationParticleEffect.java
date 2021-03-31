@@ -10,8 +10,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Locale;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
@@ -23,8 +21,8 @@ import net.minecraft.world.event.BlockPositionSource;
 
 public class VibrationParticleEffect
 implements ParticleEffect {
-    public static final Codec<VibrationParticleEffect> field_28277 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Vibration.CODEC.fieldOf("vibration")).forGetter(vibrationParticleEffect -> vibrationParticleEffect.field_28279)).apply((Applicative<VibrationParticleEffect, ?>)instance, VibrationParticleEffect::new));
-    public static final ParticleEffect.Factory<VibrationParticleEffect> field_28278 = new ParticleEffect.Factory<VibrationParticleEffect>(){
+    public static final Codec<VibrationParticleEffect> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Vibration.CODEC.fieldOf("vibration")).forGetter(vibrationParticleEffect -> vibrationParticleEffect.vibration)).apply((Applicative<VibrationParticleEffect, ?>)instance, VibrationParticleEffect::new));
+    public static final ParticleEffect.Factory<VibrationParticleEffect> PARAMETERS_FACTORY = new ParticleEffect.Factory<VibrationParticleEffect>(){
 
         @Override
         public VibrationParticleEffect read(ParticleType<VibrationParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
@@ -63,33 +61,32 @@ implements ParticleEffect {
             return this.read(type, reader);
         }
     };
-    private final Vibration field_28279;
+    private final Vibration vibration;
 
     public VibrationParticleEffect(Vibration vibration) {
-        this.field_28279 = vibration;
+        this.vibration = vibration;
     }
 
     @Override
     public void write(PacketByteBuf buf) {
-        Vibration.writeToBuf(buf, this.field_28279);
+        Vibration.writeToBuf(buf, this.vibration);
     }
 
     @Override
     public String asString() {
-        BlockPos blockPos = this.field_28279.getOrigin();
+        BlockPos blockPos = this.vibration.getOrigin();
         double d = blockPos.getX();
         double e = blockPos.getY();
         double f = blockPos.getZ();
-        return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f %.2f %.2f %d", Registry.PARTICLE_TYPE.getId(this.getType()), d, e, f, d, e, f, this.field_28279.getArrivalInTicks());
+        return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f %.2f %.2f %d", Registry.PARTICLE_TYPE.getId(this.getType()), d, e, f, d, e, f, this.vibration.getArrivalInTicks());
     }
 
     public ParticleType<VibrationParticleEffect> getType() {
         return ParticleTypes.VIBRATION;
     }
 
-    @Environment(value=EnvType.CLIENT)
-    public Vibration method_33125() {
-        return this.field_28279;
+    public Vibration getVibration() {
+        return this.vibration;
     }
 }
 

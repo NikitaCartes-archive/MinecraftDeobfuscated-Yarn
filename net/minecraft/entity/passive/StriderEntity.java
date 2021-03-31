@@ -6,8 +6,6 @@ package net.minecraft.entity.passive;
 import com.google.common.collect.Sets;
 import java.util.LinkedHashSet;
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -77,6 +75,9 @@ public class StriderEntity
 extends AnimalEntity
 implements ItemSteerable,
 Saddleable {
+    private static final float field_30499 = 0.23f;
+    private static final float field_30500 = 0.66f;
+    private static final float field_30501 = 0.55f;
     private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.WARPED_FUNGUS);
     private static final Ingredient ATTRACTING_INGREDIENT = Ingredient.ofItems(Items.WARPED_FUNGUS, Items.WARPED_FUNGUS_ON_A_STICK);
     private static final TrackedData<Integer> BOOST_TIME = DataTracker.registerData(StriderEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -121,15 +122,15 @@ Saddleable {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
-        this.saddledComponent.writeNbt(tag);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        this.saddledComponent.writeNbt(nbt);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        this.saddledComponent.readNbt(tag);
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.saddledComponent.readNbt(nbt);
     }
 
     @Override
@@ -414,16 +415,15 @@ Saddleable {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public Vec3d method_29919() {
         return new Vec3d(0.0, 0.6f * this.getStandingEyeHeight(), this.getWidth() * 0.4f);
     }
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         if (this.isBaby()) {
-            return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+            return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
         }
         if (this.random.nextInt(30) == 0) {
             MobEntity mobEntity = EntityType.ZOMBIFIED_PIGLIN.create(world.toServerWorld());
@@ -437,7 +437,7 @@ Saddleable {
         } else {
             entityData = new PassiveEntity.PassiveData(0.5f);
         }
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     private EntityData method_30336(ServerWorldAccess serverWorldAccess, LocalDifficulty localDifficulty, MobEntity mobEntity, @Nullable EntityData entityData) {

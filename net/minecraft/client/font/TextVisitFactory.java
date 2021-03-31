@@ -4,8 +4,6 @@
 package net.minecraft.client.font;
 
 import java.util.Optional;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.text.CharacterVisitor;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
@@ -16,8 +14,8 @@ import net.minecraft.util.Unit;
  * A utility class for visiting the characters of strings, handling surrogate
  * code points and formatting codes.
  */
-@Environment(value=EnvType.CLIENT)
 public class TextVisitFactory {
+    private static final char field_29861 = '\ufffd';
     private static final Optional<Object> VISIT_TERMINATED = Optional.of(Unit.INSTANCE);
 
     private static boolean visitRegularCharacter(Style style, CharacterVisitor visitor, int index, char c) {

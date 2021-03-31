@@ -15,6 +15,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class RconCommandOutput
 implements CommandOutput {
+    private static final String field_29793 = "Rcon";
     private static final Text RCON_NAME = new LiteralText("Rcon");
     private final StringBuffer buffer = new StringBuffer();
     private final MinecraftServer server;
@@ -33,7 +34,7 @@ implements CommandOutput {
 
     public ServerCommandSource createRconCommandSource() {
         ServerWorld serverWorld = this.server.getOverworld();
-        return new ServerCommandSource(this, Vec3d.of(serverWorld.getSpawnPos()), Vec2f.ZERO, serverWorld, 4, "Rcon", RCON_NAME, this.server, null);
+        return new ServerCommandSource(this, Vec3d.of(serverWorld.getSpawnPos()), Vec2f.ZERO, serverWorld, 4, field_29793, RCON_NAME, this.server, null);
     }
 
     @Override

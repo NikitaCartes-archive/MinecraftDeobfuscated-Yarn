@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class ModelElementFace {
+    public static final int field_32789 = -1;
     public final Direction cullFace;
     public final int tintIndex;
     public final String textureId;
@@ -33,6 +34,8 @@ public class ModelElementFace {
     @Environment(value=EnvType.CLIENT)
     public static class Deserializer
     implements JsonDeserializer<ModelElementFace> {
+        private static final int field_32790 = -1;
+
         protected Deserializer() {
         }
 

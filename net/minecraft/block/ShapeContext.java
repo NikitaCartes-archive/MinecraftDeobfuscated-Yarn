@@ -24,6 +24,8 @@ public interface ShapeContext {
 
     public boolean isAbove(VoxelShape var1, BlockPos var2, boolean var3);
 
+    public boolean isWearingOnFeet(Item var1);
+
     public boolean isHolding(Item var1);
 
     public boolean canWalkOnFluid(FluidState var1, FlowableFluid var2);

@@ -15,6 +15,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class PistonHandler {
+    public static final int field_31384 = 12;
     private final World world;
     private final BlockPos posFrom;
     private final boolean retracted;
@@ -161,6 +162,10 @@ public class PistonHandler {
             return false;
         }
         return true;
+    }
+
+    public Direction getMotionDirection() {
+        return this.motionDirection;
     }
 
     public List<BlockPos> getMovedBlocks() {

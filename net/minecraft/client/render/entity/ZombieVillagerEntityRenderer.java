@@ -33,7 +33,7 @@ extends BipedEntityRenderer<ZombieVillagerEntity, ZombieVillagerEntityModel<Zomb
 
     @Override
     protected boolean isShaking(ZombieVillagerEntity zombieVillagerEntity) {
-        return zombieVillagerEntity.isConverting();
+        return super.isShaking(zombieVillagerEntity) || zombieVillagerEntity.isConverting();
     }
 
     @Override

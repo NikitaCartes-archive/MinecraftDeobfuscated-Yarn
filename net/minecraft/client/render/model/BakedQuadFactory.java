@@ -27,8 +27,12 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class BakedQuadFactory {
+    public static final int field_32796 = 8;
     private static final float MIN_SCALE = 1.0f / (float)Math.cos(0.3926991f) - 1.0f;
     private static final float MAX_SCALE = 1.0f / (float)Math.cos(0.7853981852531433) - 1.0f;
+    public static final int field_32797 = 4;
+    private static final int field_32799 = 3;
+    public static final int field_32798 = 4;
 
     public BakedQuad bake(Vec3f from, Vec3f to, ModelElementFace face, Sprite texture, Direction side, ModelBakeSettings settings, @Nullable ModelRotation rotation, boolean shade, Identifier modelId) {
         ModelElementTexture modelElementTexture = face.textureData;

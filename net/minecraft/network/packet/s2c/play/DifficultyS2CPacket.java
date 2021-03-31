@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -36,12 +34,10 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onDifficulty(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isDifficultyLocked() {
         return this.difficultyLocked;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Difficulty getDifficulty() {
         return this.difficulty;
     }

@@ -25,6 +25,7 @@ import net.minecraft.util.math.Vec3f;
 public class BeaconBlockEntityRenderer
 implements BlockEntityRenderer<BeaconBlockEntity> {
     public static final Identifier BEAM_TEXTURE = new Identifier("textures/entity/beacon_beam.png");
+    public static final int field_32822 = 1024;
 
     public BeaconBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
     }

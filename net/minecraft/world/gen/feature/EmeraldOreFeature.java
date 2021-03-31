@@ -4,7 +4,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.EmeraldOreFeatureConfig;
@@ -23,7 +23,7 @@ extends Feature<EmeraldOreFeatureConfig> {
         BlockPos blockPos = context.getOrigin();
         EmeraldOreFeatureConfig emeraldOreFeatureConfig = context.getConfig();
         if (structureWorldAccess.getBlockState(blockPos).isOf(emeraldOreFeatureConfig.target.getBlock())) {
-            structureWorldAccess.setBlockState(blockPos, emeraldOreFeatureConfig.state, SetBlockStateFlags.NOTIFY_LISTENERS);
+            structureWorldAccess.setBlockState(blockPos, emeraldOreFeatureConfig.state, Block.NOTIFY_LISTENERS);
         }
         return true;
     }

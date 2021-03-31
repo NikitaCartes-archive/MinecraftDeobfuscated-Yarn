@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -75,52 +73,42 @@ implements Packet<ClientPlayPacketListener> {
         this.parameters.write(buf);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isLongDistance() {
         return this.longDistance;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public double getX() {
         return this.x;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public double getY() {
         return this.y;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public double getZ() {
         return this.z;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getOffsetX() {
         return this.offsetX;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getOffsetY() {
         return this.offsetY;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getOffsetZ() {
         return this.offsetZ;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getSpeed() {
         return this.speed;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getCount() {
         return this.count;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public ParticleEffect getParameters() {
         return this.parameters;
     }

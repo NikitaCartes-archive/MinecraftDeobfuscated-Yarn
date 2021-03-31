@@ -6,7 +6,6 @@ package net.minecraft.nbt;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.nbt.AbstractNbtNumber;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtTagSizeTracker;
@@ -19,6 +18,7 @@ import net.minecraft.util.math.MathHelper;
  */
 public class NbtFloat
 extends AbstractNbtNumber {
+    private static final int field_33194 = 96;
     public static final NbtFloat ZERO = new NbtFloat(0.0f);
     public static final NbtType<NbtFloat> TYPE = new NbtType<NbtFloat>(){
 
@@ -68,7 +68,7 @@ extends AbstractNbtNumber {
 
     @Override
     public byte getType() {
-        return (byte)NbtTypeIds.FLOAT;
+        return 5;
     }
 
     public NbtType<NbtFloat> getNbtType() {

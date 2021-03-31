@@ -11,6 +11,7 @@ import net.minecraft.world.World;
 
 public abstract class TameableShoulderEntity
 extends TameableEntity {
+    private static final int field_30372 = 100;
     private int ticks;
 
     protected TameableShoulderEntity(EntityType<? extends TameableShoulderEntity> entityType, World world) {

@@ -74,6 +74,14 @@ extends ConditionalLootFunction {
         return stack;
     }
 
+    public static ConditionalLootFunction.Builder<?> builder(Text name) {
+        return SetNameLootFunction.builder((LootCondition[] conditions) -> new SetNameLootFunction((LootCondition[])conditions, name, null));
+    }
+
+    public static ConditionalLootFunction.Builder<?> builder(Text name, LootContext.EntityTarget target) {
+        return SetNameLootFunction.builder((LootCondition[] conditions) -> new SetNameLootFunction((LootCondition[])conditions, name, target));
+    }
+
     public static class Serializer
     extends ConditionalLootFunction.Serializer<SetNameLootFunction> {
         @Override

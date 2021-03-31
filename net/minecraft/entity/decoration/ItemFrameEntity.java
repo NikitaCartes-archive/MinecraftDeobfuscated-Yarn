@@ -3,9 +3,6 @@
  */
 package net.minecraft.entity.decoration;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -48,6 +45,7 @@ extends AbstractDecorationEntity {
     private static final Logger ITEM_FRAME_LOGGER = LogManager.getLogger();
     private static final TrackedData<ItemStack> ITEM_STACK = DataTracker.registerData(ItemFrameEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
     private static final TrackedData<Integer> ROTATION = DataTracker.registerData(ItemFrameEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    public static final int field_30454 = 8;
     private float itemDropChance = 1.0f;
     private boolean fixed;
 
@@ -197,7 +195,6 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public boolean shouldRender(double distance) {
         double d = 16.0;
         return distance < (d *= 64.0 * ItemFrameEntity.getRenderDistanceMultiplier()) * d;
@@ -333,22 +330,22 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
         if (!this.getHeldItemStack().isEmpty()) {
-            tag.put("Item", this.getHeldItemStack().writeNbt(new NbtCompound()));
-            tag.putByte("ItemRotation", (byte)this.getRotation());
-            tag.putFloat("ItemDropChance", this.itemDropChance);
+            nbt.put("Item", this.getHeldItemStack().writeNbt(new NbtCompound()));
+            nbt.putByte("ItemRotation", (byte)this.getRotation());
+            nbt.putFloat("ItemDropChance", this.itemDropChance);
         }
-        tag.putByte("Facing", (byte)this.facing.getId());
-        tag.putBoolean("Invisible", this.isInvisible());
-        tag.putBoolean("Fixed", this.fixed);
+        nbt.putByte("Facing", (byte)this.facing.getId());
+        nbt.putBoolean("Invisible", this.isInvisible());
+        nbt.putBoolean("Fixed", this.fixed);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        NbtCompound nbtCompound = tag.getCompound("Item");
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        NbtCompound nbtCompound = nbt.getCompound("Item");
         if (nbtCompound != null && !nbtCompound.isEmpty()) {
             ItemStack itemStack2;
             ItemStack itemStack = ItemStack.fromNbt(nbtCompound);
@@ -359,14 +356,14 @@ extends AbstractDecorationEntity {
                 this.removeFromFrame(itemStack2);
             }
             this.setHeldItemStack(itemStack, false);
-            this.setRotation(tag.getByte("ItemRotation"), false);
-            if (tag.contains("ItemDropChance", NbtTypeIds.NUMBER)) {
-                this.itemDropChance = tag.getFloat("ItemDropChance");
+            this.setRotation(nbt.getByte("ItemRotation"), false);
+            if (nbt.contains("ItemDropChance", 99)) {
+                this.itemDropChance = nbt.getFloat("ItemDropChance");
             }
         }
-        this.setFacing(Direction.byId(tag.getByte("Facing")));
-        this.setInvisible(tag.getBoolean("Invisible"));
-        this.fixed = tag.getBoolean("Fixed");
+        this.setFacing(Direction.byId(nbt.getByte("Facing")));
+        this.setInvisible(nbt.getBoolean("Invisible"));
+        this.fixed = nbt.getBoolean("Fixed");
     }
 
     @Override
@@ -412,14 +409,12 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void onSpawnPacket(EntitySpawnS2CPacket packet) {
         super.onSpawnPacket(packet);
         this.setFacing(Direction.byId(packet.getEntityData()));
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public ItemStack getPickBlockStack() {
         ItemStack itemStack = this.getHeldItemStack();
         if (itemStack.isEmpty()) {

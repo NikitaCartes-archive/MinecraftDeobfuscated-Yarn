@@ -20,6 +20,10 @@ public class LootContextType {
         this.allowed = ImmutableSet.copyOf(Sets.union(required, allowed));
     }
 
+    public boolean isAllowed(LootContextParameter<?> parameter) {
+        return this.allowed.contains(parameter);
+    }
+
     public Set<LootContextParameter<?>> getRequired() {
         return this.required;
     }
@@ -38,6 +42,10 @@ public class LootContextType {
         if (!set2.isEmpty()) {
             reporter.report("Parameters " + set2 + " are not provided in this context");
         }
+    }
+
+    public static Builder create() {
+        return new Builder();
     }
 
     public static class Builder {

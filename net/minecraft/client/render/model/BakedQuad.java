@@ -24,6 +24,10 @@ public class BakedQuad {
         this.shade = shade;
     }
 
+    public Sprite method_35788() {
+        return this.sprite;
+    }
+
     public int[] getVertexData() {
         return this.vertexData;
     }

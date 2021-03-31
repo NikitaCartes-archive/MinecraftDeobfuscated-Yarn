@@ -3,8 +3,6 @@
  */
 package net.minecraft.entity.mob;
 
-import net.fabricmc.yarn.constants.NbtTypeIds;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
@@ -18,10 +16,12 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 
 public class SkeletonEntity
 extends AbstractSkeletonEntity {
     private static final TrackedData<Boolean> CONVERTING = DataTracker.registerData(SkeletonEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    public static final String STRAY_CONVERSION_TIME_KEY = "StrayConversionTime";
     private int field_28643;
     private int conversionTime;
 
@@ -42,6 +42,15 @@ extends AbstractSkeletonEntity {
         return this.getDataTracker().get(CONVERTING);
     }
 
+    public void setConverting(boolean converting) {
+        this.dataTracker.set(CONVERTING, converting);
+    }
+
+    @Override
+    public boolean isShaking() {
+        return this.isConverting();
+    }
+
     @Override
     public void tick() {
         if (!this.world.isClient && this.isAlive() && !this.isAiDisabled()) {
@@ -52,7 +61,7 @@ extends AbstractSkeletonEntity {
                 }
             } else if (this.inPowderSnow) {
                 ++this.field_28643;
-                if (this.field_28643 >= 600) {
+                if (this.field_28643 >= 140) {
                     this.setConversionTime(300);
                 }
             } else {
@@ -63,16 +72,16 @@ extends AbstractSkeletonEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
-        tag.putInt("StrayConversionTime", this.isConverting() ? this.conversionTime : -1);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putInt(STRAY_CONVERSION_TIME_KEY, this.isConverting() ? this.conversionTime : -1);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        if (tag.contains("StrayConversionTime", NbtTypeIds.NUMBER) && tag.getInt("StrayConversionTime") > -1) {
-            this.setConversionTime(tag.getInt("StrayConversionTime"));
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        if (nbt.contains(STRAY_CONVERSION_TIME_KEY, 99) && nbt.getInt(STRAY_CONVERSION_TIME_KEY) > -1) {
+            this.setConversionTime(nbt.getInt(STRAY_CONVERSION_TIME_KEY));
         }
     }
 

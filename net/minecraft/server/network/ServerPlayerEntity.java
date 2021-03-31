@@ -15,8 +15,6 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Random;
 import java.util.UUID;
-import net.fabricmc.yarn.constants.NbtTypeIds;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
@@ -141,6 +139,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.PortalUtil;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldProperties;
 import net.minecraft.world.biome.source.BiomeAccess;
 import org.apache.logging.log4j.LogManager;
@@ -150,6 +149,8 @@ import org.jetbrains.annotations.Nullable;
 public class ServerPlayerEntity
 extends PlayerEntity {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final int field_29769 = 32;
+    private static final int field_29770 = 10;
     public ServerPlayNetworkHandler networkHandler;
     public final MinecraftServer server;
     public final ServerPlayerInteractionManager interactionManager;
@@ -226,7 +227,7 @@ extends PlayerEntity {
         }
 
         private void sendCursorStackUpdate(ItemStack stack) {
-            ServerPlayerEntity.this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, stack));
+            ServerPlayerEntity.this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(ScreenHandlerSlotUpdateS2CPacket.UPDATE_CURSOR_SYNC_ID, -1, stack));
         }
     };
     private final ScreenHandlerListener screenHandlerListener = new ScreenHandlerListener(){
@@ -301,60 +302,60 @@ extends PlayerEntity {
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        if (tag.contains("enteredNetherPosition", NbtTypeIds.COMPOUND)) {
-            NbtCompound nbtCompound = tag.getCompound("enteredNetherPosition");
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        if (nbt.contains("enteredNetherPosition", 10)) {
+            NbtCompound nbtCompound = nbt.getCompound("enteredNetherPosition");
             this.enteredNetherPos = new Vec3d(nbtCompound.getDouble("x"), nbtCompound.getDouble("y"), nbtCompound.getDouble("z"));
         }
-        this.seenCredits = tag.getBoolean("seenCredits");
-        if (tag.contains("recipeBook", NbtTypeIds.COMPOUND)) {
-            this.recipeBook.readNbt(tag.getCompound("recipeBook"), this.server.getRecipeManager());
+        this.seenCredits = nbt.getBoolean("seenCredits");
+        if (nbt.contains("recipeBook", 10)) {
+            this.recipeBook.readNbt(nbt.getCompound("recipeBook"), this.server.getRecipeManager());
         }
         if (this.isSleeping()) {
             this.wakeUp();
         }
-        if (tag.contains("SpawnX", NbtTypeIds.NUMBER) && tag.contains("SpawnY", NbtTypeIds.NUMBER) && tag.contains("SpawnZ", NbtTypeIds.NUMBER)) {
-            this.spawnPointPosition = new BlockPos(tag.getInt("SpawnX"), tag.getInt("SpawnY"), tag.getInt("SpawnZ"));
-            this.spawnPointSet = tag.getBoolean("SpawnForced");
-            this.spawnAngle = tag.getFloat("SpawnAngle");
-            if (tag.contains("SpawnDimension")) {
-                this.spawnPointDimension = World.CODEC.parse(NbtOps.INSTANCE, tag.get("SpawnDimension")).resultOrPartial(LOGGER::error).orElse(World.OVERWORLD);
+        if (nbt.contains("SpawnX", 99) && nbt.contains("SpawnY", 99) && nbt.contains("SpawnZ", 99)) {
+            this.spawnPointPosition = new BlockPos(nbt.getInt("SpawnX"), nbt.getInt("SpawnY"), nbt.getInt("SpawnZ"));
+            this.spawnPointSet = nbt.getBoolean("SpawnForced");
+            this.spawnAngle = nbt.getFloat("SpawnAngle");
+            if (nbt.contains("SpawnDimension")) {
+                this.spawnPointDimension = World.CODEC.parse(NbtOps.INSTANCE, nbt.get("SpawnDimension")).resultOrPartial(LOGGER::error).orElse(World.OVERWORLD);
             }
         }
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
-        this.writeGameModeToNbt(tag);
-        tag.putBoolean("seenCredits", this.seenCredits);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        this.writeGameModeNbt(nbt);
+        nbt.putBoolean("seenCredits", this.seenCredits);
         if (this.enteredNetherPos != null) {
             NbtCompound nbtCompound = new NbtCompound();
             nbtCompound.putDouble("x", this.enteredNetherPos.x);
             nbtCompound.putDouble("y", this.enteredNetherPos.y);
             nbtCompound.putDouble("z", this.enteredNetherPos.z);
-            tag.put("enteredNetherPosition", nbtCompound);
+            nbt.put("enteredNetherPosition", nbtCompound);
         }
         Entity entity = this.getRootVehicle();
         Entity entity2 = this.getVehicle();
         if (entity2 != null && entity != this && entity.hasPlayerRider()) {
             NbtCompound nbtCompound2 = new NbtCompound();
             NbtCompound nbtCompound3 = new NbtCompound();
-            entity.saveToTag(nbtCompound3);
+            entity.saveNbt(nbtCompound3);
             nbtCompound2.putUuid("Attach", entity2.getUuid());
             nbtCompound2.put("Entity", nbtCompound3);
-            tag.put("RootVehicle", nbtCompound2);
+            nbt.put("RootVehicle", nbtCompound2);
         }
-        tag.put("recipeBook", this.recipeBook.toNbt());
-        tag.putString("Dimension", this.world.getRegistryKey().getValue().toString());
+        nbt.put("recipeBook", this.recipeBook.toNbt());
+        nbt.putString("Dimension", this.world.getRegistryKey().getValue().toString());
         if (this.spawnPointPosition != null) {
-            tag.putInt("SpawnX", this.spawnPointPosition.getX());
-            tag.putInt("SpawnY", this.spawnPointPosition.getY());
-            tag.putInt("SpawnZ", this.spawnPointPosition.getZ());
-            tag.putBoolean("SpawnForced", this.spawnPointSet);
-            tag.putFloat("SpawnAngle", this.spawnAngle);
-            Identifier.CODEC.encodeStart(NbtOps.INSTANCE, this.spawnPointDimension.getValue()).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> tag.put("SpawnDimension", (NbtElement)nbtElement));
+            nbt.putInt("SpawnX", this.spawnPointPosition.getX());
+            nbt.putInt("SpawnY", this.spawnPointPosition.getY());
+            nbt.putInt("SpawnZ", this.spawnPointPosition.getZ());
+            nbt.putBoolean("SpawnForced", this.spawnPointSet);
+            nbt.putFloat("SpawnAngle", this.spawnAngle);
+            Identifier.CODEC.encodeStart(NbtOps.INSTANCE, this.spawnPointDimension.getValue()).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbt.put("SpawnDimension", (NbtElement)nbtElement));
         }
     }
 
@@ -648,7 +649,7 @@ extends PlayerEntity {
             this.getServerWorld().removePlayer(this, Entity.RemovalReason.CHANGED_DIMENSION);
             if (!this.notInAnyWorld) {
                 this.notInAnyWorld = true;
-                this.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.GAME_WON, this.seenCredits ? 0.0f : 1.0f));
+                this.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.GAME_WON, this.seenCredits ? GameStateChangeS2CPacket.DEMO_OPEN_SCREEN : (int)1.0f));
                 this.seenCredits = true;
             }
             return this;
@@ -814,7 +815,7 @@ extends PlayerEntity {
     @Override
     public void wakeUp(boolean bl, boolean updateSleepingPlayers) {
         if (this.isSleeping()) {
-            this.getServerWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(this, 2));
+            this.getServerWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(this, EntityAnimationS2CPacket.WAKE_UP));
         }
         super.wakeUp(bl, updateSleepingPlayers);
         if (this.networkHandler != null) {
@@ -1123,12 +1124,12 @@ extends PlayerEntity {
 
     @Override
     public void addCritParticles(Entity target) {
-        this.getServerWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(target, 4));
+        this.getServerWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(target, EntityAnimationS2CPacket.CRIT));
     }
 
     @Override
     public void addEnchantedHitParticles(Entity target) {
-        this.getServerWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(target, 5));
+        this.getServerWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(target, EntityAnimationS2CPacket.ENCHANTED_HIT));
     }
 
     @Override
@@ -1202,6 +1203,10 @@ extends PlayerEntity {
         this.filterText = packet.shouldFilterText();
         this.getDataTracker().set(PLAYER_MODEL_PARTS, (byte)packet.getPlayerModelBitMask());
         this.getDataTracker().set(MAIN_ARM, (byte)(packet.getMainArm() != Arm.LEFT ? 1 : 0));
+    }
+
+    public boolean method_34879() {
+        return this.clientChatColorsEnabled;
     }
 
     public ChatVisibility getClientChatVisibility() {
@@ -1453,8 +1458,8 @@ extends PlayerEntity {
     }
 
     @Nullable
-    private static GameMode gameModeFromNbt(@Nullable NbtCompound tag, String key) {
-        return tag != null && tag.contains(key, NbtTypeIds.NUMBER) ? GameMode.byId(tag.getInt(key)) : null;
+    private static GameMode gameModeFromNbt(@Nullable NbtCompound nbt, String key) {
+        return nbt != null && nbt.contains(key, 99) ? GameMode.byId(nbt.getInt(key)) : null;
     }
 
     /**
@@ -1473,15 +1478,15 @@ extends PlayerEntity {
         return backupGameMode != null ? backupGameMode : this.server.getDefaultGameMode();
     }
 
-    public void setGameMode(@Nullable NbtCompound tag) {
-        this.interactionManager.setGameMode(this.getServerGameMode(ServerPlayerEntity.gameModeFromNbt(tag, "playerGameType")), ServerPlayerEntity.gameModeFromNbt(tag, "previousPlayerGameType"));
+    public void setGameMode(@Nullable NbtCompound nbt) {
+        this.interactionManager.setGameMode(this.getServerGameMode(ServerPlayerEntity.gameModeFromNbt(nbt, "playerGameType")), ServerPlayerEntity.gameModeFromNbt(nbt, "previousPlayerGameType"));
     }
 
-    private void writeGameModeToNbt(NbtCompound tag) {
-        tag.putInt("playerGameType", this.interactionManager.getGameMode().getId());
+    private void writeGameModeNbt(NbtCompound nbt) {
+        nbt.putInt("playerGameType", this.interactionManager.getGameMode().getId());
         GameMode gameMode = this.interactionManager.getPreviousGameMode();
         if (gameMode != null) {
-            tag.putInt("previousPlayerGameType", gameMode.getId());
+            nbt.putInt("previousPlayerGameType", gameMode.getId());
         }
     }
 

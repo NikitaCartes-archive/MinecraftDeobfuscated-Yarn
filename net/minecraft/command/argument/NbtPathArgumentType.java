@@ -36,6 +36,11 @@ implements ArgumentType<NbtPath> {
     private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo.bar", "foo[0]", "[0]", "[]", "{foo=bar}");
     public static final SimpleCommandExceptionType INVALID_PATH_NODE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("arguments.nbtpath.node.invalid"));
     public static final DynamicCommandExceptionType NOTHING_FOUND_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("arguments.nbtpath.nothing_found", object));
+    private static final char field_32182 = '[';
+    private static final char field_32183 = ']';
+    private static final char field_32184 = '{';
+    private static final char field_32185 = '}';
+    private static final char field_32186 = '\"';
 
     public static NbtPathArgumentType nbtPath() {
         return new NbtPathArgumentType();
@@ -518,17 +523,17 @@ implements ArgumentType<NbtPath> {
 
         public int clear(NbtElement var1);
 
-        default public List<NbtElement> get(List<NbtElement> tags) {
-            return this.process(tags, this::get);
+        default public List<NbtElement> get(List<NbtElement> elements) {
+            return this.process(elements, this::get);
         }
 
-        default public List<NbtElement> getOrInit(List<NbtElement> tags, Supplier<NbtElement> supplier) {
-            return this.process(tags, (current, results) -> this.getOrInit((NbtElement)current, supplier, (List<NbtElement>)results));
+        default public List<NbtElement> getOrInit(List<NbtElement> elements, Supplier<NbtElement> supplier) {
+            return this.process(elements, (current, results) -> this.getOrInit((NbtElement)current, supplier, (List<NbtElement>)results));
         }
 
-        default public List<NbtElement> process(List<NbtElement> tags, BiConsumer<NbtElement, List<NbtElement>> action) {
+        default public List<NbtElement> process(List<NbtElement> elements, BiConsumer<NbtElement, List<NbtElement>> action) {
             ArrayList<NbtElement> list = Lists.newArrayList();
-            for (NbtElement nbtElement : tags) {
+            for (NbtElement nbtElement : elements) {
                 action.accept(nbtElement, list);
             }
             return list;
@@ -546,8 +551,8 @@ implements ArgumentType<NbtPath> {
             this.nodeEndIndices = nodeEndIndices;
         }
 
-        public List<NbtElement> get(NbtElement tag) throws CommandSyntaxException {
-            List<NbtElement> list = Collections.singletonList(tag);
+        public List<NbtElement> get(NbtElement element) throws CommandSyntaxException {
+            List<NbtElement> list = Collections.singletonList(element);
             for (PathNode pathNode : this.nodes) {
                 if (!(list = pathNode.get(list)).isEmpty()) continue;
                 throw this.createNothingFoundException(pathNode);
@@ -555,8 +560,8 @@ implements ArgumentType<NbtPath> {
             return list;
         }
 
-        public int count(NbtElement tag) {
-            List<NbtElement> list = Collections.singletonList(tag);
+        public int count(NbtElement element) {
+            List<NbtElement> list = Collections.singletonList(element);
             for (PathNode pathNode : this.nodes) {
                 if (!(list = pathNode.get(list)).isEmpty()) continue;
                 return 0;
@@ -575,24 +580,28 @@ implements ArgumentType<NbtPath> {
             return list;
         }
 
-        public List<NbtElement> getOrInit(NbtElement tag, Supplier<NbtElement> source) throws CommandSyntaxException {
-            List<NbtElement> list = this.getTerminals(tag);
+        public List<NbtElement> getOrInit(NbtElement element, Supplier<NbtElement> source) throws CommandSyntaxException {
+            List<NbtElement> list = this.getTerminals(element);
             PathNode pathNode = this.nodes[this.nodes.length - 1];
             return pathNode.getOrInit(list, source);
         }
 
-        private static int forEach(List<NbtElement> tags, Function<NbtElement, Integer> operation) {
-            return tags.stream().map(operation).reduce(0, (integer, integer2) -> integer + integer2);
+        private static int forEach(List<NbtElement> elements, Function<NbtElement, Integer> operation) {
+            return elements.stream().map(operation).reduce(0, (integer, integer2) -> integer + integer2);
         }
 
-        public int put(NbtElement tag, Supplier<NbtElement> source) throws CommandSyntaxException {
-            List<NbtElement> list = this.getTerminals(tag);
+        public int method_35722(NbtElement nbtElement, NbtElement nbtElement2) throws CommandSyntaxException {
+            return this.put(nbtElement, nbtElement2::copy);
+        }
+
+        public int put(NbtElement element, Supplier<NbtElement> source) throws CommandSyntaxException {
+            List<NbtElement> list = this.getTerminals(element);
             PathNode pathNode = this.nodes[this.nodes.length - 1];
             return NbtPath.forEach(list, nbtElement -> pathNode.set((NbtElement)nbtElement, source));
         }
 
-        public int remove(NbtElement tag) {
-            List<NbtElement> list = Collections.singletonList(tag);
+        public int remove(NbtElement element) {
+            List<NbtElement> list = Collections.singletonList(element);
             for (int i = 0; i < this.nodes.length - 1; ++i) {
                 list = this.nodes[i].get(list);
             }

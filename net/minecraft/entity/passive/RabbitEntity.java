@@ -4,11 +4,7 @@
 package net.minecraft.entity.passive;
 
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.yarn.constants.RabbitTypes;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -62,14 +58,30 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import org.jetbrains.annotations.Nullable;
 
 public class RabbitEntity
 extends AnimalEntity {
+    public static final double field_30356 = 0.6;
+    public static final double field_30357 = 0.8;
+    public static final double field_30358 = 1.0;
+    public static final double field_30359 = 2.2;
+    public static final double field_30360 = 1.4;
     private static final TrackedData<Integer> RABBIT_TYPE = DataTracker.registerData(RabbitEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    public static final int field_30361 = 0;
+    public static final int field_30362 = 1;
+    public static final int field_30363 = 2;
+    public static final int field_30364 = 3;
+    public static final int field_30365 = 4;
+    public static final int field_30366 = 5;
+    public static final int field_30367 = 99;
     private static final Identifier KILLER_BUNNY = new Identifier("killer_bunny");
+    public static final int field_30368 = 8;
+    public static final int field_30369 = 8;
+    private static final int field_30370 = 40;
     private int jumpTicks;
     private int jumpDuration;
     private boolean lastOnGround;
@@ -128,7 +140,6 @@ extends AnimalEntity {
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getJumpProgress(float delta) {
         if (this.jumpDuration == 0) {
             return 0.0f;
@@ -245,17 +256,17 @@ extends AnimalEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
-        tag.putInt("RabbitType", this.getRabbitType());
-        tag.putInt("MoreCarrotTicks", this.moreCarrotTicks);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putInt("RabbitType", this.getRabbitType());
+        nbt.putInt("MoreCarrotTicks", this.moreCarrotTicks);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        this.setRabbitType(tag.getInt("RabbitType"));
-        this.moreCarrotTicks = tag.getInt("MoreCarrotTicks");
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.setRabbitType(nbt.getInt("RabbitType"));
+        this.moreCarrotTicks = nbt.getInt("MoreCarrotTicks");
     }
 
     protected SoundEvent getJumpSound() {
@@ -331,7 +342,7 @@ extends AnimalEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         int i = this.chooseType(world);
         if (entityData instanceof RabbitData) {
             i = ((RabbitData)entityData).type;
@@ -339,7 +350,7 @@ extends AnimalEntity {
             entityData = new RabbitData(i);
         }
         this.setRabbitType(i);
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     private int chooseType(WorldAccess world) {
@@ -364,7 +375,6 @@ extends AnimalEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void handleStatus(byte status) {
         if (status == 1) {
             this.spawnSprintingParticles();
@@ -376,7 +386,6 @@ extends AnimalEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public Vec3d method_29919() {
         return new Vec3d(0.0, 0.6f * this.getStandingEyeHeight(), this.getWidth() * 0.4f);
     }
@@ -455,10 +464,10 @@ extends AnimalEntity {
                 if (this.hasTarget && block instanceof CarrotsBlock) {
                     int i = blockState.get(CarrotsBlock.AGE);
                     if (i == 0) {
-                        world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+                        world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
                         world.breakBlock(blockPos, true, this.rabbit);
                     } else {
-                        world.setBlockState(blockPos, (BlockState)blockState.with(CarrotsBlock.AGE, i - 1), SetBlockStateFlags.NOTIFY_LISTENERS);
+                        world.setBlockState(blockPos, (BlockState)blockState.with(CarrotsBlock.AGE, i - 1), Block.NOTIFY_LISTENERS);
                         world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, blockPos, Block.getRawIdFromState(blockState));
                     }
                     this.rabbit.moreCarrotTicks = 40;

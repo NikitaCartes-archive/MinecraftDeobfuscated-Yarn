@@ -10,8 +10,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
@@ -93,6 +91,10 @@ public class Heightmap {
         return this.get(Heightmap.toIndex(x, z));
     }
 
+    public int method_35334(int i, int j) {
+        return this.get(Heightmap.toIndex(i, j)) - 1;
+    }
+
     private int get(int index) {
         return this.storage.get(index) + this.chunk.getBottomY();
     }
@@ -113,20 +115,20 @@ public class Heightmap {
         return x + z * 16;
     }
 
-    static /* synthetic */ Predicate method_16683() {
+    static /* synthetic */ Predicate getNotAirPredicate() {
         return NOT_AIR;
     }
 
-    static /* synthetic */ Predicate method_16681() {
+    static /* synthetic */ Predicate getSuffocatesPredicate() {
         return SUFFOCATES;
     }
 
     public static enum Type implements StringIdentifiable
     {
-        WORLD_SURFACE_WG("WORLD_SURFACE_WG", Purpose.WORLDGEN, Heightmap.method_16683()),
-        WORLD_SURFACE("WORLD_SURFACE", Purpose.CLIENT, Heightmap.method_16683()),
-        OCEAN_FLOOR_WG("OCEAN_FLOOR_WG", Purpose.WORLDGEN, Heightmap.method_16681()),
-        OCEAN_FLOOR("OCEAN_FLOOR", Purpose.LIVE_WORLD, Heightmap.method_16681()),
+        WORLD_SURFACE_WG("WORLD_SURFACE_WG", Purpose.WORLDGEN, Heightmap.getNotAirPredicate()),
+        WORLD_SURFACE("WORLD_SURFACE", Purpose.CLIENT, Heightmap.getNotAirPredicate()),
+        OCEAN_FLOOR_WG("OCEAN_FLOOR_WG", Purpose.WORLDGEN, Heightmap.getSuffocatesPredicate()),
+        OCEAN_FLOOR("OCEAN_FLOOR", Purpose.LIVE_WORLD, Heightmap.getSuffocatesPredicate()),
         MOTION_BLOCKING("MOTION_BLOCKING", Purpose.CLIENT, blockState -> blockState.getMaterial().blocksMovement() || !blockState.getFluidState().isEmpty()),
         MOTION_BLOCKING_NO_LEAVES("MOTION_BLOCKING_NO_LEAVES", Purpose.LIVE_WORLD, blockState -> (blockState.getMaterial().blocksMovement() || !blockState.getFluidState().isEmpty()) && !(blockState.getBlock() instanceof LeavesBlock));
 
@@ -150,7 +152,6 @@ public class Heightmap {
             return this.purpose == Purpose.CLIENT;
         }
 
-        @Environment(value=EnvType.CLIENT)
         public boolean isStoredServerSide() {
             return this.purpose != Purpose.WORLDGEN;
         }

@@ -34,7 +34,7 @@ extends AbstractDustParticleEffect {
 
         @Override
         public DustParticleEffect read(ParticleType<DustParticleEffect> particleType, PacketByteBuf packetByteBuf) {
-            return new DustParticleEffect(AbstractDustParticleEffect.method_33466(packetByteBuf), packetByteBuf.readFloat());
+            return new DustParticleEffect(AbstractDustParticleEffect.readColor(packetByteBuf), packetByteBuf.readFloat());
         }
 
         @Override

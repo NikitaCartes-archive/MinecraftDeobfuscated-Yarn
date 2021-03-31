@@ -4,7 +4,7 @@
 package net.minecraft.test;
 
 import java.util.function.Consumer;
-import net.minecraft.test.StartupParameter;
+import net.minecraft.test.TestContext;
 import net.minecraft.util.BlockRotation;
 
 public class TestFunction {
@@ -14,13 +14,34 @@ public class TestFunction {
     private final boolean required;
     private final int maxAttempts;
     private final int requiredSuccesses;
-    private final Consumer<StartupParameter> starter;
+    private final Consumer<TestContext> starter;
     private final int tickLimit;
     private final long duration;
     private final BlockRotation rotation;
 
-    public void start(StartupParameter startupParameter) {
-        this.starter.accept(startupParameter);
+    public TestFunction(String batchId, String structurePath, String structureName, int tickLimit, long duration, boolean required, Consumer<TestContext> starter) {
+        this(batchId, structurePath, structureName, BlockRotation.NONE, tickLimit, duration, required, 1, 1, starter);
+    }
+
+    public TestFunction(String batchId, String structurePath, String structureName, BlockRotation rotation, int tickLimit, long duration, boolean required, Consumer<TestContext> starter) {
+        this(batchId, structurePath, structureName, rotation, tickLimit, duration, required, 1, 1, starter);
+    }
+
+    public TestFunction(String batchId, String structurePath, String structureName, BlockRotation rotation, int tickLimit, long duration, boolean required, int requiredSuccesses, int maxAttempts, Consumer<TestContext> starter) {
+        this.batchId = batchId;
+        this.structurePath = structurePath;
+        this.structureName = structureName;
+        this.rotation = rotation;
+        this.tickLimit = tickLimit;
+        this.required = required;
+        this.requiredSuccesses = requiredSuccesses;
+        this.maxAttempts = maxAttempts;
+        this.starter = starter;
+        this.duration = duration;
+    }
+
+    public void start(TestContext parameter) {
+        this.starter.accept(parameter);
     }
 
     public String getStructurePath() {

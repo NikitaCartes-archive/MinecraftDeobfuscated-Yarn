@@ -5,9 +5,6 @@ package net.minecraft.entity;
 
 import java.util.List;
 import java.util.Optional;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
@@ -28,11 +25,13 @@ import net.minecraft.util.math.Box;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class LightningEntity
 extends Entity {
+    private static final int field_30062 = 2;
     private int ambientTick;
     public long seed;
     private int remainingActions;
@@ -57,6 +56,11 @@ extends Entity {
         return SoundCategory.WEATHER;
     }
 
+    @Nullable
+    public ServerPlayerEntity getChanneler() {
+        return this.channeler;
+    }
+
     public void setChanneler(@Nullable ServerPlayerEntity channeler) {
         this.channeler = channeler;
     }
@@ -72,16 +76,19 @@ extends Entity {
     @Override
     public void tick() {
         super.tick();
-        if (this.ambientTick == 2 && !this.world.isClient) {
-            Difficulty difficulty = this.world.getDifficulty();
-            if (difficulty == Difficulty.NORMAL || difficulty == Difficulty.HARD) {
-                this.spawnFire(4);
+        if (this.ambientTick == 2) {
+            if (this.world.isClient()) {
+                this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.WEATHER, 10000.0f, 0.8f + this.random.nextFloat() * 0.2f, false);
+                this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT, SoundCategory.WEATHER, 2.0f, 0.5f + this.random.nextFloat() * 0.2f, false);
+            } else {
+                Difficulty difficulty = this.world.getDifficulty();
+                if (difficulty == Difficulty.NORMAL || difficulty == Difficulty.HARD) {
+                    this.spawnFire(4);
+                }
+                this.powerLightningRod();
+                LightningEntity.cleanOxidization(this.world, this.getBlockPos().down());
+                this.emitGameEvent(GameEvent.LIGHTNING_STRIKE);
             }
-            this.powerLightningRod();
-            LightningEntity.cleanOxidization(this.world, this.getBlockPos().down());
-            this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.WEATHER, 10000.0f, 0.8f + this.random.nextFloat() * 0.2f);
-            this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT, SoundCategory.WEATHER, 2.0f, 0.5f + this.random.nextFloat() * 0.2f);
-            this.emitGameEvent(GameEvent.LIGHTNING_STRIKE);
         }
         --this.ambientTick;
         if (this.ambientTick < 0) {
@@ -170,7 +177,6 @@ extends Entity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public boolean shouldRender(double distance) {
         double d = 64.0 * LightningEntity.getRenderDistanceMultiplier();
         return distance < d * d;
@@ -181,11 +187,11 @@ extends Entity {
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound tag) {
+    protected void readCustomDataFromNbt(NbtCompound nbt) {
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound tag) {
+    protected void writeCustomDataToNbt(NbtCompound nbt) {
     }
 
     @Override

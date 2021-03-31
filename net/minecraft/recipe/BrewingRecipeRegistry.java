@@ -18,6 +18,7 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.util.registry.Registry;
 
 public class BrewingRecipeRegistry {
+    public static final int field_30942 = 20;
     private static final List<Recipe<Potion>> POTION_RECIPES = Lists.newArrayList();
     private static final List<Recipe<Item>> ITEM_RECIPES = Lists.newArrayList();
     private static final List<Ingredient> POTION_TYPES = Lists.newArrayList();

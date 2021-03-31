@@ -29,7 +29,7 @@ extends Decorator<CountConfig> {
         int i = 0;
         do {
             bl = false;
-            for (int j = 0; j < countConfig.getCount().getValue(random); ++j) {
+            for (int j = 0; j < countConfig.getCount().get(random); ++j) {
                 int l;
                 int m;
                 int k = random.nextInt(16) + blockPos.getX();

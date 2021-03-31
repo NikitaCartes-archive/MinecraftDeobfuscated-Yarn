@@ -17,9 +17,9 @@ import net.minecraft.util.math.floatprovider.FloatProviderType;
 
 public class UniformFloatProvider
 extends FloatProvider {
-    public static final Codec<UniformFloatProvider> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.FLOAT.fieldOf("base")).forGetter(uniformFloatProvider -> Float.valueOf(uniformFloatProvider.base)), ((MapCodec)Codec.FLOAT.fieldOf("spread")).forGetter(uniformFloatProvider -> Float.valueOf(uniformFloatProvider.spread))).apply((Applicative<UniformFloatProvider, ?>)instance, UniformFloatProvider::new)).comapFlatMap(uniformFloatProvider -> {
-        if (uniformFloatProvider.spread < 0.0f) {
-            return DataResult.error("Spread must be non-negative, got: " + uniformFloatProvider.spread);
+    public static final Codec<UniformFloatProvider> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.FLOAT.fieldOf("min_inclusive")).forGetter(uniformFloatProvider -> Float.valueOf(uniformFloatProvider.base)), ((MapCodec)Codec.FLOAT.fieldOf("max_exclusive")).forGetter(uniformFloatProvider -> Float.valueOf(uniformFloatProvider.spread))).apply((Applicative<UniformFloatProvider, ?>)instance, UniformFloatProvider::new)).comapFlatMap(uniformFloatProvider -> {
+        if (uniformFloatProvider.spread <= uniformFloatProvider.base) {
+            return DataResult.error("Max must be larger than min, min_inclusive: " + uniformFloatProvider.base + ", max_exclusive: " + uniformFloatProvider.spread);
         }
         return DataResult.success(uniformFloatProvider);
     }, Function.identity());
@@ -32,15 +32,15 @@ extends FloatProvider {
     }
 
     public static UniformFloatProvider create(float base, float spread) {
+        if (spread <= base) {
+            throw new IllegalArgumentException("Max must exceed min");
+        }
         return new UniformFloatProvider(base, spread);
     }
 
     @Override
     public float get(Random random) {
-        if (this.spread == 0.0f) {
-            return this.base;
-        }
-        return MathHelper.nextBetween(random, this.base, this.base + this.spread);
+        return MathHelper.nextBetween(random, this.base, this.spread);
     }
 
     @Override
@@ -50,7 +50,7 @@ extends FloatProvider {
 
     @Override
     public float getMax() {
-        return this.base + this.spread;
+        return this.spread;
     }
 
     @Override
@@ -74,7 +74,7 @@ extends FloatProvider {
     }
 
     public String toString() {
-        return "[" + this.base + '-' + (this.base + this.spread) + ']';
+        return "[" + this.base + '-' + this.spread + ']';
     }
 }
 

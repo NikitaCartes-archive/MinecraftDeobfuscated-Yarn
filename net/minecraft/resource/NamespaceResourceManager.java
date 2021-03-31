@@ -18,8 +18,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceImpl;
 import net.minecraft.resource.ResourceManager;
@@ -46,7 +44,6 @@ implements ResourceManager {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public Set<String> getAllNamespaces() {
         return ImmutableSet.of(this.namespace);
     }
@@ -72,7 +69,6 @@ implements ResourceManager {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public boolean containsResource(Identifier id) {
         if (!this.isPathAbsolute(id)) {
             return false;
@@ -127,7 +123,6 @@ implements ResourceManager {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public Stream<ResourcePack> streamResourcePacks() {
         return this.packList.stream();
     }

@@ -6,9 +6,6 @@ package net.minecraft.entity.vehicle;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -65,6 +62,12 @@ extends Entity {
     private static final TrackedData<Boolean> LEFT_PADDLE_MOVING = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> RIGHT_PADDLE_MOVING = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> BUBBLE_WOBBLE_TICKS = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    public static final int field_30697 = 0;
+    public static final int field_30698 = 1;
+    private static final int field_30695 = 60;
+    private static final double field_30696 = (double)0.3926991f;
+    public static final double field_30699 = 0.7853981852531433;
+    public static final int field_30700 = 60;
     private final float[] paddlePhases = new float[2];
     private float velocityDecay;
     private float ticksUnderwater;
@@ -145,7 +148,7 @@ extends Entity {
 
     @Override
     protected Vec3d positionInPortal(Direction.Axis portalAxis, PortalUtil.Rectangle portalRect) {
-        return LivingEntity.method_31079(super.positionInPortal(portalAxis, portalRect));
+        return LivingEntity.positionInPortal(super.positionInPortal(portalAxis, portalRect));
     }
 
     @Override
@@ -227,7 +230,6 @@ extends Entity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void animateDamage() {
         this.setDamageWobbleSide(-this.getDamageWobbleSide());
         this.setDamageWobbleTicks(10);
@@ -240,7 +242,6 @@ extends Entity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
         this.x = x;
         this.y = y;
@@ -386,7 +387,6 @@ extends Entity {
         this.dataTracker.set(RIGHT_PADDLE_MOVING, rightMoving);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float interpolatePaddlePhase(int paddle, float tickDelta) {
         if (this.isPaddleMoving(paddle)) {
             return (float)MathHelper.clampedLerp((double)this.paddlePhases[paddle] - (double)0.3926991f, this.paddlePhases[paddle], tickDelta);
@@ -651,20 +651,19 @@ extends Entity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void onPassengerLookAround(Entity passenger) {
         this.copyEntityData(passenger);
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound tag) {
-        tag.putString("Type", this.getBoatType().getName());
+    protected void writeCustomDataToNbt(NbtCompound nbt) {
+        nbt.putString("Type", this.getBoatType().getName());
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound tag) {
-        if (tag.contains("Type", NbtTypeIds.STRING)) {
-            this.setBoatType(Type.getType(tag.getString("Type")));
+    protected void readCustomDataFromNbt(NbtCompound nbt) {
+        if (nbt.contains("Type", 8)) {
+            this.setBoatType(Type.getType(nbt.getString("Type")));
         }
     }
 
@@ -742,7 +741,6 @@ extends Entity {
         return this.dataTracker.get(BUBBLE_WOBBLE_TICKS);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float interpolateBubbleWobble(float tickDelta) {
         return MathHelper.lerp(tickDelta, this.lastBubbleWobble, this.bubbleWobble);
     }
@@ -774,7 +772,6 @@ extends Entity {
         return this.getFirstPassenger();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void setInputs(boolean pressingLeft, boolean pressingRight, boolean pressingForward, boolean pressingBack) {
         this.pressingLeft = pressingLeft;
         this.pressingRight = pressingRight;
@@ -793,7 +790,6 @@ extends Entity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public ItemStack getPickBlockStack() {
         return new ItemStack(this.asItem());
     }

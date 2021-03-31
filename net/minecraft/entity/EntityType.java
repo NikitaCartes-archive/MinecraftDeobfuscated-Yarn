@@ -12,9 +12,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -89,6 +86,7 @@ import net.minecraft.entity.passive.DolphinEntity;
 import net.minecraft.entity.passive.DonkeyEntity;
 import net.minecraft.entity.passive.FoxEntity;
 import net.minecraft.entity.passive.GlowSquidEntity;
+import net.minecraft.entity.passive.GoatEntity;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.LlamaEntity;
@@ -166,10 +164,12 @@ import org.jetbrains.annotations.Nullable;
 public class EntityType<T extends Entity>
 implements TypeFilter<Entity, T> {
     private static final Logger LOGGER = LogManager.getLogger();
+    public static final String ENTITY_TAG_KEY = "EntityTag";
+    private static final float field_30054 = 1.3964844f;
     public static final EntityType<AreaEffectCloudEntity> AREA_EFFECT_CLOUD = EntityType.register("area_effect_cloud", Builder.create(AreaEffectCloudEntity::new, SpawnGroup.MISC).makeFireImmune().setDimensions(6.0f, 0.5f).maxTrackingRange(10).trackingTickInterval(Integer.MAX_VALUE));
     public static final EntityType<ArmorStandEntity> ARMOR_STAND = EntityType.register("armor_stand", Builder.create(ArmorStandEntity::new, SpawnGroup.MISC).setDimensions(0.5f, 1.975f).maxTrackingRange(10));
     public static final EntityType<ArrowEntity> ARROW = EntityType.register("arrow", Builder.create(ArrowEntity::new, SpawnGroup.MISC).setDimensions(0.5f, 0.5f).maxTrackingRange(4).trackingTickInterval(20));
-    public static final EntityType<AxolotlEntity> AXOLOTL = EntityType.register("axolotl", Builder.create(AxolotlEntity::new, SpawnGroup.WATER_CREATURE).setDimensions(0.75f, 0.42f).maxTrackingRange(10));
+    public static final EntityType<AxolotlEntity> AXOLOTL = EntityType.register("axolotl", Builder.create(AxolotlEntity::new, SpawnGroup.UNDERGROUND_WATER_CREATURE).setDimensions(0.75f, 0.42f).maxTrackingRange(10));
     public static final EntityType<BatEntity> BAT = EntityType.register("bat", Builder.create(BatEntity::new, SpawnGroup.AMBIENT).setDimensions(0.5f, 0.9f).maxTrackingRange(5));
     public static final EntityType<BeeEntity> BEE = EntityType.register("bee", Builder.create(BeeEntity::new, SpawnGroup.CREATURE).setDimensions(0.7f, 0.6f).maxTrackingRange(8));
     public static final EntityType<BlazeEntity> BLAZE = EntityType.register("blaze", Builder.create(BlazeEntity::new, SpawnGroup.MONSTER).makeFireImmune().setDimensions(0.6f, 1.8f).maxTrackingRange(8));
@@ -199,7 +199,8 @@ implements TypeFilter<Entity, T> {
     public static final EntityType<GhastEntity> GHAST = EntityType.register("ghast", Builder.create(GhastEntity::new, SpawnGroup.MONSTER).makeFireImmune().setDimensions(4.0f, 4.0f).maxTrackingRange(10));
     public static final EntityType<GiantEntity> GIANT = EntityType.register("giant", Builder.create(GiantEntity::new, SpawnGroup.MONSTER).setDimensions(3.6f, 12.0f).maxTrackingRange(10));
     public static final EntityType<GlowItemFrameEntity> GLOW_ITEM_FRAME = EntityType.register("glow_item_frame", Builder.create(GlowItemFrameEntity::new, SpawnGroup.MISC).setDimensions(0.5f, 0.5f).maxTrackingRange(10).trackingTickInterval(Integer.MAX_VALUE));
-    public static final EntityType<GlowSquidEntity> GLOW_SQUID = EntityType.register("glow_squid", Builder.create(GlowSquidEntity::new, SpawnGroup.WATER_CREATURE).setDimensions(0.8f, 0.8f).maxTrackingRange(10));
+    public static final EntityType<GlowSquidEntity> GLOW_SQUID = EntityType.register("glow_squid", Builder.create(GlowSquidEntity::new, SpawnGroup.UNDERGROUND_WATER_CREATURE).setDimensions(0.8f, 0.8f).maxTrackingRange(10));
+    public static final EntityType<GoatEntity> GOAT = EntityType.register("goat", Builder.create(GoatEntity::new, SpawnGroup.CREATURE).setDimensions(0.9f, 1.3f).maxTrackingRange(10));
     public static final EntityType<GuardianEntity> GUARDIAN = EntityType.register("guardian", Builder.create(GuardianEntity::new, SpawnGroup.MONSTER).setDimensions(0.85f, 0.85f).maxTrackingRange(8));
     public static final EntityType<HoglinEntity> HOGLIN = EntityType.register("hoglin", Builder.create(HoglinEntity::new, SpawnGroup.MONSTER).setDimensions(1.3964844f, 1.4f).maxTrackingRange(8));
     public static final EntityType<HorseEntity> HORSE = EntityType.register("horse", Builder.create(HorseEntity::new, SpawnGroup.CREATURE).setDimensions(1.3964844f, 1.6f).maxTrackingRange(10));
@@ -232,7 +233,7 @@ implements TypeFilter<Entity, T> {
     public static final EntityType<PiglinEntity> PIGLIN = EntityType.register("piglin", Builder.create(PiglinEntity::new, SpawnGroup.MONSTER).setDimensions(0.6f, 1.95f).maxTrackingRange(8));
     public static final EntityType<PiglinBruteEntity> PIGLIN_BRUTE = EntityType.register("piglin_brute", Builder.create(PiglinBruteEntity::new, SpawnGroup.MONSTER).setDimensions(0.6f, 1.95f).maxTrackingRange(8));
     public static final EntityType<PillagerEntity> PILLAGER = EntityType.register("pillager", Builder.create(PillagerEntity::new, SpawnGroup.MONSTER).spawnableFarFromPlayer().setDimensions(0.6f, 1.95f).maxTrackingRange(8));
-    public static final EntityType<PolarBearEntity> POLAR_BEAR = EntityType.register("polar_bear", Builder.create(PolarBearEntity::new, SpawnGroup.CREATURE).setDimensions(1.4f, 1.4f).maxTrackingRange(10));
+    public static final EntityType<PolarBearEntity> POLAR_BEAR = EntityType.register("polar_bear", Builder.create(PolarBearEntity::new, SpawnGroup.CREATURE).allowSpawningInside(Blocks.POWDER_SNOW).setDimensions(1.4f, 1.4f).maxTrackingRange(10));
     public static final EntityType<TntEntity> TNT = EntityType.register("tnt", Builder.create(TntEntity::new, SpawnGroup.MISC).makeFireImmune().setDimensions(0.98f, 0.98f).maxTrackingRange(10).trackingTickInterval(10));
     public static final EntityType<PufferfishEntity> PUFFERFISH = EntityType.register("pufferfish", Builder.create(PufferfishEntity::new, SpawnGroup.WATER_AMBIENT).setDimensions(0.7f, 0.7f).maxTrackingRange(4));
     public static final EntityType<RabbitEntity> RABBIT = EntityType.register("rabbit", Builder.create(RabbitEntity::new, SpawnGroup.CREATURE).setDimensions(0.4f, 0.5f).maxTrackingRange(8));
@@ -246,12 +247,12 @@ implements TypeFilter<Entity, T> {
     public static final EntityType<SkeletonHorseEntity> SKELETON_HORSE = EntityType.register("skeleton_horse", Builder.create(SkeletonHorseEntity::new, SpawnGroup.CREATURE).setDimensions(1.3964844f, 1.6f).maxTrackingRange(10));
     public static final EntityType<SlimeEntity> SLIME = EntityType.register("slime", Builder.create(SlimeEntity::new, SpawnGroup.MONSTER).setDimensions(2.04f, 2.04f).maxTrackingRange(10));
     public static final EntityType<SmallFireballEntity> SMALL_FIREBALL = EntityType.register("small_fireball", Builder.create(SmallFireballEntity::new, SpawnGroup.MISC).setDimensions(0.3125f, 0.3125f).maxTrackingRange(4).trackingTickInterval(10));
-    public static final EntityType<SnowGolemEntity> SNOW_GOLEM = EntityType.register("snow_golem", Builder.create(SnowGolemEntity::new, SpawnGroup.MISC).setDimensions(0.7f, 1.9f).maxTrackingRange(8));
+    public static final EntityType<SnowGolemEntity> SNOW_GOLEM = EntityType.register("snow_golem", Builder.create(SnowGolemEntity::new, SpawnGroup.MISC).allowSpawningInside(Blocks.POWDER_SNOW).setDimensions(0.7f, 1.9f).maxTrackingRange(8));
     public static final EntityType<SnowballEntity> SNOWBALL = EntityType.register("snowball", Builder.create(SnowballEntity::new, SpawnGroup.MISC).setDimensions(0.25f, 0.25f).maxTrackingRange(4).trackingTickInterval(10));
     public static final EntityType<SpectralArrowEntity> SPECTRAL_ARROW = EntityType.register("spectral_arrow", Builder.create(SpectralArrowEntity::new, SpawnGroup.MISC).setDimensions(0.5f, 0.5f).maxTrackingRange(4).trackingTickInterval(20));
     public static final EntityType<SpiderEntity> SPIDER = EntityType.register("spider", Builder.create(SpiderEntity::new, SpawnGroup.MONSTER).setDimensions(1.4f, 0.9f).maxTrackingRange(8));
     public static final EntityType<SquidEntity> SQUID = EntityType.register("squid", Builder.create(SquidEntity::new, SpawnGroup.WATER_CREATURE).setDimensions(0.8f, 0.8f).maxTrackingRange(8));
-    public static final EntityType<StrayEntity> STRAY = EntityType.register("stray", Builder.create(StrayEntity::new, SpawnGroup.MONSTER).setDimensions(0.6f, 1.99f).maxTrackingRange(8));
+    public static final EntityType<StrayEntity> STRAY = EntityType.register("stray", Builder.create(StrayEntity::new, SpawnGroup.MONSTER).setDimensions(0.6f, 1.99f).allowSpawningInside(Blocks.POWDER_SNOW).maxTrackingRange(8));
     public static final EntityType<StriderEntity> STRIDER = EntityType.register("strider", Builder.create(StriderEntity::new, SpawnGroup.CREATURE).makeFireImmune().setDimensions(0.9f, 1.7f).maxTrackingRange(10));
     public static final EntityType<EggEntity> EGG = EntityType.register("egg", Builder.create(EggEntity::new, SpawnGroup.MISC).setDimensions(0.25f, 0.25f).maxTrackingRange(4).trackingTickInterval(10));
     public static final EntityType<EnderPearlEntity> ENDER_PEARL = EntityType.register("ender_pearl", Builder.create(EnderPearlEntity::new, SpawnGroup.MISC).setDimensions(0.25f, 0.25f).maxTrackingRange(4).trackingTickInterval(10));
@@ -325,8 +326,8 @@ implements TypeFilter<Entity, T> {
     }
 
     @Nullable
-    public T spawn(ServerWorld world, @Nullable NbtCompound itemTag, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
-        T entity = this.create(world, itemTag, name, player, pos, spawnReason, alignPosition, invertY);
+    public T spawn(ServerWorld world, @Nullable NbtCompound itemNbt, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
+        T entity = this.create(world, itemNbt, name, player, pos, spawnReason, alignPosition, invertY);
         if (entity != null) {
             world.spawnEntityAndPassengers((Entity)entity);
         }
@@ -334,7 +335,7 @@ implements TypeFilter<Entity, T> {
     }
 
     @Nullable
-    public T create(ServerWorld world, @Nullable NbtCompound itemTag, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
+    public T create(ServerWorld world, @Nullable NbtCompound itemNbt, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
         double d;
         T entity = this.create(world);
         if (entity == null) {
@@ -351,13 +352,13 @@ implements TypeFilter<Entity, T> {
             MobEntity mobEntity = (MobEntity)entity;
             mobEntity.headYaw = mobEntity.yaw;
             mobEntity.bodyYaw = mobEntity.yaw;
-            mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), spawnReason, null, itemTag);
+            mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), spawnReason, null, itemNbt);
             mobEntity.playAmbientSound();
         }
         if (name != null && entity instanceof LivingEntity) {
             ((Entity)entity).setCustomName(name);
         }
-        EntityType.loadFromEntityNbt(world, player, entity, itemTag);
+        EntityType.loadFromEntityNbt(world, player, entity, itemNbt);
         return entity;
     }
 
@@ -370,8 +371,8 @@ implements TypeFilter<Entity, T> {
         return 1.0 + VoxelShapes.calculateMaxOffset(Direction.Axis.Y, boundingBox, stream, invertY ? -2.0 : -1.0);
     }
 
-    public static void loadFromEntityNbt(World world, @Nullable PlayerEntity player, @Nullable Entity entity, @Nullable NbtCompound itemTag) {
-        if (itemTag == null || !itemTag.contains("EntityTag", NbtTypeIds.COMPOUND)) {
+    public static void loadFromEntityNbt(World world, @Nullable PlayerEntity player, @Nullable Entity entity, @Nullable NbtCompound itemNbt) {
+        if (itemNbt == null || !itemNbt.contains(ENTITY_TAG_KEY, 10)) {
             return;
         }
         MinecraftServer minecraftServer = world.getServer();
@@ -383,7 +384,7 @@ implements TypeFilter<Entity, T> {
         }
         NbtCompound nbtCompound = entity.writeNbt(new NbtCompound());
         UUID uUID = entity.getUuid();
-        nbtCompound.copyFrom(itemTag.getCompound("EntityTag"));
+        nbtCompound.copyFrom(itemNbt.getCompound(ENTITY_TAG_KEY));
         entity.setUuid(uUID);
         entity.readNbt(nbtCompound);
     }
@@ -426,6 +427,11 @@ implements TypeFilter<Entity, T> {
         return this.getTranslationKey();
     }
 
+    public String method_35050() {
+        int i = this.getTranslationKey().lastIndexOf(46);
+        return i == -1 ? this.getTranslationKey() : this.getTranslationKey().substring(i + 1);
+    }
+
     public Identifier getLootTableId() {
         if (this.lootTableId == null) {
             Identifier identifier = Registry.ENTITY_TYPE.getId(this);
@@ -448,17 +454,15 @@ implements TypeFilter<Entity, T> {
     }
 
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     public static Entity createInstanceFromId(int type, World world) {
         return EntityType.newInstance(world, Registry.ENTITY_TYPE.get(type));
     }
 
-    public static Optional<Entity> getEntityFromNbt(NbtCompound tag, World world) {
-        return Util.ifPresentOrElse(EntityType.fromNbt(tag).map(entityType -> entityType.create(world)), entity -> entity.readNbt(tag), () -> LOGGER.warn("Skipping Entity with id {}", (Object)tag.getString("id")));
+    public static Optional<Entity> getEntityFromNbt(NbtCompound nbt, World world) {
+        return Util.ifPresentOrElse(EntityType.fromNbt(nbt).map(entityType -> entityType.create(world)), entity -> entity.readNbt(nbt), () -> LOGGER.warn("Skipping Entity with id {}", (Object)nbt.getString("id")));
     }
 
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     private static Entity newInstance(World world, @Nullable EntityType<?> type) {
         return type == null ? null : (Entity)type.create(world);
     }
@@ -483,22 +487,22 @@ implements TypeFilter<Entity, T> {
         if (!this.fireImmune && (state.isIn(BlockTags.FIRE) || state.isOf(Blocks.MAGMA_BLOCK) || CampfireBlock.isLitCampfire(state) || state.isOf(Blocks.LAVA))) {
             return true;
         }
-        return state.isOf(Blocks.WITHER_ROSE) || state.isOf(Blocks.SWEET_BERRY_BUSH) || state.isOf(Blocks.CACTUS);
+        return state.isOf(Blocks.WITHER_ROSE) || state.isOf(Blocks.SWEET_BERRY_BUSH) || state.isOf(Blocks.CACTUS) || state.isOf(Blocks.POWDER_SNOW);
     }
 
     public EntityDimensions getDimensions() {
         return this.dimensions;
     }
 
-    public static Optional<EntityType<?>> fromNbt(NbtCompound compoundTag) {
-        return Registry.ENTITY_TYPE.getOrEmpty(new Identifier(compoundTag.getString("id")));
+    public static Optional<EntityType<?>> fromNbt(NbtCompound nbt) {
+        return Registry.ENTITY_TYPE.getOrEmpty(new Identifier(nbt.getString("id")));
     }
 
     @Nullable
-    public static Entity loadEntityWithPassengers(NbtCompound compoundTag, World world, Function<Entity, Entity> entityProcessor) {
-        return EntityType.loadEntityFromNbt(compoundTag, world).map(entityProcessor).map(entity -> {
-            if (compoundTag.contains("Passengers", NbtTypeIds.LIST)) {
-                NbtList nbtList = compoundTag.getList("Passengers", NbtTypeIds.COMPOUND);
+    public static Entity loadEntityWithPassengers(NbtCompound nbt, World world, Function<Entity, Entity> entityProcessor) {
+        return EntityType.loadEntityFromNbt(nbt, world).map(entityProcessor).map(entity -> {
+            if (nbt.contains("Passengers", 9)) {
+                NbtList nbtList = nbt.getList("Passengers", 10);
                 for (int i = 0; i < nbtList.size(); ++i) {
                     Entity entity2 = EntityType.loadEntityWithPassengers(nbtList.getCompound(i), world, entityProcessor);
                     if (entity2 == null) continue;
@@ -538,9 +542,9 @@ implements TypeFilter<Entity, T> {
         }, false);
     }
 
-    private static Optional<Entity> loadEntityFromNbt(NbtCompound compoundTag, World world) {
+    private static Optional<Entity> loadEntityFromNbt(NbtCompound nbt, World world) {
         try {
-            return EntityType.getEntityFromNbt(compoundTag, world);
+            return EntityType.getEntityFromNbt(nbt, world);
         } catch (RuntimeException runtimeException) {
             LOGGER.warn("Exception loading entity: ", (Throwable)runtimeException);
             return Optional.empty();

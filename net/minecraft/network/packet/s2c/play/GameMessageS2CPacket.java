@@ -4,8 +4,6 @@
 package net.minecraft.network.packet.s2c.play;
 
 import java.util.UUID;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -42,17 +40,14 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onGameMessage(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Text getMessage() {
         return this.message;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public MessageType getLocation() {
         return this.location;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public UUID getSenderUuid() {
         return this.senderUuid;
     }

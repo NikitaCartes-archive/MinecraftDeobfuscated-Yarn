@@ -3,8 +3,6 @@
  */
 package net.minecraft.util.shape;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.math.AxisCycleDirection;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.BitSetVoxelSet;
@@ -58,7 +56,24 @@ public abstract class VoxelSet {
 
     public abstract int getMax(Direction.Axis var1);
 
-    @Environment(value=EnvType.CLIENT)
+    public int method_35592(Direction.Axis axis, int i, int j) {
+        int k = this.getSize(axis);
+        if (i < 0 || j < 0) {
+            return k;
+        }
+        Direction.Axis axis2 = AxisCycleDirection.FORWARD.cycle(axis);
+        Direction.Axis axis3 = AxisCycleDirection.BACKWARD.cycle(axis);
+        if (i >= this.getSize(axis2) || j >= this.getSize(axis3)) {
+            return k;
+        }
+        AxisCycleDirection axisCycleDirection = AxisCycleDirection.between(Direction.Axis.X, axis);
+        for (int l = 0; l < k; ++l) {
+            if (!this.contains(axisCycleDirection, l, i, j)) continue;
+            return l;
+        }
+        return k;
+    }
+
     public int getEndingAxisCoord(Direction.Axis axis, int from, int to) {
         if (from < 0 || to < 0) {
             return 0;
@@ -93,14 +108,12 @@ public abstract class VoxelSet {
         return this.getSize(Direction.Axis.Z);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void forEachEdge(PositionBiConsumer positionBiConsumer, boolean bl) {
         this.forEachEdge(positionBiConsumer, AxisCycleDirection.NONE, bl);
         this.forEachEdge(positionBiConsumer, AxisCycleDirection.FORWARD, bl);
         this.forEachEdge(positionBiConsumer, AxisCycleDirection.BACKWARD, bl);
     }
 
-    @Environment(value=EnvType.CLIENT)
     private void forEachEdge(PositionBiConsumer positionBiConsumer, AxisCycleDirection direction, boolean bl) {
         AxisCycleDirection axisCycleDirection = direction.opposite();
         int i = this.getSize(axisCycleDirection.cycle(Direction.Axis.X));

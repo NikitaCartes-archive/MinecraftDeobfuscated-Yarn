@@ -39,6 +39,9 @@ public class RealmsUtil {
             return this.load((String)object);
         }
     });
+    private static final int field_32129 = 60;
+    private static final int field_32130 = 3600;
+    private static final int field_32131 = 86400;
 
     public static String uuidToName(String uuid) throws Exception {
         GameProfile gameProfile = gameProfileCache.get(uuid);

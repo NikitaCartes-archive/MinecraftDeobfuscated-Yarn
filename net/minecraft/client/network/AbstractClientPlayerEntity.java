@@ -28,6 +28,17 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public abstract class AbstractClientPlayerEntity
 extends PlayerEntity {
+    private static final String field_32666 = "http://skins.minecraft.net/MinecraftSkins/%s.png";
+    public static final int field_32659 = 8;
+    public static final int field_32660 = 8;
+    public static final int field_32661 = 8;
+    public static final int field_32667 = 8;
+    public static final int field_32668 = 40;
+    public static final int field_32669 = 8;
+    public static final int field_32662 = 8;
+    public static final int field_32663 = 8;
+    public static final int field_32664 = 64;
+    public static final int field_32665 = 64;
     private PlayerListEntry cachedScoreboardEntry;
     public float elytraPitch;
     public float elytraYaw;
@@ -93,7 +104,7 @@ extends PlayerEntity {
         TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
         AbstractTexture abstractTexture = textureManager.method_34590(id, MissingSprite.getMissingSpriteTexture());
         if (abstractTexture == MissingSprite.getMissingSpriteTexture()) {
-            abstractTexture = new PlayerSkinTexture(null, String.format("http://skins.minecraft.net/MinecraftSkins/%s.png", ChatUtil.stripTextFormat(playerName)), DefaultSkinHelper.getTexture(AbstractClientPlayerEntity.getOfflinePlayerUuid(playerName)), true, null);
+            abstractTexture = new PlayerSkinTexture(null, String.format(field_32666, ChatUtil.stripTextFormat(playerName)), DefaultSkinHelper.getTexture(AbstractClientPlayerEntity.getOfflinePlayerUuid(playerName)), true, null);
             textureManager.registerTexture(id, abstractTexture);
         }
     }

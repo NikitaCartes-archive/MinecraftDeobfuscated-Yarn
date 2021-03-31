@@ -4,8 +4,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
-import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -43,6 +41,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,6 +59,7 @@ extends BlockWithEntity {
     public static final VoxelShape NORTH_SHAPE = VoxelShapes.union(Block.createCuboidShape(0.0, 10.0, 1.0, 16.0, 14.0, 5.333333), Block.createCuboidShape(0.0, 12.0, 5.333333, 16.0, 16.0, 9.666667), Block.createCuboidShape(0.0, 14.0, 9.666667, 16.0, 18.0, 14.0), BASE_SHAPE);
     public static final VoxelShape EAST_SHAPE = VoxelShapes.union(Block.createCuboidShape(10.666667, 10.0, 0.0, 15.0, 14.0, 16.0), Block.createCuboidShape(6.333333, 12.0, 0.0, 10.666667, 16.0, 16.0), Block.createCuboidShape(2.0, 14.0, 0.0, 6.333333, 18.0, 16.0), BASE_SHAPE);
     public static final VoxelShape SOUTH_SHAPE = VoxelShapes.union(Block.createCuboidShape(0.0, 10.0, 10.666667, 16.0, 14.0, 15.0), Block.createCuboidShape(0.0, 12.0, 6.333333, 16.0, 16.0, 10.666667), Block.createCuboidShape(0.0, 14.0, 2.0, 16.0, 18.0, 6.333333), BASE_SHAPE);
+    private static final int field_31113 = 2;
 
     protected LecternBlock(AbstractBlock.Settings settings) {
         super(settings);
@@ -161,7 +161,7 @@ extends BlockWithEntity {
     }
 
     public static void setHasBook(World world, BlockPos pos, BlockState state, boolean hasBook) {
-        world.setBlockState(pos, (BlockState)((BlockState)state.with(POWERED, false)).with(HAS_BOOK, hasBook), SetBlockStateFlags.DEFAULT);
+        world.setBlockState(pos, (BlockState)((BlockState)state.with(POWERED, false)).with(HAS_BOOK, hasBook), Block.NOTIFY_ALL);
         LecternBlock.updateNeighborAlways(world, pos, state);
     }
 
@@ -172,7 +172,7 @@ extends BlockWithEntity {
     }
 
     private static void setPowered(World world, BlockPos pos, BlockState state, boolean powered) {
-        world.setBlockState(pos, (BlockState)state.with(POWERED, powered), SetBlockStateFlags.DEFAULT);
+        world.setBlockState(pos, (BlockState)state.with(POWERED, powered), Block.NOTIFY_ALL);
         LecternBlock.updateNeighborAlways(world, pos, state);
     }
 

@@ -89,6 +89,11 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class ClientPlayerEntity
 extends AbstractClientPlayerEntity {
+    private static final int field_32671 = 20;
+    private static final int field_32672 = 600;
+    private static final int field_32673 = 100;
+    private static final float field_32674 = 0.6f;
+    private static final double field_32675 = 0.35;
     public final ClientPlayNetworkHandler networkHandler;
     private final StatHandler statHandler;
     private final ClientRecipeBook recipeBook;

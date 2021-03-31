@@ -18,6 +18,9 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class EvokerFangsEntityModel<T extends Entity>
 extends SinglePartEntityModel<T> {
+    private static final String BASE = "base";
+    private static final String UPPER_JAW = "upper_jaw";
+    private static final String LOWER_JAW = "lower_jaw";
     private final ModelPart root;
     private final ModelPart base;
     private final ModelPart upperJaw;
@@ -25,18 +28,18 @@ extends SinglePartEntityModel<T> {
 
     public EvokerFangsEntityModel(ModelPart root) {
         this.root = root;
-        this.base = root.getChild("base");
-        this.upperJaw = root.getChild("upper_jaw");
-        this.lowerJaw = root.getChild("lower_jaw");
+        this.base = root.getChild(BASE);
+        this.upperJaw = root.getChild(UPPER_JAW);
+        this.lowerJaw = root.getChild(LOWER_JAW);
     }
 
     public static TexturedModelData getTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
-        modelPartData.addChild("base", ModelPartBuilder.create().uv(0, 0).cuboid(0.0f, 0.0f, 0.0f, 10.0f, 12.0f, 10.0f), ModelTransform.pivot(-5.0f, 24.0f, -5.0f));
+        modelPartData.addChild(BASE, ModelPartBuilder.create().uv(0, 0).cuboid(0.0f, 0.0f, 0.0f, 10.0f, 12.0f, 10.0f), ModelTransform.pivot(-5.0f, 24.0f, -5.0f));
         ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(40, 0).cuboid(0.0f, 0.0f, 0.0f, 4.0f, 14.0f, 8.0f);
-        modelPartData.addChild("upper_jaw", modelPartBuilder, ModelTransform.pivot(1.5f, 24.0f, -4.0f));
-        modelPartData.addChild("lower_jaw", modelPartBuilder, ModelTransform.of(-1.5f, 24.0f, 4.0f, 0.0f, (float)Math.PI, 0.0f));
+        modelPartData.addChild(UPPER_JAW, modelPartBuilder, ModelTransform.pivot(1.5f, 24.0f, -4.0f));
+        modelPartData.addChild(LOWER_JAW, modelPartBuilder, ModelTransform.of(-1.5f, 24.0f, 4.0f, 0.0f, (float)Math.PI, 0.0f));
         return TexturedModelData.of(modelData, 64, 32);
     }
 

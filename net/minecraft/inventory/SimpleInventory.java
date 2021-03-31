@@ -58,7 +58,7 @@ RecipeInputProvider {
      * Clears this inventory and return all the non-empty stacks in a list.
      */
     public List<ItemStack> clearToList() {
-        List<ItemStack> list = this.stacks.stream().filter(itemStack -> !itemStack.isEmpty()).collect(Collectors.toList());
+        List<ItemStack> list = this.stacks.stream().filter(stack -> !stack.isEmpty()).collect(Collectors.toList());
         this.clear();
         return list;
     }
@@ -177,7 +177,7 @@ RecipeInputProvider {
     }
 
     public String toString() {
-        return this.stacks.stream().filter(itemStack -> !itemStack.isEmpty()).collect(Collectors.toList()).toString();
+        return this.stacks.stream().filter(stack -> !stack.isEmpty()).collect(Collectors.toList()).toString();
     }
 
     private void addToNewSlot(ItemStack stack) {
@@ -210,15 +210,15 @@ RecipeInputProvider {
         }
     }
 
-    public void readTags(NbtList tags) {
-        for (int i = 0; i < tags.size(); ++i) {
-            ItemStack itemStack = ItemStack.fromNbt(tags.getCompound(i));
+    public void readNbtList(NbtList nbtList) {
+        for (int i = 0; i < nbtList.size(); ++i) {
+            ItemStack itemStack = ItemStack.fromNbt(nbtList.getCompound(i));
             if (itemStack.isEmpty()) continue;
             this.addStack(itemStack);
         }
     }
 
-    public NbtList getTags() {
+    public NbtList toNbtList() {
         NbtList nbtList = new NbtList();
         for (int i = 0; i < this.size(); ++i) {
             ItemStack itemStack = this.getStack(i);

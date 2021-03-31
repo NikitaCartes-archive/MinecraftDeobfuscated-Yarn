@@ -12,7 +12,6 @@ import it.unimi.dsi.fastutil.shorts.Short2ObjectMap;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
 import java.util.EnumMap;
 import java.util.Map;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -45,6 +44,7 @@ public abstract class FlowableFluid
 extends Fluid {
     public static final BooleanProperty FALLING = Properties.FALLING;
     public static final IntProperty LEVEL = Properties.LEVEL_1_8;
+    private static final int field_31726 = 200;
     private static final ThreadLocal<Object2ByteLinkedOpenHashMap<Block.NeighborGroup>> field_15901 = ThreadLocal.withInitial(() -> {
         Object2ByteLinkedOpenHashMap<Block.NeighborGroup> object2ByteLinkedOpenHashMap = new Object2ByteLinkedOpenHashMap<Block.NeighborGroup>(200){
 
@@ -68,7 +68,7 @@ extends Fluid {
         double e = 0.0;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (Direction direction : Direction.Type.HORIZONTAL) {
-            mutable.set(pos, direction);
+            mutable.set((Vec3i)pos, direction);
             FluidState fluidState = world.getFluidState(mutable);
             if (!this.method_15748(fluidState)) continue;
             float f = fluidState.getHeight();
@@ -89,7 +89,7 @@ extends Fluid {
         Vec3d vec3d = new Vec3d(d, 0.0, e);
         if (state.get(FALLING).booleanValue()) {
             for (Direction direction2 : Direction.Type.HORIZONTAL) {
-                mutable.set(pos, direction2);
+                mutable.set((Vec3i)pos, direction2);
                 if (!this.method_15749(world, mutable, direction2) && !this.method_15749(world, (BlockPos)mutable.up(), direction2)) continue;
                 vec3d = vec3d.normalize().add(0.0, -6.0, 0.0);
                 break;
@@ -233,7 +233,7 @@ extends Fluid {
             if (!state.isAir()) {
                 this.beforeBreakingBlock(world, pos, state);
             }
-            world.setBlockState(pos, fluidState.getBlockState(), SetBlockStateFlags.DEFAULT);
+            world.setBlockState(pos, fluidState.getBlockState(), Block.NOTIFY_ALL);
         }
     }
 
@@ -368,11 +368,11 @@ extends Fluid {
             int i = this.getNextTickDelay(world, pos, state, fluidState);
             if (fluidState.isEmpty()) {
                 state = fluidState;
-                world.setBlockState(pos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT);
+                world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
             } else if (!fluidState.equals(state)) {
                 state = fluidState;
                 BlockState blockState = state.getBlockState();
-                world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
+                world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
                 world.getFluidTickScheduler().schedule(pos, state.getFluid(), i);
                 world.updateNeighborsAlways(pos, blockState.getBlock());
             }
@@ -403,6 +403,9 @@ extends Fluid {
     public float getHeight(FluidState state) {
         return (float)state.getLevel() / 9.0f;
     }
+
+    @Override
+    public abstract int getLevel(FluidState var1);
 
     @Override
     public VoxelShape getShape(FluidState state, BlockView world, BlockPos pos) {

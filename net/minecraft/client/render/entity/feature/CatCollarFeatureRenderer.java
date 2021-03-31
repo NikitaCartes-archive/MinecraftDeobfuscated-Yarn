@@ -21,9 +21,9 @@ extends FeatureRenderer<CatEntity, CatEntityModel<CatEntity>> {
     private static final Identifier SKIN = new Identifier("textures/entity/cat/cat_collar.png");
     private final CatEntityModel<CatEntity> model;
 
-    public CatCollarFeatureRenderer(FeatureRendererContext<CatEntity, CatEntityModel<CatEntity>> featureRendererContext, EntityModelLoader entityModelLoader) {
-        super(featureRendererContext);
-        this.model = new CatEntityModel(entityModelLoader.getModelPart(EntityModelLayers.CAT_COLLAR));
+    public CatCollarFeatureRenderer(FeatureRendererContext<CatEntity, CatEntityModel<CatEntity>> context, EntityModelLoader loader) {
+        super(context);
+        this.model = new CatEntityModel(loader.getModelPart(EntityModelLayers.CAT_COLLAR));
     }
 
     @Override

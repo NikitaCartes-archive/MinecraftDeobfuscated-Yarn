@@ -19,11 +19,11 @@ implements Predicate<ItemStack> {
     private static final Dynamic2CommandExceptionType OVERSTACKED_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableText("arguments.item.overstacked", object, object2));
     private final Item item;
     @Nullable
-    private final NbtCompound tag;
+    private final NbtCompound nbt;
 
-    public ItemStackArgument(Item item, @Nullable NbtCompound tag) {
+    public ItemStackArgument(Item item, @Nullable NbtCompound nbt) {
         this.item = item;
-        this.tag = tag;
+        this.nbt = nbt;
     }
 
     public Item getItem() {
@@ -32,13 +32,13 @@ implements Predicate<ItemStack> {
 
     @Override
     public boolean test(ItemStack itemStack) {
-        return itemStack.isOf(this.item) && NbtHelper.matches(this.tag, itemStack.getTag(), true);
+        return itemStack.isOf(this.item) && NbtHelper.matches(this.nbt, itemStack.getTag(), true);
     }
 
     public ItemStack createStack(int amount, boolean checkOverstack) throws CommandSyntaxException {
         ItemStack itemStack = new ItemStack(this.item, amount);
-        if (this.tag != null) {
-            itemStack.setTag(this.tag);
+        if (this.nbt != null) {
+            itemStack.setTag(this.nbt);
         }
         if (checkOverstack && amount > itemStack.getMaxCount()) {
             throw OVERSTACKED_EXCEPTION.create(Registry.ITEM.getId(this.item), itemStack.getMaxCount());
@@ -48,15 +48,15 @@ implements Predicate<ItemStack> {
 
     public String asString() {
         StringBuilder stringBuilder = new StringBuilder(Registry.ITEM.getRawId(this.item));
-        if (this.tag != null) {
-            stringBuilder.append(this.tag);
+        if (this.nbt != null) {
+            stringBuilder.append(this.nbt);
         }
         return stringBuilder.toString();
     }
 
     @Override
-    public /* synthetic */ boolean test(Object object) {
-        return this.test((ItemStack)object);
+    public /* synthetic */ boolean test(Object stack) {
+        return this.test((ItemStack)stack);
     }
 }
 

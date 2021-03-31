@@ -5,13 +5,14 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractPlantStemBlock;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
@@ -44,7 +45,7 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     private void generateNetherWartBlocksInArea(WorldAccess world, Random random, BlockPos pos) {
-        world.setBlockState(pos, Blocks.NETHER_WART_BLOCK.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+        world.setBlockState(pos, Blocks.NETHER_WART_BLOCK.getDefaultState(), Block.NOTIFY_LISTENERS);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         BlockPos.Mutable mutable2 = new BlockPos.Mutable();
         for (int i = 0; i < 200; ++i) {
@@ -52,14 +53,14 @@ extends Feature<DefaultFeatureConfig> {
             if (!world.isAir(mutable)) continue;
             int j = 0;
             for (Direction direction : DIRECTIONS) {
-                BlockState blockState = world.getBlockState(mutable2.set(mutable, direction));
+                BlockState blockState = world.getBlockState(mutable2.set((Vec3i)mutable, direction));
                 if (blockState.isOf(Blocks.NETHERRACK) || blockState.isOf(Blocks.NETHER_WART_BLOCK)) {
                     ++j;
                 }
                 if (j > 1) break;
             }
             if (j != true) continue;
-            world.setBlockState(mutable, Blocks.NETHER_WART_BLOCK.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+            world.setBlockState(mutable, Blocks.NETHER_WART_BLOCK.getDefaultState(), Block.NOTIFY_LISTENERS);
         }
     }
 
@@ -86,10 +87,10 @@ extends Feature<DefaultFeatureConfig> {
         for (int i = 0; i <= length; ++i) {
             if (world.isAir(pos)) {
                 if (i == length || !world.isAir((BlockPos)pos.down())) {
-                    world.setBlockState(pos, (BlockState)Blocks.WEEPING_VINES.getDefaultState().with(AbstractPlantStemBlock.AGE, MathHelper.nextInt(random, minAge, maxAge)), SetBlockStateFlags.NOTIFY_LISTENERS);
+                    world.setBlockState(pos, (BlockState)Blocks.WEEPING_VINES.getDefaultState().with(AbstractPlantStemBlock.AGE, MathHelper.nextInt(random, minAge, maxAge)), Block.NOTIFY_LISTENERS);
                     break;
                 }
-                world.setBlockState(pos, Blocks.WEEPING_VINES_PLANT.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+                world.setBlockState(pos, Blocks.WEEPING_VINES_PLANT.getDefaultState(), Block.NOTIFY_LISTENERS);
             }
             pos.move(Direction.DOWN);
         }

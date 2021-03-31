@@ -197,6 +197,40 @@ public class PlayerPredicate {
         private final Object2BooleanMap<Identifier> recipes = new Object2BooleanOpenHashMap<Identifier>();
         private final Map<Identifier, AdvancementPredicate> advancements = Maps.newHashMap();
 
+        public static Builder create() {
+            return new Builder();
+        }
+
+        public Builder experienceLevel(NumberRange.IntRange experienceLevel) {
+            this.experienceLevel = experienceLevel;
+            return this;
+        }
+
+        public Builder stat(Stat<?> stat, NumberRange.IntRange value) {
+            this.stats.put(stat, value);
+            return this;
+        }
+
+        public Builder recipe(Identifier id, boolean unlocked) {
+            this.recipes.put(id, unlocked);
+            return this;
+        }
+
+        public Builder gamemode(GameMode gamemode) {
+            this.gamemode = gamemode;
+            return this;
+        }
+
+        public Builder advancement(Identifier id, boolean done) {
+            this.advancements.put(id, new CompletedAdvancementPredicate(done));
+            return this;
+        }
+
+        public Builder advancement(Identifier id, Map<String, Boolean> criteria) {
+            this.advancements.put(id, new AdvancementCriteriaPredicate(new Object2BooleanOpenHashMap<String>(criteria)));
+            return this;
+        }
+
         public PlayerPredicate build() {
             return new PlayerPredicate(this.experienceLevel, this.gamemode, this.stats, this.recipes, this.advancements);
         }

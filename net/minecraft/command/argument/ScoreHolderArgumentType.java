@@ -44,6 +44,7 @@ implements ArgumentType<ScoreHolder> {
     };
     private static final Collection<String> EXAMPLES = Arrays.asList("Player", "0123", "*", "@e");
     private static final SimpleCommandExceptionType EMPTY_SCORE_HOLDER_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.scoreHolder.empty"));
+    private static final byte field_32470 = 1;
     private final boolean multiple;
 
     public ScoreHolderArgumentType(boolean multiple) {

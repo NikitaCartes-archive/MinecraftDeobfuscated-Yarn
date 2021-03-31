@@ -418,6 +418,10 @@ extends RealmsScreen {
         this.stopRealmsFetcher();
     }
 
+    public void method_35682(boolean bl) {
+        this.createdTrial = bl;
+    }
+
     private void onRenew() {
         RealmsServer realmsServer = this.findServer(this.selectedServerId);
         if (realmsServer == null) {
@@ -1004,6 +1008,12 @@ extends RealmsScreen {
         return realmsMainScreen;
     }
 
+    public void method_35683() {
+        if (this.shouldShowPopup() && this.popupOpenedByUser) {
+            this.popupOpenedByUser = false;
+        }
+    }
+
     public static void method_23765(ResourceManager manager) {
         Collection<Identifier> collection = manager.findResources("textures/gui/images", string -> string.endsWith(".png"));
         IMAGES = collection.stream().filter(identifier -> identifier.getNamespace().equals("realms")).collect(ImmutableList.toImmutableList());
@@ -1011,6 +1021,10 @@ extends RealmsScreen {
 
     private void method_27452(Text ... texts) {
         this.toolTip = Arrays.asList(texts);
+    }
+
+    private void method_35681(Iterable<Text> iterable) {
+        this.toolTip = ImmutableList.copyOf(iterable);
     }
 
     private void method_24985(ButtonWidget buttonWidget) {
@@ -1099,6 +1113,7 @@ extends RealmsScreen {
     @Environment(value=EnvType.CLIENT)
     class RealmSelectionListEntry
     extends Entry {
+        private static final int field_32054 = 36;
         private final RealmsServer mServerData;
 
         public RealmSelectionListEntry(RealmsServer serverData) {

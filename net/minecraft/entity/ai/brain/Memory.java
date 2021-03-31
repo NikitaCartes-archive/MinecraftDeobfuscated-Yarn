@@ -8,6 +8,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
+import net.minecraft.util.annotation.Debug;
 
 public class Memory<T> {
     private final T value;
@@ -38,6 +39,10 @@ public class Memory<T> {
         return new Memory<T>(value, expiry);
     }
 
+    public long method_35127() {
+        return this.expiry;
+    }
+
     public T getValue() {
         return this.value;
     }
@@ -50,6 +55,7 @@ public class Memory<T> {
         return this.value + (this.isTimed() ? " (ttl: " + this.expiry + ")" : "");
     }
 
+    @Debug
     public boolean isTimed() {
         return this.expiry != Long.MAX_VALUE;
     }

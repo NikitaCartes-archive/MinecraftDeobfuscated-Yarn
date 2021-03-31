@@ -8,7 +8,6 @@ import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import java.util.List;
 import java.util.Random;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -18,7 +17,6 @@ import net.minecraft.structure.JigsawJunction;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
-import net.minecraft.structure.pool.EmptyPoolElement;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.dynamic.RegistryOps;
@@ -43,25 +41,24 @@ extends StructurePiece {
     private final StructureManager structureManager;
 
     public PoolStructurePiece(StructureManager structureManager, StructurePoolElement poolElement, BlockPos pos, int groundLevelDelta, BlockRotation rotation, BlockBox boundingBox) {
-        super(StructurePieceType.JIGSAW, 0);
+        super(StructurePieceType.JIGSAW, 0, boundingBox);
         this.structureManager = structureManager;
         this.poolElement = poolElement;
         this.pos = pos;
         this.groundLevelDelta = groundLevelDelta;
         this.rotation = rotation;
-        this.boundingBox = boundingBox;
     }
 
-    public PoolStructurePiece(ServerWorld serverWorld, NbtCompound tag) {
-        super(StructurePieceType.JIGSAW, tag);
-        this.structureManager = serverWorld.getStructureManager();
-        this.pos = new BlockPos(tag.getInt("PosX"), tag.getInt("PosY"), tag.getInt("PosZ"));
-        this.groundLevelDelta = tag.getInt("ground_level_delta");
-        RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, serverWorld.getServer().method_34864(), serverWorld.getServer().getRegistryManager());
-        this.poolElement = StructurePoolElement.CODEC.parse(registryOps, tag.getCompound("pool_element")).resultOrPartial(LOGGER::error).orElse(EmptyPoolElement.INSTANCE);
-        this.rotation = BlockRotation.valueOf(tag.getString("rotation"));
+    public PoolStructurePiece(ServerWorld world, NbtCompound nbt) {
+        super(StructurePieceType.JIGSAW, nbt);
+        this.structureManager = world.getStructureManager();
+        this.pos = new BlockPos(nbt.getInt("PosX"), nbt.getInt("PosY"), nbt.getInt("PosZ"));
+        this.groundLevelDelta = nbt.getInt("ground_level_delta");
+        RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, world.getServer().method_34864(), world.getServer().getRegistryManager());
+        this.poolElement = (StructurePoolElement)StructurePoolElement.CODEC.parse(registryOps, nbt.getCompound("pool_element")).resultOrPartial(LOGGER::error).orElseThrow(() -> new IllegalStateException("Invalid pool element found"));
+        this.rotation = BlockRotation.valueOf(nbt.getString("rotation"));
         this.boundingBox = this.poolElement.getBoundingBox(this.structureManager, this.pos, this.rotation);
-        NbtList nbtList = tag.getList("junctions", NbtTypeIds.COMPOUND);
+        NbtList nbtList = nbt.getList("junctions", 10);
         this.junctions.clear();
         nbtList.forEach(nbtElement -> this.junctions.add(JigsawJunction.method_28873(new Dynamic<NbtElement>((DynamicOps<NbtElement>)registryOps, (NbtElement)nbtElement))));
     }

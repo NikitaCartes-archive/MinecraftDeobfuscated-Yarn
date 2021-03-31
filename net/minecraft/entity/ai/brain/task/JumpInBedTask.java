@@ -18,6 +18,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class JumpInBedTask
 extends Task<MobEntity> {
+    private static final int field_30128 = 100;
+    private static final int field_30129 = 3;
+    private static final int field_30130 = 6;
+    private static final int field_30131 = 5;
     private final float walkSpeed;
     @Nullable
     private BlockPos bedPos;

@@ -12,5 +12,9 @@ extends RuntimeException {
     public GlException(String string) {
         super(string);
     }
+
+    public GlException(String string, Throwable throwable) {
+        super(string, throwable);
+    }
 }
 

@@ -10,6 +10,8 @@ import net.minecraft.client.resource.metadata.TextureResourceMetadataReader;
 @Environment(value=EnvType.CLIENT)
 public class TextureResourceMetadata {
     public static final TextureResourceMetadataReader READER = new TextureResourceMetadataReader();
+    public static final boolean field_32980 = false;
+    public static final boolean field_32981 = false;
     private final boolean blur;
     private final boolean clamp;
 

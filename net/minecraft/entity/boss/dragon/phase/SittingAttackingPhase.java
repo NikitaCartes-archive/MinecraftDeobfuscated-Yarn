@@ -10,6 +10,7 @@ import net.minecraft.sound.SoundEvents;
 
 public class SittingAttackingPhase
 extends AbstractSittingPhase {
+    private static final int field_30432 = 40;
     private int ticks;
 
     public SittingAttackingPhase(EnderDragonEntity enderDragonEntity) {

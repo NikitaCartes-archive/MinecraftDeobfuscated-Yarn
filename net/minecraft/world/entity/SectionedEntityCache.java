@@ -19,6 +19,7 @@ import java.util.stream.LongStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import net.minecraft.util.TypeFilter;
+import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -132,6 +133,7 @@ public class SectionedEntityCache<T extends EntityLike> {
         this.trackedPositions.remove(sectionPos);
     }
 
+    @Debug
     public int sectionCount() {
         return this.trackedPositions.size();
     }

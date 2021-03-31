@@ -16,8 +16,6 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
@@ -30,6 +28,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class GameRules {
+    public static final int field_30963 = 3;
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Map<Key<?>, Type<?>> RULE_TYPES = Maps.newTreeMap(Comparator.comparing(key -> Key.method_20772(key)));
     public static final Key<BooleanRule> DO_FIRE_TICK = GameRules.register("doFireTick", Category.UPDATES, BooleanRule.method_20755(true));
@@ -108,7 +107,7 @@ public class GameRules {
      */
     public static final Key<BooleanRule> DO_IMMEDIATE_RESPAWN = GameRules.register("doImmediateRespawn", Category.PLAYER, BooleanRule.method_20757(false, (server, rule) -> {
         for (ServerPlayerEntity serverPlayerEntity : server.getPlayerManager().getPlayerList()) {
-            serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.IMMEDIATE_RESPAWN, rule.get() ? 1.0f : 0.0f));
+            serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.IMMEDIATE_RESPAWN, rule.get() ? 1.0f : (float)GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
         }
     }));
     public static final Key<BooleanRule> DROWNING_DAMAGE = GameRules.register("drowningDamage", Category.PLAYER, BooleanRule.method_20755(true));
@@ -178,12 +177,10 @@ public class GameRules {
         type2.accept(consumer, key2);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void setAllValues(GameRules rules, @Nullable MinecraftServer server) {
         rules.rules.keySet().forEach(key -> this.setValue((Key)key, rules, server));
     }
 
-    @Environment(value=EnvType.CLIENT)
     private <T extends Rule<T>> void setValue(Key<T> key, GameRules rules, @Nullable MinecraftServer server) {
         T rule = rules.get(key);
         ((Rule)this.get(key)).setValue(rule, server);
@@ -254,7 +251,6 @@ public class GameRules {
         }
 
         @Override
-        @Environment(value=EnvType.CLIENT)
         public void setValue(BooleanRule booleanRule, @Nullable MinecraftServer minecraftServer) {
             this.value = booleanRule.value;
             this.changed(minecraftServer);
@@ -305,6 +301,11 @@ public class GameRules {
             return this.value;
         }
 
+        public void set(int value, @Nullable MinecraftServer server) {
+            this.value = value;
+            this.changed(server);
+        }
+
         @Override
         public String serialize() {
             return Integer.toString(this.value);
@@ -315,7 +316,6 @@ public class GameRules {
             this.value = IntRule.parseInt(value);
         }
 
-        @Environment(value=EnvType.CLIENT)
         public boolean validate(String input) {
             try {
                 this.value = Integer.parseInt(input);
@@ -352,7 +352,6 @@ public class GameRules {
         }
 
         @Override
-        @Environment(value=EnvType.CLIENT)
         public void setValue(IntRule intRule, @Nullable MinecraftServer minecraftServer) {
             this.value = intRule.value;
             this.changed(minecraftServer);
@@ -407,7 +406,6 @@ public class GameRules {
 
         protected abstract T copy();
 
-        @Environment(value=EnvType.CLIENT)
         public abstract void setValue(T var1, @Nullable MinecraftServer var2);
     }
 
@@ -469,7 +467,6 @@ public class GameRules {
             return "gamerule." + this.name;
         }
 
-        @Environment(value=EnvType.CLIENT)
         public Category getCategory() {
             return this.category;
         }
@@ -505,7 +502,6 @@ public class GameRules {
             this.category = category;
         }
 
-        @Environment(value=EnvType.CLIENT)
         public String getCategory() {
             return this.category;
         }

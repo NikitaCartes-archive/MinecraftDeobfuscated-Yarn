@@ -8,8 +8,6 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
@@ -68,6 +66,7 @@ import org.jetbrains.annotations.Nullable;
 public class SheepEntity
 extends AnimalEntity
 implements Shearable {
+    private static final int field_30371 = 40;
     private static final TrackedData<Byte> COLOR = DataTracker.registerData(SheepEntity.class, TrackedDataHandlerRegistry.BYTE);
     private static final Map<DyeColor, ItemConvertible> DROPS = Util.make(Maps.newEnumMap(DyeColor.class), enumMap -> {
         enumMap.put(DyeColor.WHITE, Blocks.WHITE_WOOL);
@@ -100,7 +99,6 @@ implements Shearable {
         return new float[]{fs[0] * 0.75f, fs[1] * 0.75f, fs[2] * 0.75f};
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static float[] getRgbColor(DyeColor dyeColor) {
         return COLORS.get(dyeColor);
     }
@@ -204,7 +202,6 @@ implements Shearable {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void handleStatus(byte status) {
         if (status == 10) {
             this.eatGrassTimer = 40;
@@ -213,7 +210,6 @@ implements Shearable {
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getNeckAngle(float delta) {
         if (this.eatGrassTimer <= 0) {
             return 0.0f;
@@ -227,7 +223,6 @@ implements Shearable {
         return -((float)(this.eatGrassTimer - 40) - delta) / 4.0f;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getHeadAngle(float delta) {
         if (this.eatGrassTimer > 4 && this.eatGrassTimer <= 36) {
             float f = ((float)(this.eatGrassTimer - 4) - delta) / 32.0f;
@@ -272,17 +267,17 @@ implements Shearable {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
-        tag.putBoolean("Sheared", this.isSheared());
-        tag.putByte("Color", (byte)this.getColor().getId());
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putBoolean("Sheared", this.isSheared());
+        nbt.putByte("Color", (byte)this.getColor().getId());
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        this.setSheared(tag.getBoolean("Sheared"));
-        this.setColor(DyeColor.byId(tag.getByte("Color")));
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.setSheared(nbt.getBoolean("Sheared"));
+        this.setColor(DyeColor.byId(nbt.getByte("Color")));
     }
 
     @Override
@@ -365,9 +360,9 @@ implements Shearable {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         this.setColor(SheepEntity.generateDefaultColor(world.getRandom()));
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     private DyeColor getChildColor(AnimalEntity firstParent, AnimalEntity secondParent) {

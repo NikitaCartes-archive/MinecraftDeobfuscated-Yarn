@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -27,6 +26,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.structure.SimpleStructurePiece;
 import net.minecraft.structure.Structure;
+import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.processor.BlackstoneReplacementStructureProcessor;
@@ -57,64 +57,60 @@ import org.apache.logging.log4j.Logger;
 public class RuinedPortalStructurePiece
 extends SimpleStructurePiece {
     private static final Logger field_24992 = LogManager.getLogger();
-    private final Identifier template;
-    private final BlockRotation rotation;
-    private final BlockMirror mirror;
+    private static final float field_31620 = 0.3f;
+    private static final float field_31621 = 0.07f;
+    private static final float field_31622 = 0.2f;
+    private static final float field_31623 = 0.2f;
     private final VerticalPlacement verticalPlacement;
     private final Properties properties;
 
-    public RuinedPortalStructurePiece(BlockPos pos, VerticalPlacement verticalPlacement, Properties properties, Identifier template, Structure structure, BlockRotation rotation, BlockMirror mirror, BlockPos center) {
-        super(StructurePieceType.RUINED_PORTAL, 0);
-        this.pos = pos;
-        this.template = template;
-        this.rotation = rotation;
-        this.mirror = mirror;
+    public RuinedPortalStructurePiece(StructureManager structureManager, BlockPos blockPos, VerticalPlacement verticalPlacement, Properties properties, Identifier identifier, Structure structure, BlockRotation blockRotation, BlockMirror blockMirror, BlockPos blockPos2) {
+        super(StructurePieceType.RUINED_PORTAL, 0, structureManager, identifier, identifier.toString(), RuinedPortalStructurePiece.method_35450(blockMirror, blockRotation, verticalPlacement, blockPos2, properties), blockPos);
         this.verticalPlacement = verticalPlacement;
         this.properties = properties;
-        this.processProperties(structure, center);
     }
 
-    public RuinedPortalStructurePiece(ServerWorld serverWorld, NbtCompound tag) {
-        super(StructurePieceType.RUINED_PORTAL, tag);
-        this.template = new Identifier(tag.getString("Template"));
-        this.rotation = BlockRotation.valueOf(tag.getString("Rotation"));
-        this.mirror = BlockMirror.valueOf(tag.getString("Mirror"));
-        this.verticalPlacement = VerticalPlacement.getFromId(tag.getString("VerticalPlacement"));
-        this.properties = (Properties)Properties.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, tag.get("Properties"))).getOrThrow(true, field_24992::error);
-        Structure structure = serverWorld.getStructureManager().getStructureOrBlank(this.template);
-        this.processProperties(structure, new BlockPos(structure.getSize().getX() / 2, 0, structure.getSize().getZ() / 2));
+    public RuinedPortalStructurePiece(ServerWorld world, NbtCompound nbt) {
+        super(StructurePieceType.RUINED_PORTAL, nbt, world, identifier -> RuinedPortalStructurePiece.method_35449(world, nbt, identifier));
+        this.verticalPlacement = VerticalPlacement.getFromId(nbt.getString("VerticalPlacement"));
+        this.properties = (Properties)Properties.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("Properties"))).getOrThrow(true, field_24992::error);
     }
 
     @Override
     protected void writeNbt(ServerWorld world, NbtCompound nbt) {
         super.writeNbt(world, nbt);
-        nbt.putString("Template", this.template.toString());
-        nbt.putString("Rotation", this.rotation.name());
-        nbt.putString("Mirror", this.mirror.name());
+        nbt.putString("Rotation", this.placementData.getRotation().name());
+        nbt.putString("Mirror", this.placementData.getMirror().name());
         nbt.putString("VerticalPlacement", this.verticalPlacement.getId());
         Properties.CODEC.encodeStart(NbtOps.INSTANCE, this.properties).resultOrPartial(field_24992::error).ifPresent(nbtElement -> nbt.put("Properties", (NbtElement)nbtElement));
     }
 
-    private void processProperties(Structure structure, BlockPos center) {
-        BlockIgnoreStructureProcessor blockIgnoreStructureProcessor = this.properties.airPocket ? BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS : BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS;
-        ArrayList<StructureProcessorRule> list = Lists.newArrayList();
-        list.add(RuinedPortalStructurePiece.createReplacementRule(Blocks.GOLD_BLOCK, 0.3f, Blocks.AIR));
-        list.add(this.createLavaReplacementRule());
-        if (!this.properties.cold) {
-            list.add(RuinedPortalStructurePiece.createReplacementRule(Blocks.NETHERRACK, 0.07f, Blocks.MAGMA_BLOCK));
-        }
-        StructurePlacementData structurePlacementData = new StructurePlacementData().setRotation(this.rotation).setMirror(this.mirror).setPosition(center).addProcessor(blockIgnoreStructureProcessor).addProcessor(new RuleStructureProcessor(list)).addProcessor(new BlockAgeStructureProcessor(this.properties.mossiness)).addProcessor(new LavaSubmergedBlockStructureProcessor());
-        if (this.properties.replaceWithBlackstone) {
-            structurePlacementData.addProcessor(BlackstoneReplacementStructureProcessor.INSTANCE);
-        }
-        this.setStructureData(structure, this.pos, structurePlacementData);
+    private static StructurePlacementData method_35449(ServerWorld world, NbtCompound nbt, Identifier id) {
+        Structure structure = world.getStructureManager().getStructureOrBlank(id);
+        BlockPos blockPos = new BlockPos(structure.getSize().getX() / 2, 0, structure.getSize().getZ() / 2);
+        return RuinedPortalStructurePiece.method_35450(BlockMirror.valueOf(nbt.getString("Mirror")), BlockRotation.valueOf(nbt.getString("Rotation")), VerticalPlacement.getFromId(nbt.getString("VerticalPlacement")), blockPos, (Properties)Properties.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("Properties"))).getOrThrow(true, field_24992::error));
     }
 
-    private StructureProcessorRule createLavaReplacementRule() {
-        if (this.verticalPlacement == VerticalPlacement.ON_OCEAN_FLOOR) {
+    private static StructurePlacementData method_35450(BlockMirror blockMirror, BlockRotation blockRotation, VerticalPlacement verticalPlacement, BlockPos blockPos, Properties properties) {
+        BlockIgnoreStructureProcessor blockIgnoreStructureProcessor = properties.airPocket ? BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS : BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS;
+        ArrayList<StructureProcessorRule> list = Lists.newArrayList();
+        list.add(RuinedPortalStructurePiece.createReplacementRule(Blocks.GOLD_BLOCK, 0.3f, Blocks.AIR));
+        list.add(RuinedPortalStructurePiece.createLavaReplacementRule(verticalPlacement, properties));
+        if (!properties.cold) {
+            list.add(RuinedPortalStructurePiece.createReplacementRule(Blocks.NETHERRACK, 0.07f, Blocks.MAGMA_BLOCK));
+        }
+        StructurePlacementData structurePlacementData = new StructurePlacementData().setRotation(blockRotation).setMirror(blockMirror).setPosition(blockPos).addProcessor(blockIgnoreStructureProcessor).addProcessor(new RuleStructureProcessor(list)).addProcessor(new BlockAgeStructureProcessor(properties.mossiness)).addProcessor(new LavaSubmergedBlockStructureProcessor());
+        if (properties.replaceWithBlackstone) {
+            structurePlacementData.addProcessor(BlackstoneReplacementStructureProcessor.INSTANCE);
+        }
+        return structurePlacementData;
+    }
+
+    private static StructureProcessorRule createLavaReplacementRule(VerticalPlacement verticalPlacement, Properties properties) {
+        if (verticalPlacement == VerticalPlacement.ON_OCEAN_FLOOR) {
             return RuinedPortalStructurePiece.createReplacementRule(Blocks.LAVA, Blocks.MAGMA_BLOCK);
         }
-        if (this.properties.cold) {
+        if (properties.cold) {
             return RuinedPortalStructurePiece.createReplacementRule(Blocks.LAVA, Blocks.NETHERRACK);
         }
         return RuinedPortalStructurePiece.createReplacementRule(Blocks.LAVA, 0.2f, Blocks.MAGMA_BLOCK);
@@ -125,7 +121,7 @@ extends SimpleStructurePiece {
         if (!boundingBox.contains(this.pos)) {
             return true;
         }
-        boundingBox.encompass(this.structure.calculateBoundingBox(this.placementData, this.pos));
+        boundingBox.intersection(this.structure.calculateBoundingBox(this.placementData, this.pos));
         boolean bl = super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
         this.placeNetherrackBase(random, world);
         this.updateNetherracksInBound(random, world);
@@ -151,7 +147,7 @@ extends SimpleStructurePiece {
         if (blockState.isAir() || blockState.isOf(Blocks.VINE)) {
             return;
         }
-        Direction direction = Direction.Type.HORIZONTAL.random(random);
+        Direction direction = RuinedPortalStructurePiece.method_35457(random);
         BlockPos blockPos = pos.offset(direction);
         BlockState blockState2 = world.getBlockState(blockPos);
         if (!blockState2.isAir()) {
@@ -161,19 +157,19 @@ extends SimpleStructurePiece {
             return;
         }
         BooleanProperty booleanProperty = VineBlock.getFacingProperty(direction.getOpposite());
-        world.setBlockState(blockPos, (BlockState)Blocks.VINE.getDefaultState().with(booleanProperty, true), SetBlockStateFlags.DEFAULT);
+        world.setBlockState(blockPos, (BlockState)Blocks.VINE.getDefaultState().with(booleanProperty, true), Block.NOTIFY_ALL);
     }
 
     private void generateOvergrownLeaves(Random random, WorldAccess world, BlockPos pos) {
         if (random.nextFloat() < 0.5f && world.getBlockState(pos).isOf(Blocks.NETHERRACK) && world.getBlockState(pos.up()).isAir()) {
-            world.setBlockState(pos.up(), (BlockState)Blocks.JUNGLE_LEAVES.getDefaultState().with(LeavesBlock.PERSISTENT, true), SetBlockStateFlags.DEFAULT);
+            world.setBlockState(pos.up(), (BlockState)Blocks.JUNGLE_LEAVES.getDefaultState().with(LeavesBlock.PERSISTENT, true), Block.NOTIFY_ALL);
         }
     }
 
     private void updateNetherracksInBound(Random random, WorldAccess world) {
-        for (int i = this.boundingBox.minX + 1; i < this.boundingBox.maxX; ++i) {
-            for (int j = this.boundingBox.minZ + 1; j < this.boundingBox.maxZ; ++j) {
-                BlockPos blockPos = new BlockPos(i, this.boundingBox.minY, j);
+        for (int i = this.boundingBox.getMinX() + 1; i < this.boundingBox.getMaxX(); ++i) {
+            for (int j = this.boundingBox.getMinZ() + 1; j < this.boundingBox.getMaxZ(); ++j) {
+                BlockPos blockPos = new BlockPos(i, this.boundingBox.getMinY(), j);
                 if (!world.getBlockState(blockPos).isOf(Blocks.NETHERRACK)) continue;
                 this.updateNetherracks(random, world, blockPos.down());
             }
@@ -208,9 +204,9 @@ extends SimpleStructurePiece {
                 float f = fs[r];
                 if (!(random.nextDouble() < (double)f)) continue;
                 int s = RuinedPortalStructurePiece.getBaseHeight(world, o, p, this.verticalPlacement);
-                int t = bl ? s : Math.min(this.boundingBox.minY, s);
+                int t = bl ? s : Math.min(this.boundingBox.getMinY(), s);
                 mutable.set(o, t, p);
-                if (Math.abs(t - this.boundingBox.minY) > 3 || !this.canFillNetherrack(world, mutable)) continue;
+                if (Math.abs(t - this.boundingBox.getMinY()) > 3 || !this.canFillNetherrack(world, mutable)) continue;
                 this.placeNetherrackBottom(random, world, mutable);
                 if (this.properties.overgrown) {
                     this.generateOvergrownLeaves(random, world, mutable);
@@ -227,9 +223,9 @@ extends SimpleStructurePiece {
 
     private void placeNetherrackBottom(Random random, WorldAccess world, BlockPos pos) {
         if (!this.properties.cold && random.nextFloat() < 0.07f) {
-            world.setBlockState(pos, Blocks.MAGMA_BLOCK.getDefaultState(), SetBlockStateFlags.DEFAULT);
+            world.setBlockState(pos, Blocks.MAGMA_BLOCK.getDefaultState(), Block.NOTIFY_ALL);
         } else {
-            world.setBlockState(pos, Blocks.NETHERRACK.getDefaultState(), SetBlockStateFlags.DEFAULT);
+            world.setBlockState(pos, Blocks.NETHERRACK.getDefaultState(), Block.NOTIFY_ALL);
         }
     }
 

@@ -21,6 +21,7 @@ import net.minecraft.server.world.ServerWorld;
 
 public class CrossbowAttackTask<E extends MobEntity, T extends LivingEntity>
 extends Task<E> {
+    private static final int field_30114 = 1200;
     private int chargingCooldown;
     private CrossbowState state = CrossbowState.UNCHARGED;
 

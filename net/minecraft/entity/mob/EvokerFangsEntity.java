@@ -5,8 +5,6 @@ package net.minecraft.entity.mob;
 
 import java.util.List;
 import java.util.UUID;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -22,6 +20,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class EvokerFangsEntity
 extends Entity {
+    public static final int field_30662 = 20;
+    public static final int field_30663 = 2;
+    public static final int field_30664 = 14;
     private int warmup;
     private boolean startedAttack;
     private int ticksLeft = 22;
@@ -60,18 +61,18 @@ extends Entity {
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound tag) {
-        this.warmup = tag.getInt("Warmup");
-        if (tag.containsUuid("Owner")) {
-            this.ownerUuid = tag.getUuid("Owner");
+    protected void readCustomDataFromNbt(NbtCompound nbt) {
+        this.warmup = nbt.getInt("Warmup");
+        if (nbt.containsUuid("Owner")) {
+            this.ownerUuid = nbt.getUuid("Owner");
         }
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound tag) {
-        tag.putInt("Warmup", this.warmup);
+    protected void writeCustomDataToNbt(NbtCompound nbt) {
+        nbt.putInt("Warmup", this.warmup);
         if (this.ownerUuid != null) {
-            tag.putUuid("Owner", this.ownerUuid);
+            nbt.putUuid("Owner", this.ownerUuid);
         }
     }
 
@@ -126,7 +127,6 @@ extends Entity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void handleStatus(byte status) {
         super.handleStatus(status);
         if (status == 4) {
@@ -137,7 +137,6 @@ extends Entity {
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getAnimationProgress(float tickDelta) {
         if (!this.playingAnimation) {
             return 0.0f;

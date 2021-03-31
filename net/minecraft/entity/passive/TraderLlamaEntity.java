@@ -4,9 +4,6 @@
 package net.minecraft.entity.passive;
 
 import java.util.EnumSet;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -35,7 +32,6 @@ extends LlamaEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public boolean isTrader() {
         return true;
     }
@@ -46,16 +42,16 @@ extends LlamaEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
-        tag.putInt("DespawnDelay", this.despawnDelay);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putInt("DespawnDelay", this.despawnDelay);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        if (tag.contains("DespawnDelay", NbtTypeIds.NUMBER)) {
-            this.despawnDelay = tag.getInt("DespawnDelay");
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        if (nbt.contains("DespawnDelay", 99)) {
+            this.despawnDelay = nbt.getInt("DespawnDelay");
         }
     }
 
@@ -64,6 +60,10 @@ extends LlamaEntity {
         super.initGoals();
         this.goalSelector.add(1, new EscapeDangerGoal(this, 2.0));
         this.targetSelector.add(1, new DefendTraderGoal(this));
+    }
+
+    public void method_35189(int i) {
+        this.despawnDelay = i;
     }
 
     @Override
@@ -108,14 +108,14 @@ extends LlamaEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         if (spawnReason == SpawnReason.EVENT) {
             this.setBreedingAge(0);
         }
         if (entityData == null) {
             entityData = new PassiveEntity.PassiveData(false);
         }
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     public static class DefendTraderGoal

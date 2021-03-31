@@ -3,13 +3,10 @@
  */
 package net.minecraft.client.gui.screen;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
-@Environment(value=EnvType.CLIENT)
 public class ScreenTexts {
     public static final Text ON = new TranslatableText("options.on");
     public static final Text OFF = new TranslatableText("options.off");
@@ -20,6 +17,10 @@ public class ScreenTexts {
     public static final Text PROCEED = new TranslatableText("gui.proceed");
     public static final Text BACK = new TranslatableText("gui.back");
     public static final Text CONNECT_FAILED = new TranslatableText("connect.failed");
+
+    public static Text method_36134(boolean bl) {
+        return bl ? ON : OFF;
+    }
 
     public static MutableText composeToggleText(Text text, boolean value) {
         return new TranslatableText(value ? "options.on.composed" : "options.off.composed", text);

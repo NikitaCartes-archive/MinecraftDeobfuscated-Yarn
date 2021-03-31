@@ -6,12 +6,9 @@ package net.minecraft.client.render;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class VertexFormatElement {
-    private static final Logger LOGGER = LogManager.getLogger();
     private final Format format;
     private final Type type;
     private final int index;
@@ -55,6 +52,10 @@ public class VertexFormatElement {
 
     public final int getSize() {
         return this.size;
+    }
+
+    public final boolean method_35667() {
+        return this.type == Type.POSITION;
     }
 
     public boolean equals(Object o) {
@@ -129,30 +130,30 @@ public class VertexFormatElement {
     @Environment(value=EnvType.CLIENT)
     public static enum Type {
         POSITION("Position", (i, j, k, l, m, n) -> {
-            GlStateManager.enableVertexAttribArray(n);
-            GlStateManager.vertexAttribPointer(n, i, j, false, k, l);
-        }, (i, j) -> GlStateManager.disableVertexAttribArray(j)),
+            GlStateManager._enableVertexAttribArray(n);
+            GlStateManager._vertexAttribPointer(n, i, j, false, k, l);
+        }, (i, j) -> GlStateManager._disableVertexAttribArray(j)),
         NORMAL("Normal", (i, j, k, l, m, n) -> {
-            GlStateManager.enableVertexAttribArray(n);
-            GlStateManager.vertexAttribPointer(n, i, j, true, k, l);
-        }, (i, j) -> GlStateManager.disableVertexAttribArray(j)),
+            GlStateManager._enableVertexAttribArray(n);
+            GlStateManager._vertexAttribPointer(n, i, j, true, k, l);
+        }, (i, j) -> GlStateManager._disableVertexAttribArray(j)),
         COLOR("Vertex Color", (i, j, k, l, m, n) -> {
-            GlStateManager.enableVertexAttribArray(n);
-            GlStateManager.vertexAttribPointer(n, i, j, true, k, l);
-        }, (i, j) -> GlStateManager.disableVertexAttribArray(j)),
+            GlStateManager._enableVertexAttribArray(n);
+            GlStateManager._vertexAttribPointer(n, i, j, true, k, l);
+        }, (i, j) -> GlStateManager._disableVertexAttribArray(j)),
         UV("UV", (i, j, k, l, m, n) -> {
-            GlStateManager.enableVertexAttribArray(n);
+            GlStateManager._enableVertexAttribArray(n);
             if (j == 5126) {
-                GlStateManager.vertexAttribPointer(n, i, j, false, k, l);
+                GlStateManager._vertexAttribPointer(n, i, j, false, k, l);
             } else {
-                GlStateManager.vertexAttribIPointer(n, i, j, k, l);
+                GlStateManager._vertexAttribIPointer(n, i, j, k, l);
             }
-        }, (i, j) -> GlStateManager.disableVertexAttribArray(j)),
+        }, (i, j) -> GlStateManager._disableVertexAttribArray(j)),
         PADDING("Padding", (i, j, k, l, m, n) -> {}, (i, j) -> {}),
         GENERIC("Generic", (i, j, k, l, m, n) -> {
-            GlStateManager.enableVertexAttribArray(n);
-            GlStateManager.vertexAttribPointer(n, i, j, false, k, l);
-        }, (i, j) -> GlStateManager.disableVertexAttribArray(j));
+            GlStateManager._enableVertexAttribArray(n);
+            GlStateManager._vertexAttribPointer(n, i, j, false, k, l);
+        }, (i, j) -> GlStateManager._disableVertexAttribArray(j));
 
         private final String name;
         private final Starter starter;

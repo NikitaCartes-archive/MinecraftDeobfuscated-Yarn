@@ -3,9 +3,6 @@
  */
 package net.minecraft.entity.projectile;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -100,7 +97,6 @@ extends PersistentProjectileEntity {
         return this.tridentStack.copy();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public boolean isEnchanted() {
         return this.dataTracker.get(ENCHANTED);
     }
@@ -158,8 +154,8 @@ extends PersistentProjectileEntity {
     }
 
     @Override
-    protected boolean method_34713(PlayerEntity playerEntity) {
-        return super.method_34713(playerEntity) || this.isNoClip() && this.method_34714(playerEntity);
+    protected boolean tryPickup(PlayerEntity player) {
+        return super.tryPickup(player) || this.isNoClip() && this.isOwner(player);
     }
 
     @Override
@@ -169,26 +165,26 @@ extends PersistentProjectileEntity {
 
     @Override
     public void onPlayerCollision(PlayerEntity player) {
-        if (this.method_34714(player) || this.getOwner() == null) {
+        if (this.isOwner(player) || this.getOwner() == null) {
             super.onPlayerCollision(player);
         }
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
-        if (tag.contains("Trident", NbtTypeIds.COMPOUND)) {
-            this.tridentStack = ItemStack.fromNbt(tag.getCompound("Trident"));
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        if (nbt.contains("Trident", 10)) {
+            this.tridentStack = ItemStack.fromNbt(nbt.getCompound("Trident"));
         }
-        this.dealtDamage = tag.getBoolean("DealtDamage");
+        this.dealtDamage = nbt.getBoolean("DealtDamage");
         this.dataTracker.set(LOYALTY, (byte)EnchantmentHelper.getLoyalty(this.tridentStack));
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
-        tag.put("Trident", this.tridentStack.writeNbt(new NbtCompound()));
-        tag.putBoolean("DealtDamage", this.dealtDamage);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.put("Trident", this.tridentStack.writeNbt(new NbtCompound()));
+        nbt.putBoolean("DealtDamage", this.dealtDamage);
     }
 
     @Override
@@ -205,7 +201,6 @@ extends PersistentProjectileEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public boolean shouldRender(double cameraX, double cameraY, double cameraZ) {
         return true;
     }

@@ -36,6 +36,9 @@ import org.jetbrains.annotations.Nullable;
  */
 public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>>
 extends SectionDistanceLevelPropagator {
+    protected static final int field_31710 = 0;
+    protected static final int field_31711 = 1;
+    protected static final int field_31712 = 2;
     protected static final ChunkNibbleArray EMPTY = new ChunkNibbleArray();
     private static final Direction[] DIRECTIONS = Direction.values();
     private final LightType lightType;

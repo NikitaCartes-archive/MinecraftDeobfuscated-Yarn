@@ -10,8 +10,6 @@ import com.mojang.datafixers.util.Pair;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -70,6 +68,7 @@ extends Entity {
     private static final TrackedData<Integer> CUSTOM_BLOCK_OFFSET = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Boolean> CUSTOM_BLOCK_PRESENT = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final ImmutableMap<EntityPose, ImmutableList<Integer>> DISMOUNT_FREE_Y_SPACES_NEEDED = ImmutableMap.of(EntityPose.STANDING, ImmutableList.of(Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(-1)), EntityPose.CROUCHING, ImmutableList.of(Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(-1)), EntityPose.SWIMMING, ImmutableList.of(Integer.valueOf(0), Integer.valueOf(1)));
+    protected static final float field_30694 = 0.95f;
     private boolean yawFlipped;
     private static final Map<RailShape, Pair<Vec3i, Vec3i>> ADJACENT_RAIL_POSITIONS_BY_SHAPE = Util.make(Maps.newEnumMap(RailShape.class), enumMap -> {
         Vec3i vec3i = Direction.WEST.getVector();
@@ -97,11 +96,8 @@ extends Entity {
     private double clientZ;
     private double clientYaw;
     private double clientPitch;
-    @Environment(value=EnvType.CLIENT)
     private double clientXVelocity;
-    @Environment(value=EnvType.CLIENT)
     private double clientYVelocity;
-    @Environment(value=EnvType.CLIENT)
     private double clientZVelocity;
 
     protected AbstractMinecartEntity(EntityType<?> entityType, World world) {
@@ -166,7 +162,7 @@ extends Entity {
 
     @Override
     protected Vec3d positionInPortal(Direction.Axis portalAxis, PortalUtil.Rectangle portalRect) {
-        return LivingEntity.method_31079(super.positionInPortal(portalAxis, portalRect));
+        return LivingEntity.positionInPortal(super.positionInPortal(portalAxis, portalRect));
     }
 
     @Override
@@ -261,7 +257,6 @@ extends Entity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void animateDamage() {
         this.setDamageWobbleSide(-this.getDamageWobbleSide());
         this.setDamageWobbleTicks(10);
@@ -562,7 +557,6 @@ extends Entity {
      * This method is used to determine the minecart's render orientation, by computing a position along the rail slightly before and slightly after the minecart's actual position.
      */
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     public Vec3d snapPositionToRailWithOffset(double x, double y, double z, double offset) {
         BlockState blockState;
         int k;
@@ -640,7 +634,6 @@ extends Entity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public Box getVisibilityBoundingBox() {
         Box box = this.getBoundingBox();
         if (this.hasCustomBlock()) {
@@ -650,19 +643,19 @@ extends Entity {
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound tag) {
-        if (tag.getBoolean("CustomDisplayTile")) {
-            this.setCustomBlock(NbtHelper.toBlockState(tag.getCompound("DisplayState")));
-            this.setCustomBlockOffset(tag.getInt("DisplayOffset"));
+    protected void readCustomDataFromNbt(NbtCompound nbt) {
+        if (nbt.getBoolean("CustomDisplayTile")) {
+            this.setCustomBlock(NbtHelper.toBlockState(nbt.getCompound("DisplayState")));
+            this.setCustomBlockOffset(nbt.getInt("DisplayOffset"));
         }
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound tag) {
+    protected void writeCustomDataToNbt(NbtCompound nbt) {
         if (this.hasCustomBlock()) {
-            tag.putBoolean("CustomDisplayTile", true);
-            tag.put("DisplayState", NbtHelper.fromBlockState(this.getContainedBlock()));
-            tag.putInt("DisplayOffset", this.getBlockOffset());
+            nbt.putBoolean("CustomDisplayTile", true);
+            nbt.put("DisplayState", NbtHelper.fromBlockState(this.getContainedBlock()));
+            nbt.putInt("DisplayOffset", this.getBlockOffset());
         }
     }
 
@@ -729,7 +722,6 @@ extends Entity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
         this.clientX = x;
         this.clientY = y;
@@ -741,7 +733,6 @@ extends Entity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void setVelocityClient(double x, double y, double z) {
         this.clientXVelocity = x;
         this.clientYVelocity = y;
@@ -821,7 +812,6 @@ extends Entity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public ItemStack getPickBlockStack() {
         Item item;
         switch (this.getMinecartType()) {

@@ -4,9 +4,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.Block;
@@ -42,7 +39,7 @@ extends AbstractRedstoneGateBlock {
         if (!player.getAbilities().allowModifyWorld) {
             return ActionResult.PASS;
         }
-        world.setBlockState(pos, (BlockState)state.cycle(DELAY), SetBlockStateFlags.DEFAULT);
+        world.setBlockState(pos, (BlockState)state.cycle(DELAY), Block.NOTIFY_ALL);
         return ActionResult.success(world.isClient);
     }
 
@@ -76,7 +73,6 @@ extends AbstractRedstoneGateBlock {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         if (!state.get(POWERED).booleanValue()) {
             return;

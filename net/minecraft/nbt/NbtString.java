@@ -7,7 +7,6 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Objects;
-import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtTagSizeTracker;
 import net.minecraft.nbt.NbtType;
@@ -18,6 +17,7 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
  */
 public class NbtString
 implements NbtElement {
+    private static final int field_33241 = 288;
     public static final NbtType<NbtString> TYPE = new NbtType<NbtString>(){
 
         @Override
@@ -49,6 +49,10 @@ implements NbtElement {
         }
     };
     private static final NbtString EMPTY = new NbtString("");
+    private static final char field_33242 = '\"';
+    private static final char field_33243 = '\'';
+    private static final char field_33244 = '\\';
+    private static final char field_33245 = '\u0000';
     private final String value;
 
     private NbtString(String value) {
@@ -70,7 +74,7 @@ implements NbtElement {
 
     @Override
     public byte getType() {
-        return (byte)NbtTypeIds.STRING;
+        return 8;
     }
 
     public NbtType<NbtString> getNbtType() {

@@ -3,8 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.item.Item;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -36,12 +34,10 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onCooldownUpdate(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Item getItem() {
         return this.item;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public int getCooldown() {
         return this.cooldown;
     }

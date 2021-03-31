@@ -40,13 +40,13 @@ implements ArgumentType<ItemPredicateArgument> {
     public ItemPredicateArgument parse(StringReader stringReader) throws CommandSyntaxException {
         ItemStringReader itemStringReader = new ItemStringReader(stringReader, true).consume();
         if (itemStringReader.getItem() != null) {
-            ItemPredicate itemPredicate = new ItemPredicate(itemStringReader.getItem(), itemStringReader.getTag());
+            ItemPredicate itemPredicate = new ItemPredicate(itemStringReader.getItem(), itemStringReader.getNbt());
             return commandContext -> itemPredicate;
         }
         Identifier identifier = itemStringReader.getId();
         return commandContext -> {
             Tag<Item> tag = ((ServerCommandSource)commandContext.getSource()).getMinecraftServer().getTagManager().getTag(Registry.ITEM_KEY, identifier, identifier -> UNKNOWN_TAG_EXCEPTION.create(identifier.toString()));
-            return new TagPredicate(tag, itemStringReader.getTag());
+            return new TagPredicate(tag, itemStringReader.getNbt());
         };
     }
 
@@ -83,9 +83,9 @@ implements ArgumentType<ItemPredicateArgument> {
         @Nullable
         private final NbtCompound compound;
 
-        public TagPredicate(Tag<Item> tag, @Nullable NbtCompound nbtCompound) {
+        public TagPredicate(Tag<Item> tag, @Nullable NbtCompound nbt) {
             this.tag = tag;
-            this.compound = nbtCompound;
+            this.compound = nbt;
         }
 
         @Override
@@ -103,21 +103,21 @@ implements ArgumentType<ItemPredicateArgument> {
     implements Predicate<ItemStack> {
         private final Item item;
         @Nullable
-        private final NbtCompound compound;
+        private final NbtCompound nbt;
 
-        public ItemPredicate(Item item, @Nullable NbtCompound nbtCompound) {
+        public ItemPredicate(Item item, @Nullable NbtCompound nbt) {
             this.item = item;
-            this.compound = nbtCompound;
+            this.nbt = nbt;
         }
 
         @Override
         public boolean test(ItemStack itemStack) {
-            return itemStack.isOf(this.item) && NbtHelper.matches(this.compound, itemStack.getTag(), true);
+            return itemStack.isOf(this.item) && NbtHelper.matches(this.nbt, itemStack.getTag(), true);
         }
 
         @Override
-        public /* synthetic */ boolean test(Object object) {
-            return this.test((ItemStack)object);
+        public /* synthetic */ boolean test(Object context) {
+            return this.test((ItemStack)context);
         }
     }
 

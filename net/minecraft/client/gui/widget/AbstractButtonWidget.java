@@ -31,6 +31,8 @@ extends DrawableHelper
 implements Drawable,
 Element {
     public static final Identifier WIDGETS_LOCATION = new Identifier("textures/gui/widgets.png");
+    private static final int field_32175 = 750;
+    private static final int field_32176 = 200;
     protected int width;
     protected int height;
     public int x;

@@ -53,7 +53,7 @@ public class VertexFormat {
         return this.elements;
     }
 
-    public ImmutableList<String> method_34445() {
+    public ImmutableList<String> getShaderAttributes() {
         return ((ImmutableSet)this.field_29340.keySet()).asList();
     }
 
@@ -109,21 +109,21 @@ public class VertexFormat {
 
     public int method_34446() {
         if (this.field_29341 == 0) {
-            this.field_29341 = GlStateManager.genVertexArray();
+            this.field_29341 = GlStateManager._glGenVertexArrays();
         }
         return this.field_29341;
     }
 
     public int method_34447() {
         if (this.field_29342 == 0) {
-            this.field_29342 = GlStateManager.genBuffer();
+            this.field_29342 = GlStateManager._glGenBuffers();
         }
         return this.field_29342;
     }
 
     public int method_34448() {
         if (this.field_29343 == 0) {
-            this.field_29343 = GlStateManager.genBuffer();
+            this.field_29343 = GlStateManager._glGenBuffers();
         }
         return this.field_29343;
     }

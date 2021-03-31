@@ -50,6 +50,7 @@ import org.jetbrains.annotations.Nullable;
 public class SpiderEntity
 extends HostileEntity {
     private static final TrackedData<Byte> SPIDER_FLAGS = DataTracker.registerData(SpiderEntity.class, TrackedDataHandlerRegistry.BYTE);
+    private static final float field_30498 = 0.1f;
 
     public SpiderEntity(EntityType<? extends SpiderEntity> entityType, World world) {
         super((EntityType<? extends HostileEntity>)entityType, world);
@@ -153,9 +154,9 @@ extends HostileEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         StatusEffect statusEffect;
-        entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
         if (world.getRandom().nextInt(100) == 0) {
             SkeletonEntity skeletonEntity = EntityType.SKELETON.create(this.world);
             skeletonEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0f);

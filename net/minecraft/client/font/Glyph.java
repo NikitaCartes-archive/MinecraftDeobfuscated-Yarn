@@ -18,6 +18,10 @@ public interface Glyph {
         return 0.0f;
     }
 
+    default public float getAscent() {
+        return 0.0f;
+    }
+
     default public float getBoldOffset() {
         return 1.0f;
     }

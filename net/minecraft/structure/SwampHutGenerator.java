@@ -31,7 +31,7 @@ extends StructurePieceWithDimensions {
     private boolean hasCat;
 
     public SwampHutGenerator(Random random, int i, int j) {
-        super(StructurePieceType.SWAMP_HUT, random, i, 64, j, 7, 7, 9);
+        super(StructurePieceType.SWAMP_HUT, i, 64, j, 7, 7, 9, SwampHutGenerator.method_35457(random));
     }
 
     public SwampHutGenerator(ServerWorld serverWorld, NbtCompound nbt) {
@@ -49,9 +49,7 @@ extends StructurePieceWithDimensions {
 
     @Override
     public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
-        int k;
-        int j;
-        int i;
+        BlockPos.Mutable blockPos;
         if (!this.method_14839(world, boundingBox, 0)) {
             return false;
         }
@@ -88,17 +86,17 @@ extends StructurePieceWithDimensions {
         this.addBlock(world, (BlockState)blockState.with(StairsBlock.SHAPE, StairShape.OUTER_LEFT), 6, 4, 1, boundingBox);
         this.addBlock(world, (BlockState)blockState4.with(StairsBlock.SHAPE, StairShape.OUTER_LEFT), 0, 4, 8, boundingBox);
         this.addBlock(world, (BlockState)blockState4.with(StairsBlock.SHAPE, StairShape.OUTER_RIGHT), 6, 4, 8, boundingBox);
-        for (i = 2; i <= 7; i += 5) {
-            for (j = 1; j <= 5; j += 4) {
+        for (int i = 2; i <= 7; i += 5) {
+            for (int j = 1; j <= 5; j += 4) {
                 this.fillDownwards(world, Blocks.OAK_LOG.getDefaultState(), j, -1, i, boundingBox);
             }
         }
-        if (!this.hasWitch && boundingBox.contains(new BlockPos(i = this.applyXTransform(2, 5), j = this.applyYTransform(2), k = this.applyZTransform(2, 5)))) {
+        if (!this.hasWitch && boundingBox.contains(blockPos = this.offsetPos(2, 2, 5))) {
             this.hasWitch = true;
             WitchEntity witchEntity = EntityType.WITCH.create(world.toServerWorld());
             witchEntity.setPersistent();
-            witchEntity.refreshPositionAndAngles((double)i + 0.5, j, (double)k + 0.5, 0.0f, 0.0f);
-            witchEntity.initialize(world, world.getLocalDifficulty(new BlockPos(i, j, k)), SpawnReason.STRUCTURE, null, null);
+            witchEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, 0.0f, 0.0f);
+            witchEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnReason.STRUCTURE, null, null);
             world.spawnEntityAndPassengers(witchEntity);
         }
         this.spawnCat(world, boundingBox);
@@ -106,15 +104,13 @@ extends StructurePieceWithDimensions {
     }
 
     private void spawnCat(ServerWorldAccess world, BlockBox box) {
-        int k;
-        int j;
-        int i;
-        if (!this.hasCat && box.contains(new BlockPos(i = this.applyXTransform(2, 5), j = this.applyYTransform(2), k = this.applyZTransform(2, 5)))) {
+        BlockPos.Mutable blockPos;
+        if (!this.hasCat && box.contains(blockPos = this.offsetPos(2, 2, 5))) {
             this.hasCat = true;
             CatEntity catEntity = EntityType.CAT.create(world.toServerWorld());
             catEntity.setPersistent();
-            catEntity.refreshPositionAndAngles((double)i + 0.5, j, (double)k + 0.5, 0.0f, 0.0f);
-            catEntity.initialize(world, world.getLocalDifficulty(new BlockPos(i, j, k)), SpawnReason.STRUCTURE, null, null);
+            catEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, 0.0f, 0.0f);
+            catEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnReason.STRUCTURE, null, null);
             world.spawnEntityAndPassengers(catEntity);
         }
     }
