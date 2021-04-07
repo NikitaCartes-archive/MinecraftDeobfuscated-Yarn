@@ -9,6 +9,7 @@ import java.util.Optional;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
@@ -173,7 +174,7 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 			return false;
 		} else {
 			this.movementCooldownTicks = 10;
-			this.world.sendEntityStatus(this, (byte)4);
+			this.world.sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
 			this.playSound(SoundEvents.ENTITY_ZOGLIN_ATTACK, 1.0F, this.getSoundPitch());
 			return Hoglin.tryAttack(this, (LivingEntity)target);
 		}
@@ -204,7 +205,7 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 		} else if (bl && source.getAttacker() instanceof LivingEntity) {
 			LivingEntity livingEntity = (LivingEntity)source.getAttacker();
 			if (EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(livingEntity) && !LookTargetUtil.isNewTargetTooFar(this, livingEntity, 4.0)) {
-				this.method_26938(livingEntity);
+				this.setAttackTarget(livingEntity);
 			}
 
 			return bl;
@@ -213,9 +214,9 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 		}
 	}
 
-	private void method_26938(LivingEntity livingEntity) {
+	private void setAttackTarget(LivingEntity entity) {
 		this.brain.forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
-		this.brain.remember(MemoryModuleType.ATTACK_TARGET, livingEntity, 200L);
+		this.brain.remember(MemoryModuleType.ATTACK_TARGET, entity, 200L);
 	}
 
 	@Override
@@ -266,7 +267,7 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 
 	@Override
 	public void handleStatus(byte status) {
-		if (status == 4) {
+		if (status == EntityStatuses.PLAY_ATTACK_SOUND) {
 			this.movementCooldownTicks = 10;
 			this.playSound(SoundEvents.ENTITY_ZOGLIN_ATTACK, 1.0F, this.getSoundPitch());
 		} else {

@@ -22,7 +22,8 @@ public class NopeSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 		BlockState blockState,
 		BlockState blockState2,
 		int l,
-		long m,
+		int m,
+		long n,
 		TernarySurfaceConfig ternarySurfaceConfig
 	) {
 	}

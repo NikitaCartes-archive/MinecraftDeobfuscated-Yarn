@@ -17,7 +17,7 @@ public class ChatHudListener implements ClientChatListener {
 	}
 
 	@Override
-	public void onChatMessage(MessageType messageType, Text message, UUID senderUuid) {
+	public void onChatMessage(MessageType messageType, Text message, UUID sender) {
 		if (messageType != MessageType.CHAT) {
 			this.client.inGameHud.getChatHud().addMessage(message);
 		} else {

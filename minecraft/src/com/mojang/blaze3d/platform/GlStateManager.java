@@ -9,7 +9,7 @@ import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_6177;
+import net.minecraft.util.annotation.DeobfuscateClass;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.Vector4f;
@@ -21,7 +21,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 @Environment(EnvType.CLIENT)
-@class_6177
+@DeobfuscateClass
 public class GlStateManager {
 	public static final int TEXTURE_COUNT = 12;
 	private static final GlStateManager.BlendFuncState BLEND = new GlStateManager.BlendFuncState();
@@ -767,7 +767,7 @@ public class GlStateManager {
 	}
 
 	@Environment(EnvType.CLIENT)
-	@class_6177
+	@DeobfuscateClass
 	public static enum DstFactor {
 		CONSTANT_ALPHA(32771),
 		CONSTANT_COLOR(32769),
@@ -846,7 +846,7 @@ public class GlStateManager {
 	}
 
 	@Environment(EnvType.CLIENT)
-	@class_6177
+	@DeobfuscateClass
 	public static enum SrcFactor {
 		CONSTANT_ALPHA(32771),
 		CONSTANT_COLOR(32769),

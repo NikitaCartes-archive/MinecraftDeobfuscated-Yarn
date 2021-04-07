@@ -3,7 +3,7 @@ package net.minecraft.util.snooper;
 public interface SnooperListener {
 	void addSnooperInfo(Snooper snooper);
 
-	void method_35034(Snooper snooper);
+	void addInitialSnooperInfo(Snooper snooper);
 
 	boolean method_35033();
 }

@@ -8,6 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
@@ -106,7 +107,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 			return false;
 		} else {
 			this.movementCooldownTicks = 10;
-			this.world.sendEntityStatus(this, (byte)4);
+			this.world.sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
 			this.playSound(SoundEvents.ENTITY_HOGLIN_ATTACK, 1.0F, this.getSoundPitch());
 			HoglinBrain.onAttacking(this, (LivingEntity)target);
 			return Hoglin.tryAttack(this, (LivingEntity)target);
@@ -233,7 +234,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 
 	@Override
 	public void handleStatus(byte status) {
-		if (status == 4) {
+		if (status == EntityStatuses.PLAY_ATTACK_SOUND) {
 			this.movementCooldownTicks = 10;
 			this.playSound(SoundEvents.ENTITY_HOGLIN_ATTACK, 1.0F, this.getSoundPitch());
 		} else {

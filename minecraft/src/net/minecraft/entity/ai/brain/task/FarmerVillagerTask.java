@@ -25,8 +25,8 @@ import net.minecraft.village.VillagerProfession;
 import net.minecraft.world.GameRules;
 
 public class FarmerVillagerTask extends Task<VillagerEntity> {
-	private static final int field_30124 = 200;
-	public static final float field_30123 = 0.5F;
+	private static final int MAX_RUN_TIME = 200;
+	public static final float WALK_SPEED = 0.5F;
 	@Nullable
 	private BlockPos currentTarget;
 	private long nextResponseTime;

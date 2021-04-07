@@ -2,10 +2,10 @@ package com.mojang.blaze3d.platform;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_6177;
+import net.minecraft.util.annotation.DeobfuscateClass;
 
 @Environment(EnvType.CLIENT)
-@class_6177
+@DeobfuscateClass
 public class GlConst {
 	public static final int GL_READ_FRAMEBUFFER = 36008;
 	public static final int GL_DRAW_FRAMEBUFFER = 36009;

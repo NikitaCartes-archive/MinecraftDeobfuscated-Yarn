@@ -8,6 +8,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 public class ProjectileDamageSource extends EntityDamageSource {
+	@Nullable
 	private final Entity attacker;
 
 	public ProjectileDamageSource(String name, Entity projectile, @Nullable Entity attacker) {

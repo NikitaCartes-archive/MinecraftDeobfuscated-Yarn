@@ -22,9 +22,20 @@ public class ConfiguredSurfaceBuilder<SC extends SurfaceConfig> {
 	}
 
 	public void generate(
-		Random random, Chunk chunk, Biome biome, int x, int z, int height, double noise, BlockState defaultBlock, BlockState defaultFluid, int seaLevel, long seed
+		Random random,
+		Chunk chunk,
+		Biome biome,
+		int x,
+		int z,
+		int height,
+		double noise,
+		BlockState defaultBlock,
+		BlockState defaultFluid,
+		int seaLevel,
+		int i,
+		long l
 	) {
-		this.surfaceBuilder.generate(random, chunk, biome, x, z, height, noise, defaultBlock, defaultFluid, seaLevel, seed, this.config);
+		this.surfaceBuilder.generate(random, chunk, biome, x, z, height, noise, defaultBlock, defaultFluid, seaLevel, i, l, this.config);
 	}
 
 	public void initSeed(long seed) {

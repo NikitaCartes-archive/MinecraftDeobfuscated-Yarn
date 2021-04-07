@@ -15,8 +15,8 @@ public class AquaticStrollTask extends StrollTask {
 	}
 
 	@Override
-	protected Vec3d method_33201(PathAwareEntity pathAwareEntity) {
-		Vec3d vec3d = LookTargetUtil.method_33193(pathAwareEntity, this.horizontalRadius, this.verticalRadius);
-		return vec3d != null && pathAwareEntity.world.getFluidState(new BlockPos(vec3d)).isEmpty() ? null : vec3d;
+	protected Vec3d findWalkTarget(PathAwareEntity entity) {
+		Vec3d vec3d = LookTargetUtil.find(entity, this.horizontalRadius, this.verticalRadius);
+		return vec3d != null && entity.world.getFluidState(new BlockPos(vec3d)).isEmpty() ? null : vec3d;
 	}
 }

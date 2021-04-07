@@ -100,11 +100,11 @@ public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRe
 				MapState mapState = FilledMapItem.getMapState(integer, itemFrameEntity.world);
 				matrixStack.translate(0.0, 0.0, -1.0);
 				if (mapState != null) {
-					int k = this.method_33433(itemFrameEntity, 15728850, i);
+					int k = this.getLight(itemFrameEntity, 15728850, i);
 					this.client.gameRenderer.getMapRenderer().draw(matrixStack, vertexConsumerProvider, integer, mapState, true, k);
 				}
 			} else {
-				int l = this.method_33433(itemFrameEntity, 15728880, i);
+				int l = this.getLight(itemFrameEntity, 15728880, i);
 				matrixStack.scale(0.5F, 0.5F, 0.5F);
 				this.itemRenderer
 					.renderItem(itemStack, ModelTransformation.Mode.FIXED, l, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider, itemFrameEntity.getId());
@@ -114,8 +114,8 @@ public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRe
 		matrixStack.pop();
 	}
 
-	private int method_33433(T itemFrameEntity, int i, int j) {
-		return itemFrameEntity.getType() == EntityType.GLOW_ITEM_FRAME ? i : j;
+	private int getLight(T itemFrame, int glowLight, int regularLight) {
+		return itemFrame.getType() == EntityType.GLOW_ITEM_FRAME ? glowLight : regularLight;
 	}
 
 	private ModelIdentifier getModelId(T entity, ItemStack stack) {

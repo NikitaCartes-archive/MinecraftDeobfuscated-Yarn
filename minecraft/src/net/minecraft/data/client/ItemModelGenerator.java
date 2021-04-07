@@ -87,6 +87,7 @@ public class ItemModelGenerator {
 		this.register(Items.COOKED_RABBIT, Models.GENERATED);
 		this.register(Items.COOKED_SALMON, Models.GENERATED);
 		this.register(Items.COOKIE, Models.GENERATED);
+		this.register(Items.RAW_COPPER, Models.GENERATED);
 		this.register(Items.COPPER_INGOT, Models.GENERATED);
 		this.register(Items.CREEPER_BANNER_PATTERN, Models.GENERATED);
 		this.register(Items.CYAN_DYE, Models.GENERATED);
@@ -126,6 +127,7 @@ public class ItemModelGenerator {
 		this.register(Items.GLOWSTONE_DUST, Models.GENERATED);
 		this.register(Items.GLOW_INK_SAC, Models.GENERATED);
 		this.register(Items.GLOW_ITEM_FRAME, Models.GENERATED);
+		this.register(Items.RAW_GOLD, Models.GENERATED);
 		this.register(Items.GOLDEN_APPLE, Models.GENERATED);
 		this.register(Items.GOLDEN_AXE, Models.HANDHELD);
 		this.register(Items.GOLDEN_BOOTS, Models.GENERATED);
@@ -148,6 +150,7 @@ public class ItemModelGenerator {
 		this.register(Items.HONEY_BOTTLE, Models.GENERATED);
 		this.register(Items.HOPPER_MINECART, Models.GENERATED);
 		this.register(Items.INK_SAC, Models.GENERATED);
+		this.register(Items.RAW_IRON, Models.GENERATED);
 		this.register(Items.IRON_AXE, Models.HANDHELD);
 		this.register(Items.IRON_BOOTS, Models.GENERATED);
 		this.register(Items.IRON_CHESTPLATE, Models.GENERATED);

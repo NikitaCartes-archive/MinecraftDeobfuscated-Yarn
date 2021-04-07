@@ -3,13 +3,13 @@ package net.minecraft.unused.packageinfo;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_6178;
-import net.minecraft.class_6179;
+import net.minecraft.util.annotation.ClientFieldsAreNonnullByDefault;
+import net.minecraft.util.annotation.ClientMethodsReturnNonnullByDefault;
 
 // $VF: synthetic class
 @ParametersAreNonnullByDefault
-@class_6179
-@class_6178
+@ClientMethodsReturnNonnullByDefault
+@ClientFieldsAreNonnullByDefault
 @Environment(EnvType.CLIENT)
 interface PackageInfo6185 {
 }

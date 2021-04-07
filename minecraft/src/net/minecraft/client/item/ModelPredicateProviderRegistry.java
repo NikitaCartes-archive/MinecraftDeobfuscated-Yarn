@@ -35,7 +35,7 @@ import net.minecraft.world.World;
 @Environment(EnvType.CLIENT)
 public class ModelPredicateProviderRegistry {
 	private static final Map<Identifier, ModelPredicateProvider> GLOBAL = Maps.<Identifier, ModelPredicateProvider>newHashMap();
-	private static final String field_32947 = "CustomModelData";
+	private static final String CUSTOM_MODEL_DATA_KEY = "CustomModelData";
 	private static final Identifier DAMAGED_ID = new Identifier("damaged");
 	private static final Identifier DAMAGE_ID = new Identifier("damage");
 	private static final ModelPredicateProvider DAMAGED_PROVIDER = (itemStack, clientWorld, livingEntity, i) -> itemStack.isDamaged() ? 1.0F : 0.0F;

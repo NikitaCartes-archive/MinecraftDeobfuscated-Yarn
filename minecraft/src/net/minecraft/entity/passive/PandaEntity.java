@@ -85,9 +85,9 @@ public class PandaEntity extends AnimalEntity {
 	private float rollOverAnimationProgress;
 	private float lastRollOverAnimationProgress;
 	private PandaEntity.LookAtEntityGoal lookAtPlayerGoal;
-	private static final Predicate<ItemEntity> IS_FOOD = itemEntity -> {
-		ItemStack itemStack = itemEntity.getStack();
-		return (itemStack.isOf(Blocks.BAMBOO.asItem()) || itemStack.isOf(Blocks.CAKE.asItem())) && itemEntity.isAlive() && !itemEntity.cannotPickup();
+	private static final Predicate<ItemEntity> IS_FOOD = item -> {
+		ItemStack itemStack = item.getStack();
+		return (itemStack.isOf(Blocks.BAMBOO.asItem()) || itemStack.isOf(Blocks.CAKE.asItem())) && item.isAlive() && !item.cannotPickup();
 	};
 
 	public PandaEntity(EntityType<? extends PandaEntity> entityType, World world) {

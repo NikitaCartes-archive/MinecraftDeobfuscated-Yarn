@@ -151,7 +151,7 @@ public class NoiseColumnSampler {
 
 	/**
 	 * Calculates an offset for the noise.
-	 * <p>For example in the overworld, this makes lower y values solid while making higher y values air.</p>
+	 * <p>For example in the overworld, this makes lower y values solid while making higher y values air.
 	 */
 	private double getOffset(int y, double depth, double scale, double randomDensityOffset) {
 		double d = 1.0 - (double)y * 2.0 / 32.0 + randomDensityOffset;

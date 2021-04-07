@@ -10,11 +10,10 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.Vec3d;
 
 public class EntityDamageSource extends DamageSource {
-	@Nullable
 	protected final Entity source;
 	private boolean thorns;
 
-	public EntityDamageSource(String name, @Nullable Entity source) {
+	public EntityDamageSource(String name, Entity source) {
 		super(name);
 		this.source = source;
 	}
@@ -28,7 +27,6 @@ public class EntityDamageSource extends DamageSource {
 		return this.thorns;
 	}
 
-	@Nullable
 	@Override
 	public Entity getAttacker() {
 		return this.source;
@@ -45,13 +43,13 @@ public class EntityDamageSource extends DamageSource {
 
 	@Override
 	public boolean isScaledWithDifficulty() {
-		return this.source != null && this.source instanceof LivingEntity && !(this.source instanceof PlayerEntity);
+		return this.source instanceof LivingEntity && !(this.source instanceof PlayerEntity);
 	}
 
 	@Nullable
 	@Override
 	public Vec3d getPosition() {
-		return this.source != null ? this.source.getPos() : null;
+		return this.source.getPos();
 	}
 
 	@Override

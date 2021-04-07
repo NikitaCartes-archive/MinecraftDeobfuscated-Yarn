@@ -21,12 +21,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class PlayWithVillagerBabiesTask extends Task<PathAwareEntity> {
-	private static final int field_30151 = 20;
-	private static final int field_30152 = 8;
-	private static final float field_30153 = 0.6F;
-	private static final float field_30154 = 0.6F;
-	private static final int field_30155 = 5;
-	private static final int field_30156 = 10;
+	private static final int HORIZONTAL_RANGE = 20;
+	private static final int VERTICAL_RANGE = 8;
+	private static final float WALK_SPEED = 0.6F;
+	private static final float PLAYING_WALK_SPEED = 0.6F;
+	private static final int MAX_BABY_INTERACTION_COUNT = 5;
+	private static final int RUN_CHANCE = 10;
 
 	public PlayWithVillagerBabiesTask() {
 		super(

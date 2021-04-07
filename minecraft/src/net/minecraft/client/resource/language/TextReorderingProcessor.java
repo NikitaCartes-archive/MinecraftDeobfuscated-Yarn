@@ -54,8 +54,8 @@ public class TextReorderingProcessor {
 		}
 	}
 
-	public static TextReorderingProcessor method_36144(StringVisitable stringVisitable) {
-		return create(stringVisitable, i -> i, string -> string);
+	public static TextReorderingProcessor create(StringVisitable visitable) {
+		return create(visitable, i -> i, string -> string);
 	}
 
 	public static TextReorderingProcessor create(StringVisitable visitable, Int2IntFunction reverser, UnaryOperator<String> unaryOperator) {

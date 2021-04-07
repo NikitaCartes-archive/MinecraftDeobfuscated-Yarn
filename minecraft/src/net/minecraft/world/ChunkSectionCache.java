@@ -4,10 +4,12 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
+import net.minecraft.world.chunk.WorldChunk;
 
 public class ChunkSectionCache implements AutoCloseable {
 	private final WorldAccess world;
@@ -20,28 +22,37 @@ public class ChunkSectionCache implements AutoCloseable {
 		this.world = world;
 	}
 
-	public ChunkSection getSection(BlockPos pos) {
-		long l = ChunkSectionPos.toLong(pos);
-		if (this.cachedSection != null && this.sectionPos == l) {
+	@Nullable
+	public ChunkSection getSection(BlockPos blockPos) {
+		int i = this.world.getSectionIndex(blockPos.getY());
+		if (i >= 0 && i < this.world.countVerticalSections()) {
+			long l = ChunkSectionPos.toLong(blockPos);
+			if (this.cachedSection == null || this.sectionPos != l) {
+				this.cachedSection = this.cache.computeIfAbsent(l, lx -> {
+					Chunk chunk = this.world.getChunk(ChunkSectionPos.getSectionCoord(blockPos.getX()), ChunkSectionPos.getSectionCoord(blockPos.getZ()));
+					ChunkSection chunkSection = chunk.getSection(i);
+					chunkSection.lock();
+					return chunkSection;
+				});
+				this.sectionPos = l;
+			}
+
 			return this.cachedSection;
 		} else {
-			this.cachedSection = this.cache.computeIfAbsent(l, cachedPos -> {
-				Chunk chunk = this.world.getChunk(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()));
-				ChunkSection chunkSection = chunk.getSection(chunk.getSectionIndex(pos.getY()));
-				chunkSection.lock();
-				return chunkSection;
-			});
-			this.sectionPos = l;
-			return this.cachedSection;
+			return WorldChunk.EMPTY_SECTION;
 		}
 	}
 
 	public BlockState getBlockState(BlockPos pos) {
 		ChunkSection chunkSection = this.getSection(pos);
-		int i = ChunkSectionPos.getLocalCoord(pos.getX());
-		int j = ChunkSectionPos.getLocalCoord(pos.getY());
-		int k = ChunkSectionPos.getLocalCoord(pos.getZ());
-		return chunkSection.getBlockState(i, j, k);
+		if (chunkSection == WorldChunk.EMPTY_SECTION) {
+			return Blocks.AIR.getDefaultState();
+		} else {
+			int i = ChunkSectionPos.getLocalCoord(pos.getX());
+			int j = ChunkSectionPos.getLocalCoord(pos.getY());
+			int k = ChunkSectionPos.getLocalCoord(pos.getZ());
+			return chunkSection.getBlockState(i, j, k);
+		}
 	}
 
 	public void close() {

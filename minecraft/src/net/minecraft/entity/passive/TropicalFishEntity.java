@@ -22,7 +22,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public class TropicalFishEntity extends SchoolingFishEntity {
-	public static final String field_30378 = "BucketVariantTag";
+	public static final String BUCKET_VARIANT_TAG_KEY = "BucketVariantTag";
 	private static final TrackedData<Integer> VARIANT = DataTracker.registerData(TropicalFishEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	public static final int field_30380 = 0;
 	public static final int field_30383 = 1;

@@ -31,6 +31,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
@@ -432,13 +433,13 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public void handleStatus(byte status) {
-		if (status == 9) {
+		if (status == EntityStatuses.CONSUME_ITEM) {
 			this.consumeItem();
-		} else if (status == 23) {
+		} else if (status == EntityStatuses.USE_FULL_DEBUG_INFO) {
 			this.reducedDebugInfo = false;
-		} else if (status == 22) {
+		} else if (status == EntityStatuses.USE_REDUCED_DEBUG_INFO) {
 			this.reducedDebugInfo = true;
-		} else if (status == 43) {
+		} else if (status == EntityStatuses.ADD_CLOUD_PARTICLES) {
 			this.spawnParticles(ParticleTypes.CLOUD);
 		} else {
 			super.handleStatus(status);
@@ -667,7 +668,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	/**
-	 * @param throwRandomly If true, the item will be thrown in a random direction from the entity regardless of which direction the entity is facing
+	 * @param throwRandomly if true, the item will be thrown in a random direction from the entity regardless of which direction the entity is facing
 	 */
 	@Nullable
 	public ItemEntity dropItem(ItemStack stack, boolean throwRandomly, boolean retainOwnership) {
@@ -1296,7 +1297,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		if (this.random.nextFloat() < f) {
 			this.getItemCooldownManager().set(Items.SHIELD, 100);
 			this.clearActiveItem();
-			this.world.sendEntityStatus(this, (byte)30);
+			this.world.sendEntityStatus(this, EntityStatuses.BREAK_SHIELD);
 		}
 	}
 

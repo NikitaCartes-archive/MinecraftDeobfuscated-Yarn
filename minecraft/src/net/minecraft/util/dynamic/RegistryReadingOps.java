@@ -31,7 +31,7 @@ public class RegistryReadingOps<T> extends ForwardingDynamicOps<T> {
 	 * Encode an id for a registry element than a full object if possible.
 	 * 
 	 * <p>This method is called by casting an arbitrary dynamic ops to a registry
-	 * reading ops.</p>
+	 * reading ops.
 	 * 
 	 * @see RegistryOps#decodeOrId(Object, RegistryKey, Codec, boolean)
 	 */

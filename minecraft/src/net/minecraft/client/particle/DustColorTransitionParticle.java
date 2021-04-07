@@ -15,19 +15,19 @@ public class DustColorTransitionParticle extends AbstractDustParticle<DustColorT
 
 	protected DustColorTransitionParticle(
 		ClientWorld world,
-		double d,
-		double e,
-		double f,
-		double g,
-		double h,
-		double i,
+		double x,
+		double y,
+		double z,
+		double velocityX,
+		double velocityY,
+		double velocityZ,
 		DustColorTransitionParticleEffect dustColorTransitionParticleEffect,
 		SpriteProvider spriteProvider
 	) {
-		super(world, d, e, f, g, h, i, dustColorTransitionParticleEffect, spriteProvider);
-		float j = this.random.nextFloat() * 0.4F + 0.6F;
-		this.field_28244 = this.method_33073(dustColorTransitionParticleEffect.getFromColor(), j);
-		this.field_28245 = this.method_33073(dustColorTransitionParticleEffect.getToColor(), j);
+		super(world, x, y, z, velocityX, velocityY, velocityZ, dustColorTransitionParticleEffect, spriteProvider);
+		float f = this.random.nextFloat() * 0.4F + 0.6F;
+		this.field_28244 = this.method_33073(dustColorTransitionParticleEffect.getFromColor(), f);
+		this.field_28245 = this.method_33073(dustColorTransitionParticleEffect.getToColor(), f);
 	}
 
 	private Vec3f method_33073(Vec3f vec3f, float f) {

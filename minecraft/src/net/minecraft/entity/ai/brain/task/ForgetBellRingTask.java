@@ -11,7 +11,7 @@ import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 
 public class ForgetBellRingTask extends Task<LivingEntity> {
-	private static final int field_30165 = 300;
+	private static final int MIN_HEARD_BELL_TIME = 300;
 	private final int distance;
 	private final int maxHiddenTicks;
 	private int hiddenTicks;

@@ -41,7 +41,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 	public static final Identifier BLOCK_ATLAS_TEXTURE = PlayerScreenHandler.BLOCK_ATLAS_TEXTURE;
 	@Deprecated
 	public static final Identifier PARTICLE_ATLAS_TEXTURE = new Identifier("textures/atlas/particles.png");
-	private static final String field_32957 = ".png";
+	private static final String PNG_EXTENSION = ".png";
 	private final List<TextureTickListener> animatedSprites = Lists.<TextureTickListener>newArrayList();
 	private final Set<Identifier> spritesToLoad = Sets.<Identifier>newHashSet();
 	private final Map<Identifier, Sprite> sprites = Maps.<Identifier, Sprite>newHashMap();
@@ -77,7 +77,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 				throw new CrashException(crashReport);
 			}
 
-			TextureTickListener textureTickListener = sprite.method_33443();
+			TextureTickListener textureTickListener = sprite.getAnimation();
 			if (textureTickListener != null) {
 				this.animatedSprites.add(textureTickListener);
 			}

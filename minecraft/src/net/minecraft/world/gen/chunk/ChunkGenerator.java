@@ -168,11 +168,12 @@ public abstract class ChunkGenerator {
 	 * Tries to find the closest structure of a given type near a given block.
 	 * <p>
 	 * New chunks will only be generated up to the {@link net.minecraft.world.chunk.ChunkStatus#STRUCTURE_STARTS} phase by this method.
+	 * <p>
+	 * The radius is ignored for strongholds.
 	 * 
 	 * @return {@code null} if no structure could be found within the given search radius
 	 * 
-	 * @param radius The search radius in chunks around the chunk the given block position is in. A radius of 0 will only search in the given chunk.
-	 * This is ignored for strongholds.
+	 * @param radius the search radius in chunks around the chunk the given block position is in; a radius of 0 will only search in the given chunk
 	 * @param skipExistingChunks whether only structures that are not referenced by generated chunks (chunks past the STRUCTURE_STARTS stage) are returned, excluding strongholds
 	 */
 	@Nullable

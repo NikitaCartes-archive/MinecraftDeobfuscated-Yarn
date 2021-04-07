@@ -28,7 +28,6 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	protected ButtonWidget doneButton;
 	protected ButtonWidget cancelButton;
 	protected CyclingButtonWidget<Boolean> toggleTrackingOutputButton;
-	protected boolean trackingOutput;
 	private CommandSuggestor commandSuggestor;
 
 	public AbstractCommandBlockScreen() {
@@ -98,7 +97,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.commandSuggestor.refresh();
 	}
 
-	private void method_32642(boolean bl) {
+	protected void method_32642(boolean bl) {
 		this.previousOutputTextField.setText(bl ? this.getCommandExecutor().getLastOutput().getString() : "-");
 	}
 
@@ -118,12 +117,6 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	}
 
 	protected abstract void syncSettingsToServer(CommandBlockExecutor commandExecutor);
-
-	@Override
-	public void onClose() {
-		this.getCommandExecutor().setTrackingOutput(this.trackingOutput);
-		this.client.openScreen(null);
-	}
 
 	private void onCommandChanged(String text) {
 		this.commandSuggestor.refresh();

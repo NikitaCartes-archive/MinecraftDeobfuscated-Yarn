@@ -70,14 +70,14 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public static final RegistryKey<World> OVERWORLD = RegistryKey.of(Registry.WORLD_KEY, new Identifier("overworld"));
 	public static final RegistryKey<World> NETHER = RegistryKey.of(Registry.WORLD_KEY, new Identifier("the_nether"));
 	public static final RegistryKey<World> END = RegistryKey.of(Registry.WORLD_KEY, new Identifier("the_end"));
-	public static final int field_30965 = 30000000;
-	public static final int field_30966 = 512;
+	public static final int HORIZONTAL_LIMIT = 30000000;
+	public static final int MAX_UPDATE_DEPTH = 512;
 	public static final int field_30967 = 32;
 	private static final Direction[] DIRECTIONS = Direction.values();
 	public static final int field_30968 = 15;
 	public static final int field_30969 = 24000;
-	public static final int field_30970 = 20000000;
-	public static final int field_30971 = -20000000;
+	public static final int MAX_Y = 20000000;
+	public static final int MIN_Y = -20000000;
 	protected final List<BlockEntityTickInvoker> blockEntityTickers = Lists.<BlockEntityTickInvoker>newArrayList();
 	private final List<BlockEntityTickInvoker> pendingBlockEntityTickers = Lists.<BlockEntityTickInvoker>newArrayList();
 	private boolean iteratingTickingBlockEntities;
@@ -85,7 +85,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	private final boolean debugWorld;
 	private int ambientDarkness;
 	protected int lcgBlockSeed = new Random().nextInt();
-	protected final int unusedIncrement = 1013904223;
+	protected final int lcgBlockSeedIncrement = 1013904223;
 	protected float rainGradientPrev;
 	protected float rainGradient;
 	protected float thunderGradientPrev;

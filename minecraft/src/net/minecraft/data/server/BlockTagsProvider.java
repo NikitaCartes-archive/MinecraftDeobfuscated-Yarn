@@ -312,7 +312,8 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.CUT_COPPER_STAIRS,
 				Blocks.WAXED_WEATHERED_CUT_COPPER_STAIRS,
 				Blocks.WAXED_EXPOSED_CUT_COPPER_STAIRS,
-				Blocks.WAXED_CUT_COPPER_STAIRS
+				Blocks.WAXED_CUT_COPPER_STAIRS,
+				Blocks.WAXED_OXIDIZED_CUT_COPPER_STAIRS
 			);
 		this.getOrCreateTagBuilder(BlockTags.SLABS)
 			.addTag(BlockTags.WOODEN_SLABS)
@@ -359,7 +360,8 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.OXIDIZED_CUT_COPPER_SLAB,
 				Blocks.WEATHERED_CUT_COPPER_SLAB,
 				Blocks.EXPOSED_CUT_COPPER_SLAB,
-				Blocks.CUT_COPPER_SLAB
+				Blocks.CUT_COPPER_SLAB,
+				Blocks.WAXED_OXIDIZED_CUT_COPPER_SLAB
 			);
 		this.getOrCreateTagBuilder(BlockTags.WALLS)
 			.add(

@@ -450,12 +450,12 @@ public class BlockPos extends Vec3i {
 	 * a block towards the first direction, followed by moving along
 	 * the second direction.
 	 * 
+	 * @throws IllegalStateException when the 2 directions lie on the same axis
+	 * 
 	 * @param center the center of iteration
 	 * @param radius the maximum chebychev distance
 	 * @param firstDirection the direction the iterator moves first
 	 * @param secondDirection the direction the iterator moves after the first
-	 * 
-	 * @throws IllegalStateException when the 2 directions lie on the same axis
 	 */
 	public static Iterable<BlockPos.Mutable> iterateInSquare(BlockPos center, int radius, Direction firstDirection, Direction secondDirection) {
 		Validate.validState(firstDirection.getAxis() != secondDirection.getAxis(), "The two directions cannot be on the same axis");

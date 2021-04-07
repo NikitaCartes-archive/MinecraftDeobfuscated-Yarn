@@ -14,7 +14,7 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
 public class SecondaryPointsOfInterestSensor extends Sensor<VillagerEntity> {
-	private static final int field_30257 = 40;
+	private static final int RUN_TIME = 40;
 
 	public SecondaryPointsOfInterestSensor() {
 		super(40);

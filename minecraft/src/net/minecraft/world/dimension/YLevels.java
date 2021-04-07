@@ -11,6 +11,6 @@ public class YLevels {
 	public static final int NETHER_LOGICAL_HEIGHT = 128;
 	public static final int END_MIN_Y = 0;
 	public static final int END_HEIGHT = 256;
-	public static final int END_GENERATION_HEIGHT = 256;
+	public static final int END_GENERATION_HEIGHT = 128;
 	public static final int END_LOGICAL_HEIGHT = 256;
 }

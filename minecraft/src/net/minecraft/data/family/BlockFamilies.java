@@ -9,8 +9,14 @@ import net.minecraft.util.registry.Registry;
 
 public class BlockFamilies {
 	private static final Map<Block, BlockFamily> BASE_BLOCKS_TO_FAMILIES = Maps.<Block, BlockFamily>newHashMap();
-	private static final String field_33117 = "wooden";
-	private static final String field_33118 = "has_planks";
+	/**
+	 * The group used for the recipes of wooden block families.
+	 */
+	private static final String WOODEN_GROUP = "wooden";
+	/**
+	 * The name of the criterion used for the recipe unlock advancements of wooden block families.
+	 */
+	private static final String WOODEN_UNLOCK_CRITERION_NAME = "has_planks";
 	public static final BlockFamily ACACIA = register(Blocks.ACACIA_PLANKS)
 		.button(Blocks.ACACIA_BUTTON)
 		.fence(Blocks.ACACIA_FENCE)
@@ -138,13 +144,13 @@ public class BlockFamilies {
 		.stairs(Blocks.POLISHED_BLACKSTONE_STAIRS)
 		.slab(Blocks.POLISHED_BLACKSTONE_SLAB)
 		.polished(Blocks.POLISHED_BLACKSTONE_BRICKS)
-		.chsieled(Blocks.CHISELED_POLISHED_BLACKSTONE)
+		.chiseled(Blocks.CHISELED_POLISHED_BLACKSTONE)
 		.build();
 	public static final BlockFamily POLISHED_BLACKSTONE_BRICK = register(Blocks.POLISHED_BLACKSTONE_BRICKS)
 		.wall(Blocks.POLISHED_BLACKSTONE_BRICK_WALL)
 		.stairs(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS)
 		.slab(Blocks.POLISHED_BLACKSTONE_BRICK_SLAB)
-		.method_34593(Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS)
+		.cracked(Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS)
 		.build();
 	public static final BlockFamily BRICK = register(Blocks.BRICKS).wall(Blocks.BRICK_WALL).stairs(Blocks.BRICK_STAIRS).slab(Blocks.BRICK_SLAB).build();
 	public static final BlockFamily END_STONE_BRICK = register(Blocks.END_STONE_BRICKS)
@@ -167,29 +173,35 @@ public class BlockFamilies {
 		.stairs(Blocks.WAXED_CUT_COPPER_STAIRS)
 		.noGenerateModels()
 		.build();
-	public static final BlockFamily LIGHTLY_WEATHERED_CUT_COPPER = register(Blocks.EXPOSED_CUT_COPPER)
+	public static final BlockFamily EXPOSED_CUT_COPPER = register(Blocks.EXPOSED_CUT_COPPER)
 		.slab(Blocks.EXPOSED_CUT_COPPER_SLAB)
 		.stairs(Blocks.EXPOSED_CUT_COPPER_STAIRS)
 		.noGenerateModels()
 		.build();
-	public static final BlockFamily WAXED_LIGHTLY_WEATHERED_CUT_COPPER = register(Blocks.WAXED_EXPOSED_CUT_COPPER)
+	public static final BlockFamily WAXED_EXPOSED_CUT_COPPER = register(Blocks.WAXED_EXPOSED_CUT_COPPER)
 		.slab(Blocks.WAXED_EXPOSED_CUT_COPPER_SLAB)
 		.stairs(Blocks.WAXED_EXPOSED_CUT_COPPER_STAIRS)
 		.noGenerateModels()
 		.build();
-	public static final BlockFamily SEMI_WEATHERED_CUT_COPPER = register(Blocks.WEATHERED_CUT_COPPER)
+	public static final BlockFamily WEATHERED_CUT_COPPER = register(Blocks.WEATHERED_CUT_COPPER)
 		.slab(Blocks.WEATHERED_CUT_COPPER_SLAB)
 		.stairs(Blocks.WEATHERED_CUT_COPPER_STAIRS)
 		.noGenerateModels()
 		.build();
-	public static final BlockFamily WAXED_SEMI_WEATHERED_CUT_COPPER = register(Blocks.WAXED_WEATHERED_CUT_COPPER)
+	public static final BlockFamily WAXED_WEATHERED_CUT_COPPER = register(Blocks.WAXED_WEATHERED_CUT_COPPER)
 		.slab(Blocks.WAXED_WEATHERED_CUT_COPPER_SLAB)
 		.stairs(Blocks.WAXED_WEATHERED_CUT_COPPER_STAIRS)
 		.noGenerateModels()
 		.build();
-	public static final BlockFamily WEATHERED_CUT_COPPER = register(Blocks.OXIDIZED_CUT_COPPER)
+	public static final BlockFamily OXIDIZED_CUT_COPPER = register(Blocks.OXIDIZED_CUT_COPPER)
 		.slab(Blocks.OXIDIZED_CUT_COPPER_SLAB)
 		.stairs(Blocks.OXIDIZED_CUT_COPPER_STAIRS)
+		.noGenerateModels()
+		.build();
+	public static final BlockFamily WAXED_OXIDIZED_CUT_COPPER = register(Blocks.WAXED_OXIDIZED_CUT_COPPER)
+		.slab(Blocks.WAXED_OXIDIZED_CUT_COPPER_SLAB)
+		.stairs(Blocks.WAXED_OXIDIZED_CUT_COPPER_STAIRS)
+		.noGenerateModels()
 		.build();
 	public static final BlockFamily COBBLESTONE = register(Blocks.COBBLESTONE)
 		.wall(Blocks.COBBLESTONE_WALL)
@@ -226,8 +238,8 @@ public class BlockFamilies {
 		.wall(Blocks.NETHER_BRICK_WALL)
 		.stairs(Blocks.NETHER_BRICK_STAIRS)
 		.slab(Blocks.NETHER_BRICK_SLAB)
-		.chsieled(Blocks.CHISELED_NETHER_BRICKS)
-		.method_34593(Blocks.CRACKED_NETHER_BRICKS)
+		.chiseled(Blocks.CHISELED_NETHER_BRICKS)
+		.cracked(Blocks.CRACKED_NETHER_BRICKS)
 		.build();
 	public static final BlockFamily RED_NETHER_BRICK = register(Blocks.RED_NETHER_BRICKS)
 		.slab(Blocks.RED_NETHER_BRICK_SLAB)
@@ -251,7 +263,7 @@ public class BlockFamilies {
 	public static final BlockFamily QUARTZ_BLOCK = register(Blocks.QUARTZ_BLOCK)
 		.stairs(Blocks.QUARTZ_STAIRS)
 		.slab(Blocks.QUARTZ_SLAB)
-		.chsieled(Blocks.CHISELED_QUARTZ_BLOCK)
+		.chiseled(Blocks.CHISELED_QUARTZ_BLOCK)
 		.noGenerateRecipes()
 		.build();
 	public static final BlockFamily SMOOTH_QUARTZ = register(Blocks.SMOOTH_QUARTZ).stairs(Blocks.SMOOTH_QUARTZ_STAIRS).slab(Blocks.SMOOTH_QUARTZ_SLAB).build();
@@ -259,7 +271,7 @@ public class BlockFamilies {
 		.wall(Blocks.SANDSTONE_WALL)
 		.stairs(Blocks.SANDSTONE_STAIRS)
 		.slab(Blocks.SANDSTONE_SLAB)
-		.chsieled(Blocks.CHISELED_SANDSTONE)
+		.chiseled(Blocks.CHISELED_SANDSTONE)
 		.noGenerateRecipes()
 		.build();
 	public static final BlockFamily CUT_SANDSTONE = register(Blocks.CUT_SANDSTONE).slab(Blocks.CUT_SANDSTONE_SLAB).build();
@@ -271,7 +283,7 @@ public class BlockFamilies {
 		.wall(Blocks.RED_SANDSTONE_WALL)
 		.stairs(Blocks.RED_SANDSTONE_STAIRS)
 		.slab(Blocks.RED_SANDSTONE_SLAB)
-		.chsieled(Blocks.CHISELED_RED_SANDSTONE)
+		.chiseled(Blocks.CHISELED_RED_SANDSTONE)
 		.noGenerateRecipes()
 		.build();
 	public static final BlockFamily CUT_RED_SANDSTONE = register(Blocks.CUT_RED_SANDSTONE).slab(Blocks.CUT_RED_SANDSTONE_SLAB).build();
@@ -289,34 +301,34 @@ public class BlockFamilies {
 		.wall(Blocks.STONE_BRICK_WALL)
 		.stairs(Blocks.STONE_BRICK_STAIRS)
 		.slab(Blocks.STONE_BRICK_SLAB)
-		.chsieled(Blocks.CHISELED_STONE_BRICKS)
-		.method_34593(Blocks.CRACKED_STONE_BRICKS)
+		.chiseled(Blocks.CHISELED_STONE_BRICKS)
+		.cracked(Blocks.CRACKED_STONE_BRICKS)
 		.noGenerateRecipes()
 		.build();
-	public static final BlockFamily field_28946 = register(Blocks.DEEPSLATE).build();
-	public static final BlockFamily field_29079 = register(Blocks.COBBLED_DEEPSLATE)
+	public static final BlockFamily DEEPSLATE = register(Blocks.DEEPSLATE).build();
+	public static final BlockFamily COBBLED_DEEPSLATE = register(Blocks.COBBLED_DEEPSLATE)
 		.slab(Blocks.COBBLED_DEEPSLATE_SLAB)
 		.stairs(Blocks.COBBLED_DEEPSLATE_STAIRS)
 		.wall(Blocks.COBBLED_DEEPSLATE_WALL)
-		.chsieled(Blocks.CHISELED_DEEPSLATE)
+		.chiseled(Blocks.CHISELED_DEEPSLATE)
 		.polished(Blocks.POLISHED_DEEPSLATE)
 		.build();
-	public static final BlockFamily field_28947 = register(Blocks.POLISHED_DEEPSLATE)
+	public static final BlockFamily POLISHED_DEEPSLATE = register(Blocks.POLISHED_DEEPSLATE)
 		.slab(Blocks.POLISHED_DEEPSLATE_SLAB)
 		.stairs(Blocks.POLISHED_DEEPSLATE_STAIRS)
 		.wall(Blocks.POLISHED_DEEPSLATE_WALL)
 		.build();
-	public static final BlockFamily field_28949 = register(Blocks.DEEPSLATE_BRICKS)
+	public static final BlockFamily DEEPSLATE_BRICK = register(Blocks.DEEPSLATE_BRICKS)
 		.slab(Blocks.DEEPSLATE_BRICK_SLAB)
 		.stairs(Blocks.DEEPSLATE_BRICK_STAIRS)
 		.wall(Blocks.DEEPSLATE_BRICK_WALL)
-		.method_34593(Blocks.CRACKED_DEEPSLATE_BRICKS)
+		.cracked(Blocks.CRACKED_DEEPSLATE_BRICKS)
 		.build();
-	public static final BlockFamily field_28948 = register(Blocks.DEEPSLATE_TILES)
+	public static final BlockFamily DEEPSLATE_TILE = register(Blocks.DEEPSLATE_TILES)
 		.slab(Blocks.DEEPSLATE_TILE_SLAB)
 		.stairs(Blocks.DEEPSLATE_TILE_STAIRS)
 		.wall(Blocks.DEEPSLATE_TILE_WALL)
-		.method_34593(Blocks.CRACKED_DEEPSLATE_TILES)
+		.cracked(Blocks.CRACKED_DEEPSLATE_TILES)
 		.build();
 
 	private static BlockFamily.Builder register(Block baseBlock) {

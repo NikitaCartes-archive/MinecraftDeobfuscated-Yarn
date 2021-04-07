@@ -98,7 +98,7 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 
 	public static void loadSkin(Identifier id, String playerName) {
 		TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
-		AbstractTexture abstractTexture = textureManager.method_34590(id, MissingSprite.getMissingSpriteTexture());
+		AbstractTexture abstractTexture = textureManager.getOrDefault(id, MissingSprite.getMissingSpriteTexture());
 		if (abstractTexture == MissingSprite.getMissingSpriteTexture()) {
 			AbstractTexture var4 = new PlayerSkinTexture(
 				null,

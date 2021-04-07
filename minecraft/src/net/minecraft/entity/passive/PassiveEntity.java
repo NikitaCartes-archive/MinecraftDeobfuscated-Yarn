@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 
 public abstract class PassiveEntity extends PathAwareEntity {
 	private static final TrackedData<Boolean> CHILD = DataTracker.registerData(PassiveEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	public static final int field_29969 = -24000;
+	public static final int BABY_AGE = -24000;
 	private static final int field_29970 = 40;
 	protected int breedingAge;
 	protected int forcedAge;

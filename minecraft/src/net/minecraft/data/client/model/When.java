@@ -20,8 +20,8 @@ public interface When extends Supplier<JsonElement> {
 		return new When.PropertyCondition();
 	}
 
-	static When method_35870(When... whens) {
-		return new When.LogicalCondition(When.LogicalOperator.AND, Arrays.asList(whens));
+	static When allOf(When... conditions) {
+		return new When.LogicalCondition(When.LogicalOperator.AND, Arrays.asList(conditions));
 	}
 
 	static When anyOf(When... conditions) {

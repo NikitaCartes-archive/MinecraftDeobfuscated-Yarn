@@ -42,7 +42,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public class MooshroomEntity extends CowEntity implements Shearable {
 	private static final TrackedData<String> TYPE = DataTracker.registerData(MooshroomEntity.class, TrackedDataHandlerRegistry.STRING);
-	private static final int field_30339 = 1024;
+	private static final int MUTATION_CHANCE = 1024;
 	private StatusEffect stewEffect;
 	private int stewEffectDuration;
 	private UUID lightningId;
@@ -107,7 +107,7 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 			this.sheared(SoundCategory.PLAYERS);
 			this.emitGameEvent(GameEvent.SHEAR, player);
 			if (!this.world.isClient) {
-				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+				itemStack.damage(1, player, playerx -> playerx.sendToolBreakStatus(hand));
 			}
 
 			return ActionResult.success(this.world.isClient);

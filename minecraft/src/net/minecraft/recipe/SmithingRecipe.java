@@ -25,14 +25,14 @@ public class SmithingRecipe implements Recipe<Inventory> {
 	}
 
 	@Override
-	public boolean matches(Inventory inv, World world) {
-		return this.base.test(inv.getStack(0)) && this.addition.test(inv.getStack(1));
+	public boolean matches(Inventory inventory, World world) {
+		return this.base.test(inventory.getStack(0)) && this.addition.test(inventory.getStack(1));
 	}
 
 	@Override
-	public ItemStack craft(Inventory inv) {
+	public ItemStack craft(Inventory inventory) {
 		ItemStack itemStack = this.result.copy();
-		NbtCompound nbtCompound = inv.getStack(0).getTag();
+		NbtCompound nbtCompound = inventory.getStack(0).getTag();
 		if (nbtCompound != null) {
 			itemStack.setTag(nbtCompound.copy());
 		}
@@ -55,7 +55,7 @@ public class SmithingRecipe implements Recipe<Inventory> {
 	}
 
 	@Override
-	public ItemStack getRecipeKindIcon() {
+	public ItemStack createIcon() {
 		return new ItemStack(Blocks.SMITHING_TABLE);
 	}
 

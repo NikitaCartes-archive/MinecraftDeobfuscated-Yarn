@@ -28,7 +28,7 @@ import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class PlayerSkinProvider {
-	public static final String field_32970 = "textures";
+	public static final String TEXTURES = "textures";
 	private final TextureManager textureManager;
 	private final File skinCacheDir;
 	private final MinecraftSessionService sessionService;
@@ -59,7 +59,7 @@ public class PlayerSkinProvider {
 	private Identifier loadSkin(MinecraftProfileTexture profileTexture, Type type, @Nullable PlayerSkinProvider.SkinTextureAvailableCallback callback) {
 		String string = Hashing.sha1().hashUnencodedChars(profileTexture.getHash()).toString();
 		Identifier identifier = new Identifier("skins/" + string);
-		AbstractTexture abstractTexture = this.textureManager.method_34590(identifier, MissingSprite.getMissingSpriteTexture());
+		AbstractTexture abstractTexture = this.textureManager.getOrDefault(identifier, MissingSprite.getMissingSpriteTexture());
 		if (abstractTexture == MissingSprite.getMissingSpriteTexture()) {
 			File file = new File(this.skinCacheDir, string.length() > 2 ? string.substring(0, 2) : "xx");
 			File file2 = new File(file, string);

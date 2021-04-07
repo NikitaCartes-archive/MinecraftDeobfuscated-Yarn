@@ -50,7 +50,7 @@ public class Snooper {
 		this.addInitialInfo("os_architecture", System.getProperty("os.arch"));
 		this.addInitialInfo("java_version", System.getProperty("java.version"));
 		this.addInfo("version", SharedConstants.getGameVersion().getId());
-		this.listener.method_35034(this);
+		this.listener.addInitialSnooperInfo(this);
 	}
 
 	private void method_35032() {

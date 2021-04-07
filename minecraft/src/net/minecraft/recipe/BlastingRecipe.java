@@ -10,7 +10,7 @@ public class BlastingRecipe extends AbstractCookingRecipe {
 	}
 
 	@Override
-	public ItemStack getRecipeKindIcon() {
+	public ItemStack createIcon() {
 		return new ItemStack(Blocks.BLAST_FURNACE);
 	}
 

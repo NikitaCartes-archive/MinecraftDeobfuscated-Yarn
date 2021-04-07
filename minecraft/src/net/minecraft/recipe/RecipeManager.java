@@ -94,7 +94,7 @@ public class RecipeManager extends JsonDataLoader {
 	public <C extends Inventory, T extends Recipe<C>> DefaultedList<ItemStack> getRemainingStacks(RecipeType<T> recipeType, C inventory, World world) {
 		Optional<T> optional = this.getFirstMatch(recipeType, inventory, world);
 		if (optional.isPresent()) {
-			return ((Recipe)optional.get()).getRemainingStacks(inventory);
+			return ((Recipe)optional.get()).getRemainder(inventory);
 		} else {
 			DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(inventory.size(), ItemStack.EMPTY);
 

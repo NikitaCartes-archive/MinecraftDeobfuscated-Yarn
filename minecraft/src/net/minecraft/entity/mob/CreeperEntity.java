@@ -214,7 +214,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 				);
 			if (!this.world.isClient) {
 				this.ignite();
-				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+				itemStack.damage(1, player, playerx -> playerx.sendToolBreakStatus(hand));
 			}
 
 			return ActionResult.success(this.world.isClient);

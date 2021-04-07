@@ -55,10 +55,10 @@ public class FindEntityTask<E extends LivingEntity, T extends LivingEntity> exte
 		return new FindEntityTask<>(entityType, maxDistance, livingEntity -> true, livingEntity -> true, targetModule, speed, completionRange);
 	}
 
-	public static <T extends LivingEntity> FindEntityTask<LivingEntity, T> method_35071(
-		EntityType<? extends T> entityType, int i, Predicate<T> predicate, MemoryModuleType<T> memoryModuleType, float f, int j
+	public static <T extends LivingEntity> FindEntityTask<LivingEntity, T> create(
+		EntityType<? extends T> entityType, int maxDistance, Predicate<T> condition, MemoryModuleType<T> moduleType, float speed, int completionRange
 	) {
-		return new FindEntityTask<>(entityType, i, livingEntity -> true, predicate, memoryModuleType, f, j);
+		return new FindEntityTask<>(entityType, maxDistance, livingEntity -> true, condition, moduleType, speed, completionRange);
 	}
 
 	@Override

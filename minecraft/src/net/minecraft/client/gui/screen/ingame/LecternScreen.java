@@ -104,7 +104,7 @@ public class LecternScreen extends BookScreen implements ScreenHandlerProvider<L
 	}
 
 	@Override
-	protected void method_34494() {
+	protected void closeScreen() {
 		this.client.player.closeHandledScreen();
 	}
 }

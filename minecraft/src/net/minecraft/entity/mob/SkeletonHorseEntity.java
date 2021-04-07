@@ -23,7 +23,7 @@ import net.minecraft.world.World;
 
 public class SkeletonHorseEntity extends HorseBaseEntity {
 	private final SkeletonHorseTrapTriggerGoal trapTriggerGoal = new SkeletonHorseTrapTriggerGoal(this);
-	private static final int field_30427 = 18000;
+	private static final int DESPAWN_AGE = 18000;
 	private boolean trapped;
 	private int trapTime;
 

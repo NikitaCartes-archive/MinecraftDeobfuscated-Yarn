@@ -17,8 +17,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.village.TradeOffer;
 
 public class HoldTradeOffersTask extends Task<VillagerEntity> {
-	private static final int field_30167 = 900;
-	private static final int field_30168 = 40;
+	private static final int RUN_INTERVAL = 900;
+	private static final int OFFER_SHOWING_INTERVAL = 40;
 	@Nullable
 	private ItemStack customerHeldStack;
 	private final List<ItemStack> offers = Lists.<ItemStack>newArrayList();

@@ -28,8 +28,8 @@ public class EndCrystalEntityRenderer extends EntityRenderer<EndCrystalEntity> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/end_crystal/end_crystal.png");
 	private static final RenderLayer END_CRYSTAL = RenderLayer.getEntityCutoutNoCull(TEXTURE);
 	private static final float SINE_45_DEGREES = (float)Math.sin(Math.PI / 4);
-	private static final String field_32919 = "glass";
-	private static final String field_32920 = "base";
+	private static final String GLASS = "glass";
+	private static final String BASE = "base";
 	private final ModelPart core;
 	private final ModelPart frame;
 	private final ModelPart bottom;

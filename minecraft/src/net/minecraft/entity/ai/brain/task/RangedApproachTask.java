@@ -12,7 +12,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
 
 public class RangedApproachTask extends Task<MobEntity> {
-	private static final int field_30166 = 1;
+	private static final int WEAPON_REACH_REDUCTION = 1;
 	private final Function<LivingEntity, Float> speed;
 
 	public RangedApproachTask(float speed) {
@@ -37,7 +37,7 @@ public class RangedApproachTask extends Task<MobEntity> {
 
 	protected void run(ServerWorld serverWorld, MobEntity mobEntity, long l) {
 		LivingEntity livingEntity = (LivingEntity)mobEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get();
-		if (LookTargetUtil.isVisibleInMemory(mobEntity, livingEntity) && LookTargetUtil.method_25940(mobEntity, livingEntity, 1)) {
+		if (LookTargetUtil.isVisibleInMemory(mobEntity, livingEntity) && LookTargetUtil.isTargetWithinAttackRange(mobEntity, livingEntity, 1)) {
 			this.forgetWalkTarget(mobEntity);
 		} else {
 			this.rememberWalkTarget(mobEntity, livingEntity);

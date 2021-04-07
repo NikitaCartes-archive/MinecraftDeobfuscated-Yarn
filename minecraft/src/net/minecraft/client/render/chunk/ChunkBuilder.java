@@ -220,7 +220,7 @@ public class ChunkBuilder {
 	@Environment(EnvType.CLIENT)
 	public class BuiltChunk {
 		public static final int field_32832 = 16;
-		public final int field_29641;
+		public final int index;
 		public final AtomicReference<ChunkBuilder.ChunkData> data = new AtomicReference(ChunkBuilder.ChunkData.EMPTY);
 		@Nullable
 		private ChunkBuilder.BuiltChunk.RebuildTask rebuildTask;
@@ -242,7 +242,7 @@ public class ChunkBuilder {
 		private boolean needsImportantRebuild;
 
 		public BuiltChunk(int i) {
-			this.field_29641 = i;
+			this.index = i;
 		}
 
 		private boolean isChunkNonEmpty(BlockPos pos) {

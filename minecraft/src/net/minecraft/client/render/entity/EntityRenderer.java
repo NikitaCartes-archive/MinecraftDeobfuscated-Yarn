@@ -71,7 +71,7 @@ public abstract class EntityRenderer<T extends Entity> {
 	/**
 	 * Determines whether the passed entity should render with a nameplate above its head.
 	 * 
-	 * <p>Checks for a custom nametag on living entities, and for teams/team visibilities for players.</p>
+	 * <p>Checks for a custom nametag on living entities, and for teams/team visibilities for players.
 	 */
 	protected boolean hasLabel(T entity) {
 		return entity.shouldRenderName() && entity.hasCustomName();

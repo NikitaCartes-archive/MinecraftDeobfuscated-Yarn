@@ -5,7 +5,6 @@ import com.mojang.serialization.Codec;
 import java.util.BitSet;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.class_6108;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.fluid.Fluids;
@@ -15,7 +14,7 @@ import net.minecraft.world.chunk.Chunk;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class NetherCaveCarver extends CaveCarver {
-	public NetherCaveCarver(Codec<class_6108> codec) {
+	public NetherCaveCarver(Codec<CaveCarverConfig> codec) {
 		super(codec);
 		this.alwaysCarvableBlocks = ImmutableSet.of(
 			Blocks.STONE,
@@ -56,7 +55,7 @@ public class NetherCaveCarver extends CaveCarver {
 
 	protected boolean carveAtPoint(
 		CarverContext carverContext,
-		class_6108 arg,
+		CaveCarverConfig caveCarverConfig,
 		Chunk chunk,
 		Function<BlockPos, Biome> function,
 		BitSet bitSet,

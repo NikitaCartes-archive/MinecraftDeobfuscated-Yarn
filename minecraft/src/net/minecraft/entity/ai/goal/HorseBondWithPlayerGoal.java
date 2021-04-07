@@ -2,6 +2,7 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -68,7 +69,7 @@ public class HorseBondWithPlayerGoal extends Goal {
 
 			this.horse.removeAllPassengers();
 			this.horse.playAngrySound();
-			this.horse.world.sendEntityStatus(this.horse, (byte)6);
+			this.horse.world.sendEntityStatus(this.horse, EntityStatuses.ADD_NEGATIVE_PLAYER_REACTION_PARTICLES);
 		}
 	}
 }

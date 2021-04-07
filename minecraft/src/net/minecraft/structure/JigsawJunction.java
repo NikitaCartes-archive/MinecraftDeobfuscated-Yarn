@@ -33,11 +33,11 @@ public class JigsawJunction {
 		return this.sourceZ;
 	}
 
-	public int method_35367() {
+	public int getDeltaY() {
 		return this.deltaY;
 	}
 
-	public StructurePool.Projection method_35368() {
+	public StructurePool.Projection getDestProjection() {
 		return this.destProjection;
 	}
 

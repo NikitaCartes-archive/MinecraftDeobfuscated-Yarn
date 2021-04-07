@@ -24,12 +24,12 @@ public class AscendingParticle extends SpriteBillboardParticle {
 		SpriteProvider spriteProvider,
 		float colorMultiplier,
 		int baseMaxAge,
-		float f,
-		boolean bl
+		float gravityStrength,
+		boolean collidesWithWorld
 	) {
 		super(world, x, y, z, 0.0, 0.0, 0.0);
 		this.field_28786 = 0.96F;
-		this.gravityStrength = f;
+		this.gravityStrength = gravityStrength;
 		this.field_28787 = true;
 		this.spriteProvider = spriteProvider;
 		this.velocityX *= (double)randomVelocityXMultiplier;
@@ -38,16 +38,16 @@ public class AscendingParticle extends SpriteBillboardParticle {
 		this.velocityX += velocityX;
 		this.velocityY += velocityY;
 		this.velocityZ += velocityZ;
-		float g = world.random.nextFloat() * colorMultiplier;
-		this.colorRed = g;
-		this.colorGreen = g;
-		this.colorBlue = g;
+		float f = world.random.nextFloat() * colorMultiplier;
+		this.colorRed = f;
+		this.colorGreen = f;
+		this.colorBlue = f;
 		this.scale *= 0.75F * scaleMultiplier;
 		this.maxAge = (int)((double)baseMaxAge / ((double)world.random.nextFloat() * 0.8 + 0.2));
 		this.maxAge = (int)((float)this.maxAge * scaleMultiplier);
 		this.maxAge = Math.max(this.maxAge, 1);
 		this.setSpriteForAge(spriteProvider);
-		this.collidesWithWorld = bl;
+		this.collidesWithWorld = collidesWithWorld;
 	}
 
 	@Override

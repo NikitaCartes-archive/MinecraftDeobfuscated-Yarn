@@ -8,6 +8,7 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
@@ -55,6 +56,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 	private int fishTravelCountdown;
 	private float fishAngle;
 	private boolean inOpenWater = true;
+	@Nullable
 	private Entity hookedEntity;
 	private FishingBobberEntity.State state = FishingBobberEntity.State.FLYING;
 	private final int luckOfTheSeaLevel;
@@ -257,8 +259,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 	protected void onEntityHit(EntityHitResult entityHitResult) {
 		super.onEntityHit(entityHitResult);
 		if (!this.world.isClient) {
-			this.hookedEntity = entityHitResult.getEntity();
-			this.updateHookedEntityId();
+			this.updateHookedEntityId(entityHitResult.getEntity());
 		}
 	}
 
@@ -268,8 +269,9 @@ public class FishingBobberEntity extends ProjectileEntity {
 		this.setVelocity(this.getVelocity().normalize().multiply(blockHitResult.squaredDistanceTo(this)));
 	}
 
-	private void updateHookedEntityId() {
-		this.getDataTracker().set(HOOK_ENTITY_ID, this.hookedEntity.getId() + 1);
+	private void updateHookedEntityId(Entity entity) {
+		this.hookedEntity = entity;
+		this.getDataTracker().set(HOOK_ENTITY_ID, entity.getId() + 1);
 	}
 
 	private void tickFishingLogic(BlockPos pos) {
@@ -418,9 +420,9 @@ public class FishingBobberEntity extends ProjectileEntity {
 		if (!this.world.isClient && playerEntity != null) {
 			int i = 0;
 			if (this.hookedEntity != null) {
-				this.pullHookedEntity();
+				this.pullHookedEntity(this.hookedEntity);
 				Criteria.FISHING_ROD_HOOKED.trigger((ServerPlayerEntity)playerEntity, usedItem, this, Collections.emptyList());
-				this.world.sendEntityStatus(this, (byte)31);
+				this.world.sendEntityStatus(this, EntityStatuses.PULL_HOOKED_ENTITY);
 				i = this.hookedEntity instanceof ItemEntity ? 3 : 5;
 			} else if (this.hookCountdown > 0) {
 				LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
@@ -466,18 +468,21 @@ public class FishingBobberEntity extends ProjectileEntity {
 
 	@Override
 	public void handleStatus(byte status) {
-		if (status == 31 && this.world.isClient && this.hookedEntity instanceof PlayerEntity && ((PlayerEntity)this.hookedEntity).isMainPlayer()) {
-			this.pullHookedEntity();
+		if (status == EntityStatuses.PULL_HOOKED_ENTITY
+			&& this.world.isClient
+			&& this.hookedEntity instanceof PlayerEntity
+			&& ((PlayerEntity)this.hookedEntity).isMainPlayer()) {
+			this.pullHookedEntity(this.hookedEntity);
 		}
 
 		super.handleStatus(status);
 	}
 
-	protected void pullHookedEntity() {
-		Entity entity = this.getOwner();
-		if (entity != null) {
-			Vec3d vec3d = new Vec3d(entity.getX() - this.getX(), entity.getY() - this.getY(), entity.getZ() - this.getZ()).multiply(0.1);
-			this.hookedEntity.setVelocity(this.hookedEntity.getVelocity().add(vec3d));
+	protected void pullHookedEntity(Entity entity) {
+		Entity entity2 = this.getOwner();
+		if (entity2 != null) {
+			Vec3d vec3d = new Vec3d(entity2.getX() - this.getX(), entity2.getY() - this.getY(), entity2.getZ() - this.getZ()).multiply(0.1);
+			entity.setVelocity(entity.getVelocity().add(vec3d));
 		}
 	}
 
@@ -488,19 +493,25 @@ public class FishingBobberEntity extends ProjectileEntity {
 
 	@Override
 	public void remove(Entity.RemovalReason reason) {
+		this.method_36210(null);
 		super.remove(reason);
-		PlayerEntity playerEntity = this.getPlayerOwner();
-		if (playerEntity != null) {
-			playerEntity.fishHook = null;
-		}
+	}
+
+	@Override
+	public void method_36209() {
+		this.method_36210(null);
 	}
 
 	@Override
 	public void setOwner(@Nullable Entity entity) {
 		super.setOwner(entity);
+		this.method_36210(this);
+	}
+
+	private void method_36210(@Nullable FishingBobberEntity fishingBobberEntity) {
 		PlayerEntity playerEntity = this.getPlayerOwner();
 		if (playerEntity != null) {
-			playerEntity.fishHook = this;
+			playerEntity.fishHook = fishingBobberEntity;
 		}
 	}
 

@@ -204,7 +204,7 @@ public abstract class FishEntity extends WaterCreatureEntity implements Bucketab
 
 				if (d != 0.0 || g != 0.0) {
 					float i = (float)(MathHelper.atan2(g, d) * 180.0F / (float)Math.PI) - 90.0F;
-					this.fish.yaw = this.changeAngle(this.fish.yaw, i, 90.0F);
+					this.fish.yaw = this.wrapDegrees(this.fish.yaw, i, 90.0F);
 					this.fish.bodyYaw = this.fish.yaw;
 				}
 			} else {

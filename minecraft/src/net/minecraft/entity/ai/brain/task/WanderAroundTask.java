@@ -17,7 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class WanderAroundTask extends Task<MobEntity> {
-	private static final int field_30150 = 40;
+	private static final int MAX_UPDATE_COUNTDOWN = 40;
 	private int pathUpdateCountdownTicks;
 	@Nullable
 	private Path path;
@@ -29,7 +29,7 @@ public class WanderAroundTask extends Task<MobEntity> {
 		this(150, 250);
 	}
 
-	public WanderAroundTask(int i, int j) {
+	public WanderAroundTask(int minRunTime, int maxRunTime) {
 		super(
 			ImmutableMap.of(
 				MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
@@ -39,8 +39,8 @@ public class WanderAroundTask extends Task<MobEntity> {
 				MemoryModuleType.WALK_TARGET,
 				MemoryModuleState.VALUE_PRESENT
 			),
-			i,
-			j
+			minRunTime,
+			maxRunTime
 		);
 	}
 

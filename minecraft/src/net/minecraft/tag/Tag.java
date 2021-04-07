@@ -112,12 +112,12 @@ public interface Tag<T> {
 			return this.entries.stream();
 		}
 
-		public void method_32826(Consumer<Identifier> consumer) {
-			this.entries.forEach(trackedEntry -> trackedEntry.entry.method_32831(consumer));
+		public void forEachTagId(Consumer<Identifier> consumer) {
+			this.entries.forEach(trackedEntry -> trackedEntry.entry.forEachTagId(consumer));
 		}
 
-		public void method_32828(Consumer<Identifier> consumer) {
-			this.entries.forEach(trackedEntry -> trackedEntry.entry.method_32833(consumer));
+		public void forEachGroupId(Consumer<Identifier> consumer) {
+			this.entries.forEach(trackedEntry -> trackedEntry.entry.forEachGroupId(consumer));
 		}
 
 		public Tag.Builder read(JsonObject json, String source) {
@@ -176,13 +176,13 @@ public interface Tag<T> {
 
 		void addToJson(JsonArray json);
 
-		default void method_32831(Consumer<Identifier> consumer) {
+		default void forEachTagId(Consumer<Identifier> consumer) {
 		}
 
-		default void method_32833(Consumer<Identifier> consumer) {
+		default void forEachGroupId(Consumer<Identifier> consumer) {
 		}
 
-		boolean method_32832(Predicate<Identifier> predicate, Predicate<Identifier> predicate2);
+		boolean canAdd(Predicate<Identifier> existenceTest, Predicate<Identifier> duplicationTest);
 	}
 
 	public interface Identified<T> extends Tag<T> {
@@ -213,8 +213,8 @@ public interface Tag<T> {
 		}
 
 		@Override
-		public boolean method_32832(Predicate<Identifier> predicate, Predicate<Identifier> predicate2) {
-			return predicate.test(this.id);
+		public boolean canAdd(Predicate<Identifier> existenceTest, Predicate<Identifier> duplicationTest) {
+			return existenceTest.test(this.id);
 		}
 
 		public String toString() {
@@ -248,7 +248,7 @@ public interface Tag<T> {
 		}
 
 		@Override
-		public boolean method_32832(Predicate<Identifier> predicate, Predicate<Identifier> predicate2) {
+		public boolean canAdd(Predicate<Identifier> existenceTest, Predicate<Identifier> duplicationTest) {
 			return true;
 		}
 
@@ -287,12 +287,12 @@ public interface Tag<T> {
 		}
 
 		@Override
-		public void method_32833(Consumer<Identifier> consumer) {
+		public void forEachGroupId(Consumer<Identifier> consumer) {
 			consumer.accept(this.id);
 		}
 
 		@Override
-		public boolean method_32832(Predicate<Identifier> predicate, Predicate<Identifier> predicate2) {
+		public boolean canAdd(Predicate<Identifier> existenceTest, Predicate<Identifier> duplicationTest) {
 			return true;
 		}
 	}
@@ -325,12 +325,12 @@ public interface Tag<T> {
 		}
 
 		@Override
-		public boolean method_32832(Predicate<Identifier> predicate, Predicate<Identifier> predicate2) {
-			return predicate2.test(this.id);
+		public boolean canAdd(Predicate<Identifier> existenceTest, Predicate<Identifier> duplicationTest) {
+			return duplicationTest.test(this.id);
 		}
 
 		@Override
-		public void method_32831(Consumer<Identifier> consumer) {
+		public void forEachTagId(Consumer<Identifier> consumer) {
 			consumer.accept(this.id);
 		}
 	}

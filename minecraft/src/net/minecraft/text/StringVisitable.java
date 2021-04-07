@@ -150,11 +150,11 @@ public interface StringVisitable {
 		 * 
 		 * <p>A contextual style is obtained by calling {@link Style#withParent(Style)}
 		 * on the current's text style, passing the previous contextual style or
-		 * the starting style if it is the beginning of a visit.</p>
+		 * the starting style if it is the beginning of a visit.
 		 * 
 		 * <p>When a {@link Optional#isPresent() present optional} is returned,
 		 * the visit is terminated before visiting all text. Can return {@link
-		 * StringVisitable#TERMINATE_VISIT} for convenience.</p>
+		 * StringVisitable#TERMINATE_VISIT} for convenience.
 		 * 
 		 * @return {@code Optional.empty()} to continue, a non-empty result to terminate
 		 * 
@@ -173,7 +173,7 @@ public interface StringVisitable {
 		 * 
 		 * <p>When a {@link Optional#isPresent() present optional} is returned,
 		 * the visit is terminated before visiting all text. Can return {@link
-		 * StringVisitable#TERMINATE_VISIT} for convenience.</p>
+		 * StringVisitable#TERMINATE_VISIT} for convenience.
 		 * 
 		 * @return {@code Optional.empty()} to continue, a non-empty result to terminate
 		 * 

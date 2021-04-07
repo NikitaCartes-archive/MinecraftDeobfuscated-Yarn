@@ -144,8 +144,8 @@ public class SelectionManager {
 		}
 	}
 
-	public void method_35727(int i) {
-		this.moveCursor(i, false);
+	public void moveCursor(int offset) {
+		this.moveCursor(offset, false);
 	}
 
 	public void moveCursor(int offset, boolean shiftDown) {
@@ -153,8 +153,8 @@ public class SelectionManager {
 		this.updateSelectionRange(shiftDown);
 	}
 
-	public void method_35728(int i) {
-		this.moveCursorPastWord(i, false);
+	public void moveCursorPastWord(int offset) {
+		this.moveCursorPastWord(offset, false);
 	}
 
 	public void moveCursorPastWord(int offset, boolean shiftDown) {
@@ -220,7 +220,7 @@ public class SelectionManager {
 		}
 	}
 
-	public void method_35729() {
+	public void moveCursorToStart() {
 		this.moveCursorToStart(false);
 	}
 
@@ -242,8 +242,8 @@ public class SelectionManager {
 		return this.selectionStart;
 	}
 
-	public void method_35730(int i) {
-		this.moveCursorTo(i, true);
+	public void moveCursorTo(int position) {
+		this.moveCursorTo(position, true);
 	}
 
 	public void moveCursorTo(int position, boolean shiftDown) {
@@ -255,8 +255,8 @@ public class SelectionManager {
 		return this.selectionEnd;
 	}
 
-	public void method_35731(int i) {
-		this.selectionEnd = this.clampCursorPosition(i);
+	public void setSelectionEnd(int pos) {
+		this.selectionEnd = this.clampCursorPosition(pos);
 	}
 
 	public void setSelection(int start, int end) {

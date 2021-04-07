@@ -11,7 +11,7 @@ public class ScheduleRule {
 	private final List<ScheduleRuleEntry> entries = Lists.<ScheduleRuleEntry>newArrayList();
 	private int prioritizedEntryIndex;
 
-	public ImmutableList<ScheduleRuleEntry> method_35214() {
+	public ImmutableList<ScheduleRuleEntry> getEntries() {
 		return ImmutableList.copyOf(this.entries);
 	}
 
@@ -21,8 +21,8 @@ public class ScheduleRule {
 		return this;
 	}
 
-	public ScheduleRule method_35215(Collection<ScheduleRuleEntry> collection) {
-		this.entries.addAll(collection);
+	public ScheduleRule add(Collection<ScheduleRuleEntry> entries) {
+		this.entries.addAll(entries);
 		this.sort();
 		return this;
 	}

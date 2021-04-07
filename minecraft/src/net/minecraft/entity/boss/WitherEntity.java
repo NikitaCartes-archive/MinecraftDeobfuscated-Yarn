@@ -57,18 +57,17 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 	private static final TrackedData<Integer> TRACKED_ENTITY_ID_3 = DataTracker.registerData(WitherEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final List<TrackedData<Integer>> TRACKED_ENTITY_IDS = ImmutableList.of(TRACKED_ENTITY_ID_1, TRACKED_ENTITY_ID_2, TRACKED_ENTITY_ID_3);
 	private static final TrackedData<Integer> INVUL_TIMER = DataTracker.registerData(WitherEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final int field_30441 = 220;
+	private static final int DEFAULT_INVUL_TIMER = 220;
 	private final float[] sideHeadPitches = new float[2];
 	private final float[] sideHeadYaws = new float[2];
 	private final float[] prevSideHeadPitches = new float[2];
 	private final float[] prevSideHeadYaws = new float[2];
-	private final int[] field_7091 = new int[2];
-	private final int[] field_7092 = new int[2];
-	private int field_7082;
+	private final int[] skullCooldowns = new int[2];
+	private final int[] chargedSkullCooldowns = new int[2];
+	private int blockBreakingCooldown;
 	private final ServerBossBar bossBar = (ServerBossBar)new ServerBossBar(this.getDisplayName(), BossBar.Color.PURPLE, BossBar.Style.PROGRESS)
 		.setDarkenSky(true);
-	private static final Predicate<LivingEntity> CAN_ATTACK_PREDICATE = livingEntity -> livingEntity.getGroup() != EntityGroup.UNDEAD
-			&& livingEntity.isMobOrPlayer();
+	private static final Predicate<LivingEntity> CAN_ATTACK_PREDICATE = entity -> entity.getGroup() != EntityGroup.UNDEAD && entity.isMobOrPlayer();
 	private static final TargetPredicate HEAD_TARGET_PREDICATE = new TargetPredicate().setBaseMaxDistance(20.0).setPredicate(CAN_ATTACK_PREDICATE);
 
 	public WitherEntity(EntityType<? extends WitherEntity> entityType, World world) {
@@ -254,16 +253,16 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 			super.mobTick();
 
 			for(int i = 1; i < 3; ++i) {
-				if (this.age >= this.field_7091[i - 1]) {
-					this.field_7091[i - 1] = this.age + 10 + this.random.nextInt(10);
-					if ((this.world.getDifficulty() == Difficulty.NORMAL || this.world.getDifficulty() == Difficulty.HARD) && this.field_7092[i - 1]++ > 15) {
+				if (this.age >= this.skullCooldowns[i - 1]) {
+					this.skullCooldowns[i - 1] = this.age + 10 + this.random.nextInt(10);
+					if ((this.world.getDifficulty() == Difficulty.NORMAL || this.world.getDifficulty() == Difficulty.HARD) && this.chargedSkullCooldowns[i - 1]++ > 15) {
 						float f = 10.0F;
 						float g = 5.0F;
 						double d = MathHelper.nextDouble(this.random, this.getX() - 10.0, this.getX() + 10.0);
 						double e = MathHelper.nextDouble(this.random, this.getY() - 5.0, this.getY() + 5.0);
 						double h = MathHelper.nextDouble(this.random, this.getZ() - 10.0, this.getZ() + 10.0);
 						this.shootSkullAt(i + 1, d, e, h, true);
-						this.field_7092[i - 1] = 0;
+						this.chargedSkullCooldowns[i - 1] = 0;
 					}
 
 					int j = this.getTrackedEntityId(i);
@@ -275,8 +274,8 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 							this.setTrackedEntityId(i, 0);
 						} else {
 							this.shootSkullAt(i + 1, (LivingEntity)entity);
-							this.field_7091[i - 1] = this.age + 40 + this.random.nextInt(20);
-							this.field_7092[i - 1] = 0;
+							this.skullCooldowns[i - 1] = this.age + 40 + this.random.nextInt(20);
+							this.chargedSkullCooldowns[i - 1] = 0;
 						}
 					} else {
 						List<LivingEntity> list = this.world.getTargets(LivingEntity.class, HEAD_TARGET_PREDICATE, this, this.getBoundingBox().expand(20.0, 8.0, 20.0));
@@ -306,9 +305,9 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 				this.setTrackedEntityId(0, 0);
 			}
 
-			if (this.field_7082 > 0) {
-				--this.field_7082;
-				if (this.field_7082 == 0 && this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+			if (this.blockBreakingCooldown > 0) {
+				--this.blockBreakingCooldown;
+				if (this.blockBreakingCooldown == 0 && this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 					int i = MathHelper.floor(this.getY());
 					int j = MathHelper.floor(this.getX());
 					int l = MathHelper.floor(this.getZ());
@@ -458,12 +457,12 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 			if (entity != null && !(entity instanceof PlayerEntity) && entity instanceof LivingEntity && ((LivingEntity)entity).getGroup() == this.getGroup()) {
 				return false;
 			} else {
-				if (this.field_7082 <= 0) {
-					this.field_7082 = 20;
+				if (this.blockBreakingCooldown <= 0) {
+					this.blockBreakingCooldown = 20;
 				}
 
-				for(int i = 0; i < this.field_7092.length; ++i) {
-					this.field_7092[i] += 3;
+				for(int i = 0; i < this.chargedSkullCooldowns.length; ++i) {
+					this.chargedSkullCooldowns[i] += 3;
 				}
 
 				return super.damage(source, amount);

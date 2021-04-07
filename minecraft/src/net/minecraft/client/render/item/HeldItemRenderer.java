@@ -292,7 +292,7 @@ public class HeldItemRenderer {
 		float f = player.getHandSwingProgress(tickDelta);
 		Hand hand = MoreObjects.firstNonNull(player.preferredHand, Hand.MAIN_HAND);
 		float g = MathHelper.lerp(tickDelta, player.prevPitch, player.pitch);
-		HeldItemRenderer.HandRenderType handRenderType = method_33303(player);
+		HeldItemRenderer.HandRenderType handRenderType = getHandRenderType(player);
 		float h = MathHelper.lerp(tickDelta, player.lastRenderPitch, player.renderPitch);
 		float i = MathHelper.lerp(tickDelta, player.lastRenderYaw, player.renderYaw);
 		matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion((player.getPitch(tickDelta) - h) * 0.1F));
@@ -313,15 +313,15 @@ public class HeldItemRenderer {
 	}
 
 	@VisibleForTesting
-	static HeldItemRenderer.HandRenderType method_33303(ClientPlayerEntity clientPlayerEntity) {
-		ItemStack itemStack = clientPlayerEntity.getMainHandStack();
-		ItemStack itemStack2 = clientPlayerEntity.getOffHandStack();
+	static HeldItemRenderer.HandRenderType getHandRenderType(ClientPlayerEntity player) {
+		ItemStack itemStack = player.getMainHandStack();
+		ItemStack itemStack2 = player.getOffHandStack();
 		boolean bl = itemStack.isOf(Items.BOW) || itemStack2.isOf(Items.BOW);
 		boolean bl2 = itemStack.isOf(Items.CROSSBOW) || itemStack2.isOf(Items.CROSSBOW);
 		if (!bl && !bl2) {
 			return HeldItemRenderer.HandRenderType.RENDER_BOTH_HANDS;
-		} else if (clientPlayerEntity.isUsingItem()) {
-			return method_33304(clientPlayerEntity);
+		} else if (player.isUsingItem()) {
+			return getUsingItemHandRenderType(player);
 		} else if (isChargedCrossbow(itemStack)) {
 			return HeldItemRenderer.HandRenderType.RENDER_MAIN_HAND_ONLY;
 		} else if (isChargedCrossbow(itemStack2)) {
@@ -331,11 +331,11 @@ public class HeldItemRenderer {
 		}
 	}
 
-	private static HeldItemRenderer.HandRenderType method_33304(ClientPlayerEntity clientPlayerEntity) {
-		ItemStack itemStack = clientPlayerEntity.getActiveItem();
-		Hand hand = clientPlayerEntity.getActiveHand();
+	private static HeldItemRenderer.HandRenderType getUsingItemHandRenderType(ClientPlayerEntity player) {
+		ItemStack itemStack = player.getActiveItem();
+		Hand hand = player.getActiveHand();
 		if (!itemStack.isOf(Items.BOW) && !itemStack.isOf(Items.CROSSBOW)) {
-			return hand == Hand.MAIN_HAND && isChargedCrossbow(clientPlayerEntity.getOffHandStack())
+			return hand == Hand.MAIN_HAND && isChargedCrossbow(player.getOffHandStack())
 				? HeldItemRenderer.HandRenderType.RENDER_MAIN_HAND_ONLY
 				: HeldItemRenderer.HandRenderType.RENDER_BOTH_HANDS;
 		} else {

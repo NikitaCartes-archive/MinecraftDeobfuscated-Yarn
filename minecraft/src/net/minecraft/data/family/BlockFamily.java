@@ -65,12 +65,12 @@ public class BlockFamily {
 			return this;
 		}
 
-		public BlockFamily.Builder chsieled(Block block) {
+		public BlockFamily.Builder chiseled(Block block) {
 			this.family.variants.put(BlockFamily.Variant.CHISELED, block);
 			return this;
 		}
 
-		public BlockFamily.Builder method_34593(Block block) {
+		public BlockFamily.Builder cracked(Block block) {
 			this.family.variants.put(BlockFamily.Variant.CRACKED, block);
 			return this;
 		}

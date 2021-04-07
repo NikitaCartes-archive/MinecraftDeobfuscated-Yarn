@@ -61,7 +61,7 @@ public class TakeoffPhase extends AbstractPhase {
 		if (this.path != null) {
 			this.path.next();
 			if (!this.path.isFinished()) {
-				Vec3i vec3i = this.path.method_31032();
+				Vec3i vec3i = this.path.getCurrentNodePos();
 				this.path.next();
 
 				double d;

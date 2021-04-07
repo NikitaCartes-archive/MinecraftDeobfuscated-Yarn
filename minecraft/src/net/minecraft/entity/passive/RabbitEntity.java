@@ -9,6 +9,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.CarrotsBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
@@ -131,7 +132,7 @@ public class RabbitEntity extends AnimalEntity {
 		}
 
 		if (!this.world.isClient) {
-			this.world.sendEntityStatus(this, (byte)1);
+			this.world.sendEntityStatus(this, EntityStatuses.ADD_SPRINTING_PARTICLES_OR_RESET_SPAWNER_MINECART_SPAWN_DELAY);
 		}
 	}
 
@@ -389,7 +390,7 @@ public class RabbitEntity extends AnimalEntity {
 
 	@Override
 	public void handleStatus(byte status) {
-		if (status == 1) {
+		if (status == EntityStatuses.ADD_SPRINTING_PARTICLES_OR_RESET_SPAWNER_MINECART_SPAWN_DELAY) {
 			this.spawnSprintingParticles();
 			this.jumpDuration = 10;
 			this.jumpTicks = 0;
@@ -399,7 +400,7 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	@Override
-	public Vec3d method_29919() {
+	public Vec3d getLeashOffset() {
 		return new Vec3d(0.0, (double)(0.6F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));
 	}
 

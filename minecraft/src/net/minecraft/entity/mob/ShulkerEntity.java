@@ -159,11 +159,11 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	public void tick() {
 		super.tick();
 		if (!this.world.isClient && !this.hasVehicle() && !this.canStay(this.getBlockPos(), this.getAttachedFace())) {
-			this.method_33348();
+			this.tryAttachOrTeleport();
 		}
 
-		if (this.method_33349()) {
-			this.method_33350();
+		if (this.tickOpenProgress()) {
+			this.moveEntities();
 		}
 
 		if (this.world.isClient) {
@@ -175,7 +175,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		}
 	}
 
-	private void method_33348() {
+	private void tryAttachOrTeleport() {
 		Direction direction = this.findAttachSide(this.getBlockPos());
 		if (direction != null) {
 			this.setAttachedFace(direction);
@@ -196,7 +196,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		return 0.5F - MathHelper.sin((0.5F + f) * (float) Math.PI) * 0.5F;
 	}
 
-	private boolean method_33349() {
+	private boolean tickOpenProgress() {
 		this.prevOpenProgress = this.openProgress;
 		float f = (float)this.getPeekAmount() * 0.01F;
 		if (this.openProgress == f) {
@@ -212,7 +212,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		}
 	}
 
-	private void method_33350() {
+	private void moveEntities() {
 		this.refreshPosition();
 		float f = method_33342(this.openProgress);
 		float g = method_33342(this.prevOpenProgress);
@@ -353,12 +353,12 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		}
 	}
 
-	private boolean method_33351(BlockPos blockPos) {
-		BlockState blockState = this.world.getBlockState(blockPos);
+	private boolean method_33351(BlockPos pos) {
+		BlockState blockState = this.world.getBlockState(pos);
 		if (blockState.isAir()) {
 			return false;
 		} else {
-			boolean bl = blockState.isOf(Blocks.MOVING_PISTON) && blockPos.equals(this.getBlockPos());
+			boolean bl = blockState.isOf(Blocks.MOVING_PISTON) && pos.equals(this.getBlockPos());
 			return !bl;
 		}
 	}

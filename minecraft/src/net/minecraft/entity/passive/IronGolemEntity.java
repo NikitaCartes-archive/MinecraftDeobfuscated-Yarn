@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.Durations;
@@ -55,7 +56,7 @@ import net.minecraft.world.event.GameEvent;
 
 public class IronGolemEntity extends GolemEntity implements Angerable {
 	protected static final TrackedData<Byte> IRON_GOLEM_FLAGS = DataTracker.registerData(IronGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
-	private static final int field_30338 = 25;
+	private static final int HEALTH_PER_INGOT = 25;
 	private int attackTicksLeft;
 	private int lookingAtVillagerTicksLeft;
 	private static final UniformIntProvider ANGER_TIME_RANGE = Durations.betweenSeconds(20, 39);
@@ -80,10 +81,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 		this.targetSelector.add(2, new RevengeGoal(this));
 		this.targetSelector.add(3, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
 		this.targetSelector
-			.add(
-				3,
-				new FollowTargetGoal(this, MobEntity.class, 5, false, false, livingEntity -> livingEntity instanceof Monster && !(livingEntity instanceof CreeperEntity))
-			);
+			.add(3, new FollowTargetGoal(this, MobEntity.class, 5, false, false, entity -> entity instanceof Monster && !(entity instanceof CreeperEntity)));
 		this.targetSelector.add(4, new UniversalAngerGoal<>(this, false));
 	}
 
@@ -205,7 +203,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 	@Override
 	public boolean tryAttack(Entity target) {
 		this.attackTicksLeft = 10;
-		this.world.sendEntityStatus(this, (byte)4);
+		this.world.sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
 		float f = this.getAttackDamage();
 		float g = (int)f > 0 ? f / 2.0F + (float)this.random.nextInt((int)f) : f;
 		boolean bl = target.damage(DamageSource.mob(this), g);
@@ -235,12 +233,12 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 
 	@Override
 	public void handleStatus(byte status) {
-		if (status == 4) {
+		if (status == EntityStatuses.PLAY_ATTACK_SOUND) {
 			this.attackTicksLeft = 10;
 			this.playSound(SoundEvents.ENTITY_IRON_GOLEM_ATTACK, 1.0F, 1.0F);
-		} else if (status == 11) {
+		} else if (status == EntityStatuses.LOOK_AT_VILLAGER) {
 			this.lookingAtVillagerTicksLeft = 400;
-		} else if (status == 34) {
+		} else if (status == EntityStatuses.STOP_LOOKING_AT_VILLAGER) {
 			this.lookingAtVillagerTicksLeft = 0;
 		} else {
 			super.handleStatus(status);
@@ -254,10 +252,10 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 	public void setLookingAtVillager(boolean lookingAtVillager) {
 		if (lookingAtVillager) {
 			this.lookingAtVillagerTicksLeft = 400;
-			this.world.sendEntityStatus(this, (byte)11);
+			this.world.sendEntityStatus(this, EntityStatuses.LOOK_AT_VILLAGER);
 		} else {
 			this.lookingAtVillagerTicksLeft = 0;
-			this.world.sendEntityStatus(this, (byte)34);
+			this.world.sendEntityStatus(this, EntityStatuses.STOP_LOOKING_AT_VILLAGER);
 		}
 	}
 
@@ -343,7 +341,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 	}
 
 	@Override
-	public Vec3d method_29919() {
+	public Vec3d getLeashOffset() {
 		return new Vec3d(0.0, (double)(0.875F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));
 	}
 

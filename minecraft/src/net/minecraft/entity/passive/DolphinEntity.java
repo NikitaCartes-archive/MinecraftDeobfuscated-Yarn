@@ -11,6 +11,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
@@ -78,9 +79,9 @@ public class DolphinEntity extends WaterCreatureEntity {
 		.includeTeammates()
 		.includeInvulnerable()
 		.includeHidden();
-	public static final int field_30326 = 4800;
-	private static final int field_30327 = 2400;
-	public static final Predicate<ItemEntity> CAN_TAKE = itemEntity -> !itemEntity.cannotPickup() && itemEntity.isAlive() && itemEntity.isTouchingWater();
+	public static final int MAX_AIR = 4800;
+	private static final int MAX_MOISTNESS = 2400;
+	public static final Predicate<ItemEntity> CAN_TAKE = item -> !item.cannotPickup() && item.isAlive() && item.isTouchingWater();
 
 	public DolphinEntity(EntityType<? extends DolphinEntity> entityType, World world) {
 		super(entityType, world);
@@ -313,7 +314,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 
 	@Override
 	public void handleStatus(byte status) {
-		if (status == 38) {
+		if (status == EntityStatuses.ADD_DOLPHIN_HAPPY_VILLAGER_PARTICLES) {
 			this.spawnParticlesAround(ParticleTypes.HAPPY_VILLAGER);
 		} else {
 			super.handleStatus(status);
@@ -458,7 +459,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 					this.dolphin.setTreasurePos(blockPos2);
 				}
 
-				serverWorld.sendEntityStatus(this.dolphin, (byte)38);
+				serverWorld.sendEntityStatus(this.dolphin, EntityStatuses.ADD_DOLPHIN_HAPPY_VILLAGER_PARTICLES);
 			}
 		}
 
@@ -496,21 +497,21 @@ public class DolphinEntity extends WaterCreatureEntity {
 				this.dolphin.getLookControl().lookAt(vec3d2.x, vec3d2.y, vec3d2.z, (float)(this.dolphin.getBodyYawSpeed() + 20), (float)this.dolphin.getLookPitchSpeed());
 				this.dolphin.getNavigation().startMovingTo(vec3d2.x, vec3d2.y, vec3d2.z, 1.3);
 				if (world.random.nextInt(80) == 0) {
-					world.sendEntityStatus(this.dolphin, (byte)38);
+					world.sendEntityStatus(this.dolphin, EntityStatuses.ADD_DOLPHIN_HAPPY_VILLAGER_PARTICLES);
 				}
 			}
 		}
 	}
 
 	class PlayWithItemsGoal extends Goal {
-		private int field_6758;
+		private int nextPlayingTime;
 
 		private PlayWithItemsGoal() {
 		}
 
 		@Override
 		public boolean canStart() {
-			if (this.field_6758 > DolphinEntity.this.age) {
+			if (this.nextPlayingTime > DolphinEntity.this.age) {
 				return false;
 			} else {
 				List<ItemEntity> list = DolphinEntity.this.world
@@ -528,7 +529,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 				DolphinEntity.this.playSound(SoundEvents.ENTITY_DOLPHIN_PLAY, 1.0F, 1.0F);
 			}
 
-			this.field_6758 = 0;
+			this.nextPlayingTime = 0;
 		}
 
 		@Override
@@ -537,7 +538,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 			if (!itemStack.isEmpty()) {
 				this.spitOutItem(itemStack);
 				DolphinEntity.this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
-				this.field_6758 = DolphinEntity.this.age + DolphinEntity.this.random.nextInt(100);
+				this.nextPlayingTime = DolphinEntity.this.age + DolphinEntity.this.random.nextInt(100);
 			}
 		}
 

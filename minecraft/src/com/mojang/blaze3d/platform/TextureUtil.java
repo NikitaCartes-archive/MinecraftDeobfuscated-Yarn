@@ -15,15 +15,15 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_6177;
 import net.minecraft.client.texture.NativeImage;
+import net.minecraft.util.annotation.DeobfuscateClass;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryUtil;
 
 @Environment(EnvType.CLIENT)
-@class_6177
+@DeobfuscateClass
 public class TextureUtil {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final int MIN_MIPMAP_LEVEL = 0;

@@ -7,7 +7,7 @@ import net.minecraft.entity.mob.MobEntity;
 
 public class TargetPredicate {
 	public static final TargetPredicate DEFAULT = new TargetPredicate();
-	private static final double field_30263 = 2.0;
+	private static final double MIN_DISTANCE = 2.0;
 	private double baseMaxDistance = -1.0;
 	private boolean includeInvulnerable;
 	private boolean includeTeammates;

@@ -219,18 +219,18 @@ public class ItemRenderer implements SynchronousResourceReloader {
 		}
 	}
 
-	public BakedModel getHeldItemModel(ItemStack itemStack, @Nullable World world, @Nullable LivingEntity entity, int seed) {
+	public BakedModel getHeldItemModel(ItemStack stack, @Nullable World world, @Nullable LivingEntity entity, int seed) {
 		BakedModel bakedModel;
-		if (itemStack.isOf(Items.TRIDENT)) {
+		if (stack.isOf(Items.TRIDENT)) {
 			bakedModel = this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident_in_hand#inventory"));
-		} else if (itemStack.isOf(Items.SPYGLASS)) {
+		} else if (stack.isOf(Items.SPYGLASS)) {
 			bakedModel = this.models.getModelManager().getModel(new ModelIdentifier("minecraft:spyglass_in_hand#inventory"));
 		} else {
-			bakedModel = this.models.getModel(itemStack);
+			bakedModel = this.models.getModel(stack);
 		}
 
 		ClientWorld clientWorld = world instanceof ClientWorld ? (ClientWorld)world : null;
-		BakedModel bakedModel2 = bakedModel.getOverrides().apply(bakedModel, itemStack, clientWorld, entity, seed);
+		BakedModel bakedModel2 = bakedModel.getOverrides().apply(bakedModel, stack, clientWorld, entity, seed);
 		return bakedModel2 == null ? this.models.getModelManager().getMissingModel() : bakedModel2;
 	}
 

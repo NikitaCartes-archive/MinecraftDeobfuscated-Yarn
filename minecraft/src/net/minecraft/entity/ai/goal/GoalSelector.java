@@ -19,11 +19,11 @@ import org.apache.logging.log4j.Logger;
  * <p>A running goal will always be replaced with a goal with a <i>lower</i> priority, if
  * such a goal exists, it's competing for the same control and its
  * {@link Goal#canStart() canStart()} method returns true. (Note that some goals randomize
- * this method.)</p>
+ * this method.)
  * 
  * <p>If two goals have the same priority and are competing for the same control, then one
  * goal cannot replace the other if it's running. The goal selector tries to run goals in the order
- * they were added.</p>
+ * they were added.
  */
 public class GoalSelector {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -58,7 +58,7 @@ public class GoalSelector {
 	}
 
 	@VisibleForTesting
-	public void method_35113() {
+	public void clear() {
 		this.goals.clear();
 	}
 
@@ -108,7 +108,7 @@ public class GoalSelector {
 		profiler.pop();
 	}
 
-	public Set<PrioritizedGoal> method_35115() {
+	public Set<PrioritizedGoal> getGoals() {
 		return this.goals;
 	}
 
@@ -116,8 +116,8 @@ public class GoalSelector {
 		return this.goals.stream().filter(PrioritizedGoal::isRunning);
 	}
 
-	public void method_35114(int i) {
-		this.timeInterval = i;
+	public void setTimeInterval(int timeInterval) {
+		this.timeInterval = timeInterval;
 	}
 
 	public void disableControl(Goal.Control control) {

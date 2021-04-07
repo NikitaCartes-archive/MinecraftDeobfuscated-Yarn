@@ -53,7 +53,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 	private static final List<RegistryKey<Biome>> NETHER_BIOMES = ImmutableList.of(
 		BiomeKeys.NETHER_WASTES, BiomeKeys.SOUL_SAND_VALLEY, BiomeKeys.WARPED_FOREST, BiomeKeys.CRIMSON_FOREST, BiomeKeys.BASALT_DELTAS
 	);
-	private static final EntityPredicate.Extended field_25712 = EntityPredicate.Extended.create(
+	private static final EntityPredicate.Extended PIGLIN_DISTRACTION_PREDICATE = EntityPredicate.Extended.create(
 		EntityPropertiesLootCondition.builder(
 				LootContext.EntityTarget.THIS,
 				EntityPredicate.Builder.create()
@@ -506,7 +506,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.criterion(
 				"distract_piglin",
 				ThrownItemPickedUpByEntityCriterion.Conditions.create(
-					field_25712,
+					PIGLIN_DISTRACTION_PREDICATE,
 					ItemPredicate.Builder.create().tag(ItemTags.PIGLIN_LOVED),
 					EntityPredicate.Extended.ofLegacy(
 						EntityPredicate.Builder.create().type(EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().isBaby(false).build()).build()
@@ -516,7 +516,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.criterion(
 				"distract_piglin_directly",
 				PlayerInteractedWithEntityCriterion.Conditions.create(
-					field_25712,
+					PIGLIN_DISTRACTION_PREDICATE,
 					ItemPredicate.Builder.create().item(PiglinBrain.BARTERING_ITEM),
 					EntityPredicate.Extended.ofLegacy(
 						EntityPredicate.Builder.create().type(EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().isBaby(false).build()).build()

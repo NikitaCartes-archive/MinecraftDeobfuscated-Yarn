@@ -18,10 +18,10 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
-	private static final String field_32445 = "right_body_stick";
-	private static final String field_32446 = "left_body_stick";
-	private static final String field_32447 = "shoulder_stick";
-	private static final String field_32448 = "base_plate";
+	private static final String RIGHT_BODY_STICK = "right_body_stick";
+	private static final String LEFT_BODY_STICK = "left_body_stick";
+	private static final String SHOULDER_STICK = "shoulder_stick";
+	private static final String BASE_PLATE = "base_plate";
 	private final ModelPart rightBodyStick;
 	private final ModelPart leftBodyStick;
 	private final ModelPart shoulderStick;

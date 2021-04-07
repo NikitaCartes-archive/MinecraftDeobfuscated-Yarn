@@ -6,6 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -35,7 +36,7 @@ public class DirectConnectScreen extends Screen {
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (this.getFocused() != this.addressField || keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_KP_ENTER) {
+		if (!this.selectServerButton.active || this.getFocused() != this.addressField || keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_KP_ENTER) {
 			return super.keyPressed(keyCode, scanCode, modifiers);
 		} else {
 			this.saveAndClose();
@@ -85,8 +86,7 @@ public class DirectConnectScreen extends Screen {
 	}
 
 	private void onAddressFieldChanged() {
-		String string = this.addressField.getText();
-		this.selectServerButton.active = !string.isEmpty() && string.split(":").length > 0 && string.indexOf(32) == -1;
+		this.selectServerButton.active = ServerAddress.isValid(this.addressField.getText());
 	}
 
 	@Override

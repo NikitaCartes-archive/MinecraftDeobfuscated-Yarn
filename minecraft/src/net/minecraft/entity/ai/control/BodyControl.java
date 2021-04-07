@@ -5,9 +5,9 @@ import net.minecraft.util.math.MathHelper;
 
 public class BodyControl implements Control {
 	private final MobEntity entity;
-	private static final int field_30194 = 15;
-	private static final int field_30195 = 10;
-	private static final int field_30196 = 10;
+	private static final int MAX_HEAD_YAW = 15;
+	private static final int MAX_ACTIVE_TICKS = 10;
+	private static final int ROTATION_INCREMENTS = 10;
 	private int activeTicks;
 	private float lastHeadYaw;
 

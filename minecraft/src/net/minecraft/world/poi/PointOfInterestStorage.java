@@ -243,7 +243,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	/**
 	 * Preloads chunks in a square area with the given radius. Loads the chunks with {@code ChunkStatus.EMPTY}.
 	 * 
-	 * @param radius The radius in blocks
+	 * @param radius the radius in blocks
 	 */
 	public void preloadChunks(WorldView world, BlockPos pos, int radius) {
 		ChunkSectionPos.stream(new ChunkPos(pos), Math.floorDiv(radius, 16), this.world.getBottomSectionCoord(), this.world.getTopSectionCoord())
