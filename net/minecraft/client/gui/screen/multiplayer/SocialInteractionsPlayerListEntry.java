@@ -173,12 +173,12 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
         NarratorManager.INSTANCE.narrate(chatMessage.getString());
     }
 
-    private MutableText getNarrationMessage(MutableText mutableText) {
-        Text text = this.getStatusText();
-        if (text == LiteralText.EMPTY) {
-            return new LiteralText(this.name).append(", ").append(mutableText);
+    private MutableText getNarrationMessage(MutableText text) {
+        Text text2 = this.getStatusText();
+        if (text2 == LiteralText.EMPTY) {
+            return new LiteralText(this.name).append(", ").append(text);
         }
-        return new LiteralText(this.name).append(", ").append(text).append(", ").append(mutableText);
+        return new LiteralText(this.name).append(", ").append(text2).append(", ").append(text);
     }
 
     private Text getStatusText() {

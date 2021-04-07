@@ -82,14 +82,14 @@ extends Goal {
         return this.goal;
     }
 
-    public boolean equals(@Nullable Object object) {
-        if (this == object) {
+    public boolean equals(@Nullable Object o) {
+        if (this == o) {
             return true;
         }
-        if (object == null || this.getClass() != object.getClass()) {
+        if (o == null || this.getClass() != o.getClass()) {
             return false;
         }
-        return this.goal.equals(((PrioritizedGoal)object).goal);
+        return this.goal.equals(((PrioritizedGoal)o).goal);
     }
 
     public int hashCode() {

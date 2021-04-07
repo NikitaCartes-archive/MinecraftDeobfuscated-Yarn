@@ -1114,15 +1114,15 @@ extends DrawableHelper {
         return this.client.getSocialInteractionsManager().getUuid(string2);
     }
 
-    public void addChatMessage(MessageType type, Text message, UUID senderUuid) {
-        if (this.client.shouldBlockMessages(senderUuid)) {
+    public void addChatMessage(MessageType type, Text message, UUID sender) {
+        if (this.client.shouldBlockMessages(sender)) {
             return;
         }
         if (this.client.options.hideMatchedNames && this.client.shouldBlockMessages(this.extractSender(message))) {
             return;
         }
         for (ClientChatListener clientChatListener : this.listeners.get((Object)type)) {
-            clientChatListener.onChatMessage(type, message, senderUuid);
+            clientChatListener.onChatMessage(type, message, sender);
         }
     }
 

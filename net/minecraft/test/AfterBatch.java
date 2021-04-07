@@ -9,7 +9,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * {@code AfterBatch} methods are ran once the batch specificied has finished.
+ * {@code AfterBatch} methods are ran once the batch specified has finished.
  */
 @Target(value={ElementType.METHOD})
 @Retention(value=RetentionPolicy.RUNTIME)

@@ -70,7 +70,7 @@ extends Entity {
     private static final ImmutableMap<EntityPose, ImmutableList<Integer>> DISMOUNT_FREE_Y_SPACES_NEEDED = ImmutableMap.of(EntityPose.STANDING, ImmutableList.of(Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(-1)), EntityPose.CROUCHING, ImmutableList.of(Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(-1)), EntityPose.SWIMMING, ImmutableList.of(Integer.valueOf(0), Integer.valueOf(1)));
     protected static final float field_30694 = 0.95f;
     private boolean yawFlipped;
-    private static final Map<RailShape, Pair<Vec3i, Vec3i>> ADJACENT_RAIL_POSITIONS_BY_SHAPE = Util.make(Maps.newEnumMap(RailShape.class), enumMap -> {
+    private static final Map<RailShape, Pair<Vec3i, Vec3i>> ADJACENT_RAIL_POSITIONS_BY_SHAPE = Util.make(Maps.newEnumMap(RailShape.class), map -> {
         Vec3i vec3i = Direction.WEST.getVector();
         Vec3i vec3i2 = Direction.EAST.getVector();
         Vec3i vec3i3 = Direction.NORTH.getVector();
@@ -79,16 +79,16 @@ extends Entity {
         Vec3i vec3i6 = vec3i2.down();
         Vec3i vec3i7 = vec3i3.down();
         Vec3i vec3i8 = vec3i4.down();
-        enumMap.put(RailShape.NORTH_SOUTH, Pair.of(vec3i3, vec3i4));
-        enumMap.put(RailShape.EAST_WEST, Pair.of(vec3i, vec3i2));
-        enumMap.put(RailShape.ASCENDING_EAST, Pair.of(vec3i5, vec3i2));
-        enumMap.put(RailShape.ASCENDING_WEST, Pair.of(vec3i, vec3i6));
-        enumMap.put(RailShape.ASCENDING_NORTH, Pair.of(vec3i3, vec3i8));
-        enumMap.put(RailShape.ASCENDING_SOUTH, Pair.of(vec3i7, vec3i4));
-        enumMap.put(RailShape.SOUTH_EAST, Pair.of(vec3i4, vec3i2));
-        enumMap.put(RailShape.SOUTH_WEST, Pair.of(vec3i4, vec3i));
-        enumMap.put(RailShape.NORTH_WEST, Pair.of(vec3i3, vec3i));
-        enumMap.put(RailShape.NORTH_EAST, Pair.of(vec3i3, vec3i2));
+        map.put(RailShape.NORTH_SOUTH, Pair.of(vec3i3, vec3i4));
+        map.put(RailShape.EAST_WEST, Pair.of(vec3i, vec3i2));
+        map.put(RailShape.ASCENDING_EAST, Pair.of(vec3i5, vec3i2));
+        map.put(RailShape.ASCENDING_WEST, Pair.of(vec3i, vec3i6));
+        map.put(RailShape.ASCENDING_NORTH, Pair.of(vec3i3, vec3i8));
+        map.put(RailShape.ASCENDING_SOUTH, Pair.of(vec3i7, vec3i4));
+        map.put(RailShape.SOUTH_EAST, Pair.of(vec3i4, vec3i2));
+        map.put(RailShape.SOUTH_WEST, Pair.of(vec3i4, vec3i));
+        map.put(RailShape.NORTH_WEST, Pair.of(vec3i3, vec3i));
+        map.put(RailShape.NORTH_EAST, Pair.of(vec3i3, vec3i2));
     });
     private int clientInterpolationSteps;
     private double clientX;
@@ -177,7 +177,7 @@ extends Entity {
             return super.updatePassengerForDismount(passenger);
         }
         int[][] is = Dismounting.getDismountOffsets(direction);
-        BlockPos blockPos2 = this.getBlockPos();
+        BlockPos blockPos = this.getBlockPos();
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         ImmutableList<EntityPose> immutableList = passenger.getPoses();
         for (EntityPose entityPose : immutableList) {
@@ -189,7 +189,7 @@ extends Entity {
                 for (int[] js : is) {
                     Vec3d vec3d;
                     Box box;
-                    mutable.set(blockPos2.getX() + js[0], blockPos2.getY() + i, blockPos2.getZ() + js[1]);
+                    mutable.set(blockPos.getX() + js[0], blockPos.getY() + i, blockPos.getZ() + js[1]);
                     double d = this.world.getDismountHeight(Dismounting.getCollisionShape(this.world, mutable), () -> Dismounting.getCollisionShape(this.world, (BlockPos)mutable.down()));
                     if (!Dismounting.canDismountInBlock(d) || !Dismounting.canPlaceEntityAt(this.world, passenger, (box = new Box(-f, 0.0, -f, f, entityDimensions.height, f)).offset(vec3d = Vec3d.ofCenter(mutable, d)))) continue;
                     passenger.setPose(entityPose);
@@ -198,11 +198,11 @@ extends Entity {
             }
         }
         double e = this.getBoundingBox().maxY;
-        mutable.set((double)blockPos2.getX(), e, (double)blockPos2.getZ());
+        mutable.set((double)blockPos.getX(), e, (double)blockPos.getZ());
         for (EntityPose entityPose2 : immutableList) {
             double g = passenger.getDimensions((EntityPose)entityPose2).height;
             int j = MathHelper.ceil(e - (double)mutable.getY() + g);
-            double h = Dismounting.getCeilingHeight(mutable, j, blockPos -> this.world.getBlockState((BlockPos)blockPos).getCollisionShape(this.world, (BlockPos)blockPos));
+            double h = Dismounting.getCeilingHeight(mutable, j, pos -> this.world.getBlockState((BlockPos)pos).getCollisionShape(this.world, (BlockPos)pos));
             if (!(e + g <= h)) continue;
             passenger.setPose(entityPose2);
             break;

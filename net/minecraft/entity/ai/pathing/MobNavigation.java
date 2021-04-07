@@ -215,8 +215,8 @@ extends EntityNavigation {
         return this.nodeMaker.canEnterOpenDoors();
     }
 
-    public void method_35139(boolean bl) {
-        this.nodeMaker.setCanEnterOpenDoors(bl);
+    public void setCanEnterOpenDoors(boolean canEnterOpenDoors) {
+        this.nodeMaker.setCanEnterOpenDoors(canEnterOpenDoors);
     }
 
     public boolean canEnterOpenDoors() {

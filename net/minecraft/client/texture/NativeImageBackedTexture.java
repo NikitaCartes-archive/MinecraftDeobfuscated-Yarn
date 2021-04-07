@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class NativeImageBackedTexture
 extends AbstractTexture {
-    private static final Logger field_25794 = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     @Nullable
     private NativeImage image;
 
@@ -49,7 +49,7 @@ extends AbstractTexture {
             this.bindTexture();
             this.image.upload(0, 0, 0, false);
         } else {
-            field_25794.warn("Trying to upload disposed texture {}", (Object)this.getGlId());
+            LOGGER.warn("Trying to upload disposed texture {}", (Object)this.getGlId());
         }
     }
 

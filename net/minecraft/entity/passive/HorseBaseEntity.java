@@ -887,10 +887,10 @@ Saddleable {
      * <p>In the item slot argument type, the slot is referred to as <code>
      * horse.armor</code>. In this horse's screen, it appears in the middle of
      * the left side, and right below the saddle slot if this horse has a saddle
-     * slot.</p>
+     * slot.
      * 
      * <p>This is used by horse armors and llama carpets, but can be
-     * refitted to any purpose.</p>
+     * refitted to any purpose.
      */
     public boolean hasArmorSlot() {
         return false;

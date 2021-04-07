@@ -42,7 +42,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class MineshaftGenerator {
-    private static final Logger field_29326 = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final int field_31551 = 3;
     private static final int field_31552 = 3;
     private static final int field_31553 = 5;
@@ -644,7 +644,7 @@ public class MineshaftGenerator {
 
         public MineshaftRoom(ServerWorld serverWorld, NbtCompound nbt) {
             super(StructurePieceType.MINESHAFT_ROOM, nbt);
-            BlockBox.CODEC.listOf().parse(NbtOps.INSTANCE, nbt.getList("Entrances", 11)).resultOrPartial(field_29326::error).ifPresent(this.entrances::addAll);
+            BlockBox.CODEC.listOf().parse(NbtOps.INSTANCE, nbt.getList("Entrances", 11)).resultOrPartial(LOGGER::error).ifPresent(this.entrances::addAll);
         }
 
         @Override
@@ -708,7 +708,7 @@ public class MineshaftGenerator {
         @Override
         protected void writeNbt(ServerWorld world, NbtCompound nbt) {
             super.writeNbt(world, nbt);
-            BlockBox.CODEC.listOf().encodeStart(NbtOps.INSTANCE, this.entrances).resultOrPartial(field_29326::error).ifPresent(nbtElement -> nbt.put("Entrances", (NbtElement)nbtElement));
+            BlockBox.CODEC.listOf().encodeStart(NbtOps.INSTANCE, this.entrances).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbt.put("Entrances", (NbtElement)nbtElement));
         }
     }
 

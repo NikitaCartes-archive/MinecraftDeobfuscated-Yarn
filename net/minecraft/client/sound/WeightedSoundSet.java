@@ -58,7 +58,7 @@ implements SoundContainer<Sound> {
         this.sounds.add(soundContainer);
     }
 
-    public Identifier method_35812() {
+    public Identifier getId() {
         return this.id;
     }
 

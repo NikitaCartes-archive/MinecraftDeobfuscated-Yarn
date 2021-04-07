@@ -92,12 +92,12 @@ public interface Tag<T> {
         }
 
         @Override
-        public void method_32833(Consumer<Identifier> consumer) {
+        public void forEachGroupId(Consumer<Identifier> consumer) {
             consumer.accept(this.id);
         }
 
         @Override
-        public boolean method_32832(Predicate<Identifier> predicate, Predicate<Identifier> predicate2) {
+        public boolean canAdd(Predicate<Identifier> existenceTest, Predicate<Identifier> duplicationTest) {
             return true;
         }
     }
@@ -130,12 +130,12 @@ public interface Tag<T> {
         }
 
         @Override
-        public boolean method_32832(Predicate<Identifier> predicate, Predicate<Identifier> predicate2) {
-            return predicate2.test(this.id);
+        public boolean canAdd(Predicate<Identifier> existenceTest, Predicate<Identifier> duplicationTest) {
+            return duplicationTest.test(this.id);
         }
 
         @Override
-        public void method_32831(Consumer<Identifier> consumer) {
+        public void forEachTagId(Consumer<Identifier> consumer) {
             consumer.accept(this.id);
         }
     }
@@ -166,7 +166,7 @@ public interface Tag<T> {
         }
 
         @Override
-        public boolean method_32832(Predicate<Identifier> predicate, Predicate<Identifier> predicate2) {
+        public boolean canAdd(Predicate<Identifier> existenceTest, Predicate<Identifier> duplicationTest) {
             return true;
         }
 
@@ -199,8 +199,8 @@ public interface Tag<T> {
         }
 
         @Override
-        public boolean method_32832(Predicate<Identifier> predicate, Predicate<Identifier> predicate2) {
-            return predicate.test(this.id);
+        public boolean canAdd(Predicate<Identifier> existenceTest, Predicate<Identifier> duplicationTest) {
+            return existenceTest.test(this.id);
         }
 
         public String toString() {
@@ -213,13 +213,13 @@ public interface Tag<T> {
 
         public void addToJson(JsonArray var1);
 
-        default public void method_32831(Consumer<Identifier> consumer) {
+        default public void forEachTagId(Consumer<Identifier> consumer) {
         }
 
-        default public void method_32833(Consumer<Identifier> consumer) {
+        default public void forEachGroupId(Consumer<Identifier> consumer) {
         }
 
-        public boolean method_32832(Predicate<Identifier> var1, Predicate<Identifier> var2);
+        public boolean canAdd(Predicate<Identifier> var1, Predicate<Identifier> var2);
     }
 
     public static class Builder {
@@ -242,8 +242,8 @@ public interface Tag<T> {
             return this.add(new ObjectEntry(id), source);
         }
 
-        public Builder addOptional(Identifier id, String ource) {
-            return this.add(new OptionalObjectEntry(id), ource);
+        public Builder addOptional(Identifier id, String source) {
+            return this.add(new OptionalObjectEntry(id), source);
         }
 
         public Builder addTag(Identifier id, String source) {
@@ -268,12 +268,12 @@ public interface Tag<T> {
             return this.entries.stream();
         }
 
-        public void method_32826(Consumer<Identifier> consumer) {
-            this.entries.forEach(trackedEntry -> ((TrackedEntry)trackedEntry).entry.method_32831(consumer));
+        public void forEachTagId(Consumer<Identifier> consumer) {
+            this.entries.forEach(trackedEntry -> ((TrackedEntry)trackedEntry).entry.forEachTagId(consumer));
         }
 
-        public void method_32828(Consumer<Identifier> consumer) {
-            this.entries.forEach(trackedEntry -> ((TrackedEntry)trackedEntry).entry.method_32833(consumer));
+        public void forEachGroupId(Consumer<Identifier> consumer) {
+            this.entries.forEach(trackedEntry -> ((TrackedEntry)trackedEntry).entry.forEachGroupId(consumer));
         }
 
         public Builder read(JsonObject json, String source) {

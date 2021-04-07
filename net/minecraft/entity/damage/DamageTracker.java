@@ -30,6 +30,7 @@ public class DamageTracker {
     private int ageOnLastUpdate;
     private boolean recentlyAttacked;
     private boolean hasDamage;
+    @Nullable
     private String fallDeathSuffix;
 
     public DamageTracker(LivingEntity entity) {
@@ -74,7 +75,7 @@ public class DamageTracker {
             Text text2 = damageRecord.getAttackerName();
             if (damageRecord.getDamageSource() == DamageSource.FALL || damageRecord.getDamageSource() == DamageSource.OUT_OF_WORLD) {
                 text3 = new TranslatableText("death.fell.accident." + this.getFallDeathSuffix(damageRecord), this.entity.getDisplayName());
-            } else if (!(text2 == null || text != null && text2.equals(text))) {
+            } else if (text2 != null && !text2.equals(text)) {
                 ItemStack itemStack;
                 Entity entity2 = damageRecord.getDamageSource().getAttacker();
                 ItemStack itemStack2 = itemStack = entity2 instanceof LivingEntity ? ((LivingEntity)entity2).getMainHandStack() : ItemStack.EMPTY;
@@ -144,12 +145,12 @@ public class DamageTracker {
         return damageRecord.getFallDeathSuffix() == null ? "generic" : damageRecord.getFallDeathSuffix();
     }
 
-    public boolean method_35039() {
+    public boolean hasDamage() {
         this.update();
         return this.hasDamage;
     }
 
-    public boolean method_35040() {
+    public boolean wasRecentlyAttacked() {
         this.update();
         return this.recentlyAttacked;
     }
@@ -185,7 +186,7 @@ public class DamageTracker {
     }
 
     @Nullable
-    public DamageRecord method_35041() {
+    public DamageRecord getMostRecentDamage() {
         if (this.recentDamage.isEmpty()) {
             return null;
         }

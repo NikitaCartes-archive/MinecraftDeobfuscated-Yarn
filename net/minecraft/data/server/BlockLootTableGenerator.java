@@ -192,8 +192,8 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         return LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with(((LootPoolEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(drop).conditionally(WITH_SILK_TOUCH)).apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY).withOperation("Bees", "BlockEntityTag.Bees"))).apply(CopyStateFunction.getBuilder(drop).addProperty(BeehiveBlock.HONEY_LEVEL))).alternatively(ItemEntry.builder(drop))));
     }
 
-    private static LootTable.Builder method_33709(Block block) {
-        return LootTable.builder().pool(LootPool.builder().with(ItemEntry.builder(Items.GLOW_BERRIES)).conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(CaveVines.BERRIES, true))));
+    private static LootTable.Builder glowBerryDrops(Block drop) {
+        return LootTable.builder().pool(LootPool.builder().with(ItemEntry.builder(Items.GLOW_BERRIES)).conditionally(BlockStatePropertyLootCondition.builder(drop).properties(StatePredicate.Builder.create().exactMatch(CaveVines.BERRIES, true))));
     }
 
     private static LootTable.Builder oreDrops(Block dropWithSilkTouch, Item drop) {
@@ -278,10 +278,6 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.DARK_OAK_SAPLING);
         this.addDrop(Blocks.SAND);
         this.addDrop(Blocks.RED_SAND);
-        this.addDrop(Blocks.GOLD_ORE);
-        this.addDrop(Blocks.DEEPSLATE_GOLD_ORE);
-        this.addDrop(Blocks.IRON_ORE);
-        this.addDrop(Blocks.DEEPSLATE_IRON_ORE);
         this.addDrop(Blocks.OAK_LOG);
         this.addDrop(Blocks.SPRUCE_LOG);
         this.addDrop(Blocks.BIRCH_LOG);
@@ -669,8 +665,6 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.EXPOSED_COPPER);
         this.addDrop(Blocks.WEATHERED_COPPER);
         this.addDrop(Blocks.OXIDIZED_COPPER);
-        this.addDrop(Blocks.COPPER_ORE);
-        this.addDrop(Blocks.DEEPSLATE_COPPER_ORE);
         this.addDrop(Blocks.CUT_COPPER);
         this.addDrop(Blocks.EXPOSED_CUT_COPPER);
         this.addDrop(Blocks.WEATHERED_CUT_COPPER);
@@ -678,12 +672,15 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.WAXED_COPPER_BLOCK);
         this.addDrop(Blocks.WAXED_WEATHERED_COPPER);
         this.addDrop(Blocks.WAXED_EXPOSED_COPPER);
+        this.addDrop(Blocks.WAXED_OXIDIZED_COPPER);
         this.addDrop(Blocks.WAXED_CUT_COPPER);
         this.addDrop(Blocks.WAXED_WEATHERED_CUT_COPPER);
         this.addDrop(Blocks.WAXED_EXPOSED_CUT_COPPER);
+        this.addDrop(Blocks.WAXED_OXIDIZED_CUT_COPPER);
         this.addDrop(Blocks.WAXED_CUT_COPPER_STAIRS);
         this.addDrop(Blocks.WAXED_EXPOSED_CUT_COPPER_STAIRS);
         this.addDrop(Blocks.WAXED_WEATHERED_CUT_COPPER_STAIRS);
+        this.addDrop(Blocks.WAXED_OXIDIZED_CUT_COPPER_STAIRS);
         this.addDrop(Blocks.CUT_COPPER_STAIRS);
         this.addDrop(Blocks.EXPOSED_CUT_COPPER_STAIRS);
         this.addDrop(Blocks.WEATHERED_CUT_COPPER_STAIRS);
@@ -812,6 +809,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.WEATHERED_CUT_COPPER_SLAB, BlockLootTableGenerator::slabDrops);
         this.addDrop(Blocks.EXPOSED_CUT_COPPER_SLAB, BlockLootTableGenerator::slabDrops);
         this.addDrop(Blocks.CUT_COPPER_SLAB, BlockLootTableGenerator::slabDrops);
+        this.addDrop(Blocks.WAXED_OXIDIZED_CUT_COPPER_SLAB, BlockLootTableGenerator::slabDrops);
         this.addDrop(Blocks.WAXED_WEATHERED_CUT_COPPER_SLAB, BlockLootTableGenerator::slabDrops);
         this.addDrop(Blocks.WAXED_EXPOSED_CUT_COPPER_SLAB, BlockLootTableGenerator::slabDrops);
         this.addDrop(Blocks.WAXED_CUT_COPPER_SLAB, BlockLootTableGenerator::slabDrops);
@@ -852,8 +850,8 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.COCOA, (Block block) -> LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder)BlockLootTableGenerator.applyExplosionDecay(block, ItemEntry.builder(Items.COCOA_BEANS).apply((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootNumberProvider.create(3.0f)).conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(CocoaBlock.AGE, 2))))))));
         this.addDrop(Blocks.SEA_PICKLE, (Block block) -> LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder)BlockLootTableGenerator.applyExplosionDecay(Blocks.SEA_PICKLE, ((LeafEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(block).apply((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0f)).conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(SeaPickleBlock.PICKLES, 2))))).apply((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootNumberProvider.create(3.0f)).conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(SeaPickleBlock.PICKLES, 3))))).apply((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootNumberProvider.create(4.0f)).conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(SeaPickleBlock.PICKLES, 4))))))));
         this.addDrop(Blocks.COMPOSTER, (Block block) -> LootTable.builder().pool(LootPool.builder().with((LootPoolEntry.Builder)BlockLootTableGenerator.applyExplosionDecay(block, ItemEntry.builder(Items.COMPOSTER)))).pool(LootPool.builder().with(ItemEntry.builder(Items.BONE_MEAL)).conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(ComposterBlock.LEVEL, 8)))));
-        this.addDrop(Blocks.CAVE_VINES, BlockLootTableGenerator::method_33709);
-        this.addDrop(Blocks.CAVE_VINES_PLANT, BlockLootTableGenerator::method_33709);
+        this.addDrop(Blocks.CAVE_VINES, BlockLootTableGenerator::glowBerryDrops);
+        this.addDrop(Blocks.CAVE_VINES_PLANT, BlockLootTableGenerator::glowBerryDrops);
         this.addDrop(Blocks.CANDLE, BlockLootTableGenerator::candleDrops);
         this.addDrop(Blocks.WHITE_CANDLE, BlockLootTableGenerator::candleDrops);
         this.addDrop(Blocks.ORANGE_CANDLE, BlockLootTableGenerator::candleDrops);
@@ -954,6 +952,12 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.NETHER_QUARTZ_ORE, (Block block) -> BlockLootTableGenerator.oreDrops(block, Items.QUARTZ));
         this.addDrop(Blocks.DIAMOND_ORE, (Block block) -> BlockLootTableGenerator.oreDrops(block, Items.DIAMOND));
         this.addDrop(Blocks.DEEPSLATE_DIAMOND_ORE, (Block block) -> BlockLootTableGenerator.oreDrops(block, Items.DIAMOND));
+        this.addDrop(Blocks.COPPER_ORE, (Block block) -> BlockLootTableGenerator.oreDrops(block, Items.RAW_COPPER));
+        this.addDrop(Blocks.DEEPSLATE_COPPER_ORE, (Block block) -> BlockLootTableGenerator.oreDrops(block, Items.RAW_COPPER));
+        this.addDrop(Blocks.IRON_ORE, (Block block) -> BlockLootTableGenerator.oreDrops(block, Items.RAW_IRON));
+        this.addDrop(Blocks.DEEPSLATE_IRON_ORE, (Block block) -> BlockLootTableGenerator.oreDrops(block, Items.RAW_IRON));
+        this.addDrop(Blocks.GOLD_ORE, (Block block) -> BlockLootTableGenerator.oreDrops(block, Items.RAW_GOLD));
+        this.addDrop(Blocks.DEEPSLATE_GOLD_ORE, (Block block) -> BlockLootTableGenerator.oreDrops(block, Items.RAW_GOLD));
         this.addDrop(Blocks.NETHER_GOLD_ORE, (Block block) -> BlockLootTableGenerator.dropsWithSilkTouch(block, (LootPoolEntry.Builder)BlockLootTableGenerator.applyExplosionDecay(block, ((LeafEntry.Builder)ItemEntry.builder(Items.GOLD_NUGGET).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0f, 6.0f)))).apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE)))));
         this.addDrop(Blocks.LAPIS_ORE, BlockLootTableGenerator::method_34057);
         this.addDrop(Blocks.DEEPSLATE_LAPIS_ORE, BlockLootTableGenerator::method_34057);
@@ -1128,8 +1132,8 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(block, block);
     }
 
-    private void addDrop(Block block, Function<Block, LootTable.Builder> function) {
-        this.addDrop(block, function.apply(block));
+    private void addDrop(Block block, Function<Block, LootTable.Builder> lootTableFunction) {
+        this.addDrop(block, lootTableFunction.apply(block));
     }
 
     private void addDrop(Block block, LootTable.Builder lootTable) {
@@ -1137,8 +1141,8 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
     }
 
     @Override
-    public /* synthetic */ void accept(Object object) {
-        this.accept((BiConsumer)object);
+    public /* synthetic */ void accept(Object exporter) {
+        this.accept((BiConsumer)exporter);
     }
 }
 

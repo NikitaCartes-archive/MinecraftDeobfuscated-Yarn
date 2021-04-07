@@ -35,8 +35,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.RecipeCategoryOptionsC2SPacket;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeGridAligner;
+import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -74,7 +74,7 @@ RecipeGridAligner<Ingredient> {
     private String searchText = "";
     private ClientRecipeBook recipeBook;
     private final RecipeBookResults recipesArea = new RecipeBookResults();
-    private final RecipeFinder recipeFinder = new RecipeFinder();
+    private final RecipeMatcher recipeFinder = new RecipeMatcher();
     private int cachedInvChangeCount;
     private boolean searching;
 
@@ -444,7 +444,7 @@ RecipeGridAligner<Ingredient> {
         ItemStack itemStack = recipe.getOutput();
         this.ghostSlots.setRecipe(recipe);
         this.ghostSlots.addSlot(Ingredient.ofStacks(itemStack), slots.get((int)0).x, slots.get((int)0).y);
-        this.alignRecipeToGrid(this.craftingScreenHandler.getCraftingWidth(), this.craftingScreenHandler.getCraftingHeight(), this.craftingScreenHandler.getCraftingResultSlotIndex(), recipe, recipe.getPreviewInputs().iterator(), 0);
+        this.alignRecipeToGrid(this.craftingScreenHandler.getCraftingWidth(), this.craftingScreenHandler.getCraftingHeight(), this.craftingScreenHandler.getCraftingResultSlotIndex(), recipe, recipe.getIngredients().iterator(), 0);
     }
 
     @Override

@@ -41,6 +41,7 @@ implements FlyingItemEntity {
     private static final TrackedData<Boolean> SHOT_AT_ANGLE = DataTracker.registerData(FireworkRocketEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private int life;
     private int lifeTime;
+    @Nullable
     private LivingEntity shooter;
 
     public FireworkRocketEntity(EntityType<? extends FireworkRocketEntity> entityType, World world) {

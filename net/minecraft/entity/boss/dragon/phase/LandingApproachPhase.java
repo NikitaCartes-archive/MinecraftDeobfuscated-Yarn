@@ -78,7 +78,7 @@ extends AbstractPhase {
     private void followPath() {
         if (this.path != null && !this.path.isFinished()) {
             double f;
-            BlockPos vec3i = this.path.method_31032();
+            BlockPos vec3i = this.path.getCurrentNodePos();
             this.path.next();
             double d = vec3i.getX();
             double e = vec3i.getZ();

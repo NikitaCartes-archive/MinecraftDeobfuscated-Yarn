@@ -27,7 +27,9 @@ extends Entity {
     private boolean startedAttack;
     private int ticksLeft = 22;
     private boolean playingAnimation;
+    @Nullable
     private LivingEntity owner;
+    @Nullable
     private UUID ownerUuid;
 
     public EvokerFangsEntity(EntityType<? extends EvokerFangsEntity> entityType, World world) {

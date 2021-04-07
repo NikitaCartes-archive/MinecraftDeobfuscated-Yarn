@@ -145,8 +145,8 @@ public class TagGroupLoader<T> {
         Function<Identifier, Tag> function = map::get;
         Function<Identifier, Object> function2 = identifier -> this.registryGetter.apply((Identifier)identifier).orElse(null);
         HashMultimap multimap = HashMultimap.create();
-        tags.forEach((identifier, builder) -> builder.method_32826(identifier2 -> TagGroupLoader.method_32844(multimap, identifier, identifier2)));
-        tags.forEach((identifier, builder) -> builder.method_32828(identifier2 -> TagGroupLoader.method_32844(multimap, identifier, identifier2)));
+        tags.forEach((identifier, builder) -> builder.forEachTagId(identifier2 -> TagGroupLoader.method_32844(multimap, identifier, identifier2)));
+        tags.forEach((identifier, builder) -> builder.forEachGroupId(identifier2 -> TagGroupLoader.method_32844(multimap, identifier, identifier2)));
         HashSet set = Sets.newHashSet();
         tags.keySet().forEach(identifier2 -> TagGroupLoader.method_32839(tags, multimap, set, identifier2, (identifier, builder) -> builder.build(function, function2).ifLeft(collection -> LOGGER.error("Couldn't load tag {} as it is missing following references: {}", identifier, (Object)collection.stream().map(Objects::toString).collect(Collectors.joining(",")))).ifRight(tag -> map.put((Identifier)identifier, tag))));
         return TagGroup.create(map);

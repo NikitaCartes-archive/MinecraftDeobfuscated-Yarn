@@ -822,18 +822,18 @@ extends Entity {
             return this.name;
         }
 
-        public static Type getType(int i) {
+        public static Type getType(int type) {
             Type[] types = Type.values();
-            if (i < 0 || i >= types.length) {
-                i = 0;
+            if (type < 0 || type >= types.length) {
+                type = 0;
             }
-            return types[i];
+            return types[type];
         }
 
-        public static Type getType(String string) {
+        public static Type getType(String name) {
             Type[] types = Type.values();
             for (int i = 0; i < types.length; ++i) {
-                if (!types[i].getName().equals(string)) continue;
+                if (!types[i].getName().equals(name)) continue;
                 return types[i];
             }
             return types[0];

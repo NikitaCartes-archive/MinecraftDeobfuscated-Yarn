@@ -51,8 +51,8 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
     }
 
     @Override
-    public /* synthetic */ void accept(Object object) {
-        this.accept((BiConsumer)object);
+    public /* synthetic */ void accept(Object exporter) {
+        this.accept((BiConsumer)exporter);
     }
 }
 

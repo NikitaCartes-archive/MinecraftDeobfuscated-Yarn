@@ -171,41 +171,41 @@ public class ServerNetworkIo {
         return this.server;
     }
 
-    static class class_5980
+    static class DelayingChannelInboundHandler
     extends ChannelInboundHandlerAdapter {
-        private static final Timer field_29772 = new HashedWheelTimer();
-        private final int field_29773;
-        private final int field_29774;
-        private final List<class_5981> field_29775 = Lists.newArrayList();
+        private static final Timer TIMER = new HashedWheelTimer();
+        private final int baseDelay;
+        private final int extraDelay;
+        private final List<Packet> packets = Lists.newArrayList();
 
-        public class_5980(int i, int j) {
-            this.field_29773 = i;
-            this.field_29774 = j;
+        public DelayingChannelInboundHandler(int baseDelay, int extraDelay) {
+            this.baseDelay = baseDelay;
+            this.extraDelay = extraDelay;
         }
 
         @Override
-        public void channelRead(ChannelHandlerContext channelHandlerContext, Object object) {
-            this.method_34880(channelHandlerContext, object);
+        public void channelRead(ChannelHandlerContext ctx, Object msg) {
+            this.delay(ctx, msg);
         }
 
-        private void method_34880(ChannelHandlerContext channelHandlerContext, Object object) {
-            int i = this.field_29773 + (int)(Math.random() * (double)this.field_29774);
-            this.field_29775.add(new class_5981(channelHandlerContext, object));
-            field_29772.newTimeout(this::method_34881, i, TimeUnit.MILLISECONDS);
+        private void delay(ChannelHandlerContext ctx, Object msg) {
+            int i = this.baseDelay + (int)(Math.random() * (double)this.extraDelay);
+            this.packets.add(new Packet(ctx, msg));
+            TIMER.newTimeout(this::forward, i, TimeUnit.MILLISECONDS);
         }
 
-        private void method_34881(Timeout timeout) {
-            class_5981 lv = this.field_29775.remove(0);
-            lv.field_29776.fireChannelRead(lv.field_29777);
+        private void forward(Timeout timeout) {
+            Packet packet = this.packets.remove(0);
+            packet.context.fireChannelRead(packet.message);
         }
 
-        static class class_5981 {
-            public final ChannelHandlerContext field_29776;
-            public final Object field_29777;
+        static class Packet {
+            public final ChannelHandlerContext context;
+            public final Object message;
 
-            public class_5981(ChannelHandlerContext channelHandlerContext, Object object) {
-                this.field_29776 = channelHandlerContext;
-                this.field_29777 = object;
+            public Packet(ChannelHandlerContext context, Object message) {
+                this.context = context;
+                this.message = message;
             }
         }
     }

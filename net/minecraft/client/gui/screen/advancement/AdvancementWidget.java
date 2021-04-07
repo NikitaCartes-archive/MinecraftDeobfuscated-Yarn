@@ -151,7 +151,7 @@ extends DrawableHelper {
         }
     }
 
-    public int method_35737() {
+    public int getWidth() {
         return this.width;
     }
 

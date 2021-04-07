@@ -15,7 +15,7 @@ import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
 public class FuzzyPositions {
-    private static final int field_30264 = 10;
+    private static final int GAUSS_RANGE = 10;
 
     /**
      * Creates a fuzzy offset position within the given horizontal and vertical

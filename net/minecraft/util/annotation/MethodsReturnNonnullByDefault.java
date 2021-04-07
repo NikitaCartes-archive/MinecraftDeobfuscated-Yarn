@@ -15,6 +15,9 @@ import org.jetbrains.annotations.NotNull;
  * 
  * <p>While this annotation is meant to be a package/class annotation, it can
  * be applied to anything as it does not restrict its targets.
+ * 
+ * @see ClientMethodsReturnNonnullByDefault
+ * @see MathMethodsReturnNonnullByDefault
  */
 @NotNull
 @TypeQualifierDefault(value={ElementType.METHOD})

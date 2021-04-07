@@ -79,9 +79,9 @@ extends WaterCreatureEntity {
     private static final TrackedData<Boolean> HAS_FISH = DataTracker.registerData(DolphinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> MOISTNESS = DataTracker.registerData(DolphinEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TargetPredicate CLOSE_PLAYER_PREDICATE = new TargetPredicate().setBaseMaxDistance(10.0).includeTeammates().includeInvulnerable().includeHidden();
-    public static final int field_30326 = 4800;
-    private static final int field_30327 = 2400;
-    public static final Predicate<ItemEntity> CAN_TAKE = itemEntity -> !itemEntity.cannotPickup() && itemEntity.isAlive() && itemEntity.isTouchingWater();
+    public static final int MAX_AIR = 4800;
+    private static final int MAX_MOISTNESS = 2400;
+    public static final Predicate<ItemEntity> CAN_TAKE = item -> !item.cannotPickup() && item.isAlive() && item.isTouchingWater();
 
     public DolphinEntity(EntityType<? extends DolphinEntity> entityType, World world) {
         super((EntityType<? extends WaterCreatureEntity>)entityType, world);
@@ -517,14 +517,14 @@ extends WaterCreatureEntity {
 
     class PlayWithItemsGoal
     extends Goal {
-        private int field_6758;
+        private int nextPlayingTime;
 
         private PlayWithItemsGoal() {
         }
 
         @Override
         public boolean canStart() {
-            if (this.field_6758 > DolphinEntity.this.age) {
+            if (this.nextPlayingTime > DolphinEntity.this.age) {
                 return false;
             }
             List<ItemEntity> list = DolphinEntity.this.world.getEntitiesByClass(ItemEntity.class, DolphinEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), CAN_TAKE);
@@ -538,7 +538,7 @@ extends WaterCreatureEntity {
                 DolphinEntity.this.getNavigation().startMovingTo(list.get(0), 1.2f);
                 DolphinEntity.this.playSound(SoundEvents.ENTITY_DOLPHIN_PLAY, 1.0f, 1.0f);
             }
-            this.field_6758 = 0;
+            this.nextPlayingTime = 0;
         }
 
         @Override
@@ -547,7 +547,7 @@ extends WaterCreatureEntity {
             if (!itemStack.isEmpty()) {
                 this.spitOutItem(itemStack);
                 DolphinEntity.this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
-                this.field_6758 = DolphinEntity.this.age + DolphinEntity.this.random.nextInt(100);
+                this.nextPlayingTime = DolphinEntity.this.age + DolphinEntity.this.random.nextInt(100);
             }
         }
 

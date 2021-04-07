@@ -100,7 +100,7 @@ implements DebugRenderer.Renderer {
             });
         }
         for (Entry entry : this.entries) {
-            Vec3d vec3d = entry.field_28260;
+            Vec3d vec3d = entry.pos;
             double d = 0.2f;
             double e = vec3d.x - (double)0.2f;
             double f = vec3d.y - (double)0.2f;
@@ -127,24 +127,24 @@ implements DebugRenderer.Renderer {
         DebugRenderer.drawBox(box.offset(vec3d), f, g, h, i);
     }
 
-    public void method_33087(GameEvent gameEvent, BlockPos blockPos) {
-        this.entries.add(new Entry(Util.getMeasuringTimeMs(), gameEvent, Vec3d.ofBottomCenter(blockPos)));
+    public void addEvent(GameEvent event, BlockPos pos) {
+        this.entries.add(new Entry(Util.getMeasuringTimeMs(), event, Vec3d.ofBottomCenter(pos)));
     }
 
-    public void method_33088(PositionSource positionSource, int i) {
-        this.listeners.add(new Listener(positionSource, i));
+    public void addListener(PositionSource positionSource, int range) {
+        this.listeners.add(new Listener(positionSource, range));
     }
 
     @Environment(value=EnvType.CLIENT)
     static class Entry {
         public final long startingMs;
         public final GameEvent event;
-        public final Vec3d field_28260;
+        public final Vec3d pos;
 
-        public Entry(long l, GameEvent gameEvent, Vec3d vec3d) {
-            this.startingMs = l;
-            this.event = gameEvent;
-            this.field_28260 = vec3d;
+        public Entry(long startingMs, GameEvent event, Vec3d pos) {
+            this.startingMs = startingMs;
+            this.event = event;
+            this.pos = pos;
         }
 
         public boolean hasExpired() {

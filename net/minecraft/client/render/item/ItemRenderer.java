@@ -191,10 +191,10 @@ implements SynchronousResourceReloader {
         }
     }
 
-    public BakedModel getHeldItemModel(ItemStack itemStack, @Nullable World world, @Nullable LivingEntity entity, int seed) {
-        BakedModel bakedModel = itemStack.isOf(Items.TRIDENT) ? this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident_in_hand#inventory")) : (itemStack.isOf(Items.SPYGLASS) ? this.models.getModelManager().getModel(new ModelIdentifier("minecraft:spyglass_in_hand#inventory")) : this.models.getModel(itemStack));
+    public BakedModel getHeldItemModel(ItemStack stack, @Nullable World world, @Nullable LivingEntity entity, int seed) {
+        BakedModel bakedModel = stack.isOf(Items.TRIDENT) ? this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident_in_hand#inventory")) : (stack.isOf(Items.SPYGLASS) ? this.models.getModelManager().getModel(new ModelIdentifier("minecraft:spyglass_in_hand#inventory")) : this.models.getModel(stack));
         ClientWorld clientWorld = world instanceof ClientWorld ? (ClientWorld)world : null;
-        BakedModel bakedModel2 = bakedModel.getOverrides().apply(bakedModel, itemStack, clientWorld, entity, seed);
+        BakedModel bakedModel2 = bakedModel.getOverrides().apply(bakedModel, stack, clientWorld, entity, seed);
         return bakedModel2 == null ? this.models.getModelManager().getMissingModel() : bakedModel2;
     }
 

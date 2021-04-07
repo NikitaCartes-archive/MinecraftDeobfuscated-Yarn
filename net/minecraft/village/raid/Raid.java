@@ -68,12 +68,12 @@ public class Raid {
     private static final int field_30680 = 32;
     private static final int field_30681 = 48000;
     private static final int field_30682 = 3;
-    private static final String OMNIOUS_BANNER_TRANSLATION_KEY = "block.minecraft.ominous_banner";
+    private static final String OMINOUS_BANNER_TRANSLATION_KEY = "block.minecraft.ominous_banner";
     private static final String RAIDERS_REMAINING_TRANSLATION_KEY = "event.minecraft.raid.raiders_remaining";
     public static final int field_30669 = 16;
     private static final int field_30685 = 40;
-    private static final int field_30686 = 300;
-    public static final int field_30670 = 2400;
+    private static final int DEFAULT_PRE_RAID_TICKS = 300;
+    public static final int MAX_DESPAWN_COUNTER = 2400;
     public static final int field_30671 = 600;
     private static final int field_30687 = 30;
     public static final int field_30672 = 24000;
@@ -84,7 +84,7 @@ public class Raid {
     private static final Text DEFEAT_SUFFIX_TEXT = new TranslatableText("event.minecraft.raid.defeat");
     private static final Text VICTORY_TITLE = EVENT_TEXT.shallowCopy().append(" - ").append(VICTORY_SUFFIX_TEXT);
     private static final Text DEFEAT_TITLE = EVENT_TEXT.shallowCopy().append(" - ").append(DEFEAT_SUFFIX_TEXT);
-    private static final int field_30689 = 48000;
+    private static final int MAX_ACTIVE_TICKS = 48000;
     public static final int field_30674 = 9216;
     public static final int field_30675 = 12544;
     private final Map<Integer, RaiderEntity> waveToCaptain = Maps.newHashMap();
@@ -545,7 +545,7 @@ public class Raid {
         NbtList nbtList = new BannerPattern.Patterns().add(BannerPattern.RHOMBUS_MIDDLE, DyeColor.CYAN).add(BannerPattern.STRIPE_BOTTOM, DyeColor.LIGHT_GRAY).add(BannerPattern.STRIPE_CENTER, DyeColor.GRAY).add(BannerPattern.BORDER, DyeColor.LIGHT_GRAY).add(BannerPattern.STRIPE_MIDDLE, DyeColor.BLACK).add(BannerPattern.HALF_HORIZONTAL, DyeColor.LIGHT_GRAY).add(BannerPattern.CIRCLE_MIDDLE, DyeColor.LIGHT_GRAY).add(BannerPattern.BORDER, DyeColor.BLACK).toNbt();
         nbtCompound.put("Patterns", nbtList);
         itemStack.addHideFlag(ItemStack.TooltipSection.ADDITIONAL);
-        itemStack.setCustomName(new TranslatableText(OMNIOUS_BANNER_TRANSLATION_KEY).formatted(Formatting.GOLD));
+        itemStack.setCustomName(new TranslatableText(OMINOUS_BANNER_TRANSLATION_KEY).formatted(Formatting.GOLD));
         return itemStack;
     }
 

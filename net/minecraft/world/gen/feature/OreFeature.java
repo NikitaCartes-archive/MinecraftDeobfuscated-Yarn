@@ -16,6 +16,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.chunk.ChunkSection;
+import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
 import net.minecraft.world.gen.feature.util.FeatureContext;
@@ -116,6 +117,7 @@ extends Feature<OreFeatureConfig> {
                             bitSet.set(ah);
                             mutable.set(ab, ad, af);
                             ChunkSection chunkSection = chunkSectionCache.getSection(mutable);
+                            if (chunkSection == WorldChunk.EMPTY_SECTION) continue;
                             int ai = ChunkSectionPos.getLocalCoord(ab);
                             int aj = ChunkSectionPos.getLocalCoord(ad);
                             int ak = ChunkSectionPos.getLocalCoord(af);

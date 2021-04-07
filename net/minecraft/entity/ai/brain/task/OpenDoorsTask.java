@@ -26,12 +26,12 @@ import org.jetbrains.annotations.Nullable;
 
 public class OpenDoorsTask
 extends Task<LivingEntity> {
-    private static final int field_30125 = 20;
-    private static final double field_30126 = 2.0;
-    private static final double field_30127 = 2.0;
+    private static final int RUN_TIME = 20;
+    private static final double PATHING_DISTANCE = 2.0;
+    private static final double REACH_DISTANCE = 2.0;
     @Nullable
-    private PathNode field_26387;
-    private int field_26388;
+    private PathNode pathNode;
+    private int ticks;
 
     public OpenDoorsTask() {
         super(ImmutableMap.of(MemoryModuleType.PATH, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.DOORS_TO_CLOSE, MemoryModuleState.REGISTERED));
@@ -40,17 +40,17 @@ extends Task<LivingEntity> {
     @Override
     protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
         Path path = entity.getBrain().getOptionalMemory(MemoryModuleType.PATH).get();
-        if (path.method_30849() || path.isFinished()) {
+        if (path.isStart() || path.isFinished()) {
             return false;
         }
-        if (!Objects.equals(this.field_26387, path.method_29301())) {
-            this.field_26388 = 20;
+        if (!Objects.equals(this.pathNode, path.getCurrentNode())) {
+            this.ticks = 20;
             return true;
         }
-        if (this.field_26388 > 0) {
-            --this.field_26388;
+        if (this.ticks > 0) {
+            --this.ticks;
         }
-        return this.field_26388 == 0;
+        return this.ticks == 0;
     }
 
     @Override
@@ -59,38 +59,38 @@ extends Task<LivingEntity> {
         BlockPos blockPos2;
         BlockState blockState2;
         Path path = entity.getBrain().getOptionalMemory(MemoryModuleType.PATH).get();
-        this.field_26387 = path.method_29301();
-        PathNode pathNode = path.method_30850();
-        PathNode pathNode2 = path.method_29301();
-        BlockPos blockPos = pathNode.getPos();
+        this.pathNode = path.getCurrentNode();
+        PathNode pathNode = path.getLastNode();
+        PathNode pathNode2 = path.getCurrentNode();
+        BlockPos blockPos = pathNode.getBlockPos();
         BlockState blockState = world.getBlockState(blockPos);
         if (blockState.isIn(BlockTags.WOODEN_DOORS)) {
             DoorBlock doorBlock = (DoorBlock)blockState.getBlock();
             if (!doorBlock.isOpen(blockState)) {
                 doorBlock.setOpen(entity, world, blockState, blockPos, true);
             }
-            this.method_30767(world, entity, blockPos);
+            this.rememberToCloseDoor(world, entity, blockPos);
         }
-        if ((blockState2 = world.getBlockState(blockPos2 = pathNode2.getPos())).isIn(BlockTags.WOODEN_DOORS) && !(doorBlock2 = (DoorBlock)blockState2.getBlock()).isOpen(blockState2)) {
+        if ((blockState2 = world.getBlockState(blockPos2 = pathNode2.getBlockPos())).isIn(BlockTags.WOODEN_DOORS) && !(doorBlock2 = (DoorBlock)blockState2.getBlock()).isOpen(blockState2)) {
             doorBlock2.setOpen(entity, world, blockState2, blockPos2, true);
-            this.method_30767(world, entity, blockPos2);
+            this.rememberToCloseDoor(world, entity, blockPos2);
         }
-        OpenDoorsTask.method_30760(world, entity, pathNode, pathNode2);
+        OpenDoorsTask.pathToDoor(world, entity, pathNode, pathNode2);
     }
 
-    public static void method_30760(ServerWorld serverWorld, LivingEntity livingEntity, @Nullable PathNode pathNode, @Nullable PathNode pathNode2) {
-        Brain<Set<GlobalPos>> brain = livingEntity.getBrain();
+    public static void pathToDoor(ServerWorld world, LivingEntity entity, @Nullable PathNode lastNode, @Nullable PathNode currentNode) {
+        Brain<Set<GlobalPos>> brain = entity.getBrain();
         if (brain.hasMemoryModule(MemoryModuleType.DOORS_TO_CLOSE)) {
             Iterator<GlobalPos> iterator = brain.getOptionalMemory(MemoryModuleType.DOORS_TO_CLOSE).get().iterator();
             while (iterator.hasNext()) {
                 GlobalPos globalPos = iterator.next();
                 BlockPos blockPos = globalPos.getPos();
-                if (pathNode != null && pathNode.getPos().equals(blockPos) || pathNode2 != null && pathNode2.getPos().equals(blockPos)) continue;
-                if (OpenDoorsTask.cannotReachDoor(serverWorld, livingEntity, globalPos)) {
+                if (lastNode != null && lastNode.getBlockPos().equals(blockPos) || currentNode != null && currentNode.getBlockPos().equals(blockPos)) continue;
+                if (OpenDoorsTask.cannotReachDoor(world, entity, globalPos)) {
                     iterator.remove();
                     continue;
                 }
-                BlockState blockState = serverWorld.getBlockState(blockPos);
+                BlockState blockState = world.getBlockState(blockPos);
                 if (!blockState.isIn(BlockTags.WOODEN_DOORS)) {
                     iterator.remove();
                     continue;
@@ -100,47 +100,47 @@ extends Task<LivingEntity> {
                     iterator.remove();
                     continue;
                 }
-                if (OpenDoorsTask.method_30761(serverWorld, livingEntity, blockPos)) {
+                if (OpenDoorsTask.hasOtherMobReachedDoor(world, entity, blockPos)) {
                     iterator.remove();
                     continue;
                 }
-                doorBlock.setOpen(livingEntity, serverWorld, blockState, blockPos, false);
+                doorBlock.setOpen(entity, world, blockState, blockPos, false);
                 iterator.remove();
             }
         }
     }
 
-    private static boolean method_30761(ServerWorld serverWorld, LivingEntity livingEntity3, BlockPos blockPos) {
-        Brain<List<LivingEntity>> brain = livingEntity3.getBrain();
+    private static boolean hasOtherMobReachedDoor(ServerWorld world, LivingEntity entity, BlockPos pos) {
+        Brain<List<LivingEntity>> brain = entity.getBrain();
         if (!brain.hasMemoryModule(MemoryModuleType.MOBS)) {
             return false;
         }
-        return brain.getOptionalMemory(MemoryModuleType.MOBS).get().stream().filter(livingEntity2 -> livingEntity2.getType() == livingEntity3.getType()).filter(livingEntity -> blockPos.isWithinDistance(livingEntity.getPos(), 2.0)).anyMatch(livingEntity -> OpenDoorsTask.method_30766(serverWorld, livingEntity, blockPos));
+        return brain.getOptionalMemory(MemoryModuleType.MOBS).get().stream().filter(livingEntity2 -> livingEntity2.getType() == entity.getType()).filter(livingEntity -> pos.isWithinDistance(livingEntity.getPos(), 2.0)).anyMatch(livingEntity -> OpenDoorsTask.hasReached(world, livingEntity, pos));
     }
 
-    private static boolean method_30766(ServerWorld serverWorld, LivingEntity livingEntity, BlockPos blockPos) {
-        if (!livingEntity.getBrain().hasMemoryModule(MemoryModuleType.PATH)) {
+    private static boolean hasReached(ServerWorld world, LivingEntity entity, BlockPos pos) {
+        if (!entity.getBrain().hasMemoryModule(MemoryModuleType.PATH)) {
             return false;
         }
-        Path path = livingEntity.getBrain().getOptionalMemory(MemoryModuleType.PATH).get();
+        Path path = entity.getBrain().getOptionalMemory(MemoryModuleType.PATH).get();
         if (path.isFinished()) {
             return false;
         }
-        PathNode pathNode = path.method_30850();
+        PathNode pathNode = path.getLastNode();
         if (pathNode == null) {
             return false;
         }
-        PathNode pathNode2 = path.method_29301();
-        return blockPos.equals(pathNode.getPos()) || blockPos.equals(pathNode2.getPos());
+        PathNode pathNode2 = path.getCurrentNode();
+        return pos.equals(pathNode.getBlockPos()) || pos.equals(pathNode2.getBlockPos());
     }
 
     private static boolean cannotReachDoor(ServerWorld world, LivingEntity entity, GlobalPos doorPos) {
         return doorPos.getDimension() != world.getRegistryKey() || !doorPos.getPos().isWithinDistance(entity.getPos(), 2.0);
     }
 
-    private void method_30767(ServerWorld serverWorld, LivingEntity livingEntity, BlockPos blockPos) {
-        Brain<?> brain = livingEntity.getBrain();
-        GlobalPos globalPos = GlobalPos.create(serverWorld.getRegistryKey(), blockPos);
+    private void rememberToCloseDoor(ServerWorld world, LivingEntity entity, BlockPos pos) {
+        Brain<?> brain = entity.getBrain();
+        GlobalPos globalPos = GlobalPos.create(world.getRegistryKey(), pos);
         if (brain.getOptionalMemory(MemoryModuleType.DOORS_TO_CLOSE).isPresent()) {
             brain.getOptionalMemory(MemoryModuleType.DOORS_TO_CLOSE).get().add(globalPos);
         } else {

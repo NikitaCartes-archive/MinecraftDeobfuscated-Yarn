@@ -130,7 +130,7 @@ extends EntityNavigation {
         this.nodeMaker.setCanOpenDoors(canPathThroughDoors);
     }
 
-    public boolean method_35128() {
+    public boolean canEnterOpenDoors() {
         return this.nodeMaker.canEnterOpenDoors();
     }
 

@@ -112,7 +112,7 @@ implements BlockEntityRenderer<BannerBlockEntity> {
     }
 
     public static void renderCanvas(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, ModelPart canvas, SpriteIdentifier baseSprite, boolean isBanner, List<Pair<BannerPattern, DyeColor>> patterns, boolean glint) {
-        canvas.render(matrices, baseSprite.method_30001(vertexConsumers, RenderLayer::getEntitySolid, glint), light, overlay);
+        canvas.render(matrices, baseSprite.getVertexConsumer(vertexConsumers, RenderLayer::getEntitySolid, glint), light, overlay);
         for (int i = 0; i < 17 && i < patterns.size(); ++i) {
             Pair<BannerPattern, DyeColor> pair = patterns.get(i);
             float[] fs = pair.getSecond().getColorComponents();

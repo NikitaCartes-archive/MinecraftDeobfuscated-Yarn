@@ -112,7 +112,7 @@ implements ScreenHandlerProvider<LecternScreenHandler> {
     }
 
     @Override
-    protected void method_34494() {
+    protected void closeScreen() {
         this.client.player.closeHandledScreen();
     }
 

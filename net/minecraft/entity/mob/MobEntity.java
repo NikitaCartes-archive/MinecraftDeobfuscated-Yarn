@@ -1256,8 +1256,8 @@ extends LivingEntity {
         return this.isLeftHanded() ? Arm.LEFT : Arm.RIGHT;
     }
 
-    public double method_33191(LivingEntity livingEntity) {
-        return this.getWidth() * 2.0f * (this.getWidth() * 2.0f) + livingEntity.getWidth();
+    public double squaredAttackRange(LivingEntity target) {
+        return this.getWidth() * 2.0f * (this.getWidth() * 2.0f) + target.getWidth();
     }
 
     @Override
@@ -1331,9 +1331,9 @@ extends LivingEntity {
         }
     }
 
-    public void method_35056() {
-        this.goalSelector.method_35113();
-        this.getBrain().method_35060();
+    public void clearGoalsAndTasks() {
+        this.goalSelector.clear();
+        this.getBrain().clear();
     }
 
     @Override

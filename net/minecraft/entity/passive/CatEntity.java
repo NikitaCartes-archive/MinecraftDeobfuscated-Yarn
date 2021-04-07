@@ -101,18 +101,18 @@ extends TameableEntity {
     public static final int field_30323 = 10;
     private static final int field_30324 = 11;
     private static final int field_30325 = 10;
-    public static final Map<Integer, Identifier> TEXTURES = Util.make(Maps.newHashMap(), hashMap -> {
-        hashMap.put(0, new Identifier("textures/entity/cat/tabby.png"));
-        hashMap.put(1, new Identifier("textures/entity/cat/black.png"));
-        hashMap.put(2, new Identifier("textures/entity/cat/red.png"));
-        hashMap.put(3, new Identifier("textures/entity/cat/siamese.png"));
-        hashMap.put(4, new Identifier("textures/entity/cat/british_shorthair.png"));
-        hashMap.put(5, new Identifier("textures/entity/cat/calico.png"));
-        hashMap.put(6, new Identifier("textures/entity/cat/persian.png"));
-        hashMap.put(7, new Identifier("textures/entity/cat/ragdoll.png"));
-        hashMap.put(8, new Identifier("textures/entity/cat/white.png"));
-        hashMap.put(9, new Identifier("textures/entity/cat/jellie.png"));
-        hashMap.put(10, new Identifier("textures/entity/cat/all_black.png"));
+    public static final Map<Integer, Identifier> TEXTURES = Util.make(Maps.newHashMap(), map -> {
+        map.put(0, new Identifier("textures/entity/cat/tabby.png"));
+        map.put(1, new Identifier("textures/entity/cat/black.png"));
+        map.put(2, new Identifier("textures/entity/cat/red.png"));
+        map.put(3, new Identifier("textures/entity/cat/siamese.png"));
+        map.put(4, new Identifier("textures/entity/cat/british_shorthair.png"));
+        map.put(5, new Identifier("textures/entity/cat/calico.png"));
+        map.put(6, new Identifier("textures/entity/cat/persian.png"));
+        map.put(7, new Identifier("textures/entity/cat/ragdoll.png"));
+        map.put(8, new Identifier("textures/entity/cat/white.png"));
+        map.put(9, new Identifier("textures/entity/cat/jellie.png"));
+        map.put(10, new Identifier("textures/entity/cat/all_black.png"));
     });
     private CatFleeGoal<PlayerEntity> fleeGoal;
     private net.minecraft.entity.ai.goal.TemptGoal temptGoal;
@@ -515,13 +515,13 @@ extends TameableEntity {
                 BlockState blockState = this.cat.world.getBlockState(blockPos);
                 if (blockState.isIn(BlockTags.BEDS)) {
                     this.bedPos = blockState.getOrEmpty(BedBlock.FACING).map(direction -> blockPos.offset(direction.getOpposite())).orElseGet(() -> new BlockPos(blockPos));
-                    return !this.method_16098();
+                    return !this.cannotSleep();
                 }
             }
             return false;
         }
 
-        private boolean method_16098() {
+        private boolean cannotSleep() {
             List<CatEntity> list = this.cat.world.getNonSpectatingEntities(CatEntity.class, new Box(this.bedPos).expand(2.0));
             for (CatEntity catEntity : list) {
                 if (catEntity == this.cat || !catEntity.isSleepingWithOwner() && !catEntity.isHeadDown()) continue;
@@ -532,7 +532,7 @@ extends TameableEntity {
 
         @Override
         public boolean shouldContinue() {
-            return this.cat.isTamed() && !this.cat.isSitting() && this.owner != null && this.owner.isSleeping() && this.bedPos != null && !this.method_16098();
+            return this.cat.isTamed() && !this.cat.isSitting() && this.owner != null && this.owner.isSleeping() && this.bedPos != null && !this.cannotSleep();
         }
 
         @Override

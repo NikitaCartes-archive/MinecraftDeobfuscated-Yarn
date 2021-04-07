@@ -49,8 +49,8 @@ implements Consumer<Consumer<Advancement>> {
     }
 
     @Override
-    public /* synthetic */ void accept(Object object) {
-        this.accept((Consumer)object);
+    public /* synthetic */ void accept(Object exporter) {
+        this.accept((Consumer)exporter);
     }
 }
 

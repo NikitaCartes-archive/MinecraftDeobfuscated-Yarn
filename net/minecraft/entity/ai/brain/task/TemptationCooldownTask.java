@@ -13,15 +13,15 @@ import net.minecraft.server.world.ServerWorld;
 
 public class TemptationCooldownTask
 extends Task<LivingEntity> {
-    private final MemoryModuleType<Integer> field_30113;
+    private final MemoryModuleType<Integer> moduleType;
 
-    public TemptationCooldownTask(MemoryModuleType<Integer> memoryModuleType) {
-        super(ImmutableMap.of(memoryModuleType, MemoryModuleState.VALUE_PRESENT));
-        this.field_30113 = memoryModuleType;
+    public TemptationCooldownTask(MemoryModuleType<Integer> moduleType) {
+        super(ImmutableMap.of(moduleType, MemoryModuleState.VALUE_PRESENT));
+        this.moduleType = moduleType;
     }
 
     private Optional<Integer> getTemptationCooldownTicks(LivingEntity entity) {
-        return entity.getBrain().getOptionalMemory(this.field_30113);
+        return entity.getBrain().getOptionalMemory(this.moduleType);
     }
 
     @Override
@@ -38,12 +38,12 @@ extends Task<LivingEntity> {
     @Override
     protected void keepRunning(ServerWorld world, LivingEntity entity, long time) {
         Optional<Integer> optional = this.getTemptationCooldownTicks(entity);
-        entity.getBrain().remember(this.field_30113, optional.get() - 1);
+        entity.getBrain().remember(this.moduleType, optional.get() - 1);
     }
 
     @Override
     protected void finishRunning(ServerWorld world, LivingEntity entity, long time) {
-        entity.getBrain().forget(this.field_30113);
+        entity.getBrain().forget(this.moduleType);
     }
 }
 

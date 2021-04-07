@@ -20,7 +20,7 @@ import net.minecraft.util.Util;
 
 public class TemptTask
 extends Task<PathAwareEntity> {
-    public static final int field_30115 = 100;
+    public static final int TEMPTATION_COOLDOWN_TICKS = 100;
     public static final double field_30116 = 2.5;
     private final Function<LivingEntity, Float> speed;
 

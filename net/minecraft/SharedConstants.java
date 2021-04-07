@@ -9,20 +9,21 @@ import io.netty.util.ResourceLeakDetector;
 import java.time.Duration;
 import net.minecraft.MinecraftVersion;
 import net.minecraft.command.TranslatableBuiltInExceptions;
+import org.jetbrains.annotations.Nullable;
 
 public class SharedConstants {
     @Deprecated
     public static final boolean field_29709 = true;
     @Deprecated
-    public static final int field_29732 = 2705;
+    public static final int field_29732 = 2706;
     @Deprecated
-    public static final String field_29733 = "21w13a";
+    public static final String field_29733 = "21w14a";
     @Deprecated
     public static final String field_29734 = "1.17";
     @Deprecated
     public static final int field_29735 = 755;
     @Deprecated
-    public static final int field_29736 = 20;
+    public static final int field_29736 = 21;
     public static final int field_29737 = 2678;
     private static final int field_29708 = 30;
     @Deprecated
@@ -108,6 +109,7 @@ public class SharedConstants {
     public static final float field_29705 = 1365.3334f;
     public static final float field_29706 = 0.87890625f;
     public static final float field_29707 = 17.578125f;
+    @Nullable
     private static GameVersion gameVersion;
 
     public static boolean isValidChar(char chr) {
@@ -123,23 +125,29 @@ public class SharedConstants {
         return stringBuilder.toString();
     }
 
-    public static void method_34872(GameVersion gameVersion) {
-        if (SharedConstants.gameVersion == null) {
-            SharedConstants.gameVersion = gameVersion;
-        } else if (gameVersion != SharedConstants.gameVersion) {
+    public static void setGameVersion(GameVersion version) {
+        if (gameVersion == null) {
+            gameVersion = version;
+        } else if (version != gameVersion) {
             throw new IllegalStateException("Cannot override the current game version!");
+        }
+    }
+
+    public static void createGameVersion() {
+        if (gameVersion == null) {
+            gameVersion = MinecraftVersion.create();
         }
     }
 
     public static GameVersion getGameVersion() {
         if (gameVersion == null) {
-            gameVersion = MinecraftVersion.create();
+            throw new IllegalStateException("Game version not set");
         }
         return gameVersion;
     }
 
     public static int getProtocolVersion() {
-        return 0x40000014;
+        return 1073741845;
     }
 
     static {

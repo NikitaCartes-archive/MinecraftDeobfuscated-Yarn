@@ -15,24 +15,22 @@ import net.minecraft.world.gen.surfacebuilder.TernarySurfaceConfig;
 
 public class DefaultSurfaceBuilder
 extends SurfaceBuilder<TernarySurfaceConfig> {
-    private static final int field_31700 = 50;
-
     public DefaultSurfaceBuilder(Codec<TernarySurfaceConfig> codec) {
         super(codec);
     }
 
     @Override
-    public void generate(Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, long m, TernarySurfaceConfig ternarySurfaceConfig) {
-        this.generate(random, chunk, biome, i, j, k, d, blockState, blockState2, ternarySurfaceConfig.getTopMaterial(), ternarySurfaceConfig.getUnderMaterial(), ternarySurfaceConfig.getUnderwaterMaterial(), l);
+    public void generate(Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, int m, long n, TernarySurfaceConfig ternarySurfaceConfig) {
+        this.generate(random, chunk, biome, i, j, k, d, blockState, blockState2, ternarySurfaceConfig.getTopMaterial(), ternarySurfaceConfig.getUnderMaterial(), ternarySurfaceConfig.getUnderwaterMaterial(), l, m);
     }
 
-    protected void generate(Random random, Chunk chunk, Biome biome, int x, int z, int height, double noise, BlockState defaultBlock, BlockState fluidBlock, BlockState topBlock, BlockState underBlock, BlockState underwaterBlock, int seaLevel) {
+    protected void generate(Random random, Chunk chunk, Biome biome, int x, int z, int height, double noise, BlockState defaultBlock, BlockState fluidBlock, BlockState topBlock, BlockState underBlock, BlockState underwaterBlock, int seaLevel, int i) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        int i = (int)(noise / 3.0 + 3.0 + random.nextDouble() * 0.25);
-        if (i == 0) {
+        int j = (int)(noise / 3.0 + 3.0 + random.nextDouble() * 0.25);
+        if (j == 0) {
             boolean bl = false;
-            for (int j = height; j >= 50; --j) {
-                mutable.set(x, j, z);
+            for (int k = height; k >= i; --k) {
+                mutable.set(x, k, z);
                 BlockState blockState = chunk.getBlockState(mutable);
                 if (blockState.isAir()) {
                     bl = false;
@@ -40,34 +38,34 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
                 }
                 if (!blockState.isOf(defaultBlock.getBlock())) continue;
                 if (!bl) {
-                    BlockState blockState2 = j >= seaLevel ? Blocks.AIR.getDefaultState() : (j == seaLevel - 1 ? (biome.getTemperature(mutable) < 0.15f ? Blocks.ICE.getDefaultState() : fluidBlock) : (j >= seaLevel - (7 + i) ? defaultBlock : underwaterBlock));
+                    BlockState blockState2 = k >= seaLevel ? Blocks.AIR.getDefaultState() : (k == seaLevel - 1 ? (biome.getTemperature(mutable) < 0.15f ? Blocks.ICE.getDefaultState() : fluidBlock) : (k >= seaLevel - (7 + j) ? defaultBlock : underwaterBlock));
                     chunk.setBlockState(mutable, blockState2, false);
                 }
                 bl = true;
             }
         } else {
             BlockState blockState3 = underBlock;
-            int j = -1;
-            for (int k = height; k >= 50; --k) {
-                mutable.set(x, k, z);
+            int k = -1;
+            for (int l = height; l >= i; --l) {
+                mutable.set(x, l, z);
                 BlockState blockState2 = chunk.getBlockState(mutable);
                 if (blockState2.isAir()) {
-                    j = -1;
+                    k = -1;
                     continue;
                 }
                 if (!blockState2.isOf(defaultBlock.getBlock())) continue;
-                if (j == -1) {
+                if (k == -1) {
                     BlockState blockState4;
-                    j = i;
-                    if (k >= seaLevel + 2) {
+                    k = j;
+                    if (l >= seaLevel + 2) {
                         blockState4 = topBlock;
-                    } else if (k >= seaLevel - 1) {
+                    } else if (l >= seaLevel - 1) {
                         blockState3 = underBlock;
                         blockState4 = topBlock;
-                    } else if (k >= seaLevel - 4) {
+                    } else if (l >= seaLevel - 4) {
                         blockState3 = underBlock;
                         blockState4 = underBlock;
-                    } else if (k >= seaLevel - (7 + i)) {
+                    } else if (l >= seaLevel - (7 + j)) {
                         blockState4 = blockState3;
                     } else {
                         blockState3 = defaultBlock;
@@ -76,10 +74,10 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
                     chunk.setBlockState(mutable, blockState4, false);
                     continue;
                 }
-                if (j <= 0) continue;
+                if (k <= 0) continue;
                 chunk.setBlockState(mutable, blockState3, false);
-                if (--j != 0 || !blockState3.isOf(Blocks.SAND) || i <= 1) continue;
-                j = random.nextInt(4) + Math.max(0, k - seaLevel);
+                if (--k != 0 || !blockState3.isOf(Blocks.SAND) || j <= 1) continue;
+                k = random.nextInt(4) + Math.max(0, l - seaLevel);
                 blockState3 = blockState3.isOf(Blocks.RED_SAND) ? Blocks.RED_SANDSTONE.getDefaultState() : Blocks.SANDSTONE.getDefaultState();
             }
         }

@@ -124,12 +124,12 @@ public class ModelLoader {
     static final int field_32984 = -1;
     private static final int field_32985 = 0;
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final String field_32986 = "builtin/";
-    private static final String field_32987 = "builtin/generated";
-    private static final String field_32988 = "builtin/entity";
-    private static final String field_32989 = "missing";
-    public static final ModelIdentifier MISSING = new ModelIdentifier("builtin/missing", "missing");
-    private static final String field_21773 = MISSING.toString();
+    private static final String BUILTIN = "builtin/";
+    private static final String BUILTIN_GENERATED = "builtin/generated";
+    private static final String BUILTIN_ENTITY = "builtin/entity";
+    private static final String MISSING = "missing";
+    public static final ModelIdentifier MISSING_ID = new ModelIdentifier("builtin/missing", "missing");
+    private static final String field_21773 = MISSING_ID.toString();
     @VisibleForTesting
     public static final String MISSING_DEFINITION = ("{    'textures': {       'particle': '" + MissingSprite.getMissingSpriteId().getPath() + "',       'missingno': '" + MissingSprite.getMissingSpriteId().getPath() + "'    },    'elements': [         {  'from': [ 0, 0, 0 ],            'to': [ 16, 16, 16 ],            'faces': {                'down':  { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'down',  'texture': '#missingno' },                'up':    { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'up',    'texture': '#missingno' },                'north': { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'north', 'texture': '#missingno' },                'south': { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'south', 'texture': '#missingno' },                'west':  { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'west',  'texture': '#missingno' },                'east':  { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'east',  'texture': '#missingno' }            }        }    ]}").replace('\'', '\"');
     private static final Map<String, String> BUILTIN_MODEL_DEFINITIONS = Maps.newHashMap(ImmutableMap.of("missing", MISSING_DEFINITION));
@@ -163,8 +163,8 @@ public class ModelLoader {
         this.blockColors = blockColors;
         profiler.push("missing_model");
         try {
-            this.unbakedModels.put(MISSING, this.loadModelFromJson(MISSING));
-            this.addModel(MISSING);
+            this.unbakedModels.put(MISSING_ID, this.loadModelFromJson(MISSING_ID));
+            this.addModel(MISSING_ID);
         } catch (IOException iOException) {
             LOGGER.error("Error loading missing model, should never happen :(", (Throwable)iOException);
             throw new RuntimeException(iOException);
@@ -273,7 +273,7 @@ public class ModelLoader {
             throw new IllegalStateException("Circular reference while loading " + id);
         }
         this.modelsToLoad.add(id);
-        UnbakedModel unbakedModel = this.unbakedModels.get(MISSING);
+        UnbakedModel unbakedModel = this.unbakedModels.get(MISSING_ID);
         while (!this.modelsToLoad.isEmpty()) {
             Identifier identifier = this.modelsToLoad.iterator().next();
             try {
@@ -313,7 +313,7 @@ public class ModelLoader {
             immutableList.forEach(blockState -> map.put(BlockModels.getModelId(identifier, blockState), (BlockState)blockState));
             HashMap map2 = Maps.newHashMap();
             Identifier identifier2 = new Identifier(id.getNamespace(), "blockstates/" + id.getPath() + ".json");
-            UnbakedModel unbakedModel = this.unbakedModels.get(MISSING);
+            UnbakedModel unbakedModel = this.unbakedModels.get(MISSING_ID);
             ModelDefinition modelDefinition2 = new ModelDefinition(ImmutableList.of(unbakedModel), ImmutableList.of());
             Pair<UnbakedModel, Supplier<ModelDefinition>> pair = Pair.of(unbakedModel, () -> modelDefinition2);
             try {
@@ -321,7 +321,7 @@ public class ModelLoader {
                 try {
                     list2 = this.resourceManager.getAllResources(identifier2).stream().map(resource -> {
                         try (InputStream inputStream = resource.getInputStream();){
-                            Pair<String, ModelVariantMap> pair = Pair.of(resource.getResourcePackName(), ModelVariantMap.deserialize(this.variantMapDeserializationContext, new InputStreamReader(inputStream, StandardCharsets.UTF_8)));
+                            Pair<String, ModelVariantMap> pair = Pair.of(resource.getResourcePackName(), ModelVariantMap.fromJson(this.variantMapDeserializationContext, new InputStreamReader(inputStream, StandardCharsets.UTF_8)));
                             return pair;
                         } catch (Exception exception) {
                             throw new ModelLoaderException(String.format("Exception loading blockstate definition: '%s' in resourcepack: '%s': %s", resource.getId(), resource.getResourcePackName(), exception.getMessage()));
@@ -468,7 +468,7 @@ public class ModelLoader {
                 resource = null;
                 try {
                     string = id.getPath();
-                    if (!field_32987.equals(string)) break block7;
+                    if (!BUILTIN_GENERATED.equals(string)) break block7;
                     jsonUnbakedModel = GENERATION_MARKER;
                 } catch (Throwable throwable) {
                     IOUtils.closeQuietly(reader);
@@ -479,14 +479,14 @@ public class ModelLoader {
                 IOUtils.closeQuietly(resource);
                 return jsonUnbakedModel;
             }
-            if (!field_32988.equals(string)) break block8;
+            if (!BUILTIN_ENTITY.equals(string)) break block8;
             JsonUnbakedModel jsonUnbakedModel = BLOCK_ENTITY_MARKER;
             IOUtils.closeQuietly(reader);
             IOUtils.closeQuietly(resource);
             return jsonUnbakedModel;
         }
-        if (string.startsWith(field_32986)) {
-            String string2 = string.substring(field_32986.length());
+        if (string.startsWith(BUILTIN)) {
+            String string2 = string.substring(BUILTIN.length());
             String string3 = BUILTIN_MODEL_DEFINITIONS.get(string2);
             if (string3 == null) {
                 throw new FileNotFoundException(id.toString());

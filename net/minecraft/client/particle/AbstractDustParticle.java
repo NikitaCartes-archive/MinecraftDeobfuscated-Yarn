@@ -15,23 +15,23 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class AbstractDustParticle<T extends AbstractDustParticleEffect>
 extends SpriteBillboardParticle {
-    private final SpriteProvider field_28247;
+    private final SpriteProvider spriteProvider;
 
-    protected AbstractDustParticle(ClientWorld world, double d, double e, double f, double g, double h, double i, T abstractDustParticleEffect, SpriteProvider spriteProvider) {
-        super(world, d, e, f, g, h, i);
+    protected AbstractDustParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, T abstractDustParticleEffect, SpriteProvider spriteProvider) {
+        super(world, x, y, z, velocityX, velocityY, velocityZ);
         this.field_28786 = 0.96f;
         this.field_28787 = true;
-        this.field_28247 = spriteProvider;
+        this.spriteProvider = spriteProvider;
         this.velocityX *= (double)0.1f;
         this.velocityY *= (double)0.1f;
         this.velocityZ *= (double)0.1f;
-        float j = this.random.nextFloat() * 0.4f + 0.6f;
-        this.colorRed = this.method_33076(((AbstractDustParticleEffect)abstractDustParticleEffect).getColor().getX(), j);
-        this.colorGreen = this.method_33076(((AbstractDustParticleEffect)abstractDustParticleEffect).getColor().getY(), j);
-        this.colorBlue = this.method_33076(((AbstractDustParticleEffect)abstractDustParticleEffect).getColor().getZ(), j);
+        float f = this.random.nextFloat() * 0.4f + 0.6f;
+        this.colorRed = this.method_33076(((AbstractDustParticleEffect)abstractDustParticleEffect).getColor().getX(), f);
+        this.colorGreen = this.method_33076(((AbstractDustParticleEffect)abstractDustParticleEffect).getColor().getY(), f);
+        this.colorBlue = this.method_33076(((AbstractDustParticleEffect)abstractDustParticleEffect).getColor().getZ(), f);
         this.scale *= 0.75f * ((AbstractDustParticleEffect)abstractDustParticleEffect).getScale();
-        int k = (int)(8.0 / (this.random.nextDouble() * 0.8 + 0.2));
-        this.maxAge = (int)Math.max((float)k * ((AbstractDustParticleEffect)abstractDustParticleEffect).getScale(), 1.0f);
+        int i = (int)(8.0 / (this.random.nextDouble() * 0.8 + 0.2));
+        this.maxAge = (int)Math.max((float)i * ((AbstractDustParticleEffect)abstractDustParticleEffect).getScale(), 1.0f);
         this.setSpriteForAge(spriteProvider);
     }
 
@@ -52,7 +52,7 @@ extends SpriteBillboardParticle {
     @Override
     public void tick() {
         super.tick();
-        this.setSpriteForAge(this.field_28247);
+        this.setSpriteForAge(this.spriteProvider);
     }
 }
 

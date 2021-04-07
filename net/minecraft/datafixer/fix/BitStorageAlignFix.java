@@ -21,12 +21,12 @@ import net.minecraft.util.math.MathHelper;
 
 public class BitStorageAlignFix
 extends DataFix {
-    private static final int field_29863 = 6;
-    private static final int field_29864 = 16;
-    private static final int field_29865 = 16;
-    private static final int field_29866 = 4096;
-    private static final int field_29867 = 9;
-    private static final int field_29868 = 256;
+    private static final int ELEMENT_BIT_SHIFT = 6;
+    private static final int CHUNK_WIDTH = 16;
+    private static final int CHUNK_LENGTH = 16;
+    private static final int MAX_BLOCK_STATE_ID = 4096;
+    private static final int HEIGHT_VALUE_BITS = 9;
+    private static final int MAX_HEIGHT_VALUE = 256;
 
     public BitStorageAlignFix(Schema outputSchema) {
         super(outputSchema, false);
@@ -42,76 +42,76 @@ extends DataFix {
         OpticFinder opticFinder3 = DSL.typeFinder(type3);
         Type<Pair<String, Dynamic<?>>> type4 = DSL.named(TypeReferences.BLOCK_STATE.typeName(), DSL.remainderType());
         OpticFinder<Pair<String, Dynamic<?>>> opticFinder4 = DSL.fieldFinder("Palette", DSL.list(type4));
-        return this.fixTypeEverywhereTyped("BitStorageAlignFix", type, this.getOutputSchema().getType(TypeReferences.CHUNK), (Typed<?> typed2) -> typed2.updateTyped(opticFinder, typed -> this.method_27775(BitStorageAlignFix.method_27774(opticFinder2, opticFinder3, opticFinder4, typed))));
+        return this.fixTypeEverywhereTyped("BitStorageAlignFix", type, this.getOutputSchema().getType(TypeReferences.CHUNK), (Typed<?> chunk) -> chunk.updateTyped(opticFinder, level -> this.fixHeightmaps(BitStorageAlignFix.fixLevel(opticFinder2, opticFinder3, opticFinder4, level))));
     }
 
-    private Typed<?> method_27775(Typed<?> typed) {
-        return typed.update(DSL.remainderFinder(), dynamic -> dynamic.update("Heightmaps", dynamic2 -> dynamic2.updateMapValues(pair -> pair.mapSecond(dynamic2 -> BitStorageAlignFix.method_27772(dynamic, dynamic2, 256, 9)))));
+    private Typed<?> fixHeightmaps(Typed<?> fixedLevel) {
+        return fixedLevel.update(DSL.remainderFinder(), levelDynamic -> levelDynamic.update("Heightmaps", heightmapsDynamic -> heightmapsDynamic.updateMapValues(heightmap -> heightmap.mapSecond(heightmapDynamic -> BitStorageAlignFix.fixBitStorageArray(levelDynamic, heightmapDynamic, 256, 9)))));
     }
 
-    private static Typed<?> method_27774(OpticFinder<?> opticFinder, OpticFinder<?> opticFinder2, OpticFinder<List<Pair<String, Dynamic<?>>>> opticFinder3, Typed<?> typed) {
-        return typed.updateTyped(opticFinder, typed2 -> typed2.updateTyped(opticFinder2, typed -> {
-            int i = typed.getOptional(opticFinder3).map(list -> Math.max(4, DataFixUtils.ceillog2(list.size()))).orElse(0);
+    private static Typed<?> fixLevel(OpticFinder<?> levelSectionsFinder, OpticFinder<?> sectionFinder, OpticFinder<List<Pair<String, Dynamic<?>>>> paletteFinder, Typed<?> level) {
+        return level.updateTyped(levelSectionsFinder, levelSection -> levelSection.updateTyped(sectionFinder, section -> {
+            int i = section.getOptional(paletteFinder).map(palette -> Math.max(4, DataFixUtils.ceillog2(palette.size()))).orElse(0);
             if (i == 0 || MathHelper.isPowerOfTwo(i)) {
-                return typed;
+                return section;
             }
-            return typed.update(DSL.remainderFinder(), dynamic -> dynamic.update("BlockStates", dynamic2 -> BitStorageAlignFix.method_27772(dynamic, dynamic2, 4096, i)));
+            return section.update(DSL.remainderFinder(), sectionDynamic -> sectionDynamic.update("BlockStates", statesDynamic -> BitStorageAlignFix.fixBitStorageArray(sectionDynamic, statesDynamic, 4096, i)));
         }));
     }
 
-    private static Dynamic<?> method_27772(Dynamic<?> dynamic, Dynamic<?> dynamic2, int i, int j) {
-        long[] ls = dynamic2.asLongStream().toArray();
-        long[] ms = BitStorageAlignFix.method_27288(i, j, ls);
-        return dynamic.createLongList(LongStream.of(ms));
+    private static Dynamic<?> fixBitStorageArray(Dynamic<?> sectionDynamic, Dynamic<?> statesDynamic, int maxValue, int elementBits) {
+        long[] ls = statesDynamic.asLongStream().toArray();
+        long[] ms = BitStorageAlignFix.resizePackedIntArray(maxValue, elementBits, ls);
+        return sectionDynamic.createLongList(LongStream.of(ms));
     }
 
-    public static long[] method_27288(int i, int j, long[] ls) {
-        int k = ls.length;
-        if (k == 0) {
-            return ls;
+    public static long[] resizePackedIntArray(int maxValue, int elementBits, long[] elements) {
+        int i = elements.length;
+        if (i == 0) {
+            return elements;
         }
-        long l = (1L << j) - 1L;
-        int m = 64 / j;
-        int n = (i + m - 1) / m;
-        long[] ms = new long[n];
-        int o = 0;
+        long l = (1L << elementBits) - 1L;
+        int j = 64 / elementBits;
+        int k = (maxValue + j - 1) / j;
+        long[] ls = new long[k];
+        int m = 0;
+        int n = 0;
+        long o = 0L;
         int p = 0;
-        long q = 0L;
-        int r = 0;
-        long s = ls[0];
-        long t = k > 1 ? ls[1] : 0L;
-        for (int u = 0; u < i; ++u) {
-            int aa;
-            long z;
-            int v = u * j;
-            int w = v >> 6;
-            int x = (u + 1) * j - 1 >> 6;
-            int y = v ^ w << 6;
-            if (w != r) {
-                s = t;
-                t = w + 1 < k ? ls[w + 1] : 0L;
-                r = w;
+        long q = elements[0];
+        long r = i > 1 ? elements[1] : 0L;
+        for (int s = 0; s < maxValue; ++s) {
+            int y;
+            long x;
+            int t = s * elementBits;
+            int u = t >> 6;
+            int v = (s + 1) * elementBits - 1 >> 6;
+            int w = t ^ u << 6;
+            if (u != p) {
+                q = r;
+                r = u + 1 < i ? elements[u + 1] : 0L;
+                p = u;
             }
-            if (w == x) {
-                z = s >>> y & l;
+            if (u == v) {
+                x = q >>> w & l;
             } else {
-                aa = 64 - y;
-                z = (s >>> y | t << aa) & l;
+                y = 64 - w;
+                x = (q >>> w | r << y) & l;
             }
-            aa = p + j;
-            if (aa >= 64) {
-                ms[o++] = q;
-                q = z;
-                p = j;
+            y = n + elementBits;
+            if (y >= 64) {
+                ls[m++] = o;
+                o = x;
+                n = elementBits;
                 continue;
             }
-            q |= z << p;
-            p = aa;
+            o |= x << n;
+            n = y;
         }
-        if (q != 0L) {
-            ms[o] = q;
+        if (o != 0L) {
+            ls[m] = o;
         }
-        return ms;
+        return ls;
     }
 }
 

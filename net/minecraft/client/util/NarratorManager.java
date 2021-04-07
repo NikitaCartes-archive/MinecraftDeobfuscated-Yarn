@@ -29,7 +29,7 @@ implements ClientChatListener {
     private final Narrator narrator = Narrator.getNarrator();
 
     @Override
-    public void onChatMessage(MessageType messageType, Text message, UUID senderUuid) {
+    public void onChatMessage(MessageType messageType, Text message, UUID sender) {
         NarratorMode narratorMode = NarratorManager.getNarratorOption();
         if (narratorMode == NarratorMode.OFF || !this.narrator.active()) {
             return;

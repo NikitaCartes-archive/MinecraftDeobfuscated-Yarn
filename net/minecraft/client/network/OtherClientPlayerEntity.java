@@ -76,9 +76,9 @@ extends AbstractClientPlayerEntity {
     }
 
     @Override
-    public void sendSystemMessage(Text message, UUID senderUuid) {
+    public void sendSystemMessage(Text message, UUID sender) {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        if (!minecraftClient.shouldBlockMessages(senderUuid)) {
+        if (!minecraftClient.shouldBlockMessages(sender)) {
             minecraftClient.inGameHud.getChatHud().addMessage(message);
         }
     }

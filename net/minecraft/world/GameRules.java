@@ -28,7 +28,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class GameRules {
-    public static final int field_30963 = 3;
+    public static final int DEFAULT_RANDOM_TICK_SPEED = 3;
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Map<Key<?>, Type<?>> RULE_TYPES = Maps.newTreeMap(Comparator.comparing(key -> Key.method_20772(key)));
     public static final Key<BooleanRule> DO_FIRE_TICK = GameRules.register("doFireTick", Category.UPDATES, BooleanRule.method_20755(true));

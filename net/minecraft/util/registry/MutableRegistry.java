@@ -25,7 +25,7 @@ extends Registry<T> {
      * 
      * <p>If the given key is not already present in the registry, adds the entry to the registry. If
      * {@code rawId} is present, then this method gives the entry this raw ID. Otherwise, uses the
-     * next available ID.</p>
+     * next available ID.
      */
     public abstract <V extends T> V replace(OptionalInt var1, RegistryKey<T> var2, V var3, Lifecycle var4);
 

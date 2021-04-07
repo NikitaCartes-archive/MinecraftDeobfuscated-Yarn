@@ -62,7 +62,7 @@ public class IronGolemEntity
 extends GolemEntity
 implements Angerable {
     protected static final TrackedData<Byte> IRON_GOLEM_FLAGS = DataTracker.registerData(IronGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
-    private static final int field_30338 = 25;
+    private static final int HEALTH_PER_INGOT = 25;
     private int attackTicksLeft;
     private int lookingAtVillagerTicksLeft;
     private static final UniformIntProvider ANGER_TIME_RANGE = Durations.betweenSeconds(20, 39);
@@ -86,7 +86,7 @@ implements Angerable {
         this.targetSelector.add(1, new TrackIronGolemTargetGoal(this));
         this.targetSelector.add(2, new RevengeGoal(this, new Class[0]));
         this.targetSelector.add(3, new FollowTargetGoal<PlayerEntity>(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
-        this.targetSelector.add(3, new FollowTargetGoal<MobEntity>(this, MobEntity.class, 5, false, false, livingEntity -> livingEntity instanceof Monster && !(livingEntity instanceof CreeperEntity)));
+        this.targetSelector.add(3, new FollowTargetGoal<MobEntity>(this, MobEntity.class, 5, false, false, entity -> entity instanceof Monster && !(entity instanceof CreeperEntity)));
         this.targetSelector.add(4, new UniversalAngerGoal<IronGolemEntity>(this, false));
     }
 
@@ -320,7 +320,7 @@ implements Angerable {
     }
 
     @Override
-    public Vec3d method_29919() {
+    public Vec3d getLeashOffset() {
         return new Vec3d(0.0, 0.875f * this.getStandingEyeHeight(), this.getWidth() * 0.4f);
     }
 

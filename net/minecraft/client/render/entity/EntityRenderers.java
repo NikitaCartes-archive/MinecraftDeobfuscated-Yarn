@@ -118,7 +118,7 @@ import org.apache.logging.log4j.Logger;
 @Environment(value=EnvType.CLIENT)
 public class EntityRenderers {
     private static final Logger LOGGER = LogManager.getLogger();
-    public static final String field_32922 = "default";
+    public static final String DEFAULT = "default";
     private static final Map<EntityType<?>, EntityRendererFactory<?>> rendererFactories = Maps.newHashMap();
     private static final Map<String, EntityRendererFactory<AbstractClientPlayerEntity>> playerRendererFactories = ImmutableMap.of("default", context -> new PlayerEntityRenderer(context, false), "slim", context -> new PlayerEntityRenderer(context, true));
 

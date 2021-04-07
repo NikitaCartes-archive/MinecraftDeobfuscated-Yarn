@@ -190,7 +190,7 @@ public class AreaHelper {
     public static TeleportTarget getNetherTeleportTarget(ServerWorld destination, PortalUtil.Rectangle portalRect, Direction.Axis portalAxis, Vec3d offset, EntityDimensions dimensions, Vec3d velocity, float yaw, float pitch) {
         BlockPos blockPos = portalRect.lowerLeft;
         BlockState blockState = destination.getBlockState(blockPos);
-        Direction.Axis axis = blockState.get(Properties.HORIZONTAL_AXIS);
+        Direction.Axis axis = blockState.getOrEmpty(Properties.HORIZONTAL_AXIS).orElse(Direction.Axis.X);
         double d = portalRect.width;
         double e = portalRect.height;
         int i = portalAxis == axis ? 0 : 90;

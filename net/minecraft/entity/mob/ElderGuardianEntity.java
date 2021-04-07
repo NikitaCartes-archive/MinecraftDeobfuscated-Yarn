@@ -67,14 +67,14 @@ extends GuardianEntity {
         int i = 1200;
         if ((this.age + this.getId()) % 1200 == 0) {
             StatusEffect statusEffect = StatusEffects.MINING_FATIGUE;
-            List<ServerPlayerEntity> list = ((ServerWorld)this.world).getPlayers(serverPlayerEntity -> this.squaredDistanceTo((Entity)serverPlayerEntity) < 2500.0 && serverPlayerEntity.interactionManager.isSurvivalLike());
+            List<ServerPlayerEntity> list = ((ServerWorld)this.world).getPlayers(player -> this.squaredDistanceTo((Entity)player) < 2500.0 && player.interactionManager.isSurvivalLike());
             int j = 2;
             int k = 6000;
             int l = 1200;
-            for (ServerPlayerEntity serverPlayerEntity2 : list) {
-                if (serverPlayerEntity2.hasStatusEffect(statusEffect) && serverPlayerEntity2.getStatusEffect(statusEffect).getAmplifier() >= 2 && serverPlayerEntity2.getStatusEffect(statusEffect).getDuration() >= 1200) continue;
-                serverPlayerEntity2.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.ELDER_GUARDIAN_EFFECT, this.isSilent() ? GameStateChangeS2CPacket.DEMO_OPEN_SCREEN : (int)1.0f));
-                serverPlayerEntity2.addStatusEffect(new StatusEffectInstance(statusEffect, 6000, 2));
+            for (ServerPlayerEntity serverPlayerEntity : list) {
+                if (serverPlayerEntity.hasStatusEffect(statusEffect) && serverPlayerEntity.getStatusEffect(statusEffect).getAmplifier() >= 2 && serverPlayerEntity.getStatusEffect(statusEffect).getDuration() >= 1200) continue;
+                serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.ELDER_GUARDIAN_EFFECT, this.isSilent() ? GameStateChangeS2CPacket.DEMO_OPEN_SCREEN : (int)1.0f));
+                serverPlayerEntity.addStatusEffect(new StatusEffectInstance(statusEffect, 6000, 2));
             }
         }
         if (!this.hasPositionTarget()) {

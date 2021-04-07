@@ -36,7 +36,7 @@ extends PathNode {
         this.reached = true;
     }
 
-    public boolean method_35501() {
+    public boolean isReached() {
         return this.reached;
     }
 

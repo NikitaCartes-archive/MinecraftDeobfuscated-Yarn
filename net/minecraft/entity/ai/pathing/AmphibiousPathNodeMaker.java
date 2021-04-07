@@ -23,12 +23,12 @@ import org.jetbrains.annotations.Nullable;
 
 public class AmphibiousPathNodeMaker
 extends LandPathNodeMaker {
-    private final boolean field_28358;
+    private final boolean penaliseDeepWater;
     private float oldWalkablePenalty;
     private float oldWaterBorderPenalty;
 
-    public AmphibiousPathNodeMaker(boolean bl) {
-        this.field_28358 = bl;
+    public AmphibiousPathNodeMaker(boolean penaliseDeepWater) {
+        this.penaliseDeepWater = penaliseDeepWater;
     }
 
     @Override
@@ -135,7 +135,7 @@ extends LandPathNodeMaker {
             pathNode.penalty = Math.max(pathNode.penalty, f);
         }
         if (pathNodeType == PathNodeType.WATER || pathNodeType == PathNodeType.WALKABLE) {
-            if (this.field_28358 && y < this.entity.world.getSeaLevel() - 10 && pathNode != null) {
+            if (this.penaliseDeepWater && y < this.entity.world.getSeaLevel() - 10 && pathNode != null) {
                 pathNode.penalty += 1.0f;
             }
             return pathNode;

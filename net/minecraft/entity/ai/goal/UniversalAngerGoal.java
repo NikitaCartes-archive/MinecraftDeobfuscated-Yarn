@@ -17,7 +17,7 @@ import net.minecraft.world.GameRules;
 
 public class UniversalAngerGoal<T extends MobEntity>
 extends Goal {
-    private static final int field_30232 = 10;
+    private static final int BOX_VERTICAL_EXPANSION = 10;
     private final T mob;
     private final boolean triggerOthers;
     private int lastAttackedTime;

@@ -167,14 +167,14 @@ AutoCloseable {
     private final MinecraftClient client;
     private final TextureManager textureManager;
     private final EntityRenderDispatcher entityRenderDispatcher;
-    private final BlockEntityRenderDispatcher field_27741;
+    private final BlockEntityRenderDispatcher blockEntityRenderDispatcher;
     private final BufferBuilderStorage bufferBuilders;
     private ClientWorld world;
     private Set<ChunkBuilder.BuiltChunk> chunksToRebuild = Sets.newLinkedHashSet();
     private final ObjectArrayList<ChunkInfo> visibleChunks = new ObjectArrayList();
     private final Set<BlockEntity> noCullingBlockEntities = Sets.newHashSet();
     private BuiltChunkStorage chunks;
-    private class_5972 field_29619;
+    private ChunkInfoList chunkInfos;
     @Nullable
     private VertexBuffer starsBuffer;
     @Nullable
@@ -225,7 +225,7 @@ AutoCloseable {
     private int viewDistance = -1;
     private int regularEntityCount;
     private int blockEntityCount;
-    private Frustum field_27740;
+    private Frustum frustum;
     private boolean shouldCaptureFrustum;
     @Nullable
     private Frustum capturedFrustum;
@@ -243,7 +243,7 @@ AutoCloseable {
     public WorldRenderer(MinecraftClient client, BufferBuilderStorage bufferBuilderStorage) {
         this.client = client;
         this.entityRenderDispatcher = client.getEntityRenderDispatcher();
-        this.field_27741 = client.getBlockEntityRenderDispatcher();
+        this.blockEntityRenderDispatcher = client.getBlockEntityRenderDispatcher();
         this.bufferBuilders = bufferBuilderStorage;
         this.textureManager = client.getTextureManager();
         for (int i = 0; i < 32; ++i) {
@@ -669,7 +669,7 @@ AutoCloseable {
             this.noCullingBlockEntities.clear();
         }
         this.chunks = new BuiltChunkStorage(this.chunkBuilder, this.world, this.client.options.viewDistance, this);
-        this.field_29619 = new class_5972(this.chunks.chunks.length);
+        this.chunkInfos = new ChunkInfoList(this.chunks.chunks.length);
         if (this.world != null && (entity = this.client.getCameraEntity()) != null) {
             this.chunks.updateCameraPosition(entity.getX(), entity.getZ());
         }
@@ -818,7 +818,7 @@ AutoCloseable {
         }
         this.client.getProfiler().push("iteration");
         k = this.client.options.viewDistance;
-        this.field_29619.method_34818();
+        this.chunkInfos.update();
         while (!queue.isEmpty()) {
             ChunkInfo chunkInfo2 = (ChunkInfo)queue.poll();
             ChunkBuilder.BuiltChunk builtChunk3 = chunkInfo2.chunk;
@@ -827,11 +827,11 @@ AutoCloseable {
                 ChunkInfo chunkInfo22;
                 ChunkBuilder.BuiltChunk builtChunk4 = this.getAdjacentChunk(blockPos2, builtChunk3, direction);
                 if (bl2 && chunkInfo2.canCull(direction.getOpposite())) continue;
-                if (bl2 && chunkInfo2.method_34813()) {
+                if (bl2 && chunkInfo2.hasAnyDirection()) {
                     ChunkBuilder.ChunkData chunkData = builtChunk3.getData();
                     boolean bl3 = false;
                     for (int p = 0; p < DIRECTIONS.length; ++p) {
-                        if (!chunkInfo2.method_34814(p) || !chunkData.isVisibleThrough(DIRECTIONS[p].getOpposite(), direction)) continue;
+                        if (!chunkInfo2.hasDirection(p) || !chunkData.isVisibleThrough(DIRECTIONS[p].getOpposite(), direction)) continue;
                         bl3 = true;
                         break;
                     }
@@ -839,16 +839,16 @@ AutoCloseable {
                 }
                 if (builtChunk4 == null || !builtChunk4.shouldBuild()) continue;
                 if (!builtChunk4.setRebuildFrame(i)) {
-                    chunkInfo22 = this.field_29619.method_34820(builtChunk4);
+                    chunkInfo22 = this.chunkInfos.getInfo(builtChunk4);
                     if (chunkInfo22 == null) continue;
-                    chunkInfo22.method_34816(direction);
+                    chunkInfo22.addDirection(direction);
                     continue;
                 }
                 if (!frustum.isVisible(builtChunk4.boundingBox)) continue;
                 chunkInfo22 = new ChunkInfo(builtChunk4, direction, chunkInfo2.propagationLevel + 1);
                 chunkInfo22.updateCullingState(chunkInfo2.cullingState, direction);
                 queue.add(chunkInfo22);
-                this.field_29619.method_34821(builtChunk4, chunkInfo22);
+                this.chunkInfos.setInfo(builtChunk4, chunkInfo22);
             }
         }
         this.client.getProfiler().pop();
@@ -891,13 +891,13 @@ AutoCloseable {
         }
     }
 
-    public void method_32133(MatrixStack matrixStack, Vec3d vec3d, Matrix4f matrix4f) {
-        Matrix4f matrix4f2 = matrixStack.peek().getModel();
-        double d = vec3d.getX();
-        double e = vec3d.getY();
-        double f = vec3d.getZ();
-        this.field_27740 = new Frustum(matrix4f2, matrix4f);
-        this.field_27740.setPosition(d, e, f);
+    public void setupFrustum(MatrixStack matrices, Vec3d pos, Matrix4f projectionMatrix) {
+        Matrix4f matrix4f = matrices.peek().getModel();
+        double d = pos.getX();
+        double e = pos.getY();
+        double f = pos.getZ();
+        this.frustum = new Frustum(matrix4f, projectionMatrix);
+        this.frustum.setPosition(d, e, f);
     }
 
     /*
@@ -909,7 +909,7 @@ AutoCloseable {
         Frustum frustum;
         boolean bl;
         RenderSystem.setShaderGameTime(this.world.getTime(), tickDelta);
-        this.field_27741.configure(this.world, camera, this.client.crosshairTarget);
+        this.blockEntityRenderDispatcher.configure(this.world, camera, this.client.crosshairTarget);
         this.entityRenderDispatcher.configure(this.world, camera, this.client.targetedEntity);
         Profiler profiler = this.world.getProfiler();
         profiler.swap("light_updates");
@@ -925,7 +925,7 @@ AutoCloseable {
             frustum = this.capturedFrustum;
             frustum.setPosition(this.capturedFrustumPosition.x, this.capturedFrustumPosition.y, this.capturedFrustumPosition.z);
         } else {
-            frustum = this.field_27740;
+            frustum = this.frustum;
         }
         this.client.getProfiler().swap("captureFrustum");
         if (this.shouldCaptureFrustum) {
@@ -965,7 +965,7 @@ AutoCloseable {
         if (this.world.getSkyProperties().isDarkened()) {
             DiffuseLighting.enableForLevel(matrices.peek().getModel());
         } else {
-            DiffuseLighting.method_27869(matrices.peek().getModel());
+            DiffuseLighting.disableForLevel(matrices.peek().getModel());
         }
         profiler.swap("entities");
         this.regularEntityCount = 0;
@@ -1034,7 +1034,7 @@ AutoCloseable {
                         return vertexConsumer2;
                     };
                 }
-                this.field_27741.render(blockEntity, tickDelta, matrices, vertexConsumerProvider2);
+                this.blockEntityRenderDispatcher.render(blockEntity, tickDelta, matrices, vertexConsumerProvider2);
                 matrices.pop();
             }
         }
@@ -1044,7 +1044,7 @@ AutoCloseable {
                 BlockPos blockPos2 = blockEntity2.getPos();
                 matrices.push();
                 matrices.translate((double)blockPos2.getX() - d, (double)blockPos2.getY() - e, (double)blockPos2.getZ() - f);
-                this.field_27741.render(blockEntity2, tickDelta, matrices, immediate);
+                this.blockEntityRenderDispatcher.render(blockEntity2, tickDelta, matrices, immediate);
                 matrices.pop();
             }
         }
@@ -1304,7 +1304,7 @@ AutoCloseable {
                     int k = i >> 8 & 0xFF;
                     int l = i & 0xFF;
                     for (int m = 0; m < DIRECTIONS.length; ++m) {
-                        if (!chunkInfo.method_34814(m)) continue;
+                        if (!chunkInfo.hasDirection(m)) continue;
                         Direction direction = DIRECTIONS[m];
                         bufferBuilder.vertex(8.0, 8.0, 8.0).color(j, k, l, 255).next();
                         bufferBuilder.vertex(8 - 16 * direction.getOffsetX(), 8 - 16 * direction.getOffsetY(), 8 - 16 * direction.getOffsetZ()).color(j, k, l, 255).next();
@@ -2664,31 +2664,31 @@ AutoCloseable {
     @Environment(value=EnvType.CLIENT)
     public static class ShaderException
     extends RuntimeException {
-        public ShaderException(String string, Throwable throwable) {
-            super(string, throwable);
+        public ShaderException(String message, Throwable cause) {
+            super(message, cause);
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    static class class_5972 {
-        private final ChunkInfo[] field_29620;
-        private final ChunkInfo[] field_29621;
+    static class ChunkInfoList {
+        private final ChunkInfo[] current;
+        private final ChunkInfo[] pending;
 
-        private class_5972(int i) {
-            this.field_29620 = new ChunkInfo[i];
-            this.field_29621 = new ChunkInfo[i];
+        private ChunkInfoList(int size) {
+            this.current = new ChunkInfo[size];
+            this.pending = new ChunkInfo[size];
         }
 
-        private void method_34818() {
-            System.arraycopy(this.field_29621, 0, this.field_29620, 0, this.field_29620.length);
+        private void update() {
+            System.arraycopy(this.pending, 0, this.current, 0, this.current.length);
         }
 
-        public void method_34821(ChunkBuilder.BuiltChunk builtChunk, ChunkInfo chunkInfo) {
-            this.field_29620[builtChunk.field_29641] = chunkInfo;
+        public void setInfo(ChunkBuilder.BuiltChunk chunk, ChunkInfo info) {
+            this.current[chunk.index] = info;
         }
 
-        public ChunkInfo method_34820(ChunkBuilder.BuiltChunk builtChunk) {
-            return this.field_29620[builtChunk.field_29641];
+        public ChunkInfo getInfo(ChunkBuilder.BuiltChunk chunk) {
+            return this.current[chunk.index];
         }
     }
 
@@ -2699,12 +2699,12 @@ AutoCloseable {
         private byte cullingState;
         private final int propagationLevel;
 
-        private ChunkInfo(ChunkBuilder.BuiltChunk builtChunk, @Nullable Direction direction, int i) {
-            this.chunk = builtChunk;
-            if (direction != null) {
-                this.method_34816(direction);
+        private ChunkInfo(ChunkBuilder.BuiltChunk chunk, @Nullable Direction cull, int propagationLevel) {
+            this.chunk = chunk;
+            if (cull != null) {
+                this.addDirection(cull);
             }
-            this.propagationLevel = i;
+            this.propagationLevel = propagationLevel;
         }
 
         public void updateCullingState(byte parentCullingState, Direction from) {
@@ -2715,15 +2715,15 @@ AutoCloseable {
             return (this.cullingState & 1 << from.ordinal()) > 0;
         }
 
-        public void method_34816(Direction direction) {
+        public void addDirection(Direction direction) {
             this.direction = (byte)(this.direction | (this.direction | 1 << direction.ordinal()));
         }
 
-        public boolean method_34814(int i) {
-            return (this.direction & 1 << i) > 0;
+        public boolean hasDirection(int ordinal) {
+            return (this.direction & 1 << ordinal) > 0;
         }
 
-        public boolean method_34813() {
+        public boolean hasAnyDirection() {
             return this.direction != 0;
         }
     }

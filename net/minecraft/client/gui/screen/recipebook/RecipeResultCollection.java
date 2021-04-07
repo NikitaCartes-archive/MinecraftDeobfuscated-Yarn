@@ -13,7 +13,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeFinder;
+import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.book.RecipeBook;
 
 @Environment(value=EnvType.CLIENT)
@@ -51,7 +51,7 @@ public class RecipeResultCollection {
         }
     }
 
-    public void computeCraftables(RecipeFinder recipeFinder, int gridWidth, int gridHeight, RecipeBook recipeBook) {
+    public void computeCraftables(RecipeMatcher recipeFinder, int gridWidth, int gridHeight, RecipeBook recipeBook) {
         for (Recipe<?> recipe : this.recipes) {
             boolean bl;
             boolean bl2 = bl = recipe.fits(gridWidth, gridHeight) && recipeBook.contains(recipe);
@@ -60,7 +60,7 @@ public class RecipeResultCollection {
             } else {
                 this.fittingRecipes.remove(recipe);
             }
-            if (bl && recipeFinder.findRecipe(recipe, null)) {
+            if (bl && recipeFinder.match(recipe, null)) {
                 this.craftableRecipes.add(recipe);
                 continue;
             }

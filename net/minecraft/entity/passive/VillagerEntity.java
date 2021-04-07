@@ -128,7 +128,7 @@ VillagerDataContainer {
     private boolean natural;
     private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(MemoryModuleType.HOME, MemoryModuleType.JOB_SITE, MemoryModuleType.POTENTIAL_JOB_SITE, MemoryModuleType.MEETING_POINT, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.VISIBLE_VILLAGER_BABIES, MemoryModuleType.NEAREST_PLAYERS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleType.WALK_TARGET, new MemoryModuleType[]{MemoryModuleType.LOOK_TARGET, MemoryModuleType.INTERACTION_TARGET, MemoryModuleType.BREED_TARGET, MemoryModuleType.PATH, MemoryModuleType.DOORS_TO_CLOSE, MemoryModuleType.NEAREST_BED, MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY, MemoryModuleType.NEAREST_HOSTILE, MemoryModuleType.SECONDARY_JOB_SITE, MemoryModuleType.HIDING_PLACE, MemoryModuleType.HEARD_BELL_TIME, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.LAST_SLEPT, MemoryModuleType.LAST_WOKEN, MemoryModuleType.LAST_WORKED_AT_POI, MemoryModuleType.GOLEM_DETECTED_RECENTLY});
     private static final ImmutableList<SensorType<? extends Sensor<? super VillagerEntity>>> SENSORS = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS, SensorType.NEAREST_BED, SensorType.HURT_BY, SensorType.VILLAGER_HOSTILES, SensorType.VILLAGER_BABIES, SensorType.SECONDARY_POIS, SensorType.GOLEM_DETECTED);
-    public static final Map<MemoryModuleType<GlobalPos>, BiPredicate<VillagerEntity, PointOfInterestType>> POINTS_OF_INTEREST = ImmutableMap.of(MemoryModuleType.HOME, (villagerEntity, pointOfInterestType) -> pointOfInterestType == PointOfInterestType.HOME, MemoryModuleType.JOB_SITE, (villagerEntity, pointOfInterestType) -> villagerEntity.getVillagerData().getProfession().getWorkStation() == pointOfInterestType, MemoryModuleType.POTENTIAL_JOB_SITE, (villagerEntity, pointOfInterestType) -> PointOfInterestType.IS_USED_BY_PROFESSION.test((PointOfInterestType)pointOfInterestType), MemoryModuleType.MEETING_POINT, (villagerEntity, pointOfInterestType) -> pointOfInterestType == PointOfInterestType.MEETING);
+    public static final Map<MemoryModuleType<GlobalPos>, BiPredicate<VillagerEntity, PointOfInterestType>> POINTS_OF_INTEREST = ImmutableMap.of(MemoryModuleType.HOME, (villager, poiType) -> poiType == PointOfInterestType.HOME, MemoryModuleType.JOB_SITE, (villager, poiType) -> villager.getVillagerData().getProfession().getWorkStation() == poiType, MemoryModuleType.POTENTIAL_JOB_SITE, (villager, poiType) -> PointOfInterestType.IS_USED_BY_PROFESSION.test((PointOfInterestType)poiType), MemoryModuleType.MEETING_POINT, (villager, poiType) -> poiType == PointOfInterestType.MEETING);
 
     public VillagerEntity(EntityType<? extends VillagerEntity> entityType, World world) {
         this(entityType, world, VillagerType.PLAINS);
@@ -556,7 +556,7 @@ VillagerDataContainer {
             return;
         }
         ServerWorld serverWorld = (ServerWorld)this.world;
-        optional.get().stream().filter(livingEntity -> livingEntity instanceof InteractionObserver).forEach(livingEntity -> serverWorld.handleInteraction(EntityInteraction.VILLAGER_KILLED, killer, (InteractionObserver)((Object)livingEntity)));
+        optional.get().stream().filter(entity -> entity instanceof InteractionObserver).forEach(livingEntity -> serverWorld.handleInteraction(EntityInteraction.VILLAGER_KILLED, killer, (InteractionObserver)((Object)livingEntity)));
     }
 
     public void releaseTicketFor(MemoryModuleType<GlobalPos> memoryModuleType) {
@@ -564,17 +564,17 @@ VillagerDataContainer {
             return;
         }
         MinecraftServer minecraftServer = ((ServerWorld)this.world).getServer();
-        this.brain.getOptionalMemory(memoryModuleType).ifPresent(globalPos -> {
-            ServerWorld serverWorld = minecraftServer.getWorld(globalPos.getDimension());
+        this.brain.getOptionalMemory(memoryModuleType).ifPresent(pos -> {
+            ServerWorld serverWorld = minecraftServer.getWorld(pos.getDimension());
             if (serverWorld == null) {
                 return;
             }
             PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
-            Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(globalPos.getPos());
+            Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(pos.getPos());
             BiPredicate<VillagerEntity, PointOfInterestType> biPredicate = POINTS_OF_INTEREST.get(memoryModuleType);
             if (optional.isPresent() && biPredicate.test(this, optional.get())) {
-                pointOfInterestStorage.releaseTicket(globalPos.getPos());
-                DebugInfoSender.sendPointOfInterest(serverWorld, globalPos.getPos());
+                pointOfInterestStorage.releaseTicket(pos.getPos());
+                DebugInfoSender.sendPointOfInterest(serverWorld, pos.getPos());
             }
         });
     }
@@ -607,7 +607,7 @@ VillagerDataContainer {
     }
 
     public int getReputation(PlayerEntity player) {
-        return this.gossip.getReputationFor(player.getUuid(), villageGossipType -> true);
+        return this.gossip.getReputationFor(player.getUuid(), gossipType -> true);
     }
 
     private void depleteFood(int amount) {
@@ -779,14 +779,14 @@ VillagerDataContainer {
         this.lastGossipDecayTime = l;
     }
 
-    public void summonGolem(ServerWorld world, long time, int i) {
+    public void summonGolem(ServerWorld world, long time, int requiredCount) {
         if (!this.canSummonGolem(time)) {
             return;
         }
         Box box = this.getBoundingBox().expand(10.0, 10.0, 10.0);
         List<VillagerEntity> list = world.getNonSpectatingEntities(VillagerEntity.class, box);
         List list2 = list.stream().filter(villager -> villager.canSummonGolem(time)).limit(5L).collect(Collectors.toList());
-        if (list2.size() < i) {
+        if (list2.size() < requiredCount) {
             return;
         }
         IronGolemEntity ironGolemEntity = this.spawnIronGolem(world);

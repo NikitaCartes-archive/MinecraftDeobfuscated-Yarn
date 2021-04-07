@@ -3,9 +3,9 @@
  */
 package net.minecraft.recipe;
 
-import net.minecraft.recipe.RecipeFinder;
+import net.minecraft.recipe.RecipeMatcher;
 
 public interface RecipeInputProvider {
-    public void provideRecipeInputs(RecipeFinder var1);
+    public void provideRecipeInputs(RecipeMatcher var1);
 }
 

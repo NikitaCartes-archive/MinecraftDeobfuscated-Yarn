@@ -256,7 +256,7 @@ public abstract class Option {
     });
     public static final CyclingOption<Arm> MAIN_HAND = CyclingOption.create("options.mainHand", Arm.values(), Arm::getOptionName, gameOptions -> gameOptions.mainArm, (gameOptions, option, mainArm) -> {
         gameOptions.mainArm = mainArm;
-        gameOptions.onPlayerModelPartChange();
+        gameOptions.sendClientSettings();
     });
     public static final CyclingOption<NarratorMode> NARRATOR = CyclingOption.create("options.narrator", NarratorMode.values(), narrator -> {
         if (NarratorManager.INSTANCE.isActive()) {

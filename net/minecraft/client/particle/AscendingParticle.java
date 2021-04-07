@@ -16,11 +16,11 @@ public class AscendingParticle
 extends SpriteBillboardParticle {
     private final SpriteProvider spriteProvider;
 
-    protected AscendingParticle(ClientWorld world, double x, double y, double z, float randomVelocityXMultiplier, float randomVelocityYMultiplier, float randomVelocityZMultiplier, double velocityX, double velocityY, double velocityZ, float scaleMultiplier, SpriteProvider spriteProvider, float colorMultiplier, int baseMaxAge, float f, boolean bl) {
+    protected AscendingParticle(ClientWorld world, double x, double y, double z, float randomVelocityXMultiplier, float randomVelocityYMultiplier, float randomVelocityZMultiplier, double velocityX, double velocityY, double velocityZ, float scaleMultiplier, SpriteProvider spriteProvider, float colorMultiplier, int baseMaxAge, float gravityStrength, boolean collidesWithWorld) {
         super(world, x, y, z, 0.0, 0.0, 0.0);
-        float g;
+        float f;
         this.field_28786 = 0.96f;
-        this.gravityStrength = f;
+        this.gravityStrength = gravityStrength;
         this.field_28787 = true;
         this.spriteProvider = spriteProvider;
         this.velocityX *= (double)randomVelocityXMultiplier;
@@ -29,15 +29,15 @@ extends SpriteBillboardParticle {
         this.velocityX += velocityX;
         this.velocityY += velocityY;
         this.velocityZ += velocityZ;
-        this.colorRed = g = world.random.nextFloat() * colorMultiplier;
-        this.colorGreen = g;
-        this.colorBlue = g;
+        this.colorRed = f = world.random.nextFloat() * colorMultiplier;
+        this.colorGreen = f;
+        this.colorBlue = f;
         this.scale *= 0.75f * scaleMultiplier;
         this.maxAge = (int)((double)baseMaxAge / ((double)world.random.nextFloat() * 0.8 + 0.2));
         this.maxAge = (int)((float)this.maxAge * scaleMultiplier);
         this.maxAge = Math.max(this.maxAge, 1);
         this.setSpriteForAge(spriteProvider);
-        this.collidesWithWorld = bl;
+        this.collidesWithWorld = collidesWithWorld;
     }
 
     @Override

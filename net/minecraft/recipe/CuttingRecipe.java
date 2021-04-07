@@ -60,7 +60,7 @@ implements Recipe<Inventory> {
     }
 
     @Override
-    public DefaultedList<Ingredient> getPreviewInputs() {
+    public DefaultedList<Ingredient> getIngredients() {
         DefaultedList<Ingredient> defaultedList = DefaultedList.of();
         defaultedList.add(this.input);
         return defaultedList;
@@ -72,7 +72,7 @@ implements Recipe<Inventory> {
     }
 
     @Override
-    public ItemStack craft(Inventory inv) {
+    public ItemStack craft(Inventory inventory) {
         return this.output.copy();
     }
 

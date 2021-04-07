@@ -269,7 +269,7 @@ extends AnimalEntity {
     }
 
     @Override
-    public Vec3d method_29919() {
+    public Vec3d getLeashOffset() {
         return new Vec3d(0.0, 0.5f * this.getStandingEyeHeight(), this.getWidth() * 0.4f);
     }
 

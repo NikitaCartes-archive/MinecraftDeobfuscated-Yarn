@@ -39,7 +39,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class ModelPredicateProviderRegistry {
     private static final Map<Identifier, ModelPredicateProvider> GLOBAL = Maps.newHashMap();
-    private static final String field_32947 = "CustomModelData";
+    private static final String CUSTOM_MODEL_DATA_KEY = "CustomModelData";
     private static final Identifier DAMAGED_ID = new Identifier("damaged");
     private static final Identifier DAMAGE_ID = new Identifier("damage");
     private static final ModelPredicateProvider DAMAGED_PROVIDER = (itemStack, clientWorld, livingEntity, i) -> itemStack.isDamaged() ? 1.0f : 0.0f;
@@ -79,7 +79,7 @@ public class ModelPredicateProviderRegistry {
     static {
         ModelPredicateProviderRegistry.register(new Identifier("lefthanded"), (itemStack, clientWorld, livingEntity, i) -> livingEntity == null || livingEntity.getMainArm() == Arm.RIGHT ? 0.0f : 1.0f);
         ModelPredicateProviderRegistry.register(new Identifier("cooldown"), (itemStack, clientWorld, livingEntity, i) -> livingEntity instanceof PlayerEntity ? ((PlayerEntity)livingEntity).getItemCooldownManager().getCooldownProgress(itemStack.getItem(), 0.0f) : 0.0f);
-        ModelPredicateProviderRegistry.register(new Identifier("custom_model_data"), (itemStack, clientWorld, livingEntity, i) -> itemStack.hasTag() ? (float)itemStack.getTag().getInt(field_32947) : 0.0f);
+        ModelPredicateProviderRegistry.register(new Identifier("custom_model_data"), (itemStack, clientWorld, livingEntity, i) -> itemStack.hasTag() ? (float)itemStack.getTag().getInt(CUSTOM_MODEL_DATA_KEY) : 0.0f);
         ModelPredicateProviderRegistry.register(Items.BOW, new Identifier("pull"), (itemStack, clientWorld, livingEntity, i) -> {
             if (livingEntity == null) {
                 return 0.0f;

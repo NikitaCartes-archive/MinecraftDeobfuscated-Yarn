@@ -53,8 +53,8 @@ public class TextReorderingProcessor {
         return reverse ? Lists.reverse(list) : list;
     }
 
-    public static TextReorderingProcessor method_36144(StringVisitable stringVisitable) {
-        return TextReorderingProcessor.create(stringVisitable, i -> i, string -> string);
+    public static TextReorderingProcessor create(StringVisitable visitable) {
+        return TextReorderingProcessor.create(visitable, i -> i, string -> string);
     }
 
     public static TextReorderingProcessor create(StringVisitable visitable, Int2IntFunction reverser, UnaryOperator<String> unaryOperator) {

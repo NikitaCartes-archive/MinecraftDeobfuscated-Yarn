@@ -55,7 +55,7 @@ public class TitleScreen
 extends Screen {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final String field_32272 = "Demo_World";
-    public static final String field_32271 = "Copyright Mojang AB. Do not distribute!";
+    public static final String COPYRIGHT = "Copyright Mojang AB. Do not distribute!";
     public static final CubeMapRenderer PANORAMA_CUBE_MAP = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
     private static final Identifier PANORAMA_OVERLAY = new Identifier("textures/gui/title/background/panorama_overlay.png");
     private static final Identifier ACCESSIBILITY_ICON_TEXTURE = new Identifier("textures/gui/accessibility.png");
@@ -113,7 +113,7 @@ extends Screen {
         if (this.splashText == null) {
             this.splashText = this.client.getSplashTextLoader().get();
         }
-        this.copyrightTextWidth = this.textRenderer.getWidth(field_32271);
+        this.copyrightTextWidth = this.textRenderer.getWidth(COPYRIGHT);
         this.copyrightTextX = this.width - this.copyrightTextWidth - 2;
         int i = 24;
         int j = this.height / 4 + 48;
@@ -251,7 +251,7 @@ extends Screen {
             string = string + I18n.translate("menu.modded", new Object[0]);
         }
         TitleScreen.drawStringWithShadow(matrices, this.textRenderer, string, 2, this.height - 10, 0xFFFFFF | l);
-        TitleScreen.drawStringWithShadow(matrices, this.textRenderer, field_32271, this.copyrightTextX, this.height - 10, 0xFFFFFF | l);
+        TitleScreen.drawStringWithShadow(matrices, this.textRenderer, COPYRIGHT, this.copyrightTextX, this.height - 10, 0xFFFFFF | l);
         if (mouseX > this.copyrightTextX && mouseX < this.copyrightTextX + this.copyrightTextWidth && mouseY > this.height - 10 && mouseY < this.height) {
             TitleScreen.fill(matrices, this.copyrightTextX, this.height - 1, this.copyrightTextX + this.copyrightTextWidth, this.height, 0xFFFFFF | l);
         }

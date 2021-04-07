@@ -47,7 +47,7 @@ public class LevelProperties
 implements ServerWorldProperties,
 SaveProperties {
     private static final Logger LOGGER = LogManager.getLogger();
-    protected static final String field_31843 = "WorldGenSettings";
+    protected static final String WORLD_GEN_SETTINGS_KEY = "WorldGenSettings";
     private LevelInfo levelInfo;
     private final GeneratorOptions generatorOptions;
     private final Lifecycle lifecycle;
@@ -148,7 +148,7 @@ SaveProperties {
         levelTag.put("Version", nbtCompound);
         levelTag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
         RegistryReadingOps<NbtElement> registryReadingOps = RegistryReadingOps.of(NbtOps.INSTANCE, registryManager);
-        GeneratorOptions.CODEC.encodeStart(registryReadingOps, this.generatorOptions).resultOrPartial(Util.addPrefix("WorldGenSettings: ", LOGGER::error)).ifPresent(nbtElement -> levelTag.put(field_31843, (NbtElement)nbtElement));
+        GeneratorOptions.CODEC.encodeStart(registryReadingOps, this.generatorOptions).resultOrPartial(Util.addPrefix("WorldGenSettings: ", LOGGER::error)).ifPresent(nbtElement -> levelTag.put(WORLD_GEN_SETTINGS_KEY, (NbtElement)nbtElement));
         levelTag.putInt("GameType", this.levelInfo.getGameMode().getId());
         levelTag.putInt("SpawnX", this.spawnX);
         levelTag.putInt("SpawnY", this.spawnY);

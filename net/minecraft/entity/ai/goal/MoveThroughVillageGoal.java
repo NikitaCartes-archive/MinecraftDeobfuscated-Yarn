@@ -100,7 +100,7 @@ extends Goal {
             PathNode pathNode = this.targetPath.getNode(i);
             BlockPos blockPos22 = new BlockPos(pathNode.x, pathNode.y + 1, pathNode.z);
             if (!DoorBlock.isWoodenDoor(this.mob.world, blockPos22)) continue;
-            this.targetPath = this.mob.getNavigation().findPathTo(pathNode.x, pathNode.y, pathNode.z, 0);
+            this.targetPath = this.mob.getNavigation().findPathTo(pathNode.x, (double)pathNode.y, pathNode.z, 0);
             break;
         }
         return this.targetPath != null;

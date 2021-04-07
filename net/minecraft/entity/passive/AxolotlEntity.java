@@ -68,18 +68,18 @@ import org.jetbrains.annotations.Nullable;
 public class AxolotlEntity
 extends AnimalEntity
 implements Bucketable {
-    public static final int field_30388 = 200;
+    public static final int PLAY_DEAD_TICKS = 200;
     public static final Predicate<LivingEntity> AXOLOTL_NOT_PLAYING_DEAD = entity -> entity.getType() == EntityType.AXOLOTL && !((AxolotlEntity)entity).isPlayingDead();
     protected static final ImmutableList<? extends SensorType<? extends Sensor<? super AxolotlEntity>>> SENSORS = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_ADULT, SensorType.HURT_BY, SensorType.AXOLOTL_ATTACKABLES, SensorType.AXOLOTL_TEMPTATIONS);
     protected static final ImmutableList<? extends MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(MemoryModuleType.BREED_TARGET, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.LOOK_TARGET, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.PATH, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleType.NEAREST_VISIBLE_ADULT, new MemoryModuleType[]{MemoryModuleType.HURT_BY_ENTITY, MemoryModuleType.PLAY_DEAD_TICKS, MemoryModuleType.NEAREST_ATTACKABLE, MemoryModuleType.TEMPTING_PLAYER, MemoryModuleType.TEMPTATION_COOLDOWN_TICKS, MemoryModuleType.IS_TEMPTED, MemoryModuleType.HAS_HUNTING_COOLDOWN});
     private static final TrackedData<Integer> VARIANT = DataTracker.registerData(AxolotlEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Boolean> PLAYING_DEAD = DataTracker.registerData(AxolotlEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> FROM_BUCKET = DataTracker.registerData(AxolotlEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    public static final double field_30389 = 20.0;
-    public static final int field_30390 = 1200;
-    private static final int field_30392 = 6000;
-    public static final String field_30391 = "Variant";
-    private static final int field_30393 = 100;
+    public static final double BUFF_RANGE = 20.0;
+    public static final int BLUE_BABY_CHANCE = 1200;
+    private static final int MAX_AIR = 6000;
+    public static final String VARIANT_KEY = "Variant";
+    private static final int BUFF_DURATION = 100;
 
     public AxolotlEntity(EntityType<? extends AxolotlEntity> entityType, World world) {
         super((EntityType<? extends AnimalEntity>)entityType, world);
@@ -105,14 +105,14 @@ implements Bucketable {
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        nbt.putInt(field_30391, this.getVariant().getId());
+        nbt.putInt(VARIANT_KEY, this.getVariant().getId());
         nbt.putBoolean("FromBucket", this.isFromBucket());
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        this.setVariant(Variant.VARIANTS[nbt.getInt(field_30391)]);
+        this.setVariant(Variant.VARIANTS[nbt.getInt(VARIANT_KEY)]);
         this.setFromBucket(nbt.getBoolean("FromBucket"));
     }
 
@@ -157,7 +157,7 @@ implements Bucketable {
         }
     }
 
-    public boolean method_35176() {
+    public boolean isAirLessThanMax() {
         return this.getAir() < this.getMaxAir();
     }
 
@@ -233,8 +233,8 @@ implements Bucketable {
     }
 
     @Override
-    public double method_33191(LivingEntity livingEntity) {
-        return 1.5 + (double)livingEntity.getWidth() * 2.0;
+    public double squaredAttackRange(LivingEntity target) {
+        return 1.5 + (double)target.getWidth() * 2.0;
     }
 
     @Override
@@ -313,14 +313,14 @@ implements Bucketable {
     public void copyDataToStack(ItemStack stack) {
         Bucketable.copyDataToStack(this, stack);
         NbtCompound nbtCompound = stack.getOrCreateTag();
-        nbtCompound.putInt(field_30391, this.getVariant().getId());
+        nbtCompound.putInt(VARIANT_KEY, this.getVariant().getId());
         nbtCompound.putInt("Age", this.getBreedingAge());
     }
 
     @Override
     public void copyDataFromNbt(NbtCompound nbt) {
         Bucketable.copyDataFromNbt(this, nbt);
-        this.setVariant(Variant.VARIANTS[nbt.getInt(field_30391)]);
+        this.setVariant(Variant.VARIANTS[nbt.getInt(VARIANT_KEY)]);
         if (nbt.contains("Age")) {
             this.setBreedingAge(nbt.getInt("Age"));
         }
@@ -341,29 +341,29 @@ implements Bucketable {
         return !this.isPlayingDead() && super.canTakeDamage();
     }
 
-    public static void method_35175(AxolotlEntity axolotlEntity) {
+    public static void appreciatePlayer(AxolotlEntity axolotl) {
         Entity entity;
         DamageSource damageSource;
-        Optional<LivingEntity> optional = axolotlEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET);
+        Optional<LivingEntity> optional = axolotl.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET);
         if (!optional.isPresent()) {
             return;
         }
-        World world = axolotlEntity.world;
+        World world = axolotl.world;
         LivingEntity livingEntity = optional.get();
         if (livingEntity.isDead() && (damageSource = livingEntity.getRecentDamageSource()) != null && (entity = damageSource.getAttacker()) != null && entity.getType() == EntityType.PLAYER) {
             PlayerEntity playerEntity = (PlayerEntity)entity;
-            List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, axolotlEntity.getBoundingBox().expand(20.0));
+            List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, axolotl.getBoundingBox().expand(20.0));
             if (list.contains(playerEntity)) {
                 AxolotlEntity.buffPlayer(playerEntity);
             }
         }
     }
 
-    public static void buffPlayer(PlayerEntity playerEntity) {
-        StatusEffectInstance statusEffectInstance = playerEntity.getStatusEffect(StatusEffects.REGENERATION);
+    public static void buffPlayer(PlayerEntity player) {
+        StatusEffectInstance statusEffectInstance = player.getStatusEffect(StatusEffects.REGENERATION);
         int i = 100 + (statusEffectInstance != null ? statusEffectInstance.getDuration() : 0);
-        playerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, i, 0));
-        playerEntity.removeStatusEffect(StatusEffects.MINING_FATIGUE);
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, i, 0));
+        player.removeStatusEffect(StatusEffects.MINING_FATIGUE);
     }
 
     @Override

@@ -77,16 +77,16 @@ implements Consumer<Consumer<Advancement>> {
         return task;
     }
 
-    protected static Advancement.Task requireListedBiomesVisited(Advancement.Task task, List<RegistryKey<Biome>> list) {
-        for (RegistryKey<Biome> registryKey : list) {
+    protected static Advancement.Task requireListedBiomesVisited(Advancement.Task task, List<RegistryKey<Biome>> biomes) {
+        for (RegistryKey<Biome> registryKey : biomes) {
             task.criterion(registryKey.getValue().toString(), LocationArrivalCriterion.Conditions.create(LocationPredicate.biome(registryKey)));
         }
         return task;
     }
 
     @Override
-    public /* synthetic */ void accept(Object object) {
-        this.accept((Consumer)object);
+    public /* synthetic */ void accept(Object exporter) {
+        this.accept((Consumer)exporter);
     }
 }
 

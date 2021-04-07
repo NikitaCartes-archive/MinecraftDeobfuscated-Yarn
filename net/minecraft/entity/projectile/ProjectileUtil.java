@@ -93,7 +93,7 @@ public final class ProjectileUtil {
         return new EntityHitResult(entity2);
     }
 
-    public static final void method_7484(Entity entity, float f) {
+    public static void method_7484(Entity entity, float f) {
         Vec3d vec3d = entity.getVelocity();
         if (vec3d.lengthSquared() == 0.0) {
             return;

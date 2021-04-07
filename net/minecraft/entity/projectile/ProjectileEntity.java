@@ -22,7 +22,10 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class ProjectileEntity
 extends Entity {
+    @Nullable
     private UUID ownerUuid;
+    @Nullable
+    private Entity owner;
     private boolean leftOwner;
     private boolean shot;
 
@@ -33,13 +36,18 @@ extends Entity {
     public void setOwner(@Nullable Entity entity) {
         if (entity != null) {
             this.ownerUuid = entity.getUuid();
+            this.owner = entity;
         }
     }
 
     @Nullable
     public Entity getOwner() {
+        if (this.owner != null) {
+            return this.owner;
+        }
         if (this.ownerUuid != null && this.world instanceof ServerWorld) {
-            return ((ServerWorld)this.world).getEntity(this.ownerUuid);
+            this.owner = ((ServerWorld)this.world).getEntity(this.ownerUuid);
+            return this.owner;
         }
         return null;
     }
@@ -126,9 +134,8 @@ extends Entity {
     }
 
     protected void onBlockHit(BlockHitResult blockHitResult) {
-        BlockHitResult blockHitResult2 = blockHitResult;
-        BlockState blockState = this.world.getBlockState(blockHitResult2.getBlockPos());
-        blockState.onProjectileHit(this.world, blockState, blockHitResult2, this);
+        BlockState blockState = this.world.getBlockState(blockHitResult.getBlockPos());
+        blockState.onProjectileHit(this.world, blockState, blockHitResult, this);
     }
 
     @Override

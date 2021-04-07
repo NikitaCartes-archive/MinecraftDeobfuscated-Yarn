@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class TropicalFishEntity
 extends SchoolingFishEntity {
-    public static final String field_30378 = "BucketVariantTag";
+    public static final String BUCKET_VARIANT_TAG_KEY = "BucketVariantTag";
     private static final TrackedData<Integer> VARIANT = DataTracker.registerData(TropicalFishEntity.class, TrackedDataHandlerRegistry.INTEGER);
     public static final int field_30380 = 0;
     public static final int field_30383 = 1;
@@ -101,13 +101,13 @@ extends SchoolingFishEntity {
     public void copyDataToStack(ItemStack stack) {
         super.copyDataToStack(stack);
         NbtCompound nbtCompound = stack.getOrCreateTag();
-        nbtCompound.putInt(field_30378, this.getVariant());
+        nbtCompound.putInt(BUCKET_VARIANT_TAG_KEY, this.getVariant());
     }
 
     @Override
     public void copyDataFromNbt(NbtCompound nbt) {
         super.copyDataFromNbt(nbt);
-        this.setVariant(nbt.getInt(field_30378));
+        this.setVariant(nbt.getInt(BUCKET_VARIANT_TAG_KEY));
     }
 
     @Override

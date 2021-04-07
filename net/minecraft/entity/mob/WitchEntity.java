@@ -63,7 +63,7 @@ implements RangedAttackMob {
     @Override
     protected void initGoals() {
         super.initGoals();
-        this.raidGoal = new RaidGoal<RaiderEntity>(this, RaiderEntity.class, true, livingEntity -> livingEntity != null && this.hasActiveRaid() && livingEntity.getType() != EntityType.WITCH);
+        this.raidGoal = new RaidGoal<RaiderEntity>(this, RaiderEntity.class, true, entity -> entity != null && this.hasActiveRaid() && entity.getType() != EntityType.WITCH);
         this.attackPlayerGoal = new DisableableFollowTargetGoal<PlayerEntity>(this, PlayerEntity.class, 10, true, false, null);
         this.goalSelector.add(1, new SwimGoal(this));
         this.goalSelector.add(2, new ProjectileAttackGoal(this, 1.0, 60, 10.0f));

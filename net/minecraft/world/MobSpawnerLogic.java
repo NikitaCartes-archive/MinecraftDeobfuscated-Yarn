@@ -26,6 +26,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.MobSpawnerEntry;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -136,7 +137,7 @@ public abstract class MobSpawnerLogic {
                 this.updateSpawns(world, pos);
                 return;
             }
-            world.syncWorldEvent(2004, pos, 0);
+            world.syncWorldEvent(WorldEvents.SPAWNER_SPAWNS_MOB, pos, 0);
             if (entity2 instanceof MobEntity) {
                 ((MobEntity)entity2).playSpawnEffects();
             }

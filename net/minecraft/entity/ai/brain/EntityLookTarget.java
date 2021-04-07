@@ -41,7 +41,7 @@ implements LookTarget {
         return true;
     }
 
-    public Entity method_35066() {
+    public Entity getEntity() {
         return this.entity;
     }
 

@@ -139,7 +139,7 @@ public class StructureWeightSampler {
 
     /**
      * Calculates the structure weight for the given position.
-     * <p>The weight increases as x and z approach {@code (0, 0)}, and positive y values make the weight negative while negative y values make the weight positive.</p>
+     * <p>The weight increases as x and z approach {@code (0, 0)}, and positive y values make the weight negative while negative y values make the weight positive.
      */
     private static double calculateStructureWeight(int x, int y, int z) {
         double d = x * x + z * z;

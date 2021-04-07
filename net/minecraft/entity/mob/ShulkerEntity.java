@@ -167,10 +167,10 @@ implements Monster {
     public void tick() {
         super.tick();
         if (!(this.world.isClient || this.hasVehicle() || this.canStay(this.getBlockPos(), this.getAttachedFace()))) {
-            this.method_33348();
+            this.tryAttachOrTeleport();
         }
-        if (this.method_33349()) {
-            this.method_33350();
+        if (this.tickOpenProgress()) {
+            this.moveEntities();
         }
         if (this.world.isClient) {
             if (this.teleportLerpTimer > 0) {
@@ -181,7 +181,7 @@ implements Monster {
         }
     }
 
-    private void method_33348() {
+    private void tryAttachOrTeleport() {
         Direction direction = this.findAttachSide(this.getBlockPos());
         if (direction != null) {
             this.setAttachedFace(direction);
@@ -202,7 +202,7 @@ implements Monster {
         return 0.5f - MathHelper.sin((0.5f + f) * (float)Math.PI) * 0.5f;
     }
 
-    private boolean method_33349() {
+    private boolean tickOpenProgress() {
         this.prevOpenProgress = this.openProgress;
         float f = (float)this.getPeekAmount() * 0.01f;
         if (this.openProgress == f) {
@@ -212,7 +212,7 @@ implements Monster {
         return true;
     }
 
-    private void method_33350() {
+    private void moveEntities() {
         this.refreshPosition();
         float f = ShulkerEntity.method_33342(this.openProgress);
         float g = ShulkerEntity.method_33342(this.prevOpenProgress);
@@ -335,12 +335,12 @@ implements Monster {
         return this.world.isSpaceEmpty(this, box);
     }
 
-    private boolean method_33351(BlockPos blockPos) {
-        BlockState blockState = this.world.getBlockState(blockPos);
+    private boolean method_33351(BlockPos pos) {
+        BlockState blockState = this.world.getBlockState(pos);
         if (blockState.isAir()) {
             return false;
         }
-        boolean bl = blockState.isOf(Blocks.MOVING_PISTON) && blockPos.equals(this.getBlockPos());
+        boolean bl = blockState.isOf(Blocks.MOVING_PISTON) && pos.equals(this.getBlockPos());
         return !bl;
     }
 

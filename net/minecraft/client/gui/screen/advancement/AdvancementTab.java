@@ -60,11 +60,11 @@ extends DrawableHelper {
         this.addWidget(this.rootWidget, root);
     }
 
-    public AdvancementTabType method_35734() {
+    public AdvancementTabType getType() {
         return this.type;
     }
 
-    public int method_35735() {
+    public int getIndex() {
         return this.index;
     }
 
@@ -76,7 +76,7 @@ extends DrawableHelper {
         return this.title;
     }
 
-    public AdvancementDisplay method_35736() {
+    public AdvancementDisplay getDisplay() {
         return this.display;
     }
 

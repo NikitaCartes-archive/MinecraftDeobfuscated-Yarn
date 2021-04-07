@@ -28,7 +28,7 @@ extends ProjectileEntity {
 
     public LlamaSpitEntity(World world, LlamaEntity owner) {
         this((EntityType<? extends LlamaSpitEntity>)EntityType.LLAMA_SPIT, world);
-        super.setOwner(owner);
+        this.setOwner(owner);
         this.setPosition(owner.getX() - (double)(owner.getWidth() + 1.0f) * 0.5 * (double)MathHelper.sin(owner.bodyYaw * ((float)Math.PI / 180)), owner.getEyeY() - (double)0.1f, owner.getZ() + (double)(owner.getWidth() + 1.0f) * 0.5 * (double)MathHelper.cos(owner.bodyYaw * ((float)Math.PI / 180)));
     }
 
@@ -37,9 +37,7 @@ extends ProjectileEntity {
         super.tick();
         Vec3d vec3d = this.getVelocity();
         HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
-        if (hitResult != null) {
-            this.onCollision(hitResult);
-        }
+        this.onCollision(hitResult);
         double d = this.getX() + vec3d.x;
         double e = this.getY() + vec3d.y;
         double f = this.getZ() + vec3d.z;

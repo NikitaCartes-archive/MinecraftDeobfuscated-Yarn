@@ -35,16 +35,16 @@ public class DataCache {
     private final Map<Path, String> newSha1 = Maps.newHashMap();
     private final Set<Path> ignores = Sets.newHashSet();
 
-    public DataCache(Path path2, String string2) throws IOException {
-        this.root = path2;
-        Path path22 = path2.resolve(".cache");
-        Files.createDirectories(path22, new FileAttribute[0]);
-        this.recordFile = path22.resolve(string2);
+    public DataCache(Path root, String name) throws IOException {
+        this.root = root;
+        Path path2 = root.resolve(".cache");
+        Files.createDirectories(path2, new FileAttribute[0]);
+        this.recordFile = path2.resolve(name);
         this.files().forEach(path -> this.oldSha1.put((Path)path, ""));
         if (Files.isReadable(this.recordFile)) {
             IOUtils.readLines(Files.newInputStream(this.recordFile, new OpenOption[0]), Charsets.UTF_8).forEach(string -> {
                 int i = string.indexOf(32);
-                this.oldSha1.put(path2.resolve(string.substring(i + 1)), string.substring(0, i));
+                this.oldSha1.put(root.resolve(string.substring(i + 1)), string.substring(0, i));
             });
         }
     }
@@ -68,9 +68,9 @@ public class DataCache {
         return this.oldSha1.get(path);
     }
 
-    public void updateSha1(Path path, String string) {
-        this.newSha1.put(path, string);
-        if (Objects.equals(this.oldSha1.remove(path), string)) {
+    public void updateSha1(Path path, String sha1) {
+        this.newSha1.put(path, sha1);
+        if (Objects.equals(this.oldSha1.remove(path), sha1)) {
             ++this.unchanged;
         }
     }

@@ -20,10 +20,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class IronGolemWanderAroundGoal
 extends WanderAroundGoal {
-    private static final int field_30213 = 2;
-    private static final int field_30214 = 32;
-    private static final int field_30215 = 10;
-    private static final int field_30216 = 7;
+    private static final int CHUNK_RANGE = 2;
+    private static final int ENTITY_COLLISION_RANGE = 32;
+    private static final int HORIZONTAL_RANGE = 10;
+    private static final int VERTICAL_RANGE = 7;
 
     public IronGolemWanderAroundGoal(PathAwareEntity pathAwareEntity, double d) {
         super(pathAwareEntity, d, 240, false);
@@ -35,29 +35,29 @@ extends WanderAroundGoal {
         Vec3d vec3d;
         float f = this.mob.world.random.nextFloat();
         if (this.mob.world.random.nextFloat() < 0.3f) {
-            return this.method_27925();
+            return this.findRandomInRange();
         }
         if (f < 0.7f) {
-            vec3d = this.method_27926();
+            vec3d = this.findVillagerPos();
             if (vec3d == null) {
-                vec3d = this.method_27927();
+                vec3d = this.findRandomBlockPos();
             }
         } else {
-            vec3d = this.method_27927();
+            vec3d = this.findRandomBlockPos();
             if (vec3d == null) {
-                vec3d = this.method_27926();
+                vec3d = this.findVillagerPos();
             }
         }
-        return vec3d == null ? this.method_27925() : vec3d;
+        return vec3d == null ? this.findRandomInRange() : vec3d;
     }
 
     @Nullable
-    private Vec3d method_27925() {
+    private Vec3d findRandomInRange() {
         return FuzzyTargeting.find(this.mob, 10, 7);
     }
 
     @Nullable
-    private Vec3d method_27926() {
+    private Vec3d findVillagerPos() {
         ServerWorld serverWorld = (ServerWorld)this.mob.world;
         List<VillagerEntity> list = serverWorld.getEntitiesByType(EntityType.VILLAGER, this.mob.getBoundingBox().expand(32.0), this::canVillagerSummonGolem);
         if (list.isEmpty()) {
@@ -69,12 +69,12 @@ extends WanderAroundGoal {
     }
 
     @Nullable
-    private Vec3d method_27927() {
-        ChunkSectionPos chunkSectionPos = this.method_27928();
+    private Vec3d findRandomBlockPos() {
+        ChunkSectionPos chunkSectionPos = this.findRandomChunkPos();
         if (chunkSectionPos == null) {
             return null;
         }
-        BlockPos blockPos = this.method_27923(chunkSectionPos);
+        BlockPos blockPos = this.findRandomPosInChunk(chunkSectionPos);
         if (blockPos == null) {
             return null;
         }
@@ -82,7 +82,7 @@ extends WanderAroundGoal {
     }
 
     @Nullable
-    private ChunkSectionPos method_27928() {
+    private ChunkSectionPos findRandomChunkPos() {
         ServerWorld serverWorld = (ServerWorld)this.mob.world;
         List list = ChunkSectionPos.stream(ChunkSectionPos.from(this.mob), 2).filter(chunkSectionPos -> serverWorld.getOccupiedPointOfInterestDistance((ChunkSectionPos)chunkSectionPos) == 0).collect(Collectors.toList());
         if (list.isEmpty()) {
@@ -92,10 +92,10 @@ extends WanderAroundGoal {
     }
 
     @Nullable
-    private BlockPos method_27923(ChunkSectionPos chunkSectionPos) {
+    private BlockPos findRandomPosInChunk(ChunkSectionPos pos) {
         ServerWorld serverWorld = (ServerWorld)this.mob.world;
         PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
-        List list = pointOfInterestStorage.getInCircle(pointOfInterestType -> true, chunkSectionPos.getCenterPos(), 8, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED).map(PointOfInterest::getPos).collect(Collectors.toList());
+        List list = pointOfInterestStorage.getInCircle(pointOfInterestType -> true, pos.getCenterPos(), 8, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED).map(PointOfInterest::getPos).collect(Collectors.toList());
         if (list.isEmpty()) {
             return null;
         }

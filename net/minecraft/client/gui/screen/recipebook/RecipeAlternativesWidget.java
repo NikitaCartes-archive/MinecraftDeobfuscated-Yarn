@@ -202,7 +202,7 @@ Element {
         }
 
         protected void alignRecipe(Recipe<?> recipe) {
-            this.alignRecipeToGrid(3, 3, -1, recipe, recipe.getPreviewInputs().iterator(), 0);
+            this.alignRecipeToGrid(3, 3, -1, recipe, recipe.getIngredients().iterator(), 0);
         }
 
         @Override
@@ -264,7 +264,7 @@ Element {
 
         @Override
         protected void alignRecipe(Recipe<?> recipe) {
-            ItemStack[] itemStacks = recipe.getPreviewInputs().get(0).getMatchingStacksClient();
+            ItemStack[] itemStacks = recipe.getIngredients().get(0).getMatchingStacksClient();
             this.slots.add(new AlternativeButtonWidget.InputSlot(10, 10, itemStacks));
         }
     }

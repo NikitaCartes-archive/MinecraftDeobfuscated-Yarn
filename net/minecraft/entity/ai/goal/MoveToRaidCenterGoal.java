@@ -20,7 +20,7 @@ import net.minecraft.village.raid.RaidManager;
 
 public class MoveToRaidCenterGoal<T extends RaiderEntity>
 extends Goal {
-    private static final float field_30225 = 1.0f;
+    private static final float WALK_SPEED = 1.0f;
     private final T actor;
 
     public MoveToRaidCenterGoal(T actor) {

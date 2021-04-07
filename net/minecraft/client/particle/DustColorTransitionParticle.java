@@ -21,11 +21,11 @@ extends AbstractDustParticle<DustColorTransitionParticleEffect> {
     private final Vec3f field_28244;
     private final Vec3f field_28245;
 
-    protected DustColorTransitionParticle(ClientWorld world, double d, double e, double f, double g, double h, double i, DustColorTransitionParticleEffect dustColorTransitionParticleEffect, SpriteProvider spriteProvider) {
-        super(world, d, e, f, g, h, i, dustColorTransitionParticleEffect, spriteProvider);
-        float j = this.random.nextFloat() * 0.4f + 0.6f;
-        this.field_28244 = this.method_33073(dustColorTransitionParticleEffect.getFromColor(), j);
-        this.field_28245 = this.method_33073(dustColorTransitionParticleEffect.getToColor(), j);
+    protected DustColorTransitionParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, DustColorTransitionParticleEffect dustColorTransitionParticleEffect, SpriteProvider spriteProvider) {
+        super(world, x, y, z, velocityX, velocityY, velocityZ, dustColorTransitionParticleEffect, spriteProvider);
+        float f = this.random.nextFloat() * 0.4f + 0.6f;
+        this.field_28244 = this.method_33073(dustColorTransitionParticleEffect.getFromColor(), f);
+        this.field_28245 = this.method_33073(dustColorTransitionParticleEffect.getToColor(), f);
     }
 
     private Vec3f method_33073(Vec3f vec3f, float f) {

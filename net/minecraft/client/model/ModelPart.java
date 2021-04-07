@@ -98,23 +98,23 @@ public final class ModelPart {
         matrices.pop();
     }
 
-    public void method_35745(MatrixStack matrixStack, class_6229 arg) {
-        this.method_35746(matrixStack, arg, "");
+    public void forEachCuboid(MatrixStack matrices, CuboidConsumer consumer) {
+        this.forEachCuboid(matrices, consumer, "");
     }
 
-    private void method_35746(MatrixStack matrixStack, class_6229 arg, String string) {
+    private void forEachCuboid(MatrixStack matrices, CuboidConsumer consumer, String path) {
         if (this.cuboids.isEmpty() && this.children.isEmpty()) {
             return;
         }
-        matrixStack.push();
-        this.rotate(matrixStack);
-        MatrixStack.Entry entry = matrixStack.peek();
+        matrices.push();
+        this.rotate(matrices);
+        MatrixStack.Entry entry = matrices.peek();
         for (int i = 0; i < this.cuboids.size(); ++i) {
-            arg.method_35748(entry, string, i, this.cuboids.get(i));
+            consumer.accept(entry, path, i, this.cuboids.get(i));
         }
-        String string22 = string + "/";
-        this.children.forEach((string2, modelPart) -> modelPart.method_35746(matrixStack, arg, string22 + string2));
-        matrixStack.pop();
+        String string = path + "/";
+        this.children.forEach((name, part) -> part.forEachCuboid(matrices, consumer, string + name));
+        matrices.pop();
     }
 
     public void rotate(MatrixStack matrix) {
@@ -277,8 +277,8 @@ public final class ModelPart {
 
     @FunctionalInterface
     @Environment(value=EnvType.CLIENT)
-    public static interface class_6229 {
-        public void method_35748(MatrixStack.Entry var1, String var2, int var3, Cuboid var4);
+    public static interface CuboidConsumer {
+        public void accept(MatrixStack.Entry var1, String var2, int var3, Cuboid var4);
     }
 }
 

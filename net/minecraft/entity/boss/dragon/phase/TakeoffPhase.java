@@ -63,7 +63,7 @@ extends AbstractPhase {
             this.path.next();
             if (!this.path.isFinished()) {
                 double d;
-                BlockPos vec3i = this.path.method_31032();
+                BlockPos vec3i = this.path.getCurrentNodePos();
                 this.path.next();
                 while ((d = (double)((float)vec3i.getY() + this.dragon.getRandom().nextFloat() * 20.0f)) < (double)vec3i.getY()) {
                 }

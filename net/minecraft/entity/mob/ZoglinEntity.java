@@ -176,14 +176,14 @@ Hoglin {
         }
         LivingEntity livingEntity = (LivingEntity)source.getAttacker();
         if (EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(livingEntity) && !LookTargetUtil.isNewTargetTooFar(this, livingEntity, 4.0)) {
-            this.method_26938(livingEntity);
+            this.setAttackTarget(livingEntity);
         }
         return bl;
     }
 
-    private void method_26938(LivingEntity livingEntity) {
+    private void setAttackTarget(LivingEntity entity) {
         this.brain.forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
-        this.brain.remember(MemoryModuleType.ATTACK_TARGET, livingEntity, 200L);
+        this.brain.remember(MemoryModuleType.ATTACK_TARGET, entity, 200L);
     }
 
     public Brain<ZoglinEntity> getBrain() {

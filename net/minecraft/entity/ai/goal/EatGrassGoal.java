@@ -19,7 +19,7 @@ import net.minecraft.world.event.GameEvent;
 
 public class EatGrassGoal
 extends Goal {
-    private static final int field_30203 = 40;
+    private static final int MAX_TIMER = 40;
     private static final Predicate<BlockState> GRASS_PREDICATE = BlockStatePredicate.forBlock(Blocks.GRASS);
     private final MobEntity mob;
     private final World world;

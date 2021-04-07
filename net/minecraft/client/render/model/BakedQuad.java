@@ -24,7 +24,7 @@ public class BakedQuad {
         this.shade = shade;
     }
 
-    public Sprite method_35788() {
+    public Sprite getSprite() {
         return this.sprite;
     }
 

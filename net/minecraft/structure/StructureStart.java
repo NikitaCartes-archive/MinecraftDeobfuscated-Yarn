@@ -78,17 +78,21 @@ implements class_6130 {
 
     public abstract void init(DynamicRegistryManager var1, ChunkGenerator var2, StructureManager var3, ChunkPos var4, Biome var5, C var6, HeightLimitView var7);
 
+    public final BlockBox setBoundingBoxFromChildren() {
+        if (this.boundingBox == null) {
+            this.boundingBox = this.method_36217();
+        }
+        return this.boundingBox;
+    }
+
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public BlockBox setBoundingBoxFromChildren() {
-        if (this.boundingBox == null) {
-            List<StructurePiece> list = this.children;
-            synchronized (list) {
-                this.boundingBox = BlockBox.method_35413(this.children.stream().map(StructurePiece::getBoundingBox)::iterator).orElseThrow(() -> new IllegalStateException("Unable to calculate boundingbox without pieces"));
-            }
+    protected BlockBox method_36217() {
+        List<StructurePiece> list = this.children;
+        synchronized (list) {
+            return BlockBox.method_35413(this.children.stream().map(StructurePiece::getBoundingBox)::iterator).orElseThrow(() -> new IllegalStateException("Unable to calculate boundingbox without pieces"));
         }
-        return this.boundingBox;
     }
 
     public List<StructurePiece> getChildren() {

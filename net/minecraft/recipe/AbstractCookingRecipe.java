@@ -33,12 +33,12 @@ implements Recipe<Inventory> {
     }
 
     @Override
-    public boolean matches(Inventory inv, World world) {
-        return this.input.test(inv.getStack(0));
+    public boolean matches(Inventory inventory, World world) {
+        return this.input.test(inventory.getStack(0));
     }
 
     @Override
-    public ItemStack craft(Inventory inv) {
+    public ItemStack craft(Inventory inventory) {
         return this.output.copy();
     }
 
@@ -48,7 +48,7 @@ implements Recipe<Inventory> {
     }
 
     @Override
-    public DefaultedList<Ingredient> getPreviewInputs() {
+    public DefaultedList<Ingredient> getIngredients() {
         DefaultedList<Ingredient> defaultedList = DefaultedList.of();
         defaultedList.add(this.input);
         return defaultedList;

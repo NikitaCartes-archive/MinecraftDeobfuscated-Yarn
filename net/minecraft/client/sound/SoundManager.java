@@ -49,7 +49,7 @@ public class SoundManager
 extends SinglePreparationResourceReloader<SoundList> {
     public static final Sound MISSING_SOUND = new Sound("meta:missing_sound", 1.0f, 1.0f, 1, Sound.RegistrationType.FILE, false, false, 16);
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final String field_33026 = "sounds.json";
+    private static final String SOUNDS_JSON = "sounds.json";
     private static final Gson GSON = new GsonBuilder().registerTypeHierarchyAdapter(Text.class, new Text.Serializer()).registerTypeAdapter((Type)((Object)SoundEntry.class), new SoundEntryDeserializer()).create();
     private static final TypeToken<Map<String, SoundEntry>> TYPE = new TypeToken<Map<String, SoundEntry>>(){};
     private final Map<Identifier, WeightedSoundSet> sounds = Maps.newHashMap();
@@ -66,7 +66,7 @@ extends SinglePreparationResourceReloader<SoundList> {
         for (String string : resourceManager.getAllNamespaces()) {
             profiler.push(string);
             try {
-                List<Resource> list = resourceManager.getAllResources(new Identifier(string, field_33026));
+                List<Resource> list = resourceManager.getAllResources(new Identifier(string, SOUNDS_JSON));
                 for (Resource resource : list) {
                     profiler.push(resource.getResourcePackName());
                     try (InputStream inputStream = resource.getInputStream();
@@ -79,7 +79,7 @@ extends SinglePreparationResourceReloader<SoundList> {
                         }
                         profiler.pop();
                     } catch (RuntimeException runtimeException) {
-                        LOGGER.warn("Invalid {} in resourcepack: '{}'", (Object)field_33026, (Object)resource.getResourcePackName(), (Object)runtimeException);
+                        LOGGER.warn("Invalid {} in resourcepack: '{}'", (Object)SOUNDS_JSON, (Object)resource.getResourcePackName(), (Object)runtimeException);
                     }
                     profiler.pop();
                 }
@@ -171,20 +171,20 @@ extends SinglePreparationResourceReloader<SoundList> {
         this.soundSystem.updateSoundVolume(category, volume);
     }
 
-    public void stop(SoundInstance soundInstance) {
-        this.soundSystem.stop(soundInstance);
+    public void stop(SoundInstance sound) {
+        this.soundSystem.stop(sound);
     }
 
-    public boolean isPlaying(SoundInstance soundInstance) {
-        return this.soundSystem.isPlaying(soundInstance);
+    public boolean isPlaying(SoundInstance sound) {
+        return this.soundSystem.isPlaying(sound);
     }
 
-    public void registerListener(SoundInstanceListener soundInstanceListener) {
-        this.soundSystem.registerListener(soundInstanceListener);
+    public void registerListener(SoundInstanceListener listener) {
+        this.soundSystem.registerListener(listener);
     }
 
-    public void unregisterListener(SoundInstanceListener soundInstanceListener) {
-        this.soundSystem.unregisterListener(soundInstanceListener);
+    public void unregisterListener(SoundInstanceListener listener) {
+        this.soundSystem.unregisterListener(listener);
     }
 
     public void stopSounds(@Nullable Identifier id, @Nullable SoundCategory soundCategory) {

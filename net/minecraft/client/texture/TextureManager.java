@@ -119,8 +119,8 @@ AutoCloseable {
         return abstractTexture;
     }
 
-    public AbstractTexture method_34590(Identifier identifier, AbstractTexture abstractTexture) {
-        return this.textures.getOrDefault(identifier, abstractTexture);
+    public AbstractTexture getOrDefault(Identifier id, AbstractTexture fallback) {
+        return this.textures.getOrDefault(id, fallback);
     }
 
     public Identifier registerDynamicTexture(String prefix, NativeImageBackedTexture texture) {
@@ -158,7 +158,7 @@ AutoCloseable {
     }
 
     public void destroyTexture(Identifier id) {
-        AbstractTexture abstractTexture = this.method_34590(id, MissingSprite.getMissingSpriteTexture());
+        AbstractTexture abstractTexture = this.getOrDefault(id, MissingSprite.getMissingSpriteTexture());
         if (abstractTexture != MissingSprite.getMissingSpriteTexture()) {
             TextureUtil.releaseTextureId(abstractTexture.getGlId());
         }

@@ -15,11 +15,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class EntityDamageSource
 extends DamageSource {
-    @Nullable
     protected final Entity source;
     private boolean thorns;
 
-    public EntityDamageSource(String name, @Nullable Entity source) {
+    public EntityDamageSource(String name, Entity source) {
         super(name);
         this.source = source;
     }
@@ -34,7 +33,6 @@ extends DamageSource {
     }
 
     @Override
-    @Nullable
     public Entity getAttacker() {
         return this.source;
     }
@@ -51,13 +49,13 @@ extends DamageSource {
 
     @Override
     public boolean isScaledWithDifficulty() {
-        return this.source != null && this.source instanceof LivingEntity && !(this.source instanceof PlayerEntity);
+        return this.source instanceof LivingEntity && !(this.source instanceof PlayerEntity);
     }
 
     @Override
     @Nullable
     public Vec3d getPosition() {
-        return this.source != null ? this.source.getPos() : null;
+        return this.source.getPos();
     }
 
     @Override

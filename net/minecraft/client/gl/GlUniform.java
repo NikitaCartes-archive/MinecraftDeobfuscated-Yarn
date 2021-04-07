@@ -399,7 +399,7 @@ implements AutoCloseable {
     @Override
     public final void set(Matrix4f values) {
         this.floatData.position(0);
-        values.writeToBuffer(this.floatData);
+        values.writeRowFirst(this.floatData);
         this.markStateDirty();
     }
 

@@ -18,7 +18,7 @@ extends WanderAroundGoal {
     @Override
     @Nullable
     protected Vec3d getWanderTarget() {
-        return LookTargetUtil.method_33193(this.mob, 10, 7);
+        return LookTargetUtil.find(this.mob, 10, 7);
     }
 }
 

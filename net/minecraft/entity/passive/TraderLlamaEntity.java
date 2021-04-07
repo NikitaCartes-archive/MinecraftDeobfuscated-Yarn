@@ -62,8 +62,8 @@ extends LlamaEntity {
         this.targetSelector.add(1, new DefendTraderGoal(this));
     }
 
-    public void method_35189(int i) {
-        this.despawnDelay = i;
+    public void setDespawnDelay(int despawnDelay) {
+        this.despawnDelay = despawnDelay;
     }
 
     @Override

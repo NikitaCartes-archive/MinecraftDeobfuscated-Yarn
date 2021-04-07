@@ -31,8 +31,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class FarmerVillagerTask
 extends Task<VillagerEntity> {
-    private static final int field_30124 = 200;
-    public static final float field_30123 = 0.5f;
+    private static final int MAX_RUN_TIME = 200;
+    public static final float WALK_SPEED = 0.5f;
     @Nullable
     private BlockPos currentTarget;
     private long nextResponseTime;

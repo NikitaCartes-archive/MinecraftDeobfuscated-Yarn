@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class AnimalEntity
 extends PassiveEntity {
-    static final int field_30270 = 6000;
+    static final int BREEDING_COOLDOWN = 6000;
     private int loveTicks;
     private UUID lovingPlayer;
 

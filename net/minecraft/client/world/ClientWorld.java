@@ -90,7 +90,10 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class ClientWorld
 extends World {
-    private static final double field_32641 = 0.05;
+    /**
+     * A minor offset applied when spawning particles.
+     */
+    private static final double PARTICLE_Y_OFFSET = 0.05;
     private final EntityList entityList = new EntityList();
     private final ClientEntityManager<Entity> entityManager = new ClientEntityManager<Entity>(Entity.class, new ClientEntityHandler());
     private final ClientPlayNetworkHandler netHandler;
@@ -240,6 +243,7 @@ extends World {
         Entity entity = this.getEntityLookup().get(entityId);
         if (entity != null) {
             entity.setRemoved(removalReason);
+            entity.method_36209();
         }
     }
 

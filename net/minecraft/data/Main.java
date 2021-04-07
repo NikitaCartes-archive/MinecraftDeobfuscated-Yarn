@@ -13,6 +13,7 @@ import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpecBuilder;
+import net.minecraft.SharedConstants;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.SnbtProvider;
 import net.minecraft.data.client.BlockStateDefinitionProvider;
@@ -20,7 +21,7 @@ import net.minecraft.data.dev.NbtProvider;
 import net.minecraft.data.report.BiomeListProvider;
 import net.minecraft.data.report.BlockListProvider;
 import net.minecraft.data.report.CommandSyntaxProvider;
-import net.minecraft.data.report.ItemListProvider;
+import net.minecraft.data.report.RegistryDumpProvider;
 import net.minecraft.data.server.AdvancementsProvider;
 import net.minecraft.data.server.BlockTagsProvider;
 import net.minecraft.data.server.EntityTypeTagsProvider;
@@ -34,7 +35,8 @@ import net.minecraft.obfuscate.DontObfuscate;
 
 public class Main {
     @DontObfuscate
-    public static void main(String[] strings) throws IOException {
+    public static void main(String[] args) throws IOException {
+        SharedConstants.createGameVersion();
         OptionParser optionParser = new OptionParser();
         AbstractOptionSpec optionSpec = optionParser.accepts("help", "Show the help menu").forHelp();
         OptionSpecBuilder optionSpec2 = optionParser.accepts("server", "Include server generators");
@@ -45,7 +47,7 @@ public class Main {
         OptionSpecBuilder optionSpec7 = optionParser.accepts("all", "Include all generators");
         ArgumentAcceptingOptionSpec<String> optionSpec8 = optionParser.accepts("output", "Output folder").withRequiredArg().defaultsTo("generated", (String[])new String[0]);
         ArgumentAcceptingOptionSpec<String> optionSpec9 = optionParser.accepts("input", "Input folder").withRequiredArg();
-        OptionSet optionSet = optionParser.parse(strings);
+        OptionSet optionSet = optionParser.parse(args);
         if (optionSet.has(optionSpec) || !optionSet.hasOptions()) {
             optionParser.printHelpOn(System.out);
             return;
@@ -85,7 +87,7 @@ public class Main {
         }
         if (includeReports) {
             dataGenerator.install(new BlockListProvider(dataGenerator));
-            dataGenerator.install(new ItemListProvider(dataGenerator));
+            dataGenerator.install(new RegistryDumpProvider(dataGenerator));
             dataGenerator.install(new CommandSyntaxProvider(dataGenerator));
             dataGenerator.install(new BiomeListProvider(dataGenerator));
         }

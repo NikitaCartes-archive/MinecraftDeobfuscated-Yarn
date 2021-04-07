@@ -79,9 +79,9 @@ implements BlockStateSupplier {
         return jsonObject2;
     }
 
-    private static List<BlockStateVariant> intersect(List<BlockStateVariant> list, List<BlockStateVariant> list2) {
+    private static List<BlockStateVariant> intersect(List<BlockStateVariant> left, List<BlockStateVariant> right) {
         ImmutableList.Builder builder = ImmutableList.builder();
-        list.forEach(blockStateVariant -> list2.forEach(blockStateVariant2 -> builder.add(BlockStateVariant.union(blockStateVariant, blockStateVariant2))));
+        left.forEach(blockStateVariant -> right.forEach(blockStateVariant2 -> builder.add(BlockStateVariant.union(blockStateVariant, blockStateVariant2))));
         return builder.build();
     }
 

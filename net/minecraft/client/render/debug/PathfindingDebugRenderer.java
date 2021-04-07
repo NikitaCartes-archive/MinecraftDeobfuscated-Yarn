@@ -82,26 +82,26 @@ implements DebugRenderer.Renderer {
             DebugRenderer.drawBox(new Box((float)blockPos.getX() + 0.25f, (float)blockPos.getY() + 0.25f, (double)blockPos.getZ() + 0.25, (float)blockPos.getX() + 0.75f, (float)blockPos.getY() + 0.75f, (float)blockPos.getZ() + 0.75f).offset(-cameraX, -cameraY, -cameraZ), 0.0f, 1.0f, 0.0f, 0.5f);
             for (i = 0; i < path.getLength(); ++i) {
                 PathNode pathNode = path.getNode(i);
-                if (!(PathfindingDebugRenderer.getManhattanDistance(pathNode.getPos(), cameraX, cameraY, cameraZ) <= 80.0f)) continue;
+                if (!(PathfindingDebugRenderer.getManhattanDistance(pathNode.getBlockPos(), cameraX, cameraY, cameraZ) <= 80.0f)) continue;
                 float f = i == path.getCurrentNodeIndex() ? 1.0f : 0.0f;
                 float g = i == path.getCurrentNodeIndex() ? 0.0f : 1.0f;
                 DebugRenderer.drawBox(new Box((float)pathNode.x + 0.5f - nodeSize, (float)pathNode.y + 0.01f * (float)i, (float)pathNode.z + 0.5f - nodeSize, (float)pathNode.x + 0.5f + nodeSize, (float)pathNode.y + 0.25f + 0.01f * (float)i, (float)pathNode.z + 0.5f + nodeSize).offset(-cameraX, -cameraY, -cameraZ), f, 0.0f, g, 0.5f);
             }
         }
         if (bl) {
-            for (PathNode pathNode2 : path.method_22881()) {
-                if (!(PathfindingDebugRenderer.getManhattanDistance(pathNode2.getPos(), cameraX, cameraY, cameraZ) <= 80.0f)) continue;
+            for (PathNode pathNode2 : path.getDebugSecondNodes()) {
+                if (!(PathfindingDebugRenderer.getManhattanDistance(pathNode2.getBlockPos(), cameraX, cameraY, cameraZ) <= 80.0f)) continue;
                 DebugRenderer.drawBox(new Box((float)pathNode2.x + 0.5f - nodeSize / 2.0f, (float)pathNode2.y + 0.01f, (float)pathNode2.z + 0.5f - nodeSize / 2.0f, (float)pathNode2.x + 0.5f + nodeSize / 2.0f, (double)pathNode2.y + 0.1, (float)pathNode2.z + 0.5f + nodeSize / 2.0f).offset(-cameraX, -cameraY, -cameraZ), 1.0f, 0.8f, 0.8f, 0.5f);
             }
-            for (PathNode pathNode2 : path.method_22880()) {
-                if (!(PathfindingDebugRenderer.getManhattanDistance(pathNode2.getPos(), cameraX, cameraY, cameraZ) <= 80.0f)) continue;
+            for (PathNode pathNode2 : path.getDebugNodes()) {
+                if (!(PathfindingDebugRenderer.getManhattanDistance(pathNode2.getBlockPos(), cameraX, cameraY, cameraZ) <= 80.0f)) continue;
                 DebugRenderer.drawBox(new Box((float)pathNode2.x + 0.5f - nodeSize / 2.0f, (float)pathNode2.y + 0.01f, (float)pathNode2.z + 0.5f - nodeSize / 2.0f, (float)pathNode2.x + 0.5f + nodeSize / 2.0f, (double)pathNode2.y + 0.1, (float)pathNode2.z + 0.5f + nodeSize / 2.0f).offset(-cameraX, -cameraY, -cameraZ), 0.8f, 1.0f, 1.0f, 0.5f);
             }
         }
         if (drawLabels) {
             for (i = 0; i < path.getLength(); ++i) {
                 PathNode pathNode = path.getNode(i);
-                if (!(PathfindingDebugRenderer.getManhattanDistance(pathNode.getPos(), cameraX, cameraY, cameraZ) <= 80.0f)) continue;
+                if (!(PathfindingDebugRenderer.getManhattanDistance(pathNode.getBlockPos(), cameraX, cameraY, cameraZ) <= 80.0f)) continue;
                 DebugRenderer.drawString(String.format("%s", new Object[]{pathNode.type}), (double)pathNode.x + 0.5, (double)pathNode.y + 0.75, (double)pathNode.z + 0.5, -1, 0.02f, true, 0.0f, true);
                 DebugRenderer.drawString(String.format(Locale.ROOT, "%.2f", Float.valueOf(pathNode.penalty)), (double)pathNode.x + 0.5, (double)pathNode.y + 0.25, (double)pathNode.z + 0.5, -1, 0.02f, true, 0.0f, true);
             }
@@ -115,7 +115,7 @@ implements DebugRenderer.Renderer {
         bufferBuilder.begin(VertexFormat.DrawMode.LINE_STRIP, VertexFormats.POSITION_COLOR);
         for (int i = 0; i < path.getLength(); ++i) {
             PathNode pathNode = path.getNode(i);
-            if (PathfindingDebugRenderer.getManhattanDistance(pathNode.getPos(), cameraX, cameraY, cameraZ) > 80.0f) continue;
+            if (PathfindingDebugRenderer.getManhattanDistance(pathNode.getBlockPos(), cameraX, cameraY, cameraZ) > 80.0f) continue;
             float f = (float)i / (float)path.getLength() * 0.33f;
             int j = i == 0 ? 0 : MathHelper.hsvToRgb(f, 0.9f, 0.9f);
             int k = j >> 16 & 0xFF;

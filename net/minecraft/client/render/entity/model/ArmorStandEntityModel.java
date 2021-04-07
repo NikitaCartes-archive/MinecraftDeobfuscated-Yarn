@@ -25,10 +25,10 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class ArmorStandEntityModel
 extends ArmorStandArmorEntityModel {
-    private static final String field_32445 = "right_body_stick";
-    private static final String field_32446 = "left_body_stick";
-    private static final String field_32447 = "shoulder_stick";
-    private static final String field_32448 = "base_plate";
+    private static final String RIGHT_BODY_STICK = "right_body_stick";
+    private static final String LEFT_BODY_STICK = "left_body_stick";
+    private static final String SHOULDER_STICK = "shoulder_stick";
+    private static final String BASE_PLATE = "base_plate";
     private final ModelPart rightBodyStick;
     private final ModelPart leftBodyStick;
     private final ModelPart shoulderStick;
@@ -36,10 +36,10 @@ extends ArmorStandArmorEntityModel {
 
     public ArmorStandEntityModel(ModelPart modelPart) {
         super(modelPart);
-        this.rightBodyStick = modelPart.getChild(field_32445);
-        this.leftBodyStick = modelPart.getChild(field_32446);
-        this.shoulderStick = modelPart.getChild(field_32447);
-        this.basePlate = modelPart.getChild(field_32448);
+        this.rightBodyStick = modelPart.getChild(RIGHT_BODY_STICK);
+        this.leftBodyStick = modelPart.getChild(LEFT_BODY_STICK);
+        this.shoulderStick = modelPart.getChild(SHOULDER_STICK);
+        this.basePlate = modelPart.getChild(BASE_PLATE);
         this.hat.visible = false;
     }
 
@@ -52,10 +52,10 @@ extends ArmorStandArmorEntityModel {
         modelPartData.addChild(EntityModelPartNames.LEFT_ARM, ModelPartBuilder.create().uv(32, 16).mirrored().cuboid(0.0f, -2.0f, -1.0f, 2.0f, 12.0f, 2.0f), ModelTransform.pivot(5.0f, 2.0f, 0.0f));
         modelPartData.addChild(EntityModelPartNames.RIGHT_LEG, ModelPartBuilder.create().uv(8, 0).cuboid(-1.0f, 0.0f, -1.0f, 2.0f, 11.0f, 2.0f), ModelTransform.pivot(-1.9f, 12.0f, 0.0f));
         modelPartData.addChild(EntityModelPartNames.LEFT_LEG, ModelPartBuilder.create().uv(40, 16).mirrored().cuboid(-1.0f, 0.0f, -1.0f, 2.0f, 11.0f, 2.0f), ModelTransform.pivot(1.9f, 12.0f, 0.0f));
-        modelPartData.addChild(field_32445, ModelPartBuilder.create().uv(16, 0).cuboid(-3.0f, 3.0f, -1.0f, 2.0f, 7.0f, 2.0f), ModelTransform.NONE);
-        modelPartData.addChild(field_32446, ModelPartBuilder.create().uv(48, 16).cuboid(1.0f, 3.0f, -1.0f, 2.0f, 7.0f, 2.0f), ModelTransform.NONE);
-        modelPartData.addChild(field_32447, ModelPartBuilder.create().uv(0, 48).cuboid(-4.0f, 10.0f, -1.0f, 8.0f, 2.0f, 2.0f), ModelTransform.NONE);
-        modelPartData.addChild(field_32448, ModelPartBuilder.create().uv(0, 32).cuboid(-6.0f, 11.0f, -6.0f, 12.0f, 1.0f, 12.0f), ModelTransform.pivot(0.0f, 12.0f, 0.0f));
+        modelPartData.addChild(RIGHT_BODY_STICK, ModelPartBuilder.create().uv(16, 0).cuboid(-3.0f, 3.0f, -1.0f, 2.0f, 7.0f, 2.0f), ModelTransform.NONE);
+        modelPartData.addChild(LEFT_BODY_STICK, ModelPartBuilder.create().uv(48, 16).cuboid(1.0f, 3.0f, -1.0f, 2.0f, 7.0f, 2.0f), ModelTransform.NONE);
+        modelPartData.addChild(SHOULDER_STICK, ModelPartBuilder.create().uv(0, 48).cuboid(-4.0f, 10.0f, -1.0f, 8.0f, 2.0f, 2.0f), ModelTransform.NONE);
+        modelPartData.addChild(BASE_PLATE, ModelPartBuilder.create().uv(0, 32).cuboid(-6.0f, 11.0f, -6.0f, 12.0f, 1.0f, 12.0f), ModelTransform.pivot(0.0f, 12.0f, 0.0f));
         return TexturedModelData.of(modelData, 64, 64);
     }
 

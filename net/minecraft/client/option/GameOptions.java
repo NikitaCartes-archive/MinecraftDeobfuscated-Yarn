@@ -506,7 +506,7 @@ public class GameOptions {
         } catch (Exception exception) {
             LOGGER.error("Failed to save options", (Throwable)exception);
         }
-        this.onPlayerModelPartChange();
+        this.sendClientSettings();
     }
 
     public float getSoundVolume(SoundCategory category) {
@@ -518,7 +518,14 @@ public class GameOptions {
         this.client.getSoundManager().updateSoundVolume(category, volume);
     }
 
-    public void onPlayerModelPartChange() {
+    /**
+     * Sends the current client settings to the server if the client is
+     * connected to a server.
+     * 
+     * <p>Called when a player joins the game or when client settings are
+     * changed.
+     */
+    public void sendClientSettings() {
         if (this.client.player != null) {
             int i = 0;
             for (PlayerModelPart playerModelPart : this.enabledPlayerModelParts) {
@@ -542,7 +549,7 @@ public class GameOptions {
 
     public void togglePlayerModelPart(PlayerModelPart part, boolean enabled) {
         this.setPlayerModelPart(part, enabled);
-        this.onPlayerModelPartChange();
+        this.sendClientSettings();
     }
 
     public CloudRenderMode getCloudRenderMode() {

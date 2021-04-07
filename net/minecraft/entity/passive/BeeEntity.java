@@ -424,7 +424,7 @@ Flutterer {
     }
 
     @Debug
-    public GoalSelector method_35163() {
+    public GoalSelector getGoalSelector() {
         return this.goalSelector;
     }
 
@@ -637,7 +637,7 @@ Flutterer {
     }
 
     @Override
-    public Vec3d method_29919() {
+    public Vec3d getLeashOffset() {
         return new Vec3d(0.0, 0.5f * this.getStandingEyeHeight(), this.getWidth() * 0.2f);
     }
 

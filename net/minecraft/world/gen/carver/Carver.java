@@ -13,7 +13,6 @@ import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_6108;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -29,16 +28,21 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.carver.CarverConfig;
 import net.minecraft.world.gen.carver.CarverContext;
 import net.minecraft.world.gen.carver.CaveCarver;
+import net.minecraft.world.gen.carver.CaveCarverConfig;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.carver.NetherCaveCarver;
 import net.minecraft.world.gen.carver.RavineCarver;
 import net.minecraft.world.gen.carver.RavineCarverConfig;
+import net.minecraft.world.gen.carver.UnderwaterCanyonCarver;
+import net.minecraft.world.gen.carver.UnderwaterCaveCarver;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public abstract class Carver<C extends CarverConfig> {
-    public static final Carver<class_6108> CAVE = Carver.register("cave", new CaveCarver(class_6108.field_31491));
-    public static final Carver<class_6108> NETHER_CAVE = Carver.register("nether_cave", new NetherCaveCarver(class_6108.field_31491));
+    public static final Carver<CaveCarverConfig> CAVE = Carver.register("cave", new CaveCarver(CaveCarverConfig.CAVE_CODEC));
+    public static final Carver<CaveCarverConfig> NETHER_CAVE = Carver.register("nether_cave", new NetherCaveCarver(CaveCarverConfig.CAVE_CODEC));
     public static final Carver<RavineCarverConfig> RAVINE = Carver.register("canyon", new RavineCarver(RavineCarverConfig.RAVINE_CODEC));
+    public static final Carver<RavineCarverConfig> UNDERWATER_CANYON = Carver.register("underwater_canyon", new UnderwaterCanyonCarver(RavineCarverConfig.RAVINE_CODEC));
+    public static final Carver<CaveCarverConfig> UNDERWATER_CAVE = Carver.register("underwater_cave", new UnderwaterCaveCarver(CaveCarverConfig.CAVE_CODEC));
     protected static final BlockState AIR = Blocks.AIR.getDefaultState();
     protected static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
     protected static final FluidState WATER = Fluids.WATER.getDefaultState();
@@ -123,7 +127,7 @@ public abstract class Carver<C extends CarverConfig> {
         if (!this.canCarveBlock(blockState, blockState2) && !Carver.isDebug(config)) {
             return false;
         }
-        if (pos.getY() < ((CarverConfig)config).field_31490.getY(context) && !Carver.isDebug(config)) {
+        if (pos.getY() < ((CarverConfig)config).lavaLevel.getY(context) && !Carver.isDebug(config)) {
             chunk.setBlockState(pos, LAVA.getBlockState(), false);
         } else {
             chunk.setBlockState(pos, Carver.getState(config), false);

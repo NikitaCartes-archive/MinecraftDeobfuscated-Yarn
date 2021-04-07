@@ -13,7 +13,7 @@ import net.minecraft.world.WorldEvents;
 
 public class BreakDoorGoal
 extends DoorInteractGoal {
-    private static final int field_30202 = 240;
+    private static final int MIN_MAX_PROGRESS = 240;
     private final Predicate<Difficulty> difficultySufficientPredicate;
     protected int breakProgress;
     protected int prevBreakProgress = -1;

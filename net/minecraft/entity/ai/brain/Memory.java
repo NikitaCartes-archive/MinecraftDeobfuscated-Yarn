@@ -39,7 +39,7 @@ public class Memory<T> {
         return new Memory<T>(value, expiry);
     }
 
-    public long method_35127() {
+    public long getExpiry() {
         return this.expiry;
     }
 

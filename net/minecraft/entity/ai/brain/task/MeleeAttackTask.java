@@ -27,7 +27,7 @@ extends Task<MobEntity> {
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, MobEntity mobEntity) {
         LivingEntity livingEntity = this.getAttackTarget(mobEntity);
-        return !this.isHoldingUsableRangedWeapon(mobEntity) && LookTargetUtil.isVisibleInMemory(mobEntity, livingEntity) && LookTargetUtil.method_25941(mobEntity, livingEntity);
+        return !this.isHoldingUsableRangedWeapon(mobEntity) && LookTargetUtil.isVisibleInMemory(mobEntity, livingEntity) && LookTargetUtil.isTargetWithinMeleeRange(mobEntity, livingEntity);
     }
 
     private boolean isHoldingUsableRangedWeapon(MobEntity entity) {

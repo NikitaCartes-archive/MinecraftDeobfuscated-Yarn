@@ -34,7 +34,7 @@ extends StructurePieceWithDimensions {
         super(StructurePieceType.SWAMP_HUT, i, 64, j, 7, 7, 9, SwampHutGenerator.method_35457(random));
     }
 
-    public SwampHutGenerator(ServerWorld serverWorld, NbtCompound nbt) {
+    public SwampHutGenerator(ServerWorld world, NbtCompound nbt) {
         super(StructurePieceType.SWAMP_HUT, nbt);
         this.hasWitch = nbt.getBoolean("Witch");
         this.hasCat = nbt.getBoolean("Cat");

@@ -61,15 +61,15 @@ public class Dismounting {
     }
 
     @Nullable
-    public static Vec3d findRespawnPos(EntityType<?> entityType, CollisionView world, BlockPos pos, boolean bl) {
-        if (bl && entityType.isInvalidSpawn(world.getBlockState(pos))) {
+    public static Vec3d findRespawnPos(EntityType<?> entityType, CollisionView world, BlockPos pos, boolean ignoreInvalidPos) {
+        if (ignoreInvalidPos && entityType.isInvalidSpawn(world.getBlockState(pos))) {
             return null;
         }
         double d = world.getDismountHeight(Dismounting.getCollisionShape(world, pos), () -> Dismounting.getCollisionShape(world, pos.down()));
         if (!Dismounting.canDismountInBlock(d)) {
             return null;
         }
-        if (bl && d <= 0.0 && entityType.isInvalidSpawn(world.getBlockState(pos.down()))) {
+        if (ignoreInvalidPos && d <= 0.0 && entityType.isInvalidSpawn(world.getBlockState(pos.down()))) {
             return null;
         }
         Vec3d vec3d = Vec3d.ofCenter(pos, d);

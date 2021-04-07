@@ -57,26 +57,27 @@ public class PortalForcer {
     }
 
     public Optional<PortalUtil.Rectangle> createPortal(BlockPos blockPos, Direction.Axis axis) {
+        int m;
+        int l;
         int k;
-        int j;
         Direction direction = Direction.get(Direction.AxisDirection.POSITIVE, axis);
         double d = -1.0;
         BlockPos blockPos2 = null;
         double e = -1.0;
         BlockPos blockPos3 = null;
         WorldBorder worldBorder = this.world.getWorldBorder();
-        int i = this.world.getBottomY() + this.world.getLogicalHeight() - 1;
+        int i = Math.min(this.world.getTopY(), this.world.getBottomY() + this.world.getLogicalHeight()) - 1;
         BlockPos.Mutable mutable = blockPos.mutableCopy();
         for (BlockPos.Mutable mutable2 : BlockPos.iterateInSquare(blockPos, 16, Direction.EAST, Direction.SOUTH)) {
-            j = Math.min(i, this.world.getTopY(Heightmap.Type.MOTION_BLOCKING, mutable2.getX(), mutable2.getZ()));
+            int j = Math.min(i, this.world.getTopY(Heightmap.Type.MOTION_BLOCKING, mutable2.getX(), mutable2.getZ()));
             k = 1;
             if (!worldBorder.contains(mutable2) || !worldBorder.contains(mutable2.move(direction, 1))) continue;
             mutable2.move(direction.getOpposite(), 1);
-            for (int l = j; l >= this.world.getBottomY(); --l) {
+            for (l = j; l >= this.world.getBottomY(); --l) {
                 int n;
                 mutable2.setY(l);
                 if (!this.world.isAir(mutable2)) continue;
-                int m = l;
+                m = l;
                 while (l > this.world.getBottomY() && this.world.isAir(mutable2.move(Direction.DOWN))) {
                     --l;
                 }
@@ -98,32 +99,37 @@ public class PortalForcer {
             d = e;
         }
         if (d == -1.0) {
-            blockPos2 = new BlockPos(blockPos.getX(), MathHelper.clamp(blockPos.getY(), 70, this.world.getBottomY() + this.world.getLogicalHeight() - 10), blockPos.getZ()).toImmutable();
+            int p = i - 9;
+            int o = Math.max(this.world.getBottomY() - -1, 70);
+            if (p < o) {
+                return Optional.empty();
+            }
+            blockPos2 = new BlockPos(blockPos.getX(), MathHelper.clamp(blockPos.getY(), o, p), blockPos.getZ()).toImmutable();
             Direction direction2 = direction.rotateYClockwise();
             if (!worldBorder.contains(blockPos2)) {
                 return Optional.empty();
             }
-            for (int o = -1; o < 2; ++o) {
-                for (j = 0; j < 2; ++j) {
-                    for (k = -1; k < 3; ++k) {
-                        BlockState blockState = k < 0 ? Blocks.OBSIDIAN.getDefaultState() : Blocks.AIR.getDefaultState();
-                        mutable.set(blockPos2, j * direction.getOffsetX() + o * direction2.getOffsetX(), k, j * direction.getOffsetZ() + o * direction2.getOffsetZ());
+            for (k = -1; k < 2; ++k) {
+                for (l = 0; l < 2; ++l) {
+                    for (m = -1; m < 3; ++m) {
+                        BlockState blockState = m < 0 ? Blocks.OBSIDIAN.getDefaultState() : Blocks.AIR.getDefaultState();
+                        mutable.set(blockPos2, l * direction.getOffsetX() + k * direction2.getOffsetX(), m, l * direction.getOffsetZ() + k * direction2.getOffsetZ());
                         this.world.setBlockState(mutable, blockState);
                     }
                 }
             }
         }
-        for (int p = -1; p < 3; ++p) {
-            for (int o = -1; o < 4; ++o) {
-                if (p != -1 && p != 2 && o != -1 && o != 3) continue;
-                mutable.set(blockPos2, p * direction.getOffsetX(), o, p * direction.getOffsetZ());
+        for (int o = -1; o < 3; ++o) {
+            for (int p = -1; p < 4; ++p) {
+                if (o != -1 && o != 2 && p != -1 && p != 3) continue;
+                mutable.set(blockPos2, o * direction.getOffsetX(), p, o * direction.getOffsetZ());
                 this.world.setBlockState(mutable, Blocks.OBSIDIAN.getDefaultState(), Block.NOTIFY_ALL);
             }
         }
         BlockState blockState2 = (BlockState)Blocks.NETHER_PORTAL.getDefaultState().with(NetherPortalBlock.AXIS, axis);
-        for (int o = 0; o < 2; ++o) {
-            for (j = 0; j < 3; ++j) {
-                mutable.set(blockPos2, o * direction.getOffsetX(), j, o * direction.getOffsetZ());
+        for (int p = 0; p < 2; ++p) {
+            for (int j = 0; j < 3; ++j) {
+                mutable.set(blockPos2, p * direction.getOffsetX(), j, p * direction.getOffsetZ());
                 this.world.setBlockState(mutable, blockState2, Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
             }
         }

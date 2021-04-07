@@ -53,7 +53,7 @@ implements TextureTickListener {
     public static final Identifier BLOCK_ATLAS_TEXTURE = PlayerScreenHandler.BLOCK_ATLAS_TEXTURE;
     @Deprecated
     public static final Identifier PARTICLE_ATLAS_TEXTURE = new Identifier("textures/atlas/particles.png");
-    private static final String field_32957 = ".png";
+    private static final String PNG_EXTENSION = ".png";
     private final List<TextureTickListener> animatedSprites = Lists.newArrayList();
     private final Set<Identifier> spritesToLoad = Sets.newHashSet();
     private final Map<Identifier, Sprite> sprites = Maps.newHashMap();
@@ -86,7 +86,7 @@ implements TextureTickListener {
                 crashReportSection.add("Sprite", sprite);
                 throw new CrashException(crashReport);
             }
-            TextureTickListener textureTickListener = sprite.method_33443();
+            TextureTickListener textureTickListener = sprite.getAnimation();
             if (textureTickListener == null) continue;
             this.animatedSprites.add(textureTickListener);
         }
@@ -212,7 +212,7 @@ implements TextureTickListener {
     }
 
     private Identifier getTexturePath(Identifier id) {
-        return new Identifier(id.getNamespace(), String.format("textures/%s%s", id.getPath(), field_32957));
+        return new Identifier(id.getNamespace(), String.format("textures/%s%s", id.getPath(), PNG_EXTENSION));
     }
 
     public void tickAnimatedSprites() {

@@ -801,11 +801,11 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         public final DefaultedList<ItemStack> itemList = DefaultedList.of();
         private final ScreenHandler field_29349;
 
-        public CreativeScreenHandler(PlayerEntity playerEntity) {
+        public CreativeScreenHandler(PlayerEntity player) {
             super(null, 0);
             int i;
-            this.field_29349 = playerEntity.playerScreenHandler;
-            PlayerInventory playerInventory = playerEntity.getInventory();
+            this.field_29349 = player.playerScreenHandler;
+            PlayerInventory playerInventory = player.getInventory();
             for (i = 0; i < 5; ++i) {
                 for (int j = 0; j < 9; ++j) {
                     this.addSlot(new LockableSlot(INVENTORY, i * 9 + j, 9 + j * 18, 18 + i * 18));

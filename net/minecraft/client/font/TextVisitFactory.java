@@ -93,7 +93,7 @@ public class TextVisitFactory {
     /**
      * Visits the code points of a string, applying the formatting codes within.
      * 
-     * <p>The visit is in forward direction.</p>
+     * <p>The visit is in forward direction.
      * 
      * @return {@code true} if the full string was visited, or {@code false} indicating
      * the {@code visitor} terminated half-way
@@ -109,7 +109,7 @@ public class TextVisitFactory {
     /**
      * Visits the code points of a string, applying the formatting codes within.
      * 
-     * <p>The visit is in forward direction.</p>
+     * <p>The visit is in forward direction.
      * 
      * @return {@code true} if the full string was visited, or {@code false} indicating
      * the {@code visitor} terminated half-way
@@ -125,7 +125,7 @@ public class TextVisitFactory {
     /**
      * Visits the code points of a string, applying the formatting codes within.
      * 
-     * <p>The visit is in forward direction.</p>
+     * <p>The visit is in forward direction.
      * 
      * @return {@code true} if the full string was visited, or {@code false} indicating
      * the {@code visitor} terminated half-way
@@ -178,7 +178,7 @@ public class TextVisitFactory {
      * Visits the code points for every literal string and the formatting codes
      * supplied by the renderable.
      * 
-     * <p>The visit is in forward direction.</p>
+     * <p>The visit is in forward direction.
      * 
      * @return {@code true} if the full string was visited, or {@code false} indicating
      * the {@code visitor} terminated half-way

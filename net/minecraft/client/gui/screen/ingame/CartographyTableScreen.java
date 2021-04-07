@@ -105,15 +105,15 @@ extends HandledScreen<CartographyTableScreenHandler> {
         }
     }
 
-    private void drawMap(MatrixStack matrixStack, @Nullable Integer integer, @Nullable MapState mapState, int i, int j, float f) {
+    private void drawMap(MatrixStack matrices, @Nullable Integer integer, @Nullable MapState mapState, int i, int j, float f) {
         if (integer != null && mapState != null) {
-            matrixStack.push();
-            matrixStack.translate(i, j, 1.0);
-            matrixStack.scale(f, f, 1.0f);
+            matrices.push();
+            matrices.translate(i, j, 1.0);
+            matrices.scale(f, f, 1.0f);
             VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-            this.client.gameRenderer.getMapRenderer().draw(matrixStack, immediate, integer, mapState, true, 0xF000F0);
+            this.client.gameRenderer.getMapRenderer().draw(matrices, immediate, integer, mapState, true, 0xF000F0);
             immediate.draw();
-            matrixStack.pop();
+            matrices.pop();
         }
     }
 }

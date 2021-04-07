@@ -254,6 +254,7 @@ import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.screen.HorseScreenHandler;
 import net.minecraft.screen.MerchantScreenHandler;
+import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundCategory;
@@ -382,7 +383,7 @@ implements ClientPlayPacketListener {
         this.client.player.setReducedDebugInfo(packet.hasReducedDebugInfo());
         this.client.player.setShowsDeathScreen(packet.showsDeathScreen());
         this.client.interactionManager.setGameModes(packet.getGameMode(), packet.getPreviousGameMode());
-        this.client.options.onPlayerModelPartChange();
+        this.client.options.sendClientSettings();
         this.connection.send(new CustomPayloadC2SPacket(CustomPayloadC2SPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(ClientBrandRetriever.getClientModName())));
         this.client.getGame().onStartGameSession();
     }
@@ -706,7 +707,7 @@ implements ClientPlayPacketListener {
     @Override
     public void onGameMessage(GameMessageS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        this.client.inGameHud.addChatMessage(packet.getLocation(), packet.getMessage(), packet.getSenderUuid());
+        this.client.inGameHud.addChatMessage(packet.getLocation(), packet.getMessage(), packet.getSender());
     }
 
     @Override
@@ -930,7 +931,7 @@ implements ClientPlayPacketListener {
                 CreativeInventoryScreen creativeInventoryScreen = (CreativeInventoryScreen)this.client.currentScreen;
                 boolean bl2 = bl = creativeInventoryScreen.getSelectedTab() != ItemGroup.INVENTORY.getIndex();
             }
-            if (packet.getSyncId() == 0 && packet.getSlot() >= 36 && i < 45) {
+            if (packet.getSyncId() == 0 && PlayerScreenHandler.method_36211(i)) {
                 ItemStack itemStack2;
                 if (!itemStack.isEmpty() && ((itemStack2 = playerEntity.playerScreenHandler.getSlot(i).getStack()).isEmpty() || itemStack2.getCount() < itemStack.getCount())) {
                     itemStack.setCooldown(5);
@@ -1758,12 +1759,12 @@ implements ClientPlayPacketListener {
             } else if (CustomPayloadS2CPacket.DEBUG_GAME_EVENT.equals(identifier)) {
                 GameEvent gameEvent = Registry.GAME_EVENT.get(new Identifier(packetByteBuf.readString()));
                 BlockPos blockPos8 = packetByteBuf.readBlockPos();
-                this.client.debugRenderer.gameEventDebugRenderer.method_33087(gameEvent, blockPos8);
+                this.client.debugRenderer.gameEventDebugRenderer.addEvent(gameEvent, blockPos8);
             } else if (CustomPayloadS2CPacket.DEBUG_GAME_EVENT_LISTENERS.equals(identifier)) {
                 Identifier identifier2 = packetByteBuf.readIdentifier();
                 Object positionSource = Registry.POSITION_SOURCE_TYPE.getOrEmpty(identifier2).orElseThrow(() -> new IllegalArgumentException("Unknown position source type " + identifier2)).readFromBuf(packetByteBuf);
                 int j = packetByteBuf.readVarInt();
-                this.client.debugRenderer.gameEventDebugRenderer.method_33088((PositionSource)positionSource, j);
+                this.client.debugRenderer.gameEventDebugRenderer.addListener((PositionSource)positionSource, j);
             } else {
                 LOGGER.warn("Unknown custom packed identifier: {}", (Object)identifier);
             }

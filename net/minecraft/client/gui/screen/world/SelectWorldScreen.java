@@ -126,7 +126,7 @@ extends Screen {
         try {
             WorldListWidget.Entry entry;
             String string = "DEBUG world";
-            if (!this.levelList.children().isEmpty() && (entry = (WorldListWidget.Entry)this.levelList.children().get(0)).method_35740().equals("DEBUG world")) {
+            if (!this.levelList.children().isEmpty() && (entry = (WorldListWidget.Entry)this.levelList.children().get(0)).getLevelDisplayName().equals("DEBUG world")) {
                 entry.method_33685();
             }
             DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();

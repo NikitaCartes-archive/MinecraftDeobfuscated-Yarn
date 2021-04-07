@@ -51,7 +51,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class GuardianEntity
 extends HostileEntity {
-    protected static final int field_30470 = 80;
+    protected static final int WARMUP_TIME = 80;
     private static final TrackedData<Boolean> SPIKES_RETRACTED = DataTracker.registerData(GuardianEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> BEAM_TARGET_ID = DataTracker.registerData(GuardianEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private float tailAngle;
@@ -342,7 +342,7 @@ extends HostileEntity {
             double f = vec3d.y / d;
             double g = vec3d.z / d;
             float h = (float)(MathHelper.atan2(vec3d.z, vec3d.x) * 57.2957763671875) - 90.0f;
-            this.guardian.bodyYaw = this.guardian.yaw = this.changeAngle(this.guardian.yaw, h, 90.0f);
+            this.guardian.bodyYaw = this.guardian.yaw = this.wrapDegrees(this.guardian.yaw, h, 90.0f);
             float i = (float)(this.speed * this.guardian.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
             float j = MathHelper.lerp(0.125f, this.guardian.getMovementSpeed(), i);
             this.guardian.setMovementSpeed(j);

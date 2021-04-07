@@ -175,7 +175,7 @@ extends Entity {
     private final DefaultedList<ItemStack> equippedHand = DefaultedList.ofSize(2, ItemStack.EMPTY);
     private final DefaultedList<ItemStack> equippedArmor = DefaultedList.ofSize(4, ItemStack.EMPTY);
     public boolean handSwinging;
-    private boolean field_30082 = false;
+    private boolean noDrag = false;
     public Hand preferredHand;
     public int handSwingTicks;
     public int stuckArrowTimer;
@@ -459,7 +459,7 @@ extends Entity {
             entityAttributeInstance.addTemporaryModifier(new EntityAttributeModifier(SOUL_SPEED_BOOST_ID, "Soul speed boost", (double)(0.03f * (1.0f + (float)i * 0.35f)), EntityAttributeModifier.Operation.ADDITION));
             if (this.getRandom().nextFloat() < 0.04f) {
                 ItemStack itemStack = this.getEquippedStack(EquipmentSlot.FEET);
-                itemStack.damage(1, this, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.FEET));
+                itemStack.damage(1, this, player -> player.sendEquipmentBreakStatus(EquipmentSlot.FEET));
             }
         }
     }
@@ -632,12 +632,12 @@ extends Entity {
         this.despawnCounter = despawnCounter;
     }
 
-    public boolean method_35053() {
-        return this.field_30082;
+    public boolean hasNoDrag() {
+        return this.noDrag;
     }
 
-    public void method_35054(boolean bl) {
-        this.field_30082 = bl;
+    public void setNoDrag(boolean noDrag) {
+        this.noDrag = noDrag;
     }
 
     protected void onEquipStack(ItemStack stack) {
@@ -986,7 +986,7 @@ extends Entity {
         this.despawnCounter = 0;
         float f = amount;
         if (source.isFallingBlock() && !this.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
-            this.getEquippedStack(EquipmentSlot.HEAD).damage((int)(amount * 4.0f + this.random.nextFloat() * amount * 2.0f), this, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.HEAD));
+            this.getEquippedStack(EquipmentSlot.HEAD).damage((int)(amount * 4.0f + this.random.nextFloat() * amount * 2.0f), this, player -> player.sendEquipmentBreakStatus(EquipmentSlot.HEAD));
             amount *= 0.75f;
         }
         boolean bl = false;
@@ -1028,8 +1028,8 @@ extends Entity {
                 this.attackingPlayer = (PlayerEntity)entity2;
             } else if (entity2 instanceof WolfEntity && (wolfEntity = (WolfEntity)entity2).isTamed()) {
                 this.playerHitTimer = 100;
-                LivingEntity livingEntity2 = wolfEntity.getOwner();
-                this.attackingPlayer = livingEntity2 != null && livingEntity2.getType() == EntityType.PLAYER ? (PlayerEntity)livingEntity2 : null;
+                LivingEntity livingEntity = wolfEntity.getOwner();
+                this.attackingPlayer = livingEntity != null && livingEntity.getType() == EntityType.PLAYER ? (PlayerEntity)livingEntity : null;
             }
         }
         if (bl2) {
@@ -1503,7 +1503,7 @@ extends Entity {
         this.swingHand(hand, false);
     }
 
-    public void swingHand(Hand hand, boolean bl) {
+    public void swingHand(Hand hand, boolean fromServerPlayer) {
         if (!this.handSwinging || this.handSwingTicks >= this.getHandSwingDuration() / 2 || this.handSwingTicks < 0) {
             this.handSwingTicks = -1;
             this.handSwinging = true;
@@ -1511,7 +1511,7 @@ extends Entity {
             if (this.world instanceof ServerWorld) {
                 EntityAnimationS2CPacket entityAnimationS2CPacket = new EntityAnimationS2CPacket(this, hand == Hand.MAIN_HAND ? EntityAnimationS2CPacket.SWING_MAIN_HAND : EntityAnimationS2CPacket.SWING_OFF_HAND);
                 ServerChunkManager serverChunkManager = ((ServerWorld)this.world).getChunkManager();
-                if (bl) {
+                if (fromServerPlayer) {
                     serverChunkManager.sendToNearbyPlayers(this, entityAnimationS2CPacket);
                 } else {
                     serverChunkManager.sendToOtherNearbyPlayers(this, entityAnimationS2CPacket);
@@ -1676,7 +1676,7 @@ extends Entity {
      * <p>This checks both the entity's main and off hand.
      */
     public boolean isHolding(Item item) {
-        return this.isHolding((ItemStack itemStack) -> itemStack.isOf(item));
+        return this.isHolding((ItemStack stack) -> stack.isOf(item));
     }
 
     /**
@@ -1922,7 +1922,7 @@ extends Entity {
                 } else {
                     q = this.getY() > (double)this.world.getBottomY() ? -0.1 : 0.0;
                 }
-                if (this.method_35053()) {
+                if (this.hasNoDrag()) {
                     this.setVelocity(vec3d6.x, q, vec3d6.z);
                 } else {
                     this.setVelocity(vec3d6.x * (double)f, q * (double)0.98f, vec3d6.z * (double)f);
@@ -2327,7 +2327,7 @@ extends Entity {
                 if (!this.world.isClient && i % 10 == 0) {
                     int j = i / 10;
                     if (j % 2 == 0) {
-                        itemStack.damage(1, this, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
+                        itemStack.damage(1, this, player -> player.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
                     }
                     this.emitGameEvent(GameEvent.ELYTRA_FREE_FALL);
                 }
@@ -2394,8 +2394,8 @@ extends Entity {
     protected void attackLivingEntity(LivingEntity target) {
     }
 
-    public void setRiptideTicks(int i) {
-        this.riptideTicks = i;
+    public void setRiptideTicks(int riptideTicks) {
+        this.riptideTicks = riptideTicks;
         if (!this.world.isClient) {
             this.setLivingFlag(4, true);
         }
@@ -2849,19 +2849,19 @@ extends Entity {
     }
 
     private boolean isSleepingInBed() {
-        return this.getSleepingPosition().map(blockPos -> this.world.getBlockState((BlockPos)blockPos).getBlock() instanceof BedBlock).orElse(false);
+        return this.getSleepingPosition().map(pos -> this.world.getBlockState((BlockPos)pos).getBlock() instanceof BedBlock).orElse(false);
     }
 
     public void wakeUp() {
-        this.getSleepingPosition().filter(this.world::isChunkLoaded).ifPresent(blockPos -> {
-            BlockState blockState = this.world.getBlockState((BlockPos)blockPos);
+        this.getSleepingPosition().filter(this.world::isChunkLoaded).ifPresent(pos -> {
+            BlockState blockState = this.world.getBlockState((BlockPos)pos);
             if (blockState.getBlock() instanceof BedBlock) {
-                this.world.setBlockState((BlockPos)blockPos, (BlockState)blockState.with(BedBlock.OCCUPIED, false), Block.NOTIFY_ALL);
-                Vec3d vec3d = BedBlock.findWakeUpPosition(this.getType(), this.world, blockPos, this.yaw).orElseGet(() -> {
-                    BlockPos blockPos2 = blockPos.up();
+                this.world.setBlockState((BlockPos)pos, (BlockState)blockState.with(BedBlock.OCCUPIED, false), Block.NOTIFY_ALL);
+                Vec3d vec3d = BedBlock.findWakeUpPosition(this.getType(), this.world, pos, this.yaw).orElseGet(() -> {
+                    BlockPos blockPos2 = pos.up();
                     return new Vec3d((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.1, (double)blockPos2.getZ() + 0.5);
                 });
-                Vec3d vec3d2 = Vec3d.ofBottomCenter(blockPos).subtract(vec3d).normalize();
+                Vec3d vec3d2 = Vec3d.ofBottomCenter(pos).subtract(vec3d).normalize();
                 float f = (float)MathHelper.wrapDegrees(MathHelper.atan2(vec3d2.z, vec3d2.x) * 57.2957763671875 - 90.0);
                 this.setPosition(vec3d.x, vec3d.y, vec3d.z);
                 this.yaw = f;
@@ -2984,7 +2984,7 @@ extends Entity {
         if (slot == EquipmentSlot.HEAD || slot == EquipmentSlot.MAINHAND || slot == EquipmentSlot.OFFHAND) {
             return CommandItemSlot.of(entity, slot);
         }
-        return CommandItemSlot.of(entity, slot, itemStack -> itemStack.isEmpty() || MobEntity.getPreferredEquipmentSlot(itemStack) == slot);
+        return CommandItemSlot.of(entity, slot, stack -> stack.isEmpty() || MobEntity.getPreferredEquipmentSlot(stack) == slot);
     }
 
     @Nullable

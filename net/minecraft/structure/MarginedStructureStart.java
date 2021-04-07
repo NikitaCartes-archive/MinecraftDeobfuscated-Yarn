@@ -16,8 +16,8 @@ extends StructureStart<C> {
     }
 
     @Override
-    public BlockBox setBoundingBoxFromChildren() {
-        return super.setBoundingBoxFromChildren().expand(12);
+    protected BlockBox method_36217() {
+        return super.method_36217().expand(12);
     }
 }
 

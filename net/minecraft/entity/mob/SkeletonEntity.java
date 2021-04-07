@@ -22,7 +22,7 @@ public class SkeletonEntity
 extends AbstractSkeletonEntity {
     private static final TrackedData<Boolean> CONVERTING = DataTracker.registerData(SkeletonEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     public static final String STRAY_CONVERSION_TIME_KEY = "StrayConversionTime";
-    private int field_28643;
+    private int inPowderSnowTime;
     private int conversionTime;
 
     public SkeletonEntity(EntityType<? extends SkeletonEntity> entityType, World world) {
@@ -60,12 +60,12 @@ extends AbstractSkeletonEntity {
                     this.convertToStray();
                 }
             } else if (this.inPowderSnow) {
-                ++this.field_28643;
-                if (this.field_28643 >= 140) {
+                ++this.inPowderSnowTime;
+                if (this.inPowderSnowTime >= 140) {
                     this.setConversionTime(300);
                 }
             } else {
-                this.field_28643 = -1;
+                this.inPowderSnowTime = -1;
             }
         }
         super.tick();

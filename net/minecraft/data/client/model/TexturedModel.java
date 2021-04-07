@@ -88,7 +88,7 @@ public class TexturedModel {
             return this.get(block).upload(block, suffix, writer);
         }
 
-        default public Factory method_35912(Consumer<Texture> consumer) {
+        default public Factory andThen(Consumer<Texture> consumer) {
             return block -> this.get(block).texture(consumer);
         }
     }

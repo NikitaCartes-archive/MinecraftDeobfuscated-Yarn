@@ -35,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class PlayerSkinProvider {
-    public static final String field_32970 = "textures";
+    public static final String TEXTURES = "textures";
     private final TextureManager textureManager;
     private final File skinCacheDir;
     private final MinecraftSessionService sessionService;
@@ -50,7 +50,7 @@ public class PlayerSkinProvider {
             @Override
             public Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> load(String string) {
                 GameProfile gameProfile = new GameProfile(null, "dummy_mcdummyface");
-                gameProfile.getProperties().put(PlayerSkinProvider.field_32970, new Property(PlayerSkinProvider.field_32970, string, ""));
+                gameProfile.getProperties().put(PlayerSkinProvider.TEXTURES, new Property(PlayerSkinProvider.TEXTURES, string, ""));
                 try {
                     return sessionService.getTextures(gameProfile, false);
                 } catch (Throwable throwable) {
@@ -72,7 +72,7 @@ public class PlayerSkinProvider {
     private Identifier loadSkin(MinecraftProfileTexture profileTexture, MinecraftProfileTexture.Type type, @Nullable SkinTextureAvailableCallback callback) {
         String string = Hashing.sha1().hashUnencodedChars(profileTexture.getHash()).toString();
         Identifier identifier = new Identifier("skins/" + string);
-        AbstractTexture abstractTexture = this.textureManager.method_34590(identifier, MissingSprite.getMissingSpriteTexture());
+        AbstractTexture abstractTexture = this.textureManager.getOrDefault(identifier, MissingSprite.getMissingSpriteTexture());
         if (abstractTexture == MissingSprite.getMissingSpriteTexture()) {
             File file = new File(this.skinCacheDir, string.length() > 2 ? string.substring(0, 2) : "xx");
             File file2 = new File(file, string);
@@ -120,7 +120,7 @@ public class PlayerSkinProvider {
     }
 
     public Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> getTextures(GameProfile gameProfile) {
-        Property property = Iterables.getFirst(gameProfile.getProperties().get(field_32970), null);
+        Property property = Iterables.getFirst(gameProfile.getProperties().get(TEXTURES), null);
         if (property == null) {
             return ImmutableMap.of();
         }

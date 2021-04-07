@@ -19,21 +19,21 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
     }
 
     @Override
-    public void generate(Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, long m, TernarySurfaceConfig ternarySurfaceConfig) {
+    public void generate(Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, int m, long n, TernarySurfaceConfig ternarySurfaceConfig) {
         double e = Biome.FOLIAGE_NOISE.sample((double)i * 0.25, (double)j * 0.25, false);
         if (e > 0.0) {
-            int n = i & 0xF;
-            int o = j & 0xF;
+            int o = i & 0xF;
+            int p = j & 0xF;
             BlockPos.Mutable mutable = new BlockPos.Mutable();
-            for (int p = k; p >= 0; --p) {
-                mutable.set(n, p, o);
+            for (int q = k; q >= m; --q) {
+                mutable.set(o, q, p);
                 if (chunk.getBlockState(mutable).isAir()) continue;
-                if (p != 62 || chunk.getBlockState(mutable).isOf(blockState2.getBlock())) break;
+                if (q != 62 || chunk.getBlockState(mutable).isOf(blockState2.getBlock())) break;
                 chunk.setBlockState(mutable, blockState2, false);
                 break;
             }
         }
-        SurfaceBuilder.DEFAULT.generate(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, ternarySurfaceConfig);
+        SurfaceBuilder.DEFAULT.generate(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, n, ternarySurfaceConfig);
     }
 }
 

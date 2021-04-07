@@ -114,12 +114,10 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
      * @param height height of the column retrieved using {@link net.minecraft.world.Heightmap.Type#WORLD_SURFACE_WG}, and will never be lower than the sea level
      * @param noise noise value at this column. Has a range of {@code (-8, 8)} but follows a normal distribution so most values will be around {@code (-2, 2)}
      * @param defaultBlock default block of the chunk generator, used to know which block to replace with the surface blocks
-     * @param defaultFluid Default fluid of the chunk generator
+     * @param defaultFluid default fluid of the chunk generator
      * @param seaLevel the sea level of the chunk generator
-     * @param seed the world seed
-     * @param surfaceBlocks the config passed to the chunk generator, stores the states used by the surface builder
      */
-    public abstract void generate(Random var1, Chunk var2, Biome var3, int var4, int var5, int var6, double var7, BlockState var9, BlockState var10, int var11, long var12, C var14);
+    public abstract void generate(Random var1, Chunk var2, Biome var3, int var4, int var5, int var6, double var7, BlockState var9, BlockState var10, int var11, int var12, long var13, C var15);
 
     /**
      * Runs before {@link #generate} and allows for custom noise to be initialized.

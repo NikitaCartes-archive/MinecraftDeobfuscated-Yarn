@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class WanderAroundTask
 extends Task<MobEntity> {
-    private static final int field_30150 = 40;
+    private static final int MAX_UPDATE_COUNTDOWN = 40;
     private int pathUpdateCountdownTicks;
     @Nullable
     private Path path;
@@ -35,8 +35,8 @@ extends Task<MobEntity> {
         this(150, 250);
     }
 
-    public WanderAroundTask(int i, int j) {
-        super(ImmutableMap.of(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleState.REGISTERED, MemoryModuleType.PATH, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_PRESENT), i, j);
+    public WanderAroundTask(int minRunTime, int maxRunTime) {
+        super(ImmutableMap.of(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleState.REGISTERED, MemoryModuleType.PATH, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_PRESENT), minRunTime, maxRunTime);
     }
 
     @Override

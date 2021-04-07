@@ -140,7 +140,7 @@ extends PersistentProjectileEntity {
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        if (this.potion != Potions.EMPTY && this.potion != null) {
+        if (this.potion != Potions.EMPTY) {
             nbt.putString("Potion", Registry.POTION.getId(this.potion).toString());
         }
         if (this.colorSet) {

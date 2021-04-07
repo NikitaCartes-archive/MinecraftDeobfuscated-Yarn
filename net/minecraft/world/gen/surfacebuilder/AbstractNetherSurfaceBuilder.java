@@ -31,33 +31,33 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
     }
 
     @Override
-    public void generate(Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, long m, TernarySurfaceConfig ternarySurfaceConfig) {
-        int n = l + 1;
-        int o = i & 0xF;
-        int p = j & 0xF;
-        int q = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
+    public void generate(Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, int m, long n, TernarySurfaceConfig ternarySurfaceConfig) {
+        int o = l + 1;
+        int p = i & 0xF;
+        int q = j & 0xF;
         int r = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
+        int s = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
         double e = 0.03125;
         boolean bl = this.shoreNoise.sample((double)i * 0.03125, 109.0, (double)j * 0.03125) * 75.0 + random.nextDouble() > 0.0;
         BlockState blockState3 = (BlockState)this.underLavaNoises.entrySet().stream().max(Comparator.comparing(entry -> ((OctavePerlinNoiseSampler)entry.getValue()).sample(i, l, j))).get().getKey();
         BlockState blockState4 = (BlockState)this.surfaceNoises.entrySet().stream().max(Comparator.comparing(entry -> ((OctavePerlinNoiseSampler)entry.getValue()).sample(i, l, j))).get().getKey();
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        BlockState blockState5 = chunk.getBlockState(mutable.set(o, 128, p));
-        for (int s = 127; s >= 0; --s) {
-            int t;
-            mutable.set(o, s, p);
+        BlockState blockState5 = chunk.getBlockState(mutable.set(p, 128, q));
+        for (int t = 127; t >= m; --t) {
+            int u;
+            mutable.set(p, t, q);
             BlockState blockState6 = chunk.getBlockState(mutable);
             if (blockState5.isOf(blockState.getBlock()) && (blockState6.isAir() || blockState6 == blockState2)) {
-                for (t = 0; t < q; ++t) {
+                for (u = 0; u < r; ++u) {
                     mutable.move(Direction.UP);
                     if (!chunk.getBlockState(mutable).isOf(blockState.getBlock())) break;
                     chunk.setBlockState(mutable, blockState3, false);
                 }
-                mutable.set(o, s, p);
+                mutable.set(p, t, q);
             }
             if ((blockState5.isAir() || blockState5 == blockState2) && blockState6.isOf(blockState.getBlock())) {
-                for (t = 0; t < r && chunk.getBlockState(mutable).isOf(blockState.getBlock()); ++t) {
-                    if (bl && s >= n - 4 && s <= n + 1) {
+                for (u = 0; u < s && chunk.getBlockState(mutable).isOf(blockState.getBlock()); ++u) {
+                    if (bl && t >= o - 4 && t <= o + 1) {
                         chunk.setBlockState(mutable, this.getLavaShoreState(), false);
                     } else {
                         chunk.setBlockState(mutable, blockState4, false);

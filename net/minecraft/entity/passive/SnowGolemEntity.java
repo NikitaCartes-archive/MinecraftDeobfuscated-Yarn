@@ -138,13 +138,13 @@ RangedAttackMob {
     }
 
     @Override
-    protected ActionResult interactMob(PlayerEntity player, Hand hand) {
-        ItemStack itemStack = player.getStackInHand(hand);
+    protected ActionResult interactMob(PlayerEntity player2, Hand hand) {
+        ItemStack itemStack = player2.getStackInHand(hand);
         if (itemStack.isOf(Items.SHEARS) && this.isShearable()) {
             this.sheared(SoundCategory.PLAYERS);
-            this.emitGameEvent(GameEvent.SHEAR, player);
+            this.emitGameEvent(GameEvent.SHEAR, player2);
             if (!this.world.isClient) {
-                itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+                itemStack.damage(1, player2, player -> player.sendToolBreakStatus(hand));
             }
             return ActionResult.success(this.world.isClient);
         }
@@ -197,7 +197,7 @@ RangedAttackMob {
     }
 
     @Override
-    public Vec3d method_29919() {
+    public Vec3d getLeashOffset() {
         return new Vec3d(0.0, 0.75f * this.getStandingEyeHeight(), this.getWidth() * 0.4f);
     }
 }

@@ -48,7 +48,7 @@ public class MooshroomEntity
 extends CowEntity
 implements Shearable {
     private static final TrackedData<String> TYPE = DataTracker.registerData(MooshroomEntity.class, TrackedDataHandlerRegistry.STRING);
-    private static final int field_30339 = 1024;
+    private static final int MUTATION_CHANCE = 1024;
     private StatusEffect stewEffect;
     private int stewEffectDuration;
     private UUID lightningId;
@@ -86,8 +86,8 @@ implements Shearable {
     }
 
     @Override
-    public ActionResult interactMob(PlayerEntity player, Hand hand) {
-        ItemStack itemStack = player.getStackInHand(hand);
+    public ActionResult interactMob(PlayerEntity player2, Hand hand) {
+        ItemStack itemStack = player2.getStackInHand(hand);
         if (itemStack.isOf(Items.BOWL) && !this.isBaby()) {
             ItemStack itemStack2;
             boolean bl = false;
@@ -100,17 +100,17 @@ implements Shearable {
             } else {
                 itemStack2 = new ItemStack(Items.MUSHROOM_STEW);
             }
-            ItemStack itemStack3 = ItemUsage.exchangeStack(itemStack, player, itemStack2, false);
-            player.setStackInHand(hand, itemStack3);
+            ItemStack itemStack3 = ItemUsage.exchangeStack(itemStack, player2, itemStack2, false);
+            player2.setStackInHand(hand, itemStack3);
             SoundEvent soundEvent = bl ? SoundEvents.ENTITY_MOOSHROOM_SUSPICIOUS_MILK : SoundEvents.ENTITY_MOOSHROOM_MILK;
             this.playSound(soundEvent, 1.0f, 1.0f);
             return ActionResult.success(this.world.isClient);
         }
         if (itemStack.isOf(Items.SHEARS) && this.isShearable()) {
             this.sheared(SoundCategory.PLAYERS);
-            this.emitGameEvent(GameEvent.SHEAR, player);
+            this.emitGameEvent(GameEvent.SHEAR, player2);
             if (!this.world.isClient) {
-                itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+                itemStack.damage(1, player2, player -> player.sendToolBreakStatus(hand));
             }
             return ActionResult.success(this.world.isClient);
         }
@@ -125,7 +125,7 @@ implements Shearable {
                     return ActionResult.PASS;
                 }
                 Pair<StatusEffect, Integer> pair = optional.get();
-                if (!player.getAbilities().creativeMode) {
+                if (!player2.getAbilities().creativeMode) {
                     itemStack.decrement(1);
                 }
                 for (int j = 0; j < 4; ++j) {
@@ -137,7 +137,7 @@ implements Shearable {
             }
             return ActionResult.success(this.world.isClient);
         }
-        return super.interactMob(player, hand);
+        return super.interactMob(player2, hand);
     }
 
     @Override

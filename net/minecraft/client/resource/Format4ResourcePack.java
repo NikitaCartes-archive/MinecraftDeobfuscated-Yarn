@@ -50,7 +50,7 @@ implements ResourcePack {
     public static final int field_32967 = 64;
     public static final int field_32968 = 64;
     public static final Identifier IRON_GOLEM_TEXTURE = new Identifier("textures/entity/iron_golem.png");
-    public static final String field_32969 = "textures/entity/iron_golem/iron_golem.png";
+    public static final String IRON_GOLEM_TEXTURE_PATH = "textures/entity/iron_golem/iron_golem.png";
     private final ResourcePack parent;
 
     public Format4ResourcePack(ResourcePack parent) {
@@ -71,7 +71,7 @@ implements ResourcePack {
         if ("textures/misc/enchanted_item_glint.png".equals(string)) {
             return false;
         }
-        if (field_32969.equals(string)) {
+        if (IRON_GOLEM_TEXTURE_PATH.equals(string)) {
             return this.parent.contains(type, IRON_GOLEM_TEXTURE);
         }
         if ("textures/entity/conduit/wind.png".equals(string) || "textures/entity/conduit/wind_vertical.png".equals(string)) {
@@ -96,7 +96,7 @@ implements ResourcePack {
             return this.parent.open(type, id);
         }
         String string = id.getPath();
-        if (field_32969.equals(string)) {
+        if (IRON_GOLEM_TEXTURE_PATH.equals(string)) {
             return this.parent.open(type, IRON_GOLEM_TEXTURE);
         }
         if (SHIELD_PATTERN_TEXTURES.contains(string)) {

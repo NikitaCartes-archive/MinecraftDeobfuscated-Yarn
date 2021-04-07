@@ -102,7 +102,7 @@ extends PlayerEntity {
 
     public static void loadSkin(Identifier id, String playerName) {
         TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
-        AbstractTexture abstractTexture = textureManager.method_34590(id, MissingSprite.getMissingSpriteTexture());
+        AbstractTexture abstractTexture = textureManager.getOrDefault(id, MissingSprite.getMissingSpriteTexture());
         if (abstractTexture == MissingSprite.getMissingSpriteTexture()) {
             abstractTexture = new PlayerSkinTexture(null, String.format(field_32666, ChatUtil.stripTextFormat(playerName)), DefaultSkinHelper.getTexture(AbstractClientPlayerEntity.getOfflinePlayerUuid(playerName)), true, null);
             textureManager.registerTexture(id, abstractTexture);

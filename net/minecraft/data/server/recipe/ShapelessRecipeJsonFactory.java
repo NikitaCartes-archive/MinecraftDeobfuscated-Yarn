@@ -35,8 +35,8 @@ implements CraftingRecipeJsonFactory {
     private final Advancement.Task builder = Advancement.Task.create();
     private String group;
 
-    public ShapelessRecipeJsonFactory(ItemConvertible itemProvider, int outputCount) {
-        this.output = itemProvider.asItem();
+    public ShapelessRecipeJsonFactory(ItemConvertible output, int outputCount) {
+        this.output = output.asItem();
         this.outputCount = outputCount;
     }
 

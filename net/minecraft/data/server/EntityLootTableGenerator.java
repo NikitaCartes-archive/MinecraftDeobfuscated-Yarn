@@ -169,17 +169,17 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.lootTables.forEach(biConsumer::accept);
     }
 
-    private void register(EntityType<?> entityType, LootTable.Builder builder) {
-        this.register(entityType.getLootTableId(), builder);
+    private void register(EntityType<?> entityType, LootTable.Builder lootTable) {
+        this.register(entityType.getLootTableId(), lootTable);
     }
 
-    private void register(Identifier identifier, LootTable.Builder builder) {
-        this.lootTables.put(identifier, builder);
+    private void register(Identifier entityId, LootTable.Builder lootTable) {
+        this.lootTables.put(entityId, lootTable);
     }
 
     @Override
-    public /* synthetic */ void accept(Object object) {
-        this.accept((BiConsumer)object);
+    public /* synthetic */ void accept(Object exporter) {
+        this.accept((BiConsumer)exporter);
     }
 }
 

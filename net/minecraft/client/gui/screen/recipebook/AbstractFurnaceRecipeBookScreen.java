@@ -41,7 +41,7 @@ extends RecipeBookWidget {
         ItemStack itemStack = recipe.getOutput();
         this.ghostSlots.setRecipe(recipe);
         this.ghostSlots.addSlot(Ingredient.ofStacks(itemStack), slots.get((int)2).x, slots.get((int)2).y);
-        DefaultedList<Ingredient> defaultedList = recipe.getPreviewInputs();
+        DefaultedList<Ingredient> defaultedList = recipe.getIngredients();
         Slot slot = slots.get(1);
         if (slot.getStack().isEmpty()) {
             if (this.fuels == null) {

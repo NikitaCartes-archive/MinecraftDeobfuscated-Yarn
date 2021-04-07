@@ -142,7 +142,7 @@ public class DebugInfoSender {
         if (brain.hasMemoryModule(MemoryModuleType.PATH)) {
             packetByteBuf2.writeBoolean(true);
             Path path = brain.getOptionalMemory(MemoryModuleType.PATH).get();
-            path.method_35498(packetByteBuf2);
+            path.toBuffer(packetByteBuf2);
         } else {
             packetByteBuf2.writeBoolean(false);
         }
@@ -153,7 +153,7 @@ public class DebugInfoSender {
         } else {
             packetByteBuf2.writeBoolean(false);
         }
-        packetByteBuf2.writeCollection(brain.method_35059(), (packetByteBuf, activity) -> packetByteBuf.writeString(activity.getId()));
+        packetByteBuf2.writeCollection(brain.getPossibleActivities(), (packetByteBuf, activity) -> packetByteBuf.writeString(activity.getId()));
         Set set = brain.getRunningTasks().stream().map(Task::toString).collect(Collectors.toSet());
         packetByteBuf2.writeCollection(set, PacketByteBuf::writeString);
         packetByteBuf2.writeCollection(DebugInfoSender.method_36157(livingEntity, l), (packetByteBuf, string) -> {
@@ -199,7 +199,7 @@ public class DebugInfoSender {
                     long m = l - (Long)object;
                     string = "" + m + " ticks ago";
                 } else {
-                    string = memory.isTimed() ? DebugInfoSender.method_36156((ServerWorld)livingEntity.world, object) + " (ttl: " + memory.method_35127() + ")" : DebugInfoSender.method_36156((ServerWorld)livingEntity.world, object);
+                    string = memory.isTimed() ? DebugInfoSender.method_36156((ServerWorld)livingEntity.world, object) + " (ttl: " + memory.getExpiry() + ")" : DebugInfoSender.method_36156((ServerWorld)livingEntity.world, object);
                 }
             } else {
                 string = "-";
@@ -219,7 +219,7 @@ public class DebugInfoSender {
         }
         if (object instanceof LivingEntity) {
             Entity entity = (Entity)object;
-            return NameGenerator.method_36154(entity);
+            return NameGenerator.name(entity);
         }
         if (object instanceof Nameable) {
             return ((Nameable)object).getName().getString();
@@ -228,7 +228,7 @@ public class DebugInfoSender {
             return DebugInfoSender.method_36156(serverWorld, ((WalkTarget)object).getLookTarget());
         }
         if (object instanceof EntityLookTarget) {
-            return DebugInfoSender.method_36156(serverWorld, ((EntityLookTarget)object).method_35066());
+            return DebugInfoSender.method_36156(serverWorld, ((EntityLookTarget)object).getEntity());
         }
         if (object instanceof GlobalPos) {
             return DebugInfoSender.method_36156(serverWorld, ((GlobalPos)object).getPos());

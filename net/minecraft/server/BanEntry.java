@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class BanEntry<T>
 extends ServerConfigEntry<T> {
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
-    public static final String field_29787 = "forever";
+    public static final String FOREVER = "forever";
     protected final Date creationDate;
     protected final String source;
     protected final Date expiryDate;
@@ -48,7 +48,7 @@ extends ServerConfigEntry<T> {
         this.reason = json.has("reason") ? json.get("reason").getAsString() : "Banned by an operator.";
     }
 
-    public Date method_34885() {
+    public Date getCreationDate() {
         return this.creationDate;
     }
 
@@ -78,7 +78,7 @@ extends ServerConfigEntry<T> {
     protected void fromJson(JsonObject json) {
         json.addProperty("created", DATE_FORMAT.format(this.creationDate));
         json.addProperty("source", this.source);
-        json.addProperty("expires", this.expiryDate == null ? field_29787 : DATE_FORMAT.format(this.expiryDate));
+        json.addProperty("expires", this.expiryDate == null ? FOREVER : DATE_FORMAT.format(this.expiryDate));
         json.addProperty("reason", this.reason);
     }
 }

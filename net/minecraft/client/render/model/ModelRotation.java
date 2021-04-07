@@ -70,7 +70,7 @@ public enum ModelRotation implements ModelBakeSettings
         return BY_INDEX.get(ModelRotation.getIndex(MathHelper.floorMod(x, 360), MathHelper.floorMod(y, 360)));
     }
 
-    public DirectionTransformation method_35808() {
+    public DirectionTransformation getDirectionTransformation() {
         return this.directionTransformation;
     }
 

@@ -359,6 +359,9 @@ CommandOutput {
         }
     }
 
+    public void method_36209() {
+    }
+
     public void setPose(EntityPose pose) {
         this.dataTracker.set(POSE, pose);
     }
@@ -586,8 +589,8 @@ CommandOutput {
         this.verticalCollision = movement.y != vec3d.y;
         this.onGround = this.verticalCollision && movement.y < 0.0;
         BlockPos blockPos = this.getLandingPos();
-        BlockState blockState2 = this.world.getBlockState(blockPos);
-        this.fall(vec3d.y, this.onGround, blockState2, blockPos);
+        BlockState blockState = this.world.getBlockState(blockPos);
+        this.fall(vec3d.y, this.onGround, blockState, blockPos);
         Vec3d vec3d2 = this.getVelocity();
         if (movement.x != vec3d.x) {
             this.setVelocity(0.0, vec3d2.y, vec3d2.z);
@@ -595,7 +598,7 @@ CommandOutput {
         if (movement.z != vec3d.z) {
             this.setVelocity(vec3d2.x, vec3d2.y, 0.0);
         }
-        Block block = blockState2.getBlock();
+        Block block = blockState.getBlock();
         if (movement.y != vec3d.y) {
             block.onEntityLand(this.world, this);
         }
@@ -607,12 +610,12 @@ CommandOutput {
             double e = vec3d.y;
             double f = vec3d.z;
             this.field_28627 = (float)((double)this.field_28627 + vec3d.length() * 0.6);
-            if (!blockState2.isIn(BlockTags.CLIMBABLE) && !blockState2.isOf(Blocks.POWDER_SNOW)) {
+            if (!blockState.isIn(BlockTags.CLIMBABLE) && !blockState.isOf(Blocks.POWDER_SNOW)) {
                 e = 0.0;
             }
             this.horizontalSpeed = (float)((double)this.horizontalSpeed + (double)MathHelper.sqrt(Entity.squaredHorizontalLength(vec3d)) * 0.6);
             this.distanceTraveled = (float)((double)this.distanceTraveled + (double)MathHelper.sqrt(d * d + e * e + f * f) * 0.6);
-            if (this.distanceTraveled > this.nextStepSoundDistance && !blockState2.isAir()) {
+            if (this.distanceTraveled > this.nextStepSoundDistance && !blockState.isAir()) {
                 this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
                 if (this.isTouchingWater()) {
                     if (moveEffect.playsSounds()) {
@@ -630,13 +633,13 @@ CommandOutput {
                     }
                 } else {
                     if (moveEffect.playsSounds()) {
-                        this.playStepSound(blockPos, blockState2);
+                        this.playStepSound(blockPos, blockState);
                     }
-                    if (moveEffect.emitsGameEvents() && !blockState2.isIn(BlockTags.OCCLUDES_VIBRATION_SIGNALS)) {
+                    if (moveEffect.emitsGameEvents() && !blockState.isIn(BlockTags.OCCLUDES_VIBRATION_SIGNALS)) {
                         this.emitGameEvent(GameEvent.STEP);
                     }
                 }
-            } else if (blockState2.isAir()) {
+            } else if (blockState.isAir()) {
                 this.addAirTravelEffects();
             }
         }
@@ -650,7 +653,7 @@ CommandOutput {
         }
         float i = this.getVelocityMultiplier();
         this.setVelocity(this.getVelocity().multiply(i, 1.0, i));
-        if (this.world.getStatesInBoxIfLoaded(this.getBoundingBox().contract(1.0E-6)).noneMatch(blockState -> blockState.isIn(BlockTags.FIRE) || blockState.isOf(Blocks.LAVA)) && this.fireTicks <= 0) {
+        if (this.world.getStatesInBoxIfLoaded(this.getBoundingBox().contract(1.0E-6)).noneMatch(state -> state.isIn(BlockTags.FIRE) || state.isOf(Blocks.LAVA)) && this.fireTicks <= 0) {
             this.setFireTicks(-this.getBurningDuration());
         }
         if ((this.isWet() || this.inPowderSnow) && this.isOnFire()) {
@@ -1626,7 +1629,7 @@ CommandOutput {
         }
         float f = this.dimensions.width * 0.8f;
         Box box = Box.of(this.getEyePos(), f, 1.0E-6, f);
-        return this.world.getBlockCollisions(this, box, (blockState, blockPos) -> blockState.shouldSuffocate(this.world, (BlockPos)blockPos)).findAny().isPresent();
+        return this.world.getBlockCollisions(this, box, (state, pos) -> state.shouldSuffocate(this.world, (BlockPos)pos)).findAny().isPresent();
     }
 
     /**
@@ -1914,10 +1917,10 @@ CommandOutput {
      * 
      * <p>Compared to {@link #isSneaking()}, it only makes the entity appear
      * crouching and does not bring other effects of sneaking, such as no less
-     * obvious name label rendering, no dismounting while riding, etc.</p>
+     * obvious name label rendering, no dismounting while riding, etc.
      * 
      * <p>This is used by vanilla for non-player entities to crouch, such as
-     * for foxes and cats.</p>
+     * for foxes and cats.
      */
     public boolean isInSneakingPose() {
         return this.getPose() == EntityPose.CROUCHING;
@@ -2244,19 +2247,19 @@ CommandOutput {
         double g = Math.min(2.9999872E7, worldBorder.getBoundSouth() - 16.0);
         double h = DimensionType.getCoordinateScaleFactor(this.world.getDimension(), destination.getDimension());
         BlockPos blockPos2 = new BlockPos(MathHelper.clamp(this.getX() * h, d, f), this.getY(), MathHelper.clamp(this.getZ() * h, e, g));
-        return this.getPortalRect(destination, blockPos2, bl3).map(rectangle -> {
+        return this.getPortalRect(destination, blockPos2, bl3).map(rect -> {
             Vec3d vec3d;
             Direction.Axis axis;
             BlockState blockState = this.world.getBlockState(this.lastNetherPortalPosition);
             if (blockState.contains(Properties.HORIZONTAL_AXIS)) {
                 axis = blockState.get(Properties.HORIZONTAL_AXIS);
-                PortalUtil.Rectangle rectangle2 = PortalUtil.getLargestRectangle(this.lastNetherPortalPosition, axis, 21, Direction.Axis.Y, 21, blockPos -> this.world.getBlockState((BlockPos)blockPos) == blockState);
-                vec3d = this.positionInPortal(axis, rectangle2);
+                PortalUtil.Rectangle rectangle = PortalUtil.getLargestRectangle(this.lastNetherPortalPosition, axis, 21, Direction.Axis.Y, 21, blockPos -> this.world.getBlockState((BlockPos)blockPos) == blockState);
+                vec3d = this.positionInPortal(axis, rectangle);
             } else {
                 axis = Direction.Axis.X;
                 vec3d = new Vec3d(0.5, 0.0, 0.0);
             }
-            return AreaHelper.getNetherTeleportTarget(destination, rectangle, axis, vec3d, this.getDimensions(this.getPose()), this.getVelocity(), this.yaw, this.pitch);
+            return AreaHelper.getNetherTeleportTarget(destination, rect, axis, vec3d, this.getDimensions(this.getPose()), this.getVelocity(), this.yaw, this.pitch);
         }).orElse(null);
     }
 
@@ -2463,7 +2466,7 @@ CommandOutput {
         return this.standingEyeHeight;
     }
 
-    public Vec3d method_29919() {
+    public Vec3d getLeashOffset() {
         return new Vec3d(0.0, this.getStandingEyeHeight(), this.getWidth() * 0.4f);
     }
 
@@ -2480,7 +2483,7 @@ CommandOutput {
     }
 
     @Override
-    public void sendSystemMessage(Text message, UUID senderUuid) {
+    public void sendSystemMessage(Text message, UUID sender) {
     }
 
     public World getEntityWorld() {
@@ -2613,7 +2616,7 @@ CommandOutput {
     }
 
     public boolean hasPassengerDeep(Entity passenger) {
-        return this.streamIntoPassengers().anyMatch(entity2 -> entity2 == passenger);
+        return this.streamIntoPassengers().anyMatch(entity -> entity == passenger);
     }
 
     public boolean isLogicalSideForUpdatingMovement() {
@@ -2945,7 +2948,7 @@ CommandOutput {
     }
 
     @Override
-    public void setRemoved(RemovalReason reason) {
+    public final void setRemoved(RemovalReason reason) {
         if (this.removalReason == null) {
             this.removalReason = reason;
         }

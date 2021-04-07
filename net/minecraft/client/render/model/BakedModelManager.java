@@ -74,7 +74,7 @@ implements AutoCloseable {
         this.atlasManager = modelLoader.upload(this.textureManager, profiler);
         this.models = modelLoader.getBakedModelMap();
         this.stateLookup = modelLoader.getStateLookup();
-        this.missingModel = this.models.get(ModelLoader.MISSING);
+        this.missingModel = this.models.get(ModelLoader.MISSING_ID);
         profiler.swap("cache");
         this.blockModelCache.reload();
         profiler.pop();

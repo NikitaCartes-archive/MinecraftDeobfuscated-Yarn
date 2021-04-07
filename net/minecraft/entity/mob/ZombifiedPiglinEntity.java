@@ -53,8 +53,8 @@ implements Angerable {
     private int angerTime;
     private UUID targetUuid;
     private static final int field_30524 = 10;
-    private static final UniformIntProvider field_25609 = Durations.betweenSeconds(4, 6);
-    private int field_25608;
+    private static final UniformIntProvider ANGER_PASSING_COOLDOWN_RANGE = Durations.betweenSeconds(4, 6);
+    private int angerPassingCooldown;
 
     public ZombifiedPiglinEntity(EntityType<? extends ZombifiedPiglinEntity> entityType, World world) {
         super((EntityType<? extends ZombieEntity>)entityType, world);
@@ -102,7 +102,7 @@ implements Angerable {
         }
         this.tickAngerLogic((ServerWorld)this.world, true);
         if (this.getTarget() != null) {
-            this.method_29941();
+            this.tickAngerPassing();
         }
         if (this.hasAngerTime()) {
             this.playerHitTimer = this.age;
@@ -119,21 +119,21 @@ implements Angerable {
         }
     }
 
-    private void method_29941() {
-        if (this.field_25608 > 0) {
-            --this.field_25608;
+    private void tickAngerPassing() {
+        if (this.angerPassingCooldown > 0) {
+            --this.angerPassingCooldown;
             return;
         }
         if (this.getVisibilityCache().canSee(this.getTarget())) {
-            this.method_29942();
+            this.angerNearbyZombifiedPiglins();
         }
-        this.field_25608 = field_25609.get(this.random);
+        this.angerPassingCooldown = ANGER_PASSING_COOLDOWN_RANGE.get(this.random);
     }
 
-    private void method_29942() {
+    private void angerNearbyZombifiedPiglins() {
         double d = this.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE);
         Box box = Box.from(this.getPos()).expand(d, 10.0, d);
-        this.world.getEntitiesByClass(ZombifiedPiglinEntity.class, box, EntityPredicates.EXCEPT_SPECTATOR).stream().filter(zombifiedPiglinEntity -> zombifiedPiglinEntity != this).filter(zombifiedPiglinEntity -> zombifiedPiglinEntity.getTarget() == null).filter(zombifiedPiglinEntity -> !zombifiedPiglinEntity.isTeammate(this.getTarget())).forEach(zombifiedPiglinEntity -> zombifiedPiglinEntity.setTarget(this.getTarget()));
+        this.world.getEntitiesByClass(ZombifiedPiglinEntity.class, box, EntityPredicates.EXCEPT_SPECTATOR).stream().filter(zombifiedPiglin -> zombifiedPiglin != this).filter(zombifiedPiglin -> zombifiedPiglin.getTarget() == null).filter(zombifiedPiglin -> !zombifiedPiglin.isTeammate(this.getTarget())).forEach(zombifiedPiglin -> zombifiedPiglin.setTarget(this.getTarget()));
     }
 
     private void playAngrySound() {
@@ -144,7 +144,7 @@ implements Angerable {
     public void setTarget(@Nullable LivingEntity target) {
         if (this.getTarget() == null && target != null) {
             this.angrySoundDelay = ANGRY_SOUND_DELAY_RANGE.get(this.random);
-            this.field_25608 = field_25609.get(this.random);
+            this.angerPassingCooldown = ANGER_PASSING_COOLDOWN_RANGE.get(this.random);
         }
         if (target instanceof PlayerEntity) {
             this.setAttacking((PlayerEntity)target);

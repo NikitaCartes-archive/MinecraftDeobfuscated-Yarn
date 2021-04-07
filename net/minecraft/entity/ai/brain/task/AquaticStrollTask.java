@@ -22,9 +22,9 @@ extends StrollTask {
     }
 
     @Override
-    protected Vec3d method_33201(PathAwareEntity pathAwareEntity) {
-        Vec3d vec3d = LookTargetUtil.method_33193(pathAwareEntity, this.horizontalRadius, this.verticalRadius);
-        if (vec3d != null && pathAwareEntity.world.getFluidState(new BlockPos(vec3d)).isEmpty()) {
+    protected Vec3d findWalkTarget(PathAwareEntity entity) {
+        Vec3d vec3d = LookTargetUtil.find(entity, this.horizontalRadius, this.verticalRadius);
+        if (vec3d != null && entity.world.getFluidState(new BlockPos(vec3d)).isEmpty()) {
             return null;
         }
         return vec3d;

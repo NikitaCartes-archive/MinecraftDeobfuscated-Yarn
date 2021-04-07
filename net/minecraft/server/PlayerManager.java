@@ -643,10 +643,10 @@ public abstract class PlayerManager {
         }
     }
 
-    public void broadcastChatMessage(Text message, MessageType type, UUID senderUuid) {
-        this.server.sendSystemMessage(message, senderUuid);
+    public void broadcastChatMessage(Text message, MessageType type, UUID sender) {
+        this.server.sendSystemMessage(message, sender);
         for (ServerPlayerEntity serverPlayerEntity : this.players) {
-            serverPlayerEntity.sendMessage(message, type, senderUuid);
+            serverPlayerEntity.sendMessage(message, type, sender);
         }
     }
 

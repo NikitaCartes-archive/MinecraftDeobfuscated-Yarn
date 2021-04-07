@@ -9,7 +9,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * {@code BeforeBatch} methods are ran before the batch specificied has started.
+ * {@code BeforeBatch} methods are ran before the batch specified has started.
  */
 @Target(value={ElementType.METHOD})
 @Retention(value=RetentionPolicy.RUNTIME)

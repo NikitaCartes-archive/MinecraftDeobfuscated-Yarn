@@ -24,8 +24,8 @@ extends Supplier<JsonElement> {
         return new PropertyCondition();
     }
 
-    public static When method_35870(When ... whens) {
-        return new LogicalCondition(LogicalOperator.AND, Arrays.asList(whens));
+    public static When allOf(When ... conditions) {
+        return new LogicalCondition(LogicalOperator.AND, Arrays.asList(conditions));
     }
 
     public static When anyOf(When ... conditions) {

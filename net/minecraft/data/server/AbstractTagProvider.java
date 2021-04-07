@@ -48,7 +48,7 @@ implements DataProvider {
         this.tagBuilders.clear();
         this.configure();
         this.tagBuilders.forEach((id, builder) -> {
-            List list = builder.streamEntries().filter(trackedEntry -> !trackedEntry.getEntry().method_32832(this.registry::containsId, this.tagBuilders::containsKey)).collect(Collectors.toList());
+            List list = builder.streamEntries().filter(trackedEntry -> !trackedEntry.getEntry().canAdd(this.registry::containsId, this.tagBuilders::containsKey)).collect(Collectors.toList());
             if (!list.isEmpty()) {
                 throw new IllegalArgumentException(String.format("Couldn't define tag %s as it is missing following references: %s", id, list.stream().map(Objects::toString).collect(Collectors.joining(","))));
             }
@@ -97,8 +97,8 @@ implements DataProvider {
             return this;
         }
 
-        public ObjectBuilder<T> method_35922(Identifier identifier) {
-            this.builder.addOptional(identifier, this.source);
+        public ObjectBuilder<T> add(Identifier id) {
+            this.builder.addOptional(id, this.source);
             return this;
         }
 
@@ -107,8 +107,8 @@ implements DataProvider {
             return this;
         }
 
-        public ObjectBuilder<T> method_35923(Identifier identifier) {
-            this.builder.addOptionalTag(identifier, this.source);
+        public ObjectBuilder<T> addTag(Identifier id) {
+            this.builder.addOptionalTag(id, this.source);
             return this;
         }
 

@@ -38,7 +38,7 @@ import org.jetbrains.annotations.Nullable;
 public class ItemEntity
 extends Entity {
     private static final TrackedData<ItemStack> STACK = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
-    private static final int field_30456 = 6000;
+    private static final int DESPAWN_AGE = 6000;
     private static final int field_30457 = Short.MAX_VALUE;
     private static final int field_30458 = Short.MIN_VALUE;
     /**

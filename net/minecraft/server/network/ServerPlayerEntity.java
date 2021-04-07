@@ -1172,20 +1172,20 @@ extends PlayerEntity {
     }
 
     @Override
-    public void sendSystemMessage(Text message, UUID senderUuid) {
-        this.sendMessage(message, MessageType.SYSTEM, senderUuid);
+    public void sendSystemMessage(Text message, UUID sender) {
+        this.sendMessage(message, MessageType.SYSTEM, sender);
     }
 
-    public void sendMessage(Text message, MessageType type, UUID senderUuid) {
+    public void sendMessage(Text message, MessageType type, UUID sender) {
         if (!this.acceptsMessage(type)) {
             return;
         }
-        this.networkHandler.sendPacket(new GameMessageS2CPacket(message, type, senderUuid), future -> {
+        this.networkHandler.sendPacket(new GameMessageS2CPacket(message, type, sender), future -> {
             if (!future.isSuccess() && (type == MessageType.GAME_INFO || type == MessageType.SYSTEM) && this.acceptsMessage(MessageType.SYSTEM)) {
                 int i = 256;
                 String string = message.asTruncatedString(256);
                 MutableText text2 = new LiteralText(string).formatted(Formatting.YELLOW);
-                this.networkHandler.sendPacket(new GameMessageS2CPacket(new TranslatableText("multiplayer.message_not_delivered", text2).formatted(Formatting.RED), MessageType.SYSTEM, senderUuid));
+                this.networkHandler.sendPacket(new GameMessageS2CPacket(new TranslatableText("multiplayer.message_not_delivered", text2).formatted(Formatting.RED), MessageType.SYSTEM, sender));
             }
         });
     }

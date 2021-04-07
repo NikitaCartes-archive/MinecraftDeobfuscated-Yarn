@@ -74,12 +74,12 @@ implements Angerable {
     private static final TrackedData<Boolean> BEGGING = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> COLLAR_COLOR = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> ANGER_TIME = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    public static final Predicate<LivingEntity> FOLLOW_TAMED_PREDICATE = livingEntity -> {
-        EntityType<?> entityType = livingEntity.getType();
+    public static final Predicate<LivingEntity> FOLLOW_TAMED_PREDICATE = entity -> {
+        EntityType<?> entityType = entity.getType();
         return entityType == EntityType.SHEEP || entityType == EntityType.RABBIT || entityType == EntityType.FOX;
     };
-    private static final float field_30386 = 8.0f;
-    private static final float field_30387 = 20.0f;
+    private static final float WILD_MAX_HEALTH = 8.0f;
+    private static final float TAMED_MAX_HEALTH = 20.0f;
     private float begAnimationProgress;
     private float lastBegAnimationProgress;
     private boolean furWet;
@@ -262,9 +262,10 @@ implements Angerable {
      * <p>
      * The brightness multiplier represents how much darker the wolf gets while its fur is wet. The multiplier changes (from 0.75 to 1.0 incrementally) when a wolf shakes.
      * 
-     * @param tickDelta Progress for linearly interpolating between the previous and current game state.
      * @return Brightness as a float value between 0.75 and 1.0.
      * @see net.minecraft.client.render.entity.model.TintableAnimalModel#setColorMultiplier(float, float, float)
+     * 
+     * @param tickDelta progress for linearly interpolating between the previous and current game state
      */
     public float getFurWetBrightnessMultiplier(float tickDelta) {
         return Math.min(0.5f + MathHelper.lerp(tickDelta, this.lastShakeProgress, this.shakeProgress) / 2.0f * 0.5f, 1.0f);
@@ -517,7 +518,7 @@ implements Angerable {
     }
 
     @Override
-    public Vec3d method_29919() {
+    public Vec3d getLeashOffset() {
         return new Vec3d(0.0, 0.6f * this.getStandingEyeHeight(), this.getWidth() * 0.4f);
     }
 

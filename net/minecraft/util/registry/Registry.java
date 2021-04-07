@@ -17,10 +17,10 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import net.minecraft.Bootstrap;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.class_6123;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
@@ -98,6 +98,7 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.feature.size.FeatureSizeType;
 import net.minecraft.world.gen.foliage.FoliagePlacerType;
+import net.minecraft.world.gen.heightprovider.HeightProviderType;
 import net.minecraft.world.gen.placer.BlockPlacerType;
 import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
 import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilder;
@@ -213,8 +214,8 @@ IndexedIterable<T> {
     public static final Registry<FloatProviderType<?>> FLOAT_PROVIDER_TYPE = Registry.create(FLOAT_PROVIDER_TYPE_KEY, () -> FloatProviderType.CONSTANT);
     public static final RegistryKey<Registry<IntProviderType<?>>> INT_PROVIDER_TYPE_KEY = Registry.createRegistryKey("int_provider_type");
     public static final Registry<IntProviderType<?>> INT_PROVIDER_TYPE = Registry.create(INT_PROVIDER_TYPE_KEY, () -> IntProviderType.CONSTANT);
-    public static final RegistryKey<Registry<class_6123<?>>> HEIGHT_PROVIDER_TYPE_KEY = Registry.createRegistryKey("height_provider_type");
-    public static final Registry<class_6123<?>> HEIGHT_PROVIDER_TYPE = Registry.create(HEIGHT_PROVIDER_TYPE_KEY, () -> class_6123.field_31541);
+    public static final RegistryKey<Registry<HeightProviderType<?>>> HEIGHT_PROVIDER_TYPE_KEY = Registry.createRegistryKey("height_provider_type");
+    public static final Registry<HeightProviderType<?>> HEIGHT_PROVIDER_TYPE = Registry.create(HEIGHT_PROVIDER_TYPE_KEY, () -> HeightProviderType.CONSTANT);
     public static final RegistryKey<Registry<ChunkGeneratorSettings>> CHUNK_GENERATOR_SETTINGS_KEY = Registry.createRegistryKey("worldgen/noise_settings");
     public static final RegistryKey<Registry<ConfiguredSurfaceBuilder<?>>> CONFIGURED_SURFACE_BUILDER_KEY = Registry.createRegistryKey("worldgen/configured_surface_builder");
     public static final RegistryKey<Registry<ConfiguredCarver<?>>> CONFIGURED_CARVER_KEY = Registry.createRegistryKey("worldgen/configured_carver");
@@ -302,6 +303,7 @@ IndexedIterable<T> {
     }
 
     protected Registry(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle) {
+        Bootstrap.method_36235(() -> "registry " + key);
         this.registryKey = key;
         this.lifecycle = lifecycle;
     }

@@ -28,30 +28,30 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
     }
 
     @Override
-    public void generate(Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, long m, TernarySurfaceConfig ternarySurfaceConfig) {
-        int n = l;
-        int o = i & 0xF;
-        int p = j & 0xF;
+    public void generate(Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, int m, long n, TernarySurfaceConfig ternarySurfaceConfig) {
+        int o = l;
+        int p = i & 0xF;
+        int q = j & 0xF;
         double e = this.surfaceNoise.sample((double)i * 0.1, l, (double)j * 0.1);
         boolean bl = e > 0.15 + random.nextDouble() * 0.35;
         double f = this.surfaceNoise.sample((double)i * 0.1, 109.0, (double)j * 0.1);
         boolean bl2 = f > 0.25 + random.nextDouble() * 0.9;
-        int q = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
+        int r = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        int r = -1;
+        int s = -1;
         BlockState blockState3 = ternarySurfaceConfig.getUnderMaterial();
-        for (int s = 127; s >= 0; --s) {
-            mutable.set(o, s, p);
+        for (int t = 127; t >= m; --t) {
+            mutable.set(p, t, q);
             BlockState blockState4 = ternarySurfaceConfig.getTopMaterial();
             BlockState blockState5 = chunk.getBlockState(mutable);
             if (blockState5.isAir()) {
-                r = -1;
+                s = -1;
                 continue;
             }
             if (!blockState5.isOf(blockState.getBlock())) continue;
-            if (r == -1) {
+            if (s == -1) {
                 boolean bl3 = false;
-                if (q <= 0) {
+                if (r <= 0) {
                     bl3 = true;
                     blockState3 = ternarySurfaceConfig.getUnderMaterial();
                 }
@@ -60,19 +60,19 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
                 } else if (bl2) {
                     blockState4 = ternarySurfaceConfig.getUnderwaterMaterial();
                 }
-                if (s < n && bl3) {
+                if (t < o && bl3) {
                     blockState4 = blockState2;
                 }
-                r = q;
-                if (s >= n - 1) {
+                s = r;
+                if (t >= o - 1) {
                     chunk.setBlockState(mutable, blockState4, false);
                     continue;
                 }
                 chunk.setBlockState(mutable, blockState3, false);
                 continue;
             }
-            if (r <= 0) continue;
-            --r;
+            if (s <= 0) continue;
+            --s;
             chunk.setBlockState(mutable, blockState3, false);
         }
     }

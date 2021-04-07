@@ -469,7 +469,7 @@ implements RangedAttackMob {
     }
 
     @Override
-    public Vec3d method_29919() {
+    public Vec3d getLeashOffset() {
         return new Vec3d(0.0, 0.75 * (double)this.getStandingEyeHeight(), (double)this.getWidth() * 0.5);
     }
 
@@ -481,7 +481,7 @@ implements RangedAttackMob {
     static class ChaseWolvesGoal
     extends FollowTargetGoal<WolfEntity> {
         public ChaseWolvesGoal(LlamaEntity llama) {
-            super(llama, WolfEntity.class, 16, false, true, livingEntity -> !((WolfEntity)livingEntity).isTamed());
+            super(llama, WolfEntity.class, 16, false, true, wolf -> !((WolfEntity)wolf).isTamed());
         }
 
         @Override

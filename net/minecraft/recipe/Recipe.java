@@ -15,15 +15,38 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 public interface Recipe<C extends Inventory> {
+    /**
+     * Determines whether this recipe matches the contents currently placed inside the available crafting grid.
+     */
     public boolean matches(C var1, World var2);
 
+    /**
+     * Crafts this recipe.
+     * 
+     * <p>This method may perform side effects on the {@code inventory} argument.</p>
+     * 
+     * <p>This method should return a new item stack on each call.</p>
+     * 
+     * @return the resulting item stack
+     */
     public ItemStack craft(C var1);
 
+    /**
+     * Determines whether this recipe's pattern will fit into the available crafting area.
+     */
     public boolean fits(int var1, int var2);
 
     public ItemStack getOutput();
 
-    default public DefaultedList<ItemStack> getRemainingStacks(C inventory) {
+    /**
+     * Returns the remaining stacks to be left in the crafting grid after crafting is complete.
+     * Should return the same number of items as the input grid contains in the same order they're expected
+     * to appear in that grid.
+     * 
+     * @implSpec Default implementation simply returns a grid of all empty stacks where all stacks from the
+     * input grid have been replaced with the result of calling {@link Item#getRecipeRemainder()} on them.
+     */
+    default public DefaultedList<ItemStack> getRemainder(C inventory) {
         DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(inventory.size(), ItemStack.EMPTY);
         for (int i = 0; i < defaultedList.size(); ++i) {
             Item item = inventory.getStack(i).getItem();
@@ -33,7 +56,12 @@ public interface Recipe<C extends Inventory> {
         return defaultedList;
     }
 
-    default public DefaultedList<Ingredient> getPreviewInputs() {
+    /**
+     * The ingredients accepted as inputs for this recipe. Used by the recipe book
+     * when displaying a ghost form of this recipe on the crafting grid as well as for
+     * previewing the possible inputs in the book itself.
+     */
+    default public DefaultedList<Ingredient> getIngredients() {
         return DefaultedList.of();
     }
 
@@ -41,11 +69,18 @@ public interface Recipe<C extends Inventory> {
         return false;
     }
 
+    /**
+     * Optional group this recipe belongs in. Used to group recipes into different categories by the recipe book.
+     */
     default public String getGroup() {
         return "";
     }
 
-    default public ItemStack getRecipeKindIcon() {
+    /**
+     * Creates the stack that is displayed on the recipe book tab containing this recipe, and on a toast when a recipe of this type is unlocked.
+     * Used in conjunction with {@link #getGroup()}.
+     */
+    default public ItemStack createIcon() {
         return new ItemStack(Blocks.CRAFTING_TABLE);
     }
 
@@ -56,7 +91,7 @@ public interface Recipe<C extends Inventory> {
     public RecipeType<?> getType();
 
     default public boolean isEmpty() {
-        DefaultedList<Ingredient> defaultedList = this.getPreviewInputs();
+        DefaultedList<Ingredient> defaultedList = this.getIngredients();
         return defaultedList.isEmpty() || defaultedList.stream().anyMatch(ingredient -> ingredient.getMatchingStacksClient().length == 0);
     }
 }

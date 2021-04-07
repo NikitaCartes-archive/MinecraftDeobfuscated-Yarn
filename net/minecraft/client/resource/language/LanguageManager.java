@@ -30,7 +30,7 @@ import org.apache.logging.log4j.Logger;
 public class LanguageManager
 implements SynchronousResourceReloader {
     private static final Logger LOGGER = LogManager.getLogger();
-    public static final String field_32971 = "en_us";
+    public static final String DEFAULT_LANGUAGE_CODE = "en_us";
     private static final LanguageDefinition ENGLISH_US = new LanguageDefinition("en_us", "US", "English", false);
     private Map<String, LanguageDefinition> languageDefs = ImmutableMap.of("en_us", ENGLISH_US);
     private String currentLanguageCode;
@@ -60,7 +60,7 @@ implements SynchronousResourceReloader {
     @Override
     public void reload(ResourceManager manager) {
         this.languageDefs = LanguageManager.loadAvailableLanguages(manager.streamResourcePacks());
-        LanguageDefinition languageDefinition = this.languageDefs.getOrDefault(field_32971, ENGLISH_US);
+        LanguageDefinition languageDefinition = this.languageDefs.getOrDefault(DEFAULT_LANGUAGE_CODE, ENGLISH_US);
         this.language = this.languageDefs.getOrDefault(this.currentLanguageCode, languageDefinition);
         ArrayList<LanguageDefinition> list = Lists.newArrayList(languageDefinition);
         if (this.language != languageDefinition) {
