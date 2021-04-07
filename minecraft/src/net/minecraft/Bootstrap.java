@@ -4,6 +4,7 @@ import java.io.PrintStream;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import net.minecraft.block.Block;
 import net.minecraft.block.ComposterBlock;
 import net.minecraft.block.FireBlock;
@@ -30,7 +31,7 @@ import org.apache.logging.log4j.Logger;
 
 public class Bootstrap {
 	public static final PrintStream SYSOUT = System.out;
-	private static boolean initialized;
+	private static volatile boolean initialized;
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	public static void initialize() {
@@ -91,17 +92,31 @@ public class Bootstrap {
 		return set;
 	}
 
-	public static void logMissing() {
+	public static void method_36235(Supplier<String> supplier) {
 		if (!initialized) {
-			throw new IllegalArgumentException("Not bootstrapped");
-		} else {
-			if (SharedConstants.isDevelopment) {
-				getMissingTranslations().forEach(string -> LOGGER.error("Missing translations: {}", string));
-				CommandManager.checkMissing();
-			}
-
-			DefaultAttributeRegistry.checkMissing();
+			throw method_36237(supplier);
 		}
+	}
+
+	private static RuntimeException method_36237(Supplier<String> supplier) {
+		try {
+			String string = (String)supplier.get();
+			return new IllegalArgumentException("Not bootstrapped (called from " + string + ")");
+		} catch (Exception var3) {
+			RuntimeException runtimeException = new IllegalArgumentException("Not bootstrapped (failed to resolve location)");
+			runtimeException.addSuppressed(var3);
+			return runtimeException;
+		}
+	}
+
+	public static void logMissing() {
+		method_36235(() -> "validate");
+		if (SharedConstants.isDevelopment) {
+			getMissingTranslations().forEach(string -> LOGGER.error("Missing translations: {}", string));
+			CommandManager.checkMissing();
+		}
+
+		DefaultAttributeRegistry.checkMissing();
 	}
 
 	private static void setOutputStreams() {

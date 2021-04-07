@@ -1198,11 +1198,11 @@ public class InGameHud extends DrawableHelper {
 		return string2 == null ? Util.NIL_UUID : this.client.getSocialInteractionsManager().getUuid(string2);
 	}
 
-	public void addChatMessage(MessageType type, Text message, UUID senderUuid) {
-		if (!this.client.shouldBlockMessages(senderUuid)) {
+	public void addChatMessage(MessageType type, Text message, UUID sender) {
+		if (!this.client.shouldBlockMessages(sender)) {
 			if (!this.client.options.hideMatchedNames || !this.client.shouldBlockMessages(this.extractSender(message))) {
 				for (ClientChatListener clientChatListener : (List)this.listeners.get(type)) {
-					clientChatListener.onChatMessage(type, message, senderUuid);
+					clientChatListener.onChatMessage(type, message, sender);
 				}
 			}
 		}

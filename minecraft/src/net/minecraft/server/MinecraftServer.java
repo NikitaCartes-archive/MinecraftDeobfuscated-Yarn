@@ -1042,7 +1042,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	public abstract Optional<String> getModdedStatusMessage();
 
 	@Override
-	public void sendSystemMessage(Text message, UUID senderUuid) {
+	public void sendSystemMessage(Text message, UUID sender) {
 		LOGGER.info(message.getString());
 	}
 
@@ -1165,7 +1165,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	@Override
-	public void method_35034(Snooper snooper) {
+	public void addInitialSnooperInfo(Snooper snooper) {
 		snooper.addInitialInfo("singleplayer", this.isSinglePlayer());
 		snooper.addInitialInfo("server_brand", this.getServerModName());
 		snooper.addInitialInfo("gui_supported", GraphicsEnvironment.isHeadless() ? "headless" : "supported");
@@ -1313,7 +1313,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return true;
 	}
 
-	public Proxy method_36113() {
+	public Proxy getProxy() {
 		return this.proxy;
 	}
 
@@ -1836,7 +1836,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return null;
 	}
 
-	public ResourceManager method_34864() {
+	public ResourceManager getResourceManager() {
 		return this.serverResourceManager.getResourceManager();
 	}
 }

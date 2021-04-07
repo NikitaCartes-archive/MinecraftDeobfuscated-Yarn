@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class NativeImageBackedTexture extends AbstractTexture {
-	private static final Logger field_25794 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	@Nullable
 	private NativeImage image;
 
@@ -43,7 +43,7 @@ public class NativeImageBackedTexture extends AbstractTexture {
 			this.bindTexture();
 			this.image.upload(0, 0, 0, false);
 		} else {
-			field_25794.warn("Trying to upload disposed texture {}", this.getGlId());
+			LOGGER.warn("Trying to upload disposed texture {}", this.getGlId());
 		}
 	}
 

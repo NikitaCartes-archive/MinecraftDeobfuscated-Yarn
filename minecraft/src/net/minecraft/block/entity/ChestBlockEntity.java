@@ -125,14 +125,14 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 
 	@Override
 	public void onOpen(PlayerEntity player) {
-		if (!player.isSpectator()) {
+		if (!this.removed && !player.isSpectator()) {
 			this.stateManager.openChest(player, this.getWorld(), this.getPos(), this.getCachedState());
 		}
 	}
 
 	@Override
 	public void onClose(PlayerEntity player) {
-		if (!player.isSpectator()) {
+		if (!this.removed && !player.isSpectator()) {
 			this.stateManager.closeChest(player, this.getWorld(), this.getPos(), this.getCachedState());
 		}
 	}
@@ -176,7 +176,9 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	public void onScheduledTick() {
-		this.stateManager.updateViewerCount(this.getWorld(), this.getPos(), this.getCachedState());
+		if (!this.removed) {
+			this.stateManager.updateViewerCount(this.getWorld(), this.getPos(), this.getCachedState());
+		}
 	}
 
 	protected void onInvOpenOrClose(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {

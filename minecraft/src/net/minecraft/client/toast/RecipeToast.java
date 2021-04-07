@@ -42,7 +42,7 @@ public class RecipeToast implements Toast {
 			manager.getGame().textRenderer.draw(matrices, TITLE, 30.0F, 7.0F, -11534256);
 			manager.getGame().textRenderer.draw(matrices, DESCRIPTION, 30.0F, 18.0F, -16777216);
 			Recipe<?> recipe = (Recipe<?>)this.recipes.get((int)(startTime / Math.max(1L, 5000L / (long)this.recipes.size()) % (long)this.recipes.size()));
-			ItemStack itemStack = recipe.getRecipeKindIcon();
+			ItemStack itemStack = recipe.createIcon();
 			MatrixStack matrixStack = RenderSystem.getModelViewStack();
 			matrixStack.push();
 			matrixStack.scale(0.6F, 0.6F, 1.0F);

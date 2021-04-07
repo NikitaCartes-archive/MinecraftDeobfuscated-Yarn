@@ -33,7 +33,7 @@ public class CommandFunction {
 	/**
 	 * Parses a function in the context of {@code source}.
 	 * 
-	 * <p>Any syntax errors, such as improper comment lines or unknown commands, will be thrown at this point.</p>
+	 * <p>Any syntax errors, such as improper comment lines or unknown commands, will be thrown at this point.
 	 * 
 	 * @param lines the raw lines (including comments) read from a function file
 	 */

@@ -30,7 +30,7 @@ import net.minecraft.world.event.GameEvent;
 
 public class ItemEntity extends Entity {
 	private static final TrackedData<ItemStack> STACK = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
-	private static final int field_30456 = 6000;
+	private static final int DESPAWN_AGE = 6000;
 	private static final int field_30457 = 32767;
 	private static final int field_30458 = -32768;
 	/**

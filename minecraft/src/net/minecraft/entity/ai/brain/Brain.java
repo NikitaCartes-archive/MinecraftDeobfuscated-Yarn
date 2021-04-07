@@ -39,7 +39,7 @@ import org.apache.logging.log4j.Logger;
 public class Brain<E extends LivingEntity> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Supplier<Codec<Brain<E>>> codecSupplier;
-	private static final int field_30096 = 20;
+	private static final int ACTIVITY_REFRESH_COOLDOWN = 20;
 	private final Map<MemoryModuleType<?>, Optional<? extends Memory<?>>> memories = Maps.<MemoryModuleType<?>, Optional<? extends Memory<?>>>newHashMap();
 	private final Map<SensorType<? extends Sensor<? super E>>, Sensor<? super E>> sensors = Maps.<SensorType<? extends Sensor<? super E>>, Sensor<? super E>>newLinkedHashMap();
 	private final Map<Integer, Map<Activity, Set<Task<? super E>>>> tasks = Maps.newTreeMap();
@@ -216,7 +216,7 @@ public class Brain<E extends LivingEntity> {
 
 	@Deprecated
 	@Debug
-	public Set<Activity> method_35059() {
+	public Set<Activity> getPossibleActivities() {
 		return this.possibleActivities;
 	}
 
@@ -345,7 +345,7 @@ public class Brain<E extends LivingEntity> {
 	}
 
 	@VisibleForTesting
-	public void method_35060() {
+	public void clear() {
 		this.tasks.clear();
 	}
 
@@ -445,7 +445,7 @@ public class Brain<E extends LivingEntity> {
 	}
 
 	/**
-	 * @param begin The beginning of the index of tasks, exclusive
+	 * @param begin the beginning of the index of tasks, exclusive
 	 */
 	ImmutableList<? extends Pair<Integer, ? extends Task<? super E>>> indexTaskList(int begin, ImmutableList<? extends Task<? super E>> tasks) {
 		int i = begin;

@@ -46,7 +46,7 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 			.forEach(
 				(id, builder) -> {
 					List<Tag.TrackedEntry> list = (List<Tag.TrackedEntry>)builder.streamEntries()
-						.filter(trackedEntry -> !trackedEntry.getEntry().method_32832(this.registry::containsId, this.tagBuilders::containsKey))
+						.filter(trackedEntry -> !trackedEntry.getEntry().canAdd(this.registry::containsId, this.tagBuilders::containsKey))
 						.collect(Collectors.toList());
 					if (!list.isEmpty()) {
 						throw new IllegalArgumentException(
@@ -122,8 +122,8 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 			return this;
 		}
 
-		public AbstractTagProvider.ObjectBuilder<T> method_35922(Identifier identifier) {
-			this.builder.addOptional(identifier, this.source);
+		public AbstractTagProvider.ObjectBuilder<T> add(Identifier id) {
+			this.builder.addOptional(id, this.source);
 			return this;
 		}
 
@@ -132,8 +132,8 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 			return this;
 		}
 
-		public AbstractTagProvider.ObjectBuilder<T> method_35923(Identifier identifier) {
-			this.builder.addOptionalTag(identifier, this.source);
+		public AbstractTagProvider.ObjectBuilder<T> addTag(Identifier id) {
+			this.builder.addOptionalTag(id, this.source);
 			return this;
 		}
 

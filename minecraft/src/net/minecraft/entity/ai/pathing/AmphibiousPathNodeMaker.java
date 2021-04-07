@@ -15,12 +15,12 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.chunk.ChunkCache;
 
 public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
-	private final boolean field_28358;
+	private final boolean penaliseDeepWater;
 	private float oldWalkablePenalty;
 	private float oldWaterBorderPenalty;
 
-	public AmphibiousPathNodeMaker(boolean bl) {
-		this.field_28358 = bl;
+	public AmphibiousPathNodeMaker(boolean penaliseDeepWater) {
+		this.penaliseDeepWater = penaliseDeepWater;
 	}
 
 	@Override
@@ -213,7 +213,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 
 				return pathNode;
 			} else {
-				if (this.field_28358 && y < this.entity.world.getSeaLevel() - 10 && pathNode != null) {
+				if (this.penaliseDeepWater && y < this.entity.world.getSeaLevel() - 10 && pathNode != null) {
 					pathNode.penalty++;
 				}
 

@@ -16,9 +16,9 @@ import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 
 public class NearestBedSensor extends Sensor<MobEntity> {
-	private static final int field_30251 = 40;
-	private static final int field_30252 = 5;
-	private static final int field_30253 = 20;
+	private static final int REMEMBER_TIME = 40;
+	private static final int MAX_TRIES = 5;
+	private static final int MAX_EXPIRY_TIME = 20;
 	private final Long2LongMap positionToExpiryTime = new Long2LongOpenHashMap();
 	private int tries;
 	private long expiryTime;

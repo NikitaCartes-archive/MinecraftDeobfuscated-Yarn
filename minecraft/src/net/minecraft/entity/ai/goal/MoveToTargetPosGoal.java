@@ -6,9 +6,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldView;
 
 public abstract class MoveToTargetPosGoal extends Goal {
-	private static final int field_30221 = 1200;
-	private static final int field_30222 = 1200;
-	private static final int field_30223 = 200;
+	private static final int MIN_WAITING_TIME = 1200;
+	private static final int MAX_TRYING_TIME = 1200;
+	private static final int MIN_INTERVAL = 200;
 	protected final PathAwareEntity mob;
 	public final double speed;
 	protected int cooldown;

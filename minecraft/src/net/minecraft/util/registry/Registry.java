@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
-import net.minecraft.class_6123;
+import net.minecraft.Bootstrap;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
@@ -92,6 +92,7 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.feature.size.FeatureSizeType;
 import net.minecraft.world.gen.foliage.FoliagePlacerType;
+import net.minecraft.world.gen.heightprovider.HeightProviderType;
 import net.minecraft.world.gen.placer.BlockPlacerType;
 import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
 import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilder;
@@ -205,8 +206,8 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	public static final Registry<FloatProviderType<?>> FLOAT_PROVIDER_TYPE = create(FLOAT_PROVIDER_TYPE_KEY, () -> FloatProviderType.CONSTANT);
 	public static final RegistryKey<Registry<IntProviderType<?>>> INT_PROVIDER_TYPE_KEY = createRegistryKey("int_provider_type");
 	public static final Registry<IntProviderType<?>> INT_PROVIDER_TYPE = create(INT_PROVIDER_TYPE_KEY, () -> IntProviderType.CONSTANT);
-	public static final RegistryKey<Registry<class_6123<?>>> HEIGHT_PROVIDER_TYPE_KEY = createRegistryKey("height_provider_type");
-	public static final Registry<class_6123<?>> HEIGHT_PROVIDER_TYPE = create(HEIGHT_PROVIDER_TYPE_KEY, () -> class_6123.field_31541);
+	public static final RegistryKey<Registry<HeightProviderType<?>>> HEIGHT_PROVIDER_TYPE_KEY = createRegistryKey("height_provider_type");
+	public static final Registry<HeightProviderType<?>> HEIGHT_PROVIDER_TYPE = create(HEIGHT_PROVIDER_TYPE_KEY, () -> HeightProviderType.CONSTANT);
 	public static final RegistryKey<Registry<ChunkGeneratorSettings>> CHUNK_GENERATOR_SETTINGS_KEY = createRegistryKey("worldgen/noise_settings");
 	public static final RegistryKey<Registry<ConfiguredSurfaceBuilder<?>>> CONFIGURED_SURFACE_BUILDER_KEY = createRegistryKey(
 		"worldgen/configured_surface_builder"
@@ -303,6 +304,7 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	}
 
 	protected Registry(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle) {
+		Bootstrap.method_36235(() -> "registry " + key);
 		this.registryKey = key;
 		this.lifecycle = lifecycle;
 	}

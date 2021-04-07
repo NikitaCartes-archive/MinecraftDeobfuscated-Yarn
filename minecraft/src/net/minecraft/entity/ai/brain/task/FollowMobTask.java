@@ -17,12 +17,12 @@ public class FollowMobTask extends Task<LivingEntity> {
 	private final Predicate<LivingEntity> predicate;
 	private final float maxDistanceSquared;
 
-	public FollowMobTask(Tag<EntityType<?>> tag, float f) {
-		this(livingEntity -> livingEntity.getType().isIn(tag), f);
+	public FollowMobTask(Tag<EntityType<?>> entityType, float maxDistance) {
+		this(livingEntity -> livingEntity.getType().isIn(entityType), maxDistance);
 	}
 
-	public FollowMobTask(SpawnGroup spawnGroup, float maxDistance) {
-		this(livingEntity -> spawnGroup.equals(livingEntity.getType().getSpawnGroup()), maxDistance);
+	public FollowMobTask(SpawnGroup group, float maxDistance) {
+		this(livingEntity -> group.equals(livingEntity.getType().getSpawnGroup()), maxDistance);
 	}
 
 	public FollowMobTask(EntityType<?> entityType, float maxDistance) {

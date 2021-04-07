@@ -75,11 +75,11 @@ public class PrioritizedGoal extends Goal {
 		return this.goal;
 	}
 
-	public boolean equals(@Nullable Object object) {
-		if (this == object) {
+	public boolean equals(@Nullable Object o) {
+		if (this == o) {
 			return true;
 		} else {
-			return object != null && this.getClass() == object.getClass() ? this.goal.equals(((PrioritizedGoal)object).goal) : false;
+			return o != null && this.getClass() == o.getClass() ? this.goal.equals(((PrioritizedGoal)o).goal) : false;
 		}
 	}
 

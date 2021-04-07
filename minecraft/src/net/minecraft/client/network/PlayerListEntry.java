@@ -61,7 +61,7 @@ public class PlayerListEntry {
 		this.latency = latency;
 	}
 
-	public boolean method_35757() {
+	public boolean hasCape() {
 		return this.getCapeTexture() != null;
 	}
 

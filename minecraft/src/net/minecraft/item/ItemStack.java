@@ -356,7 +356,7 @@ public final class ItemStack {
 	 * <p>
 	 * Depending on block implementation, when combined together, the correct item and block may achieve a better mining speed and yield
 	 * drops that would not be obtained when mining otherwise.
-	 * </p>
+	 * 
 	 * @return values consistent with calls to {@link Item#isSuitableFor}
 	 * @see Item#isSuitableFor(BlockState)
 	 */

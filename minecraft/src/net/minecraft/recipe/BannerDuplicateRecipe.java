@@ -71,7 +71,7 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 		return ItemStack.EMPTY;
 	}
 
-	public DefaultedList<ItemStack> getRemainingStacks(CraftingInventory craftingInventory) {
+	public DefaultedList<ItemStack> getRemainder(CraftingInventory craftingInventory) {
 		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(craftingInventory.size(), ItemStack.EMPTY);
 
 		for (int i = 0; i < defaultedList.size(); i++) {

@@ -36,7 +36,7 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookWidget {
 		ItemStack itemStack = recipe.getOutput();
 		this.ghostSlots.setRecipe(recipe);
 		this.ghostSlots.addSlot(Ingredient.ofStacks(itemStack), ((Slot)slots.get(2)).x, ((Slot)slots.get(2)).y);
-		DefaultedList<Ingredient> defaultedList = recipe.getPreviewInputs();
+		DefaultedList<Ingredient> defaultedList = recipe.getIngredients();
 		Slot slot = (Slot)slots.get(1);
 		if (slot.getStack().isEmpty()) {
 			if (this.fuels == null) {

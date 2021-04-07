@@ -12,6 +12,9 @@ import javax.annotation.meta.TypeQualifierDefault;
  * 
  * <p>While this annotation is meant to be a package/class annotation, it can
  * be applied to anything as it does not restrict its targets.
+ * 
+ * @see ClientMethodsReturnNonnullByDefault
+ * @see MathMethodsReturnNonnullByDefault
  */
 @Nonnull
 @TypeQualifierDefault({ElementType.METHOD})

@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -41,7 +42,7 @@ public class HoneyBlock extends TransparentBlock {
 	public void onLandedUpon(World world, BlockPos pos, Entity entity, float distance) {
 		entity.playSound(SoundEvents.BLOCK_HONEY_BLOCK_SLIDE, 1.0F, 1.0F);
 		if (!world.isClient) {
-			world.sendEntityStatus(entity, (byte)54);
+			world.sendEntityStatus(entity, EntityStatuses.DRIP_RICH_HONEY);
 		}
 
 		if (entity.handleFallDamage(distance, 0.2F, DamageSource.FALL)) {
@@ -100,7 +101,7 @@ public class HoneyBlock extends TransparentBlock {
 			}
 
 			if (!world.isClient && world.random.nextInt(5) == 0) {
-				world.sendEntityStatus(entity, (byte)53);
+				world.sendEntityStatus(entity, EntityStatuses.DRIP_HONEY);
 			}
 		}
 	}

@@ -13,19 +13,19 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.DefaultedRegistry;
 import net.minecraft.util.registry.Registry;
 
-public class ItemListProvider implements DataProvider {
+public class RegistryDumpProvider implements DataProvider {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-	private final DataGenerator root;
+	private final DataGenerator generator;
 
-	public ItemListProvider(DataGenerator dataGenerator) {
-		this.root = dataGenerator;
+	public RegistryDumpProvider(DataGenerator generator) {
+		this.generator = generator;
 	}
 
 	@Override
 	public void run(DataCache cache) throws IOException {
 		JsonObject jsonObject = new JsonObject();
 		Registry.REGISTRIES.getIds().forEach(identifier -> jsonObject.add(identifier.toString(), toJson((Registry<?>)Registry.REGISTRIES.get(identifier))));
-		Path path = this.root.getOutput().resolve("reports/registries.json");
+		Path path = this.generator.getOutput().resolve("reports/registries.json");
 		DataProvider.writeToPath(GSON, cache, jsonObject, path);
 	}
 

@@ -17,8 +17,8 @@ public class WalkTarget {
 		this(new BlockPosLookTarget(new BlockPos(pos)), speed, completionRange);
 	}
 
-	public WalkTarget(Entity entity, float f, int i) {
-		this(new EntityLookTarget(entity, false), f, i);
+	public WalkTarget(Entity entity, float speed, int completionRange) {
+		this(new EntityLookTarget(entity, false), speed, completionRange);
 	}
 
 	public WalkTarget(LookTarget lookTarget, float speed, int completionRange) {

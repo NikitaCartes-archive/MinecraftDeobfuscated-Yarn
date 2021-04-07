@@ -93,9 +93,7 @@ public abstract class SchoolingFishEntity extends FishEntity {
 	}
 
 	public void pullInOtherFish(Stream<? extends SchoolingFishEntity> fish) {
-		fish.limit((long)(this.getMaxGroupSize() - this.groupSize))
-			.filter(schoolingFishEntity -> schoolingFishEntity != this)
-			.forEach(schoolingFishEntity -> schoolingFishEntity.joinGroupOf(this));
+		fish.limit((long)(this.getMaxGroupSize() - this.groupSize)).filter(fishx -> fishx != this).forEach(fishx -> fishx.joinGroupOf(this));
 	}
 
 	@Nullable

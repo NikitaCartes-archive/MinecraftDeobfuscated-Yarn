@@ -15,7 +15,7 @@ import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 
 public class SleepTask extends Task<LivingEntity> {
-	public static final int field_30175 = 100;
+	public static final int RUN_TIME = 100;
 	private long startTime;
 
 	public SleepTask() {
@@ -60,7 +60,7 @@ public class SleepTask extends Task<LivingEntity> {
 	@Override
 	protected void run(ServerWorld world, LivingEntity entity, long time) {
 		if (time > this.startTime) {
-			OpenDoorsTask.method_30760(world, entity, null, null);
+			OpenDoorsTask.pathToDoor(world, entity, null, null);
 			entity.sleep(((GlobalPos)entity.getBrain().getOptionalMemory(MemoryModuleType.HOME).get()).getPos());
 		}
 	}

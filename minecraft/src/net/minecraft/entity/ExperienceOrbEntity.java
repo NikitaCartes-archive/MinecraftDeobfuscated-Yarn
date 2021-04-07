@@ -21,7 +21,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class ExperienceOrbEntity extends Entity {
-	private static final int field_30055 = 6000;
+	private static final int DESPAWN_AGE = 6000;
 	private static final int field_30056 = 20;
 	private static final int field_30057 = 8;
 	private static final int field_30058 = 40;
@@ -77,7 +77,7 @@ public class ExperienceOrbEntity extends Entity {
 		}
 
 		if (this.age % 20 == 1) {
-			this.method_31498();
+			this.onEverySecond();
 		}
 
 		if (this.target != null && (this.target.isSpectator() || this.target.isDead())) {
@@ -112,7 +112,13 @@ public class ExperienceOrbEntity extends Entity {
 		}
 	}
 
-	private void method_31498() {
+	/**
+	 * Called every second (every 20 ticks).
+	 * 
+	 * @implSpec This method first checks if the orb still has a nearby {@link #target},
+	 * and assigns a new target if there is none. It then tries to merge nearby experience orbs.
+	 */
+	private void onEverySecond() {
 		if (this.target == null || this.target.squaredDistanceTo(this) > 64.0) {
 			this.target = this.world.getClosestPlayer(this, 8.0);
 		}
@@ -211,7 +217,7 @@ public class ExperienceOrbEntity extends Entity {
 			if (player.experiencePickUpDelay == 0) {
 				player.experiencePickUpDelay = 2;
 				player.sendPickup(this, 1);
-				int i = this.method_35051(player, this.amount);
+				int i = this.repairPlayerGears(player, this.amount);
 				if (i > 0) {
 					player.addExperience(i);
 				}
@@ -224,16 +230,22 @@ public class ExperienceOrbEntity extends Entity {
 		}
 	}
 
-	private int method_35051(PlayerEntity playerEntity, int i) {
-		Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.chooseEquipmentWith(Enchantments.MENDING, playerEntity, ItemStack::isDamaged);
+	/**
+	 * Repairs a player's gears using the experience recursively, until the experience is
+	 * all used or all gears are repaired.
+	 * 
+	 * @return the amount of leftover experience
+	 */
+	private int repairPlayerGears(PlayerEntity player, int amount) {
+		Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.chooseEquipmentWith(Enchantments.MENDING, player, ItemStack::isDamaged);
 		if (entry != null) {
 			ItemStack itemStack = (ItemStack)entry.getValue();
-			int j = Math.min(this.getMendingRepairAmount(this.amount), itemStack.getDamage());
-			itemStack.setDamage(itemStack.getDamage() - j);
-			int k = i - this.getMendingRepairCost(j);
-			return k > 0 ? this.method_35051(playerEntity, k) : 0;
+			int i = Math.min(this.getMendingRepairAmount(this.amount), itemStack.getDamage());
+			itemStack.setDamage(itemStack.getDamage() - i);
+			int j = amount - this.getMendingRepairCost(i);
+			return j > 0 ? this.repairPlayerGears(player, j) : 0;
 		} else {
-			return i;
+			return amount;
 		}
 	}
 

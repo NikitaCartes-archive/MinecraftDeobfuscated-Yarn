@@ -67,13 +67,13 @@ public final class Ingredient implements Predicate<ItemStack> {
 		}
 	}
 
-	public IntList getIds() {
+	public IntList getMatchingItemIds() {
 		if (this.ids == null) {
 			this.cacheMatchingStacks();
 			this.ids = new IntArrayList(this.matchingStacks.length);
 
 			for (ItemStack itemStack : this.matchingStacks) {
-				this.ids.add(RecipeFinder.getItemId(itemStack));
+				this.ids.add(RecipeMatcher.getItemId(itemStack));
 			}
 
 			this.ids.sort(IntComparators.NATURAL_COMPARATOR);
@@ -110,7 +110,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 		return ingredient.entries.length == 0 ? EMPTY : ingredient;
 	}
 
-	public static Ingredient method_35226() {
+	public static Ingredient empty() {
 		return EMPTY;
 	}
 

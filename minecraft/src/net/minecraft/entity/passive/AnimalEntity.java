@@ -5,6 +5,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.SpawnReason;
@@ -28,7 +29,7 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 
 public abstract class AnimalEntity extends PassiveEntity {
-	static final int field_30270 = 6000;
+	static final int BREEDING_COOLDOWN = 6000;
 	private int loveTicks;
 	private UUID lovingPlayer;
 
@@ -167,7 +168,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 			this.lovingPlayer = player.getUuid();
 		}
 
-		this.world.sendEntityStatus(this, (byte)18);
+		this.world.sendEntityStatus(this, EntityStatuses.ADD_BREEDING_PARTICLES);
 	}
 
 	public void setLoveTicks(int loveTicks) {
@@ -224,7 +225,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 			passiveEntity.setBaby(true);
 			passiveEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F);
 			world.spawnEntityAndPassengers(passiveEntity);
-			world.sendEntityStatus(this, (byte)18);
+			world.sendEntityStatus(this, EntityStatuses.ADD_BREEDING_PARTICLES);
 			if (world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
 				world.spawnEntity(new ExperienceOrbEntity(world, this.getX(), this.getY(), this.getZ(), this.getRandom().nextInt(7) + 1));
 			}
@@ -233,7 +234,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 
 	@Override
 	public void handleStatus(byte status) {
-		if (status == 18) {
+		if (status == EntityStatuses.ADD_BREEDING_PARTICLES) {
 			for (int i = 0; i < 7; i++) {
 				double d = this.random.nextGaussian() * 0.02;
 				double e = this.random.nextGaussian() * 0.02;

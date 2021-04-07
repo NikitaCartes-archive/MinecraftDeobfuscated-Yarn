@@ -23,11 +23,11 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/anvil.png");
 	private static final Text TOO_EXPENSIVE_TEXT = new TranslatableText("container.repair.expensive");
 	private TextFieldWidget nameField;
-	private final PlayerEntity field_29348;
+	private final PlayerEntity player;
 
 	public AnvilScreen(AnvilScreenHandler handler, PlayerInventory inventory, Text title) {
 		super(handler, inventory, title, TEXTURE);
-		this.field_29348 = inventory.player;
+		this.player = inventory.player;
 		this.titleX = 60;
 	}
 
@@ -105,7 +105,7 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 				text = null;
 			} else {
 				text = new TranslatableText("container.repair.cost", i);
-				if (!this.handler.getSlot(2).canTakeItems(this.field_29348)) {
+				if (!this.handler.getSlot(2).canTakeItems(this.player)) {
 					j = 16736352;
 				}
 			}

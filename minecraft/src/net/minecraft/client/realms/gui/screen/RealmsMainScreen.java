@@ -1447,7 +1447,7 @@ public class RealmsMainScreen extends RealmsScreen {
 					int q = i + RealmsMainScreen.this.textRenderer.getWidth(text) + 8;
 					int r = j + 13;
 					boolean bl = false;
-					if (k >= q && k < q + o && l > r && l <= r + 16 & l < RealmsMainScreen.this.height - 40 && l > 32 && !RealmsMainScreen.this.shouldShowPopup()) {
+					if (k >= q && k < q + o && l > r && l <= r + 16 && l < RealmsMainScreen.this.height - 40 && l > 32 && !RealmsMainScreen.this.shouldShowPopup()) {
 						bl = true;
 						RealmsMainScreen.this.hoverState = RealmsMainScreen.HoverState.EXPIRED;
 					}

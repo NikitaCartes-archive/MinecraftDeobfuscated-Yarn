@@ -6,7 +6,7 @@ import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.util.math.Vec3d;
 
 public class WanderAroundFarGoal extends WanderAroundGoal {
-	public static final float field_30229 = 0.001F;
+	public static final float CHANCE = 0.001F;
 	protected final float probability;
 
 	public WanderAroundFarGoal(PathAwareEntity pathAwareEntity, double d) {

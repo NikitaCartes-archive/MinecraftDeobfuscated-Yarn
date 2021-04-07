@@ -19,6 +19,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityInteraction;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.InteractionObserver;
@@ -163,13 +164,13 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	);
 	public static final Map<MemoryModuleType<GlobalPos>, BiPredicate<VillagerEntity, PointOfInterestType>> POINTS_OF_INTEREST = ImmutableMap.of(
 		MemoryModuleType.HOME,
-		(villagerEntity, pointOfInterestType) -> pointOfInterestType == PointOfInterestType.HOME,
+		(villager, poiType) -> poiType == PointOfInterestType.HOME,
 		MemoryModuleType.JOB_SITE,
-		(villagerEntity, pointOfInterestType) -> villagerEntity.getVillagerData().getProfession().getWorkStation() == pointOfInterestType,
+		(villager, poiType) -> villager.getVillagerData().getProfession().getWorkStation() == poiType,
 		MemoryModuleType.POTENTIAL_JOB_SITE,
-		(villagerEntity, pointOfInterestType) -> PointOfInterestType.IS_USED_BY_PROFESSION.test(pointOfInterestType),
+		(villager, poiType) -> PointOfInterestType.IS_USED_BY_PROFESSION.test(poiType),
 		MemoryModuleType.MEETING_POINT,
-		(villagerEntity, pointOfInterestType) -> pointOfInterestType == PointOfInterestType.MEETING
+		(villager, poiType) -> poiType == PointOfInterestType.MEETING
 	);
 
 	public VillagerEntity(EntityType<? extends VillagerEntity> entityType, World world) {
@@ -279,14 +280,14 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 
 		if (this.lastCustomer != null && this.world instanceof ServerWorld) {
 			((ServerWorld)this.world).handleInteraction(EntityInteraction.TRADE, this.lastCustomer, this);
-			this.world.sendEntityStatus(this, (byte)14);
+			this.world.sendEntityStatus(this, EntityStatuses.ADD_VILLAGER_HAPPY_PARTICLES);
 			this.lastCustomer = null;
 		}
 
 		if (!this.isAiDisabled() && this.random.nextInt(100) == 0) {
 			Raid raid = ((ServerWorld)this.world).getRaidAt(this.getBlockPos());
 			if (raid != null && raid.isActive() && !raid.isFinished()) {
-				this.world.sendEntityStatus(this, (byte)42);
+				this.world.sendEntityStatus(this, EntityStatuses.ADD_SPLASH_PARTICLES);
 			}
 		}
 
@@ -606,7 +607,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		if (attacker != null && this.world instanceof ServerWorld) {
 			((ServerWorld)this.world).handleInteraction(EntityInteraction.VILLAGER_HURT, attacker, this);
 			if (this.isAlive() && attacker instanceof PlayerEntity) {
-				this.world.sendEntityStatus(this, (byte)13);
+				this.world.sendEntityStatus(this, EntityStatuses.ADD_VILLAGER_ANGRY_PARTICLES);
 			}
 		}
 
@@ -639,7 +640,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 				ServerWorld serverWorld = (ServerWorld)this.world;
 				((List)optional.get())
 					.stream()
-					.filter(livingEntity -> livingEntity instanceof InteractionObserver)
+					.filter(entity -> entity instanceof InteractionObserver)
 					.forEach(livingEntity -> serverWorld.handleInteraction(EntityInteraction.VILLAGER_KILLED, killer, (InteractionObserver)livingEntity));
 			}
 		}
@@ -648,15 +649,15 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	public void releaseTicketFor(MemoryModuleType<GlobalPos> memoryModuleType) {
 		if (this.world instanceof ServerWorld) {
 			MinecraftServer minecraftServer = ((ServerWorld)this.world).getServer();
-			this.brain.getOptionalMemory(memoryModuleType).ifPresent(globalPos -> {
-				ServerWorld serverWorld = minecraftServer.getWorld(globalPos.getDimension());
+			this.brain.getOptionalMemory(memoryModuleType).ifPresent(pos -> {
+				ServerWorld serverWorld = minecraftServer.getWorld(pos.getDimension());
 				if (serverWorld != null) {
 					PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
-					Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(globalPos.getPos());
+					Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(pos.getPos());
 					BiPredicate<VillagerEntity, PointOfInterestType> biPredicate = (BiPredicate<VillagerEntity, PointOfInterestType>)POINTS_OF_INTEREST.get(memoryModuleType);
 					if (optional.isPresent() && biPredicate.test(this, optional.get())) {
-						pointOfInterestStorage.releaseTicket(globalPos.getPos());
-						DebugInfoSender.sendPointOfInterest(serverWorld, globalPos.getPos());
+						pointOfInterestStorage.releaseTicket(pos.getPos());
+						DebugInfoSender.sendPointOfInterest(serverWorld, pos.getPos());
 					}
 				}
 			});
@@ -695,7 +696,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	}
 
 	public int getReputation(PlayerEntity player) {
-		return this.gossip.getReputationFor(player.getUuid(), villageGossipType -> true);
+		return this.gossip.getReputationFor(player.getUuid(), gossipType -> true);
 	}
 
 	private void depleteFood(int amount) {
@@ -728,13 +729,13 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 
 	@Override
 	public void handleStatus(byte status) {
-		if (status == 12) {
+		if (status == EntityStatuses.ADD_VILLAGER_HEART_PARTICLES) {
 			this.produceParticles(ParticleTypes.HEART);
-		} else if (status == 13) {
+		} else if (status == EntityStatuses.ADD_VILLAGER_ANGRY_PARTICLES) {
 			this.produceParticles(ParticleTypes.ANGRY_VILLAGER);
-		} else if (status == 14) {
+		} else if (status == EntityStatuses.ADD_VILLAGER_HAPPY_PARTICLES) {
 			this.produceParticles(ParticleTypes.HAPPY_VILLAGER);
-		} else if (status == 42) {
+		} else if (status == EntityStatuses.ADD_SPLASH_PARTICLES) {
 			this.produceParticles(ParticleTypes.SPLASH);
 		} else {
 			super.handleStatus(status);
@@ -877,12 +878,12 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		}
 	}
 
-	public void summonGolem(ServerWorld world, long time, int i) {
+	public void summonGolem(ServerWorld world, long time, int requiredCount) {
 		if (this.canSummonGolem(time)) {
 			Box box = this.getBoundingBox().expand(10.0, 10.0, 10.0);
 			List<VillagerEntity> list = world.getNonSpectatingEntities(VillagerEntity.class, box);
 			List<VillagerEntity> list2 = (List<VillagerEntity>)list.stream().filter(villager -> villager.canSummonGolem(time)).limit(5L).collect(Collectors.toList());
-			if (list2.size() >= i) {
+			if (list2.size() >= requiredCount) {
 				IronGolemEntity ironGolemEntity = this.spawnIronGolem(world);
 				if (ironGolemEntity != null) {
 					list.forEach(GolemLastSeenSensor::rememberIronGolem);

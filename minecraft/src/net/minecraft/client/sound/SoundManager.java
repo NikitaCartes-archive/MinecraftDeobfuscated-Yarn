@@ -35,7 +35,7 @@ import org.apache.logging.log4j.Logger;
 public class SoundManager extends SinglePreparationResourceReloader<SoundManager.SoundList> {
 	public static final Sound MISSING_SOUND = new Sound("meta:missing_sound", 1.0F, 1.0F, 1, Sound.RegistrationType.FILE, false, false, 16);
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final String field_33026 = "sounds.json";
+	private static final String SOUNDS_JSON = "sounds.json";
 	private static final Gson GSON = new GsonBuilder()
 		.registerTypeHierarchyAdapter(Text.class, new Text.Serializer())
 		.registerTypeAdapter(SoundEntry.class, new SoundEntryDeserializer())
@@ -213,20 +213,20 @@ public class SoundManager extends SinglePreparationResourceReloader<SoundManager
 		this.soundSystem.updateSoundVolume(category, volume);
 	}
 
-	public void stop(SoundInstance soundInstance) {
-		this.soundSystem.stop(soundInstance);
+	public void stop(SoundInstance sound) {
+		this.soundSystem.stop(sound);
 	}
 
-	public boolean isPlaying(SoundInstance soundInstance) {
-		return this.soundSystem.isPlaying(soundInstance);
+	public boolean isPlaying(SoundInstance sound) {
+		return this.soundSystem.isPlaying(sound);
 	}
 
-	public void registerListener(SoundInstanceListener soundInstanceListener) {
-		this.soundSystem.registerListener(soundInstanceListener);
+	public void registerListener(SoundInstanceListener listener) {
+		this.soundSystem.registerListener(listener);
 	}
 
-	public void unregisterListener(SoundInstanceListener soundInstanceListener) {
-		this.soundSystem.unregisterListener(soundInstanceListener);
+	public void unregisterListener(SoundInstanceListener listener) {
+		this.soundSystem.unregisterListener(listener);
 	}
 
 	public void stopSounds(@Nullable Identifier id, @Nullable SoundCategory soundCategory) {

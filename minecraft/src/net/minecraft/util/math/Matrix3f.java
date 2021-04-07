@@ -5,7 +5,10 @@ import java.nio.FloatBuffer;
 import org.apache.commons.lang3.tuple.Triple;
 
 public final class Matrix3f {
-	private static final int field_31077 = 3;
+	/**
+	 * The number of rows and columns ({@value}) this matrix has.
+	 */
+	private static final int ORDER = 3;
 	private static final float THREE_PLUS_TWO_SQRT_TWO = 3.0F + 2.0F * (float)Math.sqrt(2.0);
 	private static final float COS_PI_OVER_EIGHT = (float)Math.cos(Math.PI / 8);
 	private static final float SIN_PI_OVER_EIGHT = (float)Math.sin(Math.PI / 8);
@@ -56,16 +59,16 @@ public final class Matrix3f {
 		return matrix3f;
 	}
 
-	public Matrix3f(Matrix4f matrix4f) {
-		this.a00 = matrix4f.a00;
-		this.a01 = matrix4f.a01;
-		this.a02 = matrix4f.a02;
-		this.a10 = matrix4f.a10;
-		this.a11 = matrix4f.a11;
-		this.a12 = matrix4f.a12;
-		this.a20 = matrix4f.a20;
-		this.a21 = matrix4f.a21;
-		this.a22 = matrix4f.a22;
+	public Matrix3f(Matrix4f matrix) {
+		this.a00 = matrix.a00;
+		this.a01 = matrix.a01;
+		this.a02 = matrix.a02;
+		this.a10 = matrix.a10;
+		this.a11 = matrix.a11;
+		this.a12 = matrix.a12;
+		this.a20 = matrix.a20;
+		this.a21 = matrix.a21;
+		this.a22 = matrix.a22;
 	}
 
 	public Matrix3f(Matrix3f source) {
@@ -106,11 +109,11 @@ public final class Matrix3f {
 		return Pair.of(i, j);
 	}
 
-	private static Quaternion method_22857(Matrix3f matrix3f) {
-		Matrix3f matrix3f2 = new Matrix3f();
+	private static Quaternion method_22857(Matrix3f matrix) {
+		Matrix3f matrix3f = new Matrix3f();
 		Quaternion quaternion = Quaternion.IDENTITY.copy();
-		if (matrix3f.a01 * matrix3f.a01 + matrix3f.a10 * matrix3f.a10 > 1.0E-6F) {
-			Pair<Float, Float> pair = getSinAndCosOfRotation(matrix3f.a00, 0.5F * (matrix3f.a01 + matrix3f.a10), matrix3f.a11);
+		if (matrix.a01 * matrix.a01 + matrix.a10 * matrix.a10 > 1.0E-6F) {
+			Pair<Float, Float> pair = getSinAndCosOfRotation(matrix.a00, 0.5F * (matrix.a01 + matrix.a10), matrix.a11);
 			Float float_ = pair.getFirst();
 			Float float2 = pair.getSecond();
 			Quaternion quaternion2 = new Quaternion(0.0F, 0.0F, float_, float2);
@@ -118,20 +121,20 @@ public final class Matrix3f {
 			float g = -2.0F * float_ * float2;
 			float h = float2 * float2 + float_ * float_;
 			quaternion.hamiltonProduct(quaternion2);
-			matrix3f2.loadIdentity();
-			matrix3f2.a00 = f;
-			matrix3f2.a11 = f;
-			matrix3f2.a10 = -g;
-			matrix3f2.a01 = g;
-			matrix3f2.a22 = h;
-			matrix3f.multiply(matrix3f2);
-			matrix3f2.transpose();
-			matrix3f2.multiply(matrix3f);
-			matrix3f.load(matrix3f2);
+			matrix3f.loadIdentity();
+			matrix3f.a00 = f;
+			matrix3f.a11 = f;
+			matrix3f.a10 = -g;
+			matrix3f.a01 = g;
+			matrix3f.a22 = h;
+			matrix.multiply(matrix3f);
+			matrix3f.transpose();
+			matrix3f.multiply(matrix);
+			matrix.load(matrix3f);
 		}
 
-		if (matrix3f.a02 * matrix3f.a02 + matrix3f.a20 * matrix3f.a20 > 1.0E-6F) {
-			Pair<Float, Float> pair = getSinAndCosOfRotation(matrix3f.a00, 0.5F * (matrix3f.a02 + matrix3f.a20), matrix3f.a22);
+		if (matrix.a02 * matrix.a02 + matrix.a20 * matrix.a20 > 1.0E-6F) {
+			Pair<Float, Float> pair = getSinAndCosOfRotation(matrix.a00, 0.5F * (matrix.a02 + matrix.a20), matrix.a22);
 			float i = -pair.getFirst();
 			Float float2 = pair.getSecond();
 			Quaternion quaternion2 = new Quaternion(0.0F, i, 0.0F, float2);
@@ -139,20 +142,20 @@ public final class Matrix3f {
 			float g = -2.0F * i * float2;
 			float h = float2 * float2 + i * i;
 			quaternion.hamiltonProduct(quaternion2);
-			matrix3f2.loadIdentity();
-			matrix3f2.a00 = f;
-			matrix3f2.a22 = f;
-			matrix3f2.a20 = g;
-			matrix3f2.a02 = -g;
-			matrix3f2.a11 = h;
-			matrix3f.multiply(matrix3f2);
-			matrix3f2.transpose();
-			matrix3f2.multiply(matrix3f);
-			matrix3f.load(matrix3f2);
+			matrix3f.loadIdentity();
+			matrix3f.a00 = f;
+			matrix3f.a22 = f;
+			matrix3f.a20 = g;
+			matrix3f.a02 = -g;
+			matrix3f.a11 = h;
+			matrix.multiply(matrix3f);
+			matrix3f.transpose();
+			matrix3f.multiply(matrix);
+			matrix.load(matrix3f);
 		}
 
-		if (matrix3f.a12 * matrix3f.a12 + matrix3f.a21 * matrix3f.a21 > 1.0E-6F) {
-			Pair<Float, Float> pair = getSinAndCosOfRotation(matrix3f.a11, 0.5F * (matrix3f.a12 + matrix3f.a21), matrix3f.a22);
+		if (matrix.a12 * matrix.a12 + matrix.a21 * matrix.a21 > 1.0E-6F) {
+			Pair<Float, Float> pair = getSinAndCosOfRotation(matrix.a11, 0.5F * (matrix.a12 + matrix.a21), matrix.a22);
 			Float float_ = pair.getFirst();
 			Float float2 = pair.getSecond();
 			Quaternion quaternion2 = new Quaternion(float_, 0.0F, 0.0F, float2);
@@ -160,35 +163,35 @@ public final class Matrix3f {
 			float g = -2.0F * float_ * float2;
 			float h = float2 * float2 + float_ * float_;
 			quaternion.hamiltonProduct(quaternion2);
-			matrix3f2.loadIdentity();
-			matrix3f2.a11 = f;
-			matrix3f2.a22 = f;
-			matrix3f2.a21 = -g;
-			matrix3f2.a12 = g;
-			matrix3f2.a00 = h;
-			matrix3f.multiply(matrix3f2);
-			matrix3f2.transpose();
-			matrix3f2.multiply(matrix3f);
-			matrix3f.load(matrix3f2);
+			matrix3f.loadIdentity();
+			matrix3f.a11 = f;
+			matrix3f.a22 = f;
+			matrix3f.a21 = -g;
+			matrix3f.a12 = g;
+			matrix3f.a00 = h;
+			matrix.multiply(matrix3f);
+			matrix3f.transpose();
+			matrix3f.multiply(matrix);
+			matrix.load(matrix3f);
 		}
 
 		return quaternion;
 	}
 
-	private static void method_35260(Matrix3f matrix3f, Quaternion quaternion) {
-		float f = matrix3f.a00 * matrix3f.a00 + matrix3f.a10 * matrix3f.a10 + matrix3f.a20 * matrix3f.a20;
-		float g = matrix3f.a01 * matrix3f.a01 + matrix3f.a11 * matrix3f.a11 + matrix3f.a21 * matrix3f.a21;
-		float h = matrix3f.a02 * matrix3f.a02 + matrix3f.a12 * matrix3f.a12 + matrix3f.a22 * matrix3f.a22;
+	private static void method_35260(Matrix3f matrix, Quaternion quaternion) {
+		float f = matrix.a00 * matrix.a00 + matrix.a10 * matrix.a10 + matrix.a20 * matrix.a20;
+		float g = matrix.a01 * matrix.a01 + matrix.a11 * matrix.a11 + matrix.a21 * matrix.a21;
+		float h = matrix.a02 * matrix.a02 + matrix.a12 * matrix.a12 + matrix.a22 * matrix.a22;
 		if (f < g) {
-			float i = matrix3f.a10;
-			matrix3f.a10 = -matrix3f.a00;
-			matrix3f.a00 = i;
-			i = matrix3f.a11;
-			matrix3f.a11 = -matrix3f.a01;
-			matrix3f.a01 = i;
-			i = matrix3f.a12;
-			matrix3f.a12 = -matrix3f.a02;
-			matrix3f.a02 = i;
+			float i = matrix.a10;
+			matrix.a10 = -matrix.a00;
+			matrix.a00 = i;
+			i = matrix.a11;
+			matrix.a11 = -matrix.a01;
+			matrix.a01 = i;
+			i = matrix.a12;
+			matrix.a12 = -matrix.a02;
+			matrix.a02 = i;
 			Quaternion quaternion2 = new Quaternion(0.0F, 0.0F, SQRT_HALF, SQRT_HALF);
 			quaternion.hamiltonProduct(quaternion2);
 			i = f;
@@ -197,30 +200,30 @@ public final class Matrix3f {
 		}
 
 		if (f < h) {
-			float i = matrix3f.a20;
-			matrix3f.a20 = -matrix3f.a00;
-			matrix3f.a00 = i;
-			i = matrix3f.a21;
-			matrix3f.a21 = -matrix3f.a01;
-			matrix3f.a01 = i;
-			i = matrix3f.a22;
-			matrix3f.a22 = -matrix3f.a02;
-			matrix3f.a02 = i;
+			float i = matrix.a20;
+			matrix.a20 = -matrix.a00;
+			matrix.a00 = i;
+			i = matrix.a21;
+			matrix.a21 = -matrix.a01;
+			matrix.a01 = i;
+			i = matrix.a22;
+			matrix.a22 = -matrix.a02;
+			matrix.a02 = i;
 			Quaternion quaternion2 = new Quaternion(0.0F, SQRT_HALF, 0.0F, SQRT_HALF);
 			quaternion.hamiltonProduct(quaternion2);
 			h = f;
 		}
 
 		if (g < h) {
-			float i = matrix3f.a20;
-			matrix3f.a20 = -matrix3f.a10;
-			matrix3f.a10 = i;
-			i = matrix3f.a21;
-			matrix3f.a21 = -matrix3f.a11;
-			matrix3f.a11 = i;
-			i = matrix3f.a22;
-			matrix3f.a22 = -matrix3f.a12;
-			matrix3f.a12 = i;
+			float i = matrix.a20;
+			matrix.a20 = -matrix.a10;
+			matrix.a10 = i;
+			i = matrix.a21;
+			matrix.a21 = -matrix.a11;
+			matrix.a11 = i;
+			i = matrix.a22;
+			matrix.a22 = -matrix.a12;
+			matrix.a12 = i;
 			Quaternion quaternion2 = new Quaternion(SQRT_HALF, 0.0F, 0.0F, SQRT_HALF);
 			quaternion.hamiltonProduct(quaternion2);
 		}
@@ -341,39 +344,60 @@ public final class Matrix3f {
 		return 31 * i + (this.a22 != 0.0F ? Float.floatToIntBits(this.a22) : 0);
 	}
 
-	private static int method_35259(int i, int j) {
-		return j * 3 + i;
+	private static int pack(int x, int y) {
+		return y * 3 + x;
 	}
 
-	public void method_35261(FloatBuffer floatBuffer) {
-		this.a00 = floatBuffer.get(method_35259(0, 0));
-		this.a01 = floatBuffer.get(method_35259(0, 1));
-		this.a02 = floatBuffer.get(method_35259(0, 2));
-		this.a10 = floatBuffer.get(method_35259(1, 0));
-		this.a11 = floatBuffer.get(method_35259(1, 1));
-		this.a12 = floatBuffer.get(method_35259(1, 2));
-		this.a20 = floatBuffer.get(method_35259(2, 0));
-		this.a21 = floatBuffer.get(method_35259(2, 1));
-		this.a22 = floatBuffer.get(method_35259(2, 2));
+	/**
+	 * Reads a matrix from the buffer in row-major order.
+	 * 
+	 * @see #readColumnFirst(FloatBuffer)
+	 * @see #read(FloatBuffer, boolean)
+	 */
+	public void readRowFirst(FloatBuffer buf) {
+		this.a00 = buf.get(pack(0, 0));
+		this.a01 = buf.get(pack(0, 1));
+		this.a02 = buf.get(pack(0, 2));
+		this.a10 = buf.get(pack(1, 0));
+		this.a11 = buf.get(pack(1, 1));
+		this.a12 = buf.get(pack(1, 2));
+		this.a20 = buf.get(pack(2, 0));
+		this.a21 = buf.get(pack(2, 1));
+		this.a22 = buf.get(pack(2, 2));
 	}
 
-	public void method_35263(FloatBuffer floatBuffer) {
-		this.a00 = floatBuffer.get(method_35259(0, 0));
-		this.a01 = floatBuffer.get(method_35259(1, 0));
-		this.a02 = floatBuffer.get(method_35259(2, 0));
-		this.a10 = floatBuffer.get(method_35259(0, 1));
-		this.a11 = floatBuffer.get(method_35259(1, 1));
-		this.a12 = floatBuffer.get(method_35259(2, 1));
-		this.a20 = floatBuffer.get(method_35259(0, 2));
-		this.a21 = floatBuffer.get(method_35259(1, 2));
-		this.a22 = floatBuffer.get(method_35259(2, 2));
+	/**
+	 * Reads a matrix from the buffer in column-major order.
+	 * 
+	 * @see #readRowFirst(FloatBuffer)
+	 * @see #read(FloatBuffer, boolean)
+	 */
+	public void readColumnFirst(FloatBuffer buf) {
+		this.a00 = buf.get(pack(0, 0));
+		this.a01 = buf.get(pack(1, 0));
+		this.a02 = buf.get(pack(2, 0));
+		this.a10 = buf.get(pack(0, 1));
+		this.a11 = buf.get(pack(1, 1));
+		this.a12 = buf.get(pack(2, 1));
+		this.a20 = buf.get(pack(0, 2));
+		this.a21 = buf.get(pack(1, 2));
+		this.a22 = buf.get(pack(2, 2));
 	}
 
-	public void method_35262(FloatBuffer floatBuffer, boolean bl) {
-		if (bl) {
-			this.method_35263(floatBuffer);
+	/**
+	 * Reads a matrix from the buffer.
+	 * 
+	 * @see #readRowFirst(FloatBuffer)
+	 * @see #readColumnFirst(FloatBuffer)
+	 * 
+	 * @param columnFirst {@code true} to read in column-major order; {@code false} to read in
+	 * row-major order
+	 */
+	public void read(FloatBuffer buf, boolean columnFirst) {
+		if (columnFirst) {
+			this.readColumnFirst(buf);
 		} else {
-			this.method_35261(floatBuffer);
+			this.readRowFirst(buf);
 		}
 	}
 
@@ -413,35 +437,56 @@ public final class Matrix3f {
 		return stringBuilder.toString();
 	}
 
-	public void method_35266(FloatBuffer floatBuffer) {
-		floatBuffer.put(method_35259(0, 0), this.a00);
-		floatBuffer.put(method_35259(0, 1), this.a01);
-		floatBuffer.put(method_35259(0, 2), this.a02);
-		floatBuffer.put(method_35259(1, 0), this.a10);
-		floatBuffer.put(method_35259(1, 1), this.a11);
-		floatBuffer.put(method_35259(1, 2), this.a12);
-		floatBuffer.put(method_35259(2, 0), this.a20);
-		floatBuffer.put(method_35259(2, 1), this.a21);
-		floatBuffer.put(method_35259(2, 2), this.a22);
+	/**
+	 * Writes this matrix to the buffer in row-major order.
+	 * 
+	 * @see #writeColumnFirst(FloatBuffer)
+	 * @see #write(FloatBuffer, boolean)
+	 */
+	public void writeRowFirst(FloatBuffer buf) {
+		buf.put(pack(0, 0), this.a00);
+		buf.put(pack(0, 1), this.a01);
+		buf.put(pack(0, 2), this.a02);
+		buf.put(pack(1, 0), this.a10);
+		buf.put(pack(1, 1), this.a11);
+		buf.put(pack(1, 2), this.a12);
+		buf.put(pack(2, 0), this.a20);
+		buf.put(pack(2, 1), this.a21);
+		buf.put(pack(2, 2), this.a22);
 	}
 
-	public void method_35268(FloatBuffer floatBuffer) {
-		floatBuffer.put(method_35259(0, 0), this.a00);
-		floatBuffer.put(method_35259(1, 0), this.a01);
-		floatBuffer.put(method_35259(2, 0), this.a02);
-		floatBuffer.put(method_35259(0, 1), this.a10);
-		floatBuffer.put(method_35259(1, 1), this.a11);
-		floatBuffer.put(method_35259(2, 1), this.a12);
-		floatBuffer.put(method_35259(0, 2), this.a20);
-		floatBuffer.put(method_35259(1, 2), this.a21);
-		floatBuffer.put(method_35259(2, 2), this.a22);
+	/**
+	 * Writes this matrix to the buffer in column-major order.
+	 * 
+	 * @see #writeRowFirst(FloatBuffer)
+	 * @see #write(FloatBuffer, boolean)
+	 */
+	public void writeColumnFirst(FloatBuffer buf) {
+		buf.put(pack(0, 0), this.a00);
+		buf.put(pack(1, 0), this.a01);
+		buf.put(pack(2, 0), this.a02);
+		buf.put(pack(0, 1), this.a10);
+		buf.put(pack(1, 1), this.a11);
+		buf.put(pack(2, 1), this.a12);
+		buf.put(pack(0, 2), this.a20);
+		buf.put(pack(1, 2), this.a21);
+		buf.put(pack(2, 2), this.a22);
 	}
 
-	public void method_35264(FloatBuffer floatBuffer, boolean bl) {
-		if (bl) {
-			this.method_35268(floatBuffer);
+	/**
+	 * Writes this matrix to the buffer.
+	 * 
+	 * @see #writeRowFirst(FloatBuffer)
+	 * @see #writeColumnFirst(FloatBuffer)
+	 * 
+	 * @param columnFirst {@code true} to write in column-major order; {@code false} to write in
+	 * row-major order
+	 */
+	public void write(FloatBuffer buf, boolean columnFirst) {
+		if (columnFirst) {
+			this.writeColumnFirst(buf);
 		} else {
-			this.method_35266(floatBuffer);
+			this.writeRowFirst(buf);
 		}
 	}
 
@@ -480,7 +525,7 @@ public final class Matrix3f {
 		return o;
 	}
 
-	public float method_35269() {
+	public float determinant() {
 		float f = this.a11 * this.a22 - this.a12 * this.a21;
 		float g = -(this.a10 * this.a22 - this.a12 * this.a20);
 		float h = this.a10 * this.a21 - this.a11 * this.a20;
@@ -560,31 +605,34 @@ public final class Matrix3f {
 		this.a22 *= scalar;
 	}
 
-	public void method_35265(Matrix3f matrix3f) {
-		this.a00 = this.a00 + matrix3f.a00;
-		this.a01 = this.a01 + matrix3f.a01;
-		this.a02 = this.a02 + matrix3f.a02;
-		this.a10 = this.a10 + matrix3f.a10;
-		this.a11 = this.a11 + matrix3f.a11;
-		this.a12 = this.a12 + matrix3f.a12;
-		this.a20 = this.a20 + matrix3f.a20;
-		this.a21 = this.a21 + matrix3f.a21;
-		this.a22 = this.a22 + matrix3f.a22;
+	public void add(Matrix3f matrix) {
+		this.a00 = this.a00 + matrix.a00;
+		this.a01 = this.a01 + matrix.a01;
+		this.a02 = this.a02 + matrix.a02;
+		this.a10 = this.a10 + matrix.a10;
+		this.a11 = this.a11 + matrix.a11;
+		this.a12 = this.a12 + matrix.a12;
+		this.a20 = this.a20 + matrix.a20;
+		this.a21 = this.a21 + matrix.a21;
+		this.a22 = this.a22 + matrix.a22;
 	}
 
-	public void method_35267(Matrix3f matrix3f) {
-		this.a00 = this.a00 - matrix3f.a00;
-		this.a01 = this.a01 - matrix3f.a01;
-		this.a02 = this.a02 - matrix3f.a02;
-		this.a10 = this.a10 - matrix3f.a10;
-		this.a11 = this.a11 - matrix3f.a11;
-		this.a12 = this.a12 - matrix3f.a12;
-		this.a20 = this.a20 - matrix3f.a20;
-		this.a21 = this.a21 - matrix3f.a21;
-		this.a22 = this.a22 - matrix3f.a22;
+	public void subtract(Matrix3f matrix) {
+		this.a00 = this.a00 - matrix.a00;
+		this.a01 = this.a01 - matrix.a01;
+		this.a02 = this.a02 - matrix.a02;
+		this.a10 = this.a10 - matrix.a10;
+		this.a11 = this.a11 - matrix.a11;
+		this.a12 = this.a12 - matrix.a12;
+		this.a20 = this.a20 - matrix.a20;
+		this.a21 = this.a21 - matrix.a21;
+		this.a22 = this.a22 - matrix.a22;
 	}
 
-	public float method_35270() {
+	/**
+	 * Returns the sum of the elements on the main diagonal.
+	 */
+	public float trace() {
 		return this.a00 + this.a11 + this.a22;
 	}
 

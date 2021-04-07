@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -59,9 +60,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 	@Override
 	protected void initGoals() {
 		super.initGoals();
-		this.raidGoal = new RaidGoal<>(
-			this, RaiderEntity.class, true, livingEntity -> livingEntity != null && this.hasActiveRaid() && livingEntity.getType() != EntityType.WITCH
-		);
+		this.raidGoal = new RaidGoal<>(this, RaiderEntity.class, true, entity -> entity != null && this.hasActiveRaid() && entity.getType() != EntityType.WITCH);
 		this.attackPlayerGoal = new DisableableFollowTargetGoal<>(this, PlayerEntity.class, 10, true, false, null);
 		this.goalSelector.add(1, new SwimGoal(this));
 		this.goalSelector.add(2, new ProjectileAttackGoal(this, 1.0, 60, 10.0F));
@@ -167,7 +166,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 			}
 
 			if (this.random.nextFloat() < 7.5E-4F) {
-				this.world.sendEntityStatus(this, (byte)15);
+				this.world.sendEntityStatus(this, EntityStatuses.ADD_WITCH_PARTICLES);
 			}
 		}
 
@@ -181,7 +180,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 
 	@Override
 	public void handleStatus(byte status) {
-		if (status == 15) {
+		if (status == EntityStatuses.ADD_WITCH_PARTICLES) {
 			for (int i = 0; i < this.random.nextInt(35) + 10; i++) {
 				this.world
 					.addParticle(

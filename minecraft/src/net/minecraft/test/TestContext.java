@@ -102,7 +102,7 @@ public class TestContext {
 
 	public <E extends MobEntity> E spawnMob(EntityType<E> type, BlockPos pos) {
 		E mobEntity = (E)this.spawnEntity(type, pos);
-		mobEntity.method_35056();
+		mobEntity.clearGoalsAndTasks();
 		return mobEntity;
 	}
 
@@ -112,7 +112,7 @@ public class TestContext {
 
 	public <E extends MobEntity> E spawnMob(EntityType<E> type, Vec3d pos) {
 		E mobEntity = (E)this.spawnEntity(type, pos);
-		mobEntity.method_35056();
+		mobEntity.clearGoalsAndTasks();
 		return mobEntity;
 	}
 

@@ -22,11 +22,11 @@ public class ClampedEntityAttribute extends EntityAttribute {
 		}
 	}
 
-	public double method_35061() {
+	public double getMinValue() {
 		return this.minValue;
 	}
 
-	public double method_35062() {
+	public double getMaxValue() {
 		return this.maxValue;
 	}
 

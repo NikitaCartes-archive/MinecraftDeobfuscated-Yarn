@@ -137,7 +137,7 @@ public class DebugInfoSender {
 		if (brain.hasMemoryModule(MemoryModuleType.PATH)) {
 			packetByteBuf.writeBoolean(true);
 			Path path = (Path)brain.getOptionalMemory(MemoryModuleType.PATH).get();
-			path.method_35498(packetByteBuf);
+			path.toBuffer(packetByteBuf);
 		} else {
 			packetByteBuf.writeBoolean(false);
 		}
@@ -150,7 +150,7 @@ public class DebugInfoSender {
 			packetByteBuf.writeBoolean(false);
 		}
 
-		packetByteBuf.writeCollection(brain.method_35059(), (packetByteBufx, activity) -> packetByteBufx.writeString(activity.getId()));
+		packetByteBuf.writeCollection(brain.getPossibleActivities(), (packetByteBufx, activity) -> packetByteBufx.writeString(activity.getId()));
 		Set<String> set = (Set<String>)brain.getRunningTasks().stream().map(Task::toString).collect(Collectors.toSet());
 		packetByteBuf.writeCollection(set, PacketByteBuf::writeString);
 		packetByteBuf.writeCollection(method_36157(livingEntity, l), (packetByteBufx, string) -> {
@@ -207,7 +207,7 @@ public class DebugInfoSender {
 					long m = l - (Long)object;
 					string = "" + m + " ticks ago";
 				} else if (memory.isTimed()) {
-					string = method_36156((ServerWorld)livingEntity.world, object) + " (ttl: " + memory.method_35127() + ")";
+					string = method_36156((ServerWorld)livingEntity.world, object) + " (ttl: " + memory.getExpiry() + ")";
 				} else {
 					string = method_36156((ServerWorld)livingEntity.world, object);
 				}
@@ -229,13 +229,13 @@ public class DebugInfoSender {
 			return method_36156(serverWorld, serverWorld.getEntity((UUID)object));
 		} else if (object instanceof LivingEntity) {
 			Entity entity = (Entity)object;
-			return NameGenerator.method_36154(entity);
+			return NameGenerator.name(entity);
 		} else if (object instanceof Nameable) {
 			return ((Nameable)object).getName().getString();
 		} else if (object instanceof WalkTarget) {
 			return method_36156(serverWorld, ((WalkTarget)object).getLookTarget());
 		} else if (object instanceof EntityLookTarget) {
-			return method_36156(serverWorld, ((EntityLookTarget)object).method_35066());
+			return method_36156(serverWorld, ((EntityLookTarget)object).getEntity());
 		} else if (object instanceof GlobalPos) {
 			return method_36156(serverWorld, ((GlobalPos)object).getPos());
 		} else if (object instanceof BlockPosLookTarget) {

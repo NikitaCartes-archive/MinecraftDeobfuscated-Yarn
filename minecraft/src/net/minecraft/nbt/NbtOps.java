@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
  * they will be transported in packets as NBT. DataFixerUpper allows
  * generalizing the dimension serialization logic to prevent duplicate code,
  * where the NBT ops allow the DataFixerUpper dimension serialization logic
- * to interact with Minecraft NBTs.</p>
+ * to interact with Minecraft NBTs.
  * 
  * @see NbtOps#INSTANCE
  */
@@ -44,7 +44,7 @@ public class NbtOps implements DynamicOps<NbtElement> {
 	 * <p>This ops does not compress maps (replace field name to value pairs
 	 * with an ordered list of values in serialization). In fact, since
 	 * Minecraft NBT lists can only contain elements of the same type, this op
-	 * cannot compress maps.</p>
+	 * cannot compress maps.
 	 */
 	public static final NbtOps INSTANCE = new NbtOps();
 

@@ -17,10 +17,10 @@ public class MeleeAttackGoal extends Goal {
 	private double targetY;
 	private double targetZ;
 	private int updateCountdownTicks;
-	private int field_24667;
+	private int cooldown;
 	private final int attackIntervalTicks = 20;
 	private long lastUpdateTime;
-	private static final long field_30218 = 20L;
+	private static final long MAX_ATTACK_TIME = 20L;
 
 	public MeleeAttackGoal(PathAwareEntity mob, double speed, boolean pauseWhenMobIdle) {
 		this.mob = mob;
@@ -71,7 +71,7 @@ public class MeleeAttackGoal extends Goal {
 		this.mob.getNavigation().startMovingAlong(this.path, this.speed);
 		this.mob.setAttacking(true);
 		this.updateCountdownTicks = 0;
-		this.field_24667 = 0;
+		this.cooldown = 0;
 	}
 
 	@Override
@@ -113,32 +113,32 @@ public class MeleeAttackGoal extends Goal {
 			}
 		}
 
-		this.field_24667 = Math.max(this.field_24667 - 1, 0);
+		this.cooldown = Math.max(this.cooldown - 1, 0);
 		this.attack(livingEntity, d);
 	}
 
 	protected void attack(LivingEntity target, double squaredDistance) {
 		double d = this.getSquaredMaxAttackDistance(target);
-		if (squaredDistance <= d && this.field_24667 <= 0) {
-			this.method_28346();
+		if (squaredDistance <= d && this.cooldown <= 0) {
+			this.resetCooldown();
 			this.mob.swingHand(Hand.MAIN_HAND);
 			this.mob.tryAttack(target);
 		}
 	}
 
-	protected void method_28346() {
-		this.field_24667 = 20;
+	protected void resetCooldown() {
+		this.cooldown = 20;
 	}
 
-	protected boolean method_28347() {
-		return this.field_24667 <= 0;
+	protected boolean isCooledDown() {
+		return this.cooldown <= 0;
 	}
 
-	protected int method_28348() {
-		return this.field_24667;
+	protected int getCooldown() {
+		return this.cooldown;
 	}
 
-	protected int method_28349() {
+	protected int getMaxCooldown() {
 		return 20;
 	}
 

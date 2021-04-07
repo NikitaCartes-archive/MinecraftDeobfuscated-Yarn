@@ -39,29 +39,29 @@ public class AquiferSampler {
 		int z,
 		DoublePerlinNoiseSampler edgeDensityNoise,
 		DoublePerlinNoiseSampler waterLevelNoise,
-		ChunkGeneratorSettings settings,
+		ChunkGeneratorSettings chunkGeneratorSettings,
 		NoiseColumnSampler columnSampler,
-		int height
+		int i,
+		int j
 	) {
 		this.edgeDensityNoise = edgeDensityNoise;
 		this.waterLevelNoise = waterLevelNoise;
-		this.settings = settings;
+		this.settings = chunkGeneratorSettings;
 		this.columnSampler = columnSampler;
 		ChunkPos chunkPos = new ChunkPos(x, z);
 		this.startX = this.getLocalX(chunkPos.getStartX()) - 1;
-		int i = this.getLocalX(chunkPos.getEndX()) + 1;
-		this.sizeX = i - this.startX + 1;
-		int j = settings.getGenerationShapeConfig().getMinimumY();
-		this.startY = this.getLocalY(j) - 1;
-		int k = this.getLocalY(j + height) + 1;
-		int l = k - this.startY + 1;
+		int k = this.getLocalX(chunkPos.getEndX()) + 1;
+		this.sizeX = k - this.startX + 1;
+		this.startY = this.getLocalY(i) - 1;
+		int l = this.getLocalY(i + j) + 1;
+		int m = l - this.startY + 1;
 		this.startZ = this.getLocalZ(chunkPos.getStartZ()) - 1;
-		int m = this.getLocalZ(chunkPos.getEndZ()) + 1;
-		this.sizeZ = m - this.startZ + 1;
-		int n = this.sizeX * l * this.sizeZ;
-		this.waterLevels = new int[n];
+		int n = this.getLocalZ(chunkPos.getEndZ()) + 1;
+		this.sizeZ = n - this.startZ + 1;
+		int o = this.sizeX * m * this.sizeZ;
+		this.waterLevels = new int[o];
 		Arrays.fill(this.waterLevels, Integer.MAX_VALUE);
-		this.blockPositions = new long[n];
+		this.blockPositions = new long[o];
 		Arrays.fill(this.blockPositions, Long.MAX_VALUE);
 	}
 

@@ -8,8 +8,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeInputProvider;
+import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.util.collection.DefaultedList;
 
 public class SimpleInventory implements Inventory, RecipeInputProvider {
@@ -172,9 +172,9 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 	}
 
 	@Override
-	public void provideRecipeInputs(RecipeFinder finder) {
+	public void provideRecipeInputs(RecipeMatcher finder) {
 		for (ItemStack itemStack : this.stacks) {
-			finder.addItem(itemStack);
+			finder.addInput(itemStack);
 		}
 	}
 

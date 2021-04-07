@@ -267,7 +267,7 @@ public class MathHelper {
 	/**
 	 * Steps from {@code from} degrees towards {@code to} degrees, changing the value by at most {@code step} degrees.
 	 * 
-	 * <p>This method does not wrap the resulting angle, so {@link #stepAngleTowards(float, float, float)} should be used in preference.</p>
+	 * <p>This method does not wrap the resulting angle, so {@link #stepAngleTowards(float, float, float)} should be used in preference.
 	 */
 	public static float stepUnwrappedAngleTowards(float from, float to, float step) {
 		float f = subtractAngles(from, to);
@@ -394,9 +394,9 @@ public class MathHelper {
 	 * This is the delta value needed to lerp between {@code start} and {@code end} to get {@code value}.
 	 * In other words, {@code getLerpProgress(lerp(delta, start, end), start, end) == delta}.
 	 * 
-	 * @param value The result of the lerp function
-	 * @param start The value interpolated from
-	 * @param end The value interpolated to
+	 * @param value the result of the lerp function
+	 * @param start the value interpolated from
+	 * @param end the value interpolated to
 	 */
 	public static double getLerpProgress(double value, double start, double end) {
 		return (value - start) / (end - start);
@@ -676,12 +676,12 @@ public class MathHelper {
 	/**
 	 * A two-dimensional lerp between values on the 4 corners of the unit square. Arbitrary values are specified for the corners and the output is interpolated between them.
 	 * 
-	 * @param deltaX The x-coordinate on the unit square
-	 * @param deltaY The y-coordinate on the unit square
-	 * @param x0y0 The output if {@code deltaX} is 0 and {@code deltaY} is 0
-	 * @param x1y0 The output if {@code deltaX} is 1 and {@code deltaY} is 0
-	 * @param x0y1 The output if {@code deltaX} is 0 and {@code deltaY} is 1
-	 * @param x1y1 The output if {@code deltaX} is 1 and {@code deltaY} is 1
+	 * @param deltaX the x-coordinate on the unit square
+	 * @param deltaY the y-coordinate on the unit square
+	 * @param x0y0 the output if {@code deltaX} is 0 and {@code deltaY} is 0
+	 * @param x1y0 the output if {@code deltaX} is 1 and {@code deltaY} is 0
+	 * @param x0y1 the output if {@code deltaX} is 0 and {@code deltaY} is 1
+	 * @param x1y1 the output if {@code deltaX} is 1 and {@code deltaY} is 1
 	 */
 	public static double lerp2(double deltaX, double deltaY, double x0y0, double x1y0, double x0y1, double x1y1) {
 		return lerp(deltaY, lerp(deltaX, x0y0, x1y0), lerp(deltaX, x0y1, x1y1));
@@ -690,17 +690,17 @@ public class MathHelper {
 	/**
 	 * A three-dimensional lerp between values on the 8 corners of the unit cube. Arbitrary values are specified for the corners and the output is interpolated between them.
 	 * 
-	 * @param deltaX The x-coordinate on the unit cube
-	 * @param deltaY The y-coordinate on the unit cube
-	 * @param deltaZ The z-coordinate on the unit cube
-	 * @param x0y0z0 The output if {@code deltaX} is 0, {@code deltaY} is 0 and {@code deltaZ} is 0
-	 * @param x1y0z0 The output if {@code deltaX} is 1, {@code deltaY} is 0 and {@code deltaZ} is 0
-	 * @param x0y1z0 The output if {@code deltaX} is 0, {@code deltaY} is 1 and {@code deltaZ} is 0
-	 * @param x1y1z0 The output if {@code deltaX} is 1, {@code deltaY} is 1 and {@code deltaZ} is 0
-	 * @param x0y0z1 The output if {@code deltaX} is 0, {@code deltaY} is 0 and {@code deltaZ} is 1
-	 * @param x1y0z1 The output if {@code deltaX} is 1, {@code deltaY} is 0 and {@code deltaZ} is 1
-	 * @param x0y1z1 The output if {@code deltaX} is 0, {@code deltaY} is 1 and {@code deltaZ} is 1
-	 * @param x1y1z1 The output if {@code deltaX} is 1, {@code deltaY} is 1 and {@code deltaZ} is 1
+	 * @param deltaX the x-coordinate on the unit cube
+	 * @param deltaY the y-coordinate on the unit cube
+	 * @param deltaZ the z-coordinate on the unit cube
+	 * @param x0y0z0 the output if {@code deltaX} is 0, {@code deltaY} is 0 and {@code deltaZ} is 0
+	 * @param x1y0z0 the output if {@code deltaX} is 1, {@code deltaY} is 0 and {@code deltaZ} is 0
+	 * @param x0y1z0 the output if {@code deltaX} is 0, {@code deltaY} is 1 and {@code deltaZ} is 0
+	 * @param x1y1z0 the output if {@code deltaX} is 1, {@code deltaY} is 1 and {@code deltaZ} is 0
+	 * @param x0y0z1 the output if {@code deltaX} is 0, {@code deltaY} is 0 and {@code deltaZ} is 1
+	 * @param x1y0z1 the output if {@code deltaX} is 1, {@code deltaY} is 0 and {@code deltaZ} is 1
+	 * @param x0y1z1 the output if {@code deltaX} is 0, {@code deltaY} is 1 and {@code deltaZ} is 1
+	 * @param x1y1z1 the output if {@code deltaX} is 1, {@code deltaY} is 1 and {@code deltaZ} is 1
 	 */
 	public static double lerp3(
 		double deltaX,

@@ -23,13 +23,13 @@ import org.apache.logging.log4j.Logger;
 
 public class SnbtProvider implements DataProvider {
 	@Nullable
-	private static final Path field_24615 = null;
+	private static final Path DEBUG_OUTPUT_DIRECTORY = null;
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final DataGenerator root;
 	private final List<SnbtProvider.Tweaker> write = Lists.<SnbtProvider.Tweaker>newArrayList();
 
-	public SnbtProvider(DataGenerator dataGenerator) {
-		this.root = dataGenerator;
+	public SnbtProvider(DataGenerator generator) {
+		this.root = generator;
 	}
 
 	public SnbtProvider addWriter(SnbtProvider.Tweaker tweaker) {
@@ -37,14 +37,14 @@ public class SnbtProvider implements DataProvider {
 		return this;
 	}
 
-	private NbtCompound write(String string, NbtCompound nbtCompound) {
-		NbtCompound nbtCompound2 = nbtCompound;
+	private NbtCompound write(String key, NbtCompound compound) {
+		NbtCompound nbtCompound = compound;
 
 		for (SnbtProvider.Tweaker tweaker : this.write) {
-			nbtCompound2 = tweaker.write(string, nbtCompound2);
+			nbtCompound = tweaker.write(key, nbtCompound);
 		}
 
-		return nbtCompound2;
+		return nbtCompound;
 	}
 
 	@Override
@@ -100,7 +100,7 @@ public class SnbtProvider implements DataProvider {
 				byte[] bs = byteArrayOutputStream.toByteArray();
 				String string2 = SHA1.hashBytes(bs).toString();
 				String string3;
-				if (field_24615 != null) {
+				if (DEBUG_OUTPUT_DIRECTORY != null) {
 					string3 = NbtHelper.toPrettyPrintedString(nbtCompound);
 				} else {
 					string3 = null;
@@ -130,27 +130,27 @@ public class SnbtProvider implements DataProvider {
 		}
 	}
 
-	private void write(DataCache dataCache, SnbtProvider.CompressedData compressedData, Path path) {
-		if (compressedData.field_24616 != null) {
-			Path path2 = field_24615.resolve(compressedData.name + ".snbt");
+	private void write(DataCache cache, SnbtProvider.CompressedData data, Path root) {
+		if (data.snbtContent != null) {
+			Path path = DEBUG_OUTPUT_DIRECTORY.resolve(data.name + ".snbt");
 
 			try {
-				NbtProvider.writeTo(path2, compressedData.field_24616);
+				NbtProvider.writeTo(path, data.snbtContent);
 			} catch (IOException var18) {
-				LOGGER.error("Couldn't write structure SNBT {} at {}", compressedData.name, path2, var18);
+				LOGGER.error("Couldn't write structure SNBT {} at {}", data.name, path, var18);
 			}
 		}
 
-		Path path2 = path.resolve(compressedData.name + ".nbt");
+		Path path = root.resolve(data.name + ".nbt");
 
 		try {
-			if (!Objects.equals(dataCache.getOldSha1(path2), compressedData.sha1) || !Files.exists(path2, new LinkOption[0])) {
-				Files.createDirectories(path2.getParent());
-				OutputStream outputStream = Files.newOutputStream(path2);
+			if (!Objects.equals(cache.getOldSha1(path), data.sha1) || !Files.exists(path, new LinkOption[0])) {
+				Files.createDirectories(path.getParent());
+				OutputStream outputStream = Files.newOutputStream(path);
 				Throwable var6 = null;
 
 				try {
-					outputStream.write(compressedData.bytes);
+					outputStream.write(data.bytes);
 				} catch (Throwable var17) {
 					var6 = var17;
 					throw var17;
@@ -169,9 +169,9 @@ public class SnbtProvider implements DataProvider {
 				}
 			}
 
-			dataCache.updateSha1(path2, compressedData.sha1);
+			cache.updateSha1(path, data.sha1);
 		} catch (IOException var20) {
-			LOGGER.error("Couldn't write structure {} at {}", compressedData.name, path2, var20);
+			LOGGER.error("Couldn't write structure {} at {}", data.name, path, var20);
 		}
 	}
 
@@ -179,14 +179,14 @@ public class SnbtProvider implements DataProvider {
 		private final String name;
 		private final byte[] bytes;
 		@Nullable
-		private final String field_24616;
+		private final String snbtContent;
 		private final String sha1;
 
-		public CompressedData(String name, byte[] bytes, @Nullable String sha1, String string) {
+		public CompressedData(String name, byte[] bytes, @Nullable String snbtContent, String sha1) {
 			this.name = name;
 			this.bytes = bytes;
-			this.field_24616 = sha1;
-			this.sha1 = string;
+			this.snbtContent = snbtContent;
+			this.sha1 = sha1;
 		}
 	}
 

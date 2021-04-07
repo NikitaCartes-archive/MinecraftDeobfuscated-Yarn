@@ -31,7 +31,7 @@ public class ModelVariantMap {
 	private final Map<String, WeightedUnbakedModel> variantMap = Maps.<String, WeightedUnbakedModel>newLinkedHashMap();
 	private MultipartUnbakedModel multipartModel;
 
-	public static ModelVariantMap deserialize(ModelVariantMap.DeserializationContext context, Reader reader) {
+	public static ModelVariantMap fromJson(ModelVariantMap.DeserializationContext context, Reader reader) {
 		return JsonHelper.deserialize(context.gson, reader, ModelVariantMap.class);
 	}
 
@@ -57,16 +57,33 @@ public class ModelVariantMap {
 		}
 	}
 
+	/**
+	 * Checks if there's a variant under the {@code key} in this map.
+	 * 
+	 * @return {@code true} if the {@code key} has a variant, {@code false} otherwise
+	 * 
+	 * @param key the variant's key
+	 */
 	@VisibleForTesting
-	public boolean method_35790(String string) {
-		return this.variantMap.get(string) != null;
+	public boolean containsVariant(String key) {
+		return this.variantMap.get(key) != null;
 	}
 
+	/**
+	 * Finds and returns the definition of the variant under the {@code key}. If the
+	 * {@code key} does not {@linkplain #containsVariant(String) exist}, this throws
+	 * an exception.
+	 * 
+	 * @return the variant definition
+	 * @throws VariantAbsentException if no variant with the given {@code key} exists
+	 * 
+	 * @param key the variant's key
+	 */
 	@VisibleForTesting
-	public WeightedUnbakedModel method_35792(String string) {
-		WeightedUnbakedModel weightedUnbakedModel = (WeightedUnbakedModel)this.variantMap.get(string);
+	public WeightedUnbakedModel getVariant(String key) {
+		WeightedUnbakedModel weightedUnbakedModel = (WeightedUnbakedModel)this.variantMap.get(key);
 		if (weightedUnbakedModel == null) {
-			throw new ModelVariantMap.class_6247();
+			throw new ModelVariantMap.VariantAbsentException();
 		} else {
 			return weightedUnbakedModel;
 		}
@@ -96,7 +113,7 @@ public class ModelVariantMap {
 	}
 
 	@VisibleForTesting
-	public Set<WeightedUnbakedModel> method_35791() {
+	public Set<WeightedUnbakedModel> getAllModels() {
 		Set<WeightedUnbakedModel> set = Sets.<WeightedUnbakedModel>newHashSet(this.variantMap.values());
 		if (this.hasMultipartModel()) {
 			set.addAll(this.multipartModel.getModels());
@@ -137,8 +154,8 @@ public class ModelVariantMap {
 	public static class Deserializer implements JsonDeserializer<ModelVariantMap> {
 		public ModelVariantMap deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
-			Map<String, WeightedUnbakedModel> map = this.deserializeVariants(jsonDeserializationContext, jsonObject);
-			MultipartUnbakedModel multipartUnbakedModel = this.deserializeMultipart(jsonDeserializationContext, jsonObject);
+			Map<String, WeightedUnbakedModel> map = this.variantsFromJson(jsonDeserializationContext, jsonObject);
+			MultipartUnbakedModel multipartUnbakedModel = this.multipartFromJson(jsonDeserializationContext, jsonObject);
 			if (!map.isEmpty() || multipartUnbakedModel != null && !multipartUnbakedModel.getModels().isEmpty()) {
 				return new ModelVariantMap(map, multipartUnbakedModel);
 			} else {
@@ -146,7 +163,7 @@ public class ModelVariantMap {
 			}
 		}
 
-		protected Map<String, WeightedUnbakedModel> deserializeVariants(JsonDeserializationContext context, JsonObject object) {
+		protected Map<String, WeightedUnbakedModel> variantsFromJson(JsonDeserializationContext context, JsonObject object) {
 			Map<String, WeightedUnbakedModel> map = Maps.<String, WeightedUnbakedModel>newHashMap();
 			if (object.has("variants")) {
 				JsonObject jsonObject = JsonHelper.getObject(object, "variants");
@@ -160,7 +177,7 @@ public class ModelVariantMap {
 		}
 
 		@Nullable
-		protected MultipartUnbakedModel deserializeMultipart(JsonDeserializationContext context, JsonObject object) {
+		protected MultipartUnbakedModel multipartFromJson(JsonDeserializationContext context, JsonObject object) {
 			if (!object.has("multipart")) {
 				return null;
 			} else {
@@ -170,9 +187,12 @@ public class ModelVariantMap {
 		}
 	}
 
+	/**
+	 * An unchecked exception indicating a variant is not found with a string key.
+	 */
 	@Environment(EnvType.CLIENT)
-	public class class_6247 extends RuntimeException {
-		protected class_6247() {
+	public class VariantAbsentException extends RuntimeException {
+		protected VariantAbsentException() {
 		}
 	}
 }

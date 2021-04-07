@@ -210,11 +210,11 @@ public final class NativeImage implements AutoCloseable {
 
 	public void method_35621(int i, int j, byte b) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		if (!this.format.method_35631()) {
+		if (!this.format.hasLuminance()) {
 			throw new IllegalArgumentException(String.format("setPixelLuminance only works on image with luminance; have %s", this.format));
 		} else if (i <= this.width && j <= this.height) {
 			this.checkAllocated();
-			long l = (long)((i + j * this.width) * this.format.getChannelCount() + this.format.method_35635() / 8);
+			long l = (long)((i + j * this.width) * this.format.getChannelCount() + this.format.getLuminanceChannelOffset() / 8);
 			MemoryUtil.memPutByte(this.pointer + l, b);
 		} else {
 			throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", i, j, this.width, this.height));
@@ -223,10 +223,10 @@ public final class NativeImage implements AutoCloseable {
 
 	public byte method_35623(int i, int j) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		if (!this.format.method_35636()) {
+		if (!this.format.hasRedChannel()) {
 			throw new IllegalArgumentException(String.format("no red or luminance in %s", this.format));
 		} else if (i <= this.width && j <= this.height) {
-			int k = (i + j * this.width) * this.format.getChannelCount() + this.format.method_35639() / 8;
+			int k = (i + j * this.width) * this.format.getChannelCount() + this.format.getRedOrLuminanceOffset() / 8;
 			return MemoryUtil.memGetByte(this.pointer + (long)k);
 		} else {
 			throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", i, j, this.width, this.height));
@@ -235,10 +235,10 @@ public final class NativeImage implements AutoCloseable {
 
 	public byte method_35625(int i, int j) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		if (!this.format.method_35637()) {
+		if (!this.format.hasGreenChannel()) {
 			throw new IllegalArgumentException(String.format("no green or luminance in %s", this.format));
 		} else if (i <= this.width && j <= this.height) {
-			int k = (i + j * this.width) * this.format.getChannelCount() + this.format.method_35640() / 8;
+			int k = (i + j * this.width) * this.format.getChannelCount() + this.format.getGreenOrLuminanceOffset() / 8;
 			return MemoryUtil.memGetByte(this.pointer + (long)k);
 		} else {
 			throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", i, j, this.width, this.height));
@@ -247,10 +247,10 @@ public final class NativeImage implements AutoCloseable {
 
 	public byte method_35626(int i, int j) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		if (!this.format.method_35638()) {
+		if (!this.format.hasBlueChannel()) {
 			throw new IllegalArgumentException(String.format("no blue or luminance in %s", this.format));
 		} else if (i <= this.width && j <= this.height) {
-			int k = (i + j * this.width) * this.format.getChannelCount() + this.format.method_35641() / 8;
+			int k = (i + j * this.width) * this.format.getChannelCount() + this.format.getBlueOrLuminanceOffset() / 8;
 			return MemoryUtil.memGetByte(this.pointer + (long)k);
 		} else {
 			throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", i, j, this.width, this.height));
@@ -758,19 +758,19 @@ public final class NativeImage implements AutoCloseable {
 			return this.pixelDataFormat;
 		}
 
-		public boolean method_35628() {
+		public boolean hasRed() {
 			return this.hasRed;
 		}
 
-		public boolean method_35629() {
+		public boolean hasGreen() {
 			return this.hasGreen;
 		}
 
-		public boolean method_35630() {
+		public boolean hasBlue() {
 			return this.hasBlue;
 		}
 
-		public boolean method_35631() {
+		public boolean hasLuminance() {
 			return this.hasLuminance;
 		}
 
@@ -778,19 +778,19 @@ public final class NativeImage implements AutoCloseable {
 			return this.hasAlpha;
 		}
 
-		public int method_35632() {
+		public int getRedOffset() {
 			return this.redOffset;
 		}
 
-		public int method_35633() {
+		public int getGreenOffset() {
 			return this.greenOffset;
 		}
 
-		public int method_35634() {
+		public int getBlueOffset() {
 			return this.blueOffset;
 		}
 
-		public int method_35635() {
+		public int getLuminanceChannelOffset() {
 			return this.luminanceChannelOffset;
 		}
 
@@ -798,15 +798,15 @@ public final class NativeImage implements AutoCloseable {
 			return this.alphaChannelOffset;
 		}
 
-		public boolean method_35636() {
+		public boolean hasRedChannel() {
 			return this.hasLuminance || this.hasRed;
 		}
 
-		public boolean method_35637() {
+		public boolean hasGreenChannel() {
 			return this.hasLuminance || this.hasGreen;
 		}
 
-		public boolean method_35638() {
+		public boolean hasBlueChannel() {
 			return this.hasLuminance || this.hasBlue;
 		}
 
@@ -814,15 +814,15 @@ public final class NativeImage implements AutoCloseable {
 			return this.hasLuminance || this.hasAlpha;
 		}
 
-		public int method_35639() {
+		public int getRedOrLuminanceOffset() {
 			return this.hasLuminance ? this.luminanceChannelOffset : this.redOffset;
 		}
 
-		public int method_35640() {
+		public int getGreenOrLuminanceOffset() {
 			return this.hasLuminance ? this.luminanceChannelOffset : this.greenOffset;
 		}
 
-		public int method_35641() {
+		public int getBlueOrLuminanceOffset() {
 			return this.hasLuminance ? this.luminanceChannelOffset : this.blueOffset;
 		}
 

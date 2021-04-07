@@ -34,11 +34,11 @@ import org.apache.logging.log4j.Logger;
  * 
  * <p>Each minecraft server has a dynamic registry manager for file-loaded
  * registries, while each client play network handler has a dynamic registry
- * manager for server-sent dynamic registries.</p>
+ * manager for server-sent dynamic registries.
  * 
  * <p>The {@link DynamicRegistryManager.Impl}
  * class serves as an immutable implementation of any particular collection
- * or configuration of dynamic registries.</p>
+ * or configuration of dynamic registries.
  */
 public abstract class DynamicRegistryManager {
 	private static final Logger LOGGER = LogManager.getLogger();

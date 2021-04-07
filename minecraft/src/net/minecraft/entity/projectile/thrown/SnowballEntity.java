@@ -1,6 +1,7 @@
 package net.minecraft.entity.projectile.thrown;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -40,7 +41,7 @@ public class SnowballEntity extends ThrownItemEntity {
 
 	@Override
 	public void handleStatus(byte status) {
-		if (status == 3) {
+		if (status == EntityStatuses.PLAY_DEATH_SOUND_OR_ADD_PROJECTILE_HIT_PARTICLES) {
 			ParticleEffect particleEffect = this.getParticleParameters();
 
 			for (int i = 0; i < 8; i++) {
@@ -61,7 +62,7 @@ public class SnowballEntity extends ThrownItemEntity {
 	protected void onCollision(HitResult hitResult) {
 		super.onCollision(hitResult);
 		if (!this.world.isClient) {
-			this.world.sendEntityStatus(this, (byte)3);
+			this.world.sendEntityStatus(this, EntityStatuses.PLAY_DEATH_SOUND_OR_ADD_PROJECTILE_HIT_PARTICLES);
 			this.discard();
 		}
 	}

@@ -5,6 +5,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
@@ -123,7 +124,7 @@ public class SquidEntity extends WaterCreatureEntity {
 					this.thrustTimerSpeed = 1.0F / (this.random.nextFloat() + 1.0F) * 0.2F;
 				}
 
-				this.world.sendEntityStatus(this, (byte)19);
+				this.world.sendEntityStatus(this, EntityStatuses.RESET_SQUID_THRUST_TIMER);
 			}
 		}
 
@@ -213,7 +214,7 @@ public class SquidEntity extends WaterCreatureEntity {
 
 	@Override
 	public void handleStatus(byte status) {
-		if (status == 19) {
+		if (status == EntityStatuses.RESET_SQUID_THRUST_TIMER) {
 			this.thrustTimer = 0.0F;
 		} else {
 			super.handleStatus(status);

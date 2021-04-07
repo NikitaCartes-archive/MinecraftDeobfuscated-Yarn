@@ -8,6 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
@@ -45,7 +46,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class GuardianEntity extends HostileEntity {
-	protected static final int field_30470 = 80;
+	protected static final int WARMUP_TIME = 80;
 	private static final TrackedData<Boolean> SPIKES_RETRACTED = DataTracker.registerData(GuardianEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> BEAM_TARGET_ID = DataTracker.registerData(GuardianEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private float tailAngle;
@@ -404,7 +405,7 @@ public class GuardianEntity extends HostileEntity {
 				if (this.beamTicks == 0) {
 					this.guardian.setBeamTarget(this.guardian.getTarget().getId());
 					if (!this.guardian.isSilent()) {
-						this.guardian.world.sendEntityStatus(this.guardian, (byte)21);
+						this.guardian.world.sendEntityStatus(this.guardian, EntityStatuses.PLAY_GUARDIAN_ATTACK_SOUND);
 					}
 				} else if (this.beamTicks >= this.guardian.getWarmupTime()) {
 					float f = 1.0F;
@@ -443,7 +444,7 @@ public class GuardianEntity extends HostileEntity {
 				double f = vec3d.y / d;
 				double g = vec3d.z / d;
 				float h = (float)(MathHelper.atan2(vec3d.z, vec3d.x) * 180.0F / (float)Math.PI) - 90.0F;
-				this.guardian.yaw = this.changeAngle(this.guardian.yaw, h, 90.0F);
+				this.guardian.yaw = this.wrapDegrees(this.guardian.yaw, h, 90.0F);
 				this.guardian.bodyYaw = this.guardian.yaw;
 				float i = (float)(this.speed * this.guardian.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
 				float j = MathHelper.lerp(0.125F, this.guardian.getMovementSpeed(), i);

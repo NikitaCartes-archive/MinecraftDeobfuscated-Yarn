@@ -30,21 +30,21 @@ public class SingleItemRecipeJsonFactory {
 		this.count = outputCount;
 	}
 
-	public static SingleItemRecipeJsonFactory create(Ingredient input, ItemConvertible output) {
+	public static SingleItemRecipeJsonFactory createStonecutting(Ingredient input, ItemConvertible output) {
 		return new SingleItemRecipeJsonFactory(RecipeSerializer.STONECUTTING, input, output, 1);
 	}
 
-	public static SingleItemRecipeJsonFactory create(Ingredient input, ItemConvertible output, int outputCount) {
+	public static SingleItemRecipeJsonFactory createStonecutting(Ingredient input, ItemConvertible output, int outputCount) {
 		return new SingleItemRecipeJsonFactory(RecipeSerializer.STONECUTTING, input, output, outputCount);
 	}
 
-	public SingleItemRecipeJsonFactory create(String criterionName, CriterionConditions conditions) {
+	public SingleItemRecipeJsonFactory createStonecutting(String criterionName, CriterionConditions conditions) {
 		this.builder.criterion(criterionName, conditions);
 		return this;
 	}
 
-	public SingleItemRecipeJsonFactory method_35919(String string) {
-		this.group = string;
+	public SingleItemRecipeJsonFactory group(String group) {
+		this.group = group;
 		return this;
 	}
 

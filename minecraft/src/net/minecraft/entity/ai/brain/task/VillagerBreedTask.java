@@ -2,6 +2,7 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -16,8 +17,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.poi.PointOfInterestType;
 
 public class VillagerBreedTask extends Task<VillagerEntity> {
-	private static final int field_30190 = 5;
-	private static final float field_30191 = 0.5F;
+	private static final int MAX_DISTANCE = 5;
+	private static final float APPROACH_SPEED = 0.5F;
 	private long breedEndTime;
 
 	public VillagerBreedTask() {
@@ -37,8 +38,8 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		PassiveEntity passiveEntity = (PassiveEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.BREED_TARGET).get();
 		LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, passiveEntity, 0.5F);
-		serverWorld.sendEntityStatus(passiveEntity, (byte)18);
-		serverWorld.sendEntityStatus(villagerEntity, (byte)18);
+		serverWorld.sendEntityStatus(passiveEntity, EntityStatuses.ADD_BREEDING_PARTICLES);
+		serverWorld.sendEntityStatus(villagerEntity, EntityStatuses.ADD_BREEDING_PARTICLES);
 		int i = 275 + villagerEntity.getRandom().nextInt(50);
 		this.breedEndTime = l + (long)i;
 	}
@@ -52,8 +53,8 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 				villagerEntity2.eatForBreeding();
 				this.goHome(serverWorld, villagerEntity, villagerEntity2);
 			} else if (villagerEntity.getRandom().nextInt(35) == 0) {
-				serverWorld.sendEntityStatus(villagerEntity2, (byte)12);
-				serverWorld.sendEntityStatus(villagerEntity, (byte)12);
+				serverWorld.sendEntityStatus(villagerEntity2, EntityStatuses.ADD_VILLAGER_HEART_PARTICLES);
+				serverWorld.sendEntityStatus(villagerEntity, EntityStatuses.ADD_VILLAGER_HEART_PARTICLES);
 			}
 		}
 	}
@@ -61,8 +62,8 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 	private void goHome(ServerWorld world, VillagerEntity first, VillagerEntity second) {
 		Optional<BlockPos> optional = this.getReachableHome(world, first);
 		if (!optional.isPresent()) {
-			world.sendEntityStatus(second, (byte)13);
-			world.sendEntityStatus(first, (byte)13);
+			world.sendEntityStatus(second, EntityStatuses.ADD_VILLAGER_ANGRY_PARTICLES);
+			world.sendEntityStatus(first, EntityStatuses.ADD_VILLAGER_ANGRY_PARTICLES);
 		} else {
 			Optional<VillagerEntity> optional2 = this.createChild(world, first, second);
 			if (optional2.isPresent()) {
@@ -109,7 +110,7 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 			villagerEntity.setBreedingAge(-24000);
 			villagerEntity.refreshPositionAndAngles(parent.getX(), parent.getY(), parent.getZ(), 0.0F, 0.0F);
 			world.spawnEntityAndPassengers(villagerEntity);
-			world.sendEntityStatus(villagerEntity, (byte)12);
+			world.sendEntityStatus(villagerEntity, EntityStatuses.ADD_VILLAGER_HEART_PARTICLES);
 			return Optional.of(villagerEntity);
 		}
 	}

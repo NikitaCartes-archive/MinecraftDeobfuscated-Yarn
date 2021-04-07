@@ -115,7 +115,7 @@ public class HoldingPatternPhase extends AbstractPhase {
 
 	private void followPath() {
 		if (this.path != null && !this.path.isFinished()) {
-			Vec3i vec3i = this.path.method_31032();
+			Vec3i vec3i = this.path.getCurrentNodePos();
 			this.path.next();
 			double d = (double)vec3i.getX();
 			double e = (double)vec3i.getZ();

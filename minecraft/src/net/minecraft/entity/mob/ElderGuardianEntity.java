@@ -65,7 +65,7 @@ public class ElderGuardianEntity extends GuardianEntity {
 		if ((this.age + this.getId()) % 1200 == 0) {
 			StatusEffect statusEffect = StatusEffects.MINING_FATIGUE;
 			List<ServerPlayerEntity> list = ((ServerWorld)this.world)
-				.getPlayers(serverPlayerEntityx -> this.squaredDistanceTo(serverPlayerEntityx) < 2500.0 && serverPlayerEntityx.interactionManager.isSurvivalLike());
+				.getPlayers(player -> this.squaredDistanceTo(player) < 2500.0 && player.interactionManager.isSurvivalLike());
 			int j = 2;
 			int k = 6000;
 			int l = 1200;

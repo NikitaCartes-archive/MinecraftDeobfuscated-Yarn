@@ -144,7 +144,11 @@ import org.apache.logging.log4j.Logger;
 public class ServerWorld extends World implements StructureWorldAccess {
 	public static final BlockPos END_SPAWN_POS = new BlockPos(100, 50, 0);
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final int field_29768 = 300;
+	/**
+	 * The number of ticks ({@value}) the world will continue to tick entities after
+	 * all players have left and the world does not contain any forced chunks.
+	 */
+	private static final int SERVER_IDLE_COOLDOWN = 300;
 	private final List<ServerPlayerEntity> players = Lists.<ServerPlayerEntity>newArrayList();
 	private final ServerChunkManager serverChunkManager;
 	private final MinecraftServer server;

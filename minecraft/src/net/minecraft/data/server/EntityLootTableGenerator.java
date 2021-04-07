@@ -1112,11 +1112,11 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		this.lootTables.forEach(biConsumer::accept);
 	}
 
-	private void register(EntityType<?> entityType, LootTable.Builder builder) {
-		this.register(entityType.getLootTableId(), builder);
+	private void register(EntityType<?> entityType, LootTable.Builder lootTable) {
+		this.register(entityType.getLootTableId(), lootTable);
 	}
 
-	private void register(Identifier identifier, LootTable.Builder builder) {
-		this.lootTables.put(identifier, builder);
+	private void register(Identifier entityId, LootTable.Builder lootTable) {
+		this.lootTables.put(entityId, lootTable);
 	}
 }

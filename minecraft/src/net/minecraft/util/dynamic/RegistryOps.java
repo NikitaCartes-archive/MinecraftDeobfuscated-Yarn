@@ -75,7 +75,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 	 * Encode an id for a registry element than a full object if possible.
 	 * 
 	 * <p>This method is called by casting an arbitrary dynamic ops to a registry
-	 * reading ops.</p>
+	 * reading ops.
 	 * 
 	 * @see RegistryReadingOps#encodeOrId(Object, Object, RegistryKey, Codec)
 	 */
@@ -125,7 +125,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 	/**
 	 * Reads a supplier for a registry element.
 	 * 
-	 * <p>This logic is used by both {@code decodeOrId} and {@code loadToRegistry}.</p>
+	 * <p>This logic is used by both {@code decodeOrId} and {@code loadToRegistry}.
 	 */
 	private <E> DataResult<Supplier<E>> readSupplier(RegistryKey<? extends Registry<E>> key, MutableRegistry<E> registry, Codec<E> codec, Identifier elementId) {
 		RegistryKey<E> registryKey = RegistryKey.of(key, elementId);

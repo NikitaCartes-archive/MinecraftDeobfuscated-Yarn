@@ -25,7 +25,7 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 	private final Block targetBlock;
 	private final MobEntity stepAndDestroyMob;
 	private int counter;
-	private static final int field_30227 = 20;
+	private static final int MAX_COOLDOWN = 20;
 
 	public StepAndDestroyBlockGoal(Block targetBlock, PathAwareEntity mob, double speed, int maxYDifference) {
 		super(mob, speed, 24, maxYDifference);

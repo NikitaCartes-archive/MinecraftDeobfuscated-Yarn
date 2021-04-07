@@ -12,6 +12,12 @@ import javax.annotation.meta.TypeQualifierDefault;
  * 
  * <p>While this annotation is meant to be a package/class annotation, it can
  * be applied to anything as it does not restrict its targets.
+ * 
+ * <p>A similar {@link FieldsAreNonnullByDefault2} exists; they don't coexist
+ * on any package info class.
+ * 
+ * @see ClientFieldsAreNonnullByDefault
+ * @see FieldsAreNonnullByDefault2
  */
 @Nonnull
 @TypeQualifierDefault({ElementType.FIELD})

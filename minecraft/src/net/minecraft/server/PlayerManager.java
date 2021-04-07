@@ -20,6 +20,7 @@ import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -601,7 +602,7 @@ public abstract class PlayerManager {
 			} else if (permissionLevel >= 4) {
 				b = 28;
 			} else {
-				b = (byte)(24 + permissionLevel);
+				b = (byte)(EntityStatuses.SET_OP_LEVEL_0 + permissionLevel);
 			}
 
 			player.networkHandler.sendPacket(new EntityStatusS2CPacket(player, b));
@@ -742,11 +743,11 @@ public abstract class PlayerManager {
 		}
 	}
 
-	public void broadcastChatMessage(Text message, MessageType type, UUID senderUuid) {
-		this.server.sendSystemMessage(message, senderUuid);
+	public void broadcastChatMessage(Text message, MessageType type, UUID sender) {
+		this.server.sendSystemMessage(message, sender);
 
 		for (ServerPlayerEntity serverPlayerEntity : this.players) {
-			serverPlayerEntity.sendMessage(message, type, senderUuid);
+			serverPlayerEntity.sendMessage(message, type, sender);
 		}
 	}
 

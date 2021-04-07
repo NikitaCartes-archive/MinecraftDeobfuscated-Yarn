@@ -904,20 +904,20 @@ public class BoatEntity extends Entity {
 			return this.name;
 		}
 
-		public static BoatEntity.Type getType(int i) {
+		public static BoatEntity.Type getType(int type) {
 			BoatEntity.Type[] types = values();
-			if (i < 0 || i >= types.length) {
-				i = 0;
+			if (type < 0 || type >= types.length) {
+				type = 0;
 			}
 
-			return types[i];
+			return types[type];
 		}
 
-		public static BoatEntity.Type getType(String string) {
+		public static BoatEntity.Type getType(String name) {
 			BoatEntity.Type[] types = values();
 
 			for (int i = 0; i < types.length; i++) {
-				if (types[i].getName().equals(string)) {
+				if (types[i].getName().equals(name)) {
 					return types[i];
 				}
 			}

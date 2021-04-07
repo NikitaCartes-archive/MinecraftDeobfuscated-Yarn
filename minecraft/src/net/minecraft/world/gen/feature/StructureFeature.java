@@ -198,7 +198,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 	 * 
 	 * @return {@code null} if no structure could be found within the given search radius
 	 * 
-	 * @param searchRadius The search radius in chunks around the chunk the given block position is in. A radius of 0 will only search in the given chunk.
+	 * @param searchRadius the search radius in chunks around the chunk the given block position is in; a radius of 0 will only search in the given chunk
 	 */
 	@Nullable
 	public BlockPos locateStructure(

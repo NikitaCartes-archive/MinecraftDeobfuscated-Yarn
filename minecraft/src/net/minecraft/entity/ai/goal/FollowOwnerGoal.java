@@ -15,9 +15,9 @@ import net.minecraft.world.WorldView;
 
 public class FollowOwnerGoal extends Goal {
 	public static final int field_30205 = 12;
-	private static final int field_30206 = 2;
-	private static final int field_30207 = 3;
-	private static final int field_30208 = 1;
+	private static final int HORIZONTAL_RANGE = 2;
+	private static final int HORIZONTAL_VARIATION = 3;
+	private static final int VERTICAL_VARIATION = 1;
 	private final TameableEntity tameable;
 	private LivingEntity owner;
 	private final WorldView world;

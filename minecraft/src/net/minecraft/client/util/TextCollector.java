@@ -9,18 +9,18 @@ import net.minecraft.text.StringVisitable;
 
 @Environment(EnvType.CLIENT)
 public class TextCollector {
-	private final List<StringVisitable> field_25260 = Lists.<StringVisitable>newArrayList();
+	private final List<StringVisitable> texts = Lists.<StringVisitable>newArrayList();
 
-	public void add(StringVisitable stringVisitable) {
-		this.field_25260.add(stringVisitable);
+	public void add(StringVisitable text) {
+		this.texts.add(text);
 	}
 
 	@Nullable
 	public StringVisitable getRawCombined() {
-		if (this.field_25260.isEmpty()) {
+		if (this.texts.isEmpty()) {
 			return null;
 		} else {
-			return this.field_25260.size() == 1 ? (StringVisitable)this.field_25260.get(0) : StringVisitable.concat(this.field_25260);
+			return this.texts.size() == 1 ? (StringVisitable)this.texts.get(0) : StringVisitable.concat(this.texts);
 		}
 	}
 
@@ -29,7 +29,7 @@ public class TextCollector {
 		return stringVisitable != null ? stringVisitable : StringVisitable.EMPTY;
 	}
 
-	public void method_35690() {
-		this.field_25260.clear();
+	public void clear() {
+		this.texts.clear();
 	}
 }

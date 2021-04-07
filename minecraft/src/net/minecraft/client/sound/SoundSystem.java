@@ -94,13 +94,13 @@ public class SoundSystem {
 		}
 	}
 
-	private float getSoundVolume(@Nullable SoundCategory soundCategory) {
-		return soundCategory != null && soundCategory != SoundCategory.MASTER ? this.settings.getSoundVolume(soundCategory) : 1.0F;
+	private float getSoundVolume(@Nullable SoundCategory category) {
+		return category != null && category != SoundCategory.MASTER ? this.settings.getSoundVolume(category) : 1.0F;
 	}
 
-	public void updateSoundVolume(SoundCategory soundCategory, float volume) {
+	public void updateSoundVolume(SoundCategory category, float volume) {
 		if (this.started) {
-			if (soundCategory == SoundCategory.MASTER) {
+			if (category == SoundCategory.MASTER) {
 				this.listener.setVolume(volume);
 			} else {
 				this.sources.forEach((soundInstance, sourceManager) -> {
@@ -126,9 +126,9 @@ public class SoundSystem {
 		}
 	}
 
-	public void stop(SoundInstance soundInstance) {
+	public void stop(SoundInstance sound) {
 		if (this.started) {
-			Channel.SourceManager sourceManager = (Channel.SourceManager)this.sources.get(soundInstance);
+			Channel.SourceManager sourceManager = (Channel.SourceManager)this.sources.get(sound);
 			if (sourceManager != null) {
 				sourceManager.run(Source::stop);
 			}
@@ -149,12 +149,12 @@ public class SoundSystem {
 		}
 	}
 
-	public void registerListener(SoundInstanceListener soundInstanceListener) {
-		this.listeners.add(soundInstanceListener);
+	public void registerListener(SoundInstanceListener listener) {
+		this.listeners.add(listener);
 	}
 
-	public void unregisterListener(SoundInstanceListener soundInstanceListener) {
-		this.listeners.remove(soundInstanceListener);
+	public void unregisterListener(SoundInstanceListener listener) {
+		this.listeners.remove(listener);
 	}
 
 	public void tick(boolean bl) {
@@ -242,58 +242,58 @@ public class SoundSystem {
 		}
 	}
 
-	private static boolean canRepeatInstantly(SoundInstance soundInstance) {
-		return soundInstance.getRepeatDelay() > 0;
+	private static boolean canRepeatInstantly(SoundInstance sound) {
+		return sound.getRepeatDelay() > 0;
 	}
 
-	private static boolean isRepeatDelayed(SoundInstance soundInstance) {
-		return soundInstance.isRepeatable() && canRepeatInstantly(soundInstance);
+	private static boolean isRepeatDelayed(SoundInstance sound) {
+		return sound.isRepeatable() && canRepeatInstantly(sound);
 	}
 
-	private static boolean shouldRepeatInstantly(SoundInstance soundInstance) {
-		return soundInstance.isRepeatable() && !canRepeatInstantly(soundInstance);
+	private static boolean shouldRepeatInstantly(SoundInstance sound) {
+		return sound.isRepeatable() && !canRepeatInstantly(sound);
 	}
 
-	public boolean isPlaying(SoundInstance soundInstance) {
+	public boolean isPlaying(SoundInstance sound) {
 		if (!this.started) {
 			return false;
 		} else {
-			return this.soundEndTicks.containsKey(soundInstance) && this.soundEndTicks.get(soundInstance) <= this.ticks ? true : this.sources.containsKey(soundInstance);
+			return this.soundEndTicks.containsKey(sound) && this.soundEndTicks.get(sound) <= this.ticks ? true : this.sources.containsKey(sound);
 		}
 	}
 
-	public void play(SoundInstance soundInstance) {
+	public void play(SoundInstance sound) {
 		if (this.started) {
-			if (soundInstance.canPlay()) {
-				WeightedSoundSet weightedSoundSet = soundInstance.getSoundSet(this.loader);
-				Identifier identifier = soundInstance.getId();
+			if (sound.canPlay()) {
+				WeightedSoundSet weightedSoundSet = sound.getSoundSet(this.loader);
+				Identifier identifier = sound.getId();
 				if (weightedSoundSet == null) {
 					if (unknownSounds.add(identifier)) {
 						LOGGER.warn(MARKER, "Unable to play unknown soundEvent: {}", identifier);
 					}
 				} else {
-					Sound sound = soundInstance.getSound();
-					if (sound == SoundManager.MISSING_SOUND) {
+					Sound sound2 = sound.getSound();
+					if (sound2 == SoundManager.MISSING_SOUND) {
 						if (unknownSounds.add(identifier)) {
 							LOGGER.warn(MARKER, "Unable to play empty soundEvent: {}", identifier);
 						}
 					} else {
-						float f = soundInstance.getVolume();
-						float g = Math.max(f, 1.0F) * (float)sound.getAttenuation();
-						SoundCategory soundCategory = soundInstance.getCategory();
-						float h = this.getAdjustedVolume(soundInstance);
-						float i = this.getAdjustedPitch(soundInstance);
-						SoundInstance.AttenuationType attenuationType = soundInstance.getAttenuationType();
-						boolean bl = soundInstance.isLooping();
-						if (h == 0.0F && !soundInstance.shouldAlwaysPlay()) {
-							LOGGER.debug(MARKER, "Skipped playing sound {}, volume was zero.", sound.getIdentifier());
+						float f = sound.getVolume();
+						float g = Math.max(f, 1.0F) * (float)sound2.getAttenuation();
+						SoundCategory soundCategory = sound.getCategory();
+						float h = this.getAdjustedVolume(sound);
+						float i = this.getAdjustedPitch(sound);
+						SoundInstance.AttenuationType attenuationType = sound.getAttenuationType();
+						boolean bl = sound.isLooping();
+						if (h == 0.0F && !sound.shouldAlwaysPlay()) {
+							LOGGER.debug(MARKER, "Skipped playing sound {}, volume was zero.", sound2.getIdentifier());
 						} else {
-							Vec3d vec3d = new Vec3d(soundInstance.getX(), soundInstance.getY(), soundInstance.getZ());
+							Vec3d vec3d = new Vec3d(sound.getX(), sound.getY(), sound.getZ());
 							if (!this.listeners.isEmpty()) {
 								boolean bl2 = bl || attenuationType == SoundInstance.AttenuationType.NONE || this.listener.getPos().squaredDistanceTo(vec3d) < (double)(g * g);
 								if (bl2) {
 									for (SoundInstanceListener soundInstanceListener : this.listeners) {
-										soundInstanceListener.onSoundPlayed(soundInstance, weightedSoundSet);
+										soundInstanceListener.onSoundPlayed(sound, weightedSoundSet);
 									}
 								} else {
 									LOGGER.debug(MARKER, "Did not notify listeners of soundEvent: {}, it is too far away to hear", identifier);
@@ -303,18 +303,18 @@ public class SoundSystem {
 							if (this.listener.getVolume() <= 0.0F) {
 								LOGGER.debug(MARKER, "Skipped playing soundEvent: {}, master volume was zero", identifier);
 							} else {
-								boolean bl2 = shouldRepeatInstantly(soundInstance);
-								boolean bl3 = sound.isStreamed();
+								boolean bl2 = shouldRepeatInstantly(sound);
+								boolean bl3 = sound2.isStreamed();
 								CompletableFuture<Channel.SourceManager> completableFuture = this.channel
-									.createSource(sound.isStreamed() ? SoundEngine.RunMode.STREAMING : SoundEngine.RunMode.STATIC);
+									.createSource(sound2.isStreamed() ? SoundEngine.RunMode.STREAMING : SoundEngine.RunMode.STATIC);
 								Channel.SourceManager sourceManager = (Channel.SourceManager)completableFuture.join();
 								if (sourceManager == null) {
 									LOGGER.warn("Failed to create new sound handle");
 								} else {
-									LOGGER.debug(MARKER, "Playing sound {} for event {}", sound.getIdentifier(), identifier);
-									this.soundEndTicks.put(soundInstance, this.ticks + 20);
-									this.sources.put(soundInstance, sourceManager);
-									this.sounds.put(soundCategory, soundInstance);
+									LOGGER.debug(MARKER, "Playing sound {} for event {}", sound2.getIdentifier(), identifier);
+									this.soundEndTicks.put(sound, this.ticks + 20);
+									this.sources.put(sound, sourceManager);
+									this.sounds.put(soundCategory, sound);
 									sourceManager.run(source -> {
 										source.setPitch(i);
 										source.setVolume(h);
@@ -329,19 +329,19 @@ public class SoundSystem {
 										source.setRelative(bl);
 									});
 									if (!bl3) {
-										this.soundLoader.loadStatic(sound.getLocation()).thenAccept(staticSound -> sourceManager.run(source -> {
+										this.soundLoader.loadStatic(sound2.getLocation()).thenAccept(staticSound -> sourceManager.run(source -> {
 												source.setBuffer(staticSound);
 												source.play();
 											}));
 									} else {
-										this.soundLoader.loadStreamed(sound.getLocation(), bl2).thenAccept(audioStream -> sourceManager.run(source -> {
+										this.soundLoader.loadStreamed(sound2.getLocation(), bl2).thenAccept(audioStream -> sourceManager.run(source -> {
 												source.setStream(audioStream);
 												source.play();
 											}));
 									}
 
-									if (soundInstance instanceof TickableSoundInstance) {
-										this.tickingSounds.add((TickableSoundInstance)soundInstance);
+									if (sound instanceof TickableSoundInstance) {
+										this.tickingSounds.add((TickableSoundInstance)sound);
 									}
 								}
 							}
@@ -360,12 +360,12 @@ public class SoundSystem {
 		this.preloadedSounds.add(sound);
 	}
 
-	private float getAdjustedPitch(SoundInstance soundInstance) {
-		return MathHelper.clamp(soundInstance.getPitch(), 0.5F, 2.0F);
+	private float getAdjustedPitch(SoundInstance sound) {
+		return MathHelper.clamp(sound.getPitch(), 0.5F, 2.0F);
 	}
 
-	private float getAdjustedVolume(SoundInstance soundInstance) {
-		return MathHelper.clamp(soundInstance.getVolume() * this.getSoundVolume(soundInstance.getCategory()), 0.0F, 1.0F);
+	private float getAdjustedVolume(SoundInstance sound) {
+		return MathHelper.clamp(sound.getVolume() * this.getSoundVolume(sound.getCategory()), 0.0F, 1.0F);
 	}
 
 	public void pauseAll() {
@@ -396,18 +396,18 @@ public class SoundSystem {
 		}
 	}
 
-	public void stopSounds(@Nullable Identifier identifier, @Nullable SoundCategory soundCategory) {
-		if (soundCategory != null) {
-			for (SoundInstance soundInstance : this.sounds.get(soundCategory)) {
-				if (identifier == null || soundInstance.getId().equals(identifier)) {
+	public void stopSounds(@Nullable Identifier id, @Nullable SoundCategory category) {
+		if (category != null) {
+			for (SoundInstance soundInstance : this.sounds.get(category)) {
+				if (id == null || soundInstance.getId().equals(id)) {
 					this.stop(soundInstance);
 				}
 			}
-		} else if (identifier == null) {
+		} else if (id == null) {
 			this.stopAll();
 		} else {
 			for (SoundInstance soundInstancex : this.sources.keySet()) {
-				if (soundInstancex.getId().equals(identifier)) {
+				if (soundInstancex.getId().equals(id)) {
 					this.stop(soundInstancex);
 				}
 			}

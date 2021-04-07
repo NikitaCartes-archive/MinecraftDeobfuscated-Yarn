@@ -434,7 +434,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	@Debug
-	public GoalSelector method_35163() {
+	public GoalSelector getGoalSelector() {
 		return this.goalSelector;
 	}
 
@@ -653,7 +653,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	@Override
-	public Vec3d method_29919() {
+	public Vec3d getLeashOffset() {
 		return new Vec3d(0.0, (double)(0.5F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.2F));
 	}
 

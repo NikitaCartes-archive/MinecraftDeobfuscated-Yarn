@@ -16,7 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.ChunkCache;
 
 public class PathNodeNavigator {
-	private static final float field_31807 = 1.5F;
+	private static final float TARGET_DISTANCE_MULTIPLIER = 1.5F;
 	private final PathNode[] successors = new PathNode[32];
 	private final int range;
 	private final PathNodeMaker pathNodeMaker;

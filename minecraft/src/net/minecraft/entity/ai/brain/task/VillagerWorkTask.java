@@ -11,8 +11,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.dynamic.GlobalPos;
 
 public class VillagerWorkTask extends Task<VillagerEntity> {
-	private static final int field_30192 = 300;
-	private static final double field_30193 = 1.73;
+	private static final int RUN_TIME = 300;
+	private static final double MAX_DISTANCE = 1.73;
 	private long lastCheckedTime;
 
 	public VillagerWorkTask() {

@@ -13,7 +13,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.poi.PointOfInterestStorage;
 
 public class WalkTowardJobSiteTask extends Task<VillagerEntity> {
-	private static final int field_30122 = 1200;
+	private static final int RUN_TIME = 1200;
 	final float speed;
 
 	public WalkTowardJobSiteTask(float speed) {

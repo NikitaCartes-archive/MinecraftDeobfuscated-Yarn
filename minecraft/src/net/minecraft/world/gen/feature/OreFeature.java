@@ -13,6 +13,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.chunk.ChunkSection;
+import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class OreFeature extends Feature<OreFeatureConfig> {
@@ -136,16 +137,18 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 												bitSet.set(ah);
 												mutable.set(ab, ad, af);
 												ChunkSection chunkSection = chunkSectionCache.getSection(mutable);
-												int ai = ChunkSectionPos.getLocalCoord(ab);
-												int aj = ChunkSectionPos.getLocalCoord(ad);
-												int ak = ChunkSectionPos.getLocalCoord(af);
-												BlockState blockState = chunkSection.getBlockState(ai, aj, ak);
+												if (chunkSection != WorldChunk.EMPTY_SECTION) {
+													int ai = ChunkSectionPos.getLocalCoord(ab);
+													int aj = ChunkSectionPos.getLocalCoord(ad);
+													int ak = ChunkSectionPos.getLocalCoord(af);
+													BlockState blockState = chunkSection.getBlockState(ai, aj, ak);
 
-												for (OreFeatureConfig.Target target : config.targets) {
-													if (shouldPlace(blockState, chunkSectionCache::getBlockState, random, config, target, mutable)) {
-														chunkSection.setBlockState(ai, aj, ak, target.state, false);
-														i++;
-														break;
+													for (OreFeatureConfig.Target target : config.targets) {
+														if (shouldPlace(blockState, chunkSectionCache::getBlockState, random, config, target, mutable)) {
+															chunkSection.setBlockState(ai, aj, ak, target.state, false);
+															i++;
+															break;
+														}
 													}
 												}
 											}

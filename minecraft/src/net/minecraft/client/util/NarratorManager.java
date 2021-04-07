@@ -25,7 +25,7 @@ public class NarratorManager implements ClientChatListener {
 	private final Narrator narrator = Narrator.getNarrator();
 
 	@Override
-	public void onChatMessage(MessageType messageType, Text message, UUID senderUuid) {
+	public void onChatMessage(MessageType messageType, Text message, UUID sender) {
 		NarratorMode narratorMode = getNarratorOption();
 		if (narratorMode != NarratorMode.OFF && this.narrator.active()) {
 			if (narratorMode == NarratorMode.ALL

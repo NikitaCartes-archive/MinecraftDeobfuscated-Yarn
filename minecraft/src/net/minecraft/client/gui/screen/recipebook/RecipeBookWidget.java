@@ -28,8 +28,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.RecipeCategoryOptionsC2SPacket;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeGridAligner;
+import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -61,7 +61,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	private String searchText = "";
 	private ClientRecipeBook recipeBook;
 	private final RecipeBookResults recipesArea = new RecipeBookResults();
-	private final RecipeFinder recipeFinder = new RecipeFinder();
+	private final RecipeMatcher recipeFinder = new RecipeMatcher();
 	private int cachedInvChangeCount;
 	private boolean searching;
 
@@ -467,7 +467,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 			this.craftingScreenHandler.getCraftingHeight(),
 			this.craftingScreenHandler.getCraftingResultSlotIndex(),
 			recipe,
-			recipe.getPreviewInputs().iterator(),
+			recipe.getIngredients().iterator(),
 			0
 		);
 	}

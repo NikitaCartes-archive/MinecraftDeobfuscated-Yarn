@@ -75,7 +75,7 @@ public class SwimNavigation extends EntityNavigation {
 			}
 
 			int i = 6;
-			Vec3d vec3d3 = Vec3d.ofBottomCenter(this.currentPath.method_31032());
+			Vec3d vec3d3 = Vec3d.ofBottomCenter(this.currentPath.getCurrentNodePos());
 			if (Math.abs(this.entity.getX() - vec3d3.x) < (double)g
 				&& Math.abs(this.entity.getZ() - vec3d3.z) < (double)g
 				&& Math.abs(this.entity.getY() - vec3d3.y) < (double)(g * 2.0F)) {
@@ -106,7 +106,7 @@ public class SwimNavigation extends EntityNavigation {
 		}
 
 		if (this.currentPath != null && !this.currentPath.isFinished()) {
-			Vec3i vec3i = this.currentPath.method_31032();
+			Vec3i vec3i = this.currentPath.getCurrentNodePos();
 			if (vec3i.equals(this.lastNodePosition)) {
 				this.currentNodeMs = this.currentNodeMs + (Util.getMeasuringTimeMs() - this.lastActiveTickMs);
 			} else {

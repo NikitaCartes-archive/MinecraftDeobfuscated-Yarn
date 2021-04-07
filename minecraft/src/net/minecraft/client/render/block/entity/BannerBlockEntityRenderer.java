@@ -124,7 +124,7 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 		List<Pair<BannerPattern, DyeColor>> patterns,
 		boolean glint
 	) {
-		canvas.render(matrices, baseSprite.method_30001(vertexConsumers, RenderLayer::getEntitySolid, glint), light, overlay);
+		canvas.render(matrices, baseSprite.getVertexConsumer(vertexConsumers, RenderLayer::getEntitySolid, glint), light, overlay);
 
 		for (int i = 0; i < 17 && i < patterns.size(); i++) {
 			Pair<BannerPattern, DyeColor> pair = (Pair<BannerPattern, DyeColor>)patterns.get(i);

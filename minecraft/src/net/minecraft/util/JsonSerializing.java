@@ -99,7 +99,7 @@ public class JsonSerializing {
 	 * 
 	 * <p>When the root element read is an object, the handler obtains the type
 	 * from registry to handle reading; otherwise, it falls back to custom
-	 * logic.</p>
+	 * logic.
 	 */
 	public static class TypeHandler<E, T extends JsonSerializableType<E>> {
 		private final Registry<T> registry;

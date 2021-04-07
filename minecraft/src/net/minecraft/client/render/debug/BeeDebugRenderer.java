@@ -76,8 +76,8 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 		this.bees.put(bee.uuid, bee);
 	}
 
-	public void method_35794(int i) {
-		this.bees.values().removeIf(bee -> bee.entityId == i);
+	public void removeBee(int id) {
+		this.bees.values().removeIf(bee -> bee.entityId == id);
 	}
 
 	@Override
@@ -270,7 +270,7 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 		return this.client.gameRenderer.getCamera();
 	}
 
-	private Set<String> method_35796(BeeDebugRenderer.Hive hive) {
+	private Set<String> getBeeNamesForHive(BeeDebugRenderer.Hive hive) {
 		return (Set<String>)this.getBeesForHive(hive.pos).stream().map(NameGenerator::name).collect(Collectors.toSet());
 	}
 

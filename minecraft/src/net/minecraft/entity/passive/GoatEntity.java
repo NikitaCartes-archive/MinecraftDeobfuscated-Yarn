@@ -52,8 +52,8 @@ public class GoatEntity extends AnimalEntity {
 		MemoryModuleType.TEMPTATION_COOLDOWN_TICKS,
 		MemoryModuleType.IS_TEMPTED
 	);
-	public static final int field_30402 = 10;
-	public static final double field_30403 = 0.02;
+	public static final int FALL_DAMAGE_SUBTRACTOR = 10;
+	public static final double SCREAMING_CHANCE = 0.02;
 	private boolean screaming;
 
 	public GoatEntity(EntityType<? extends GoatEntity> entityType, World world) {

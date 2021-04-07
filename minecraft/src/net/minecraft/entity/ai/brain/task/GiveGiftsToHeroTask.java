@@ -26,10 +26,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.VillagerProfession;
 
 public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
-	private static final int field_30117 = 5;
-	private static final int field_30118 = 600;
+	private static final int MAX_DISTANCE = 5;
+	private static final int DEFAULT_DURATION = 600;
 	private static final int field_30119 = 6600;
-	private static final int field_30120 = 20;
+	private static final int RUN_TIME = 20;
 	private static final Map<VillagerProfession, Identifier> GIFTS = Util.make(Maps.<VillagerProfession, Identifier>newHashMap(), hashMap -> {
 		hashMap.put(VillagerProfession.ARMORER, LootTables.HERO_OF_THE_VILLAGE_ARMORER_GIFT_GAMEPLAY);
 		hashMap.put(VillagerProfession.BUTCHER, LootTables.HERO_OF_THE_VILLAGE_BUTCHER_GIFT_GAMEPLAY);
@@ -45,7 +45,7 @@ public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 		hashMap.put(VillagerProfession.TOOLSMITH, LootTables.HERO_OF_THE_VILLAGE_TOOLSMITH_GIFT_GAMEPLAY);
 		hashMap.put(VillagerProfession.WEAPONSMITH, LootTables.HERO_OF_THE_VILLAGE_WEAPONSMITH_GIFT_GAMEPLAY);
 	});
-	private static final float field_30121 = 0.5F;
+	private static final float WALK_SPEED = 0.5F;
 	private int ticksLeft = 600;
 	private boolean done;
 	private long startTime;

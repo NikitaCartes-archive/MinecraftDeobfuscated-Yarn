@@ -72,7 +72,7 @@ public class AxolotlBrain {
 			Activity.FIGHT,
 			0,
 			ImmutableList.of(
-				new ForgetAttackTargetTask<>(AxolotlEntity::method_35175),
+				new ForgetAttackTargetTask<>(AxolotlEntity::appreciatePlayer),
 				new RangedApproachTask(AxolotlBrain::method_33242),
 				new MeleeAttackTask(20),
 				new ForgetTask(AxolotlBrain::hasBreedTarget, MemoryModuleType.ATTACK_TARGET)
@@ -138,16 +138,16 @@ public class AxolotlBrain {
 		}
 	}
 
-	private static float method_33242(LivingEntity livingEntity) {
-		return livingEntity.isInsideWaterOrBubbleColumn() ? 0.6F : 0.15F;
+	private static float method_33242(LivingEntity entity) {
+		return entity.isInsideWaterOrBubbleColumn() ? 0.6F : 0.15F;
 	}
 
-	private static float method_33245(LivingEntity livingEntity) {
-		return livingEntity.isInsideWaterOrBubbleColumn() ? 0.6F : 0.15F;
+	private static float method_33245(LivingEntity entity) {
+		return entity.isInsideWaterOrBubbleColumn() ? 0.6F : 0.15F;
 	}
 
-	private static float method_33248(LivingEntity livingEntity) {
-		return livingEntity.isInsideWaterOrBubbleColumn() ? 0.5F : 0.15F;
+	private static float method_33248(LivingEntity entity) {
+		return entity.isInsideWaterOrBubbleColumn() ? 0.5F : 0.15F;
 	}
 
 	private static Optional<? extends LivingEntity> getAttackTarget(AxolotlEntity axolotl) {

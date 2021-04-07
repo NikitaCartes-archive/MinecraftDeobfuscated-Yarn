@@ -16,7 +16,7 @@ import net.minecraft.util.registry.RegistryKey;
  * decoding behavior if it cannot do so.
  * 
  * <p>The codec's saves and loads {@code Supplier<E>} in order to avoid early
- * loading from registry before a registry is fully loaded from a codec.</p>
+ * loading from registry before a registry is fully loaded from a codec.
  * 
  * @param <E> the element type
  * @see RegistryCodec

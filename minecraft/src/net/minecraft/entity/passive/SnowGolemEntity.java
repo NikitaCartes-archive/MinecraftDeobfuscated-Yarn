@@ -142,7 +142,7 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 			this.sheared(SoundCategory.PLAYERS);
 			this.emitGameEvent(GameEvent.SHEAR, player);
 			if (!this.world.isClient) {
-				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+				itemStack.damage(1, player, playerx -> playerx.sendToolBreakStatus(hand));
 			}
 
 			return ActionResult.success(this.world.isClient);
@@ -197,7 +197,7 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 	}
 
 	@Override
-	public Vec3d method_29919() {
+	public Vec3d getLeashOffset() {
 		return new Vec3d(0.0, (double)(0.75F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));
 	}
 }

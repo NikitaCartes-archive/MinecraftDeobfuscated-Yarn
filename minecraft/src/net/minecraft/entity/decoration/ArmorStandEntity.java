@@ -9,6 +9,7 @@ import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LightningEntity;
@@ -425,7 +426,7 @@ public class ArmorStandEntity extends LivingEntity {
 			} else {
 				long l = this.world.getTime();
 				if (l - this.lastHitTime > 5L && !bl) {
-					this.world.sendEntityStatus(this, (byte)32);
+					this.world.sendEntityStatus(this, EntityStatuses.HIT_ARMOR_STAND);
 					this.emitGameEvent(GameEvent.ENTITY_DAMAGED, source.getAttacker());
 					this.lastHitTime = l;
 				} else {
@@ -441,7 +442,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Override
 	public void handleStatus(byte status) {
-		if (status == 32) {
+		if (status == EntityStatuses.HIT_ARMOR_STAND) {
 			if (this.world.isClient) {
 				this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_ARMOR_STAND_HIT, this.getSoundCategory(), 0.3F, 1.0F, false);
 				this.lastHitTime = this.world.getTime();

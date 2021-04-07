@@ -679,8 +679,11 @@ public class Items {
 	public static final Item COAL = register("coal", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item CHARCOAL = register("charcoal", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item DIAMOND = register("diamond", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
+	public static final Item RAW_IRON = register("raw_iron", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item IRON_INGOT = register("iron_ingot", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
+	public static final Item RAW_COPPER = register("raw_copper", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item COPPER_INGOT = register("copper_ingot", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
+	public static final Item RAW_GOLD = register("raw_gold", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item GOLD_INGOT = register("gold_ingot", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item NETHERITE_INGOT = register("netherite_ingot", new Item(new Item.Settings().group(ItemGroup.MATERIALS).fireproof()));
 	public static final Item NETHERITE_SCRAP = register("netherite_scrap", new Item(new Item.Settings().group(ItemGroup.MATERIALS).fireproof()));
@@ -1512,15 +1515,19 @@ public class Items {
 	public static final Item WAXED_COPPER = register(Blocks.WAXED_COPPER_BLOCK, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WAXED_EXPOSED_COPPER = register(Blocks.WAXED_EXPOSED_COPPER, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WAXED_WEATHERED_COPPER = register(Blocks.WAXED_WEATHERED_COPPER, ItemGroup.BUILDING_BLOCKS);
+	public static final Item WAXED_OXIDIZED_COPPER = register(Blocks.WAXED_OXIDIZED_COPPER, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WAXED_CUT_COPPER = register(Blocks.WAXED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WAXED_EXPOSED_CUT_COPPER = register(Blocks.WAXED_EXPOSED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WAXED_WEATHERED_CUT_COPPER = register(Blocks.WAXED_WEATHERED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
+	public static final Item WAXED_OXIDIZED_CUT_COPPER = register(Blocks.WAXED_OXIDIZED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WAXED_CUT_COPPER_STAIRS = register(Blocks.WAXED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WAXED_EXPOSED_CUT_COPPER_STAIRS = register(Blocks.WAXED_EXPOSED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WAXED_WEATHERED_CUT_COPPER_STAIRS = register(Blocks.WAXED_WEATHERED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
+	public static final Item WAXED_OXIDIZED_CUT_COPPER_STAIRS = register(Blocks.WAXED_OXIDIZED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WAXED_CUT_COPPER_SLAB = register(Blocks.WAXED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WAXED_EXPOSED_CUT_COPPER_SLAB = register(Blocks.WAXED_EXPOSED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WAXED_WEATHERED_CUT_COPPER_SLAB = register(Blocks.WAXED_WEATHERED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
+	public static final Item WAXED_OXIDIZED_CUT_COPPER_SLAB = register(Blocks.WAXED_OXIDIZED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
 	public static final Item POWDER_SNOW_BUCKET = register(
 		"powder_snow_bucket",
 		new PowderSnowBucketItem(Blocks.POWDER_SNOW, SoundEvents.ITEM_BUCKET_EMPTY_POWDER_SNOW, new Item.Settings().maxCount(1).group(ItemGroup.MISC))
@@ -1536,8 +1543,8 @@ public class Items {
 		return register(new BlockItem(block, new Item.Settings().group(group)));
 	}
 
-	private static Item register(Block block, ItemGroup itemGroup, Block... blocks) {
-		BlockItem blockItem = new BlockItem(block, new Item.Settings().group(itemGroup));
+	private static Item register(Block block, ItemGroup group, Block... blocks) {
+		BlockItem blockItem = new BlockItem(block, new Item.Settings().group(group));
 
 		for (Block block2 : blocks) {
 			Item.BLOCK_ITEMS.put(block2, blockItem);

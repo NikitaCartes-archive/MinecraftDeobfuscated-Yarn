@@ -273,7 +273,7 @@ public abstract class ScreenHandler {
 	/**
 	 * Performs a slot click. This can behave in many different ways depending mainly on the action type.
 	 * 
-	 * @param actionType The type of slot click. Check the docs for each SlotActionType value for details
+	 * @param actionType the type of slot click, check the docs for each {@link SlotActionType} value for details
 	 */
 	public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
 		try {

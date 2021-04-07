@@ -21,6 +21,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -137,10 +138,10 @@ public class FoxEntity extends AnimalEntity {
 	@Override
 	protected void initGoals() {
 		this.followChickenAndRabbitGoal = new FollowTargetGoal(
-			this, AnimalEntity.class, 10, false, false, livingEntity -> livingEntity instanceof ChickenEntity || livingEntity instanceof RabbitEntity
+			this, AnimalEntity.class, 10, false, false, entity -> entity instanceof ChickenEntity || entity instanceof RabbitEntity
 		);
 		this.followBabyTurtleGoal = new FollowTargetGoal(this, TurtleEntity.class, 10, false, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER);
-		this.followFishGoal = new FollowTargetGoal(this, FishEntity.class, 20, false, false, livingEntity -> livingEntity instanceof SchoolingFishEntity);
+		this.followFishGoal = new FollowTargetGoal(this, FishEntity.class, 20, false, false, entity -> entity instanceof SchoolingFishEntity);
 		this.goalSelector.add(0, new FoxEntity.FoxSwimGoal());
 		this.goalSelector.add(1, new FoxEntity.StopWanderingGoal());
 		this.goalSelector.add(2, new FoxEntity.EscapeWhenNotAggressiveGoal(2.2));
@@ -149,17 +150,11 @@ public class FoxEntity extends AnimalEntity {
 			.add(
 				4,
 				new FleeEntityGoal(
-					this,
-					PlayerEntity.class,
-					16.0F,
-					1.6,
-					1.4,
-					livingEntity -> NOTICEABLE_PLAYER_FILTER.test(livingEntity) && !this.canTrust(livingEntity.getUuid()) && !this.isAggressive()
+					this, PlayerEntity.class, 16.0F, 1.6, 1.4, entity -> NOTICEABLE_PLAYER_FILTER.test(entity) && !this.canTrust(entity.getUuid()) && !this.isAggressive()
 				)
 			);
-		this.goalSelector
-			.add(4, new FleeEntityGoal(this, WolfEntity.class, 8.0F, 1.6, 1.4, livingEntity -> !((WolfEntity)livingEntity).isTamed() && !this.isAggressive()));
-		this.goalSelector.add(4, new FleeEntityGoal(this, PolarBearEntity.class, 8.0F, 1.6, 1.4, livingEntity -> !this.isAggressive()));
+		this.goalSelector.add(4, new FleeEntityGoal(this, WolfEntity.class, 8.0F, 1.6, 1.4, entity -> !((WolfEntity)entity).isTamed() && !this.isAggressive()));
+		this.goalSelector.add(4, new FleeEntityGoal(this, PolarBearEntity.class, 8.0F, 1.6, 1.4, entity -> !this.isAggressive()));
 		this.goalSelector.add(5, new FoxEntity.MoveToHuntGoal());
 		this.goalSelector.add(6, new FoxEntity.JumpChasingGoal());
 		this.goalSelector.add(6, new FoxEntity.AvoidDaylightGoal(1.25));
@@ -176,9 +171,7 @@ public class FoxEntity extends AnimalEntity {
 		this.targetSelector
 			.add(
 				3,
-				new FoxEntity.DefendFriendGoal(
-					LivingEntity.class, false, false, livingEntity -> JUST_ATTACKED_SOMETHING_FILTER.test(livingEntity) && !this.canTrust(livingEntity.getUuid())
-				)
+				new FoxEntity.DefendFriendGoal(LivingEntity.class, false, false, entity -> JUST_ATTACKED_SOMETHING_FILTER.test(entity) && !this.canTrust(entity.getUuid()))
 			);
 	}
 
@@ -202,7 +195,7 @@ public class FoxEntity extends AnimalEntity {
 					this.eatingTime = 0;
 				} else if (this.eatingTime > 560 && this.random.nextFloat() < 0.1F) {
 					this.playSound(this.getEatSound(itemStack), 1.0F, 1.0F);
-					this.world.sendEntityStatus(this, (byte)45);
+					this.world.sendEntityStatus(this, EntityStatuses.CREATE_EATING_PARTICLES);
 				}
 			}
 
@@ -259,7 +252,7 @@ public class FoxEntity extends AnimalEntity {
 
 	@Override
 	public void handleStatus(byte status) {
-		if (status == 45) {
+		if (status == EntityStatuses.CREATE_EATING_PARTICLES) {
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.MAINHAND);
 			if (!itemStack.isEmpty()) {
 				for (int i = 0; i < 8; i++) {
@@ -563,7 +556,7 @@ public class FoxEntity extends AnimalEntity {
 		this.setFoxFlag(16, chasing);
 	}
 
-	public boolean method_35172() {
+	public boolean isJumping() {
 		return this.jumping;
 	}
 
@@ -703,7 +696,7 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	@Override
-	public Vec3d method_29919() {
+	public Vec3d getLeashOffset() {
 		return new Vec3d(0.0, (double)(0.55F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));
 	}
 
@@ -715,8 +708,8 @@ public class FoxEntity extends AnimalEntity {
 		@Override
 		protected void attack(LivingEntity target, double squaredDistance) {
 			double d = this.getSquaredMaxAttackDistance(target);
-			if (squaredDistance <= d && this.method_28347()) {
-				this.method_28346();
+			if (squaredDistance <= d && this.isCooledDown()) {
+				this.resetCooldown();
 				this.mob.tryAttack(target);
 				FoxEntity.this.playSound(SoundEvents.ENTITY_FOX_BITE, 1.0F, 1.0F);
 			}
@@ -838,7 +831,7 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	class DelayedCalmDownGoal extends FoxEntity.CalmDownGoal {
-		private static final int field_30337 = 140;
+		private static final int MAX_CALM_DOWN_TIME = 140;
 		private int timer = FoxEntity.this.random.nextInt(140);
 
 		public DelayedCalmDownGoal() {
@@ -885,7 +878,7 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	public class EatSweetBerriesGoal extends MoveToTargetPosGoal {
-		private static final int field_30336 = 40;
+		private static final int EATING_TIME = 40;
 		protected int timer;
 
 		public EatSweetBerriesGoal(double speed, int range, int maxYDifference) {
@@ -927,20 +920,20 @@ public class FoxEntity extends AnimalEntity {
 			if (FoxEntity.this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 				BlockState blockState = FoxEntity.this.world.getBlockState(this.targetPos);
 				if (blockState.isOf(Blocks.SWEET_BERRY_BUSH)) {
-					this.method_33587(blockState);
+					this.pickSweetBerries(blockState);
 				} else if (CaveVines.hasBerries(blockState)) {
-					this.method_33586(blockState);
+					this.pickGlowBerries(blockState);
 				}
 			}
 		}
 
-		private void method_33586(BlockState blockState) {
-			CaveVines.pickBerries(blockState, FoxEntity.this.world, this.targetPos);
+		private void pickGlowBerries(BlockState state) {
+			CaveVines.pickBerries(state, FoxEntity.this.world, this.targetPos);
 		}
 
-		private void method_33587(BlockState blockState) {
-			int i = (Integer)blockState.get(SweetBerryBushBlock.AGE);
-			blockState.with(SweetBerryBushBlock.AGE, Integer.valueOf(1));
+		private void pickSweetBerries(BlockState state) {
+			int i = (Integer)state.get(SweetBerryBushBlock.AGE);
+			state.with(SweetBerryBushBlock.AGE, Integer.valueOf(1));
 			int j = 1 + FoxEntity.this.world.random.nextInt(2) + (i == 3 ? 1 : 0);
 			ItemStack itemStack = FoxEntity.this.getEquippedStack(EquipmentSlot.MAINHAND);
 			if (itemStack.isEmpty()) {
@@ -953,7 +946,7 @@ public class FoxEntity extends AnimalEntity {
 			}
 
 			FoxEntity.this.playSound(SoundEvents.ITEM_SWEET_BERRIES_PICK_FROM_BUSH, 1.0F, 1.0F);
-			FoxEntity.this.world.setBlockState(this.targetPos, blockState.with(SweetBerryBushBlock.AGE, Integer.valueOf(1)), Block.NOTIFY_LISTENERS);
+			FoxEntity.this.world.setBlockState(this.targetPos, state.with(SweetBerryBushBlock.AGE, Integer.valueOf(1)), Block.NOTIFY_LISTENERS);
 		}
 
 		@Override
@@ -1028,7 +1021,7 @@ public class FoxEntity extends AnimalEntity {
 
 		@Override
 		protected boolean shouldStayHorizontal() {
-			return !FoxEntity.this.isChasing() && !FoxEntity.this.isInSneakingPose() && !FoxEntity.this.isRollingHead() & !FoxEntity.this.isWalking();
+			return !FoxEntity.this.isChasing() && !FoxEntity.this.isInSneakingPose() && !FoxEntity.this.isRollingHead() && !FoxEntity.this.isWalking();
 		}
 	}
 
@@ -1243,7 +1236,7 @@ public class FoxEntity extends AnimalEntity {
 				foxEntity.setBreedingAge(-24000);
 				foxEntity.refreshPositionAndAngles(this.animal.getX(), this.animal.getY(), this.animal.getZ(), 0.0F, 0.0F);
 				serverWorld.spawnEntityAndPassengers(foxEntity);
-				this.world.sendEntityStatus(this.animal, (byte)18);
+				this.world.sendEntityStatus(this.animal, EntityStatuses.ADD_BREEDING_PARTICLES);
 				if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
 					this.world
 						.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.getX(), this.animal.getY(), this.animal.getZ(), this.animal.getRandom().nextInt(7) + 1));
@@ -1497,8 +1490,8 @@ public class FoxEntity extends AnimalEntity {
 			return TYPES[id];
 		}
 
-		public static FoxEntity.Type fromBiome(Optional<RegistryKey<Biome>> optional) {
-			return optional.isPresent() && SNOW.biomes.contains(optional.get()) ? SNOW : RED;
+		public static FoxEntity.Type fromBiome(Optional<RegistryKey<Biome>> biome) {
+			return biome.isPresent() && SNOW.biomes.contains(biome.get()) ? SNOW : RED;
 		}
 	}
 

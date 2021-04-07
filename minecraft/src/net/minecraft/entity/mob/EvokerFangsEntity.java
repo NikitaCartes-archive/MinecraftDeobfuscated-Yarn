@@ -3,6 +3,7 @@ package net.minecraft.entity.mob;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -22,7 +23,9 @@ public class EvokerFangsEntity extends Entity {
 	private boolean startedAttack;
 	private int ticksLeft = 22;
 	private boolean playingAnimation;
+	@Nullable
 	private LivingEntity owner;
+	@Nullable
 	private UUID ownerUuid;
 
 	public EvokerFangsEntity(EntityType<? extends EvokerFangsEntity> entityType, World world) {
@@ -100,7 +103,7 @@ public class EvokerFangsEntity extends Entity {
 			}
 
 			if (!this.startedAttack) {
-				this.world.sendEntityStatus(this, (byte)4);
+				this.world.sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
 				this.startedAttack = true;
 			}
 
@@ -128,7 +131,7 @@ public class EvokerFangsEntity extends Entity {
 	@Override
 	public void handleStatus(byte status) {
 		super.handleStatus(status);
-		if (status == 4) {
+		if (status == EntityStatuses.PLAY_ATTACK_SOUND) {
 			this.playingAnimation = true;
 			if (!this.isSilent()) {
 				this.world

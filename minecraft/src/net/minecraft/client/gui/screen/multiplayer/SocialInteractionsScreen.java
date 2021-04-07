@@ -178,7 +178,6 @@ public class SocialInteractionsScreen extends Screen {
 				collection = ImmutableList.<UUID>of();
 		}
 
-		this.currentTab = currentTab;
 		this.playerList.update(collection, this.playerList.getScrollAmount());
 		if (!this.searchBox.getText().isEmpty() && this.playerList.isEmpty() && !this.searchBox.isFocused()) {
 			NarratorManager.INSTANCE.narrate(EMPTY_SEARCH_TEXT.getString());
@@ -224,14 +223,10 @@ public class SocialInteractionsScreen extends Screen {
 			this.playerList.render(matrices, mouseX, mouseY, delta);
 		} else if (!this.searchBox.getText().isEmpty()) {
 			drawCenteredText(matrices, this.client.textRenderer, EMPTY_SEARCH_TEXT, this.width / 2, (78 + this.method_31361()) / 2, -1);
-		} else {
-			switch (this.currentTab) {
-				case HIDDEN:
-					drawCenteredText(matrices, this.client.textRenderer, EMPTY_HIDDEN_TEXT, this.width / 2, (78 + this.method_31361()) / 2, -1);
-					break;
-				case BLOCKED:
-					drawCenteredText(matrices, this.client.textRenderer, EMPTY_BLOCKED_TEXT, this.width / 2, (78 + this.method_31361()) / 2, -1);
-			}
+		} else if (this.currentTab == SocialInteractionsScreen.Tab.HIDDEN) {
+			drawCenteredText(matrices, this.client.textRenderer, EMPTY_HIDDEN_TEXT, this.width / 2, (78 + this.method_31361()) / 2, -1);
+		} else if (this.currentTab == SocialInteractionsScreen.Tab.BLOCKED) {
+			drawCenteredText(matrices, this.client.textRenderer, EMPTY_BLOCKED_TEXT, this.width / 2, (78 + this.method_31361()) / 2, -1);
 		}
 
 		if (!this.searchBox.isFocused() && this.searchBox.getText().isEmpty()) {

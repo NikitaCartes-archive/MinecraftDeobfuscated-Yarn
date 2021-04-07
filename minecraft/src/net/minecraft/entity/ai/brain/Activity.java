@@ -36,11 +36,11 @@ public class Activity {
 		return Registry.register(Registry.ACTIVITY, id, new Activity(id));
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (object != null && this.getClass() == object.getClass()) {
-			Activity activity = (Activity)object;
+		} else if (o != null && this.getClass() == o.getClass()) {
+			Activity activity = (Activity)o;
 			return this.id.equals(activity.id);
 		} else {
 			return false;

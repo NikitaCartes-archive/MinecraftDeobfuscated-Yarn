@@ -3,7 +3,10 @@ package net.minecraft.util.math;
 import java.nio.FloatBuffer;
 
 public final class Matrix4f {
-	private static final int field_31601 = 4;
+	/**
+	 * The number of rows and columns ({@value}) this matrix has.
+	 */
+	private static final int ORDER = 4;
 	protected float a00;
 	protected float a01;
 	protected float a02;
@@ -24,23 +27,23 @@ public final class Matrix4f {
 	public Matrix4f() {
 	}
 
-	public Matrix4f(Matrix4f matrix4f) {
-		this.a00 = matrix4f.a00;
-		this.a01 = matrix4f.a01;
-		this.a02 = matrix4f.a02;
-		this.a03 = matrix4f.a03;
-		this.a10 = matrix4f.a10;
-		this.a11 = matrix4f.a11;
-		this.a12 = matrix4f.a12;
-		this.a13 = matrix4f.a13;
-		this.a20 = matrix4f.a20;
-		this.a21 = matrix4f.a21;
-		this.a22 = matrix4f.a22;
-		this.a23 = matrix4f.a23;
-		this.a30 = matrix4f.a30;
-		this.a31 = matrix4f.a31;
-		this.a32 = matrix4f.a32;
-		this.a33 = matrix4f.a33;
+	public Matrix4f(Matrix4f matrix) {
+		this.a00 = matrix.a00;
+		this.a01 = matrix.a01;
+		this.a02 = matrix.a02;
+		this.a03 = matrix.a03;
+		this.a10 = matrix.a10;
+		this.a11 = matrix.a11;
+		this.a12 = matrix.a12;
+		this.a13 = matrix.a13;
+		this.a20 = matrix.a20;
+		this.a21 = matrix.a21;
+		this.a22 = matrix.a22;
+		this.a23 = matrix.a23;
+		this.a30 = matrix.a30;
+		this.a31 = matrix.a31;
+		this.a32 = matrix.a32;
+		this.a33 = matrix.a33;
 	}
 
 	public Matrix4f(Quaternion quaternion) {
@@ -77,19 +80,19 @@ public final class Matrix4f {
 		matrix4f.a33 = 0.0F;
 		Matrix4f matrix4f2 = this.copy();
 		matrix4f2.multiply(matrix4f);
-		return method_35437(matrix4f2.a00 / matrix4f2.a03)
-			&& method_35437(matrix4f2.a10 / matrix4f2.a13)
-			&& method_35437(matrix4f2.a20 / matrix4f2.a23)
-			&& method_35437(matrix4f2.a01 / matrix4f2.a03)
-			&& method_35437(matrix4f2.a11 / matrix4f2.a13)
-			&& method_35437(matrix4f2.a21 / matrix4f2.a23)
-			&& method_35437(matrix4f2.a02 / matrix4f2.a03)
-			&& method_35437(matrix4f2.a12 / matrix4f2.a13)
-			&& method_35437(matrix4f2.a22 / matrix4f2.a23);
+		return isInteger(matrix4f2.a00 / matrix4f2.a03)
+			&& isInteger(matrix4f2.a10 / matrix4f2.a13)
+			&& isInteger(matrix4f2.a20 / matrix4f2.a23)
+			&& isInteger(matrix4f2.a01 / matrix4f2.a03)
+			&& isInteger(matrix4f2.a11 / matrix4f2.a13)
+			&& isInteger(matrix4f2.a21 / matrix4f2.a23)
+			&& isInteger(matrix4f2.a02 / matrix4f2.a03)
+			&& isInteger(matrix4f2.a12 / matrix4f2.a13)
+			&& isInteger(matrix4f2.a22 / matrix4f2.a23);
 	}
 
-	private static boolean method_35437(float f) {
-		return (double)Math.abs(f - (float)Math.round(f)) <= 1.0E-5;
+	private static boolean isInteger(float value) {
+		return (double)Math.abs(value - (float)Math.round(value)) <= 1.0E-5;
 	}
 
 	public boolean equals(Object o) {
@@ -141,69 +144,90 @@ public final class Matrix4f {
 		return y * 4 + x;
 	}
 
-	public void method_35435(FloatBuffer floatBuffer) {
-		this.a00 = floatBuffer.get(pack(0, 0));
-		this.a01 = floatBuffer.get(pack(0, 1));
-		this.a02 = floatBuffer.get(pack(0, 2));
-		this.a03 = floatBuffer.get(pack(0, 3));
-		this.a10 = floatBuffer.get(pack(1, 0));
-		this.a11 = floatBuffer.get(pack(1, 1));
-		this.a12 = floatBuffer.get(pack(1, 2));
-		this.a13 = floatBuffer.get(pack(1, 3));
-		this.a20 = floatBuffer.get(pack(2, 0));
-		this.a21 = floatBuffer.get(pack(2, 1));
-		this.a22 = floatBuffer.get(pack(2, 2));
-		this.a23 = floatBuffer.get(pack(2, 3));
-		this.a30 = floatBuffer.get(pack(3, 0));
-		this.a31 = floatBuffer.get(pack(3, 1));
-		this.a32 = floatBuffer.get(pack(3, 2));
-		this.a33 = floatBuffer.get(pack(3, 3));
+	/**
+	 * Reads a matrix from the buffer in row-major order.
+	 * 
+	 * @see #readColumnFirst(FloatBuffer)
+	 * @see #read(FloatBuffer, boolean)
+	 */
+	public void readRowFirst(FloatBuffer buf) {
+		this.a00 = buf.get(pack(0, 0));
+		this.a01 = buf.get(pack(0, 1));
+		this.a02 = buf.get(pack(0, 2));
+		this.a03 = buf.get(pack(0, 3));
+		this.a10 = buf.get(pack(1, 0));
+		this.a11 = buf.get(pack(1, 1));
+		this.a12 = buf.get(pack(1, 2));
+		this.a13 = buf.get(pack(1, 3));
+		this.a20 = buf.get(pack(2, 0));
+		this.a21 = buf.get(pack(2, 1));
+		this.a22 = buf.get(pack(2, 2));
+		this.a23 = buf.get(pack(2, 3));
+		this.a30 = buf.get(pack(3, 0));
+		this.a31 = buf.get(pack(3, 1));
+		this.a32 = buf.get(pack(3, 2));
+		this.a33 = buf.get(pack(3, 3));
 	}
 
-	public void method_35438(FloatBuffer floatBuffer) {
-		this.a00 = floatBuffer.get(pack(0, 0));
-		this.a01 = floatBuffer.get(pack(1, 0));
-		this.a02 = floatBuffer.get(pack(2, 0));
-		this.a03 = floatBuffer.get(pack(3, 0));
-		this.a10 = floatBuffer.get(pack(0, 1));
-		this.a11 = floatBuffer.get(pack(1, 1));
-		this.a12 = floatBuffer.get(pack(2, 1));
-		this.a13 = floatBuffer.get(pack(3, 1));
-		this.a20 = floatBuffer.get(pack(0, 2));
-		this.a21 = floatBuffer.get(pack(1, 2));
-		this.a22 = floatBuffer.get(pack(2, 2));
-		this.a23 = floatBuffer.get(pack(3, 2));
-		this.a30 = floatBuffer.get(pack(0, 3));
-		this.a31 = floatBuffer.get(pack(1, 3));
-		this.a32 = floatBuffer.get(pack(2, 3));
-		this.a33 = floatBuffer.get(pack(3, 3));
+	/**
+	 * Reads a matrix from the buffer in column-major order.
+	 * 
+	 * @see #readRowFirst(FloatBuffer)
+	 * @see #read(FloatBuffer, boolean)
+	 */
+	public void readColumnFirst(FloatBuffer buf) {
+		this.a00 = buf.get(pack(0, 0));
+		this.a01 = buf.get(pack(1, 0));
+		this.a02 = buf.get(pack(2, 0));
+		this.a03 = buf.get(pack(3, 0));
+		this.a10 = buf.get(pack(0, 1));
+		this.a11 = buf.get(pack(1, 1));
+		this.a12 = buf.get(pack(2, 1));
+		this.a13 = buf.get(pack(3, 1));
+		this.a20 = buf.get(pack(0, 2));
+		this.a21 = buf.get(pack(1, 2));
+		this.a22 = buf.get(pack(2, 2));
+		this.a23 = buf.get(pack(3, 2));
+		this.a30 = buf.get(pack(0, 3));
+		this.a31 = buf.get(pack(1, 3));
+		this.a32 = buf.get(pack(2, 3));
+		this.a33 = buf.get(pack(3, 3));
 	}
 
-	public void method_35436(FloatBuffer floatBuffer, boolean bl) {
-		if (bl) {
-			this.method_35438(floatBuffer);
+	/**
+	 * Reads a matrix from the buffer.
+	 * 
+	 * @see #readRowFirst(FloatBuffer)
+	 * @see #readColumnFirst(FloatBuffer)
+	 * 
+	 * @param columnFirst {@code true} to read in column-major order; {@code false} to read in
+	 * row-major order
+	 */
+	public void read(FloatBuffer buf, boolean columnFirst) {
+		if (columnFirst) {
+			this.readColumnFirst(buf);
 		} else {
-			this.method_35435(floatBuffer);
+			this.readRowFirst(buf);
 		}
 	}
 
-	public void method_35434(Matrix4f matrix4f) {
-		this.a00 = matrix4f.a00;
-		this.a01 = matrix4f.a01;
-		this.a02 = matrix4f.a02;
-		this.a03 = matrix4f.a03;
-		this.a10 = matrix4f.a10;
-		this.a11 = matrix4f.a11;
-		this.a12 = matrix4f.a12;
-		this.a13 = matrix4f.a13;
-		this.a20 = matrix4f.a20;
-		this.a21 = matrix4f.a21;
-		this.a22 = matrix4f.a22;
-		this.a23 = matrix4f.a23;
-		this.a30 = matrix4f.a30;
-		this.a31 = matrix4f.a31;
-		this.a32 = matrix4f.a32;
-		this.a33 = matrix4f.a33;
+	public void load(Matrix4f source) {
+		this.a00 = source.a00;
+		this.a01 = source.a01;
+		this.a02 = source.a02;
+		this.a03 = source.a03;
+		this.a10 = source.a10;
+		this.a11 = source.a11;
+		this.a12 = source.a12;
+		this.a13 = source.a13;
+		this.a20 = source.a20;
+		this.a21 = source.a21;
+		this.a22 = source.a22;
+		this.a23 = source.a23;
+		this.a30 = source.a30;
+		this.a31 = source.a31;
+		this.a32 = source.a32;
+		this.a33 = source.a33;
 	}
 
 	public String toString() {
@@ -244,49 +268,70 @@ public final class Matrix4f {
 		return stringBuilder.toString();
 	}
 
-	public void writeToBuffer(FloatBuffer buffer) {
-		buffer.put(pack(0, 0), this.a00);
-		buffer.put(pack(0, 1), this.a01);
-		buffer.put(pack(0, 2), this.a02);
-		buffer.put(pack(0, 3), this.a03);
-		buffer.put(pack(1, 0), this.a10);
-		buffer.put(pack(1, 1), this.a11);
-		buffer.put(pack(1, 2), this.a12);
-		buffer.put(pack(1, 3), this.a13);
-		buffer.put(pack(2, 0), this.a20);
-		buffer.put(pack(2, 1), this.a21);
-		buffer.put(pack(2, 2), this.a22);
-		buffer.put(pack(2, 3), this.a23);
-		buffer.put(pack(3, 0), this.a30);
-		buffer.put(pack(3, 1), this.a31);
-		buffer.put(pack(3, 2), this.a32);
-		buffer.put(pack(3, 3), this.a33);
+	/**
+	 * Writes this matrix to the buffer in row-major order.
+	 * 
+	 * @see #writeColumnFirst(FloatBuffer)
+	 * @see #write(FloatBuffer, boolean)
+	 */
+	public void writeRowFirst(FloatBuffer buf) {
+		buf.put(pack(0, 0), this.a00);
+		buf.put(pack(0, 1), this.a01);
+		buf.put(pack(0, 2), this.a02);
+		buf.put(pack(0, 3), this.a03);
+		buf.put(pack(1, 0), this.a10);
+		buf.put(pack(1, 1), this.a11);
+		buf.put(pack(1, 2), this.a12);
+		buf.put(pack(1, 3), this.a13);
+		buf.put(pack(2, 0), this.a20);
+		buf.put(pack(2, 1), this.a21);
+		buf.put(pack(2, 2), this.a22);
+		buf.put(pack(2, 3), this.a23);
+		buf.put(pack(3, 0), this.a30);
+		buf.put(pack(3, 1), this.a31);
+		buf.put(pack(3, 2), this.a32);
+		buf.put(pack(3, 3), this.a33);
 	}
 
-	public void method_35443(FloatBuffer floatBuffer) {
-		floatBuffer.put(pack(0, 0), this.a00);
-		floatBuffer.put(pack(1, 0), this.a01);
-		floatBuffer.put(pack(2, 0), this.a02);
-		floatBuffer.put(pack(3, 0), this.a03);
-		floatBuffer.put(pack(0, 1), this.a10);
-		floatBuffer.put(pack(1, 1), this.a11);
-		floatBuffer.put(pack(2, 1), this.a12);
-		floatBuffer.put(pack(3, 1), this.a13);
-		floatBuffer.put(pack(0, 2), this.a20);
-		floatBuffer.put(pack(1, 2), this.a21);
-		floatBuffer.put(pack(2, 2), this.a22);
-		floatBuffer.put(pack(3, 2), this.a23);
-		floatBuffer.put(pack(0, 3), this.a30);
-		floatBuffer.put(pack(1, 3), this.a31);
-		floatBuffer.put(pack(2, 3), this.a32);
-		floatBuffer.put(pack(3, 3), this.a33);
+	/**
+	 * Writes this matrix to the buffer in column-major order.
+	 * 
+	 * @see #writeRowFirst(FloatBuffer)
+	 * @see #write(FloatBuffer, boolean)
+	 */
+	public void writeColumnFirst(FloatBuffer buf) {
+		buf.put(pack(0, 0), this.a00);
+		buf.put(pack(1, 0), this.a01);
+		buf.put(pack(2, 0), this.a02);
+		buf.put(pack(3, 0), this.a03);
+		buf.put(pack(0, 1), this.a10);
+		buf.put(pack(1, 1), this.a11);
+		buf.put(pack(2, 1), this.a12);
+		buf.put(pack(3, 1), this.a13);
+		buf.put(pack(0, 2), this.a20);
+		buf.put(pack(1, 2), this.a21);
+		buf.put(pack(2, 2), this.a22);
+		buf.put(pack(3, 2), this.a23);
+		buf.put(pack(0, 3), this.a30);
+		buf.put(pack(1, 3), this.a31);
+		buf.put(pack(2, 3), this.a32);
+		buf.put(pack(3, 3), this.a33);
 	}
 
-	public void method_35439(FloatBuffer floatBuffer, boolean bl) {
-		if (bl) {
-			this.method_35443(floatBuffer);
+	/**
+	 * Writes this matrix to the buffer.
+	 * 
+	 * @see #writeRowFirst(FloatBuffer)
+	 * @see #writeColumnFirst(FloatBuffer)
+	 * 
+	 * @param columnFirst {@code true} to write in column-major order; {@code false} to write in
+	 * row-major order
+	 */
+	public void write(FloatBuffer buf, boolean columnFirst) {
+		if (columnFirst) {
+			this.writeColumnFirst(buf);
 		} else {
-			this.writeToBuffer(floatBuffer);
+			this.writeRowFirst(buf);
 		}
 	}
 
@@ -357,7 +402,7 @@ public final class Matrix4f {
 		return f * q - g * p + h * o + i * n - j * m + k * l;
 	}
 
-	public float method_35441() {
+	public float determinant() {
 		float f = this.a00 * this.a11 - this.a01 * this.a10;
 		float g = this.a00 * this.a12 - this.a02 * this.a10;
 		float h = this.a00 * this.a13 - this.a03 * this.a10;
@@ -462,45 +507,48 @@ public final class Matrix4f {
 		this.a33 *= scalar;
 	}
 
-	public void method_35440(Matrix4f matrix4f) {
-		this.a00 = this.a00 + matrix4f.a00;
-		this.a01 = this.a01 + matrix4f.a01;
-		this.a02 = this.a02 + matrix4f.a02;
-		this.a03 = this.a03 + matrix4f.a03;
-		this.a10 = this.a10 + matrix4f.a10;
-		this.a11 = this.a11 + matrix4f.a11;
-		this.a12 = this.a12 + matrix4f.a12;
-		this.a13 = this.a13 + matrix4f.a13;
-		this.a20 = this.a20 + matrix4f.a20;
-		this.a21 = this.a21 + matrix4f.a21;
-		this.a22 = this.a22 + matrix4f.a22;
-		this.a23 = this.a23 + matrix4f.a23;
-		this.a30 = this.a30 + matrix4f.a30;
-		this.a31 = this.a31 + matrix4f.a31;
-		this.a32 = this.a32 + matrix4f.a32;
-		this.a33 = this.a33 + matrix4f.a33;
+	public void add(Matrix4f matrix) {
+		this.a00 = this.a00 + matrix.a00;
+		this.a01 = this.a01 + matrix.a01;
+		this.a02 = this.a02 + matrix.a02;
+		this.a03 = this.a03 + matrix.a03;
+		this.a10 = this.a10 + matrix.a10;
+		this.a11 = this.a11 + matrix.a11;
+		this.a12 = this.a12 + matrix.a12;
+		this.a13 = this.a13 + matrix.a13;
+		this.a20 = this.a20 + matrix.a20;
+		this.a21 = this.a21 + matrix.a21;
+		this.a22 = this.a22 + matrix.a22;
+		this.a23 = this.a23 + matrix.a23;
+		this.a30 = this.a30 + matrix.a30;
+		this.a31 = this.a31 + matrix.a31;
+		this.a32 = this.a32 + matrix.a32;
+		this.a33 = this.a33 + matrix.a33;
 	}
 
-	public void method_35442(Matrix4f matrix4f) {
-		this.a00 = this.a00 - matrix4f.a00;
-		this.a01 = this.a01 - matrix4f.a01;
-		this.a02 = this.a02 - matrix4f.a02;
-		this.a03 = this.a03 - matrix4f.a03;
-		this.a10 = this.a10 - matrix4f.a10;
-		this.a11 = this.a11 - matrix4f.a11;
-		this.a12 = this.a12 - matrix4f.a12;
-		this.a13 = this.a13 - matrix4f.a13;
-		this.a20 = this.a20 - matrix4f.a20;
-		this.a21 = this.a21 - matrix4f.a21;
-		this.a22 = this.a22 - matrix4f.a22;
-		this.a23 = this.a23 - matrix4f.a23;
-		this.a30 = this.a30 - matrix4f.a30;
-		this.a31 = this.a31 - matrix4f.a31;
-		this.a32 = this.a32 - matrix4f.a32;
-		this.a33 = this.a33 - matrix4f.a33;
+	public void subtract(Matrix4f matrix) {
+		this.a00 = this.a00 - matrix.a00;
+		this.a01 = this.a01 - matrix.a01;
+		this.a02 = this.a02 - matrix.a02;
+		this.a03 = this.a03 - matrix.a03;
+		this.a10 = this.a10 - matrix.a10;
+		this.a11 = this.a11 - matrix.a11;
+		this.a12 = this.a12 - matrix.a12;
+		this.a13 = this.a13 - matrix.a13;
+		this.a20 = this.a20 - matrix.a20;
+		this.a21 = this.a21 - matrix.a21;
+		this.a22 = this.a22 - matrix.a22;
+		this.a23 = this.a23 - matrix.a23;
+		this.a30 = this.a30 - matrix.a30;
+		this.a31 = this.a31 - matrix.a31;
+		this.a32 = this.a32 - matrix.a32;
+		this.a33 = this.a33 - matrix.a33;
 	}
 
-	public float method_35444() {
+	/**
+	 * Returns the sum of the elements on the main diagonal.
+	 */
+	public float trace() {
 		return this.a00 + this.a11 + this.a22 + this.a33;
 	}
 

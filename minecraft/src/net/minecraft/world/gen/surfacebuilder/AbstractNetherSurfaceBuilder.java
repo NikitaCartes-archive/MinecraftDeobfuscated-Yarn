@@ -36,14 +36,15 @@ public abstract class AbstractNetherSurfaceBuilder extends SurfaceBuilder<Ternar
 		BlockState blockState,
 		BlockState blockState2,
 		int l,
-		long m,
+		int m,
+		long n,
 		TernarySurfaceConfig ternarySurfaceConfig
 	) {
-		int n = l + 1;
-		int o = i & 15;
-		int p = j & 15;
-		int q = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
+		int o = l + 1;
+		int p = i & 15;
+		int q = j & 15;
 		int r = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
+		int s = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
 		double e = 0.03125;
 		boolean bl = this.shoreNoise.sample((double)i * 0.03125, 109.0, (double)j * 0.03125) * 75.0 + random.nextDouble() > 0.0;
 		BlockState blockState3 = (BlockState)((Entry)this.underLavaNoises
@@ -59,13 +60,13 @@ public abstract class AbstractNetherSurfaceBuilder extends SurfaceBuilder<Ternar
 				.get())
 			.getKey();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		BlockState blockState5 = chunk.getBlockState(mutable.set(o, 128, p));
+		BlockState blockState5 = chunk.getBlockState(mutable.set(p, 128, q));
 
-		for (int s = 127; s >= 0; s--) {
-			mutable.set(o, s, p);
+		for (int t = 127; t >= m; t--) {
+			mutable.set(p, t, q);
 			BlockState blockState6 = chunk.getBlockState(mutable);
 			if (blockState5.isOf(blockState.getBlock()) && (blockState6.isAir() || blockState6 == blockState2)) {
-				for (int t = 0; t < q; t++) {
+				for (int u = 0; u < r; u++) {
 					mutable.move(Direction.UP);
 					if (!chunk.getBlockState(mutable).isOf(blockState.getBlock())) {
 						break;
@@ -74,12 +75,12 @@ public abstract class AbstractNetherSurfaceBuilder extends SurfaceBuilder<Ternar
 					chunk.setBlockState(mutable, blockState3, false);
 				}
 
-				mutable.set(o, s, p);
+				mutable.set(p, t, q);
 			}
 
 			if ((blockState5.isAir() || blockState5 == blockState2) && blockState6.isOf(blockState.getBlock())) {
-				for (int t = 0; t < r && chunk.getBlockState(mutable).isOf(blockState.getBlock()); t++) {
-					if (bl && s >= n - 4 && s <= n + 1) {
+				for (int u = 0; u < s && chunk.getBlockState(mutable).isOf(blockState.getBlock()); u++) {
+					if (bl && t >= o - 4 && t <= o + 1) {
 						chunk.setBlockState(mutable, this.getLavaShoreState(), false);
 					} else {
 						chunk.setBlockState(mutable, blockState4, false);

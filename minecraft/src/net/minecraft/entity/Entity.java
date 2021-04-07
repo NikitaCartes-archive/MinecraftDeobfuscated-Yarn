@@ -336,6 +336,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	public void method_36209() {
+	}
+
 	public void setPose(EntityPose pose) {
 		this.dataTracker.set(POSE, pose);
 	}
@@ -653,9 +656,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 			float i = this.getVelocityMultiplier();
 			this.setVelocity(this.getVelocity().multiply((double)i, 1.0, (double)i));
-			if (this.world
-					.getStatesInBoxIfLoaded(this.getBoundingBox().contract(1.0E-6))
-					.noneMatch(blockStatex -> blockStatex.isIn(BlockTags.FIRE) || blockStatex.isOf(Blocks.LAVA))
+			if (this.world.getStatesInBoxIfLoaded(this.getBoundingBox().contract(1.0E-6)).noneMatch(state -> state.isIn(BlockTags.FIRE) || state.isOf(Blocks.LAVA))
 				&& this.fireTicks <= 0) {
 				this.setFireTicks(-this.getBurningDuration());
 			}
@@ -1716,7 +1717,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		} else {
 			float f = this.dimensions.width * 0.8F;
 			Box box = Box.of(this.getEyePos(), (double)f, 1.0E-6, (double)f);
-			return this.world.getBlockCollisions(this, box, (blockState, blockPos) -> blockState.shouldSuffocate(this.world, blockPos)).findAny().isPresent();
+			return this.world.getBlockCollisions(this, box, (state, pos) -> state.shouldSuffocate(this.world, pos)).findAny().isPresent();
 		}
 	}
 
@@ -2014,10 +2015,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * 
 	 * <p>Compared to {@link #isSneaking()}, it only makes the entity appear
 	 * crouching and does not bring other effects of sneaking, such as no less
-	 * obvious name label rendering, no dismounting while riding, etc.</p>
+	 * obvious name label rendering, no dismounting while riding, etc.
 	 * 
 	 * <p>This is used by vanilla for non-player entities to crouch, such as
-	 * for foxes and cats.</p>
+	 * for foxes and cats.
 	 */
 	public boolean isInSneakingPose() {
 		return this.getPose() == EntityPose.CROUCHING;
@@ -2366,24 +2367,22 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				BlockPos blockPos2 = new BlockPos(MathHelper.clamp(this.getX() * h, d, f), this.getY(), MathHelper.clamp(this.getZ() * h, e, g));
 				return (TeleportTarget)this.getPortalRect(destination, blockPos2, bl3)
 					.map(
-						rectangle -> {
+						rect -> {
 							BlockState blockState = this.world.getBlockState(this.lastNetherPortalPosition);
 							Direction.Axis axis;
 							Vec3d vec3d;
 							if (blockState.contains(Properties.HORIZONTAL_AXIS)) {
 								axis = blockState.get(Properties.HORIZONTAL_AXIS);
-								PortalUtil.Rectangle rectangle2 = PortalUtil.getLargestRectangle(
+								PortalUtil.Rectangle rectangle = PortalUtil.getLargestRectangle(
 									this.lastNetherPortalPosition, axis, 21, Direction.Axis.Y, 21, blockPos -> this.world.getBlockState(blockPos) == blockState
 								);
-								vec3d = this.positionInPortal(axis, rectangle2);
+								vec3d = this.positionInPortal(axis, rectangle);
 							} else {
 								axis = Direction.Axis.X;
 								vec3d = new Vec3d(0.5, 0.0, 0.0);
 							}
 
-							return AreaHelper.getNetherTeleportTarget(
-								destination, rectangle, axis, vec3d, this.getDimensions(this.getPose()), this.getVelocity(), this.yaw, this.pitch
-							);
+							return AreaHelper.getNetherTeleportTarget(destination, rect, axis, vec3d, this.getDimensions(this.getPose()), this.getVelocity(), this.yaw, this.pitch);
 						}
 					)
 					.orElse(null);
@@ -2612,7 +2611,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.standingEyeHeight;
 	}
 
-	public Vec3d method_29919() {
+	public Vec3d getLeashOffset() {
 		return new Vec3d(0.0, (double)this.getStandingEyeHeight(), (double)(this.getWidth() * 0.4F));
 	}
 
@@ -2629,7 +2628,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	@Override
-	public void sendSystemMessage(Text message, UUID senderUuid) {
+	public void sendSystemMessage(Text message, UUID sender) {
 	}
 
 	public World getEntityWorld() {
@@ -2766,7 +2765,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public boolean hasPassengerDeep(Entity passenger) {
-		return this.streamIntoPassengers().anyMatch(entity2 -> entity2 == passenger);
+		return this.streamIntoPassengers().anyMatch(entity -> entity == passenger);
 	}
 
 	public boolean isLogicalSideForUpdatingMovement() {
@@ -3118,7 +3117,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	@Override
-	public void setRemoved(Entity.RemovalReason reason) {
+	public final void setRemoved(Entity.RemovalReason reason) {
 		if (this.removalReason == null) {
 			this.removalReason = reason;
 		}

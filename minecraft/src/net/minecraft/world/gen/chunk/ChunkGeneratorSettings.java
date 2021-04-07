@@ -26,6 +26,7 @@ public final class ChunkGeneratorSettings {
 					Codec.INT.fieldOf("bedrock_roof_position").forGetter(ChunkGeneratorSettings::getBedrockCeilingY),
 					Codec.INT.fieldOf("bedrock_floor_position").forGetter(ChunkGeneratorSettings::getBedrockFloorY),
 					Codec.INT.fieldOf("sea_level").forGetter(ChunkGeneratorSettings::getSeaLevel),
+					Codec.INT.fieldOf("min_surface_level").forGetter(ChunkGeneratorSettings::getMinSurfaceLevel),
 					Codec.BOOL.fieldOf("disable_mob_generation").forGetter(ChunkGeneratorSettings::isMobGenerationDisabled),
 					Codec.BOOL.fieldOf("aquifers_enabled").forGetter(ChunkGeneratorSettings::hasAquifers),
 					Codec.BOOL.fieldOf("noise_caves_enabled").forGetter(ChunkGeneratorSettings::hasNoiseCaves),
@@ -41,6 +42,7 @@ public final class ChunkGeneratorSettings {
 	private final int bedrockCeilingY;
 	private final int bedrockFloorY;
 	private final int seaLevel;
+	private final int minSurfaceLevel;
 	private final boolean mobGenerationDisabled;
 	private final boolean aquifers;
 	private final boolean noiseCaves;
@@ -63,6 +65,7 @@ public final class ChunkGeneratorSettings {
 		int bedrockCeilingY,
 		int bedrockFloorY,
 		int seaLevel,
+		int minSurfaceLevel,
 		boolean mobGenerationDisabled,
 		boolean aquifers,
 		boolean noiseCaves,
@@ -75,6 +78,7 @@ public final class ChunkGeneratorSettings {
 		this.bedrockCeilingY = bedrockCeilingY;
 		this.bedrockFloorY = bedrockFloorY;
 		this.seaLevel = seaLevel;
+		this.minSurfaceLevel = minSurfaceLevel;
 		this.mobGenerationDisabled = mobGenerationDisabled;
 		this.aquifers = aquifers;
 		this.noiseCaves = noiseCaves;
@@ -119,6 +123,10 @@ public final class ChunkGeneratorSettings {
 		return this.seaLevel;
 	}
 
+	public int getMinSurfaceLevel() {
+		return this.minSurfaceLevel;
+	}
+
 	/**
 	 * Whether entities will be generated during chunk population.
 	 * 
@@ -161,7 +169,7 @@ public final class ChunkGeneratorSettings {
 			structuresConfig,
 			GenerationShapeConfig.create(
 				bl3 ? -64 : 0,
-				bl3 ? 384 : 256,
+				bl3 ? 384 : 128,
 				new NoiseSamplingConfig(2.0, 1.0, 80.0, 160.0),
 				new SlideConfig(-3000, 64, -46),
 				new SlideConfig(-30, 7, 1),
@@ -178,6 +186,7 @@ public final class ChunkGeneratorSettings {
 			defaultFluid,
 			Integer.MIN_VALUE,
 			Integer.MIN_VALUE,
+			bl3 ? -64 : 0,
 			bl3 ? -64 : 0,
 			bl,
 			false,
@@ -213,6 +222,7 @@ public final class ChunkGeneratorSettings {
 			0,
 			0,
 			32,
+			bl ? -64 : 0,
 			false,
 			false,
 			false,
@@ -244,6 +254,7 @@ public final class ChunkGeneratorSettings {
 			Integer.MIN_VALUE,
 			0,
 			63,
+			50,
 			false,
 			true,
 			true,

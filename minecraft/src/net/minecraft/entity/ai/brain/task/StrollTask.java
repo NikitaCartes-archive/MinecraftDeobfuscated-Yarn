@@ -12,8 +12,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 
 public class StrollTask extends Task<PathAwareEntity> {
-	private static final int field_30157 = 10;
-	private static final int field_30158 = 7;
+	private static final int MIN_RUN_TIME = 10;
+	private static final int MAX_RUN_TIME = 7;
 	private final float speed;
 	protected final int horizontalRadius;
 	protected final int verticalRadius;
@@ -30,12 +30,12 @@ public class StrollTask extends Task<PathAwareEntity> {
 	}
 
 	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
-		Optional<Vec3d> optional = Optional.ofNullable(this.method_33201(pathAwareEntity));
+		Optional<Vec3d> optional = Optional.ofNullable(this.findWalkTarget(pathAwareEntity));
 		pathAwareEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, this.speed, 0)));
 	}
 
 	@Nullable
-	protected Vec3d method_33201(PathAwareEntity pathAwareEntity) {
-		return FuzzyTargeting.find(pathAwareEntity, this.horizontalRadius, this.verticalRadius);
+	protected Vec3d findWalkTarget(PathAwareEntity entity) {
+		return FuzzyTargeting.find(entity, this.horizontalRadius, this.verticalRadius);
 	}
 }

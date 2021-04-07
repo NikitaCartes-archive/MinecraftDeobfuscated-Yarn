@@ -93,19 +93,19 @@ public class LookTargetUtil {
 			.orElse(center);
 	}
 
-	public static boolean method_25940(MobEntity mobEntity, LivingEntity livingEntity, int i) {
-		Item item = mobEntity.getMainHandStack().getItem();
-		if (item instanceof RangedWeaponItem && mobEntity.canUseRangedWeapon((RangedWeaponItem)item)) {
-			int j = ((RangedWeaponItem)item).getRange() - i;
-			return mobEntity.isInRange(livingEntity, (double)j);
+	public static boolean isTargetWithinAttackRange(MobEntity source, LivingEntity target, int rangedWeaponReachReduction) {
+		Item item = source.getMainHandStack().getItem();
+		if (item instanceof RangedWeaponItem && source.canUseRangedWeapon((RangedWeaponItem)item)) {
+			int i = ((RangedWeaponItem)item).getRange() - rangedWeaponReachReduction;
+			return source.isInRange(target, (double)i);
 		} else {
-			return method_25941(mobEntity, livingEntity);
+			return isTargetWithinMeleeRange(source, target);
 		}
 	}
 
-	public static boolean method_25941(MobEntity mobEntity, LivingEntity livingEntity) {
-		double d = mobEntity.squaredDistanceTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
-		return d <= mobEntity.method_33191(livingEntity);
+	public static boolean isTargetWithinMeleeRange(MobEntity source, LivingEntity target) {
+		double d = source.squaredDistanceTo(target.getX(), target.getY(), target.getZ());
+		return d <= source.squaredAttackRange(target);
 	}
 
 	/**
@@ -160,16 +160,14 @@ public class LookTargetUtil {
 	}
 
 	@Nullable
-	public static Vec3d method_33193(PathAwareEntity pathAwareEntity, int i, int j) {
-		Vec3d vec3d = NoPenaltyTargeting.find(pathAwareEntity, i, j);
-		int k = 0;
+	public static Vec3d find(PathAwareEntity entity, int horizontalRange, int verticalRange) {
+		Vec3d vec3d = NoPenaltyTargeting.find(entity, horizontalRange, verticalRange);
+		int i = 0;
 
 		while (
-			vec3d != null
-				&& !pathAwareEntity.world.getBlockState(new BlockPos(vec3d)).canPathfindThrough(pathAwareEntity.world, new BlockPos(vec3d), NavigationType.WATER)
-				&& k++ < 10
+			vec3d != null && !entity.world.getBlockState(new BlockPos(vec3d)).canPathfindThrough(entity.world, new BlockPos(vec3d), NavigationType.WATER) && i++ < 10
 		) {
-			vec3d = NoPenaltyTargeting.find(pathAwareEntity, i, j);
+			vec3d = NoPenaltyTargeting.find(entity, horizontalRange, verticalRange);
 		}
 
 		return vec3d;

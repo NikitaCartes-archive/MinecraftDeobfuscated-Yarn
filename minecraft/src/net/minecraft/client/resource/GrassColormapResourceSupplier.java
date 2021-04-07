@@ -14,7 +14,7 @@ import net.minecraft.util.profiler.Profiler;
 public class GrassColormapResourceSupplier extends SinglePreparationResourceReloader<int[]> {
 	private static final Identifier GRASS_COLORMAP_LOC = new Identifier("textures/colormap/grass.png");
 
-	protected int[] method_18662(ResourceManager resourceManager, Profiler profiler) {
+	protected int[] tryLoad(ResourceManager resourceManager, Profiler profiler) {
 		try {
 			return RawTextureDataLoader.loadRawTextureData(resourceManager, GRASS_COLORMAP_LOC);
 		} catch (IOException var4) {

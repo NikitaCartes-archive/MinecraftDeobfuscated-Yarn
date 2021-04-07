@@ -28,7 +28,7 @@ public class VariantSetting<T> {
 			this.value = value;
 		}
 
-		public VariantSetting<T> method_35907() {
+		public VariantSetting<T> getParent() {
 			return VariantSetting.this;
 		}
 

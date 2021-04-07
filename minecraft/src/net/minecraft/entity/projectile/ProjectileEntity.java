@@ -18,7 +18,10 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public abstract class ProjectileEntity extends Entity {
+	@Nullable
 	private UUID ownerUuid;
+	@Nullable
+	private Entity owner;
 	private boolean leftOwner;
 	private boolean shot;
 
@@ -29,12 +32,20 @@ public abstract class ProjectileEntity extends Entity {
 	public void setOwner(@Nullable Entity entity) {
 		if (entity != null) {
 			this.ownerUuid = entity.getUuid();
+			this.owner = entity;
 		}
 	}
 
 	@Nullable
 	public Entity getOwner() {
-		return this.ownerUuid != null && this.world instanceof ServerWorld ? ((ServerWorld)this.world).getEntity(this.ownerUuid) : null;
+		if (this.owner != null) {
+			return this.owner;
+		} else if (this.ownerUuid != null && this.world instanceof ServerWorld) {
+			this.owner = ((ServerWorld)this.world).getEntity(this.ownerUuid);
+			return this.owner;
+		} else {
+			return null;
+		}
 	}
 
 	@Override

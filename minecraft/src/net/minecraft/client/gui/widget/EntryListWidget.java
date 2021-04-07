@@ -28,7 +28,7 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extends AbstractParentElement implements Drawable {
-	public static final Identifier field_29346 = new Identifier("textures/misc/white.png");
+	public static final Identifier WHITE_TEXTURE = new Identifier("textures/misc/white.png");
 	protected final MinecraftClient client;
 	protected final int itemHeight;
 	private final List<E> children = new EntryListWidget.Entries();

@@ -18,17 +18,17 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class CookingRecipeJsonFactory {
-	private final Item result;
-	private final Ingredient ingredient;
+	private final Item output;
+	private final Ingredient input;
 	private final float experience;
 	private final int cookingTime;
 	private final Advancement.Task builder = Advancement.Task.create();
 	private String group;
 	private final CookingRecipeSerializer<?> serializer;
 
-	private CookingRecipeJsonFactory(ItemConvertible result, Ingredient ingredient, float experience, int cookingTime, CookingRecipeSerializer<?> serializer) {
-		this.result = result.asItem();
-		this.ingredient = ingredient;
+	private CookingRecipeJsonFactory(ItemConvertible output, Ingredient input, float experience, int cookingTime, CookingRecipeSerializer<?> serializer) {
+		this.output = output.asItem();
+		this.input = input;
 		this.experience = experience;
 		this.cookingTime = cookingTime;
 		this.serializer = serializer;
@@ -40,8 +40,8 @@ public class CookingRecipeJsonFactory {
 		return new CookingRecipeJsonFactory(result, ingredient, experience, cookingTime, serializer);
 	}
 
-	public static CookingRecipeJsonFactory method_35916(Ingredient ingredient, ItemConvertible itemConvertible, float f, int i) {
-		return create(ingredient, itemConvertible, f, i, RecipeSerializer.CAMPFIRE_COOKING);
+	public static CookingRecipeJsonFactory create(Ingredient result, ItemConvertible ingredient, float experience, int cookingTime) {
+		return create(result, ingredient, experience, cookingTime, RecipeSerializer.CAMPFIRE_COOKING);
 	}
 
 	public static CookingRecipeJsonFactory createBlasting(Ingredient ingredient, ItemConvertible result, float experience, int cookingTime) {
@@ -52,8 +52,8 @@ public class CookingRecipeJsonFactory {
 		return create(ingredient, result, experience, cookingTime, RecipeSerializer.SMELTING);
 	}
 
-	public static CookingRecipeJsonFactory method_35918(Ingredient ingredient, ItemConvertible itemConvertible, float f, int i) {
-		return create(ingredient, itemConvertible, f, i, RecipeSerializer.SMOKING);
+	public static CookingRecipeJsonFactory createSmoking(Ingredient result, ItemConvertible ingredient, float experience, int cookingTime) {
+		return create(result, ingredient, experience, cookingTime, RecipeSerializer.SMOKING);
 	}
 
 	public CookingRecipeJsonFactory criterion(String criterionName, CriterionConditions conditions) {
@@ -61,17 +61,17 @@ public class CookingRecipeJsonFactory {
 		return this;
 	}
 
-	public CookingRecipeJsonFactory method_35917(String string) {
-		this.group = string;
+	public CookingRecipeJsonFactory group(String group) {
+		this.group = group;
 		return this;
 	}
 
 	public void offerTo(Consumer<RecipeJsonProvider> exporter) {
-		this.offerTo(exporter, Registry.ITEM.getId(this.result));
+		this.offerTo(exporter, Registry.ITEM.getId(this.output));
 	}
 
 	public void offerTo(Consumer<RecipeJsonProvider> exporter, String recipeIdStr) {
-		Identifier identifier = Registry.ITEM.getId(this.result);
+		Identifier identifier = Registry.ITEM.getId(this.output);
 		Identifier identifier2 = new Identifier(recipeIdStr);
 		if (identifier2.equals(identifier)) {
 			throw new IllegalStateException("Recipe " + identifier2 + " should remove its 'save' argument");
@@ -91,12 +91,12 @@ public class CookingRecipeJsonFactory {
 			new CookingRecipeJsonFactory.CookingRecipeJsonProvider(
 				recipeId,
 				this.group == null ? "" : this.group,
-				this.ingredient,
-				this.result,
+				this.input,
+				this.output,
 				this.experience,
 				this.cookingTime,
 				this.builder,
-				new Identifier(recipeId.getNamespace(), "recipes/" + this.result.getGroup().getName() + "/" + recipeId.getPath()),
+				new Identifier(recipeId.getNamespace(), "recipes/" + this.output.getGroup().getName() + "/" + recipeId.getPath()),
 				(RecipeSerializer<? extends AbstractCookingRecipe>)this.serializer
 			)
 		);
@@ -111,7 +111,7 @@ public class CookingRecipeJsonFactory {
 	public static class CookingRecipeJsonProvider implements RecipeJsonProvider {
 		private final Identifier recipeId;
 		private final String group;
-		private final Ingredient ingredient;
+		private final Ingredient input;
 		private final Item result;
 		private final float experience;
 		private final int cookingTime;
@@ -122,7 +122,7 @@ public class CookingRecipeJsonFactory {
 		public CookingRecipeJsonProvider(
 			Identifier recipeId,
 			String group,
-			Ingredient ingredient,
+			Ingredient input,
 			Item result,
 			float experience,
 			int cookingTime,
@@ -132,7 +132,7 @@ public class CookingRecipeJsonFactory {
 		) {
 			this.recipeId = recipeId;
 			this.group = group;
-			this.ingredient = ingredient;
+			this.input = input;
 			this.result = result;
 			this.experience = experience;
 			this.cookingTime = cookingTime;
@@ -147,7 +147,7 @@ public class CookingRecipeJsonFactory {
 				json.addProperty("group", this.group);
 			}
 
-			json.add("ingredient", this.ingredient.toJson());
+			json.add("ingredient", this.input.toJson());
 			json.addProperty("result", Registry.ITEM.getId(this.result).toString());
 			json.addProperty("experience", this.experience);
 			json.addProperty("cookingtime", this.cookingTime);

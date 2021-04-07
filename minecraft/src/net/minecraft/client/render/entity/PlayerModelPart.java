@@ -28,7 +28,7 @@ public enum PlayerModelPart {
 		return this.bitFlag;
 	}
 
-	public int method_35206() {
+	public int getId() {
 		return this.id;
 	}
 

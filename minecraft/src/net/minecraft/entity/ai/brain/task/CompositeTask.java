@@ -88,20 +88,20 @@ public class CompositeTask<E extends LivingEntity> extends Task<E> {
 	public static enum RunMode {
 		RUN_ONE {
 			@Override
-			public <E extends LivingEntity> void run(Stream<Task<? super E>> stream, ServerWorld world, E entity, long time) {
-				stream.filter(task -> task.getStatus() == Task.Status.STOPPED).filter(task -> task.tryStarting(world, entity, time)).findFirst();
+			public <E extends LivingEntity> void run(Stream<Task<? super E>> tasks, ServerWorld world, E entity, long time) {
+				tasks.filter(task -> task.getStatus() == Task.Status.STOPPED).filter(task -> task.tryStarting(world, entity, time)).findFirst();
 			}
 		},
 		TRY_ALL {
 			@Override
-			public <E extends LivingEntity> void run(Stream<Task<? super E>> stream, ServerWorld world, E entity, long time) {
-				stream.filter(task -> task.getStatus() == Task.Status.STOPPED).forEach(task -> task.tryStarting(world, entity, time));
+			public <E extends LivingEntity> void run(Stream<Task<? super E>> tasks, ServerWorld world, E entity, long time) {
+				tasks.filter(task -> task.getStatus() == Task.Status.STOPPED).forEach(task -> task.tryStarting(world, entity, time));
 			}
 		};
 
 		private RunMode() {
 		}
 
-		public abstract <E extends LivingEntity> void run(Stream<Task<? super E>> stream, ServerWorld world, E entity, long time);
+		public abstract <E extends LivingEntity> void run(Stream<Task<? super E>> tasks, ServerWorld world, E entity, long time);
 	}
 }

@@ -13,8 +13,8 @@ import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 
 public class RingBellTask extends Task<LivingEntity> {
-	private static final float field_30160 = 0.95F;
-	public static final int field_30159 = 3;
+	private static final float RUN_CHANCE = 0.95F;
+	public static final int MAX_DISTANCE = 3;
 
 	public RingBellTask() {
 		super(ImmutableMap.of(MemoryModuleType.MEETING_POINT, MemoryModuleState.VALUE_PRESENT));

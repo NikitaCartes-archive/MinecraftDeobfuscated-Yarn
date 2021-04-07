@@ -38,7 +38,7 @@ public class AreaEffectCloudEntity extends Entity {
 	private static final TrackedData<Integer> COLOR = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> WAITING = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<ParticleEffect> PARTICLE_ID = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.PARTICLE);
-	private static final float field_29971 = 32.0F;
+	private static final float MAX_RADIUS = 32.0F;
 	private Potion potion = Potions.EMPTY;
 	private final List<StatusEffectInstance> effects = Lists.<StatusEffectInstance>newArrayList();
 	private final Map<Entity, Integer> affectedEntities = Maps.<Entity, Integer>newHashMap();
@@ -307,7 +307,7 @@ public class AreaEffectCloudEntity extends Entity {
 		}
 	}
 
-	public float method_35044() {
+	public float getRadiusOnUse() {
 		return this.radiusOnUse;
 	}
 
@@ -315,7 +315,7 @@ public class AreaEffectCloudEntity extends Entity {
 		this.radiusOnUse = radius;
 	}
 
-	public float method_35045() {
+	public float getRadiusGrowth() {
 		return this.radiusGrowth;
 	}
 
@@ -323,15 +323,15 @@ public class AreaEffectCloudEntity extends Entity {
 		this.radiusGrowth = growth;
 	}
 
-	public int method_35046() {
+	public int getDurationOnUse() {
 		return this.durationOnUse;
 	}
 
-	public void method_35043(int i) {
-		this.durationOnUse = i;
+	public void setDurationOnUse(int durationOnUse) {
+		this.durationOnUse = durationOnUse;
 	}
 
-	public int method_35047() {
+	public int getWaitTime() {
 		return this.waitTime;
 	}
 
@@ -442,7 +442,7 @@ public class AreaEffectCloudEntity extends Entity {
 		super.onTrackedDataSet(data);
 	}
 
-	public Potion method_35048() {
+	public Potion getPotion() {
 		return this.potion;
 	}
 

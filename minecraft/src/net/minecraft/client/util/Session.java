@@ -51,7 +51,7 @@ public class Session {
 		}
 	}
 
-	public Session.AccountType method_35718() {
+	public Session.AccountType getAccountType() {
 		return this.accountType;
 	}
 

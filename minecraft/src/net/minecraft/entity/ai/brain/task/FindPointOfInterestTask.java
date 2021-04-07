@@ -21,41 +21,39 @@ import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 
 public class FindPointOfInterestTask extends Task<PathAwareEntity> {
-	private static final int field_30099 = 5;
-	private static final int field_30100 = 20;
-	public static final int field_30098 = 48;
+	private static final int MAX_POSITIONS_PER_RUN = 5;
+	private static final int POSITION_EXPIRE_INTERVAL = 20;
+	public static final int POI_SORTING_RADIUS = 48;
 	private final PointOfInterestType poiType;
 	private final MemoryModuleType<GlobalPos> targetMemoryModuleType;
 	private final boolean onlyRunIfChild;
-	private final Optional<Byte> field_25812;
+	private final Optional<Byte> entityStatus;
 	private long positionExpireTimeLimit;
 	private final Long2ObjectMap<FindPointOfInterestTask.RetryMarker> foundPositionsToExpiry = new Long2ObjectOpenHashMap<>();
 
 	public FindPointOfInterestTask(
 		PointOfInterestType poiType,
-		MemoryModuleType<GlobalPos> memoryModuleType,
+		MemoryModuleType<GlobalPos> moduleType,
 		MemoryModuleType<GlobalPos> targetMemoryModuleType,
 		boolean onlyRunIfChild,
-		Optional<Byte> optional
+		Optional<Byte> entityStatus
 	) {
-		super(method_29245(memoryModuleType, targetMemoryModuleType));
+		super(create(moduleType, targetMemoryModuleType));
 		this.poiType = poiType;
 		this.targetMemoryModuleType = targetMemoryModuleType;
 		this.onlyRunIfChild = onlyRunIfChild;
-		this.field_25812 = optional;
+		this.entityStatus = entityStatus;
 	}
 
-	public FindPointOfInterestTask(PointOfInterestType poiType, MemoryModuleType<GlobalPos> memoryModuleType, boolean onlyRunIfChild, Optional<Byte> optional) {
-		this(poiType, memoryModuleType, memoryModuleType, onlyRunIfChild, optional);
+	public FindPointOfInterestTask(PointOfInterestType poiType, MemoryModuleType<GlobalPos> moduleType, boolean onlyRunIfChild, Optional<Byte> entityStatus) {
+		this(poiType, moduleType, moduleType, onlyRunIfChild, entityStatus);
 	}
 
-	private static ImmutableMap<MemoryModuleType<?>, MemoryModuleState> method_29245(
-		MemoryModuleType<GlobalPos> memoryModuleType, MemoryModuleType<GlobalPos> memoryModuleType2
-	) {
+	private static ImmutableMap<MemoryModuleType<?>, MemoryModuleState> create(MemoryModuleType<GlobalPos> firstModule, MemoryModuleType<GlobalPos> secondModule) {
 		Builder<MemoryModuleType<?>, MemoryModuleState> builder = ImmutableMap.builder();
-		builder.put(memoryModuleType, MemoryModuleState.VALUE_ABSENT);
-		if (memoryModuleType2 != memoryModuleType) {
-			builder.put(memoryModuleType2, MemoryModuleState.VALUE_ABSENT);
+		builder.put(firstModule, MemoryModuleState.VALUE_ABSENT);
+		if (secondModule != firstModule) {
+			builder.put(secondModule, MemoryModuleState.VALUE_ABSENT);
 		}
 
 		return builder.build();
@@ -75,15 +73,15 @@ public class FindPointOfInterestTask extends Task<PathAwareEntity> {
 	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
 		this.positionExpireTimeLimit = l + 20L + (long)serverWorld.getRandom().nextInt(20);
 		PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
-		this.foundPositionsToExpiry.long2ObjectEntrySet().removeIf(entry -> !((FindPointOfInterestTask.RetryMarker)entry.getValue()).method_29927(l));
+		this.foundPositionsToExpiry.long2ObjectEntrySet().removeIf(entry -> !((FindPointOfInterestTask.RetryMarker)entry.getValue()).isAttempting(l));
 		Predicate<BlockPos> predicate = blockPos -> {
 			FindPointOfInterestTask.RetryMarker retryMarker = this.foundPositionsToExpiry.get(blockPos.asLong());
 			if (retryMarker == null) {
 				return true;
-			} else if (!retryMarker.method_29928(l)) {
+			} else if (!retryMarker.shouldRetry(l)) {
 				return false;
 			} else {
-				retryMarker.method_29926(l);
+				retryMarker.setAttemptTime(l);
 				return true;
 			}
 		};
@@ -92,13 +90,13 @@ public class FindPointOfInterestTask extends Task<PathAwareEntity> {
 			)
 			.limit(5L)
 			.collect(Collectors.toSet());
-		Path path = pathAwareEntity.getNavigation().method_29934(set, this.poiType.getSearchDistance());
+		Path path = pathAwareEntity.getNavigation().findPathTo(set, this.poiType.getSearchDistance());
 		if (path != null && path.reachesTarget()) {
 			BlockPos blockPos = path.getTarget();
 			pointOfInterestStorage.getType(blockPos).ifPresent(pointOfInterestType -> {
 				pointOfInterestStorage.getPosition(this.poiType.getCompletionCondition(), blockPos2x -> blockPos2x.equals(blockPos), blockPos, 1);
 				pathAwareEntity.getBrain().remember(this.targetMemoryModuleType, GlobalPos.create(serverWorld.getRegistryKey(), blockPos));
-				this.field_25812.ifPresent(byte_ -> serverWorld.sendEntityStatus(pathAwareEntity, byte_));
+				this.entityStatus.ifPresent(byte_ -> serverWorld.sendEntityStatus(pathAwareEntity, byte_));
 				this.foundPositionsToExpiry.clear();
 				DebugInfoSender.sendPointOfInterest(serverWorld, blockPos);
 			});
@@ -110,9 +108,9 @@ public class FindPointOfInterestTask extends Task<PathAwareEntity> {
 	}
 
 	static class RetryMarker {
-		private static final int field_30101 = 40;
+		private static final int MIN_DELAY = 40;
 		private static final int field_30102 = 80;
-		private static final int field_30103 = 400;
+		private static final int ATTEMPT_DURATION = 400;
 		private final Random random;
 		private long previousAttemptAt;
 		private long nextScheduledAttemptAt;
@@ -120,21 +118,21 @@ public class FindPointOfInterestTask extends Task<PathAwareEntity> {
 
 		RetryMarker(Random random, long time) {
 			this.random = random;
-			this.method_29926(time);
+			this.setAttemptTime(time);
 		}
 
-		public void method_29926(long time) {
+		public void setAttemptTime(long time) {
 			this.previousAttemptAt = time;
 			int i = this.currentDelay + this.random.nextInt(40) + 40;
 			this.currentDelay = Math.min(i, 400);
 			this.nextScheduledAttemptAt = time + (long)this.currentDelay;
 		}
 
-		public boolean method_29927(long time) {
+		public boolean isAttempting(long time) {
 			return time - this.previousAttemptAt < 400L;
 		}
 
-		public boolean method_29928(long time) {
+		public boolean shouldRetry(long time) {
 			return time >= this.nextScheduledAttemptAt;
 		}
 

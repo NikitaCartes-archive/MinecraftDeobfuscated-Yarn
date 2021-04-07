@@ -95,23 +95,23 @@ public final class ModelPart {
 		}
 	}
 
-	public void method_35745(MatrixStack matrixStack, ModelPart.class_6229 arg) {
-		this.method_35746(matrixStack, arg, "");
+	public void forEachCuboid(MatrixStack matrices, ModelPart.CuboidConsumer consumer) {
+		this.forEachCuboid(matrices, consumer, "");
 	}
 
-	private void method_35746(MatrixStack matrixStack, ModelPart.class_6229 arg, String string) {
+	private void forEachCuboid(MatrixStack matrices, ModelPart.CuboidConsumer consumer, String path) {
 		if (!this.cuboids.isEmpty() || !this.children.isEmpty()) {
-			matrixStack.push();
-			this.rotate(matrixStack);
-			MatrixStack.Entry entry = matrixStack.peek();
+			matrices.push();
+			this.rotate(matrices);
+			MatrixStack.Entry entry = matrices.peek();
 
 			for (int i = 0; i < this.cuboids.size(); i++) {
-				arg.method_35748(entry, string, i, (ModelPart.Cuboid)this.cuboids.get(i));
+				consumer.accept(entry, path, i, (ModelPart.Cuboid)this.cuboids.get(i));
 			}
 
-			String string2 = string + "/";
-			this.children.forEach((string2x, modelPart) -> modelPart.method_35746(matrixStack, arg, string2 + string2x));
-			matrixStack.pop();
+			String string = path + "/";
+			this.children.forEach((name, part) -> part.forEachCuboid(matrices, consumer, string + name));
+			matrices.pop();
 		}
 	}
 
@@ -254,6 +254,22 @@ public final class ModelPart {
 		}
 	}
 
+	@FunctionalInterface
+	@Environment(EnvType.CLIENT)
+	public interface CuboidConsumer {
+		/**
+		 * Accepts a cuboid from a model part.
+		 * 
+		 * @see ModelPart#forEachCuboid(MatrixStack, CuboidConsumer)
+		 * 
+		 * @param matrix the current matrix transformation from the model parts
+		 * @param path the path of the current model part, separated by {@code /}
+		 * @param index the index of the current cuboid in the current model part
+		 * @param cuboid the current cuboid
+		 */
+		void accept(MatrixStack.Entry matrix, String path, int index, ModelPart.Cuboid cuboid);
+	}
+
 	@Environment(EnvType.CLIENT)
 	static class Quad {
 		public final ModelPart.Vertex[] vertices;
@@ -303,11 +319,5 @@ public final class ModelPart {
 			this.u = u;
 			this.v = v;
 		}
-	}
-
-	@FunctionalInterface
-	@Environment(EnvType.CLIENT)
-	public interface class_6229 {
-		void method_35748(MatrixStack.Entry entry, String string, int i, ModelPart.Cuboid cuboid);
 	}
 }

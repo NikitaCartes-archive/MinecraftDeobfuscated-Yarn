@@ -2332,7 +2332,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	@Override
-	public void method_35034(Snooper snooper) {
+	public void addInitialSnooperInfo(Snooper snooper) {
 		snooper.addInitialInfo("client_brand", ClientBrandRetriever.getClientModName());
 		snooper.addInitialInfo("launched_version", this.gameVersion);
 		method_35705(snooper);
@@ -2614,8 +2614,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		try {
 			this.gameRenderer.method_35770(true);
 			this.worldRenderer.method_35774();
-			this.window.method_35642(i);
-			this.window.method_35643(j);
+			this.window.setFramebufferWidth(i);
+			this.window.setFramebufferHeight(j);
 
 			for (int n = 0; n < 6; n++) {
 				switch (n) {
@@ -2670,8 +2670,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.player.prevPitch = h;
 			this.player.prevYaw = m;
 			this.gameRenderer.method_35769(true);
-			this.window.method_35642(k);
-			this.window.method_35643(l);
+			this.window.setFramebufferWidth(k);
+			this.window.setFramebufferHeight(l);
 			framebuffer.delete();
 			this.gameRenderer.method_35770(false);
 			this.worldRenderer.method_35774();

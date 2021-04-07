@@ -206,7 +206,7 @@ public class AreaHelper {
 	) {
 		BlockPos blockPos = portalRect.lowerLeft;
 		BlockState blockState = destination.getBlockState(blockPos);
-		Direction.Axis axis = blockState.get(Properties.HORIZONTAL_AXIS);
+		Direction.Axis axis = (Direction.Axis)blockState.getOrEmpty(Properties.HORIZONTAL_AXIS).orElse(Direction.Axis.X);
 		double d = (double)portalRect.width;
 		double e = (double)portalRect.height;
 		int i = portalAxis == axis ? 0 : 90;

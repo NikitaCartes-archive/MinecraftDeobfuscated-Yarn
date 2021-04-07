@@ -52,36 +52,36 @@ public abstract class BlockStateVariantMap {
 	}
 
 	public static <T1 extends Comparable<T1>, T2 extends Comparable<T2>> BlockStateVariantMap.DoubleProperty<T1, T2> create(
-		Property<T1> property, Property<T2> property2
+		Property<T1> first, Property<T2> second
 	) {
-		return new BlockStateVariantMap.DoubleProperty<>(property, property2);
+		return new BlockStateVariantMap.DoubleProperty<>(first, second);
 	}
 
 	public static <T1 extends Comparable<T1>, T2 extends Comparable<T2>, T3 extends Comparable<T3>> BlockStateVariantMap.TripleProperty<T1, T2, T3> create(
-		Property<T1> property, Property<T2> property2, Property<T3> property3
+		Property<T1> first, Property<T2> second, Property<T3> third
 	) {
-		return new BlockStateVariantMap.TripleProperty<>(property, property2, property3);
+		return new BlockStateVariantMap.TripleProperty<>(first, second, third);
 	}
 
 	public static <T1 extends Comparable<T1>, T2 extends Comparable<T2>, T3 extends Comparable<T3>, T4 extends Comparable<T4>> BlockStateVariantMap.QuadrupleProperty<T1, T2, T3, T4> create(
-		Property<T1> property, Property<T2> property2, Property<T3> property3, Property<T4> property4
+		Property<T1> first, Property<T2> second, Property<T3> third, Property<T4> fourth
 	) {
-		return new BlockStateVariantMap.QuadrupleProperty<>(property, property2, property3, property4);
+		return new BlockStateVariantMap.QuadrupleProperty<>(first, second, third, fourth);
 	}
 
 	public static <T1 extends Comparable<T1>, T2 extends Comparable<T2>, T3 extends Comparable<T3>, T4 extends Comparable<T4>, T5 extends Comparable<T5>> BlockStateVariantMap.QuintupleProperty<T1, T2, T3, T4, T5> create(
-		Property<T1> property, Property<T2> property2, Property<T3> property3, Property<T4> property4, Property<T5> property5
+		Property<T1> first, Property<T2> second, Property<T3> third, Property<T4> fourth, Property<T5> fifth
 	) {
-		return new BlockStateVariantMap.QuintupleProperty<>(property, property2, property3, property4, property5);
+		return new BlockStateVariantMap.QuintupleProperty<>(first, second, third, fourth, fifth);
 	}
 
 	public static class DoubleProperty<T1 extends Comparable<T1>, T2 extends Comparable<T2>> extends BlockStateVariantMap {
 		private final Property<T1> first;
 		private final Property<T2> second;
 
-		private DoubleProperty(Property<T1> property, Property<T2> property2) {
-			this.first = property;
-			this.second = property2;
+		private DoubleProperty(Property<T1> first, Property<T2> second) {
+			this.first = first;
+			this.second = second;
 		}
 
 		@Override
@@ -89,23 +89,23 @@ public abstract class BlockStateVariantMap {
 			return ImmutableList.of(this.first, this.second);
 		}
 
-		public BlockStateVariantMap.DoubleProperty<T1, T2> register(T1 comparable, T2 comparable2, List<BlockStateVariant> list) {
-			PropertiesMap propertiesMap = PropertiesMap.withValues(this.first.createValue(comparable), this.second.createValue(comparable2));
-			this.register(propertiesMap, list);
+		public BlockStateVariantMap.DoubleProperty<T1, T2> register(T1 firstValue, T2 secondValue, List<BlockStateVariant> variants) {
+			PropertiesMap propertiesMap = PropertiesMap.withValues(this.first.createValue(firstValue), this.second.createValue(secondValue));
+			this.register(propertiesMap, variants);
 			return this;
 		}
 
-		public BlockStateVariantMap.DoubleProperty<T1, T2> register(T1 comparable, T2 comparable2, BlockStateVariant blockStateVariant) {
-			return this.register(comparable, comparable2, Collections.singletonList(blockStateVariant));
+		public BlockStateVariantMap.DoubleProperty<T1, T2> register(T1 firstValue, T2 secondValue, BlockStateVariant variant) {
+			return this.register(firstValue, secondValue, Collections.singletonList(variant));
 		}
 
 		public BlockStateVariantMap register(BiFunction<T1, T2, BlockStateVariant> variantFactory) {
 			this.first
 				.getValues()
 				.forEach(
-					comparable -> this.second
+					firstValue -> this.second
 							.getValues()
-							.forEach(comparable2 -> this.register((T1)comparable, (T2)comparable2, (BlockStateVariant)variantFactory.apply(comparable, comparable2)))
+							.forEach(secondValue -> this.register((T1)firstValue, (T2)secondValue, (BlockStateVariant)variantFactory.apply(firstValue, secondValue)))
 				);
 			return this;
 		}
@@ -114,12 +114,17 @@ public abstract class BlockStateVariantMap {
 			this.first
 				.getValues()
 				.forEach(
-					comparable -> this.second
+					firstValue -> this.second
 							.getValues()
-							.forEach(comparable2 -> this.register((T1)comparable, (T2)comparable2, (List<BlockStateVariant>)variantsFactory.apply(comparable, comparable2)))
+							.forEach(secondValue -> this.register((T1)firstValue, (T2)secondValue, (List<BlockStateVariant>)variantsFactory.apply(firstValue, secondValue)))
 				);
 			return this;
 		}
+	}
+
+	@FunctionalInterface
+	public interface QuadFunction<P1, P2, P3, P4, R> {
+		R apply(P1 one, P2 two, P3 three, P4 four);
 	}
 
 	public static class QuadrupleProperty<T1 extends Comparable<T1>, T2 extends Comparable<T2>, T3 extends Comparable<T3>, T4 extends Comparable<T4>>
@@ -129,11 +134,11 @@ public abstract class BlockStateVariantMap {
 		private final Property<T3> third;
 		private final Property<T4> fourth;
 
-		private QuadrupleProperty(Property<T1> property, Property<T2> property2, Property<T3> property3, Property<T4> property4) {
-			this.first = property;
-			this.second = property2;
-			this.third = property3;
-			this.fourth = property4;
+		private QuadrupleProperty(Property<T1> first, Property<T2> second, Property<T3> third, Property<T4> fourth) {
+			this.first = first;
+			this.second = second;
+			this.third = third;
+			this.fourth = fourth;
 		}
 
 		@Override
@@ -142,40 +147,40 @@ public abstract class BlockStateVariantMap {
 		}
 
 		public BlockStateVariantMap.QuadrupleProperty<T1, T2, T3, T4> register(
-			T1 comparable, T2 comparable2, T3 comparable3, T4 comparable4, List<BlockStateVariant> list
+			T1 firstValue, T2 secondValue, T3 thirdValue, T4 fourthValue, List<BlockStateVariant> variants
 		) {
 			PropertiesMap propertiesMap = PropertiesMap.withValues(
-				this.first.createValue(comparable), this.second.createValue(comparable2), this.third.createValue(comparable3), this.fourth.createValue(comparable4)
+				this.first.createValue(firstValue), this.second.createValue(secondValue), this.third.createValue(thirdValue), this.fourth.createValue(fourthValue)
 			);
-			this.register(propertiesMap, list);
+			this.register(propertiesMap, variants);
 			return this;
 		}
 
 		public BlockStateVariantMap.QuadrupleProperty<T1, T2, T3, T4> register(
-			T1 comparable, T2 comparable2, T3 comparable3, T4 comparable4, BlockStateVariant blockStateVariant
+			T1 firstValue, T2 secondValue, T3 thirdValue, T4 fourthValue, BlockStateVariant variant
 		) {
-			return this.register(comparable, comparable2, comparable3, comparable4, Collections.singletonList(blockStateVariant));
+			return this.register(firstValue, secondValue, thirdValue, fourthValue, Collections.singletonList(variant));
 		}
 
-		public BlockStateVariantMap method_35886(BlockStateVariantMap.class_6291<T1, T2, T3, T4, BlockStateVariant> arg) {
+		public BlockStateVariantMap register(BlockStateVariantMap.QuadFunction<T1, T2, T3, T4, BlockStateVariant> variantFactory) {
 			this.first
 				.getValues()
 				.forEach(
-					comparable -> this.second
+					firstValue -> this.second
 							.getValues()
 							.forEach(
-								comparable2 -> this.third
+								secondValue -> this.third
 										.getValues()
 										.forEach(
-											comparable3 -> this.fourth
+											thirdValue -> this.fourth
 													.getValues()
 													.forEach(
-														comparable4 -> this.register(
-																(T1)comparable,
-																(T2)comparable2,
-																(T3)comparable3,
-																(T4)comparable4,
-																arg.method_35906((T1)comparable, (T2)comparable2, (T3)comparable3, (T4)comparable4)
+														fourthValue -> this.register(
+																(T1)firstValue,
+																(T2)secondValue,
+																(T3)thirdValue,
+																(T4)fourthValue,
+																variantFactory.apply((T1)firstValue, (T2)secondValue, (T3)thirdValue, (T4)fourthValue)
 															)
 													)
 										)
@@ -184,25 +189,25 @@ public abstract class BlockStateVariantMap {
 			return this;
 		}
 
-		public BlockStateVariantMap method_35891(BlockStateVariantMap.class_6291<T1, T2, T3, T4, List<BlockStateVariant>> arg) {
+		public BlockStateVariantMap registerVariants(BlockStateVariantMap.QuadFunction<T1, T2, T3, T4, List<BlockStateVariant>> variantFactory) {
 			this.first
 				.getValues()
 				.forEach(
-					comparable -> this.second
+					firstValue -> this.second
 							.getValues()
 							.forEach(
-								comparable2 -> this.third
+								secondValue -> this.third
 										.getValues()
 										.forEach(
-											comparable3 -> this.fourth
+											thirdValue -> this.fourth
 													.getValues()
 													.forEach(
-														comparable4 -> this.register(
-																(T1)comparable,
-																(T2)comparable2,
-																(T3)comparable3,
-																(T4)comparable4,
-																arg.method_35906((T1)comparable, (T2)comparable2, (T3)comparable3, (T4)comparable4)
+														fourthValue -> this.register(
+																(T1)firstValue,
+																(T2)secondValue,
+																(T3)thirdValue,
+																(T4)fourthValue,
+																variantFactory.apply((T1)firstValue, (T2)secondValue, (T3)thirdValue, (T4)fourthValue)
 															)
 													)
 										)
@@ -210,6 +215,11 @@ public abstract class BlockStateVariantMap {
 				);
 			return this;
 		}
+	}
+
+	@FunctionalInterface
+	public interface QuintFunction<P1, P2, P3, P4, P5, R> {
+		R apply(P1 one, P2 two, P3 three, P4 four, P5 five);
 	}
 
 	public static class QuintupleProperty<T1 extends Comparable<T1>, T2 extends Comparable<T2>, T3 extends Comparable<T3>, T4 extends Comparable<T4>, T5 extends Comparable<T5>>
@@ -220,12 +230,12 @@ public abstract class BlockStateVariantMap {
 		private final Property<T4> fourth;
 		private final Property<T5> fifth;
 
-		private QuintupleProperty(Property<T1> property, Property<T2> property2, Property<T3> property3, Property<T4> property4, Property<T5> property5) {
-			this.first = property;
-			this.second = property2;
-			this.third = property3;
-			this.fourth = property4;
-			this.fifth = property5;
+		private QuintupleProperty(Property<T1> first, Property<T2> second, Property<T3> third, Property<T4> fourth, Property<T5> fifth) {
+			this.first = first;
+			this.second = second;
+			this.third = third;
+			this.fourth = fourth;
+			this.fifth = fifth;
 		}
 
 		@Override
@@ -234,48 +244,48 @@ public abstract class BlockStateVariantMap {
 		}
 
 		public BlockStateVariantMap.QuintupleProperty<T1, T2, T3, T4, T5> register(
-			T1 comparable, T2 comparable2, T3 comparable3, T4 comparable4, T5 comparable5, List<BlockStateVariant> list
+			T1 firstValue, T2 secondValue, T3 thirdValue, T4 fourthValue, T5 fifthValue, List<BlockStateVariant> variants
 		) {
 			PropertiesMap propertiesMap = PropertiesMap.withValues(
-				this.first.createValue(comparable),
-				this.second.createValue(comparable2),
-				this.third.createValue(comparable3),
-				this.fourth.createValue(comparable4),
-				this.fifth.createValue(comparable5)
+				this.first.createValue(firstValue),
+				this.second.createValue(secondValue),
+				this.third.createValue(thirdValue),
+				this.fourth.createValue(fourthValue),
+				this.fifth.createValue(fifthValue)
 			);
-			this.register(propertiesMap, list);
+			this.register(propertiesMap, variants);
 			return this;
 		}
 
 		public BlockStateVariantMap.QuintupleProperty<T1, T2, T3, T4, T5> register(
-			T1 comparable, T2 comparable2, T3 comparable3, T4 comparable4, T5 comparable5, BlockStateVariant blockStateVariant
+			T1 firstValue, T2 secondValue, T3 thirdValue, T4 fourthValue, T5 fifthValue, BlockStateVariant variant
 		) {
-			return this.register(comparable, comparable2, comparable3, comparable4, comparable5, Collections.singletonList(blockStateVariant));
+			return this.register(firstValue, secondValue, thirdValue, fourthValue, fifthValue, Collections.singletonList(variant));
 		}
 
-		public BlockStateVariantMap method_35897(BlockStateVariantMap.class_6290<T1, T2, T3, T4, T5, BlockStateVariant> arg) {
+		public BlockStateVariantMap register(BlockStateVariantMap.QuintFunction<T1, T2, T3, T4, T5, BlockStateVariant> variantFactory) {
 			this.first
 				.getValues()
 				.forEach(
-					comparable -> this.second
+					firstValue -> this.second
 							.getValues()
 							.forEach(
-								comparable2 -> this.third
+								secondValue -> this.third
 										.getValues()
 										.forEach(
-											comparable3 -> this.fourth
+											thirdValue -> this.fourth
 													.getValues()
 													.forEach(
-														comparable4 -> this.fifth
+														fourthValue -> this.fifth
 																.getValues()
 																.forEach(
-																	comparable5 -> this.register(
-																			(T1)comparable,
-																			(T2)comparable2,
-																			(T3)comparable3,
-																			(T4)comparable4,
-																			(T5)comparable5,
-																			arg.method_35905((T1)comparable, (T2)comparable2, (T3)comparable3, (T4)comparable4, (T5)comparable5)
+																	fifthValue -> this.register(
+																			(T1)firstValue,
+																			(T2)secondValue,
+																			(T3)thirdValue,
+																			(T4)fourthValue,
+																			(T5)fifthValue,
+																			variantFactory.apply((T1)firstValue, (T2)secondValue, (T3)thirdValue, (T4)fourthValue, (T5)fifthValue)
 																		)
 																)
 													)
@@ -285,29 +295,29 @@ public abstract class BlockStateVariantMap {
 			return this;
 		}
 
-		public BlockStateVariantMap method_35903(BlockStateVariantMap.class_6290<T1, T2, T3, T4, T5, List<BlockStateVariant>> arg) {
+		public BlockStateVariantMap registerVariants(BlockStateVariantMap.QuintFunction<T1, T2, T3, T4, T5, List<BlockStateVariant>> variantFactory) {
 			this.first
 				.getValues()
 				.forEach(
-					comparable -> this.second
+					firstValue -> this.second
 							.getValues()
 							.forEach(
-								comparable2 -> this.third
+								secondValue -> this.third
 										.getValues()
 										.forEach(
-											comparable3 -> this.fourth
+											thirdValue -> this.fourth
 													.getValues()
 													.forEach(
-														comparable4 -> this.fifth
+														fourthValue -> this.fifth
 																.getValues()
 																.forEach(
-																	comparable5 -> this.register(
-																			(T1)comparable,
-																			(T2)comparable2,
-																			(T3)comparable3,
-																			(T4)comparable4,
-																			(T5)comparable5,
-																			arg.method_35905((T1)comparable, (T2)comparable2, (T3)comparable3, (T4)comparable4, (T5)comparable5)
+																	fifthValue -> this.register(
+																			(T1)firstValue,
+																			(T2)secondValue,
+																			(T3)thirdValue,
+																			(T4)fourthValue,
+																			(T5)fifthValue,
+																			variantFactory.apply((T1)firstValue, (T2)secondValue, (T3)thirdValue, (T4)fourthValue, (T5)fifthValue)
 																		)
 																)
 													)
@@ -341,19 +351,19 @@ public abstract class BlockStateVariantMap {
 		}
 
 		public BlockStateVariantMap register(Function<T1, BlockStateVariant> variantFactory) {
-			this.property.getValues().forEach(comparable -> this.register((T1)comparable, (BlockStateVariant)variantFactory.apply(comparable)));
+			this.property.getValues().forEach(value -> this.register((T1)value, (BlockStateVariant)variantFactory.apply(value)));
 			return this;
 		}
 
-		public BlockStateVariantMap method_35878(Function<T1, List<BlockStateVariant>> function) {
-			this.property.getValues().forEach(comparable -> this.register((T1)comparable, (List<BlockStateVariant>)function.apply(comparable)));
+		public BlockStateVariantMap registerVariants(Function<T1, List<BlockStateVariant>> variantFactory) {
+			this.property.getValues().forEach(value -> this.register((T1)value, (List<BlockStateVariant>)variantFactory.apply(value)));
 			return this;
 		}
 	}
 
 	@FunctionalInterface
 	public interface TriFunction<P1, P2, P3, R> {
-		R apply(P1 object, P2 object2, P3 object3);
+		R apply(P1 one, P2 two, P3 three);
 	}
 
 	public static class TripleProperty<T1 extends Comparable<T1>, T2 extends Comparable<T2>, T3 extends Comparable<T3>> extends BlockStateVariantMap {
@@ -361,10 +371,10 @@ public abstract class BlockStateVariantMap {
 		private final Property<T2> second;
 		private final Property<T3> third;
 
-		private TripleProperty(Property<T1> property, Property<T2> property2, Property<T3> property3) {
-			this.first = property;
-			this.second = property2;
-			this.third = property3;
+		private TripleProperty(Property<T1> first, Property<T2> second, Property<T3> third) {
+			this.first = first;
+			this.second = second;
+			this.third = third;
 		}
 
 		@Override
@@ -372,60 +382,50 @@ public abstract class BlockStateVariantMap {
 			return ImmutableList.of(this.first, this.second, this.third);
 		}
 
-		public BlockStateVariantMap.TripleProperty<T1, T2, T3> register(T1 comparable, T2 comparable2, T3 comparable3, List<BlockStateVariant> list) {
+		public BlockStateVariantMap.TripleProperty<T1, T2, T3> register(T1 firstValue, T2 secondValue, T3 thirdValue, List<BlockStateVariant> variants) {
 			PropertiesMap propertiesMap = PropertiesMap.withValues(
-				this.first.createValue(comparable), this.second.createValue(comparable2), this.third.createValue(comparable3)
+				this.first.createValue(firstValue), this.second.createValue(secondValue), this.third.createValue(thirdValue)
 			);
-			this.register(propertiesMap, list);
+			this.register(propertiesMap, variants);
 			return this;
 		}
 
-		public BlockStateVariantMap.TripleProperty<T1, T2, T3> register(T1 comparable, T2 comparable2, T3 comparable3, BlockStateVariant blockStateVariant) {
-			return this.register(comparable, comparable2, comparable3, Collections.singletonList(blockStateVariant));
+		public BlockStateVariantMap.TripleProperty<T1, T2, T3> register(T1 firstValue, T2 secondValue, T3 thirdValue, BlockStateVariant variant) {
+			return this.register(firstValue, secondValue, thirdValue, Collections.singletonList(variant));
 		}
 
-		public BlockStateVariantMap register(BlockStateVariantMap.TriFunction<T1, T2, T3, BlockStateVariant> triFunction) {
+		public BlockStateVariantMap register(BlockStateVariantMap.TriFunction<T1, T2, T3, BlockStateVariant> variantFactory) {
 			this.first
 				.getValues()
 				.forEach(
-					comparable -> this.second
+					firstValue -> this.second
 							.getValues()
 							.forEach(
-								comparable2 -> this.third
+								secondValue -> this.third
 										.getValues()
 										.forEach(
-											comparable3 -> this.register((T1)comparable, (T2)comparable2, (T3)comparable3, triFunction.apply((T1)comparable, (T2)comparable2, (T3)comparable3))
+											thirdValue -> this.register((T1)firstValue, (T2)secondValue, (T3)thirdValue, variantFactory.apply((T1)firstValue, (T2)secondValue, (T3)thirdValue))
 										)
 							)
 				);
 			return this;
 		}
 
-		public BlockStateVariantMap method_35882(BlockStateVariantMap.TriFunction<T1, T2, T3, List<BlockStateVariant>> triFunction) {
+		public BlockStateVariantMap registerVariants(BlockStateVariantMap.TriFunction<T1, T2, T3, List<BlockStateVariant>> variantFactory) {
 			this.first
 				.getValues()
 				.forEach(
-					comparable -> this.second
+					firstValue -> this.second
 							.getValues()
 							.forEach(
-								comparable2 -> this.third
+								secondValue -> this.third
 										.getValues()
 										.forEach(
-											comparable3 -> this.register((T1)comparable, (T2)comparable2, (T3)comparable3, triFunction.apply((T1)comparable, (T2)comparable2, (T3)comparable3))
+											thirdValue -> this.register((T1)firstValue, (T2)secondValue, (T3)thirdValue, variantFactory.apply((T1)firstValue, (T2)secondValue, (T3)thirdValue))
 										)
 							)
 				);
 			return this;
 		}
-	}
-
-	@FunctionalInterface
-	public interface class_6290<P1, P2, P3, P4, P5, R> {
-		R method_35905(P1 object, P2 object2, P3 object3, P4 object4, P5 object5);
-	}
-
-	@FunctionalInterface
-	public interface class_6291<P1, P2, P3, P4, R> {
-		R method_35906(P1 object, P2 object2, P3 object3, P4 object4);
 	}
 }

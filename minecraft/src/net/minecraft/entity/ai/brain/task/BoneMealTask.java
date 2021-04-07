@@ -20,7 +20,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldEvents;
 
 public class BoneMealTask extends Task<VillagerEntity> {
-	private static final int field_30184 = 80;
+	private static final int MAX_DURATION = 80;
 	private long startTime;
 	private long lastEndEntityAge;
 	private int duration;

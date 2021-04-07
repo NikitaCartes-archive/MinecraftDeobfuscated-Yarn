@@ -76,7 +76,7 @@ public class NameGenerator {
 		"Fist"
 	};
 
-	public static String method_36154(Entity entity) {
+	public static String name(Entity entity) {
 		if (entity instanceof PlayerEntity) {
 			return entity.getName().getString();
 		} else {

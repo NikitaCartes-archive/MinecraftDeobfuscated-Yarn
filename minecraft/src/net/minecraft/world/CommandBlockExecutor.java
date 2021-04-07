@@ -162,7 +162,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 	}
 
 	@Override
-	public void sendSystemMessage(Text message, UUID senderUuid) {
+	public void sendSystemMessage(Text message, UUID sender) {
 		if (this.trackOutput) {
 			this.lastOutput = new LiteralText("[" + DATE_FORMAT.format(new Date()) + "] ").append(message);
 			this.markDirty();

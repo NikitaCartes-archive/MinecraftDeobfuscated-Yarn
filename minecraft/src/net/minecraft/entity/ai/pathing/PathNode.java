@@ -52,10 +52,10 @@ public class PathNode {
 		return MathHelper.sqrt(f * f + g * g + h * h);
 	}
 
-	public float method_35494(BlockPos blockPos) {
-		float f = (float)(blockPos.getX() - this.x);
-		float g = (float)(blockPos.getY() - this.y);
-		float h = (float)(blockPos.getZ() - this.z);
+	public float getDistance(BlockPos pos) {
+		float f = (float)(pos.getX() - this.x);
+		float g = (float)(pos.getY() - this.y);
+		float h = (float)(pos.getZ() - this.z);
 		return MathHelper.sqrt(f * f + g * g + h * h);
 	}
 
@@ -66,10 +66,10 @@ public class PathNode {
 		return f * f + g * g + h * h;
 	}
 
-	public float method_35497(BlockPos blockPos) {
-		float f = (float)(blockPos.getX() - this.x);
-		float g = (float)(blockPos.getY() - this.y);
-		float h = (float)(blockPos.getZ() - this.z);
+	public float getSquaredDistance(BlockPos pos) {
+		float f = (float)(pos.getX() - this.x);
+		float g = (float)(pos.getY() - this.y);
+		float h = (float)(pos.getZ() - this.z);
 		return f * f + g * g + h * h;
 	}
 
@@ -87,11 +87,11 @@ public class PathNode {
 		return f + g + h;
 	}
 
-	public BlockPos getPos() {
+	public BlockPos getBlockPos() {
 		return new BlockPos(this.x, this.y, this.z);
 	}
 
-	public Vec3d method_35496() {
+	public Vec3d getPos() {
 		return new Vec3d((double)this.x, (double)this.y, (double)this.z);
 	}
 
@@ -116,24 +116,24 @@ public class PathNode {
 		return "Node{x=" + this.x + ", y=" + this.y + ", z=" + this.z + '}';
 	}
 
-	public void method_35495(PacketByteBuf packetByteBuf) {
-		packetByteBuf.writeInt(this.x);
-		packetByteBuf.writeInt(this.y);
-		packetByteBuf.writeInt(this.z);
-		packetByteBuf.writeFloat(this.pathLength);
-		packetByteBuf.writeFloat(this.penalty);
-		packetByteBuf.writeBoolean(this.visited);
-		packetByteBuf.writeInt(this.type.ordinal());
-		packetByteBuf.writeFloat(this.heapWeight);
+	public void toBuffer(PacketByteBuf buffer) {
+		buffer.writeInt(this.x);
+		buffer.writeInt(this.y);
+		buffer.writeInt(this.z);
+		buffer.writeFloat(this.pathLength);
+		buffer.writeFloat(this.penalty);
+		buffer.writeBoolean(this.visited);
+		buffer.writeInt(this.type.ordinal());
+		buffer.writeFloat(this.heapWeight);
 	}
 
-	public static PathNode fromBuffer(PacketByteBuf buffer) {
-		PathNode pathNode = new PathNode(buffer.readInt(), buffer.readInt(), buffer.readInt());
-		pathNode.pathLength = buffer.readFloat();
-		pathNode.penalty = buffer.readFloat();
-		pathNode.visited = buffer.readBoolean();
-		pathNode.type = PathNodeType.values()[buffer.readInt()];
-		pathNode.heapWeight = buffer.readFloat();
+	public static PathNode readBuf(PacketByteBuf buf) {
+		PathNode pathNode = new PathNode(buf.readInt(), buf.readInt(), buf.readInt());
+		pathNode.pathLength = buf.readFloat();
+		pathNode.penalty = buf.readFloat();
+		pathNode.visited = buf.readBoolean();
+		pathNode.type = PathNodeType.values()[buf.readInt()];
+		pathNode.heapWeight = buf.readFloat();
 		return pathNode;
 	}
 }

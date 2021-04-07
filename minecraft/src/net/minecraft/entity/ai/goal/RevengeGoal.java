@@ -15,7 +15,7 @@ import net.minecraft.world.GameRules;
 
 public class RevengeGoal extends TrackTargetGoal {
 	private static final TargetPredicate VALID_AVOIDABLES_PREDICATE = new TargetPredicate().includeHidden().ignoreDistanceScalingFactor();
-	private static final int field_30230 = 10;
+	private static final int BOX_VERTICAL_EXPANSION = 10;
 	private boolean groupRevenge;
 	private int lastAttackedTime;
 	private final Class<?>[] noRevengeTypes;

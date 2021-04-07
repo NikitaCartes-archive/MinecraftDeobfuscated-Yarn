@@ -10,10 +10,11 @@ public class DamageRecord {
 	private final int entityAge;
 	private final float damage;
 	private final float entityHealth;
+	@Nullable
 	private final String fallDeathSuffix;
 	private final float fallDistance;
 
-	public DamageRecord(DamageSource damageSource, int entityAge, float entityOriginalHealth, float damage, String fallDeathSuffix, float fallDistance) {
+	public DamageRecord(DamageSource damageSource, int entityAge, float entityOriginalHealth, float damage, @Nullable String fallDeathSuffix, float fallDistance) {
 		this.damageSource = damageSource;
 		this.entityAge = entityAge;
 		this.damage = damage;

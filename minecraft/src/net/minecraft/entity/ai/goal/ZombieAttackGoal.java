@@ -27,7 +27,7 @@ public class ZombieAttackGoal extends MeleeAttackGoal {
 	public void tick() {
 		super.tick();
 		this.ticks++;
-		if (this.ticks >= 5 && this.method_28348() < this.method_28349() / 2) {
+		if (this.ticks >= 5 && this.getCooldown() < this.getMaxCooldown() / 2) {
 			this.zombie.setAttacking(true);
 		} else {
 			this.zombie.setAttacking(false);

@@ -13,14 +13,14 @@ import net.minecraft.item.Items;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 public class CrossbowAttackGoal<T extends HostileEntity & RangedAttackMob & CrossbowUser> extends Goal {
-	public static final UniformIntProvider field_25696 = Durations.betweenSeconds(1, 2);
+	public static final UniformIntProvider COOLDOWN_RANGE = Durations.betweenSeconds(1, 2);
 	private final T actor;
 	private CrossbowAttackGoal.Stage stage = CrossbowAttackGoal.Stage.UNCHARGED;
 	private final double speed;
 	private final float squaredRange;
 	private int seeingTargetTicker;
 	private int chargedTicksLeft;
-	private int field_25697;
+	private int cooldown;
 
 	public CrossbowAttackGoal(T actor, double speed, float range) {
 		this.actor = actor;
@@ -79,13 +79,13 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttackMob & Cros
 			double d = this.actor.squaredDistanceTo(livingEntity);
 			boolean bl3 = (d > (double)this.squaredRange || this.seeingTargetTicker < 5) && this.chargedTicksLeft == 0;
 			if (bl3) {
-				this.field_25697--;
-				if (this.field_25697 <= 0) {
+				this.cooldown--;
+				if (this.cooldown <= 0) {
 					this.actor.getNavigation().startMovingTo(livingEntity, this.isUncharged() ? this.speed : this.speed * 0.5);
-					this.field_25697 = field_25696.get(this.actor.getRandom());
+					this.cooldown = COOLDOWN_RANGE.get(this.actor.getRandom());
 				}
 			} else {
-				this.field_25697 = 0;
+				this.cooldown = 0;
 				this.actor.getNavigation().stop();
 			}
 

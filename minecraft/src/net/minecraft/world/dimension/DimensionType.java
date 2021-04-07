@@ -35,6 +35,7 @@ import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
 
 public class DimensionType {
 	public static final int SIZE_BITS_Y = BlockPos.SIZE_BITS_Y;
+	public static final int field_33411 = 16;
 	public static final int MAX_HEIGHT = (1 << SIZE_BITS_Y) - 32;
 	public static final int MAX_COLUMN_HEIGHT = (MAX_HEIGHT >> 1) - 1;
 	public static final int MIN_HEIGHT = MAX_COLUMN_HEIGHT - MAX_HEIGHT + 1;
@@ -60,7 +61,7 @@ public class DimensionType {
 						Codec.BOOL.fieldOf("respawn_anchor_works").forGetter(DimensionType::isRespawnAnchorWorking),
 						Codec.BOOL.fieldOf("has_raids").forGetter(DimensionType::hasRaids),
 						Codec.intRange(MIN_HEIGHT, MAX_COLUMN_HEIGHT).fieldOf("min_y").forGetter(DimensionType::getMinimumY),
-						Codec.intRange(0, MAX_HEIGHT).fieldOf("height").forGetter(DimensionType::getHeight),
+						Codec.intRange(16, MAX_HEIGHT).fieldOf("height").forGetter(DimensionType::getHeight),
 						Codec.intRange(0, MAX_HEIGHT).fieldOf("logical_height").forGetter(DimensionType::getLogicalHeight),
 						Identifier.CODEC.fieldOf("infiniburn").forGetter(dimensionType -> dimensionType.infiniburn),
 						Identifier.CODEC.fieldOf("effects").orElse(OVERWORLD_ID).forGetter(dimensionType -> dimensionType.skyProperties),
@@ -177,7 +178,9 @@ public class DimensionType {
 	private final transient float[] brightnessByLightLevel;
 
 	private static DataResult<DimensionType> checkHeight(DimensionType type) {
-		if (type.getMinimumY() + type.getHeight() > MAX_COLUMN_HEIGHT + 1) {
+		if (type.getHeight() < 16) {
+			return DataResult.error("height has to be at least 16");
+		} else if (type.getMinimumY() + type.getHeight() > MAX_COLUMN_HEIGHT + 1) {
 			return DataResult.error("min_y + height cannot be higher than: " + (MAX_COLUMN_HEIGHT + 1));
 		} else if (type.getLogicalHeight() > type.getHeight()) {
 			return DataResult.error("logical_height cannot be higher than height");

@@ -80,14 +80,15 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 	public void updateCommandBlock() {
 		CommandBlockExecutor commandBlockExecutor = this.blockEntity.getCommandExecutor();
 		this.consoleCommandTextField.setText(commandBlockExecutor.getCommand());
-		this.trackingOutput = commandBlockExecutor.isTrackingOutput();
+		boolean bl = commandBlockExecutor.isTrackingOutput();
 		this.mode = this.blockEntity.getCommandBlockType();
 		this.conditional = this.blockEntity.isConditionalCommandBlock();
 		this.autoActivate = this.blockEntity.isAuto();
-		this.toggleTrackingOutputButton.setValue(this.trackingOutput);
+		this.toggleTrackingOutputButton.setValue(bl);
 		this.modeButton.setValue(this.mode);
 		this.conditionalModeButton.setValue(this.conditional);
 		this.redstoneTriggerButton.setValue(this.autoActivate);
+		this.method_32642(bl);
 		this.setButtonsActive(true);
 	}
 

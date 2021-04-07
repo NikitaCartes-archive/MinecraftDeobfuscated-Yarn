@@ -60,7 +60,9 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	private double damage = 2.0;
 	private int punch;
 	private SoundEvent sound = this.getHitSound();
+	@Nullable
 	private IntOpenHashSet piercedEntities;
+	@Nullable
 	private List<Entity> piercingKilledEntities;
 
 	protected PersistentProjectileEntity(EntityType<? extends PersistentProjectileEntity> entityType, World world) {

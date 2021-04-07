@@ -514,7 +514,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			}
 		}
 
-		public String method_35740() {
+		public String getLevelDisplayName() {
 			return this.level.getDisplayName();
 		}
 	}

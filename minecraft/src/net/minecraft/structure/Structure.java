@@ -52,17 +52,17 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class Structure {
-	public static final String field_31687 = "palette";
-	public static final String field_31688 = "palettes";
-	public static final String field_31689 = "entities";
-	public static final String field_31690 = "blocks";
-	public static final String field_31691 = "pos";
-	public static final String field_31692 = "state";
-	public static final String field_31693 = "nbt";
-	public static final String field_31694 = "pos";
-	public static final String field_31695 = "blockPos";
-	public static final String field_31696 = "nbt";
-	public static final String field_31697 = "size";
+	public static final String PALETTE_KEY = "palette";
+	public static final String PALETTES_KEY = "palettes";
+	public static final String ENTITIES_KEY = "entities";
+	public static final String BLOCKS_KEY = "blocks";
+	public static final String BLOCKS_POS_KEY = "pos";
+	public static final String BLOCKS_STATE_KEY = "state";
+	public static final String BLOCKS_NBT_KEY = "nbt";
+	public static final String ENTITIES_POS_KEY = "pos";
+	public static final String ENTITIES_BLOCK_POS_KEY = "blockPos";
+	public static final String ENTITIES_NBT_KEY = "nbt";
+	public static final String SIZE_KEY = "size";
 	static final int field_31698 = 16;
 	private final List<Structure.PalettedBlockInfoList> blockInfoLists = Lists.<Structure.PalettedBlockInfoList>newArrayList();
 	private final List<Structure.StructureEntityInfo> entities = Lists.<Structure.StructureEntityInfo>newArrayList();

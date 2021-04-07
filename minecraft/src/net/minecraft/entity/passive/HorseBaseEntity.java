@@ -13,6 +13,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.JumpingMount;
@@ -689,7 +690,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 			Criteria.TAME_ANIMAL.trigger((ServerPlayerEntity)player, this);
 		}
 
-		this.world.sendEntityStatus(this, (byte)7);
+		this.world.sendEntityStatus(this, EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES);
 		return true;
 	}
 
@@ -902,9 +903,9 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 
 	@Override
 	public void handleStatus(byte status) {
-		if (status == 7) {
+		if (status == EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES) {
 			this.spawnPlayerReactionParticles(true);
-		} else if (status == 6) {
+		} else if (status == EntityStatuses.ADD_NEGATIVE_PLAYER_REACTION_PARTICLES) {
 			this.spawnPlayerReactionParticles(false);
 		} else {
 			super.handleStatus(status);
@@ -961,10 +962,10 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	 * <p>In the item slot argument type, the slot is referred to as <code>
 	 * horse.armor</code>. In this horse's screen, it appears in the middle of
 	 * the left side, and right below the saddle slot if this horse has a saddle
-	 * slot.</p>
+	 * slot.
 	 * 
 	 * <p>This is used by horse armors and llama carpets, but can be
-	 * refitted to any purpose.</p>
+	 * refitted to any purpose.
 	 */
 	public boolean hasArmorSlot() {
 		return false;

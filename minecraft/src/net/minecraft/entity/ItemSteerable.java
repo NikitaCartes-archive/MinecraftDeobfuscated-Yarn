@@ -26,14 +26,14 @@ public interface ItemSteerable {
 				entity.headYaw = entity.yaw;
 				entity.stepHeight = 1.0F;
 				entity.flyingSpeed = entity.getMovementSpeed() * 0.1F;
-				if (saddledEntity.boosted && saddledEntity.field_23216++ > saddledEntity.currentBoostTime) {
+				if (saddledEntity.boosted && saddledEntity.boostedTime++ > saddledEntity.currentBoostTime) {
 					saddledEntity.boosted = false;
 				}
 
 				if (entity.isLogicalSideForUpdatingMovement()) {
 					float f = this.getSaddledSpeed();
 					if (saddledEntity.boosted) {
-						f += f * 1.15F * MathHelper.sin((float)saddledEntity.field_23216 / (float)saddledEntity.currentBoostTime * (float) Math.PI);
+						f += f * 1.15F * MathHelper.sin((float)saddledEntity.boostedTime / (float)saddledEntity.currentBoostTime * (float) Math.PI);
 					}
 
 					entity.setMovementSpeed(f);

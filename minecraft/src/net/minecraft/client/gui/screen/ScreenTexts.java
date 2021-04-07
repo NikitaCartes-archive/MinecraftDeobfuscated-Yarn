@@ -15,8 +15,8 @@ public class ScreenTexts {
 	public static final Text BACK = new TranslatableText("gui.back");
 	public static final Text CONNECT_FAILED = new TranslatableText("connect.failed");
 
-	public static Text method_36134(boolean bl) {
-		return bl ? ON : OFF;
+	public static Text onOrOff(boolean on) {
+		return on ? ON : OFF;
 	}
 
 	public static MutableText composeToggleText(Text text, boolean value) {

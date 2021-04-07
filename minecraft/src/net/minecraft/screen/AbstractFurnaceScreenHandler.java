@@ -8,8 +8,8 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.AbstractCookingRecipe;
 import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeInputProvider;
+import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.screen.slot.FurnaceFuelSlot;
@@ -78,7 +78,7 @@ public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenH
 	}
 
 	@Override
-	public void populateRecipeFinder(RecipeFinder finder) {
+	public void populateRecipeFinder(RecipeMatcher finder) {
 		if (this.inventory instanceof RecipeInputProvider) {
 			((RecipeInputProvider)this.inventory).provideRecipeInputs(finder);
 		}

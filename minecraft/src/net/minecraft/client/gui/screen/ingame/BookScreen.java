@@ -225,14 +225,14 @@ public class BookScreen extends Screen {
 		} else {
 			boolean bl = super.handleTextClick(style);
 			if (bl && clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
-				this.method_34494();
+				this.closeScreen();
 			}
 
 			return bl;
 		}
 	}
 
-	protected void method_34494() {
+	protected void closeScreen() {
 		this.client.openScreen(null);
 	}
 

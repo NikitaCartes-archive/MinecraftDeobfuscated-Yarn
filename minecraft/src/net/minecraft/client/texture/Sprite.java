@@ -40,8 +40,8 @@ public class Sprite implements AutoCloseable {
 	private final float vMin;
 	private final float vMax;
 
-	protected Sprite(SpriteAtlasTexture spriteAtlasTexture, Sprite.Info info, int maxLevel, int atlasWidth, int atlasHeight, int x, int y, NativeImage nativeImage) {
-		this.atlas = spriteAtlasTexture;
+	protected Sprite(SpriteAtlasTexture atlas, Sprite.Info info, int maxLevel, int atlasWidth, int atlasHeight, int x, int y, NativeImage nativeImage) {
+		this.atlas = atlas;
 		this.width = info.width;
 		this.height = info.height;
 		this.id = info.id;
@@ -51,7 +51,7 @@ public class Sprite implements AutoCloseable {
 		this.uMax = (float)(x + this.width) / (float)atlasWidth;
 		this.vMin = (float)y / (float)atlasHeight;
 		this.vMax = (float)(y + this.height) / (float)atlasHeight;
-		this.animation = this.method_33437(info, nativeImage.getWidth(), nativeImage.getHeight(), maxLevel);
+		this.animation = this.createAnimation(info, nativeImage.getWidth(), nativeImage.getHeight(), maxLevel);
 
 		try {
 			try {
@@ -86,7 +86,7 @@ public class Sprite implements AutoCloseable {
 	}
 
 	@Nullable
-	private Sprite.Animation method_33437(Sprite.Info info, int nativeImageWidth, int nativeImageHeight, int maxLevel) {
+	private Sprite.Animation createAnimation(Sprite.Info info, int nativeImageWidth, int nativeImageHeight, int maxLevel) {
 		AnimationResourceMetadata animationResourceMetadata = info.animationData;
 		int i = nativeImageWidth / animationResourceMetadata.getWidth(info.width);
 		int j = nativeImageHeight / animationResourceMetadata.getHeight(info.height);
@@ -141,11 +141,11 @@ public class Sprite implements AutoCloseable {
 		}
 	}
 
-	public int method_35806() {
+	public int getX() {
 		return this.x;
 	}
 
-	public int method_35807() {
+	public int getY() {
 		return this.y;
 	}
 
@@ -201,8 +201,8 @@ public class Sprite implements AutoCloseable {
 		return this.atlas;
 	}
 
-	public IntStream method_33442() {
-		return this.animation != null ? this.animation.method_33450() : IntStream.of(1);
+	public IntStream getDistinctFrameCount() {
+		return this.animation != null ? this.animation.getDistinctFrameCount() : IntStream.of(1);
 	}
 
 	public void close() {
@@ -272,7 +272,7 @@ public class Sprite implements AutoCloseable {
 	}
 
 	@Nullable
-	public TextureTickListener method_33443() {
+	public TextureTickListener getAnimation() {
 		return this.animation;
 	}
 
@@ -340,7 +340,7 @@ public class Sprite implements AutoCloseable {
 			this.upload(((Sprite.AnimationFrame)this.frames.get(0)).index);
 		}
 
-		public IntStream method_33450() {
+		public IntStream getDistinctFrameCount() {
 			return this.frames.stream().mapToInt(animationFrame -> animationFrame.index).distinct();
 		}
 	}
@@ -433,9 +433,9 @@ public class Sprite implements AutoCloseable {
 		/**
 		 * Returns the pixel color at frame {@code frameIndex} within mipmap {@code layer} at sprite relative coordinates.
 		 */
-		private int getPixelColor(Sprite.Animation animation, int frameIndex, int i, int j, int k) {
-			return Sprite.this.images[i]
-				.getPixelColor(j + (animation.getFrameX(frameIndex) * Sprite.this.width >> i), k + (animation.getFrameY(frameIndex) * Sprite.this.height >> i));
+		private int getPixelColor(Sprite.Animation animation, int frameIndex, int layer, int x, int y) {
+			return Sprite.this.images[layer]
+				.getPixelColor(x + (animation.getFrameX(frameIndex) * Sprite.this.width >> layer), y + (animation.getFrameY(frameIndex) * Sprite.this.height >> layer));
 		}
 
 		/**

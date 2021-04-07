@@ -145,7 +145,7 @@ public class ItemModelGenerator {
 		int i = sprite.getWidth();
 		int j = sprite.getHeight();
 		List<ItemModelGenerator.Frame> list = Lists.<ItemModelGenerator.Frame>newArrayList();
-		sprite.method_33442().forEach(k -> {
+		sprite.getDistinctFrameCount().forEach(k -> {
 			for (int l = 0; l < j; l++) {
 				for (int m = 0; m < i; m++) {
 					boolean bl = !this.isPixelTransparent(sprite, k, m, l, i, j);

@@ -3,6 +3,7 @@ package net.minecraft.client.option;
 import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -310,9 +311,11 @@ public abstract class Option {
 		});
 	public static final CyclingOption GUI_SCALE = CyclingOption.create(
 		"options.guiScale",
-		() -> (List)IntStream.rangeClosed(0, MinecraftClient.getInstance().getWindow().calculateScaleFactor(0, MinecraftClient.getInstance().forcesUnicodeFont()))
+		(Supplier<List<Integer>>)(() -> (List)IntStream.rangeClosed(
+					0, MinecraftClient.getInstance().getWindow().calculateScaleFactor(0, MinecraftClient.getInstance().forcesUnicodeFont())
+				)
 				.boxed()
-				.collect(Collectors.toList()),
+				.collect(Collectors.toList())),
 		guiScale -> (Text)(guiScale == 0 ? new TranslatableText("options.guiScale.auto") : new LiteralText(Integer.toString(guiScale))),
 		gameOptions -> gameOptions.guiScale,
 		(gameOptions, option, guiScale) -> gameOptions.guiScale = guiScale
@@ -320,7 +323,7 @@ public abstract class Option {
 	public static final CyclingOption<Arm> MAIN_HAND = CyclingOption.create(
 		"options.mainHand", Arm.values(), Arm::getOptionName, gameOptions -> gameOptions.mainArm, (gameOptions, option, mainArm) -> {
 			gameOptions.mainArm = mainArm;
-			gameOptions.onPlayerModelPartChange();
+			gameOptions.sendClientSettings();
 		}
 	);
 	public static final CyclingOption<NarratorMode> NARRATOR = CyclingOption.create(

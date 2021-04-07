@@ -29,18 +29,16 @@ public class PufferfishEntity extends FishEntity {
 	private static final TrackedData<Integer> PUFF_STATE = DataTracker.registerData(PufferfishEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private int inflateTicks;
 	private int deflateTicks;
-	private static final Predicate<LivingEntity> BLOW_UP_FILTER = livingEntity -> {
-		if (livingEntity == null) {
+	private static final Predicate<LivingEntity> BLOW_UP_FILTER = entity -> {
+		if (entity == null) {
 			return false;
 		} else {
-			return !(livingEntity instanceof PlayerEntity) || !livingEntity.isSpectator() && !((PlayerEntity)livingEntity).isCreative()
-				? livingEntity.getGroup() != EntityGroup.AQUATIC
-				: false;
+			return !(entity instanceof PlayerEntity) || !entity.isSpectator() && !((PlayerEntity)entity).isCreative() ? entity.getGroup() != EntityGroup.AQUATIC : false;
 		}
 	};
-	public static final int field_30353 = 0;
-	public static final int field_30354 = 1;
-	public static final int field_30355 = 2;
+	public static final int NOT_PUFFED = 0;
+	public static final int SEMI_PUFFED = 1;
+	public static final int FULLY_PUFFED = 2;
 
 	public PufferfishEntity(EntityType<? extends PufferfishEntity> entityType, World world) {
 		super(entityType, world);

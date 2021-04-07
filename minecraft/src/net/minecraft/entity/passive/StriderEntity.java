@@ -431,7 +431,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	}
 
 	@Override
-	public Vec3d method_29919() {
+	public Vec3d getLeashOffset() {
 		return new Vec3d(0.0, (double)(0.6F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));
 	}
 
@@ -446,13 +446,13 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 			Object var7;
 			if (this.random.nextInt(30) == 0) {
 				MobEntity mobEntity = EntityType.ZOMBIFIED_PIGLIN.create(world.toServerWorld());
-				var7 = this.method_30336(world, difficulty, mobEntity, new ZombieEntity.ZombieData(ZombieEntity.shouldBeBaby(this.random), false));
+				var7 = this.initializeRider(world, difficulty, mobEntity, new ZombieEntity.ZombieData(ZombieEntity.shouldBeBaby(this.random), false));
 				mobEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
 				this.saddle(null);
 			} else if (this.random.nextInt(10) == 0) {
 				PassiveEntity passiveEntity = EntityType.STRIDER.create(world.toServerWorld());
 				passiveEntity.setBreedingAge(-24000);
-				var7 = this.method_30336(world, difficulty, passiveEntity, null);
+				var7 = this.initializeRider(world, difficulty, passiveEntity, null);
 			} else {
 				var7 = new PassiveEntity.PassiveData(0.5F);
 			}
@@ -461,10 +461,10 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		}
 	}
 
-	private EntityData method_30336(ServerWorldAccess serverWorldAccess, LocalDifficulty localDifficulty, MobEntity mobEntity, @Nullable EntityData entityData) {
-		mobEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0F);
-		mobEntity.initialize(serverWorldAccess, localDifficulty, SpawnReason.JOCKEY, entityData, null);
-		mobEntity.startRiding(this, true);
+	private EntityData initializeRider(ServerWorldAccess world, LocalDifficulty difficulty, MobEntity rider, @Nullable EntityData entityData) {
+		rider.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0F);
+		rider.initialize(world, difficulty, SpawnReason.JOCKEY, entityData, null);
+		rider.startRiding(this, true);
 		return new PassiveEntity.PassiveData(0.0F);
 	}
 

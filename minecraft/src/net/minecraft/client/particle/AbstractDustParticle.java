@@ -8,25 +8,33 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class AbstractDustParticle<T extends AbstractDustParticleEffect> extends SpriteBillboardParticle {
-	private final SpriteProvider field_28247;
+	private final SpriteProvider spriteProvider;
 
 	protected AbstractDustParticle(
-		ClientWorld world, double d, double e, double f, double g, double h, double i, T abstractDustParticleEffect, SpriteProvider spriteProvider
+		ClientWorld world,
+		double x,
+		double y,
+		double z,
+		double velocityX,
+		double velocityY,
+		double velocityZ,
+		T abstractDustParticleEffect,
+		SpriteProvider spriteProvider
 	) {
-		super(world, d, e, f, g, h, i);
+		super(world, x, y, z, velocityX, velocityY, velocityZ);
 		this.field_28786 = 0.96F;
 		this.field_28787 = true;
-		this.field_28247 = spriteProvider;
+		this.spriteProvider = spriteProvider;
 		this.velocityX *= 0.1F;
 		this.velocityY *= 0.1F;
 		this.velocityZ *= 0.1F;
-		float j = this.random.nextFloat() * 0.4F + 0.6F;
-		this.colorRed = this.method_33076(abstractDustParticleEffect.getColor().getX(), j);
-		this.colorGreen = this.method_33076(abstractDustParticleEffect.getColor().getY(), j);
-		this.colorBlue = this.method_33076(abstractDustParticleEffect.getColor().getZ(), j);
+		float f = this.random.nextFloat() * 0.4F + 0.6F;
+		this.colorRed = this.method_33076(abstractDustParticleEffect.getColor().getX(), f);
+		this.colorGreen = this.method_33076(abstractDustParticleEffect.getColor().getY(), f);
+		this.colorBlue = this.method_33076(abstractDustParticleEffect.getColor().getZ(), f);
 		this.scale = this.scale * 0.75F * abstractDustParticleEffect.getScale();
-		int k = (int)(8.0 / (this.random.nextDouble() * 0.8 + 0.2));
-		this.maxAge = (int)Math.max((float)k * abstractDustParticleEffect.getScale(), 1.0F);
+		int i = (int)(8.0 / (this.random.nextDouble() * 0.8 + 0.2));
+		this.maxAge = (int)Math.max((float)i * abstractDustParticleEffect.getScale(), 1.0F);
 		this.setSpriteForAge(spriteProvider);
 	}
 
@@ -47,6 +55,6 @@ public class AbstractDustParticle<T extends AbstractDustParticleEffect> extends 
 	@Override
 	public void tick() {
 		super.tick();
-		this.setSpriteForAge(this.field_28247);
+		this.setSpriteForAge(this.spriteProvider);
 	}
 }

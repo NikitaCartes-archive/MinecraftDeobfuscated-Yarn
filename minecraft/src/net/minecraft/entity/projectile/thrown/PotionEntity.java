@@ -71,11 +71,11 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 			BlockPos blockPos = blockHitResult.getBlockPos();
 			BlockPos blockPos2 = blockPos.offset(direction);
 			if (bl) {
-				this.extinguishFire(blockPos2, direction);
-				this.extinguishFire(blockPos2.offset(direction.getOpposite()), direction);
+				this.extinguishFire(blockPos2);
+				this.extinguishFire(blockPos2.offset(direction.getOpposite()));
 
 				for (Direction direction2 : Direction.Type.HORIZONTAL) {
-					this.extinguishFire(blockPos2.offset(direction2), direction2);
+					this.extinguishFire(blockPos2.offset(direction2));
 				}
 			}
 		}
@@ -181,7 +181,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		return this.getStack().isOf(Items.LINGERING_POTION);
 	}
 
-	private void extinguishFire(BlockPos pos, Direction direction) {
+	private void extinguishFire(BlockPos pos) {
 		BlockState blockState = this.world.getBlockState(pos);
 		if (blockState.isIn(BlockTags.FIRE)) {
 			this.world.removeBlock(pos, false);

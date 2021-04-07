@@ -15,7 +15,7 @@ public interface ModifiableWorld {
 	 * <p>When called on the server, the new block state is stored and propagated to clients and listeners as dictated
 	 * by the supplied flags. Note that calling this on the client will update the world locally, but may not see the
 	 * change persisted across loads. It's recommended to check whether this world is client before
-	 * interacting with the world in this way.</p>
+	 * interacting with the world in this way.
 	 * 
 	 * <p>See {@link #setBlockState(BlockPos, BlockState, int)} for a list of accepted flags.
 	 * 
@@ -32,7 +32,7 @@ public interface ModifiableWorld {
 	 * <p>When called on the server, the new block state is stored and propagated to clients and listeners as dictated
 	 * by the supplied flags. Note that calling this on the client will update the world locally, but may not see the
 	 * change persisted across loads. It's recommended to check whether this world is client before
-	 * interacting with the world in this way.</p>
+	 * interacting with the world in this way.
 	 * 
 	 * <p>The accepted values of these flags are:
 	 * <ul>

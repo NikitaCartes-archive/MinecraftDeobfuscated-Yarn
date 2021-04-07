@@ -258,22 +258,22 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 		@Override
 		protected void attack(LivingEntity target, double squaredDistance) {
 			double d = this.getSquaredMaxAttackDistance(target);
-			if (squaredDistance <= d && this.method_28347()) {
-				this.method_28346();
+			if (squaredDistance <= d && this.isCooledDown()) {
+				this.resetCooldown();
 				this.mob.tryAttack(target);
 				PolarBearEntity.this.setWarning(false);
 			} else if (squaredDistance <= d * 2.0) {
-				if (this.method_28347()) {
+				if (this.isCooledDown()) {
 					PolarBearEntity.this.setWarning(false);
-					this.method_28346();
+					this.resetCooldown();
 				}
 
-				if (this.method_28348() <= 10) {
+				if (this.getCooldown() <= 10) {
 					PolarBearEntity.this.setWarning(true);
 					PolarBearEntity.this.playWarningSound();
 				}
 			} else {
-				this.method_28346();
+				this.resetCooldown();
 				PolarBearEntity.this.setWarning(false);
 			}
 		}

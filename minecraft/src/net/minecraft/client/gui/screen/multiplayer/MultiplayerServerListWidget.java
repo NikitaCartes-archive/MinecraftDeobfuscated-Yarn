@@ -236,7 +236,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			this.server = server;
 			this.client = MinecraftClient.getInstance();
 			this.iconTextureId = new Identifier("servers/" + Hashing.sha1().hashUnencodedChars(server.address) + "/icon");
-			AbstractTexture abstractTexture = this.client.getTextureManager().method_34590(this.iconTextureId, MissingSprite.getMissingSpriteTexture());
+			AbstractTexture abstractTexture = this.client.getTextureManager().getOrDefault(this.iconTextureId, MissingSprite.getMissingSpriteTexture());
 			if (abstractTexture != MissingSprite.getMissingSpriteTexture() && abstractTexture instanceof NativeImageBackedTexture) {
 				this.icon = (NativeImageBackedTexture)abstractTexture;
 			}

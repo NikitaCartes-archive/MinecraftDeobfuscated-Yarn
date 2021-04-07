@@ -16,22 +16,22 @@ public class BlockDustParticle extends SpriteBillboardParticle {
 	private final float sampleU;
 	private final float sampleV;
 
-	public BlockDustParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, BlockState blockState) {
-		this(clientWorld, d, e, f, g, h, i, blockState, new BlockPos(d, e, f));
+	public BlockDustParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, BlockState state) {
+		this(world, x, y, z, velocityX, velocityY, velocityZ, state, new BlockPos(x, y, z));
 	}
 
 	public BlockDustParticle(
-		ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, BlockState blockState, BlockPos blockPos
+		ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, BlockState state, BlockPos blockPos
 	) {
 		super(world, x, y, z, velocityX, velocityY, velocityZ);
 		this.blockPos = blockPos;
-		this.setSprite(MinecraftClient.getInstance().getBlockRenderManager().getModels().getSprite(blockState));
+		this.setSprite(MinecraftClient.getInstance().getBlockRenderManager().getModels().getSprite(state));
 		this.gravityStrength = 1.0F;
 		this.colorRed = 0.6F;
 		this.colorGreen = 0.6F;
 		this.colorBlue = 0.6F;
-		if (!blockState.isOf(Blocks.GRASS_BLOCK)) {
-			int i = MinecraftClient.getInstance().getBlockColors().getColor(blockState, world, blockPos, 0);
+		if (!state.isOf(Blocks.GRASS_BLOCK)) {
+			int i = MinecraftClient.getInstance().getBlockColors().getColor(state, world, blockPos, 0);
 			this.colorRed *= (float)(i >> 16 & 0xFF) / 255.0F;
 			this.colorGreen *= (float)(i >> 8 & 0xFF) / 255.0F;
 			this.colorBlue *= (float)(i & 0xFF) / 255.0F;

@@ -29,10 +29,10 @@ public class CyclingOption<T> extends Option {
 		this.buttonBuilderFactory = buttonBuilderFactory;
 	}
 
-	public static <T> CyclingOption<T> method_35694(
-		String string, List<T> list, Function<T, Text> function, Function<GameOptions, T> function2, CyclingOption.Setter<T> setter
+	public static <T> CyclingOption<T> create(
+		String key, List<T> values, Function<T, Text> valueToText, Function<GameOptions, T> getter, CyclingOption.Setter<T> setter
 	) {
-		return new CyclingOption<>(string, function2, setter, () -> CyclingButtonWidget.builder(function).values(list));
+		return new CyclingOption<>(key, getter, setter, () -> CyclingButtonWidget.builder(valueToText).values(values));
 	}
 
 	public static <T> CyclingOption<T> create(

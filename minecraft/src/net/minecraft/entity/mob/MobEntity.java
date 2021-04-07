@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
@@ -299,13 +300,13 @@ public abstract class MobEntity extends LivingEntity {
 				this.world.addParticle(ParticleTypes.POOF, this.offsetX(1.0) - d * 10.0, this.getRandomBodyY() - e * 10.0, this.getParticleZ(1.0) - f * 10.0, d, e, f);
 			}
 		} else {
-			this.world.sendEntityStatus(this, (byte)20);
+			this.world.sendEntityStatus(this, EntityStatuses.PLAY_SPAWN_EFFECTS);
 		}
 	}
 
 	@Override
 	public void handleStatus(byte status) {
-		if (status == 20) {
+		if (status == EntityStatuses.PLAY_SPAWN_EFFECTS) {
 			this.playSpawnEffects();
 		} else {
 			super.handleStatus(status);
@@ -1310,8 +1311,8 @@ public abstract class MobEntity extends LivingEntity {
 		return this.isLeftHanded() ? Arm.LEFT : Arm.RIGHT;
 	}
 
-	public double method_33191(LivingEntity livingEntity) {
-		return (double)(this.getWidth() * 2.0F * this.getWidth() * 2.0F + livingEntity.getWidth());
+	public double squaredAttackRange(LivingEntity target) {
+		return (double)(this.getWidth() * 2.0F * this.getWidth() * 2.0F + target.getWidth());
 	}
 
 	@Override
@@ -1362,7 +1363,7 @@ public abstract class MobEntity extends LivingEntity {
 			float f = 0.25F + (float)EnchantmentHelper.getEfficiency(this) * 0.05F;
 			if (this.random.nextFloat() < f) {
 				player.getItemCooldownManager().set(Items.SHIELD, 100);
-				this.world.sendEntityStatus(player, (byte)30);
+				this.world.sendEntityStatus(player, EntityStatuses.BREAK_SHIELD);
 			}
 		}
 	}
@@ -1389,9 +1390,9 @@ public abstract class MobEntity extends LivingEntity {
 		}
 	}
 
-	public void method_35056() {
-		this.goalSelector.method_35113();
-		this.getBrain().method_35060();
+	public void clearGoalsAndTasks() {
+		this.goalSelector.clear();
+		this.getBrain().clear();
 	}
 
 	@Override

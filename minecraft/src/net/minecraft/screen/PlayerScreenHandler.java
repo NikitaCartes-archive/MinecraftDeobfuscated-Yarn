@@ -11,7 +11,7 @@ import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeFinder;
+import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.screen.slot.Slot;
@@ -102,8 +102,12 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 		});
 	}
 
+	public static boolean method_36211(int i) {
+		return i >= 36 && i < 45 || i == 45;
+	}
+
 	@Override
-	public void populateRecipeFinder(RecipeFinder finder) {
+	public void populateRecipeFinder(RecipeMatcher finder) {
 		this.craftingInput.provideRecipeInputs(finder);
 	}
 

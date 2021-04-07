@@ -6,13 +6,13 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.nbt.NbtCompound;
 
 public class SaddledComponent {
-	private static final int field_30060 = 140;
+	private static final int MIN_BOOST_TIME = 140;
 	private static final int field_30061 = 700;
 	private final DataTracker dataTracker;
 	private final TrackedData<Integer> boostTime;
 	private final TrackedData<Boolean> saddled;
 	public boolean boosted;
-	public int field_23216;
+	public int boostedTime;
 	public int currentBoostTime;
 
 	public SaddledComponent(DataTracker dataTracker, TrackedData<Integer> boostTime, TrackedData<Boolean> saddled) {
@@ -23,7 +23,7 @@ public class SaddledComponent {
 
 	public void boost() {
 		this.boosted = true;
-		this.field_23216 = 0;
+		this.boostedTime = 0;
 		this.currentBoostTime = this.dataTracker.get(this.boostTime);
 	}
 
@@ -32,7 +32,7 @@ public class SaddledComponent {
 			return false;
 		} else {
 			this.boosted = true;
-			this.field_23216 = 0;
+			this.boostedTime = 0;
 			this.currentBoostTime = random.nextInt(841) + 140;
 			this.dataTracker.set(this.boostTime, this.currentBoostTime);
 			return true;

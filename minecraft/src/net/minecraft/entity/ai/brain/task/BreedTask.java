@@ -12,9 +12,9 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.server.world.ServerWorld;
 
 public class BreedTask extends Task<AnimalEntity> {
-	private static final int field_30104 = 3;
-	private static final int field_30105 = 60;
-	private static final int field_30106 = 110;
+	private static final int MAX_RANGE = 3;
+	private static final int MIN_BREED_TIME = 60;
+	private static final int RUN_TIME = 110;
 	private final EntityType<? extends AnimalEntity> targetType;
 	private final float speed;
 	private long breedTime;

@@ -35,13 +35,13 @@ public class RavineCarver extends Carver<RavineCarverConfig> {
 	) {
 		int j = (this.getBranchFactor() * 2 - 1) * 16;
 		double d = (double)chunkPos.getOffsetX(random.nextInt(16));
-		int k = ravineCarverConfig.field_31488.method_35391(random, carverContext);
+		int k = ravineCarverConfig.y.get(random, carverContext);
 		double e = (double)chunkPos.getOffsetZ(random.nextInt(16));
 		float f = random.nextFloat() * (float) (Math.PI * 2);
-		float g = ravineCarverConfig.field_31479.get(random);
-		double h = (double)ravineCarverConfig.field_31489.get(random);
-		float l = ravineCarverConfig.field_31480.field_31483.get(random);
-		int m = (int)((float)j * ravineCarverConfig.field_31480.field_31482.get(random));
+		float g = ravineCarverConfig.verticalRotation.get(random);
+		double h = (double)ravineCarverConfig.yScale.get(random);
+		float l = ravineCarverConfig.shape.thickness.get(random);
+		int m = (int)((float)j * ravineCarverConfig.shape.distanceFactor.get(random));
 		int n = 0;
 		this.carveRavine(carverContext, ravineCarverConfig, chunk, function, random.nextLong(), i, d, (double)k, e, l, f, g, 0, m, h, bitSet);
 		return true;
@@ -73,7 +73,7 @@ public class RavineCarver extends Carver<RavineCarverConfig> {
 		for (int i = branchStartIndex; i < branchCount; i++) {
 			double d = 1.5 + (double)(MathHelper.sin((float)i * (float) Math.PI / (float)branchCount) * width);
 			double e = d * yawPitchRatio;
-			d *= (double)config.field_31480.field_31485.get(random);
+			d *= (double)config.shape.horizontalRadiusFactor.get(random);
 			e = this.getVerticalScale(config, random, e, (float)branchCount, (float)i);
 			float h = MathHelper.cos(pitch);
 			float j = MathHelper.sin(pitch);
@@ -117,7 +117,7 @@ public class RavineCarver extends Carver<RavineCarverConfig> {
 		float f = 1.0F;
 
 		for (int j = 0; j < i; j++) {
-			if (j == 0 || random.nextInt(config.field_31480.field_31484) == 0) {
+			if (j == 0 || random.nextInt(config.shape.widthSmoothness) == 0) {
 				f = 1.0F + random.nextFloat() * random.nextFloat();
 			}
 
@@ -129,7 +129,7 @@ public class RavineCarver extends Carver<RavineCarverConfig> {
 
 	private double getVerticalScale(RavineCarverConfig config, Random random, double pitch, float branchCount, float branchIndex) {
 		float f = 1.0F - MathHelper.abs(0.5F - branchIndex / branchCount) * 2.0F;
-		float g = config.field_31480.field_31486 + config.field_31480.field_31487 * f;
+		float g = config.shape.verticalRadiusDefaultFactor + config.shape.verticalRadiusCenterFactor * f;
 		return (double)g * pitch * (double)MathHelper.nextBetween(random, 0.75F, 1.0F);
 	}
 

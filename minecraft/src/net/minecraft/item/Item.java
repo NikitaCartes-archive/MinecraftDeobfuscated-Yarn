@@ -218,7 +218,6 @@ public class Item implements ItemConvertible {
 	 * Note that this is not the <b>only</b> way to achieve "effectiveness" when mining.
 	 * Other items, such as shears on string, may use their own logic
 	 * and calls to this method might not return a value consistent to this rule for those items.
-	 * </p>
 	 */
 	public boolean isSuitableFor(BlockState state) {
 		return false;

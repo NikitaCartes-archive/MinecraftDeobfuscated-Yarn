@@ -121,12 +121,12 @@ public class ModelLoader {
 	static final int field_32984 = -1;
 	private static final int field_32985 = 0;
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final String field_32986 = "builtin/";
-	private static final String field_32987 = "builtin/generated";
-	private static final String field_32988 = "builtin/entity";
-	private static final String field_32989 = "missing";
-	public static final ModelIdentifier MISSING = new ModelIdentifier("builtin/missing", "missing");
-	private static final String field_21773 = MISSING.toString();
+	private static final String BUILTIN = "builtin/";
+	private static final String BUILTIN_GENERATED = "builtin/generated";
+	private static final String BUILTIN_ENTITY = "builtin/entity";
+	private static final String MISSING = "missing";
+	public static final ModelIdentifier MISSING_ID = new ModelIdentifier("builtin/missing", "missing");
+	private static final String field_21773 = MISSING_ID.toString();
 	@VisibleForTesting
 	public static final String MISSING_DEFINITION = ("{    'textures': {       'particle': '"
 			+ MissingSprite.getMissingSpriteId().getPath()
@@ -172,8 +172,8 @@ public class ModelLoader {
 		profiler.push("missing_model");
 
 		try {
-			this.unbakedModels.put(MISSING, this.loadModelFromJson(MISSING));
-			this.addModel(MISSING);
+			this.unbakedModels.put(MISSING_ID, this.loadModelFromJson(MISSING_ID));
+			this.addModel(MISSING_ID);
 		} catch (IOException var12) {
 			LOGGER.error("Error loading missing model, should never happen :(", (Throwable)var12);
 			throw new RuntimeException(var12);
@@ -308,7 +308,7 @@ public class ModelLoader {
 			throw new IllegalStateException("Circular reference while loading " + id);
 		} else {
 			this.modelsToLoad.add(id);
-			UnbakedModel unbakedModel = (UnbakedModel)this.unbakedModels.get(MISSING);
+			UnbakedModel unbakedModel = (UnbakedModel)this.unbakedModels.get(MISSING_ID);
 
 			while (!this.modelsToLoad.isEmpty()) {
 				Identifier identifier = (Identifier)this.modelsToLoad.iterator().next();
@@ -355,7 +355,7 @@ public class ModelLoader {
 				});
 				Map<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>>> map2 = Maps.<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>>>newHashMap();
 				Identifier identifier2 = new Identifier(id.getNamespace(), "blockstates/" + id.getPath() + ".json");
-				UnbakedModel unbakedModel = (UnbakedModel)this.unbakedModels.get(MISSING);
+				UnbakedModel unbakedModel = (UnbakedModel)this.unbakedModels.get(MISSING_ID);
 				ModelLoader.ModelDefinition modelDefinition = new ModelLoader.ModelDefinition(ImmutableList.of(unbakedModel), ImmutableList.of());
 				Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>> pair = Pair.of(unbakedModel, () -> modelDefinition);
 
@@ -375,7 +375,7 @@ public class ModelLoader {
 										try {
 											var4x = Pair.of(
 												resource.getResourcePackName(),
-												ModelVariantMap.deserialize(this.variantMapDeserializationContext, new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+												ModelVariantMap.fromJson(this.variantMapDeserializationContext, new InputStreamReader(inputStream, StandardCharsets.UTF_8))
 											);
 										} catch (Throwable var14) {
 											var3x = var14;

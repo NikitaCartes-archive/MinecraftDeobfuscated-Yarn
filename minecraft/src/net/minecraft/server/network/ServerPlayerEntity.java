@@ -24,6 +24,7 @@ import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -579,7 +580,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			this.onKilledBy(livingEntity);
 		}
 
-		this.world.sendEntityStatus(this, (byte)3);
+		this.world.sendEntityStatus(this, EntityStatuses.PLAY_DEATH_SOUND_OR_ADD_PROJECTILE_HIT_PARTICLES);
 		this.incrementStat(Stats.DEATHS);
 		this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_DEATH));
 		this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST));
@@ -1114,7 +1115,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Override
 	protected void consumeItem() {
 		if (!this.activeItemStack.isEmpty() && this.isUsingItem()) {
-			this.networkHandler.sendPacket(new EntityStatusS2CPacket(this, (byte)9));
+			this.networkHandler.sendPacket(new EntityStatusS2CPacket(this, EntityStatuses.CONSUME_ITEM));
 			super.consumeItem();
 		}
 	}
@@ -1257,15 +1258,15 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	public void sendSystemMessage(Text message, UUID senderUuid) {
-		this.sendMessage(message, MessageType.SYSTEM, senderUuid);
+	public void sendSystemMessage(Text message, UUID sender) {
+		this.sendMessage(message, MessageType.SYSTEM, sender);
 	}
 
-	public void sendMessage(Text message, MessageType type, UUID senderUuid) {
+	public void sendMessage(Text message, MessageType type, UUID sender) {
 		if (this.acceptsMessage(type)) {
 			this.networkHandler
 				.sendPacket(
-					new GameMessageS2CPacket(message, type, senderUuid),
+					new GameMessageS2CPacket(message, type, sender),
 					future -> {
 						if (!future.isSuccess() && (type == MessageType.GAME_INFO || type == MessageType.SYSTEM) && this.acceptsMessage(MessageType.SYSTEM)) {
 							int i = 256;
@@ -1273,7 +1274,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 							Text text2 = new LiteralText(string).formatted(Formatting.YELLOW);
 							this.networkHandler
 								.sendPacket(
-									new GameMessageS2CPacket(new TranslatableText("multiplayer.message_not_delivered", text2).formatted(Formatting.RED), MessageType.SYSTEM, senderUuid)
+									new GameMessageS2CPacket(new TranslatableText("multiplayer.message_not_delivered", text2).formatted(Formatting.RED), MessageType.SYSTEM, sender)
 								);
 						}
 					}

@@ -162,7 +162,7 @@ public abstract class LivingEntity extends Entity {
 	private final DefaultedList<ItemStack> equippedHand = DefaultedList.ofSize(2, ItemStack.EMPTY);
 	private final DefaultedList<ItemStack> equippedArmor = DefaultedList.ofSize(4, ItemStack.EMPTY);
 	public boolean handSwinging;
-	private boolean field_30082 = false;
+	private boolean noDrag = false;
 	public Hand preferredHand;
 	public int handSwingTicks;
 	public int stuckArrowTimer;
@@ -493,7 +493,7 @@ public abstract class LivingEntity extends Entity {
 				);
 				if (this.getRandom().nextFloat() < 0.04F) {
 					ItemStack itemStack = this.getEquippedStack(EquipmentSlot.FEET);
-					itemStack.damage(1, this, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.FEET));
+					itemStack.damage(1, this, player -> player.sendEquipmentBreakStatus(EquipmentSlot.FEET));
 				}
 			}
 		}
@@ -676,12 +676,12 @@ public abstract class LivingEntity extends Entity {
 		this.despawnCounter = despawnCounter;
 	}
 
-	public boolean method_35053() {
-		return this.field_30082;
+	public boolean hasNoDrag() {
+		return this.noDrag;
 	}
 
-	public void method_35054(boolean bl) {
-		this.field_30082 = bl;
+	public void setNoDrag(boolean noDrag) {
+		this.noDrag = noDrag;
 	}
 
 	protected void onEquipStack(ItemStack stack) {
@@ -1069,7 +1069,7 @@ public abstract class LivingEntity extends Entity {
 			float f = amount;
 			if (source.isFallingBlock() && !this.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
 				this.getEquippedStack(EquipmentSlot.HEAD)
-					.damage((int)(amount * 4.0F + this.random.nextFloat() * amount * 2.0F), this, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.HEAD));
+					.damage((int)(amount * 4.0F + this.random.nextFloat() * amount * 2.0F), this, player -> player.sendEquipmentBreakStatus(EquipmentSlot.HEAD));
 				amount *= 0.75F;
 			}
 
@@ -1133,9 +1133,9 @@ public abstract class LivingEntity extends Entity {
 
 			if (bl2) {
 				if (bl) {
-					this.world.sendEntityStatus(this, (byte)29);
+					this.world.sendEntityStatus(this, EntityStatuses.BLOCK_WITH_SHIELD);
 				} else if (source instanceof EntityDamageSource && ((EntityDamageSource)source).isThorns()) {
-					this.world.sendEntityStatus(this, (byte)33);
+					this.world.sendEntityStatus(this, EntityStatuses.DAMAGE_FROM_THORNS);
 				} else {
 					byte b;
 					if (source == DamageSource.DROWN) {
@@ -1147,7 +1147,7 @@ public abstract class LivingEntity extends Entity {
 					} else if (source == DamageSource.FREEZE) {
 						b = 57;
 					} else {
-						b = 2;
+						b = EntityStatuses.DAMAGE_FROM_GENERIC_SOURCE;
 					}
 
 					this.world.sendEntityStatus(this, b);
@@ -1241,7 +1241,7 @@ public abstract class LivingEntity extends Entity {
 				this.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 900, 1));
 				this.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 100, 1));
 				this.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 800, 0));
-				this.world.sendEntityStatus(this, (byte)35);
+				this.world.sendEntityStatus(this, EntityStatuses.USE_TOTEM_OF_UNDYING);
 			}
 
 			return itemStack != null;
@@ -1325,7 +1325,7 @@ public abstract class LivingEntity extends Entity {
 				this.onKilledBy(livingEntity);
 			}
 
-			this.world.sendEntityStatus(this, (byte)3);
+			this.world.sendEntityStatus(this, EntityStatuses.PLAY_DEATH_SOUND_OR_ADD_PROJECTILE_HIT_PARTICLES);
 			this.setPose(EntityPose.DYING);
 		}
 	}
@@ -1665,7 +1665,7 @@ public abstract class LivingEntity extends Entity {
 		this.swingHand(hand, false);
 	}
 
-	public void swingHand(Hand hand, boolean bl) {
+	public void swingHand(Hand hand, boolean fromServerPlayer) {
 		if (!this.handSwinging || this.handSwingTicks >= this.getHandSwingDuration() / 2 || this.handSwingTicks < 0) {
 			this.handSwingTicks = -1;
 			this.handSwinging = true;
@@ -1675,7 +1675,7 @@ public abstract class LivingEntity extends Entity {
 					this, hand == Hand.MAIN_HAND ? EntityAnimationS2CPacket.SWING_MAIN_HAND : EntityAnimationS2CPacket.SWING_OFF_HAND
 				);
 				ServerChunkManager serverChunkManager = ((ServerWorld)this.world).getChunkManager();
-				if (bl) {
+				if (fromServerPlayer) {
 					serverChunkManager.sendToNearbyPlayers(this, entityAnimationS2CPacket);
 				} else {
 					serverChunkManager.sendToOtherNearbyPlayers(this, entityAnimationS2CPacket);
@@ -1698,18 +1698,18 @@ public abstract class LivingEntity extends Entity {
 				this.maxHurtTime = 10;
 				this.hurtTime = this.maxHurtTime;
 				this.knockbackVelocity = 0.0F;
-				if (status == 33) {
+				if (status == EntityStatuses.DAMAGE_FROM_THORNS) {
 					this.playSound(SoundEvents.ENCHANT_THORNS_HIT, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 				}
 
 				DamageSource damageSource;
-				if (status == 37) {
+				if (status == EntityStatuses.DAMAGE_FROM_FIRE) {
 					damageSource = DamageSource.ON_FIRE;
-				} else if (status == 36) {
+				} else if (status == EntityStatuses.DAMAGE_FROM_DROWNING) {
 					damageSource = DamageSource.DROWN;
-				} else if (status == 44) {
+				} else if (status == EntityStatuses.DAMAGE_FROM_BERRY_BUSH) {
 					damageSource = DamageSource.SWEET_BERRY_BUSH;
-				} else if (status == 57) {
+				} else if (status == EntityStatuses.DAMAGE_FROM_FREEZING) {
 					damageSource = DamageSource.FREEZE;
 				} else {
 					damageSource = DamageSource.GENERIC;
@@ -1883,7 +1883,7 @@ public abstract class LivingEntity extends Entity {
 	 * <p>This checks both the entity's main and off hand.
 	 */
 	public boolean isHolding(Item item) {
-		return this.isHolding(itemStack -> itemStack.isOf(item));
+		return this.isHolding(stack -> stack.isOf(item));
 	}
 
 	/**
@@ -2156,7 +2156,7 @@ public abstract class LivingEntity extends Entity {
 					q -= d;
 				}
 
-				if (this.method_35053()) {
+				if (this.hasNoDrag()) {
 					this.setVelocity(vec3d6.x, q, vec3d6.z);
 				} else {
 					this.setVelocity(vec3d6.x * (double)fxx, q * 0.98F, vec3d6.z * (double)fxx);
@@ -2425,7 +2425,7 @@ public abstract class LivingEntity extends Entity {
 			&& itemStack2 != null
 			&& ItemStack.areEqual(itemStack, this.getStackInHandSlot(EquipmentSlot.OFFHAND))
 			&& ItemStack.areEqual(itemStack2, this.getStackInHandSlot(EquipmentSlot.MAINHAND))) {
-			((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(this, new EntityStatusS2CPacket(this, (byte)55));
+			((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(this, new EntityStatusS2CPacket(this, EntityStatuses.SWAP_HANDS));
 			equipment.remove(EquipmentSlot.MAINHAND);
 			equipment.remove(EquipmentSlot.OFFHAND);
 			this.setStackInHandSlot(EquipmentSlot.MAINHAND, itemStack.copy());
@@ -2629,7 +2629,7 @@ public abstract class LivingEntity extends Entity {
 				if (!this.world.isClient && i % 10 == 0) {
 					int j = i / 10;
 					if (j % 2 == 0) {
-						itemStack.damage(1, this, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
+						itemStack.damage(1, this, player -> player.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
 					}
 
 					this.emitGameEvent(GameEvent.ELYTRA_FREE_FALL);
@@ -2703,8 +2703,8 @@ public abstract class LivingEntity extends Entity {
 	protected void attackLivingEntity(LivingEntity target) {
 	}
 
-	public void setRiptideTicks(int i) {
-		this.riptideTicks = i;
+	public void setRiptideTicks(int riptideTicks) {
+		this.riptideTicks = riptideTicks;
 		if (!this.world.isClient) {
 			this.setLivingFlag(4, true);
 		}
@@ -3093,7 +3093,7 @@ public abstract class LivingEntity extends Entity {
 			return false;
 		} else {
 			if (particleEffects) {
-				world.sendEntityStatus(this, (byte)46);
+				world.sendEntityStatus(this, EntityStatuses.ADD_PORTAL_PARTICLES);
 			}
 
 			if (this instanceof PathAwareEntity) {
@@ -3183,19 +3183,19 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	private boolean isSleepingInBed() {
-		return (Boolean)this.getSleepingPosition().map(blockPos -> this.world.getBlockState(blockPos).getBlock() instanceof BedBlock).orElse(false);
+		return (Boolean)this.getSleepingPosition().map(pos -> this.world.getBlockState(pos).getBlock() instanceof BedBlock).orElse(false);
 	}
 
 	public void wakeUp() {
-		this.getSleepingPosition().filter(this.world::isChunkLoaded).ifPresent(blockPos -> {
-			BlockState blockState = this.world.getBlockState(blockPos);
+		this.getSleepingPosition().filter(this.world::isChunkLoaded).ifPresent(pos -> {
+			BlockState blockState = this.world.getBlockState(pos);
 			if (blockState.getBlock() instanceof BedBlock) {
-				this.world.setBlockState(blockPos, blockState.with(BedBlock.OCCUPIED, Boolean.valueOf(false)), Block.NOTIFY_ALL);
-				Vec3d vec3dx = (Vec3d)BedBlock.findWakeUpPosition(this.getType(), this.world, blockPos, this.yaw).orElseGet(() -> {
-					BlockPos blockPos2 = blockPos.up();
+				this.world.setBlockState(pos, blockState.with(BedBlock.OCCUPIED, Boolean.valueOf(false)), Block.NOTIFY_ALL);
+				Vec3d vec3dx = (Vec3d)BedBlock.findWakeUpPosition(this.getType(), this.world, pos, this.yaw).orElseGet(() -> {
+					BlockPos blockPos2 = pos.up();
 					return new Vec3d((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.1, (double)blockPos2.getZ() + 0.5);
 				});
-				Vec3d vec3d2 = Vec3d.ofBottomCenter(blockPos).subtract(vec3dx).normalize();
+				Vec3d vec3d2 = Vec3d.ofBottomCenter(pos).subtract(vec3dx).normalize();
 				float f = (float)MathHelper.wrapDegrees(MathHelper.atan2(vec3d2.z, vec3d2.x) * 180.0F / (float)Math.PI - 90.0);
 				this.setPosition(vec3dx.x, vec3dx.y, vec3dx.z);
 				this.yaw = f;
@@ -3321,7 +3321,7 @@ public abstract class LivingEntity extends Entity {
 
 	private static CommandItemSlot getCommandItemSlot(LivingEntity entity, EquipmentSlot slot) {
 		return slot != EquipmentSlot.HEAD && slot != EquipmentSlot.MAINHAND && slot != EquipmentSlot.OFFHAND
-			? CommandItemSlot.of(entity, slot, itemStack -> itemStack.isEmpty() || MobEntity.getPreferredEquipmentSlot(itemStack) == slot)
+			? CommandItemSlot.of(entity, slot, stack -> stack.isEmpty() || MobEntity.getPreferredEquipmentSlot(stack) == slot)
 			: CommandItemSlot.of(entity, slot);
 	}
 

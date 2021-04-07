@@ -6,7 +6,6 @@ import java.util.BitSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
-import net.minecraft.class_6108;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -24,9 +23,11 @@ import net.minecraft.world.chunk.Chunk;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public abstract class Carver<C extends CarverConfig> {
-	public static final Carver<class_6108> CAVE = register("cave", new CaveCarver(class_6108.field_31491));
-	public static final Carver<class_6108> NETHER_CAVE = register("nether_cave", new NetherCaveCarver(class_6108.field_31491));
+	public static final Carver<CaveCarverConfig> CAVE = register("cave", new CaveCarver(CaveCarverConfig.CAVE_CODEC));
+	public static final Carver<CaveCarverConfig> NETHER_CAVE = register("nether_cave", new NetherCaveCarver(CaveCarverConfig.CAVE_CODEC));
 	public static final Carver<RavineCarverConfig> RAVINE = register("canyon", new RavineCarver(RavineCarverConfig.RAVINE_CODEC));
+	public static final Carver<RavineCarverConfig> UNDERWATER_CANYON = register("underwater_canyon", new UnderwaterCanyonCarver(RavineCarverConfig.RAVINE_CODEC));
+	public static final Carver<CaveCarverConfig> UNDERWATER_CAVE = register("underwater_cave", new UnderwaterCaveCarver(CaveCarverConfig.CAVE_CODEC));
 	protected static final BlockState AIR = Blocks.AIR.getDefaultState();
 	protected static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
 	protected static final FluidState WATER = Fluids.WATER.getDefaultState();
@@ -179,7 +180,7 @@ public abstract class Carver<C extends CarverConfig> {
 		if (!this.canCarveBlock(blockState, blockState2) && !isDebug(config)) {
 			return false;
 		} else {
-			if (pos.getY() < config.field_31490.getY(context) && !isDebug(config)) {
+			if (pos.getY() < config.lavaLevel.getY(context) && !isDebug(config)) {
 				chunk.setBlockState(pos, LAVA.getBlockState(), false);
 			} else {
 				chunk.setBlockState(pos, getState(config), false);

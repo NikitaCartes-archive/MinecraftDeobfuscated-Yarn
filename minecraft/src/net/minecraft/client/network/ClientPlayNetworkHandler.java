@@ -93,6 +93,7 @@ import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -243,6 +244,7 @@ import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.screen.HorseScreenHandler;
 import net.minecraft.screen.MerchantScreenHandler;
+import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -373,7 +375,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.client.player.setReducedDebugInfo(packet.hasReducedDebugInfo());
 		this.client.player.setShowsDeathScreen(packet.showsDeathScreen());
 		this.client.interactionManager.setGameModes(packet.getGameMode(), packet.getPreviousGameMode());
-		this.client.options.onPlayerModelPartChange();
+		this.client.options.sendClientSettings();
 		this.connection
 			.send(new CustomPayloadC2SPacket(CustomPayloadC2SPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(ClientBrandRetriever.getClientModName())));
 		this.client.getGame().onStartGameSession();
@@ -739,7 +741,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onGameMessage(GameMessageS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.client.inGameHud.addChatMessage(packet.getLocation(), packet.getMessage(), packet.getSenderUuid());
+		this.client.inGameHud.addChatMessage(packet.getLocation(), packet.getMessage(), packet.getSender());
 	}
 
 	@Override
@@ -849,9 +851,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		Entity entity = packet.getEntity(this.world);
 		if (entity != null) {
-			if (packet.getStatus() == 21) {
+			if (packet.getStatus() == EntityStatuses.PLAY_GUARDIAN_ATTACK_SOUND) {
 				this.client.getSoundManager().play(new GuardianAttackSoundInstance((GuardianEntity)entity));
-			} else if (packet.getStatus() == 35) {
+			} else if (packet.getStatus() == EntityStatuses.USE_TOTEM_OF_UNDYING) {
 				int i = 40;
 				this.client.particleManager.addEmitter(entity, ParticleTypes.TOTEM_OF_UNDYING, 30);
 				this.world.playSound(entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ITEM_TOTEM_USE, entity.getSoundCategory(), 1.0F, 1.0F, false);
@@ -988,7 +990,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				bl = creativeInventoryScreen.getSelectedTab() != ItemGroup.INVENTORY.getIndex();
 			}
 
-			if (packet.getSyncId() == 0 && packet.getSlot() >= 36 && i < 45) {
+			if (packet.getSyncId() == 0 && PlayerScreenHandler.method_36211(i)) {
 				if (!itemStack.isEmpty()) {
 					ItemStack itemStack2 = playerEntity.playerScreenHandler.getSlot(i).getStack();
 					if (itemStack2.isEmpty() || itemStack2.getCount() < itemStack.getCount()) {
@@ -1928,7 +1930,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			} else if (CustomPayloadS2CPacket.DEBUG_GAME_EVENT.equals(identifier)) {
 				GameEvent gameEvent = Registry.GAME_EVENT.get(new Identifier(packetByteBuf.readString()));
 				BlockPos blockPos8 = packetByteBuf.readBlockPos();
-				this.client.debugRenderer.gameEventDebugRenderer.method_33087(gameEvent, blockPos8);
+				this.client.debugRenderer.gameEventDebugRenderer.addEvent(gameEvent, blockPos8);
 			} else if (CustomPayloadS2CPacket.DEBUG_GAME_EVENT_LISTENERS.equals(identifier)) {
 				Identifier identifier2 = packetByteBuf.readIdentifier();
 				PositionSource positionSource = ((PositionSourceType)Registry.POSITION_SOURCE_TYPE
@@ -1936,7 +1938,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 						.orElseThrow(() -> new IllegalArgumentException("Unknown position source type " + identifier2)))
 					.readFromBuf(packetByteBuf);
 				int j = packetByteBuf.readVarInt();
-				this.client.debugRenderer.gameEventDebugRenderer.method_33088(positionSource, j);
+				this.client.debugRenderer.gameEventDebugRenderer.addListener(positionSource, j);
 			} else {
 				LOGGER.warn("Unknown custom packed identifier: {}", identifier);
 			}

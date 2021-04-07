@@ -46,8 +46,8 @@ import net.minecraft.world.gen.ChunkRandom;
 
 public class SlimeEntity extends MobEntity implements Monster {
 	private static final TrackedData<Integer> SLIME_SIZE = DataTracker.registerData(SlimeEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	public static final int field_30496 = 1;
-	public static final int field_30497 = 127;
+	public static final int MIN_SIZE = 1;
+	public static final int MAX_SIZE = 127;
 	public float targetStretch;
 	public float stretch;
 	public float lastStretch;
@@ -466,7 +466,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 		@Override
 		public void tick() {
-			this.entity.yaw = this.changeAngle(this.entity.yaw, this.targetYaw, 90.0F);
+			this.entity.yaw = this.wrapDegrees(this.entity.yaw, this.targetYaw, 90.0F);
 			this.entity.headYaw = this.entity.yaw;
 			this.entity.bodyYaw = this.entity.yaw;
 			if (this.state != MoveControl.State.MOVE_TO) {

@@ -1118,7 +1118,7 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector.accept(createSingletonBlockState(block, modelFactory.upload(block, this.modelCollector)));
 	}
 
-	private void method_35868(Block block, Texture texture, Model model) {
+	private void registerSingleton(Block block, Texture texture, Model model) {
 		Identifier identifier = model.upload(block, texture, this.modelCollector);
 		this.blockStateCollector.accept(createSingletonBlockState(block, identifier));
 	}
@@ -3412,13 +3412,17 @@ public class BlockStateModelGenerator {
 			.forEach(blockFamily -> this.registerCubeAllModelTexturePool(blockFamily.getBaseBlock()).family(blockFamily));
 		this.registerCubeAllModelTexturePool(Blocks.CUT_COPPER).family(BlockFamilies.CUT_COPPER).same(Blocks.WAXED_CUT_COPPER).family(BlockFamilies.WAXED_CUT_COPPER);
 		this.registerCubeAllModelTexturePool(Blocks.EXPOSED_CUT_COPPER)
-			.family(BlockFamilies.LIGHTLY_WEATHERED_CUT_COPPER)
+			.family(BlockFamilies.EXPOSED_CUT_COPPER)
 			.same(Blocks.WAXED_EXPOSED_CUT_COPPER)
-			.family(BlockFamilies.WAXED_LIGHTLY_WEATHERED_CUT_COPPER);
+			.family(BlockFamilies.WAXED_EXPOSED_CUT_COPPER);
 		this.registerCubeAllModelTexturePool(Blocks.WEATHERED_CUT_COPPER)
-			.family(BlockFamilies.SEMI_WEATHERED_CUT_COPPER)
+			.family(BlockFamilies.WEATHERED_CUT_COPPER)
 			.same(Blocks.WAXED_WEATHERED_CUT_COPPER)
-			.family(BlockFamilies.WAXED_SEMI_WEATHERED_CUT_COPPER);
+			.family(BlockFamilies.WAXED_WEATHERED_CUT_COPPER);
+		this.registerCubeAllModelTexturePool(Blocks.OXIDIZED_CUT_COPPER)
+			.family(BlockFamilies.OXIDIZED_CUT_COPPER)
+			.same(Blocks.WAXED_OXIDIZED_CUT_COPPER)
+			.family(BlockFamilies.WAXED_OXIDIZED_CUT_COPPER);
 		this.registerSimpleState(Blocks.AIR);
 		this.registerStateWithModelReference(Blocks.CAVE_AIR, Blocks.AIR);
 		this.registerStateWithModelReference(Blocks.VOID_AIR, Blocks.AIR);
@@ -3537,6 +3541,7 @@ public class BlockStateModelGenerator {
 		this.registerInfested(Blocks.COPPER_BLOCK, Blocks.WAXED_COPPER_BLOCK);
 		this.registerInfested(Blocks.EXPOSED_COPPER, Blocks.WAXED_EXPOSED_COPPER);
 		this.registerInfested(Blocks.WEATHERED_COPPER, Blocks.WAXED_WEATHERED_COPPER);
+		this.registerInfested(Blocks.OXIDIZED_COPPER, Blocks.WAXED_OXIDIZED_COPPER);
 		this.registerPressurePlate(Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE, Blocks.GOLD_BLOCK);
 		this.registerPressurePlate(Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE, Blocks.IRON_BLOCK);
 		this.registerAmethysts();

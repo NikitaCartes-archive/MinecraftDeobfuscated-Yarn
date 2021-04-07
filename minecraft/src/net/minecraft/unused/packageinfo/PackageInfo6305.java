@@ -1,12 +1,12 @@
 package net.minecraft.unused.packageinfo;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import net.minecraft.class_6037;
-import net.minecraft.class_6216;
+import net.minecraft.util.annotation.FieldsAreNonnullByDefault2;
+import net.minecraft.util.annotation.MathMethodsReturnNonnullByDefault;
 
 // $VF: synthetic class
 @ParametersAreNonnullByDefault
-@class_6216
-@class_6037
+@MathMethodsReturnNonnullByDefault
+@FieldsAreNonnullByDefault2
 interface PackageInfo6305 {
 }

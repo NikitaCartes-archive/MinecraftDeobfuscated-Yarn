@@ -60,7 +60,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
 public class AxolotlEntity extends AnimalEntity implements Bucketable {
-	public static final int field_30388 = 200;
+	public static final int PLAY_DEAD_TICKS = 200;
 	public static final Predicate<LivingEntity> AXOLOTL_NOT_PLAYING_DEAD = entity -> entity.getType() == EntityType.AXOLOTL
 			&& !((AxolotlEntity)entity).isPlayingDead();
 	protected static final ImmutableList<? extends SensorType<? extends Sensor<? super AxolotlEntity>>> SENSORS = ImmutableList.of(
@@ -90,11 +90,11 @@ public class AxolotlEntity extends AnimalEntity implements Bucketable {
 	private static final TrackedData<Integer> VARIANT = DataTracker.registerData(AxolotlEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> PLAYING_DEAD = DataTracker.registerData(AxolotlEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> FROM_BUCKET = DataTracker.registerData(AxolotlEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	public static final double field_30389 = 20.0;
-	public static final int field_30390 = 1200;
-	private static final int field_30392 = 6000;
-	public static final String field_30391 = "Variant";
-	private static final int field_30393 = 100;
+	public static final double BUFF_RANGE = 20.0;
+	public static final int BLUE_BABY_CHANCE = 1200;
+	private static final int MAX_AIR = 6000;
+	public static final String VARIANT_KEY = "Variant";
+	private static final int BUFF_DURATION = 100;
 
 	public AxolotlEntity(EntityType<? extends AxolotlEntity> entityType, World world) {
 		super(entityType, world);
@@ -177,7 +177,7 @@ public class AxolotlEntity extends AnimalEntity implements Bucketable {
 		}
 	}
 
-	public boolean method_35176() {
+	public boolean isAirLessThanMax() {
 		return this.getAir() < this.getMaxAir();
 	}
 
@@ -260,8 +260,8 @@ public class AxolotlEntity extends AnimalEntity implements Bucketable {
 	}
 
 	@Override
-	public double method_33191(LivingEntity livingEntity) {
-		return 1.5 + (double)livingEntity.getWidth() * 2.0;
+	public double squaredAttackRange(LivingEntity target) {
+		return 1.5 + (double)target.getWidth() * 2.0;
 	}
 
 	@Override
@@ -379,10 +379,10 @@ public class AxolotlEntity extends AnimalEntity implements Bucketable {
 		return !this.isPlayingDead() && super.canTakeDamage();
 	}
 
-	public static void method_35175(AxolotlEntity axolotlEntity) {
-		Optional<LivingEntity> optional = axolotlEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET);
+	public static void appreciatePlayer(AxolotlEntity axolotl) {
+		Optional<LivingEntity> optional = axolotl.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET);
 		if (optional.isPresent()) {
-			World world = axolotlEntity.world;
+			World world = axolotl.world;
 			LivingEntity livingEntity = (LivingEntity)optional.get();
 			if (livingEntity.isDead()) {
 				DamageSource damageSource = livingEntity.getRecentDamageSource();
@@ -390,7 +390,7 @@ public class AxolotlEntity extends AnimalEntity implements Bucketable {
 					Entity entity = damageSource.getAttacker();
 					if (entity != null && entity.getType() == EntityType.PLAYER) {
 						PlayerEntity playerEntity = (PlayerEntity)entity;
-						List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, axolotlEntity.getBoundingBox().expand(20.0));
+						List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, axolotl.getBoundingBox().expand(20.0));
 						if (list.contains(playerEntity)) {
 							buffPlayer(playerEntity);
 						}
@@ -400,11 +400,11 @@ public class AxolotlEntity extends AnimalEntity implements Bucketable {
 		}
 	}
 
-	public static void buffPlayer(PlayerEntity playerEntity) {
-		StatusEffectInstance statusEffectInstance = playerEntity.getStatusEffect(StatusEffects.REGENERATION);
+	public static void buffPlayer(PlayerEntity player) {
+		StatusEffectInstance statusEffectInstance = player.getStatusEffect(StatusEffects.REGENERATION);
 		int i = 100 + (statusEffectInstance != null ? statusEffectInstance.getDuration() : 0);
-		playerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, i, 0));
-		playerEntity.removeStatusEffect(StatusEffects.MINING_FATIGUE);
+		player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, i, 0));
+		player.removeStatusEffect(StatusEffects.MINING_FATIGUE);
 	}
 
 	@Override

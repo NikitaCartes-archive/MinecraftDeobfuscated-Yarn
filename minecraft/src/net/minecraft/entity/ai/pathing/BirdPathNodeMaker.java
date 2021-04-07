@@ -15,19 +15,19 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.chunk.ChunkCache;
 
 public class BirdPathNodeMaker extends LandPathNodeMaker {
-	private final Long2ObjectMap<PathNodeType> field_27341 = new Long2ObjectOpenHashMap<>();
+	private final Long2ObjectMap<PathNodeType> pathNodes = new Long2ObjectOpenHashMap<>();
 
 	@Override
 	public void init(ChunkCache cachedWorld, MobEntity entity) {
 		super.init(cachedWorld, entity);
-		this.field_27341.clear();
+		this.pathNodes.clear();
 		this.waterPathNodeTypeWeight = entity.getPathfindingPenalty(PathNodeType.WATER);
 	}
 
 	@Override
 	public void clear() {
 		this.entity.setPathfindingPenalty(PathNodeType.WATER, this.waterPathNodeTypeWeight);
-		this.field_27341.clear();
+		this.pathNodes.clear();
 		super.clear();
 	}
 
@@ -46,7 +46,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 		}
 
 		BlockPos blockPos = this.entity.getBlockPos();
-		PathNodeType pathNodeType = this.method_31932(blockPos.getX(), i, blockPos.getZ());
+		PathNodeType pathNodeType = this.getNodeType(blockPos.getX(), i, blockPos.getZ());
 		if (this.entity.getPathfindingPenalty(pathNodeType) < 0.0F) {
 			for (BlockPos blockPos2 : ImmutableSet.of(
 				new BlockPos(this.entity.getBoundingBox().minX, (double)i, this.entity.getBoundingBox().minZ),
@@ -54,7 +54,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 				new BlockPos(this.entity.getBoundingBox().maxX, (double)i, this.entity.getBoundingBox().minZ),
 				new BlockPos(this.entity.getBoundingBox().maxX, (double)i, this.entity.getBoundingBox().maxZ)
 			)) {
-				PathNodeType pathNodeType2 = this.method_31932(blockPos.getX(), i, blockPos.getZ());
+				PathNodeType pathNodeType2 = this.getNodeType(blockPos.getX(), i, blockPos.getZ());
 				if (this.entity.getPathfindingPenalty(pathNodeType2) >= 0.0F) {
 					return super.getNode(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
 				}
@@ -188,7 +188,8 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 		if (this.unvisited(pathNode21)
 			&& this.isPassable(pathNode17)
 			&& this.isPassable(pathNode4)
-			&& this.isPassable(pathNode2) & this.isPassable(pathNode5)
+			&& this.isPassable(pathNode2)
+			&& this.isPassable(pathNode5)
 			&& this.isPassable(pathNode10)
 			&& this.isPassable(pathNode8)) {
 			successors[i++] = pathNode21;
@@ -198,7 +199,8 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 		if (this.unvisited(pathNode22)
 			&& this.isPassable(pathNode18)
 			&& this.isPassable(pathNode)
-			&& this.isPassable(pathNode2) & this.isPassable(pathNode5)
+			&& this.isPassable(pathNode2)
+			&& this.isPassable(pathNode5)
 			&& this.isPassable(pathNode7)
 			&& this.isPassable(pathNode8)) {
 			successors[i++] = pathNode22;
@@ -263,7 +265,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 	@Override
 	protected PathNode getNode(int x, int y, int z) {
 		PathNode pathNode = null;
-		PathNodeType pathNodeType = this.method_31932(x, y, z);
+		PathNodeType pathNodeType = this.getNodeType(x, y, z);
 		float f = this.entity.getPathfindingPenalty(pathNodeType);
 		if (f >= 0.0F) {
 			pathNode = super.getNode(x, y, z);
@@ -277,15 +279,15 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 		return pathNode;
 	}
 
-	private PathNodeType method_31932(int i, int j, int k) {
-		return this.field_27341
+	private PathNodeType getNodeType(int x, int y, int z) {
+		return this.pathNodes
 			.computeIfAbsent(
-				BlockPos.asLong(i, j, k),
+				BlockPos.asLong(x, y, z),
 				l -> this.getNodeType(
 						this.cachedWorld,
-						i,
-						j,
-						k,
+						x,
+						y,
+						z,
 						this.entity,
 						this.entityBlockXSize,
 						this.entityBlockYSize,

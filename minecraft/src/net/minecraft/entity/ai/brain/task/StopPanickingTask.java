@@ -6,7 +6,7 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.world.ServerWorld;
 
 public class StopPanickingTask extends Task<VillagerEntity> {
-	private static final int field_30188 = 36;
+	private static final int MAX_DISTANCE = 36;
 
 	public StopPanickingTask() {
 		super(ImmutableMap.of());

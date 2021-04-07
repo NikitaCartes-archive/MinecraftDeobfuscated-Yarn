@@ -20,7 +20,7 @@ public class DiffuseLighting {
 		RenderSystem.setupLevelDiffuseLighting(field_24428, field_24429, modelMatrix);
 	}
 
-	public static void method_27869(Matrix4f modelMatrix) {
+	public static void disableForLevel(Matrix4f modelMatrix) {
 		RenderSystem.setupLevelDiffuseLighting(field_24426, field_24427, modelMatrix);
 	}
 

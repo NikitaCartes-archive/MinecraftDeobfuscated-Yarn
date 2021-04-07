@@ -14,7 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
-import net.minecraft.recipe.RecipeFinder;
+import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
@@ -27,11 +27,32 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 
 public class PlayerInventory implements Inventory, Nameable {
-	public static final int field_30637 = 5;
+	/**
+	 * The maximum cooldown ({@value} ticks) applied to timed use items such as the Eye of Ender.
+	 */
+	public static final int ITEM_USAGE_COOLDOWN = 5;
+	/**
+	 * The number of slots ({@value}) in the main (non-hotbar) section of the inventory.
+	 */
 	public static final int MAIN_SIZE = 36;
+	/**
+	 * The number of columns ({@value}) in the inventory.
+	 * 
+	 * <p>The same value dictates the size of the player's hotbar, excluding the offhand slot.</p>
+	 */
 	private static final int HOTBAR_SIZE = 9;
-	public static final int field_30639 = 40;
-	public static final int field_30640 = -1;
+	/**
+	 * Zero-based index of the offhand slot.
+	 * 
+	 * <p>This value is the result of the sum {@code MAIN_SIZE (36) + ARMOR_SIZE (4)}.</p>
+	 */
+	public static final int OFF_HAND_SLOT = 40;
+	/**
+	 * The slot index ({@value}) used to indicate no result
+	 * (item not present / no available space) when querying the inventory's contents
+	 * or to indicate no preference when inserting an item into the inventory.
+	 */
+	public static final int NOT_FOUND = -1;
 	public final DefaultedList<ItemStack> main = DefaultedList.ofSize(36, ItemStack.EMPTY);
 	public final DefaultedList<ItemStack> armor = DefaultedList.ofSize(4, ItemStack.EMPTY);
 	public final DefaultedList<ItemStack> offHand = DefaultedList.ofSize(1, ItemStack.EMPTY);
@@ -112,6 +133,12 @@ public class PlayerInventory implements Inventory, Nameable {
 		return -1;
 	}
 
+	/**
+	 * Given the item stack to search for, returns the equivalent slot index with a matching stack that is all of:
+	 * not damaged, not enchanted, and not renamed.
+	 * 
+	 * @return the index where a matching stack was found, or {@value #NOT_FOUND}
+	 */
 	public int indexOf(ItemStack stack) {
 		for (int i = 0; i < this.main.size(); i++) {
 			ItemStack itemStack = this.main.get(i);
@@ -301,23 +328,23 @@ public class PlayerInventory implements Inventory, Nameable {
 	}
 
 	public void offerOrDrop(ItemStack stack) {
-		this.method_32338(stack, true);
+		this.offer(stack, true);
 	}
 
-	public void method_32338(ItemStack itemStack, boolean bl) {
-		while (!itemStack.isEmpty()) {
-			int i = this.getOccupiedSlotWithRoomForStack(itemStack);
+	public void offer(ItemStack stack, boolean notifiesClient) {
+		while (!stack.isEmpty()) {
+			int i = this.getOccupiedSlotWithRoomForStack(stack);
 			if (i == -1) {
 				i = this.getEmptySlot();
 			}
 
 			if (i == -1) {
-				this.player.dropItem(itemStack, false);
+				this.player.dropItem(stack, false);
 				break;
 			}
 
-			int j = itemStack.getMaxCount() - this.getStack(i).getCount();
-			if (this.insertStack(i, itemStack.split(j)) && bl && this.player instanceof ServerPlayerEntity) {
+			int j = stack.getMaxCount() - this.getStack(i).getCount();
+			if (this.insertStack(i, stack.split(j)) && notifiesClient && this.player instanceof ServerPlayerEntity) {
 				((ServerPlayerEntity)this.player)
 					.networkHandler
 					.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(ScreenHandlerSlotUpdateS2CPacket.UPDATE_PLAYER_INVENTORY_SYNC_ID, i, this.getStack(i)));
@@ -501,18 +528,18 @@ public class PlayerInventory implements Inventory, Nameable {
 		return this.armor.get(slot);
 	}
 
-	public void damageArmor(DamageSource damageSource, float f) {
-		if (!(f <= 0.0F)) {
-			f /= 4.0F;
-			if (f < 1.0F) {
-				f = 1.0F;
+	public void damageArmor(DamageSource damageSource, float amount) {
+		if (!(amount <= 0.0F)) {
+			amount /= 4.0F;
+			if (amount < 1.0F) {
+				amount = 1.0F;
 			}
 
 			for (int i = 0; i < this.armor.size(); i++) {
 				ItemStack itemStack = this.armor.get(i);
 				if ((!damageSource.isFire() || !itemStack.getItem().isFireproof()) && itemStack.getItem() instanceof ArmorItem) {
 					int j = i;
-					itemStack.damage((int)f, this.player, playerEntity -> playerEntity.sendEquipmentBreakStatus(EquipmentSlot.fromTypeIndex(EquipmentSlot.Type.ARMOR, j)));
+					itemStack.damage((int)amount, this.player, playerEntity -> playerEntity.sendEquipmentBreakStatus(EquipmentSlot.fromTypeIndex(EquipmentSlot.Type.ARMOR, j)));
 				}
 			}
 		}
@@ -583,9 +610,9 @@ public class PlayerInventory implements Inventory, Nameable {
 		}
 	}
 
-	public void populateRecipeFinder(RecipeFinder finder) {
+	public void populateRecipeFinder(RecipeMatcher finder) {
 		for (ItemStack itemStack : this.main) {
-			finder.addNormalItem(itemStack);
+			finder.addUnenchantedInput(itemStack);
 		}
 	}
 }

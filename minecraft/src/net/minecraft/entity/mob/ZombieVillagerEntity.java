@@ -11,6 +11,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityInteraction;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.SpawnReason;
@@ -175,12 +176,12 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		this.getDataTracker().set(CONVERTING, true);
 		this.removeStatusEffect(StatusEffects.WEAKNESS);
 		this.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, delay, Math.min(this.world.getDifficulty().getId() - 1, 0)));
-		this.world.sendEntityStatus(this, (byte)16);
+		this.world.sendEntityStatus(this, EntityStatuses.PLAY_CURE_ZOMBIE_VILLAGER_SOUND);
 	}
 
 	@Override
 	public void handleStatus(byte status) {
-		if (status == 16) {
+		if (status == EntityStatuses.PLAY_CURE_ZOMBIE_VILLAGER_SOUND) {
 			if (!this.isSilent()) {
 				this.world
 					.playSound(

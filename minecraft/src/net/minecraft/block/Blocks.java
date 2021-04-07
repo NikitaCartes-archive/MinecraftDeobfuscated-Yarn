@@ -3093,9 +3093,14 @@ public class Blocks {
 	public static final Block WAXED_COPPER_BLOCK = register("waxed_copper_block", new Block(AbstractBlock.Settings.copy(COPPER_BLOCK)));
 	public static final Block WAXED_WEATHERED_COPPER = register("waxed_weathered_copper", new Block(AbstractBlock.Settings.copy(WEATHERED_COPPER)));
 	public static final Block WAXED_EXPOSED_COPPER = register("waxed_exposed_copper", new Block(AbstractBlock.Settings.copy(EXPOSED_COPPER)));
+	public static final Block WAXED_OXIDIZED_COPPER = register("waxed_oxidized_copper", new Block(AbstractBlock.Settings.copy(OXIDIZED_COPPER)));
+	public static final Block WAXED_OXIDIZED_CUT_COPPER = register("waxed_oxidized_cut_copper", new Block(AbstractBlock.Settings.copy(OXIDIZED_COPPER)));
 	public static final Block WAXED_WEATHERED_CUT_COPPER = register("waxed_weathered_cut_copper", new Block(AbstractBlock.Settings.copy(WEATHERED_COPPER)));
 	public static final Block WAXED_EXPOSED_CUT_COPPER = register("waxed_exposed_cut_copper", new Block(AbstractBlock.Settings.copy(EXPOSED_COPPER)));
 	public static final Block WAXED_CUT_COPPER = register("waxed_cut_copper", new Block(AbstractBlock.Settings.copy(COPPER_BLOCK)));
+	public static final Block WAXED_OXIDIZED_CUT_COPPER_STAIRS = register(
+		"waxed_oxidized_cut_copper_stairs", new StairsBlock(WAXED_OXIDIZED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(OXIDIZED_COPPER))
+	);
 	public static final Block WAXED_WEATHERED_CUT_COPPER_STAIRS = register(
 		"waxed_weathered_cut_copper_stairs", new StairsBlock(WAXED_WEATHERED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(WEATHERED_COPPER))
 	);
@@ -3104,6 +3109,9 @@ public class Blocks {
 	);
 	public static final Block WAXED_CUT_COPPER_STAIRS = register(
 		"waxed_cut_copper_stairs", new StairsBlock(WAXED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(COPPER_BLOCK))
+	);
+	public static final Block WAXED_OXIDIZED_CUT_COPPER_SLAB = register(
+		"waxed_oxidized_cut_copper_slab", new SlabBlock(AbstractBlock.Settings.copy(WAXED_OXIDIZED_CUT_COPPER).requiresTool())
 	);
 	public static final Block WAXED_WEATHERED_CUT_COPPER_SLAB = register(
 		"waxed_weathered_cut_copper_slab", new SlabBlock(AbstractBlock.Settings.copy(WAXED_WEATHERED_CUT_COPPER).requiresTool())

@@ -80,15 +80,19 @@ public abstract class StructureStart<C extends FeatureConfig> implements class_6
 		DynamicRegistryManager registryManager, ChunkGenerator chunkGenerator, StructureManager manager, ChunkPos pos, Biome biome, C config, HeightLimitView world
 	);
 
-	public BlockBox setBoundingBoxFromChildren() {
+	public final BlockBox setBoundingBoxFromChildren() {
 		if (this.boundingBox == null) {
-			synchronized (this.children) {
-				this.boundingBox = (BlockBox)BlockBox.method_35413(this.children.stream().map(StructurePiece::getBoundingBox)::iterator)
-					.orElseThrow(() -> new IllegalStateException("Unable to calculate boundingbox without pieces"));
-			}
+			this.boundingBox = this.method_36217();
 		}
 
 		return this.boundingBox;
+	}
+
+	protected BlockBox method_36217() {
+		synchronized (this.children) {
+			return (BlockBox)BlockBox.method_35413(this.children.stream().map(StructurePiece::getBoundingBox)::iterator)
+				.orElseThrow(() -> new IllegalStateException("Unable to calculate boundingbox without pieces"));
+		}
 	}
 
 	public List<StructurePiece> getChildren() {

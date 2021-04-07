@@ -34,7 +34,7 @@ public class RconCommandOutput implements CommandOutput {
 	}
 
 	@Override
-	public void sendSystemMessage(Text message, UUID senderUuid) {
+	public void sendSystemMessage(Text message, UUID sender) {
 		this.buffer.append(message.getString());
 	}
 

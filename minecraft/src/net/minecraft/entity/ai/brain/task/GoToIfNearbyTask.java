@@ -12,18 +12,18 @@ import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.Vec3d;
 
 public class GoToIfNearbyTask extends Task<PathAwareEntity> {
-	private static final int field_30179 = 180;
-	private static final int field_30180 = 8;
-	private static final int field_30181 = 6;
+	private static final int UPDATE_INTERVAL = 180;
+	private static final int HORIZONTAL_RANGE = 8;
+	private static final int VERTICAL_RANGE = 6;
 	private final MemoryModuleType<GlobalPos> target;
 	private long nextUpdateTime;
 	private final int maxDistance;
-	private final float field_25752;
+	private final float walkSpeed;
 
-	public GoToIfNearbyTask(MemoryModuleType<GlobalPos> target, float f, int maxDistance) {
+	public GoToIfNearbyTask(MemoryModuleType<GlobalPos> target, float walkSpeed, int maxDistance) {
 		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED, target, MemoryModuleState.VALUE_PRESENT));
 		this.target = target;
-		this.field_25752 = f;
+		this.walkSpeed = walkSpeed;
 		this.maxDistance = maxDistance;
 	}
 
@@ -37,7 +37,7 @@ public class GoToIfNearbyTask extends Task<PathAwareEntity> {
 	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
 		if (l > this.nextUpdateTime) {
 			Optional<Vec3d> optional = Optional.ofNullable(FuzzyTargeting.find(pathAwareEntity, 8, 6));
-			pathAwareEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, this.field_25752, 1)));
+			pathAwareEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, this.walkSpeed, 1)));
 			this.nextUpdateTime = l + 180L;
 		}
 	}

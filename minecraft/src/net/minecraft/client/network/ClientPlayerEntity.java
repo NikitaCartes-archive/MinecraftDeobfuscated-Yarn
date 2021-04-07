@@ -34,6 +34,7 @@ import net.minecraft.client.util.ClientPlayerTickable;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.MovementType;
@@ -472,14 +473,14 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void sendSystemMessage(Text message, UUID senderUuid) {
+	public void sendSystemMessage(Text message, UUID sender) {
 		this.client.inGameHud.getChatHud().addMessage(message);
 	}
 
 	@Override
 	public void handleStatus(byte status) {
-		if (status >= 24 && status <= 28) {
-			this.setClientPermissionLevel(status - 24);
+		if (status >= EntityStatuses.SET_OP_LEVEL_0 && status <= EntityStatuses.SET_OP_LEVEL_4) {
+			this.setClientPermissionLevel(status - EntityStatuses.SET_OP_LEVEL_0);
 		} else {
 			super.handleStatus(status);
 		}

@@ -960,6 +960,14 @@ public class ConfiguredFeatures {
 			.spreadHorizontally()
 			.repeat(2)
 	);
+	public static final ConfiguredFeature<?, ?> OLD_TUFF = register(
+		"old_tuff",
+		Feature.ORE
+			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.TUFF, 33))
+			.rangeOf(YOffset.fixed(0), YOffset.fixed(16))
+			.spreadHorizontally()
+			.repeat(1)
+	);
 	public static final ConfiguredFeature<?, ?> OLD_ORE_COAL = register(
 		"old_ore_coal",
 		Feature.ORE

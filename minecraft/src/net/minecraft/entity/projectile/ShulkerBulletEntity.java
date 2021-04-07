@@ -30,6 +30,7 @@ import net.minecraft.world.World;
 
 public class ShulkerBulletEntity extends ProjectileEntity {
 	private static final double field_30666 = 0.15;
+	@Nullable
 	private Entity target;
 	@Nullable
 	private Direction direction;
@@ -201,7 +202,7 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 				}
 			}
 
-			if (this.target == null || !this.target.isAlive() || this.target instanceof PlayerEntity && ((PlayerEntity)this.target).isSpectator()) {
+			if (this.target == null || !this.target.isAlive() || this.target instanceof PlayerEntity && this.target.isSpectator()) {
 				if (!this.hasNoGravity()) {
 					this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
 				}

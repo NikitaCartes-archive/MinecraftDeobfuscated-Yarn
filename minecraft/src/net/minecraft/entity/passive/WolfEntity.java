@@ -7,6 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.Durations;
@@ -64,12 +65,12 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	private static final TrackedData<Boolean> BEGGING = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> COLLAR_COLOR = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> ANGER_TIME = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	public static final Predicate<LivingEntity> FOLLOW_TAMED_PREDICATE = livingEntity -> {
-		EntityType<?> entityType = livingEntity.getType();
+	public static final Predicate<LivingEntity> FOLLOW_TAMED_PREDICATE = entity -> {
+		EntityType<?> entityType = entity.getType();
 		return entityType == EntityType.SHEEP || entityType == EntityType.RABBIT || entityType == EntityType.FOX;
 	};
-	private static final float field_30386 = 8.0F;
-	private static final float field_30387 = 20.0F;
+	private static final float WILD_MAX_HEALTH = 8.0F;
+	private static final float TAMED_MAX_HEALTH = 20.0F;
 	private float begAnimationProgress;
 	private float lastBegAnimationProgress;
 	private boolean furWet;
@@ -177,7 +178,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 			this.canShakeWaterOff = true;
 			this.shakeProgress = 0.0F;
 			this.lastShakeProgress = 0.0F;
-			this.world.sendEntityStatus(this, (byte)8);
+			this.world.sendEntityStatus(this, EntityStatuses.SHAKE_OFF_WATER);
 		}
 
 		if (!this.world.isClient) {
@@ -199,7 +200,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 			if (this.isWet()) {
 				this.furWet = true;
 				if (this.canShakeWaterOff && !this.world.isClient) {
-					this.world.sendEntityStatus(this, (byte)56);
+					this.world.sendEntityStatus(this, EntityStatuses.RESET_WOLF_SHAKE);
 					this.resetShake();
 				}
 			} else if ((this.furWet || this.canShakeWaterOff) && this.canShakeWaterOff) {
@@ -261,9 +262,10 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	 * <p>
 	 * The brightness multiplier represents how much darker the wolf gets while its fur is wet. The multiplier changes (from 0.75 to 1.0 incrementally) when a wolf shakes.
 	 * 
-	 * @param tickDelta Progress for linearly interpolating between the previous and current game state.
 	 * @return Brightness as a float value between 0.75 and 1.0.
 	 * @see net.minecraft.client.render.entity.model.TintableAnimalModel#setColorMultiplier(float, float, float)
+	 * 
+	 * @param tickDelta progress for linearly interpolating between the previous and current game state
 	 */
 	public float getFurWetBrightnessMultiplier(float tickDelta) {
 		return Math.min(0.5F + MathHelper.lerp(tickDelta, this.lastShakeProgress, this.shakeProgress) / 2.0F * 0.5F, 1.0F);
@@ -383,9 +385,9 @@ public class WolfEntity extends TameableEntity implements Angerable {
 					this.navigation.stop();
 					this.setTarget(null);
 					this.setSitting(true);
-					this.world.sendEntityStatus(this, (byte)7);
+					this.world.sendEntityStatus(this, EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES);
 				} else {
-					this.world.sendEntityStatus(this, (byte)6);
+					this.world.sendEntityStatus(this, EntityStatuses.ADD_NEGATIVE_PLAYER_REACTION_PARTICLES);
 				}
 
 				return ActionResult.SUCCESS;
@@ -397,11 +399,11 @@ public class WolfEntity extends TameableEntity implements Angerable {
 
 	@Override
 	public void handleStatus(byte status) {
-		if (status == 8) {
+		if (status == EntityStatuses.SHAKE_OFF_WATER) {
 			this.canShakeWaterOff = true;
 			this.shakeProgress = 0.0F;
 			this.lastShakeProgress = 0.0F;
-		} else if (status == 56) {
+		} else if (status == EntityStatuses.RESET_WOLF_SHAKE) {
 			this.resetShake();
 		} else {
 			super.handleStatus(status);
@@ -520,7 +522,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	}
 
 	@Override
-	public Vec3d method_29919() {
+	public Vec3d getLeashOffset() {
 		return new Vec3d(0.0, (double)(0.6F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));
 	}
 

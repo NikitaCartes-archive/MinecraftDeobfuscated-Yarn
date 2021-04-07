@@ -37,7 +37,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class MineshaftGenerator {
-	private static final Logger field_29326 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int field_31551 = 3;
 	private static final int field_31552 = 3;
 	private static final int field_31553 = 5;
@@ -867,7 +867,7 @@ public class MineshaftGenerator {
 			BlockBox.CODEC
 				.listOf()
 				.parse(NbtOps.INSTANCE, nbt.getList("Entrances", NbtElement.INT_ARRAY_TYPE))
-				.resultOrPartial(MineshaftGenerator.field_29326::error)
+				.resultOrPartial(MineshaftGenerator.LOGGER::error)
 				.ifPresent(this.entrances::addAll);
 		}
 
@@ -1055,7 +1055,7 @@ public class MineshaftGenerator {
 			BlockBox.CODEC
 				.listOf()
 				.encodeStart(NbtOps.INSTANCE, this.entrances)
-				.resultOrPartial(MineshaftGenerator.field_29326::error)
+				.resultOrPartial(MineshaftGenerator.LOGGER::error)
 				.ifPresent(nbtElement -> nbt.put("Entrances", nbtElement));
 		}
 	}

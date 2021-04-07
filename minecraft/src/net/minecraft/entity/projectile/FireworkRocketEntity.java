@@ -3,6 +3,7 @@ package net.minecraft.entity.projectile;
 import java.util.OptionalInt;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -36,6 +37,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 	private static final TrackedData<Boolean> SHOT_AT_ANGLE = DataTracker.registerData(FireworkRocketEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private int life;
 	private int lifeTime;
+	@Nullable
 	private LivingEntity shooter;
 
 	public FireworkRocketEntity(EntityType<? extends FireworkRocketEntity> entityType, World world) {
@@ -166,7 +168,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 	}
 
 	private void explodeAndRemove() {
-		this.world.sendEntityStatus(this, (byte)17);
+		this.world.sendEntityStatus(this, EntityStatuses.EXPLODE_FIREWORK_CLIENT);
 		this.emitGameEvent(GameEvent.EXPLODE, this.getOwner());
 		this.explode();
 		this.discard();
@@ -247,7 +249,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 
 	@Override
 	public void handleStatus(byte status) {
-		if (status == 17 && this.world.isClient) {
+		if (status == EntityStatuses.EXPLODE_FIREWORK_CLIENT && this.world.isClient) {
 			if (!this.hasExplosionEffects()) {
 				for (int i = 0; i < this.random.nextInt(3) + 2; i++) {
 					this.world

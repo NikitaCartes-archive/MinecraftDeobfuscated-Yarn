@@ -12,16 +12,16 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 
 public class ForgetAttackTargetTask<E extends MobEntity> extends Task<E> {
-	private static final int field_30177 = 200;
+	private static final int REMEMBER_TIME = 200;
 	private final Predicate<LivingEntity> alternativeCondition;
-	private final Consumer<E> field_30178;
+	private final Consumer<E> forgetCallback;
 
-	public ForgetAttackTargetTask(Predicate<LivingEntity> predicate, Consumer<E> consumer) {
+	public ForgetAttackTargetTask(Predicate<LivingEntity> condition, Consumer<E> forgetCallback) {
 		super(
 			ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleState.REGISTERED)
 		);
-		this.alternativeCondition = predicate;
-		this.field_30178 = consumer;
+		this.alternativeCondition = condition;
+		this.forgetCallback = forgetCallback;
 	}
 
 	public ForgetAttackTargetTask(Predicate<LivingEntity> alternativeCondition) {
@@ -29,8 +29,8 @@ public class ForgetAttackTargetTask<E extends MobEntity> extends Task<E> {
 		});
 	}
 
-	public ForgetAttackTargetTask(Consumer<E> consumer) {
-		this(livingEntity -> false, consumer);
+	public ForgetAttackTargetTask(Consumer<E> forgetCallback) {
+		this(livingEntity -> false, forgetCallback);
 	}
 
 	public ForgetAttackTargetTask() {
@@ -74,7 +74,7 @@ public class ForgetAttackTargetTask<E extends MobEntity> extends Task<E> {
 	}
 
 	protected void forgetAttackTarget(E entity) {
-		this.field_30178.accept(entity);
+		this.forgetCallback.accept(entity);
 		entity.getBrain().forget(MemoryModuleType.ATTACK_TARGET);
 	}
 }

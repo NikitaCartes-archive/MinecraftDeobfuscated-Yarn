@@ -26,8 +26,8 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class ResourceIndex {
 	protected static final Logger LOGGER = LogManager.getLogger();
-	private final Map<String, File> index = Maps.<String, File>newHashMap();
-	private final Map<Identifier, File> field_21556 = Maps.<Identifier, File>newHashMap();
+	private final Map<String, File> rootIndex = Maps.<String, File>newHashMap();
+	private final Map<Identifier, File> namespacedIndex = Maps.<Identifier, File>newHashMap();
 
 	protected ResourceIndex() {
 	}
@@ -49,9 +49,9 @@ public class ResourceIndex {
 					String string2 = JsonHelper.getString(jsonObject3, "hash");
 					File file3 = new File(file, string2.substring(0, 2) + "/" + string2);
 					if (strings.length == 1) {
-						this.index.put(strings[0], file3);
+						this.rootIndex.put(strings[0], file3);
 					} else {
-						this.field_21556.put(new Identifier(strings[0], strings[1]), file3);
+						this.namespacedIndex.put(new Identifier(strings[0], strings[1]), file3);
 					}
 				}
 			}
@@ -66,16 +66,16 @@ public class ResourceIndex {
 
 	@Nullable
 	public File getResource(Identifier identifier) {
-		return (File)this.field_21556.get(identifier);
+		return (File)this.namespacedIndex.get(identifier);
 	}
 
 	@Nullable
 	public File findFile(String path) {
-		return (File)this.index.get(path);
+		return (File)this.rootIndex.get(path);
 	}
 
 	public Collection<Identifier> getFilesRecursively(String string, String string2, int i, Predicate<String> predicate) {
-		return (Collection<Identifier>)this.field_21556.keySet().stream().filter(identifier -> {
+		return (Collection<Identifier>)this.namespacedIndex.keySet().stream().filter(identifier -> {
 			String string3 = identifier.getPath();
 			return identifier.getNamespace().equals(string2) && !string3.endsWith(".mcmeta") && string3.startsWith(string + "/") && predicate.test(string3);
 		}).collect(Collectors.toList());

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -119,12 +120,12 @@ public class RaidManager extends PersistentState {
 					bl = true;
 				} else {
 					player.removeStatusEffect(StatusEffects.BAD_OMEN);
-					player.networkHandler.sendPacket(new EntityStatusS2CPacket(player, (byte)43));
+					player.networkHandler.sendPacket(new EntityStatusS2CPacket(player, EntityStatuses.ADD_CLOUD_PARTICLES));
 				}
 
 				if (bl) {
 					raid.start(player);
-					player.networkHandler.sendPacket(new EntityStatusS2CPacket(player, (byte)43));
+					player.networkHandler.sendPacket(new EntityStatusS2CPacket(player, EntityStatuses.ADD_CLOUD_PARTICLES));
 					if (!raid.hasSpawned()) {
 						player.incrementStat(Stats.RAID_TRIGGER);
 						Criteria.VOLUNTARY_EXILE.trigger(player);

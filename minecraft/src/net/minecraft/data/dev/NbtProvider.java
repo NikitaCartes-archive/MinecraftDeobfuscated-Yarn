@@ -17,8 +17,8 @@ public class NbtProvider implements DataProvider {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final DataGenerator root;
 
-	public NbtProvider(DataGenerator dataGenerator) {
-		this.root = dataGenerator;
+	public NbtProvider(DataGenerator root) {
+		this.root = root;
 	}
 
 	@Override

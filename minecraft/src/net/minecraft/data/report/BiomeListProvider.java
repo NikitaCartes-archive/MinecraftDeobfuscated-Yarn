@@ -24,15 +24,15 @@ import org.apache.logging.log4j.Logger;
 public class BiomeListProvider implements DataProvider {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-	private final DataGenerator dataGenerator;
+	private final DataGenerator generator;
 
-	public BiomeListProvider(DataGenerator dataGenerator) {
-		this.dataGenerator = dataGenerator;
+	public BiomeListProvider(DataGenerator generator) {
+		this.generator = generator;
 	}
 
 	@Override
 	public void run(DataCache cache) {
-		Path path = this.dataGenerator.getOutput();
+		Path path = this.generator.getOutput();
 
 		for (Entry<RegistryKey<Biome>, Biome> entry : BuiltinRegistries.BIOME.getEntries()) {
 			Path path2 = getPath(path, ((RegistryKey)entry.getKey()).getValue());
@@ -52,8 +52,8 @@ public class BiomeListProvider implements DataProvider {
 		}
 	}
 
-	private static Path getPath(Path path, Identifier identifier) {
-		return path.resolve("reports/biomes/" + identifier.getPath() + ".json");
+	private static Path getPath(Path root, Identifier id) {
+		return root.resolve("reports/biomes/" + id.getPath() + ".json");
 	}
 
 	@Override
