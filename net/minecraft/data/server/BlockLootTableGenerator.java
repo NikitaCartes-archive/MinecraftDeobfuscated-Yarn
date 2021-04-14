@@ -710,6 +710,9 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.CHISELED_DEEPSLATE);
         this.addDrop(Blocks.CRACKED_DEEPSLATE_BRICKS);
         this.addDrop(Blocks.CRACKED_DEEPSLATE_TILES);
+        this.addDrop(Blocks.RAW_IRON_BLOCK);
+        this.addDrop(Blocks.RAW_COPPER_BLOCK);
+        this.addDrop(Blocks.RAW_GOLD_BLOCK);
         this.addDrop(Blocks.FARMLAND, Blocks.DIRT);
         this.addDrop(Blocks.TRIPWIRE, Items.STRING);
         this.addDrop(Blocks.DIRT_PATH, Blocks.DIRT);

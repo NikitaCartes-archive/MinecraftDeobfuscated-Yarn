@@ -11,16 +11,20 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 public class LeapingChargeTask
 extends Task<MobEntity> {
     public static final int RUN_TIME = 100;
     private final UniformIntProvider cooldownRange;
+    private SoundEvent field_33459;
 
-    public LeapingChargeTask(UniformIntProvider cooldownRange) {
+    public LeapingChargeTask(UniformIntProvider cooldownRange, SoundEvent soundEvent) {
         super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.LONG_JUMP_MID_JUMP, MemoryModuleState.VALUE_PRESENT), 100);
         this.cooldownRange = cooldownRange;
+        this.field_33459 = soundEvent;
     }
 
     @Override
@@ -38,6 +42,7 @@ extends Task<MobEntity> {
     protected void finishRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
         if (mobEntity.isOnGround()) {
             mobEntity.setVelocity(mobEntity.getVelocity().multiply(0.1f));
+            serverWorld.playSoundFromEntity(null, mobEntity, this.field_33459, SoundCategory.NEUTRAL, 2.0f, 1.0f);
         }
         mobEntity.setNoDrag(false);
         mobEntity.setPose(EntityPose.STANDING);

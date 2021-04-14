@@ -6,6 +6,8 @@ package net.minecraft.network.packet.s2c.play;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
 
 public class ResourcePackSendS2CPacket
 implements Packet<ClientPlayPacketListener> {
@@ -13,20 +15,24 @@ implements Packet<ClientPlayPacketListener> {
     private final String url;
     private final String hash;
     private final boolean required;
+    @Nullable
+    private final Text prompt;
 
-    public ResourcePackSendS2CPacket(String url, String hash, boolean required) {
+    public ResourcePackSendS2CPacket(String url, String hash, boolean required, @Nullable Text prompt) {
         if (hash.length() > 40) {
             throw new IllegalArgumentException("Hash is too long (max 40, was " + hash.length() + ")");
         }
         this.url = url;
         this.hash = hash;
         this.required = required;
+        this.prompt = prompt;
     }
 
     public ResourcePackSendS2CPacket(PacketByteBuf buf) {
         this.url = buf.readString();
         this.hash = buf.readString(40);
         this.required = buf.readBoolean();
+        this.prompt = buf.readBoolean() ? buf.readText() : null;
     }
 
     @Override
@@ -34,6 +40,12 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeString(this.url);
         buf.writeString(this.hash);
         buf.writeBoolean(this.required);
+        if (this.prompt != null) {
+            buf.writeBoolean(true);
+            buf.writeText(this.prompt);
+        } else {
+            buf.writeBoolean(false);
+        }
     }
 
     @Override
@@ -51,6 +63,11 @@ implements Packet<ClientPlayPacketListener> {
 
     public boolean isRequired() {
         return this.required;
+    }
+
+    @Nullable
+    public Text getPrompt() {
+        return this.prompt;
     }
 }
 

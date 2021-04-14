@@ -3,31 +3,34 @@
  */
 package net.minecraft.world.gen;
 
+import java.util.function.Supplier;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.gen.BlockInterpolator;
+import net.minecraft.world.gen.BlockSource;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 
-public class DeepslateInterpolator
-implements BlockInterpolator {
+public class DeepslateBlockSource
+implements BlockSource {
     private static final int field_31468 = -8;
     private static final int field_31469 = 0;
     private final ChunkRandom random;
     private final long seed;
     private final BlockState defaultBlock;
     private final BlockState deepslateState;
+    private final Supplier<ChunkGeneratorSettings> settings;
 
-    public DeepslateInterpolator(long seed, BlockState defaultBlock, BlockState deepslateState) {
+    public DeepslateBlockSource(long seed, BlockState defaultBlock, BlockState deepslateState, Supplier<ChunkGeneratorSettings> settings) {
         this.random = new ChunkRandom(seed);
         this.seed = seed;
         this.defaultBlock = defaultBlock;
         this.deepslateState = deepslateState;
+        this.settings = settings;
     }
 
     @Override
-    public BlockState sample(int x, int y, int z, ChunkGeneratorSettings settings) {
-        if (!settings.hasDeepslate()) {
+    public BlockState sample(int x, int y, int z) {
+        if (!this.settings.get().hasDeepslate()) {
             return this.defaultBlock;
         }
         if (y < -8) {

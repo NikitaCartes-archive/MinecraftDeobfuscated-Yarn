@@ -74,20 +74,20 @@ extends EntityRenderer<LightningEntity> {
                     if (m == 0) {
                         z *= (float)(r - 1) * 0.1f + 1.0f;
                     }
-                    LightningEntityRenderer.method_23183(matrix4f, vertexConsumer, p, q, r, s, t, 0.45f, 0.45f, 0.5f, y, z, false, false, true, false);
-                    LightningEntityRenderer.method_23183(matrix4f, vertexConsumer, p, q, r, s, t, 0.45f, 0.45f, 0.5f, y, z, true, false, true, true);
-                    LightningEntityRenderer.method_23183(matrix4f, vertexConsumer, p, q, r, s, t, 0.45f, 0.45f, 0.5f, y, z, true, true, false, true);
-                    LightningEntityRenderer.method_23183(matrix4f, vertexConsumer, p, q, r, s, t, 0.45f, 0.45f, 0.5f, y, z, false, true, false, false);
+                    LightningEntityRenderer.drawBranch(matrix4f, vertexConsumer, p, q, r, s, t, 0.45f, 0.45f, 0.5f, y, z, false, false, true, false);
+                    LightningEntityRenderer.drawBranch(matrix4f, vertexConsumer, p, q, r, s, t, 0.45f, 0.45f, 0.5f, y, z, true, false, true, true);
+                    LightningEntityRenderer.drawBranch(matrix4f, vertexConsumer, p, q, r, s, t, 0.45f, 0.45f, 0.5f, y, z, true, true, false, true);
+                    LightningEntityRenderer.drawBranch(matrix4f, vertexConsumer, p, q, r, s, t, 0.45f, 0.45f, 0.5f, y, z, false, true, false, false);
                 }
             }
         }
     }
 
-    private static void method_23183(Matrix4f matrix4f, VertexConsumer vertexConsumer, float f, float g, int i, float h, float j, float k, float l, float m, float n, float o, boolean bl, boolean bl2, boolean bl3, boolean bl4) {
-        vertexConsumer.vertex(matrix4f, f + (bl ? o : -o), i * 16, g + (bl2 ? o : -o)).color(k, l, m, 0.3f).next();
-        vertexConsumer.vertex(matrix4f, h + (bl ? n : -n), (i + 1) * 16, j + (bl2 ? n : -n)).color(k, l, m, 0.3f).next();
-        vertexConsumer.vertex(matrix4f, h + (bl3 ? n : -n), (i + 1) * 16, j + (bl4 ? n : -n)).color(k, l, m, 0.3f).next();
-        vertexConsumer.vertex(matrix4f, f + (bl3 ? o : -o), i * 16, g + (bl4 ? o : -o)).color(k, l, m, 0.3f).next();
+    private static void drawBranch(Matrix4f matrix, VertexConsumer buffer, float f, float g, int i, float h, float j, float red, float green, float blue, float k, float l, boolean bl, boolean bl2, boolean bl3, boolean bl4) {
+        buffer.vertex(matrix, f + (bl ? l : -l), i * 16, g + (bl2 ? l : -l)).color(red, green, blue, 0.3f).next();
+        buffer.vertex(matrix, h + (bl ? k : -k), (i + 1) * 16, j + (bl2 ? k : -k)).color(red, green, blue, 0.3f).next();
+        buffer.vertex(matrix, h + (bl3 ? k : -k), (i + 1) * 16, j + (bl4 ? k : -k)).color(red, green, blue, 0.3f).next();
+        buffer.vertex(matrix, f + (bl3 ? l : -l), i * 16, g + (bl4 ? l : -l)).color(red, green, blue, 0.3f).next();
     }
 
     @Override

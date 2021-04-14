@@ -250,20 +250,22 @@ StringVisitable {
                     if (!jsonObject2.has("name") || !jsonObject2.has("objective")) throw new JsonParseException("A score component needs a least a name and an objective");
                     ScoreText scoreText = new ScoreText(JsonHelper.getString(jsonObject2, "name"), JsonHelper.getString(jsonObject2, "objective"));
                 } else if (jsonObject.has("selector")) {
-                    SelectorText selectorText = new SelectorText(JsonHelper.getString(jsonObject, "selector"));
+                    Optional<Text> optional = this.method_36329(type, jsonDeserializationContext, jsonObject);
+                    SelectorText selectorText = new SelectorText(JsonHelper.getString(jsonObject, "selector"), optional);
                 } else if (jsonObject.has("keybind")) {
                     KeybindText keybindText = new KeybindText(JsonHelper.getString(jsonObject, "keybind"));
                 } else {
                     if (!jsonObject.has("nbt")) throw new JsonParseException("Don't know how to turn " + jsonElement + " into a Component");
                     string = JsonHelper.getString(jsonObject, "nbt");
+                    Optional<Text> optional2 = this.method_36329(type, jsonDeserializationContext, jsonObject);
                     boolean bl = JsonHelper.getBoolean(jsonObject, "interpret", false);
                     if (jsonObject.has("block")) {
-                        NbtText.BlockNbtText blockNbtText = new NbtText.BlockNbtText(string, bl, JsonHelper.getString(jsonObject, "block"));
+                        NbtText.BlockNbtText blockNbtText = new NbtText.BlockNbtText(string, bl, JsonHelper.getString(jsonObject, "block"), optional2);
                     } else if (jsonObject.has("entity")) {
-                        NbtText.EntityNbtText entityNbtText = new NbtText.EntityNbtText(string, bl, JsonHelper.getString(jsonObject, "entity"));
+                        NbtText.EntityNbtText entityNbtText = new NbtText.EntityNbtText(string, bl, JsonHelper.getString(jsonObject, "entity"), optional2);
                     } else {
                         if (!jsonObject.has("storage")) throw new JsonParseException("Don't know how to turn " + jsonElement + " into a Component");
-                        NbtText.StorageNbtText storageNbtText = new NbtText.StorageNbtText(string, bl, new Identifier(JsonHelper.getString(jsonObject, "storage")));
+                        NbtText.StorageNbtText storageNbtText = new NbtText.StorageNbtText(string, bl, new Identifier(JsonHelper.getString(jsonObject, "storage")), optional2);
                     }
                 }
                 if (jsonObject.has("extra")) {
@@ -288,6 +290,13 @@ StringVisitable {
                 var5_19.append(mutableText2);
             }
             return var5_19;
+        }
+
+        private Optional<Text> method_36329(Type type, JsonDeserializationContext jsonDeserializationContext, JsonObject jsonObject) {
+            if (jsonObject.has("separator")) {
+                return Optional.of(this.deserialize(jsonObject.get("separator"), type, jsonDeserializationContext));
+            }
+            return Optional.empty();
         }
 
         private void addStyle(Style style, JsonObject json, JsonSerializationContext context) {
@@ -344,6 +353,7 @@ StringVisitable {
             } else if (text instanceof SelectorText) {
                 SelectorText selectorText = (SelectorText)text;
                 jsonObject.addProperty("selector", selectorText.getPattern());
+                this.method_36328(jsonSerializationContext, jsonObject, selectorText.method_36339());
                 return jsonObject;
             } else if (text instanceof KeybindText) {
                 KeybindText keybindText = (KeybindText)text;
@@ -354,6 +364,7 @@ StringVisitable {
                 NbtText nbtText = (NbtText)text;
                 jsonObject.addProperty("nbt", nbtText.getPath());
                 jsonObject.addProperty("interpret", nbtText.shouldInterpret());
+                this.method_36328(jsonSerializationContext, jsonObject, nbtText.field_33539);
                 if (text instanceof NbtText.BlockNbtText) {
                     NbtText.BlockNbtText blockNbtText = (NbtText.BlockNbtText)text;
                     jsonObject.addProperty("block", blockNbtText.getPos());
@@ -369,6 +380,10 @@ StringVisitable {
                 }
             }
             return jsonObject;
+        }
+
+        private void method_36328(JsonSerializationContext jsonSerializationContext, JsonObject jsonObject, Optional<Text> optional) {
+            optional.ifPresent(text -> jsonObject.add("separator", this.serialize((Text)text, (Type)text.getClass(), jsonSerializationContext)));
         }
 
         public static String toJson(Text text) {

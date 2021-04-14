@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class IdList<T>
 implements IndexedIterable<T> {
-    public static final int field_33088 = -1;
+    public static final int NULL_ID = -1;
     private int nextId;
     private final IdentityHashMap<T, Integer> idMap;
     private final List<T> list;

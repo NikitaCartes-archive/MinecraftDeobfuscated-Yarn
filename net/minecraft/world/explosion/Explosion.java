@@ -142,7 +142,7 @@ public class Explosion {
         int i = 16;
         for (int j = 0; j < 16; ++j) {
             for (k = 0; k < 16; ++k) {
-                for (l = 0; l < 16; ++l) {
+                block2: for (l = 0; l < 16; ++l) {
                     if (j != 0 && j != 15 && k != 0 && k != 15 && l != 0 && l != 15) continue;
                     double d = (float)j / 15.0f * 2.0f - 1.0f;
                     double e = (float)k / 15.0f * 2.0f - 1.0f;
@@ -156,10 +156,11 @@ public class Explosion {
                     double o = this.z;
                     float p = 0.3f;
                     for (float h = this.power * (0.7f + this.world.random.nextFloat() * 0.6f); h > 0.0f; h -= 0.22500001f) {
-                        FluidState fluidState;
                         BlockPos blockPos = new BlockPos(m, n, o);
                         BlockState blockState = this.world.getBlockState(blockPos);
-                        Optional<Float> optional = this.behavior.getBlastResistance(this, this.world, blockPos, blockState, fluidState = this.world.getFluidState(blockPos));
+                        FluidState fluidState = this.world.getFluidState(blockPos);
+                        if (!this.world.isInBuildLimit(blockPos)) continue block2;
+                        Optional<Float> optional = this.behavior.getBlastResistance(this, this.world, blockPos, blockState, fluidState);
                         if (optional.isPresent()) {
                             h -= (optional.get().floatValue() + 0.3f) * 0.3f;
                         }

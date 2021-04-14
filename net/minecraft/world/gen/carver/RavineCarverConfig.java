@@ -7,6 +7,7 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.floatprovider.FloatProvider;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.carver.CarverConfig;
@@ -30,7 +31,7 @@ extends CarverConfig {
     }
 
     public static class Shape {
-        public static final Codec<Shape> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)FloatProvider.VALUE_CODEC.fieldOf("distance_factor")).forGetter(shape -> shape.distanceFactor), ((MapCodec)FloatProvider.VALUE_CODEC.fieldOf("thickness")).forGetter(shape -> shape.thickness), ((MapCodec)Codec.intRange(0, Integer.MAX_VALUE).fieldOf("width_smoothness")).forGetter(shape -> shape.widthSmoothness), ((MapCodec)FloatProvider.VALUE_CODEC.fieldOf("horizontal_radius_factor")).forGetter(shape -> shape.horizontalRadiusFactor), ((MapCodec)Codec.FLOAT.fieldOf("vertical_radius_default_factor")).forGetter(shape -> Float.valueOf(shape.verticalRadiusDefaultFactor)), ((MapCodec)Codec.FLOAT.fieldOf("vertical_radius_center_factor")).forGetter(shape -> Float.valueOf(shape.verticalRadiusCenterFactor))).apply((Applicative<Shape, ?>)instance, Shape::new));
+        public static final Codec<Shape> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)FloatProvider.VALUE_CODEC.fieldOf("distance_factor")).forGetter(shape -> shape.distanceFactor), ((MapCodec)FloatProvider.VALUE_CODEC.fieldOf("thickness")).forGetter(shape -> shape.thickness), ((MapCodec)Codecs.field_33441.fieldOf("width_smoothness")).forGetter(shape -> shape.widthSmoothness), ((MapCodec)FloatProvider.VALUE_CODEC.fieldOf("horizontal_radius_factor")).forGetter(shape -> shape.horizontalRadiusFactor), ((MapCodec)Codec.FLOAT.fieldOf("vertical_radius_default_factor")).forGetter(shape -> Float.valueOf(shape.verticalRadiusDefaultFactor)), ((MapCodec)Codec.FLOAT.fieldOf("vertical_radius_center_factor")).forGetter(shape -> Float.valueOf(shape.verticalRadiusCenterFactor))).apply((Applicative<Shape, ?>)instance, Shape::new));
         public final FloatProvider distanceFactor;
         public final FloatProvider thickness;
         public final int widthSmoothness;

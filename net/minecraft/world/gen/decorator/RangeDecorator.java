@@ -5,19 +5,19 @@ package net.minecraft.world.gen.decorator;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.gen.decorator.BaseRangeDecorator;
+import net.minecraft.world.gen.decorator.AbstractRangeDecorator;
+import net.minecraft.world.gen.decorator.DecoratorContext;
 import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
 
 public class RangeDecorator
-extends BaseRangeDecorator {
+extends AbstractRangeDecorator<RangeDecoratorConfig> {
     public RangeDecorator(Codec<RangeDecoratorConfig> codec) {
         super(codec);
     }
 
     @Override
-    protected int getY(Random random, int bottomY, int topY) {
-        return MathHelper.nextInt(random, bottomY, topY);
+    protected int getY(DecoratorContext decoratorContext, Random random, RangeDecoratorConfig rangeDecoratorConfig, int i) {
+        return rangeDecoratorConfig.field_33519.get(random, decoratorContext);
     }
 }
 

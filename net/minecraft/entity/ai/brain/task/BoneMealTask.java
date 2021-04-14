@@ -22,7 +22,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.WorldEvents;
 
 public class BoneMealTask
 extends Task<VillagerEntity> {
@@ -113,7 +112,7 @@ extends Task<VillagerEntity> {
             break;
         }
         if (!itemStack.isEmpty() && BoneMealItem.useOnFertilizable(itemStack, serverWorld, blockPos)) {
-            serverWorld.syncWorldEvent(WorldEvents.PLANT_FERTILIZED, blockPos, 0);
+            serverWorld.syncWorldEvent(1505, blockPos, 0);
             this.pos = this.findBoneMealPos(serverWorld, villagerEntity);
             this.addLookWalkTargets(villagerEntity);
             this.startTime = l + 40L;

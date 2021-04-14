@@ -11,7 +11,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
-import net.minecraft.class_6130;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
@@ -19,6 +18,7 @@ import net.minecraft.structure.SimpleStructurePiece;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePieceType;
+import net.minecraft.structure.StructurePiecesHolder;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.util.BlockMirror;
@@ -42,15 +42,15 @@ public class IglooGenerator {
     private static final Map<Identifier, BlockPos> field_14408 = ImmutableMap.of(TOP_TEMPLATE, new BlockPos(3, 5, 5), MIDDLE_TEMPLATE, new BlockPos(1, 3, 1), BOTTOM_TEMPLATE, new BlockPos(3, 6, 7));
     private static final Map<Identifier, BlockPos> field_14406 = ImmutableMap.of(TOP_TEMPLATE, BlockPos.ORIGIN, MIDDLE_TEMPLATE, new BlockPos(2, -3, 4), BOTTOM_TEMPLATE, new BlockPos(0, -3, -2));
 
-    public static void addPieces(StructureManager manager, BlockPos pos, BlockRotation rotation, class_6130 arg, Random random) {
+    public static void addPieces(StructureManager manager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder structurePiecesHolder, Random random) {
         if (random.nextDouble() < 0.5) {
             int i = random.nextInt(8) + 4;
-            arg.method_35462(new Piece(manager, BOTTOM_TEMPLATE, pos, rotation, i * 3));
+            structurePiecesHolder.addPiece(new Piece(manager, BOTTOM_TEMPLATE, pos, rotation, i * 3));
             for (int j = 0; j < i - 1; ++j) {
-                arg.method_35462(new Piece(manager, MIDDLE_TEMPLATE, pos, rotation, j * 3));
+                structurePiecesHolder.addPiece(new Piece(manager, MIDDLE_TEMPLATE, pos, rotation, j * 3));
             }
         }
-        arg.method_35462(new Piece(manager, TOP_TEMPLATE, pos, rotation, 0));
+        structurePiecesHolder.addPiece(new Piece(manager, TOP_TEMPLATE, pos, rotation, 0));
     }
 
     public static class Piece

@@ -7,7 +7,6 @@ import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import net.fabricmc.yarn.constants.CatTypes;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -88,17 +87,17 @@ extends TameableEntity {
     private static final TrackedData<Boolean> SLEEPING_WITH_OWNER = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> HEAD_DOWN = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> COLLAR_COLOR = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    public static final int field_30313 = 0;
-    public static final int field_30314 = 1;
-    public static final int field_30315 = 2;
-    public static final int field_30316 = 3;
-    public static final int field_30317 = 4;
-    public static final int field_30318 = 5;
-    public static final int field_30319 = 6;
-    public static final int field_30320 = 7;
-    public static final int field_30321 = 8;
-    public static final int field_30322 = 9;
-    public static final int field_30323 = 10;
+    public static final int TABBY_TYPE = 0;
+    public static final int BLACK_TYPE = 1;
+    public static final int RED_TYPE = 2;
+    public static final int SIAMESE_TYPE = 3;
+    public static final int BRITISH_SHORTHAIR_TYPE = 4;
+    public static final int CALICO_TYPE = 5;
+    public static final int PERSIAN_TYPE = 6;
+    public static final int RAGDOLL_TYPE = 7;
+    public static final int WHITE_TYPE = 8;
+    public static final int JELLIE_TYPE = 9;
+    public static final int ALL_BLACK_TYPE = 10;
     private static final int field_30324 = 11;
     private static final int field_30325 = 10;
     public static final Map<Integer, Identifier> TEXTURES = Util.make(Maps.newHashMap(), map -> {
@@ -381,7 +380,7 @@ extends TameableEntity {
         }
         ServerWorld world2 = world.toServerWorld();
         if (world2 instanceof ServerWorld && world2.getStructureAccessor().getStructureAt(this.getBlockPos(), true, StructureFeature.SWAMP_HUT).hasChildren()) {
-            this.setCatType(CatTypes.ALL_BLACK);
+            this.setCatType(ALL_BLACK_TYPE);
             this.setPersistent();
         }
         return entityData;

@@ -859,6 +859,9 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         }
         EntityType<?> entityType = entity.getType();
         int i = entityType.getMaxTrackDistance() * 16;
+        if (i == 0) {
+            return;
+        }
         int j = entityType.getTrackTickInterval();
         if (this.entityTrackers.containsKey(entity.getId())) {
             throw Util.throwOrPause(new IllegalStateException("Entity is already tracked!"));

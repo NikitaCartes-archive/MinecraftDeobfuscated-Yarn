@@ -286,7 +286,7 @@ public class Blocks {
     public static final Block IRON_ORE = Blocks.register("iron_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0f, 3.0f)));
     public static final Block DEEPSLATE_IRON_ORE = Blocks.register("deepslate_iron_ore", new OreBlock(AbstractBlock.Settings.copy(IRON_ORE).strength(4.5f, 3.0f).sounds(BlockSoundGroup.DEEPSLATE)));
     public static final Block COAL_ORE = Blocks.register("coal_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0f, 3.0f), UniformIntProvider.create(0, 2)));
-    public static final Block DEEPSLATE_COAL_ORE = Blocks.register("deepslate_coal_ore", new OreBlock(AbstractBlock.Settings.copy(COAL_ORE).strength(4.5f, 3.0f).sounds(BlockSoundGroup.DEEPSLATE)));
+    public static final Block DEEPSLATE_COAL_ORE = Blocks.register("deepslate_coal_ore", new OreBlock(AbstractBlock.Settings.copy(COAL_ORE).strength(4.5f, 3.0f).sounds(BlockSoundGroup.DEEPSLATE), UniformIntProvider.create(0, 2)));
     public static final Block NETHER_GOLD_ORE = Blocks.register("nether_gold_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.DARK_RED).requiresTool().strength(3.0f, 3.0f).sounds(BlockSoundGroup.NETHER_GOLD_ORE), UniformIntProvider.create(0, 1)));
     public static final Block OAK_LOG = Blocks.register("oak_log", Blocks.createLogBlock(MapColor.OAK_TAN, MapColor.SPRUCE_BROWN));
     public static final Block SPRUCE_LOG = Blocks.register("spruce_log", Blocks.createLogBlock(MapColor.SPRUCE_BROWN, MapColor.BROWN));
@@ -1121,12 +1121,12 @@ public class Blocks {
     public static final Block SMALL_DRIPLEAF = Blocks.register("small_dripleaf", new SmallDripleafBlock(AbstractBlock.Settings.of(Material.PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.SMALL_DRIPLEAF)));
     public static final Block HANGING_ROOTS = Blocks.register("hanging_roots", new HangingRootsBlock(AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT, MapColor.DIRT_BROWN).noCollision().breakInstantly().sounds(BlockSoundGroup.HANGING_ROOTS)));
     public static final Block ROOTED_DIRT = Blocks.register("rooted_dirt", new RootedDirtBlock(AbstractBlock.Settings.of(Material.SOIL, MapColor.DIRT_BROWN).strength(0.5f).sounds(BlockSoundGroup.ROOTED_DIRT)));
-    public static final Block DEEPSLATE = Blocks.register("deepslate", new PillarBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.STONE_GRAY).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.DEEPSLATE)));
+    public static final Block DEEPSLATE = Blocks.register("deepslate", new PillarBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.DEEPSLATE_GRAY).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.DEEPSLATE)));
     public static final Block COBBLED_DEEPSLATE = Blocks.register("cobbled_deepslate", new Block(AbstractBlock.Settings.copy(DEEPSLATE).strength(3.5f, 6.0f)));
     public static final Block COBBLED_DEEPSLATE_STAIRS = Blocks.register("cobbled_deepslate_stairs", new StairsBlock(COBBLED_DEEPSLATE.getDefaultState(), AbstractBlock.Settings.copy(COBBLED_DEEPSLATE)));
     public static final Block COBBLED_DEEPSLATE_SLAB = Blocks.register("cobbled_deepslate_slab", new SlabBlock(AbstractBlock.Settings.copy(COBBLED_DEEPSLATE)));
     public static final Block COBBLED_DEEPSLATE_WALL = Blocks.register("cobbled_deepslate_wall", new WallBlock(AbstractBlock.Settings.copy(COBBLED_DEEPSLATE)));
-    public static final Block POLISHED_DEEPSLATE = Blocks.register("polished_deepslate", new Block(AbstractBlock.Settings.copy(COBBLED_DEEPSLATE).strength(3.5f, 6.0f).sounds(BlockSoundGroup.POLISHED_DEEPSLATE)));
+    public static final Block POLISHED_DEEPSLATE = Blocks.register("polished_deepslate", new Block(AbstractBlock.Settings.copy(COBBLED_DEEPSLATE).sounds(BlockSoundGroup.POLISHED_DEEPSLATE)));
     public static final Block POLISHED_DEEPSLATE_STAIRS = Blocks.register("polished_deepslate_stairs", new StairsBlock(POLISHED_DEEPSLATE.getDefaultState(), AbstractBlock.Settings.copy(POLISHED_DEEPSLATE)));
     public static final Block POLISHED_DEEPSLATE_SLAB = Blocks.register("polished_deepslate_slab", new SlabBlock(AbstractBlock.Settings.copy(POLISHED_DEEPSLATE)));
     public static final Block POLISHED_DEEPSLATE_WALL = Blocks.register("polished_deepslate_wall", new WallBlock(AbstractBlock.Settings.copy(POLISHED_DEEPSLATE)));
@@ -1141,8 +1141,11 @@ public class Blocks {
     public static final Block CHISELED_DEEPSLATE = Blocks.register("chiseled_deepslate", new Block(AbstractBlock.Settings.copy(COBBLED_DEEPSLATE).sounds(BlockSoundGroup.DEEPSLATE_BRICKS)));
     public static final Block CRACKED_DEEPSLATE_BRICKS = Blocks.register("cracked_deepslate_bricks", new Block(AbstractBlock.Settings.copy(DEEPSLATE_BRICKS)));
     public static final Block CRACKED_DEEPSLATE_TILES = Blocks.register("cracked_deepslate_tiles", new Block(AbstractBlock.Settings.copy(DEEPSLATE_TILES)));
-    public static final Block INFESTED_DEEPSLATE = Blocks.register("infested_deepslate", new InfestedBlock(DEEPSLATE, AbstractBlock.Settings.of(Material.ORGANIC_PRODUCT).strength(0.0f, 0.75f)));
+    public static final Block INFESTED_DEEPSLATE = Blocks.register("infested_deepslate", new InfestedBlock(DEEPSLATE, AbstractBlock.Settings.of(Material.ORGANIC_PRODUCT, MapColor.DEEPSLATE_GRAY).strength(0.0f, 0.75f).sounds(BlockSoundGroup.DEEPSLATE)));
     public static final Block SMOOTH_BASALT = Blocks.register("smooth_basalt", new Block(AbstractBlock.Settings.copy(BASALT)));
+    public static final Block RAW_IRON_BLOCK = Blocks.register("raw_iron_block", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.RAW_IRON_PINK).requiresTool().strength(5.0f, 6.0f)));
+    public static final Block RAW_COPPER_BLOCK = Blocks.register("raw_copper_block", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.ORANGE).requiresTool().strength(5.0f, 6.0f)));
+    public static final Block RAW_GOLD_BLOCK = Blocks.register("raw_gold_block", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.GOLD).requiresTool().strength(5.0f, 6.0f)));
 
     private static ToIntFunction<BlockState> createLightLevelFromLitBlockState(int litLevel) {
         return state -> state.get(Properties.LIT) != false ? litLevel : 0;
@@ -1176,12 +1179,12 @@ public class Blocks {
         return new BedBlock(color, AbstractBlock.Settings.of(Material.WOOL, state -> state.get(BedBlock.PART) == BedPart.FOOT ? color.getMapColor() : MapColor.WHITE_GRAY).sounds(BlockSoundGroup.WOOD).strength(0.2f).nonOpaque());
     }
 
-    private static PillarBlock createLogBlock(MapColor topMaterialColor, MapColor sideMaterialColor) {
-        return new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topMaterialColor : sideMaterialColor).strength(2.0f).sounds(BlockSoundGroup.WOOD));
+    private static PillarBlock createLogBlock(MapColor topMapColor, MapColor sideMapColor) {
+        return new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topMapColor : sideMapColor).strength(2.0f).sounds(BlockSoundGroup.WOOD));
     }
 
-    private static Block createNetherStemBlock(MapColor materialColor) {
-        return new PillarBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, state -> materialColor).strength(2.0f).sounds(BlockSoundGroup.NETHER_STEM));
+    private static Block createNetherStemBlock(MapColor mapColor) {
+        return new PillarBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, state -> mapColor).strength(2.0f).sounds(BlockSoundGroup.NETHER_STEM));
     }
 
     /**

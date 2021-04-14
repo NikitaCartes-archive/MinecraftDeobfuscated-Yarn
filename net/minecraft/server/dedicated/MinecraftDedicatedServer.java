@@ -48,6 +48,7 @@ import net.minecraft.server.rcon.QueryResponseHandler;
 import net.minecraft.server.rcon.RconCommandOutput;
 import net.minecraft.server.rcon.RconListener;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
@@ -83,12 +84,15 @@ implements DedicatedServer {
     private DedicatedServerGui gui;
     @Nullable
     private final TextFilterer filterer;
+    @Nullable
+    private final Text resourcePackPrompt;
 
     public MinecraftDedicatedServer(Thread serverThread, DynamicRegistryManager.Impl registryManager, LevelStorage.Session session, ResourcePackManager dataPackManager, ServerResourceManager serverResourceManager, SaveProperties saveProperties, ServerPropertiesLoader propertiesLoader, DataFixer dataFixer, MinecraftSessionService sessionService, GameProfileRepository gameProfileRepo, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
         super(serverThread, registryManager, session, saveProperties, dataPackManager, Proxy.NO_PROXY, dataFixer, serverResourceManager, sessionService, gameProfileRepo, userCache, worldGenerationProgressListenerFactory);
         this.propertiesLoader = propertiesLoader;
         this.rconCommandOutput = new RconCommandOutput(this);
         this.filterer = TextFilterer.load(propertiesLoader.getPropertiesHandler().textFilteringConfig);
+        this.resourcePackPrompt = MinecraftDedicatedServer.parseResourcePackPrompt(propertiesLoader);
     }
 
     @Override
@@ -302,7 +306,7 @@ implements DedicatedServer {
     }
 
     @Override
-    public boolean method_35033() {
+    public boolean isSnooperEnabled() {
         return this.getProperties().snooperEnabled;
     }
 
@@ -556,6 +560,25 @@ implements DedicatedServer {
     @Nullable
     public GameMode getForcedGameMode() {
         return this.propertiesLoader.getPropertiesHandler().forceGameMode ? this.saveProperties.getGameMode() : null;
+    }
+
+    @Nullable
+    private static Text parseResourcePackPrompt(ServerPropertiesLoader propertiesLoader) {
+        String string = propertiesLoader.getPropertiesHandler().resourcePackPrompt;
+        if (!Strings.isNullOrEmpty(string)) {
+            try {
+                return Text.Serializer.fromJson(string);
+            } catch (Exception exception) {
+                LOGGER.warn("Failed to parse resource pack prompt '{}'", (Object)string, (Object)exception);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    @Nullable
+    public Text getResourcePackPrompt() {
+        return this.resourcePackPrompt;
     }
 
     @Override

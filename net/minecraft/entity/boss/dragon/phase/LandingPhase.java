@@ -27,9 +27,9 @@ extends AbstractPhase {
     public void clientTick() {
         Vec3d vec3d = this.dragon.getRotationVectorFromPhase(1.0f).normalize();
         vec3d.rotateY(-0.7853982f);
-        double d = this.dragon.partHead.getX();
-        double e = this.dragon.partHead.getBodyY(0.5);
-        double f = this.dragon.partHead.getZ();
+        double d = this.dragon.head.getX();
+        double e = this.dragon.head.getBodyY(0.5);
+        double f = this.dragon.head.getZ();
         for (int i = 0; i < 8; ++i) {
             Random random = this.dragon.getRandom();
             double g = d + random.nextGaussian() / 2.0;

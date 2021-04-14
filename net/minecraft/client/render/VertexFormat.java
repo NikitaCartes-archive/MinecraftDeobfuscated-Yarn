@@ -19,26 +19,26 @@ import net.minecraft.client.render.VertexFormatElement;
 @Environment(value=EnvType.CLIENT)
 public class VertexFormat {
     private final ImmutableList<VertexFormatElement> elements;
-    private final ImmutableMap<String, VertexFormatElement> field_29340;
+    private final ImmutableMap<String, VertexFormatElement> elementMap;
     private final IntList offsets = new IntArrayList();
     private final int size;
-    private int field_29341;
-    private int field_29342;
-    private int field_29343;
+    private int vertexArray;
+    private int vertexBuffer;
+    private int elementBuffer;
 
-    public VertexFormat(ImmutableMap<String, VertexFormatElement> immutableMap) {
-        this.field_29340 = immutableMap;
-        this.elements = ((ImmutableCollection)immutableMap.values()).asList();
+    public VertexFormat(ImmutableMap<String, VertexFormatElement> elementMap) {
+        this.elementMap = elementMap;
+        this.elements = ((ImmutableCollection)elementMap.values()).asList();
         int i = 0;
-        for (VertexFormatElement vertexFormatElement : immutableMap.values()) {
+        for (VertexFormatElement vertexFormatElement : elementMap.values()) {
             this.offsets.add(i);
-            i += vertexFormatElement.getSize();
+            i += vertexFormatElement.getByteLength();
         }
         this.size = i;
     }
 
     public String toString() {
-        return "format: " + this.field_29340.size() + " elements: " + this.field_29340.entrySet().stream().map(Object::toString).collect(Collectors.joining(" "));
+        return "format: " + this.elementMap.size() + " elements: " + this.elementMap.entrySet().stream().map(Object::toString).collect(Collectors.joining(" "));
     }
 
     public int getVertexSizeInteger() {
@@ -54,7 +54,7 @@ public class VertexFormat {
     }
 
     public ImmutableList<String> getShaderAttributes() {
-        return ((ImmutableSet)this.field_29340.keySet()).asList();
+        return ((ImmutableSet)this.elementMap.keySet()).asList();
     }
 
     public boolean equals(Object o) {
@@ -68,22 +68,22 @@ public class VertexFormat {
         if (this.size != vertexFormat.size) {
             return false;
         }
-        return this.field_29340.equals(vertexFormat.field_29340);
+        return this.elementMap.equals(vertexFormat.elementMap);
     }
 
     public int hashCode() {
-        return this.field_29340.hashCode();
+        return this.elementMap.hashCode();
     }
 
     public void startDrawing() {
         if (!RenderSystem.isOnRenderThread()) {
-            RenderSystem.recordRenderCall(this::method_34449);
+            RenderSystem.recordRenderCall(this::innerStartDrawing);
             return;
         }
-        this.method_34449();
+        this.innerStartDrawing();
     }
 
-    private void method_34449() {
+    private void innerStartDrawing() {
         int i = this.getVertexSize();
         ImmutableList<VertexFormatElement> list = this.getElements();
         for (int j = 0; j < list.size(); ++j) {
@@ -93,13 +93,13 @@ public class VertexFormat {
 
     public void endDrawing() {
         if (!RenderSystem.isOnRenderThread()) {
-            RenderSystem.recordRenderCall(this::method_34450);
+            RenderSystem.recordRenderCall(this::innerEndDrawing);
             return;
         }
-        this.method_34450();
+        this.innerEndDrawing();
     }
 
-    private void method_34450() {
+    private void innerEndDrawing() {
         ImmutableList<VertexFormatElement> immutableList = this.getElements();
         for (int i = 0; i < immutableList.size(); ++i) {
             VertexFormatElement vertexFormatElement = (VertexFormatElement)immutableList.get(i);
@@ -107,25 +107,25 @@ public class VertexFormat {
         }
     }
 
-    public int method_34446() {
-        if (this.field_29341 == 0) {
-            this.field_29341 = GlStateManager._glGenVertexArrays();
+    public int getVertexArray() {
+        if (this.vertexArray == 0) {
+            this.vertexArray = GlStateManager._glGenVertexArrays();
         }
-        return this.field_29341;
+        return this.vertexArray;
     }
 
-    public int method_34447() {
-        if (this.field_29342 == 0) {
-            this.field_29342 = GlStateManager._glGenBuffers();
+    public int getVertexBuffer() {
+        if (this.vertexBuffer == 0) {
+            this.vertexBuffer = GlStateManager._glGenBuffers();
         }
-        return this.field_29342;
+        return this.vertexBuffer;
     }
 
-    public int method_34448() {
-        if (this.field_29343 == 0) {
-            this.field_29343 = GlStateManager._glGenBuffers();
+    public int getElementBuffer() {
+        if (this.elementBuffer == 0) {
+            this.elementBuffer = GlStateManager._glGenBuffers();
         }
-        return this.field_29343;
+        return this.elementBuffer;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -140,13 +140,13 @@ public class VertexFormat {
         QUADS(4, 4, 4);
 
         public final int mode;
-        public final int field_27384;
-        public final int field_27385;
+        public final int vertexCount;
+        public final int size;
 
-        private DrawMode(int mode, int j, int k) {
+        private DrawMode(int mode, int vertexCount, int size) {
             this.mode = mode;
-            this.field_27384 = j;
-            this.field_27385 = k;
+            this.vertexCount = vertexCount;
+            this.size = size;
         }
 
         public int getSize(int vertexCount) {
@@ -180,11 +180,11 @@ public class VertexFormat {
         SHORT(5123, 2),
         INT(5125, 4);
 
-        public final int field_27374;
+        public final int count;
         public final int size;
 
-        private IntType(int j, int size) {
-            this.field_27374 = j;
+        private IntType(int count, int size) {
+            this.count = count;
             this.size = size;
         }
 

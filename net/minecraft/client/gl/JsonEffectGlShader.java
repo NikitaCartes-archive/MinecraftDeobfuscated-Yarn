@@ -376,7 +376,7 @@ AutoCloseable {
         this.vertexShader.attachTo(this);
     }
 
-    public String method_35763() {
+    public String getName() {
         return this.name;
     }
 

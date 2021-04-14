@@ -193,7 +193,7 @@ public class EndCityGenerator {
             int i = random.nextInt();
             for (StructurePiece structurePiece : list) {
                 structurePiece.chainLength = i;
-                StructurePiece structurePiece2 = StructureStart.intersects(pieces, structurePiece.getBoundingBox());
+                StructurePiece structurePiece2 = StructureStart.getIntersecting(pieces, structurePiece.getBoundingBox());
                 if (structurePiece2 == null || structurePiece2.chainLength == parent.chainLength) continue;
                 bl = true;
                 break;

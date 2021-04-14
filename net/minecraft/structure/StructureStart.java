@@ -7,12 +7,12 @@ import com.google.common.collect.Lists;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import net.minecraft.class_6130;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
+import net.minecraft.structure.StructurePiecesHolder;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -37,7 +37,7 @@ import org.jetbrains.annotations.Nullable;
  * with the chunk that the structure originates from.
  */
 public abstract class StructureStart<C extends FeatureConfig>
-implements class_6130 {
+implements StructurePiecesHolder {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final String INVALID = "INVALID";
     public static final StructureStart<?> DEFAULT = new StructureStart<MineshaftFeatureConfig>(null, new ChunkPos(0, 0), 0, 0L){
@@ -80,7 +80,7 @@ implements class_6130 {
 
     public final BlockBox setBoundingBoxFromChildren() {
         if (this.boundingBox == null) {
-            this.boundingBox = this.method_36217();
+            this.boundingBox = this.calculateBoundingBox();
         }
         return this.boundingBox;
     }
@@ -88,10 +88,10 @@ implements class_6130 {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    protected BlockBox method_36217() {
+    protected BlockBox calculateBoundingBox() {
         List<StructurePiece> list = this.children;
         synchronized (list) {
-            return BlockBox.method_35413(this.children.stream().map(StructurePiece::getBoundingBox)::iterator).orElseThrow(() -> new IllegalStateException("Unable to calculate boundingbox without pieces"));
+            return BlockBox.encompass(this.children.stream().map(StructurePiece::getBoundingBox)::iterator).orElseThrow(() -> new IllegalStateException("Unable to calculate boundingbox without pieces"));
         }
     }
 
@@ -207,15 +207,15 @@ implements class_6130 {
     }
 
     @Override
-    public void method_35462(StructurePiece structurePiece) {
-        this.children.add(structurePiece);
+    public void addPiece(StructurePiece piece) {
+        this.children.add(piece);
         this.resetBoundingBox();
     }
 
     @Override
     @Nullable
-    public StructurePiece method_35461(BlockBox blockBox) {
-        return StructureStart.intersects(this.children, blockBox);
+    public StructurePiece getIntersecting(BlockBox box) {
+        return StructureStart.getIntersecting(this.children, box);
     }
 
     public void clearChildren() {
@@ -228,7 +228,7 @@ implements class_6130 {
     }
 
     @Nullable
-    public static StructurePiece intersects(List<StructurePiece> pieces, BlockBox box) {
+    public static StructurePiece getIntersecting(List<StructurePiece> pieces, BlockBox box) {
         for (StructurePiece structurePiece : pieces) {
             if (!structurePiece.getBoundingBox().intersects(box)) continue;
             return structurePiece;

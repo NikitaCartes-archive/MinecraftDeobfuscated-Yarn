@@ -55,10 +55,10 @@ extends EntityRenderer<FishingBobberEntity> {
         Matrix4f matrix4f = entry.getModel();
         Matrix3f matrix3f = entry.getNormal();
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(LAYER);
-        FishingBobberEntityRenderer.method_23840(vertexConsumer, matrix4f, matrix3f, i, 0.0f, 0, 0, 1);
-        FishingBobberEntityRenderer.method_23840(vertexConsumer, matrix4f, matrix3f, i, 1.0f, 0, 1, 1);
-        FishingBobberEntityRenderer.method_23840(vertexConsumer, matrix4f, matrix3f, i, 1.0f, 1, 1, 0);
-        FishingBobberEntityRenderer.method_23840(vertexConsumer, matrix4f, matrix3f, i, 0.0f, 1, 0, 0);
+        FishingBobberEntityRenderer.vertex(vertexConsumer, matrix4f, matrix3f, i, 0.0f, 0, 0, 1);
+        FishingBobberEntityRenderer.vertex(vertexConsumer, matrix4f, matrix3f, i, 1.0f, 0, 1, 1);
+        FishingBobberEntityRenderer.vertex(vertexConsumer, matrix4f, matrix3f, i, 1.0f, 1, 1, 0);
+        FishingBobberEntityRenderer.vertex(vertexConsumer, matrix4f, matrix3f, i, 0.0f, 1, 0, 0);
         matrixStack.pop();
         int j = playerEntity.getMainArm() == Arm.RIGHT ? 1 : -1;
         ItemStack itemStack = playerEntity.getMainHandStack();
@@ -95,33 +95,33 @@ extends EntityRenderer<FishingBobberEntity> {
         float v = (float)(o - s);
         float w = (float)(p - t) + r;
         float x = (float)(q - u);
-        VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.method_34572());
+        VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getLineStrip());
         MatrixStack.Entry entry2 = matrixStack.peek();
         int y = 16;
         for (int z = 0; z <= 16; ++z) {
-            FishingBobberEntityRenderer.method_23172(v, w, x, vertexConsumer2, entry2, FishingBobberEntityRenderer.method_23954(z, 16), FishingBobberEntityRenderer.method_23954(z + 1, 17));
+            FishingBobberEntityRenderer.method_23172(v, w, x, vertexConsumer2, entry2, FishingBobberEntityRenderer.percentage(z, 16), FishingBobberEntityRenderer.percentage(z + 1, 17));
         }
         matrixStack.pop();
         super.render(fishingBobberEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
-    private static float method_23954(int i, int j) {
-        return (float)i / (float)j;
+    private static float percentage(int value, int max) {
+        return (float)value / (float)max;
     }
 
-    private static void method_23840(VertexConsumer vertexConsumer, Matrix4f matrix4f, Matrix3f matrix3f, int i, float f, int j, int k, int l) {
-        vertexConsumer.vertex(matrix4f, f - 0.5f, (float)j - 0.5f, 0.0f).color(255, 255, 255, 255).texture(k, l).overlay(OverlayTexture.DEFAULT_UV).light(i).normal(matrix3f, 0.0f, 1.0f, 0.0f).next();
+    private static void vertex(VertexConsumer buffer, Matrix4f matrix, Matrix3f normalMatrix, int light, float x, int y, int u, int v) {
+        buffer.vertex(matrix, x - 0.5f, (float)y - 0.5f, 0.0f).color(255, 255, 255, 255).texture(u, v).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(normalMatrix, 0.0f, 1.0f, 0.0f).next();
     }
 
-    private static void method_23172(float f, float g, float h, VertexConsumer vertexConsumer, MatrixStack.Entry entry, float i, float j) {
-        float k = f * i;
-        float l = g * (i * i + i) * 0.5f + 0.25f;
-        float m = h * i;
-        float n = f * j - k;
-        float o = g * (j * j + j) * 0.5f + 0.25f - l;
-        float p = h * j - m;
-        float q = MathHelper.sqrt(n * n + o * o + p * p);
-        vertexConsumer.vertex(entry.getModel(), k, l, m).color(0, 0, 0, 255).normal(entry.getNormal(), n /= q, o /= q, p /= q).next();
+    private static void method_23172(float x, float y, float z, VertexConsumer buffer, MatrixStack.Entry normal, float f, float g) {
+        float h = x * f;
+        float i = y * (f * f + f) * 0.5f + 0.25f;
+        float j = z * f;
+        float k = x * g - h;
+        float l = y * (g * g + g) * 0.5f + 0.25f - i;
+        float m = z * g - j;
+        float n = MathHelper.sqrt(k * k + l * l + m * m);
+        buffer.vertex(normal.getModel(), h, i, j).color(0, 0, 0, 255).normal(normal.getNormal(), k /= n, l /= n, m /= n).next();
     }
 
     @Override

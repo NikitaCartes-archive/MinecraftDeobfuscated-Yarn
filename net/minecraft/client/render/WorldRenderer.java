@@ -1029,7 +1029,7 @@ AutoCloseable {
                     vertexConsumerProvider2 = renderLayer -> {
                         VertexConsumer vertexConsumer2 = immediate.getBuffer(renderLayer);
                         if (renderLayer.hasCrumbling()) {
-                            return VertexConsumers.dual(vertexConsumer, vertexConsumer2);
+                            return VertexConsumers.union(vertexConsumer, vertexConsumer2);
                         }
                         return vertexConsumer2;
                     };
@@ -1051,7 +1051,7 @@ AutoCloseable {
         this.checkEmpty(matrices);
         immediate.draw(RenderLayer.getSolid());
         immediate.draw(RenderLayer.getEndPortal());
-        immediate.draw(RenderLayer.method_34571());
+        immediate.draw(RenderLayer.getEndGateway());
         immediate.draw(TexturedRenderLayers.getEntitySolid());
         immediate.draw(TexturedRenderLayers.getEntityCutout());
         immediate.draw(TexturedRenderLayers.getBeds());
@@ -1259,7 +1259,7 @@ AutoCloseable {
                 glUniform.set((float)((double)blockPos.getX() - d), (float)((double)blockPos.getY() - e), (float)((double)blockPos.getZ() - f));
                 glUniform.upload();
             }
-            vertexBuffer.method_34432();
+            vertexBuffer.drawVertices();
             bl2 = true;
         }
         if (glUniform != null) {
@@ -1270,7 +1270,7 @@ AutoCloseable {
             vertexFormat.endDrawing();
         }
         VertexBuffer.unbind();
-        VertexBuffer.method_34430();
+        VertexBuffer.unbindVertexArray();
         this.client.getProfiler().pop();
         renderLayer.endDrawing();
     }
@@ -1531,7 +1531,7 @@ AutoCloseable {
         RenderSystem.depthMask(false);
         RenderSystem.setShaderColor(g, h, i, 1.0f);
         Shader shader = RenderSystem.getShader();
-        this.lightSkyBuffer.method_34427(matrices.peek().getModel(), matrix4f, shader);
+        this.lightSkyBuffer.setShader(matrices.peek().getModel(), matrix4f, shader);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         float[] fs = this.world.getSkyProperties().getFogColorOverride(this.world.getSkyAngle(f), f);
@@ -1599,7 +1599,7 @@ AutoCloseable {
         float v = this.world.method_23787(f) * j;
         if (v > 0.0f) {
             RenderSystem.setShaderColor(v, v, v, v);
-            this.starsBuffer.method_34427(matrices.peek().getModel(), matrix4f, GameRenderer.getPositionShader());
+            this.starsBuffer.setShader(matrices.peek().getModel(), matrix4f, GameRenderer.getPositionShader());
         }
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.disableBlend();
@@ -1610,7 +1610,7 @@ AutoCloseable {
         if (d < 0.0) {
             matrices.push();
             matrices.translate(0.0, 12.0, 0.0);
-            this.darkSkyBuffer.method_34427(matrices.peek().getModel(), matrix4f, shader);
+            this.darkSkyBuffer.setShader(matrices.peek().getModel(), matrix4f, shader);
             matrices.pop();
         }
         if (this.world.getSkyProperties().isAlternateSkyColor()) {
@@ -1682,7 +1682,7 @@ AutoCloseable {
                     RenderSystem.colorMask(true, true, true, true);
                 }
                 Shader shader = RenderSystem.getShader();
-                this.cloudsBuffer.method_34427(matrices.peek().getModel(), matrix4f, shader);
+                this.cloudsBuffer.setShader(matrices.peek().getModel(), matrix4f, shader);
             }
         }
         matrices.pop();
@@ -2322,6 +2322,11 @@ AutoCloseable {
             }
             case 2005: {
                 BoneMealItem.createParticles(this.world, pos, data);
+                break;
+            }
+            case 1505: {
+                BoneMealItem.createParticles(this.world, pos, data);
+                this.world.playSound(pos, SoundEvents.ITEM_BONE_MEAL_USE, SoundCategory.BLOCKS, 1.0f, 1.0f, false);
                 break;
             }
             case 3002: {

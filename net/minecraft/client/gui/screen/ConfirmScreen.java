@@ -14,11 +14,13 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(value=EnvType.CLIENT)
 public class ConfirmScreen
 extends Screen {
+    private static final int field_33535 = 90;
     private final Text message;
     private MultilineText messageSplit = MultilineText.EMPTY;
     protected Text yesTranslated;
@@ -46,9 +48,11 @@ extends Screen {
     @Override
     protected void init() {
         super.init();
-        this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 96, 150, 20, this.yesTranslated, buttonWidget -> this.callback.accept(true)));
-        this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height / 6 + 96, 150, 20, this.noTranslated, buttonWidget -> this.callback.accept(false)));
         this.messageSplit = MultilineText.create(this.textRenderer, (StringVisitable)this.message, this.width - 50);
+        int i = this.messageSplit.count() * this.textRenderer.fontHeight;
+        int j = MathHelper.clamp(90 + i + 12, this.height / 6 + 96, this.height - 24);
+        this.addButton(new ButtonWidget(this.width / 2 - 155, j, 150, 20, this.yesTranslated, buttonWidget -> this.callback.accept(true)));
+        this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, j, 150, 20, this.noTranslated, buttonWidget -> this.callback.accept(false)));
     }
 
     @Override

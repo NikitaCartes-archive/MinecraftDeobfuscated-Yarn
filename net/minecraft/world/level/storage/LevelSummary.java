@@ -127,7 +127,9 @@ implements Comparable<LevelSummary> {
      * <p>This includes world versions {@code 2692} and earlier (21w05b and earlier).
      */
     public boolean isPreWorldHeightChangeVersion() {
-        return true != this.versionInfo.getVersionId() > 2692;
+        int i = this.versionInfo.getVersionId();
+        boolean bl = i > 2692 && i <= 2706;
+        return false != bl;
     }
 
     public boolean isUnavailable() {

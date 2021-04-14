@@ -89,6 +89,9 @@ extends Block {
 
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+        if (!AbstractLichenBlock.hasAnyDirection(state)) {
+            return state.contains(Properties.WATERLOGGED) && state.get(Properties.WATERLOGGED) != false ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState();
+        }
         if (!AbstractLichenBlock.hasDirection(state, direction) || AbstractLichenBlock.canGrowOn(world, direction, neighborPos, neighborState)) {
             return state;
         }
@@ -140,7 +143,7 @@ extends Block {
             }
             blockState = state;
         } else {
-            blockState = this.isWaterlogged() && state.getFluidState().isEqualAndStill(Fluids.WATER) ? (BlockState)this.getDefaultState().with(Properties.WATERLOGGED, true) : this.getDefaultState();
+            blockState = this.isWaterlogged() && state.getFluidState().isEqualAndStill(Fluids.WATER) ? (BlockState)AbstractLichenBlock.method_36292(this).with(Properties.WATERLOGGED, true) : AbstractLichenBlock.method_36292(this);
         }
         BlockPos blockPos = pos.offset(direction);
         if (AbstractLichenBlock.canGrowOn(world, direction, blockPos, world.getBlockState(blockPos))) {
@@ -268,11 +271,18 @@ extends Block {
         return FACING_PROPERTIES.get(direction);
     }
 
+    public static BlockState method_36292(Block block) {
+        return AbstractLichenBlock.method_36293(block.getDefaultState(), false);
+    }
+
     private static BlockState withNoDirections(StateManager<Block, BlockState> stateManager) {
-        BlockState blockState = stateManager.getDefaultState();
+        return AbstractLichenBlock.method_36293(stateManager.getDefaultState(), true);
+    }
+
+    private static BlockState method_36293(BlockState blockState, boolean bl) {
         for (BooleanProperty booleanProperty : FACING_PROPERTIES.values()) {
             if (!blockState.contains(booleanProperty)) continue;
-            blockState = (BlockState)blockState.with(booleanProperty, false);
+            blockState = (BlockState)blockState.with(booleanProperty, bl);
         }
         return blockState;
     }

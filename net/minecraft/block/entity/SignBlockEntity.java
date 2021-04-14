@@ -4,12 +4,12 @@
 package net.minecraft.block.entity;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import java.util.UUID;
 import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.command.CommandOutput;
@@ -37,7 +37,8 @@ extends BlockEntity {
     private final Text[] texts = new Text[]{LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY};
     private final Text[] filteredTexts = new Text[]{LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY};
     private boolean editable = true;
-    private PlayerEntity editor;
+    @Nullable
+    private UUID editor;
     @Nullable
     private OrderedText[] textsBeingEdited;
     private boolean filterText;
@@ -160,11 +161,12 @@ extends BlockEntity {
         }
     }
 
-    public void setEditor(PlayerEntity player) {
-        this.editor = player;
+    public void setEditor(UUID uUID) {
+        this.editor = uUID;
     }
 
-    public PlayerEntity getEditor() {
+    @Nullable
+    public UUID getEditor() {
         return this.editor;
     }
 

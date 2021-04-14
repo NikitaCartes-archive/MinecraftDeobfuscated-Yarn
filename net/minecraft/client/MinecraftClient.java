@@ -2078,7 +2078,7 @@ WindowEventHandler {
     }
 
     @Override
-    public boolean method_35033() {
+    public boolean isSnooperEnabled() {
         return this.options.snooperEnabled;
     }
 

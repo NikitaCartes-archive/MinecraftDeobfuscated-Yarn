@@ -145,10 +145,12 @@ public class BackgroundRenderer {
             blue = blue * (1.0f - f) + blue * 0.6f * f;
         }
         float u = cameraSubmersionType == CameraSubmersionType.WATER ? (entity instanceof ClientPlayerEntity ? ((ClientPlayerEntity)entity).getUnderwaterVisibility() : 1.0f) : (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.NIGHT_VISION) ? GameRenderer.getNightVisionStrength((LivingEntity)entity, tickDelta) : 0.0f);
-        float v = Math.min(1.0f / red, Math.min(1.0f / green, 1.0f / blue));
-        red = red * (1.0f - u) + red * v * u;
-        green = green * (1.0f - u) + green * v * u;
-        blue = blue * (1.0f - u) + blue * v * u;
+        if (red != 0.0f && green != 0.0f && blue != 0.0f) {
+            float v = Math.min(1.0f / red, Math.min(1.0f / green, 1.0f / blue));
+            red = red * (1.0f - u) + red * v * u;
+            green = green * (1.0f - u) + green * v * u;
+            blue = blue * (1.0f - u) + blue * v * u;
+        }
         RenderSystem.clearColor(red, green, blue, 0.0f);
     }
 

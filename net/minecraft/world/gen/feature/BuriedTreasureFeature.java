@@ -46,7 +46,7 @@ extends StructureFeature<ProbabilityConfig> {
         @Override
         public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, ChunkPos chunkPos, Biome biome, ProbabilityConfig probabilityConfig, HeightLimitView heightLimitView) {
             BlockPos blockPos = new BlockPos(chunkPos.getOffsetX(9), 90, chunkPos.getOffsetZ(9));
-            this.method_35462(new BuriedTreasureGenerator.Piece(blockPos));
+            this.addPiece(new BuriedTreasureGenerator.Piece(blockPos));
         }
 
         @Override

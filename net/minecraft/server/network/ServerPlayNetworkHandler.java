@@ -1354,7 +1354,7 @@ ServerPlayPacketListener {
                 return;
             }
             SignBlockEntity signBlockEntity = (SignBlockEntity)blockEntity;
-            if (!signBlockEntity.isEditable() || signBlockEntity.getEditor() != this.player) {
+            if (!signBlockEntity.isEditable() || !this.player.getUuid().equals(signBlockEntity.getEditor())) {
                 LOGGER.warn("Player {} just tried to change non-editable sign", (Object)this.player.getName().getString());
                 return;
             }

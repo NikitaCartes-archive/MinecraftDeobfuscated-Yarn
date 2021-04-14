@@ -22,7 +22,7 @@ import net.minecraft.world.World;
 
 public class FrostedIceBlock
 extends IceBlock {
-    public static final int field_31096 = 3;
+    public static final int MAX_AGE = 3;
     public static final IntProperty AGE = Properties.AGE_3;
     private static final int field_31097 = 4;
     private static final int field_31098 = 2;

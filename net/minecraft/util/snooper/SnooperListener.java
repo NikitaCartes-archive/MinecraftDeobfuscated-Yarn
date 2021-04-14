@@ -10,6 +10,6 @@ public interface SnooperListener {
 
     public void addInitialSnooperInfo(Snooper var1);
 
-    public boolean method_35033();
+    public boolean isSnooperEnabled();
 }
 

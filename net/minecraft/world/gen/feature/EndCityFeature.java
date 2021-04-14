@@ -85,7 +85,7 @@ extends StructureFeature<DefaultFeatureConfig> {
             BlockPos blockPos = chunkPos.getCenterAtY(i);
             ArrayList<StructurePiece> list = Lists.newArrayList();
             EndCityGenerator.addPieces(structureManager, blockPos, blockRotation, list, this.random);
-            list.forEach(this::method_35462);
+            list.forEach(this::addPiece);
         }
     }
 }

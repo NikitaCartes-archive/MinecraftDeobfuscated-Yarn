@@ -171,8 +171,8 @@ public class Camera {
             Vec3d vec3d9 = this.pos.add(vec3d8);
             BlockPos blockPos = new BlockPos(vec3d9);
             FluidState fluidState2 = this.area.getFluidState(blockPos);
-            if (!fluidState2.isEmpty()) {
-                if (vec3d9.y >= (double)((float)this.blockPos.getY() + fluidState2.getHeight(this.area, this.blockPos)) || !fluidState2.isIn(FluidTags.LAVA)) continue;
+            if (fluidState2.isIn(FluidTags.LAVA)) {
+                if (!(vec3d9.y <= (double)(fluidState2.getHeight(this.area, blockPos) + (float)blockPos.getY()))) continue;
                 return CameraSubmersionType.LAVA;
             }
             BlockState blockState = this.area.getBlockState(blockPos);

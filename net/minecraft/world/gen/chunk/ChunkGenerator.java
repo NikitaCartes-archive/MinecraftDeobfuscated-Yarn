@@ -14,6 +14,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
@@ -41,7 +42,9 @@ import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ProtoChunk;
+import net.minecraft.world.gen.BlockSource;
 import net.minecraft.world.gen.ChunkRandom;
+import net.minecraft.world.gen.DefaultBlockSource;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.carver.CarverContext;
@@ -75,6 +78,7 @@ public abstract class ChunkGenerator {
     private final StructuresConfig structuresConfig;
     private final long worldSeed;
     private final List<ChunkPos> strongholds = Lists.newArrayList();
+    private final BlockSource blockSource;
 
     public ChunkGenerator(BiomeSource biomeSource, StructuresConfig structuresConfig) {
         this(biomeSource, biomeSource, structuresConfig, 0L);
@@ -85,6 +89,7 @@ public abstract class ChunkGenerator {
         this.biomeSource = biomeSource;
         this.structuresConfig = structuresConfig;
         this.worldSeed = worldSeed;
+        this.blockSource = new DefaultBlockSource(Blocks.STONE.getDefaultState());
     }
 
     private void generateStrongholdPositions() {
@@ -235,7 +240,7 @@ public abstract class ChunkGenerator {
         return this.structuresConfig;
     }
 
-    public int getSpawnHeight(HeightLimitView heightLimitView) {
+    public int getSpawnHeight(HeightLimitView world) {
         return 64;
     }
 
@@ -244,7 +249,7 @@ public abstract class ChunkGenerator {
     }
 
     public int getWorldHeight() {
-        return 384;
+        return 256;
     }
 
     public Pool<SpawnSettings.SpawnEntry> getEntitySpawnList(Biome biome, StructureAccessor accessor, SpawnGroup group, BlockPos pos) {
@@ -254,23 +259,23 @@ public abstract class ChunkGenerator {
     /**
      * Determines which structures should start in the given chunk and creates their starting points.
      */
-    public void setStructureStarts(DynamicRegistryManager dynamicRegistryManager, StructureAccessor structureAccessor, Chunk chunk, StructureManager structureManager, long worldSeed) {
+    public void setStructureStarts(DynamicRegistryManager registryManager, StructureAccessor accessor, Chunk chunk, StructureManager structureManager, long worldSeed) {
         Biome biome = this.populationSource.getBiomeForNoiseGen(chunk.getPos());
-        this.setStructureStart(ConfiguredStructureFeatures.STRONGHOLD, dynamicRegistryManager, structureAccessor, chunk, structureManager, worldSeed, biome);
+        this.setStructureStart(ConfiguredStructureFeatures.STRONGHOLD, registryManager, accessor, chunk, structureManager, worldSeed, biome);
         for (Supplier<ConfiguredStructureFeature<?, ?>> supplier : biome.getGenerationSettings().getStructureFeatures()) {
-            this.setStructureStart(supplier.get(), dynamicRegistryManager, structureAccessor, chunk, structureManager, worldSeed, biome);
+            this.setStructureStart(supplier.get(), registryManager, accessor, chunk, structureManager, worldSeed, biome);
         }
     }
 
-    private void setStructureStart(ConfiguredStructureFeature<?, ?> configuredStructureFeature, DynamicRegistryManager dynamicRegistryManager, StructureAccessor structureAccessor, Chunk chunk, StructureManager structureManager, long worldSeed, Biome biome) {
+    private void setStructureStart(ConfiguredStructureFeature<?, ?> feature, DynamicRegistryManager registryManager, StructureAccessor accessor, Chunk chunk, StructureManager structureManager, long worldSeed, Biome biome) {
         ChunkPos chunkPos = chunk.getPos();
         ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunk);
-        StructureStart<?> structureStart = structureAccessor.getStructureStart(chunkSectionPos, (StructureFeature<?>)configuredStructureFeature.feature, chunk);
+        StructureStart<?> structureStart = accessor.getStructureStart(chunkSectionPos, (StructureFeature<?>)feature.feature, chunk);
         int i = structureStart != null ? structureStart.getReferences() : 0;
-        StructureConfig structureConfig = this.structuresConfig.getForType((StructureFeature<?>)configuredStructureFeature.feature);
+        StructureConfig structureConfig = this.structuresConfig.getForType((StructureFeature<?>)feature.feature);
         if (structureConfig != null) {
-            StructureStart<?> structureStart2 = configuredStructureFeature.tryPlaceStart(dynamicRegistryManager, this, this.populationSource, structureManager, worldSeed, chunkPos, biome, i, structureConfig, chunk);
-            structureAccessor.setStructureStart(chunkSectionPos, (StructureFeature<?>)configuredStructureFeature.feature, structureStart2, chunk);
+            StructureStart<?> structureStart2 = feature.tryPlaceStart(registryManager, this, this.populationSource, structureManager, worldSeed, chunkPos, biome, i, structureConfig, chunk);
+            accessor.setStructureStart(chunkSectionPos, (StructureFeature<?>)feature.feature, structureStart2, chunk);
         }
     }
 
@@ -341,6 +346,10 @@ public abstract class ChunkGenerator {
     public boolean isStrongholdStartingChunk(ChunkPos pos) {
         this.generateStrongholdPositions();
         return this.strongholds.contains(pos);
+    }
+
+    public BlockSource getBlockSource() {
+        return this.blockSource;
     }
 
     static {

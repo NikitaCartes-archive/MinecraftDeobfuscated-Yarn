@@ -84,9 +84,9 @@ import org.jetbrains.annotations.Nullable;
 public abstract class MobEntity
 extends LivingEntity {
     private static final TrackedData<Byte> MOB_FLAGS = DataTracker.registerData(MobEntity.class, TrackedDataHandlerRegistry.BYTE);
-    private static final int field_30088 = 1;
-    private static final int field_30089 = 2;
-    private static final int field_30090 = 4;
+    private static final int AI_DISABLED_FLAG = 1;
+    private static final int LEFT_HANDED_FLAG = 2;
+    private static final int ATTACKING_FLAG = 4;
     public static final float field_30091 = 0.15f;
     public static final float field_30083 = 0.55f;
     public static final float field_30084 = 0.5f;

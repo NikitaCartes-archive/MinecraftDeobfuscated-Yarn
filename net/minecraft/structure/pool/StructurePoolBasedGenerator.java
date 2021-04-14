@@ -13,11 +13,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import net.minecraft.block.JigsawBlock;
-import net.minecraft.class_6130;
 import net.minecraft.structure.JigsawJunction;
 import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructurePiecesHolder;
 import net.minecraft.structure.pool.EmptyPoolElement;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElement;
@@ -45,7 +45,7 @@ import org.apache.logging.log4j.Logger;
 public class StructurePoolBasedGenerator {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static void method_30419(DynamicRegistryManager dynamicRegistryManager, StructurePoolFeatureConfig structurePoolFeatureConfig, PieceFactory pieceFactory, ChunkGenerator chunkGenerator, StructureManager structureManager, BlockPos blockPos, class_6130 arg, Random random, boolean bl, boolean bl2, HeightLimitView heightLimitView) {
+    public static void method_30419(DynamicRegistryManager dynamicRegistryManager, StructurePoolFeatureConfig structurePoolFeatureConfig, PieceFactory pieceFactory, ChunkGenerator chunkGenerator, StructureManager structureManager, BlockPos blockPos, StructurePiecesHolder structurePiecesHolder, Random random, boolean bl, boolean bl2, HeightLimitView heightLimitView) {
         StructureFeature.init();
         ArrayList<PoolStructurePiece> list = Lists.newArrayList();
         Registry<StructurePool> registry = dynamicRegistryManager.get(Registry.STRUCTURE_POOL_KEY);
@@ -74,7 +74,7 @@ public class StructurePoolBasedGenerator {
             ShapedPoolStructurePiece shapedPoolStructurePiece = (ShapedPoolStructurePiece)structurePoolGenerator.structurePieces.removeFirst();
             structurePoolGenerator.generatePiece(shapedPoolStructurePiece.piece, shapedPoolStructurePiece.pieceShape, shapedPoolStructurePiece.minY, shapedPoolStructurePiece.currentSize, bl, heightLimitView);
         }
-        list.forEach(arg::method_35462);
+        list.forEach(structurePiecesHolder::addPiece);
     }
 
     public static void method_27230(DynamicRegistryManager dynamicRegistryManager, PoolStructurePiece poolStructurePiece, int i, PieceFactory pieceFactory, ChunkGenerator chunkGenerator, StructureManager structureManager, List<? super PoolStructurePiece> list, Random random, HeightLimitView heightLimitView) {

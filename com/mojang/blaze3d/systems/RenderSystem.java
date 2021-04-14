@@ -1112,7 +1112,7 @@ public class RenderSystem {
         private final int increment;
         private final IndexMapper indexMapper;
         private int id;
-        private VertexFormat.IntType vertexFormat = VertexFormat.IntType.BYTE;
+        private VertexFormat.IntType elementFormat = VertexFormat.IntType.BYTE;
         private int size;
 
         private IndexBuffer(int sizeMultiplier, int increment, IndexMapper indexMapper) {
@@ -1137,7 +1137,7 @@ public class RenderSystem {
             if (byteBuffer == null) {
                 throw new RuntimeException("Failed to map GL buffer");
             }
-            this.vertexFormat = intType;
+            this.elementFormat = intType;
             IntConsumer intConsumer = this.getIndexConsumer(byteBuffer);
             for (int j = 0; j < newSize; j += this.increment) {
                 this.indexMapper.accept(intConsumer, j * this.sizeMultiplier / this.increment);
@@ -1149,7 +1149,7 @@ public class RenderSystem {
         }
 
         private IntConsumer getIndexConsumer(ByteBuffer indicesBuffer) {
-            switch (this.vertexFormat) {
+            switch (this.elementFormat) {
                 case BYTE: {
                     return i -> indicesBuffer.put((byte)i);
                 }
@@ -1164,8 +1164,8 @@ public class RenderSystem {
             return this.id;
         }
 
-        public VertexFormat.IntType getVertexFormat() {
-            return this.vertexFormat;
+        public VertexFormat.IntType getElementFormat() {
+            return this.elementFormat;
         }
 
         @Environment(value=EnvType.CLIENT)

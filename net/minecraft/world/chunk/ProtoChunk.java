@@ -444,7 +444,7 @@ implements Chunk {
     }
 
     public BitSet getOrCreateCarvingMask(GenerationStep.Carver carver2) {
-        return this.carvingMasks.computeIfAbsent(carver2, carver -> new BitSet(98304));
+        return this.carvingMasks.computeIfAbsent(carver2, carver -> new BitSet(65536));
     }
 
     public void setCarvingMask(GenerationStep.Carver carver, BitSet mask) {

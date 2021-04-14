@@ -7,6 +7,8 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.util.math.intprovider.IntProvider;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.GeodeCrackConfig;
 import net.minecraft.world.gen.feature.GeodeLayerConfig;
@@ -15,41 +17,35 @@ import net.minecraft.world.gen.feature.GeodeLayerThicknessConfig;
 public class GeodeFeatureConfig
 implements FeatureConfig {
     public static final Codec<Double> RANGE = Codec.doubleRange(0.0, 1.0);
-    public static final Codec<GeodeFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)GeodeLayerConfig.CODEC.fieldOf("blocks")).forGetter(geodeFeatureConfig -> geodeFeatureConfig.layerConfig), ((MapCodec)GeodeLayerThicknessConfig.CODEC.fieldOf("layers")).forGetter(geodeFeatureConfig -> geodeFeatureConfig.layerThicknessConfig), ((MapCodec)GeodeCrackConfig.CODEC.fieldOf("crack")).forGetter(geodeFeatureConfig -> geodeFeatureConfig.crackConfig), ((MapCodec)RANGE.fieldOf("use_potential_placements_chance")).orElse(0.35).forGetter(geodeFeatureConfig -> geodeFeatureConfig.usePotentialPlacementsChance), ((MapCodec)RANGE.fieldOf("use_alternate_layer0_chance")).orElse(0.0).forGetter(geodeFeatureConfig -> geodeFeatureConfig.useAlternateLayer0Chance), ((MapCodec)Codec.BOOL.fieldOf("placements_require_layer0_alternate")).orElse(true).forGetter(geodeFeatureConfig -> geodeFeatureConfig.placementsRequireLayer0Alternate), ((MapCodec)Codec.intRange(1, 10).fieldOf("min_outer_wall_distance")).orElse(4).forGetter(geodeFeatureConfig -> geodeFeatureConfig.minOuterWallDistance), ((MapCodec)Codec.intRange(1, 20).fieldOf("max_outer_wall_distance")).orElse(6).forGetter(geodeFeatureConfig -> geodeFeatureConfig.maxOuterWallDistance), ((MapCodec)Codec.intRange(1, 10).fieldOf("min_distribution_points")).orElse(3).forGetter(geodeFeatureConfig -> geodeFeatureConfig.minDistributionPoints), ((MapCodec)Codec.intRange(1, 20).fieldOf("max_distribution_points")).orElse(5).forGetter(geodeFeatureConfig -> geodeFeatureConfig.maxDistributionPoints), ((MapCodec)Codec.intRange(0, 10).fieldOf("min_point_offset")).orElse(1).forGetter(geodeFeatureConfig -> geodeFeatureConfig.minPointOffset), ((MapCodec)Codec.intRange(0, 10).fieldOf("max_point_offset")).orElse(3).forGetter(geodeFeatureConfig -> geodeFeatureConfig.maxPointOffset), ((MapCodec)Codec.INT.fieldOf("min_gen_offset")).orElse(-16).forGetter(geodeFeatureConfig -> geodeFeatureConfig.minGenOffset), ((MapCodec)Codec.INT.fieldOf("max_gen_offset")).orElse(16).forGetter(geodeFeatureConfig -> geodeFeatureConfig.maxGenOffset), ((MapCodec)RANGE.fieldOf("noise_multiplier")).orElse(0.05).forGetter(geodeFeatureConfig -> geodeFeatureConfig.noiseMultiplier), ((MapCodec)Codec.INT.fieldOf("invalid_blocks_threshold")).forGetter(geodeFeatureConfig -> geodeFeatureConfig.invalidBlocksThreshold)).apply((Applicative<GeodeFeatureConfig, ?>)instance, GeodeFeatureConfig::new));
+    public static final Codec<GeodeFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)GeodeLayerConfig.CODEC.fieldOf("blocks")).forGetter(geodeFeatureConfig -> geodeFeatureConfig.layerConfig), ((MapCodec)GeodeLayerThicknessConfig.CODEC.fieldOf("layers")).forGetter(geodeFeatureConfig -> geodeFeatureConfig.layerThicknessConfig), ((MapCodec)GeodeCrackConfig.CODEC.fieldOf("crack")).forGetter(geodeFeatureConfig -> geodeFeatureConfig.crackConfig), ((MapCodec)RANGE.fieldOf("use_potential_placements_chance")).orElse(0.35).forGetter(geodeFeatureConfig -> geodeFeatureConfig.usePotentialPlacementsChance), ((MapCodec)RANGE.fieldOf("use_alternate_layer0_chance")).orElse(0.0).forGetter(geodeFeatureConfig -> geodeFeatureConfig.useAlternateLayer0Chance), ((MapCodec)Codec.BOOL.fieldOf("placements_require_layer0_alternate")).orElse(true).forGetter(geodeFeatureConfig -> geodeFeatureConfig.placementsRequireLayer0Alternate), ((MapCodec)IntProvider.createValidatingCodec(1, 20).fieldOf("outer_wall_distance")).orElse(UniformIntProvider.create(4, 5)).forGetter(geodeFeatureConfig -> geodeFeatureConfig.field_33516), ((MapCodec)IntProvider.createValidatingCodec(1, 20).fieldOf("distribution_points")).orElse(UniformIntProvider.create(3, 4)).forGetter(geodeFeatureConfig -> geodeFeatureConfig.field_33517), ((MapCodec)IntProvider.createValidatingCodec(0, 10).fieldOf("point_offset")).orElse(UniformIntProvider.create(1, 2)).forGetter(geodeFeatureConfig -> geodeFeatureConfig.field_33518), ((MapCodec)Codec.INT.fieldOf("min_gen_offset")).orElse(-16).forGetter(geodeFeatureConfig -> geodeFeatureConfig.minGenOffset), ((MapCodec)Codec.INT.fieldOf("max_gen_offset")).orElse(16).forGetter(geodeFeatureConfig -> geodeFeatureConfig.maxGenOffset), ((MapCodec)RANGE.fieldOf("noise_multiplier")).orElse(0.05).forGetter(geodeFeatureConfig -> geodeFeatureConfig.noiseMultiplier), ((MapCodec)Codec.INT.fieldOf("invalid_blocks_threshold")).forGetter(geodeFeatureConfig -> geodeFeatureConfig.invalidBlocksThreshold)).apply((Applicative<GeodeFeatureConfig, ?>)instance, GeodeFeatureConfig::new));
     public final GeodeLayerConfig layerConfig;
     public final GeodeLayerThicknessConfig layerThicknessConfig;
     public final GeodeCrackConfig crackConfig;
     public final double usePotentialPlacementsChance;
     public final double useAlternateLayer0Chance;
     public final boolean placementsRequireLayer0Alternate;
-    public final int minOuterWallDistance;
-    public final int maxOuterWallDistance;
-    public final int minDistributionPoints;
-    public final int maxDistributionPoints;
-    public final int minPointOffset;
-    public final int maxPointOffset;
+    public final IntProvider field_33516;
+    public final IntProvider field_33517;
+    public final IntProvider field_33518;
     public final int minGenOffset;
     public final int maxGenOffset;
     public final double noiseMultiplier;
     public final int invalidBlocksThreshold;
 
-    public GeodeFeatureConfig(GeodeLayerConfig layerConfig, GeodeLayerThicknessConfig layerThicknessConfig, GeodeCrackConfig crackConfig, double usePotentialPlacementsChance, double useAlternateLayer0Chance, boolean placementsRequireLayer0Alternate, int minOuterWallDistance, int maxOuterWallDistance, int minDistributionPoints, int maxDistributionPoints, int minPointOffset, int maxPointOffset, int minGenOffset, int maxGenOffset, double noiseMultiplier, int invalidBlocksThreshold) {
+    public GeodeFeatureConfig(GeodeLayerConfig layerConfig, GeodeLayerThicknessConfig layerThicknessConfig, GeodeCrackConfig crackConfig, double usePotentialPlacementsChance, double useAlternateLayer0Chance, boolean placementsRequireLayer0Alternate, IntProvider intProvider, IntProvider intProvider2, IntProvider intProvider3, int maxDistributionPoints, int minPointOffset, double d, int maxGenOffset) {
         this.layerConfig = layerConfig;
         this.layerThicknessConfig = layerThicknessConfig;
         this.crackConfig = crackConfig;
         this.usePotentialPlacementsChance = usePotentialPlacementsChance;
         this.useAlternateLayer0Chance = useAlternateLayer0Chance;
         this.placementsRequireLayer0Alternate = placementsRequireLayer0Alternate;
-        this.minOuterWallDistance = minOuterWallDistance;
-        this.maxOuterWallDistance = maxOuterWallDistance;
-        this.minDistributionPoints = minDistributionPoints;
-        this.maxDistributionPoints = maxDistributionPoints;
-        this.minPointOffset = minPointOffset;
-        this.maxPointOffset = maxPointOffset;
-        this.minGenOffset = minGenOffset;
-        this.maxGenOffset = maxGenOffset;
-        this.noiseMultiplier = noiseMultiplier;
-        this.invalidBlocksThreshold = invalidBlocksThreshold;
+        this.field_33516 = intProvider;
+        this.field_33517 = intProvider2;
+        this.field_33518 = intProvider3;
+        this.minGenOffset = maxDistributionPoints;
+        this.maxGenOffset = minPointOffset;
+        this.noiseMultiplier = d;
+        this.invalidBlocksThreshold = maxGenOffset;
     }
 }
 

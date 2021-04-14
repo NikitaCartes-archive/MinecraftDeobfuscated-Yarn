@@ -83,6 +83,13 @@ implements CommandSource {
         this.rotation = rot;
     }
 
+    public ServerCommandSource method_36321(CommandOutput commandOutput) {
+        if (this.output == commandOutput) {
+            return this;
+        }
+        return new ServerCommandSource(commandOutput, this.position, this.rotation, this.world, this.level, this.simpleName, this.name, this.server, this.entity, this.silent, this.resultConsumer, this.entityAnchor);
+    }
+
     public ServerCommandSource withEntity(Entity entity) {
         if (this.entity == entity) {
             return this;
@@ -117,7 +124,7 @@ implements CommandSource {
     }
 
     public ServerCommandSource withSilent() {
-        if (this.silent) {
+        if (this.silent || this.output.method_36320()) {
             return this;
         }
         return new ServerCommandSource(this.output, this.position, this.rotation, this.world, this.level, this.simpleName, this.name, this.server, this.entity, true, this.resultConsumer, this.entityAnchor);

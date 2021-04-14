@@ -7,7 +7,9 @@ import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
@@ -20,6 +22,8 @@ import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.collection.WeightedPicker;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -27,11 +31,11 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
-public class LongJumpTask
-extends Task<MobEntity> {
+public class LongJumpTask<E extends MobEntity>
+extends Task<E> {
     private static final int MAX_COOLDOWN = 20;
     private static final int TARGET_RETAIN_TIME = 40;
-    private static final int PATHING_DISTANCE = 7;
+    private static final int PATHING_DISTANCE = 8;
     public static final int RUN_TIME = 200;
     private final UniformIntProvider cooldownRange;
     private final int verticalRange;
@@ -42,13 +46,15 @@ extends Task<MobEntity> {
     private Optional<Target> lastTarget = Optional.empty();
     private int cooldown;
     private long targetTime;
+    private Function<E, SoundEvent> field_33460;
 
-    public LongJumpTask(UniformIntProvider cooldownRange, int verticalRange, int horizontalRange, float maxRange) {
+    public LongJumpTask(UniformIntProvider cooldownRange, int verticalRange, int horizontalRange, float maxRange, Function<E, SoundEvent> function) {
         super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.LONG_JUMP_COOLING_DOWN, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.LONG_JUMP_MID_JUMP, MemoryModuleState.VALUE_ABSENT), 200);
         this.cooldownRange = cooldownRange;
         this.verticalRange = verticalRange;
         this.horizontalRange = horizontalRange;
         this.maxRange = maxRange;
+        this.field_33460 = function;
     }
 
     @Override
@@ -87,22 +93,23 @@ extends Task<MobEntity> {
     }
 
     @Override
-    protected void keepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+    protected void keepRunning(ServerWorld serverWorld, E mobEntity, long l) {
         if (this.lastTarget.isPresent()) {
             if (l - this.targetTime >= 40L) {
-                mobEntity.yaw = mobEntity.bodyYaw;
-                mobEntity.setNoDrag(true);
-                mobEntity.setVelocity(this.lastTarget.get().getRammingVelocity());
-                mobEntity.getBrain().remember(MemoryModuleType.LONG_JUMP_MID_JUMP, true);
+                ((MobEntity)mobEntity).yaw = ((MobEntity)mobEntity).bodyYaw;
+                ((LivingEntity)mobEntity).setNoDrag(true);
+                ((Entity)mobEntity).setVelocity(this.lastTarget.get().getRammingVelocity());
+                ((LivingEntity)mobEntity).getBrain().remember(MemoryModuleType.LONG_JUMP_MID_JUMP, true);
+                serverWorld.playSoundFromEntity(null, (Entity)mobEntity, this.field_33460.apply(mobEntity), SoundCategory.NEUTRAL, 1.0f, 1.0f);
             }
         } else {
             --this.cooldown;
             Optional<Target> optional = WeightedPicker.getRandom(serverWorld.random, this.targets);
             if (optional.isPresent()) {
                 this.targets.remove(optional.get());
-                mobEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(optional.get().getPos()));
-                EntityNavigation entityNavigation = mobEntity.getNavigation();
-                Path path = entityNavigation.findPathTo(optional.get().getPos(), 0, 7);
+                ((LivingEntity)mobEntity).getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(optional.get().getPos()));
+                EntityNavigation entityNavigation = ((MobEntity)mobEntity).getNavigation();
+                Path path = entityNavigation.findPathTo(optional.get().getPos(), 0, 8);
                 if (path == null || !path.reachesTarget()) {
                     this.lastTarget = optional;
                     this.targetTime = l;
@@ -187,7 +194,7 @@ extends Task<MobEntity> {
 
     @Override
     protected /* synthetic */ void keepRunning(ServerWorld world, LivingEntity entity, long time) {
-        this.keepRunning(world, (MobEntity)entity, time);
+        this.keepRunning(world, (E)((MobEntity)entity), time);
     }
 
     @Override

@@ -37,21 +37,6 @@ extends HeightProvider {
         return this.offset.getY(context);
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
-            return true;
-        }
-        if (object == null || this.getClass() != object.getClass()) {
-            return false;
-        }
-        ConstantHeightProvider constantHeightProvider = (ConstantHeightProvider)object;
-        return this.offset.equals(constantHeightProvider.offset);
-    }
-
-    public int hashCode() {
-        return this.offset.hashCode();
-    }
-
     @Override
     public HeightProviderType<?> getType() {
         return HeightProviderType.CONSTANT;

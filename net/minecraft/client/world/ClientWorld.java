@@ -698,12 +698,12 @@ extends World {
     public void emitGameEvent(@Nullable Entity entity, GameEvent event, BlockPos pos) {
     }
 
-    protected Map<String, MapState> method_35754() {
+    protected Map<String, MapState> getMapStates() {
         return ImmutableMap.copyOf(this.mapStates);
     }
 
-    protected void method_35753(Map<String, MapState> map) {
-        this.mapStates.putAll(map);
+    protected void putMapStates(Map<String, MapState> mapStates) {
+        this.mapStates.putAll(mapStates);
     }
 
     @Override
@@ -950,9 +950,9 @@ extends World {
             this.difficultyLocked = difficultyLocked;
         }
 
-        public double getSkyDarknessHeight(HeightLimitView heightLimitView) {
+        public double getSkyDarknessHeight(HeightLimitView world) {
             if (this.flatWorld) {
-                return heightLimitView.getBottomY();
+                return world.getBottomY();
             }
             return 63.0;
         }

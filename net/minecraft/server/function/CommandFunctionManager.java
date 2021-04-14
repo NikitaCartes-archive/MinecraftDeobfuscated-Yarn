@@ -4,9 +4,11 @@
 package net.minecraft.server.function;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Queues;
 import com.mojang.brigadier.CommandDispatcher;
-import java.util.ArrayDeque;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.server.MinecraftServer;
@@ -14,16 +16,19 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.function.FunctionLoader;
 import net.minecraft.tag.Tag;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.GameRules;
+import org.jetbrains.annotations.Nullable;
 
 public class CommandFunctionManager {
+    private static final Text field_33542 = new TranslatableText("commands.debug.function.noRecursion");
     private static final Identifier TICK_FUNCTION = new Identifier("tick");
     private static final Identifier LOAD_FUNCTION = new Identifier("load");
     private final MinecraftServer server;
-    private boolean executing;
-    private final ArrayDeque<Entry> chain = new ArrayDeque();
-    private final List<Entry> pending = Lists.newArrayList();
+    @Nullable
+    private class_6345 field_33543;
     private final List<CommandFunction> tickFunctions = Lists.newArrayList();
     private boolean needToRunLoadFunctions;
     private FunctionLoader loader;
@@ -59,46 +64,28 @@ public class CommandFunctionManager {
         this.server.getProfiler().pop();
     }
 
+    public int execute(CommandFunction function, ServerCommandSource source) {
+        return this.method_36341(function, source, null);
+    }
+
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public int execute(CommandFunction function, ServerCommandSource source) {
-        int i = this.getMaxCommandChainLength();
-        if (this.executing) {
-            if (this.chain.size() + this.pending.size() < i) {
-                this.pending.add(new Entry(this, source, new CommandFunction.FunctionElement(function)));
+    public int method_36341(CommandFunction commandFunction, ServerCommandSource serverCommandSource, @Nullable class_6346 arg) {
+        if (this.field_33543 != null) {
+            if (arg != null) {
+                this.field_33543.method_36344(field_33542.getString());
+                return 0;
             }
+            this.field_33543.method_36343(commandFunction, serverCommandSource);
             return 0;
         }
         try {
-            this.executing = true;
-            int j = 0;
-            CommandFunction.Element[] elements = function.getElements();
-            for (int k = elements.length - 1; k >= 0; --k) {
-                this.chain.push(new Entry(this, source, elements[k]));
-            }
-            while (!this.chain.isEmpty()) {
-                try {
-                    Entry entry = this.chain.removeFirst();
-                    this.server.getProfiler().push(entry::toString);
-                    entry.execute(this.chain, i);
-                    if (!this.pending.isEmpty()) {
-                        Lists.reverse(this.pending).forEach(this.chain::addFirst);
-                        this.pending.clear();
-                    }
-                } finally {
-                    this.server.getProfiler().pop();
-                }
-                if (++j < i) continue;
-                int n = j;
-                return n;
-            }
-            int n = j;
+            this.field_33543 = new class_6345(arg);
+            int n = this.field_33543.method_36346(commandFunction, serverCommandSource);
             return n;
         } finally {
-            this.chain.clear();
-            this.pending.clear();
-            this.executing = false;
+            this.field_33543 = null;
         }
     }
 
@@ -138,22 +125,93 @@ public class CommandFunctionManager {
         return this.loader.getTags().getTagIds();
     }
 
+    public static interface class_6346 {
+        public void method_36349(int var1, String var2);
+
+        public void method_36350(int var1, String var2, int var3);
+
+        public void method_36352(int var1, String var2);
+
+        public void method_36351(int var1, Identifier var2, int var3);
+    }
+
+    class class_6345 {
+        private int field_33545;
+        @Nullable
+        private final class_6346 field_33546;
+        private final Deque<Entry> field_33547 = Queues.newArrayDeque();
+        private final List<Entry> field_33548 = Lists.newArrayList();
+
+        private class_6345(class_6346 arg) {
+            this.field_33546 = arg;
+        }
+
+        private void method_36343(CommandFunction commandFunction, ServerCommandSource serverCommandSource) {
+            int i = CommandFunctionManager.this.getMaxCommandChainLength();
+            if (this.field_33547.size() + this.field_33548.size() < i) {
+                this.field_33548.add(new Entry(serverCommandSource, this.field_33545, new CommandFunction.FunctionElement(commandFunction)));
+            }
+        }
+
+        /*
+         * WARNING - Removed try catching itself - possible behaviour change.
+         */
+        private int method_36346(CommandFunction commandFunction, ServerCommandSource serverCommandSource) {
+            int i = CommandFunctionManager.this.getMaxCommandChainLength();
+            int j = 0;
+            CommandFunction.Element[] elements = commandFunction.getElements();
+            for (int k = elements.length - 1; k >= 0; --k) {
+                this.field_33547.push(new Entry(serverCommandSource, 0, elements[k]));
+            }
+            while (!this.field_33547.isEmpty()) {
+                try {
+                    Entry entry = this.field_33547.removeFirst();
+                    CommandFunctionManager.this.server.getProfiler().push(entry::toString);
+                    this.field_33545 = entry.field_33549;
+                    entry.execute(CommandFunctionManager.this, this.field_33547, i, this.field_33546);
+                    if (!this.field_33548.isEmpty()) {
+                        Lists.reverse(this.field_33548).forEach(this.field_33547::addFirst);
+                        this.field_33548.clear();
+                    }
+                } finally {
+                    CommandFunctionManager.this.server.getProfiler().pop();
+                }
+                if (++j < i) continue;
+                return j;
+            }
+            return j;
+        }
+
+        public void method_36344(String string) {
+            if (this.field_33546 != null) {
+                this.field_33546.method_36352(this.field_33545, string);
+            }
+        }
+    }
+
     public static class Entry {
-        private final CommandFunctionManager manager;
         private final ServerCommandSource source;
+        private final int field_33549;
         private final CommandFunction.Element element;
 
-        public Entry(CommandFunctionManager manager, ServerCommandSource source, CommandFunction.Element element) {
-            this.manager = manager;
-            this.source = source;
+        public Entry(ServerCommandSource serverCommandSource, int i, CommandFunction.Element element) {
+            this.source = serverCommandSource;
+            this.field_33549 = i;
             this.element = element;
         }
 
-        public void execute(ArrayDeque<Entry> stack, int maxChainLength) {
-            try {
-                this.element.execute(this.manager, this.source, stack, maxChainLength);
-            } catch (Throwable throwable) {
-                // empty catch block
+        public void execute(CommandFunctionManager commandFunctionManager, Deque<Entry> deque, int i, @Nullable class_6346 arg) {
+            block4: {
+                try {
+                    this.element.execute(commandFunctionManager, this.source, deque, i, this.field_33549, arg);
+                } catch (CommandSyntaxException commandSyntaxException) {
+                    if (arg != null) {
+                        arg.method_36352(this.field_33549, commandSyntaxException.getRawMessage().getString());
+                    }
+                } catch (Exception exception) {
+                    if (arg == null) break block4;
+                    arg.method_36352(this.field_33549, exception.getMessage());
+                }
             }
         }
 

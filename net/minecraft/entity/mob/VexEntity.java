@@ -47,7 +47,7 @@ extends HostileEntity {
     public static final float field_30502 = 45.836624f;
     public static final int field_28645 = MathHelper.ceil(3.9269907f);
     protected static final TrackedData<Byte> VEX_FLAGS = DataTracker.registerData(VexEntity.class, TrackedDataHandlerRegistry.BYTE);
-    private static final int field_30503 = 1;
+    private static final int CHARGING_FLAG = 1;
     private MobEntity owner;
     @Nullable
     private BlockPos bounds;

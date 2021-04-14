@@ -193,7 +193,7 @@ extends StructureFeature<RuinedPortalFeatureConfig> {
             if (ruinedPortalFeatureConfig.portalType == Type.MOUNTAIN || ruinedPortalFeatureConfig.portalType == Type.OCEAN || ruinedPortalFeatureConfig.portalType == Type.STANDARD) {
                 properties.cold = RuinedPortalFeature.isColdAt(blockPos4, biome);
             }
-            this.method_35462(new RuinedPortalStructurePiece(structureManager, blockPos4, verticalPlacement, properties, identifier, structure, blockRotation, blockMirror, blockPos));
+            this.addPiece(new RuinedPortalStructurePiece(structureManager, blockPos4, verticalPlacement, properties, identifier, structure, blockRotation, blockMirror, blockPos));
         }
     }
 }

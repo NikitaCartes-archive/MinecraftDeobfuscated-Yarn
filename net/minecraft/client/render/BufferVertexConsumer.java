@@ -27,7 +27,7 @@ extends VertexConsumer {
         if (this.getCurrentElement().getType() != VertexFormatElement.Type.POSITION) {
             return this;
         }
-        if (this.getCurrentElement().getFormat() != VertexFormatElement.Format.FLOAT || this.getCurrentElement().method_34451() != 3) {
+        if (this.getCurrentElement().getDataType() != VertexFormatElement.DataType.FLOAT || this.getCurrentElement().getLength() != 3) {
             throw new IllegalStateException();
         }
         this.putFloat(0, (float)x);
@@ -43,7 +43,7 @@ extends VertexConsumer {
         if (vertexFormatElement.getType() != VertexFormatElement.Type.COLOR) {
             return this;
         }
-        if (vertexFormatElement.getFormat() != VertexFormatElement.Format.UBYTE || vertexFormatElement.method_34451() != 4) {
+        if (vertexFormatElement.getDataType() != VertexFormatElement.DataType.UBYTE || vertexFormatElement.getLength() != 4) {
             throw new IllegalStateException();
         }
         this.putByte(0, (byte)red);
@@ -57,10 +57,10 @@ extends VertexConsumer {
     @Override
     default public VertexConsumer texture(float u, float v) {
         VertexFormatElement vertexFormatElement = this.getCurrentElement();
-        if (vertexFormatElement.getType() != VertexFormatElement.Type.UV || vertexFormatElement.getIndex() != 0) {
+        if (vertexFormatElement.getType() != VertexFormatElement.Type.UV || vertexFormatElement.getTextureIndex() != 0) {
             return this;
         }
-        if (vertexFormatElement.getFormat() != VertexFormatElement.Format.FLOAT || vertexFormatElement.method_34451() != 2) {
+        if (vertexFormatElement.getDataType() != VertexFormatElement.DataType.FLOAT || vertexFormatElement.getLength() != 2) {
             throw new IllegalStateException();
         }
         this.putFloat(0, u);
@@ -81,10 +81,10 @@ extends VertexConsumer {
 
     default public VertexConsumer texture(short u, short v, int index) {
         VertexFormatElement vertexFormatElement = this.getCurrentElement();
-        if (vertexFormatElement.getType() != VertexFormatElement.Type.UV || vertexFormatElement.getIndex() != index) {
+        if (vertexFormatElement.getType() != VertexFormatElement.Type.UV || vertexFormatElement.getTextureIndex() != index) {
             return this;
         }
-        if (vertexFormatElement.getFormat() != VertexFormatElement.Format.SHORT || vertexFormatElement.method_34451() != 2) {
+        if (vertexFormatElement.getDataType() != VertexFormatElement.DataType.SHORT || vertexFormatElement.getLength() != 2) {
             throw new IllegalStateException();
         }
         this.putShort(0, u);
@@ -99,17 +99,17 @@ extends VertexConsumer {
         if (vertexFormatElement.getType() != VertexFormatElement.Type.NORMAL) {
             return this;
         }
-        if (vertexFormatElement.getFormat() != VertexFormatElement.Format.BYTE || vertexFormatElement.method_34451() != 3) {
+        if (vertexFormatElement.getDataType() != VertexFormatElement.DataType.BYTE || vertexFormatElement.getLength() != 3) {
             throw new IllegalStateException();
         }
-        this.putByte(0, BufferVertexConsumer.method_24212(x));
-        this.putByte(1, BufferVertexConsumer.method_24212(y));
-        this.putByte(2, BufferVertexConsumer.method_24212(z));
+        this.putByte(0, BufferVertexConsumer.packByte(x));
+        this.putByte(1, BufferVertexConsumer.packByte(y));
+        this.putByte(2, BufferVertexConsumer.packByte(z));
         this.nextElement();
         return this;
     }
 
-    public static byte method_24212(float f) {
+    public static byte packByte(float f) {
         return (byte)((int)(MathHelper.clamp(f, -1.0f, 1.0f) * 127.0f) & 0xFF);
     }
 }

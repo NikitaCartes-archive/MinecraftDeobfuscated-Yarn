@@ -38,7 +38,7 @@ implements Waterloggable {
     private static final VoxelShape BOTTOM_OUTLINE_SHAPE;
     private static final VoxelShape COLLISION_SHAPE;
     private static final VoxelShape OUTLINE_SHAPE;
-    public static final int field_31237 = 7;
+    public static final int MAX_DISTANCE = 7;
     public static final IntProperty DISTANCE;
     public static final BooleanProperty WATERLOGGED;
     public static final BooleanProperty BOTTOM;

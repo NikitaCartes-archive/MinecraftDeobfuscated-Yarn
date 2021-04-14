@@ -107,8 +107,8 @@ public class BlockBox {
         return this.maxX >= minX && this.minX <= maxX && this.maxZ >= minZ && this.minZ <= maxZ;
     }
 
-    public static Optional<BlockBox> method_35411(Iterable<BlockPos> iterable) {
-        Iterator<BlockPos> iterator = iterable.iterator();
+    public static Optional<BlockBox> encompassPositions(Iterable<BlockPos> positions) {
+        Iterator<BlockPos> iterator = positions.iterator();
         if (!iterator.hasNext()) {
             return Optional.empty();
         }
@@ -117,18 +117,18 @@ public class BlockBox {
         return Optional.of(blockBox);
     }
 
-    public static Optional<BlockBox> method_35413(Iterable<BlockBox> iterable) {
-        Iterator<BlockBox> iterator = iterable.iterator();
+    public static Optional<BlockBox> encompass(Iterable<BlockBox> boxes) {
+        Iterator<BlockBox> iterator = boxes.iterator();
         if (!iterator.hasNext()) {
             return Optional.empty();
         }
         BlockBox blockBox = iterator.next();
         BlockBox blockBox2 = new BlockBox(blockBox.minX, blockBox.minY, blockBox.minZ, blockBox.maxX, blockBox.maxY, blockBox.maxZ);
-        iterator.forEachRemaining(blockBox2::intersection);
+        iterator.forEachRemaining(blockBox2::encompass);
         return Optional.of(blockBox2);
     }
 
-    public BlockBox intersection(BlockBox box) {
+    public BlockBox encompass(BlockBox box) {
         this.minX = Math.min(this.minX, box.minX);
         this.minY = Math.min(this.minY, box.minY);
         this.minZ = Math.min(this.minZ, box.minZ);

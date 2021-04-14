@@ -99,11 +99,11 @@ implements Angerable,
 Flutterer {
     public static final float field_30271 = 120.32113f;
     public static final int field_28638 = MathHelper.ceil(1.4959966f);
-    private static final TrackedData<Byte> STATUS_TRACKER = DataTracker.registerData(BeeEntity.class, TrackedDataHandlerRegistry.BYTE);
+    private static final TrackedData<Byte> BEE_FLAGS = DataTracker.registerData(BeeEntity.class, TrackedDataHandlerRegistry.BYTE);
     private static final TrackedData<Integer> ANGER = DataTracker.registerData(BeeEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private static final int field_30281 = 2;
-    private static final int field_30282 = 4;
-    private static final int field_30283 = 8;
+    private static final int NEAR_TARGET_FLAG = 2;
+    private static final int HAS_STUNG_FLAG = 4;
+    private static final int HAS_NECTAR_FLAG = 8;
     private static final int field_30284 = 1200;
     /**
      * A bee will start moving to a flower once this time in ticks has passed from a pollination.
@@ -164,7 +164,7 @@ Flutterer {
     @Override
     protected void initDataTracker() {
         super.initDataTracker();
-        this.dataTracker.startTracking(STATUS_TRACKER, (byte)0);
+        this.dataTracker.startTracking(BEE_FLAGS, (byte)0);
         this.dataTracker.startTracking(ANGER, 0);
     }
 
@@ -508,14 +508,14 @@ Flutterer {
 
     private void setBeeFlag(int bit, boolean value) {
         if (value) {
-            this.dataTracker.set(STATUS_TRACKER, (byte)(this.dataTracker.get(STATUS_TRACKER) | bit));
+            this.dataTracker.set(BEE_FLAGS, (byte)(this.dataTracker.get(BEE_FLAGS) | bit));
         } else {
-            this.dataTracker.set(STATUS_TRACKER, (byte)(this.dataTracker.get(STATUS_TRACKER) & ~bit));
+            this.dataTracker.set(BEE_FLAGS, (byte)(this.dataTracker.get(BEE_FLAGS) & ~bit));
         }
     }
 
     private boolean getBeeFlag(int location) {
-        return (this.dataTracker.get(STATUS_TRACKER) & location) != 0;
+        return (this.dataTracker.get(BEE_FLAGS) & location) != 0;
     }
 
     public static DefaultAttributeContainer.Builder createBeeAttributes() {

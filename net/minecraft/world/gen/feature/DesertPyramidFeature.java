@@ -35,7 +35,7 @@ extends StructureFeature<DefaultFeatureConfig> {
         @Override
         public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, ChunkPos chunkPos, Biome biome, DefaultFeatureConfig defaultFeatureConfig, HeightLimitView heightLimitView) {
             DesertTempleGenerator desertTempleGenerator = new DesertTempleGenerator(this.random, chunkPos.getStartX(), chunkPos.getStartZ());
-            this.method_35462(desertTempleGenerator);
+            this.addPiece(desertTempleGenerator);
         }
     }
 }

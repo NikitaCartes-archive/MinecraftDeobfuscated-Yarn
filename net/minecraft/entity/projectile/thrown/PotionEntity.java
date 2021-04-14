@@ -16,6 +16,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -120,6 +121,10 @@ implements FlyingItemEntity {
                 if (!(d < 16.0) || !livingEntity.hurtByWater()) continue;
                 livingEntity.damage(DamageSource.magic(livingEntity, this.getOwner()), 1.0f);
             }
+        }
+        List<AxolotlEntity> list2 = this.world.getNonSpectatingEntities(AxolotlEntity.class, box);
+        for (AxolotlEntity axolotlEntity : list2) {
+            axolotlEntity.hydrateFromPotion();
         }
     }
 

@@ -13,7 +13,6 @@ import net.minecraft.block.FenceBlock;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
-import net.minecraft.class_6130;
 import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.loot.LootTables;
@@ -21,6 +20,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
+import net.minecraft.structure.StructurePiecesHolder;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -36,35 +36,35 @@ public class NetherFortressGenerator {
     private static final PieceData[] ALL_BRIDGE_PIECES = new PieceData[]{new PieceData(Bridge.class, 30, 0, true), new PieceData(BridgeCrossing.class, 10, 4), new PieceData(BridgeSmallCrossing.class, 10, 4), new PieceData(BridgeStairs.class, 10, 3), new PieceData(BridgePlatform.class, 5, 2), new PieceData(CorridorExit.class, 5, 1)};
     private static final PieceData[] ALL_CORRIDOR_PIECES = new PieceData[]{new PieceData(SmallCorridor.class, 25, 0, true), new PieceData(CorridorCrossing.class, 15, 5), new PieceData(CorridorRightTurn.class, 5, 10), new PieceData(CorridorLeftTurn.class, 5, 10), new PieceData(CorridorStairs.class, 10, 3, true), new PieceData(CorridorBalcony.class, 7, 2), new PieceData(CorridorNetherWartsRoom.class, 5, 2)};
 
-    private static Piece createPiece(PieceData pieceData, class_6130 arg, Random random, int x, int y, int z, Direction orientation, int chainLength) {
+    private static Piece createPiece(PieceData pieceData, StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength) {
         Class<? extends Piece> class_ = pieceData.pieceType;
         Piece piece = null;
         if (class_ == Bridge.class) {
-            piece = Bridge.create(arg, random, x, y, z, orientation, chainLength);
+            piece = Bridge.create(structurePiecesHolder, random, x, y, z, orientation, chainLength);
         } else if (class_ == BridgeCrossing.class) {
-            piece = BridgeCrossing.create(arg, x, y, z, orientation, chainLength);
+            piece = BridgeCrossing.create(structurePiecesHolder, x, y, z, orientation, chainLength);
         } else if (class_ == BridgeSmallCrossing.class) {
-            piece = BridgeSmallCrossing.create(arg, x, y, z, orientation, chainLength);
+            piece = BridgeSmallCrossing.create(structurePiecesHolder, x, y, z, orientation, chainLength);
         } else if (class_ == BridgeStairs.class) {
-            piece = BridgeStairs.create(arg, x, y, z, chainLength, orientation);
+            piece = BridgeStairs.create(structurePiecesHolder, x, y, z, chainLength, orientation);
         } else if (class_ == BridgePlatform.class) {
-            piece = BridgePlatform.create(arg, x, y, z, chainLength, orientation);
+            piece = BridgePlatform.create(structurePiecesHolder, x, y, z, chainLength, orientation);
         } else if (class_ == CorridorExit.class) {
-            piece = CorridorExit.create(arg, random, x, y, z, orientation, chainLength);
+            piece = CorridorExit.create(structurePiecesHolder, random, x, y, z, orientation, chainLength);
         } else if (class_ == SmallCorridor.class) {
-            piece = SmallCorridor.create(arg, x, y, z, orientation, chainLength);
+            piece = SmallCorridor.create(structurePiecesHolder, x, y, z, orientation, chainLength);
         } else if (class_ == CorridorRightTurn.class) {
-            piece = CorridorRightTurn.create(arg, random, x, y, z, orientation, chainLength);
+            piece = CorridorRightTurn.create(structurePiecesHolder, random, x, y, z, orientation, chainLength);
         } else if (class_ == CorridorLeftTurn.class) {
-            piece = CorridorLeftTurn.create(arg, random, x, y, z, orientation, chainLength);
+            piece = CorridorLeftTurn.create(structurePiecesHolder, random, x, y, z, orientation, chainLength);
         } else if (class_ == CorridorStairs.class) {
-            piece = CorridorStairs.create(arg, x, y, z, orientation, chainLength);
+            piece = CorridorStairs.create(structurePiecesHolder, x, y, z, orientation, chainLength);
         } else if (class_ == CorridorBalcony.class) {
-            piece = CorridorBalcony.create(arg, x, y, z, orientation, chainLength);
+            piece = CorridorBalcony.create(structurePiecesHolder, x, y, z, orientation, chainLength);
         } else if (class_ == CorridorCrossing.class) {
-            piece = CorridorCrossing.create(arg, x, y, z, orientation, chainLength);
+            piece = CorridorCrossing.create(structurePiecesHolder, x, y, z, orientation, chainLength);
         } else if (class_ == CorridorNetherWartsRoom.class) {
-            piece = CorridorNetherWartsRoom.create(arg, x, y, z, orientation, chainLength);
+            piece = CorridorNetherWartsRoom.create(structurePiecesHolder, x, y, z, orientation, chainLength);
         }
         return piece;
     }
@@ -85,19 +85,19 @@ public class NetherFortressGenerator {
         }
 
         @Override
-        public void fillOpenings(StructurePiece start, class_6130 arg, Random random) {
+        public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
             int i = 1;
             Direction direction = this.getFacing();
             if (direction == Direction.WEST || direction == Direction.NORTH) {
                 i = 5;
             }
-            this.fillNWOpening((Start)start, arg, random, 0, i, random.nextInt(8) > 0);
-            this.fillSEOpening((Start)start, arg, random, 0, i, random.nextInt(8) > 0);
+            this.fillNWOpening((Start)start, structurePiecesHolder, random, 0, i, random.nextInt(8) > 0);
+            this.fillSEOpening((Start)start, structurePiecesHolder, random, 0, i, random.nextInt(8) > 0);
         }
 
-        public static CorridorBalcony create(class_6130 arg, int x, int y, int z, Direction orientation, int chainLength) {
+        public static CorridorBalcony create(StructurePiecesHolder structurePiecesHolder, int x, int y, int z, Direction orientation, int chainLength) {
             BlockBox blockBox = BlockBox.rotated(x, y, z, -3, 0, 0, 9, 7, 9, orientation);
-            if (!CorridorBalcony.isInBounds(blockBox) || arg.method_35461(blockBox) != null) {
+            if (!CorridorBalcony.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
                 return null;
             }
             return new CorridorBalcony(chainLength, blockBox, orientation);
@@ -153,13 +153,13 @@ public class NetherFortressGenerator {
         }
 
         @Override
-        public void fillOpenings(StructurePiece start, class_6130 arg, Random random) {
-            this.fillForwardOpening((Start)start, arg, random, 1, 0, true);
+        public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
+            this.fillForwardOpening((Start)start, structurePiecesHolder, random, 1, 0, true);
         }
 
-        public static CorridorStairs create(class_6130 arg, int x, int y, int z, Direction orientation, int chainLength) {
+        public static CorridorStairs create(StructurePiecesHolder structurePiecesHolder, int x, int y, int z, Direction orientation, int chainLength) {
             BlockBox blockBox = BlockBox.rotated(x, y, z, -1, -7, 0, 5, 14, 10, orientation);
-            if (!CorridorStairs.isInBounds(blockBox) || arg.method_35461(blockBox) != null) {
+            if (!CorridorStairs.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
                 return null;
             }
             return new CorridorStairs(chainLength, blockBox, orientation);
@@ -220,13 +220,13 @@ public class NetherFortressGenerator {
         }
 
         @Override
-        public void fillOpenings(StructurePiece start, class_6130 arg, Random random) {
-            this.fillNWOpening((Start)start, arg, random, 0, 1, true);
+        public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
+            this.fillNWOpening((Start)start, structurePiecesHolder, random, 0, 1, true);
         }
 
-        public static CorridorLeftTurn create(class_6130 arg, Random random, int x, int y, int z, Direction orientation, int chainLength) {
+        public static CorridorLeftTurn create(StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength) {
             BlockBox blockBox = BlockBox.rotated(x, y, z, -1, 0, 0, 5, 7, 5, orientation);
-            if (!CorridorLeftTurn.isInBounds(blockBox) || arg.method_35461(blockBox) != null) {
+            if (!CorridorLeftTurn.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
                 return null;
             }
             return new CorridorLeftTurn(chainLength, random, blockBox, orientation);
@@ -284,13 +284,13 @@ public class NetherFortressGenerator {
         }
 
         @Override
-        public void fillOpenings(StructurePiece start, class_6130 arg, Random random) {
-            this.fillSEOpening((Start)start, arg, random, 0, 1, true);
+        public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
+            this.fillSEOpening((Start)start, structurePiecesHolder, random, 0, 1, true);
         }
 
-        public static CorridorRightTurn create(class_6130 arg, Random random, int x, int y, int z, Direction orientation, int chainLength) {
+        public static CorridorRightTurn create(StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength) {
             BlockBox blockBox = BlockBox.rotated(x, y, z, -1, 0, 0, 5, 7, 5, orientation);
-            if (!CorridorRightTurn.isInBounds(blockBox) || arg.method_35461(blockBox) != null) {
+            if (!CorridorRightTurn.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
                 return null;
             }
             return new CorridorRightTurn(chainLength, random, blockBox, orientation);
@@ -339,15 +339,15 @@ public class NetherFortressGenerator {
         }
 
         @Override
-        public void fillOpenings(StructurePiece start, class_6130 arg, Random random) {
-            this.fillForwardOpening((Start)start, arg, random, 1, 0, true);
-            this.fillNWOpening((Start)start, arg, random, 0, 1, true);
-            this.fillSEOpening((Start)start, arg, random, 0, 1, true);
+        public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
+            this.fillForwardOpening((Start)start, structurePiecesHolder, random, 1, 0, true);
+            this.fillNWOpening((Start)start, structurePiecesHolder, random, 0, 1, true);
+            this.fillSEOpening((Start)start, structurePiecesHolder, random, 0, 1, true);
         }
 
-        public static CorridorCrossing create(class_6130 arg, int x, int y, int z, Direction orientation, int chainLength) {
+        public static CorridorCrossing create(StructurePiecesHolder structurePiecesHolder, int x, int y, int z, Direction orientation, int chainLength) {
             BlockBox blockBox = BlockBox.rotated(x, y, z, -1, 0, 0, 5, 7, 5, orientation);
-            if (!CorridorCrossing.isInBounds(blockBox) || arg.method_35461(blockBox) != null) {
+            if (!CorridorCrossing.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
                 return null;
             }
             return new CorridorCrossing(chainLength, blockBox, orientation);
@@ -387,13 +387,13 @@ public class NetherFortressGenerator {
         }
 
         @Override
-        public void fillOpenings(StructurePiece start, class_6130 arg, Random random) {
-            this.fillForwardOpening((Start)start, arg, random, 1, 0, true);
+        public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
+            this.fillForwardOpening((Start)start, structurePiecesHolder, random, 1, 0, true);
         }
 
-        public static SmallCorridor create(class_6130 arg, int x, int y, int z, Direction orientation, int chainLength) {
+        public static SmallCorridor create(StructurePiecesHolder structurePiecesHolder, int x, int y, int z, Direction orientation, int chainLength) {
             BlockBox blockBox = BlockBox.rotated(x, y, z, -1, 0, 0, 5, 7, 5, orientation);
-            if (!SmallCorridor.isInBounds(blockBox) || arg.method_35461(blockBox) != null) {
+            if (!SmallCorridor.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
                 return null;
             }
             return new SmallCorridor(chainLength, blockBox, orientation);
@@ -436,14 +436,14 @@ public class NetherFortressGenerator {
         }
 
         @Override
-        public void fillOpenings(StructurePiece start, class_6130 arg, Random random) {
-            this.fillForwardOpening((Start)start, arg, random, 5, 3, true);
-            this.fillForwardOpening((Start)start, arg, random, 5, 11, true);
+        public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
+            this.fillForwardOpening((Start)start, structurePiecesHolder, random, 5, 3, true);
+            this.fillForwardOpening((Start)start, structurePiecesHolder, random, 5, 11, true);
         }
 
-        public static CorridorNetherWartsRoom create(class_6130 arg, int x, int y, int z, Direction orientation, int chainlength) {
+        public static CorridorNetherWartsRoom create(StructurePiecesHolder structurePiecesHolder, int x, int y, int z, Direction orientation, int chainlength) {
             BlockBox blockBox = BlockBox.rotated(x, y, z, -5, -3, 0, 13, 14, 13, orientation);
-            if (!CorridorNetherWartsRoom.isInBounds(blockBox) || arg.method_35461(blockBox) != null) {
+            if (!CorridorNetherWartsRoom.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
                 return null;
             }
             return new CorridorNetherWartsRoom(chainlength, blockBox, orientation);
@@ -571,13 +571,13 @@ public class NetherFortressGenerator {
         }
 
         @Override
-        public void fillOpenings(StructurePiece start, class_6130 arg, Random random) {
-            this.fillForwardOpening((Start)start, arg, random, 5, 3, true);
+        public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
+            this.fillForwardOpening((Start)start, structurePiecesHolder, random, 5, 3, true);
         }
 
-        public static CorridorExit create(class_6130 arg, Random random, int x, int y, int z, Direction orientation, int chainLength) {
+        public static CorridorExit create(StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength) {
             BlockBox blockBox = BlockBox.rotated(x, y, z, -5, -3, 0, 13, 14, 13, orientation);
-            if (!CorridorExit.isInBounds(blockBox) || arg.method_35461(blockBox) != null) {
+            if (!CorridorExit.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
                 return null;
             }
             return new CorridorExit(chainLength, random, blockBox, orientation);
@@ -677,9 +677,9 @@ public class NetherFortressGenerator {
             nbt.putBoolean("Mob", this.hasBlazeSpawner);
         }
 
-        public static BridgePlatform create(class_6130 arg, int x, int y, int z, int chainLength, Direction orientation) {
+        public static BridgePlatform create(StructurePiecesHolder structurePiecesHolder, int x, int y, int z, int chainLength, Direction orientation) {
             BlockBox blockBox = BlockBox.rotated(x, y, z, -2, 0, 0, 7, 8, 9, orientation);
-            if (!BridgePlatform.isInBounds(blockBox) || arg.method_35461(blockBox) != null) {
+            if (!BridgePlatform.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
                 return null;
             }
             return new BridgePlatform(chainLength, blockBox, orientation);
@@ -750,13 +750,13 @@ public class NetherFortressGenerator {
         }
 
         @Override
-        public void fillOpenings(StructurePiece start, class_6130 arg, Random random) {
-            this.fillSEOpening((Start)start, arg, random, 6, 2, false);
+        public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
+            this.fillSEOpening((Start)start, structurePiecesHolder, random, 6, 2, false);
         }
 
-        public static BridgeStairs create(class_6130 arg, int x, int y, int z, int chainlength, Direction orientation) {
+        public static BridgeStairs create(StructurePiecesHolder structurePiecesHolder, int x, int y, int z, int chainlength, Direction orientation) {
             BlockBox blockBox = BlockBox.rotated(x, y, z, -2, 0, 0, 7, 11, 7, orientation);
-            if (!BridgeStairs.isInBounds(blockBox) || arg.method_35461(blockBox) != null) {
+            if (!BridgeStairs.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
                 return null;
             }
             return new BridgeStairs(chainlength, blockBox, orientation);
@@ -810,15 +810,15 @@ public class NetherFortressGenerator {
         }
 
         @Override
-        public void fillOpenings(StructurePiece start, class_6130 arg, Random random) {
-            this.fillForwardOpening((Start)start, arg, random, 2, 0, false);
-            this.fillNWOpening((Start)start, arg, random, 0, 2, false);
-            this.fillSEOpening((Start)start, arg, random, 0, 2, false);
+        public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
+            this.fillForwardOpening((Start)start, structurePiecesHolder, random, 2, 0, false);
+            this.fillNWOpening((Start)start, structurePiecesHolder, random, 0, 2, false);
+            this.fillSEOpening((Start)start, structurePiecesHolder, random, 0, 2, false);
         }
 
-        public static BridgeSmallCrossing create(class_6130 arg, int x, int y, int z, Direction orientation, int chainLength) {
+        public static BridgeSmallCrossing create(StructurePiecesHolder structurePiecesHolder, int x, int y, int z, Direction orientation, int chainLength) {
             BlockBox blockBox = BlockBox.rotated(x, y, z, -2, 0, 0, 7, 9, 7, orientation);
-            if (!BridgeSmallCrossing.isInBounds(blockBox) || arg.method_35461(blockBox) != null) {
+            if (!BridgeSmallCrossing.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
                 return null;
             }
             return new BridgeSmallCrossing(chainLength, blockBox, orientation);
@@ -880,15 +880,15 @@ public class NetherFortressGenerator {
         }
 
         @Override
-        public void fillOpenings(StructurePiece start, class_6130 arg, Random random) {
-            this.fillForwardOpening((Start)start, arg, random, 8, 3, false);
-            this.fillNWOpening((Start)start, arg, random, 3, 8, false);
-            this.fillSEOpening((Start)start, arg, random, 3, 8, false);
+        public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
+            this.fillForwardOpening((Start)start, structurePiecesHolder, random, 8, 3, false);
+            this.fillNWOpening((Start)start, structurePiecesHolder, random, 3, 8, false);
+            this.fillSEOpening((Start)start, structurePiecesHolder, random, 3, 8, false);
         }
 
-        public static BridgeCrossing create(class_6130 arg, int x, int y, int z, Direction orientation, int chainLength) {
+        public static BridgeCrossing create(StructurePiecesHolder structurePiecesHolder, int x, int y, int z, Direction orientation, int chainLength) {
             BlockBox blockBox = BlockBox.rotated(x, y, z, -8, -3, 0, 19, 10, 19, orientation);
-            if (!BridgeCrossing.isInBounds(blockBox) || arg.method_35461(blockBox) != null) {
+            if (!BridgeCrossing.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
                 return null;
             }
             return new BridgeCrossing(chainLength, blockBox, orientation);
@@ -952,9 +952,9 @@ public class NetherFortressGenerator {
             this.seed = nbt.getInt("Seed");
         }
 
-        public static BridgeEnd create(class_6130 arg, Random random, int x, int y, int z, Direction orientation, int chainLength) {
+        public static BridgeEnd create(StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength) {
             BlockBox blockBox = BlockBox.rotated(x, y, z, -1, -3, 0, 5, 10, 8, orientation);
-            if (!BridgeEnd.isInBounds(blockBox) || arg.method_35461(blockBox) != null) {
+            if (!BridgeEnd.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
                 return null;
             }
             return new BridgeEnd(chainLength, random, blockBox, orientation);
@@ -1012,13 +1012,13 @@ public class NetherFortressGenerator {
         }
 
         @Override
-        public void fillOpenings(StructurePiece start, class_6130 arg, Random random) {
-            this.fillForwardOpening((Start)start, arg, random, 1, 3, false);
+        public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
+            this.fillForwardOpening((Start)start, structurePiecesHolder, random, 1, 3, false);
         }
 
-        public static Bridge create(class_6130 arg, Random random, int x, int y, int z, Direction orientation, int chainLength) {
+        public static Bridge create(StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength) {
             BlockBox blockBox = BlockBox.rotated(x, y, z, -1, -3, 0, 5, 10, 19, orientation);
-            if (!Bridge.isInBounds(blockBox) || arg.method_35461(blockBox) != null) {
+            if (!Bridge.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
                 return null;
             }
             return new Bridge(chainLength, random, blockBox, orientation);
@@ -1107,7 +1107,7 @@ public class NetherFortressGenerator {
             return bl ? i : -1;
         }
 
-        private Piece pickPiece(Start start, List<PieceData> possiblePieces, class_6130 arg, Random random, int x, int y, int z, Direction orientation, int chainLength) {
+        private Piece pickPiece(Start start, List<PieceData> possiblePieces, StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength) {
             int i = this.checkRemainingPieces(possiblePieces);
             boolean bl = i > 0 && chainLength <= 30;
             int j = 0;
@@ -1117,7 +1117,7 @@ public class NetherFortressGenerator {
                 for (PieceData pieceData : possiblePieces) {
                     if ((k -= pieceData.weight) >= 0) continue;
                     if (!pieceData.canGenerate(chainLength) || pieceData == start.lastPiece && !pieceData.repeatable) continue block0;
-                    Piece piece = NetherFortressGenerator.createPiece(pieceData, arg, random, x, y, z, orientation, chainLength);
+                    Piece piece = NetherFortressGenerator.createPiece(pieceData, structurePiecesHolder, random, x, y, z, orientation, chainLength);
                     if (piece == null) continue;
                     ++pieceData.generatedCount;
                     start.lastPiece = pieceData;
@@ -1127,41 +1127,41 @@ public class NetherFortressGenerator {
                     return piece;
                 }
             }
-            return BridgeEnd.create(arg, random, x, y, z, orientation, chainLength);
+            return BridgeEnd.create(structurePiecesHolder, random, x, y, z, orientation, chainLength);
         }
 
-        private StructurePiece pieceGenerator(Start start, class_6130 arg, Random random, int x, int y, int z, @Nullable Direction orientation, int chainLength, boolean inside) {
+        private StructurePiece pieceGenerator(Start start, StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, @Nullable Direction orientation, int chainLength, boolean inside) {
             Piece structurePiece;
             if (Math.abs(x - start.getBoundingBox().getMinX()) > 112 || Math.abs(z - start.getBoundingBox().getMinZ()) > 112) {
-                return BridgeEnd.create(arg, random, x, y, z, orientation, chainLength);
+                return BridgeEnd.create(structurePiecesHolder, random, x, y, z, orientation, chainLength);
             }
             List<PieceData> list = start.bridgePieces;
             if (inside) {
                 list = start.corridorPieces;
             }
-            if ((structurePiece = this.pickPiece(start, list, arg, random, x, y, z, orientation, chainLength + 1)) != null) {
-                arg.method_35462(structurePiece);
+            if ((structurePiece = this.pickPiece(start, list, structurePiecesHolder, random, x, y, z, orientation, chainLength + 1)) != null) {
+                structurePiecesHolder.addPiece(structurePiece);
                 start.pieces.add(structurePiece);
             }
             return structurePiece;
         }
 
         @Nullable
-        protected StructurePiece fillForwardOpening(Start start, class_6130 arg, Random random, int leftRightOffset, int heightOffset, boolean inside) {
+        protected StructurePiece fillForwardOpening(Start start, StructurePiecesHolder structurePiecesHolder, Random random, int leftRightOffset, int heightOffset, boolean inside) {
             Direction direction = this.getFacing();
             if (direction != null) {
                 switch (direction) {
                     case NORTH: {
-                        return this.pieceGenerator(start, arg, random, this.boundingBox.getMinX() + leftRightOffset, this.boundingBox.getMinY() + heightOffset, this.boundingBox.getMinZ() - 1, direction, this.getChainLength(), inside);
+                        return this.pieceGenerator(start, structurePiecesHolder, random, this.boundingBox.getMinX() + leftRightOffset, this.boundingBox.getMinY() + heightOffset, this.boundingBox.getMinZ() - 1, direction, this.getChainLength(), inside);
                     }
                     case SOUTH: {
-                        return this.pieceGenerator(start, arg, random, this.boundingBox.getMinX() + leftRightOffset, this.boundingBox.getMinY() + heightOffset, this.boundingBox.getMaxZ() + 1, direction, this.getChainLength(), inside);
+                        return this.pieceGenerator(start, structurePiecesHolder, random, this.boundingBox.getMinX() + leftRightOffset, this.boundingBox.getMinY() + heightOffset, this.boundingBox.getMaxZ() + 1, direction, this.getChainLength(), inside);
                     }
                     case WEST: {
-                        return this.pieceGenerator(start, arg, random, this.boundingBox.getMinX() - 1, this.boundingBox.getMinY() + heightOffset, this.boundingBox.getMinZ() + leftRightOffset, direction, this.getChainLength(), inside);
+                        return this.pieceGenerator(start, structurePiecesHolder, random, this.boundingBox.getMinX() - 1, this.boundingBox.getMinY() + heightOffset, this.boundingBox.getMinZ() + leftRightOffset, direction, this.getChainLength(), inside);
                     }
                     case EAST: {
-                        return this.pieceGenerator(start, arg, random, this.boundingBox.getMaxX() + 1, this.boundingBox.getMinY() + heightOffset, this.boundingBox.getMinZ() + leftRightOffset, direction, this.getChainLength(), inside);
+                        return this.pieceGenerator(start, structurePiecesHolder, random, this.boundingBox.getMaxX() + 1, this.boundingBox.getMinY() + heightOffset, this.boundingBox.getMinZ() + leftRightOffset, direction, this.getChainLength(), inside);
                     }
                 }
             }
@@ -1169,21 +1169,21 @@ public class NetherFortressGenerator {
         }
 
         @Nullable
-        protected StructurePiece fillNWOpening(Start start, class_6130 arg, Random random, int heightOffset, int leftRightOffset, boolean inside) {
+        protected StructurePiece fillNWOpening(Start start, StructurePiecesHolder structurePiecesHolder, Random random, int heightOffset, int leftRightOffset, boolean inside) {
             Direction direction = this.getFacing();
             if (direction != null) {
                 switch (direction) {
                     case NORTH: {
-                        return this.pieceGenerator(start, arg, random, this.boundingBox.getMinX() - 1, this.boundingBox.getMinY() + heightOffset, this.boundingBox.getMinZ() + leftRightOffset, Direction.WEST, this.getChainLength(), inside);
+                        return this.pieceGenerator(start, structurePiecesHolder, random, this.boundingBox.getMinX() - 1, this.boundingBox.getMinY() + heightOffset, this.boundingBox.getMinZ() + leftRightOffset, Direction.WEST, this.getChainLength(), inside);
                     }
                     case SOUTH: {
-                        return this.pieceGenerator(start, arg, random, this.boundingBox.getMinX() - 1, this.boundingBox.getMinY() + heightOffset, this.boundingBox.getMinZ() + leftRightOffset, Direction.WEST, this.getChainLength(), inside);
+                        return this.pieceGenerator(start, structurePiecesHolder, random, this.boundingBox.getMinX() - 1, this.boundingBox.getMinY() + heightOffset, this.boundingBox.getMinZ() + leftRightOffset, Direction.WEST, this.getChainLength(), inside);
                     }
                     case WEST: {
-                        return this.pieceGenerator(start, arg, random, this.boundingBox.getMinX() + leftRightOffset, this.boundingBox.getMinY() + heightOffset, this.boundingBox.getMinZ() - 1, Direction.NORTH, this.getChainLength(), inside);
+                        return this.pieceGenerator(start, structurePiecesHolder, random, this.boundingBox.getMinX() + leftRightOffset, this.boundingBox.getMinY() + heightOffset, this.boundingBox.getMinZ() - 1, Direction.NORTH, this.getChainLength(), inside);
                     }
                     case EAST: {
-                        return this.pieceGenerator(start, arg, random, this.boundingBox.getMinX() + leftRightOffset, this.boundingBox.getMinY() + heightOffset, this.boundingBox.getMinZ() - 1, Direction.NORTH, this.getChainLength(), inside);
+                        return this.pieceGenerator(start, structurePiecesHolder, random, this.boundingBox.getMinX() + leftRightOffset, this.boundingBox.getMinY() + heightOffset, this.boundingBox.getMinZ() - 1, Direction.NORTH, this.getChainLength(), inside);
                     }
                 }
             }
@@ -1191,21 +1191,21 @@ public class NetherFortressGenerator {
         }
 
         @Nullable
-        protected StructurePiece fillSEOpening(Start start, class_6130 arg, Random random, int heightOffset, int leftRightOffset, boolean inside) {
+        protected StructurePiece fillSEOpening(Start start, StructurePiecesHolder structurePiecesHolder, Random random, int heightOffset, int leftRightOffset, boolean inside) {
             Direction direction = this.getFacing();
             if (direction != null) {
                 switch (direction) {
                     case NORTH: {
-                        return this.pieceGenerator(start, arg, random, this.boundingBox.getMaxX() + 1, this.boundingBox.getMinY() + heightOffset, this.boundingBox.getMinZ() + leftRightOffset, Direction.EAST, this.getChainLength(), inside);
+                        return this.pieceGenerator(start, structurePiecesHolder, random, this.boundingBox.getMaxX() + 1, this.boundingBox.getMinY() + heightOffset, this.boundingBox.getMinZ() + leftRightOffset, Direction.EAST, this.getChainLength(), inside);
                     }
                     case SOUTH: {
-                        return this.pieceGenerator(start, arg, random, this.boundingBox.getMaxX() + 1, this.boundingBox.getMinY() + heightOffset, this.boundingBox.getMinZ() + leftRightOffset, Direction.EAST, this.getChainLength(), inside);
+                        return this.pieceGenerator(start, structurePiecesHolder, random, this.boundingBox.getMaxX() + 1, this.boundingBox.getMinY() + heightOffset, this.boundingBox.getMinZ() + leftRightOffset, Direction.EAST, this.getChainLength(), inside);
                     }
                     case WEST: {
-                        return this.pieceGenerator(start, arg, random, this.boundingBox.getMinX() + leftRightOffset, this.boundingBox.getMinY() + heightOffset, this.boundingBox.getMaxZ() + 1, Direction.SOUTH, this.getChainLength(), inside);
+                        return this.pieceGenerator(start, structurePiecesHolder, random, this.boundingBox.getMinX() + leftRightOffset, this.boundingBox.getMinY() + heightOffset, this.boundingBox.getMaxZ() + 1, Direction.SOUTH, this.getChainLength(), inside);
                     }
                     case EAST: {
-                        return this.pieceGenerator(start, arg, random, this.boundingBox.getMinX() + leftRightOffset, this.boundingBox.getMinY() + heightOffset, this.boundingBox.getMaxZ() + 1, Direction.SOUTH, this.getChainLength(), inside);
+                        return this.pieceGenerator(start, structurePiecesHolder, random, this.boundingBox.getMinX() + leftRightOffset, this.boundingBox.getMinY() + heightOffset, this.boundingBox.getMaxZ() + 1, Direction.SOUTH, this.getChainLength(), inside);
                     }
                 }
             }

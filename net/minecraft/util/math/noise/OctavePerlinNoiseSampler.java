@@ -67,19 +67,19 @@ implements NoiseSampler {
         this(random, octaves, ChunkRandom::new);
     }
 
-    private OctavePerlinNoiseSampler(WorldGenRandom worldGenRandom, IntSortedSet intSortedSet, LongFunction<WorldGenRandom> longFunction) {
-        this(worldGenRandom, OctavePerlinNoiseSampler.calculateAmplitudes(intSortedSet), longFunction);
+    private OctavePerlinNoiseSampler(WorldGenRandom random, IntSortedSet octaves, LongFunction<WorldGenRandom> randomFunction) {
+        this(random, OctavePerlinNoiseSampler.calculateAmplitudes(octaves), randomFunction);
     }
 
     protected OctavePerlinNoiseSampler(WorldGenRandom random, Pair<Integer, DoubleList> offsetAndAmplitudes) {
         this(random, offsetAndAmplitudes, ChunkRandom::new);
     }
 
-    protected OctavePerlinNoiseSampler(WorldGenRandom worldGenRandom, Pair<Integer, DoubleList> pair, LongFunction<WorldGenRandom> longFunction) {
+    protected OctavePerlinNoiseSampler(WorldGenRandom random, Pair<Integer, DoubleList> octaves, LongFunction<WorldGenRandom> randomFunction) {
         double d;
-        int i = pair.getFirst();
-        this.amplitudes = pair.getSecond();
-        PerlinNoiseSampler perlinNoiseSampler = new PerlinNoiseSampler(worldGenRandom);
+        int i = octaves.getFirst();
+        this.amplitudes = octaves.getSecond();
+        PerlinNoiseSampler perlinNoiseSampler = new PerlinNoiseSampler(random);
         int j = this.amplitudes.size();
         int k = -i;
         this.octaveSamplers = new PerlinNoiseSampler[j];
@@ -90,13 +90,13 @@ implements NoiseSampler {
             if (l < j) {
                 double e = this.amplitudes.getDouble(l);
                 if (e != 0.0) {
-                    this.octaveSamplers[l] = new PerlinNoiseSampler(worldGenRandom);
+                    this.octaveSamplers[l] = new PerlinNoiseSampler(random);
                     continue;
                 }
-                OctavePerlinNoiseSampler.method_34401(worldGenRandom);
+                OctavePerlinNoiseSampler.skipCalls(random);
                 continue;
             }
-            OctavePerlinNoiseSampler.method_34401(worldGenRandom);
+            OctavePerlinNoiseSampler.skipCalls(random);
         }
         if (k < j - 1) {
             throw new IllegalArgumentException("Positive octaves are temporarily disabled");
@@ -105,8 +105,8 @@ implements NoiseSampler {
         this.persistence = Math.pow(2.0, j - 1) / (Math.pow(2.0, j) - 1.0);
     }
 
-    private static void method_34401(WorldGenRandom worldGenRandom) {
-        worldGenRandom.skip(262);
+    private static void skipCalls(WorldGenRandom random) {
+        random.skip(262);
     }
 
     public double sample(double x, double y, double z) {

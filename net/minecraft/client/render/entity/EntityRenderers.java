@@ -9,7 +9,6 @@ import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.render.entity.AreaEffectCloudEntityRenderer;
 import net.minecraft.client.render.entity.ArmorStandEntityRenderer;
 import net.minecraft.client.render.entity.ArrowEntityRenderer;
 import net.minecraft.client.render.entity.AxolotlEntityRenderer;
@@ -28,6 +27,7 @@ import net.minecraft.client.render.entity.DonkeyEntityRenderer;
 import net.minecraft.client.render.entity.DragonFireballEntityRenderer;
 import net.minecraft.client.render.entity.DrownedEntityRenderer;
 import net.minecraft.client.render.entity.ElderGuardianEntityRenderer;
+import net.minecraft.client.render.entity.EmptyEntityRenderer;
 import net.minecraft.client.render.entity.EndCrystalEntityRenderer;
 import net.minecraft.client.render.entity.EnderDragonEntityRenderer;
 import net.minecraft.client.render.entity.EndermanEntityRenderer;
@@ -161,7 +161,7 @@ public class EntityRenderers {
     }
 
     static {
-        EntityRenderers.register(EntityType.AREA_EFFECT_CLOUD, AreaEffectCloudEntityRenderer::new);
+        EntityRenderers.register(EntityType.AREA_EFFECT_CLOUD, EmptyEntityRenderer::new);
         EntityRenderers.register(EntityType.ARMOR_STAND, ArmorStandEntityRenderer::new);
         EntityRenderers.register(EntityType.ARROW, ArrowEntityRenderer::new);
         EntityRenderers.register(EntityType.AXOLOTL, AxolotlEntityRenderer::new);
@@ -218,6 +218,7 @@ public class EntityRenderers {
         EntityRenderers.register(EntityType.LLAMA, context -> new LlamaEntityRenderer(context, EntityModelLayers.LLAMA));
         EntityRenderers.register(EntityType.LLAMA_SPIT, LlamaSpitEntityRenderer::new);
         EntityRenderers.register(EntityType.MAGMA_CUBE, MagmaCubeEntityRenderer::new);
+        EntityRenderers.register(EntityType.MARKER, EmptyEntityRenderer::new);
         EntityRenderers.register(EntityType.MINECART, context -> new MinecartEntityRenderer(context, EntityModelLayers.MINECART));
         EntityRenderers.register(EntityType.MOOSHROOM, MooshroomEntityRenderer::new);
         EntityRenderers.register(EntityType.MULE, context -> new DonkeyEntityRenderer(context, 0.92f, EntityModelLayers.MULE));

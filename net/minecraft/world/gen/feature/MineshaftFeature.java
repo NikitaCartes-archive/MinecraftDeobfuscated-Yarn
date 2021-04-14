@@ -52,7 +52,7 @@ extends StructureFeature<MineshaftFeatureConfig> {
         @Override
         public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, ChunkPos chunkPos, Biome biome, MineshaftFeatureConfig mineshaftFeatureConfig, HeightLimitView heightLimitView) {
             MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(0, this.random, chunkPos.getOffsetX(2), chunkPos.getOffsetZ(2), mineshaftFeatureConfig.type);
-            this.method_35462(mineshaftRoom);
+            this.addPiece(mineshaftRoom);
             mineshaftRoom.fillOpenings(mineshaftRoom, this, this.random);
             if (mineshaftFeatureConfig.type == Type.MESA) {
                 int i = -5;

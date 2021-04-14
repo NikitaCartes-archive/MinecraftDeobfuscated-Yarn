@@ -140,7 +140,7 @@ extends LandPathNodeMaker {
             }
             return pathNode;
         }
-        if (pathNode == null && maxYStep > 0 && pathNodeType != PathNodeType.FENCE && pathNodeType != PathNodeType.UNPASSABLE_RAIL && pathNodeType != PathNodeType.TRAPDOOR) {
+        if (pathNode == null && maxYStep > 0 && pathNodeType != PathNodeType.FENCE && pathNodeType != PathNodeType.UNPASSABLE_RAIL && pathNodeType != PathNodeType.TRAPDOOR && pathNodeType != PathNodeType.POWDER_SNOW) {
             pathNode = this.getPathNode(x, y + 1, z, maxYStep - 1, prevFeetY);
         }
         if (pathNodeType == PathNodeType.OPEN) {

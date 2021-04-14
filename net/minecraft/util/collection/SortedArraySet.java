@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class SortedArraySet<T>
 extends AbstractSet<T> {
-    private static final int field_29860 = 10;
+    private static final int DEFAULT_CAPACITY = 10;
     private final Comparator<T> comparator;
     private T[] elements;
     private int size;
@@ -26,7 +26,7 @@ extends AbstractSet<T> {
         this.elements = SortedArraySet.cast(new Object[initialCapacity]);
     }
 
-    public static <T extends Comparable<T>> SortedArraySet<T> method_34958() {
+    public static <T extends Comparable<T>> SortedArraySet<T> create() {
         return SortedArraySet.create(10);
     }
 
@@ -34,12 +34,12 @@ extends AbstractSet<T> {
         return new SortedArraySet(initialCapacity, Comparator.naturalOrder());
     }
 
-    public static <T> SortedArraySet<T> method_34959(Comparator<T> comparator) {
-        return SortedArraySet.method_34960(comparator, 10);
+    public static <T> SortedArraySet<T> create(Comparator<T> comparator) {
+        return SortedArraySet.create(comparator, 10);
     }
 
-    public static <T> SortedArraySet<T> method_34960(Comparator<T> comparator, int i) {
-        return new SortedArraySet<T>(i, comparator);
+    public static <T> SortedArraySet<T> create(Comparator<T> comparator, int initialCapacity) {
+        return new SortedArraySet<T>(initialCapacity, comparator);
     }
 
     private static <T> T[] cast(Object[] array) {
@@ -120,7 +120,7 @@ extends AbstractSet<T> {
     }
 
     @Nullable
-    public T method_34961(T object) {
+    public T getIfContains(T object) {
         int i = this.binarySearch(object);
         if (i >= 0) {
             return this.get(i);

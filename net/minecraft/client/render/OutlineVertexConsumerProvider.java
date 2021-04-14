@@ -38,7 +38,7 @@ implements VertexConsumerProvider {
         if (optional.isPresent()) {
             VertexConsumer vertexConsumer2 = this.plainDrawer.getBuffer(optional.get());
             OutlineVertexConsumer outlineVertexConsumer = new OutlineVertexConsumer(vertexConsumer2, this.red, this.green, this.blue, this.alpha);
-            return VertexConsumers.dual(outlineVertexConsumer, vertexConsumer);
+            return VertexConsumers.union((VertexConsumer)outlineVertexConsumer, vertexConsumer);
         }
         return vertexConsumer;
     }
@@ -70,11 +70,11 @@ implements VertexConsumerProvider {
         }
 
         @Override
-        public void fixedColor(int i, int j, int k, int l) {
+        public void fixedColor(int red, int green, int blue, int alpha) {
         }
 
         @Override
-        public void method_35666() {
+        public void unfixColor() {
         }
 
         @Override

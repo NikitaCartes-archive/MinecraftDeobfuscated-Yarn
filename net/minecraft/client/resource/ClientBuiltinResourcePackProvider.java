@@ -22,7 +22,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.ProgressScreen;
+import net.minecraft.client.gui.screen.ScreenTexts;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.resource.DefaultClientResourcePack;
 import net.minecraft.client.resource.ResourceIndex;
 import net.minecraft.client.util.NetworkUtils;
@@ -134,6 +137,17 @@ implements ResourcePackProvider {
                 if (throwable != null) {
                     LOGGER.warn("Pack application failed: {}, deleting file {}", (Object)throwable.getMessage(), (Object)file);
                     ClientBuiltinResourcePackProvider.delete(file);
+                    MinecraftClient minecraftClient = MinecraftClient.getInstance();
+                    minecraftClient.execute(() -> minecraftClient.openScreen(new ConfirmScreen(bl -> {
+                        if (bl) {
+                            minecraftClient.openScreen(null);
+                        } else {
+                            ClientPlayNetworkHandler clientPlayNetworkHandler = minecraftClient.getNetworkHandler();
+                            if (clientPlayNetworkHandler != null) {
+                                clientPlayNetworkHandler.getConnection().disconnect(new TranslatableText("connect.aborted"));
+                            }
+                        }
+                    }, new TranslatableText("multiplayer.texturePrompt.failure.line1"), new TranslatableText("multiplayer.texturePrompt.failure.line2"), ScreenTexts.PROCEED, new TranslatableText("menu.disconnect"))));
                 }
             });
             return completableFuture2;

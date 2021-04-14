@@ -827,7 +827,7 @@ implements ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         this.client.player.updateHealth(packet.getHealth());
         this.client.player.getHungerManager().setFoodLevel(packet.getFood());
-        this.client.player.getHungerManager().setSaturationLevelClient(packet.getSaturation());
+        this.client.player.getHungerManager().setSaturationLevel(packet.getSaturation());
     }
 
     @Override
@@ -847,13 +847,13 @@ implements ClientPlayPacketListener {
         if (registryKey != clientPlayerEntity.world.getRegistryKey()) {
             ClientWorld.Properties properties;
             Scoreboard scoreboard = this.world.getScoreboard();
-            Map<String, MapState> map = this.world.method_35754();
+            Map<String, MapState> map = this.world.getMapStates();
             boolean bl = packet.isDebugWorld();
             boolean bl2 = packet.isFlatWorld();
             this.worldProperties = properties = new ClientWorld.Properties(this.worldProperties.getDifficulty(), this.worldProperties.isHardcore(), bl2);
             this.world = new ClientWorld(this, properties, registryKey, dimensionType, this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer, bl, packet.getSha256Seed());
             this.world.setScoreboard(scoreboard);
-            this.world.method_35753(map);
+            this.world.putMapStates(map);
             this.client.joinWorld(this.world);
             this.client.openScreen(new DownloadingTerrainScreen());
         }
@@ -1502,13 +1502,20 @@ implements ClientPlayPacketListener {
                 if (serverInfo != null) {
                     ServerList.updateServerListEntry(serverInfo);
                 }
-            }, bl ? new TranslatableText("multiplayer.requiredTexturePrompt.line1") : new TranslatableText("multiplayer.texturePrompt.line1"), bl ? new TranslatableText("multiplayer.requiredTexturePrompt.line2").formatted(Formatting.YELLOW, Formatting.BOLD) : new TranslatableText("multiplayer.texturePrompt.line2"), bl ? new TranslatableText("gui.proceed") : ScreenTexts.YES, bl ? new TranslatableText("menu.disconnect") : ScreenTexts.NO)));
+            }, bl ? new TranslatableText("multiplayer.requiredTexturePrompt.line1") : new TranslatableText("multiplayer.texturePrompt.line1"), ClientPlayNetworkHandler.getServerResourcePackPrompt(bl ? new TranslatableText("multiplayer.requiredTexturePrompt.line2").formatted(Formatting.YELLOW, Formatting.BOLD) : new TranslatableText("multiplayer.texturePrompt.line2"), packet.getPrompt()), bl ? ScreenTexts.PROCEED : ScreenTexts.YES, bl ? new TranslatableText("menu.disconnect") : ScreenTexts.NO)));
         } else {
             this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.DECLINED);
             if (bl) {
                 this.connection.disconnect(new TranslatableText("multiplayer.requiredTexturePrompt.disconnect"));
             }
         }
+    }
+
+    private static Text getServerResourcePackPrompt(Text defaultPrompt, @Nullable Text customPrompt) {
+        if (customPrompt == null) {
+            return defaultPrompt;
+        }
+        return new TranslatableText("multiplayer.texturePrompt.serverPrompt", defaultPrompt, customPrompt);
     }
 
     private boolean validateResourcePackUrl(String url) {

@@ -16,8 +16,8 @@ extends StructureStart<C> {
     }
 
     @Override
-    protected BlockBox method_36217() {
-        return super.method_36217().expand(12);
+    protected BlockBox calculateBoundingBox() {
+        return super.calculateBoundingBox().expand(12);
     }
 }
 

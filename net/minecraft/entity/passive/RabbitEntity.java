@@ -4,7 +4,6 @@
 package net.minecraft.entity.passive;
 
 import java.util.Random;
-import net.fabricmc.yarn.constants.RabbitTypes;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -68,16 +67,16 @@ extends AnimalEntity {
     public static final double field_30356 = 0.6;
     public static final double field_30357 = 0.8;
     public static final double field_30358 = 1.0;
-    public static final double field_30359 = 2.2;
+    public static final double ESCAPE_SPEED = 2.2;
     public static final double field_30360 = 1.4;
     private static final TrackedData<Integer> RABBIT_TYPE = DataTracker.registerData(RabbitEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    public static final int field_30361 = 0;
-    public static final int field_30362 = 1;
-    public static final int field_30363 = 2;
-    public static final int field_30364 = 3;
-    public static final int field_30365 = 4;
-    public static final int field_30366 = 5;
-    public static final int field_30367 = 99;
+    public static final int BROWN_TYPE = 0;
+    public static final int WHITE_TYPE = 1;
+    public static final int BLACK_TYPE = 2;
+    public static final int WHITE_SPOTTED_TYPE = 3;
+    public static final int GOLD_TYPE = 4;
+    public static final int SALT_TYPE = 5;
+    public static final int KILLER_BUNNY_TYPE = 99;
     private static final Identifier KILLER_BUNNY = new Identifier("killer_bunny");
     public static final int field_30368 = 8;
     public static final int field_30369 = 8;
@@ -190,7 +189,7 @@ extends AnimalEntity {
                 this.setJumping(false);
                 this.scheduleJump();
             }
-            if (this.getRabbitType() == RabbitTypes.KILLER_BUNNY && this.ticksUntilJump == 0 && (livingEntity = this.getTarget()) != null && this.squaredDistanceTo(livingEntity) < 16.0) {
+            if (this.getRabbitType() == KILLER_BUNNY_TYPE && this.ticksUntilJump == 0 && (livingEntity = this.getTarget()) != null && this.squaredDistanceTo(livingEntity) < 16.0) {
                 this.lookTowards(livingEntity.getX(), livingEntity.getZ());
                 this.moveControl.moveTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), this.moveControl.getSpeed());
                 this.startJump();
@@ -290,7 +289,7 @@ extends AnimalEntity {
 
     @Override
     public boolean tryAttack(Entity target) {
-        if (this.getRabbitType() == RabbitTypes.KILLER_BUNNY) {
+        if (this.getRabbitType() == KILLER_BUNNY_TYPE) {
             this.playSound(SoundEvents.ENTITY_RABBIT_ATTACK, 1.0f, (this.random.nextFloat() - this.random.nextFloat()) * 0.2f + 1.0f);
             return target.damage(DamageSource.mob(this), 8.0f);
         }
@@ -299,7 +298,7 @@ extends AnimalEntity {
 
     @Override
     public SoundCategory getSoundCategory() {
-        return this.getRabbitType() == RabbitTypes.KILLER_BUNNY ? SoundCategory.HOSTILE : SoundCategory.NEUTRAL;
+        return this.getRabbitType() == KILLER_BUNNY_TYPE ? SoundCategory.HOSTILE : SoundCategory.NEUTRAL;
     }
 
     private static boolean isTempting(ItemStack stack) {
@@ -327,7 +326,7 @@ extends AnimalEntity {
     }
 
     public void setRabbitType(int rabbitType) {
-        if (rabbitType == RabbitTypes.KILLER_BUNNY) {
+        if (rabbitType == KILLER_BUNNY_TYPE) {
             this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(8.0);
             this.goalSelector.add(4, new RabbitAttackGoal(this));
             this.targetSelector.add(1, new RevengeGoal(this, new Class[0]).setGroupRevenge(new Class[0]));
@@ -499,7 +498,7 @@ extends AnimalEntity {
 
         @Override
         public boolean canStart() {
-            return this.rabbit.getRabbitType() != RabbitTypes.KILLER_BUNNY && super.canStart();
+            return this.rabbit.getRabbitType() != KILLER_BUNNY_TYPE && super.canStart();
         }
     }
 

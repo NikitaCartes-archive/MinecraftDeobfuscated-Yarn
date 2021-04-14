@@ -243,7 +243,7 @@ public class Framebuffer {
         bufferBuilder.vertex(f, 0.0, 0.0).texture(h, i).color(255, 255, 255, 255).next();
         bufferBuilder.vertex(0.0, 0.0, 0.0).texture(0.0f, i).color(255, 255, 255, 255).next();
         bufferBuilder.end();
-        BufferRenderer.method_34424(bufferBuilder);
+        BufferRenderer.postDraw(bufferBuilder);
         shader.bind();
         GlStateManager._depthMask(true);
         GlStateManager._colorMask(true, true, true, true);

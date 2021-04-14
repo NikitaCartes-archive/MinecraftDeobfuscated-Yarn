@@ -44,13 +44,13 @@ implements AutoCloseable {
         this.program.close();
     }
 
-    public final String method_35777() {
-        return this.program.method_35763();
+    public final String getName() {
+        return this.program.getName();
     }
 
-    public void addAuxTarget(String name, IntSupplier intSupplier, int width, int height) {
+    public void addAuxTarget(String name, IntSupplier valueSupplier, int width, int height) {
         this.samplerNames.add(this.samplerNames.size(), name);
-        this.samplerValues.add(this.samplerValues.size(), intSupplier);
+        this.samplerValues.add(this.samplerValues.size(), valueSupplier);
         this.samplerWidths.add(this.samplerWidths.size(), width);
         this.samplerHeights.add(this.samplerHeights.size(), height);
     }
@@ -86,7 +86,7 @@ implements AutoCloseable {
         bufferBuilder.vertex(f, g, 500.0).next();
         bufferBuilder.vertex(0.0, g, 500.0).next();
         bufferBuilder.end();
-        BufferRenderer.method_34424(bufferBuilder);
+        BufferRenderer.postDraw(bufferBuilder);
         RenderSystem.depthFunc(515);
         this.program.disable();
         this.output.endWrite();

@@ -62,7 +62,7 @@ implements Monster {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final TrackedData<Integer> PHASE_TYPE = DataTracker.registerData(EnderDragonEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TargetPredicate CLOSE_PLAYER_PREDICATE = new TargetPredicate().setBaseMaxDistance(64.0);
-    private static final int field_30428 = 200;
+    private static final int MAX_HEALTH = 200;
     private static final int field_30429 = 400;
     private static final float field_30430 = 0.25f;
     /**
@@ -71,14 +71,14 @@ implements Monster {
     public final double[][] segmentCircularBuffer = new double[64][3];
     public int latestSegment = -1;
     private final EnderDragonPart[] parts;
-    public final EnderDragonPart partHead;
-    private final EnderDragonPart partNeck;
-    private final EnderDragonPart partBody;
-    private final EnderDragonPart partTail1;
-    private final EnderDragonPart partTail2;
-    private final EnderDragonPart partTail3;
-    private final EnderDragonPart partWingRight;
-    private final EnderDragonPart partWingLeft;
+    public final EnderDragonPart head;
+    private final EnderDragonPart neck;
+    private final EnderDragonPart body;
+    private final EnderDragonPart tail1;
+    private final EnderDragonPart tail2;
+    private final EnderDragonPart tail3;
+    private final EnderDragonPart rightWing;
+    private final EnderDragonPart leftWing;
     public float prevWingPosition;
     public float wingPosition;
     public boolean slowedDownByBlock;
@@ -104,15 +104,15 @@ implements Monster {
 
     public EnderDragonEntity(EntityType<? extends EnderDragonEntity> entityType, World world) {
         super((EntityType<? extends MobEntity>)EntityType.ENDER_DRAGON, world);
-        this.partHead = new EnderDragonPart(this, "head", 1.0f, 1.0f);
-        this.partNeck = new EnderDragonPart(this, "neck", 3.0f, 3.0f);
-        this.partBody = new EnderDragonPart(this, "body", 5.0f, 3.0f);
-        this.partTail1 = new EnderDragonPart(this, "tail", 2.0f, 2.0f);
-        this.partTail2 = new EnderDragonPart(this, "tail", 2.0f, 2.0f);
-        this.partTail3 = new EnderDragonPart(this, "tail", 2.0f, 2.0f);
-        this.partWingRight = new EnderDragonPart(this, "wing", 4.0f, 2.0f);
-        this.partWingLeft = new EnderDragonPart(this, "wing", 4.0f, 2.0f);
-        this.parts = new EnderDragonPart[]{this.partHead, this.partNeck, this.partBody, this.partTail1, this.partTail2, this.partTail3, this.partWingRight, this.partWingLeft};
+        this.head = new EnderDragonPart(this, "head", 1.0f, 1.0f);
+        this.neck = new EnderDragonPart(this, "neck", 3.0f, 3.0f);
+        this.body = new EnderDragonPart(this, "body", 5.0f, 3.0f);
+        this.tail1 = new EnderDragonPart(this, "tail", 2.0f, 2.0f);
+        this.tail2 = new EnderDragonPart(this, "tail", 2.0f, 2.0f);
+        this.tail3 = new EnderDragonPart(this, "tail", 2.0f, 2.0f);
+        this.rightWing = new EnderDragonPart(this, "wing", 4.0f, 2.0f);
+        this.leftWing = new EnderDragonPart(this, "wing", 4.0f, 2.0f);
+        this.parts = new EnderDragonPart[]{this.head, this.neck, this.body, this.tail1, this.tail2, this.tail3, this.rightWing, this.leftWing};
         this.setHealth(this.getMaxHealth());
         this.noClip = true;
         this.ignoreCameraFrustum = true;
@@ -270,31 +270,31 @@ implements Monster {
         float x = this.yaw * ((float)Math.PI / 180);
         float y = MathHelper.sin(x);
         float z = MathHelper.cos(x);
-        this.movePart(this.partBody, y * 0.5f, 0.0, -z * 0.5f);
-        this.movePart(this.partWingRight, z * 4.5f, 2.0, y * 4.5f);
-        this.movePart(this.partWingLeft, z * -4.5f, 2.0, y * -4.5f);
+        this.movePart(this.body, y * 0.5f, 0.0, -z * 0.5f);
+        this.movePart(this.rightWing, z * 4.5f, 2.0, y * 4.5f);
+        this.movePart(this.leftWing, z * -4.5f, 2.0, y * -4.5f);
         if (!this.world.isClient && this.hurtTime == 0) {
-            this.launchLivingEntities(this.world.getOtherEntities(this, this.partWingRight.getBoundingBox().expand(4.0, 2.0, 4.0).offset(0.0, -2.0, 0.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
-            this.launchLivingEntities(this.world.getOtherEntities(this, this.partWingLeft.getBoundingBox().expand(4.0, 2.0, 4.0).offset(0.0, -2.0, 0.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
-            this.damageLivingEntities(this.world.getOtherEntities(this, this.partHead.getBoundingBox().expand(1.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
-            this.damageLivingEntities(this.world.getOtherEntities(this, this.partNeck.getBoundingBox().expand(1.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
+            this.launchLivingEntities(this.world.getOtherEntities(this, this.rightWing.getBoundingBox().expand(4.0, 2.0, 4.0).offset(0.0, -2.0, 0.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
+            this.launchLivingEntities(this.world.getOtherEntities(this, this.leftWing.getBoundingBox().expand(4.0, 2.0, 4.0).offset(0.0, -2.0, 0.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
+            this.damageLivingEntities(this.world.getOtherEntities(this, this.head.getBoundingBox().expand(1.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
+            this.damageLivingEntities(this.world.getOtherEntities(this, this.neck.getBoundingBox().expand(1.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
         }
         float aa = MathHelper.sin(this.yaw * ((float)Math.PI / 180) - this.yawAcceleration * 0.01f);
         float ab = MathHelper.cos(this.yaw * ((float)Math.PI / 180) - this.yawAcceleration * 0.01f);
         float ac = this.getHeadVerticalMovement();
-        this.movePart(this.partHead, aa * 6.5f * v, ac + w * 6.5f, -ab * 6.5f * v);
-        this.movePart(this.partNeck, aa * 5.5f * v, ac + w * 5.5f, -ab * 5.5f * v);
+        this.movePart(this.head, aa * 6.5f * v, ac + w * 6.5f, -ab * 6.5f * v);
+        this.movePart(this.neck, aa * 5.5f * v, ac + w * 5.5f, -ab * 5.5f * v);
         double[] ds = this.getSegmentProperties(5, 1.0f);
         for (ad = 0; ad < 3; ++ad) {
             EnderDragonPart enderDragonPart = null;
             if (ad == 0) {
-                enderDragonPart = this.partTail1;
+                enderDragonPart = this.tail1;
             }
             if (ad == 1) {
-                enderDragonPart = this.partTail2;
+                enderDragonPart = this.tail2;
             }
             if (ad == 2) {
-                enderDragonPart = this.partTail3;
+                enderDragonPart = this.tail3;
             }
             double[] es = this.getSegmentProperties(12 + ad * 2, 1.0f);
             float ae = this.yaw * ((float)Math.PI / 180) + this.wrapYawChange(es[0] - ds[0]) * ((float)Math.PI / 180);
@@ -305,7 +305,7 @@ implements Monster {
             this.movePart(enderDragonPart, -(y * 1.5f + af * q) * v, es[1] - ds[1] - (double)((q + 1.5f) * w) + 1.5, (z * 1.5f + ag * q) * v);
         }
         if (!this.world.isClient) {
-            this.slowedDownByBlock = this.destroyBlocks(this.partHead.getBoundingBox()) | this.destroyBlocks(this.partNeck.getBoundingBox()) | this.destroyBlocks(this.partBody.getBoundingBox());
+            this.slowedDownByBlock = this.destroyBlocks(this.head.getBoundingBox()) | this.destroyBlocks(this.neck.getBoundingBox()) | this.destroyBlocks(this.body.getBoundingBox());
             if (this.fight != null) {
                 this.fight.updateFight(this);
             }
@@ -363,8 +363,8 @@ implements Monster {
     }
 
     private void launchLivingEntities(List<Entity> entities) {
-        double d = (this.partBody.getBoundingBox().minX + this.partBody.getBoundingBox().maxX) / 2.0;
-        double e = (this.partBody.getBoundingBox().minZ + this.partBody.getBoundingBox().maxZ) / 2.0;
+        double d = (this.body.getBoundingBox().minX + this.body.getBoundingBox().maxX) / 2.0;
+        double e = (this.body.getBoundingBox().minZ + this.body.getBoundingBox().maxZ) / 2.0;
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity)) continue;
             double f = entity.getX() - d;
@@ -424,7 +424,7 @@ implements Monster {
             return false;
         }
         amount = this.phaseManager.getCurrent().modifyDamageTaken(source, amount);
-        if (part != this.partHead) {
+        if (part != this.head) {
             amount = amount / 4.0f + Math.min(amount, 1.0f);
         }
         if (amount < 0.01f) {
@@ -451,7 +451,7 @@ implements Monster {
     @Override
     public boolean damage(DamageSource source, float amount) {
         if (source instanceof EntityDamageSource && ((EntityDamageSource)source).isThorns()) {
-            this.damagePart(this.partBody, source, amount);
+            this.damagePart(this.body, source, amount);
         }
         return false;
     }
@@ -745,7 +745,7 @@ implements Monster {
     public void crystalDestroyed(EndCrystalEntity crystal, BlockPos pos, DamageSource source) {
         PlayerEntity playerEntity = source.getAttacker() instanceof PlayerEntity ? (PlayerEntity)source.getAttacker() : this.world.getClosestPlayer(CLOSE_PLAYER_PREDICATE, pos.getX(), pos.getY(), pos.getZ());
         if (crystal == this.connectedCrystal) {
-            this.damagePart(this.partHead, DamageSource.explosion(playerEntity), 10.0f);
+            this.damagePart(this.head, DamageSource.explosion(playerEntity), 10.0f);
         }
         this.phaseManager.getCurrent().crystalDestroyed(crystal, pos, source, playerEntity);
     }

@@ -1069,7 +1069,7 @@ AutoCloseable {
     }
 
     @Override
-    public boolean method_35033() {
+    public boolean isSnooperEnabled() {
         return true;
     }
 
@@ -1611,6 +1611,11 @@ AutoCloseable {
 
     public ResourceManager getResourceManager() {
         return this.serverResourceManager.getResourceManager();
+    }
+
+    @Nullable
+    public Text getResourcePackPrompt() {
+        return null;
     }
 
     @Override

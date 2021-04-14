@@ -4,12 +4,12 @@
 package net.minecraft.structure;
 
 import java.util.Random;
-import net.minecraft.class_6130;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.SimpleStructurePiece;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePieceType;
+import net.minecraft.structure.StructurePiecesHolder;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.util.BlockMirror;
@@ -27,9 +27,9 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 public class NetherFossilGenerator {
     private static final Identifier[] FOSSILS = new Identifier[]{new Identifier("nether_fossils/fossil_1"), new Identifier("nether_fossils/fossil_2"), new Identifier("nether_fossils/fossil_3"), new Identifier("nether_fossils/fossil_4"), new Identifier("nether_fossils/fossil_5"), new Identifier("nether_fossils/fossil_6"), new Identifier("nether_fossils/fossil_7"), new Identifier("nether_fossils/fossil_8"), new Identifier("nether_fossils/fossil_9"), new Identifier("nether_fossils/fossil_10"), new Identifier("nether_fossils/fossil_11"), new Identifier("nether_fossils/fossil_12"), new Identifier("nether_fossils/fossil_13"), new Identifier("nether_fossils/fossil_14")};
 
-    public static void addPieces(StructureManager manager, class_6130 arg, Random random, BlockPos pos) {
+    public static void addPieces(StructureManager manager, StructurePiecesHolder structurePiecesHolder, Random random, BlockPos pos) {
         BlockRotation blockRotation = BlockRotation.random(random);
-        arg.method_35462(new Piece(manager, Util.getRandom(FOSSILS, random), pos, blockRotation));
+        structurePiecesHolder.addPiece(new Piece(manager, Util.getRandom(FOSSILS, random), pos, blockRotation));
     }
 
     public static class Piece
@@ -58,7 +58,7 @@ public class NetherFossilGenerator {
 
         @Override
         public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
-            boundingBox.intersection(this.structure.calculateBoundingBox(this.placementData, this.pos));
+            boundingBox.encompass(this.structure.calculateBoundingBox(this.placementData, this.pos));
             return super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
         }
     }

@@ -241,7 +241,7 @@ extends RenderPhase {
     }
 
     public static RenderLayer getOutline(Identifier texture) {
-        return (RenderLayer)MultiPhase.field_29640.apply(texture, DISABLE_CULLING);
+        return (RenderLayer)MultiPhase.CULLING_LAYERS.apply(texture, DISABLE_CULLING);
     }
 
     public static RenderLayer getArmorGlint() {
@@ -300,7 +300,7 @@ extends RenderPhase {
         return END_PORTAL;
     }
 
-    public static RenderLayer method_34571() {
+    public static RenderLayer getEndGateway() {
         return END_GATEWAY;
     }
 
@@ -308,7 +308,7 @@ extends RenderPhase {
         return LINES;
     }
 
-    public static RenderLayer method_34572() {
+    public static RenderLayer getLineStrip() {
         return LINE_STRIP;
     }
 
@@ -335,7 +335,7 @@ extends RenderPhase {
             return;
         }
         if (this.translucent) {
-            buffer.method_31948(cameraX, cameraY, cameraZ);
+            buffer.setCameraPosition(cameraX, cameraY, cameraZ);
         }
         buffer.end();
         this.startDrawing();
@@ -383,7 +383,7 @@ extends RenderPhase {
     @Environment(value=EnvType.CLIENT)
     static final class MultiPhase
     extends RenderLayer {
-        private static final BiFunction<Identifier, RenderPhase.Cull, RenderLayer> field_29640 = Util.memoize((identifier, cull) -> RenderLayer.method_34828("outline", VertexFormats.POSITION_COLOR_TEXTURE, VertexFormat.DrawMode.QUADS, 256, MultiPhaseParameters.builder().shader(MultiPhase.OUTLINE_SHADER).texture(new RenderPhase.Texture((Identifier)identifier, false, false)).cull((RenderPhase.Cull)cull).depthTest(MultiPhase.ALWAYS_DEPTH_TEST).target(MultiPhase.OUTLINE_TARGET).build(OutlineMode.IS_OUTLINE)));
+        private static final BiFunction<Identifier, RenderPhase.Cull, RenderLayer> CULLING_LAYERS = Util.memoize((texture, culling) -> RenderLayer.method_34828("outline", VertexFormats.POSITION_COLOR_TEXTURE, VertexFormat.DrawMode.QUADS, 256, MultiPhaseParameters.builder().shader(MultiPhase.OUTLINE_SHADER).texture(new RenderPhase.Texture((Identifier)texture, false, false)).cull((RenderPhase.Cull)culling).depthTest(MultiPhase.ALWAYS_DEPTH_TEST).target(MultiPhase.OUTLINE_TARGET).build(OutlineMode.IS_OUTLINE)));
         private final MultiPhaseParameters phases;
         private final Optional<RenderLayer> affectedOutline;
         private final boolean outline;
@@ -391,7 +391,7 @@ extends RenderPhase {
         private MultiPhase(String name, VertexFormat vertexFormat, VertexFormat.DrawMode drawMode, int expectedBufferSize, boolean hasCrumbling, boolean translucent, MultiPhaseParameters phases) {
             super(name, vertexFormat, drawMode, expectedBufferSize, hasCrumbling, translucent, () -> phases.phases.forEach(RenderPhase::startDrawing), () -> phases.phases.forEach(RenderPhase::endDrawing));
             this.phases = phases;
-            this.affectedOutline = phases.outlineMode == OutlineMode.AFFECTS_OUTLINE ? phases.texture.getId().map(identifier -> field_29640.apply((Identifier)identifier, phases.cull)) : Optional.empty();
+            this.affectedOutline = phases.outlineMode == OutlineMode.AFFECTS_OUTLINE ? phases.texture.getId().map(texture -> CULLING_LAYERS.apply((Identifier)texture, phases.cull)) : Optional.empty();
             this.outline = phases.outlineMode == OutlineMode.IS_OUTLINE;
         }
 
@@ -405,7 +405,7 @@ extends RenderPhase {
             return this.outline;
         }
 
-        protected final MultiPhaseParameters method_35784() {
+        protected final MultiPhaseParameters getPhases() {
             return this.phases;
         }
 
@@ -418,7 +418,7 @@ extends RenderPhase {
     @Environment(value=EnvType.CLIENT)
     public static final class MultiPhaseParameters {
         private final RenderPhase.TextureBase texture;
-        private final RenderPhase.Shader field_29461;
+        private final RenderPhase.Shader shader;
         private final RenderPhase.Transparency transparency;
         private final RenderPhase.DepthTest depthTest;
         private final RenderPhase.Cull cull;
@@ -432,9 +432,9 @@ extends RenderPhase {
         private final OutlineMode outlineMode;
         private final ImmutableList<RenderPhase> phases;
 
-        private MultiPhaseParameters(RenderPhase.TextureBase textureBase, RenderPhase.Shader shader, RenderPhase.Transparency transparency, RenderPhase.DepthTest depthTest, RenderPhase.Cull cull, RenderPhase.Lightmap lightmap, RenderPhase.Overlay overlay, RenderPhase.Layering layering, RenderPhase.Target target, RenderPhase.Texturing texturing, RenderPhase.WriteMaskState writeMaskState, RenderPhase.LineWidth lineWidth, OutlineMode outlineMode) {
-            this.texture = textureBase;
-            this.field_29461 = shader;
+        private MultiPhaseParameters(RenderPhase.TextureBase texture, RenderPhase.Shader shader, RenderPhase.Transparency transparency, RenderPhase.DepthTest depthTest, RenderPhase.Cull cull, RenderPhase.Lightmap lightmap, RenderPhase.Overlay overlay, RenderPhase.Layering layering, RenderPhase.Target target, RenderPhase.Texturing texturing, RenderPhase.WriteMaskState writeMaskState, RenderPhase.LineWidth lineWidth, OutlineMode outlineMode) {
+            this.texture = texture;
+            this.shader = shader;
             this.transparency = transparency;
             this.depthTest = depthTest;
             this.cull = cull;
@@ -446,7 +446,7 @@ extends RenderPhase {
             this.writeMaskState = writeMaskState;
             this.lineWidth = lineWidth;
             this.outlineMode = outlineMode;
-            this.phases = ImmutableList.of(this.texture, this.field_29461, this.transparency, this.depthTest, this.cull, this.lightmap, this.overlay, this.layering, this.target, this.texturing, this.writeMaskState, this.lineWidth, new RenderPhase[0]);
+            this.phases = ImmutableList.of(this.texture, this.shader, this.transparency, this.depthTest, this.cull, this.lightmap, this.overlay, this.layering, this.target, this.texturing, this.writeMaskState, this.lineWidth, new RenderPhase[0]);
         }
 
         public String toString() {

@@ -87,7 +87,7 @@ extends StructureFeature<DefaultFeatureConfig> {
             BlockPos blockPos = new BlockPos(chunkPos.getOffsetX(8), q + 1, chunkPos.getOffsetZ(8));
             LinkedList<WoodlandMansionGenerator.Piece> list = Lists.newLinkedList();
             WoodlandMansionGenerator.addPieces(structureManager, blockPos, blockRotation, list, this.random);
-            list.forEach(this::method_35462);
+            list.forEach(this::addPiece);
         }
 
         @Override
