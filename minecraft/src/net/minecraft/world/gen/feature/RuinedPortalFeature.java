@@ -209,7 +209,7 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 				properties.cold = RuinedPortalFeature.isColdAt(blockPos4, biome);
 			}
 
-			this.method_35462(
+			this.addPiece(
 				new RuinedPortalStructurePiece(structureManager, blockPos4, verticalPlacement, properties, identifier, structure, blockRotation, blockMirror, blockPos)
 			);
 		}

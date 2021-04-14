@@ -56,7 +56,7 @@ public class BuriedTreasureFeature extends StructureFeature<ProbabilityConfig> {
 			HeightLimitView heightLimitView
 		) {
 			BlockPos blockPos = new BlockPos(chunkPos.getOffsetX(9), 90, chunkPos.getOffsetZ(9));
-			this.method_35462(new BuriedTreasureGenerator.Piece(blockPos));
+			this.addPiece(new BuriedTreasureGenerator.Piece(blockPos));
 		}
 
 		@Override

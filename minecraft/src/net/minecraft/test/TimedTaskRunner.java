@@ -35,9 +35,9 @@ public class TimedTaskRunner {
 		return this;
 	}
 
-	public TimedTaskRunner method_36077(int i, Runnable task) {
+	public TimedTaskRunner method_36077(int delay, Runnable task) {
 		this.tasks.add(TimedTask.create(() -> {
-			if (this.test.getTick() < this.tick + (long)i) {
+			if (this.test.getTick() < this.tick + (long)delay) {
 				throw new GameTestException("Waiting");
 			} else {
 				this.tryRun(task);
@@ -64,10 +64,10 @@ public class TimedTaskRunner {
 		this.tasks.add(TimedTask.create(() -> this.test.fail((Throwable)supplier.get())));
 	}
 
-	public TimedTaskRunner.class_6304 method_36083() {
-		TimedTaskRunner.class_6304 lv = new TimedTaskRunner.class_6304();
-		this.tasks.add(TimedTask.create(() -> lv.method_36093(this.test.getTick())));
-		return lv;
+	public TimedTaskRunner.Trigger method_36083() {
+		TimedTaskRunner.Trigger trigger = new TimedTaskRunner.Trigger();
+		this.tasks.add(TimedTask.create(() -> trigger.trigger(this.test.getTick())));
+		return trigger;
 	}
 
 	public void runSilently(long tick) {
@@ -110,25 +110,25 @@ public class TimedTaskRunner {
 		}
 	}
 
-	public class class_6304 {
-		private static final long field_33154 = -1L;
-		private long field_33155 = -1L;
+	public class Trigger {
+		private static final long UNTRIGGERED_TICK = -1L;
+		private long triggeredTick = -1L;
 
-		void method_36093(long l) {
-			if (this.field_33155 != -1L) {
-				throw new IllegalStateException("Condition already triggered at " + this.field_33155);
+		void trigger(long tick) {
+			if (this.triggeredTick != -1L) {
+				throw new IllegalStateException("Condition already triggered at " + this.triggeredTick);
 			} else {
-				this.field_33155 = l;
+				this.triggeredTick = tick;
 			}
 		}
 
-		public void method_36092() {
+		public void checkTrigger() {
 			long l = TimedTaskRunner.this.test.getTick();
-			if (this.field_33155 != l) {
-				if (this.field_33155 == -1L) {
+			if (this.triggeredTick != l) {
+				if (this.triggeredTick == -1L) {
 					throw new GameTestException("Condition not triggered (t=" + l + ")");
 				} else {
-					throw new GameTestException("Condition triggered at " + this.field_33155 + ", (t=" + l + ")");
+					throw new GameTestException("Condition triggered at " + this.triggeredTick + ", (t=" + l + ")");
 				}
 			}
 		}

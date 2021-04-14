@@ -25,7 +25,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	private static final VoxelShape BOTTOM_OUTLINE_SHAPE;
 	private static final VoxelShape COLLISION_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
 	private static final VoxelShape OUTLINE_SHAPE = VoxelShapes.fullCube().offset(0.0, -1.0, 0.0);
-	public static final int field_31237 = 7;
+	public static final int MAX_DISTANCE = 7;
 	public static final IntProperty DISTANCE = Properties.DISTANCE_0_7;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final BooleanProperty BOTTOM = Properties.BOTTOM;

@@ -5,5 +5,5 @@ public interface SnooperListener {
 
 	void addInitialSnooperInfo(Snooper snooper);
 
-	boolean method_35033();
+	boolean isSnooperEnabled();
 }

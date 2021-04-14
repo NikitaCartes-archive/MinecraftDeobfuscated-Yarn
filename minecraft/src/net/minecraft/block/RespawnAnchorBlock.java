@@ -35,8 +35,8 @@ import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 
 public class RespawnAnchorBlock extends Block {
-	public static final int field_31231 = 0;
-	public static final int field_31232 = 4;
+	public static final int NO_CHARGES = 0;
+	public static final int MAX_CHARGES = 4;
 	public static final IntProperty CHARGES = Properties.CHARGES;
 	private static final ImmutableList<Vec3i> VALID_HORIZONTAL_SPAWN_OFFSETS = ImmutableList.of(
 		new Vec3i(0, 0, -1),

@@ -5,6 +5,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.function.Function;
+import net.minecraft.util.dynamic.Codecs;
 
 /**
  * Contains parameters for placement of a single type of {@link net.minecraft.world.gen.feature.StructureFeature} during chunk
@@ -15,7 +16,7 @@ public class StructureConfig {
 			instance -> instance.group(
 						Codec.intRange(0, 4096).fieldOf("spacing").forGetter(config -> config.spacing),
 						Codec.intRange(0, 4096).fieldOf("separation").forGetter(config -> config.separation),
-						Codec.intRange(0, Integer.MAX_VALUE).fieldOf("salt").forGetter(config -> config.salt)
+						Codecs.field_33441.fieldOf("salt").forGetter(config -> config.salt)
 					)
 					.apply(instance, StructureConfig::new)
 		)

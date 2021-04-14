@@ -84,12 +84,12 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	);
 	private static final TrackedData<Byte> HORSE_FLAGS = DataTracker.registerData(HorseBaseEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Optional<UUID>> OWNER_UUID = DataTracker.registerData(HorseBaseEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
-	private static final int field_30419 = 2;
-	private static final int field_30420 = 4;
-	private static final int field_30421 = 8;
-	private static final int field_30422 = 16;
-	private static final int field_30423 = 32;
-	private static final int field_30424 = 64;
+	private static final int TAMED_FLAG = 2;
+	private static final int SADDLED_FLAG = 4;
+	private static final int BRED_FLAG = 8;
+	private static final int EATING_GRASS_FLAG = 16;
+	private static final int ANGRY_FLAG = 32;
+	private static final int EATING_FLAG = 64;
 	public static final int field_30416 = 0;
 	public static final int field_30417 = 1;
 	public static final int field_30418 = 2;

@@ -63,7 +63,7 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 				this.random.setCarverSeed(this.seed + (long)(i++), chunkPos.x, chunkPos.z);
 				StrongholdGenerator.init();
 				start = new StrongholdGenerator.Start(this.random, chunkPos.getOffsetX(2), chunkPos.getOffsetZ(2));
-				this.method_35462(start);
+				this.addPiece(start);
 				start.fillOpenings(start, this, this.random);
 				List<StructurePiece> list = start.pieces;
 

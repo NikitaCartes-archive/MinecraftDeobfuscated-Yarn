@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import java.util.Objects;
 import java.util.Random;
 import java.util.function.Function;
 
@@ -29,9 +28,9 @@ public class TrapezoidFloatProvider extends FloatProvider {
 			},
 			Function.identity()
 		);
-	private float min;
-	private float max;
-	private float plateau;
+	private final float min;
+	private final float max;
+	private final float plateau;
 
 	public static TrapezoidFloatProvider create(float min, float max, float plateau) {
 		return new TrapezoidFloatProvider(min, max, plateau);
@@ -64,21 +63,6 @@ public class TrapezoidFloatProvider extends FloatProvider {
 	@Override
 	public FloatProviderType<?> getType() {
 		return FloatProviderType.TRAPEZOID;
-	}
-
-	public boolean equals(Object object) {
-		if (this == object) {
-			return true;
-		} else if (object != null && this.getClass() == object.getClass()) {
-			TrapezoidFloatProvider trapezoidFloatProvider = (TrapezoidFloatProvider)object;
-			return this.min == trapezoidFloatProvider.min && this.max == trapezoidFloatProvider.max && this.plateau == trapezoidFloatProvider.plateau;
-		} else {
-			return false;
-		}
-	}
-
-	public int hashCode() {
-		return Objects.hash(new Object[]{this.min, this.max, this.plateau});
 	}
 
 	public String toString() {

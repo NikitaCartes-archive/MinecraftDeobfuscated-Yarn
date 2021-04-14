@@ -45,8 +45,8 @@ public class FlatChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public int getSpawnHeight(HeightLimitView heightLimitView) {
-		return heightLimitView.getBottomY() + Math.min(heightLimitView.getHeight(), this.config.getLayerBlocks().size());
+	public int getSpawnHeight(HeightLimitView world) {
+		return world.getBottomY() + Math.min(world.getHeight(), this.config.getLayerBlocks().size());
 	}
 
 	@Override

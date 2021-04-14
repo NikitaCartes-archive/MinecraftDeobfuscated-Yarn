@@ -19,6 +19,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	public final boolean allowFlight = this.parseBoolean("allow-flight", false);
 	public final String resourcePack = this.getString("resource-pack", "");
 	public final boolean requireResourcePack = this.parseBoolean("require-resource-pack", false);
+	public final String resourcePackPrompt = this.getString("resource-pack-prompt", "");
 	public final String motd = this.getString("motd", "A Minecraft Server");
 	public final boolean forceGameMode = this.parseBoolean("force-gamemode", false);
 	public final boolean enforceWhitelist = this.parseBoolean("enforce-whitelist", false);

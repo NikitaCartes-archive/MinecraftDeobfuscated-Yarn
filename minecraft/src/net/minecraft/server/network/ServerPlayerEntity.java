@@ -364,10 +364,10 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 	}
 
-	public void setExperiencePoints(int i) {
+	public void setExperiencePoints(int points) {
 		float f = (float)this.getNextLevelExperience();
 		float g = (f - 1.0F) / f;
-		this.experienceProgress = MathHelper.clamp((float)i / f, 0.0F, g);
+		this.experienceProgress = MathHelper.clamp((float)points / f, 0.0F, g);
 		this.syncedExperience = -1;
 	}
 
@@ -393,7 +393,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		screenHandler.updateSyncHandler(this.screenHandlerSyncHandler);
 	}
 
-	public void method_34225() {
+	public void onSpawn() {
 		this.onSpawn(this.playerScreenHandler);
 	}
 
@@ -954,7 +954,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Override
 	public void openEditSignScreen(SignBlockEntity sign) {
-		sign.setEditor(this);
+		sign.setEditor(this.getUuid());
 		this.networkHandler.sendPacket(new BlockUpdateS2CPacket(this.world, sign.getPos()));
 		this.networkHandler.sendPacket(new SignEditorOpenS2CPacket(sign.getPos()));
 	}
@@ -1298,7 +1298,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		this.getDataTracker().set(MAIN_ARM, (byte)(packet.getMainArm() == Arm.LEFT ? 0 : 1));
 	}
 
-	public boolean method_34879() {
+	public boolean areClientChatColorsEnabled() {
 		return this.clientChatColorsEnabled;
 	}
 
@@ -1318,8 +1318,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 	}
 
-	public void sendResourcePackUrl(String url, String hash, boolean required) {
-		this.networkHandler.sendPacket(new ResourcePackSendS2CPacket(url, hash, required));
+	public void sendResourcePackUrl(String url, String hash, boolean required, @Nullable Text resourcePackPrompt) {
+		this.networkHandler.sendPacket(new ResourcePackSendS2CPacket(url, hash, required, resourcePackPrompt));
 	}
 
 	@Override

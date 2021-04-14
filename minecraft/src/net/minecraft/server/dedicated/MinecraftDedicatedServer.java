@@ -38,6 +38,7 @@ import net.minecraft.server.rcon.QueryResponseHandler;
 import net.minecraft.server.rcon.RconCommandOutput;
 import net.minecraft.server.rcon.RconListener;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
@@ -71,6 +72,8 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	private DedicatedServerGui gui;
 	@Nullable
 	private final TextFilterer filterer;
+	@Nullable
+	private final Text resourcePackPrompt;
 
 	public MinecraftDedicatedServer(
 		Thread serverThread,
@@ -103,6 +106,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		this.propertiesLoader = propertiesLoader;
 		this.rconCommandOutput = new RconCommandOutput(this);
 		this.filterer = TextFilterer.load(propertiesLoader.getPropertiesHandler().textFilteringConfig);
+		this.resourcePackPrompt = parseResourcePackPrompt(propertiesLoader);
 	}
 
 	@Override
@@ -334,7 +338,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public boolean method_35033() {
+	public boolean isSnooperEnabled() {
 		return this.getProperties().snooperEnabled;
 	}
 
@@ -595,5 +599,25 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	@Override
 	public GameMode getForcedGameMode() {
 		return this.propertiesLoader.getPropertiesHandler().forceGameMode ? this.saveProperties.getGameMode() : null;
+	}
+
+	@Nullable
+	private static Text parseResourcePackPrompt(ServerPropertiesLoader propertiesLoader) {
+		String string = propertiesLoader.getPropertiesHandler().resourcePackPrompt;
+		if (!Strings.isNullOrEmpty(string)) {
+			try {
+				return Text.Serializer.fromJson(string);
+			} catch (Exception var3) {
+				LOGGER.warn("Failed to parse resource pack prompt '{}'", string, var3);
+			}
+		}
+
+		return null;
+	}
+
+	@Nullable
+	@Override
+	public Text getResourcePackPrompt() {
+		return this.resourcePackPrompt;
 	}
 }

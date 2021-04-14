@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
 public class CropBlock extends PlantBlock implements Fertilizable {
-	public static final int field_31079 = 7;
+	public static final int MAX_AGE = 7;
 	public static final IntProperty AGE = Properties.AGE_7;
 	private static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{
 		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0),

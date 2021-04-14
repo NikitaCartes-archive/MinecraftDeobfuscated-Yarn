@@ -117,7 +117,7 @@ public class Main {
 			MinecraftServer.convertLevel(session);
 			LevelSummary levelSummary = session.getLevelSummary();
 			if (levelSummary != null && levelSummary.isPreWorldHeightChangeVersion()) {
-				LOGGER.info("Loading of old worlds is temporarily disabled.");
+				LOGGER.info("Loading of worlds with extended height is disabled.");
 				return;
 			}
 

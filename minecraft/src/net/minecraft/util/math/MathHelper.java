@@ -722,8 +722,8 @@ public class MathHelper {
 		return value * value * value * (value * (value * 6.0 - 15.0) + 10.0);
 	}
 
-	public static double method_34956(double d) {
-		return 30.0 * d * d * (d - 1.0) * (d - 1.0);
+	public static double perlinFadeDerivative(double value) {
+		return 30.0 * value * value * (value - 1.0) * (value - 1.0);
 	}
 
 	public static int sign(double value) {

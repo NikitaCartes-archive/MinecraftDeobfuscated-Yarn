@@ -30,7 +30,7 @@ public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 				OutlineVertexConsumerProvider.OutlineVertexConsumer outlineVertexConsumer = new OutlineVertexConsumerProvider.OutlineVertexConsumer(
 					vertexConsumer2, this.red, this.green, this.blue, this.alpha
 				);
-				return VertexConsumers.dual(outlineVertexConsumer, vertexConsumer);
+				return VertexConsumers.union(outlineVertexConsumer, vertexConsumer);
 			} else {
 				return vertexConsumer;
 			}
@@ -63,11 +63,11 @@ public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 		}
 
 		@Override
-		public void fixedColor(int i, int j, int k, int l) {
+		public void fixedColor(int red, int green, int blue, int alpha) {
 		}
 
 		@Override
-		public void method_35666() {
+		public void unfixColor() {
 		}
 
 		@Override

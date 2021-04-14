@@ -6,6 +6,8 @@ import net.minecraft.util.registry.Registry;
 public interface IntProviderType<P extends IntProvider> {
 	IntProviderType<ConstantIntProvider> CONSTANT = register("constant", ConstantIntProvider.CODEC);
 	IntProviderType<UniformIntProvider> UNIFORM = register("uniform", UniformIntProvider.CODEC);
+	IntProviderType<BiasedToBottomIntProvider> BIASED_TO_BOTTOM = register("biased_to_bottom", BiasedToBottomIntProvider.CODEC);
+	IntProviderType<ClampedIntProvider> CLAMPED = register("clamped", ClampedIntProvider.CODEC);
 
 	Codec<P> codec();
 

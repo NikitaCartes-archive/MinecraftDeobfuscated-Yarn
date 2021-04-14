@@ -94,6 +94,7 @@ public class AxolotlEntity extends AnimalEntity implements Bucketable {
 	public static final int BLUE_BABY_CHANCE = 1200;
 	private static final int MAX_AIR = 6000;
 	public static final String VARIANT_KEY = "Variant";
+	private static final int field_33485 = 1800;
 	private static final int BUFF_DURATION = 100;
 
 	public AxolotlEntity(EntityType<? extends AxolotlEntity> entityType, World world) {
@@ -175,6 +176,11 @@ public class AxolotlEntity extends AnimalEntity implements Bucketable {
 		} else {
 			this.setAir(this.getMaxAir());
 		}
+	}
+
+	public void hydrateFromPotion() {
+		int i = this.getAir() + 1800;
+		this.setAir(Math.min(i, this.getMaxAir()));
 	}
 
 	public boolean isAirLessThanMax() {

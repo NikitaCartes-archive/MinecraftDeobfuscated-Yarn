@@ -23,7 +23,6 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 	);
 	public static final Decorator<CountExtraDecoratorConfig> COUNT_EXTRA = register("count_extra", new CountExtraDecorator(CountExtraDecoratorConfig.CODEC));
 	public static final Decorator<ChanceDecoratorConfig> LAVA_LAKE = register("lava_lake", new LavaLakeDecorator(ChanceDecoratorConfig.CODEC));
-	public static final Decorator<CountConfig> GLOWSTONE = register("glowstone", new GlowstoneDecorator(CountConfig.CODEC));
 	public static final Decorator<HeightmapDecoratorConfig> HEIGHTMAP = register("heightmap", new HeightmapDecorator(HeightmapDecoratorConfig.CODEC));
 	public static final Decorator<HeightmapDecoratorConfig> HEIGHTMAP_SPREAD_DOUBLE = register(
 		"heightmap_spread_double", new SpreadDoubleHeightmapDecorator(HeightmapDecoratorConfig.CODEC)
@@ -33,15 +32,6 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 	);
 	public static final Decorator<CaveSurfaceDecoratorConfig> CAVE_SURFACE = register("cave_surface", new CaveSurfaceDecorator(CaveSurfaceDecoratorConfig.CODEC));
 	public static final Decorator<RangeDecoratorConfig> RANGE = register("range", new RangeDecorator(RangeDecoratorConfig.CODEC));
-	public static final Decorator<BiasedRangedDecoratorConfig> RANGE_BIASED_TO_BOTTOM = register(
-		"range_biased_to_bottom", new BiasedRangeDecorator(BiasedRangedDecoratorConfig.CODEC)
-	);
-	public static final Decorator<BiasedRangedDecoratorConfig> RANGE_VERY_BIASED_TO_BOTTOM = register(
-		"range_very_biased_to_bottom", new VeryBiasedRangeDecoratorConfig(BiasedRangedDecoratorConfig.CODEC)
-	);
-	public static final Decorator<DepthAverageDecoratorConfig> DEPTH_AVERAGE = register(
-		"depth_average", new DepthAverageDecorator(DepthAverageDecoratorConfig.CODEC)
-	);
 	public static final Decorator<NopeDecoratorConfig> SPREAD_32_ABOVE = register("spread_32_above", new Spread32AboveDecorator(NopeDecoratorConfig.CODEC));
 	public static final Decorator<NopeDecoratorConfig> END_GATEWAY = register("end_gateway", new EndGatewayDecorator(NopeDecoratorConfig.CODEC));
 	private final Codec<ConfiguredDecorator<DC>> codec;

@@ -58,9 +58,9 @@ public interface VertexConsumer {
 		this.next();
 	}
 
-	void fixedColor(int i, int j, int k, int l);
+	void fixedColor(int red, int green, int blue, int alpha);
 
-	void method_35666();
+	void unfixColor();
 
 	default VertexConsumer color(float red, float green, float blue, float alpha) {
 		return this.color((int)(red * 255.0F), (int)(green * 255.0F), (int)(blue * 255.0F), (int)(alpha * 255.0F));

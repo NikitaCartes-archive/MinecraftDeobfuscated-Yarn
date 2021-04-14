@@ -46,7 +46,7 @@ public class EndGatewayBlockEntityRenderer extends EndPortalBlockEntityRenderer<
 
 	@Override
 	protected RenderLayer method_34589() {
-		return RenderLayer.method_34571();
+		return RenderLayer.getEndGateway();
 	}
 
 	@Override

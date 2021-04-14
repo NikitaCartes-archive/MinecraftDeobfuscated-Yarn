@@ -51,7 +51,7 @@ public class SwampHutFeature extends StructureFeature<DefaultFeatureConfig> {
 			HeightLimitView heightLimitView
 		) {
 			SwampHutGenerator swampHutGenerator = new SwampHutGenerator(this.random, chunkPos.getStartX(), chunkPos.getStartZ());
-			this.method_35462(swampHutGenerator);
+			this.addPiece(swampHutGenerator);
 		}
 	}
 }

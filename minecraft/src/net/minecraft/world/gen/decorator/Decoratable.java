@@ -5,6 +5,8 @@ import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.gen.CountConfig;
 import net.minecraft.world.gen.YOffset;
+import net.minecraft.world.gen.heightprovider.TrapezoidHeightProvider;
+import net.minecraft.world.gen.heightprovider.UniformHeightProvider;
 
 public interface Decoratable<R> {
 	R decorate(ConfiguredDecorator<?> decorator);
@@ -48,8 +50,12 @@ public interface Decoratable<R> {
 		return this.repeat(UniformIntProvider.create(0, maxCount));
 	}
 
-	default R rangeOf(YOffset bottom, YOffset top) {
-		return this.range(new RangeDecoratorConfig(bottom, top));
+	default R method_36296(YOffset yOffset, YOffset yOffset2) {
+		return this.range(new RangeDecoratorConfig(UniformHeightProvider.create(yOffset, yOffset2)));
+	}
+
+	default R method_36297(YOffset yOffset, YOffset yOffset2) {
+		return this.range(new RangeDecoratorConfig(TrapezoidHeightProvider.create(yOffset, yOffset2)));
 	}
 
 	default R range(RangeDecoratorConfig config) {
@@ -62,9 +68,5 @@ public interface Decoratable<R> {
 	 */
 	default R spreadHorizontally() {
 		return this.decorate(Decorator.SQUARE.configure(NopeDecoratorConfig.INSTANCE));
-	}
-
-	default R averageDepth(YOffset baseline, int spread) {
-		return this.decorate(Decorator.DEPTH_AVERAGE.configure(new DepthAverageDecoratorConfig(baseline, spread)));
 	}
 }

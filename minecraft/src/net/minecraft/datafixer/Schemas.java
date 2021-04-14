@@ -192,6 +192,7 @@ import net.minecraft.datafixer.schema.Schema2684;
 import net.minecraft.datafixer.schema.Schema2686;
 import net.minecraft.datafixer.schema.Schema2688;
 import net.minecraft.datafixer.schema.Schema2704;
+import net.minecraft.datafixer.schema.Schema2707;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -744,6 +745,8 @@ public class Schemas {
 		builder.addFixer(new ArrowPickupFix(schema137));
 		Schema schema138 = builder.addSchema(2704, Schema2704::new);
 		builder.addFixer(new ChoiceTypesFix(schema138, "Added Goat", TypeReferences.ENTITY));
+		Schema schema139 = builder.addSchema(2707, Schema2707::new);
+		builder.addFixer(new ChoiceTypesFix(schema139, "Added Marker", TypeReferences.ENTITY));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

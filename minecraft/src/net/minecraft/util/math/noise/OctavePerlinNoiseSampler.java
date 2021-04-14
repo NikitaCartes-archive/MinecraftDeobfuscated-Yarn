@@ -65,18 +65,18 @@ public class OctavePerlinNoiseSampler implements NoiseSampler {
 		this(random, octaves, ChunkRandom::new);
 	}
 
-	private OctavePerlinNoiseSampler(WorldGenRandom worldGenRandom, IntSortedSet intSortedSet, LongFunction<WorldGenRandom> longFunction) {
-		this(worldGenRandom, calculateAmplitudes(intSortedSet), longFunction);
+	private OctavePerlinNoiseSampler(WorldGenRandom random, IntSortedSet octaves, LongFunction<WorldGenRandom> randomFunction) {
+		this(random, calculateAmplitudes(octaves), randomFunction);
 	}
 
 	protected OctavePerlinNoiseSampler(WorldGenRandom random, Pair<Integer, DoubleList> offsetAndAmplitudes) {
 		this(random, offsetAndAmplitudes, ChunkRandom::new);
 	}
 
-	protected OctavePerlinNoiseSampler(WorldGenRandom worldGenRandom, Pair<Integer, DoubleList> pair, LongFunction<WorldGenRandom> longFunction) {
-		int i = pair.getFirst();
-		this.amplitudes = pair.getSecond();
-		PerlinNoiseSampler perlinNoiseSampler = new PerlinNoiseSampler(worldGenRandom);
+	protected OctavePerlinNoiseSampler(WorldGenRandom random, Pair<Integer, DoubleList> octaves, LongFunction<WorldGenRandom> randomFunction) {
+		int i = octaves.getFirst();
+		this.amplitudes = octaves.getSecond();
+		PerlinNoiseSampler perlinNoiseSampler = new PerlinNoiseSampler(random);
 		int j = this.amplitudes.size();
 		int k = -i;
 		this.octaveSamplers = new PerlinNoiseSampler[j];
@@ -91,12 +91,12 @@ public class OctavePerlinNoiseSampler implements NoiseSampler {
 			if (l < j) {
 				double e = this.amplitudes.getDouble(l);
 				if (e != 0.0) {
-					this.octaveSamplers[l] = new PerlinNoiseSampler(worldGenRandom);
+					this.octaveSamplers[l] = new PerlinNoiseSampler(random);
 				} else {
-					method_34401(worldGenRandom);
+					skipCalls(random);
 				}
 			} else {
-				method_34401(worldGenRandom);
+				skipCalls(random);
 			}
 		}
 
@@ -108,8 +108,8 @@ public class OctavePerlinNoiseSampler implements NoiseSampler {
 		}
 	}
 
-	private static void method_34401(WorldGenRandom worldGenRandom) {
-		worldGenRandom.skip(262);
+	private static void skipCalls(WorldGenRandom random) {
+		random.skip(262);
 	}
 
 	public double sample(double x, double y, double z) {

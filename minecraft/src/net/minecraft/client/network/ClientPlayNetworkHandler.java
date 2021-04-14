@@ -875,7 +875,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.client.player.updateHealth(packet.getHealth());
 		this.client.player.getHungerManager().setFoodLevel(packet.getFood());
-		this.client.player.getHungerManager().setSaturationLevelClient(packet.getSaturation());
+		this.client.player.getHungerManager().setSaturationLevel(packet.getSaturation());
 	}
 
 	@Override
@@ -894,7 +894,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.positionLookSetup = false;
 		if (registryKey != clientPlayerEntity.world.getRegistryKey()) {
 			Scoreboard scoreboard = this.world.getScoreboard();
-			Map<String, MapState> map = this.world.method_35754();
+			Map<String, MapState> map = this.world.getMapStates();
 			boolean bl = packet.isDebugWorld();
 			boolean bl2 = packet.isFlatWorld();
 			ClientWorld.Properties properties = new ClientWorld.Properties(this.worldProperties.getDifficulty(), this.worldProperties.isHardcore(), bl2);
@@ -903,7 +903,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				this, properties, registryKey, dimensionType, this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer, bl, packet.getSha256Seed()
 			);
 			this.world.setScoreboard(scoreboard);
-			this.world.method_35753(map);
+			this.world.putMapStates(map);
 			this.client.joinWorld(this.world);
 			this.client.openScreen(new DownloadingTerrainScreen());
 		}
@@ -1634,10 +1634,13 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 												}
 											},
 											bl ? new TranslatableText("multiplayer.requiredTexturePrompt.line1") : new TranslatableText("multiplayer.texturePrompt.line1"),
-											(Text)(bl
-												? new TranslatableText("multiplayer.requiredTexturePrompt.line2").formatted(new Formatting[]{Formatting.YELLOW, Formatting.BOLD})
-												: new TranslatableText("multiplayer.texturePrompt.line2")),
-											(Text)(bl ? new TranslatableText("gui.proceed") : ScreenTexts.YES),
+											getServerResourcePackPrompt(
+												(Text)(bl
+													? new TranslatableText("multiplayer.requiredTexturePrompt.line2").formatted(new Formatting[]{Formatting.YELLOW, Formatting.BOLD})
+													: new TranslatableText("multiplayer.texturePrompt.line2")),
+												packet.getPrompt()
+											),
+											bl ? ScreenTexts.PROCEED : ScreenTexts.YES,
 											(Text)(bl ? new TranslatableText("menu.disconnect") : ScreenTexts.NO)
 										)
 									)
@@ -1645,6 +1648,10 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				}
 			}
 		}
+	}
+
+	private static Text getServerResourcePackPrompt(Text defaultPrompt, @Nullable Text customPrompt) {
+		return (Text)(customPrompt == null ? defaultPrompt : new TranslatableText("multiplayer.texturePrompt.serverPrompt", defaultPrompt, customPrompt));
 	}
 
 	private boolean validateResourcePackUrl(String url) {

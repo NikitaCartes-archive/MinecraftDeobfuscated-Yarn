@@ -12,15 +12,15 @@ public class SharedConstants {
 	@Deprecated
 	public static final boolean field_29709 = true;
 	@Deprecated
-	public static final int field_29732 = 2706;
+	public static final int field_29732 = 2709;
 	@Deprecated
-	public static final String field_29733 = "21w14a";
+	public static final String field_29733 = "21w15a";
 	@Deprecated
 	public static final String field_29734 = "1.17";
 	@Deprecated
 	public static final int field_29735 = 755;
 	@Deprecated
-	public static final int field_29736 = 21;
+	public static final int field_29736 = 22;
 	public static final int field_29737 = 2678;
 	private static final int field_29708 = 30;
 	@Deprecated
@@ -28,8 +28,8 @@ public class SharedConstants {
 	@Deprecated
 	public static final int field_29739 = 7;
 	public static final String field_29740 = "DataVersion";
-	public static final boolean field_29741 = true;
-	public static final boolean field_29742 = true;
+	public static final boolean field_29741 = false;
+	public static final boolean field_29742 = false;
 	public static final boolean field_29743 = false;
 	public static final boolean field_29744 = false;
 	public static final boolean field_29745 = false;
@@ -148,7 +148,7 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 1073741845;
+		return 1073741846;
 	}
 
 	static {

@@ -18,7 +18,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
-	public static final int field_31061 = 2;
+	public static final int MAX_AGE = 2;
 	public static final IntProperty AGE = Properties.AGE_2;
 	protected static final int field_31062 = 4;
 	protected static final int field_31063 = 5;

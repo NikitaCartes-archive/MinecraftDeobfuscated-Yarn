@@ -24,7 +24,7 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 
 public class CakeBlock extends Block {
-	public static final int field_31046 = 6;
+	public static final int MAX_BITES = 6;
 	public static final IntProperty BITES = Properties.BITES;
 	public static final int DEFAULT_COMPARATOR_OUTPUT = getComparatorOutput(0);
 	protected static final float field_31047 = 1.0F;

@@ -4,12 +4,12 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_6184;
+import net.minecraft.unused.FixedDataSetter;
 import org.lwjgl.system.MemoryUtil;
 
 @Environment(EnvType.CLIENT)
 public class GlDebugInfo {
-	public static void method_35612(class_6184 arg) {
+	public static void method_35612(FixedDataSetter fixedDataSetter) {
 	}
 
 	public static ByteBuffer method_35611(int i) {

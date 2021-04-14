@@ -18,7 +18,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.WorldEvents;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 
@@ -38,7 +37,7 @@ public class BoneMealItem extends Item {
 		BlockPos blockPos2 = blockPos.offset(context.getSide());
 		if (useOnFertilizable(context.getStack(), world, blockPos)) {
 			if (!world.isClient) {
-				world.syncWorldEvent(WorldEvents.PLANT_FERTILIZED, blockPos, 0);
+				world.syncWorldEvent(1505, blockPos, 0);
 			}
 
 			return ActionResult.success(world.isClient);
@@ -47,7 +46,7 @@ public class BoneMealItem extends Item {
 			boolean bl = blockState.isSideSolidFullSquare(world, blockPos, context.getSide());
 			if (bl && useOnGround(context.getStack(), world, blockPos2, context.getSide())) {
 				if (!world.isClient) {
-					world.syncWorldEvent(WorldEvents.PLANT_FERTILIZED, blockPos2, 0);
+					world.syncWorldEvent(1505, blockPos2, 0);
 				}
 
 				return ActionResult.success(world.isClient);

@@ -12,16 +12,16 @@ public abstract class FixedColorVertexConsumer implements VertexConsumer {
 	protected int fixedAlpha = 255;
 
 	@Override
-	public void fixedColor(int i, int j, int k, int l) {
-		this.fixedRed = i;
-		this.fixedGreen = j;
-		this.fixedBlue = k;
-		this.fixedAlpha = l;
+	public void fixedColor(int red, int green, int blue, int alpha) {
+		this.fixedRed = red;
+		this.fixedGreen = green;
+		this.fixedBlue = blue;
+		this.fixedAlpha = alpha;
 		this.colorFixed = true;
 	}
 
 	@Override
-	public void method_35666() {
+	public void unfixColor() {
 		this.colorFixed = false;
 	}
 }

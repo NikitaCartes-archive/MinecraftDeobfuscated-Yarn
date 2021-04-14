@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
 public class TntMinecartEntity extends AbstractMinecartEntity {
-	private static final byte field_30703 = 10;
+	private static final byte PRIME_TNT_STATUS = 10;
 	private int fuseTicks = -1;
 
 	public TntMinecartEntity(EntityType<? extends TntMinecartEntity> entityType, World world) {

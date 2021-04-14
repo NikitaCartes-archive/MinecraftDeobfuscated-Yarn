@@ -7,7 +7,7 @@ import net.minecraft.world.gen.decorator.DecoratorConfig;
 import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class CountConfig implements DecoratorConfig, FeatureConfig {
-	public static final Codec<CountConfig> CODEC = IntProvider.createValidatingCodec(-10, 256)
+	public static final Codec<CountConfig> CODEC = IntProvider.createValidatingCodec(0, 256)
 		.fieldOf("count")
 		.<CountConfig>xmap(CountConfig::new, CountConfig::getCount)
 		.codec();

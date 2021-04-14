@@ -47,9 +47,9 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	private static final double field_30657 = 2.0;
 	private static final TrackedData<Byte> PROJECTILE_FLAGS = DataTracker.registerData(PersistentProjectileEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Byte> PIERCE_LEVEL = DataTracker.registerData(PersistentProjectileEntity.class, TrackedDataHandlerRegistry.BYTE);
-	private static final int field_30654 = 1;
-	private static final int field_30655 = 2;
-	private static final int field_30656 = 4;
+	private static final int CRITICAL_FLAG = 1;
+	private static final int NO_CLIP_FLAG = 2;
+	private static final int SHOT_FROM_CROSSBOW_FLAG = 4;
 	@Nullable
 	private BlockState inBlockState;
 	protected boolean inGround;

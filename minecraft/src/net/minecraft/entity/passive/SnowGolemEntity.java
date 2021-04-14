@@ -41,7 +41,7 @@ import net.minecraft.world.event.GameEvent;
 
 public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAttackMob {
 	private static final TrackedData<Byte> SNOW_GOLEM_FLAGS = DataTracker.registerData(SnowGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
-	private static final byte field_30373 = 16;
+	private static final byte HAS_PUMPKIN_FLAG = 16;
 	private static final float field_30374 = 1.7F;
 
 	public SnowGolemEntity(EntityType<? extends SnowGolemEntity> entityType, World world) {

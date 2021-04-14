@@ -733,12 +733,12 @@ public class ClientWorld extends World {
 	public void emitGameEvent(@Nullable Entity entity, GameEvent event, BlockPos pos) {
 	}
 
-	public Map<String, MapState> method_35754() {
+	public Map<String, MapState> getMapStates() {
 		return ImmutableMap.copyOf(this.mapStates);
 	}
 
-	public void method_35753(Map<String, MapState> map) {
-		this.mapStates.putAll(map);
+	public void putMapStates(Map<String, MapState> mapStates) {
+		this.mapStates.putAll(mapStates);
 	}
 
 	@Override
@@ -937,8 +937,8 @@ public class ClientWorld extends World {
 			this.difficultyLocked = difficultyLocked;
 		}
 
-		public double getSkyDarknessHeight(HeightLimitView heightLimitView) {
-			return this.flatWorld ? (double)heightLimitView.getBottomY() : 63.0;
+		public double getSkyDarknessHeight(HeightLimitView world) {
+			return this.flatWorld ? (double)world.getBottomY() : 63.0;
 		}
 
 		public double getHorizonShadingRatio() {

@@ -21,7 +21,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterloggable {
-	public static final int field_31241 = 4;
+	public static final int MAX_PICKLES = 4;
 	public static final IntProperty PICKLES = Properties.PICKLES;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	protected static final VoxelShape ONE_PICKLE_SHAPE = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 6.0, 10.0);

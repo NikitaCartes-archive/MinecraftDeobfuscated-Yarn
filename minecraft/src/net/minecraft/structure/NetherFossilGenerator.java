@@ -1,7 +1,6 @@
 package net.minecraft.structure;
 
 import java.util.Random;
-import net.minecraft.class_6130;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
@@ -35,9 +34,9 @@ public class NetherFossilGenerator {
 		new Identifier("nether_fossils/fossil_14")
 	};
 
-	public static void addPieces(StructureManager manager, class_6130 arg, Random random, BlockPos pos) {
+	public static void addPieces(StructureManager manager, StructurePiecesHolder structurePiecesHolder, Random random, BlockPos pos) {
 		BlockRotation blockRotation = BlockRotation.random(random);
-		arg.method_35462(new NetherFossilGenerator.Piece(manager, Util.getRandom(FOSSILS, random), pos, blockRotation));
+		structurePiecesHolder.addPiece(new NetherFossilGenerator.Piece(manager, Util.getRandom(FOSSILS, random), pos, blockRotation));
 	}
 
 	public static class Piece extends SimpleStructurePiece {
@@ -76,7 +75,7 @@ public class NetherFossilGenerator {
 			ChunkPos chunkPos,
 			BlockPos pos
 		) {
-			boundingBox.intersection(this.structure.calculateBoundingBox(this.placementData, this.pos));
+			boundingBox.encompass(this.structure.calculateBoundingBox(this.placementData, this.pos));
 			return super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
 		}
 	}

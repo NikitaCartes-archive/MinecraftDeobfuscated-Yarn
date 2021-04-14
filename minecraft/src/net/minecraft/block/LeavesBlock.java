@@ -18,7 +18,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class LeavesBlock extends Block {
-	public static final int field_31111 = 7;
+	public static final int MAX_DISTANCE = 7;
 	public static final IntProperty DISTANCE = Properties.DISTANCE_1_7;
 	public static final BooleanProperty PERSISTENT = Properties.PERSISTENT;
 	private static final int field_31112 = 1;

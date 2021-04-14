@@ -1,7 +1,6 @@
 package net.minecraft.structure;
 
 import java.util.Random;
-import net.minecraft.class_6130;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
@@ -61,10 +60,15 @@ public class ShipwreckGenerator {
 	};
 
 	public static void addParts(
-		StructureManager structureManager, BlockPos pos, BlockRotation rotation, class_6130 arg, Random random, ShipwreckFeatureConfig config
+		StructureManager structureManager,
+		BlockPos pos,
+		BlockRotation rotation,
+		StructurePiecesHolder structurePiecesHolder,
+		Random random,
+		ShipwreckFeatureConfig config
 	) {
 		Identifier identifier = Util.getRandom(config.isBeached ? BEACHED_TEMPLATES : REGULAR_TEMPLATES, random);
-		arg.method_35462(new ShipwreckGenerator.Piece(structureManager, identifier, pos, rotation, config.isBeached));
+		structurePiecesHolder.addPiece(new ShipwreckGenerator.Piece(structureManager, identifier, pos, rotation, config.isBeached));
 	}
 
 	public static class Piece extends SimpleStructurePiece {

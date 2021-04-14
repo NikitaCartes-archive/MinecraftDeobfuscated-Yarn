@@ -2353,7 +2353,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	@Override
-	public boolean method_35033() {
+	public boolean isSnooperEnabled() {
 		return this.options.snooperEnabled;
 	}
 

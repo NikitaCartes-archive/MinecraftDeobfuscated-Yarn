@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import java.util.Objects;
 import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.util.math.MathHelper;
@@ -52,21 +51,6 @@ public class UniformIntProvider extends IntProvider {
 	@Override
 	public IntProviderType<?> getType() {
 		return IntProviderType.UNIFORM;
-	}
-
-	public boolean equals(Object object) {
-		if (this == object) {
-			return true;
-		} else if (object != null && this.getClass() == object.getClass()) {
-			UniformIntProvider uniformIntProvider = (UniformIntProvider)object;
-			return this.min == uniformIntProvider.min && this.max == uniformIntProvider.max;
-		} else {
-			return false;
-		}
-	}
-
-	public int hashCode() {
-		return Objects.hash(new Object[]{this.min, this.max});
 	}
 
 	public String toString() {

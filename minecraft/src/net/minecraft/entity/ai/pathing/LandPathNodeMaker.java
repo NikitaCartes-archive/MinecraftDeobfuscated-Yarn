@@ -243,7 +243,8 @@ public class LandPathNodeMaker extends PathNodeMaker {
 					&& maxYStep > 0
 					&& pathNodeType != PathNodeType.FENCE
 					&& pathNodeType != PathNodeType.UNPASSABLE_RAIL
-					&& pathNodeType != PathNodeType.TRAPDOOR) {
+					&& pathNodeType != PathNodeType.TRAPDOOR
+					&& pathNodeType != PathNodeType.POWDER_SNOW) {
 					pathNode = this.getPathNode(x, y + 1, z, maxYStep - 1, prevFeetY, direction, nodeType);
 					if (pathNode != null && (pathNode.type == PathNodeType.OPEN || pathNode.type == PathNodeType.WALKABLE) && this.entity.getWidth() < 1.0F) {
 						double g = (double)(x - direction.getOffsetX()) + 0.5;
@@ -517,8 +518,10 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		Material material = blockState.getMaterial();
 		if (blockState.isAir()) {
 			return PathNodeType.OPEN;
-		} else if (blockState.isIn(BlockTags.TRAPDOORS) || blockState.isOf(Blocks.LILY_PAD) || blockState.isOf(Blocks.POWDER_SNOW)) {
+		} else if (blockState.isIn(BlockTags.TRAPDOORS) || blockState.isOf(Blocks.LILY_PAD)) {
 			return PathNodeType.TRAPDOOR;
+		} else if (blockState.isOf(Blocks.POWDER_SNOW)) {
+			return PathNodeType.POWDER_SNOW;
 		} else if (blockState.isOf(Blocks.CACTUS)) {
 			return PathNodeType.DAMAGE_CACTUS;
 		} else if (blockState.isOf(Blocks.SWEET_BERRY_BUSH)) {

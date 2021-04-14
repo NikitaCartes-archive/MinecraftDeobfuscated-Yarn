@@ -1,11 +1,13 @@
 package net.minecraft.entity.mob;
 
 import java.util.Collection;
+import javax.annotation.Nullable;
 import net.minecraft.client.render.entity.feature.SkinOverlayOwner;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.CreeperIgniteGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
@@ -23,6 +25,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.passive.CatEntity;
+import net.minecraft.entity.passive.GoatEntity;
 import net.minecraft.entity.passive.OcelotEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -151,6 +154,13 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 		}
 
 		super.tick();
+	}
+
+	@Override
+	public void setTarget(@Nullable LivingEntity target) {
+		if (!(target instanceof GoatEntity)) {
+			super.setTarget(target);
+		}
 	}
 
 	@Override

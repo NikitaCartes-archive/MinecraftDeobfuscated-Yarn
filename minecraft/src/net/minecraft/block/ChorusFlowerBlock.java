@@ -17,7 +17,7 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 
 public class ChorusFlowerBlock extends Block {
-	public static final int field_31060 = 5;
+	public static final int MAX_AGE = 5;
 	public static final IntProperty AGE = Properties.AGE_5;
 	private final ChorusPlantBlock plantBlock;
 
