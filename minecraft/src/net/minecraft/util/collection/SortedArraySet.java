@@ -9,7 +9,7 @@ import java.util.NoSuchElementException;
 import javax.annotation.Nullable;
 
 public class SortedArraySet<T> extends AbstractSet<T> {
-	private static final int field_29860 = 10;
+	private static final int DEFAULT_CAPACITY = 10;
 	private final Comparator<T> comparator;
 	private T[] elements;
 	private int size;
@@ -23,7 +23,7 @@ public class SortedArraySet<T> extends AbstractSet<T> {
 		}
 	}
 
-	public static <T extends Comparable<T>> SortedArraySet<T> method_34958() {
+	public static <T extends Comparable<T>> SortedArraySet<T> create() {
 		return create(10);
 	}
 
@@ -31,12 +31,12 @@ public class SortedArraySet<T> extends AbstractSet<T> {
 		return new SortedArraySet<>(initialCapacity, Comparator.naturalOrder());
 	}
 
-	public static <T> SortedArraySet<T> method_34959(Comparator<T> comparator) {
-		return method_34960(comparator, 10);
+	public static <T> SortedArraySet<T> create(Comparator<T> comparator) {
+		return create(comparator, 10);
 	}
 
-	public static <T> SortedArraySet<T> method_34960(Comparator<T> comparator, int i) {
-		return new SortedArraySet<>(i, comparator);
+	public static <T> SortedArraySet<T> create(Comparator<T> comparator, int initialCapacity) {
+		return new SortedArraySet<>(initialCapacity, comparator);
 	}
 
 	private static <T> T[] cast(Object[] array) {
@@ -120,7 +120,7 @@ public class SortedArraySet<T> extends AbstractSet<T> {
 	}
 
 	@Nullable
-	public T method_34961(T object) {
+	public T getIfContains(T object) {
 		int i = this.binarySearch(object);
 		return i >= 0 ? this.get(i) : null;
 	}

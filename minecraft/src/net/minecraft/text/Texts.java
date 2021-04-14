@@ -4,8 +4,10 @@ import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.Message;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.datafixers.DataFixUtils;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
@@ -13,6 +15,10 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Formatting;
 
 public class Texts {
+	public static final String field_33536 = ", ";
+	public static final Text field_33537 = new LiteralText(", ").formatted(Formatting.GRAY);
+	public static final Text field_33538 = new LiteralText(", ");
+
 	public static MutableText setStyleIfAbsent(MutableText text, Style style) {
 		if (style.isEmpty()) {
 			return text;
@@ -24,6 +30,10 @@ public class Texts {
 				return style2.equals(style) ? text : text.setStyle(style2.withParent(style));
 			}
 		}
+	}
+
+	public static Optional<MutableText> method_36330(@Nullable ServerCommandSource serverCommandSource, Optional<Text> optional, @Nullable Entity entity, int i) throws CommandSyntaxException {
+		return optional.isPresent() ? Optional.of(parse(serverCommandSource, (Text)optional.get(), entity, i)) : Optional.empty();
 	}
 
 	public static MutableText parse(@Nullable ServerCommandSource source, Text text, @Nullable Entity sender, int depth) throws CommandSyntaxException {
@@ -77,21 +87,29 @@ public class Texts {
 		}
 	}
 
-	public static <T> MutableText join(Collection<T> elements, Function<T, Text> transformer) {
-		if (elements.isEmpty()) {
+	public static <T> Text join(Collection<T> elements, Function<T, Text> transformer) {
+		return method_36332(elements, field_33537, transformer);
+	}
+
+	public static <T> MutableText method_36331(Collection<T> collection, Optional<? extends Text> optional, Function<T, Text> function) {
+		return method_36332(collection, DataFixUtils.orElse(optional, field_33537), function);
+	}
+
+	public static <T> MutableText method_36332(Collection<T> collection, Text text, Function<T, Text> function) {
+		if (collection.isEmpty()) {
 			return new LiteralText("");
-		} else if (elements.size() == 1) {
-			return ((Text)transformer.apply(elements.iterator().next())).shallowCopy();
+		} else if (collection.size() == 1) {
+			return ((Text)function.apply(collection.iterator().next())).shallowCopy();
 		} else {
 			MutableText mutableText = new LiteralText("");
 			boolean bl = true;
 
-			for (T object : elements) {
+			for (T object : collection) {
 				if (!bl) {
-					mutableText.append(new LiteralText(", ").formatted(Formatting.GRAY));
+					mutableText.append(text);
 				}
 
-				mutableText.append((Text)transformer.apply(object));
+				mutableText.append((Text)function.apply(object));
 				bl = false;
 			}
 

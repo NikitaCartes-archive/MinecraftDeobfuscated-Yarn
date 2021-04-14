@@ -464,7 +464,7 @@ public class ProtoChunk implements Chunk {
 	}
 
 	public BitSet getOrCreateCarvingMask(GenerationStep.Carver carver) {
-		return (BitSet)this.carvingMasks.computeIfAbsent(carver, carverx -> new BitSet(98304));
+		return (BitSet)this.carvingMasks.computeIfAbsent(carver, carverx -> new BitSet(65536));
 	}
 
 	public void setCarvingMask(GenerationStep.Carver carver, BitSet mask) {

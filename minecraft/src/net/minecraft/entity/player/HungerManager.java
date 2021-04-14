@@ -13,7 +13,7 @@ public class HungerManager {
 	private int foodLevel = 20;
 	private float foodSaturationLevel;
 	private float exhaustion;
-	private int foodStarvationTimer;
+	private int foodTickTimer;
 	private int prevFoodLevel = 20;
 
 	public HungerManager() {
@@ -46,38 +46,38 @@ public class HungerManager {
 
 		boolean bl = player.world.getGameRules().getBoolean(GameRules.NATURAL_REGENERATION);
 		if (bl && this.foodSaturationLevel > 0.0F && player.canFoodHeal() && this.foodLevel >= 20) {
-			this.foodStarvationTimer++;
-			if (this.foodStarvationTimer >= 10) {
+			this.foodTickTimer++;
+			if (this.foodTickTimer >= 10) {
 				float f = Math.min(this.foodSaturationLevel, 6.0F);
 				player.heal(f / 6.0F);
 				this.addExhaustion(f);
-				this.foodStarvationTimer = 0;
+				this.foodTickTimer = 0;
 			}
 		} else if (bl && this.foodLevel >= 18 && player.canFoodHeal()) {
-			this.foodStarvationTimer++;
-			if (this.foodStarvationTimer >= 80) {
+			this.foodTickTimer++;
+			if (this.foodTickTimer >= 80) {
 				player.heal(1.0F);
 				this.addExhaustion(6.0F);
-				this.foodStarvationTimer = 0;
+				this.foodTickTimer = 0;
 			}
 		} else if (this.foodLevel <= 0) {
-			this.foodStarvationTimer++;
-			if (this.foodStarvationTimer >= 80) {
+			this.foodTickTimer++;
+			if (this.foodTickTimer >= 80) {
 				if (player.getHealth() > 10.0F || difficulty == Difficulty.HARD || player.getHealth() > 1.0F && difficulty == Difficulty.NORMAL) {
 					player.damage(DamageSource.STARVE, 1.0F);
 				}
 
-				this.foodStarvationTimer = 0;
+				this.foodTickTimer = 0;
 			}
 		} else {
-			this.foodStarvationTimer = 0;
+			this.foodTickTimer = 0;
 		}
 	}
 
 	public void readNbt(NbtCompound nbt) {
 		if (nbt.contains("foodLevel", NbtElement.NUMBER_TYPE)) {
 			this.foodLevel = nbt.getInt("foodLevel");
-			this.foodStarvationTimer = nbt.getInt("foodTickTimer");
+			this.foodTickTimer = nbt.getInt("foodTickTimer");
 			this.foodSaturationLevel = nbt.getFloat("foodSaturationLevel");
 			this.exhaustion = nbt.getFloat("foodExhaustionLevel");
 		}
@@ -85,7 +85,7 @@ public class HungerManager {
 
 	public void writeNbt(NbtCompound nbt) {
 		nbt.putInt("foodLevel", this.foodLevel);
-		nbt.putInt("foodTickTimer", this.foodStarvationTimer);
+		nbt.putInt("foodTickTimer", this.foodTickTimer);
 		nbt.putFloat("foodSaturationLevel", this.foodSaturationLevel);
 		nbt.putFloat("foodExhaustionLevel", this.exhaustion);
 	}
@@ -118,7 +118,7 @@ public class HungerManager {
 		this.foodLevel = foodLevel;
 	}
 
-	public void setSaturationLevelClient(float saturationLevel) {
+	public void setSaturationLevel(float saturationLevel) {
 		this.foodSaturationLevel = saturationLevel;
 	}
 

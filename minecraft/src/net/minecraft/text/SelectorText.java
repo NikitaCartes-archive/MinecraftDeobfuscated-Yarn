@@ -2,6 +2,7 @@ package net.minecraft.text;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
@@ -15,16 +16,18 @@ public class SelectorText extends BaseText implements ParsableText {
 	private final String pattern;
 	@Nullable
 	private final EntitySelector selector;
+	protected final Optional<Text> field_33540;
 
-	public SelectorText(String pattern) {
+	public SelectorText(String pattern, Optional<Text> optional) {
 		this.pattern = pattern;
+		this.field_33540 = optional;
 		EntitySelector entitySelector = null;
 
 		try {
 			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(new StringReader(pattern));
 			entitySelector = entitySelectorReader.read();
-		} catch (CommandSyntaxException var4) {
-			LOGGER.warn("Invalid selector component: {}: {}", pattern, var4.getMessage());
+		} catch (CommandSyntaxException var5) {
+			LOGGER.warn("Invalid selector component: {}: {}", pattern, var5.getMessage());
 		}
 
 		this.selector = entitySelector;
@@ -39,9 +42,18 @@ public class SelectorText extends BaseText implements ParsableText {
 		return this.selector;
 	}
 
+	public Optional<Text> method_36339() {
+		return this.field_33540;
+	}
+
 	@Override
 	public MutableText parse(@Nullable ServerCommandSource source, @Nullable Entity sender, int depth) throws CommandSyntaxException {
-		return (MutableText)(source != null && this.selector != null ? EntitySelector.getNames(this.selector.getEntities(source)) : new LiteralText(""));
+		if (source != null && this.selector != null) {
+			Optional<? extends Text> optional = Texts.method_36330(source, this.field_33540, sender, depth);
+			return Texts.method_36331(this.selector.getEntities(source), optional, Entity::getDisplayName);
+		} else {
+			return new LiteralText("");
+		}
 	}
 
 	@Override
@@ -50,7 +62,7 @@ public class SelectorText extends BaseText implements ParsableText {
 	}
 
 	public SelectorText copy() {
-		return new SelectorText(this.pattern);
+		return new SelectorText(this.pattern, this.field_33540);
 	}
 
 	@Override

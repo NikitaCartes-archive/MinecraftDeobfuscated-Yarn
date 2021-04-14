@@ -18,7 +18,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class SnowBlock extends Block {
-	public static final int field_31247 = 8;
+	public static final int MAX_LAYERS = 8;
 	public static final IntProperty LAYERS = Properties.LAYERS;
 	protected static final VoxelShape[] LAYERS_TO_SHAPE = new VoxelShape[]{
 		VoxelShapes.empty(),

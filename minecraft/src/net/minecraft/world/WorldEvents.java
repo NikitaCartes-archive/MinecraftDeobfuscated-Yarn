@@ -362,6 +362,7 @@ public class WorldEvents {
 	 * <p>Called by {@link net.minecraft.block.PointedDripstoneBlock#dripTick(net.minecraft.block.BlockState, net.minecraft.server.world.ServerWorld, net.minecraft.util.math.BlockPos, float) PointedDripstoneBlock#dripTick}
 	 */
 	public static final int POINTED_DRIPSTONE_DRIPS = 1504;
+	public static final int field_33511 = 1505;
 	/**
 	 * A Dispenser is activated.
 	 * <br>Spawns smoke particles.

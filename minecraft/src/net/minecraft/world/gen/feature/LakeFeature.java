@@ -11,6 +11,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.LightType;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.BlockSource;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class LakeFeature extends Feature<SingleStateFeatureConfig> {
@@ -119,20 +120,23 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 				}
 
 				if (singleStateFeatureConfig.state.getMaterial() == Material.LAVA) {
-					for (int j = 0; j < 16; j++) {
-						for (int s = 0; s < 16; s++) {
-							for (int txxx = 0; txxx < 8; txxx++) {
-								boolean bl = !bls[(j * 16 + s) * 8 + txxx]
+					BlockSource blockSource = context.getGenerator().getBlockSource();
+
+					for (int s = 0; s < 16; s++) {
+						for (int txxx = 0; txxx < 16; txxx++) {
+							for (int u = 0; u < 8; u++) {
+								boolean bl2 = !bls[(s * 16 + txxx) * 8 + u]
 									&& (
-										j < 15 && bls[((j + 1) * 16 + s) * 8 + txxx]
-											|| j > 0 && bls[((j - 1) * 16 + s) * 8 + txxx]
-											|| s < 15 && bls[(j * 16 + s + 1) * 8 + txxx]
-											|| s > 0 && bls[(j * 16 + (s - 1)) * 8 + txxx]
-											|| txxx < 7 && bls[(j * 16 + s) * 8 + txxx + 1]
-											|| txxx > 0 && bls[(j * 16 + s) * 8 + (txxx - 1)]
+										s < 15 && bls[((s + 1) * 16 + txxx) * 8 + u]
+											|| s > 0 && bls[((s - 1) * 16 + txxx) * 8 + u]
+											|| txxx < 15 && bls[(s * 16 + txxx + 1) * 8 + u]
+											|| txxx > 0 && bls[(s * 16 + (txxx - 1)) * 8 + u]
+											|| u < 7 && bls[(s * 16 + txxx) * 8 + u + 1]
+											|| u > 0 && bls[(s * 16 + txxx) * 8 + (u - 1)]
 									);
-								if (bl && (txxx < 4 || random.nextInt(2) != 0) && structureWorldAccess.getBlockState(blockPos.add(j, txxx, s)).getMaterial().isSolid()) {
-									structureWorldAccess.setBlockState(blockPos.add(j, txxx, s), Blocks.STONE.getDefaultState(), Block.NOTIFY_LISTENERS);
+								if (bl2 && (u < 4 || random.nextInt(2) != 0) && structureWorldAccess.getBlockState(blockPos.add(s, u, txxx)).getMaterial().isSolid()) {
+									BlockPos blockPos3 = blockPos.add(s, u, txxx);
+									structureWorldAccess.setBlockState(blockPos3, blockSource.get(blockPos3), Block.NOTIFY_LISTENERS);
 								}
 							}
 						}
@@ -142,7 +146,7 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 				if (singleStateFeatureConfig.state.getMaterial() == Material.WATER) {
 					for (int j = 0; j < 16; j++) {
 						for (int s = 0; s < 16; s++) {
-							int txxxx = 4;
+							int txxx = 4;
 							BlockPos blockPos2 = blockPos.add(j, 4, s);
 							if (structureWorldAccess.getBiome(blockPos2).canSetIce(structureWorldAccess, blockPos2, false)) {
 								structureWorldAccess.setBlockState(blockPos2, Blocks.ICE.getDefaultState(), Block.NOTIFY_LISTENERS);

@@ -167,10 +167,13 @@ public class BackgroundRenderer {
 			ux = 0.0F;
 		}
 
-		float vx = Math.min(1.0F / red, Math.min(1.0F / green, 1.0F / blue));
-		red = red * (1.0F - ux) + red * vx * ux;
-		green = green * (1.0F - ux) + green * vx * ux;
-		blue = blue * (1.0F - ux) + blue * vx * ux;
+		if (red != 0.0F && green != 0.0F && blue != 0.0F) {
+			float vx = Math.min(1.0F / red, Math.min(1.0F / green, 1.0F / blue));
+			red = red * (1.0F - ux) + red * vx * ux;
+			green = green * (1.0F - ux) + green * vx * ux;
+			blue = blue * (1.0F - ux) + blue * vx * ux;
+		}
+
 		RenderSystem.clearColor(red, green, blue, 0.0F);
 	}
 

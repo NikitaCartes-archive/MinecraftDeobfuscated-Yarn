@@ -212,7 +212,9 @@ public abstract class PlayerManager {
 		this.server.getBossBarManager().onPlayerConnect(player);
 		this.sendWorldInfo(player, serverWorld2);
 		if (!this.server.getResourcePackUrl().isEmpty()) {
-			player.sendResourcePackUrl(this.server.getResourcePackUrl(), this.server.getResourcePackHash(), this.server.requireResourcePack());
+			player.sendResourcePackUrl(
+				this.server.getResourcePackUrl(), this.server.getResourcePackHash(), this.server.requireResourcePack(), this.server.getResourcePackPrompt()
+			);
 		}
 
 		for (StatusEffectInstance statusEffectInstance : player.getStatusEffects()) {
@@ -254,7 +256,7 @@ public abstract class PlayerManager {
 			}
 		}
 
-		player.method_34225();
+		player.onSpawn();
 	}
 
 	protected void sendScoreboard(ServerScoreboard scoreboard, ServerPlayerEntity player) {
@@ -493,7 +495,7 @@ public abstract class PlayerManager {
 		serverWorld2.onPlayerRespawned(serverPlayerEntity);
 		this.players.add(serverPlayerEntity);
 		this.playerMap.put(serverPlayerEntity.getUuid(), serverPlayerEntity);
-		serverPlayerEntity.method_34225();
+		serverPlayerEntity.onSpawn();
 		serverPlayerEntity.setHealth(serverPlayerEntity.getHealth());
 		if (bl2) {
 			serverPlayerEntity.networkHandler

@@ -14,6 +14,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -115,6 +116,10 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 					livingEntity.damage(DamageSource.magic(livingEntity, this.getOwner()), 1.0F);
 				}
 			}
+		}
+
+		for (AxolotlEntity axolotlEntity : this.world.getNonSpectatingEntities(AxolotlEntity.class, box)) {
+			axolotlEntity.hydrateFromPotion();
 		}
 	}
 

@@ -77,37 +77,37 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
 						z *= (float)(r - 1) * 0.1F + 1.0F;
 					}
 
-					method_23183(matrix4f, vertexConsumer, p, q, r, s, t, 0.45F, 0.45F, 0.5F, y, z, false, false, true, false);
-					method_23183(matrix4f, vertexConsumer, p, q, r, s, t, 0.45F, 0.45F, 0.5F, y, z, true, false, true, true);
-					method_23183(matrix4f, vertexConsumer, p, q, r, s, t, 0.45F, 0.45F, 0.5F, y, z, true, true, false, true);
-					method_23183(matrix4f, vertexConsumer, p, q, r, s, t, 0.45F, 0.45F, 0.5F, y, z, false, true, false, false);
+					drawBranch(matrix4f, vertexConsumer, p, q, r, s, t, 0.45F, 0.45F, 0.5F, y, z, false, false, true, false);
+					drawBranch(matrix4f, vertexConsumer, p, q, r, s, t, 0.45F, 0.45F, 0.5F, y, z, true, false, true, true);
+					drawBranch(matrix4f, vertexConsumer, p, q, r, s, t, 0.45F, 0.45F, 0.5F, y, z, true, true, false, true);
+					drawBranch(matrix4f, vertexConsumer, p, q, r, s, t, 0.45F, 0.45F, 0.5F, y, z, false, true, false, false);
 				}
 			}
 		}
 	}
 
-	private static void method_23183(
-		Matrix4f matrix4f,
-		VertexConsumer vertexConsumer,
+	private static void drawBranch(
+		Matrix4f matrix,
+		VertexConsumer buffer,
 		float f,
 		float g,
 		int i,
 		float h,
 		float j,
+		float red,
+		float green,
+		float blue,
 		float k,
 		float l,
-		float m,
-		float n,
-		float o,
 		boolean bl,
 		boolean bl2,
 		boolean bl3,
 		boolean bl4
 	) {
-		vertexConsumer.vertex(matrix4f, f + (bl ? o : -o), (float)(i * 16), g + (bl2 ? o : -o)).color(k, l, m, 0.3F).next();
-		vertexConsumer.vertex(matrix4f, h + (bl ? n : -n), (float)((i + 1) * 16), j + (bl2 ? n : -n)).color(k, l, m, 0.3F).next();
-		vertexConsumer.vertex(matrix4f, h + (bl3 ? n : -n), (float)((i + 1) * 16), j + (bl4 ? n : -n)).color(k, l, m, 0.3F).next();
-		vertexConsumer.vertex(matrix4f, f + (bl3 ? o : -o), (float)(i * 16), g + (bl4 ? o : -o)).color(k, l, m, 0.3F).next();
+		buffer.vertex(matrix, f + (bl ? l : -l), (float)(i * 16), g + (bl2 ? l : -l)).color(red, green, blue, 0.3F).next();
+		buffer.vertex(matrix, h + (bl ? k : -k), (float)((i + 1) * 16), j + (bl2 ? k : -k)).color(red, green, blue, 0.3F).next();
+		buffer.vertex(matrix, h + (bl3 ? k : -k), (float)((i + 1) * 16), j + (bl4 ? k : -k)).color(red, green, blue, 0.3F).next();
+		buffer.vertex(matrix, f + (bl3 ? l : -l), (float)(i * 16), g + (bl4 ? l : -l)).color(red, green, blue, 0.3F).next();
 	}
 
 	public Identifier getTexture(LightningEntity lightningEntity) {

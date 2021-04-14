@@ -3,7 +3,6 @@ package net.minecraft.structure;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Random;
-import net.minecraft.class_6130;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -112,16 +111,20 @@ public class OceanRuinGenerator {
 		return Util.getRandom(BIG_WARM_RUINS, random);
 	}
 
-	public static void addPieces(StructureManager manager, BlockPos pos, BlockRotation rotation, class_6130 arg, Random random, OceanRuinFeatureConfig config) {
+	public static void addPieces(
+		StructureManager manager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder structurePiecesHolder, Random random, OceanRuinFeatureConfig config
+	) {
 		boolean bl = random.nextFloat() <= config.largeProbability;
 		float f = bl ? 0.9F : 0.8F;
-		method_14822(manager, pos, rotation, arg, random, config, bl, f);
+		method_14822(manager, pos, rotation, structurePiecesHolder, random, config, bl, f);
 		if (bl && random.nextFloat() <= config.clusterProbability) {
-			method_14825(manager, random, rotation, pos, config, arg);
+			method_14825(manager, random, rotation, pos, config, structurePiecesHolder);
 		}
 	}
 
-	private static void method_14825(StructureManager manager, Random random, BlockRotation rotation, BlockPos pos, OceanRuinFeatureConfig config, class_6130 arg) {
+	private static void method_14825(
+		StructureManager manager, Random random, BlockRotation rotation, BlockPos pos, OceanRuinFeatureConfig config, StructurePiecesHolder structurePiecesHolder
+	) {
 		BlockPos blockPos = new BlockPos(pos.getX(), 90, pos.getZ());
 		BlockPos blockPos2 = Structure.transformAround(new BlockPos(15, 0, 15), BlockMirror.NONE, rotation, BlockPos.ORIGIN).add(blockPos);
 		BlockBox blockBox = BlockBox.create(blockPos, blockPos2);
@@ -137,7 +140,7 @@ public class OceanRuinGenerator {
 				BlockPos blockPos5 = Structure.transformAround(new BlockPos(5, 0, 6), BlockMirror.NONE, blockRotation, BlockPos.ORIGIN).add(blockPos4);
 				BlockBox blockBox2 = BlockBox.create(blockPos4, blockPos5);
 				if (!blockBox2.intersects(blockBox)) {
-					method_14822(manager, blockPos4, blockRotation, arg, random, config, false, 0.8F);
+					method_14822(manager, blockPos4, blockRotation, structurePiecesHolder, random, config, false, 0.8F);
 				}
 			}
 		}
@@ -157,22 +160,29 @@ public class OceanRuinGenerator {
 	}
 
 	private static void method_14822(
-		StructureManager manager, BlockPos pos, BlockRotation rotation, class_6130 arg, Random random, OceanRuinFeatureConfig config, boolean large, float integrity
+		StructureManager manager,
+		BlockPos pos,
+		BlockRotation rotation,
+		StructurePiecesHolder structurePiecesHolder,
+		Random random,
+		OceanRuinFeatureConfig config,
+		boolean large,
+		float integrity
 	) {
 		switch (config.biomeType) {
 			case WARM:
 			default:
 				Identifier identifier = large ? getRandomBigWarmRuin(random) : getRandomWarmRuin(random);
-				arg.method_35462(new OceanRuinGenerator.Piece(manager, identifier, pos, rotation, integrity, config.biomeType, large));
+				structurePiecesHolder.addPiece(new OceanRuinGenerator.Piece(manager, identifier, pos, rotation, integrity, config.biomeType, large));
 				break;
 			case COLD:
 				Identifier[] identifiers = large ? BIG_BRICK_RUINS : BRICK_RUINS;
 				Identifier[] identifiers2 = large ? BIG_CRACKED_RUINS : CRACKED_RUINS;
 				Identifier[] identifiers3 = large ? BIG_MOSSY_RUINS : MOSSY_RUINS;
 				int i = random.nextInt(identifiers.length);
-				arg.method_35462(new OceanRuinGenerator.Piece(manager, identifiers[i], pos, rotation, integrity, config.biomeType, large));
-				arg.method_35462(new OceanRuinGenerator.Piece(manager, identifiers2[i], pos, rotation, 0.7F, config.biomeType, large));
-				arg.method_35462(new OceanRuinGenerator.Piece(manager, identifiers3[i], pos, rotation, 0.5F, config.biomeType, large));
+				structurePiecesHolder.addPiece(new OceanRuinGenerator.Piece(manager, identifiers[i], pos, rotation, integrity, config.biomeType, large));
+				structurePiecesHolder.addPiece(new OceanRuinGenerator.Piece(manager, identifiers2[i], pos, rotation, 0.7F, config.biomeType, large));
+				structurePiecesHolder.addPiece(new OceanRuinGenerator.Piece(manager, identifiers3[i], pos, rotation, 0.5F, config.biomeType, large));
 		}
 	}
 

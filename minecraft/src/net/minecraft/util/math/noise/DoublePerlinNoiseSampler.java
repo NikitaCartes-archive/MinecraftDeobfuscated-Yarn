@@ -6,7 +6,7 @@ import it.unimi.dsi.fastutil.doubles.DoubleListIterator;
 import net.minecraft.world.gen.WorldGenRandom;
 
 public class DoublePerlinNoiseSampler {
-	private static final double field_31702 = 1.0181268882175227;
+	private static final double DOMAIN_SCALE = 1.0181268882175227;
 	private static final double field_31703 = 0.3333333333333333;
 	private final double amplitude;
 	private final OctavePerlinNoiseSampler firstSampler;

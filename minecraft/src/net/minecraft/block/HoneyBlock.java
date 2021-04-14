@@ -22,7 +22,7 @@ public class HoneyBlock extends TransparentBlock {
 	private static final double field_31101 = 0.13;
 	private static final double field_31102 = 0.08;
 	private static final double field_31103 = 0.05;
-	private static final int field_31104 = 20;
+	private static final int TICKS_PER_SECOND = 20;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 15.0, 15.0);
 
 	public HoneyBlock(AbstractBlock.Settings settings) {

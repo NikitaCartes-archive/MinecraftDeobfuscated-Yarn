@@ -18,7 +18,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class StemBlock extends PlantBlock implements Fertilizable {
-	public static final int field_31255 = 7;
+	public static final int MAX_AGE = 7;
 	public static final IntProperty AGE = Properties.AGE_7;
 	protected static final float field_31256 = 1.0F;
 	protected static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{

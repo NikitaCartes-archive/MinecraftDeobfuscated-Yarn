@@ -2,6 +2,7 @@ package net.minecraft.world.gen.carver;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.floatprovider.FloatProvider;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.heightprovider.HeightProvider;
@@ -41,7 +42,7 @@ public class RavineCarverConfig extends CarverConfig {
 			instance -> instance.group(
 						FloatProvider.VALUE_CODEC.fieldOf("distance_factor").forGetter(shape -> shape.distanceFactor),
 						FloatProvider.VALUE_CODEC.fieldOf("thickness").forGetter(shape -> shape.thickness),
-						Codec.intRange(0, Integer.MAX_VALUE).fieldOf("width_smoothness").forGetter(shape -> shape.widthSmoothness),
+						Codecs.field_33441.fieldOf("width_smoothness").forGetter(shape -> shape.widthSmoothness),
 						FloatProvider.VALUE_CODEC.fieldOf("horizontal_radius_factor").forGetter(shape -> shape.horizontalRadiusFactor),
 						Codec.FLOAT.fieldOf("vertical_radius_default_factor").forGetter(shape -> shape.verticalRadiusDefaultFactor),
 						Codec.FLOAT.fieldOf("vertical_radius_center_factor").forGetter(shape -> shape.verticalRadiusCenterFactor)

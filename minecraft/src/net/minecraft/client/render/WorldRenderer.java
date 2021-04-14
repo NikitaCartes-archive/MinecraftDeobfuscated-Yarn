@@ -1147,7 +1147,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 							);
 							vertexConsumerProvider2 = renderLayer -> {
 								VertexConsumer vertexConsumer2x = immediate.getBuffer(renderLayer);
-								return renderLayer.hasCrumbling() ? VertexConsumers.dual(vertexConsumer, vertexConsumer2x) : vertexConsumer2x;
+								return renderLayer.hasCrumbling() ? VertexConsumers.union(vertexConsumer, vertexConsumer2x) : vertexConsumer2x;
 							};
 						}
 					}
@@ -1171,7 +1171,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		this.checkEmpty(matrices);
 		immediate.draw(RenderLayer.getSolid());
 		immediate.draw(RenderLayer.getEndPortal());
-		immediate.draw(RenderLayer.method_34571());
+		immediate.draw(RenderLayer.getEndGateway());
 		immediate.draw(TexturedRenderLayers.getEntitySolid());
 		immediate.draw(TexturedRenderLayers.getEntityCutout());
 		immediate.draw(TexturedRenderLayers.getBeds());
@@ -1413,7 +1413,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					glUniform.upload();
 				}
 
-				vertexBuffer.method_34432();
+				vertexBuffer.drawVertices();
 				bl2 = true;
 			}
 		}
@@ -1428,7 +1428,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		}
 
 		VertexBuffer.unbind();
-		VertexBuffer.method_34430();
+		VertexBuffer.unbindVertexArray();
 		this.client.getProfiler().pop();
 		renderLayer.endDrawing();
 	}
@@ -1726,7 +1726,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			RenderSystem.depthMask(false);
 			RenderSystem.setShaderColor(g, h, i, 1.0F);
 			Shader shader = RenderSystem.getShader();
-			this.lightSkyBuffer.method_34427(matrices.peek().getModel(), matrix4f, shader);
+			this.lightSkyBuffer.setShader(matrices.peek().getModel(), matrix4f, shader);
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
 			float[] fs = this.world.getSkyProperties().getFogColorOverride(this.world.getSkyAngle(f), f);
@@ -1797,7 +1797,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			float v = this.world.method_23787(f) * j;
 			if (v > 0.0F) {
 				RenderSystem.setShaderColor(v, v, v, v);
-				this.starsBuffer.method_34427(matrices.peek().getModel(), matrix4f, GameRenderer.getPositionShader());
+				this.starsBuffer.setShader(matrices.peek().getModel(), matrix4f, GameRenderer.getPositionShader());
 			}
 
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -1809,7 +1809,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			if (d < 0.0) {
 				matrices.push();
 				matrices.translate(0.0, 12.0, 0.0);
-				this.darkSkyBuffer.method_34427(matrices.peek().getModel(), matrix4f, shader);
+				this.darkSkyBuffer.setShader(matrices.peek().getModel(), matrix4f, shader);
 				matrices.pop();
 			}
 
@@ -1896,7 +1896,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					}
 
 					Shader shader = RenderSystem.getShader();
-					this.cloudsBuffer.method_34427(matrices.peek().getModel(), matrix4f, shader);
+					this.cloudsBuffer.setShader(matrices.peek().getModel(), matrix4f, shader);
 				}
 			}
 
@@ -2806,6 +2806,10 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				break;
 			case 1504:
 				PointedDripstoneBlock.createParticle(this.world, pos, this.world.getBlockState(pos));
+				break;
+			case 1505:
+				BoneMealItem.createParticles(this.world, pos, data);
+				this.world.playSound(pos, SoundEvents.ITEM_BONE_MEAL_USE, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
 				break;
 			case 2000:
 				Direction direction = Direction.byId(data);

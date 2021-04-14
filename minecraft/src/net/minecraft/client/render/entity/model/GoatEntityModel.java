@@ -75,5 +75,9 @@ public class GoatEntityModel<T extends GoatEntity> extends QuadrupedEntityModel<
 		this.head.getChild(EntityModelPartNames.LEFT_HORN).visible = !goatEntity.isBaby();
 		this.head.getChild(EntityModelPartNames.RIGHT_HORN).visible = !goatEntity.isBaby();
 		super.setAngles(goatEntity, f, g, h, i, j);
+		float k = goatEntity.method_36283();
+		if (k != 0.0F) {
+			this.head.pitch = k;
+		}
 	}
 }

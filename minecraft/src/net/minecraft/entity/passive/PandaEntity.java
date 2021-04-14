@@ -67,10 +67,10 @@ public class PandaEntity extends AnimalEntity {
 	private static final TrackedData<Byte> HIDDEN_GENE = DataTracker.registerData(PandaEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Byte> PANDA_FLAGS = DataTracker.registerData(PandaEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TargetPredicate ASK_FOR_BAMBOO_TARGET = new TargetPredicate().setBaseMaxDistance(8.0).includeTeammates().includeInvulnerable();
-	private static final int field_30344 = 2;
-	private static final int field_30345 = 4;
-	private static final int field_30346 = 8;
-	private static final int field_30347 = 16;
+	private static final int SNEEZING_FLAG = 2;
+	private static final int PLAYING_FLAG = 4;
+	private static final int SCARED_FLAG = 8;
+	private static final int LYING_ON_BACK_FLAG = 16;
 	private static final int field_30348 = 5;
 	public static final int field_30343 = 32;
 	private static final int field_30349 = 32;

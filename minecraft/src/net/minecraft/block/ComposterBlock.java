@@ -34,7 +34,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
 
 public class ComposterBlock extends Block implements InventoryProvider {
-	public static final int field_31071 = 8;
+	public static final int MAX_LEVEL = 8;
 	public static final int field_31072 = 0;
 	public static final int field_31073 = 7;
 	public static final IntProperty LEVEL = Properties.LEVEL_8;

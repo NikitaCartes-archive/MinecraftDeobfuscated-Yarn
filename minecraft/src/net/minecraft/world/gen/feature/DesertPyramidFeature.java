@@ -35,7 +35,7 @@ public class DesertPyramidFeature extends StructureFeature<DefaultFeatureConfig>
 			HeightLimitView heightLimitView
 		) {
 			DesertTempleGenerator desertTempleGenerator = new DesertTempleGenerator(this.random, chunkPos.getStartX(), chunkPos.getStartZ());
-			this.method_35462(desertTempleGenerator);
+			this.addPiece(desertTempleGenerator);
 		}
 	}
 }

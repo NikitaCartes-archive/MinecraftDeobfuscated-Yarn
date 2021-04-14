@@ -164,7 +164,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 						} else {
 							try {
 								StructurePiece structurePiece = structurePieceType.load(world, nbtCompound);
-								structureStart.method_35462(structurePiece);
+								structureStart.addPiece(structurePiece);
 							} catch (Exception var17) {
 								LOGGER.error("Exception loading structure piece with id {}", identifier2, var17);
 							}

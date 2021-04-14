@@ -67,9 +67,9 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddleable {
-	private static final float field_30499 = 0.23F;
-	private static final float field_30500 = 0.66F;
-	private static final float field_30501 = 0.55F;
+	private static final float COLD_SADDLED_SPEED = 0.23F;
+	private static final float COLD_SPEED = 0.66F;
+	private static final float DEFAULT_SADDLED_SPEED = 0.55F;
 	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.WARPED_FUNGUS);
 	private static final Ingredient ATTRACTING_INGREDIENT = Ingredient.ofItems(Items.WARPED_FUNGUS, Items.WARPED_FUNGUS_ON_A_STICK);
 	private static final TrackedData<Integer> BOOST_TIME = DataTracker.registerData(StriderEntity.class, TrackedDataHandlerRegistry.INTEGER);

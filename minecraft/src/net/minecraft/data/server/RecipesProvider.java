@@ -62,7 +62,9 @@ public class RecipesProvider implements DataProvider {
 	private static final ImmutableList<ItemConvertible> COAL_ORES = ImmutableList.of(Items.COAL_ORE, Items.DEEPSLATE_COAL_ORE);
 	private static final ImmutableList<ItemConvertible> IRON_ORES = ImmutableList.of(Items.IRON_ORE, Items.DEEPSLATE_IRON_ORE, Items.RAW_IRON);
 	private static final ImmutableList<ItemConvertible> COPPER_ORES = ImmutableList.of(Items.COPPER_ORE, Items.DEEPSLATE_COPPER_ORE, Items.RAW_COPPER);
-	private static final ImmutableList<ItemConvertible> GOLD_ORES = ImmutableList.of(Items.GOLD_ORE, Items.DEEPSLATE_GOLD_ORE, Items.RAW_GOLD);
+	private static final ImmutableList<ItemConvertible> GOLD_ORES = ImmutableList.of(
+		Items.GOLD_ORE, Items.DEEPSLATE_GOLD_ORE, Items.NETHER_GOLD_ORE, Items.RAW_GOLD
+	);
 	private static final ImmutableList<ItemConvertible> DIAMOND_ORES = ImmutableList.of(Items.DIAMOND_ORE, Items.DEEPSLATE_DIAMOND_ORE);
 	private static final ImmutableList<ItemConvertible> LAPIS_ORES = ImmutableList.of(Items.LAPIS_ORE, Items.DEEPSLATE_LAPIS_ORE);
 	private static final ImmutableList<ItemConvertible> REDSTONE_ORES = ImmutableList.of(Items.REDSTONE_ORE, Items.DEEPSLATE_REDSTONE_ORE);
@@ -2416,6 +2418,9 @@ public class RecipesProvider implements DataProvider {
 		offerSmelting(exporter, LAPIS_ORES, Items.LAPIS_LAZULI, 0.2F, 200);
 		offerSmelting(exporter, REDSTONE_ORES, Items.REDSTONE, 0.7F, 200);
 		offerSmelting(exporter, EMERALD_ORES, Items.EMERALD, 1.0F, 200);
+		offerReversibleCompactingRecipes(exporter, Items.RAW_IRON, Items.RAW_IRON_BLOCK);
+		offerReversibleCompactingRecipes(exporter, Items.RAW_COPPER, Items.RAW_COPPER_BLOCK);
+		offerReversibleCompactingRecipes(exporter, Items.RAW_GOLD, Items.RAW_GOLD_BLOCK);
 		CookingRecipeJsonFactory.createSmelting(Ingredient.fromTag(ItemTags.SAND), Blocks.GLASS.asItem(), 0.1F, 200)
 			.criterion("has_sand", conditionsFromTag(ItemTags.SAND))
 			.offerTo(exporter);
@@ -3391,6 +3396,23 @@ public class RecipesProvider implements DataProvider {
 	 */
 	private static void offerCrackingRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {
 		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(input), output, 0.1F, 200).criterion(hasItem(input), conditionsFromItem(input)).offerTo(exporter);
+	}
+
+	/**
+	 * Offers two recipes to convert between a normal and compacted form of an item.
+	 * 
+	 * <p>The shaped recipe converts 9 items in a square to a compacted form of the item.
+	 * <p>The shapeless recipe converts the compacted form to 9 of the normal form.
+	 */
+	private static void offerReversibleCompactingRecipes(Consumer<RecipeJsonProvider> exporter, ItemConvertible normal, ItemConvertible compact) {
+		ShapelessRecipeJsonFactory.create(normal, 9).input(compact).criterion(hasItem(compact), conditionsFromItem(compact)).offerTo(exporter);
+		ShapedRecipeJsonFactory.create(compact)
+			.input('#', normal)
+			.pattern("###")
+			.pattern("###")
+			.pattern("###")
+			.criterion(hasItem(normal), conditionsFromItem(normal))
+			.offerTo(exporter);
 	}
 
 	private static void generateCookingRecipes(Consumer<RecipeJsonProvider> exporter, String cooker, CookingRecipeSerializer<?> serializer, int cookingTime) {

@@ -3531,6 +3531,9 @@ public class BlockStateModelGenerator {
 		this.registerSimpleCubeAll(Blocks.CALCITE);
 		this.registerSimpleCubeAll(Blocks.TUFF);
 		this.registerSimpleCubeAll(Blocks.DRIPSTONE_BLOCK);
+		this.registerSimpleCubeAll(Blocks.RAW_IRON_BLOCK);
+		this.registerSimpleCubeAll(Blocks.RAW_COPPER_BLOCK);
+		this.registerSimpleCubeAll(Blocks.RAW_GOLD_BLOCK);
 		this.registerPetrifiedOakSlab();
 		this.registerSimpleCubeAll(Blocks.COPPER_ORE);
 		this.registerSimpleCubeAll(Blocks.DEEPSLATE_COPPER_ORE);

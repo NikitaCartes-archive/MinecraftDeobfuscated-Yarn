@@ -28,9 +28,9 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public class PiglinBruteEntity extends AbstractPiglinEntity {
-	private static final int field_30586 = 50;
-	private static final float field_30587 = 0.35F;
-	private static final int field_30588 = 7;
+	private static final int MAX_HEALTH = 50;
+	private static final float MOVEMENT_SPEED = 0.35F;
+	private static final int ATTACK_DAMAGE = 7;
 	protected static final ImmutableList<SensorType<? extends Sensor<? super PiglinBruteEntity>>> SENSOR_TYPES = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS, SensorType.HURT_BY, SensorType.PIGLIN_BRUTE_SPECIFIC_SENSOR
 	);

@@ -35,7 +35,7 @@ public class JungleTempleFeature extends StructureFeature<DefaultFeatureConfig> 
 			HeightLimitView heightLimitView
 		) {
 			JungleTempleGenerator jungleTempleGenerator = new JungleTempleGenerator(this.random, chunkPos.getStartX(), chunkPos.getStartZ());
-			this.method_35462(jungleTempleGenerator);
+			this.addPiece(jungleTempleGenerator);
 		}
 	}
 }

@@ -10,6 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.BuddingAmethystBlock;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -34,11 +35,11 @@ public class GeodeFeature extends Feature<GeodeFeatureConfig> {
 		int i = geodeFeatureConfig.minGenOffset;
 		int j = geodeFeatureConfig.maxGenOffset;
 		List<Pair<BlockPos, Integer>> list = Lists.<Pair<BlockPos, Integer>>newLinkedList();
-		int k = geodeFeatureConfig.minDistributionPoints + random.nextInt(geodeFeatureConfig.maxDistributionPoints - geodeFeatureConfig.minDistributionPoints);
+		int k = geodeFeatureConfig.field_33517.get(random);
 		ChunkRandom chunkRandom = new ChunkRandom(structureWorldAccess.getSeed());
 		DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.create(chunkRandom, -4, 1.0);
 		List<BlockPos> list2 = Lists.<BlockPos>newLinkedList();
-		double d = (double)k / (double)geodeFeatureConfig.maxOuterWallDistance;
+		double d = (double)k / (double)geodeFeatureConfig.field_33516.getMax();
 		GeodeLayerThicknessConfig geodeLayerThicknessConfig = geodeFeatureConfig.layerThicknessConfig;
 		GeodeLayerConfig geodeLayerConfig = geodeFeatureConfig.layerConfig;
 		GeodeCrackConfig geodeCrackConfig = geodeFeatureConfig.crackConfig;
@@ -51,9 +52,9 @@ public class GeodeFeature extends Feature<GeodeFeatureConfig> {
 		int m = 0;
 
 		for (int n = 0; n < k; n++) {
-			int o = geodeFeatureConfig.minOuterWallDistance + random.nextInt(geodeFeatureConfig.maxOuterWallDistance - geodeFeatureConfig.minOuterWallDistance);
-			int p = geodeFeatureConfig.minOuterWallDistance + random.nextInt(geodeFeatureConfig.maxOuterWallDistance - geodeFeatureConfig.minOuterWallDistance);
-			int q = geodeFeatureConfig.minOuterWallDistance + random.nextInt(geodeFeatureConfig.maxOuterWallDistance - geodeFeatureConfig.minOuterWallDistance);
+			int o = geodeFeatureConfig.field_33516.get(random);
+			int p = geodeFeatureConfig.field_33516.get(random);
+			int q = geodeFeatureConfig.field_33516.get(random);
 			BlockPos blockPos2 = blockPos.add(o, p, q);
 			BlockState blockState = structureWorldAccess.getBlockState(blockPos2);
 			if (blockState.isAir() || blockState.isOf(Blocks.WATER) || blockState.isOf(Blocks.LAVA)) {
@@ -62,7 +63,7 @@ public class GeodeFeature extends Feature<GeodeFeatureConfig> {
 				}
 			}
 
-			list.add(Pair.of(blockPos2, geodeFeatureConfig.minPointOffset + random.nextInt(geodeFeatureConfig.maxPointOffset - geodeFeatureConfig.minPointOffset)));
+			list.add(Pair.of(blockPos2, geodeFeatureConfig.field_33518.get(random)));
 		}
 
 		if (bl) {
@@ -132,7 +133,7 @@ public class GeodeFeature extends Feature<GeodeFeatureConfig> {
 		List<BlockState> list4 = geodeLayerConfig.innerBlocks;
 
 		for (BlockPos blockPos5 : list3) {
-			BlockState blockState2 = (BlockState)list4.get(random.nextInt(list4.size()));
+			BlockState blockState2 = Util.getRandom(list4, random);
 
 			for (Direction direction : DIRECTIONS) {
 				if (blockState2.contains(Properties.FACING)) {

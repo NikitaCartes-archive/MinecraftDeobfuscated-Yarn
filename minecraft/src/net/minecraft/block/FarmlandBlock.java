@@ -23,7 +23,7 @@ import net.minecraft.world.WorldView;
 public class FarmlandBlock extends Block {
 	public static final IntProperty MOISTURE = Properties.MOISTURE;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 15.0, 16.0);
-	public static final int field_31084 = 7;
+	public static final int MAX_MOISTURE = 7;
 
 	protected FarmlandBlock(AbstractBlock.Settings settings) {
 		super(settings);

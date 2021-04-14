@@ -28,6 +28,7 @@ public class Items {
 	public static final Item POLISHED_DEEPSLATE = register(Blocks.POLISHED_DEEPSLATE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item CALCITE = register(Blocks.CALCITE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item TUFF = register(Blocks.TUFF, ItemGroup.BUILDING_BLOCKS);
+	public static final Item DRIPSTONE_BLOCK = register(Blocks.DRIPSTONE_BLOCK, ItemGroup.BUILDING_BLOCKS);
 	public static final Item GRASS_BLOCK = register(Blocks.GRASS_BLOCK, ItemGroup.BUILDING_BLOCKS);
 	public static final Item DIRT = register(Blocks.DIRT, ItemGroup.BUILDING_BLOCKS);
 	public static final Item COARSE_DIRT = register(Blocks.COARSE_DIRT, ItemGroup.BUILDING_BLOCKS);
@@ -54,15 +55,35 @@ public class Items {
 	public static final Item SAND = register(Blocks.SAND, ItemGroup.BUILDING_BLOCKS);
 	public static final Item RED_SAND = register(Blocks.RED_SAND, ItemGroup.BUILDING_BLOCKS);
 	public static final Item GRAVEL = register(Blocks.GRAVEL, ItemGroup.BUILDING_BLOCKS);
-	public static final Item GOLD_ORE = register(Blocks.GOLD_ORE, ItemGroup.BUILDING_BLOCKS);
-	public static final Item DEEPSLATE_GOLD_ORE = register(Blocks.DEEPSLATE_GOLD_ORE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item COAL_ORE = register(Blocks.COAL_ORE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item DEEPSLATE_COAL_ORE = register(Blocks.DEEPSLATE_COAL_ORE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item IRON_ORE = register(Blocks.IRON_ORE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item DEEPSLATE_IRON_ORE = register(Blocks.DEEPSLATE_IRON_ORE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item COPPER_ORE = register(Blocks.COPPER_ORE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item DEEPSLATE_COPPER_ORE = register(Blocks.DEEPSLATE_COPPER_ORE, ItemGroup.BUILDING_BLOCKS);
-	public static final Item COAL_ORE = register(Blocks.COAL_ORE, ItemGroup.BUILDING_BLOCKS);
-	public static final Item DEEPSLATE_COAL_ORE = register(Blocks.DEEPSLATE_COAL_ORE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item GOLD_ORE = register(Blocks.GOLD_ORE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item DEEPSLATE_GOLD_ORE = register(Blocks.DEEPSLATE_GOLD_ORE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item REDSTONE_ORE = register(Blocks.REDSTONE_ORE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item DEEPSLATE_REDSTONE_ORE = register(Blocks.DEEPSLATE_REDSTONE_ORE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item EMERALD_ORE = register(Blocks.EMERALD_ORE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item DEEPSLATE_EMERALD_ORE = register(Blocks.DEEPSLATE_EMERALD_ORE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item LAPIS_ORE = register(Blocks.LAPIS_ORE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item DEEPSLATE_LAPIS_ORE = register(Blocks.DEEPSLATE_LAPIS_ORE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item DIAMOND_ORE = register(Blocks.DIAMOND_ORE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item DEEPSLATE_DIAMOND_ORE = register(Blocks.DEEPSLATE_DIAMOND_ORE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item NETHER_GOLD_ORE = register(Blocks.NETHER_GOLD_ORE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item NETHER_QUARTZ_ORE = register(Blocks.NETHER_QUARTZ_ORE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item ANCIENT_DEBRIS = register(new BlockItem(Blocks.ANCIENT_DEBRIS, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS).fireproof()));
+	public static final Item COAL_BLOCK = register(Blocks.COAL_BLOCK, ItemGroup.BUILDING_BLOCKS);
+	public static final Item RAW_IRON_BLOCK = register(Blocks.RAW_IRON_BLOCK, ItemGroup.BUILDING_BLOCKS);
+	public static final Item RAW_COPPER_BLOCK = register(Blocks.RAW_COPPER_BLOCK, ItemGroup.BUILDING_BLOCKS);
+	public static final Item RAW_GOLD_BLOCK = register(Blocks.RAW_GOLD_BLOCK, ItemGroup.BUILDING_BLOCKS);
+	public static final Item AMETHYST_BLOCK = register(Blocks.AMETHYST_BLOCK, ItemGroup.BUILDING_BLOCKS);
+	public static final Item IRON_BLOCK = register(Blocks.IRON_BLOCK, ItemGroup.BUILDING_BLOCKS);
+	public static final Item COPPER_BLOCK = register(Blocks.COPPER_BLOCK, ItemGroup.BUILDING_BLOCKS);
+	public static final Item GOLD_BLOCK = register(Blocks.GOLD_BLOCK, ItemGroup.BUILDING_BLOCKS);
+	public static final Item DIAMOND_BLOCK = register(Blocks.DIAMOND_BLOCK, ItemGroup.BUILDING_BLOCKS);
+	public static final Item NETHERITE_BLOCK = register(new BlockItem(Blocks.NETHERITE_BLOCK, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS).fireproof()));
 	public static final Item OAK_LOG = register(Blocks.OAK_LOG, ItemGroup.BUILDING_BLOCKS);
 	public static final Item SPRUCE_LOG = register(Blocks.SPRUCE_LOG, ItemGroup.BUILDING_BLOCKS);
 	public static final Item BIRCH_LOG = register(Blocks.BIRCH_LOG, ItemGroup.BUILDING_BLOCKS);
@@ -107,8 +128,6 @@ public class Items {
 	public static final Item WET_SPONGE = register(Blocks.WET_SPONGE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item GLASS = register(Blocks.GLASS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item TINTED_GLASS = register(Blocks.TINTED_GLASS, ItemGroup.BUILDING_BLOCKS);
-	public static final Item LAPIS_ORE = register(Blocks.LAPIS_ORE, ItemGroup.BUILDING_BLOCKS);
-	public static final Item DEEPSLATE_LAPIS_ORE = register(Blocks.DEEPSLATE_LAPIS_ORE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item LAPIS_BLOCK = register(Blocks.LAPIS_BLOCK, ItemGroup.BUILDING_BLOCKS);
 	public static final Item SANDSTONE = register(Blocks.SANDSTONE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item CHISELED_SANDSTONE = register(Blocks.CHISELED_SANDSTONE, ItemGroup.BUILDING_BLOCKS);
@@ -170,8 +189,6 @@ public class Items {
 	public static final Item BIG_DRIPLEAF = register(Blocks.BIG_DRIPLEAF, ItemGroup.DECORATIONS);
 	public static final Item SMALL_DRIPLEAF = register(Blocks.SMALL_DRIPLEAF, ItemGroup.DECORATIONS);
 	public static final Item BAMBOO = register(Blocks.BAMBOO, ItemGroup.DECORATIONS);
-	public static final Item GOLD_BLOCK = register(Blocks.GOLD_BLOCK, ItemGroup.BUILDING_BLOCKS);
-	public static final Item IRON_BLOCK = register(Blocks.IRON_BLOCK, ItemGroup.BUILDING_BLOCKS);
 	public static final Item OAK_SLAB = register(Blocks.OAK_SLAB, ItemGroup.BUILDING_BLOCKS);
 	public static final Item SPRUCE_SLAB = register(Blocks.SPRUCE_SLAB, ItemGroup.BUILDING_BLOCKS);
 	public static final Item BIRCH_SLAB = register(Blocks.BIRCH_SLAB, ItemGroup.BUILDING_BLOCKS);
@@ -214,17 +231,12 @@ public class Items {
 	public static final Item SPAWNER = register(Blocks.SPAWNER);
 	public static final Item OAK_STAIRS = register(Blocks.OAK_STAIRS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item CHEST = register(Blocks.CHEST, ItemGroup.DECORATIONS);
-	public static final Item DIAMOND_ORE = register(Blocks.DIAMOND_ORE, ItemGroup.BUILDING_BLOCKS);
-	public static final Item DEEPSLATE_DIAMOND_ORE = register(Blocks.DEEPSLATE_DIAMOND_ORE, ItemGroup.BUILDING_BLOCKS);
-	public static final Item DIAMOND_BLOCK = register(Blocks.DIAMOND_BLOCK, ItemGroup.BUILDING_BLOCKS);
 	public static final Item CRAFTING_TABLE = register(Blocks.CRAFTING_TABLE, ItemGroup.DECORATIONS);
 	public static final Item FARMLAND = register(Blocks.FARMLAND, ItemGroup.DECORATIONS);
 	public static final Item FURNACE = register(Blocks.FURNACE, ItemGroup.DECORATIONS);
 	public static final Item LADDER = register(Blocks.LADDER, ItemGroup.DECORATIONS);
 	public static final Item RAIL = register(Blocks.RAIL, ItemGroup.TRANSPORTATION);
 	public static final Item COBBLESTONE_STAIRS = register(Blocks.COBBLESTONE_STAIRS, ItemGroup.BUILDING_BLOCKS);
-	public static final Item REDSTONE_ORE = register(Blocks.REDSTONE_ORE, ItemGroup.BUILDING_BLOCKS);
-	public static final Item DEEPSLATE_REDSTONE_ORE = register(Blocks.DEEPSLATE_REDSTONE_ORE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item SNOW = register(Blocks.SNOW, ItemGroup.DECORATIONS);
 	public static final Item ICE = register(Blocks.ICE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item SNOW_BLOCK = register(Blocks.SNOW_BLOCK, ItemGroup.BUILDING_BLOCKS);
@@ -263,10 +275,10 @@ public class Items {
 	public static final Item MOSSY_STONE_BRICKS = register(Blocks.MOSSY_STONE_BRICKS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item CRACKED_STONE_BRICKS = register(Blocks.CRACKED_STONE_BRICKS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item CHISELED_STONE_BRICKS = register(Blocks.CHISELED_STONE_BRICKS, ItemGroup.BUILDING_BLOCKS);
-	public static final Item CRACKED_DEEPSLATE_BRICKS = register(Blocks.CRACKED_DEEPSLATE_BRICKS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item DEEPSLATE_BRICKS = register(Blocks.DEEPSLATE_BRICKS, ItemGroup.BUILDING_BLOCKS);
-	public static final Item CRACKED_DEEPSLATE_TILES = register(Blocks.CRACKED_DEEPSLATE_TILES, ItemGroup.BUILDING_BLOCKS);
+	public static final Item CRACKED_DEEPSLATE_BRICKS = register(Blocks.CRACKED_DEEPSLATE_BRICKS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item DEEPSLATE_TILES = register(Blocks.DEEPSLATE_TILES, ItemGroup.BUILDING_BLOCKS);
+	public static final Item CRACKED_DEEPSLATE_TILES = register(Blocks.CRACKED_DEEPSLATE_TILES, ItemGroup.BUILDING_BLOCKS);
 	public static final Item CHISELED_DEEPSLATE = register(Blocks.CHISELED_DEEPSLATE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item BROWN_MUSHROOM_BLOCK = register(Blocks.BROWN_MUSHROOM_BLOCK, ItemGroup.DECORATIONS);
 	public static final Item RED_MUSHROOM_BLOCK = register(Blocks.RED_MUSHROOM_BLOCK, ItemGroup.DECORATIONS);
@@ -292,8 +304,6 @@ public class Items {
 	public static final Item END_STONE_BRICKS = register(Blocks.END_STONE_BRICKS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item DRAGON_EGG = register(new BlockItem(Blocks.DRAGON_EGG, new Item.Settings().rarity(Rarity.EPIC)));
 	public static final Item SANDSTONE_STAIRS = register(Blocks.SANDSTONE_STAIRS, ItemGroup.BUILDING_BLOCKS);
-	public static final Item EMERALD_ORE = register(Blocks.EMERALD_ORE, ItemGroup.BUILDING_BLOCKS);
-	public static final Item DEEPSLATE_EMERALD_ORE = register(Blocks.DEEPSLATE_EMERALD_ORE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item ENDER_CHEST = register(Blocks.ENDER_CHEST, ItemGroup.DECORATIONS);
 	public static final Item EMERALD_BLOCK = register(Blocks.EMERALD_BLOCK, ItemGroup.BUILDING_BLOCKS);
 	public static final Item SPRUCE_STAIRS = register(Blocks.SPRUCE_STAIRS, ItemGroup.BUILDING_BLOCKS);
@@ -327,7 +337,6 @@ public class Items {
 	public static final Item ANVIL = register(Blocks.ANVIL, ItemGroup.DECORATIONS);
 	public static final Item CHIPPED_ANVIL = register(Blocks.CHIPPED_ANVIL, ItemGroup.DECORATIONS);
 	public static final Item DAMAGED_ANVIL = register(Blocks.DAMAGED_ANVIL, ItemGroup.DECORATIONS);
-	public static final Item NETHER_QUARTZ_ORE = register(Blocks.NETHER_QUARTZ_ORE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item CHISELED_QUARTZ_BLOCK = register(Blocks.CHISELED_QUARTZ_BLOCK, ItemGroup.BUILDING_BLOCKS);
 	public static final Item QUARTZ_BLOCK = register(Blocks.QUARTZ_BLOCK, ItemGroup.BUILDING_BLOCKS);
 	public static final Item QUARTZ_BRICKS = register(Blocks.QUARTZ_BRICKS, ItemGroup.BUILDING_BLOCKS);
@@ -370,7 +379,6 @@ public class Items {
 	public static final Item RED_CARPET = register(Blocks.RED_CARPET, ItemGroup.DECORATIONS);
 	public static final Item BLACK_CARPET = register(Blocks.BLACK_CARPET, ItemGroup.DECORATIONS);
 	public static final Item TERRACOTTA = register(Blocks.TERRACOTTA, ItemGroup.BUILDING_BLOCKS);
-	public static final Item COAL_BLOCK = register(Blocks.COAL_BLOCK, ItemGroup.BUILDING_BLOCKS);
 	public static final Item PACKED_ICE = register(Blocks.PACKED_ICE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item ACACIA_STAIRS = register(Blocks.ACACIA_STAIRS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item DARK_OAK_STAIRS = register(Blocks.DARK_OAK_STAIRS, ItemGroup.BUILDING_BLOCKS);
@@ -1455,8 +1463,6 @@ public class Items {
 	);
 	public static final Item HONEYCOMB_BLOCK = register(Blocks.HONEYCOMB_BLOCK, ItemGroup.DECORATIONS);
 	public static final Item LODESTONE = register(Blocks.LODESTONE, ItemGroup.DECORATIONS);
-	public static final Item NETHERITE_BLOCK = register(new BlockItem(Blocks.NETHERITE_BLOCK, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS).fireproof()));
-	public static final Item ANCIENT_DEBRIS = register(new BlockItem(Blocks.ANCIENT_DEBRIS, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS).fireproof()));
 	public static final Item CRYING_OBSIDIAN = register(Blocks.CRYING_OBSIDIAN, ItemGroup.BUILDING_BLOCKS);
 	public static final Item BLACKSTONE = register(Blocks.BLACKSTONE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item BLACKSTONE_SLAB = register(Blocks.BLACKSTONE_SLAB, ItemGroup.BUILDING_BLOCKS);
@@ -1489,14 +1495,12 @@ public class Items {
 	public static final Item RED_CANDLE = register(Blocks.RED_CANDLE, ItemGroup.DECORATIONS);
 	public static final Item BLACK_CANDLE = register(Blocks.BLACK_CANDLE, ItemGroup.DECORATIONS);
 	public static final Item AMETHYST_SHARD = register("amethyst_shard", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
-	public static final Item AMETHYST_BLOCK = register(Blocks.AMETHYST_BLOCK, ItemGroup.BUILDING_BLOCKS);
 	public static final Item BUDDING_AMETHYST = register(Blocks.BUDDING_AMETHYST, ItemGroup.BUILDING_BLOCKS);
 	public static final Item SMALL_AMETHYST_BUD = register(Blocks.SMALL_AMETHYST_BUD, ItemGroup.DECORATIONS);
 	public static final Item MEDIUM_AMETHYST_BUD = register(Blocks.MEDIUM_AMETHYST_BUD, ItemGroup.DECORATIONS);
 	public static final Item LARGE_AMETHYST_BUD = register(Blocks.LARGE_AMETHYST_BUD, ItemGroup.DECORATIONS);
 	public static final Item AMETHYST_CLUSTER = register(Blocks.AMETHYST_CLUSTER, ItemGroup.DECORATIONS);
 	public static final Item SPYGLASS = register("spyglass", new SpyglassItem(new Item.Settings().group(ItemGroup.TOOLS).maxCount(1)));
-	public static final Item COPPER_BLOCK = register(Blocks.COPPER_BLOCK, ItemGroup.BUILDING_BLOCKS);
 	public static final Item EXPOSED_COPPER = register(Blocks.EXPOSED_COPPER, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WEATHERED_COPPER = register(Blocks.WEATHERED_COPPER, ItemGroup.BUILDING_BLOCKS);
 	public static final Item OXIDIZED_COPPER = register(Blocks.OXIDIZED_COPPER, ItemGroup.BUILDING_BLOCKS);
@@ -1533,7 +1537,6 @@ public class Items {
 		new PowderSnowBucketItem(Blocks.POWDER_SNOW, SoundEvents.ITEM_BUCKET_EMPTY_POWDER_SNOW, new Item.Settings().maxCount(1).group(ItemGroup.MISC))
 	);
 	public static final Item POINTED_DRIPSTONE = register(Blocks.POINTED_DRIPSTONE, ItemGroup.DECORATIONS);
-	public static final Item DRIPSTONE_BLOCK = register(Blocks.DRIPSTONE_BLOCK, ItemGroup.BUILDING_BLOCKS);
 
 	private static Item register(Block block) {
 		return register(new BlockItem(block, new Item.Settings()));

@@ -94,7 +94,7 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 			int i = chunkPos.getStartX() - 29;
 			int j = chunkPos.getStartZ() - 29;
 			Direction direction = Direction.Type.HORIZONTAL.random(this.random);
-			this.method_35462(new OceanMonumentGenerator.Base(this.random, i, j, direction));
+			this.addPiece(new OceanMonumentGenerator.Base(this.random, i, j, direction));
 			this.field_33415 = true;
 		}
 

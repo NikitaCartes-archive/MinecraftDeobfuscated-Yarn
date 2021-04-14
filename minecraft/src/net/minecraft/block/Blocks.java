@@ -150,7 +150,8 @@ public class Blocks {
 		"coal_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0F, 3.0F), UniformIntProvider.create(0, 2))
 	);
 	public static final Block DEEPSLATE_COAL_ORE = register(
-		"deepslate_coal_ore", new OreBlock(AbstractBlock.Settings.copy(COAL_ORE).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE))
+		"deepslate_coal_ore",
+		new OreBlock(AbstractBlock.Settings.copy(COAL_ORE).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE), UniformIntProvider.create(0, 2))
 	);
 	public static final Block NETHER_GOLD_ORE = register(
 		"nether_gold_ore",
@@ -3198,7 +3199,7 @@ public class Blocks {
 	);
 	public static final Block DEEPSLATE = register(
 		"deepslate",
-		new PillarBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.STONE_GRAY).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.DEEPSLATE))
+		new PillarBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.DEEPSLATE_GRAY).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.DEEPSLATE))
 	);
 	public static final Block COBBLED_DEEPSLATE = register("cobbled_deepslate", new Block(AbstractBlock.Settings.copy(DEEPSLATE).strength(3.5F, 6.0F)));
 	public static final Block COBBLED_DEEPSLATE_STAIRS = register(
@@ -3207,7 +3208,7 @@ public class Blocks {
 	public static final Block COBBLED_DEEPSLATE_SLAB = register("cobbled_deepslate_slab", new SlabBlock(AbstractBlock.Settings.copy(COBBLED_DEEPSLATE)));
 	public static final Block COBBLED_DEEPSLATE_WALL = register("cobbled_deepslate_wall", new WallBlock(AbstractBlock.Settings.copy(COBBLED_DEEPSLATE)));
 	public static final Block POLISHED_DEEPSLATE = register(
-		"polished_deepslate", new Block(AbstractBlock.Settings.copy(COBBLED_DEEPSLATE).strength(3.5F, 6.0F).sounds(BlockSoundGroup.POLISHED_DEEPSLATE))
+		"polished_deepslate", new Block(AbstractBlock.Settings.copy(COBBLED_DEEPSLATE).sounds(BlockSoundGroup.POLISHED_DEEPSLATE))
 	);
 	public static final Block POLISHED_DEEPSLATE_STAIRS = register(
 		"polished_deepslate_stairs", new StairsBlock(POLISHED_DEEPSLATE.getDefaultState(), AbstractBlock.Settings.copy(POLISHED_DEEPSLATE))
@@ -3236,9 +3237,21 @@ public class Blocks {
 	public static final Block CRACKED_DEEPSLATE_BRICKS = register("cracked_deepslate_bricks", new Block(AbstractBlock.Settings.copy(DEEPSLATE_BRICKS)));
 	public static final Block CRACKED_DEEPSLATE_TILES = register("cracked_deepslate_tiles", new Block(AbstractBlock.Settings.copy(DEEPSLATE_TILES)));
 	public static final Block INFESTED_DEEPSLATE = register(
-		"infested_deepslate", new InfestedBlock(DEEPSLATE, AbstractBlock.Settings.of(Material.ORGANIC_PRODUCT).strength(0.0F, 0.75F))
+		"infested_deepslate",
+		new InfestedBlock(
+			DEEPSLATE, AbstractBlock.Settings.of(Material.ORGANIC_PRODUCT, MapColor.DEEPSLATE_GRAY).strength(0.0F, 0.75F).sounds(BlockSoundGroup.DEEPSLATE)
+		)
 	);
 	public static final Block SMOOTH_BASALT = register("smooth_basalt", new Block(AbstractBlock.Settings.copy(BASALT)));
+	public static final Block RAW_IRON_BLOCK = register(
+		"raw_iron_block", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.RAW_IRON_PINK).requiresTool().strength(5.0F, 6.0F))
+	);
+	public static final Block RAW_COPPER_BLOCK = register(
+		"raw_copper_block", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.ORANGE).requiresTool().strength(5.0F, 6.0F))
+	);
+	public static final Block RAW_GOLD_BLOCK = register(
+		"raw_gold_block", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.GOLD).requiresTool().strength(5.0F, 6.0F))
+	);
 
 	private static ToIntFunction<BlockState> createLightLevelFromLitBlockState(int litLevel) {
 		return state -> state.get(Properties.LIT) ? litLevel : 0;
@@ -3278,16 +3291,16 @@ public class Blocks {
 		);
 	}
 
-	private static PillarBlock createLogBlock(MapColor topMaterialColor, MapColor sideMaterialColor) {
+	private static PillarBlock createLogBlock(MapColor topMapColor, MapColor sideMapColor) {
 		return new PillarBlock(
-			AbstractBlock.Settings.of(Material.WOOD, state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topMaterialColor : sideMaterialColor)
+			AbstractBlock.Settings.of(Material.WOOD, state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topMapColor : sideMapColor)
 				.strength(2.0F)
 				.sounds(BlockSoundGroup.WOOD)
 		);
 	}
 
-	private static Block createNetherStemBlock(MapColor materialColor) {
-		return new PillarBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, state -> materialColor).strength(2.0F).sounds(BlockSoundGroup.NETHER_STEM));
+	private static Block createNetherStemBlock(MapColor mapColor) {
+		return new PillarBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, state -> mapColor).strength(2.0F).sounds(BlockSoundGroup.NETHER_STEM));
 	}
 
 	/**

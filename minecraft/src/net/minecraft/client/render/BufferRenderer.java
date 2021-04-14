@@ -12,29 +12,29 @@ import net.minecraft.client.util.Window;
 
 @Environment(EnvType.CLIENT)
 public class BufferRenderer {
-	private static int currentVertexArrayObject;
-	private static int currentVertexBufferObject;
-	private static int currentElementBufferObject;
+	private static int currentVertexArray;
+	private static int currentVertexBuffer;
+	private static int currentElementBuffer;
 	@Nullable
-	private static VertexFormat field_29334;
+	private static VertexFormat vertexFormat;
 
 	public static void unbindAll() {
-		if (field_29334 != null) {
-			field_29334.endDrawing();
-			field_29334 = null;
+		if (vertexFormat != null) {
+			vertexFormat.endDrawing();
+			vertexFormat = null;
 		}
 
 		GlStateManager._glBindBuffer(34963, 0);
-		currentElementBufferObject = 0;
+		currentElementBuffer = 0;
 		GlStateManager._glBindBuffer(34962, 0);
-		currentVertexBufferObject = 0;
+		currentVertexBuffer = 0;
 		GlStateManager._glBindVertexArray(0);
-		currentVertexArrayObject = 0;
+		currentVertexArray = 0;
 	}
 
 	public static void unbindElementBuffer() {
 		GlStateManager._glBindBuffer(34963, 0);
-		currentElementBufferObject = 0;
+		currentElementBuffer = 0;
 	}
 
 	public static void draw(BufferBuilder bufferBuilder) {
@@ -43,71 +43,77 @@ public class BufferRenderer {
 				() -> {
 					Pair<BufferBuilder.DrawArrayParameters, ByteBuffer> pairx = bufferBuilder.popData();
 					BufferBuilder.DrawArrayParameters drawArrayParametersx = pairx.getFirst();
-					method_34422(
+					draw(
 						pairx.getSecond(),
 						drawArrayParametersx.getMode(),
 						drawArrayParametersx.getVertexFormat(),
 						drawArrayParametersx.getCount(),
-						drawArrayParametersx.method_31956(),
-						drawArrayParametersx.method_31955(),
-						drawArrayParametersx.method_31960()
+						drawArrayParametersx.getElementFormat(),
+						drawArrayParametersx.getVertexCount(),
+						drawArrayParametersx.isTextured()
 					);
 				}
 			);
 		} else {
 			Pair<BufferBuilder.DrawArrayParameters, ByteBuffer> pair = bufferBuilder.popData();
 			BufferBuilder.DrawArrayParameters drawArrayParameters = pair.getFirst();
-			method_34422(
+			draw(
 				pair.getSecond(),
 				drawArrayParameters.getMode(),
 				drawArrayParameters.getVertexFormat(),
 				drawArrayParameters.getCount(),
-				drawArrayParameters.method_31956(),
-				drawArrayParameters.method_31955(),
-				drawArrayParameters.method_31960()
+				drawArrayParameters.getElementFormat(),
+				drawArrayParameters.getVertexCount(),
+				drawArrayParameters.isTextured()
 			);
 		}
 	}
 
-	private static void method_34422(
-		ByteBuffer byteBuffer, VertexFormat.DrawMode drawMode, VertexFormat vertexFormat, int i, VertexFormat.IntType intType, int j, boolean bl
+	private static void draw(
+		ByteBuffer buffer,
+		VertexFormat.DrawMode drawMode,
+		VertexFormat vertexFormat,
+		int count,
+		VertexFormat.IntType elementFormat,
+		int vertexCount,
+		boolean textured
 	) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		byteBuffer.clear();
-		if (i > 0) {
-			int k = i * vertexFormat.getVertexSize();
-			method_34421(vertexFormat);
-			byteBuffer.position(0);
-			byteBuffer.limit(k);
-			GlStateManager._glBufferData(34962, byteBuffer, 35048);
-			int m;
-			if (bl) {
-				RenderSystem.IndexBuffer indexBuffer = RenderSystem.getSequentialBuffer(drawMode, j);
-				int l = indexBuffer.getId();
-				if (l != currentElementBufferObject) {
-					GlStateManager._glBindBuffer(34963, l);
-					currentElementBufferObject = l;
+		buffer.clear();
+		if (count > 0) {
+			int i = count * vertexFormat.getVertexSize();
+			bind(vertexFormat);
+			buffer.position(0);
+			buffer.limit(i);
+			GlStateManager._glBufferData(34962, buffer, 35048);
+			int k;
+			if (textured) {
+				RenderSystem.IndexBuffer indexBuffer = RenderSystem.getSequentialBuffer(drawMode, vertexCount);
+				int j = indexBuffer.getId();
+				if (j != currentElementBuffer) {
+					GlStateManager._glBindBuffer(34963, j);
+					currentElementBuffer = j;
 				}
 
-				m = indexBuffer.getVertexFormat().field_27374;
+				k = indexBuffer.getElementFormat().count;
 			} else {
-				int n = vertexFormat.method_34448();
-				if (n != currentElementBufferObject) {
-					GlStateManager._glBindBuffer(34963, n);
-					currentElementBufferObject = n;
+				int l = vertexFormat.getElementBuffer();
+				if (l != currentElementBuffer) {
+					GlStateManager._glBindBuffer(34963, l);
+					currentElementBuffer = l;
 				}
 
-				byteBuffer.position(k);
-				byteBuffer.limit(k + j * intType.size);
-				GlStateManager._glBufferData(34963, byteBuffer, 35048);
-				m = intType.field_27374;
+				buffer.position(i);
+				buffer.limit(i + vertexCount * elementFormat.size);
+				GlStateManager._glBufferData(34963, buffer, 35048);
+				k = elementFormat.count;
 			}
 
 			Shader shader = RenderSystem.getShader();
 
-			for (int l = 0; l < 8; l++) {
-				int o = RenderSystem.getShaderTexture(l);
-				shader.addSampler("Sampler" + l, o);
+			for (int j = 0; j < 8; j++) {
+				int m = RenderSystem.getShaderTexture(j);
+				shader.addSampler("Sampler" + j, m);
 			}
 
 			if (shader.modelViewMat != null) {
@@ -153,15 +159,18 @@ public class BufferRenderer {
 
 			RenderSystem.setupShaderLights(shader);
 			shader.upload();
-			GlStateManager._drawElements(drawMode.mode, j, m, 0L);
+			GlStateManager._drawElements(drawMode.mode, vertexCount, k, 0L);
 			shader.bind();
-			byteBuffer.position(0);
+			buffer.position(0);
 		}
 	}
 
-	public static void method_34424(BufferBuilder bufferBuilder) {
+	/**
+	 * Similar to a regular draw, however this method will skip rendering shaders.
+	 */
+	public static void postDraw(BufferBuilder builder) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		Pair<BufferBuilder.DrawArrayParameters, ByteBuffer> pair = bufferBuilder.popData();
+		Pair<BufferBuilder.DrawArrayParameters, ByteBuffer> pair = builder.popData();
 		BufferBuilder.DrawArrayParameters drawArrayParameters = pair.getFirst();
 		ByteBuffer byteBuffer = pair.getSecond();
 		VertexFormat vertexFormat = drawArrayParameters.getVertexFormat();
@@ -169,44 +178,44 @@ public class BufferRenderer {
 		byteBuffer.clear();
 		if (i > 0) {
 			int j = i * vertexFormat.getVertexSize();
-			method_34421(vertexFormat);
+			bind(vertexFormat);
 			byteBuffer.position(0);
 			byteBuffer.limit(j);
 			GlStateManager._glBufferData(34962, byteBuffer, 35048);
-			RenderSystem.IndexBuffer indexBuffer = RenderSystem.getSequentialBuffer(drawArrayParameters.getMode(), drawArrayParameters.method_31955());
+			RenderSystem.IndexBuffer indexBuffer = RenderSystem.getSequentialBuffer(drawArrayParameters.getMode(), drawArrayParameters.getVertexCount());
 			int k = indexBuffer.getId();
-			if (k != currentElementBufferObject) {
+			if (k != currentElementBuffer) {
 				GlStateManager._glBindBuffer(34963, k);
-				currentElementBufferObject = k;
+				currentElementBuffer = k;
 			}
 
-			int l = indexBuffer.getVertexFormat().field_27374;
-			GlStateManager._drawElements(drawArrayParameters.getMode().mode, drawArrayParameters.method_31955(), l, 0L);
+			int l = indexBuffer.getElementFormat().count;
+			GlStateManager._drawElements(drawArrayParameters.getMode().mode, drawArrayParameters.getVertexCount(), l, 0L);
 			byteBuffer.position(0);
 		}
 	}
 
-	private static void method_34421(VertexFormat vertexFormat) {
-		int i = vertexFormat.method_34446();
-		int j = vertexFormat.method_34447();
-		boolean bl = vertexFormat != field_29334;
+	private static void bind(VertexFormat vertexFormat) {
+		int i = vertexFormat.getVertexArray();
+		int j = vertexFormat.getVertexBuffer();
+		boolean bl = vertexFormat != BufferRenderer.vertexFormat;
 		if (bl) {
 			unbindAll();
 		}
 
-		if (i != currentVertexArrayObject) {
+		if (i != currentVertexArray) {
 			GlStateManager._glBindVertexArray(i);
-			currentVertexArrayObject = i;
+			currentVertexArray = i;
 		}
 
-		if (j != currentVertexBufferObject) {
+		if (j != currentVertexBuffer) {
 			GlStateManager._glBindBuffer(34962, j);
-			currentVertexBufferObject = j;
+			currentVertexBuffer = j;
 		}
 
 		if (bl) {
 			vertexFormat.startDrawing();
-			field_29334 = vertexFormat;
+			BufferRenderer.vertexFormat = vertexFormat;
 		}
 	}
 }

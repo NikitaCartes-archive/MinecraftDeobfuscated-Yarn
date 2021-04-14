@@ -1,11 +1,8 @@
 package net.minecraft.world.gen.heightprovider;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Objects;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.YOffset;
 import org.apache.logging.log4j.LogManager;
@@ -13,14 +10,13 @@ import org.apache.logging.log4j.Logger;
 
 public class BiasedToBottomHeightProvider extends HeightProvider {
 	public static final Codec<BiasedToBottomHeightProvider> BIASED_TO_BOTTOM_CODEC = RecordCodecBuilder.create(
-			instance -> instance.group(
-						YOffset.OFFSET_CODEC.fieldOf("min_inclusive").forGetter(biasedToBottomHeightProvider -> biasedToBottomHeightProvider.minOffset),
-						YOffset.OFFSET_CODEC.fieldOf("max_inclusive").forGetter(biasedToBottomHeightProvider -> biasedToBottomHeightProvider.maxOffset),
-						Codec.intRange(1, Integer.MAX_VALUE).optionalFieldOf("inner", 1).forGetter(biasedToBottomHeightProvider -> biasedToBottomHeightProvider.inner)
-					)
-					.apply(instance, BiasedToBottomHeightProvider::new)
-		)
-		.comapFlatMap(DataResult::success, Function.identity());
+		instance -> instance.group(
+					YOffset.OFFSET_CODEC.fieldOf("min_inclusive").forGetter(biasedToBottomHeightProvider -> biasedToBottomHeightProvider.minOffset),
+					YOffset.OFFSET_CODEC.fieldOf("max_inclusive").forGetter(biasedToBottomHeightProvider -> biasedToBottomHeightProvider.maxOffset),
+					Codec.intRange(1, Integer.MAX_VALUE).optionalFieldOf("inner", 1).forGetter(biasedToBottomHeightProvider -> biasedToBottomHeightProvider.inner)
+				)
+				.apply(instance, BiasedToBottomHeightProvider::new)
+	);
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final YOffset minOffset;
 	private final YOffset maxOffset;
@@ -52,23 +48,6 @@ public class BiasedToBottomHeightProvider extends HeightProvider {
 	@Override
 	public HeightProviderType<?> getType() {
 		return HeightProviderType.BIASED_TO_BOTTOM;
-	}
-
-	public boolean equals(Object object) {
-		if (this == object) {
-			return true;
-		} else if (object != null && this.getClass() == object.getClass()) {
-			BiasedToBottomHeightProvider biasedToBottomHeightProvider = (BiasedToBottomHeightProvider)object;
-			return this.minOffset.equals(biasedToBottomHeightProvider.minOffset)
-				&& this.maxOffset.equals(this.maxOffset)
-				&& this.inner == biasedToBottomHeightProvider.inner;
-		} else {
-			return false;
-		}
-	}
-
-	public int hashCode() {
-		return Objects.hash(new Object[]{this.minOffset, this.maxOffset});
 	}
 
 	public String toString() {

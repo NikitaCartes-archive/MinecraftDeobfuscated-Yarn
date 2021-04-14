@@ -66,6 +66,8 @@ public class MapColor {
 	public static final MapColor DARK_AQUA = new MapColor(56, 3837580);
 	public static final MapColor DARK_DULL_PINK = new MapColor(57, 5647422);
 	public static final MapColor BRIGHT_TEAL = new MapColor(58, 1356933);
+	public static final MapColor DEEPSLATE_GRAY = new MapColor(59, 6579300);
+	public static final MapColor RAW_IRON_PINK = new MapColor(60, 14200723);
 	public final int color;
 	public final int id;
 

@@ -19,6 +19,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 
 public class MemoryModuleType<U> {
@@ -67,6 +68,8 @@ public class MemoryModuleType<U> {
 	public static final MemoryModuleType<Integer> LONG_JUMP_COOLING_DOWN = register("long_jump_cooling_down", Codec.INT);
 	public static final MemoryModuleType<Boolean> LONG_JUMP_MID_JUMP = register("long_jump_mid_jump");
 	public static final MemoryModuleType<Boolean> HAS_HUNTING_COOLDOWN = register("has_hunting_cooldown", Codec.BOOL);
+	public static final MemoryModuleType<Integer> RAM_COOLDOWN_TICKS = register("ram_cooldown_ticks", Codec.INT);
+	public static final MemoryModuleType<Vec3d> RAM_TARGET = register("ram_target");
 	public static final MemoryModuleType<UUID> ANGRY_AT = register("angry_at", DynamicSerializableUuid.CODEC);
 	public static final MemoryModuleType<Boolean> UNIVERSAL_ANGER = register("universal_anger", Codec.BOOL);
 	public static final MemoryModuleType<Boolean> ADMIRING_ITEM = register("admiring_item", Codec.BOOL);

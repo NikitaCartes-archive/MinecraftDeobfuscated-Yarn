@@ -18,7 +18,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public class HopperMinecartEntity extends StorageMinecartEntity implements Hopper {
-	public static final int field_30702 = 4;
+	public static final int MAX_TRANSFER_COOLDOWN = 4;
 	private boolean enabled = true;
 	private int transferCooldown = -1;
 	private final BlockPos currentBlockPos = BlockPos.ORIGIN;

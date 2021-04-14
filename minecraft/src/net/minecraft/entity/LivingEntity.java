@@ -141,9 +141,9 @@ public abstract class LivingEntity extends Entity {
 	private static final int field_30080 = 10;
 	private static final int field_30081 = 2;
 	public static final int field_30063 = 4;
-	protected static final int field_30064 = 1;
-	protected static final int field_30065 = 2;
-	protected static final int field_30066 = 4;
+	protected static final int USING_ITEM_FLAG = 1;
+	protected static final int OFF_HAND_ACTIVE_FLAG = 2;
+	protected static final int USING_RIPTIDE_FLAG = 4;
 	protected static final TrackedData<Byte> LIVING_FLAGS = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Float> HEALTH = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Integer> POTION_SWIRLS_COLOR = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -1264,7 +1264,7 @@ public abstract class LivingEntity extends Entity {
 		}
 	}
 
-	private boolean blockedByShield(DamageSource source) {
+	public boolean blockedByShield(DamageSource source) {
 		Entity entity = source.getSource();
 		boolean bl = false;
 		if (entity instanceof PersistentProjectileEntity) {

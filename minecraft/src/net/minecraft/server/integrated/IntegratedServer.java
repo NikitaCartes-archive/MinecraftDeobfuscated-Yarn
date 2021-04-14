@@ -184,8 +184,8 @@ public class IntegratedServer extends MinecraftServer {
 	}
 
 	@Override
-	public boolean method_35033() {
-		return MinecraftClient.getInstance().method_35033();
+	public boolean isSnooperEnabled() {
+		return MinecraftClient.getInstance().isSnooperEnabled();
 	}
 
 	@Override

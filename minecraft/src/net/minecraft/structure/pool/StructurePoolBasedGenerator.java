@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
-import net.minecraft.class_6130;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.structure.JigsawJunction;
 import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructurePiecesHolder;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.function.BooleanBiFunction;
@@ -43,7 +43,7 @@ public class StructurePoolBasedGenerator {
 		ChunkGenerator chunkGenerator,
 		StructureManager structureManager,
 		BlockPos blockPos,
-		class_6130 arg,
+		StructurePiecesHolder structurePiecesHolder,
 		Random random,
 		boolean bl,
 		boolean bl2,
@@ -106,7 +106,7 @@ public class StructurePoolBasedGenerator {
 					);
 				}
 
-				list.forEach(arg::method_35462);
+				list.forEach(structurePiecesHolder::addPiece);
 			}
 		}
 	}

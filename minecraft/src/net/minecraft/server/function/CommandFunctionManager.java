@@ -1,24 +1,29 @@
 package net.minecraft.server.function;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Queues;
 import com.mojang.brigadier.CommandDispatcher;
-import java.util.ArrayDeque;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
+import javax.annotation.Nullable;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.tag.Tag;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.GameRules;
 
 public class CommandFunctionManager {
+	private static final Text field_33542 = new TranslatableText("commands.debug.function.noRecursion");
 	private static final Identifier TICK_FUNCTION = new Identifier("tick");
 	private static final Identifier LOAD_FUNCTION = new Identifier("load");
 	private final MinecraftServer server;
-	private boolean executing;
-	private final ArrayDeque<CommandFunctionManager.Entry> chain = new ArrayDeque();
-	private final List<CommandFunctionManager.Entry> pending = Lists.<CommandFunctionManager.Entry>newArrayList();
+	@Nullable
+	private CommandFunctionManager.class_6345 field_33543;
 	private final List<CommandFunction> tickFunctions = Lists.<CommandFunction>newArrayList();
 	private boolean needToRunLoadFunctions;
 	private FunctionLoader loader;
@@ -57,50 +62,28 @@ public class CommandFunctionManager {
 	}
 
 	public int execute(CommandFunction function, ServerCommandSource source) {
-		int i = this.getMaxCommandChainLength();
-		if (this.executing) {
-			if (this.chain.size() + this.pending.size() < i) {
-				this.pending.add(new CommandFunctionManager.Entry(this, source, new CommandFunction.FunctionElement(function)));
-			}
+		return this.method_36341(function, source, null);
+	}
 
-			return 0;
+	public int method_36341(CommandFunction commandFunction, ServerCommandSource serverCommandSource, @Nullable CommandFunctionManager.class_6346 arg) {
+		if (this.field_33543 != null) {
+			if (arg != null) {
+				this.field_33543.method_36344(field_33542.getString());
+				return 0;
+			} else {
+				this.field_33543.method_36343(commandFunction, serverCommandSource);
+				return 0;
+			}
 		} else {
-			int var16;
+			int var4;
 			try {
-				this.executing = true;
-				int j = 0;
-				CommandFunction.Element[] elements = function.getElements();
-
-				for (int k = elements.length - 1; k >= 0; k--) {
-					this.chain.push(new CommandFunctionManager.Entry(this, source, elements[k]));
-				}
-
-				do {
-					if (this.chain.isEmpty()) {
-						return j;
-					}
-
-					try {
-						CommandFunctionManager.Entry entry = (CommandFunctionManager.Entry)this.chain.removeFirst();
-						this.server.getProfiler().push(entry::toString);
-						entry.execute(this.chain, i);
-						if (!this.pending.isEmpty()) {
-							Lists.reverse(this.pending).forEach(this.chain::addFirst);
-							this.pending.clear();
-						}
-					} finally {
-						this.server.getProfiler().pop();
-					}
-				} while (++j < i);
-
-				var16 = j;
+				this.field_33543 = new CommandFunctionManager.class_6345(arg);
+				var4 = this.field_33543.method_36346(commandFunction, serverCommandSource);
 			} finally {
-				this.chain.clear();
-				this.pending.clear();
-				this.executing = false;
+				this.field_33543 = null;
 			}
 
-			return var16;
+			return var4;
 		}
 	}
 
@@ -141,25 +124,100 @@ public class CommandFunctionManager {
 	}
 
 	public static class Entry {
-		private final CommandFunctionManager manager;
 		private final ServerCommandSource source;
+		private final int field_33549;
 		private final CommandFunction.Element element;
 
-		public Entry(CommandFunctionManager manager, ServerCommandSource source, CommandFunction.Element element) {
-			this.manager = manager;
-			this.source = source;
+		public Entry(ServerCommandSource serverCommandSource, int i, CommandFunction.Element element) {
+			this.source = serverCommandSource;
+			this.field_33549 = i;
 			this.element = element;
 		}
 
-		public void execute(ArrayDeque<CommandFunctionManager.Entry> stack, int maxChainLength) {
+		public void execute(
+			CommandFunctionManager commandFunctionManager, Deque<CommandFunctionManager.Entry> deque, int i, @Nullable CommandFunctionManager.class_6346 arg
+		) {
 			try {
-				this.element.execute(this.manager, this.source, stack, maxChainLength);
-			} catch (Throwable var4) {
+				this.element.execute(commandFunctionManager, this.source, deque, i, this.field_33549, arg);
+			} catch (CommandSyntaxException var6) {
+				if (arg != null) {
+					arg.method_36352(this.field_33549, var6.getRawMessage().getString());
+				}
+			} catch (Exception var7) {
+				if (arg != null) {
+					arg.method_36352(this.field_33549, var7.getMessage());
+				}
 			}
 		}
 
 		public String toString() {
 			return this.element.toString();
 		}
+	}
+
+	class class_6345 {
+		private int field_33545;
+		@Nullable
+		private final CommandFunctionManager.class_6346 field_33546;
+		private final Deque<CommandFunctionManager.Entry> field_33547 = Queues.<CommandFunctionManager.Entry>newArrayDeque();
+		private final List<CommandFunctionManager.Entry> field_33548 = Lists.<CommandFunctionManager.Entry>newArrayList();
+
+		private class_6345(@Nullable CommandFunctionManager.class_6346 arg) {
+			this.field_33546 = arg;
+		}
+
+		private void method_36343(CommandFunction commandFunction, ServerCommandSource serverCommandSource) {
+			int i = CommandFunctionManager.this.getMaxCommandChainLength();
+			if (this.field_33547.size() + this.field_33548.size() < i) {
+				this.field_33548.add(new CommandFunctionManager.Entry(serverCommandSource, this.field_33545, new CommandFunction.FunctionElement(commandFunction)));
+			}
+		}
+
+		private int method_36346(CommandFunction commandFunction, ServerCommandSource serverCommandSource) {
+			int i = CommandFunctionManager.this.getMaxCommandChainLength();
+			int j = 0;
+			CommandFunction.Element[] elements = commandFunction.getElements();
+
+			for (int k = elements.length - 1; k >= 0; k--) {
+				this.field_33547.push(new CommandFunctionManager.Entry(serverCommandSource, 0, elements[k]));
+			}
+
+			while (!this.field_33547.isEmpty()) {
+				try {
+					CommandFunctionManager.Entry entry = (CommandFunctionManager.Entry)this.field_33547.removeFirst();
+					CommandFunctionManager.this.server.getProfiler().push(entry::toString);
+					this.field_33545 = entry.field_33549;
+					entry.execute(CommandFunctionManager.this, this.field_33547, i, this.field_33546);
+					if (!this.field_33548.isEmpty()) {
+						Lists.reverse(this.field_33548).forEach(this.field_33547::addFirst);
+						this.field_33548.clear();
+					}
+				} finally {
+					CommandFunctionManager.this.server.getProfiler().pop();
+				}
+
+				if (++j >= i) {
+					return j;
+				}
+			}
+
+			return j;
+		}
+
+		public void method_36344(String string) {
+			if (this.field_33546 != null) {
+				this.field_33546.method_36352(this.field_33545, string);
+			}
+		}
+	}
+
+	public interface class_6346 {
+		void method_36349(int i, String string);
+
+		void method_36350(int i, String string, int j);
+
+		void method_36352(int i, String string);
+
+		void method_36351(int i, Identifier identifier, int j);
 	}
 }

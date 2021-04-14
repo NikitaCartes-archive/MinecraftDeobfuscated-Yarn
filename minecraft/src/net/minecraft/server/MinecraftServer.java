@@ -1173,7 +1173,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	@Override
-	public boolean method_35033() {
+	public boolean isSnooperEnabled() {
 		return true;
 	}
 
@@ -1838,5 +1838,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public ResourceManager getResourceManager() {
 		return this.serverResourceManager.getResourceManager();
+	}
+
+	@Nullable
+	public Text getResourcePackPrompt() {
+		return null;
 	}
 }

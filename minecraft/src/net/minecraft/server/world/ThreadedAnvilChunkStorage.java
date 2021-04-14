@@ -945,20 +945,22 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		if (!(entity instanceof EnderDragonPart)) {
 			EntityType<?> entityType = entity.getType();
 			int i = entityType.getMaxTrackDistance() * 16;
-			int j = entityType.getTrackTickInterval();
-			if (this.entityTrackers.containsKey(entity.getId())) {
-				throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("Entity is already tracked!"));
-			} else {
-				ThreadedAnvilChunkStorage.EntityTracker entityTracker = new ThreadedAnvilChunkStorage.EntityTracker(entity, i, j, entityType.alwaysUpdateVelocity());
-				this.entityTrackers.put(entity.getId(), entityTracker);
-				entityTracker.updateTrackedStatus(this.world.getPlayers());
-				if (entity instanceof ServerPlayerEntity) {
-					ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
-					this.handlePlayerAddedOrRemoved(serverPlayerEntity, true);
+			if (i != 0) {
+				int j = entityType.getTrackTickInterval();
+				if (this.entityTrackers.containsKey(entity.getId())) {
+					throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("Entity is already tracked!"));
+				} else {
+					ThreadedAnvilChunkStorage.EntityTracker entityTracker = new ThreadedAnvilChunkStorage.EntityTracker(entity, i, j, entityType.alwaysUpdateVelocity());
+					this.entityTrackers.put(entity.getId(), entityTracker);
+					entityTracker.updateTrackedStatus(this.world.getPlayers());
+					if (entity instanceof ServerPlayerEntity) {
+						ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
+						this.handlePlayerAddedOrRemoved(serverPlayerEntity, true);
 
-					for (ThreadedAnvilChunkStorage.EntityTracker entityTracker2 : this.entityTrackers.values()) {
-						if (entityTracker2.entity != serverPlayerEntity) {
-							entityTracker2.updateTrackedStatus(serverPlayerEntity);
+						for (ThreadedAnvilChunkStorage.EntityTracker entityTracker2 : this.entityTrackers.values()) {
+							if (entityTracker2.entity != serverPlayerEntity) {
+								entityTracker2.updateTrackedStatus(serverPlayerEntity);
+							}
 						}
 					}
 				}

@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import java.util.Random;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.minecraft.class_6130;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -106,7 +105,7 @@ public abstract class StructurePiece {
 		return StructureWeightType.BEARD;
 	}
 
-	public void fillOpenings(StructurePiece start, class_6130 arg, Random random) {
+	public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
 	}
 
 	public abstract boolean generate(

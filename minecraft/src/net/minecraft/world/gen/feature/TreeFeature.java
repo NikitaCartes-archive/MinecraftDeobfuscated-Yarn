@@ -156,7 +156,7 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 				treeFeatureConfig.decorators.forEach(treeDecorator -> treeDecorator.generate(structureWorldAccess, biConsumer3, random, list, list2));
 			}
 
-			return (Boolean)BlockBox.method_35411(Iterables.concat(set, set2, set3)).map(blockBox -> {
+			return (Boolean)BlockBox.encompassPositions(Iterables.concat(set, set2, set3)).map(blockBox -> {
 				VoxelSet voxelSet = placeLogsAndLeaves(structureWorldAccess, blockBox, set, set3);
 				Structure.updateCorner(structureWorldAccess, Block.NOTIFY_ALL, voxelSet, blockBox.getMinX(), blockBox.getMinY(), blockBox.getMinZ());
 				return true;

@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class BufferBuilder extends FixedColorVertexConsumer implements BufferVertexConsumer {
-	private static final int field_32050 = 2097152;
+	private static final int MAX_BUFFER_SIZE = 2097152;
 	private static final Logger LOGGER = LogManager.getLogger();
 	private ByteBuffer buffer;
 	private final List<BufferBuilder.DrawArrayParameters> parameters = Lists.<BufferBuilder.DrawArrayParameters>newArrayList();
@@ -34,15 +34,15 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	private int currentElementId;
 	private VertexFormat format;
 	private VertexFormat.DrawMode drawMode;
-	private boolean field_21594;
-	private boolean field_21595;
+	private boolean textured;
+	private boolean hasOverlay;
 	private boolean building;
 	@Nullable
-	private Vec3f[] field_27348;
-	private float field_27349 = Float.NaN;
-	private float field_27350 = Float.NaN;
-	private float field_27351 = Float.NaN;
-	private boolean field_27352;
+	private Vec3f[] currentParameters;
+	private float cameraX = Float.NaN;
+	private float cameraY = Float.NaN;
+	private float cameraZ = Float.NaN;
+	private boolean cameraOffset;
 
 	public BufferBuilder(int initialCapacity) {
 		this.buffer = GlAllocationUtils.allocateByteBuffer(initialCapacity * 6);
@@ -79,21 +79,21 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		}
 	}
 
-	public void method_31948(float f, float g, float h) {
+	public void setCameraPosition(float cameraX, float cameraY, float cameraZ) {
 		if (this.drawMode == VertexFormat.DrawMode.QUADS) {
-			if (this.field_27349 != f || this.field_27350 != g || this.field_27351 != h) {
-				this.field_27349 = f;
-				this.field_27350 = g;
-				this.field_27351 = h;
-				if (this.field_27348 == null) {
-					this.field_27348 = this.method_31954();
+			if (this.cameraX != cameraX || this.cameraY != cameraY || this.cameraZ != cameraZ) {
+				this.cameraX = cameraX;
+				this.cameraY = cameraY;
+				this.cameraZ = cameraZ;
+				if (this.currentParameters == null) {
+					this.currentParameters = this.buildParameterVector();
 				}
 			}
 		}
 	}
 
 	public BufferBuilder.State popState() {
-		return new BufferBuilder.State(this.drawMode, this.vertexCount, this.field_27348, this.field_27349, this.field_27350, this.field_27351);
+		return new BufferBuilder.State(this.drawMode, this.vertexCount, this.currentParameters, this.cameraX, this.cameraY, this.cameraZ);
 	}
 
 	public void restoreState(BufferBuilder.State state) {
@@ -101,11 +101,11 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		this.drawMode = state.drawMode;
 		this.vertexCount = state.vertexCount;
 		this.elementOffset = this.buildStart;
-		this.field_27348 = state.field_27360;
-		this.field_27349 = state.field_27361;
-		this.field_27350 = state.field_27362;
-		this.field_27351 = state.field_27363;
-		this.field_27352 = true;
+		this.currentParameters = state.currentParameters;
+		this.cameraX = state.cameraX;
+		this.cameraY = state.cameraY;
+		this.cameraZ = state.cameraZ;
+		this.cameraOffset = true;
 	}
 
 	public void begin(VertexFormat.DrawMode drawMode, VertexFormat format) {
@@ -126,29 +126,29 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 			this.format = format;
 			boolean bl = format == VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL;
 			boolean bl2 = format == VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL;
-			this.field_21594 = bl || bl2;
-			this.field_21595 = bl;
+			this.textured = bl || bl2;
+			this.hasOverlay = bl;
 		}
 	}
 
-	private IntConsumer method_31949(VertexFormat.IntType intType) {
-		switch (intType) {
+	private IntConsumer createConsumer(VertexFormat.IntType elementFormat) {
+		switch (elementFormat) {
 			case BYTE:
-				return i -> this.buffer.put((byte)i);
+				return value -> this.buffer.put((byte)value);
 			case SHORT:
-				return i -> this.buffer.putShort((short)i);
+				return value -> this.buffer.putShort((short)value);
 			case INT:
 			default:
-				return i -> this.buffer.putInt(i);
+				return value -> this.buffer.putInt(value);
 		}
 	}
 
-	private Vec3f[] method_31954() {
+	private Vec3f[] buildParameterVector() {
 		FloatBuffer floatBuffer = this.buffer.asFloatBuffer();
 		int i = this.buildStart / 4;
 		int j = this.format.getVertexSizeInteger();
-		int k = j * this.drawMode.field_27385;
-		int l = this.vertexCount / this.drawMode.field_27385;
+		int k = j * this.drawMode.size;
+		int l = this.vertexCount / this.drawMode.size;
 		Vec3f[] vec3fs = new Vec3f[l];
 
 		for (int m = 0; m < l; m++) {
@@ -167,28 +167,28 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		return vec3fs;
 	}
 
-	private void method_31950(VertexFormat.IntType intType) {
-		float[] fs = new float[this.field_27348.length];
-		int[] is = new int[this.field_27348.length];
+	private void writeCameraOffset(VertexFormat.IntType elementFormat) {
+		float[] fs = new float[this.currentParameters.length];
+		int[] is = new int[this.currentParameters.length];
 
-		for (int i = 0; i < this.field_27348.length; is[i] = i++) {
-			float f = this.field_27348[i].getX() - this.field_27349;
-			float g = this.field_27348[i].getY() - this.field_27350;
-			float h = this.field_27348[i].getZ() - this.field_27351;
+		for (int i = 0; i < this.currentParameters.length; is[i] = i++) {
+			float f = this.currentParameters[i].getX() - this.cameraX;
+			float g = this.currentParameters[i].getY() - this.cameraY;
+			float h = this.currentParameters[i].getZ() - this.cameraZ;
 			fs[i] = f * f + g * g + h * h;
 		}
 
 		IntArrays.mergeSort(is, (i, jx) -> Floats.compare(fs[jx], fs[i]));
-		IntConsumer intConsumer = this.method_31949(intType);
+		IntConsumer intConsumer = this.createConsumer(elementFormat);
 		this.buffer.position(this.elementOffset);
 
 		for (int j : is) {
-			intConsumer.accept(j * this.drawMode.field_27385 + 0);
-			intConsumer.accept(j * this.drawMode.field_27385 + 1);
-			intConsumer.accept(j * this.drawMode.field_27385 + 2);
-			intConsumer.accept(j * this.drawMode.field_27385 + 2);
-			intConsumer.accept(j * this.drawMode.field_27385 + 3);
-			intConsumer.accept(j * this.drawMode.field_27385 + 0);
+			intConsumer.accept(j * this.drawMode.size + 0);
+			intConsumer.accept(j * this.drawMode.size + 1);
+			intConsumer.accept(j * this.drawMode.size + 2);
+			intConsumer.accept(j * this.drawMode.size + 2);
+			intConsumer.accept(j * this.drawMode.size + 3);
+			intConsumer.accept(j * this.drawMode.size + 0);
 		}
 	}
 
@@ -199,10 +199,10 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 			int i = this.drawMode.getSize(this.vertexCount);
 			VertexFormat.IntType intType = VertexFormat.IntType.getSmallestTypeFor(i);
 			boolean bl;
-			if (this.field_27348 != null) {
+			if (this.currentParameters != null) {
 				int j = MathHelper.roundUpToMultiple(i * intType.size, 4);
 				this.grow(j);
-				this.method_31950(intType);
+				this.writeCameraOffset(intType);
 				bl = false;
 				this.elementOffset += j;
 				this.buildStart = this.buildStart + this.vertexCount * this.format.getVertexSize() + j;
@@ -212,15 +212,15 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 			}
 
 			this.building = false;
-			this.parameters.add(new BufferBuilder.DrawArrayParameters(this.format, this.vertexCount, i, this.drawMode, intType, this.field_27352, bl));
+			this.parameters.add(new BufferBuilder.DrawArrayParameters(this.format, this.vertexCount, i, this.drawMode, intType, this.cameraOffset, bl));
 			this.vertexCount = 0;
 			this.currentElement = null;
 			this.currentElementId = 0;
-			this.field_27348 = null;
-			this.field_27349 = Float.NaN;
-			this.field_27350 = Float.NaN;
-			this.field_27351 = Float.NaN;
-			this.field_27352 = false;
+			this.currentParameters = null;
+			this.cameraX = Float.NaN;
+			this.cameraY = Float.NaN;
+			this.cameraZ = Float.NaN;
+			this.cameraOffset = false;
 		}
 	}
 
@@ -263,7 +263,7 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	public void nextElement() {
 		ImmutableList<VertexFormatElement> immutableList = this.format.getElements();
 		this.currentElementId = (this.currentElementId + 1) % immutableList.size();
-		this.elementOffset = this.elementOffset + this.currentElement.getSize();
+		this.elementOffset = this.elementOffset + this.currentElement.getByteLength();
 		VertexFormatElement vertexFormatElement = (VertexFormatElement)immutableList.get(this.currentElementId);
 		this.currentElement = vertexFormatElement;
 		if (vertexFormatElement.getType() == VertexFormatElement.Type.PADDING) {
@@ -303,7 +303,7 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	) {
 		if (this.colorFixed) {
 			throw new IllegalStateException();
-		} else if (this.field_21594) {
+		} else if (this.textured) {
 			this.putFloat(0, x);
 			this.putFloat(4, y);
 			this.putFloat(8, z);
@@ -314,7 +314,7 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 			this.putFloat(16, u);
 			this.putFloat(20, v);
 			int i;
-			if (this.field_21595) {
+			if (this.hasOverlay) {
 				this.putShort(24, (short)(overlay & 65535));
 				this.putShort(26, (short)(overlay >> 16 & 65535));
 				i = 28;
@@ -324,9 +324,9 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 
 			this.putShort(i + 0, (short)(light & 65535));
 			this.putShort(i + 2, (short)(light >> 16 & 65535));
-			this.putByte(i + 4, BufferVertexConsumer.method_24212(normalX));
-			this.putByte(i + 5, BufferVertexConsumer.method_24212(normalY));
-			this.putByte(i + 6, BufferVertexConsumer.method_24212(normalZ));
+			this.putByte(i + 4, BufferVertexConsumer.packByte(normalX));
+			this.putByte(i + 5, BufferVertexConsumer.packByte(normalY));
+			this.putByte(i + 6, BufferVertexConsumer.packByte(normalZ));
 			this.elementOffset += i + 8;
 			this.next();
 		} else {
@@ -337,7 +337,7 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	public Pair<BufferBuilder.DrawArrayParameters, ByteBuffer> popData() {
 		BufferBuilder.DrawArrayParameters drawArrayParameters = (BufferBuilder.DrawArrayParameters)this.parameters.get(this.lastParameterIndex++);
 		this.buffer.position(this.nextDrawStart);
-		this.nextDrawStart = this.nextDrawStart + MathHelper.roundUpToMultiple(drawArrayParameters.method_31958(), 4);
+		this.nextDrawStart = this.nextDrawStart + MathHelper.roundUpToMultiple(drawArrayParameters.getDrawStart(), 4);
 		this.buffer.limit(this.nextDrawStart);
 		if (this.lastParameterIndex == this.parameters.size() && this.vertexCount == 0) {
 			this.clear();
@@ -381,22 +381,28 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	public static final class DrawArrayParameters {
 		private final VertexFormat vertexFormat;
 		private final int count;
-		private final int field_27354;
+		private final int vertexCount;
 		private final VertexFormat.DrawMode mode;
-		private final VertexFormat.IntType field_27355;
-		private final boolean field_27356;
-		private final boolean field_27357;
+		private final VertexFormat.IntType elementFormat;
+		private final boolean cameraOffset;
+		private final boolean textured;
 
 		private DrawArrayParameters(
-			VertexFormat vertexFormat, int count, int mode, VertexFormat.DrawMode drawMode, VertexFormat.IntType intType, boolean bl, boolean bl2
+			VertexFormat vertexFormat,
+			int count,
+			int vertexCount,
+			VertexFormat.DrawMode drawMode,
+			VertexFormat.IntType elementFormat,
+			boolean cameraOffset,
+			boolean textured
 		) {
 			this.vertexFormat = vertexFormat;
 			this.count = count;
-			this.field_27354 = mode;
+			this.vertexCount = vertexCount;
 			this.mode = drawMode;
-			this.field_27355 = intType;
-			this.field_27356 = bl;
-			this.field_27357 = bl2;
+			this.elementFormat = elementFormat;
+			this.cameraOffset = cameraOffset;
+			this.textured = textured;
 		}
 
 		public VertexFormat getVertexFormat() {
@@ -407,36 +413,36 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 			return this.count;
 		}
 
-		public int method_31955() {
-			return this.field_27354;
+		public int getVertexCount() {
+			return this.vertexCount;
 		}
 
 		public VertexFormat.DrawMode getMode() {
 			return this.mode;
 		}
 
-		public VertexFormat.IntType method_31956() {
-			return this.field_27355;
+		public VertexFormat.IntType getElementFormat() {
+			return this.elementFormat;
 		}
 
-		public int method_31957() {
+		public int getLimit() {
 			return this.count * this.vertexFormat.getVertexSize();
 		}
 
-		private int method_31961() {
-			return this.field_27357 ? 0 : this.field_27354 * this.field_27355.size;
+		private int getDrawLength() {
+			return this.textured ? 0 : this.vertexCount * this.elementFormat.size;
 		}
 
-		public int method_31958() {
-			return this.method_31957() + this.method_31961();
+		public int getDrawStart() {
+			return this.getLimit() + this.getDrawLength();
 		}
 
-		public boolean method_31959() {
-			return this.field_27356;
+		public boolean isCameraOffset() {
+			return this.cameraOffset;
 		}
 
-		public boolean method_31960() {
-			return this.field_27357;
+		public boolean isTextured() {
+			return this.textured;
 		}
 	}
 
@@ -445,18 +451,18 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		private final VertexFormat.DrawMode drawMode;
 		private final int vertexCount;
 		@Nullable
-		private final Vec3f[] field_27360;
-		private final float field_27361;
-		private final float field_27362;
-		private final float field_27363;
+		private final Vec3f[] currentParameters;
+		private final float cameraX;
+		private final float cameraY;
+		private final float cameraZ;
 
-		private State(VertexFormat.DrawMode drawMode, int i, @Nullable Vec3f[] vec3fs, float f, float g, float h) {
+		private State(VertexFormat.DrawMode drawMode, int vertexCount, @Nullable Vec3f[] currentParameters, float cameraX, float cameraY, float cameraZ) {
 			this.drawMode = drawMode;
-			this.vertexCount = i;
-			this.field_27360 = vec3fs;
-			this.field_27361 = f;
-			this.field_27362 = g;
-			this.field_27363 = h;
+			this.vertexCount = vertexCount;
+			this.currentParameters = currentParameters;
+			this.cameraX = cameraX;
+			this.cameraY = cameraY;
+			this.cameraZ = cameraZ;
 		}
 	}
 }

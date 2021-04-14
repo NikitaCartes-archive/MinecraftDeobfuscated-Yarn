@@ -35,4 +35,8 @@ public interface CommandOutput {
 	boolean shouldTrackOutput();
 
 	boolean shouldBroadcastConsoleToOps();
+
+	default boolean method_36320() {
+		return false;
+	}
 }

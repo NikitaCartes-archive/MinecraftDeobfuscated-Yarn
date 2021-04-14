@@ -62,9 +62,9 @@ public class StrafePlayerPhase extends AbstractPhase {
 					if (this.seenTargetTimes >= 5 && k >= 0.0F && k < 10.0F) {
 						double h = 1.0;
 						Vec3d vec3d3 = this.dragon.getRotationVec(1.0F);
-						double l = this.dragon.partHead.getX() - vec3d3.x * 1.0;
-						double m = this.dragon.partHead.getBodyY(0.5) + 0.5;
-						double n = this.dragon.partHead.getZ() - vec3d3.z * 1.0;
+						double l = this.dragon.head.getX() - vec3d3.x * 1.0;
+						double m = this.dragon.head.getBodyY(0.5) + 0.5;
+						double n = this.dragon.head.getZ() - vec3d3.z * 1.0;
 						double o = this.target.getX() - l;
 						double p = this.target.getBodyY(0.5) - m;
 						double q = this.target.getZ() - n;

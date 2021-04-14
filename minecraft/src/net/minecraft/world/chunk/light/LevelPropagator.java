@@ -9,7 +9,7 @@ import java.util.function.LongPredicate;
 import net.minecraft.util.math.MathHelper;
 
 public abstract class LevelPropagator {
-	private static final int field_31706 = 255;
+	private static final int MAX_LEVEL = 255;
 	private final int levelCount;
 	private final LongLinkedOpenHashSet[] pendingIdUpdatesByLevel;
 	private final Long2ByteMap pendingUpdates;

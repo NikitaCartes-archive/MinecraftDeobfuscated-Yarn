@@ -697,7 +697,7 @@ public abstract class RenderLayer extends RenderPhase {
 	}
 
 	public static RenderLayer getOutline(Identifier texture) {
-		return (RenderLayer)RenderLayer.MultiPhase.field_29640.apply(texture, DISABLE_CULLING);
+		return (RenderLayer)RenderLayer.MultiPhase.CULLING_LAYERS.apply(texture, DISABLE_CULLING);
 	}
 
 	public static RenderLayer getArmorGlint() {
@@ -762,7 +762,7 @@ public abstract class RenderLayer extends RenderPhase {
 		return END_PORTAL;
 	}
 
-	public static RenderLayer method_34571() {
+	public static RenderLayer getEndGateway() {
 		return END_GATEWAY;
 	}
 
@@ -770,7 +770,7 @@ public abstract class RenderLayer extends RenderPhase {
 		return LINES;
 	}
 
-	public static RenderLayer method_34572() {
+	public static RenderLayer getLineStrip() {
 		return LINE_STRIP;
 	}
 
@@ -814,7 +814,7 @@ public abstract class RenderLayer extends RenderPhase {
 	public void draw(BufferBuilder buffer, int cameraX, int cameraY, int cameraZ) {
 		if (buffer.isBuilding()) {
 			if (this.translucent) {
-				buffer.method_31948((float)cameraX, (float)cameraY, (float)cameraZ);
+				buffer.setCameraPosition((float)cameraX, (float)cameraY, (float)cameraZ);
 			}
 
 			buffer.end();
@@ -863,16 +863,16 @@ public abstract class RenderLayer extends RenderPhase {
 
 	@Environment(EnvType.CLIENT)
 	static final class MultiPhase extends RenderLayer {
-		private static final BiFunction<Identifier, RenderPhase.Cull, RenderLayer> field_29640 = Util.memoize(
-			(BiFunction<Identifier, RenderPhase.Cull, RenderLayer>)((identifier, cull) -> RenderLayer.of(
+		private static final BiFunction<Identifier, RenderPhase.Cull, RenderLayer> CULLING_LAYERS = Util.memoize(
+			(BiFunction<Identifier, RenderPhase.Cull, RenderLayer>)((texture, culling) -> RenderLayer.of(
 					"outline",
 					VertexFormats.POSITION_COLOR_TEXTURE,
 					VertexFormat.DrawMode.QUADS,
 					256,
 					RenderLayer.MultiPhaseParameters.builder()
 						.shader(OUTLINE_SHADER)
-						.texture(new RenderPhase.Texture(identifier, false, false))
-						.cull(cull)
+						.texture(new RenderPhase.Texture(texture, false, false))
+						.cull(culling)
 						.depthTest(ALWAYS_DEPTH_TEST)
 						.target(OUTLINE_TARGET)
 						.build(RenderLayer.OutlineMode.IS_OUTLINE)
@@ -903,7 +903,7 @@ public abstract class RenderLayer extends RenderPhase {
 			);
 			this.phases = phases;
 			this.affectedOutline = phases.outlineMode == RenderLayer.OutlineMode.AFFECTS_OUTLINE
-				? phases.texture.getId().map(identifier -> (RenderLayer)field_29640.apply(identifier, phases.cull))
+				? phases.texture.getId().map(texture -> (RenderLayer)CULLING_LAYERS.apply(texture, phases.cull))
 				: Optional.empty();
 			this.outline = phases.outlineMode == RenderLayer.OutlineMode.IS_OUTLINE;
 		}
@@ -918,7 +918,7 @@ public abstract class RenderLayer extends RenderPhase {
 			return this.outline;
 		}
 
-		protected final RenderLayer.MultiPhaseParameters method_35784() {
+		protected final RenderLayer.MultiPhaseParameters getPhases() {
 			return this.phases;
 		}
 
@@ -931,7 +931,7 @@ public abstract class RenderLayer extends RenderPhase {
 	@Environment(EnvType.CLIENT)
 	public static final class MultiPhaseParameters {
 		private final RenderPhase.TextureBase texture;
-		private final RenderPhase.Shader field_29461;
+		private final RenderPhase.Shader shader;
 		private final RenderPhase.Transparency transparency;
 		private final RenderPhase.DepthTest depthTest;
 		private final RenderPhase.Cull cull;
@@ -946,7 +946,7 @@ public abstract class RenderLayer extends RenderPhase {
 		private final ImmutableList<RenderPhase> phases;
 
 		private MultiPhaseParameters(
-			RenderPhase.TextureBase textureBase,
+			RenderPhase.TextureBase texture,
 			RenderPhase.Shader shader,
 			RenderPhase.Transparency transparency,
 			RenderPhase.DepthTest depthTest,
@@ -960,8 +960,8 @@ public abstract class RenderLayer extends RenderPhase {
 			RenderPhase.LineWidth lineWidth,
 			RenderLayer.OutlineMode outlineMode
 		) {
-			this.texture = textureBase;
-			this.field_29461 = shader;
+			this.texture = texture;
+			this.shader = shader;
 			this.transparency = transparency;
 			this.depthTest = depthTest;
 			this.cull = cull;
@@ -975,7 +975,7 @@ public abstract class RenderLayer extends RenderPhase {
 			this.outlineMode = outlineMode;
 			this.phases = ImmutableList.of(
 				this.texture,
-				this.field_29461,
+				this.shader,
 				this.transparency,
 				this.depthTest,
 				this.cull,

@@ -345,6 +345,9 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 	public static final EntityType<MagmaCubeEntity> MAGMA_CUBE = register(
 		"magma_cube", EntityType.Builder.create(MagmaCubeEntity::new, SpawnGroup.MONSTER).makeFireImmune().setDimensions(2.04F, 2.04F).maxTrackingRange(8)
 	);
+	public static final EntityType<MarkerEntity> MARKER = register(
+		"marker", EntityType.Builder.create(MarkerEntity::new, SpawnGroup.MISC).setDimensions(0.0F, 0.0F).maxTrackingRange(0)
+	);
 	public static final EntityType<MinecartEntity> MINECART = register(
 		"minecart", EntityType.Builder.<MinecartEntity>create(MinecartEntity::new, SpawnGroup.MISC).setDimensions(0.98F, 0.7F).maxTrackingRange(8)
 	);

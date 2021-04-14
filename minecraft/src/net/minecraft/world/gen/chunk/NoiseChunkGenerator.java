@@ -42,9 +42,9 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.gen.AquiferSampler;
-import net.minecraft.world.gen.BlockInterpolator;
+import net.minecraft.world.gen.BlockSource;
 import net.minecraft.world.gen.ChunkRandom;
-import net.minecraft.world.gen.DeepslateInterpolator;
+import net.minecraft.world.gen.DeepslateBlockSource;
 import net.minecraft.world.gen.NoiseCaveSampler;
 import net.minecraft.world.gen.NoiseColumnSampler;
 import net.minecraft.world.gen.NoiseInterpolator;
@@ -79,7 +79,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	private final int worldHeight;
 	private final NoiseColumnSampler noiseColumnSampler;
 	private final boolean hasAquifers;
-	private final BlockInterpolator blockInterpolator;
+	private final BlockSource deepslateSource;
 
 	public NoiseChunkGenerator(BiomeSource biomeSource, long seed, Supplier<ChunkGeneratorSettings> settings) {
 		this(biomeSource, biomeSource, seed, settings);
@@ -132,7 +132,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 			noiseCaveSampler
 		);
 		this.hasAquifers = chunkGeneratorSettings.hasAquifers();
-		this.blockInterpolator = new DeepslateInterpolator(seed, this.defaultBlock, Blocks.DEEPSLATE.getDefaultState());
+		this.deepslateSource = new DeepslateBlockSource(seed, this.defaultBlock, Blocks.DEEPSLATE.getDefaultState(), this.settings);
 	}
 
 	@Override
@@ -192,6 +192,11 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		}
 	}
 
+	@Override
+	public BlockSource getBlockSource() {
+		return this.deepslateSource;
+	}
+
 	private OptionalInt sampleHeightmap(int x, int z, @Nullable BlockState[] states, @Nullable Predicate<BlockState> predicate, int minY, int noiseSizeY) {
 		int i = ChunkSectionPos.getSectionCoord(x);
 		int j = ChunkSectionPos.getSectionCoord(z);
@@ -235,7 +240,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 				double w = MathHelper.lerp3(v, d, e, f, q, h, s, g, r, p, t);
 				int y = o * this.verticalNoiseResolution + u;
 				int aa = y + minY * this.verticalNoiseResolution;
-				BlockState blockState = this.getBlockState(StructureWeightSampler.INSTANCE, aquiferSampler, this.blockInterpolator, x, aa, z, w);
+				BlockState blockState = this.getBlockState(StructureWeightSampler.INSTANCE, aquiferSampler, this.deepslateSource, x, aa, z, w);
 				if (states != null) {
 					states[y] = blockState;
 				}
@@ -250,7 +255,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	}
 
 	protected BlockState getBlockState(
-		StructureWeightSampler structures, @Nullable AquiferSampler aquiferSampler, BlockInterpolator blockInterpolator, int x, int y, int z, double noise
+		StructureWeightSampler structures, @Nullable AquiferSampler aquiferSampler, BlockSource blockInterpolator, int x, int y, int z, double noise
 	) {
 		double d = MathHelper.clamp(noise / 200.0, -1.0, 1.0);
 		d = d / 2.0 - d * d * d / 24.0;
@@ -262,7 +267,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 
 		BlockState blockState;
 		if (d > 0.0) {
-			blockState = blockInterpolator.sample(x, y, z, (ChunkGeneratorSettings)this.settings.get());
+			blockState = blockInterpolator.sample(x, y, z);
 		} else if (this.hasAquifers && AquiferSampler.method_35324(y - this.getMinimumY())) {
 			blockState = Blocks.LAVA.getDefaultState();
 		} else {
@@ -429,7 +434,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 								int ab = aa & 15;
 								double f = (double)z / (double)this.horizontalNoiseResolution;
 								double g = noiseInterpolator.sampleNoise(f);
-								BlockState blockState = this.getBlockState(structureWeightSampler, aquiferSampler, this.blockInterpolator, x, t, aa, g);
+								BlockState blockState = this.getBlockState(structureWeightSampler, aquiferSampler, this.deepslateSource, x, t, aa, g);
 								if (blockState != AIR) {
 									if (blockState.getLuminance() != 0 && chunk instanceof ProtoChunk) {
 										mutable.set(x, t, aa);

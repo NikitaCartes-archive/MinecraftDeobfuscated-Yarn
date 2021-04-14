@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 
 public class CommandFunction {
 	private final CommandFunction.Element[] elements;
@@ -81,8 +82,27 @@ public class CommandFunction {
 		}
 
 		@Override
-		public void execute(CommandFunctionManager manager, ServerCommandSource source, Deque<CommandFunctionManager.Entry> entries, int maxChainLength) throws CommandSyntaxException {
-			manager.getDispatcher().execute(new ParseResults<>(this.parsed.getContext().withSource(source), this.parsed.getReader(), this.parsed.getExceptions()));
+		public void execute(
+			CommandFunctionManager manager,
+			ServerCommandSource source,
+			Deque<CommandFunctionManager.Entry> entries,
+			int maxChainLength,
+			int i,
+			@Nullable CommandFunctionManager.class_6346 arg
+		) throws CommandSyntaxException {
+			if (arg != null) {
+				String string = this.parsed.getReader().getString();
+				arg.method_36349(i, string);
+				int j = this.method_36318(manager, source);
+				arg.method_36350(i, string, j);
+			} else {
+				this.method_36318(manager, source);
+			}
+		}
+
+		private int method_36318(CommandFunctionManager commandFunctionManager, ServerCommandSource serverCommandSource) throws CommandSyntaxException {
+			return commandFunctionManager.getDispatcher()
+				.execute(new ParseResults<>(this.parsed.getContext().withSource(serverCommandSource), this.parsed.getReader(), this.parsed.getExceptions()));
 		}
 
 		public String toString() {
@@ -90,8 +110,16 @@ public class CommandFunction {
 		}
 	}
 
+	@FunctionalInterface
 	public interface Element {
-		void execute(CommandFunctionManager manager, ServerCommandSource source, Deque<CommandFunctionManager.Entry> entries, int maxChainLength) throws CommandSyntaxException;
+		void execute(
+			CommandFunctionManager manager,
+			ServerCommandSource source,
+			Deque<CommandFunctionManager.Entry> entries,
+			int maxChainLength,
+			int i,
+			@Nullable CommandFunctionManager.class_6346 arg
+		) throws CommandSyntaxException;
 	}
 
 	public static class FunctionElement implements CommandFunction.Element {
@@ -102,14 +130,29 @@ public class CommandFunction {
 		}
 
 		@Override
-		public void execute(CommandFunctionManager manager, ServerCommandSource source, Deque<CommandFunctionManager.Entry> entries, int maxChainLength) {
-			this.function.get(manager).ifPresent(commandFunction -> {
+		public void execute(
+			CommandFunctionManager manager,
+			ServerCommandSource source,
+			Deque<CommandFunctionManager.Entry> entries,
+			int maxChainLength,
+			int i,
+			@Nullable CommandFunctionManager.class_6346 arg
+		) {
+			Util.ifPresentOrElse(this.function.get(manager), commandFunction -> {
 				CommandFunction.Element[] elements = commandFunction.getElements();
-				int j = maxChainLength - entries.size();
-				int k = Math.min(elements.length, j);
+				if (arg != null) {
+					arg.method_36351(i, commandFunction.getId(), elements.length);
+				}
 
-				for (int l = k - 1; l >= 0; l--) {
-					entries.addFirst(new CommandFunctionManager.Entry(manager, source, elements[l]));
+				int k = maxChainLength - entries.size();
+				int l = Math.min(elements.length, k);
+
+				for (int m = l - 1; m >= 0; m--) {
+					entries.addFirst(new CommandFunctionManager.Entry(source, i + 1, elements[m]));
+				}
+			}, () -> {
+				if (arg != null) {
+					arg.method_36351(i, this.function.getId(), -1);
 				}
 			});
 		}

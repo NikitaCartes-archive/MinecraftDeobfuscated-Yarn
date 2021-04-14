@@ -19,7 +19,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.ProgressScreen;
+import net.minecraft.client.gui.screen.ScreenTexts;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.resource.DefaultResourcePack;
 import net.minecraft.resource.DirectoryResourcePack;
@@ -129,12 +132,35 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 							? Util.completeExceptionally(new RuntimeException("Hash check failure for file " + file + ", see log"))
 							: this.loadServerPack(file, ResourcePackSource.PACK_SOURCE_SERVER)
 				)
-				.whenComplete((void_, throwable) -> {
-					if (throwable != null) {
-						LOGGER.warn("Pack application failed: {}, deleting file {}", throwable.getMessage(), file);
-						delete(file);
+				.whenComplete(
+					(void_, throwable) -> {
+						if (throwable != null) {
+							LOGGER.warn("Pack application failed: {}, deleting file {}", throwable.getMessage(), file);
+							delete(file);
+							MinecraftClient minecraftClientx = MinecraftClient.getInstance();
+							minecraftClientx.execute(
+								() -> minecraftClientx.openScreen(
+										new ConfirmScreen(
+											bl -> {
+												if (bl) {
+													minecraftClientx.openScreen(null);
+												} else {
+													ClientPlayNetworkHandler clientPlayNetworkHandler = minecraftClientx.getNetworkHandler();
+													if (clientPlayNetworkHandler != null) {
+														clientPlayNetworkHandler.getConnection().disconnect(new TranslatableText("connect.aborted"));
+													}
+												}
+											},
+											new TranslatableText("multiplayer.texturePrompt.failure.line1"),
+											new TranslatableText("multiplayer.texturePrompt.failure.line2"),
+											ScreenTexts.PROCEED,
+											new TranslatableText("menu.disconnect")
+										)
+									)
+							);
+						}
 					}
-				});
+				);
 			var13 = this.downloadTask;
 		} finally {
 			this.lock.unlock();

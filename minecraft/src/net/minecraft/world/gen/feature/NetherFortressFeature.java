@@ -69,7 +69,7 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 			HeightLimitView heightLimitView
 		) {
 			NetherFortressGenerator.Start start = new NetherFortressGenerator.Start(this.random, chunkPos.getOffsetX(2), chunkPos.getOffsetZ(2));
-			this.method_35462(start);
+			this.addPiece(start);
 			start.fillOpenings(start, this, this.random);
 			List<StructurePiece> list = start.pieces;
 

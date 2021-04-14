@@ -7,21 +7,17 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.world.WorldAccess;
 
 public class ColumnPlacer extends BlockPlacer {
 	public static final Codec<ColumnPlacer> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(
-					Codec.INT.fieldOf("min_size").forGetter(placer -> placer.minSize), Codec.INT.fieldOf("extra_size").forGetter(placer -> placer.extraSize)
-				)
-				.apply(instance, ColumnPlacer::new)
+		instance -> instance.group(IntProvider.field_33450.fieldOf("size").forGetter(columnPlacer -> columnPlacer.field_33515)).apply(instance, ColumnPlacer::new)
 	);
-	private final int minSize;
-	private final int extraSize;
+	private final IntProvider field_33515;
 
-	public ColumnPlacer(int minSize, int extraSize) {
-		this.minSize = minSize;
-		this.extraSize = extraSize;
+	public ColumnPlacer(IntProvider intProvider) {
+		this.field_33515 = intProvider;
 	}
 
 	@Override
@@ -32,7 +28,7 @@ public class ColumnPlacer extends BlockPlacer {
 	@Override
 	public void generate(WorldAccess world, BlockPos pos, BlockState state, Random random) {
 		BlockPos.Mutable mutable = pos.mutableCopy();
-		int i = this.minSize + random.nextInt(random.nextInt(this.extraSize + 1) + 1);
+		int i = this.field_33515.get(random);
 
 		for (int j = 0; j < i; j++) {
 			world.setBlockState(mutable, state, Block.NOTIFY_LISTENERS);

@@ -41,10 +41,10 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			Matrix4f matrix4f = entry.getModel();
 			Matrix3f matrix3f = entry.getNormal();
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(LAYER);
-			method_23840(vertexConsumer, matrix4f, matrix3f, i, 0.0F, 0, 0, 1);
-			method_23840(vertexConsumer, matrix4f, matrix3f, i, 1.0F, 0, 1, 1);
-			method_23840(vertexConsumer, matrix4f, matrix3f, i, 1.0F, 1, 1, 0);
-			method_23840(vertexConsumer, matrix4f, matrix3f, i, 0.0F, 1, 0, 0);
+			vertex(vertexConsumer, matrix4f, matrix3f, i, 0.0F, 0, 0, 1);
+			vertex(vertexConsumer, matrix4f, matrix3f, i, 1.0F, 0, 1, 1);
+			vertex(vertexConsumer, matrix4f, matrix3f, i, 1.0F, 1, 1, 0);
+			vertex(vertexConsumer, matrix4f, matrix3f, i, 0.0F, 1, 0, 0);
 			matrixStack.pop();
 			int j = playerEntity.getMainArm() == Arm.RIGHT ? 1 : -1;
 			ItemStack itemStack = playerEntity.getMainHandStack();
@@ -89,12 +89,12 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			float v = (float)(o - s);
 			float w = (float)(p - t) + r;
 			float x = (float)(q - u);
-			VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.method_34572());
+			VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getLineStrip());
 			MatrixStack.Entry entry2 = matrixStack.peek();
 			int y = 16;
 
 			for (int z = 0; z <= 16; z++) {
-				method_23172(v, w, x, vertexConsumer2, entry2, method_23954(z, 16), method_23954(z + 1, 17));
+				method_23172(v, w, x, vertexConsumer2, entry2, percentage(z, 16), percentage(z + 1, 17));
 			}
 
 			matrixStack.pop();
@@ -102,32 +102,32 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 		}
 	}
 
-	private static float method_23954(int i, int j) {
-		return (float)i / (float)j;
+	private static float percentage(int value, int max) {
+		return (float)value / (float)max;
 	}
 
-	private static void method_23840(VertexConsumer vertexConsumer, Matrix4f matrix4f, Matrix3f matrix3f, int i, float f, int j, int k, int l) {
-		vertexConsumer.vertex(matrix4f, f - 0.5F, (float)j - 0.5F, 0.0F)
+	private static void vertex(VertexConsumer buffer, Matrix4f matrix, Matrix3f normalMatrix, int light, float x, int y, int u, int v) {
+		buffer.vertex(matrix, x - 0.5F, (float)y - 0.5F, 0.0F)
 			.color(255, 255, 255, 255)
-			.texture((float)k, (float)l)
+			.texture((float)u, (float)v)
 			.overlay(OverlayTexture.DEFAULT_UV)
-			.light(i)
-			.normal(matrix3f, 0.0F, 1.0F, 0.0F)
+			.light(light)
+			.normal(normalMatrix, 0.0F, 1.0F, 0.0F)
 			.next();
 	}
 
-	private static void method_23172(float f, float g, float h, VertexConsumer vertexConsumer, MatrixStack.Entry entry, float i, float j) {
-		float k = f * i;
-		float l = g * (i * i + i) * 0.5F + 0.25F;
-		float m = h * i;
-		float n = f * j - k;
-		float o = g * (j * j + j) * 0.5F + 0.25F - l;
-		float p = h * j - m;
-		float q = MathHelper.sqrt(n * n + o * o + p * p);
-		n /= q;
-		o /= q;
-		p /= q;
-		vertexConsumer.vertex(entry.getModel(), k, l, m).color(0, 0, 0, 255).normal(entry.getNormal(), n, o, p).next();
+	private static void method_23172(float x, float y, float z, VertexConsumer buffer, MatrixStack.Entry normal, float f, float g) {
+		float h = x * f;
+		float i = y * (f * f + f) * 0.5F + 0.25F;
+		float j = z * f;
+		float k = x * g - h;
+		float l = y * (g * g + g) * 0.5F + 0.25F - i;
+		float m = z * g - j;
+		float n = MathHelper.sqrt(k * k + l * l + m * m);
+		k /= n;
+		l /= n;
+		m /= n;
+		buffer.vertex(normal.getModel(), h, i, j).color(0, 0, 0, 255).normal(normal.getNormal(), k, l, m).next();
 	}
 
 	public Identifier getTexture(FishingBobberEntity fishingBobberEntity) {

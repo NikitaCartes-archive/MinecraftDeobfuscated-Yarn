@@ -19,7 +19,7 @@ import net.minecraft.world.WorldView;
 
 public class CactusBlock extends Block {
 	public static final IntProperty AGE = Properties.AGE_15;
-	public static final int field_31044 = 15;
+	public static final int MAX_AGE = 15;
 	protected static final int field_31045 = 1;
 	protected static final VoxelShape COLLISION_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 15.0, 15.0);
 	protected static final VoxelShape OUTLINE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 16.0, 15.0);

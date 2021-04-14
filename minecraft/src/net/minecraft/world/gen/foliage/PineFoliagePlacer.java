@@ -54,7 +54,7 @@ public class PineFoliagePlacer extends FoliagePlacer {
 
 	@Override
 	public int getRandomRadius(Random random, int baseHeight) {
-		return super.getRandomRadius(random, baseHeight) + random.nextInt(baseHeight + 1);
+		return super.getRandomRadius(random, baseHeight) + random.nextInt(Math.max(baseHeight + 1, 1));
 	}
 
 	@Override

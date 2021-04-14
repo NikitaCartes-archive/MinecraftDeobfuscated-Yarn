@@ -2,6 +2,8 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.util.math.intprovider.IntProvider;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 public class GeodeFeatureConfig implements FeatureConfig {
 	public static final Codec<Double> RANGE = Codec.doubleRange(0.0, 1.0);
@@ -16,12 +18,18 @@ public class GeodeFeatureConfig implements FeatureConfig {
 						.fieldOf("placements_require_layer0_alternate")
 						.orElse(true)
 						.forGetter(geodeFeatureConfig -> geodeFeatureConfig.placementsRequireLayer0Alternate),
-					Codec.intRange(1, 10).fieldOf("min_outer_wall_distance").orElse(4).forGetter(geodeFeatureConfig -> geodeFeatureConfig.minOuterWallDistance),
-					Codec.intRange(1, 20).fieldOf("max_outer_wall_distance").orElse(6).forGetter(geodeFeatureConfig -> geodeFeatureConfig.maxOuterWallDistance),
-					Codec.intRange(1, 10).fieldOf("min_distribution_points").orElse(3).forGetter(geodeFeatureConfig -> geodeFeatureConfig.minDistributionPoints),
-					Codec.intRange(1, 20).fieldOf("max_distribution_points").orElse(5).forGetter(geodeFeatureConfig -> geodeFeatureConfig.maxDistributionPoints),
-					Codec.intRange(0, 10).fieldOf("min_point_offset").orElse(1).forGetter(geodeFeatureConfig -> geodeFeatureConfig.minPointOffset),
-					Codec.intRange(0, 10).fieldOf("max_point_offset").orElse(3).forGetter(geodeFeatureConfig -> geodeFeatureConfig.maxPointOffset),
+					IntProvider.createValidatingCodec(1, 20)
+						.fieldOf("outer_wall_distance")
+						.orElse(UniformIntProvider.create(4, 5))
+						.forGetter(geodeFeatureConfig -> geodeFeatureConfig.field_33516),
+					IntProvider.createValidatingCodec(1, 20)
+						.fieldOf("distribution_points")
+						.orElse(UniformIntProvider.create(3, 4))
+						.forGetter(geodeFeatureConfig -> geodeFeatureConfig.field_33517),
+					IntProvider.createValidatingCodec(0, 10)
+						.fieldOf("point_offset")
+						.orElse(UniformIntProvider.create(1, 2))
+						.forGetter(geodeFeatureConfig -> geodeFeatureConfig.field_33518),
 					Codec.INT.fieldOf("min_gen_offset").orElse(-16).forGetter(geodeFeatureConfig -> geodeFeatureConfig.minGenOffset),
 					Codec.INT.fieldOf("max_gen_offset").orElse(16).forGetter(geodeFeatureConfig -> geodeFeatureConfig.maxGenOffset),
 					RANGE.fieldOf("noise_multiplier").orElse(0.05).forGetter(geodeFeatureConfig -> geodeFeatureConfig.noiseMultiplier),
@@ -35,12 +43,9 @@ public class GeodeFeatureConfig implements FeatureConfig {
 	public final double usePotentialPlacementsChance;
 	public final double useAlternateLayer0Chance;
 	public final boolean placementsRequireLayer0Alternate;
-	public final int minOuterWallDistance;
-	public final int maxOuterWallDistance;
-	public final int minDistributionPoints;
-	public final int maxDistributionPoints;
-	public final int minPointOffset;
-	public final int maxPointOffset;
+	public final IntProvider field_33516;
+	public final IntProvider field_33517;
+	public final IntProvider field_33518;
 	public final int minGenOffset;
 	public final int maxGenOffset;
 	public final double noiseMultiplier;
@@ -53,16 +58,13 @@ public class GeodeFeatureConfig implements FeatureConfig {
 		double usePotentialPlacementsChance,
 		double useAlternateLayer0Chance,
 		boolean placementsRequireLayer0Alternate,
-		int minOuterWallDistance,
-		int maxOuterWallDistance,
-		int minDistributionPoints,
+		IntProvider intProvider,
+		IntProvider intProvider2,
+		IntProvider intProvider3,
 		int maxDistributionPoints,
 		int minPointOffset,
-		int maxPointOffset,
-		int minGenOffset,
-		int maxGenOffset,
-		double noiseMultiplier,
-		int invalidBlocksThreshold
+		double d,
+		int maxGenOffset
 	) {
 		this.layerConfig = layerConfig;
 		this.layerThicknessConfig = layerThicknessConfig;
@@ -70,15 +72,12 @@ public class GeodeFeatureConfig implements FeatureConfig {
 		this.usePotentialPlacementsChance = usePotentialPlacementsChance;
 		this.useAlternateLayer0Chance = useAlternateLayer0Chance;
 		this.placementsRequireLayer0Alternate = placementsRequireLayer0Alternate;
-		this.minOuterWallDistance = minOuterWallDistance;
-		this.maxOuterWallDistance = maxOuterWallDistance;
-		this.minDistributionPoints = minDistributionPoints;
-		this.maxDistributionPoints = maxDistributionPoints;
-		this.minPointOffset = minPointOffset;
-		this.maxPointOffset = maxPointOffset;
-		this.minGenOffset = minGenOffset;
-		this.maxGenOffset = maxGenOffset;
-		this.noiseMultiplier = noiseMultiplier;
-		this.invalidBlocksThreshold = invalidBlocksThreshold;
+		this.field_33516 = intProvider;
+		this.field_33517 = intProvider2;
+		this.field_33518 = intProvider3;
+		this.minGenOffset = maxDistributionPoints;
+		this.maxGenOffset = minPointOffset;
+		this.noiseMultiplier = d;
+		this.invalidBlocksThreshold = maxGenOffset;
 	}
 }

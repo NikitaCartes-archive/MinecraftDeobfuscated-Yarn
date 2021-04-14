@@ -116,7 +116,8 @@ public class LevelSummary implements Comparable<LevelSummary> {
 	 * <p>This includes world versions {@code 2692} and earlier (21w05b and earlier).
 	 */
 	public boolean isPreWorldHeightChangeVersion() {
-		return this.versionInfo.getVersionId() <= 2692;
+		int i = this.versionInfo.getVersionId();
+		return i > 2692 && i <= 2706;
 	}
 
 	public boolean isUnavailable() {
