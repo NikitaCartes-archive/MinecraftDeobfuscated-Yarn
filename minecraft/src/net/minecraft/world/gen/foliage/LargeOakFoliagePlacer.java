@@ -27,19 +27,19 @@ public class LargeOakFoliagePlacer extends BlobFoliagePlacer {
 
 	@Override
 	protected void generate(
-		TestableWorld testableWorld,
-		BiConsumer<BlockPos, BlockState> biConsumer,
+		TestableWorld world,
+		BiConsumer<BlockPos, BlockState> replacer,
 		Random random,
-		TreeFeatureConfig treeFeatureConfig,
-		int i,
+		TreeFeatureConfig config,
+		int trunkHeight,
 		FoliagePlacer.TreeNode treeNode,
+		int foliageHeight,
 		int radius,
-		int j,
 		int offset
 	) {
-		for (int k = offset; k >= offset - radius; k--) {
-			int l = j + (k != offset && k != offset - radius ? 1 : 0);
-			this.generateSquare(testableWorld, biConsumer, random, treeFeatureConfig, treeNode.getCenter(), l, k, treeNode.isGiantTrunk());
+		for (int i = offset; i >= offset - foliageHeight; i--) {
+			int j = radius + (i != offset && i != offset - foliageHeight ? 1 : 0);
+			this.generateSquare(world, replacer, random, config, treeNode.getCenter(), j, i, treeNode.isGiantTrunk());
 		}
 	}
 

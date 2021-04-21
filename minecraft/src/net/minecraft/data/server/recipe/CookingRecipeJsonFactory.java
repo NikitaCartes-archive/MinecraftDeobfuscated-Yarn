@@ -17,12 +17,13 @@ import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-public class CookingRecipeJsonFactory {
+public class CookingRecipeJsonFactory implements CraftingRecipeJsonFactory {
 	private final Item output;
 	private final Ingredient input;
 	private final float experience;
 	private final int cookingTime;
 	private final Advancement.Task builder = Advancement.Task.create();
+	@Nullable
 	private String group;
 	private final CookingRecipeSerializer<?> serializer;
 
@@ -61,25 +62,17 @@ public class CookingRecipeJsonFactory {
 		return this;
 	}
 
-	public CookingRecipeJsonFactory group(String group) {
+	public CookingRecipeJsonFactory group(@Nullable String group) {
 		this.group = group;
 		return this;
 	}
 
-	public void offerTo(Consumer<RecipeJsonProvider> exporter) {
-		this.offerTo(exporter, Registry.ITEM.getId(this.output));
+	@Override
+	public Item getOutputItem() {
+		return this.output;
 	}
 
-	public void offerTo(Consumer<RecipeJsonProvider> exporter, String recipeIdStr) {
-		Identifier identifier = Registry.ITEM.getId(this.output);
-		Identifier identifier2 = new Identifier(recipeIdStr);
-		if (identifier2.equals(identifier)) {
-			throw new IllegalStateException("Recipe " + identifier2 + " should remove its 'save' argument");
-		} else {
-			this.offerTo(exporter, identifier2);
-		}
-	}
-
+	@Override
 	public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId) {
 		this.validate(recipeId);
 		this.builder

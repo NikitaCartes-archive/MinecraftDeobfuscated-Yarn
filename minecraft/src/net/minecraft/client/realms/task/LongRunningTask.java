@@ -12,16 +12,16 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public abstract class LongRunningTask implements Errable, Runnable {
-	protected static final int field_32132 = 25;
+	protected static final int MAX_RETRIES = 25;
 	public static final Logger LOGGER = LogManager.getLogger();
 	protected RealmsLongRunningMcoTaskScreen longRunningMcoTaskScreen;
 
 	/**
 	 * Moved from RealmsTasks in 20w10a.
 	 */
-	protected static void pause(long l) {
+	protected static void pause(long seconds) {
 		try {
-			Thread.sleep(l * 1000L);
+			Thread.sleep(seconds * 1000L);
 		} catch (InterruptedException var3) {
 			Thread.currentThread().interrupt();
 			LOGGER.error("", (Throwable)var3);

@@ -156,7 +156,7 @@ public class DebugCommand {
 					DebugCommand.class_6347 lv = new DebugCommand.class_6347(printWriter);
 					i += serverCommandSource.getMinecraftServer()
 						.getCommandFunctionManager()
-						.method_36341(commandFunction, serverCommandSource.method_36321(lv).withMaxLevel(2), lv);
+						.method_36341(commandFunction, serverCommandSource.withOutput(lv).withMaxLevel(2), lv);
 				}
 			} catch (Throwable var20) {
 				var7 = var20;

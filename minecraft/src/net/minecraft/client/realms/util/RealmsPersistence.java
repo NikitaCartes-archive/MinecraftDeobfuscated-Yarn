@@ -13,7 +13,7 @@ import org.apache.commons.io.FileUtils;
 
 @Environment(EnvType.CLIENT)
 public class RealmsPersistence {
-	private static final String field_32128 = "realms_persistence.json";
+	private static final String FILE_NAME = "realms_persistence.json";
 	private static final CheckedGson CHECKED_GSON = new CheckedGson();
 
 	public RealmsPersistence.RealmsPersistenceData load() {

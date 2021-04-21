@@ -58,7 +58,7 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 	private String suggestion;
 	private Consumer<String> changedListener;
 	private Predicate<String> textPredicate = Objects::nonNull;
-	private BiFunction<String, Integer, OrderedText> renderTextProvider = (string, integer) -> OrderedText.styledString(string, Style.EMPTY);
+	private BiFunction<String, Integer, OrderedText> renderTextProvider = (string, integer) -> OrderedText.styledForwardsVisitedString(string, Style.EMPTY);
 
 	public TextFieldWidget(TextRenderer textRenderer, int x, int y, int width, int height, Text text) {
 		this(textRenderer, x, y, width, height, null, text);

@@ -17,7 +17,8 @@ public class Stats {
 	public static final StatType<EntityType<?>> KILLED_BY = registerType("killed_by", Registry.ENTITY_TYPE);
 	public static final StatType<Identifier> CUSTOM = registerType("custom", Registry.CUSTOM_STAT);
 	public static final Identifier LEAVE_GAME = register("leave_game", StatFormatter.DEFAULT);
-	public static final Identifier PLAY_ONE_MINUTE = register("play_one_minute", StatFormatter.TIME);
+	public static final Identifier PLAY_TIME = register("play_time", StatFormatter.TIME);
+	public static final Identifier TOTAL_WORLD_TIME = register("total_world_time", StatFormatter.TIME);
 	public static final Identifier TIME_SINCE_DEATH = register("time_since_death", StatFormatter.TIME);
 	public static final Identifier TIME_SINCE_REST = register("time_since_rest", StatFormatter.TIME);
 	public static final Identifier SNEAK_TIME = register("sneak_time", StatFormatter.TIME);

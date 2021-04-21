@@ -93,11 +93,11 @@ public class ServerCommandSource implements CommandSource {
 		this.rotation = rot;
 	}
 
-	public ServerCommandSource method_36321(CommandOutput commandOutput) {
-		return this.output == commandOutput
+	public ServerCommandSource withOutput(CommandOutput output) {
+		return this.output == output
 			? this
 			: new ServerCommandSource(
-				commandOutput,
+				output,
 				this.position,
 				this.rotation,
 				this.world,

@@ -2006,7 +2006,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public void joinWorld(ClientWorld world) {
-		ProgressScreen progressScreen = new ProgressScreen();
+		ProgressScreen progressScreen = new ProgressScreen(true);
 		progressScreen.setTitle(new TranslatableText("connect.joining"));
 		this.reset(progressScreen);
 		this.world = world;
@@ -2023,7 +2023,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public void disconnect() {
-		this.disconnect(new ProgressScreen());
+		this.disconnect(new ProgressScreen(true));
 	}
 
 	public void disconnect(Screen screen) {

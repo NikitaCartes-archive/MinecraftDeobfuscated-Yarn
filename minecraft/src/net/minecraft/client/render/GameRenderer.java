@@ -215,7 +215,11 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 	@Nullable
 	private static Shader renderTypeTextShader;
 	@Nullable
+	private static Shader field_33626;
+	@Nullable
 	private static Shader renderTypeTextSeeThroughShader;
+	@Nullable
+	private static Shader field_33627;
 	@Nullable
 	private static Shader renderTypeLightningShader;
 	@Nullable
@@ -423,7 +427,9 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 			renderTypeEntityGlintShader = this.loadShader(manager, "rendertype_entity_glint", VertexFormats.POSITION_TEXTURE);
 			renderTypeEntityGlintDirectShader = this.loadShader(manager, "rendertype_entity_glint_direct", VertexFormats.POSITION_TEXTURE);
 			renderTypeTextShader = this.loadShader(manager, "rendertype_text", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
+			field_33626 = this.loadShader(manager, "rendertype_text_intensity", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
 			renderTypeTextSeeThroughShader = this.loadShader(manager, "rendertype_text_see_through", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
+			field_33627 = this.loadShader(manager, "rendertype_text_intensity_see_through", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
 			renderTypeLightningShader = this.loadShader(manager, "rendertype_lightning", VertexFormats.POSITION_COLOR);
 			renderTypeTripwireShader = this.loadShader(manager, "rendertype_tripwire", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
 			renderTypeEndPortalShader = this.loadShader(manager, "rendertype_end_portal", VertexFormats.POSITION);
@@ -1256,8 +1262,18 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 	}
 
 	@Nullable
+	public static Shader method_36432() {
+		return field_33626;
+	}
+
+	@Nullable
 	public static Shader getRenderTypeTextSeeThroughShader() {
 		return renderTypeTextSeeThroughShader;
+	}
+
+	@Nullable
+	public static Shader method_36433() {
+		return field_33627;
 	}
 
 	@Nullable

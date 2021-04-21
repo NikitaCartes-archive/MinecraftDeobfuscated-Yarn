@@ -13,7 +13,7 @@ import net.minecraft.world.gen.feature.TreeFeatureConfig;
 public class SpruceFoliagePlacer extends FoliagePlacer {
 	public static final Codec<SpruceFoliagePlacer> CODEC = RecordCodecBuilder.create(
 		instance -> fillFoliagePlacerFields(instance)
-				.and(IntProvider.createValidatingCodec(0, 24).fieldOf("trunk_height").forGetter(spruceFoliagePlacer -> spruceFoliagePlacer.trunkHeight))
+				.and(IntProvider.createValidatingCodec(0, 24).fieldOf("trunk_height").forGetter(placer -> placer.trunkHeight))
 				.apply(instance, SpruceFoliagePlacer::new)
 	);
 	private final IntProvider trunkHeight;
@@ -30,29 +30,29 @@ public class SpruceFoliagePlacer extends FoliagePlacer {
 
 	@Override
 	protected void generate(
-		TestableWorld testableWorld,
-		BiConsumer<BlockPos, BlockState> biConsumer,
+		TestableWorld world,
+		BiConsumer<BlockPos, BlockState> replacer,
 		Random random,
-		TreeFeatureConfig treeFeatureConfig,
-		int i,
+		TreeFeatureConfig config,
+		int trunkHeight,
 		FoliagePlacer.TreeNode treeNode,
+		int foliageHeight,
 		int radius,
-		int j,
 		int offset
 	) {
 		BlockPos blockPos = treeNode.getCenter();
-		int k = random.nextInt(2);
-		int l = 1;
-		int m = 0;
+		int i = random.nextInt(2);
+		int j = 1;
+		int k = 0;
 
-		for (int n = offset; n >= -radius; n--) {
-			this.generateSquare(testableWorld, biConsumer, random, treeFeatureConfig, blockPos, k, n, treeNode.isGiantTrunk());
-			if (k >= l) {
-				k = m;
-				m = 1;
-				l = Math.min(l + 1, j + treeNode.getFoliageRadius());
+		for (int l = offset; l >= -foliageHeight; l--) {
+			this.generateSquare(world, replacer, random, config, blockPos, i, l, treeNode.isGiantTrunk());
+			if (i >= j) {
+				i = k;
+				k = 1;
+				j = Math.min(j + 1, radius + treeNode.getFoliageRadius());
 			} else {
-				k++;
+				i++;
 			}
 		}
 	}

@@ -43,12 +43,17 @@ public class RootSystemFeature extends Feature<RootSystemFeatureConfig> {
 
 		for (int i = 1; i <= config.requiredVerticalSpaceForTree; i++) {
 			mutable.move(Direction.UP);
-			if (!world.isAir(mutable) && !world.isWater(mutable)) {
+			BlockState blockState = world.getBlockState(mutable);
+			if (!method_36419(blockState, i, config.field_33616)) {
 				return false;
 			}
 		}
 
 		return true;
+	}
+
+	private static boolean method_36419(BlockState blockState, int i, int j) {
+		return blockState.isAir() || i <= j && blockState.getFluidState().isIn(FluidTags.WATER);
 	}
 
 	private boolean generateTreeAndRoots(

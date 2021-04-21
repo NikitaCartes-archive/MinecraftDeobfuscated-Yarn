@@ -18,9 +18,11 @@ public class ProgressScreen extends Screen implements ProgressListener {
 	private Text task;
 	private int progress;
 	private boolean done;
+	private final boolean field_33625;
 
-	public ProgressScreen() {
+	public ProgressScreen(boolean bl) {
 		super(NarratorManager.EMPTY);
+		this.field_33625 = bl;
 	}
 
 	@Override
@@ -58,7 +60,7 @@ public class ProgressScreen extends Screen implements ProgressListener {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if (this.done) {
-			if (!this.client.isConnectedToRealms()) {
+			if (this.field_33625) {
 				this.client.openScreen(null);
 			}
 		} else {

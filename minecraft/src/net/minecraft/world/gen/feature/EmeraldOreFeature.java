@@ -16,8 +16,12 @@ public class EmeraldOreFeature extends Feature<EmeraldOreFeatureConfig> {
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		BlockPos blockPos = context.getOrigin();
 		EmeraldOreFeatureConfig emeraldOreFeatureConfig = context.getConfig();
-		if (structureWorldAccess.getBlockState(blockPos).isOf(emeraldOreFeatureConfig.target.getBlock())) {
-			structureWorldAccess.setBlockState(blockPos, emeraldOreFeatureConfig.state, Block.NOTIFY_LISTENERS);
+
+		for (OreFeatureConfig.Target target : emeraldOreFeatureConfig.target) {
+			if (target.target.test(structureWorldAccess.getBlockState(blockPos), context.getRandom())) {
+				structureWorldAccess.setBlockState(blockPos, target.state, Block.NOTIFY_LISTENERS);
+				break;
+			}
 		}
 
 		return true;

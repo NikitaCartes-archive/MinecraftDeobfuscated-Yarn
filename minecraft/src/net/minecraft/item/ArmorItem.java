@@ -18,6 +18,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPointer;
@@ -117,6 +118,10 @@ public class ArmorItem extends Item implements Wearable {
 		ItemStack itemStack2 = user.getEquippedStack(equipmentSlot);
 		if (itemStack2.isEmpty()) {
 			user.equipStack(equipmentSlot, itemStack.copy());
+			if (!world.isClient()) {
+				user.incrementStat(Stats.USED.getOrCreateStat(this));
+			}
+
 			itemStack.setCount(0);
 			return TypedActionResult.success(itemStack, world.isClient());
 		} else {

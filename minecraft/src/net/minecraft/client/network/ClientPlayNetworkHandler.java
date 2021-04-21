@@ -1594,8 +1594,10 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				ServerInfo serverInfo = this.client.getCurrentServerEntry();
 				if (serverInfo != null && serverInfo.getResourcePackPolicy() == ServerInfo.ResourcePackPolicy.ENABLED) {
 					this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
-					this.feedbackAfterDownload(this.client.getResourcePackProvider().download(string, string2));
-				} else if (serverInfo != null && serverInfo.getResourcePackPolicy() != ServerInfo.ResourcePackPolicy.PROMPT) {
+					this.feedbackAfterDownload(this.client.getResourcePackProvider().download(string, string2, true));
+				} else if (serverInfo != null
+					&& serverInfo.getResourcePackPolicy() != ServerInfo.ResourcePackPolicy.PROMPT
+					&& (!bl || serverInfo.getResourcePackPolicy() != ServerInfo.ResourcePackPolicy.DISABLED)) {
 					this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.DECLINED);
 					if (bl) {
 						this.connection.disconnect(new TranslatableText("multiplayer.requiredTexturePrompt.disconnect"));
@@ -1606,16 +1608,16 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 							() -> this.client
 									.openScreen(
 										new ConfirmScreen(
-											bl2 -> {
+											enabled -> {
 												this.client.openScreen(null);
 												ServerInfo serverInfox = this.client.getCurrentServerEntry();
-												if (bl2) {
+												if (enabled) {
 													if (serverInfox != null) {
 														serverInfox.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.ENABLED);
 													}
 
 													this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
-													this.feedbackAfterDownload(this.client.getResourcePackProvider().download(string, string2));
+													this.feedbackAfterDownload(this.client.getResourcePackProvider().download(string, string2, true));
 												} else {
 													this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.DECLINED);
 													if (bl) {

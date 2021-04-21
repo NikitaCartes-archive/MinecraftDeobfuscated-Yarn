@@ -25,11 +25,11 @@ import org.apache.logging.log4j.Logger;
 public class SpawnSettings {
 	public static final Logger LOGGER = LogManager.getLogger();
 	private static final float field_30983 = 0.1F;
-	public static final Pool<SpawnSettings.SpawnEntry> field_30982 = Pool.empty();
+	public static final Pool<SpawnSettings.SpawnEntry> EMPTY_ENTRY_POOL = Pool.empty();
 	public static final SpawnSettings INSTANCE = new SpawnSettings(
 		0.1F,
 		(Map<SpawnGroup, Pool<SpawnSettings.SpawnEntry>>)Stream.of(SpawnGroup.values())
-			.collect(ImmutableMap.toImmutableMap(spawnGroup -> spawnGroup, spawnGroup -> field_30982)),
+			.collect(ImmutableMap.toImmutableMap(spawnGroup -> spawnGroup, spawnGroup -> EMPTY_ENTRY_POOL)),
 		ImmutableMap.of(),
 		false
 	);
@@ -68,7 +68,7 @@ public class SpawnSettings {
 	}
 
 	public Pool<SpawnSettings.SpawnEntry> getSpawnEntries(SpawnGroup spawnGroup) {
-		return (Pool<SpawnSettings.SpawnEntry>)this.spawners.getOrDefault(spawnGroup, field_30982);
+		return (Pool<SpawnSettings.SpawnEntry>)this.spawners.getOrDefault(spawnGroup, EMPTY_ENTRY_POOL);
 	}
 
 	@Nullable
@@ -179,11 +179,11 @@ public class SpawnSettings {
 			this(type, Weight.of(weight), minGroupSize, maxGroupSize);
 		}
 
-		public SpawnEntry(EntityType<?> entityType, Weight weight, int i, int j) {
+		public SpawnEntry(EntityType<?> type, Weight weight, int minGroupSize, int maxGroupSize) {
 			super(weight);
-			this.type = entityType.getSpawnGroup() == SpawnGroup.MISC ? EntityType.PIG : entityType;
-			this.minGroupSize = i;
-			this.maxGroupSize = j;
+			this.type = type.getSpawnGroup() == SpawnGroup.MISC ? EntityType.PIG : type;
+			this.minGroupSize = minGroupSize;
+			this.maxGroupSize = maxGroupSize;
 		}
 
 		public String toString() {

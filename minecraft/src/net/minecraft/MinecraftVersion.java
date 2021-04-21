@@ -29,9 +29,9 @@ public class MinecraftVersion implements GameVersion {
 
 	private MinecraftVersion() {
 		this.id = UUID.randomUUID().toString().replaceAll("-", "");
-		this.name = "21w15a";
+		this.name = "21w16a";
 		this.stable = false;
-		this.worldVersion = 2709;
+		this.worldVersion = 2711;
 		this.protocolVersion = SharedConstants.getProtocolVersion();
 		this.resourcePackVersion = 7;
 		this.dataPackVersion = 7;
@@ -39,17 +39,17 @@ public class MinecraftVersion implements GameVersion {
 		this.releaseTarget = "1.17";
 	}
 
-	private MinecraftVersion(JsonObject jsonObject) {
-		this.id = JsonHelper.getString(jsonObject, "id");
-		this.name = JsonHelper.getString(jsonObject, "name");
-		this.releaseTarget = JsonHelper.getString(jsonObject, "release_target");
-		this.stable = JsonHelper.getBoolean(jsonObject, "stable");
-		this.worldVersion = JsonHelper.getInt(jsonObject, "world_version");
-		this.protocolVersion = JsonHelper.getInt(jsonObject, "protocol_version");
-		JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "pack_version");
-		this.resourcePackVersion = JsonHelper.getInt(jsonObject2, "resource");
-		this.dataPackVersion = JsonHelper.getInt(jsonObject2, "data");
-		this.buildTime = Date.from(ZonedDateTime.parse(JsonHelper.getString(jsonObject, "build_time")).toInstant());
+	private MinecraftVersion(JsonObject json) {
+		this.id = JsonHelper.getString(json, "id");
+		this.name = JsonHelper.getString(json, "name");
+		this.releaseTarget = JsonHelper.getString(json, "release_target");
+		this.stable = JsonHelper.getBoolean(json, "stable");
+		this.worldVersion = JsonHelper.getInt(json, "world_version");
+		this.protocolVersion = JsonHelper.getInt(json, "protocol_version");
+		JsonObject jsonObject = JsonHelper.getObject(json, "pack_version");
+		this.resourcePackVersion = JsonHelper.getInt(jsonObject, "resource");
+		this.dataPackVersion = JsonHelper.getInt(jsonObject, "data");
+		this.buildTime = Date.from(ZonedDateTime.parse(JsonHelper.getString(json, "build_time")).toInstant());
 	}
 
 	public static GameVersion create() {

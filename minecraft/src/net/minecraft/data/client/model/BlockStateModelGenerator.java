@@ -3310,6 +3310,14 @@ public class BlockStateModelGenerator {
 		this.registerParentedItemModel(Blocks.INFESTED_STONE, identifier);
 	}
 
+	private void method_36440() {
+		Identifier identifier = ModelIds.getBlockModelId(Blocks.DEEPSLATE);
+		Identifier identifier2 = ModelIds.getBlockSubModelId(Blocks.DEEPSLATE, "_mirrored");
+		this.blockStateCollector
+			.accept(createBlockStateWithTwoModelAndRandomInversion(Blocks.INFESTED_DEEPSLATE, identifier, identifier2).coordinate(createAxisRotatedVariantMap()));
+		this.registerParentedItemModel(Blocks.INFESTED_DEEPSLATE, identifier);
+	}
+
 	private void registerRoots(Block root, Block pottedRoot) {
 		this.registerTintableCross(root, BlockStateModelGenerator.TintType.NOT_TINTED);
 		Texture texture = Texture.plant(Texture.getSubId(root, "_pot"));
@@ -4006,7 +4014,7 @@ public class BlockStateModelGenerator {
 		this.registerInfested(Blocks.MOSSY_STONE_BRICKS, Blocks.INFESTED_MOSSY_STONE_BRICKS);
 		this.registerInfestedStone();
 		this.registerInfested(Blocks.STONE_BRICKS, Blocks.INFESTED_STONE_BRICKS);
-		this.registerInfested(Blocks.DEEPSLATE, Blocks.INFESTED_DEEPSLATE);
+		this.method_36440();
 		SpawnEggItem.getAll().forEach(spawnEggItem -> this.registerParentedItemModel(spawnEggItem, ModelIds.getMinecraftNamespacedItem("template_spawn_egg")));
 	}
 

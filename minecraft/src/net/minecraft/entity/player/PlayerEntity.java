@@ -250,7 +250,8 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.updateCapeAngles();
 		if (!this.world.isClient) {
 			this.hungerManager.update(this);
-			this.incrementStat(Stats.PLAY_ONE_MINUTE);
+			this.incrementStat(Stats.PLAY_TIME);
+			this.incrementStat(Stats.TOTAL_WORLD_TIME);
 			if (this.isAlive()) {
 				this.incrementStat(Stats.TIME_SINCE_DEATH);
 			}

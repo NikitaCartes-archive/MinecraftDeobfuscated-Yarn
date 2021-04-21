@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import net.minecraft.class_6350;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -33,7 +34,7 @@ public class ConfiguredCarver<WC extends CarverConfig> {
 		return this.carver.shouldCarve(this.config, random);
 	}
 
-	public boolean carve(CarverContext context, Chunk chunk, Function<BlockPos, Biome> posToBiome, Random random, int chunkX, ChunkPos pos, BitSet carvingMask) {
-		return this.carver.carve(context, this.config, chunk, posToBiome, random, chunkX, pos, carvingMask);
+	public boolean carve(CarverContext context, Chunk chunk, Function<BlockPos, Biome> posToBiome, Random random, class_6350 arg, ChunkPos pos, BitSet carvingMask) {
+		return this.carver.carve(context, this.config, chunk, posToBiome, random, arg, pos, carvingMask);
 	}
 }

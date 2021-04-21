@@ -64,7 +64,7 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 					Direction direction = Direction.Type.HORIZONTAL.random(random);
 					BlockPos blockPos = pos.offset(direction);
 					BlockState blockState = world.getBlockState(blockPos.down());
-					if (world.getBlockState(blockPos).isAir() && (blockState.isOf(Blocks.FARMLAND) || blockState.isIn(BlockTags.DIRT) || blockState.isOf(Blocks.GRASS_BLOCK))) {
+					if (world.getBlockState(blockPos).isAir() && (blockState.isOf(Blocks.FARMLAND) || blockState.isIn(BlockTags.DIRT))) {
 						world.setBlockState(blockPos, this.gourdBlock.getDefaultState());
 						world.setBlockState(pos, this.gourdBlock.getAttachedStem().getDefaultState().with(HorizontalFacingBlock.FACING, direction));
 					}

@@ -15,9 +15,9 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Formatting;
 
 public class Texts {
-	public static final String field_33536 = ", ";
-	public static final Text field_33537 = new LiteralText(", ").formatted(Formatting.GRAY);
-	public static final Text field_33538 = new LiteralText(", ");
+	public static final String DEFAULT_SEPARATOR = ", ";
+	public static final Text GRAY_DEFAULT_SEPARATOR_TEXT = new LiteralText(", ").formatted(Formatting.GRAY);
+	public static final Text DEFAULT_SEPARATOR_TEXT = new LiteralText(", ");
 
 	public static MutableText setStyleIfAbsent(MutableText text, Style style) {
 		if (style.isEmpty()) {
@@ -32,8 +32,8 @@ public class Texts {
 		}
 	}
 
-	public static Optional<MutableText> method_36330(@Nullable ServerCommandSource serverCommandSource, Optional<Text> optional, @Nullable Entity entity, int i) throws CommandSyntaxException {
-		return optional.isPresent() ? Optional.of(parse(serverCommandSource, (Text)optional.get(), entity, i)) : Optional.empty();
+	public static Optional<MutableText> parse(@Nullable ServerCommandSource source, Optional<Text> text, @Nullable Entity sender, int depth) throws CommandSyntaxException {
+		return text.isPresent() ? Optional.of(parse(source, (Text)text.get(), sender, depth)) : Optional.empty();
 	}
 
 	public static MutableText parse(@Nullable ServerCommandSource source, Text text, @Nullable Entity sender, int depth) throws CommandSyntaxException {
@@ -88,28 +88,28 @@ public class Texts {
 	}
 
 	public static <T> Text join(Collection<T> elements, Function<T, Text> transformer) {
-		return method_36332(elements, field_33537, transformer);
+		return join(elements, GRAY_DEFAULT_SEPARATOR_TEXT, transformer);
 	}
 
-	public static <T> MutableText method_36331(Collection<T> collection, Optional<? extends Text> optional, Function<T, Text> function) {
-		return method_36332(collection, DataFixUtils.orElse(optional, field_33537), function);
+	public static <T> MutableText join(Collection<T> elements, Optional<? extends Text> separator, Function<T, Text> transformer) {
+		return join(elements, DataFixUtils.orElse(separator, GRAY_DEFAULT_SEPARATOR_TEXT), transformer);
 	}
 
-	public static <T> MutableText method_36332(Collection<T> collection, Text text, Function<T, Text> function) {
-		if (collection.isEmpty()) {
+	public static <T> MutableText join(Collection<T> elements, Text separator, Function<T, Text> transformer) {
+		if (elements.isEmpty()) {
 			return new LiteralText("");
-		} else if (collection.size() == 1) {
-			return ((Text)function.apply(collection.iterator().next())).shallowCopy();
+		} else if (elements.size() == 1) {
+			return ((Text)transformer.apply(elements.iterator().next())).shallowCopy();
 		} else {
 			MutableText mutableText = new LiteralText("");
 			boolean bl = true;
 
-			for (T object : collection) {
+			for (T object : elements) {
 				if (!bl) {
-					mutableText.append(text);
+					mutableText.append(separator);
 				}
 
-				mutableText.append((Text)function.apply(object));
+				mutableText.append((Text)transformer.apply(object));
 				bl = false;
 			}
 

@@ -158,6 +158,17 @@ public class Camera {
 		return this.thirdPerson;
 	}
 
+	public Camera.class_6355 method_36425() {
+		MinecraftClient minecraftClient = MinecraftClient.getInstance();
+		double d = (double)minecraftClient.getWindow().getFramebufferWidth() / (double)minecraftClient.getWindow().getFramebufferHeight();
+		double e = Math.tan(minecraftClient.options.fov * (float) (Math.PI / 180.0) / 2.0) * 0.05F;
+		double f = e * d;
+		Vec3d vec3d = new Vec3d(this.horizontalPlane).multiply(0.05F);
+		Vec3d vec3d2 = new Vec3d(this.diagonalPlane).multiply(f);
+		Vec3d vec3d3 = new Vec3d(this.verticalPlane).multiply(e);
+		return new Camera.class_6355(vec3d, vec3d2, vec3d3);
+	}
+
 	public CameraSubmersionType getSubmersionType() {
 		if (!this.ready) {
 			return CameraSubmersionType.NONE;
@@ -166,24 +177,14 @@ public class Camera {
 			if (fluidState.isIn(FluidTags.WATER) && this.pos.y < (double)((float)this.blockPos.getY() + fluidState.getHeight(this.area, this.blockPos))) {
 				return CameraSubmersionType.WATER;
 			} else {
-				MinecraftClient minecraftClient = MinecraftClient.getInstance();
-				double d = (double)minecraftClient.getWindow().getFramebufferWidth() / (double)minecraftClient.getWindow().getFramebufferHeight();
-				double e = Math.tan(minecraftClient.options.fov * (float) (Math.PI / 180.0) / 2.0) * 0.05F;
-				double f = e * d;
-				Vec3d vec3d = new Vec3d(this.horizontalPlane).multiply(0.05F);
-				Vec3d vec3d2 = new Vec3d(this.diagonalPlane).multiply(f);
-				Vec3d vec3d3 = new Vec3d(this.verticalPlane).multiply(e);
-				Vec3d vec3d4 = vec3d.add(vec3d3).add(vec3d2);
-				Vec3d vec3d5 = vec3d.add(vec3d3).subtract(vec3d2);
-				Vec3d vec3d6 = vec3d.subtract(vec3d3).add(vec3d2);
-				Vec3d vec3d7 = vec3d.subtract(vec3d3).subtract(vec3d2);
+				Camera.class_6355 lv = this.method_36425();
 
-				for (Vec3d vec3d8 : Arrays.asList(vec3d, vec3d4, vec3d5, vec3d6, vec3d7)) {
-					Vec3d vec3d9 = this.pos.add(vec3d8);
-					BlockPos blockPos = new BlockPos(vec3d9);
+				for (Vec3d vec3d : Arrays.asList(lv.field_33622, lv.method_36426(), lv.method_36429(), lv.method_36430(), lv.method_36431())) {
+					Vec3d vec3d2 = this.pos.add(vec3d);
+					BlockPos blockPos = new BlockPos(vec3d2);
 					FluidState fluidState2 = this.area.getFluidState(blockPos);
 					if (fluidState2.isIn(FluidTags.LAVA)) {
-						if (vec3d9.y <= (double)(fluidState2.getHeight(this.area, blockPos) + (float)blockPos.getY())) {
+						if (vec3d2.y <= (double)(fluidState2.getHeight(this.area, blockPos) + (float)blockPos.getY())) {
 							return CameraSubmersionType.LAVA;
 						}
 					} else {
@@ -215,5 +216,38 @@ public class Camera {
 		this.area = null;
 		this.focusedEntity = null;
 		this.ready = false;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class class_6355 {
+		private final Vec3d field_33622;
+		private final Vec3d field_33623;
+		private final Vec3d field_33624;
+
+		private class_6355(Vec3d vec3d, Vec3d vec3d2, Vec3d vec3d3) {
+			this.field_33622 = vec3d;
+			this.field_33623 = vec3d2;
+			this.field_33624 = vec3d3;
+		}
+
+		public Vec3d method_36426() {
+			return this.field_33622.add(this.field_33624).add(this.field_33623);
+		}
+
+		public Vec3d method_36429() {
+			return this.field_33622.add(this.field_33624).subtract(this.field_33623);
+		}
+
+		public Vec3d method_36430() {
+			return this.field_33622.subtract(this.field_33624).add(this.field_33623);
+		}
+
+		public Vec3d method_36431() {
+			return this.field_33622.subtract(this.field_33624).subtract(this.field_33623);
+		}
+
+		public Vec3d method_36427(float f, float g) {
+			return this.field_33622.add(this.field_33624.multiply((double)g)).subtract(this.field_33623.multiply((double)f));
+		}
 	}
 }

@@ -23,16 +23,14 @@ import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class ShapedRecipeJsonFactory implements CraftingRecipeJsonFactory {
-	private static final Logger LOGGER = LogManager.getLogger();
 	private final Item output;
 	private final int outputCount;
 	private final List<String> pattern = Lists.<String>newArrayList();
 	private final Map<Character, Ingredient> inputs = Maps.<Character, Ingredient>newLinkedHashMap();
 	private final Advancement.Task builder = Advancement.Task.create();
+	@Nullable
 	private String group;
 
 	public ShapedRecipeJsonFactory(ItemConvertible output, int outputCount) {
@@ -81,25 +79,17 @@ public class ShapedRecipeJsonFactory implements CraftingRecipeJsonFactory {
 		return this;
 	}
 
-	public ShapedRecipeJsonFactory group(String string) {
+	public ShapedRecipeJsonFactory group(@Nullable String string) {
 		this.group = string;
 		return this;
 	}
 
 	@Override
-	public void offerTo(Consumer<RecipeJsonProvider> exporter) {
-		this.offerTo(exporter, Registry.ITEM.getId(this.output));
+	public Item getOutputItem() {
+		return this.output;
 	}
 
-	public void offerTo(Consumer<RecipeJsonProvider> exporter, String recipeIdStr) {
-		Identifier identifier = Registry.ITEM.getId(this.output);
-		if (new Identifier(recipeIdStr).equals(identifier)) {
-			throw new IllegalStateException("Shaped Recipe " + recipeIdStr + " should remove its 'save' argument");
-		} else {
-			this.offerTo(exporter, new Identifier(recipeIdStr));
-		}
-	}
-
+	@Override
 	public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId) {
 		this.validate(recipeId);
 		this.builder
@@ -149,7 +139,7 @@ public class ShapedRecipeJsonFactory implements CraftingRecipeJsonFactory {
 		}
 	}
 
-	class ShapedRecipeJsonProvider implements RecipeJsonProvider {
+	static class ShapedRecipeJsonProvider implements RecipeJsonProvider {
 		private final Identifier recipeId;
 		private final Item output;
 		private final int resultCount;
@@ -162,7 +152,7 @@ public class ShapedRecipeJsonFactory implements CraftingRecipeJsonFactory {
 		public ShapedRecipeJsonProvider(
 			Identifier recipeId,
 			Item output,
-			int outputCount,
+			int resultCount,
 			String group,
 			List<String> pattern,
 			Map<Character, Ingredient> inputs,
@@ -171,7 +161,7 @@ public class ShapedRecipeJsonFactory implements CraftingRecipeJsonFactory {
 		) {
 			this.recipeId = recipeId;
 			this.output = output;
-			this.resultCount = outputCount;
+			this.resultCount = resultCount;
 			this.group = group;
 			this.pattern = pattern;
 			this.inputs = inputs;

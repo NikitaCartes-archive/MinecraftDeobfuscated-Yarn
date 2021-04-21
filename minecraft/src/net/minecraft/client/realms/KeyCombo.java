@@ -19,8 +19,8 @@ public class KeyCombo {
 		}
 	}
 
-	public KeyCombo(char[] cs) {
-		this(cs, () -> {
+	public KeyCombo(char[] keys) {
+		this(keys, () -> {
 		});
 	}
 

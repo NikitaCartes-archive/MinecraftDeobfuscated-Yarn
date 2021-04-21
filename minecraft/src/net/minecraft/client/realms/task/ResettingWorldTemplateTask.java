@@ -17,7 +17,7 @@ public class ResettingWorldTemplateTask extends ResettingWorldTask {
 	}
 
 	@Override
-	protected void method_32517(RealmsClient realmsClient, long l) throws RealmsServiceException {
-		realmsClient.resetWorldWithTemplate(l, this.template.id);
+	protected void resetWorld(RealmsClient client, long worldId) throws RealmsServiceException {
+		client.resetWorldWithTemplate(worldId, this.template.id);
 	}
 }

@@ -178,7 +178,7 @@ public class LoomScreenHandler extends ScreenHandler {
 					return ItemStack.EMPTY;
 				}
 
-				slot.onStackChanged(itemStack2, itemStack);
+				slot.onQuickTransfer(itemStack2, itemStack);
 			} else if (index != this.dyeSlot.id && index != this.bannerSlot.id && index != this.patternSlot.id) {
 				if (itemStack2.getItem() instanceof BannerItem) {
 					if (!this.insertItem(itemStack2, this.bannerSlot.id, this.bannerSlot.id + 1, false)) {

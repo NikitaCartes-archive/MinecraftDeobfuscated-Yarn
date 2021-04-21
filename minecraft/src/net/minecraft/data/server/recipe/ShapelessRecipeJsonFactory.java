@@ -18,15 +18,13 @@ import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class ShapelessRecipeJsonFactory implements CraftingRecipeJsonFactory {
-	private static final Logger LOGGER = LogManager.getLogger();
 	private final Item output;
 	private final int outputCount;
 	private final List<Ingredient> inputs = Lists.<Ingredient>newArrayList();
 	private final Advancement.Task builder = Advancement.Task.create();
+	@Nullable
 	private String group;
 
 	public ShapelessRecipeJsonFactory(ItemConvertible output, int outputCount) {
@@ -75,25 +73,17 @@ public class ShapelessRecipeJsonFactory implements CraftingRecipeJsonFactory {
 		return this;
 	}
 
-	public ShapelessRecipeJsonFactory group(String string) {
+	public ShapelessRecipeJsonFactory group(@Nullable String string) {
 		this.group = string;
 		return this;
 	}
 
 	@Override
-	public void offerTo(Consumer<RecipeJsonProvider> exporter) {
-		this.offerTo(exporter, Registry.ITEM.getId(this.output));
+	public Item getOutputItem() {
+		return this.output;
 	}
 
-	public void offerTo(Consumer<RecipeJsonProvider> exporter, String recipeIdStr) {
-		Identifier identifier = Registry.ITEM.getId(this.output);
-		if (new Identifier(recipeIdStr).equals(identifier)) {
-			throw new IllegalStateException("Shapeless Recipe " + recipeIdStr + " should remove its 'save' argument");
-		} else {
-			this.offerTo(exporter, new Identifier(recipeIdStr));
-		}
-	}
-
+	@Override
 	public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId) {
 		this.validate(recipeId);
 		this.builder

@@ -50,8 +50,7 @@ public class GiveCommand {
 		int i = item.getItem().getMaxCount();
 		int j = i * 100;
 		if (count > j) {
-			String string = item.getItem().getTranslationKey();
-			source.sendError(new TranslatableText("commands.give.failed.toomanyitems", j, string));
+			source.sendError(new TranslatableText("commands.give.failed.toomanyitems", j, item.createStack(count, false).toHoverableText()));
 			return 0;
 		} else {
 			for (ServerPlayerEntity serverPlayerEntity : targets) {

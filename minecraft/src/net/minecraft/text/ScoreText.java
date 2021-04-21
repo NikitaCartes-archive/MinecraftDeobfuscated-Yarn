@@ -15,7 +15,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 
 public class ScoreText extends BaseText implements ParsableText {
-	private static final String field_33290 = "*";
+	private static final String SENDER_PLACEHOLDER = "*";
 	private final String name;
 	@Nullable
 	private final EntitySelector selector;

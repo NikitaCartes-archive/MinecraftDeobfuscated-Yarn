@@ -277,7 +277,7 @@ public class CommandSuggestor {
 
 		for (Entry<CommandNode<CommandSource>, String> entry : map.entrySet()) {
 			if (!(entry.getKey() instanceof LiteralCommandNode)) {
-				list.add(OrderedText.styledString((String)entry.getValue(), style));
+				list.add(OrderedText.styledForwardsVisitedString((String)entry.getValue(), style));
 				i = Math.max(i, this.textRenderer.getWidth((String)entry.getValue()));
 			}
 		}
@@ -290,7 +290,7 @@ public class CommandSuggestor {
 	}
 
 	private OrderedText provideRenderText(String original, int firstCharacterIndex) {
-		return this.parse != null ? highlight(this.parse, original, firstCharacterIndex) : OrderedText.styledString(original, Style.EMPTY);
+		return this.parse != null ? highlight(this.parse, original, firstCharacterIndex) : OrderedText.styledForwardsVisitedString(original, Style.EMPTY);
 	}
 
 	@Nullable
@@ -316,8 +316,8 @@ public class CommandSuggestor {
 
 			int l = Math.min(parsedArgument.getRange().getEnd() - firstCharacterIndex, original.length());
 			if (l > 0) {
-				list.add(OrderedText.styledString(original.substring(i, k), INFO_FORMATTING));
-				list.add(OrderedText.styledString(original.substring(k, l), (Style)HIGHLIGHT_FORMATTINGS.get(j)));
+				list.add(OrderedText.styledForwardsVisitedString(original.substring(i, k), INFO_FORMATTING));
+				list.add(OrderedText.styledForwardsVisitedString(original.substring(k, l), (Style)HIGHLIGHT_FORMATTINGS.get(j)));
 				i = l;
 			}
 		}
@@ -326,13 +326,13 @@ public class CommandSuggestor {
 			int m = Math.max(parse.getReader().getCursor() - firstCharacterIndex, 0);
 			if (m < original.length()) {
 				int n = Math.min(m + parse.getReader().getRemainingLength(), original.length());
-				list.add(OrderedText.styledString(original.substring(i, m), INFO_FORMATTING));
-				list.add(OrderedText.styledString(original.substring(m, n), ERROR_FORMATTING));
+				list.add(OrderedText.styledForwardsVisitedString(original.substring(i, m), INFO_FORMATTING));
+				list.add(OrderedText.styledForwardsVisitedString(original.substring(m, n), ERROR_FORMATTING));
 				i = n;
 			}
 		}
 
-		list.add(OrderedText.styledString(original.substring(i), INFO_FORMATTING));
+		list.add(OrderedText.styledForwardsVisitedString(original.substring(i), INFO_FORMATTING));
 		return OrderedText.concat(list);
 	}
 

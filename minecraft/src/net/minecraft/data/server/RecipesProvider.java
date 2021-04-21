@@ -19,6 +19,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import javax.annotation.Nullable;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.criterion.EnterBlockCriterion;
 import net.minecraft.advancement.criterion.ImpossibleCriterion;
@@ -491,11 +492,7 @@ public class RecipesProvider implements DataProvider {
 			.group("black_dye")
 			.criterion("has_ink_sac", conditionsFromItem(Items.INK_SAC))
 			.offerTo(exporter);
-		ShapelessRecipeJsonFactory.create(Items.BLACK_DYE)
-			.input(Blocks.WITHER_ROSE)
-			.group("black_dye")
-			.criterion("has_black_flower", conditionsFromItem(Blocks.WITHER_ROSE))
-			.offerTo(exporter, "black_dye_from_wither_rose");
+		method_36444(exporter, Items.BLACK_DYE, Blocks.WITHER_ROSE, "black_dye");
 		ShapelessRecipeJsonFactory.create(Items.BLAZE_POWDER, 2)
 			.input(Items.BLAZE_ROD)
 			.criterion("has_blaze_rod", conditionsFromItem(Items.BLAZE_ROD))
@@ -505,11 +502,7 @@ public class RecipesProvider implements DataProvider {
 			.group("blue_dye")
 			.criterion("has_lapis_lazuli", conditionsFromItem(Items.LAPIS_LAZULI))
 			.offerTo(exporter);
-		ShapelessRecipeJsonFactory.create(Items.BLUE_DYE)
-			.input(Blocks.CORNFLOWER)
-			.group("blue_dye")
-			.criterion("has_blue_flower", conditionsFromItem(Blocks.CORNFLOWER))
-			.offerTo(exporter, "blue_dye_from_cornflower");
+		method_36444(exporter, Items.BLUE_DYE, Blocks.CORNFLOWER, "blue_dye");
 		ShapedRecipeJsonFactory.create(Blocks.BLUE_ICE)
 			.input('#', Blocks.PACKED_ICE)
 			.pattern("###")
@@ -517,23 +510,12 @@ public class RecipesProvider implements DataProvider {
 			.pattern("###")
 			.criterion("has_packed_ice", conditionsFromItem(Blocks.PACKED_ICE))
 			.offerTo(exporter);
-		ShapedRecipeJsonFactory.create(Blocks.BONE_BLOCK)
-			.input('X', Items.BONE_MEAL)
-			.pattern("XXX")
-			.pattern("XXX")
-			.pattern("XXX")
-			.criterion("has_bonemeal", conditionsFromItem(Items.BONE_MEAL))
-			.offerTo(exporter);
 		ShapelessRecipeJsonFactory.create(Items.BONE_MEAL, 3)
 			.input(Items.BONE)
 			.group("bonemeal")
 			.criterion("has_bone", conditionsFromItem(Items.BONE))
 			.offerTo(exporter);
-		ShapelessRecipeJsonFactory.create(Items.BONE_MEAL, 9)
-			.input(Blocks.BONE_BLOCK)
-			.group("bonemeal")
-			.criterion("has_bone_block", conditionsFromItem(Blocks.BONE_BLOCK))
-			.offerTo(exporter, "bone_meal_from_bone_block");
+		method_36449(exporter, Items.BONE_MEAL, Items.BONE_BLOCK, "bone_meal_from_bone_block", "bonemeal");
 		ShapelessRecipeJsonFactory.create(Items.BOOK)
 			.input(Items.PAPER, 3)
 			.input(Items.LEATHER)
@@ -677,17 +659,7 @@ public class RecipesProvider implements DataProvider {
 			.pattern(" # ")
 			.criterion("has_redstone", conditionsFromItem(Items.REDSTONE))
 			.offerTo(exporter);
-		ShapelessRecipeJsonFactory.create(Items.COAL, 9)
-			.input(Blocks.COAL_BLOCK)
-			.criterion("has_coal_block", conditionsFromItem(Blocks.COAL_BLOCK))
-			.offerTo(exporter);
-		ShapedRecipeJsonFactory.create(Blocks.COAL_BLOCK)
-			.input('#', Items.COAL)
-			.pattern("###")
-			.pattern("###")
-			.pattern("###")
-			.criterion("has_coal", conditionsFromItem(Items.COAL))
-			.offerTo(exporter);
+		offerReversibleCompactingRecipes(exporter, Items.COAL, Items.COAL_BLOCK);
 		ShapedRecipeJsonFactory.create(Blocks.COARSE_DIRT, 4)
 			.input('D', Blocks.DIRT)
 			.input('G', Blocks.GRAVEL)
@@ -819,10 +791,6 @@ public class RecipesProvider implements DataProvider {
 			.pattern("XRX")
 			.criterion("has_rail", conditionsFromItem(Blocks.RAIL))
 			.offerTo(exporter);
-		ShapelessRecipeJsonFactory.create(Items.DIAMOND, 9)
-			.input(Blocks.DIAMOND_BLOCK)
-			.criterion("has_diamond_block", conditionsFromItem(Blocks.DIAMOND_BLOCK))
-			.offerTo(exporter);
 		ShapedRecipeJsonFactory.create(Items.DIAMOND_AXE)
 			.input('#', Items.STICK)
 			.input('X', Items.DIAMOND)
@@ -831,13 +799,7 @@ public class RecipesProvider implements DataProvider {
 			.pattern(" #")
 			.criterion("has_diamond", conditionsFromItem(Items.DIAMOND))
 			.offerTo(exporter);
-		ShapedRecipeJsonFactory.create(Blocks.DIAMOND_BLOCK)
-			.input('#', Items.DIAMOND)
-			.pattern("###")
-			.pattern("###")
-			.pattern("###")
-			.criterion("has_diamond", conditionsFromItem(Items.DIAMOND))
-			.offerTo(exporter);
+		offerReversibleCompactingRecipes(exporter, Items.DIAMOND, Items.DIAMOND_BLOCK);
 		ShapedRecipeJsonFactory.create(Items.DIAMOND_BOOTS)
 			.input('X', Items.DIAMOND)
 			.pattern("X X")
@@ -927,17 +889,7 @@ public class RecipesProvider implements DataProvider {
 			.pattern("#R#")
 			.criterion("has_redstone", conditionsFromItem(Items.REDSTONE))
 			.offerTo(exporter);
-		ShapelessRecipeJsonFactory.create(Items.EMERALD, 9)
-			.input(Blocks.EMERALD_BLOCK)
-			.criterion("has_emerald_block", conditionsFromItem(Blocks.EMERALD_BLOCK))
-			.offerTo(exporter);
-		ShapedRecipeJsonFactory.create(Blocks.EMERALD_BLOCK)
-			.input('#', Items.EMERALD)
-			.pattern("###")
-			.pattern("###")
-			.pattern("###")
-			.criterion("has_emerald", conditionsFromItem(Items.EMERALD))
-			.offerTo(exporter);
+		offerReversibleCompactingRecipes(exporter, Items.EMERALD, Items.EMERALD_BLOCK);
 		ShapedRecipeJsonFactory.create(Blocks.ENCHANTING_TABLE)
 			.input('B', Items.BOOK)
 			.input('#', Blocks.OBSIDIAN)
@@ -1148,30 +1100,8 @@ public class RecipesProvider implements DataProvider {
 			.pattern("#")
 			.criterion("has_gold_ingot", conditionsFromItem(Items.GOLD_INGOT))
 			.offerTo(exporter);
-		ShapedRecipeJsonFactory.create(Blocks.GOLD_BLOCK)
-			.input('#', Items.GOLD_INGOT)
-			.pattern("###")
-			.pattern("###")
-			.pattern("###")
-			.criterion("has_gold_ingot", conditionsFromItem(Items.GOLD_INGOT))
-			.offerTo(exporter);
-		ShapelessRecipeJsonFactory.create(Items.GOLD_INGOT, 9)
-			.input(Blocks.GOLD_BLOCK)
-			.group("gold_ingot")
-			.criterion("has_gold_block", conditionsFromItem(Blocks.GOLD_BLOCK))
-			.offerTo(exporter, "gold_ingot_from_gold_block");
-		ShapedRecipeJsonFactory.create(Items.GOLD_INGOT)
-			.input('#', Items.GOLD_NUGGET)
-			.pattern("###")
-			.pattern("###")
-			.pattern("###")
-			.group("gold_ingot")
-			.criterion("has_gold_nugget", conditionsFromItem(Items.GOLD_NUGGET))
-			.offerTo(exporter, "gold_ingot_from_nuggets");
-		ShapelessRecipeJsonFactory.create(Items.GOLD_NUGGET, 9)
-			.input(Items.GOLD_INGOT)
-			.criterion("has_gold_ingot", conditionsFromItem(Items.GOLD_INGOT))
-			.offerTo(exporter);
+		method_36449(exporter, Items.GOLD_INGOT, Items.GOLD_BLOCK, "gold_ingot_from_gold_block", "gold_ingot");
+		method_36446(exporter, Items.GOLD_NUGGET, Items.GOLD_INGOT, "gold_ingot_from_nuggets", "gold_ingot");
 		ShapelessRecipeJsonFactory.create(Blocks.GRANITE)
 			.input(Blocks.DIORITE)
 			.input(Items.QUARTZ)
@@ -1237,13 +1167,6 @@ public class RecipesProvider implements DataProvider {
 			.pattern("###")
 			.criterion("has_iron_ingot", conditionsFromItem(Items.IRON_INGOT))
 			.offerTo(exporter);
-		ShapedRecipeJsonFactory.create(Blocks.IRON_BLOCK)
-			.input('#', Items.IRON_INGOT)
-			.pattern("###")
-			.pattern("###")
-			.pattern("###")
-			.criterion("has_iron_ingot", conditionsFromItem(Items.IRON_INGOT))
-			.offerTo(exporter);
 		ShapedRecipeJsonFactory.create(Items.IRON_BOOTS)
 			.input('X', Items.IRON_INGOT)
 			.pattern("X X")
@@ -1274,28 +1197,13 @@ public class RecipesProvider implements DataProvider {
 			.pattern(" #")
 			.criterion("has_iron_ingot", conditionsFromItem(Items.IRON_INGOT))
 			.offerTo(exporter);
-		ShapelessRecipeJsonFactory.create(Items.IRON_INGOT, 9)
-			.input(Blocks.IRON_BLOCK)
-			.group("iron_ingot")
-			.criterion("has_iron_block", conditionsFromItem(Blocks.IRON_BLOCK))
-			.offerTo(exporter, "iron_ingot_from_iron_block");
-		ShapedRecipeJsonFactory.create(Items.IRON_INGOT)
-			.input('#', Items.IRON_NUGGET)
-			.pattern("###")
-			.pattern("###")
-			.pattern("###")
-			.group("iron_ingot")
-			.criterion("has_iron_nugget", conditionsFromItem(Items.IRON_NUGGET))
-			.offerTo(exporter, "iron_ingot_from_nuggets");
+		method_36449(exporter, Items.IRON_INGOT, Items.IRON_BLOCK, "iron_ingot_from_iron_block", "iron_ingot");
+		method_36446(exporter, Items.IRON_NUGGET, Items.IRON_INGOT, "iron_ingot_from_nuggets", "iron_ingot");
 		ShapedRecipeJsonFactory.create(Items.IRON_LEGGINGS)
 			.input('X', Items.IRON_INGOT)
 			.pattern("XXX")
 			.pattern("X X")
 			.pattern("X X")
-			.criterion("has_iron_ingot", conditionsFromItem(Items.IRON_INGOT))
-			.offerTo(exporter);
-		ShapelessRecipeJsonFactory.create(Items.IRON_NUGGET, 9)
-			.input(Items.IRON_INGOT)
 			.criterion("has_iron_ingot", conditionsFromItem(Items.IRON_INGOT))
 			.offerTo(exporter);
 		ShapedRecipeJsonFactory.create(Items.IRON_PICKAXE)
@@ -1351,17 +1259,7 @@ public class RecipesProvider implements DataProvider {
 			.pattern("# #")
 			.criterion("has_stick", conditionsFromItem(Items.STICK))
 			.offerTo(exporter);
-		ShapedRecipeJsonFactory.create(Blocks.LAPIS_BLOCK)
-			.input('#', Items.LAPIS_LAZULI)
-			.pattern("###")
-			.pattern("###")
-			.pattern("###")
-			.criterion("has_lapis", conditionsFromItem(Items.LAPIS_LAZULI))
-			.offerTo(exporter);
-		ShapelessRecipeJsonFactory.create(Items.LAPIS_LAZULI, 9)
-			.input(Blocks.LAPIS_BLOCK)
-			.criterion("has_lapis_block", conditionsFromItem(Blocks.LAPIS_BLOCK))
-			.offerTo(exporter);
+		offerReversibleCompactingRecipes(exporter, Items.LAPIS_LAZULI, Items.LAPIS_BLOCK);
 		ShapedRecipeJsonFactory.create(Items.LEAD, 2)
 			.input('~', Items.STRING)
 			.input('O', Items.SLIME_BALL)
@@ -1424,11 +1322,7 @@ public class RecipesProvider implements DataProvider {
 			.pattern("#")
 			.criterion("has_cobblestone", conditionsFromItem(Blocks.COBBLESTONE))
 			.offerTo(exporter);
-		ShapelessRecipeJsonFactory.create(Items.LIGHT_BLUE_DYE)
-			.input(Blocks.BLUE_ORCHID)
-			.group("light_blue_dye")
-			.criterion("has_red_flower", conditionsFromItem(Blocks.BLUE_ORCHID))
-			.offerTo(exporter, "light_blue_dye_from_blue_orchid");
+		method_36444(exporter, Items.LIGHT_BLUE_DYE, Blocks.BLUE_ORCHID, "light_blue_dye");
 		ShapelessRecipeJsonFactory.create(Items.LIGHT_BLUE_DYE, 2)
 			.input(Items.BLUE_DYE)
 			.input(Items.WHITE_DYE)
@@ -1436,11 +1330,7 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_blue_dye", conditionsFromItem(Items.BLUE_DYE))
 			.criterion("has_white_dye", conditionsFromItem(Items.WHITE_DYE))
 			.offerTo(exporter, "light_blue_dye_from_blue_white_dye");
-		ShapelessRecipeJsonFactory.create(Items.LIGHT_GRAY_DYE)
-			.input(Blocks.AZURE_BLUET)
-			.group("light_gray_dye")
-			.criterion("has_red_flower", conditionsFromItem(Blocks.AZURE_BLUET))
-			.offerTo(exporter, "light_gray_dye_from_azure_bluet");
+		method_36444(exporter, Items.LIGHT_GRAY_DYE, Blocks.AZURE_BLUET, "light_gray_dye");
 		ShapelessRecipeJsonFactory.create(Items.LIGHT_GRAY_DYE, 2)
 			.input(Items.GRAY_DYE)
 			.input(Items.WHITE_DYE)
@@ -1455,16 +1345,8 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_white_dye", conditionsFromItem(Items.WHITE_DYE))
 			.criterion("has_black_dye", conditionsFromItem(Items.BLACK_DYE))
 			.offerTo(exporter, "light_gray_dye_from_black_white_dye");
-		ShapelessRecipeJsonFactory.create(Items.LIGHT_GRAY_DYE)
-			.input(Blocks.OXEYE_DAISY)
-			.group("light_gray_dye")
-			.criterion("has_red_flower", conditionsFromItem(Blocks.OXEYE_DAISY))
-			.offerTo(exporter, "light_gray_dye_from_oxeye_daisy");
-		ShapelessRecipeJsonFactory.create(Items.LIGHT_GRAY_DYE)
-			.input(Blocks.WHITE_TULIP)
-			.group("light_gray_dye")
-			.criterion("has_red_flower", conditionsFromItem(Blocks.WHITE_TULIP))
-			.offerTo(exporter, "light_gray_dye_from_white_tulip");
+		method_36444(exporter, Items.LIGHT_GRAY_DYE, Blocks.OXEYE_DAISY, "light_gray_dye");
+		method_36444(exporter, Items.LIGHT_GRAY_DYE, Blocks.WHITE_TULIP, "light_gray_dye");
 		createPressurePlateRecipe(exporter, Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE, Items.GOLD_INGOT);
 		ShapedRecipeJsonFactory.create(Blocks.LIGHTNING_ROD)
 			.input('#', Items.COPPER_INGOT)
@@ -1486,11 +1368,7 @@ public class RecipesProvider implements DataProvider {
 			.pattern("B")
 			.criterion("has_carved_pumpkin", conditionsFromItem(Blocks.CARVED_PUMPKIN))
 			.offerTo(exporter);
-		ShapelessRecipeJsonFactory.create(Items.MAGENTA_DYE)
-			.input(Blocks.ALLIUM)
-			.group("magenta_dye")
-			.criterion("has_red_flower", conditionsFromItem(Blocks.ALLIUM))
-			.offerTo(exporter, "magenta_dye_from_allium");
+		method_36444(exporter, Items.MAGENTA_DYE, Blocks.ALLIUM, "magenta_dye");
 		ShapelessRecipeJsonFactory.create(Items.MAGENTA_DYE, 4)
 			.input(Items.BLUE_DYE)
 			.input(Items.RED_DYE, 2)
@@ -1509,11 +1387,7 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_blue_dye", conditionsFromItem(Items.BLUE_DYE))
 			.criterion("has_red_dye", conditionsFromItem(Items.RED_DYE))
 			.offerTo(exporter, "magenta_dye_from_blue_red_pink");
-		ShapelessRecipeJsonFactory.create(Items.MAGENTA_DYE, 2)
-			.input(Blocks.LILAC)
-			.group("magenta_dye")
-			.criterion("has_double_plant", conditionsFromItem(Blocks.LILAC))
-			.offerTo(exporter, "magenta_dye_from_lilac");
+		method_36445(exporter, Items.MAGENTA_DYE, Blocks.LILAC, "magenta_dye", 2);
 		ShapelessRecipeJsonFactory.create(Items.MAGENTA_DYE, 2)
 			.input(Items.PURPLE_DYE)
 			.input(Items.PINK_DYE)
@@ -1613,11 +1487,7 @@ public class RecipesProvider implements DataProvider {
 			.pattern("###")
 			.criterion("has_quartz", conditionsFromItem(Items.QUARTZ))
 			.offerTo(exporter);
-		ShapelessRecipeJsonFactory.create(Items.ORANGE_DYE)
-			.input(Blocks.ORANGE_TULIP)
-			.group("orange_dye")
-			.criterion("has_red_flower", conditionsFromItem(Blocks.ORANGE_TULIP))
-			.offerTo(exporter, "orange_dye_from_orange_tulip");
+		method_36444(exporter, Items.ORANGE_DYE, Blocks.ORANGE_TULIP, "orange_dye");
 		ShapelessRecipeJsonFactory.create(Items.ORANGE_DYE, 2)
 			.input(Items.RED_DYE)
 			.input(Items.YELLOW_DYE)
@@ -1647,16 +1517,8 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_quartz_pillar", conditionsFromItem(Blocks.QUARTZ_PILLAR))
 			.offerTo(exporter);
 		ShapelessRecipeJsonFactory.create(Blocks.PACKED_ICE).input(Blocks.ICE, 9).criterion("has_ice", conditionsFromItem(Blocks.ICE)).offerTo(exporter);
-		ShapelessRecipeJsonFactory.create(Items.PINK_DYE, 2)
-			.input(Blocks.PEONY)
-			.group("pink_dye")
-			.criterion("has_double_plant", conditionsFromItem(Blocks.PEONY))
-			.offerTo(exporter, "pink_dye_from_peony");
-		ShapelessRecipeJsonFactory.create(Items.PINK_DYE)
-			.input(Blocks.PINK_TULIP)
-			.group("pink_dye")
-			.criterion("has_red_flower", conditionsFromItem(Blocks.PINK_TULIP))
-			.offerTo(exporter, "pink_dye_from_pink_tulip");
+		method_36445(exporter, Items.PINK_DYE, Blocks.PEONY, "pink_dye", 2);
+		method_36444(exporter, Items.PINK_DYE, Blocks.PINK_TULIP, "pink_dye");
 		ShapelessRecipeJsonFactory.create(Items.PINK_DYE, 2)
 			.input(Items.RED_DYE)
 			.input(Items.WHITE_DYE)
@@ -1761,7 +1623,7 @@ public class RecipesProvider implements DataProvider {
 			.input(Blocks.BROWN_MUSHROOM)
 			.group("rabbit_stew")
 			.criterion("has_cooked_rabbit", conditionsFromItem(Items.COOKED_RABBIT))
-			.offerTo(exporter, "rabbit_stew_from_brown_mushroom");
+			.offerTo(exporter, convertBetween(Items.RABBIT_STEW, Items.BROWN_MUSHROOM));
 		ShapelessRecipeJsonFactory.create(Items.RABBIT_STEW)
 			.input(Items.BAKED_POTATO)
 			.input(Items.COOKED_RABBIT)
@@ -1770,7 +1632,7 @@ public class RecipesProvider implements DataProvider {
 			.input(Blocks.RED_MUSHROOM)
 			.group("rabbit_stew")
 			.criterion("has_cooked_rabbit", conditionsFromItem(Items.COOKED_RABBIT))
-			.offerTo(exporter, "rabbit_stew_from_red_mushroom");
+			.offerTo(exporter, convertBetween(Items.RABBIT_STEW, Items.RED_MUSHROOM));
 		ShapedRecipeJsonFactory.create(Blocks.RAIL, 16)
 			.input('#', Items.STICK)
 			.input('X', Items.IRON_INGOT)
@@ -1779,17 +1641,7 @@ public class RecipesProvider implements DataProvider {
 			.pattern("X X")
 			.criterion("has_minecart", conditionsFromItem(Items.MINECART))
 			.offerTo(exporter);
-		ShapelessRecipeJsonFactory.create(Items.REDSTONE, 9)
-			.input(Blocks.REDSTONE_BLOCK)
-			.criterion("has_redstone_block", conditionsFromItem(Blocks.REDSTONE_BLOCK))
-			.offerTo(exporter);
-		ShapedRecipeJsonFactory.create(Blocks.REDSTONE_BLOCK)
-			.input('#', Items.REDSTONE)
-			.pattern("###")
-			.pattern("###")
-			.pattern("###")
-			.criterion("has_redstone", conditionsFromItem(Items.REDSTONE))
-			.offerTo(exporter);
+		offerReversibleCompactingRecipes(exporter, Items.REDSTONE, Items.REDSTONE_BLOCK);
 		ShapedRecipeJsonFactory.create(Blocks.REDSTONE_LAMP)
 			.input('R', Items.REDSTONE)
 			.input('G', Blocks.GLOWSTONE)
@@ -1805,21 +1657,9 @@ public class RecipesProvider implements DataProvider {
 			.pattern("#")
 			.criterion("has_redstone", conditionsFromItem(Items.REDSTONE))
 			.offerTo(exporter);
-		ShapelessRecipeJsonFactory.create(Items.RED_DYE)
-			.input(Items.BEETROOT)
-			.group("red_dye")
-			.criterion("has_beetroot", conditionsFromItem(Items.BEETROOT))
-			.offerTo(exporter, "red_dye_from_beetroot");
-		ShapelessRecipeJsonFactory.create(Items.RED_DYE)
-			.input(Blocks.POPPY)
-			.group("red_dye")
-			.criterion("has_red_flower", conditionsFromItem(Blocks.POPPY))
-			.offerTo(exporter, "red_dye_from_poppy");
-		ShapelessRecipeJsonFactory.create(Items.RED_DYE, 2)
-			.input(Blocks.ROSE_BUSH)
-			.group("red_dye")
-			.criterion("has_double_plant", conditionsFromItem(Blocks.ROSE_BUSH))
-			.offerTo(exporter, "red_dye_from_rose_bush");
+		method_36444(exporter, Items.RED_DYE, Items.BEETROOT, "red_dye");
+		method_36444(exporter, Items.RED_DYE, Blocks.POPPY, "red_dye");
+		method_36445(exporter, Items.RED_DYE, Blocks.ROSE_BUSH, "red_dye", 2);
 		ShapelessRecipeJsonFactory.create(Items.RED_DYE)
 			.input(Blocks.RED_TULIP)
 			.group("red_dye")
@@ -1892,17 +1732,7 @@ public class RecipesProvider implements DataProvider {
 			.pattern(" W ")
 			.criterion("has_iron_ingot", conditionsFromItem(Items.IRON_INGOT))
 			.offerTo(exporter);
-		ShapedRecipeJsonFactory.create(Blocks.SLIME_BLOCK)
-			.input('#', Items.SLIME_BALL)
-			.pattern("###")
-			.pattern("###")
-			.pattern("###")
-			.criterion("has_slime_ball", conditionsFromItem(Items.SLIME_BALL))
-			.offerTo(exporter);
-		ShapelessRecipeJsonFactory.create(Items.SLIME_BALL, 9)
-			.input(Blocks.SLIME_BLOCK)
-			.criterion("has_slime", conditionsFromItem(Blocks.SLIME_BLOCK))
-			.offerTo(exporter);
+		offerReversibleCompactingRecipes(exporter, Items.SLIME_BALL, Items.SLIME_BLOCK);
 		offerCutCopperRecipe(exporter, Blocks.CUT_RED_SANDSTONE, Blocks.RED_SANDSTONE);
 		offerCutCopperRecipe(exporter, Blocks.CUT_SANDSTONE, Blocks.SANDSTONE);
 		ShapedRecipeJsonFactory.create(Blocks.SNOW_BLOCK)
@@ -2029,17 +1859,13 @@ public class RecipesProvider implements DataProvider {
 			.pattern("##")
 			.pattern("##")
 			.criterion("has_string", conditionsFromItem(Items.STRING))
-			.offerTo(exporter, "white_wool_from_string");
-		ShapelessRecipeJsonFactory.create(Items.SUGAR)
-			.input(Blocks.SUGAR_CANE)
-			.group("sugar")
-			.criterion("has_reeds", conditionsFromItem(Blocks.SUGAR_CANE))
-			.offerTo(exporter, "sugar_from_sugar_cane");
+			.offerTo(exporter, convertBetween(Blocks.WHITE_WOOL, Items.STRING));
+		method_36444(exporter, Items.SUGAR, Blocks.SUGAR_CANE, "sugar");
 		ShapelessRecipeJsonFactory.create(Items.SUGAR, 3)
 			.input(Items.HONEY_BOTTLE)
 			.group("sugar")
 			.criterion("has_honey_bottle", conditionsFromItem(Items.HONEY_BOTTLE))
-			.offerTo(exporter, "sugar_from_honey_bottle");
+			.offerTo(exporter, convertBetween(Items.SUGAR, Items.HONEY_BOTTLE));
 		ShapedRecipeJsonFactory.create(Blocks.TARGET)
 			.input('H', Items.HAY_BLOCK)
 			.input('R', Items.REDSTONE)
@@ -2123,11 +1949,7 @@ public class RecipesProvider implements DataProvider {
 			.group("white_dye")
 			.criterion("has_bone_meal", conditionsFromItem(Items.BONE_MEAL))
 			.offerTo(exporter);
-		ShapelessRecipeJsonFactory.create(Items.WHITE_DYE)
-			.input(Blocks.LILY_OF_THE_VALLEY)
-			.group("white_dye")
-			.criterion("has_white_flower", conditionsFromItem(Blocks.LILY_OF_THE_VALLEY))
-			.offerTo(exporter, "white_dye_from_lily_of_the_valley");
+		method_36444(exporter, Items.WHITE_DYE, Blocks.LILY_OF_THE_VALLEY, "white_dye");
 		ShapedRecipeJsonFactory.create(Items.WOODEN_AXE)
 			.input('#', Items.STICK)
 			.input('X', ItemTags.PLANKS)
@@ -2174,24 +1996,9 @@ public class RecipesProvider implements DataProvider {
 			.input(Items.FEATHER)
 			.criterion("has_book", conditionsFromItem(Items.BOOK))
 			.offerTo(exporter);
-		ShapelessRecipeJsonFactory.create(Items.YELLOW_DYE)
-			.input(Blocks.DANDELION)
-			.group("yellow_dye")
-			.criterion("has_yellow_flower", conditionsFromItem(Blocks.DANDELION))
-			.offerTo(exporter, "yellow_dye_from_dandelion");
-		ShapelessRecipeJsonFactory.create(Items.YELLOW_DYE, 2)
-			.input(Blocks.SUNFLOWER)
-			.group("yellow_dye")
-			.criterion("has_double_plant", conditionsFromItem(Blocks.SUNFLOWER))
-			.offerTo(exporter, "yellow_dye_from_sunflower");
-		ShapelessRecipeJsonFactory.create(Items.DRIED_KELP, 9)
-			.input(Blocks.DRIED_KELP_BLOCK)
-			.criterion("has_dried_kelp_block", conditionsFromItem(Blocks.DRIED_KELP_BLOCK))
-			.offerTo(exporter);
-		ShapelessRecipeJsonFactory.create(Blocks.DRIED_KELP_BLOCK)
-			.input(Items.DRIED_KELP, 9)
-			.criterion("has_dried_kelp", conditionsFromItem(Items.DRIED_KELP))
-			.offerTo(exporter);
+		method_36444(exporter, Items.YELLOW_DYE, Blocks.DANDELION, "yellow_dye");
+		method_36445(exporter, Items.YELLOW_DYE, Blocks.SUNFLOWER, "yellow_dye", 2);
+		offerReversibleCompactingRecipes(exporter, Items.DRIED_KELP, Items.DRIED_KELP_BLOCK);
 		ShapedRecipeJsonFactory.create(Blocks.CONDUIT)
 			.input('#', Items.NAUTILUS_SHELL)
 			.input('X', Items.HEART_OF_THE_SEA)
@@ -2296,18 +2103,7 @@ public class RecipesProvider implements DataProvider {
 			.pattern("SSS")
 			.criterion("has_netherite_ingot", conditionsFromItem(Items.NETHERITE_INGOT))
 			.offerTo(exporter);
-		ShapedRecipeJsonFactory.create(Blocks.NETHERITE_BLOCK)
-			.input('#', Items.NETHERITE_INGOT)
-			.pattern("###")
-			.pattern("###")
-			.pattern("###")
-			.criterion("has_netherite_ingot", conditionsFromItem(Items.NETHERITE_INGOT))
-			.offerTo(exporter);
-		ShapelessRecipeJsonFactory.create(Items.NETHERITE_INGOT, 9)
-			.input(Blocks.NETHERITE_BLOCK)
-			.group("netherite_ingot")
-			.criterion("has_netherite_block", conditionsFromItem(Blocks.NETHERITE_BLOCK))
-			.offerTo(exporter, "netherite_ingot_from_netherite_block");
+		method_36449(exporter, Items.NETHERITE_INGOT, Items.NETHERITE_BLOCK, "netherite_ingot_from_netherite_block", "netherite_ingot");
 		ShapelessRecipeJsonFactory.create(Items.NETHERITE_INGOT)
 			.input(Items.NETHERITE_SCRAP, 4)
 			.input(Items.GOLD_INGOT, 4)
@@ -2397,7 +2193,7 @@ public class RecipesProvider implements DataProvider {
 			.offerTo(exporter);
 		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.KELP), Items.DRIED_KELP, 0.1F, 200)
 			.criterion("has_kelp", conditionsFromItem(Blocks.KELP))
-			.offerTo(exporter, "dried_kelp_from_smelting");
+			.offerTo(exporter, method_36451(Items.DRIED_KELP));
 		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Items.SALMON), Items.COOKED_SALMON, 0.35F, 200)
 			.criterion("has_salmon", conditionsFromItem(Items.SALMON))
 			.offerTo(exporter);
@@ -2424,9 +2220,9 @@ public class RecipesProvider implements DataProvider {
 		CookingRecipeJsonFactory.createSmelting(Ingredient.fromTag(ItemTags.SAND), Blocks.GLASS.asItem(), 0.1F, 200)
 			.criterion("has_sand", conditionsFromTag(ItemTags.SAND))
 			.offerTo(exporter);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.SEA_PICKLE.asItem()), Items.LIME_DYE, 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.SEA_PICKLE), Items.LIME_DYE, 0.1F, 200)
 			.criterion("has_sea_pickle", conditionsFromItem(Blocks.SEA_PICKLE))
-			.offerTo(exporter, "lime_dye_from_smelting");
+			.offerTo(exporter, method_36451(Items.LIME_DYE));
 		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.CACTUS.asItem()), Items.GREEN_DYE, 1.0F, 200)
 			.criterion("has_cactus", conditionsFromItem(Blocks.CACTUS))
 			.offerTo(exporter);
@@ -2457,7 +2253,7 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_golden_leggings", conditionsFromItem(Items.GOLDEN_LEGGINGS))
 			.criterion("has_golden_boots", conditionsFromItem(Items.GOLDEN_BOOTS))
 			.criterion("has_golden_horse_armor", conditionsFromItem(Items.GOLDEN_HORSE_ARMOR))
-			.offerTo(exporter, "gold_nugget_from_smelting");
+			.offerTo(exporter, method_36451(Items.GOLD_NUGGET));
 		CookingRecipeJsonFactory.createSmelting(
 				Ingredient.ofItems(
 					Items.IRON_PICKAXE,
@@ -2493,7 +2289,7 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_chainmail_chestplate", conditionsFromItem(Items.CHAINMAIL_CHESTPLATE))
 			.criterion("has_chainmail_leggings", conditionsFromItem(Items.CHAINMAIL_LEGGINGS))
 			.criterion("has_chainmail_boots", conditionsFromItem(Items.CHAINMAIL_BOOTS))
-			.offerTo(exporter, "iron_nugget_from_smelting");
+			.offerTo(exporter, method_36451(Items.IRON_NUGGET));
 		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.CLAY), Blocks.TERRACOTTA.asItem(), 0.35F, 200)
 			.criterion("has_clay_block", conditionsFromItem(Blocks.CLAY))
 			.offerTo(exporter);
@@ -2591,7 +2387,7 @@ public class RecipesProvider implements DataProvider {
 		offerBlasting(exporter, EMERALD_ORES, Items.EMERALD, 1.0F, 100);
 		CookingRecipeJsonFactory.createBlasting(Ingredient.ofItems(Blocks.NETHER_QUARTZ_ORE), Items.QUARTZ, 0.2F, 100)
 			.criterion("has_nether_quartz_ore", conditionsFromItem(Blocks.NETHER_QUARTZ_ORE))
-			.offerTo(exporter, "quartz_from_blasting");
+			.offerTo(exporter, method_36452(Items.QUARTZ));
 		CookingRecipeJsonFactory.createBlasting(
 				Ingredient.ofItems(
 					Items.GOLDEN_PICKAXE,
@@ -2619,7 +2415,7 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_golden_leggings", conditionsFromItem(Items.GOLDEN_LEGGINGS))
 			.criterion("has_golden_boots", conditionsFromItem(Items.GOLDEN_BOOTS))
 			.criterion("has_golden_horse_armor", conditionsFromItem(Items.GOLDEN_HORSE_ARMOR))
-			.offerTo(exporter, "gold_nugget_from_blasting");
+			.offerTo(exporter, method_36452(Items.GOLD_NUGGET));
 		CookingRecipeJsonFactory.createBlasting(
 				Ingredient.ofItems(
 					Items.IRON_PICKAXE,
@@ -2655,375 +2451,157 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_chainmail_chestplate", conditionsFromItem(Items.CHAINMAIL_CHESTPLATE))
 			.criterion("has_chainmail_leggings", conditionsFromItem(Items.CHAINMAIL_LEGGINGS))
 			.criterion("has_chainmail_boots", conditionsFromItem(Items.CHAINMAIL_BOOTS))
-			.offerTo(exporter, "iron_nugget_from_blasting");
+			.offerTo(exporter, method_36452(Items.IRON_NUGGET));
 		CookingRecipeJsonFactory.createBlasting(Ingredient.ofItems(Blocks.ANCIENT_DEBRIS), Items.NETHERITE_SCRAP, 2.0F, 100)
 			.criterion("has_ancient_debris", conditionsFromItem(Blocks.ANCIENT_DEBRIS))
-			.offerTo(exporter, "netherite_scrap_from_blasting");
+			.offerTo(exporter, method_36452(Items.NETHERITE_SCRAP));
 		generateCookingRecipes(exporter, "smoking", RecipeSerializer.SMOKING, 100);
 		generateCookingRecipes(exporter, "campfire_cooking", RecipeSerializer.CAMPFIRE_COOKING, 600);
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.STONE), Blocks.STONE_SLAB, 2)
-			.createStonecutting("has_stone", conditionsFromItem(Blocks.STONE))
-			.offerTo(exporter, "stone_slab_from_stone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.STONE), Blocks.STONE_STAIRS)
-			.createStonecutting("has_stone", conditionsFromItem(Blocks.STONE))
-			.offerTo(exporter, "stone_stairs_from_stone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.STONE), Blocks.STONE_BRICKS)
-			.createStonecutting("has_stone", conditionsFromItem(Blocks.STONE))
-			.offerTo(exporter, "stone_bricks_from_stone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.STONE), Blocks.STONE_BRICK_SLAB, 2)
-			.createStonecutting("has_stone", conditionsFromItem(Blocks.STONE))
-			.offerTo(exporter, "stone_brick_slab_from_stone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.STONE), Blocks.STONE_BRICK_STAIRS)
-			.createStonecutting("has_stone", conditionsFromItem(Blocks.STONE))
-			.offerTo(exporter, "stone_brick_stairs_from_stone_stonecutting");
+		offerRecipe(exporter, Blocks.STONE_SLAB, Blocks.STONE, 2);
+		offerRecipe(exporter, Blocks.STONE_STAIRS, Blocks.STONE);
+		offerRecipe(exporter, Blocks.STONE_BRICKS, Blocks.STONE);
+		offerRecipe(exporter, Blocks.STONE_BRICK_SLAB, Blocks.STONE, 2);
+		offerRecipe(exporter, Blocks.STONE_BRICK_STAIRS, Blocks.STONE);
 		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.STONE), Blocks.CHISELED_STONE_BRICKS)
-			.createStonecutting("has_stone", conditionsFromItem(Blocks.STONE))
+			.criterion("has_stone", conditionsFromItem(Blocks.STONE))
 			.offerTo(exporter, "chiseled_stone_bricks_stone_from_stonecutting");
 		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.STONE), Blocks.STONE_BRICK_WALL)
-			.createStonecutting("has_stone", conditionsFromItem(Blocks.STONE))
+			.criterion("has_stone", conditionsFromItem(Blocks.STONE))
 			.offerTo(exporter, "stone_brick_walls_from_stone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.SANDSTONE), Blocks.CUT_SANDSTONE)
-			.createStonecutting("has_sandstone", conditionsFromItem(Blocks.SANDSTONE))
-			.offerTo(exporter, "cut_sandstone_from_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.SANDSTONE), Blocks.SANDSTONE_SLAB, 2)
-			.createStonecutting("has_sandstone", conditionsFromItem(Blocks.SANDSTONE))
-			.offerTo(exporter, "sandstone_slab_from_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.SANDSTONE), Blocks.CUT_SANDSTONE_SLAB, 2)
-			.createStonecutting("has_sandstone", conditionsFromItem(Blocks.SANDSTONE))
-			.offerTo(exporter, "cut_sandstone_slab_from_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.CUT_SANDSTONE), Blocks.CUT_SANDSTONE_SLAB, 2)
-			.createStonecutting("has_cut_sandstone", conditionsFromItem(Blocks.SANDSTONE))
-			.offerTo(exporter, "cut_sandstone_slab_from_cut_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.SANDSTONE), Blocks.SANDSTONE_STAIRS)
-			.createStonecutting("has_sandstone", conditionsFromItem(Blocks.SANDSTONE))
-			.offerTo(exporter, "sandstone_stairs_from_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.SANDSTONE), Blocks.SANDSTONE_WALL)
-			.createStonecutting("has_sandstone", conditionsFromItem(Blocks.SANDSTONE))
-			.offerTo(exporter, "sandstone_wall_from_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.SANDSTONE), Blocks.CHISELED_SANDSTONE)
-			.createStonecutting("has_sandstone", conditionsFromItem(Blocks.SANDSTONE))
-			.offerTo(exporter, "chiseled_sandstone_from_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.RED_SANDSTONE), Blocks.CUT_RED_SANDSTONE)
-			.createStonecutting("has_red_sandstone", conditionsFromItem(Blocks.RED_SANDSTONE))
-			.offerTo(exporter, "cut_red_sandstone_from_red_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.RED_SANDSTONE), Blocks.RED_SANDSTONE_SLAB, 2)
-			.createStonecutting("has_red_sandstone", conditionsFromItem(Blocks.RED_SANDSTONE))
-			.offerTo(exporter, "red_sandstone_slab_from_red_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.RED_SANDSTONE), Blocks.CUT_RED_SANDSTONE_SLAB, 2)
-			.createStonecutting("has_red_sandstone", conditionsFromItem(Blocks.RED_SANDSTONE))
-			.offerTo(exporter, "cut_red_sandstone_slab_from_red_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.CUT_RED_SANDSTONE), Blocks.CUT_RED_SANDSTONE_SLAB, 2)
-			.createStonecutting("has_cut_red_sandstone", conditionsFromItem(Blocks.RED_SANDSTONE))
-			.offerTo(exporter, "cut_red_sandstone_slab_from_cut_red_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.RED_SANDSTONE), Blocks.RED_SANDSTONE_STAIRS)
-			.createStonecutting("has_red_sandstone", conditionsFromItem(Blocks.RED_SANDSTONE))
-			.offerTo(exporter, "red_sandstone_stairs_from_red_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.RED_SANDSTONE), Blocks.RED_SANDSTONE_WALL)
-			.createStonecutting("has_red_sandstone", conditionsFromItem(Blocks.RED_SANDSTONE))
-			.offerTo(exporter, "red_sandstone_wall_from_red_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.RED_SANDSTONE), Blocks.CHISELED_RED_SANDSTONE)
-			.createStonecutting("has_red_sandstone", conditionsFromItem(Blocks.RED_SANDSTONE))
-			.offerTo(exporter, "chiseled_red_sandstone_from_red_sandstone_stonecutting");
+		offerRecipe(exporter, Blocks.CUT_SANDSTONE, Blocks.SANDSTONE);
+		offerRecipe(exporter, Blocks.SANDSTONE_SLAB, Blocks.SANDSTONE, 2);
+		offerRecipe(exporter, Blocks.CUT_SANDSTONE_SLAB, Blocks.SANDSTONE, 2);
+		offerRecipe(exporter, Blocks.CUT_SANDSTONE_SLAB, Blocks.CUT_SANDSTONE, 2);
+		offerRecipe(exporter, Blocks.SANDSTONE_STAIRS, Blocks.SANDSTONE);
+		offerRecipe(exporter, Blocks.SANDSTONE_WALL, Blocks.SANDSTONE);
+		offerRecipe(exporter, Blocks.CHISELED_SANDSTONE, Blocks.SANDSTONE);
+		offerRecipe(exporter, Blocks.CUT_RED_SANDSTONE, Blocks.RED_SANDSTONE);
+		offerRecipe(exporter, Blocks.RED_SANDSTONE_SLAB, Blocks.RED_SANDSTONE, 2);
+		offerRecipe(exporter, Blocks.CUT_RED_SANDSTONE_SLAB, Blocks.RED_SANDSTONE, 2);
+		offerRecipe(exporter, Blocks.CUT_RED_SANDSTONE_SLAB, Blocks.CUT_RED_SANDSTONE, 2);
+		offerRecipe(exporter, Blocks.RED_SANDSTONE_STAIRS, Blocks.RED_SANDSTONE);
+		offerRecipe(exporter, Blocks.RED_SANDSTONE_WALL, Blocks.RED_SANDSTONE);
+		offerRecipe(exporter, Blocks.CHISELED_RED_SANDSTONE, Blocks.RED_SANDSTONE);
 		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.QUARTZ_BLOCK), Blocks.QUARTZ_SLAB, 2)
-			.createStonecutting("has_quartz_block", conditionsFromItem(Blocks.QUARTZ_BLOCK))
+			.criterion("has_quartz_block", conditionsFromItem(Blocks.QUARTZ_BLOCK))
 			.offerTo(exporter, "quartz_slab_from_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.QUARTZ_BLOCK), Blocks.QUARTZ_STAIRS)
-			.createStonecutting("has_quartz_block", conditionsFromItem(Blocks.QUARTZ_BLOCK))
-			.offerTo(exporter, "quartz_stairs_from_quartz_block_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.QUARTZ_BLOCK), Blocks.QUARTZ_PILLAR)
-			.createStonecutting("has_quartz_block", conditionsFromItem(Blocks.QUARTZ_BLOCK))
-			.offerTo(exporter, "quartz_pillar_from_quartz_block_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.QUARTZ_BLOCK), Blocks.CHISELED_QUARTZ_BLOCK)
-			.createStonecutting("has_quartz_block", conditionsFromItem(Blocks.QUARTZ_BLOCK))
-			.offerTo(exporter, "chiseled_quartz_block_from_quartz_block_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.QUARTZ_BLOCK), Blocks.QUARTZ_BRICKS)
-			.createStonecutting("has_quartz_block", conditionsFromItem(Blocks.QUARTZ_BLOCK))
-			.offerTo(exporter, "quartz_bricks_from_quartz_block_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.COBBLESTONE), Blocks.COBBLESTONE_STAIRS)
-			.createStonecutting("has_cobblestone", conditionsFromItem(Blocks.COBBLESTONE))
-			.offerTo(exporter, "cobblestone_stairs_from_cobblestone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.COBBLESTONE), Blocks.COBBLESTONE_SLAB, 2)
-			.createStonecutting("has_cobblestone", conditionsFromItem(Blocks.COBBLESTONE))
-			.offerTo(exporter, "cobblestone_slab_from_cobblestone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.COBBLESTONE), Blocks.COBBLESTONE_WALL)
-			.createStonecutting("has_cobblestone", conditionsFromItem(Blocks.COBBLESTONE))
-			.offerTo(exporter, "cobblestone_wall_from_cobblestone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.STONE_BRICKS), Blocks.STONE_BRICK_SLAB, 2)
-			.createStonecutting("has_stone_bricks", conditionsFromItem(Blocks.STONE_BRICKS))
-			.offerTo(exporter, "stone_brick_slab_from_stone_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.STONE_BRICKS), Blocks.STONE_BRICK_STAIRS)
-			.createStonecutting("has_stone_bricks", conditionsFromItem(Blocks.STONE_BRICKS))
-			.offerTo(exporter, "stone_brick_stairs_from_stone_bricks_stonecutting");
+		offerRecipe(exporter, Blocks.QUARTZ_STAIRS, Blocks.QUARTZ_BLOCK);
+		offerRecipe(exporter, Blocks.QUARTZ_PILLAR, Blocks.QUARTZ_BLOCK);
+		offerRecipe(exporter, Blocks.CHISELED_QUARTZ_BLOCK, Blocks.QUARTZ_BLOCK);
+		offerRecipe(exporter, Blocks.QUARTZ_BRICKS, Blocks.QUARTZ_BLOCK);
+		offerRecipe(exporter, Blocks.COBBLESTONE_STAIRS, Blocks.COBBLESTONE);
+		offerRecipe(exporter, Blocks.COBBLESTONE_SLAB, Blocks.COBBLESTONE, 2);
+		offerRecipe(exporter, Blocks.COBBLESTONE_WALL, Blocks.COBBLESTONE);
+		offerRecipe(exporter, Blocks.STONE_BRICK_SLAB, Blocks.STONE_BRICKS, 2);
+		offerRecipe(exporter, Blocks.STONE_BRICK_STAIRS, Blocks.STONE_BRICKS);
 		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.STONE_BRICKS), Blocks.STONE_BRICK_WALL)
-			.createStonecutting("has_stone_bricks", conditionsFromItem(Blocks.STONE_BRICKS))
+			.criterion("has_stone_bricks", conditionsFromItem(Blocks.STONE_BRICKS))
 			.offerTo(exporter, "stone_brick_wall_from_stone_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.STONE_BRICKS), Blocks.CHISELED_STONE_BRICKS)
-			.createStonecutting("has_stone_bricks", conditionsFromItem(Blocks.STONE_BRICKS))
-			.offerTo(exporter, "chiseled_stone_bricks_from_stone_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.BRICKS), Blocks.BRICK_SLAB, 2)
-			.createStonecutting("has_bricks", conditionsFromItem(Blocks.BRICKS))
-			.offerTo(exporter, "brick_slab_from_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.BRICKS), Blocks.BRICK_STAIRS)
-			.createStonecutting("has_bricks", conditionsFromItem(Blocks.BRICKS))
-			.offerTo(exporter, "brick_stairs_from_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.BRICKS), Blocks.BRICK_WALL)
-			.createStonecutting("has_bricks", conditionsFromItem(Blocks.BRICKS))
-			.offerTo(exporter, "brick_wall_from_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.NETHER_BRICKS), Blocks.NETHER_BRICK_SLAB, 2)
-			.createStonecutting("has_nether_bricks", conditionsFromItem(Blocks.NETHER_BRICKS))
-			.offerTo(exporter, "nether_brick_slab_from_nether_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.NETHER_BRICKS), Blocks.NETHER_BRICK_STAIRS)
-			.createStonecutting("has_nether_bricks", conditionsFromItem(Blocks.NETHER_BRICKS))
-			.offerTo(exporter, "nether_brick_stairs_from_nether_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.NETHER_BRICKS), Blocks.NETHER_BRICK_WALL)
-			.createStonecutting("has_nether_bricks", conditionsFromItem(Blocks.NETHER_BRICKS))
-			.offerTo(exporter, "nether_brick_wall_from_nether_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.NETHER_BRICKS), Blocks.CHISELED_NETHER_BRICKS)
-			.createStonecutting("has_nether_bricks", conditionsFromItem(Blocks.NETHER_BRICKS))
-			.offerTo(exporter, "chiseled_nether_bricks_from_nether_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.RED_NETHER_BRICKS), Blocks.RED_NETHER_BRICK_SLAB, 2)
-			.createStonecutting("has_nether_bricks", conditionsFromItem(Blocks.RED_NETHER_BRICKS))
-			.offerTo(exporter, "red_nether_brick_slab_from_red_nether_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.RED_NETHER_BRICKS), Blocks.RED_NETHER_BRICK_STAIRS)
-			.createStonecutting("has_nether_bricks", conditionsFromItem(Blocks.RED_NETHER_BRICKS))
-			.offerTo(exporter, "red_nether_brick_stairs_from_red_nether_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.RED_NETHER_BRICKS), Blocks.RED_NETHER_BRICK_WALL)
-			.createStonecutting("has_nether_bricks", conditionsFromItem(Blocks.RED_NETHER_BRICKS))
-			.offerTo(exporter, "red_nether_brick_wall_from_red_nether_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.PURPUR_BLOCK), Blocks.PURPUR_SLAB, 2)
-			.createStonecutting("has_purpur_block", conditionsFromItem(Blocks.PURPUR_BLOCK))
-			.offerTo(exporter, "purpur_slab_from_purpur_block_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.PURPUR_BLOCK), Blocks.PURPUR_STAIRS)
-			.createStonecutting("has_purpur_block", conditionsFromItem(Blocks.PURPUR_BLOCK))
-			.offerTo(exporter, "purpur_stairs_from_purpur_block_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.PURPUR_BLOCK), Blocks.PURPUR_PILLAR)
-			.createStonecutting("has_purpur_block", conditionsFromItem(Blocks.PURPUR_BLOCK))
-			.offerTo(exporter, "purpur_pillar_from_purpur_block_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.PRISMARINE), Blocks.PRISMARINE_SLAB, 2)
-			.createStonecutting("has_prismarine", conditionsFromItem(Blocks.PRISMARINE))
-			.offerTo(exporter, "prismarine_slab_from_prismarine_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.PRISMARINE), Blocks.PRISMARINE_STAIRS)
-			.createStonecutting("has_prismarine", conditionsFromItem(Blocks.PRISMARINE))
-			.offerTo(exporter, "prismarine_stairs_from_prismarine_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.PRISMARINE), Blocks.PRISMARINE_WALL)
-			.createStonecutting("has_prismarine", conditionsFromItem(Blocks.PRISMARINE))
-			.offerTo(exporter, "prismarine_wall_from_prismarine_stonecutting");
+		offerRecipe(exporter, Blocks.CHISELED_STONE_BRICKS, Blocks.STONE_BRICKS);
+		offerRecipe(exporter, Blocks.BRICK_SLAB, Blocks.BRICKS, 2);
+		offerRecipe(exporter, Blocks.BRICK_STAIRS, Blocks.BRICKS);
+		offerRecipe(exporter, Blocks.BRICK_WALL, Blocks.BRICKS);
+		offerRecipe(exporter, Blocks.NETHER_BRICK_SLAB, Blocks.NETHER_BRICKS, 2);
+		offerRecipe(exporter, Blocks.NETHER_BRICK_STAIRS, Blocks.NETHER_BRICKS);
+		offerRecipe(exporter, Blocks.NETHER_BRICK_WALL, Blocks.NETHER_BRICKS);
+		offerRecipe(exporter, Blocks.CHISELED_NETHER_BRICKS, Blocks.NETHER_BRICKS);
+		offerRecipe(exporter, Blocks.RED_NETHER_BRICK_SLAB, Blocks.RED_NETHER_BRICKS, 2);
+		offerRecipe(exporter, Blocks.RED_NETHER_BRICK_STAIRS, Blocks.RED_NETHER_BRICKS);
+		offerRecipe(exporter, Blocks.RED_NETHER_BRICK_WALL, Blocks.RED_NETHER_BRICKS);
+		offerRecipe(exporter, Blocks.PURPUR_SLAB, Blocks.PURPUR_BLOCK, 2);
+		offerRecipe(exporter, Blocks.PURPUR_STAIRS, Blocks.PURPUR_BLOCK);
+		offerRecipe(exporter, Blocks.PURPUR_PILLAR, Blocks.PURPUR_BLOCK);
+		offerRecipe(exporter, Blocks.PRISMARINE_SLAB, Blocks.PRISMARINE, 2);
+		offerRecipe(exporter, Blocks.PRISMARINE_STAIRS, Blocks.PRISMARINE);
+		offerRecipe(exporter, Blocks.PRISMARINE_WALL, Blocks.PRISMARINE);
 		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.PRISMARINE_BRICKS), Blocks.PRISMARINE_BRICK_SLAB, 2)
-			.createStonecutting("has_prismarine_brick", conditionsFromItem(Blocks.PRISMARINE_BRICKS))
+			.criterion("has_prismarine_brick", conditionsFromItem(Blocks.PRISMARINE_BRICKS))
 			.offerTo(exporter, "prismarine_brick_slab_from_prismarine_stonecutting");
 		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.PRISMARINE_BRICKS), Blocks.PRISMARINE_BRICK_STAIRS)
-			.createStonecutting("has_prismarine_brick", conditionsFromItem(Blocks.PRISMARINE_BRICKS))
+			.criterion("has_prismarine_brick", conditionsFromItem(Blocks.PRISMARINE_BRICKS))
 			.offerTo(exporter, "prismarine_brick_stairs_from_prismarine_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.DARK_PRISMARINE), Blocks.DARK_PRISMARINE_SLAB, 2)
-			.createStonecutting("has_dark_prismarine", conditionsFromItem(Blocks.DARK_PRISMARINE))
-			.offerTo(exporter, "dark_prismarine_slab_from_dark_prismarine_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.DARK_PRISMARINE), Blocks.DARK_PRISMARINE_STAIRS)
-			.createStonecutting("has_dark_prismarine", conditionsFromItem(Blocks.DARK_PRISMARINE))
-			.offerTo(exporter, "dark_prismarine_stairs_from_dark_prismarine_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.ANDESITE), Blocks.ANDESITE_SLAB, 2)
-			.createStonecutting("has_andesite", conditionsFromItem(Blocks.ANDESITE))
-			.offerTo(exporter, "andesite_slab_from_andesite_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.ANDESITE), Blocks.ANDESITE_STAIRS)
-			.createStonecutting("has_andesite", conditionsFromItem(Blocks.ANDESITE))
-			.offerTo(exporter, "andesite_stairs_from_andesite_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.ANDESITE), Blocks.ANDESITE_WALL)
-			.createStonecutting("has_andesite", conditionsFromItem(Blocks.ANDESITE))
-			.offerTo(exporter, "andesite_wall_from_andesite_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.ANDESITE), Blocks.POLISHED_ANDESITE)
-			.createStonecutting("has_andesite", conditionsFromItem(Blocks.ANDESITE))
-			.offerTo(exporter, "polished_andesite_from_andesite_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.ANDESITE), Blocks.POLISHED_ANDESITE_SLAB, 2)
-			.createStonecutting("has_andesite", conditionsFromItem(Blocks.ANDESITE))
-			.offerTo(exporter, "polished_andesite_slab_from_andesite_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.ANDESITE), Blocks.POLISHED_ANDESITE_STAIRS)
-			.createStonecutting("has_andesite", conditionsFromItem(Blocks.ANDESITE))
-			.offerTo(exporter, "polished_andesite_stairs_from_andesite_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.POLISHED_ANDESITE), Blocks.POLISHED_ANDESITE_SLAB, 2)
-			.createStonecutting("has_polished_andesite", conditionsFromItem(Blocks.POLISHED_ANDESITE))
-			.offerTo(exporter, "polished_andesite_slab_from_polished_andesite_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.POLISHED_ANDESITE), Blocks.POLISHED_ANDESITE_STAIRS)
-			.createStonecutting("has_polished_andesite", conditionsFromItem(Blocks.POLISHED_ANDESITE))
-			.offerTo(exporter, "polished_andesite_stairs_from_polished_andesite_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.BASALT), Blocks.POLISHED_BASALT)
-			.createStonecutting("has_basalt", conditionsFromItem(Blocks.BASALT))
-			.offerTo(exporter, "polished_basalt_from_basalt_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.GRANITE), Blocks.GRANITE_SLAB, 2)
-			.createStonecutting("has_granite", conditionsFromItem(Blocks.GRANITE))
-			.offerTo(exporter, "granite_slab_from_granite_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.GRANITE), Blocks.GRANITE_STAIRS)
-			.createStonecutting("has_granite", conditionsFromItem(Blocks.GRANITE))
-			.offerTo(exporter, "granite_stairs_from_granite_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.GRANITE), Blocks.GRANITE_WALL)
-			.createStonecutting("has_granite", conditionsFromItem(Blocks.GRANITE))
-			.offerTo(exporter, "granite_wall_from_granite_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.GRANITE), Blocks.POLISHED_GRANITE)
-			.createStonecutting("has_granite", conditionsFromItem(Blocks.GRANITE))
-			.offerTo(exporter, "polished_granite_from_granite_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.GRANITE), Blocks.POLISHED_GRANITE_SLAB, 2)
-			.createStonecutting("has_granite", conditionsFromItem(Blocks.GRANITE))
-			.offerTo(exporter, "polished_granite_slab_from_granite_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.GRANITE), Blocks.POLISHED_GRANITE_STAIRS)
-			.createStonecutting("has_granite", conditionsFromItem(Blocks.GRANITE))
-			.offerTo(exporter, "polished_granite_stairs_from_granite_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.POLISHED_GRANITE), Blocks.POLISHED_GRANITE_SLAB, 2)
-			.createStonecutting("has_polished_granite", conditionsFromItem(Blocks.POLISHED_GRANITE))
-			.offerTo(exporter, "polished_granite_slab_from_polished_granite_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.POLISHED_GRANITE), Blocks.POLISHED_GRANITE_STAIRS)
-			.createStonecutting("has_polished_granite", conditionsFromItem(Blocks.POLISHED_GRANITE))
-			.offerTo(exporter, "polished_granite_stairs_from_polished_granite_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.DIORITE), Blocks.DIORITE_SLAB, 2)
-			.createStonecutting("has_diorite", conditionsFromItem(Blocks.DIORITE))
-			.offerTo(exporter, "diorite_slab_from_diorite_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.DIORITE), Blocks.DIORITE_STAIRS)
-			.createStonecutting("has_diorite", conditionsFromItem(Blocks.DIORITE))
-			.offerTo(exporter, "diorite_stairs_from_diorite_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.DIORITE), Blocks.DIORITE_WALL)
-			.createStonecutting("has_diorite", conditionsFromItem(Blocks.DIORITE))
-			.offerTo(exporter, "diorite_wall_from_diorite_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.DIORITE), Blocks.POLISHED_DIORITE)
-			.createStonecutting("has_diorite", conditionsFromItem(Blocks.DIORITE))
-			.offerTo(exporter, "polished_diorite_from_diorite_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.DIORITE), Blocks.POLISHED_DIORITE_SLAB, 2)
-			.createStonecutting("has_diorite", conditionsFromItem(Blocks.POLISHED_DIORITE))
-			.offerTo(exporter, "polished_diorite_slab_from_diorite_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.DIORITE), Blocks.POLISHED_DIORITE_STAIRS)
-			.createStonecutting("has_diorite", conditionsFromItem(Blocks.POLISHED_DIORITE))
-			.offerTo(exporter, "polished_diorite_stairs_from_diorite_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.POLISHED_DIORITE), Blocks.POLISHED_DIORITE_SLAB, 2)
-			.createStonecutting("has_polished_diorite", conditionsFromItem(Blocks.POLISHED_DIORITE))
-			.offerTo(exporter, "polished_diorite_slab_from_polished_diorite_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.POLISHED_DIORITE), Blocks.POLISHED_DIORITE_STAIRS)
-			.createStonecutting("has_polished_diorite", conditionsFromItem(Blocks.POLISHED_DIORITE))
-			.offerTo(exporter, "polished_diorite_stairs_from_polished_diorite_stonecutting");
+		offerRecipe(exporter, Blocks.DARK_PRISMARINE_SLAB, Blocks.DARK_PRISMARINE, 2);
+		offerRecipe(exporter, Blocks.DARK_PRISMARINE_STAIRS, Blocks.DARK_PRISMARINE);
+		offerRecipe(exporter, Blocks.ANDESITE_SLAB, Blocks.ANDESITE, 2);
+		offerRecipe(exporter, Blocks.ANDESITE_STAIRS, Blocks.ANDESITE);
+		offerRecipe(exporter, Blocks.ANDESITE_WALL, Blocks.ANDESITE);
+		offerRecipe(exporter, Blocks.POLISHED_ANDESITE, Blocks.ANDESITE);
+		offerRecipe(exporter, Blocks.POLISHED_ANDESITE_SLAB, Blocks.ANDESITE, 2);
+		offerRecipe(exporter, Blocks.POLISHED_ANDESITE_STAIRS, Blocks.ANDESITE);
+		offerRecipe(exporter, Blocks.POLISHED_ANDESITE_SLAB, Blocks.POLISHED_ANDESITE, 2);
+		offerRecipe(exporter, Blocks.POLISHED_ANDESITE_STAIRS, Blocks.POLISHED_ANDESITE);
+		offerRecipe(exporter, Blocks.POLISHED_BASALT, Blocks.BASALT);
+		offerRecipe(exporter, Blocks.GRANITE_SLAB, Blocks.GRANITE, 2);
+		offerRecipe(exporter, Blocks.GRANITE_STAIRS, Blocks.GRANITE);
+		offerRecipe(exporter, Blocks.GRANITE_WALL, Blocks.GRANITE);
+		offerRecipe(exporter, Blocks.POLISHED_GRANITE, Blocks.GRANITE);
+		offerRecipe(exporter, Blocks.POLISHED_GRANITE_SLAB, Blocks.GRANITE, 2);
+		offerRecipe(exporter, Blocks.POLISHED_GRANITE_STAIRS, Blocks.GRANITE);
+		offerRecipe(exporter, Blocks.POLISHED_GRANITE_SLAB, Blocks.POLISHED_GRANITE, 2);
+		offerRecipe(exporter, Blocks.POLISHED_GRANITE_STAIRS, Blocks.POLISHED_GRANITE);
+		offerRecipe(exporter, Blocks.DIORITE_SLAB, Blocks.DIORITE, 2);
+		offerRecipe(exporter, Blocks.DIORITE_STAIRS, Blocks.DIORITE);
+		offerRecipe(exporter, Blocks.DIORITE_WALL, Blocks.DIORITE);
+		offerRecipe(exporter, Blocks.POLISHED_DIORITE, Blocks.DIORITE);
+		offerRecipe(exporter, Blocks.POLISHED_DIORITE_SLAB, Blocks.DIORITE, 2);
+		offerRecipe(exporter, Blocks.POLISHED_DIORITE_STAIRS, Blocks.DIORITE);
+		offerRecipe(exporter, Blocks.POLISHED_DIORITE_SLAB, Blocks.POLISHED_DIORITE, 2);
+		offerRecipe(exporter, Blocks.POLISHED_DIORITE_STAIRS, Blocks.POLISHED_DIORITE);
 		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.MOSSY_STONE_BRICKS), Blocks.MOSSY_STONE_BRICK_SLAB, 2)
-			.createStonecutting("has_mossy_stone_bricks", conditionsFromItem(Blocks.MOSSY_STONE_BRICKS))
+			.criterion("has_mossy_stone_bricks", conditionsFromItem(Blocks.MOSSY_STONE_BRICKS))
 			.offerTo(exporter, "mossy_stone_brick_slab_from_mossy_stone_brick_stonecutting");
 		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.MOSSY_STONE_BRICKS), Blocks.MOSSY_STONE_BRICK_STAIRS)
-			.createStonecutting("has_mossy_stone_bricks", conditionsFromItem(Blocks.MOSSY_STONE_BRICKS))
+			.criterion("has_mossy_stone_bricks", conditionsFromItem(Blocks.MOSSY_STONE_BRICKS))
 			.offerTo(exporter, "mossy_stone_brick_stairs_from_mossy_stone_brick_stonecutting");
 		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.MOSSY_STONE_BRICKS), Blocks.MOSSY_STONE_BRICK_WALL)
-			.createStonecutting("has_mossy_stone_bricks", conditionsFromItem(Blocks.MOSSY_STONE_BRICKS))
+			.criterion("has_mossy_stone_bricks", conditionsFromItem(Blocks.MOSSY_STONE_BRICKS))
 			.offerTo(exporter, "mossy_stone_brick_wall_from_mossy_stone_brick_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.MOSSY_COBBLESTONE), Blocks.MOSSY_COBBLESTONE_SLAB, 2)
-			.createStonecutting("has_mossy_cobblestone", conditionsFromItem(Blocks.MOSSY_COBBLESTONE))
-			.offerTo(exporter, "mossy_cobblestone_slab_from_mossy_cobblestone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.MOSSY_COBBLESTONE), Blocks.MOSSY_COBBLESTONE_STAIRS)
-			.createStonecutting("has_mossy_cobblestone", conditionsFromItem(Blocks.MOSSY_COBBLESTONE))
-			.offerTo(exporter, "mossy_cobblestone_stairs_from_mossy_cobblestone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.MOSSY_COBBLESTONE), Blocks.MOSSY_COBBLESTONE_WALL)
-			.createStonecutting("has_mossy_cobblestone", conditionsFromItem(Blocks.MOSSY_COBBLESTONE))
-			.offerTo(exporter, "mossy_cobblestone_wall_from_mossy_cobblestone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.SMOOTH_SANDSTONE), Blocks.SMOOTH_SANDSTONE_SLAB, 2)
-			.createStonecutting("has_smooth_sandstone", conditionsFromItem(Blocks.SMOOTH_SANDSTONE))
-			.offerTo(exporter, "smooth_sandstone_slab_from_smooth_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.SMOOTH_SANDSTONE), Blocks.SMOOTH_SANDSTONE_STAIRS)
-			.createStonecutting("has_mossy_cobblestone", conditionsFromItem(Blocks.SMOOTH_SANDSTONE))
-			.offerTo(exporter, "smooth_sandstone_stairs_from_smooth_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.SMOOTH_RED_SANDSTONE), Blocks.SMOOTH_RED_SANDSTONE_SLAB, 2)
-			.createStonecutting("has_smooth_red_sandstone", conditionsFromItem(Blocks.SMOOTH_RED_SANDSTONE))
-			.offerTo(exporter, "smooth_red_sandstone_slab_from_smooth_red_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.SMOOTH_RED_SANDSTONE), Blocks.SMOOTH_RED_SANDSTONE_STAIRS)
-			.createStonecutting("has_smooth_red_sandstone", conditionsFromItem(Blocks.SMOOTH_RED_SANDSTONE))
-			.offerTo(exporter, "smooth_red_sandstone_stairs_from_smooth_red_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.SMOOTH_QUARTZ), Blocks.SMOOTH_QUARTZ_SLAB, 2)
-			.createStonecutting("has_smooth_quartz", conditionsFromItem(Blocks.SMOOTH_QUARTZ))
-			.offerTo(exporter, "smooth_quartz_slab_from_smooth_quartz_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.SMOOTH_QUARTZ), Blocks.SMOOTH_QUARTZ_STAIRS)
-			.createStonecutting("has_smooth_quartz", conditionsFromItem(Blocks.SMOOTH_QUARTZ))
-			.offerTo(exporter, "smooth_quartz_stairs_from_smooth_quartz_stonecutting");
+		offerRecipe(exporter, Blocks.MOSSY_COBBLESTONE_SLAB, Blocks.MOSSY_COBBLESTONE, 2);
+		offerRecipe(exporter, Blocks.MOSSY_COBBLESTONE_STAIRS, Blocks.MOSSY_COBBLESTONE);
+		offerRecipe(exporter, Blocks.MOSSY_COBBLESTONE_WALL, Blocks.MOSSY_COBBLESTONE);
+		offerRecipe(exporter, Blocks.SMOOTH_SANDSTONE_SLAB, Blocks.SMOOTH_SANDSTONE, 2);
+		offerRecipe(exporter, Blocks.SMOOTH_SANDSTONE_STAIRS, Blocks.SMOOTH_SANDSTONE);
+		offerRecipe(exporter, Blocks.SMOOTH_RED_SANDSTONE_SLAB, Blocks.SMOOTH_RED_SANDSTONE, 2);
+		offerRecipe(exporter, Blocks.SMOOTH_RED_SANDSTONE_STAIRS, Blocks.SMOOTH_RED_SANDSTONE);
+		offerRecipe(exporter, Blocks.SMOOTH_QUARTZ_SLAB, Blocks.SMOOTH_QUARTZ, 2);
+		offerRecipe(exporter, Blocks.SMOOTH_QUARTZ_STAIRS, Blocks.SMOOTH_QUARTZ);
 		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.END_STONE_BRICKS), Blocks.END_STONE_BRICK_SLAB, 2)
-			.createStonecutting("has_end_stone_brick", conditionsFromItem(Blocks.END_STONE_BRICKS))
+			.criterion("has_end_stone_brick", conditionsFromItem(Blocks.END_STONE_BRICKS))
 			.offerTo(exporter, "end_stone_brick_slab_from_end_stone_brick_stonecutting");
 		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.END_STONE_BRICKS), Blocks.END_STONE_BRICK_STAIRS)
-			.createStonecutting("has_end_stone_brick", conditionsFromItem(Blocks.END_STONE_BRICKS))
+			.criterion("has_end_stone_brick", conditionsFromItem(Blocks.END_STONE_BRICKS))
 			.offerTo(exporter, "end_stone_brick_stairs_from_end_stone_brick_stonecutting");
 		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.END_STONE_BRICKS), Blocks.END_STONE_BRICK_WALL)
-			.createStonecutting("has_end_stone_brick", conditionsFromItem(Blocks.END_STONE_BRICKS))
+			.criterion("has_end_stone_brick", conditionsFromItem(Blocks.END_STONE_BRICKS))
 			.offerTo(exporter, "end_stone_brick_wall_from_end_stone_brick_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.END_STONE), Blocks.END_STONE_BRICKS)
-			.createStonecutting("has_end_stone", conditionsFromItem(Blocks.END_STONE))
-			.offerTo(exporter, "end_stone_bricks_from_end_stone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.END_STONE), Blocks.END_STONE_BRICK_SLAB, 2)
-			.createStonecutting("has_end_stone", conditionsFromItem(Blocks.END_STONE))
-			.offerTo(exporter, "end_stone_brick_slab_from_end_stone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.END_STONE), Blocks.END_STONE_BRICK_STAIRS)
-			.createStonecutting("has_end_stone", conditionsFromItem(Blocks.END_STONE))
-			.offerTo(exporter, "end_stone_brick_stairs_from_end_stone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.END_STONE), Blocks.END_STONE_BRICK_WALL)
-			.createStonecutting("has_end_stone", conditionsFromItem(Blocks.END_STONE))
-			.offerTo(exporter, "end_stone_brick_wall_from_end_stone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.SMOOTH_STONE), Blocks.SMOOTH_STONE_SLAB, 2)
-			.createStonecutting("has_smooth_stone", conditionsFromItem(Blocks.SMOOTH_STONE))
-			.offerTo(exporter, "smooth_stone_slab_from_smooth_stone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.BLACKSTONE), Blocks.BLACKSTONE_SLAB, 2)
-			.createStonecutting("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
-			.offerTo(exporter, "blackstone_slab_from_blackstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.BLACKSTONE), Blocks.BLACKSTONE_STAIRS)
-			.createStonecutting("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
-			.offerTo(exporter, "blackstone_stairs_from_blackstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.BLACKSTONE), Blocks.BLACKSTONE_WALL)
-			.createStonecutting("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
-			.offerTo(exporter, "blackstone_wall_from_blackstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.BLACKSTONE), Blocks.POLISHED_BLACKSTONE)
-			.createStonecutting("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
-			.offerTo(exporter, "polished_blackstone_from_blackstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.BLACKSTONE), Blocks.POLISHED_BLACKSTONE_WALL)
-			.createStonecutting("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
-			.offerTo(exporter, "polished_blackstone_wall_from_blackstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.BLACKSTONE), Blocks.POLISHED_BLACKSTONE_SLAB, 2)
-			.createStonecutting("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
-			.offerTo(exporter, "polished_blackstone_slab_from_blackstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.BLACKSTONE), Blocks.POLISHED_BLACKSTONE_STAIRS)
-			.createStonecutting("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
-			.offerTo(exporter, "polished_blackstone_stairs_from_blackstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.BLACKSTONE), Blocks.CHISELED_POLISHED_BLACKSTONE)
-			.createStonecutting("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
-			.offerTo(exporter, "chiseled_polished_blackstone_from_blackstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.BLACKSTONE), Blocks.POLISHED_BLACKSTONE_BRICKS)
-			.createStonecutting("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
-			.offerTo(exporter, "polished_blackstone_bricks_from_blackstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.BLACKSTONE), Blocks.POLISHED_BLACKSTONE_BRICK_SLAB, 2)
-			.createStonecutting("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
-			.offerTo(exporter, "polished_blackstone_brick_slab_from_blackstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.BLACKSTONE), Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS)
-			.createStonecutting("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
-			.offerTo(exporter, "polished_blackstone_brick_stairs_from_blackstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.BLACKSTONE), Blocks.POLISHED_BLACKSTONE_BRICK_WALL)
-			.createStonecutting("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
-			.offerTo(exporter, "polished_blackstone_brick_wall_from_blackstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE), Blocks.POLISHED_BLACKSTONE_SLAB, 2)
-			.createStonecutting("has_polished_blackstone", conditionsFromItem(Blocks.POLISHED_BLACKSTONE))
-			.offerTo(exporter, "polished_blackstone_slab_from_polished_blackstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE), Blocks.POLISHED_BLACKSTONE_STAIRS)
-			.createStonecutting("has_polished_blackstone", conditionsFromItem(Blocks.POLISHED_BLACKSTONE))
-			.offerTo(exporter, "polished_blackstone_stairs_from_polished_blackstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE), Blocks.POLISHED_BLACKSTONE_BRICKS)
-			.createStonecutting("has_polished_blackstone", conditionsFromItem(Blocks.POLISHED_BLACKSTONE))
-			.offerTo(exporter, "polished_blackstone_bricks_from_polished_blackstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE), Blocks.POLISHED_BLACKSTONE_WALL)
-			.createStonecutting("has_polished_blackstone", conditionsFromItem(Blocks.POLISHED_BLACKSTONE))
-			.offerTo(exporter, "polished_blackstone_wall_from_polished_blackstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE), Blocks.POLISHED_BLACKSTONE_BRICK_SLAB, 2)
-			.createStonecutting("has_polished_blackstone", conditionsFromItem(Blocks.POLISHED_BLACKSTONE))
-			.offerTo(exporter, "polished_blackstone_brick_slab_from_polished_blackstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE), Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS)
-			.createStonecutting("has_polished_blackstone", conditionsFromItem(Blocks.POLISHED_BLACKSTONE))
-			.offerTo(exporter, "polished_blackstone_brick_stairs_from_polished_blackstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE), Blocks.POLISHED_BLACKSTONE_BRICK_WALL)
-			.createStonecutting("has_polished_blackstone", conditionsFromItem(Blocks.POLISHED_BLACKSTONE))
-			.offerTo(exporter, "polished_blackstone_brick_wall_from_polished_blackstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE), Blocks.CHISELED_POLISHED_BLACKSTONE)
-			.createStonecutting("has_polished_blackstone", conditionsFromItem(Blocks.POLISHED_BLACKSTONE))
-			.offerTo(exporter, "chiseled_polished_blackstone_from_polished_blackstone_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE_BRICKS), Blocks.POLISHED_BLACKSTONE_BRICK_SLAB, 2)
-			.createStonecutting("has_polished_blackstone_bricks", conditionsFromItem(Blocks.POLISHED_BLACKSTONE_BRICKS))
-			.offerTo(exporter, "polished_blackstone_brick_slab_from_polished_blackstone_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE_BRICKS), Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS)
-			.createStonecutting("has_polished_blackstone_bricks", conditionsFromItem(Blocks.POLISHED_BLACKSTONE_BRICKS))
-			.offerTo(exporter, "polished_blackstone_brick_stairs_from_polished_blackstone_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE_BRICKS), Blocks.POLISHED_BLACKSTONE_BRICK_WALL)
-			.createStonecutting("has_polished_blackstone_bricks", conditionsFromItem(Blocks.POLISHED_BLACKSTONE_BRICKS))
-			.offerTo(exporter, "polished_blackstone_brick_wall_from_polished_blackstone_bricks_stonecutting");
+		offerRecipe(exporter, Blocks.END_STONE_BRICKS, Blocks.END_STONE);
+		offerRecipe(exporter, Blocks.END_STONE_BRICK_SLAB, Blocks.END_STONE, 2);
+		offerRecipe(exporter, Blocks.END_STONE_BRICK_STAIRS, Blocks.END_STONE);
+		offerRecipe(exporter, Blocks.END_STONE_BRICK_WALL, Blocks.END_STONE);
+		offerRecipe(exporter, Blocks.SMOOTH_STONE_SLAB, Blocks.SMOOTH_STONE, 2);
+		offerRecipe(exporter, Blocks.BLACKSTONE_SLAB, Blocks.BLACKSTONE, 2);
+		offerRecipe(exporter, Blocks.BLACKSTONE_STAIRS, Blocks.BLACKSTONE);
+		offerRecipe(exporter, Blocks.BLACKSTONE_WALL, Blocks.BLACKSTONE);
+		offerRecipe(exporter, Blocks.POLISHED_BLACKSTONE, Blocks.BLACKSTONE);
+		offerRecipe(exporter, Blocks.POLISHED_BLACKSTONE_WALL, Blocks.BLACKSTONE);
+		offerRecipe(exporter, Blocks.POLISHED_BLACKSTONE_SLAB, Blocks.BLACKSTONE, 2);
+		offerRecipe(exporter, Blocks.POLISHED_BLACKSTONE_STAIRS, Blocks.BLACKSTONE);
+		offerRecipe(exporter, Blocks.CHISELED_POLISHED_BLACKSTONE, Blocks.BLACKSTONE);
+		offerRecipe(exporter, Blocks.POLISHED_BLACKSTONE_BRICKS, Blocks.BLACKSTONE);
+		offerRecipe(exporter, Blocks.POLISHED_BLACKSTONE_BRICK_SLAB, Blocks.BLACKSTONE, 2);
+		offerRecipe(exporter, Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS, Blocks.BLACKSTONE);
+		offerRecipe(exporter, Blocks.POLISHED_BLACKSTONE_BRICK_WALL, Blocks.BLACKSTONE);
+		offerRecipe(exporter, Blocks.POLISHED_BLACKSTONE_SLAB, Blocks.POLISHED_BLACKSTONE, 2);
+		offerRecipe(exporter, Blocks.POLISHED_BLACKSTONE_STAIRS, Blocks.POLISHED_BLACKSTONE);
+		offerRecipe(exporter, Blocks.POLISHED_BLACKSTONE_BRICKS, Blocks.POLISHED_BLACKSTONE);
+		offerRecipe(exporter, Blocks.POLISHED_BLACKSTONE_WALL, Blocks.POLISHED_BLACKSTONE);
+		offerRecipe(exporter, Blocks.POLISHED_BLACKSTONE_BRICK_SLAB, Blocks.POLISHED_BLACKSTONE, 2);
+		offerRecipe(exporter, Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS, Blocks.POLISHED_BLACKSTONE);
+		offerRecipe(exporter, Blocks.POLISHED_BLACKSTONE_BRICK_WALL, Blocks.POLISHED_BLACKSTONE);
+		offerRecipe(exporter, Blocks.CHISELED_POLISHED_BLACKSTONE, Blocks.POLISHED_BLACKSTONE);
+		offerRecipe(exporter, Blocks.POLISHED_BLACKSTONE_BRICK_SLAB, Blocks.POLISHED_BLACKSTONE_BRICKS, 2);
+		offerRecipe(exporter, Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS, Blocks.POLISHED_BLACKSTONE_BRICKS);
+		offerRecipe(exporter, Blocks.POLISHED_BLACKSTONE_BRICK_WALL, Blocks.POLISHED_BLACKSTONE_BRICKS);
 		offerRecipe(exporter, Blocks.CUT_COPPER_SLAB, Blocks.CUT_COPPER, 2);
 		offerRecipe(exporter, Blocks.CUT_COPPER_STAIRS, Blocks.CUT_COPPER);
 		offerRecipe(exporter, Blocks.EXPOSED_CUT_COPPER_SLAB, Blocks.EXPOSED_CUT_COPPER, 2);
@@ -3112,6 +2690,22 @@ public class RecipesProvider implements DataProvider {
 		offerNetheriteUpgradeRecipe(exporter, Items.DIAMOND_SHOVEL, Items.NETHERITE_SHOVEL);
 	}
 
+	private static void method_36444(
+		Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2, @Nullable String string
+	) {
+		method_36445(consumer, itemConvertible, itemConvertible2, string, 1);
+	}
+
+	private static void method_36445(
+		Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2, @Nullable String string, int i
+	) {
+		ShapelessRecipeJsonFactory.create(itemConvertible, i)
+			.input(itemConvertible2)
+			.group(string)
+			.criterion(hasItem(itemConvertible2), conditionsFromItem(itemConvertible2))
+			.offerTo(consumer, convertBetween(itemConvertible, itemConvertible2));
+	}
+
 	private static void offerSmelting(
 		Consumer<RecipeJsonProvider> exporter, List<ItemConvertible> inputs, ItemConvertible output, float experience, int cookingTime
 	) {
@@ -3143,7 +2737,7 @@ public class RecipesProvider implements DataProvider {
 	private static void offerNetheriteUpgradeRecipe(Consumer<RecipeJsonProvider> exporter, Item output, Item input) {
 		SmithingRecipeJsonFactory.create(Ingredient.ofItems(output), Ingredient.ofItems(Items.NETHERITE_INGOT), input)
 			.criterion("has_netherite_ingot", conditionsFromItem(Items.NETHERITE_INGOT))
-			.offerTo(exporter, Registry.ITEM.getId(input.asItem()).getPath() + "_smithing");
+			.offerTo(exporter, getItemPath(input) + "_smithing");
 	}
 
 	private static void offerPlanksRecipe2(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, Tag<Item> input) {
@@ -3239,7 +2833,6 @@ public class RecipesProvider implements DataProvider {
 	}
 
 	private static void offerCarpetDyeingRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {
-		String string = Registry.ITEM.getId(output.asItem()).getPath();
 		ShapedRecipeJsonFactory.create(output, 8)
 			.input('#', Blocks.WHITE_CARPET)
 			.input('$', input)
@@ -3249,7 +2842,7 @@ public class RecipesProvider implements DataProvider {
 			.group("carpet")
 			.criterion("has_white_carpet", conditionsFromItem(Blocks.WHITE_CARPET))
 			.criterion(hasItem(input), conditionsFromItem(input))
-			.offerTo(exporter, string + "_from_white_carpet");
+			.offerTo(exporter, convertBetween(output, Blocks.WHITE_CARPET));
 	}
 
 	private static void offerBedRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {
@@ -3264,13 +2857,12 @@ public class RecipesProvider implements DataProvider {
 	}
 
 	private static void offerBedDyeingRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {
-		String string = Registry.ITEM.getId(output.asItem()).getPath();
 		ShapelessRecipeJsonFactory.create(output)
 			.input(Items.WHITE_BED)
 			.input(input)
 			.group("dyed_bed")
 			.criterion("has_bed", conditionsFromItem(Items.WHITE_BED))
-			.offerTo(exporter, string + "_from_white_bed");
+			.offerTo(exporter, convertBetween(output, Items.WHITE_BED));
 	}
 
 	private static void offerBannerRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {
@@ -3308,7 +2900,6 @@ public class RecipesProvider implements DataProvider {
 	}
 
 	private static void offerStainedGlassPaneDyeingRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {
-		String string = Registry.ITEM.getId(output.asItem()).getPath();
 		ShapedRecipeJsonFactory.create(output, 8)
 			.input('#', Blocks.GLASS_PANE)
 			.input('$', input)
@@ -3318,7 +2909,7 @@ public class RecipesProvider implements DataProvider {
 			.group("stained_glass_pane")
 			.criterion("has_glass_pane", conditionsFromItem(Blocks.GLASS_PANE))
 			.criterion(hasItem(input), conditionsFromItem(input))
-			.offerTo(exporter, string + "_from_glass_pane");
+			.offerTo(exporter, convertBetween(output, Blocks.GLASS_PANE));
 	}
 
 	private static void offerTerracottaDyeingRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {
@@ -3387,7 +2978,7 @@ public class RecipesProvider implements DataProvider {
 
 	private static void offerRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input, int count) {
 		SingleItemRecipeJsonFactory.createStonecutting(Ingredient.ofItems(input), output, count)
-			.createStonecutting(hasItem(input), conditionsFromItem(input))
+			.criterion(hasItem(input), conditionsFromItem(input))
 			.offerTo(exporter, convertBetween(output, input) + "_stonecutting");
 	}
 
@@ -3404,45 +2995,70 @@ public class RecipesProvider implements DataProvider {
 	 * <p>The shaped recipe converts 9 items in a square to a compacted form of the item.
 	 * <p>The shapeless recipe converts the compacted form to 9 of the normal form.
 	 */
-	private static void offerReversibleCompactingRecipes(Consumer<RecipeJsonProvider> exporter, ItemConvertible normal, ItemConvertible compact) {
-		ShapelessRecipeJsonFactory.create(normal, 9).input(compact).criterion(hasItem(compact), conditionsFromItem(compact)).offerTo(exporter);
-		ShapedRecipeJsonFactory.create(compact)
-			.input('#', normal)
+	private static void offerReversibleCompactingRecipes(Consumer<RecipeJsonProvider> exporter, ItemConvertible itemConvertible, ItemConvertible itemConvertible2) {
+		method_36447(exporter, itemConvertible, itemConvertible2, method_36450(itemConvertible2), null, method_36450(itemConvertible), null);
+	}
+
+	private static void method_36446(
+		Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2, String string, String string2
+	) {
+		method_36447(consumer, itemConvertible, itemConvertible2, string, string2, method_36450(itemConvertible), null);
+	}
+
+	private static void method_36449(
+		Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2, String string, String string2
+	) {
+		method_36447(consumer, itemConvertible, itemConvertible2, method_36450(itemConvertible2), null, string, string2);
+	}
+
+	private static void method_36447(
+		Consumer<RecipeJsonProvider> consumer,
+		ItemConvertible itemConvertible,
+		ItemConvertible itemConvertible2,
+		String string,
+		@Nullable String string2,
+		String string3,
+		@Nullable String string4
+	) {
+		ShapelessRecipeJsonFactory.create(itemConvertible, 9)
+			.input(itemConvertible2)
+			.group(string4)
+			.criterion(hasItem(itemConvertible2), conditionsFromItem(itemConvertible2))
+			.offerTo(consumer, new Identifier(string3));
+		ShapedRecipeJsonFactory.create(itemConvertible2)
+			.input('#', itemConvertible)
 			.pattern("###")
 			.pattern("###")
 			.pattern("###")
-			.criterion(hasItem(normal), conditionsFromItem(normal))
-			.offerTo(exporter);
+			.group(string2)
+			.criterion(hasItem(itemConvertible), conditionsFromItem(itemConvertible))
+			.offerTo(consumer, new Identifier(string));
 	}
 
 	private static void generateCookingRecipes(Consumer<RecipeJsonProvider> exporter, String cooker, CookingRecipeSerializer<?> serializer, int cookingTime) {
-		CookingRecipeJsonFactory.create(Ingredient.ofItems(Items.BEEF), Items.COOKED_BEEF, 0.35F, cookingTime, serializer)
-			.criterion("has_beef", conditionsFromItem(Items.BEEF))
-			.offerTo(exporter, "cooked_beef_from_" + cooker);
-		CookingRecipeJsonFactory.create(Ingredient.ofItems(Items.CHICKEN), Items.COOKED_CHICKEN, 0.35F, cookingTime, serializer)
-			.criterion("has_chicken", conditionsFromItem(Items.CHICKEN))
-			.offerTo(exporter, "cooked_chicken_from_" + cooker);
-		CookingRecipeJsonFactory.create(Ingredient.ofItems(Items.COD), Items.COOKED_COD, 0.35F, cookingTime, serializer)
-			.criterion("has_cod", conditionsFromItem(Items.COD))
-			.offerTo(exporter, "cooked_cod_from_" + cooker);
-		CookingRecipeJsonFactory.create(Ingredient.ofItems(Blocks.KELP), Items.DRIED_KELP, 0.1F, cookingTime, serializer)
-			.criterion("has_kelp", conditionsFromItem(Blocks.KELP))
-			.offerTo(exporter, "dried_kelp_from_" + cooker);
-		CookingRecipeJsonFactory.create(Ingredient.ofItems(Items.SALMON), Items.COOKED_SALMON, 0.35F, cookingTime, serializer)
-			.criterion("has_salmon", conditionsFromItem(Items.SALMON))
-			.offerTo(exporter, "cooked_salmon_from_" + cooker);
-		CookingRecipeJsonFactory.create(Ingredient.ofItems(Items.MUTTON), Items.COOKED_MUTTON, 0.35F, cookingTime, serializer)
-			.criterion("has_mutton", conditionsFromItem(Items.MUTTON))
-			.offerTo(exporter, "cooked_mutton_from_" + cooker);
-		CookingRecipeJsonFactory.create(Ingredient.ofItems(Items.PORKCHOP), Items.COOKED_PORKCHOP, 0.35F, cookingTime, serializer)
-			.criterion("has_porkchop", conditionsFromItem(Items.PORKCHOP))
-			.offerTo(exporter, "cooked_porkchop_from_" + cooker);
-		CookingRecipeJsonFactory.create(Ingredient.ofItems(Items.POTATO), Items.BAKED_POTATO, 0.35F, cookingTime, serializer)
-			.criterion("has_potato", conditionsFromItem(Items.POTATO))
-			.offerTo(exporter, "baked_potato_from_" + cooker);
-		CookingRecipeJsonFactory.create(Ingredient.ofItems(Items.RABBIT), Items.COOKED_RABBIT, 0.35F, cookingTime, serializer)
-			.criterion("has_rabbit", conditionsFromItem(Items.RABBIT))
-			.offerTo(exporter, "cooked_rabbit_from_" + cooker);
+		method_36448(exporter, cooker, serializer, cookingTime, Items.BEEF, Items.COOKED_BEEF, 0.35F);
+		method_36448(exporter, cooker, serializer, cookingTime, Items.CHICKEN, Items.COOKED_CHICKEN, 0.35F);
+		method_36448(exporter, cooker, serializer, cookingTime, Items.COD, Items.COOKED_COD, 0.35F);
+		method_36448(exporter, cooker, serializer, cookingTime, Items.KELP, Items.DRIED_KELP, 0.1F);
+		method_36448(exporter, cooker, serializer, cookingTime, Items.SALMON, Items.COOKED_SALMON, 0.35F);
+		method_36448(exporter, cooker, serializer, cookingTime, Items.MUTTON, Items.COOKED_MUTTON, 0.35F);
+		method_36448(exporter, cooker, serializer, cookingTime, Items.PORKCHOP, Items.COOKED_PORKCHOP, 0.35F);
+		method_36448(exporter, cooker, serializer, cookingTime, Items.POTATO, Items.BAKED_POTATO, 0.35F);
+		method_36448(exporter, cooker, serializer, cookingTime, Items.RABBIT, Items.COOKED_RABBIT, 0.35F);
+	}
+
+	private static void method_36448(
+		Consumer<RecipeJsonProvider> consumer,
+		String string,
+		CookingRecipeSerializer<?> cookingRecipeSerializer,
+		int i,
+		ItemConvertible itemConvertible,
+		ItemConvertible itemConvertible2,
+		float f
+	) {
+		CookingRecipeJsonFactory.create(Ingredient.ofItems(itemConvertible), itemConvertible2, f, i, cookingRecipeSerializer)
+			.criterion(hasItem(itemConvertible), conditionsFromItem(itemConvertible))
+			.offerTo(consumer, getItemPath(itemConvertible2) + "_from_" + string);
 	}
 
 	private static void offerWaxingRecipes(Consumer<RecipeJsonProvider> exporter) {
@@ -3526,12 +3142,24 @@ public class RecipesProvider implements DataProvider {
 		return "has_" + getItemPath(item);
 	}
 
+	private static String getItemPath(ItemConvertible item) {
+		return Registry.ITEM.getId(item.asItem()).getPath();
+	}
+
+	private static String method_36450(ItemConvertible itemConvertible) {
+		return getItemPath(itemConvertible);
+	}
+
 	private static String convertBetween(ItemConvertible from, ItemConvertible to) {
 		return getItemPath(from) + "_from_" + getItemPath(to);
 	}
 
-	private static String getItemPath(ItemConvertible item) {
-		return Registry.ITEM.getId(item.asItem()).getPath();
+	private static String method_36451(ItemConvertible itemConvertible) {
+		return getItemPath(itemConvertible) + "_from_smelting";
+	}
+
+	private static String method_36452(ItemConvertible itemConvertible) {
+		return getItemPath(itemConvertible) + "_from_blasting";
 	}
 
 	@Override

@@ -6,12 +6,15 @@ import java.util.BitSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
+import javax.annotation.Nullable;
+import net.minecraft.class_6350;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.state.property.Properties;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -20,6 +23,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.gen.BlockSource;
+import net.minecraft.world.gen.DefaultBlockSource;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public abstract class Carver<C extends CarverConfig> {
@@ -28,6 +33,7 @@ public abstract class Carver<C extends CarverConfig> {
 	public static final Carver<RavineCarverConfig> RAVINE = register("canyon", new RavineCarver(RavineCarverConfig.RAVINE_CODEC));
 	public static final Carver<RavineCarverConfig> UNDERWATER_CANYON = register("underwater_canyon", new UnderwaterCanyonCarver(RavineCarverConfig.RAVINE_CODEC));
 	public static final Carver<CaveCarverConfig> UNDERWATER_CAVE = register("underwater_cave", new UnderwaterCaveCarver(CaveCarverConfig.CAVE_CODEC));
+	protected static final BlockSource field_33614 = new DefaultBlockSource(Blocks.STONE.getDefaultState());
 	protected static final BlockState AIR = Blocks.AIR.getDefaultState();
 	protected static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
 	protected static final FluidState WATER = Fluids.WATER.getDefaultState();
@@ -63,7 +69,12 @@ public abstract class Carver<C extends CarverConfig> {
 		Blocks.MYCELIUM,
 		Blocks.SNOW,
 		Blocks.PACKED_ICE,
-		Blocks.DEEPSLATE
+		Blocks.DEEPSLATE,
+		Blocks.TUFF,
+		Blocks.GRANITE,
+		Blocks.IRON_ORE,
+		Blocks.DEEPSLATE_IRON_ORE,
+		Blocks.COPPER_ORE
 	);
 	protected Set<Fluid> carvableFluids = ImmutableSet.of(Fluids.WATER);
 	private final Codec<ConfiguredCarver<C>> codec;
@@ -94,7 +105,7 @@ public abstract class Carver<C extends CarverConfig> {
 		Chunk chunk,
 		Function<BlockPos, Biome> posToBiome,
 		long seed,
-		int seaLevel,
+		class_6350 arg,
 		double x,
 		double y,
 		double z,
@@ -119,7 +130,7 @@ public abstract class Carver<C extends CarverConfig> {
 			int p = Math.min(MathHelper.floor(y + verticalScale) + 1, context.getMinY() + context.getMaxY() - 8);
 			int q = Math.max(MathHelper.floor(z - horizontalScale) - l - 1, 0);
 			int r = Math.min(MathHelper.floor(z + horizontalScale) - l, 15);
-			if (this.isRegionUncarvable(chunk, m, n, o, p, q, r)) {
+			if (!config.field_33610 && this.isRegionUncarvable(chunk, m, n, o, p, q, r)) {
 				return false;
 			} else {
 				boolean bl = false;
@@ -144,7 +155,7 @@ public abstract class Carver<C extends CarverConfig> {
 									if (!carvingMask.get(ac) || isDebug(config)) {
 										carvingMask.set(ac);
 										mutable.set(t, w, v);
-										bl |= this.carveAtPoint(context, config, chunk, posToBiome, carvingMask, random, mutable, mutable2, seaLevel, mutableBoolean);
+										bl |= this.carveAtPoint(context, config, chunk, posToBiome, carvingMask, random, mutable, mutable2, arg, mutableBoolean);
 									}
 								}
 							}
@@ -160,7 +171,7 @@ public abstract class Carver<C extends CarverConfig> {
 	}
 
 	protected boolean carveAtPoint(
-		CarverContext context,
+		CarverContext carverContext,
 		C config,
 		Chunk chunk,
 		Function<BlockPos, Biome> posToBiome,
@@ -168,7 +179,7 @@ public abstract class Carver<C extends CarverConfig> {
 		Random random,
 		BlockPos.Mutable pos,
 		BlockPos.Mutable downPos,
-		int mainChunkX,
+		class_6350 arg,
 		MutableBoolean foundSurface
 	) {
 		BlockState blockState = chunk.getBlockState(pos);
@@ -180,28 +191,52 @@ public abstract class Carver<C extends CarverConfig> {
 		if (!this.canCarveBlock(blockState, blockState2) && !isDebug(config)) {
 			return false;
 		} else {
-			if (pos.getY() < config.lavaLevel.getY(context) && !isDebug(config)) {
-				chunk.setBlockState(pos, LAVA.getBlockState(), false);
+			BlockState blockState3 = this.method_36418(carverContext, config, pos, arg);
+			if (blockState3 == null) {
+				return false;
 			} else {
-				chunk.setBlockState(pos, getState(config), false);
+				chunk.setBlockState(pos, blockState3, false);
 				if (foundSurface.isTrue()) {
 					downPos.set(pos, Direction.DOWN);
 					if (chunk.getBlockState(downPos).isOf(Blocks.DIRT)) {
 						chunk.setBlockState(downPos, ((Biome)posToBiome.apply(pos)).getGenerationSettings().getSurfaceConfig().getTopMaterial(), false);
 					}
 				}
-			}
 
-			return true;
+				return true;
+			}
 		}
 	}
 
-	private static BlockState getState(CarverConfig config) {
-		return isDebug(config) ? config.debugConfig.getDebugState() : CAVE_AIR;
+	@Nullable
+	private BlockState method_36418(CarverContext carverContext, C carverConfig, BlockPos blockPos, class_6350 arg) {
+		if (blockPos.getY() <= carverConfig.lavaLevel.getY(carverContext)) {
+			return LAVA.getBlockState();
+		} else if (!carverConfig.field_33610) {
+			return isDebug(carverConfig) ? method_36417(carverConfig, AIR) : AIR;
+		} else {
+			BlockState blockState = arg.apply(field_33614, blockPos.getX(), blockPos.getY(), blockPos.getZ(), 0.0);
+			if (blockState == Blocks.STONE.getDefaultState()) {
+				return isDebug(carverConfig) ? carverConfig.debugConfig.method_36416() : null;
+			} else {
+				return isDebug(carverConfig) ? method_36417(carverConfig, blockState) : blockState;
+			}
+		}
+	}
+
+	private static BlockState method_36417(CarverConfig carverConfig, BlockState blockState) {
+		if (blockState.isOf(Blocks.AIR)) {
+			return carverConfig.debugConfig.getDebugState();
+		} else if (blockState.isOf(Blocks.WATER)) {
+			BlockState blockState2 = carverConfig.debugConfig.method_36414();
+			return blockState2.contains(Properties.WATERLOGGED) ? blockState2.with(Properties.WATERLOGGED, Boolean.valueOf(true)) : blockState2;
+		} else {
+			return blockState.isOf(Blocks.LAVA) ? carverConfig.debugConfig.method_36415() : blockState;
+		}
 	}
 
 	public abstract boolean carve(
-		CarverContext context, C config, Chunk chunk, Function<BlockPos, Biome> posToBiome, Random random, int seaLevel, ChunkPos pos, BitSet carvingMask
+		CarverContext context, C config, Chunk chunk, Function<BlockPos, Biome> posToBiome, Random random, class_6350 arg, ChunkPos pos, BitSet carvingMask
 	);
 
 	public abstract boolean shouldCarve(C config, Random random);

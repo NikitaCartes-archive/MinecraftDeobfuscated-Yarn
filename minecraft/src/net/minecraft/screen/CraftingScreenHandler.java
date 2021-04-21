@@ -124,7 +124,7 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 					return ItemStack.EMPTY;
 				}
 
-				slot.onStackChanged(itemStack2, itemStack);
+				slot.onQuickTransfer(itemStack2, itemStack);
 			} else if (index >= 10 && index < 46) {
 				if (!this.insertItem(itemStack2, 1, 10, false)) {
 					if (index < 37) {

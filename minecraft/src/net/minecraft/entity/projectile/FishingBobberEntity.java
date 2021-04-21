@@ -493,25 +493,25 @@ public class FishingBobberEntity extends ProjectileEntity {
 
 	@Override
 	public void remove(Entity.RemovalReason reason) {
-		this.method_36210(null);
+		this.setPlayerFishHook(null);
 		super.remove(reason);
 	}
 
 	@Override
-	public void method_36209() {
-		this.method_36210(null);
+	public void onRemoved() {
+		this.setPlayerFishHook(null);
 	}
 
 	@Override
 	public void setOwner(@Nullable Entity entity) {
 		super.setOwner(entity);
-		this.method_36210(this);
+		this.setPlayerFishHook(this);
 	}
 
-	private void method_36210(@Nullable FishingBobberEntity fishingBobberEntity) {
+	private void setPlayerFishHook(@Nullable FishingBobberEntity fishingBobber) {
 		PlayerEntity playerEntity = this.getPlayerOwner();
 		if (playerEntity != null) {
-			playerEntity.fishHook = fishingBobberEntity;
+			playerEntity.fishHook = fishingBobber;
 		}
 	}
 

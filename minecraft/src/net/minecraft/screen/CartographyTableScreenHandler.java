@@ -163,7 +163,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 					return ItemStack.EMPTY;
 				}
 
-				slot.onStackChanged(itemStack2, itemStack);
+				slot.onQuickTransfer(itemStack2, itemStack);
 			} else if (index != 1 && index != 0) {
 				if (itemStack2.isOf(Items.FILLED_MAP)) {
 					if (!this.insertItem(itemStack2, 0, 1, false)) {

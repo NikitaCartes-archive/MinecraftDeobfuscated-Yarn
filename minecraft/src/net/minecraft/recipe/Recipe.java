@@ -38,7 +38,7 @@ public interface Recipe<C extends Inventory> {
 	 * to appear in that grid.
 	 * 
 	 * @implSpec Default implementation simply returns a grid of all empty stacks where all stacks from the
-	 * input grid have been replaced with the result of calling {@link Item#getRecipeRemainder()} on them.
+	 * input grid have been replaced with the result of calling {@link net.minecraft.item.Item#getRecipeRemainder()} on them.
 	 */
 	default DefaultedList<ItemStack> getRemainder(C inventory) {
 		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(inventory.size(), ItemStack.EMPTY);

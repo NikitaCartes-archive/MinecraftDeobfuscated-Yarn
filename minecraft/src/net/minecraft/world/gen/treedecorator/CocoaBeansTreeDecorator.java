@@ -15,7 +15,7 @@ import net.minecraft.world.gen.feature.Feature;
 public class CocoaBeansTreeDecorator extends TreeDecorator {
 	public static final Codec<CocoaBeansTreeDecorator> CODEC = Codec.floatRange(0.0F, 1.0F)
 		.fieldOf("probability")
-		.<CocoaBeansTreeDecorator>xmap(CocoaBeansTreeDecorator::new, cocoaBeansTreeDecorator -> cocoaBeansTreeDecorator.probability)
+		.<CocoaBeansTreeDecorator>xmap(CocoaBeansTreeDecorator::new, decorator -> decorator.probability)
 		.codec();
 	private final float probability;
 
@@ -30,17 +30,17 @@ public class CocoaBeansTreeDecorator extends TreeDecorator {
 
 	@Override
 	public void generate(
-		TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, List<BlockPos> leavesPositions, List<BlockPos> list
+		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions
 	) {
 		if (!(random.nextFloat() >= this.probability)) {
-			int i = ((BlockPos)leavesPositions.get(0)).getY();
-			leavesPositions.stream().filter(pos -> pos.getY() - i <= 2).forEach(blockPos -> {
+			int i = ((BlockPos)logPositions.get(0)).getY();
+			logPositions.stream().filter(pos -> pos.getY() - i <= 2).forEach(pos -> {
 				for (Direction direction : Direction.Type.HORIZONTAL) {
 					if (random.nextFloat() <= 0.25F) {
 						Direction direction2 = direction.getOpposite();
-						BlockPos blockPos2 = blockPos.add(direction2.getOffsetX(), 0, direction2.getOffsetZ());
-						if (Feature.isAir(testableWorld, blockPos2)) {
-							biConsumer.accept(blockPos2, Blocks.COCOA.getDefaultState().with(CocoaBlock.AGE, Integer.valueOf(random.nextInt(3))).with(CocoaBlock.FACING, direction));
+						BlockPos blockPos = pos.add(direction2.getOffsetX(), 0, direction2.getOffsetZ());
+						if (Feature.isAir(world, blockPos)) {
+							replacer.accept(blockPos, Blocks.COCOA.getDefaultState().with(CocoaBlock.AGE, Integer.valueOf(random.nextInt(3))).with(CocoaBlock.FACING, direction));
 						}
 					}
 				}

@@ -112,7 +112,7 @@ public abstract class ForgingScreenHandler extends ScreenHandler {
 					return ItemStack.EMPTY;
 				}
 
-				slot.onStackChanged(itemStack2, itemStack);
+				slot.onQuickTransfer(itemStack2, itemStack);
 			} else if (index != 0 && index != 1) {
 				if (index >= 3 && index < 39) {
 					int i = this.method_30025(itemStack) ? 1 : 0;

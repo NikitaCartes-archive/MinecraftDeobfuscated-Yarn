@@ -249,7 +249,7 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 					return ItemStack.EMPTY;
 				}
 
-				slot.onStackChanged(itemStack2, itemStack);
+				slot.onQuickTransfer(itemStack2, itemStack);
 			} else if (index != 0 && index != 1) {
 				if (!itemStack3.isEmpty() && !itemStack4.isEmpty()) {
 					if (index >= 3 && index < 30) {

@@ -29,9 +29,9 @@ public abstract class TrunkPlacer {
 
 	protected static <P extends TrunkPlacer> P3<Mu<P>, Integer, Integer, Integer> fillTrunkPlacerFields(Instance<P> instance) {
 		return instance.group(
-			Codec.intRange(0, 32).fieldOf("base_height").forGetter(trunkPlacer -> trunkPlacer.baseHeight),
-			Codec.intRange(0, 24).fieldOf("height_rand_a").forGetter(trunkPlacer -> trunkPlacer.firstRandomHeight),
-			Codec.intRange(0, 24).fieldOf("height_rand_b").forGetter(trunkPlacer -> trunkPlacer.secondRandomHeight)
+			Codec.intRange(0, 32).fieldOf("base_height").forGetter(placer -> placer.baseHeight),
+			Codec.intRange(0, 24).fieldOf("height_rand_a").forGetter(placer -> placer.firstRandomHeight),
+			Codec.intRange(0, 24).fieldOf("height_rand_b").forGetter(placer -> placer.secondRandomHeight)
 		);
 	}
 
@@ -47,7 +47,7 @@ public abstract class TrunkPlacer {
 	 * Generates the trunk blocks and return a list of tree nodes to place foliage around
 	 */
 	public abstract List<FoliagePlacer.TreeNode> generate(
-		TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, int i, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig
+		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, int height, BlockPos startPos, TreeFeatureConfig config
 	);
 
 	public int getHeight(Random random) {
@@ -58,30 +58,26 @@ public abstract class TrunkPlacer {
 		return world.testBlockState(pos, state -> Feature.isSoil(state) && !state.isOf(Blocks.GRASS_BLOCK) && !state.isOf(Blocks.MYCELIUM));
 	}
 
-	protected static void setToDirt(
-		TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig
-	) {
-		if (treeFeatureConfig.forceDirt || !canGenerate(testableWorld, blockPos)) {
-			biConsumer.accept(blockPos, treeFeatureConfig.dirtProvider.getBlockState(random, blockPos));
+	protected static void setToDirt(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, BlockPos pos, TreeFeatureConfig config) {
+		if (config.forceDirt || !canGenerate(world, pos)) {
+			replacer.accept(pos, config.dirtProvider.getBlockState(random, pos));
 		}
 	}
 
-	protected static boolean method_35375(
-		TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig
-	) {
-		return getAndSetState(testableWorld, biConsumer, random, blockPos, treeFeatureConfig, Function.identity());
+	protected static boolean getAndSetState(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, BlockPos pos, TreeFeatureConfig config) {
+		return getAndSetState(world, replacer, random, pos, config, Function.identity());
 	}
 
 	protected static boolean getAndSetState(
-		TestableWorld testableWorld,
-		BiConsumer<BlockPos, BlockState> biConsumer,
+		TestableWorld world,
+		BiConsumer<BlockPos, BlockState> replacer,
 		Random random,
-		BlockPos blockPos,
-		TreeFeatureConfig treeFeatureConfig,
-		Function<BlockState, BlockState> function
+		BlockPos pos,
+		TreeFeatureConfig config,
+		Function<BlockState, BlockState> stateProvider
 	) {
-		if (TreeFeature.canReplace(testableWorld, blockPos)) {
-			biConsumer.accept(blockPos, function.apply(treeFeatureConfig.trunkProvider.getBlockState(random, blockPos)));
+		if (TreeFeature.canReplace(world, pos)) {
+			replacer.accept(pos, stateProvider.apply(config.trunkProvider.getBlockState(random, pos)));
 			return true;
 		} else {
 			return false;
@@ -89,10 +85,10 @@ public abstract class TrunkPlacer {
 	}
 
 	protected static void trySetState(
-		TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, BlockPos.Mutable mutable, TreeFeatureConfig treeFeatureConfig
+		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, BlockPos.Mutable pos, TreeFeatureConfig config
 	) {
-		if (TreeFeature.canTreeReplace(testableWorld, mutable)) {
-			method_35375(testableWorld, biConsumer, random, mutable, treeFeatureConfig);
+		if (TreeFeature.canTreeReplace(world, pos)) {
+			getAndSetState(world, replacer, random, pos, config);
 		}
 	}
 }

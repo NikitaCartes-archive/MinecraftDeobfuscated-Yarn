@@ -162,12 +162,12 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.AZALEA_LEAVES_FLOWERS,
 				Blocks.FLOWERING_AZALEA
 			);
-		this.getOrCreateTagBuilder(BlockTags.DIRT).add(Blocks.DIRT, Blocks.COARSE_DIRT, Blocks.PODZOL, Blocks.ROOTED_DIRT);
+		this.getOrCreateTagBuilder(BlockTags.DIRT)
+			.add(Blocks.DIRT, Blocks.GRASS_BLOCK, Blocks.PODZOL, Blocks.COARSE_DIRT, Blocks.MYCELIUM, Blocks.ROOTED_DIRT, Blocks.MOSS_BLOCK);
 		this.getOrCreateTagBuilder(BlockTags.ENDERMAN_HOLDABLE)
 			.addTag(BlockTags.SMALL_FLOWERS)
 			.addTag(BlockTags.DIRT)
 			.add(
-				Blocks.GRASS_BLOCK,
 				Blocks.SAND,
 				Blocks.RED_SAND,
 				Blocks.GRAVEL,
@@ -447,7 +447,7 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.BAMBOO_PLANTABLE_ON)
 			.addTag(BlockTags.SAND)
 			.addTag(BlockTags.DIRT)
-			.add(Blocks.BAMBOO, Blocks.BAMBOO_SAPLING, Blocks.GRAVEL, Blocks.GRASS_BLOCK, Blocks.MYCELIUM);
+			.add(Blocks.BAMBOO, Blocks.BAMBOO_SAPLING, Blocks.GRAVEL);
 		this.getOrCreateTagBuilder(BlockTags.STANDING_SIGNS)
 			.add(
 				Blocks.OAK_SIGN,
@@ -705,13 +705,13 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.INSIDE_STEP_SOUND_BLOCKS).add(Blocks.SNOW, Blocks.POWDER_SNOW);
 		this.getOrCreateTagBuilder(BlockTags.DRIPSTONE_REPLACEABLE_BLOCKS).addTag(BlockTags.BASE_STONE_OVERWORLD).add(Blocks.DIRT);
 		this.getOrCreateTagBuilder(BlockTags.CAVE_VINES).add(Blocks.CAVE_VINES_PLANT).add(Blocks.CAVE_VINES);
-		this.getOrCreateTagBuilder(BlockTags.LUSH_PLANTS_REPLACEABLE)
-			.addTag(BlockTags.BASE_STONE_OVERWORLD)
-			.addTag(BlockTags.CAVE_VINES)
-			.add(Blocks.DIRT)
+		this.getOrCreateTagBuilder(BlockTags.MOSS_REPLACEABLE).addTag(BlockTags.BASE_STONE_OVERWORLD).addTag(BlockTags.CAVE_VINES).addTag(BlockTags.DIRT);
+		this.getOrCreateTagBuilder(BlockTags.LUSH_GROUND_REPLACEABLE)
+			.addTag(BlockTags.MOSS_REPLACEABLE)
+			.add(Blocks.CLAY)
 			.add(Blocks.GRAVEL)
+			.add(Blocks.MOSS_BLOCK)
 			.add(Blocks.SAND);
-		this.getOrCreateTagBuilder(BlockTags.LUSH_GROUND_REPLACEABLE).addTag(BlockTags.LUSH_PLANTS_REPLACEABLE).add(Blocks.CLAY).add(Blocks.MOSS_BLOCK);
 		this.getOrCreateTagBuilder(BlockTags.OCCLUDES_VIBRATION_SIGNALS).addTag(BlockTags.WOOL);
 		this.getOrCreateTagBuilder(BlockTags.SNOW).add(Blocks.SNOW, Blocks.SNOW_BLOCK, Blocks.POWDER_SNOW);
 	}

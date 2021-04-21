@@ -35,26 +35,26 @@ public class BeehiveTreeDecorator extends TreeDecorator {
 
 	@Override
 	public void generate(
-		TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, List<BlockPos> leavesPositions, List<BlockPos> list
+		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions
 	) {
 		if (!(random.nextFloat() >= this.probability)) {
 			Direction direction = BeehiveBlock.getRandomGenerationDirection(random);
-			int i = !list.isEmpty()
-				? Math.max(((BlockPos)list.get(0)).getY() - 1, ((BlockPos)leavesPositions.get(0)).getY())
-				: Math.min(((BlockPos)leavesPositions.get(0)).getY() + 1 + random.nextInt(3), ((BlockPos)leavesPositions.get(leavesPositions.size() - 1)).getY());
-			List<BlockPos> list2 = (List<BlockPos>)leavesPositions.stream().filter(pos -> pos.getY() == i).collect(Collectors.toList());
-			if (!list2.isEmpty()) {
-				BlockPos blockPos = (BlockPos)list2.get(random.nextInt(list2.size()));
+			int i = !leavesPositions.isEmpty()
+				? Math.max(((BlockPos)leavesPositions.get(0)).getY() - 1, ((BlockPos)logPositions.get(0)).getY())
+				: Math.min(((BlockPos)logPositions.get(0)).getY() + 1 + random.nextInt(3), ((BlockPos)logPositions.get(logPositions.size() - 1)).getY());
+			List<BlockPos> list = (List<BlockPos>)logPositions.stream().filter(pos -> pos.getY() == i).collect(Collectors.toList());
+			if (!list.isEmpty()) {
+				BlockPos blockPos = (BlockPos)list.get(random.nextInt(list.size()));
 				BlockPos blockPos2 = blockPos.offset(direction);
-				if (Feature.isAir(testableWorld, blockPos2) && Feature.isAir(testableWorld, blockPos2.offset(Direction.SOUTH))) {
-					biConsumer.accept(blockPos2, Blocks.BEE_NEST.getDefaultState().with(BeehiveBlock.FACING, Direction.SOUTH));
-					testableWorld.getBlockEntity(blockPos2, BlockEntityType.BEEHIVE).ifPresent(beehiveBlockEntity -> {
+				if (Feature.isAir(world, blockPos2) && Feature.isAir(world, blockPos2.offset(Direction.SOUTH))) {
+					replacer.accept(blockPos2, Blocks.BEE_NEST.getDefaultState().with(BeehiveBlock.FACING, Direction.SOUTH));
+					world.getBlockEntity(blockPos2, BlockEntityType.BEEHIVE).ifPresent(blockEntity -> {
 						int ix = 2 + random.nextInt(2);
 
 						for (int j = 0; j < ix; j++) {
 							NbtCompound nbtCompound = new NbtCompound();
 							nbtCompound.putString("id", Registry.ENTITY_TYPE.getId(EntityType.BEE).toString());
-							beehiveBlockEntity.addBee(nbtCompound, random.nextInt(599), false);
+							blockEntity.addBee(nbtCompound, random.nextInt(599), false);
 						}
 					});
 				}

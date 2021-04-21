@@ -109,7 +109,7 @@ public final class BlockTags {
 	public static final Tag.Identified<Block> OCCLUDES_VIBRATION_SIGNALS = register("occludes_vibration_signals");
 	public static final Tag.Identified<Block> DRIPSTONE_REPLACEABLE_BLOCKS = register("dripstone_replaceable_blocks");
 	public static final Tag.Identified<Block> CAVE_VINES = register("cave_vines");
-	public static final Tag.Identified<Block> LUSH_PLANTS_REPLACEABLE = register("lush_plants_replaceable");
+	public static final Tag.Identified<Block> MOSS_REPLACEABLE = register("moss_replaceable");
 	public static final Tag.Identified<Block> LUSH_GROUND_REPLACEABLE = register("lush_ground_replaceable");
 	public static final Tag.Identified<Block> SNOW = register("snow");
 

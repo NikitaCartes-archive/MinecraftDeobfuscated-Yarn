@@ -157,7 +157,7 @@ public class TridentEntity extends PersistentProjectileEntity {
 
 	@Override
 	protected boolean tryPickup(PlayerEntity player) {
-		return super.tryPickup(player) || this.isNoClip() && this.isOwner(player);
+		return super.tryPickup(player) || this.isNoClip() && this.isOwner(player) && player.getInventory().insertStack(this.asItemStack());
 	}
 
 	@Override

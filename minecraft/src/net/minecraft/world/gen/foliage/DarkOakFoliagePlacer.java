@@ -26,28 +26,28 @@ public class DarkOakFoliagePlacer extends FoliagePlacer {
 
 	@Override
 	protected void generate(
-		TestableWorld testableWorld,
-		BiConsumer<BlockPos, BlockState> biConsumer,
+		TestableWorld world,
+		BiConsumer<BlockPos, BlockState> replacer,
 		Random random,
-		TreeFeatureConfig treeFeatureConfig,
-		int i,
+		TreeFeatureConfig config,
+		int trunkHeight,
 		FoliagePlacer.TreeNode treeNode,
+		int foliageHeight,
 		int radius,
-		int j,
 		int offset
 	) {
 		BlockPos blockPos = treeNode.getCenter().up(offset);
 		boolean bl = treeNode.isGiantTrunk();
 		if (bl) {
-			this.generateSquare(testableWorld, biConsumer, random, treeFeatureConfig, blockPos, j + 2, -1, bl);
-			this.generateSquare(testableWorld, biConsumer, random, treeFeatureConfig, blockPos, j + 3, 0, bl);
-			this.generateSquare(testableWorld, biConsumer, random, treeFeatureConfig, blockPos, j + 2, 1, bl);
+			this.generateSquare(world, replacer, random, config, blockPos, radius + 2, -1, bl);
+			this.generateSquare(world, replacer, random, config, blockPos, radius + 3, 0, bl);
+			this.generateSquare(world, replacer, random, config, blockPos, radius + 2, 1, bl);
 			if (random.nextBoolean()) {
-				this.generateSquare(testableWorld, biConsumer, random, treeFeatureConfig, blockPos, j, 2, bl);
+				this.generateSquare(world, replacer, random, config, blockPos, radius, 2, bl);
 			}
 		} else {
-			this.generateSquare(testableWorld, biConsumer, random, treeFeatureConfig, blockPos, j + 2, -1, bl);
-			this.generateSquare(testableWorld, biConsumer, random, treeFeatureConfig, blockPos, j + 1, 0, bl);
+			this.generateSquare(world, replacer, random, config, blockPos, radius + 2, -1, bl);
+			this.generateSquare(world, replacer, random, config, blockPos, radius + 1, 0, bl);
 		}
 	}
 

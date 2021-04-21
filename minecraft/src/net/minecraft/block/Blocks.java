@@ -917,7 +917,11 @@ public class Blocks {
 	public static final Block GLOW_LICHEN = register(
 		"glow_lichen",
 		new GlowLichenBlock(
-			AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT).noCollision().strength(0.2F).sounds(BlockSoundGroup.GLOW_LICHEN).luminance(state -> 7)
+			AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT, MapColor.LICHEN_GREEN)
+				.noCollision()
+				.strength(0.2F)
+				.sounds(BlockSoundGroup.GLOW_LICHEN)
+				.luminance(state -> 7)
 		)
 	);
 	public static final Block OAK_FENCE_GATE = register(
@@ -3238,7 +3242,7 @@ public class Blocks {
 	public static final Block CRACKED_DEEPSLATE_TILES = register("cracked_deepslate_tiles", new Block(AbstractBlock.Settings.copy(DEEPSLATE_TILES)));
 	public static final Block INFESTED_DEEPSLATE = register(
 		"infested_deepslate",
-		new InfestedBlock(
+		new RotatedInfestedBlock(
 			DEEPSLATE, AbstractBlock.Settings.of(Material.ORGANIC_PRODUCT, MapColor.DEEPSLATE_GRAY).strength(0.0F, 0.75F).sounds(BlockSoundGroup.DEEPSLATE)
 		)
 	);

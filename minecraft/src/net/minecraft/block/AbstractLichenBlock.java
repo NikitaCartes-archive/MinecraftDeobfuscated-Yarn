@@ -57,7 +57,7 @@ public class AbstractLichenBlock extends Block {
 
 	public AbstractLichenBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(withNoDirections(this.stateManager));
+		this.setDefaultState(withAllDirections(this.stateManager));
 		this.SHAPES = this.getShapesForStates(AbstractLichenBlock::getShapeForState);
 		this.hasAllHorizontalDirections = Direction.Type.HORIZONTAL.stream().allMatch(this::canHaveDirection);
 		this.canMirrorX = Direction.Type.HORIZONTAL.stream().filter(Direction.Axis.X).filter(this::canHaveDirection).count() % 2L == 0L;
@@ -142,9 +142,9 @@ public class AbstractLichenBlock extends Block {
 
 				blockState = state;
 			} else if (this.isWaterlogged() && state.getFluidState().isEqualAndStill(Fluids.WATER)) {
-				blockState = method_36292(this).with(Properties.WATERLOGGED, Boolean.valueOf(true));
+				blockState = withNoDirections(this).with(Properties.WATERLOGGED, Boolean.valueOf(true));
 			} else {
-				blockState = method_36292(this);
+				blockState = withNoDirections(this);
 			}
 
 			BlockPos blockPos = pos.offset(direction);
@@ -267,22 +267,22 @@ public class AbstractLichenBlock extends Block {
 		return (BooleanProperty)FACING_PROPERTIES.get(direction);
 	}
 
-	public static BlockState method_36292(Block block) {
-		return method_36293(block.getDefaultState(), false);
+	public static BlockState withNoDirections(Block block) {
+		return withAllDirectionsSet(block.getDefaultState(), false);
 	}
 
-	private static BlockState withNoDirections(StateManager<Block, BlockState> stateManager) {
-		return method_36293(stateManager.getDefaultState(), true);
+	private static BlockState withAllDirections(StateManager<Block, BlockState> stateManager) {
+		return withAllDirectionsSet(stateManager.getDefaultState(), true);
 	}
 
-	private static BlockState method_36293(BlockState blockState, boolean bl) {
+	private static BlockState withAllDirectionsSet(BlockState state, boolean facing) {
 		for (BooleanProperty booleanProperty : FACING_PROPERTIES.values()) {
-			if (blockState.contains(booleanProperty)) {
-				blockState = blockState.with(booleanProperty, Boolean.valueOf(bl));
+			if (state.contains(booleanProperty)) {
+				state = state.with(booleanProperty, Boolean.valueOf(facing));
 			}
 		}
 
-		return blockState;
+		return state;
 	}
 
 	private static VoxelShape getShapeForState(BlockState state) {

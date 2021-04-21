@@ -34,7 +34,7 @@ public class PositionedException extends GameTestException {
 
 	@Nullable
 	public String getDebugMessage() {
-		return super.getMessage() + " here";
+		return super.getMessage();
 	}
 
 	@Nullable

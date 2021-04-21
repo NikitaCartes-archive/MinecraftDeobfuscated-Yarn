@@ -432,7 +432,7 @@ public class MineshaftGenerator {
 						BlockState blockState3 = this.getBlockAt(world, 1, -1, p, boundingBox);
 						if (!blockState3.isAir() && blockState3.isOpaqueFullCube(world, this.offsetPos(1, -1, p))) {
 							float f = this.isUnderSeaLevel(world, 1, 0, p, boundingBox) ? 0.7F : 0.9F;
-							this.addBlockWithRandomThreshold(world, boundingBox, random, f, 1, 0, p, blockState2, false);
+							this.addBlockWithRandomThreshold(world, boundingBox, random, f, 1, 0, p, blockState2);
 						}
 					}
 				}
@@ -534,19 +534,39 @@ public class MineshaftGenerator {
 				} else {
 					this.fillWithOutline(world, boundingBox, minX, maxY, z, maxX, maxY, z, blockState, AIR, false);
 					this.addBlockWithRandomThreshold(
-						world, boundingBox, random, 0.05F, minX + 1, maxY, z - 1, Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, Direction.NORTH), false
+						world, boundingBox, random, 0.05F, minX + 1, maxY, z - 1, Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, Direction.NORTH)
 					);
 					this.addBlockWithRandomThreshold(
-						world, boundingBox, random, 0.05F, minX + 1, maxY, z + 1, Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, Direction.SOUTH), false
+						world, boundingBox, random, 0.05F, minX + 1, maxY, z + 1, Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, Direction.SOUTH)
 					);
 				}
 			}
 		}
 
-		private void addCobwebsUnderground(StructureWorldAccess world, BlockBox boundingBox, Random random, float threshold, int x, int y, int z) {
-			if (this.isUnderSeaLevel(world, x, y, z, boundingBox)) {
-				this.addBlockWithRandomThreshold(world, boundingBox, random, threshold, x, y, z, Blocks.COBWEB.getDefaultState(), true);
+		private void addCobwebsUnderground(StructureWorldAccess world, BlockBox blockBox, Random random, float threshold, int x, int y, int z) {
+			if (this.isUnderSeaLevel(world, x, y, z, blockBox) && random.nextFloat() < threshold && this.method_36422(world, blockBox, x, y, z, 2)) {
+				this.addBlock(world, Blocks.COBWEB.getDefaultState(), x, y, z, blockBox);
 			}
+		}
+
+		private boolean method_36422(StructureWorldAccess structureWorldAccess, BlockBox blockBox, int i, int j, int k, int l) {
+			BlockPos.Mutable mutable = this.offsetPos(i, j, k);
+			int m = 0;
+
+			for (Direction direction : Direction.values()) {
+				mutable.move(direction);
+				if (blockBox.contains(mutable) && structureWorldAccess.getBlockState(mutable).isSideSolidFullSquare(structureWorldAccess, mutable, direction.getOpposite())
+					)
+				 {
+					if (++m >= l) {
+						return true;
+					}
+				}
+
+				mutable.move(direction.getOpposite());
+			}
+
+			return false;
 		}
 	}
 

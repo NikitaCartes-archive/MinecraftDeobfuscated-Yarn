@@ -18,7 +18,7 @@ public class BlobFoliagePlacer extends FoliagePlacer {
 	protected final int height;
 
 	protected static <P extends BlobFoliagePlacer> P3<Mu<P>, IntProvider, IntProvider, Integer> createCodec(Instance<P> builder) {
-		return fillFoliagePlacerFields(builder).and(Codec.intRange(0, 16).fieldOf("height").forGetter(blobFoliagePlacer -> blobFoliagePlacer.height));
+		return fillFoliagePlacerFields(builder).and(Codec.intRange(0, 16).fieldOf("height").forGetter(placer -> placer.height));
 	}
 
 	public BlobFoliagePlacer(IntProvider radius, IntProvider offset, int height) {
@@ -33,19 +33,19 @@ public class BlobFoliagePlacer extends FoliagePlacer {
 
 	@Override
 	protected void generate(
-		TestableWorld testableWorld,
-		BiConsumer<BlockPos, BlockState> biConsumer,
+		TestableWorld world,
+		BiConsumer<BlockPos, BlockState> replacer,
 		Random random,
-		TreeFeatureConfig treeFeatureConfig,
-		int i,
+		TreeFeatureConfig config,
+		int trunkHeight,
 		FoliagePlacer.TreeNode treeNode,
+		int foliageHeight,
 		int radius,
-		int j,
 		int offset
 	) {
-		for (int k = offset; k >= offset - radius; k--) {
-			int l = Math.max(j + treeNode.getFoliageRadius() - 1 - k / 2, 0);
-			this.generateSquare(testableWorld, biConsumer, random, treeFeatureConfig, treeNode.getCenter(), l, k, treeNode.isGiantTrunk());
+		for (int i = offset; i >= offset - foliageHeight; i--) {
+			int j = Math.max(radius + treeNode.getFoliageRadius() - 1 - i / 2, 0);
+			this.generateSquare(world, replacer, random, config, treeNode.getCenter(), j, i, treeNode.isGiantTrunk());
 		}
 	}
 

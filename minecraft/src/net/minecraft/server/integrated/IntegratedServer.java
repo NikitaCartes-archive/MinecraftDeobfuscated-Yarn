@@ -22,6 +22,7 @@ import net.minecraft.server.LanServerPinger;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListenerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.stat.Stats;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReport;
@@ -104,13 +105,21 @@ public class IntegratedServer extends MinecraftServer {
 			profiler.pop();
 		}
 
-		if (!this.paused) {
+		if (this.paused) {
+			this.method_36439();
+		} else {
 			super.tick(shouldKeepTicking);
 			int i = Math.max(2, this.client.options.viewDistance + -1);
 			if (i != this.getPlayerManager().getViewDistance()) {
 				LOGGER.info("Changing view distance to {}, from {}", i, this.getPlayerManager().getViewDistance());
 				this.getPlayerManager().setViewDistance(i);
 			}
+		}
+	}
+
+	private void method_36439() {
+		for (ServerPlayerEntity serverPlayerEntity : this.getPlayerManager().getPlayerList()) {
+			serverPlayerEntity.incrementStat(Stats.TOTAL_WORLD_TIME);
 		}
 	}
 

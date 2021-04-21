@@ -43,7 +43,7 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 
 		RealmsServerAddress realmsServerAddress;
 		try {
-			realmsServerAddress = this.method_32516();
+			realmsServerAddress = this.join();
 		} catch (CancellationException var4) {
 			LOGGER.info("User aborted connecting to realms");
 			return;
@@ -77,11 +77,13 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 		}
 
 		boolean bl2 = realmsServerAddress.resourcePackUrl != null && realmsServerAddress.resourcePackHash != null;
-		Screen screen = (Screen)(bl2 ? this.method_32512(realmsServerAddress, this::method_32511) : this.method_32511(realmsServerAddress));
+		Screen screen = (Screen)(bl2
+			? this.createResourcePackConfirmationScreen(realmsServerAddress, this::createConnectingScreen)
+			: this.createConnectingScreen(realmsServerAddress));
 		setScreen(screen);
 	}
 
-	private RealmsServerAddress method_32516() throws RealmsServiceException, TimeoutException, CancellationException {
+	private RealmsServerAddress join() throws RealmsServiceException, TimeoutException, CancellationException {
 		RealmsClient realmsClient = RealmsClient.createRealmsClient();
 
 		for (int i = 0; i < 40; i++) {
@@ -99,15 +101,17 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 		throw new TimeoutException();
 	}
 
-	public RealmsLongRunningMcoTaskScreen method_32511(RealmsServerAddress realmsServerAddress) {
-		return new RealmsLongRunningMcoTaskScreen(this.lastScreen, new RealmsConnectTask(this.lastScreen, this.server, realmsServerAddress));
+	public RealmsLongRunningMcoTaskScreen createConnectingScreen(RealmsServerAddress address) {
+		return new RealmsLongRunningMcoTaskScreen(this.lastScreen, new RealmsConnectTask(this.lastScreen, this.server, address));
 	}
 
-	private RealmsLongConfirmationScreen method_32512(RealmsServerAddress realmsServerAddress, Function<RealmsServerAddress, Screen> function) {
-		BooleanConsumer booleanConsumer = bl -> {
+	private RealmsLongConfirmationScreen createResourcePackConfirmationScreen(
+		RealmsServerAddress address, Function<RealmsServerAddress, Screen> connectingScreenCreator
+	) {
+		BooleanConsumer booleanConsumer = confirmed -> {
 			try {
-				if (bl) {
-					this.method_32515(realmsServerAddress).thenRun(() -> setScreen((Screen)function.apply(realmsServerAddress))).exceptionally(throwable -> {
+				if (confirmed) {
+					this.downloadResourcePack(address).thenRun(() -> setScreen((Screen)connectingScreenCreator.apply(address))).exceptionally(throwable -> {
 						MinecraftClient.getInstance().getResourcePackProvider().clear();
 						LOGGER.error(throwable);
 						setScreen(new RealmsGenericErrorScreen(new LiteralText("Failed to download resource pack!"), this.lastScreen));
@@ -132,9 +136,9 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 		);
 	}
 
-	private CompletableFuture<?> method_32515(RealmsServerAddress realmsServerAddress) {
+	private CompletableFuture<?> downloadResourcePack(RealmsServerAddress address) {
 		try {
-			return MinecraftClient.getInstance().getResourcePackProvider().download(realmsServerAddress.resourcePackUrl, realmsServerAddress.resourcePackHash);
+			return MinecraftClient.getInstance().getResourcePackProvider().download(address.resourcePackUrl, address.resourcePackHash, false);
 		} catch (Exception var4) {
 			CompletableFuture<Void> completableFuture = new CompletableFuture();
 			completableFuture.completeExceptionally(var4);

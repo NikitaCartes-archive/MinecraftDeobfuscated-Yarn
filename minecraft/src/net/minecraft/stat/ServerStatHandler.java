@@ -36,11 +36,9 @@ import org.apache.logging.log4j.Logger;
 
 public class ServerStatHandler extends StatHandler {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final int field_29821 = 300;
 	private final MinecraftServer server;
 	private final File file;
 	private final Set<Stat<?>> pendingStats = Sets.<Stat<?>>newHashSet();
-	private int lastStatsUpdate = -300;
 
 	public ServerStatHandler(MinecraftServer server, File file) {
 		this.server = server;
@@ -195,14 +193,10 @@ public class ServerStatHandler extends StatHandler {
 	}
 
 	public void sendStats(ServerPlayerEntity player) {
-		int i = this.server.getTicks();
 		Object2IntMap<Stat<?>> object2IntMap = new Object2IntOpenHashMap<>();
-		if (i - this.lastStatsUpdate > 300) {
-			this.lastStatsUpdate = i;
 
-			for (Stat<?> stat : this.takePendingStats()) {
-				object2IntMap.put(stat, this.getStat(stat));
-			}
+		for (Stat<?> stat : this.takePendingStats()) {
+			object2IntMap.put(stat, this.getStat(stat));
 		}
 
 		player.networkHandler.sendPacket(new StatisticsS2CPacket(object2IntMap));

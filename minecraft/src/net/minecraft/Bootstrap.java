@@ -57,9 +57,9 @@ public class Bootstrap {
 		}
 	}
 
-	private static <T> void collectMissingTranslations(Iterable<T> iterable, Function<T, String> keyExtractor, Set<String> translationKeys) {
+	private static <T> void collectMissingTranslations(Iterable<T> registry, Function<T, String> keyExtractor, Set<String> translationKeys) {
 		Language language = Language.getInstance();
-		iterable.forEach(object -> {
+		registry.forEach(object -> {
 			String string = (String)keyExtractor.apply(object);
 			if (!language.hasTranslation(string)) {
 				translationKeys.add(string);
@@ -87,20 +87,20 @@ public class Bootstrap {
 		collectMissingTranslations(Registry.ITEM, Item::getTranslationKey, set);
 		collectMissingTranslations(Registry.ENCHANTMENT, Enchantment::getTranslationKey, set);
 		collectMissingTranslations(Registry.BLOCK, Block::getTranslationKey, set);
-		collectMissingTranslations(Registry.CUSTOM_STAT, identifier -> "stat." + identifier.toString().replace(':', '.'), set);
+		collectMissingTranslations(Registry.CUSTOM_STAT, stat -> "stat." + stat.toString().replace(':', '.'), set);
 		collectMissingGameRuleTranslations(set);
 		return set;
 	}
 
-	public static void method_36235(Supplier<String> supplier) {
+	public static void ensureBootstrapped(Supplier<String> callerGetter) {
 		if (!initialized) {
-			throw method_36237(supplier);
+			throw createNotBootstrappedException(callerGetter);
 		}
 	}
 
-	private static RuntimeException method_36237(Supplier<String> supplier) {
+	private static RuntimeException createNotBootstrappedException(Supplier<String> callerGetter) {
 		try {
-			String string = (String)supplier.get();
+			String string = (String)callerGetter.get();
 			return new IllegalArgumentException("Not bootstrapped (called from " + string + ")");
 		} catch (Exception var3) {
 			RuntimeException runtimeException = new IllegalArgumentException("Not bootstrapped (failed to resolve location)");
@@ -110,9 +110,9 @@ public class Bootstrap {
 	}
 
 	public static void logMissing() {
-		method_36235(() -> "validate");
+		ensureBootstrapped(() -> "validate");
 		if (SharedConstants.isDevelopment) {
-			getMissingTranslations().forEach(string -> LOGGER.error("Missing translations: {}", string));
+			getMissingTranslations().forEach(key -> LOGGER.error("Missing translations: {}", key));
 			CommandManager.checkMissing();
 		}
 

@@ -34,8 +34,8 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class FileUpload {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final int field_32056 = 5;
-	private static final String field_32057 = "/upload";
+	private static final int MAX_ATTEMPTS = 5;
+	private static final String UPLOAD_ENDPOINT = "/upload";
 	private final File file;
 	private final long worldId;
 	private final int slotId;

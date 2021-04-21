@@ -227,7 +227,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 				PendingInvite pendingInvite = ((RealmsPendingInvitesScreen.PendingInvitationSelectionListEntry)list.get(index)).mPendingInvite;
 				String string = I18n.translate("narrator.select.list.position", index + 1, list.size());
 				String string2 = Realms.joinNarrations(
-					Arrays.asList(pendingInvite.worldName, pendingInvite.worldOwnerName, RealmsUtil.method_25282(pendingInvite.date), string)
+					Arrays.asList(pendingInvite.worldName, pendingInvite.worldOwnerName, RealmsUtil.convertToAgePresentation(pendingInvite.date), string)
 				);
 				Realms.narrateNow(I18n.translate("narrator.select", string2));
 			}
@@ -275,7 +275,8 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 		private void renderPendingInvitationItem(MatrixStack matrices, PendingInvite pendingInvite, int i, int j, int k, int l) {
 			RealmsPendingInvitesScreen.this.textRenderer.draw(matrices, pendingInvite.worldName, (float)(i + 38), (float)(j + 1), 16777215);
 			RealmsPendingInvitesScreen.this.textRenderer.draw(matrices, pendingInvite.worldOwnerName, (float)(i + 38), (float)(j + 12), 7105644);
-			RealmsPendingInvitesScreen.this.textRenderer.draw(matrices, RealmsUtil.method_25282(pendingInvite.date), (float)(i + 38), (float)(j + 24), 7105644);
+			RealmsPendingInvitesScreen.this.textRenderer
+				.draw(matrices, RealmsUtil.convertToAgePresentation(pendingInvite.date), (float)(i + 38), (float)(j + 24), 7105644);
 			RealmsAcceptRejectButton.render(matrices, this.buttons, RealmsPendingInvitesScreen.this.pendingInvitationSelectionList, i, j, k, l);
 			RealmsTextureManager.withBoundFace(pendingInvite.worldOwnerUuid, () -> {
 				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);

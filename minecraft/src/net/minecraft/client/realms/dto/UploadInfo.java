@@ -17,9 +17,9 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class UploadInfo extends ValueObject {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final String field_32116 = "http://";
-	private static final int field_32117 = 8080;
-	private static final Pattern field_26467 = Pattern.compile("^[a-zA-Z][-a-zA-Z0-9+.]+:");
+	private static final String HTTP_PROTOCOL = "http://";
+	private static final int PORT = 8080;
+	private static final Pattern PROTOCOL_PATTERN = Pattern.compile("^[a-zA-Z][-a-zA-Z0-9+.]+:");
 	private final boolean worldClosed;
 	@Nullable
 	private final String token;
@@ -39,7 +39,7 @@ public class UploadInfo extends ValueObject {
 			String string = JsonUtils.getStringOr("uploadEndpoint", jsonObject, null);
 			if (string != null) {
 				int i = JsonUtils.getIntOr("port", jsonObject, -1);
-				URI uRI = method_30862(string, i);
+				URI uRI = getUrl(string, i);
 				if (uRI != null) {
 					boolean bl = JsonUtils.getBooleanOr("worldClosed", jsonObject, false);
 					String string2 = JsonUtils.getStringOr("token", jsonObject, null);
@@ -55,30 +55,30 @@ public class UploadInfo extends ValueObject {
 
 	@Nullable
 	@VisibleForTesting
-	public static URI method_30862(String string, int i) {
-		Matcher matcher = field_26467.matcher(string);
-		String string2 = method_30863(string, matcher);
+	public static URI getUrl(String url, int port) {
+		Matcher matcher = PROTOCOL_PATTERN.matcher(url);
+		String string = getUrlWithProtocol(url, matcher);
 
 		try {
-			URI uRI = new URI(string2);
-			int j = method_30861(i, uRI.getPort());
-			return j != uRI.getPort() ? new URI(uRI.getScheme(), uRI.getUserInfo(), uRI.getHost(), j, uRI.getPath(), uRI.getQuery(), uRI.getFragment()) : uRI;
+			URI uRI = new URI(string);
+			int i = getPort(port, uRI.getPort());
+			return i != uRI.getPort() ? new URI(uRI.getScheme(), uRI.getUserInfo(), uRI.getHost(), i, uRI.getPath(), uRI.getQuery(), uRI.getFragment()) : uRI;
 		} catch (URISyntaxException var6) {
-			LOGGER.warn("Failed to parse URI {}", string2, var6);
+			LOGGER.warn("Failed to parse URI {}", string, var6);
 			return null;
 		}
 	}
 
-	private static int method_30861(int i, int j) {
-		if (i != -1) {
-			return i;
+	private static int getPort(int port, int urlPort) {
+		if (port != -1) {
+			return port;
 		} else {
-			return j != -1 ? j : 8080;
+			return urlPort != -1 ? urlPort : 8080;
 		}
 	}
 
-	private static String method_30863(String string, Matcher matcher) {
-		return matcher.find() ? string : "http://" + string;
+	private static String getUrlWithProtocol(String url, Matcher matcher) {
+		return matcher.find() ? url : "http://" + url;
 	}
 
 	public static String createRequestContent(@Nullable String token) {

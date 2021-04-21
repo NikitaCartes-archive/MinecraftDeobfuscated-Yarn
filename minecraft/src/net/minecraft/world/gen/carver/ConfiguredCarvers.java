@@ -18,7 +18,8 @@ public class ConfiguredCarvers {
 					0.14285715F,
 					BiasedToBottomHeightProvider.create(YOffset.fixed(0), YOffset.fixed(127), 8),
 					ConstantFloatProvider.create(0.5F),
-					YOffset.aboveBottom(11),
+					YOffset.aboveBottom(10),
+					false,
 					CarverDebugConfig.create(false, Blocks.CRIMSON_BUTTON.getDefaultState()),
 					ConstantFloatProvider.create(1.0F),
 					ConstantFloatProvider.create(1.0F),
@@ -34,7 +35,8 @@ public class ConfiguredCarvers {
 					0.33333334F,
 					UniformHeightProvider.create(YOffset.aboveBottom(8), YOffset.fixed(126)),
 					UniformFloatProvider.create(0.1F, 0.9F),
-					YOffset.aboveBottom(9),
+					YOffset.aboveBottom(8),
+					false,
 					CarverDebugConfig.create(false, Blocks.CRIMSON_BUTTON.getDefaultState()),
 					UniformFloatProvider.create(0.3F, 1.8F),
 					UniformFloatProvider.create(0.5F, 1.8F),
@@ -50,7 +52,8 @@ public class ConfiguredCarvers {
 					0.02F,
 					BiasedToBottomHeightProvider.create(YOffset.fixed(20), YOffset.fixed(67), 8),
 					ConstantFloatProvider.create(3.0F),
-					YOffset.aboveBottom(11),
+					YOffset.aboveBottom(10),
+					false,
 					CarverDebugConfig.create(false, Blocks.WARPED_BUTTON.getDefaultState()),
 					UniformFloatProvider.create(-0.125F, 0.125F),
 					new RavineCarverConfig.Shape(
@@ -67,7 +70,8 @@ public class ConfiguredCarvers {
 					0.02F,
 					UniformHeightProvider.create(YOffset.fixed(10), YOffset.fixed(67)),
 					ConstantFloatProvider.create(3.0F),
-					YOffset.aboveBottom(9),
+					YOffset.aboveBottom(8),
+					false,
 					CarverDebugConfig.create(false, Blocks.WARPED_BUTTON.getDefaultState()),
 					UniformFloatProvider.create(-0.125F, 0.125F),
 					new RavineCarverConfig.Shape(
@@ -84,7 +88,8 @@ public class ConfiguredCarvers {
 					0.06666667F,
 					BiasedToBottomHeightProvider.create(YOffset.fixed(0), YOffset.fixed(127), 8),
 					ConstantFloatProvider.create(0.5F),
-					YOffset.aboveBottom(11),
+					YOffset.aboveBottom(10),
+					false,
 					CarverDebugConfig.create(false, Blocks.CRIMSON_BUTTON.getDefaultState()),
 					ConstantFloatProvider.create(1.0F),
 					ConstantFloatProvider.create(1.0F),
@@ -100,7 +105,8 @@ public class ConfiguredCarvers {
 					0.14285715F,
 					BiasedToBottomHeightProvider.create(YOffset.fixed(0), YOffset.fixed(127), 8),
 					UniformFloatProvider.create(0.1F, 0.9F),
-					YOffset.aboveBottom(9),
+					YOffset.aboveBottom(8),
+					false,
 					CarverDebugConfig.create(false, Blocks.CRIMSON_BUTTON.getDefaultState()),
 					ConstantFloatProvider.create(1.0F),
 					ConstantFloatProvider.create(1.0F),
@@ -116,7 +122,8 @@ public class ConfiguredCarvers {
 					0.02F,
 					BiasedToBottomHeightProvider.create(YOffset.fixed(20), YOffset.fixed(67), 8),
 					ConstantFloatProvider.create(3.0F),
-					YOffset.aboveBottom(11),
+					YOffset.aboveBottom(10),
+					false,
 					CarverDebugConfig.create(false, Blocks.WARPED_BUTTON.getDefaultState()),
 					UniformFloatProvider.create(-0.125F, 0.125F),
 					new RavineCarverConfig.Shape(
@@ -133,7 +140,8 @@ public class ConfiguredCarvers {
 					0.06666667F,
 					BiasedToBottomHeightProvider.create(YOffset.fixed(0), YOffset.fixed(127), 8),
 					ConstantFloatProvider.create(0.5F),
-					YOffset.aboveBottom(11),
+					YOffset.aboveBottom(10),
+					false,
 					CarverDebugConfig.create(false, Blocks.CRIMSON_BUTTON.getDefaultState()),
 					ConstantFloatProvider.create(1.0F),
 					ConstantFloatProvider.create(1.0F),
@@ -149,22 +157,24 @@ public class ConfiguredCarvers {
 					0.2F,
 					UniformHeightProvider.create(YOffset.fixed(0), YOffset.belowTop(1)),
 					ConstantFloatProvider.create(0.5F),
-					YOffset.aboveBottom(11),
+					YOffset.aboveBottom(10),
+					false,
 					ConstantFloatProvider.create(1.0F),
 					ConstantFloatProvider.create(1.0F),
 					ConstantFloatProvider.create(-0.7F)
 				)
 			)
 	);
-	public static final ConfiguredCarver<RavineCarverConfig> PROTOTYPE_CRACK = register(
-		"prototype_crack",
+	public static final ConfiguredCarver<RavineCarverConfig> PROTOTYPE_CREVICE = register(
+		"prototype_crevice",
 		Carver.RAVINE
 			.configure(
 				new RavineCarverConfig(
 					0.00125F,
 					UniformHeightProvider.create(YOffset.fixed(40), YOffset.fixed(80)),
 					UniformFloatProvider.create(6.0F, 8.0F),
-					YOffset.aboveBottom(9),
+					YOffset.aboveBottom(8),
+					false,
 					CarverDebugConfig.create(false, Blocks.OAK_BUTTON.getDefaultState()),
 					UniformFloatProvider.create(-0.125F, 0.125F),
 					new RavineCarverConfig.Shape(

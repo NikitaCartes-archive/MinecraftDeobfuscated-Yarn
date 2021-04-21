@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import java.util.BitSet;
 import java.util.Random;
 import java.util.function.Function;
+import net.minecraft.class_6350;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.fluid.Fluids;
@@ -62,7 +63,7 @@ public class NetherCaveCarver extends CaveCarver {
 		Random random,
 		BlockPos.Mutable mutable,
 		BlockPos.Mutable mutable2,
-		int i,
+		class_6350 arg,
 		MutableBoolean mutableBoolean
 	) {
 		if (this.canAlwaysCarveBlock(chunk.getBlockState(mutable))) {

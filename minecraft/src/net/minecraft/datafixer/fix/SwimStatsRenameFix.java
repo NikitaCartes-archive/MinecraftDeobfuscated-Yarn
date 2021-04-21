@@ -5,12 +5,19 @@ import com.mojang.datafixers.OpticFinder;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
+import java.util.Map;
+import java.util.Map.Entry;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class SwimStatsRenameFix extends DataFix {
-	public SwimStatsRenameFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType);
+	private final String field_33560;
+	private final Map<String, String> field_33561;
+
+	public SwimStatsRenameFix(Schema outputSchema, String string, Map<String, String> map) {
+		super(outputSchema, false);
+		this.field_33560 = string;
+		this.field_33561 = map;
 	}
 
 	@Override
@@ -21,15 +28,17 @@ public class SwimStatsRenameFix extends DataFix {
 		OpticFinder<?> opticFinder2 = opticFinder.type().findField("minecraft:custom");
 		OpticFinder<String> opticFinder3 = IdentifierNormalizingSchema.getIdentifierType().finder();
 		return this.fixTypeEverywhereTyped(
-			"SwimStatsRenameFix",
+			this.field_33560,
 			type2,
 			type,
 			typed -> typed.updateTyped(opticFinder, typedx -> typedx.updateTyped(opticFinder2, typedxx -> typedxx.update(opticFinder3, string -> {
-							if (string.equals("minecraft:swim_one_cm")) {
-								return "minecraft:walk_on_water_one_cm";
-							} else {
-								return string.equals("minecraft:dive_one_cm") ? "minecraft:walk_under_water_one_cm" : string;
+							for (Entry<String, String> entry : this.field_33561.entrySet()) {
+								if (string.equals(entry.getKey())) {
+									return (String)entry.getValue();
+								}
 							}
+
+							return string;
 						})))
 		);
 	}

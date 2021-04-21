@@ -21,8 +21,8 @@ public class BendingTrunkPlacer extends TrunkPlacer {
 		instance -> fillTrunkPlacerFields(instance)
 				.<Integer, IntProvider>and(
 					instance.group(
-						Codecs.field_33442.optionalFieldOf("min_height_for_leaves", 1).forGetter(bendingTrunkPlacer -> bendingTrunkPlacer.minHeightForLeaves),
-						IntProvider.createValidatingCodec(1, 64).fieldOf("bend_length").forGetter(bendingTrunkPlacer -> bendingTrunkPlacer.bendLength)
+						Codecs.field_33442.optionalFieldOf("min_height_for_leaves", 1).forGetter(placer -> placer.minHeightForLeaves),
+						IntProvider.createValidatingCodec(1, 64).fieldOf("bend_length").forGetter(placer -> placer.bendLength)
 					)
 				)
 				.apply(instance, BendingTrunkPlacer::new)
@@ -43,36 +43,36 @@ public class BendingTrunkPlacer extends TrunkPlacer {
 
 	@Override
 	public List<FoliagePlacer.TreeNode> generate(
-		TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, int i, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig
+		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, int height, BlockPos startPos, TreeFeatureConfig config
 	) {
 		Direction direction = Direction.Type.HORIZONTAL.random(random);
-		int j = i - 1;
-		BlockPos.Mutable mutable = blockPos.mutableCopy();
-		BlockPos blockPos2 = mutable.down();
-		setToDirt(testableWorld, biConsumer, random, blockPos2, treeFeatureConfig);
+		int i = height - 1;
+		BlockPos.Mutable mutable = startPos.mutableCopy();
+		BlockPos blockPos = mutable.down();
+		setToDirt(world, replacer, random, blockPos, config);
 		List<FoliagePlacer.TreeNode> list = Lists.<FoliagePlacer.TreeNode>newArrayList();
 
-		for (int k = 0; k <= j; k++) {
-			if (k + 1 >= j + random.nextInt(2)) {
+		for (int j = 0; j <= i; j++) {
+			if (j + 1 >= i + random.nextInt(2)) {
 				mutable.move(direction);
 			}
 
-			if (TreeFeature.canReplace(testableWorld, mutable)) {
-				method_35375(testableWorld, biConsumer, random, mutable, treeFeatureConfig);
+			if (TreeFeature.canReplace(world, mutable)) {
+				getAndSetState(world, replacer, random, mutable, config);
 			}
 
-			if (k >= this.minHeightForLeaves) {
+			if (j >= this.minHeightForLeaves) {
 				list.add(new FoliagePlacer.TreeNode(mutable.toImmutable(), 0, false));
 			}
 
 			mutable.move(Direction.UP);
 		}
 
-		int k = this.bendLength.get(random);
+		int j = this.bendLength.get(random);
 
-		for (int l = 0; l <= k; l++) {
-			if (TreeFeature.canReplace(testableWorld, mutable)) {
-				method_35375(testableWorld, biConsumer, random, mutable, treeFeatureConfig);
+		for (int k = 0; k <= j; k++) {
+			if (TreeFeature.canReplace(world, mutable)) {
+				getAndSetState(world, replacer, random, mutable, config);
 			}
 
 			list.add(new FoliagePlacer.TreeNode(mutable.toImmutable(), 0, false));

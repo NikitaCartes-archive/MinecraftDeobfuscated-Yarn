@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -43,6 +44,7 @@ public class PumpkinBlock extends GourdBlock {
 				world.spawnEntity(itemEntity);
 				itemStack.damage(1, player, playerx -> playerx.sendToolBreakStatus(hand));
 				world.emitGameEvent(player, GameEvent.SHEAR, pos);
+				player.incrementStat(Stats.USED.getOrCreateStat(Items.SHEARS));
 			}
 
 			return ActionResult.success(world.isClient);

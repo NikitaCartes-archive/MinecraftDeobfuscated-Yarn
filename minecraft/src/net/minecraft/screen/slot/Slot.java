@@ -22,10 +22,10 @@ public class Slot {
 		this.y = y;
 	}
 
-	public void onStackChanged(ItemStack originalItem, ItemStack newItem) {
-		int i = newItem.getCount() - originalItem.getCount();
+	public void onQuickTransfer(ItemStack newItem, ItemStack original) {
+		int i = original.getCount() - newItem.getCount();
 		if (i > 0) {
-			this.onCrafted(newItem, i);
+			this.onCrafted(original, i);
 		}
 	}
 

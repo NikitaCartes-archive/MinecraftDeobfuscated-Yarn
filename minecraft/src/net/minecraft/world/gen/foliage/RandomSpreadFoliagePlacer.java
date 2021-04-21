@@ -15,8 +15,8 @@ public class RandomSpreadFoliagePlacer extends FoliagePlacer {
 		instance -> fillFoliagePlacerFields(instance)
 				.<IntProvider, Integer>and(
 					instance.group(
-						IntProvider.createValidatingCodec(1, 512).fieldOf("foliage_height").forGetter(randomSpreadFoliagePlacer -> randomSpreadFoliagePlacer.foliageHeight),
-						Codec.intRange(0, 256).fieldOf("leaf_placement_attempts").forGetter(randomSpreadFoliagePlacer -> randomSpreadFoliagePlacer.leafPlacementAttempts)
+						IntProvider.createValidatingCodec(1, 512).fieldOf("foliage_height").forGetter(placer -> placer.foliageHeight),
+						Codec.intRange(0, 256).fieldOf("leaf_placement_attempts").forGetter(placer -> placer.leafPlacementAttempts)
 					)
 				)
 				.apply(instance, RandomSpreadFoliagePlacer::new)
@@ -37,22 +37,27 @@ public class RandomSpreadFoliagePlacer extends FoliagePlacer {
 
 	@Override
 	protected void generate(
-		TestableWorld testableWorld,
-		BiConsumer<BlockPos, BlockState> biConsumer,
+		TestableWorld world,
+		BiConsumer<BlockPos, BlockState> replacer,
 		Random random,
-		TreeFeatureConfig treeFeatureConfig,
-		int i,
+		TreeFeatureConfig config,
+		int trunkHeight,
 		FoliagePlacer.TreeNode treeNode,
+		int foliageHeight,
 		int radius,
-		int j,
 		int offset
 	) {
 		BlockPos blockPos = treeNode.getCenter();
 		BlockPos.Mutable mutable = blockPos.mutableCopy();
 
-		for (int k = 0; k < this.leafPlacementAttempts; k++) {
-			mutable.set(blockPos, random.nextInt(j) - random.nextInt(j), random.nextInt(radius) - random.nextInt(radius), random.nextInt(j) - random.nextInt(j));
-			placeFoliageBlock(testableWorld, biConsumer, random, treeFeatureConfig, mutable);
+		for (int i = 0; i < this.leafPlacementAttempts; i++) {
+			mutable.set(
+				blockPos,
+				random.nextInt(radius) - random.nextInt(radius),
+				random.nextInt(foliageHeight) - random.nextInt(foliageHeight),
+				random.nextInt(radius) - random.nextInt(radius)
+			);
+			placeFoliageBlock(world, replacer, random, config, mutable);
 		}
 	}
 

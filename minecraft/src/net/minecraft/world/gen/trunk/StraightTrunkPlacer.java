@@ -28,14 +28,14 @@ public class StraightTrunkPlacer extends TrunkPlacer {
 
 	@Override
 	public List<FoliagePlacer.TreeNode> generate(
-		TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, int i, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig
+		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, int height, BlockPos startPos, TreeFeatureConfig config
 	) {
-		setToDirt(testableWorld, biConsumer, random, blockPos.down(), treeFeatureConfig);
+		setToDirt(world, replacer, random, startPos.down(), config);
 
-		for (int j = 0; j < i; j++) {
-			method_35375(testableWorld, biConsumer, random, blockPos.up(j), treeFeatureConfig);
+		for (int i = 0; i < height; i++) {
+			getAndSetState(world, replacer, random, startPos.up(i), config);
 		}
 
-		return ImmutableList.of(new FoliagePlacer.TreeNode(blockPos.up(i), 0, false));
+		return ImmutableList.of(new FoliagePlacer.TreeNode(startPos.up(height), 0, false));
 	}
 }

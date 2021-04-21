@@ -37,50 +37,50 @@ public class LargeOakTrunkPlacer extends TrunkPlacer {
 
 	@Override
 	public List<FoliagePlacer.TreeNode> generate(
-		TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, int i, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig
+		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, int height, BlockPos startPos, TreeFeatureConfig config
 	) {
-		int j = 5;
-		int k = i + 2;
-		int l = MathHelper.floor((double)k * 0.618);
-		setToDirt(testableWorld, biConsumer, random, blockPos.down(), treeFeatureConfig);
+		int i = 5;
+		int j = height + 2;
+		int k = MathHelper.floor((double)j * 0.618);
+		setToDirt(world, replacer, random, startPos.down(), config);
 		double d = 1.0;
-		int m = Math.min(1, MathHelper.floor(1.382 + Math.pow(1.0 * (double)k / 13.0, 2.0)));
-		int n = blockPos.getY() + l;
-		int o = k - 5;
+		int l = Math.min(1, MathHelper.floor(1.382 + Math.pow(1.0 * (double)j / 13.0, 2.0)));
+		int m = startPos.getY() + k;
+		int n = j - 5;
 		List<LargeOakTrunkPlacer.BranchPosition> list = Lists.<LargeOakTrunkPlacer.BranchPosition>newArrayList();
-		list.add(new LargeOakTrunkPlacer.BranchPosition(blockPos.up(o), n));
+		list.add(new LargeOakTrunkPlacer.BranchPosition(startPos.up(n), m));
 
-		for (; o >= 0; o--) {
-			float f = shouldGenerateBranch(k, o);
+		for (; n >= 0; n--) {
+			float f = shouldGenerateBranch(j, n);
 			if (!(f < 0.0F)) {
-				for (int p = 0; p < m; p++) {
+				for (int o = 0; o < l; o++) {
 					double e = 1.0;
 					double g = 1.0 * (double)f * ((double)random.nextFloat() + 0.328);
 					double h = (double)(random.nextFloat() * 2.0F) * Math.PI;
-					double q = g * Math.sin(h) + 0.5;
-					double r = g * Math.cos(h) + 0.5;
-					BlockPos blockPos2 = blockPos.add(q, (double)(o - 1), r);
-					BlockPos blockPos3 = blockPos2.up(5);
-					if (this.makeOrCheckBranch(testableWorld, biConsumer, random, blockPos2, blockPos3, false, treeFeatureConfig)) {
-						int s = blockPos.getX() - blockPos2.getX();
-						int t = blockPos.getZ() - blockPos2.getZ();
-						double u = (double)blockPos2.getY() - Math.sqrt((double)(s * s + t * t)) * 0.381;
-						int v = u > (double)n ? n : (int)u;
-						BlockPos blockPos4 = new BlockPos(blockPos.getX(), v, blockPos.getZ());
-						if (this.makeOrCheckBranch(testableWorld, biConsumer, random, blockPos4, blockPos2, false, treeFeatureConfig)) {
-							list.add(new LargeOakTrunkPlacer.BranchPosition(blockPos2, blockPos4.getY()));
+					double p = g * Math.sin(h) + 0.5;
+					double q = g * Math.cos(h) + 0.5;
+					BlockPos blockPos = startPos.add(p, (double)(n - 1), q);
+					BlockPos blockPos2 = blockPos.up(5);
+					if (this.makeOrCheckBranch(world, replacer, random, blockPos, blockPos2, false, config)) {
+						int r = startPos.getX() - blockPos.getX();
+						int s = startPos.getZ() - blockPos.getZ();
+						double t = (double)blockPos.getY() - Math.sqrt((double)(r * r + s * s)) * 0.381;
+						int u = t > (double)m ? m : (int)t;
+						BlockPos blockPos3 = new BlockPos(startPos.getX(), u, startPos.getZ());
+						if (this.makeOrCheckBranch(world, replacer, random, blockPos3, blockPos, false, config)) {
+							list.add(new LargeOakTrunkPlacer.BranchPosition(blockPos, blockPos3.getY()));
 						}
 					}
 				}
 			}
 		}
 
-		this.makeOrCheckBranch(testableWorld, biConsumer, random, blockPos, blockPos.up(l), true, treeFeatureConfig);
-		this.makeBranches(testableWorld, biConsumer, random, k, blockPos, list, treeFeatureConfig);
+		this.makeOrCheckBranch(world, replacer, random, startPos, startPos.up(k), true, config);
+		this.makeBranches(world, replacer, random, j, startPos, list, config);
 		List<FoliagePlacer.TreeNode> list2 = Lists.<FoliagePlacer.TreeNode>newArrayList();
 
 		for (LargeOakTrunkPlacer.BranchPosition branchPosition : list) {
-			if (this.isHighEnough(k, branchPosition.getEndY() - blockPos.getY())) {
+			if (this.isHighEnough(j, branchPosition.getEndY() - startPos.getY())) {
 				list2.add(branchPosition.node);
 			}
 		}
@@ -89,30 +89,22 @@ public class LargeOakTrunkPlacer extends TrunkPlacer {
 	}
 
 	private boolean makeOrCheckBranch(
-		TestableWorld testableWorld,
-		BiConsumer<BlockPos, BlockState> biConsumer,
-		Random random,
-		BlockPos blockPos,
-		BlockPos blockPos2,
-		boolean bl,
-		TreeFeatureConfig treeFeatureConfig
+		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, BlockPos startPos, BlockPos branchPos, boolean make, TreeFeatureConfig config
 	) {
-		if (!bl && Objects.equals(blockPos, blockPos2)) {
+		if (!make && Objects.equals(startPos, branchPos)) {
 			return true;
 		} else {
-			BlockPos blockPos3 = blockPos2.add(-blockPos.getX(), -blockPos.getY(), -blockPos.getZ());
-			int i = this.getLongestSide(blockPos3);
-			float f = (float)blockPos3.getX() / (float)i;
-			float g = (float)blockPos3.getY() / (float)i;
-			float h = (float)blockPos3.getZ() / (float)i;
+			BlockPos blockPos = branchPos.add(-startPos.getX(), -startPos.getY(), -startPos.getZ());
+			int i = this.getLongestSide(blockPos);
+			float f = (float)blockPos.getX() / (float)i;
+			float g = (float)blockPos.getY() / (float)i;
+			float h = (float)blockPos.getZ() / (float)i;
 
 			for (int j = 0; j <= i; j++) {
-				BlockPos blockPos4 = blockPos.add((double)(0.5F + (float)j * f), (double)(0.5F + (float)j * g), (double)(0.5F + (float)j * h));
-				if (bl) {
-					TrunkPlacer.getAndSetState(
-						testableWorld, biConsumer, random, blockPos4, treeFeatureConfig, blockState -> blockState.with(PillarBlock.AXIS, this.getLogAxis(blockPos, blockPos4))
-					);
-				} else if (!TreeFeature.canTreeReplace(testableWorld, blockPos4)) {
+				BlockPos blockPos2 = startPos.add((double)(0.5F + (float)j * f), (double)(0.5F + (float)j * g), (double)(0.5F + (float)j * h));
+				if (make) {
+					TrunkPlacer.getAndSetState(world, replacer, random, blockPos2, config, state -> state.with(PillarBlock.AXIS, this.getLogAxis(startPos, blockPos2)));
+				} else if (!TreeFeature.canTreeReplace(world, blockPos2)) {
 					return false;
 				}
 			}
@@ -149,19 +141,19 @@ public class LargeOakTrunkPlacer extends TrunkPlacer {
 	}
 
 	private void makeBranches(
-		TestableWorld testableWorld,
-		BiConsumer<BlockPos, BlockState> biConsumer,
+		TestableWorld world,
+		BiConsumer<BlockPos, BlockState> replacer,
 		Random random,
-		int i,
-		BlockPos blockPos,
-		List<LargeOakTrunkPlacer.BranchPosition> list,
-		TreeFeatureConfig treeFeatureConfig
+		int treeHeight,
+		BlockPos startPos,
+		List<LargeOakTrunkPlacer.BranchPosition> branchPositions,
+		TreeFeatureConfig config
 	) {
-		for (LargeOakTrunkPlacer.BranchPosition branchPosition : list) {
-			int j = branchPosition.getEndY();
-			BlockPos blockPos2 = new BlockPos(blockPos.getX(), j, blockPos.getZ());
-			if (!blockPos2.equals(branchPosition.node.getCenter()) && this.isHighEnough(i, j - blockPos.getY())) {
-				this.makeOrCheckBranch(testableWorld, biConsumer, random, blockPos2, branchPosition.node.getCenter(), true, treeFeatureConfig);
+		for (LargeOakTrunkPlacer.BranchPosition branchPosition : branchPositions) {
+			int i = branchPosition.getEndY();
+			BlockPos blockPos = new BlockPos(startPos.getX(), i, startPos.getZ());
+			if (!blockPos.equals(branchPosition.node.getCenter()) && this.isHighEnough(treeHeight, i - startPos.getY())) {
+				this.makeOrCheckBranch(world, replacer, random, blockPos, branchPosition.node.getCenter(), true, config);
 			}
 		}
 	}
@@ -169,12 +161,12 @@ public class LargeOakTrunkPlacer extends TrunkPlacer {
 	/**
 	 * If the returned value is greater than or equal to 0, a branch will be generated.
 	 */
-	private static float shouldGenerateBranch(int i, int j) {
-		if ((float)j < (float)i * 0.3F) {
+	private static float shouldGenerateBranch(int treeHeight, int height) {
+		if ((float)height < (float)treeHeight * 0.3F) {
 			return -1.0F;
 		} else {
-			float f = (float)i / 2.0F;
-			float g = f - (float)j;
+			float f = (float)treeHeight / 2.0F;
+			float g = f - (float)height;
 			float h = MathHelper.sqrt(f * f - g * g);
 			if (g == 0.0F) {
 				h = f;

@@ -77,8 +77,8 @@ public class TextRenderingUtils {
 	public static class Line {
 		public final List<TextRenderingUtils.LineSegment> segments;
 
-		Line(TextRenderingUtils.LineSegment... lineSegments) {
-			this(Arrays.asList(lineSegments));
+		Line(TextRenderingUtils.LineSegment... segments) {
+			this(Arrays.asList(segments));
 		}
 
 		Line(List<TextRenderingUtils.LineSegment> segments) {

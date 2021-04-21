@@ -11,6 +11,7 @@ import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.stat.Stats;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -70,6 +71,8 @@ public class FireworkItem extends Item {
 				if (!user.getAbilities().creativeMode) {
 					itemStack.decrement(1);
 				}
+
+				user.incrementStat(Stats.USED.getOrCreateStat(this));
 			}
 
 			return TypedActionResult.success(user.getStackInHand(hand), world.isClient());

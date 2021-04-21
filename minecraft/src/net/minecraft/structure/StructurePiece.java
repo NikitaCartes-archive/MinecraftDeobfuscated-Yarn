@@ -353,27 +353,9 @@ public abstract class StructurePiece {
 		}
 	}
 
-	protected void addBlockWithRandomThreshold(
-		StructureWorldAccess world, BlockBox bounds, Random random, float threshold, int x, int y, int z, BlockState state, boolean bl
-	) {
+	protected void addBlockWithRandomThreshold(StructureWorldAccess world, BlockBox bounds, Random random, float threshold, int x, int y, int z, BlockState state) {
 		if (random.nextFloat() < threshold) {
-			if (!bl) {
-				this.addBlock(world, state, x, y, z, bounds);
-				return;
-			}
-
-			Direction[] directions = Direction.values();
-			BlockPos.Mutable mutable = this.offsetPos(x, y, z).mutableCopy();
-
-			for (Direction direction : directions) {
-				mutable.move(direction);
-				if (bounds.contains(mutable) && !world.isAir(mutable)) {
-					this.addBlock(world, state, x, y, z, bounds);
-					return;
-				}
-
-				mutable.move(direction.getOpposite());
-			}
+			this.addBlock(world, state, x, y, z, bounds);
 		}
 	}
 

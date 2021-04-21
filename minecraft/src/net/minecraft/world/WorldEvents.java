@@ -79,7 +79,7 @@ public class WorldEvents {
 	 * A fire block or campfire is extinguished.
 	 * <br>Plays the fire extinguish sound event.
 	 * <p>Called by {@link net.minecraft.block.AbstractFireBlock#onBreak(net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.block.BlockState, net.minecraft.entity.player.PlayerEntity) AbstractFireBlock#onBreak},
-	 * {@link net.minecraft.entity.projectile.thrown.PotionEntity#extinguishFire(net.minecraft.util.math.BlockPos, net.minecraft.util.math.Direction) PotionEntity#extinguishFire},
+	 * {@link net.minecraft.entity.projectile.thrown.PotionEntity#extinguishFire(net.minecraft.util.math.BlockPos) PotionEntity#extinguishFire},
 	 * and {@link net.minecraft.item.ShovelItem#useOnBlock(net.minecraft.item.ItemUsageContext) ShovelItem#useOnBlock}
 	 */
 	public static final int FIRE_EXTINGUISHED = 1009;

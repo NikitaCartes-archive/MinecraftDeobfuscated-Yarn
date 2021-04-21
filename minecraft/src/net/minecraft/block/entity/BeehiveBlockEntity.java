@@ -1,6 +1,7 @@
 package net.minecraft.block.entity;
 
 import com.google.common.collect.Lists;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -33,6 +34,35 @@ public class BeehiveBlockEntity extends BlockEntity {
 	public static final String TICKS_IN_HIVE_KEY = "TicksInHive";
 	public static final String HAS_NECTAR_KEY = "HasNectar";
 	public static final String BEES_KEY = "Bees";
+	private static final List<String> field_33570 = Arrays.asList(
+		"Air",
+		"ArmorDropChances",
+		"ArmorItems",
+		"Brain",
+		"CanPickUpLoot",
+		"DeathTime",
+		"FallDistance",
+		"FallFlying",
+		"Fire",
+		"HandDropChances",
+		"HandItems",
+		"HurtByTimestamp",
+		"HurtTime",
+		"LeftHanded",
+		"Motion",
+		"NoGravity",
+		"OnGround",
+		"PortalCooldown",
+		"Pos",
+		"Rotation",
+		"CannotEnterHiveTicks",
+		"TicksSincePollination",
+		"CropsGrownSincePollination",
+		"HivePos",
+		"Passengers",
+		"Leash",
+		"UUID"
+	);
 	public static final int MAX_BEE_COUNT = 3;
 	private static final int ANGERED_CANNOT_ENTER_HIVE_TICKS = 400;
 	private static final int MIN_OCCUPATION_TICKS_WITH_NECTAR = 2400;
@@ -161,9 +191,9 @@ public class BeehiveBlockEntity extends BlockEntity {
 			return false;
 		} else {
 			NbtCompound nbtCompound = bee.entityData;
-			nbtCompound.remove("Passengers");
-			nbtCompound.remove("Leash");
-			nbtCompound.remove("UUID");
+			method_36379(nbtCompound);
+			nbtCompound.put("HivePos", NbtHelper.fromBlockPos(pos));
+			nbtCompound.putBoolean("NoGravity", true);
 			Direction direction = state.get(BeehiveBlock.FACING);
 			BlockPos blockPos = pos.offset(direction);
 			boolean bl = !world.getBlockState(blockPos).getCollisionShape(world, blockPos).isEmpty();
@@ -219,6 +249,12 @@ public class BeehiveBlockEntity extends BlockEntity {
 		}
 	}
 
+	private static void method_36379(NbtCompound nbtCompound) {
+		for (String string : field_33570) {
+			nbtCompound.remove(string);
+		}
+	}
+
 	private static void ageBee(int ticks, BeeEntity bee) {
 		int i = bee.getBreedingAge();
 		if (i < 0) {
@@ -228,7 +264,6 @@ public class BeehiveBlockEntity extends BlockEntity {
 		}
 
 		bee.setLoveTicks(Math.max(0, bee.getLoveTicks() - ticks));
-		bee.resetPollinationTicks();
 	}
 
 	private boolean hasFlowerPos() {
@@ -317,7 +352,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 		private final int minOccupationTicks;
 
 		private Bee(NbtCompound entityData, int ticksInHive, int minOccupationTicks) {
-			entityData.remove("UUID");
+			BeehiveBlockEntity.method_36379(entityData);
 			this.entityData = entityData;
 			this.ticksInHive = ticksInHive;
 			this.minOccupationTicks = minOccupationTicks;

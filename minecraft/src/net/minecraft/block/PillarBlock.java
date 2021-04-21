@@ -17,6 +17,10 @@ public class PillarBlock extends Block {
 
 	@Override
 	public BlockState rotate(BlockState state, BlockRotation rotation) {
+		return changeRotation(state, rotation);
+	}
+
+	public static BlockState changeRotation(BlockState state, BlockRotation rotation) {
 		switch (rotation) {
 			case COUNTERCLOCKWISE_90:
 			case CLOCKWISE_90:

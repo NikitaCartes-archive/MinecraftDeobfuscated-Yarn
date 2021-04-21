@@ -40,6 +40,27 @@ public class TeleportCommand {
 			CommandManager.literal("teleport")
 				.requires(source -> source.hasPermissionLevel(2))
 				.then(
+					CommandManager.argument("location", Vec3ArgumentType.vec3())
+						.executes(
+							context -> execute(
+									context.getSource(),
+									Collections.singleton(context.getSource().getEntityOrThrow()),
+									context.getSource().getWorld(),
+									Vec3ArgumentType.getPosArgument(context, "location"),
+									DefaultPosArgument.zero(),
+									null
+								)
+						)
+				)
+				.then(
+					CommandManager.argument("destination", EntityArgumentType.entity())
+						.executes(
+							context -> execute(
+									context.getSource(), Collections.singleton(context.getSource().getEntityOrThrow()), EntityArgumentType.getEntity(context, "destination")
+								)
+						)
+				)
+				.then(
 					CommandManager.argument("targets", EntityArgumentType.entities())
 						.then(
 							CommandManager.argument("location", Vec3ArgumentType.vec3())
@@ -118,27 +139,6 @@ public class TeleportCommand {
 							CommandManager.argument("destination", EntityArgumentType.entity())
 								.executes(
 									context -> execute(context.getSource(), EntityArgumentType.getEntities(context, "targets"), EntityArgumentType.getEntity(context, "destination"))
-								)
-						)
-				)
-				.then(
-					CommandManager.argument("location", Vec3ArgumentType.vec3())
-						.executes(
-							context -> execute(
-									context.getSource(),
-									Collections.singleton(context.getSource().getEntityOrThrow()),
-									context.getSource().getWorld(),
-									Vec3ArgumentType.getPosArgument(context, "location"),
-									DefaultPosArgument.zero(),
-									null
-								)
-						)
-				)
-				.then(
-					CommandManager.argument("destination", EntityArgumentType.entity())
-						.executes(
-							context -> execute(
-									context.getSource(), Collections.singleton(context.getSource().getEntityOrThrow()), EntityArgumentType.getEntity(context, "destination")
 								)
 						)
 				)

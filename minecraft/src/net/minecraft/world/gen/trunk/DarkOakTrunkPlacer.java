@@ -30,53 +30,53 @@ public class DarkOakTrunkPlacer extends TrunkPlacer {
 
 	@Override
 	public List<FoliagePlacer.TreeNode> generate(
-		TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, int i, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig
+		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, int height, BlockPos startPos, TreeFeatureConfig config
 	) {
 		List<FoliagePlacer.TreeNode> list = Lists.<FoliagePlacer.TreeNode>newArrayList();
-		BlockPos blockPos2 = blockPos.down();
-		setToDirt(testableWorld, biConsumer, random, blockPos2, treeFeatureConfig);
-		setToDirt(testableWorld, biConsumer, random, blockPos2.east(), treeFeatureConfig);
-		setToDirt(testableWorld, biConsumer, random, blockPos2.south(), treeFeatureConfig);
-		setToDirt(testableWorld, biConsumer, random, blockPos2.south().east(), treeFeatureConfig);
+		BlockPos blockPos = startPos.down();
+		setToDirt(world, replacer, random, blockPos, config);
+		setToDirt(world, replacer, random, blockPos.east(), config);
+		setToDirt(world, replacer, random, blockPos.south(), config);
+		setToDirt(world, replacer, random, blockPos.south().east(), config);
 		Direction direction = Direction.Type.HORIZONTAL.random(random);
-		int j = i - random.nextInt(4);
-		int k = 2 - random.nextInt(3);
-		int l = blockPos.getX();
-		int m = blockPos.getY();
-		int n = blockPos.getZ();
-		int o = l;
-		int p = n;
-		int q = m + i - 1;
+		int i = height - random.nextInt(4);
+		int j = 2 - random.nextInt(3);
+		int k = startPos.getX();
+		int l = startPos.getY();
+		int m = startPos.getZ();
+		int n = k;
+		int o = m;
+		int p = l + height - 1;
 
-		for (int r = 0; r < i; r++) {
-			if (r >= j && k > 0) {
-				o += direction.getOffsetX();
-				p += direction.getOffsetZ();
-				k--;
+		for (int q = 0; q < height; q++) {
+			if (q >= i && j > 0) {
+				n += direction.getOffsetX();
+				o += direction.getOffsetZ();
+				j--;
 			}
 
-			int s = m + r;
-			BlockPos blockPos3 = new BlockPos(o, s, p);
-			if (TreeFeature.isAirOrLeaves(testableWorld, blockPos3)) {
-				method_35375(testableWorld, biConsumer, random, blockPos3, treeFeatureConfig);
-				method_35375(testableWorld, biConsumer, random, blockPos3.east(), treeFeatureConfig);
-				method_35375(testableWorld, biConsumer, random, blockPos3.south(), treeFeatureConfig);
-				method_35375(testableWorld, biConsumer, random, blockPos3.east().south(), treeFeatureConfig);
+			int r = l + q;
+			BlockPos blockPos2 = new BlockPos(n, r, o);
+			if (TreeFeature.isAirOrLeaves(world, blockPos2)) {
+				getAndSetState(world, replacer, random, blockPos2, config);
+				getAndSetState(world, replacer, random, blockPos2.east(), config);
+				getAndSetState(world, replacer, random, blockPos2.south(), config);
+				getAndSetState(world, replacer, random, blockPos2.east().south(), config);
 			}
 		}
 
-		list.add(new FoliagePlacer.TreeNode(new BlockPos(o, q, p), 0, true));
+		list.add(new FoliagePlacer.TreeNode(new BlockPos(n, p, o), 0, true));
 
-		for (int r = -1; r <= 2; r++) {
-			for (int s = -1; s <= 2; s++) {
-				if ((r < 0 || r > 1 || s < 0 || s > 1) && random.nextInt(3) <= 0) {
-					int t = random.nextInt(3) + 2;
+		for (int q = -1; q <= 2; q++) {
+			for (int r = -1; r <= 2; r++) {
+				if ((q < 0 || q > 1 || r < 0 || r > 1) && random.nextInt(3) <= 0) {
+					int s = random.nextInt(3) + 2;
 
-					for (int u = 0; u < t; u++) {
-						method_35375(testableWorld, biConsumer, random, new BlockPos(l + r, q - u - 1, n + s), treeFeatureConfig);
+					for (int t = 0; t < s; t++) {
+						getAndSetState(world, replacer, random, new BlockPos(k + q, p - t - 1, m + r), config);
 					}
 
-					list.add(new FoliagePlacer.TreeNode(new BlockPos(o + r, q, p + s), 0, false));
+					list.add(new FoliagePlacer.TreeNode(new BlockPos(n + q, p, o + r), 0, false));
 				}
 			}
 		}

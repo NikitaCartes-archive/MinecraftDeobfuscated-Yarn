@@ -154,11 +154,11 @@ public interface Text extends Message, StringVisitable {
 		return visitor.accept(this.asString());
 	}
 
-	default List<Text> method_36136(Style style) {
+	default List<Text> getWithStyle(Style style) {
 		List<Text> list = Lists.<Text>newArrayList();
-		this.visit((stylex, string) -> {
-			if (!string.isEmpty()) {
-				list.add(new LiteralText(string).fillStyle(stylex));
+		this.visit((styleOverride, text) -> {
+			if (!text.isEmpty()) {
+				list.add(new LiteralText(text).fillStyle(styleOverride));
 			}
 
 			return Optional.empty();
@@ -260,7 +260,7 @@ public interface Text extends Message, StringVisitable {
 
 					mutableText = new ScoreText(JsonHelper.getString(jsonObject2, "name"), JsonHelper.getString(jsonObject2, "objective"));
 				} else if (jsonObject.has("selector")) {
-					Optional<Text> optional = this.method_36329(type, jsonDeserializationContext, jsonObject);
+					Optional<Text> optional = this.getSeparator(type, jsonDeserializationContext, jsonObject);
 					mutableText = new SelectorText(JsonHelper.getString(jsonObject, "selector"), optional);
 				} else if (jsonObject.has("keybind")) {
 					mutableText = new KeybindText(JsonHelper.getString(jsonObject, "keybind"));
@@ -270,7 +270,7 @@ public interface Text extends Message, StringVisitable {
 					}
 
 					String string = JsonHelper.getString(jsonObject, "nbt");
-					Optional<Text> optional2 = this.method_36329(type, jsonDeserializationContext, jsonObject);
+					Optional<Text> optional2 = this.getSeparator(type, jsonDeserializationContext, jsonObject);
 					boolean bl = JsonHelper.getBoolean(jsonObject, "interpret", false);
 					if (jsonObject.has("block")) {
 						mutableText = new NbtText.BlockNbtText(string, bl, JsonHelper.getString(jsonObject, "block"), optional2);
@@ -301,8 +301,8 @@ public interface Text extends Message, StringVisitable {
 			}
 		}
 
-		private Optional<Text> method_36329(Type type, JsonDeserializationContext jsonDeserializationContext, JsonObject jsonObject) {
-			return jsonObject.has("separator") ? Optional.of(this.deserialize(jsonObject.get("separator"), type, jsonDeserializationContext)) : Optional.empty();
+		private Optional<Text> getSeparator(Type type, JsonDeserializationContext context, JsonObject json) {
+			return json.has("separator") ? Optional.of(this.deserialize(json.get("separator"), type, context)) : Optional.empty();
 		}
 
 		private void addStyle(Style style, JsonObject json, JsonSerializationContext context) {
@@ -359,7 +359,7 @@ public interface Text extends Message, StringVisitable {
 			} else if (text instanceof SelectorText) {
 				SelectorText selectorText = (SelectorText)text;
 				jsonObject.addProperty("selector", selectorText.getPattern());
-				this.method_36328(jsonSerializationContext, jsonObject, selectorText.method_36339());
+				this.addSeparator(jsonSerializationContext, jsonObject, selectorText.getSeparator());
 			} else if (text instanceof KeybindText) {
 				KeybindText keybindText = (KeybindText)text;
 				jsonObject.addProperty("keybind", keybindText.getKey());
@@ -371,7 +371,7 @@ public interface Text extends Message, StringVisitable {
 				NbtText nbtText = (NbtText)text;
 				jsonObject.addProperty("nbt", nbtText.getPath());
 				jsonObject.addProperty("interpret", nbtText.shouldInterpret());
-				this.method_36328(jsonSerializationContext, jsonObject, nbtText.field_33539);
+				this.addSeparator(jsonSerializationContext, jsonObject, nbtText.separator);
 				if (text instanceof NbtText.BlockNbtText) {
 					NbtText.BlockNbtText blockNbtText = (NbtText.BlockNbtText)text;
 					jsonObject.addProperty("block", blockNbtText.getPos());
@@ -391,8 +391,8 @@ public interface Text extends Message, StringVisitable {
 			return jsonObject;
 		}
 
-		private void method_36328(JsonSerializationContext jsonSerializationContext, JsonObject jsonObject, Optional<Text> optional) {
-			optional.ifPresent(text -> jsonObject.add("separator", this.serialize(text, text.getClass(), jsonSerializationContext)));
+		private void addSeparator(JsonSerializationContext context, JsonObject json, Optional<Text> separator) {
+			separator.ifPresent(separatorx -> json.add("separator", this.serialize(separatorx, separatorx.getClass(), context)));
 		}
 
 		public static String toJson(Text text) {

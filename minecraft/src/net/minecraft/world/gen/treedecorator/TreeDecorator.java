@@ -20,10 +20,10 @@ public abstract class TreeDecorator {
 	protected abstract TreeDecoratorType<?> getType();
 
 	public abstract void generate(
-		TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, List<BlockPos> leavesPositions, List<BlockPos> list
+		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions
 	);
 
-	protected static void placeVine(BiConsumer<BlockPos, BlockState> biConsumer, BlockPos blockPos, BooleanProperty booleanProperty) {
-		biConsumer.accept(blockPos, Blocks.VINE.getDefaultState().with(booleanProperty, Boolean.valueOf(true)));
+	protected static void placeVine(BiConsumer<BlockPos, BlockState> replacer, BlockPos pos, BooleanProperty facing) {
+		replacer.accept(pos, Blocks.VINE.getDefaultState().with(facing, Boolean.valueOf(true)));
 	}
 }

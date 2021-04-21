@@ -57,13 +57,11 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 			CyclingButtonWidget.onOffBuilder(new LiteralText("O"), new LiteralText("X"))
 				.initially(bl)
 				.omitKeyText()
-				.build(
-					this.width / 2 + 150 - 20, this.getTrackOutputButtonHeight(), 20, 20, new TranslatableText("advMode.trackOutput"), (cyclingButtonWidget, boolean_) -> {
-						CommandBlockExecutor commandBlockExecutor = this.getCommandExecutor();
-						commandBlockExecutor.setTrackingOutput(boolean_);
-						this.method_32642(boolean_);
-					}
-				)
+				.build(this.width / 2 + 150 - 20, this.getTrackOutputButtonHeight(), 20, 20, new TranslatableText("advMode.trackOutput"), (button, trackOutput) -> {
+					CommandBlockExecutor commandBlockExecutor = this.getCommandExecutor();
+					commandBlockExecutor.setTrackingOutput(trackOutput);
+					this.setPreviousOutputText(trackOutput);
+				})
 		);
 		this.consoleCommandTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 150, 50, 300, 20, new TranslatableText("advMode.command")) {
 			@Override
@@ -86,7 +84,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.commandSuggestor = new CommandSuggestor(this.client, this, this.consoleCommandTextField, this.textRenderer, true, true, 0, 7, false, Integer.MIN_VALUE);
 		this.commandSuggestor.setWindowActive(true);
 		this.commandSuggestor.refresh();
-		this.method_32642(bl);
+		this.setPreviousOutputText(bl);
 	}
 
 	@Override
@@ -97,8 +95,8 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.commandSuggestor.refresh();
 	}
 
-	protected void method_32642(boolean bl) {
-		this.previousOutputTextField.setText(bl ? this.getCommandExecutor().getLastOutput().getString() : "-");
+	protected void setPreviousOutputText(boolean trackOutput) {
+		this.previousOutputTextField.setText(trackOutput ? this.getCommandExecutor().getLastOutput().getString() : "-");
 	}
 
 	protected void commitAndClose() {

@@ -808,6 +808,18 @@ public class ConfiguredFeatures {
 		OreFeatureConfig.create(OreFeatureConfig.Rules.STONE_ORE_REPLACEABLES, ConfiguredFeatures.States.LAPIS_ORE),
 		OreFeatureConfig.create(OreFeatureConfig.Rules.DEEPSLATE_ORE_REPLACEABLES, ConfiguredFeatures.States.DEEPSLATE_LAPIS_ORE)
 	);
+	public static final ImmutableList<OreFeatureConfig.Target> field_33634 = ImmutableList.of(
+		OreFeatureConfig.create(OreFeatureConfig.Rules.STONE_ORE_REPLACEABLES, ConfiguredFeatures.States.EMERALD_ORE),
+		OreFeatureConfig.create(OreFeatureConfig.Rules.DEEPSLATE_ORE_REPLACEABLES, ConfiguredFeatures.States.field_33639)
+	);
+	public static final ImmutableList<OreFeatureConfig.Target> field_33635 = ImmutableList.of(
+		OreFeatureConfig.create(OreFeatureConfig.Rules.STONE_ORE_REPLACEABLES, ConfiguredFeatures.States.COPPER_ORE),
+		OreFeatureConfig.create(OreFeatureConfig.Rules.DEEPSLATE_ORE_REPLACEABLES, ConfiguredFeatures.States.field_33638)
+	);
+	public static final ImmutableList<OreFeatureConfig.Target> field_33636 = ImmutableList.of(
+		OreFeatureConfig.create(OreFeatureConfig.Rules.STONE_ORE_REPLACEABLES, ConfiguredFeatures.States.COAL_ORE),
+		OreFeatureConfig.create(OreFeatureConfig.Rules.DEEPSLATE_ORE_REPLACEABLES, ConfiguredFeatures.States.field_33637)
+	);
 	public static final ImmutableList<OreFeatureConfig.Target> INFESTED_TARGETS = ImmutableList.of(
 		OreFeatureConfig.create(OreFeatureConfig.Rules.STONE_ORE_REPLACEABLES, ConfiguredFeatures.States.INFESTED_STONE),
 		OreFeatureConfig.create(OreFeatureConfig.Rules.DEEPSLATE_ORE_REPLACEABLES, ConfiguredFeatures.States.INFESTED_DEEPSLATE)
@@ -1086,17 +1098,15 @@ public class ConfiguredFeatures {
 	);
 	public static final ConfiguredFeature<?, ?> ORE_EMERALD = register(
 		"ore_emerald",
-		Feature.EMERALD_ORE
-			.configure(new EmeraldOreFeatureConfig(ConfiguredFeatures.States.STONE, ConfiguredFeatures.States.EMERALD_ORE))
-			.range(ConfiguredFeatures.Decorators.BOTTOM_TO_TOP)
+		Feature.REPLACE_SINGLE_BLOCK
+			.configure(new EmeraldOreFeatureConfig(field_33634))
+			.method_36296(YOffset.fixed(4), YOffset.fixed(31))
+			.spreadHorizontally()
+			.repeat(UniformIntProvider.create(6, 24))
 	);
 	public static final ConfiguredFeature<?, ?> PROTOTYPE_ORE_EMERALD = register(
 		"prototype_ore_emerald",
-		Feature.EMERALD_ORE
-			.configure(new EmeraldOreFeatureConfig(ConfiguredFeatures.States.STONE, ConfiguredFeatures.States.EMERALD_ORE))
-			.method_36297(YOffset.fixed(32), YOffset.fixed(480))
-			.spreadHorizontally()
-			.repeat(50)
+		Feature.ORE.configure(new OreFeatureConfig(field_33634, 3)).method_36297(YOffset.fixed(32), YOffset.fixed(480)).spreadHorizontally().repeat(50)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_DEBRIS_LARGE = register(
 		"ore_debris_large",
@@ -1878,7 +1888,8 @@ public class ConfiguredFeatures {
 					3,
 					2,
 					new SimpleBlockStateProvider(Blocks.HANGING_ROOTS.getDefaultState()),
-					20
+					20,
+					2
 				)
 			)
 			.decorate(Decorator.CAVE_SURFACE.configure(new CaveSurfaceDecoratorConfig(VerticalSurfaceType.CEILING, 12)))
@@ -1956,7 +1967,7 @@ public class ConfiguredFeatures {
 		Feature.VEGETATION_PATCH
 			.configure(
 				new VegetationPatchFeatureConfig(
-					BlockTags.LUSH_PLANTS_REPLACEABLE.getId(),
+					BlockTags.MOSS_REPLACEABLE.getId(),
 					new SimpleBlockStateProvider(Blocks.MOSS_BLOCK.getDefaultState()),
 					() -> MOSS_VEGETATION,
 					VerticalSurfaceType.FLOOR,
@@ -1974,16 +1985,16 @@ public class ConfiguredFeatures {
 		Feature.VEGETATION_PATCH
 			.configure(
 				new VegetationPatchFeatureConfig(
-					BlockTags.LUSH_PLANTS_REPLACEABLE.getId(),
+					BlockTags.MOSS_REPLACEABLE.getId(),
 					new SimpleBlockStateProvider(Blocks.MOSS_BLOCK.getDefaultState()),
 					() -> MOSS_VEGETATION,
 					VerticalSurfaceType.FLOOR,
 					ConstantIntProvider.create(1),
 					0.0F,
 					5,
-					0.8F,
-					UniformIntProvider.create(1, 3),
-					0.0F
+					0.6F,
+					UniformIntProvider.create(1, 2),
+					0.75F
 				)
 			)
 	);
@@ -2059,7 +2070,7 @@ public class ConfiguredFeatures {
 		Feature.VEGETATION_PATCH
 			.configure(
 				new VegetationPatchFeatureConfig(
-					BlockTags.LUSH_PLANTS_REPLACEABLE.getId(),
+					BlockTags.MOSS_REPLACEABLE.getId(),
 					new SimpleBlockStateProvider(Blocks.MOSS_BLOCK.getDefaultState()),
 					() -> CAVE_VINE_IN_MOSS,
 					VerticalSurfaceType.CEILING,
@@ -2360,7 +2371,9 @@ public class ConfiguredFeatures {
 		protected static final BlockState DIORITE = Blocks.DIORITE.getDefaultState();
 		protected static final BlockState ANDESITE = Blocks.ANDESITE.getDefaultState();
 		protected static final BlockState COAL_ORE = Blocks.COAL_ORE.getDefaultState();
+		protected static final BlockState field_33637 = Blocks.DEEPSLATE_COAL_ORE.getDefaultState();
 		protected static final BlockState COPPER_ORE = Blocks.COPPER_ORE.getDefaultState();
+		protected static final BlockState field_33638 = Blocks.DEEPSLATE_COPPER_ORE.getDefaultState();
 		protected static final BlockState IRON_ORE = Blocks.IRON_ORE.getDefaultState();
 		protected static final BlockState DEEPSLATE_IRON_ORE = Blocks.DEEPSLATE_IRON_ORE.getDefaultState();
 		protected static final BlockState GOLD_ORE = Blocks.GOLD_ORE.getDefaultState();
@@ -2373,6 +2386,7 @@ public class ConfiguredFeatures {
 		protected static final BlockState DEEPSLATE_LAPIS_ORE = Blocks.DEEPSLATE_LAPIS_ORE.getDefaultState();
 		protected static final BlockState STONE = Blocks.STONE.getDefaultState();
 		protected static final BlockState EMERALD_ORE = Blocks.EMERALD_ORE.getDefaultState();
+		protected static final BlockState field_33639 = Blocks.DEEPSLATE_EMERALD_ORE.getDefaultState();
 		protected static final BlockState INFESTED_STONE = Blocks.INFESTED_STONE.getDefaultState();
 		protected static final BlockState INFESTED_DEEPSLATE = Blocks.INFESTED_DEEPSLATE.getDefaultState();
 		protected static final BlockState SAND = Blocks.SAND.getDefaultState();

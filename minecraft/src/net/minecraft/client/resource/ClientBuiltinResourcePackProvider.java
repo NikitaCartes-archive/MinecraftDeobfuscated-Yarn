@@ -21,6 +21,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.ProgressScreen;
+import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.util.NetworkUtils;
@@ -34,6 +35,7 @@ import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.ZipResourcePack;
 import net.minecraft.resource.metadata.PackResourceMetadata;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -57,6 +59,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 	private static final String field_32961 = "server";
 	private static final String field_32962 = "programer_art";
 	private static final String field_32963 = "Programmer Art";
+	private static final Text field_33633 = new TranslatableText("multiplayer.applyingPack");
 	private final DefaultResourcePack pack;
 	private final File serverPacksRoot;
 	private final ReentrantLock lock = new ReentrantLock();
@@ -106,12 +109,12 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 		return map;
 	}
 
-	public CompletableFuture<?> download(String string, String string2) {
+	public CompletableFuture<?> download(String string, String string2, boolean bl) {
 		String string3 = DigestUtils.sha1Hex(string);
 		String string4 = ALPHANUMERAL.matcher(string2).matches() ? string2 : "";
 		this.lock.lock();
 
-		CompletableFuture var13;
+		CompletableFuture var14;
 		try {
 			this.clear();
 			this.deleteOldServerPack();
@@ -120,18 +123,26 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 			if (file.exists()) {
 				completableFuture = CompletableFuture.completedFuture("");
 			} else {
-				ProgressScreen progressScreen = new ProgressScreen();
+				ProgressScreen progressScreen = new ProgressScreen(bl);
 				Map<String, String> map = getDownloadHeaders();
 				MinecraftClient minecraftClient = MinecraftClient.getInstance();
 				minecraftClient.submitAndJoin(() -> minecraftClient.openScreen(progressScreen));
 				completableFuture = NetworkUtils.downloadResourcePack(file, string, map, 104857600, progressScreen, minecraftClient.getNetworkProxy());
 			}
 
-			this.downloadTask = completableFuture.thenCompose(
-					object -> !this.verifyFile(string4, file)
-							? Util.completeExceptionally(new RuntimeException("Hash check failure for file " + file + ", see log"))
-							: this.loadServerPack(file, ResourcePackSource.PACK_SOURCE_SERVER)
-				)
+			this.downloadTask = completableFuture.thenCompose(object -> {
+					if (!this.verifyFile(string4, file)) {
+						return Util.completeExceptionally(new RuntimeException("Hash check failure for file " + file + ", see log"));
+					} else {
+						MinecraftClient minecraftClientx = MinecraftClient.getInstance();
+						minecraftClientx.execute(() -> {
+							if (!bl) {
+								minecraftClientx.openScreen(new SaveLevelScreen(field_33633));
+							}
+						});
+						return this.loadServerPack(file, ResourcePackSource.PACK_SOURCE_SERVER);
+					}
+				})
 				.whenComplete(
 					(void_, throwable) -> {
 						if (throwable != null) {
@@ -141,8 +152,8 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 							minecraftClientx.execute(
 								() -> minecraftClientx.openScreen(
 										new ConfirmScreen(
-											bl -> {
-												if (bl) {
+											blx -> {
+												if (blx) {
 													minecraftClientx.openScreen(null);
 												} else {
 													ClientPlayNetworkHandler clientPlayNetworkHandler = minecraftClientx.getNetworkHandler();
@@ -161,12 +172,12 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 						}
 					}
 				);
-			var13 = this.downloadTask;
+			var14 = this.downloadTask;
 		} finally {
 			this.lock.unlock();
 		}
 
-		return var13;
+		return var14;
 	}
 
 	private static void delete(File file) {

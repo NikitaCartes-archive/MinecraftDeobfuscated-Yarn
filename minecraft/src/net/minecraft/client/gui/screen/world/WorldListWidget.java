@@ -357,7 +357,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 					new ConfirmScreen(
 						bl -> {
 							if (bl) {
-								this.client.openScreen(new ProgressScreen());
+								this.client.openScreen(new ProgressScreen(true));
 								this.method_33685();
 							}
 

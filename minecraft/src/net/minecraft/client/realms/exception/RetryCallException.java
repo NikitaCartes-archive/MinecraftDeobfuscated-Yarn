@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class RetryCallException extends RealmsServiceException {
-	public static final int field_32118 = 5;
+	public static final int DEFAULT_DELAY_SECONDS = 5;
 	public final int delaySeconds;
 
 	public RetryCallException(int delaySeconds, int httpResultCode) {

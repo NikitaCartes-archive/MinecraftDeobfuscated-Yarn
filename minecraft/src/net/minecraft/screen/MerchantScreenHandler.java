@@ -120,7 +120,7 @@ public class MerchantScreenHandler extends ScreenHandler {
 					return ItemStack.EMPTY;
 				}
 
-				slot.onStackChanged(itemStack2, itemStack);
+				slot.onQuickTransfer(itemStack2, itemStack);
 				this.playYesSound();
 			} else if (index != 0 && index != 1) {
 				if (index >= 3 && index < 30) {

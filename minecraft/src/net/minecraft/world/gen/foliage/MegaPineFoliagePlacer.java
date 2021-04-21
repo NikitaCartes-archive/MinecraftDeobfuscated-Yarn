@@ -14,7 +14,7 @@ import net.minecraft.world.gen.feature.TreeFeatureConfig;
 public class MegaPineFoliagePlacer extends FoliagePlacer {
 	public static final Codec<MegaPineFoliagePlacer> CODEC = RecordCodecBuilder.create(
 		instance -> fillFoliagePlacerFields(instance)
-				.and(IntProvider.createValidatingCodec(0, 24).fieldOf("crown_height").forGetter(megaPineFoliagePlacer -> megaPineFoliagePlacer.crownHeight))
+				.and(IntProvider.createValidatingCodec(0, 24).fieldOf("crown_height").forGetter(placer -> placer.crownHeight))
 				.apply(instance, MegaPineFoliagePlacer::new)
 	);
 	private final IntProvider crownHeight;
@@ -31,31 +31,31 @@ public class MegaPineFoliagePlacer extends FoliagePlacer {
 
 	@Override
 	protected void generate(
-		TestableWorld testableWorld,
-		BiConsumer<BlockPos, BlockState> biConsumer,
+		TestableWorld world,
+		BiConsumer<BlockPos, BlockState> replacer,
 		Random random,
-		TreeFeatureConfig treeFeatureConfig,
-		int i,
+		TreeFeatureConfig config,
+		int trunkHeight,
 		FoliagePlacer.TreeNode treeNode,
+		int foliageHeight,
 		int radius,
-		int j,
 		int offset
 	) {
 		BlockPos blockPos = treeNode.getCenter();
-		int k = 0;
+		int i = 0;
 
-		for (int l = blockPos.getY() - radius + offset; l <= blockPos.getY() + offset; l++) {
-			int m = blockPos.getY() - l;
-			int n = j + treeNode.getFoliageRadius() + MathHelper.floor((float)m / (float)radius * 3.5F);
-			int o;
-			if (m > 0 && n == k && (l & 1) == 0) {
-				o = n + 1;
+		for (int j = blockPos.getY() - foliageHeight + offset; j <= blockPos.getY() + offset; j++) {
+			int k = blockPos.getY() - j;
+			int l = radius + treeNode.getFoliageRadius() + MathHelper.floor((float)k / (float)foliageHeight * 3.5F);
+			int m;
+			if (k > 0 && l == i && (j & 1) == 0) {
+				m = l + 1;
 			} else {
-				o = n;
+				m = l;
 			}
 
-			this.generateSquare(testableWorld, biConsumer, random, treeFeatureConfig, new BlockPos(blockPos.getX(), l, blockPos.getZ()), o, 0, treeNode.isGiantTrunk());
-			k = n;
+			this.generateSquare(world, replacer, random, config, new BlockPos(blockPos.getX(), j, blockPos.getZ()), m, 0, treeNode.isGiantTrunk());
+			i = l;
 		}
 	}
 

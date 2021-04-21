@@ -55,8 +55,8 @@ public class BookEditScreen extends Screen {
 	private static final int field_32327 = 192;
 	private static final Text EDIT_TITLE_TEXT = new TranslatableText("book.editTitle");
 	private static final Text FINALIZE_WARNING_TEXT = new TranslatableText("book.finalizeWarning");
-	private static final OrderedText BLACK_CURSOR_TEXT = OrderedText.styledString("_", Style.EMPTY.withColor(Formatting.BLACK));
-	private static final OrderedText GRAY_CURSOR_TEXT = OrderedText.styledString("_", Style.EMPTY.withColor(Formatting.GRAY));
+	private static final OrderedText BLACK_CURSOR_TEXT = OrderedText.styledForwardsVisitedString("_", Style.EMPTY.withColor(Formatting.BLACK));
+	private static final OrderedText GRAY_CURSOR_TEXT = OrderedText.styledForwardsVisitedString("_", Style.EMPTY.withColor(Formatting.GRAY));
 	private final PlayerEntity player;
 	private final ItemStack itemStack;
 	private boolean dirty;
@@ -395,7 +395,7 @@ public class BookEditScreen extends Screen {
 		this.drawTexture(matrices, i, 2, 0, 0, 192, 192);
 		if (this.signing) {
 			boolean bl = this.tickCounter / 6 % 2 == 0;
-			OrderedText orderedText = OrderedText.concat(OrderedText.styledString(this.title, Style.EMPTY), bl ? BLACK_CURSOR_TEXT : GRAY_CURSOR_TEXT);
+			OrderedText orderedText = OrderedText.concat(OrderedText.styledForwardsVisitedString(this.title, Style.EMPTY), bl ? BLACK_CURSOR_TEXT : GRAY_CURSOR_TEXT);
 			int k = this.textRenderer.getWidth(EDIT_TITLE_TEXT);
 			this.textRenderer.draw(matrices, EDIT_TITLE_TEXT, (float)(i + 36 + (114 - k) / 2), 34.0F, 0);
 			int l = this.textRenderer.getWidth(orderedText);

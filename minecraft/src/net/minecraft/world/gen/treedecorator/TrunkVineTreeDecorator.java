@@ -22,34 +22,34 @@ public class TrunkVineTreeDecorator extends TreeDecorator {
 
 	@Override
 	public void generate(
-		TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, List<BlockPos> leavesPositions, List<BlockPos> list
+		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions
 	) {
-		leavesPositions.forEach(blockPos -> {
+		logPositions.forEach(pos -> {
 			if (random.nextInt(3) > 0) {
-				BlockPos blockPos2 = blockPos.west();
-				if (Feature.isAir(testableWorld, blockPos2)) {
-					placeVine(biConsumer, blockPos2, VineBlock.EAST);
+				BlockPos blockPos = pos.west();
+				if (Feature.isAir(world, blockPos)) {
+					placeVine(replacer, blockPos, VineBlock.EAST);
 				}
 			}
 
 			if (random.nextInt(3) > 0) {
-				BlockPos blockPos2 = blockPos.east();
-				if (Feature.isAir(testableWorld, blockPos2)) {
-					placeVine(biConsumer, blockPos2, VineBlock.WEST);
+				BlockPos blockPos = pos.east();
+				if (Feature.isAir(world, blockPos)) {
+					placeVine(replacer, blockPos, VineBlock.WEST);
 				}
 			}
 
 			if (random.nextInt(3) > 0) {
-				BlockPos blockPos2 = blockPos.north();
-				if (Feature.isAir(testableWorld, blockPos2)) {
-					placeVine(biConsumer, blockPos2, VineBlock.SOUTH);
+				BlockPos blockPos = pos.north();
+				if (Feature.isAir(world, blockPos)) {
+					placeVine(replacer, blockPos, VineBlock.SOUTH);
 				}
 			}
 
 			if (random.nextInt(3) > 0) {
-				BlockPos blockPos2 = blockPos.south();
-				if (Feature.isAir(testableWorld, blockPos2)) {
-					placeVine(biConsumer, blockPos2, VineBlock.NORTH);
+				BlockPos blockPos = pos.south();
+				if (Feature.isAir(world, blockPos)) {
+					placeVine(replacer, blockPos, VineBlock.NORTH);
 				}
 			}
 		});

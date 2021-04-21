@@ -30,7 +30,8 @@ public final class ChunkGeneratorSettings {
 					Codec.BOOL.fieldOf("disable_mob_generation").forGetter(ChunkGeneratorSettings::isMobGenerationDisabled),
 					Codec.BOOL.fieldOf("aquifers_enabled").forGetter(ChunkGeneratorSettings::hasAquifers),
 					Codec.BOOL.fieldOf("noise_caves_enabled").forGetter(ChunkGeneratorSettings::hasNoiseCaves),
-					Codec.BOOL.fieldOf("deepslate_enabled").forGetter(ChunkGeneratorSettings::hasDeepslate)
+					Codec.BOOL.fieldOf("deepslate_enabled").forGetter(ChunkGeneratorSettings::hasDeepslate),
+					Codec.BOOL.fieldOf("ore_veins_enabled").forGetter(ChunkGeneratorSettings::method_36396)
 				)
 				.apply(instance, ChunkGeneratorSettings::new)
 	);
@@ -47,6 +48,7 @@ public final class ChunkGeneratorSettings {
 	private final boolean aquifers;
 	private final boolean noiseCaves;
 	private final boolean deepslate;
+	private final boolean field_33587;
 	public static final RegistryKey<ChunkGeneratorSettings> OVERWORLD = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("overworld"));
 	public static final RegistryKey<ChunkGeneratorSettings> AMPLIFIED = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("amplified"));
 	public static final RegistryKey<ChunkGeneratorSettings> NETHER = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("nether"));
@@ -69,7 +71,8 @@ public final class ChunkGeneratorSettings {
 		boolean mobGenerationDisabled,
 		boolean aquifers,
 		boolean noiseCaves,
-		boolean deepslate
+		boolean deepslate,
+		boolean bl
 	) {
 		this.structuresConfig = structuresConfig;
 		this.generationShapeConfig = generationShapeConfig;
@@ -83,6 +86,7 @@ public final class ChunkGeneratorSettings {
 		this.aquifers = aquifers;
 		this.noiseCaves = noiseCaves;
 		this.deepslate = deepslate;
+		this.field_33587 = bl;
 	}
 
 	public StructuresConfig getStructuresConfig() {
@@ -149,6 +153,10 @@ public final class ChunkGeneratorSettings {
 		return this.deepslate;
 	}
 
+	protected boolean method_36396() {
+		return this.field_33587;
+	}
+
 	public boolean equals(RegistryKey<ChunkGeneratorSettings> registryKey) {
 		return Objects.equals(this, BuiltinRegistries.CHUNK_GENERATOR_SETTINGS.get(registryKey));
 	}
@@ -191,6 +199,7 @@ public final class ChunkGeneratorSettings {
 			bl,
 			false,
 			false,
+			false,
 			false
 		);
 	}
@@ -226,6 +235,7 @@ public final class ChunkGeneratorSettings {
 			false,
 			false,
 			false,
+			false,
 			false
 		);
 	}
@@ -255,6 +265,7 @@ public final class ChunkGeneratorSettings {
 			0,
 			63,
 			0,
+			false,
 			false,
 			false,
 			false,

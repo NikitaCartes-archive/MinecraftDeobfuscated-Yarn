@@ -15,6 +15,7 @@ public class CarverConfig extends ProbabilityConfig {
 					HeightProvider.CODEC.fieldOf("y").forGetter(carverConfig -> carverConfig.y),
 					FloatProvider.VALUE_CODEC.fieldOf("yScale").forGetter(carverConfig -> carverConfig.yScale),
 					YOffset.OFFSET_CODEC.fieldOf("lava_level").forGetter(carverConfig -> carverConfig.lavaLevel),
+					Codec.BOOL.fieldOf("aquifers_enabled").forGetter(carverConfig -> carverConfig.field_33610),
 					CarverDebugConfig.CODEC.optionalFieldOf("debug_settings", CarverDebugConfig.DEFAULT).forGetter(carverConfig -> carverConfig.debugConfig)
 				)
 				.apply(instance, CarverConfig::new)
@@ -22,13 +23,15 @@ public class CarverConfig extends ProbabilityConfig {
 	public final HeightProvider y;
 	public final FloatProvider yScale;
 	public final YOffset lavaLevel;
+	public final boolean field_33610;
 	public final CarverDebugConfig debugConfig;
 
-	public CarverConfig(float probability, HeightProvider y, FloatProvider yScale, YOffset lavaLevel, CarverDebugConfig debugConfig) {
+	public CarverConfig(float probability, HeightProvider y, FloatProvider yScale, YOffset lavaLevel, boolean bl, CarverDebugConfig carverDebugConfig) {
 		super(probability);
 		this.y = y;
 		this.yScale = yScale;
 		this.lavaLevel = lavaLevel;
-		this.debugConfig = debugConfig;
+		this.field_33610 = bl;
+		this.debugConfig = carverDebugConfig;
 	}
 }

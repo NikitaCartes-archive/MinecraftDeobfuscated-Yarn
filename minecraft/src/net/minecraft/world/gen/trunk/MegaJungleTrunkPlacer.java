@@ -29,24 +29,24 @@ public class MegaJungleTrunkPlacer extends GiantTrunkPlacer {
 
 	@Override
 	public List<FoliagePlacer.TreeNode> generate(
-		TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, int i, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig
+		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, int height, BlockPos startPos, TreeFeatureConfig config
 	) {
 		List<FoliagePlacer.TreeNode> list = Lists.<FoliagePlacer.TreeNode>newArrayList();
-		list.addAll(super.generate(testableWorld, biConsumer, random, i, blockPos, treeFeatureConfig));
+		list.addAll(super.generate(world, replacer, random, height, startPos, config));
 
-		for (int j = i - 2 - random.nextInt(4); j > i / 2; j -= 2 + random.nextInt(4)) {
+		for (int i = height - 2 - random.nextInt(4); i > height / 2; i -= 2 + random.nextInt(4)) {
 			float f = random.nextFloat() * (float) (Math.PI * 2);
+			int j = 0;
 			int k = 0;
-			int l = 0;
 
-			for (int m = 0; m < 5; m++) {
-				k = (int)(1.5F + MathHelper.cos(f) * (float)m);
-				l = (int)(1.5F + MathHelper.sin(f) * (float)m);
-				BlockPos blockPos2 = blockPos.add(k, j - 3 + m / 2, l);
-				method_35375(testableWorld, biConsumer, random, blockPos2, treeFeatureConfig);
+			for (int l = 0; l < 5; l++) {
+				j = (int)(1.5F + MathHelper.cos(f) * (float)l);
+				k = (int)(1.5F + MathHelper.sin(f) * (float)l);
+				BlockPos blockPos = startPos.add(j, i - 3 + l / 2, k);
+				getAndSetState(world, replacer, random, blockPos, config);
 			}
 
-			list.add(new FoliagePlacer.TreeNode(blockPos.add(k, j, l), -2, false));
+			list.add(new FoliagePlacer.TreeNode(startPos.add(j, i, k), -2, false));
 		}
 
 		return list;

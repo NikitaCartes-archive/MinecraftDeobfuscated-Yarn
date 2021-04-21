@@ -25,15 +25,16 @@ public class CaveCarverConfig extends CarverConfig {
 		HeightProvider y,
 		FloatProvider yScale,
 		YOffset lavaLevel,
-		CarverDebugConfig debugConfig,
-		FloatProvider horizontalRadiusMultiplier,
-		FloatProvider verticalRadiusMultiplier,
-		FloatProvider floorLevel
+		boolean bl,
+		CarverDebugConfig carverDebugConfig,
+		FloatProvider floatProvider,
+		FloatProvider floatProvider2,
+		FloatProvider floatProvider3
 	) {
-		super(probability, y, yScale, lavaLevel, debugConfig);
-		this.horizontalRadiusMultiplier = horizontalRadiusMultiplier;
-		this.verticalRadiusMultiplier = verticalRadiusMultiplier;
-		this.floorLevel = floorLevel;
+		super(probability, y, yScale, lavaLevel, bl, carverDebugConfig);
+		this.horizontalRadiusMultiplier = floatProvider;
+		this.verticalRadiusMultiplier = floatProvider2;
+		this.floorLevel = floatProvider3;
 	}
 
 	public CaveCarverConfig(
@@ -41,11 +42,12 @@ public class CaveCarverConfig extends CarverConfig {
 		HeightProvider y,
 		FloatProvider yScale,
 		YOffset lavaLevel,
-		FloatProvider horizontalRadiusMultiplier,
-		FloatProvider verticalRadiusMultiplier,
-		FloatProvider floorLevel
+		boolean bl,
+		FloatProvider floatProvider,
+		FloatProvider floatProvider2,
+		FloatProvider floatProvider3
 	) {
-		this(probability, y, yScale, lavaLevel, CarverDebugConfig.DEFAULT, horizontalRadiusMultiplier, verticalRadiusMultiplier, floorLevel);
+		this(probability, y, yScale, lavaLevel, bl, CarverDebugConfig.DEFAULT, floatProvider, floatProvider2, floatProvider3);
 	}
 
 	public CaveCarverConfig(CarverConfig carverConfig, FloatProvider horizontalRadiusMultiplier, FloatProvider verticalRadiusMultiplier, FloatProvider floorLevel) {
@@ -54,6 +56,7 @@ public class CaveCarverConfig extends CarverConfig {
 			carverConfig.y,
 			carverConfig.yScale,
 			carverConfig.lavaLevel,
+			carverConfig.field_33610,
 			carverConfig.debugConfig,
 			horizontalRadiusMultiplier,
 			verticalRadiusMultiplier,

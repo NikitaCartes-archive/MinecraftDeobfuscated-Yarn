@@ -127,8 +127,10 @@ public interface CauldronBehavior {
 				return ActionResult.PASS;
 			} else {
 				if (!world.isClient) {
+					Item item = stack.getItem();
 					player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, new ItemStack(Items.GLASS_BOTTLE)));
 					player.incrementStat(Stats.USE_CAULDRON);
+					player.incrementStat(Stats.USED.getOrCreateStat(item));
 					world.setBlockState(pos, Blocks.WATER_CAULDRON.getDefaultState());
 					world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
 					world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
@@ -154,8 +156,10 @@ public interface CauldronBehavior {
 		);
 		WATER_CAULDRON_BEHAVIOR.put(Items.GLASS_BOTTLE, (CauldronBehavior)(state, world, pos, player, hand, stack) -> {
 			if (!world.isClient) {
+				Item item = stack.getItem();
 				player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)));
 				player.incrementStat(Stats.USE_CAULDRON);
+				player.incrementStat(Stats.USED.getOrCreateStat(item));
 				LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
 				world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
 				world.emitGameEvent(null, GameEvent.FLUID_PICKUP, pos);
@@ -260,8 +264,10 @@ public interface CauldronBehavior {
 			return ActionResult.PASS;
 		} else {
 			if (!world.isClient) {
+				Item item = stack.getItem();
 				player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, output));
 				player.incrementStat(Stats.USE_CAULDRON);
+				player.incrementStat(Stats.USED.getOrCreateStat(item));
 				world.setBlockState(pos, Blocks.CAULDRON.getDefaultState());
 				world.playSound(null, pos, soundEvent, SoundCategory.BLOCKS, 1.0F, 1.0F);
 				world.emitGameEvent(null, GameEvent.FLUID_PICKUP, pos);
@@ -273,8 +279,10 @@ public interface CauldronBehavior {
 
 	static ActionResult fillCauldron(World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack, BlockState state, SoundEvent soundEvent) {
 		if (!world.isClient) {
+			Item item = stack.getItem();
 			player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, new ItemStack(Items.BUCKET)));
 			player.incrementStat(Stats.FILL_CAULDRON);
+			player.incrementStat(Stats.USED.getOrCreateStat(item));
 			world.setBlockState(pos, state);
 			world.playSound(null, pos, soundEvent, SoundCategory.BLOCKS, 1.0F, 1.0F);
 			world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
