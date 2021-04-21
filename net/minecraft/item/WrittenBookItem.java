@@ -8,6 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LecternBlock;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -142,7 +143,7 @@ extends Item {
         MutableText text;
         try {
             text = Text.Serializer.fromLenientJson(string);
-            text = Texts.parse(serverCommandSource, text, playerEntity, 0);
+            text = Texts.parse(serverCommandSource, text, (Entity)playerEntity, 0);
         } catch (Exception exception) {
             text = new LiteralText(string);
         }

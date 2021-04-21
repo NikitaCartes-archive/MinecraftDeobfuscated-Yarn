@@ -303,7 +303,7 @@ IndexedIterable<T> {
     }
 
     protected Registry(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle) {
-        Bootstrap.method_36235(() -> "registry " + key);
+        Bootstrap.ensureBootstrapped(() -> "registry " + key);
         this.registryKey = key;
         this.lifecycle = lifecycle;
     }

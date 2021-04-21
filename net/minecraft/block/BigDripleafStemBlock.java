@@ -130,10 +130,9 @@ Waterloggable {
         }
         BlockPos blockPos = optional.get();
         BlockPos blockPos2 = blockPos.up();
-        FluidState fluidState = world.getFluidState(blockPos2);
         Direction direction = state.get(FACING);
-        BigDripleafStemBlock.placeStemAt(world, blockPos, state.getFluidState(), direction);
-        BigDripleafBlock.placeDripleafAt(world, blockPos2, fluidState, direction);
+        BigDripleafStemBlock.placeStemAt(world, blockPos, world.getFluidState(blockPos), direction);
+        BigDripleafBlock.placeDripleafAt(world, blockPos2, world.getFluidState(blockPos2), direction);
     }
 
     @Override

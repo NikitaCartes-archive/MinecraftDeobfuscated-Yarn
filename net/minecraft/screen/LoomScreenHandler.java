@@ -178,7 +178,7 @@ extends ScreenHandler {
                 if (!this.insertItem(itemStack2, 4, 40, true)) {
                     return ItemStack.EMPTY;
                 }
-                slot.onStackChanged(itemStack2, itemStack);
+                slot.onQuickTransfer(itemStack2, itemStack);
             } else if (index == this.dyeSlot.id || index == this.bannerSlot.id || index == this.patternSlot.id ? !this.insertItem(itemStack2, 4, 40, false) : (itemStack2.getItem() instanceof BannerItem ? !this.insertItem(itemStack2, this.bannerSlot.id, this.bannerSlot.id + 1, false) : (itemStack2.getItem() instanceof DyeItem ? !this.insertItem(itemStack2, this.dyeSlot.id, this.dyeSlot.id + 1, false) : (itemStack2.getItem() instanceof BannerPatternItem ? !this.insertItem(itemStack2, this.patternSlot.id, this.patternSlot.id + 1, false) : (index >= 4 && index < 31 ? !this.insertItem(itemStack2, 31, 40, false) : index >= 31 && index < 40 && !this.insertItem(itemStack2, 4, 31, false)))))) {
                 return ItemStack.EMPTY;
             }

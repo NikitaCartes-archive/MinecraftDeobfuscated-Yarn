@@ -20,7 +20,7 @@ import net.minecraft.world.gen.treedecorator.TreeDecoratorType;
 
 public class CocoaBeansTreeDecorator
 extends TreeDecorator {
-    public static final Codec<CocoaBeansTreeDecorator> CODEC = ((MapCodec)Codec.floatRange(0.0f, 1.0f).fieldOf("probability")).xmap(CocoaBeansTreeDecorator::new, cocoaBeansTreeDecorator -> Float.valueOf(cocoaBeansTreeDecorator.probability)).codec();
+    public static final Codec<CocoaBeansTreeDecorator> CODEC = ((MapCodec)Codec.floatRange(0.0f, 1.0f).fieldOf("probability")).xmap(CocoaBeansTreeDecorator::new, decorator -> Float.valueOf(decorator.probability)).codec();
     private final float probability;
 
     public CocoaBeansTreeDecorator(float probability) {
@@ -33,17 +33,17 @@ extends TreeDecorator {
     }
 
     @Override
-    public void generate(TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, List<BlockPos> leavesPositions, List<BlockPos> list) {
+    public void generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions) {
         if (random.nextFloat() >= this.probability) {
             return;
         }
-        int i = leavesPositions.get(0).getY();
-        leavesPositions.stream().filter(pos -> pos.getY() - i <= 2).forEach(blockPos -> {
+        int i = logPositions.get(0).getY();
+        logPositions.stream().filter(pos -> pos.getY() - i <= 2).forEach(pos -> {
             for (Direction direction : Direction.Type.HORIZONTAL) {
                 Direction direction2;
-                BlockPos blockPos2;
-                if (!(random.nextFloat() <= 0.25f) || !Feature.isAir(testableWorld, blockPos2 = blockPos.add((direction2 = direction.getOpposite()).getOffsetX(), 0, direction2.getOffsetZ()))) continue;
-                biConsumer.accept(blockPos2, (BlockState)((BlockState)Blocks.COCOA.getDefaultState().with(CocoaBlock.AGE, random.nextInt(3))).with(CocoaBlock.FACING, direction));
+                BlockPos blockPos;
+                if (!(random.nextFloat() <= 0.25f) || !Feature.isAir(world, blockPos = pos.add((direction2 = direction.getOpposite()).getOffsetX(), 0, direction2.getOffsetZ()))) continue;
+                replacer.accept(blockPos, (BlockState)((BlockState)Blocks.COCOA.getDefaultState().with(CocoaBlock.AGE, random.nextInt(3))).with(CocoaBlock.FACING, direction));
             }
         });
     }

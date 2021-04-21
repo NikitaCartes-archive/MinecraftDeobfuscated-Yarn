@@ -22,7 +22,8 @@ public class Stats {
     public static final StatType<EntityType<?>> KILLED_BY = Stats.registerType("killed_by", Registry.ENTITY_TYPE);
     public static final StatType<Identifier> CUSTOM = Stats.registerType("custom", Registry.CUSTOM_STAT);
     public static final Identifier LEAVE_GAME = Stats.register("leave_game", StatFormatter.DEFAULT);
-    public static final Identifier PLAY_ONE_MINUTE = Stats.register("play_one_minute", StatFormatter.TIME);
+    public static final Identifier PLAY_TIME = Stats.register("play_time", StatFormatter.TIME);
+    public static final Identifier TOTAL_WORLD_TIME = Stats.register("total_world_time", StatFormatter.TIME);
     public static final Identifier TIME_SINCE_DEATH = Stats.register("time_since_death", StatFormatter.TIME);
     public static final Identifier TIME_SINCE_REST = Stats.register("time_since_rest", StatFormatter.TIME);
     public static final Identifier SNEAK_TIME = Stats.register("sneak_time", StatFormatter.TIME);

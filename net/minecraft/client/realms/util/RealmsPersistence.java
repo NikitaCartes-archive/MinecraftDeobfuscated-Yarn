@@ -16,7 +16,7 @@ import org.apache.commons.io.FileUtils;
 
 @Environment(value=EnvType.CLIENT)
 public class RealmsPersistence {
-    private static final String field_32128 = "realms_persistence.json";
+    private static final String FILE_NAME = "realms_persistence.json";
     private static final CheckedGson CHECKED_GSON = new CheckedGson();
 
     public RealmsPersistenceData load() {
@@ -48,7 +48,7 @@ public class RealmsPersistence {
     }
 
     private static File getFile() {
-        return new File(MinecraftClient.getInstance().runDirectory, field_32128);
+        return new File(MinecraftClient.getInstance().runDirectory, FILE_NAME);
     }
 
     @Environment(value=EnvType.CLIENT)

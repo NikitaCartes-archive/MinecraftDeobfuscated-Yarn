@@ -3,22 +3,28 @@
  */
 package net.minecraft.world.gen.feature;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 import net.minecraft.block.BlockState;
+import net.minecraft.structure.rule.BlockStateMatchRuleTest;
 import net.minecraft.world.gen.feature.FeatureConfig;
+import net.minecraft.world.gen.feature.OreFeatureConfig;
 
 public class EmeraldOreFeatureConfig
 implements FeatureConfig {
-    public static final Codec<EmeraldOreFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockState.CODEC.fieldOf("target")).forGetter(emeraldOreFeatureConfig -> emeraldOreFeatureConfig.target), ((MapCodec)BlockState.CODEC.fieldOf("state")).forGetter(emeraldOreFeatureConfig -> emeraldOreFeatureConfig.state)).apply((Applicative<EmeraldOreFeatureConfig, ?>)instance, EmeraldOreFeatureConfig::new));
-    public final BlockState target;
-    public final BlockState state;
+    public static final Codec<EmeraldOreFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.list(OreFeatureConfig.Target.CODEC).fieldOf("targets")).forGetter(emeraldOreFeatureConfig -> emeraldOreFeatureConfig.target)).apply((Applicative<EmeraldOreFeatureConfig, ?>)instance, EmeraldOreFeatureConfig::new));
+    public final List<OreFeatureConfig.Target> target;
 
     public EmeraldOreFeatureConfig(BlockState target, BlockState state) {
-        this.target = target;
-        this.state = state;
+        this(ImmutableList.of(OreFeatureConfig.create(new BlockStateMatchRuleTest(target), state)));
+    }
+
+    public EmeraldOreFeatureConfig(List<OreFeatureConfig.Target> list) {
+        this.target = list;
     }
 }
 

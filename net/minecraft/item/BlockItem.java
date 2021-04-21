@@ -54,7 +54,8 @@ extends Item {
     public ActionResult useOnBlock(ItemUsageContext context) {
         ActionResult actionResult = this.place(new ItemPlacementContext(context));
         if (!actionResult.isAccepted() && this.isFood()) {
-            return this.use(context.getWorld(), context.getPlayer(), context.getHand()).getResult();
+            ActionResult actionResult2 = this.use(context.getWorld(), context.getPlayer(), context.getHand()).getResult();
+            return actionResult2 == ActionResult.CONSUME ? ActionResult.CONSUME_PARTIAL : actionResult2;
         }
         return actionResult;
     }

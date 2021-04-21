@@ -14,7 +14,6 @@ import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.ai.pathing.TargetPathNode;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
@@ -238,9 +237,8 @@ extends LandPathNodeMaker {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         PathNodeType pathNodeType = BirdPathNodeMaker.getCommonNodeType(world, mutable.set(x, y, z));
         if (pathNodeType == PathNodeType.OPEN && y >= world.getBottomY() + 1) {
-            BlockState blockState = world.getBlockState(mutable.set(x, y - 1, z));
             PathNodeType pathNodeType2 = BirdPathNodeMaker.getCommonNodeType(world, mutable.set(x, y - 1, z));
-            if (pathNodeType2 == PathNodeType.DAMAGE_FIRE || blockState.isOf(Blocks.MAGMA_BLOCK) || pathNodeType2 == PathNodeType.LAVA || blockState.isIn(BlockTags.CAMPFIRES)) {
+            if (pathNodeType2 == PathNodeType.DAMAGE_FIRE || pathNodeType2 == PathNodeType.LAVA) {
                 pathNodeType = PathNodeType.DAMAGE_FIRE;
             } else if (pathNodeType2 == PathNodeType.DAMAGE_CACTUS) {
                 pathNodeType = PathNodeType.DAMAGE_CACTUS;

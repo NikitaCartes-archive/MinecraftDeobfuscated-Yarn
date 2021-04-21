@@ -71,6 +71,10 @@ Waterloggable {
     private static final int field_31200 = 6;
     private static final float field_31201 = 2.0f;
     private static final int field_31202 = 2;
+    private static final float field_33566 = 5.0f;
+    private static final float field_33567 = 0.011377778f;
+    private static final int MAX_STALACTITE_GROWTH = 7;
+    private static final int STALACTITE_FLOOR_SEARCH_RANGE = 10;
     private static final float field_31203 = 0.6875f;
     private static final VoxelShape TIP_MERGE_SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 16.0, 11.0);
     private static final VoxelShape UP_TIP_SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 11.0, 11.0);
@@ -151,7 +155,7 @@ Waterloggable {
 
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        if (PointedDripstoneBlock.method_35283(state) && !this.canPlaceAt(state, world, pos)) {
+        if (PointedDripstoneBlock.isPointingUp(state) && !this.canPlaceAt(state, world, pos)) {
             world.breakBlock(pos, true);
         } else {
             PointedDripstoneBlock.spawnFallingBlock(state, world, pos);
@@ -161,6 +165,9 @@ Waterloggable {
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         PointedDripstoneBlock.dripTick(state, world, pos, random.nextFloat());
+        if (random.nextFloat() < 0.011377778f && PointedDripstoneBlock.isHeldByPointedDripstone(state, world, pos)) {
+            PointedDripstoneBlock.tryGrow(state, world, pos, random);
+        }
     }
 
     @VisibleForTesting
@@ -183,7 +190,7 @@ Waterloggable {
         if (dripChance >= f) {
             return;
         }
-        BlockPos blockPos = PointedDripstoneBlock.getTipPos(state, world, pos, 10);
+        BlockPos blockPos = PointedDripstoneBlock.getTipPos(state, world, pos, 10, false);
         if (blockPos == null) {
             return;
         }
@@ -270,7 +277,7 @@ Waterloggable {
     }
 
     private void scheduleFall(BlockState state, WorldAccess world, BlockPos pos) {
-        BlockPos blockPos = PointedDripstoneBlock.getTipPos(state, world, pos, Integer.MAX_VALUE);
+        BlockPos blockPos = PointedDripstoneBlock.getTipPos(state, world, pos, Integer.MAX_VALUE, true);
         if (blockPos == null) {
             return;
         }
@@ -293,12 +300,85 @@ Waterloggable {
     private static void spawnFallingBlock(BlockState state, ServerWorld world, BlockPos pos) {
         Vec3d vec3d = Vec3d.ofBottomCenter(pos);
         FallingBlockEntity fallingBlockEntity = new FallingBlockEntity(world, vec3d.x, vec3d.y, vec3d.z, state);
-        if (PointedDripstoneBlock.isTip(state)) {
+        if (PointedDripstoneBlock.isTip(state, true)) {
             int i = PointedDripstoneBlock.getStalactiteSize(world, pos, 6);
             float f = 1.0f * (float)i;
             fallingBlockEntity.setHurtEntities(f, 40);
         }
         world.spawnEntity(fallingBlockEntity);
+    }
+
+    @VisibleForTesting
+    public static void tryGrow(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        BlockState blockState2;
+        Optional<BlockPos> optional = PointedDripstoneBlock.getSupportingPos(world, pos, state, 7);
+        if (!optional.isPresent()) {
+            return;
+        }
+        BlockState blockState = world.getBlockState(optional.get());
+        if (!PointedDripstoneBlock.canGrow(blockState, blockState2 = world.getBlockState(optional.get().up()))) {
+            return;
+        }
+        BlockPos blockPos = PointedDripstoneBlock.getTipPos(state, world, pos, 7, false);
+        if (blockPos == null) {
+            return;
+        }
+        BlockState blockState3 = world.getBlockState(blockPos);
+        if (!PointedDripstoneBlock.canDrip(blockState3) || !PointedDripstoneBlock.canGrow(blockState3, world, blockPos)) {
+            return;
+        }
+        if (random.nextBoolean()) {
+            PointedDripstoneBlock.tryGrow(world, blockPos, Direction.DOWN);
+        } else {
+            PointedDripstoneBlock.tryGrowStalagmite(world, blockPos);
+        }
+    }
+
+    private static void tryGrowStalagmite(ServerWorld world, BlockPos pos) {
+        BlockPos.Mutable mutable = pos.mutableCopy();
+        for (int i = 0; i < 10; ++i) {
+            mutable.move(Direction.DOWN);
+            BlockState blockState = world.getBlockState(mutable);
+            if (!blockState.getFluidState().isEmpty()) {
+                return;
+            }
+            if (PointedDripstoneBlock.isTip(blockState, Direction.UP) && PointedDripstoneBlock.canGrow(blockState, world, mutable)) {
+                PointedDripstoneBlock.tryGrow(world, mutable, Direction.UP);
+                return;
+            }
+            if (!PointedDripstoneBlock.canPlaceAtWithDirection(world, mutable, Direction.UP) || world.isWater((BlockPos)mutable.down())) continue;
+            PointedDripstoneBlock.tryGrow(world, (BlockPos)mutable.down(), Direction.UP);
+            return;
+        }
+    }
+
+    private static void tryGrow(ServerWorld world, BlockPos pos, Direction direction) {
+        BlockPos blockPos = pos.offset(direction);
+        BlockState blockState = world.getBlockState(blockPos);
+        if (PointedDripstoneBlock.isTip(blockState, direction.getOpposite())) {
+            PointedDripstoneBlock.growMerged(blockState, world, blockPos);
+        } else if (blockState.isAir() || blockState.isOf(Blocks.WATER)) {
+            PointedDripstoneBlock.place(world, blockPos, direction, Thickness.TIP);
+        }
+    }
+
+    private static void place(WorldAccess world, BlockPos pos, Direction direction, Thickness thickness) {
+        BlockState blockState = (BlockState)((BlockState)((BlockState)Blocks.POINTED_DRIPSTONE.getDefaultState().with(VERTICAL_DIRECTION, direction)).with(THICKNESS, thickness)).with(WATERLOGGED, world.getFluidState(pos).getFluid() == Fluids.WATER);
+        world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
+    }
+
+    private static void growMerged(BlockState state, WorldAccess world, BlockPos pos) {
+        BlockPos blockPos2;
+        BlockPos blockPos;
+        if (state.get(VERTICAL_DIRECTION) == Direction.UP) {
+            blockPos = pos;
+            blockPos2 = pos.up();
+        } else {
+            blockPos2 = pos;
+            blockPos = pos.down();
+        }
+        PointedDripstoneBlock.place(world, blockPos2, Direction.DOWN, Thickness.TIP_MERGE);
+        PointedDripstoneBlock.place(world, blockPos, Direction.UP, Thickness.TIP_MERGE);
     }
 
     public static void createParticle(World world, BlockPos pos, BlockState state) {
@@ -317,13 +397,13 @@ Waterloggable {
     }
 
     @Nullable
-    private static BlockPos getTipPos(BlockState state, WorldAccess world, BlockPos pos, int range) {
-        if (PointedDripstoneBlock.isTip(state)) {
+    private static BlockPos getTipPos(BlockState state2, WorldAccess world, BlockPos pos, int range, boolean allowMerged) {
+        if (PointedDripstoneBlock.isTip(state2, allowMerged)) {
             return pos;
         }
-        Direction direction = state.get(VERTICAL_DIRECTION);
-        Predicate<BlockState> predicate = blockState -> blockState.isOf(Blocks.POINTED_DRIPSTONE) && blockState.get(VERTICAL_DIRECTION) == direction;
-        return PointedDripstoneBlock.searchInDirection(world, pos, direction.getDirection(), predicate, PointedDripstoneBlock::isTip, range).orElse(null);
+        Direction direction = state2.get(VERTICAL_DIRECTION);
+        Predicate<BlockState> predicate = state -> state.isOf(Blocks.POINTED_DRIPSTONE) && state.get(VERTICAL_DIRECTION) == direction;
+        return PointedDripstoneBlock.searchInDirection(world, pos, direction.getDirection(), predicate, state -> PointedDripstoneBlock.isTip(state, allowMerged), range).orElse(null);
     }
 
     @Nullable
@@ -366,10 +446,23 @@ Waterloggable {
         return PointedDripstoneBlock.isPointingDown(state) && state.get(THICKNESS) == Thickness.TIP && state.get(WATERLOGGED) == false;
     }
 
-    private static Optional<BlockPos> getSupportingPos(World world, BlockPos pos, BlockState state, int range) {
+    private static boolean canGrow(BlockState state, ServerWorld world, BlockPos pos) {
         Direction direction = state.get(VERTICAL_DIRECTION);
-        Predicate<BlockState> predicate = blockState -> blockState.isOf(Blocks.POINTED_DRIPSTONE) && blockState.get(VERTICAL_DIRECTION) == direction;
-        return PointedDripstoneBlock.searchInDirection(world, pos, direction.getOpposite().getDirection(), predicate, blockState -> !blockState.isOf(Blocks.POINTED_DRIPSTONE), range);
+        BlockPos blockPos = pos.offset(direction);
+        BlockState blockState = world.getBlockState(blockPos);
+        if (!blockState.getFluidState().isEmpty()) {
+            return false;
+        }
+        if (blockState.isAir()) {
+            return true;
+        }
+        return PointedDripstoneBlock.isTip(blockState, direction.getOpposite());
+    }
+
+    private static Optional<BlockPos> getSupportingPos(World world, BlockPos pos, BlockState state2, int range) {
+        Direction direction = state2.get(VERTICAL_DIRECTION);
+        Predicate<BlockState> predicate = state -> state.isOf(Blocks.POINTED_DRIPSTONE) && state.get(VERTICAL_DIRECTION) == direction;
+        return PointedDripstoneBlock.searchInDirection(world, pos, direction.getOpposite().getDirection(), predicate, state -> !state.isOf(Blocks.POINTED_DRIPSTONE), range);
     }
 
     private static boolean canPlaceAtWithDirection(WorldView world, BlockPos pos, Direction direction) {
@@ -378,20 +471,24 @@ Waterloggable {
         return blockState.isSideSolidFullSquare(world, blockPos, direction) || PointedDripstoneBlock.isPointedDripstoneFacingDirection(blockState, direction);
     }
 
-    private static boolean isTip(BlockState state) {
+    private static boolean isTip(BlockState state, boolean allowMerged) {
         if (!state.isOf(Blocks.POINTED_DRIPSTONE)) {
             return false;
         }
         Thickness thickness = state.get(THICKNESS);
-        return thickness == Thickness.TIP || thickness == Thickness.TIP_MERGE;
+        return thickness == Thickness.TIP || allowMerged && thickness == Thickness.TIP_MERGE;
+    }
+
+    private static boolean isTip(BlockState state, Direction direction) {
+        return PointedDripstoneBlock.isTip(state, false) && state.get(VERTICAL_DIRECTION) == direction;
     }
 
     private static boolean isPointingDown(BlockState state) {
         return PointedDripstoneBlock.isPointedDripstoneFacingDirection(state, Direction.DOWN);
     }
 
-    private static boolean method_35283(BlockState blockState) {
-        return PointedDripstoneBlock.isPointedDripstoneFacingDirection(blockState, Direction.UP);
+    private static boolean isPointingUp(BlockState state) {
+        return PointedDripstoneBlock.isPointedDripstoneFacingDirection(state, Direction.UP);
     }
 
     private static boolean isHeldByPointedDripstone(BlockState state, WorldView world, BlockPos pos) {
@@ -434,6 +531,10 @@ Waterloggable {
      */
     private static boolean isFluidLiquid(Fluid fluid) {
         return fluid == Fluids.LAVA || fluid == Fluids.WATER;
+    }
+
+    private static boolean canGrow(BlockState dripstoneBlockState, BlockState waterState) {
+        return dripstoneBlockState.isOf(Blocks.DRIPSTONE_BLOCK) && waterState.isOf(Blocks.WATER) && waterState.getFluidState().isStill();
     }
 
     private static Fluid getDripFluid(World world, Fluid fluid) {

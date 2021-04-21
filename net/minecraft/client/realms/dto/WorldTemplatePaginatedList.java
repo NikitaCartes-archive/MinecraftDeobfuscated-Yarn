@@ -37,7 +37,7 @@ extends ValueObject {
         this.total = -1;
     }
 
-    public boolean method_35688() {
+    public boolean isLastPage() {
         return this.page * this.size >= this.total && this.page > 0 && this.total > 0 && this.size > 0;
     }
 

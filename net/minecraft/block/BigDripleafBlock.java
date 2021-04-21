@@ -125,7 +125,7 @@ Waterloggable {
     public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         BlockPos blockPos = pos.down();
         BlockState blockState = world.getBlockState(blockPos);
-        return blockState.isOf(Blocks.BIG_DRIPLEAF_STEM) || blockState.isSideSolidFullSquare(world, blockPos, Direction.UP);
+        return blockState.isOf(Blocks.BIG_DRIPLEAF_STEM) || blockState.isOf(this) || blockState.isSideSolidFullSquare(world, blockPos, Direction.UP);
     }
 
     @Override
@@ -135,6 +135,9 @@ Waterloggable {
         }
         if (state.get(WATERLOGGED).booleanValue()) {
             world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+        }
+        if (direction == Direction.UP && neighborState.isOf(this)) {
+            return Blocks.BIG_DRIPLEAF_STEM.getStateWithProperties(state);
         }
         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
@@ -240,10 +243,10 @@ Waterloggable {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
         BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos().down());
-        Direction direction = blockState.isOf(Blocks.BIG_DRIPLEAF_STEM) ? blockState.get(BigDripleafStemBlock.FACING) : ctx.getPlayerFacing().getOpposite();
-        return (BlockState)((BlockState)this.getDefaultState().with(WATERLOGGED, fluidState.isEqualAndStill(Fluids.WATER))).with(FACING, direction);
+        FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
+        boolean bl = blockState.isOf(Blocks.BIG_DRIPLEAF) || blockState.isOf(Blocks.BIG_DRIPLEAF_STEM);
+        return (BlockState)((BlockState)this.getDefaultState().with(WATERLOGGED, fluidState.isEqualAndStill(Fluids.WATER))).with(FACING, bl ? blockState.get(FACING) : ctx.getPlayerFacing().getOpposite());
     }
 
     @Override

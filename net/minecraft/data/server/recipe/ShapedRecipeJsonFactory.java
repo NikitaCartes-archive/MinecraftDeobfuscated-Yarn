@@ -26,18 +26,16 @@ import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class ShapedRecipeJsonFactory
 implements CraftingRecipeJsonFactory {
-    private static final Logger LOGGER = LogManager.getLogger();
     private final Item output;
     private final int outputCount;
     private final List<String> pattern = Lists.newArrayList();
     private final Map<Character, Ingredient> inputs = Maps.newLinkedHashMap();
     private final Advancement.Task builder = Advancement.Task.create();
+    @Nullable
     private String group;
 
     public ShapedRecipeJsonFactory(ItemConvertible output, int outputCount) {
@@ -87,24 +85,17 @@ implements CraftingRecipeJsonFactory {
     }
 
     @Override
-    public ShapedRecipeJsonFactory group(String string) {
+    public ShapedRecipeJsonFactory group(@Nullable String string) {
         this.group = string;
         return this;
     }
 
     @Override
-    public void offerTo(Consumer<RecipeJsonProvider> exporter) {
-        this.offerTo(exporter, Registry.ITEM.getId(this.output));
+    public Item getOutputItem() {
+        return this.output;
     }
 
-    public void offerTo(Consumer<RecipeJsonProvider> exporter, String recipeIdStr) {
-        Identifier identifier = Registry.ITEM.getId(this.output);
-        if (new Identifier(recipeIdStr).equals(identifier)) {
-            throw new IllegalStateException("Shaped Recipe " + recipeIdStr + " should remove its 'save' argument");
-        }
-        this.offerTo(exporter, new Identifier(recipeIdStr));
-    }
-
+    @Override
     public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId) {
         this.validate(recipeId);
         this.builder.parent(new Identifier("recipes/root")).criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId)).rewards(AdvancementRewards.Builder.recipe(recipeId)).criteriaMerger(CriterionMerger.OR);
@@ -138,7 +129,7 @@ implements CraftingRecipeJsonFactory {
     }
 
     @Override
-    public /* synthetic */ CraftingRecipeJsonFactory group(String group) {
+    public /* synthetic */ CraftingRecipeJsonFactory group(@Nullable String group) {
         return this.group(group);
     }
 
@@ -147,7 +138,7 @@ implements CraftingRecipeJsonFactory {
         return this.criterion(name, conditions);
     }
 
-    class ShapedRecipeJsonProvider
+    static class ShapedRecipeJsonProvider
     implements RecipeJsonProvider {
         private final Identifier recipeId;
         private final Item output;
@@ -158,10 +149,10 @@ implements CraftingRecipeJsonFactory {
         private final Advancement.Task builder;
         private final Identifier advancementId;
 
-        public ShapedRecipeJsonProvider(Identifier recipeId, Item output, int outputCount, String group, List<String> pattern, Map<Character, Ingredient> inputs, Advancement.Task builder, Identifier advancementId) {
+        public ShapedRecipeJsonProvider(Identifier recipeId, Item output, int resultCount, String group, List<String> pattern, Map<Character, Ingredient> inputs, Advancement.Task builder, Identifier advancementId) {
             this.recipeId = recipeId;
             this.output = output;
-            this.resultCount = outputCount;
+            this.resultCount = resultCount;
             this.group = group;
             this.pattern = pattern;
             this.inputs = inputs;

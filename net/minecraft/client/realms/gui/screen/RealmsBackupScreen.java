@@ -175,7 +175,7 @@ extends RealmsScreen {
             this.selectedBackup = selectedBackup;
             Date date = this.backups.get((int)selectedBackup).lastModifiedDate;
             String string = DateFormat.getDateTimeInstance(3, 3).format(date);
-            String string2 = RealmsUtil.method_25282(date);
+            String string2 = RealmsUtil.convertToAgePresentation(date);
             TranslatableText text = new TranslatableText("mco.configure.world.restore.question.line1", string, string2);
             TranslatableText text2 = new TranslatableText("mco.configure.world.restore.question.line2");
             this.client.openScreen(new RealmsLongConfirmationScreen(bl -> {
@@ -255,7 +255,7 @@ extends RealmsScreen {
 
         private void renderBackupItem(MatrixStack matrices, Backup backup, int i, int j, int k, int l) {
             int m = backup.isUploadedVersion() ? -8388737 : 0xFFFFFF;
-            RealmsBackupScreen.this.textRenderer.draw(matrices, "Backup (" + RealmsUtil.method_25282(backup.lastModifiedDate) + ")", (float)(i + 40), (float)(j + 1), m);
+            RealmsBackupScreen.this.textRenderer.draw(matrices, "Backup (" + RealmsUtil.convertToAgePresentation(backup.lastModifiedDate) + ")", (float)(i + 40), (float)(j + 1), m);
             RealmsBackupScreen.this.textRenderer.draw(matrices, this.getMediumDatePresentation(backup.lastModifiedDate), (float)(i + 40), (float)(j + 12), 0x4C4C4C);
             int n = RealmsBackupScreen.this.width - 175;
             int o = -3;

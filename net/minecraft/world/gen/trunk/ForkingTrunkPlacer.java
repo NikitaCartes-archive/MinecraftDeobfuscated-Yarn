@@ -33,43 +33,43 @@ extends TrunkPlacer {
     }
 
     @Override
-    public List<FoliagePlacer.TreeNode> generate(TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, int i, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig) {
-        int p;
-        ForkingTrunkPlacer.setToDirt(testableWorld, biConsumer, random, blockPos.down(), treeFeatureConfig);
+    public List<FoliagePlacer.TreeNode> generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, int height, BlockPos startPos, TreeFeatureConfig config) {
+        int o;
+        ForkingTrunkPlacer.setToDirt(world, replacer, random, startPos.down(), config);
         ArrayList<FoliagePlacer.TreeNode> list = Lists.newArrayList();
         Direction direction = Direction.Type.HORIZONTAL.random(random);
-        int j = i - random.nextInt(4) - 1;
-        int k = 3 - random.nextInt(3);
+        int i = height - random.nextInt(4) - 1;
+        int j = 3 - random.nextInt(3);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        int l = blockPos.getX();
-        int m = blockPos.getZ();
-        int n = 0;
-        for (int o = 0; o < i; ++o) {
-            p = blockPos.getY() + o;
-            if (o >= j && k > 0) {
-                l += direction.getOffsetX();
-                m += direction.getOffsetZ();
-                --k;
+        int k = startPos.getX();
+        int l = startPos.getZ();
+        int m = 0;
+        for (int n = 0; n < height; ++n) {
+            o = startPos.getY() + n;
+            if (n >= i && j > 0) {
+                k += direction.getOffsetX();
+                l += direction.getOffsetZ();
+                --j;
             }
-            if (!ForkingTrunkPlacer.method_35375(testableWorld, biConsumer, random, mutable.set(l, p, m), treeFeatureConfig)) continue;
-            n = p + 1;
+            if (!ForkingTrunkPlacer.getAndSetState(world, replacer, random, mutable.set(k, o, l), config)) continue;
+            m = o + 1;
         }
-        list.add(new FoliagePlacer.TreeNode(new BlockPos(l, n, m), 1, false));
-        l = blockPos.getX();
-        m = blockPos.getZ();
+        list.add(new FoliagePlacer.TreeNode(new BlockPos(k, m, l), 1, false));
+        k = startPos.getX();
+        l = startPos.getZ();
         Direction direction2 = Direction.Type.HORIZONTAL.random(random);
         if (direction2 != direction) {
-            p = j - random.nextInt(2) - 1;
-            int q = 1 + random.nextInt(3);
-            n = 0;
-            for (int r = p; r < i && q > 0; ++r, --q) {
-                if (r < 1) continue;
-                int s = blockPos.getY() + r;
-                if (!ForkingTrunkPlacer.method_35375(testableWorld, biConsumer, random, mutable.set(l += direction2.getOffsetX(), s, m += direction2.getOffsetZ()), treeFeatureConfig)) continue;
-                n = s + 1;
+            o = i - random.nextInt(2) - 1;
+            int p = 1 + random.nextInt(3);
+            m = 0;
+            for (int q = o; q < height && p > 0; ++q, --p) {
+                if (q < 1) continue;
+                int r = startPos.getY() + q;
+                if (!ForkingTrunkPlacer.getAndSetState(world, replacer, random, mutable.set(k += direction2.getOffsetX(), r, l += direction2.getOffsetZ()), config)) continue;
+                m = r + 1;
             }
-            if (n > 1) {
-                list.add(new FoliagePlacer.TreeNode(new BlockPos(l, n, m), 0, false));
+            if (m > 1) {
+                list.add(new FoliagePlacer.TreeNode(new BlockPos(k, m, l), 0, false));
             }
         }
         return list;

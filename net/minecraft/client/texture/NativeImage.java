@@ -599,8 +599,8 @@ implements AutoCloseable {
     public static enum Format {
         ABGR(4, 6408, true, true, true, false, true, 0, 8, 16, 255, 24, true),
         BGR(3, 6407, true, true, true, false, false, 0, 8, 16, 255, 255, true),
-        LUMINANCE_ALPHA(2, 6410, false, false, false, true, true, 255, 255, 255, 0, 8, true),
-        LUMINANCE(1, 6409, false, false, false, true, false, 0, 0, 0, 0, 255, true);
+        LUMINANCE_ALPHA(2, 33319, false, false, false, true, true, 255, 255, 255, 0, 8, true),
+        LUMINANCE(1, 6403, false, false, false, true, false, 0, 0, 0, 0, 255, true);
 
         private final int channelCount;
         private final int pixelDataFormat;
@@ -746,9 +746,8 @@ implements AutoCloseable {
     public static enum GLFormat {
         ABGR(6408),
         BGR(6407),
-        LUMINANCE_ALPHA(6410),
-        LUMINANCE(6409),
-        INTENSITY(32841);
+        RG(33319),
+        RED(6403);
 
         private final int glConstant;
 

@@ -12,10 +12,12 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -95,6 +97,7 @@ extends Block {
         if (itemStack.isOf(Items.FLINT_AND_STEEL) || itemStack.isOf(Items.FIRE_CHARGE)) {
             TntBlock.primeTnt(world, pos, player2);
             world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
+            Item item = itemStack.getItem();
             if (!player2.isCreative()) {
                 if (itemStack.isOf(Items.FLINT_AND_STEEL)) {
                     itemStack.damage(1, player2, player -> player.sendToolBreakStatus(hand));
@@ -102,6 +105,7 @@ extends Block {
                     itemStack.decrement(1);
                 }
             }
+            player2.incrementStat(Stats.USED.getOrCreateStat(item));
             return ActionResult.success(world.isClient);
         }
         return super.onUse(state, world, pos, player2, hand, hit);

@@ -135,8 +135,8 @@ public class TextRenderingUtils {
     public static class Line {
         public final List<LineSegment> segments;
 
-        Line(LineSegment ... lineSegments) {
-            this(Arrays.asList(lineSegments));
+        Line(LineSegment ... segments) {
+            this(Arrays.asList(segments));
         }
 
         Line(List<LineSegment> segments) {

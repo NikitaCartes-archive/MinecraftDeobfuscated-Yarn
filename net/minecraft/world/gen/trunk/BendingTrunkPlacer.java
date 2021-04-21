@@ -27,7 +27,7 @@ import net.minecraft.world.gen.trunk.TrunkPlacerType;
 
 public class BendingTrunkPlacer
 extends TrunkPlacer {
-    public static final Codec<BendingTrunkPlacer> CODEC = RecordCodecBuilder.create(instance -> BendingTrunkPlacer.fillTrunkPlacerFields(instance).and(instance.group(Codecs.field_33442.optionalFieldOf("min_height_for_leaves", 1).forGetter(bendingTrunkPlacer -> bendingTrunkPlacer.minHeightForLeaves), ((MapCodec)IntProvider.createValidatingCodec(1, 64).fieldOf("bend_length")).forGetter(bendingTrunkPlacer -> bendingTrunkPlacer.bendLength))).apply((Applicative<BendingTrunkPlacer, ?>)instance, BendingTrunkPlacer::new));
+    public static final Codec<BendingTrunkPlacer> CODEC = RecordCodecBuilder.create(instance -> BendingTrunkPlacer.fillTrunkPlacerFields(instance).and(instance.group(Codecs.field_33442.optionalFieldOf("min_height_for_leaves", 1).forGetter(placer -> placer.minHeightForLeaves), ((MapCodec)IntProvider.createValidatingCodec(1, 64).fieldOf("bend_length")).forGetter(placer -> placer.bendLength))).apply((Applicative<BendingTrunkPlacer, ?>)instance, BendingTrunkPlacer::new));
     private final int minHeightForLeaves;
     private final IntProvider bendLength;
 
@@ -43,30 +43,30 @@ extends TrunkPlacer {
     }
 
     @Override
-    public List<FoliagePlacer.TreeNode> generate(TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, int i, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig) {
-        int k;
+    public List<FoliagePlacer.TreeNode> generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, int height, BlockPos startPos, TreeFeatureConfig config) {
+        int j;
         Direction direction = Direction.Type.HORIZONTAL.random(random);
-        int j = i - 1;
-        BlockPos.Mutable mutable = blockPos.mutableCopy();
-        Vec3i blockPos2 = mutable.down();
-        BendingTrunkPlacer.setToDirt(testableWorld, biConsumer, random, (BlockPos)blockPos2, treeFeatureConfig);
+        int i = height - 1;
+        BlockPos.Mutable mutable = startPos.mutableCopy();
+        Vec3i blockPos = mutable.down();
+        BendingTrunkPlacer.setToDirt(world, replacer, random, (BlockPos)blockPos, config);
         ArrayList<FoliagePlacer.TreeNode> list = Lists.newArrayList();
-        for (k = 0; k <= j; ++k) {
-            if (k + 1 >= j + random.nextInt(2)) {
+        for (j = 0; j <= i; ++j) {
+            if (j + 1 >= i + random.nextInt(2)) {
                 mutable.move(direction);
             }
-            if (TreeFeature.canReplace(testableWorld, mutable)) {
-                BendingTrunkPlacer.method_35375(testableWorld, biConsumer, random, mutable, treeFeatureConfig);
+            if (TreeFeature.canReplace(world, mutable)) {
+                BendingTrunkPlacer.getAndSetState(world, replacer, random, mutable, config);
             }
-            if (k >= this.minHeightForLeaves) {
+            if (j >= this.minHeightForLeaves) {
                 list.add(new FoliagePlacer.TreeNode(mutable.toImmutable(), 0, false));
             }
             mutable.move(Direction.UP);
         }
-        k = this.bendLength.get(random);
-        for (int l = 0; l <= k; ++l) {
-            if (TreeFeature.canReplace(testableWorld, mutable)) {
-                BendingTrunkPlacer.method_35375(testableWorld, biConsumer, random, mutable, treeFeatureConfig);
+        j = this.bendLength.get(random);
+        for (int k = 0; k <= j; ++k) {
+            if (TreeFeature.canReplace(world, mutable)) {
+                BendingTrunkPlacer.getAndSetState(world, replacer, random, mutable, config);
             }
             list.add(new FoliagePlacer.TreeNode(mutable.toImmutable(), 0, false));
             mutable.move(direction);

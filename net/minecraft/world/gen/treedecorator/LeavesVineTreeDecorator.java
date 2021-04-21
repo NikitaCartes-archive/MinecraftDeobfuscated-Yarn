@@ -27,20 +27,20 @@ extends TreeDecorator {
     }
 
     @Override
-    public void generate(TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, List<BlockPos> leavesPositions, List<BlockPos> list) {
-        list.forEach(blockPos -> {
-            BlockPos blockPos2;
-            if (random.nextInt(4) == 0 && Feature.isAir(testableWorld, blockPos2 = blockPos.west())) {
-                LeavesVineTreeDecorator.placeVines(testableWorld, blockPos2, VineBlock.EAST, biConsumer);
+    public void generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions) {
+        leavesPositions.forEach(pos -> {
+            BlockPos blockPos;
+            if (random.nextInt(4) == 0 && Feature.isAir(world, blockPos = pos.west())) {
+                LeavesVineTreeDecorator.placeVines(world, blockPos, VineBlock.EAST, replacer);
             }
-            if (random.nextInt(4) == 0 && Feature.isAir(testableWorld, blockPos2 = blockPos.east())) {
-                LeavesVineTreeDecorator.placeVines(testableWorld, blockPos2, VineBlock.WEST, biConsumer);
+            if (random.nextInt(4) == 0 && Feature.isAir(world, blockPos = pos.east())) {
+                LeavesVineTreeDecorator.placeVines(world, blockPos, VineBlock.WEST, replacer);
             }
-            if (random.nextInt(4) == 0 && Feature.isAir(testableWorld, blockPos2 = blockPos.north())) {
-                LeavesVineTreeDecorator.placeVines(testableWorld, blockPos2, VineBlock.SOUTH, biConsumer);
+            if (random.nextInt(4) == 0 && Feature.isAir(world, blockPos = pos.north())) {
+                LeavesVineTreeDecorator.placeVines(world, blockPos, VineBlock.SOUTH, replacer);
             }
-            if (random.nextInt(4) == 0 && Feature.isAir(testableWorld, blockPos2 = blockPos.south())) {
-                LeavesVineTreeDecorator.placeVines(testableWorld, blockPos2, VineBlock.NORTH, biConsumer);
+            if (random.nextInt(4) == 0 && Feature.isAir(world, blockPos = pos.south())) {
+                LeavesVineTreeDecorator.placeVines(world, blockPos, VineBlock.NORTH, replacer);
             }
         });
     }
@@ -48,12 +48,12 @@ extends TreeDecorator {
     /**
      * Places a vine at a given position and then up to 4 more vines going downwards.
      */
-    private static void placeVines(TestableWorld testableWorld, BlockPos blockPos, BooleanProperty booleanProperty, BiConsumer<BlockPos, BlockState> biConsumer) {
-        LeavesVineTreeDecorator.placeVine(biConsumer, blockPos, booleanProperty);
-        blockPos = blockPos.down();
-        for (int i = 4; Feature.isAir(testableWorld, blockPos) && i > 0; --i) {
-            LeavesVineTreeDecorator.placeVine(biConsumer, blockPos, booleanProperty);
-            blockPos = blockPos.down();
+    private static void placeVines(TestableWorld world, BlockPos pos, BooleanProperty facing, BiConsumer<BlockPos, BlockState> replacer) {
+        LeavesVineTreeDecorator.placeVine(replacer, pos, facing);
+        pos = pos.down();
+        for (int i = 4; Feature.isAir(world, pos) && i > 0; --i) {
+            LeavesVineTreeDecorator.placeVine(replacer, pos, facing);
+            pos = pos.down();
         }
     }
 }

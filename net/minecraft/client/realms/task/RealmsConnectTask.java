@@ -17,20 +17,20 @@ import net.minecraft.text.TranslatableText;
 public class RealmsConnectTask
 extends LongRunningTask {
     private final RealmsConnection realmsConnect;
-    private final RealmsServer field_26922;
-    private final net.minecraft.client.realms.dto.RealmsServerAddress field_20223;
+    private final RealmsServer server;
+    private final net.minecraft.client.realms.dto.RealmsServerAddress address;
 
-    public RealmsConnectTask(Screen lastScreen, RealmsServer realmsServer, net.minecraft.client.realms.dto.RealmsServerAddress realmsServerAddress) {
-        this.field_26922 = realmsServer;
-        this.field_20223 = realmsServerAddress;
+    public RealmsConnectTask(Screen lastScreen, RealmsServer server, net.minecraft.client.realms.dto.RealmsServerAddress address) {
+        this.server = server;
+        this.address = address;
         this.realmsConnect = new RealmsConnection(lastScreen);
     }
 
     @Override
     public void run() {
         this.setTitle(new TranslatableText("mco.connect.connecting"));
-        RealmsServerAddress realmsServerAddress = RealmsServerAddress.parseString(this.field_20223.address);
-        this.realmsConnect.connect(this.field_26922, realmsServerAddress.getHost(), realmsServerAddress.getPort());
+        RealmsServerAddress realmsServerAddress = RealmsServerAddress.parseString(this.address.address);
+        this.realmsConnect.connect(this.server, realmsServerAddress.getHost(), realmsServerAddress.getPort());
     }
 
     @Override

@@ -21,8 +21,8 @@ public class KeyCombo {
         this.chars = keys;
     }
 
-    public KeyCombo(char[] cs) {
-        this(cs, () -> {});
+    public KeyCombo(char[] keys) {
+        this(keys, () -> {});
     }
 
     public boolean keyPressed(char key) {

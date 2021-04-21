@@ -4,14 +4,11 @@
 package net.minecraft.entity.ai.pathing;
 
 import net.minecraft.block.AbstractRailBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.ai.pathing.TargetPathNode;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -210,10 +207,9 @@ extends LandPathNodeMaker {
         }
         if (pathNodeType == PathNodeType.OPEN && y >= world.getBottomY() + 1) {
             mutable.set(x, y, z).move(Direction.DOWN);
-            BlockState blockState = world.getBlockState(mutable);
             PathNodeType pathNodeType3 = AmphibiousPathNodeMaker.getCommonNodeType(world, mutable);
             pathNodeType = pathNodeType3 == PathNodeType.WALKABLE || pathNodeType3 == PathNodeType.OPEN || pathNodeType3 == PathNodeType.LAVA ? PathNodeType.OPEN : PathNodeType.WALKABLE;
-            if (pathNodeType3 == PathNodeType.DAMAGE_FIRE || blockState.isOf(Blocks.MAGMA_BLOCK) || blockState.isIn(BlockTags.CAMPFIRES)) {
+            if (pathNodeType3 == PathNodeType.DAMAGE_FIRE) {
                 pathNodeType = PathNodeType.DAMAGE_FIRE;
             }
             if (pathNodeType3 == PathNodeType.DAMAGE_CACTUS) {

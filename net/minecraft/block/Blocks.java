@@ -158,6 +158,7 @@ import net.minecraft.block.RepeaterBlock;
 import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.block.RootedDirtBlock;
 import net.minecraft.block.RootsBlock;
+import net.minecraft.block.RotatedInfestedBlock;
 import net.minecraft.block.SandBlock;
 import net.minecraft.block.SaplingBlock;
 import net.minecraft.block.ScaffoldingBlock;
@@ -508,7 +509,7 @@ public class Blocks {
     public static final Block PUMPKIN_STEM = Blocks.register("pumpkin_stem", new StemBlock((GourdBlock)PUMPKIN, () -> Items.PUMPKIN_SEEDS, AbstractBlock.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.STEM)));
     public static final Block MELON_STEM = Blocks.register("melon_stem", new StemBlock((GourdBlock)MELON, () -> Items.MELON_SEEDS, AbstractBlock.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.STEM)));
     public static final Block VINE = Blocks.register("vine", new VineBlock(AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT).noCollision().ticksRandomly().strength(0.2f).sounds(BlockSoundGroup.VINE)));
-    public static final Block GLOW_LICHEN = Blocks.register("glow_lichen", new GlowLichenBlock(AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT).noCollision().strength(0.2f).sounds(BlockSoundGroup.GLOW_LICHEN).luminance(state -> 7)));
+    public static final Block GLOW_LICHEN = Blocks.register("glow_lichen", new GlowLichenBlock(AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT, MapColor.LICHEN_GREEN).noCollision().strength(0.2f).sounds(BlockSoundGroup.GLOW_LICHEN).luminance(state -> 7)));
     public static final Block OAK_FENCE_GATE = Blocks.register("oak_fence_gate", new FenceGateBlock(AbstractBlock.Settings.of(Material.WOOD, OAK_PLANKS.getDefaultMapColor()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
     public static final Block BRICK_STAIRS = Blocks.register("brick_stairs", new StairsBlock(BRICKS.getDefaultState(), AbstractBlock.Settings.copy(BRICKS)));
     public static final Block STONE_BRICK_STAIRS = Blocks.register("stone_brick_stairs", new StairsBlock(STONE_BRICKS.getDefaultState(), AbstractBlock.Settings.copy(STONE_BRICKS)));
@@ -1141,7 +1142,7 @@ public class Blocks {
     public static final Block CHISELED_DEEPSLATE = Blocks.register("chiseled_deepslate", new Block(AbstractBlock.Settings.copy(COBBLED_DEEPSLATE).sounds(BlockSoundGroup.DEEPSLATE_BRICKS)));
     public static final Block CRACKED_DEEPSLATE_BRICKS = Blocks.register("cracked_deepslate_bricks", new Block(AbstractBlock.Settings.copy(DEEPSLATE_BRICKS)));
     public static final Block CRACKED_DEEPSLATE_TILES = Blocks.register("cracked_deepslate_tiles", new Block(AbstractBlock.Settings.copy(DEEPSLATE_TILES)));
-    public static final Block INFESTED_DEEPSLATE = Blocks.register("infested_deepslate", new InfestedBlock(DEEPSLATE, AbstractBlock.Settings.of(Material.ORGANIC_PRODUCT, MapColor.DEEPSLATE_GRAY).strength(0.0f, 0.75f).sounds(BlockSoundGroup.DEEPSLATE)));
+    public static final Block INFESTED_DEEPSLATE = Blocks.register("infested_deepslate", new RotatedInfestedBlock(DEEPSLATE, AbstractBlock.Settings.of(Material.ORGANIC_PRODUCT, MapColor.DEEPSLATE_GRAY).strength(0.0f, 0.75f).sounds(BlockSoundGroup.DEEPSLATE)));
     public static final Block SMOOTH_BASALT = Blocks.register("smooth_basalt", new Block(AbstractBlock.Settings.copy(BASALT)));
     public static final Block RAW_IRON_BLOCK = Blocks.register("raw_iron_block", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.RAW_IRON_PINK).requiresTool().strength(5.0f, 6.0f)));
     public static final Block RAW_COPPER_BLOCK = Blocks.register("raw_copper_block", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.ORANGE).requiresTool().strength(5.0f, 6.0f)));

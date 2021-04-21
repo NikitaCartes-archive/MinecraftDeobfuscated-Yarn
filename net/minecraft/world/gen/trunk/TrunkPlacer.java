@@ -32,7 +32,7 @@ public abstract class TrunkPlacer {
     protected final int secondRandomHeight;
 
     protected static <P extends TrunkPlacer> Products.P3<RecordCodecBuilder.Mu<P>, Integer, Integer, Integer> fillTrunkPlacerFields(RecordCodecBuilder.Instance<P> instance) {
-        return instance.group(((MapCodec)Codec.intRange(0, 32).fieldOf("base_height")).forGetter(trunkPlacer -> trunkPlacer.baseHeight), ((MapCodec)Codec.intRange(0, 24).fieldOf("height_rand_a")).forGetter(trunkPlacer -> trunkPlacer.firstRandomHeight), ((MapCodec)Codec.intRange(0, 24).fieldOf("height_rand_b")).forGetter(trunkPlacer -> trunkPlacer.secondRandomHeight));
+        return instance.group(((MapCodec)Codec.intRange(0, 32).fieldOf("base_height")).forGetter(placer -> placer.baseHeight), ((MapCodec)Codec.intRange(0, 24).fieldOf("height_rand_a")).forGetter(placer -> placer.firstRandomHeight), ((MapCodec)Codec.intRange(0, 24).fieldOf("height_rand_b")).forGetter(placer -> placer.secondRandomHeight));
     }
 
     public TrunkPlacer(int baseHeight, int firstRandomHeight, int secondRandomHeight) {
@@ -56,27 +56,27 @@ public abstract class TrunkPlacer {
         return world.testBlockState(pos, state -> Feature.isSoil(state) && !state.isOf(Blocks.GRASS_BLOCK) && !state.isOf(Blocks.MYCELIUM));
     }
 
-    protected static void setToDirt(TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig) {
-        if (treeFeatureConfig.forceDirt || !TrunkPlacer.canGenerate(testableWorld, blockPos)) {
-            biConsumer.accept(blockPos, treeFeatureConfig.dirtProvider.getBlockState(random, blockPos));
+    protected static void setToDirt(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, BlockPos pos, TreeFeatureConfig config) {
+        if (config.forceDirt || !TrunkPlacer.canGenerate(world, pos)) {
+            replacer.accept(pos, config.dirtProvider.getBlockState(random, pos));
         }
     }
 
-    protected static boolean method_35375(TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig) {
-        return TrunkPlacer.getAndSetState(testableWorld, biConsumer, random, blockPos, treeFeatureConfig, Function.identity());
+    protected static boolean getAndSetState(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, BlockPos pos, TreeFeatureConfig config) {
+        return TrunkPlacer.getAndSetState(world, replacer, random, pos, config, Function.identity());
     }
 
-    protected static boolean getAndSetState(TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig, Function<BlockState, BlockState> function) {
-        if (TreeFeature.canReplace(testableWorld, blockPos)) {
-            biConsumer.accept(blockPos, function.apply(treeFeatureConfig.trunkProvider.getBlockState(random, blockPos)));
+    protected static boolean getAndSetState(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, BlockPos pos, TreeFeatureConfig config, Function<BlockState, BlockState> stateProvider) {
+        if (TreeFeature.canReplace(world, pos)) {
+            replacer.accept(pos, stateProvider.apply(config.trunkProvider.getBlockState(random, pos)));
             return true;
         }
         return false;
     }
 
-    protected static void trySetState(TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, BlockPos.Mutable mutable, TreeFeatureConfig treeFeatureConfig) {
-        if (TreeFeature.canTreeReplace(testableWorld, mutable)) {
-            TrunkPlacer.method_35375(testableWorld, biConsumer, random, mutable, treeFeatureConfig);
+    protected static void trySetState(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, BlockPos.Mutable pos, TreeFeatureConfig config) {
+        if (TreeFeature.canTreeReplace(world, pos)) {
+            TrunkPlacer.getAndSetState(world, replacer, random, pos, config);
         }
     }
 }

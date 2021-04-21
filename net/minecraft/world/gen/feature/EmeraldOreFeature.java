@@ -9,6 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.EmeraldOreFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.OreFeatureConfig;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class EmeraldOreFeature
@@ -22,8 +23,10 @@ extends Feature<EmeraldOreFeatureConfig> {
         StructureWorldAccess structureWorldAccess = context.getWorld();
         BlockPos blockPos = context.getOrigin();
         EmeraldOreFeatureConfig emeraldOreFeatureConfig = context.getConfig();
-        if (structureWorldAccess.getBlockState(blockPos).isOf(emeraldOreFeatureConfig.target.getBlock())) {
-            structureWorldAccess.setBlockState(blockPos, emeraldOreFeatureConfig.state, Block.NOTIFY_LISTENERS);
+        for (OreFeatureConfig.Target target : emeraldOreFeatureConfig.target) {
+            if (!target.target.test(structureWorldAccess.getBlockState(blockPos), context.getRandom())) continue;
+            structureWorldAccess.setBlockState(blockPos, target.state, Block.NOTIFY_LISTENERS);
+            break;
         }
         return true;
     }

@@ -11,6 +11,7 @@ import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_6350;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
@@ -33,12 +34,12 @@ extends CaveCarver {
     }
 
     @Override
-    protected boolean carveAtPoint(CarverContext carverContext, CaveCarverConfig caveCarverConfig, Chunk chunk, Function<BlockPos, Biome> function, BitSet bitSet, Random random, BlockPos.Mutable mutable, BlockPos.Mutable mutable2, int i, MutableBoolean mutableBoolean) {
-        return UnderwaterCaveCarver.method_36215(this, chunk, random, mutable, mutable2, i);
+    protected boolean carveAtPoint(CarverContext carverContext, CaveCarverConfig caveCarverConfig, Chunk chunk, Function<BlockPos, Biome> function, BitSet bitSet, Random random, BlockPos.Mutable mutable, BlockPos.Mutable mutable2, class_6350 arg, MutableBoolean mutableBoolean) {
+        return UnderwaterCaveCarver.method_36215(this, chunk, random, mutable, mutable2, arg);
     }
 
-    protected static boolean method_36215(Carver<?> carver, Chunk chunk, Random random, BlockPos.Mutable mutable, BlockPos.Mutable mutable2, int i) {
-        if (mutable.getY() >= i) {
+    protected static boolean method_36215(Carver<?> carver, Chunk chunk, Random random, BlockPos.Mutable mutable, BlockPos.Mutable mutable2, class_6350 arg) {
+        if (arg.apply(Carver.field_33614, mutable.getX(), mutable.getY(), mutable.getZ(), Double.NEGATIVE_INFINITY).isAir()) {
             return false;
         }
         BlockState blockState = chunk.getBlockState(mutable);

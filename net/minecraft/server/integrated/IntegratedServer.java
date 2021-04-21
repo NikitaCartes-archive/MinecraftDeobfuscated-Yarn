@@ -26,6 +26,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListenerFactory;
 import net.minecraft.server.integrated.IntegratedPlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.stat.Stats;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.profiler.Profiler;
@@ -84,6 +85,7 @@ extends MinecraftServer {
             profiler.pop();
         }
         if (this.paused) {
+            this.method_36439();
             return;
         }
         super.tick(shouldKeepTicking);
@@ -91,6 +93,12 @@ extends MinecraftServer {
         if (i != this.getPlayerManager().getViewDistance()) {
             LOGGER.info("Changing view distance to {}, from {}", (Object)i, (Object)this.getPlayerManager().getViewDistance());
             this.getPlayerManager().setViewDistance(i);
+        }
+    }
+
+    private void method_36439() {
+        for (ServerPlayerEntity serverPlayerEntity : this.getPlayerManager().getPlayerList()) {
+            serverPlayerEntity.incrementStat(Stats.TOTAL_WORLD_TIME);
         }
     }
 

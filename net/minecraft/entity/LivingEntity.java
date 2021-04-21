@@ -741,6 +741,7 @@ extends Entity {
         if (this.effectsChanged) {
             if (!this.world.isClient) {
                 this.updatePotionVisibility();
+                this.method_36362();
             }
             this.effectsChanged = false;
         }
@@ -769,6 +770,13 @@ extends Entity {
             this.dataTracker.set(POTION_SWIRLS_AMBIENT, LivingEntity.containsOnlyAmbientEffects(collection));
             this.dataTracker.set(POTION_SWIRLS_COLOR, PotionUtil.getColor(collection));
             this.setInvisible(this.hasStatusEffect(StatusEffects.INVISIBILITY));
+        }
+    }
+
+    private void method_36362() {
+        boolean bl = this.isGlowing();
+        if (this.getFlag(6) != bl) {
+            this.setFlag(6, bl);
         }
     }
 
@@ -1146,7 +1154,7 @@ extends Entity {
         }
         if (!source.bypassesArmor() && this.isBlocking() && !bl && (vec3d = source.getPosition()) != null) {
             Vec3d vec3d2 = this.getRotationVec(1.0f);
-            Vec3d vec3d3 = vec3d.reverseSubtract(this.getPos()).normalize();
+            Vec3d vec3d3 = vec3d.relativize(this.getPos()).normalize();
             vec3d3 = new Vec3d(vec3d3.x, 0.0, vec3d3.z);
             if (vec3d3.dotProduct(vec3d2) < 0.0) {
                 return true;
@@ -2029,13 +2037,6 @@ extends Entity {
             if (this.age % 20 == 0) {
                 this.getDamageTracker().update();
             }
-            if (!this.glowing) {
-                boolean bl = this.hasStatusEffect(StatusEffects.GLOWING);
-                if (this.getFlag(6) != bl) {
-                    this.setFlag(6, bl);
-                }
-                this.glowing = bl;
-            }
             if (this.isSleeping() && !this.isSleepingInBed()) {
                 this.wakeUp();
             }
@@ -2286,7 +2287,7 @@ extends Entity {
         this.world.getProfiler().pop();
         this.world.getProfiler().push("freezing");
         boolean bl2 = this.getType().isIn(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES);
-        if (!this.world.isClient) {
+        if (!this.world.isClient && !this.isDead()) {
             m = this.getFrozenTicks();
             if (this.inPowderSnow && this.canFreeze()) {
                 this.setFrozenTicks(Math.min(this.getMinFreezeDamageTicks(), m + 1));
@@ -3026,6 +3027,11 @@ extends Entity {
         }
         boolean bl = !this.getEquippedStack(EquipmentSlot.HEAD).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES) && !this.getEquippedStack(EquipmentSlot.CHEST).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES) && !this.getEquippedStack(EquipmentSlot.LEGS).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES) && !this.getEquippedStack(EquipmentSlot.FEET).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES);
         return bl && super.canFreeze();
+    }
+
+    @Override
+    public boolean isGlowing() {
+        return !this.world.isClient() && this.hasStatusEffect(StatusEffects.GLOWING) || super.isGlowing();
     }
 
     public void readFromPacket(MobSpawnS2CPacket packet) {

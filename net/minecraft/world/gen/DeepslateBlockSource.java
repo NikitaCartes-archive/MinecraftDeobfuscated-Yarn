@@ -3,7 +3,6 @@
  */
 package net.minecraft.world.gen;
 
-import java.util.function.Supplier;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.gen.BlockSource;
@@ -18,19 +17,19 @@ implements BlockSource {
     private final long seed;
     private final BlockState defaultBlock;
     private final BlockState deepslateState;
-    private final Supplier<ChunkGeneratorSettings> settings;
+    private final ChunkGeneratorSettings settings;
 
-    public DeepslateBlockSource(long seed, BlockState defaultBlock, BlockState deepslateState, Supplier<ChunkGeneratorSettings> settings) {
+    public DeepslateBlockSource(long seed, BlockState defaultBlock, BlockState deepslateState, ChunkGeneratorSettings chunkGeneratorSettings) {
         this.random = new ChunkRandom(seed);
         this.seed = seed;
         this.defaultBlock = defaultBlock;
         this.deepslateState = deepslateState;
-        this.settings = settings;
+        this.settings = chunkGeneratorSettings;
     }
 
     @Override
     public BlockState sample(int x, int y, int z) {
-        if (!this.settings.get().hasDeepslate()) {
+        if (!this.settings.hasDeepslate()) {
             return this.defaultBlock;
         }
         if (y < -8) {

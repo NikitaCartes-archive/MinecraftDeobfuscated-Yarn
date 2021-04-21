@@ -83,11 +83,11 @@ implements CommandSource {
         this.rotation = rot;
     }
 
-    public ServerCommandSource method_36321(CommandOutput commandOutput) {
-        if (this.output == commandOutput) {
+    public ServerCommandSource withOutput(CommandOutput output) {
+        if (this.output == output) {
             return this;
         }
-        return new ServerCommandSource(commandOutput, this.position, this.rotation, this.world, this.level, this.simpleName, this.name, this.server, this.entity, this.silent, this.resultConsumer, this.entityAnchor);
+        return new ServerCommandSource(output, this.position, this.rotation, this.world, this.level, this.simpleName, this.name, this.server, this.entity, this.silent, this.resultConsumer, this.entityAnchor);
     }
 
     public ServerCommandSource withEntity(Entity entity) {

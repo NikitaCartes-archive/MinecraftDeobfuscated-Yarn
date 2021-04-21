@@ -24,7 +24,7 @@ extends LongRunningTask {
         this.callback = callback;
     }
 
-    protected abstract void method_32517(RealmsClient var1, long var2) throws RealmsServiceException;
+    protected abstract void resetWorld(RealmsClient var1, long var2) throws RealmsServiceException;
 
     @Override
     public void run() {
@@ -35,7 +35,7 @@ extends LongRunningTask {
                 if (this.aborted()) {
                     return;
                 }
-                this.method_32517(realmsClient, this.serverId);
+                this.resetWorld(realmsClient, this.serverId);
                 if (this.aborted()) {
                     return;
                 }

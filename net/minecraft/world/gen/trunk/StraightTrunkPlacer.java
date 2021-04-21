@@ -31,12 +31,12 @@ extends TrunkPlacer {
     }
 
     @Override
-    public List<FoliagePlacer.TreeNode> generate(TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, int i, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig) {
-        StraightTrunkPlacer.setToDirt(testableWorld, biConsumer, random, blockPos.down(), treeFeatureConfig);
-        for (int j = 0; j < i; ++j) {
-            StraightTrunkPlacer.method_35375(testableWorld, biConsumer, random, blockPos.up(j), treeFeatureConfig);
+    public List<FoliagePlacer.TreeNode> generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, int height, BlockPos startPos, TreeFeatureConfig config) {
+        StraightTrunkPlacer.setToDirt(world, replacer, random, startPos.down(), config);
+        for (int i = 0; i < height; ++i) {
+            StraightTrunkPlacer.getAndSetState(world, replacer, random, startPos.up(i), config);
         }
-        return ImmutableList.of(new FoliagePlacer.TreeNode(blockPos.up(i), 0, false));
+        return ImmutableList.of(new FoliagePlacer.TreeNode(startPos.up(height), 0, false));
     }
 }
 

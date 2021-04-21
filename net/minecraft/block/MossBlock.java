@@ -31,7 +31,7 @@ implements Fertilizable {
 
     @Override
     public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
-        return world.getBlockState(pos.up()).isAir();
+        return true;
     }
 
     @Override

@@ -53,10 +53,10 @@ extends Screen {
         this.doneButton = this.addButton(new ButtonWidget(this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20, ScreenTexts.DONE, buttonWidget -> this.commitAndClose()));
         this.cancelButton = this.addButton(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.onClose()));
         boolean bl = this.getCommandExecutor().isTrackingOutput();
-        this.toggleTrackingOutputButton = this.addButton(CyclingButtonWidget.onOffBuilder(new LiteralText("O"), new LiteralText("X")).initially(bl).omitKeyText().build(this.width / 2 + 150 - 20, this.getTrackOutputButtonHeight(), 20, 20, new TranslatableText("advMode.trackOutput"), (cyclingButtonWidget, boolean_) -> {
+        this.toggleTrackingOutputButton = this.addButton(CyclingButtonWidget.onOffBuilder(new LiteralText("O"), new LiteralText("X")).initially(bl).omitKeyText().build(this.width / 2 + 150 - 20, this.getTrackOutputButtonHeight(), 20, 20, new TranslatableText("advMode.trackOutput"), (button, trackOutput) -> {
             CommandBlockExecutor commandBlockExecutor = this.getCommandExecutor();
-            commandBlockExecutor.setTrackingOutput((boolean)boolean_);
-            this.method_32642((boolean)boolean_);
+            commandBlockExecutor.setTrackingOutput((boolean)trackOutput);
+            this.setPreviousOutputText((boolean)trackOutput);
         }));
         this.consoleCommandTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 150, 50, 300, 20, (Text)new TranslatableText("advMode.command")){
 
@@ -78,7 +78,7 @@ extends Screen {
         this.commandSuggestor = new CommandSuggestor(this.client, this, this.consoleCommandTextField, this.textRenderer, true, true, 0, 7, false, Integer.MIN_VALUE);
         this.commandSuggestor.setWindowActive(true);
         this.commandSuggestor.refresh();
-        this.method_32642(bl);
+        this.setPreviousOutputText(bl);
     }
 
     @Override
@@ -89,8 +89,8 @@ extends Screen {
         this.commandSuggestor.refresh();
     }
 
-    protected void method_32642(boolean bl) {
-        this.previousOutputTextField.setText(bl ? this.getCommandExecutor().getLastOutput().getString() : "-");
+    protected void setPreviousOutputText(boolean trackOutput) {
+        this.previousOutputTextField.setText(trackOutput ? this.getCommandExecutor().getLastOutput().getString() : "-");
     }
 
     protected void commitAndClose() {

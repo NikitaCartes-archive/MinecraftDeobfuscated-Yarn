@@ -29,6 +29,7 @@ import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.entity.vehicle.TntMinecartEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -39,6 +40,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.IntProperty;
@@ -118,6 +120,7 @@ extends BlockWithEntity {
         int i = state.get(HONEY_LEVEL);
         boolean bl = false;
         if (i >= 5) {
+            Item item = itemStack.getItem();
             if (itemStack.isOf(Items.SHEARS)) {
                 world.playSound(player2, player2.getX(), player2.getY(), player2.getZ(), SoundEvents.BLOCK_BEEHIVE_SHEAR, SoundCategory.NEUTRAL, 1.0f, 1.0f);
                 BeehiveBlock.dropHoneycomb(world, pos);
@@ -134,6 +137,9 @@ extends BlockWithEntity {
                 }
                 bl = true;
                 world.emitGameEvent((Entity)player2, GameEvent.FLUID_PICKUP, pos);
+            }
+            if (!world.isClient() && bl) {
+                player2.incrementStat(Stats.USED.getOrCreateStat(item));
             }
         }
         if (bl) {

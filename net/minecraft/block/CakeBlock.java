@@ -65,6 +65,7 @@ extends Block {
             world.playSound(null, pos, SoundEvents.BLOCK_CAKE_ADD_CANDLE, SoundCategory.BLOCKS, 1.0f, 1.0f);
             world.setBlockState(pos, CandleCakeBlock.getCandleCakeFromCandle(block));
             world.emitGameEvent((Entity)player, GameEvent.BLOCK_CHANGE, pos);
+            player.incrementStat(Stats.USED.getOrCreateStat(item));
             return ActionResult.SUCCESS;
         }
         if (world.isClient) {

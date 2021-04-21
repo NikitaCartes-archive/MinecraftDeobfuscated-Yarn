@@ -749,6 +749,7 @@ public abstract class ScreenHandler {
             slot = this.slots.get(i);
             Integer integer = (Integer)table.get(slot.inventory, slot.getIndex());
             if (integer == null) continue;
+            this.trackedStacks.set(i, handler.trackedStacks.get(integer));
             this.previousTrackedStacks.set(i, handler.previousTrackedStacks.get(integer));
         }
     }

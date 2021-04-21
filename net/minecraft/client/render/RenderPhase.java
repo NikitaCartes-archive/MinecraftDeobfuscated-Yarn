@@ -108,7 +108,9 @@ public abstract class RenderPhase {
     protected static final Shader DIRECT_ENTITY_GLINT_SHADER = new Shader(GameRenderer::getRenderTypeEntityGlintDirectShader);
     protected static final Shader CRUMBLING_SHADER = new Shader(GameRenderer::getRenderTypeCrumblingShader);
     protected static final Shader TEXT_SHADER = new Shader(GameRenderer::getRenderTypeTextShader);
+    protected static final Shader field_33628 = new Shader(GameRenderer::method_36432);
     protected static final Shader TRANSPARENT_TEXT_SHADER = new Shader(GameRenderer::getRenderTypeTextSeeThroughShader);
+    protected static final Shader field_33629 = new Shader(GameRenderer::method_36433);
     protected static final Shader LIGHTNING_SHADER = new Shader(GameRenderer::getRenderTypeLightningShader);
     protected static final Shader TRIPWIRE_SHADER = new Shader(GameRenderer::getRenderTypeTripwireShader);
     protected static final Shader END_PORTAL_SHADER = new Shader(GameRenderer::getRenderTypeEndPortalShader);

@@ -116,7 +116,7 @@ public class DebugCommand {
                 for (CommandFunction commandFunction : collection) {
                     printWriter.println(commandFunction.getId());
                     class_6347 lv = new class_6347(printWriter);
-                    i += serverCommandSource.getMinecraftServer().getCommandFunctionManager().method_36341(commandFunction, serverCommandSource.method_36321(lv).withMaxLevel(2), lv);
+                    i += serverCommandSource.getMinecraftServer().getCommandFunctionManager().method_36341(commandFunction, serverCommandSource.withOutput(lv).withMaxLevel(2), lv);
                 }
             }
         } catch (IOException | UncheckedIOException exception) {

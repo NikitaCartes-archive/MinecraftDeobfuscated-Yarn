@@ -297,7 +297,7 @@ implements Bucketable {
 
     @Override
     protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-        return 0.275f;
+        return dimensions.height * 0.655f;
     }
 
     @Override

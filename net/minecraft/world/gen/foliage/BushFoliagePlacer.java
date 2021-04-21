@@ -30,10 +30,10 @@ extends BlobFoliagePlacer {
     }
 
     @Override
-    protected void generate(TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, TreeFeatureConfig treeFeatureConfig, int i, FoliagePlacer.TreeNode treeNode, int radius, int j, int offset) {
-        for (int k = offset; k >= offset - radius; --k) {
-            int l = j + treeNode.getFoliageRadius() - 1 - k;
-            this.generateSquare(testableWorld, biConsumer, random, treeFeatureConfig, treeNode.getCenter(), l, k, treeNode.isGiantTrunk());
+    protected void generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, TreeFeatureConfig config, int trunkHeight, FoliagePlacer.TreeNode treeNode, int foliageHeight, int radius, int offset) {
+        for (int i = offset; i >= offset - foliageHeight; --i) {
+            int j = radius + treeNode.getFoliageRadius() - 1 - i;
+            this.generateSquare(world, replacer, random, config, treeNode.getCenter(), j, i, treeNode.isGiantTrunk());
         }
     }
 

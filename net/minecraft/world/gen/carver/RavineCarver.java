@@ -7,6 +7,7 @@ import com.mojang.serialization.Codec;
 import java.util.BitSet;
 import java.util.Random;
 import java.util.function.Function;
+import net.minecraft.class_6350;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -32,22 +33,22 @@ extends Carver<RavineCarverConfig> {
     }
 
     @Override
-    public boolean carve(CarverContext carverContext, RavineCarverConfig ravineCarverConfig, Chunk chunk, Function<BlockPos, Biome> function, Random random, int i, ChunkPos chunkPos, BitSet bitSet) {
-        int j = (this.getBranchFactor() * 2 - 1) * 16;
+    public boolean carve(CarverContext carverContext, RavineCarverConfig ravineCarverConfig, Chunk chunk, Function<BlockPos, Biome> function, Random random, class_6350 arg, ChunkPos chunkPos, BitSet bitSet) {
+        int i = (this.getBranchFactor() * 2 - 1) * 16;
         double d = chunkPos.getOffsetX(random.nextInt(16));
-        int k = ravineCarverConfig.y.get(random, carverContext);
+        int j = ravineCarverConfig.y.get(random, carverContext);
         double e = chunkPos.getOffsetZ(random.nextInt(16));
         float f = random.nextFloat() * ((float)Math.PI * 2);
         float g = ravineCarverConfig.verticalRotation.get(random);
         double h = ravineCarverConfig.yScale.get(random);
-        float l = ravineCarverConfig.shape.thickness.get(random);
-        int m = (int)((float)j * ravineCarverConfig.shape.distanceFactor.get(random));
-        boolean n = false;
-        this.carveRavine(carverContext, ravineCarverConfig, chunk, function, random.nextLong(), i, d, k, e, l, f, g, 0, m, h, bitSet);
+        float k = ravineCarverConfig.shape.thickness.get(random);
+        int l = (int)((float)i * ravineCarverConfig.shape.distanceFactor.get(random));
+        boolean m = false;
+        this.carveRavine(carverContext, ravineCarverConfig, chunk, function, random.nextLong(), arg, d, j, e, k, f, g, 0, l, h, bitSet);
         return true;
     }
 
-    private void carveRavine(CarverContext context2, RavineCarverConfig config, Chunk chunk, Function<BlockPos, Biome> posToBiome, long seed, int seaLevel, double x, double y2, double z, float width, float yaw, float pitch, int branchStartIndex, int branchCount, double yawPitchRatio, BitSet carvingMask) {
+    private void carveRavine(CarverContext context2, RavineCarverConfig config, Chunk chunk, Function<BlockPos, Biome> posToBiome, long seed, class_6350 arg, double x, double y2, double z, float width, float yaw, float pitch, int branchStartIndex, int branchCount, double yawPitchRatio, BitSet carvingMask) {
         Random random = new Random(seed);
         float[] fs = this.createHorizontalStretchFactors(context2, config, random);
         float f2 = 0.0f;
@@ -73,7 +74,7 @@ extends Carver<RavineCarverConfig> {
             if (!RavineCarver.canCarveBranch(chunk.getPos(), x, z, i, branchCount, width)) {
                 return;
             }
-            this.carveRegion(context2, config, chunk, posToBiome, seed, seaLevel, x, y2, z, d2, e2, carvingMask, (context, d, e, f, y) -> this.isPositionExcluded(context, fs, d, e, f, y));
+            this.carveRegion(context2, config, chunk, posToBiome, seed, arg, x, y2, z, d2, e2, carvingMask, (context, d, e, f, y) -> this.isPositionExcluded(context, fs, d, e, f, y));
         }
     }
 

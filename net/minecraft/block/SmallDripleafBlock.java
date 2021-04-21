@@ -120,7 +120,8 @@ Waterloggable {
     @Override
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
         if (state.get(TallPlantBlock.HALF) == DoubleBlockHalf.LOWER) {
-            world.setBlockState(pos.up(), Blocks.AIR.getDefaultState(), Block.FORCE_STATE);
+            BlockPos blockPos = pos.up();
+            world.setBlockState(blockPos, world.getFluidState(blockPos).getBlockState(), Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
             BigDripleafBlock.grow(world, random, pos, state.get(FACING));
         } else {
             BlockPos blockPos = pos.down();

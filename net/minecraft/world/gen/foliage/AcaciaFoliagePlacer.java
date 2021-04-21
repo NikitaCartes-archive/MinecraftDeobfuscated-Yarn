@@ -29,12 +29,12 @@ extends FoliagePlacer {
     }
 
     @Override
-    protected void generate(TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, TreeFeatureConfig treeFeatureConfig, int i, FoliagePlacer.TreeNode treeNode, int radius, int j, int offset) {
+    protected void generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, TreeFeatureConfig config, int trunkHeight, FoliagePlacer.TreeNode treeNode, int foliageHeight, int radius, int offset) {
         boolean bl = treeNode.isGiantTrunk();
         BlockPos blockPos = treeNode.getCenter().up(offset);
-        this.generateSquare(testableWorld, biConsumer, random, treeFeatureConfig, blockPos, j + treeNode.getFoliageRadius(), -1 - radius, bl);
-        this.generateSquare(testableWorld, biConsumer, random, treeFeatureConfig, blockPos, j - 1, -radius, bl);
-        this.generateSquare(testableWorld, biConsumer, random, treeFeatureConfig, blockPos, j + treeNode.getFoliageRadius() - 1, 0, bl);
+        this.generateSquare(world, replacer, random, config, blockPos, radius + treeNode.getFoliageRadius(), -1 - foliageHeight, bl);
+        this.generateSquare(world, replacer, random, config, blockPos, radius - 1, -foliageHeight, bl);
+        this.generateSquare(world, replacer, random, config, blockPos, radius + treeNode.getFoliageRadius() - 1, 0, bl);
     }
 
     @Override

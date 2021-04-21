@@ -27,28 +27,28 @@ public interface OrderedText {
         return visitor -> visitor.accept(0, style, codePoint);
     }
 
-    public static OrderedText styledString(String string, Style style) {
+    public static OrderedText styledForwardsVisitedString(String string, Style style) {
         if (string.isEmpty()) {
             return EMPTY;
         }
         return visitor -> TextVisitFactory.visitForwards(string, style, visitor);
     }
 
-    public static OrderedText method_34908(String string, Style style, Int2IntFunction int2IntFunction) {
+    public static OrderedText styledForwardsVisitedString(String string, Style style, Int2IntFunction codePointMapper) {
         if (string.isEmpty()) {
             return EMPTY;
         }
-        return characterVisitor -> TextVisitFactory.visitForwards(string, style, OrderedText.map(characterVisitor, int2IntFunction));
+        return visitor -> TextVisitFactory.visitForwards(string, style, OrderedText.map(visitor, codePointMapper));
     }
 
-    public static OrderedText method_34910(String string, Style style) {
+    public static OrderedText styledBackwardsVisitedString(String string, Style style) {
         if (string.isEmpty()) {
             return EMPTY;
         }
-        return characterVisitor -> TextVisitFactory.visitBackwards(string, style, characterVisitor);
+        return visitor -> TextVisitFactory.visitBackwards(string, style, visitor);
     }
 
-    public static OrderedText styledStringMapped(String string, Style style, Int2IntFunction codePointMapper) {
+    public static OrderedText styledBackwardsVisitedString(String string, Style style, Int2IntFunction codePointMapper) {
         if (string.isEmpty()) {
             return EMPTY;
         }

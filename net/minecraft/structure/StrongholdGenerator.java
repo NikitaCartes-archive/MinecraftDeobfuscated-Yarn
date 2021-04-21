@@ -984,10 +984,10 @@ public class StrongholdGenerator {
             this.generateEntrance(world, random, boundingBox, Piece.EntranceType.OPENING, 1, 1, 6);
             BlockState blockState = (BlockState)Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, Direction.EAST);
             BlockState blockState2 = (BlockState)Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, Direction.WEST);
-            this.addBlockWithRandomThreshold(world, boundingBox, random, 0.1f, 1, 2, 1, blockState, false);
-            this.addBlockWithRandomThreshold(world, boundingBox, random, 0.1f, 3, 2, 1, blockState2, false);
-            this.addBlockWithRandomThreshold(world, boundingBox, random, 0.1f, 1, 2, 5, blockState, false);
-            this.addBlockWithRandomThreshold(world, boundingBox, random, 0.1f, 3, 2, 5, blockState2, false);
+            this.addBlockWithRandomThreshold(world, boundingBox, random, 0.1f, 1, 2, 1, blockState);
+            this.addBlockWithRandomThreshold(world, boundingBox, random, 0.1f, 3, 2, 1, blockState2);
+            this.addBlockWithRandomThreshold(world, boundingBox, random, 0.1f, 1, 2, 5, blockState);
+            this.addBlockWithRandomThreshold(world, boundingBox, random, 0.1f, 3, 2, 5, blockState2);
             if (this.leftExitExists) {
                 this.fillWithOutline(world, boundingBox, 0, 1, 2, 0, 3, 4, AIR, AIR, false);
             }
@@ -1129,10 +1129,10 @@ public class StrongholdGenerator {
                 return null;
             }
             if (structurePiece.getBoundingBox().getMinY() == blockBox.getMinY()) {
-                for (int j = 3; j >= 1; --j) {
-                    blockBox = BlockBox.rotated(x, y, z, -1, -1, 0, 5, 5, j - 1, orientation);
+                for (int j = 2; j >= 1; --j) {
+                    blockBox = BlockBox.rotated(x, y, z, -1, -1, 0, 5, 5, j, orientation);
                     if (structurePiece.getBoundingBox().intersects(blockBox)) continue;
-                    return BlockBox.rotated(x, y, z, -1, -1, 0, 5, 5, j, orientation);
+                    return BlockBox.rotated(x, y, z, -1, -1, 0, 5, 5, j + 1, orientation);
                 }
             }
             return null;

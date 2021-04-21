@@ -134,7 +134,7 @@ implements Comparable<Identifier> {
         return i;
     }
 
-    public String method_36181() {
+    public String toUnderscoreSeparatedString() {
         return this.toString().replace('/', '_').replace(':', '_');
     }
 

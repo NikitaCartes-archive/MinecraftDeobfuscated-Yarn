@@ -29,8 +29,8 @@ import org.jetbrains.annotations.Nullable;
 public class SpawnSettings {
     public static final Logger LOGGER = LogManager.getLogger();
     private static final float field_30983 = 0.1f;
-    public static final Pool<SpawnEntry> field_30982 = Pool.empty();
-    public static final SpawnSettings INSTANCE = new SpawnSettings(0.1f, (Map<SpawnGroup, Pool<SpawnEntry>>)Stream.of(SpawnGroup.values()).collect(ImmutableMap.toImmutableMap(spawnGroup -> spawnGroup, spawnGroup -> field_30982)), ImmutableMap.of(), false);
+    public static final Pool<SpawnEntry> EMPTY_ENTRY_POOL = Pool.empty();
+    public static final SpawnSettings INSTANCE = new SpawnSettings(0.1f, (Map<SpawnGroup, Pool<SpawnEntry>>)Stream.of(SpawnGroup.values()).collect(ImmutableMap.toImmutableMap(spawnGroup -> spawnGroup, spawnGroup -> EMPTY_ENTRY_POOL)), ImmutableMap.of(), false);
     public static final MapCodec<SpawnSettings> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(Codec.floatRange(0.0f, 0.9999999f).optionalFieldOf("creature_spawn_probability", Float.valueOf(0.1f)).forGetter(spawnSettings -> Float.valueOf(spawnSettings.creatureSpawnProbability)), Codec.simpleMap(SpawnGroup.CODEC, Pool.createCodec(SpawnEntry.CODEC).promotePartial((Consumer)Util.addPrefix("Spawn data: ", LOGGER::error)), StringIdentifiable.toKeyable(SpawnGroup.values())).fieldOf("spawners").forGetter(spawnSettings -> spawnSettings.spawners), Codec.simpleMap(Registry.ENTITY_TYPE, SpawnDensity.CODEC, Registry.ENTITY_TYPE).fieldOf("spawn_costs").forGetter(spawnSettings -> spawnSettings.spawnCosts), ((MapCodec)Codec.BOOL.fieldOf("player_spawn_friendly")).orElse(false).forGetter(SpawnSettings::isPlayerSpawnFriendly)).apply((Applicative<SpawnSettings, ?>)instance, SpawnSettings::new));
     private final float creatureSpawnProbability;
     private final Map<SpawnGroup, Pool<SpawnEntry>> spawners;
@@ -45,7 +45,7 @@ public class SpawnSettings {
     }
 
     public Pool<SpawnEntry> getSpawnEntries(SpawnGroup spawnGroup) {
-        return this.spawners.getOrDefault(spawnGroup, field_30982);
+        return this.spawners.getOrDefault(spawnGroup, EMPTY_ENTRY_POOL);
     }
 
     @Nullable
@@ -122,11 +122,11 @@ public class SpawnSettings {
             this(type, Weight.of(weight), minGroupSize, maxGroupSize);
         }
 
-        public SpawnEntry(EntityType<?> entityType, Weight weight, int i, int j) {
+        public SpawnEntry(EntityType<?> type, Weight weight, int minGroupSize, int maxGroupSize) {
             super(weight);
-            this.type = entityType.getSpawnGroup() == SpawnGroup.MISC ? EntityType.PIG : entityType;
-            this.minGroupSize = i;
-            this.maxGroupSize = j;
+            this.type = type.getSpawnGroup() == SpawnGroup.MISC ? EntityType.PIG : type;
+            this.minGroupSize = minGroupSize;
+            this.maxGroupSize = maxGroupSize;
         }
 
         public String toString() {

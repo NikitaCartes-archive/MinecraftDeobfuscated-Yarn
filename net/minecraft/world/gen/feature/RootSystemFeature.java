@@ -48,10 +48,15 @@ extends Feature<RootSystemFeatureConfig> {
         BlockPos.Mutable mutable = pos.mutableCopy();
         for (int i = 1; i <= config.requiredVerticalSpaceForTree; ++i) {
             mutable.move(Direction.UP);
-            if (world.isAir(mutable) || world.isWater(mutable)) continue;
+            BlockState blockState = world.getBlockState(mutable);
+            if (RootSystemFeature.method_36419(blockState, i, config.field_33616)) continue;
             return false;
         }
         return true;
+    }
+
+    private static boolean method_36419(BlockState blockState, int i, int j) {
+        return blockState.isAir() || i <= j && blockState.getFluidState().isIn(FluidTags.WATER);
     }
 
     private boolean generateTreeAndRoots(StructureWorldAccess world, ChunkGenerator generator, RootSystemFeatureConfig config, Random random, BlockPos.Mutable mutablePos, BlockPos pos) {

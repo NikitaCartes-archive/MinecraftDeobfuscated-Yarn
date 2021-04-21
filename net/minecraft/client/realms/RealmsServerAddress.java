@@ -25,8 +25,8 @@ public class RealmsServerAddress {
         return this.port;
     }
 
-    public static RealmsServerAddress parseString(String string) {
-        ServerAddress serverAddress = ServerAddress.parse(string);
+    public static RealmsServerAddress parseString(String address) {
+        ServerAddress serverAddress = ServerAddress.parse(address);
         return new RealmsServerAddress(serverAddress.getAddress(), serverAddress.getPort());
     }
 }

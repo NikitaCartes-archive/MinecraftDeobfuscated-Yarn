@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.resource.language.I18n;
@@ -95,11 +96,13 @@ extends SinglePreparationResourceReloader<SoundList> {
     @Override
     protected void apply(SoundList soundList, ResourceManager resourceManager, Profiler profiler) {
         soundList.addTo(this.sounds, this.soundSystem);
-        for (Identifier identifier : this.sounds.keySet()) {
-            String string;
-            WeightedSoundSet weightedSoundSet = this.sounds.get(identifier);
-            if (!(weightedSoundSet.getSubtitle() instanceof TranslatableText) || I18n.hasTranslation(string = ((TranslatableText)weightedSoundSet.getSubtitle()).getKey())) continue;
-            LOGGER.debug("Missing subtitle {} for event: {}", (Object)string, (Object)identifier);
+        if (SharedConstants.isDevelopment) {
+            for (Identifier identifier : this.sounds.keySet()) {
+                String string;
+                WeightedSoundSet weightedSoundSet = this.sounds.get(identifier);
+                if (!(weightedSoundSet.getSubtitle() instanceof TranslatableText) || I18n.hasTranslation(string = ((TranslatableText)weightedSoundSet.getSubtitle()).getKey()) || !Registry.SOUND_EVENT.containsId(identifier)) continue;
+                throw new IllegalArgumentException(String.format("Missing translation %s for sound event: %s", string, identifier));
+            }
         }
         if (LOGGER.isDebugEnabled()) {
             for (Identifier identifier : this.sounds.keySet()) {

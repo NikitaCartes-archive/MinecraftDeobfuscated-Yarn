@@ -62,10 +62,10 @@ public class RealmsDataFetcher {
     }
 
     @VisibleForTesting
-    protected RealmsDataFetcher(MinecraftClient minecraftClient, RealmsClient realmsClient, RealmsPersistence realmsPersistence) {
-        this.client = minecraftClient;
-        this.realms = realmsClient;
-        this.persistence = realmsPersistence;
+    protected RealmsDataFetcher(MinecraftClient client, RealmsClient realms, RealmsPersistence persistence) {
+        this.client = client;
+        this.realms = realms;
+        this.persistence = persistence;
     }
 
     public boolean isStopped() {
@@ -99,7 +99,7 @@ public class RealmsDataFetcher {
     }
 
     public void markClean() {
-        this.fetchStatus.replaceAll((task, boolean_) -> false);
+        this.fetchStatus.replaceAll((task, fetched) -> false);
     }
 
     public synchronized void forceUpdate() {
@@ -148,9 +148,9 @@ public class RealmsDataFetcher {
     }
 
     private void cancelTasks() {
-        Stream.of(this.serverListScheduledFuture, this.pendingInviteScheduledFuture, this.trialAvailableScheduledFuture, this.liveStatsScheduledFuture, this.unreadNewsScheduledFuture).filter(Objects::nonNull).forEach(scheduledFuture -> {
+        Stream.of(this.serverListScheduledFuture, this.pendingInviteScheduledFuture, this.trialAvailableScheduledFuture, this.liveStatsScheduledFuture, this.unreadNewsScheduledFuture).filter(Objects::nonNull).forEach(task -> {
             try {
-                scheduledFuture.cancel(false);
+                task.cancel(false);
             } catch (Exception exception) {
                 LOGGER.error("Failed to cancel Realms task", (Throwable)exception);
             }
@@ -223,7 +223,7 @@ public class RealmsDataFetcher {
 
     private void updateNews() {
         try {
-            RealmsPersistence.RealmsPersistenceData realmsPersistenceData = this.method_33417();
+            RealmsPersistence.RealmsPersistenceData realmsPersistenceData = this.fetchNews();
             this.hasUnreadNews = realmsPersistenceData.hasUnreadNews;
             this.newsLink = realmsPersistenceData.newsLink;
             this.fetchStatus.put(Task.UNREAD_NEWS, true);
@@ -232,7 +232,7 @@ public class RealmsDataFetcher {
         }
     }
 
-    private RealmsPersistence.RealmsPersistenceData method_33417() {
+    private RealmsPersistence.RealmsPersistenceData fetchNews() {
         boolean bl;
         RealmsPersistence.RealmsPersistenceData realmsPersistenceData;
         try {

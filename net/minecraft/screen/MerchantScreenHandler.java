@@ -124,7 +124,7 @@ extends ScreenHandler {
                 if (!this.insertItem(itemStack2, 3, 39, true)) {
                     return ItemStack.EMPTY;
                 }
-                slot.onStackChanged(itemStack2, itemStack);
+                slot.onQuickTransfer(itemStack2, itemStack);
                 this.playYesSound();
             } else if (index == 0 || index == 1 ? !this.insertItem(itemStack2, 3, 39, false) : (index >= 3 && index < 30 ? !this.insertItem(itemStack2, 30, 39, false) : index >= 30 && index < 39 && !this.insertItem(itemStack2, 3, 30, false))) {
                 return ItemStack.EMPTY;

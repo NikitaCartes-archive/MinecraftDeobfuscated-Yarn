@@ -31,26 +31,26 @@ extends TrunkPlacer {
     }
 
     @Override
-    public List<FoliagePlacer.TreeNode> generate(TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, int i, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig) {
-        BlockPos blockPos2 = blockPos.down();
-        GiantTrunkPlacer.setToDirt(testableWorld, biConsumer, random, blockPos2, treeFeatureConfig);
-        GiantTrunkPlacer.setToDirt(testableWorld, biConsumer, random, blockPos2.east(), treeFeatureConfig);
-        GiantTrunkPlacer.setToDirt(testableWorld, biConsumer, random, blockPos2.south(), treeFeatureConfig);
-        GiantTrunkPlacer.setToDirt(testableWorld, biConsumer, random, blockPos2.south().east(), treeFeatureConfig);
+    public List<FoliagePlacer.TreeNode> generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, int height, BlockPos startPos, TreeFeatureConfig config) {
+        BlockPos blockPos = startPos.down();
+        GiantTrunkPlacer.setToDirt(world, replacer, random, blockPos, config);
+        GiantTrunkPlacer.setToDirt(world, replacer, random, blockPos.east(), config);
+        GiantTrunkPlacer.setToDirt(world, replacer, random, blockPos.south(), config);
+        GiantTrunkPlacer.setToDirt(world, replacer, random, blockPos.south().east(), config);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (int j = 0; j < i; ++j) {
-            GiantTrunkPlacer.setLog(testableWorld, biConsumer, random, mutable, treeFeatureConfig, blockPos, 0, j, 0);
-            if (j >= i - 1) continue;
-            GiantTrunkPlacer.setLog(testableWorld, biConsumer, random, mutable, treeFeatureConfig, blockPos, 1, j, 0);
-            GiantTrunkPlacer.setLog(testableWorld, biConsumer, random, mutable, treeFeatureConfig, blockPos, 1, j, 1);
-            GiantTrunkPlacer.setLog(testableWorld, biConsumer, random, mutable, treeFeatureConfig, blockPos, 0, j, 1);
+        for (int i = 0; i < height; ++i) {
+            GiantTrunkPlacer.setLog(world, replacer, random, mutable, config, startPos, 0, i, 0);
+            if (i >= height - 1) continue;
+            GiantTrunkPlacer.setLog(world, replacer, random, mutable, config, startPos, 1, i, 0);
+            GiantTrunkPlacer.setLog(world, replacer, random, mutable, config, startPos, 1, i, 1);
+            GiantTrunkPlacer.setLog(world, replacer, random, mutable, config, startPos, 0, i, 1);
         }
-        return ImmutableList.of(new FoliagePlacer.TreeNode(blockPos.up(i), 0, true));
+        return ImmutableList.of(new FoliagePlacer.TreeNode(startPos.up(height), 0, true));
     }
 
-    private static void setLog(TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, BlockPos.Mutable mutable, TreeFeatureConfig treeFeatureConfig, BlockPos blockPos, int i, int j, int k) {
-        mutable.set(blockPos, i, j, k);
-        GiantTrunkPlacer.trySetState(testableWorld, biConsumer, random, mutable, treeFeatureConfig);
+    private static void setLog(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, BlockPos.Mutable pos, TreeFeatureConfig config, BlockPos startPos, int x, int y, int z) {
+        pos.set(startPos, x, y, z);
+        GiantTrunkPlacer.trySetState(world, replacer, random, pos, config);
     }
 }
 

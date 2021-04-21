@@ -37,7 +37,7 @@ extends Entity {
 
     @Override
     protected void writeCustomDataToNbt(NbtCompound nbt) {
-        nbt.put(DATA_KEY, this.data);
+        nbt.put(DATA_KEY, this.data.copy());
     }
 
     @Override

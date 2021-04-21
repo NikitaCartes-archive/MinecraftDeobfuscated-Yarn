@@ -25,8 +25,8 @@ public abstract class TreeDecorator {
 
     public abstract void generate(TestableWorld var1, BiConsumer<BlockPos, BlockState> var2, Random var3, List<BlockPos> var4, List<BlockPos> var5);
 
-    protected static void placeVine(BiConsumer<BlockPos, BlockState> biConsumer, BlockPos blockPos, BooleanProperty booleanProperty) {
-        biConsumer.accept(blockPos, (BlockState)Blocks.VINE.getDefaultState().with(booleanProperty, true));
+    protected static void placeVine(BiConsumer<BlockPos, BlockState> replacer, BlockPos pos, BooleanProperty facing) {
+        replacer.accept(pos, (BlockState)Blocks.VINE.getDefaultState().with(facing, true));
     }
 }
 

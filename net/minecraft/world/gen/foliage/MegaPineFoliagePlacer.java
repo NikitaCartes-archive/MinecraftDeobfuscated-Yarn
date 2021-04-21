@@ -20,7 +20,7 @@ import net.minecraft.world.gen.foliage.FoliagePlacerType;
 
 public class MegaPineFoliagePlacer
 extends FoliagePlacer {
-    public static final Codec<MegaPineFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> MegaPineFoliagePlacer.fillFoliagePlacerFields(instance).and(((MapCodec)IntProvider.createValidatingCodec(0, 24).fieldOf("crown_height")).forGetter(megaPineFoliagePlacer -> megaPineFoliagePlacer.crownHeight)).apply((Applicative<MegaPineFoliagePlacer, ?>)instance, MegaPineFoliagePlacer::new));
+    public static final Codec<MegaPineFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> MegaPineFoliagePlacer.fillFoliagePlacerFields(instance).and(((MapCodec)IntProvider.createValidatingCodec(0, 24).fieldOf("crown_height")).forGetter(placer -> placer.crownHeight)).apply((Applicative<MegaPineFoliagePlacer, ?>)instance, MegaPineFoliagePlacer::new));
     private final IntProvider crownHeight;
 
     public MegaPineFoliagePlacer(IntProvider radius, IntProvider offset, IntProvider crownHeight) {
@@ -34,15 +34,15 @@ extends FoliagePlacer {
     }
 
     @Override
-    protected void generate(TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, TreeFeatureConfig treeFeatureConfig, int i, FoliagePlacer.TreeNode treeNode, int radius, int j, int offset) {
+    protected void generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, TreeFeatureConfig config, int trunkHeight, FoliagePlacer.TreeNode treeNode, int foliageHeight, int radius, int offset) {
         BlockPos blockPos = treeNode.getCenter();
-        int k = 0;
-        for (int l = blockPos.getY() - radius + offset; l <= blockPos.getY() + offset; ++l) {
-            int m = blockPos.getY() - l;
-            int n = j + treeNode.getFoliageRadius() + MathHelper.floor((float)m / (float)radius * 3.5f);
-            int o = m > 0 && n == k && (l & 1) == 0 ? n + 1 : n;
-            this.generateSquare(testableWorld, biConsumer, random, treeFeatureConfig, new BlockPos(blockPos.getX(), l, blockPos.getZ()), o, 0, treeNode.isGiantTrunk());
-            k = n;
+        int i = 0;
+        for (int j = blockPos.getY() - foliageHeight + offset; j <= blockPos.getY() + offset; ++j) {
+            int k = blockPos.getY() - j;
+            int l = radius + treeNode.getFoliageRadius() + MathHelper.floor((float)k / (float)foliageHeight * 3.5f);
+            int m = k > 0 && l == i && (j & 1) == 0 ? l + 1 : l;
+            this.generateSquare(world, replacer, random, config, new BlockPos(blockPos.getX(), j, blockPos.getZ()), m, 0, treeNode.isGiantTrunk());
+            i = l;
         }
     }
 

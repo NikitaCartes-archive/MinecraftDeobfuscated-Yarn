@@ -49,7 +49,7 @@ extends LongRunningTask {
         RealmsServerAddress realmsServerAddress;
         this.setTitle(new TranslatableText("mco.connect.connecting"));
         try {
-            realmsServerAddress = this.method_32516();
+            realmsServerAddress = this.join();
         } catch (CancellationException cancellationException) {
             LOGGER.info("User aborted connecting to realms");
             return;
@@ -77,11 +77,11 @@ extends LongRunningTask {
             return;
         }
         boolean bl2 = realmsServerAddress.resourcePackUrl != null && realmsServerAddress.resourcePackHash != null;
-        RealmsLongRunningMcoTaskScreen screen = bl2 ? this.method_32512(realmsServerAddress, this::method_32511) : this.method_32511(realmsServerAddress);
+        RealmsLongRunningMcoTaskScreen screen = bl2 ? this.createResourcePackConfirmationScreen(realmsServerAddress, this::createConnectingScreen) : this.createConnectingScreen(realmsServerAddress);
         RealmsGetServerDetailsTask.setScreen(screen);
     }
 
-    private RealmsServerAddress method_32516() throws RealmsServiceException, TimeoutException, CancellationException {
+    private RealmsServerAddress join() throws RealmsServiceException, TimeoutException, CancellationException {
         RealmsClient realmsClient = RealmsClient.createRealmsClient();
         for (int i = 0; i < 40; ++i) {
             if (this.aborted()) {
@@ -97,18 +97,18 @@ extends LongRunningTask {
         throw new TimeoutException();
     }
 
-    public RealmsLongRunningMcoTaskScreen method_32511(RealmsServerAddress realmsServerAddress) {
-        return new RealmsLongRunningMcoTaskScreen(this.lastScreen, new RealmsConnectTask(this.lastScreen, this.server, realmsServerAddress));
+    public RealmsLongRunningMcoTaskScreen createConnectingScreen(RealmsServerAddress address) {
+        return new RealmsLongRunningMcoTaskScreen(this.lastScreen, new RealmsConnectTask(this.lastScreen, this.server, address));
     }
 
-    private RealmsLongConfirmationScreen method_32512(RealmsServerAddress realmsServerAddress, Function<RealmsServerAddress, Screen> function) {
-        BooleanConsumer booleanConsumer = bl -> {
+    private RealmsLongConfirmationScreen createResourcePackConfirmationScreen(RealmsServerAddress address, Function<RealmsServerAddress, Screen> connectingScreenCreator) {
+        BooleanConsumer booleanConsumer = confirmed -> {
             try {
-                if (!bl) {
+                if (!confirmed) {
                     RealmsGetServerDetailsTask.setScreen(this.lastScreen);
                     return;
                 }
-                ((CompletableFuture)this.method_32515(realmsServerAddress).thenRun(() -> RealmsGetServerDetailsTask.setScreen((Screen)function.apply(realmsServerAddress)))).exceptionally(throwable -> {
+                ((CompletableFuture)this.downloadResourcePack(address).thenRun(() -> RealmsGetServerDetailsTask.setScreen((Screen)connectingScreenCreator.apply(address)))).exceptionally(throwable -> {
                     MinecraftClient.getInstance().getResourcePackProvider().clear();
                     LOGGER.error(throwable);
                     RealmsGetServerDetailsTask.setScreen(new RealmsGenericErrorScreen(new LiteralText("Failed to download resource pack!"), this.lastScreen));
@@ -123,9 +123,9 @@ extends LongRunningTask {
         return new RealmsLongConfirmationScreen(booleanConsumer, RealmsLongConfirmationScreen.Type.Info, new TranslatableText("mco.configure.world.resourcepack.question.line1"), new TranslatableText("mco.configure.world.resourcepack.question.line2"), true);
     }
 
-    private CompletableFuture<?> method_32515(RealmsServerAddress realmsServerAddress) {
+    private CompletableFuture<?> downloadResourcePack(RealmsServerAddress address) {
         try {
-            return MinecraftClient.getInstance().getResourcePackProvider().download(realmsServerAddress.resourcePackUrl, realmsServerAddress.resourcePackHash);
+            return MinecraftClient.getInstance().getResourcePackProvider().download(address.resourcePackUrl, address.resourcePackHash, false);
         } catch (Exception exception) {
             CompletableFuture completableFuture = new CompletableFuture();
             completableFuture.completeExceptionally(exception);

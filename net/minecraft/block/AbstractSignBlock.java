@@ -15,11 +15,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.DyeItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.stat.Stats;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
@@ -73,7 +75,8 @@ implements Waterloggable {
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         boolean bl4;
         ItemStack itemStack = player.getStackInHand(hand);
-        boolean bl = itemStack.getItem() instanceof DyeItem;
+        Item item = itemStack.getItem();
+        boolean bl = item instanceof DyeItem;
         boolean bl2 = itemStack.isOf(Items.GLOW_INK_SAC);
         boolean bl3 = itemStack.isOf(Items.INK_SAC);
         boolean bl5 = bl4 = (bl2 || bl || bl3) && player.getAbilities().allowModifyWorld;
@@ -97,10 +100,13 @@ implements Waterloggable {
                     bl6 = signBlockEntity.setGlowingText(false);
                 } else {
                     world.playSound(null, pos, SoundEvents.ITEM_DYE_USE, SoundCategory.BLOCKS, 1.0f, 1.0f);
-                    bl6 = signBlockEntity.setTextColor(((DyeItem)itemStack.getItem()).getColor());
+                    bl6 = signBlockEntity.setTextColor(((DyeItem)item).getColor());
                 }
-                if (bl6 && !player.isCreative()) {
-                    itemStack.decrement(1);
+                if (bl6) {
+                    if (!player.isCreative()) {
+                        itemStack.decrement(1);
+                    }
+                    player.incrementStat(Stats.USED.getOrCreateStat(item));
                 }
             }
             return signBlockEntity.onActivate((ServerPlayerEntity)player) ? ActionResult.SUCCESS : ActionResult.PASS;

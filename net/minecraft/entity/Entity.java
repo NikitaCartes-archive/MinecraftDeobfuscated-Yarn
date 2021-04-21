@@ -224,7 +224,7 @@ CommandOutput {
     private boolean invulnerable;
     protected UUID uuid = MathHelper.randomUuid(this.random);
     protected String uuidString = this.uuid.toString();
-    protected boolean glowing;
+    private boolean glowing;
     private final Set<String> scoreboardTags = Sets.newHashSet();
     private final double[] pistonMovementDelta = new double[]{0.0, 0.0, 0.0};
     private long pistonMovementTick;
@@ -359,7 +359,7 @@ CommandOutput {
         }
     }
 
-    public void method_36209() {
+    public void onRemoved() {
     }
 
     public void setPose(EntityPose pose) {
@@ -418,9 +418,6 @@ CommandOutput {
     }
 
     public void tick() {
-        if (!this.world.isClient) {
-            this.setFlag(6, this.isGlowing());
-        }
         this.baseTick();
     }
 
@@ -1458,7 +1455,7 @@ CommandOutput {
                 nbt.putBoolean("NoGravity", this.hasNoGravity());
             }
             if (this.glowing) {
-                nbt.putBoolean("Glowing", this.glowing);
+                nbt.putBoolean("Glowing", true);
             }
             if ((i = this.getFrozenTicks()) > 0) {
                 nbt.putInt("TicksFrozen", this.getFrozenTicks());
@@ -1950,15 +1947,20 @@ CommandOutput {
         this.setFlag(4, swimming);
     }
 
-    public boolean isGlowing() {
-        return this.glowing || this.world.isClient && this.getFlag(6);
+    public final boolean method_36361() {
+        return this.glowing;
     }
 
-    public void setGlowing(boolean glowing) {
+    public final void setGlowing(boolean glowing) {
         this.glowing = glowing;
-        if (!this.world.isClient) {
-            this.setFlag(6, this.glowing);
+        this.setFlag(6, this.isGlowing());
+    }
+
+    public boolean isGlowing() {
+        if (this.world.isClient()) {
+            return this.getFlag(6);
         }
+        return this.glowing;
     }
 
     public boolean isInvisible() {

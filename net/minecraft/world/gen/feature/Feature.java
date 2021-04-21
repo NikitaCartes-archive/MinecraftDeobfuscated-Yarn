@@ -10,7 +10,6 @@ import java.util.function.Predicate;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -127,7 +126,7 @@ public abstract class Feature<FC extends FeatureConfig> {
     public static final Feature<BlockPileFeatureConfig> BLOCK_PILE = Feature.register("block_pile", new BlockPileFeature(BlockPileFeatureConfig.CODEC));
     public static final Feature<SpringFeatureConfig> SPRING_FEATURE = Feature.register("spring_feature", new SpringFeature(SpringFeatureConfig.CODEC));
     public static final Feature<DefaultFeatureConfig> CHORUS_PLANT = Feature.register("chorus_plant", new ChorusPlantFeature(DefaultFeatureConfig.CODEC));
-    public static final Feature<EmeraldOreFeatureConfig> EMERALD_ORE = Feature.register("emerald_ore", new EmeraldOreFeature(EmeraldOreFeatureConfig.CODEC));
+    public static final Feature<EmeraldOreFeatureConfig> REPLACE_SINGLE_BLOCK = Feature.register("replace_single_block", new EmeraldOreFeature(EmeraldOreFeatureConfig.CODEC));
     public static final Feature<DefaultFeatureConfig> VOID_START_PLATFORM = Feature.register("void_start_platform", new VoidStartPlatformFeature(DefaultFeatureConfig.CODEC));
     public static final Feature<DefaultFeatureConfig> DESERT_WELL = Feature.register("desert_well", new DesertWellFeature(DefaultFeatureConfig.CODEC));
     public static final Feature<FossilFeatureConfig> FOSSIL = Feature.register("fossil", new FossilFeature(FossilFeatureConfig.CODEC));
@@ -210,7 +209,7 @@ public abstract class Feature<FC extends FeatureConfig> {
     }
 
     public static boolean isSoil(BlockState state) {
-        return state.isOf(Blocks.DIRT) || state.isOf(Blocks.GRASS_BLOCK) || state.isOf(Blocks.PODZOL) || state.isOf(Blocks.COARSE_DIRT) || state.isOf(Blocks.MYCELIUM) || state.isOf(Blocks.ROOTED_DIRT);
+        return state.isIn(BlockTags.DIRT);
     }
 
     public static boolean isSoil(TestableWorld world, BlockPos pos) {

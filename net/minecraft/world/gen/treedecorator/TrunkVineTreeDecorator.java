@@ -26,20 +26,20 @@ extends TreeDecorator {
     }
 
     @Override
-    public void generate(TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, List<BlockPos> leavesPositions, List<BlockPos> list) {
-        leavesPositions.forEach(blockPos -> {
-            BlockPos blockPos2;
-            if (random.nextInt(3) > 0 && Feature.isAir(testableWorld, blockPos2 = blockPos.west())) {
-                TrunkVineTreeDecorator.placeVine(biConsumer, blockPos2, VineBlock.EAST);
+    public void generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions) {
+        logPositions.forEach(pos -> {
+            BlockPos blockPos;
+            if (random.nextInt(3) > 0 && Feature.isAir(world, blockPos = pos.west())) {
+                TrunkVineTreeDecorator.placeVine(replacer, blockPos, VineBlock.EAST);
             }
-            if (random.nextInt(3) > 0 && Feature.isAir(testableWorld, blockPos2 = blockPos.east())) {
-                TrunkVineTreeDecorator.placeVine(biConsumer, blockPos2, VineBlock.WEST);
+            if (random.nextInt(3) > 0 && Feature.isAir(world, blockPos = pos.east())) {
+                TrunkVineTreeDecorator.placeVine(replacer, blockPos, VineBlock.WEST);
             }
-            if (random.nextInt(3) > 0 && Feature.isAir(testableWorld, blockPos2 = blockPos.north())) {
-                TrunkVineTreeDecorator.placeVine(biConsumer, blockPos2, VineBlock.SOUTH);
+            if (random.nextInt(3) > 0 && Feature.isAir(world, blockPos = pos.north())) {
+                TrunkVineTreeDecorator.placeVine(replacer, blockPos, VineBlock.SOUTH);
             }
-            if (random.nextInt(3) > 0 && Feature.isAir(testableWorld, blockPos2 = blockPos.south())) {
-                TrunkVineTreeDecorator.placeVine(biConsumer, blockPos2, VineBlock.NORTH);
+            if (random.nextInt(3) > 0 && Feature.isAir(world, blockPos = pos.south())) {
+                TrunkVineTreeDecorator.placeVine(replacer, blockPos, VineBlock.NORTH);
             }
         });
     }

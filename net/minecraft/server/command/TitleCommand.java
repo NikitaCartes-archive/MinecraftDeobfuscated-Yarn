@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.function.Function;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.TextArgumentType;
+import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.ClearTitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
@@ -59,7 +60,7 @@ public class TitleCommand {
 
     private static int executeTitle(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Text title, String titleType, Function<Text, Packet<?>> constructor) throws CommandSyntaxException {
         for (ServerPlayerEntity serverPlayerEntity : targets) {
-            serverPlayerEntity.networkHandler.sendPacket(constructor.apply(Texts.parse(source, title, serverPlayerEntity, 0)));
+            serverPlayerEntity.networkHandler.sendPacket(constructor.apply(Texts.parse(source, title, (Entity)serverPlayerEntity, 0)));
         }
         if (targets.size() == 1) {
             source.sendFeedback(new TranslatableText("commands.title.show." + titleType + ".single", targets.iterator().next().getDisplayName()), true);

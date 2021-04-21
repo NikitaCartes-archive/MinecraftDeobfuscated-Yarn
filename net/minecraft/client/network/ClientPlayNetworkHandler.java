@@ -1480,17 +1480,17 @@ implements ClientPlayPacketListener {
         ServerInfo serverInfo = this.client.getCurrentServerEntry();
         if (serverInfo != null && serverInfo.getResourcePackPolicy() == ServerInfo.ResourcePackPolicy.ENABLED) {
             this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
-            this.feedbackAfterDownload(this.client.getResourcePackProvider().download(string, string2));
-        } else if (serverInfo == null || serverInfo.getResourcePackPolicy() == ServerInfo.ResourcePackPolicy.PROMPT) {
-            this.client.execute(() -> this.client.openScreen(new ConfirmScreen(bl2 -> {
+            this.feedbackAfterDownload(this.client.getResourcePackProvider().download(string, string2, true));
+        } else if (serverInfo == null || serverInfo.getResourcePackPolicy() == ServerInfo.ResourcePackPolicy.PROMPT || bl && serverInfo.getResourcePackPolicy() == ServerInfo.ResourcePackPolicy.DISABLED) {
+            this.client.execute(() -> this.client.openScreen(new ConfirmScreen(enabled -> {
                 this.client.openScreen(null);
                 ServerInfo serverInfo = this.client.getCurrentServerEntry();
-                if (bl2) {
+                if (enabled) {
                     if (serverInfo != null) {
                         serverInfo.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.ENABLED);
                     }
                     this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
-                    this.feedbackAfterDownload(this.client.getResourcePackProvider().download(string, string2));
+                    this.feedbackAfterDownload(this.client.getResourcePackProvider().download(string, string2, true));
                 } else {
                     this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.DECLINED);
                     if (bl) {

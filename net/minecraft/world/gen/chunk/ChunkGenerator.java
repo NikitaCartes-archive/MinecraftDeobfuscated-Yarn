@@ -15,6 +15,7 @@ import java.util.concurrent.Executor;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_6350;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
@@ -151,6 +152,7 @@ public abstract class ChunkGenerator {
         ChunkPos chunkPos = chunk.getPos();
         GenerationSettings generationSettings = this.populationSource.getBiomeForNoiseGen(BiomeCoords.fromBlock(chunkPos.getStartX()), 0, BiomeCoords.fromBlock(chunkPos.getStartZ())).getGenerationSettings();
         CarverContext carverContext = new CarverContext(this);
+        class_6350 lv = this.method_36380(chunk);
         BitSet bitSet = ((ProtoChunk)chunk).getOrCreateCarvingMask(carver);
         for (int j = -8; j <= 8; ++j) {
             for (int k = -8; k <= 8; ++k) {
@@ -162,10 +164,14 @@ public abstract class ChunkGenerator {
                     ConfiguredCarver<?> configuredCarver = listIterator.next().get();
                     chunkRandom.setCarverSeed(seed + (long)l, chunkPos2.x, chunkPos2.z);
                     if (!configuredCarver.shouldCarve(chunkRandom)) continue;
-                    configuredCarver.carve(carverContext, chunk, biomeAccess::getBiome, chunkRandom, this.getSeaLevel(), chunkPos2, bitSet);
+                    configuredCarver.carve(carverContext, chunk, biomeAccess::getBiome, chunkRandom, lv, chunkPos2, bitSet);
                 }
             }
         }
+    }
+
+    protected class_6350 method_36380(Chunk chunk) {
+        return class_6350.method_36381(this.getSeaLevel(), Blocks.WATER.getDefaultState());
     }
 
     /**

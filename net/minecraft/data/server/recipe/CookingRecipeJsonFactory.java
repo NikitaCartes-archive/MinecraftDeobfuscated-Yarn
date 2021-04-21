@@ -10,6 +10,7 @@ import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.CriterionMerger;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
+import net.minecraft.data.server.recipe.CraftingRecipeJsonFactory;
 import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
@@ -21,12 +22,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
-public class CookingRecipeJsonFactory {
+public class CookingRecipeJsonFactory
+implements CraftingRecipeJsonFactory {
     private final Item output;
     private final Ingredient input;
     private final float experience;
     private final int cookingTime;
     private final Advancement.Task builder = Advancement.Task.create();
+    @Nullable
     private String group;
     private final CookingRecipeSerializer<?> serializer;
 
@@ -58,29 +61,24 @@ public class CookingRecipeJsonFactory {
         return CookingRecipeJsonFactory.create(result, ingredient, experience, cookingTime, RecipeSerializer.SMOKING);
     }
 
+    @Override
     public CookingRecipeJsonFactory criterion(String criterionName, CriterionConditions conditions) {
         this.builder.criterion(criterionName, conditions);
         return this;
     }
 
-    public CookingRecipeJsonFactory group(String group) {
+    @Override
+    public CookingRecipeJsonFactory group(@Nullable String group) {
         this.group = group;
         return this;
     }
 
-    public void offerTo(Consumer<RecipeJsonProvider> exporter) {
-        this.offerTo(exporter, Registry.ITEM.getId(this.output));
+    @Override
+    public Item getOutputItem() {
+        return this.output;
     }
 
-    public void offerTo(Consumer<RecipeJsonProvider> exporter, String recipeIdStr) {
-        Identifier identifier2 = new Identifier(recipeIdStr);
-        Identifier identifier = Registry.ITEM.getId(this.output);
-        if (identifier2.equals(identifier)) {
-            throw new IllegalStateException("Recipe " + identifier2 + " should remove its 'save' argument");
-        }
-        this.offerTo(exporter, identifier2);
-    }
-
+    @Override
     public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId) {
         this.validate(recipeId);
         this.builder.parent(new Identifier("recipes/root")).criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId)).rewards(AdvancementRewards.Builder.recipe(recipeId)).criteriaMerger(CriterionMerger.OR);
@@ -91,6 +89,16 @@ public class CookingRecipeJsonFactory {
         if (this.builder.getCriteria().isEmpty()) {
             throw new IllegalStateException("No way of obtaining recipe " + recipeId);
         }
+    }
+
+    @Override
+    public /* synthetic */ CraftingRecipeJsonFactory group(@Nullable String group) {
+        return this.group(group);
+    }
+
+    @Override
+    public /* synthetic */ CraftingRecipeJsonFactory criterion(String name, CriterionConditions conditions) {
+        return this.criterion(name, conditions);
     }
 
     public static class CookingRecipeJsonProvider

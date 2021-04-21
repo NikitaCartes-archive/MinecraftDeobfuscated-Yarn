@@ -47,18 +47,18 @@ extends Item {
 
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
+        BlockPos blockPos;
         PlayerEntity playerEntity = context.getPlayer();
         World world = context.getWorld();
-        if (!world.isClient && playerEntity != null) {
-            BlockPos blockPos = context.getBlockPos();
-            this.use(playerEntity, world.getBlockState(blockPos), world, blockPos, true, context.getStack());
+        if (!world.isClient && playerEntity != null && !this.use(playerEntity, world.getBlockState(blockPos = context.getBlockPos()), world, blockPos, true, context.getStack())) {
+            return ActionResult.FAIL;
         }
         return ActionResult.success(world.isClient);
     }
 
-    private void use(PlayerEntity player, BlockState state, WorldAccess world, BlockPos pos, boolean update, ItemStack stack) {
+    private boolean use(PlayerEntity player, BlockState state, WorldAccess world, BlockPos pos, boolean update, ItemStack stack) {
         if (!player.isCreativeLevelTwoOp()) {
-            return;
+            return false;
         }
         Block block = state.getBlock();
         StateManager<Block, BlockState> stateManager = block.getStateManager();
@@ -66,7 +66,7 @@ extends Item {
         String string = Registry.BLOCK.getId(block).toString();
         if (collection.isEmpty()) {
             DebugStickItem.sendMessage(player, new TranslatableText(this.getTranslationKey() + ".empty", string));
-            return;
+            return false;
         }
         NbtCompound nbtCompound = stack.getOrCreateSubTag("DebugProperty");
         String string2 = nbtCompound.getString(string);
@@ -84,6 +84,7 @@ extends Item {
             nbtCompound.putString(string, string3);
             DebugStickItem.sendMessage(player, new TranslatableText(this.getTranslationKey() + ".select", string3, DebugStickItem.getValueString(state, property)));
         }
+        return true;
     }
 
     private static <T extends Comparable<T>> BlockState cycle(BlockState state, Property<T> property, boolean inverse) {

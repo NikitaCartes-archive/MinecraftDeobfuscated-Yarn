@@ -14,6 +14,7 @@ public enum ActionResult {
      * performance.
      */
     CONSUME,
+    CONSUME_PARTIAL,
     /**
      * Indicates an action is not performed but allows other actions to
      * perform.
@@ -30,7 +31,7 @@ public enum ActionResult {
      * Returns whether an action is performed.
      */
     public boolean isAccepted() {
-        return this == SUCCESS || this == CONSUME;
+        return this == SUCCESS || this == CONSUME || this == CONSUME_PARTIAL;
     }
 
     /**
@@ -39,6 +40,10 @@ public enum ActionResult {
      */
     public boolean shouldSwingHand() {
         return this == SUCCESS;
+    }
+
+    public boolean method_36360() {
+        return this == SUCCESS || this == CONSUME;
     }
 
     public static ActionResult success(boolean swingHand) {

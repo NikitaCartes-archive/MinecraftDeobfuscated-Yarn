@@ -24,6 +24,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.ProgressScreen;
+import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.resource.DefaultClientResourcePack;
@@ -39,6 +40,7 @@ import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.ZipResourcePack;
 import net.minecraft.resource.metadata.PackResourceMetadata;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -62,6 +64,7 @@ implements ResourcePackProvider {
     private static final String field_32961 = "server";
     private static final String field_32962 = "programer_art";
     private static final String field_32963 = "Programmer Art";
+    private static final Text field_33633 = new TranslatableText("multiplayer.applyingPack");
     private final DefaultResourcePack pack;
     private final File serverPacksRoot;
     private final ReentrantLock lock = new ReentrantLock();
@@ -110,7 +113,7 @@ implements ResourcePackProvider {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public CompletableFuture<?> download(String string, String string2) {
+    public CompletableFuture<?> download(String string, String string2, boolean bl) {
         String string3 = DigestUtils.sha1Hex(string);
         String string4 = ALPHANUMERAL.matcher(string2).matches() ? string2 : "";
         this.lock.lock();
@@ -122,7 +125,7 @@ implements ResourcePackProvider {
             if (file.exists()) {
                 completableFuture = CompletableFuture.completedFuture("");
             } else {
-                ProgressScreen progressScreen = new ProgressScreen();
+                ProgressScreen progressScreen = new ProgressScreen(bl);
                 Map<String, String> map = ClientBuiltinResourcePackProvider.getDownloadHeaders();
                 MinecraftClient minecraftClient = MinecraftClient.getInstance();
                 minecraftClient.submitAndJoin(() -> minecraftClient.openScreen(progressScreen));
@@ -132,6 +135,12 @@ implements ResourcePackProvider {
                 if (!this.verifyFile(string4, file)) {
                     return Util.completeExceptionally(new RuntimeException("Hash check failure for file " + file + ", see log"));
                 }
+                MinecraftClient minecraftClient = MinecraftClient.getInstance();
+                minecraftClient.execute(() -> {
+                    if (!bl) {
+                        minecraftClient.openScreen(new SaveLevelScreen(field_33633));
+                    }
+                });
                 return this.loadServerPack(file, ResourcePackSource.PACK_SOURCE_SERVER);
             })).whenComplete((void_, throwable) -> {
                 if (throwable != null) {

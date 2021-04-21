@@ -84,19 +84,19 @@ implements TickableElement {
             string2 = realmsWorldOptions.templateImage;
             bl3 = realmsWorldOptions.empty;
         }
-        Action action = RealmsWorldSlotButton.method_27455(realmsServer, bl2, bl);
-        Pair<Text, Text> pair = this.method_27454(realmsServer, string, bl3, bl, action);
+        Action action = RealmsWorldSlotButton.getAction(realmsServer, bl2, bl);
+        Pair<Text, Text> pair = this.getActionPromptAndMessage(realmsServer, string, bl3, bl, action);
         this.state = new State(bl2, string, l, string2, bl3, bl, action, pair.getFirst());
         this.setMessage(pair.getSecond());
     }
 
-    private static Action method_27455(RealmsServer realmsServer, boolean bl, boolean bl2) {
-        if (bl) {
-            if (!realmsServer.expired && realmsServer.state != RealmsServer.State.UNINITIALIZED) {
+    private static Action getAction(RealmsServer server, boolean active, boolean minigame) {
+        if (active) {
+            if (!server.expired && server.state != RealmsServer.State.UNINITIALIZED) {
                 return Action.JOIN;
             }
-        } else if (bl2) {
-            if (!realmsServer.expired) {
+        } else if (minigame) {
+            if (!server.expired) {
                 return Action.SWITCH_SLOT;
             }
         } else {
@@ -105,14 +105,14 @@ implements TickableElement {
         return Action.NOTHING;
     }
 
-    private Pair<Text, Text> method_27454(RealmsServer realmsServer, String string, boolean bl, boolean bl2, Action action) {
+    private Pair<Text, Text> getActionPromptAndMessage(RealmsServer server, String text, boolean empty, boolean minigame, Action action) {
         if (action == Action.NOTHING) {
-            return Pair.of(null, new LiteralText(string));
+            return Pair.of(null, new LiteralText(text));
         }
-        Text text = bl2 ? (bl ? LiteralText.EMPTY : new LiteralText(" ").append(string).append(" ").append(realmsServer.minigameName)) : new LiteralText(" ").append(string);
-        Text text2 = action == Action.JOIN ? ACTIVE_TOOLTIP : (bl2 ? MINIGAME_TOOLTIP : TOOLTIP);
-        MutableText text3 = text2.shallowCopy().append(text);
-        return Pair.of(text2, text3);
+        Text text2 = minigame ? (empty ? LiteralText.EMPTY : new LiteralText(" ").append(text).append(" ").append(server.minigameName)) : new LiteralText(" ").append(text);
+        Text text3 = action == Action.JOIN ? ACTIVE_TOOLTIP : (minigame ? MINIGAME_TOOLTIP : TOOLTIP);
+        MutableText text4 = text3.shallowCopy().append(text2);
+        return Pair.of(text3, text4);
     }
 
     @Override
@@ -123,28 +123,28 @@ implements TickableElement {
         this.drawSlotFrame(matrices, this.x, this.y, mouseX, mouseY, this.state.isCurrentlyActiveSlot, this.state.slotName, this.slotIndex, this.state.imageId, this.state.image, this.state.empty, this.state.minigame, this.state.action, this.state.actionPrompt);
     }
 
-    private void drawSlotFrame(MatrixStack matrices, int x, int y, int mouseX, int mouseY, boolean bl, String text, int i, long l, @Nullable String string, boolean bl2, boolean bl3, Action action, @Nullable Text text2) {
-        boolean bl5;
-        boolean bl4 = this.isHovered();
-        if (this.isMouseOver(mouseX, mouseY) && text2 != null) {
-            this.toolTipSetter.accept(text2);
+    private void drawSlotFrame(MatrixStack matrices, int x, int y, int mouseX, int mouseY, boolean active, String slotName, int slotIndex, long imageId, @Nullable String image, boolean empty, boolean minigame, Action action, @Nullable Text actionPrompt) {
+        boolean bl2;
+        boolean bl = this.isHovered();
+        if (this.isMouseOver(mouseX, mouseY) && actionPrompt != null) {
+            this.toolTipSetter.accept(actionPrompt);
         }
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         TextureManager textureManager = minecraftClient.getTextureManager();
-        if (bl3) {
-            RealmsTextureManager.bindWorldTemplate(String.valueOf(l), string);
-        } else if (bl2) {
+        if (minigame) {
+            RealmsTextureManager.bindWorldTemplate(String.valueOf(imageId), image);
+        } else if (empty) {
             RenderSystem.setShaderTexture(0, EMPTY_FRAME);
-        } else if (string != null && l != -1L) {
-            RealmsTextureManager.bindWorldTemplate(String.valueOf(l), string);
-        } else if (i == 1) {
+        } else if (image != null && imageId != -1L) {
+            RealmsTextureManager.bindWorldTemplate(String.valueOf(imageId), image);
+        } else if (slotIndex == 1) {
             RenderSystem.setShaderTexture(0, PANORAMA_0);
-        } else if (i == 2) {
+        } else if (slotIndex == 2) {
             RenderSystem.setShaderTexture(0, PANORAMA_2);
-        } else if (i == 3) {
+        } else if (slotIndex == 3) {
             RenderSystem.setShaderTexture(0, PANORAMA_3);
         }
-        if (bl) {
+        if (active) {
             float f = 0.85f + 0.15f * MathHelper.cos((float)this.animTick * 0.2f);
             RenderSystem.setShaderColor(f, f, f, 1.0f);
         } else {
@@ -152,16 +152,16 @@ implements TickableElement {
         }
         RealmsWorldSlotButton.drawTexture(matrices, x + 3, y + 3, 0.0f, 0.0f, 74, 74, 74, 74);
         RenderSystem.setShaderTexture(0, SLOT_FRAME);
-        boolean bl6 = bl5 = bl4 && action != Action.NOTHING;
-        if (bl5) {
+        boolean bl3 = bl2 = bl && action != Action.NOTHING;
+        if (bl2) {
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        } else if (bl) {
+        } else if (active) {
             RenderSystem.setShaderColor(0.8f, 0.8f, 0.8f, 1.0f);
         } else {
             RenderSystem.setShaderColor(0.56f, 0.56f, 0.56f, 1.0f);
         }
         RealmsWorldSlotButton.drawTexture(matrices, x, y, 0.0f, 0.0f, 80, 80, 80, 80);
-        RealmsWorldSlotButton.drawCenteredString(matrices, minecraftClient.textRenderer, text, x + 40, y + 66, 0xFFFFFF);
+        RealmsWorldSlotButton.drawCenteredString(matrices, minecraftClient.textRenderer, slotName, x + 40, y + 66, 0xFFFFFF);
     }
 
     @Environment(value=EnvType.CLIENT)

@@ -44,8 +44,8 @@ public interface Bucketable {
         if (entity.hasNoGravity()) {
             nbtCompound.putBoolean("NoGravity", entity.hasNoGravity());
         }
-        if (entity.isGlowing()) {
-            nbtCompound.putBoolean("Glowing", entity.isGlowing());
+        if (entity.method_36361()) {
+            nbtCompound.putBoolean("Glowing", entity.method_36361());
         }
         if (entity.isInvulnerable()) {
             nbtCompound.putBoolean("Invulnerable", entity.isInvulnerable());

@@ -119,7 +119,7 @@ extends ScreenHandler {
                 if (!this.insertItem(itemStack2, 3, 39, true)) {
                     return ItemStack.EMPTY;
                 }
-                slot.onStackChanged(itemStack2, itemStack);
+                slot.onQuickTransfer(itemStack2, itemStack);
             } else if (index == 0 || index == 1) {
                 if (!this.insertItem(itemStack2, 3, 39, false)) {
                     return ItemStack.EMPTY;

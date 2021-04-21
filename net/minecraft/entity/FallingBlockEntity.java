@@ -208,7 +208,7 @@ extends Entity {
         float f = Math.min(MathHelper.floor((float)i * this.fallHurtAmount), this.fallHurtMax);
         this.world.getOtherEntities(this, this.getBoundingBox(), predicate).forEach(entity -> entity.damage(damageSource2, f));
         boolean bl = this.block.isIn(BlockTags.ANVIL);
-        if (bl && (double)this.random.nextFloat() < (double)0.05f + (double)i * 0.05) {
+        if (bl && f > 0.0f && this.random.nextFloat() < 0.05f + (float)i * 0.05f) {
             BlockState blockState = AnvilBlock.getLandingState(this.block);
             if (blockState == null) {
                 this.destroyedOnLanding = true;

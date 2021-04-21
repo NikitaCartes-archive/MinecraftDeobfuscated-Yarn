@@ -207,7 +207,7 @@ public final class ItemStack {
         }
         Item item = this.getItem();
         ActionResult actionResult = item.useOnBlock(context);
-        if (playerEntity != null && actionResult.isAccepted()) {
+        if (playerEntity != null && actionResult.method_36360()) {
             playerEntity.incrementStat(Stats.USED.getOrCreateStat(item));
         }
         return actionResult;

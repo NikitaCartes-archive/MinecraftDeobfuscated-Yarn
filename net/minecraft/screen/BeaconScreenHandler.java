@@ -102,7 +102,7 @@ extends ScreenHandler {
                 if (!this.insertItem(itemStack2, 1, 37, true)) {
                     return ItemStack.EMPTY;
                 }
-                slot.onStackChanged(itemStack2, itemStack);
+                slot.onQuickTransfer(itemStack2, itemStack);
             } else if (!this.paymentSlot.hasStack() && this.paymentSlot.canInsert(itemStack2) && itemStack2.getCount() == 1 ? !this.insertItem(itemStack2, 0, 1, false) : (index >= 1 && index < 28 ? !this.insertItem(itemStack2, 28, 37, false) : (index >= 28 && index < 37 ? !this.insertItem(itemStack2, 1, 28, false) : !this.insertItem(itemStack2, 1, 37, false)))) {
                 return ItemStack.EMPTY;
             }

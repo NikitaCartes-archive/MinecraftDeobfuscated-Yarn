@@ -3,6 +3,7 @@
  */
 package net.minecraft.world.gen;
 
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 
 public class NoiseInterpolator {
@@ -29,15 +30,15 @@ public class NoiseInterpolator {
     private final int startX;
     private final int startZ;
 
-    public NoiseInterpolator(int sizeX, int sizeY, int sizeZ, int chunkX, int chunkZ, int minY, ColumnSampler columnSampler) {
+    public NoiseInterpolator(int sizeX, int sizeY, int sizeZ, ChunkPos chunkPos, int chunkZ, ColumnSampler columnSampler) {
         this.sizeY = sizeY;
         this.sizeZ = sizeZ;
-        this.minY = minY;
+        this.minY = chunkZ;
         this.columnSampler = columnSampler;
         this.startNoiseBuffer = NoiseInterpolator.createBuffer(sizeY, sizeZ);
         this.endNoiseBuffer = NoiseInterpolator.createBuffer(sizeY, sizeZ);
-        this.startX = chunkX * sizeX;
-        this.startZ = chunkZ * sizeZ;
+        this.startX = chunkPos.x * sizeX;
+        this.startZ = chunkPos.z * sizeZ;
     }
 
     private static double[][] createBuffer(int sizeY, int sizeZ) {

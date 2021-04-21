@@ -306,7 +306,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         public void delete() {
             this.client.openScreen(new ConfirmScreen(bl -> {
                 if (bl) {
-                    this.client.openScreen(new ProgressScreen());
+                    this.client.openScreen(new ProgressScreen(true));
                     this.method_33685();
                 }
                 this.client.openScreen(this.screen);

@@ -24,7 +24,7 @@ public abstract class FoliagePlacer {
     protected final IntProvider offset;
 
     protected static <P extends FoliagePlacer> Products.P2<RecordCodecBuilder.Mu<P>, IntProvider, IntProvider> fillFoliagePlacerFields(RecordCodecBuilder.Instance<P> instance) {
-        return instance.group(((MapCodec)IntProvider.createValidatingCodec(0, 16).fieldOf("radius")).forGetter(foliagePlacer -> foliagePlacer.radius), ((MapCodec)IntProvider.createValidatingCodec(0, 16).fieldOf("offset")).forGetter(foliagePlacer -> foliagePlacer.offset));
+        return instance.group(((MapCodec)IntProvider.createValidatingCodec(0, 16).fieldOf("radius")).forGetter(placer -> placer.radius), ((MapCodec)IntProvider.createValidatingCodec(0, 16).fieldOf("offset")).forGetter(placer -> placer.offset));
     }
 
     public FoliagePlacer(IntProvider radius, IntProvider offset) {
@@ -34,8 +34,8 @@ public abstract class FoliagePlacer {
 
     protected abstract FoliagePlacerType<?> getType();
 
-    public void generate(TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, TreeFeatureConfig treeFeatureConfig, int i, TreeNode treeNode, int j, int k) {
-        this.generate(testableWorld, biConsumer, random, treeFeatureConfig, i, treeNode, j, k, this.getRandomOffset(random));
+    public void generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, TreeFeatureConfig config, int trunkHeight, TreeNode treeNode, int foliageHeight, int radius) {
+        this.generate(world, replacer, random, config, trunkHeight, treeNode, foliageHeight, radius, this.getRandomOffset(random));
     }
 
     /**
@@ -77,21 +77,21 @@ public abstract class FoliagePlacer {
     /**
      * Generates a square of leaves with the given radius. Sub-classes can use the method {@code isInvalidForLeaves} to exclude certain positions, such as corners.
      */
-    protected void generateSquare(TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, TreeFeatureConfig treeFeatureConfig, BlockPos blockPos, int i, int y, boolean giantTrunk) {
-        int j = giantTrunk ? 1 : 0;
+    protected void generateSquare(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, TreeFeatureConfig config, BlockPos centerPos, int radius, int y, boolean giantTrunk) {
+        int i = giantTrunk ? 1 : 0;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (int k = -i; k <= i + j; ++k) {
-            for (int l = -i; l <= i + j; ++l) {
-                if (this.isPositionInvalid(random, k, y, l, i, giantTrunk)) continue;
-                mutable.set(blockPos, k, y, l);
-                FoliagePlacer.placeFoliageBlock(testableWorld, biConsumer, random, treeFeatureConfig, mutable);
+        for (int j = -radius; j <= radius + i; ++j) {
+            for (int k = -radius; k <= radius + i; ++k) {
+                if (this.isPositionInvalid(random, j, y, k, radius, giantTrunk)) continue;
+                mutable.set(centerPos, j, y, k);
+                FoliagePlacer.placeFoliageBlock(world, replacer, random, config, mutable);
             }
         }
     }
 
-    protected static void placeFoliageBlock(TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, TreeFeatureConfig config, BlockPos blockPos) {
-        if (TreeFeature.canReplace(testableWorld, blockPos)) {
-            biConsumer.accept(blockPos, config.foliageProvider.getBlockState(random, blockPos));
+    protected static void placeFoliageBlock(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, TreeFeatureConfig config, BlockPos pos) {
+        if (TreeFeature.canReplace(world, pos)) {
+            replacer.accept(pos, config.foliageProvider.getBlockState(random, pos));
         }
     }
 
