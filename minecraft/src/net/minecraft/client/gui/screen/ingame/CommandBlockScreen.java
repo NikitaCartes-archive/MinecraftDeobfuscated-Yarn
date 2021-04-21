@@ -88,7 +88,7 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 		this.modeButton.setValue(this.mode);
 		this.conditionalModeButton.setValue(this.conditional);
 		this.redstoneTriggerButton.setValue(this.autoActivate);
-		this.method_32642(bl);
+		this.setPreviousOutputText(bl);
 		this.setButtonsActive(true);
 	}
 

@@ -95,6 +95,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.screen.ScreenHandlerSyncHandler;
 import net.minecraft.screen.slot.CraftingResultSlot;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.filter.TextStream;
@@ -225,8 +226,9 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private final ScreenHandlerListener screenHandlerListener = new ScreenHandlerListener() {
 		@Override
 		public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
-			if (!(handler.getSlot(slotId) instanceof CraftingResultSlot)) {
-				if (handler == ServerPlayerEntity.this.playerScreenHandler) {
+			Slot slot = handler.getSlot(slotId);
+			if (!(slot instanceof CraftingResultSlot)) {
+				if (slot.inventory == ServerPlayerEntity.this.getInventory()) {
 					Criteria.INVENTORY_CHANGED.trigger(ServerPlayerEntity.this, ServerPlayerEntity.this.getInventory(), stack);
 				}
 			}
@@ -587,6 +589,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_DEATH));
 		this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST));
 		this.extinguish();
+		this.setFrozenTicks(0);
 		this.setOnFire(false);
 		this.getDamageTracker().update();
 	}

@@ -24,6 +24,7 @@ import net.minecraft.util.math.Vec3f;
 public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEntity> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/fishing_hook.png");
 	private static final RenderLayer LAYER = RenderLayer.getEntityCutout(TEXTURE);
+	private static final double field_33632 = 960.0;
 
 	public FishingBobberEntityRenderer(EntityRendererFactory.Context context) {
 		super(context);
@@ -65,11 +66,9 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			float r;
 			if ((this.dispatcher.gameOptions == null || this.dispatcher.gameOptions.getPerspective().isFirstPerson())
 				&& playerEntity == MinecraftClient.getInstance().player) {
-				double s = this.dispatcher.gameOptions.fov;
-				s /= 100.0;
-				Vec3d vec3d = new Vec3d((double)j * -0.36 * s, -0.045 * s, 0.4);
-				vec3d = vec3d.rotateX(-MathHelper.lerp(g, playerEntity.prevPitch, playerEntity.pitch) * (float) (Math.PI / 180.0));
-				vec3d = vec3d.rotateY(-MathHelper.lerp(g, playerEntity.prevYaw, playerEntity.yaw) * (float) (Math.PI / 180.0));
+				double s = 960.0 / this.dispatcher.gameOptions.fov;
+				Vec3d vec3d = this.dispatcher.camera.method_36425().method_36427((float)j * 0.525F, -0.1F);
+				vec3d = vec3d.multiply(s);
 				vec3d = vec3d.rotateY(k * 0.5F);
 				vec3d = vec3d.rotateX(-k * 0.7F);
 				o = MathHelper.lerp((double)g, playerEntity.prevX, playerEntity.getX()) + vec3d.x;

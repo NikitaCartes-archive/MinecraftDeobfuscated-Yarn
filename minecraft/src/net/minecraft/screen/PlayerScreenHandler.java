@@ -154,7 +154,7 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 					return ItemStack.EMPTY;
 				}
 
-				slot.onStackChanged(itemStack2, itemStack);
+				slot.onQuickTransfer(itemStack2, itemStack);
 			} else if (index >= 1 && index < 5) {
 				if (!this.insertItem(itemStack2, 9, 45, false)) {
 					return ItemStack.EMPTY;

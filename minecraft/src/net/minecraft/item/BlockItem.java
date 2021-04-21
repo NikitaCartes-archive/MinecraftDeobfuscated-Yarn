@@ -43,7 +43,12 @@ public class BlockItem extends Item {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext context) {
 		ActionResult actionResult = this.place(new ItemPlacementContext(context));
-		return !actionResult.isAccepted() && this.isFood() ? this.use(context.getWorld(), context.getPlayer(), context.getHand()).getResult() : actionResult;
+		if (!actionResult.isAccepted() && this.isFood()) {
+			ActionResult actionResult2 = this.use(context.getWorld(), context.getPlayer(), context.getHand()).getResult();
+			return actionResult2 == ActionResult.CONSUME ? ActionResult.CONSUME_PARTIAL : actionResult2;
+		} else {
+			return actionResult;
+		}
 	}
 
 	public ActionResult place(ItemPlacementContext context) {

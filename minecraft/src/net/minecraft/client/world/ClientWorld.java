@@ -243,7 +243,7 @@ public class ClientWorld extends World {
 		Entity entity = this.getEntityLookup().get(entityId);
 		if (entity != null) {
 			entity.setRemoved(removalReason);
-			entity.method_36209();
+			entity.onRemoved();
 		}
 	}
 

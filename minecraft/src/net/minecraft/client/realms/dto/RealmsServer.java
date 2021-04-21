@@ -132,9 +132,9 @@ public class RealmsServer extends ValueObject {
 	private static void sortInvited(RealmsServer server) {
 		server.players
 			.sort(
-				(playerInfo, playerInfo2) -> ComparisonChain.start()
-						.compareFalseFirst(playerInfo2.isAccepted(), playerInfo.isAccepted())
-						.compare(playerInfo.getName().toLowerCase(Locale.ROOT), playerInfo2.getName().toLowerCase(Locale.ROOT))
+				(a, b) -> ComparisonChain.start()
+						.compareFalseFirst(b.isAccepted(), a.isAccepted())
+						.compare(a.getName().toLowerCase(Locale.ROOT), b.getName().toLowerCase(Locale.ROOT))
 						.result()
 			);
 	}

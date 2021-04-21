@@ -19,7 +19,7 @@ public abstract class ResettingWorldTask extends LongRunningTask {
 		this.callback = callback;
 	}
 
-	protected abstract void method_32517(RealmsClient realmsClient, long l) throws RealmsServiceException;
+	protected abstract void resetWorld(RealmsClient client, long worldId) throws RealmsServiceException;
 
 	public void run() {
 		RealmsClient realmsClient = RealmsClient.createRealmsClient();
@@ -32,7 +32,7 @@ public abstract class ResettingWorldTask extends LongRunningTask {
 					return;
 				}
 
-				this.method_32517(realmsClient, this.serverId);
+				this.resetWorld(realmsClient, this.serverId);
 				if (this.aborted()) {
 					return;
 				}

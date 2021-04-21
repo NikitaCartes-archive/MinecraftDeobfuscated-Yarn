@@ -210,7 +210,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	private boolean invulnerable;
 	protected UUID uuid = MathHelper.randomUuid(this.random);
 	protected String uuidString = this.uuid.toString();
-	protected boolean glowing;
+	private boolean glowing;
 	private final Set<String> scoreboardTags = Sets.newHashSet();
 	private final double[] pistonMovementDelta = new double[]{0.0, 0.0, 0.0};
 	private long pistonMovementTick;
@@ -341,7 +341,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
-	public void method_36209() {
+	public void onRemoved() {
 	}
 
 	public void setPose(EntityPose pose) {
@@ -400,10 +400,6 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public void tick() {
-		if (!this.world.isClient) {
-			this.setFlag(6, this.isGlowing());
-		}
-
 		this.baseTick();
 	}
 
@@ -1531,7 +1527,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			}
 
 			if (this.glowing) {
-				nbt.putBoolean("Glowing", this.glowing);
+				nbt.putBoolean("Glowing", true);
 			}
 
 			int i = this.getFrozenTicks();
@@ -2053,15 +2049,17 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.setFlag(4, swimming);
 	}
 
-	public boolean isGlowing() {
-		return this.glowing || this.world.isClient && this.getFlag(6);
+	public final boolean method_36361() {
+		return this.glowing;
 	}
 
-	public void setGlowing(boolean glowing) {
+	public final void setGlowing(boolean glowing) {
 		this.glowing = glowing;
-		if (!this.world.isClient) {
-			this.setFlag(6, this.glowing);
-		}
+		this.setFlag(6, this.isGlowing());
+	}
+
+	public boolean isGlowing() {
+		return this.world.isClient() ? this.getFlag(6) : this.glowing;
 	}
 
 	public boolean isInvisible() {

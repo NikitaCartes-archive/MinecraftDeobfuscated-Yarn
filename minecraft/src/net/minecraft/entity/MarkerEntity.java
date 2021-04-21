@@ -31,7 +31,7 @@ public class MarkerEntity extends Entity {
 
 	@Override
 	protected void writeCustomDataToNbt(NbtCompound nbt) {
-		nbt.put("data", this.data);
+		nbt.put("data", this.data.copy());
 	}
 
 	@Override

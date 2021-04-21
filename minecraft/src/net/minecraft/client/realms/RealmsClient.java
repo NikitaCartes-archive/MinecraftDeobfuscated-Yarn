@@ -40,44 +40,44 @@ public class RealmsClient {
 	private final String sessionId;
 	private final String username;
 	private final MinecraftClient client;
-	private static final String field_32076 = "worlds";
-	private static final String field_32077 = "invites";
-	private static final String field_32078 = "mco";
-	private static final String field_32079 = "subscriptions";
-	private static final String field_32080 = "activities";
-	private static final String field_32081 = "ops";
-	private static final String field_32082 = "regions/ping/stat";
-	private static final String field_32083 = "trial";
-	private static final String field_32084 = "/$WORLD_ID/initialize";
-	private static final String field_32085 = "/$WORLD_ID";
-	private static final String field_32086 = "/liveplayerlist";
-	private static final String field_32087 = "/$WORLD_ID";
-	private static final String field_32088 = "/$WORLD_ID/$PROFILE_UUID";
-	private static final String field_32089 = "/minigames/$MINIGAME_ID/$WORLD_ID";
-	private static final String field_32090 = "/available";
-	private static final String field_32091 = "/templates/$WORLD_TYPE";
-	private static final String field_32092 = "/v1/$ID/join/pc";
-	private static final String field_32093 = "/$ID";
-	private static final String field_32094 = "/$WORLD_ID";
-	private static final String field_32095 = "/$WORLD_ID/invite/$UUID";
-	private static final String field_32058 = "/count/pending";
-	private static final String field_32059 = "/pending";
-	private static final String field_32060 = "/accept/$INVITATION_ID";
-	private static final String field_32061 = "/reject/$INVITATION_ID";
-	private static final String field_32062 = "/$WORLD_ID";
-	private static final String field_32063 = "/$WORLD_ID";
-	private static final String field_32064 = "/$WORLD_ID/slot/$SLOT_ID";
-	private static final String field_32065 = "/$WORLD_ID/open";
-	private static final String field_32066 = "/$WORLD_ID/close";
-	private static final String field_32067 = "/$WORLD_ID/reset";
-	private static final String field_32068 = "/$WORLD_ID";
-	private static final String field_32069 = "/$WORLD_ID/backups";
-	private static final String field_32070 = "/$WORLD_ID/slot/$SLOT_ID/download";
-	private static final String field_32071 = "/$WORLD_ID/backups/upload";
-	private static final String field_32072 = "/client/compatible";
-	private static final String field_32073 = "/tos/agreed";
-	private static final String field_32074 = "/v1/news";
-	private static final String field_32075 = "/stageAvailable";
+	private static final String WORLDS_ENDPOINT = "worlds";
+	private static final String INVITES_ENDPOINT = "invites";
+	private static final String MCO_ENDPOINT = "mco";
+	private static final String SUBSCRIPTIONS_ENDPOINT = "subscriptions";
+	private static final String ACTIVITIES_ENDPOINT = "activities";
+	private static final String OPS_ENDPOINT = "ops";
+	private static final String PING_STAT_ENDPOINT = "regions/ping/stat";
+	private static final String TRIAL_ENDPOINT = "trial";
+	private static final String WORLD_INITIALIZE_ENDPOINT = "/$WORLD_ID/initialize";
+	private static final String WORLD_ENDPOINT = "/$WORLD_ID";
+	private static final String LIVEPLAYERLIST_ENDPOINT = "/liveplayerlist";
+	private static final String WORLD_ENDPOINT_2 = "/$WORLD_ID";
+	private static final String WORLD_PROFILE_ENDPOINT = "/$WORLD_ID/$PROFILE_UUID";
+	private static final String MINIGAMES_ENDPOINT = "/minigames/$MINIGAME_ID/$WORLD_ID";
+	private static final String AVAILABLE_ENDPOINT = "/available";
+	private static final String TEMPLATES_ENDPOINT = "/templates/$WORLD_TYPE";
+	private static final String JOIN_PC_ENDPOINT = "/v1/$ID/join/pc";
+	private static final String ID_ENDPOINT = "/$ID";
+	private static final String WORLD_ENDPOINT_3 = "/$WORLD_ID";
+	private static final String INVITE_ENDPOINT = "/$WORLD_ID/invite/$UUID";
+	private static final String COUNT_PENDING_ENDPOINT = "/count/pending";
+	private static final String PENDING_ENDPOINT = "/pending";
+	private static final String ACCEPT_INVITATION_ENDPOINT = "/accept/$INVITATION_ID";
+	private static final String REJECT_INVITATION_ENDPOINT = "/reject/$INVITATION_ID";
+	private static final String WORLD_ENDPOINT_4 = "/$WORLD_ID";
+	private static final String WORLD_ENDPOINT_5 = "/$WORLD_ID";
+	private static final String WORLD_SLOT_ENDPOINT = "/$WORLD_ID/slot/$SLOT_ID";
+	private static final String WORLD_OPEN_ENDPOINT = "/$WORLD_ID/open";
+	private static final String WORLD_CLOSE_ENDPOINT = "/$WORLD_ID/close";
+	private static final String WORLD_RESET_ENDPOINT = "/$WORLD_ID/reset";
+	private static final String WORLD_ENDPOINT_6 = "/$WORLD_ID";
+	private static final String WORLD_BACKUPS_ENDPOINT = "/$WORLD_ID/backups";
+	private static final String WORLD_SLOT_DOWNLOAD_ENDPOINT = "/$WORLD_ID/slot/$SLOT_ID/download";
+	private static final String WORLD_BACKUPS_UPLOAD_ENDPOINT = "/$WORLD_ID/backups/upload";
+	private static final String CLIENT_COMPATIBLE_ENDPOINT = "/client/compatible";
+	private static final String TOS_AGREED_ENDPOINT = "/tos/agreed";
+	private static final String NEWS_ENDPOINT = "/v1/news";
+	private static final String STAGE_AVAILABLE_ENDPOINT = "/stageAvailable";
 	private static final CheckedGson JSON = new CheckedGson();
 
 	public static RealmsClient createRealmsClient() {
@@ -134,8 +134,8 @@ public class RealmsClient {
 		return RealmsServer.parse(string2);
 	}
 
-	public PlayerActivities method_35684(long l) throws RealmsServiceException {
-		String string = this.url("activities" + "/$WORLD_ID".replace("$WORLD_ID", String.valueOf(l)));
+	public PlayerActivities getPlayerActivities(long worldId) throws RealmsServiceException {
+		String string = this.url("activities" + "/$WORLD_ID".replace("$WORLD_ID", String.valueOf(worldId)));
 		String string2 = this.execute(Request.get(string));
 		return PlayerActivities.parse(string2);
 	}

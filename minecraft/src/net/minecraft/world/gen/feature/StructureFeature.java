@@ -357,11 +357,15 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 	}
 
 	public Pool<SpawnSettings.SpawnEntry> getMonsterSpawns() {
-		return SpawnSettings.field_30982;
+		return SpawnSettings.EMPTY_ENTRY_POOL;
 	}
 
 	public Pool<SpawnSettings.SpawnEntry> getCreatureSpawns() {
-		return SpawnSettings.field_30982;
+		return SpawnSettings.EMPTY_ENTRY_POOL;
+	}
+
+	public Pool<SpawnSettings.SpawnEntry> getUndergroundWaterCreatureSpawns() {
+		return SpawnSettings.EMPTY_ENTRY_POOL;
 	}
 
 	public interface StructureStartFactory<C extends FeatureConfig> {

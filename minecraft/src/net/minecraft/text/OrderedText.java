@@ -22,19 +22,19 @@ public interface OrderedText {
 		return visitor -> visitor.accept(0, style, codePoint);
 	}
 
-	static OrderedText styledString(String string, Style style) {
+	static OrderedText styledForwardsVisitedString(String string, Style style) {
 		return string.isEmpty() ? EMPTY : visitor -> TextVisitFactory.visitForwards(string, style, visitor);
 	}
 
-	static OrderedText method_34908(String string, Style style, Int2IntFunction int2IntFunction) {
-		return string.isEmpty() ? EMPTY : characterVisitor -> TextVisitFactory.visitForwards(string, style, map(characterVisitor, int2IntFunction));
+	static OrderedText styledForwardsVisitedString(String string, Style style, Int2IntFunction codePointMapper) {
+		return string.isEmpty() ? EMPTY : visitor -> TextVisitFactory.visitForwards(string, style, map(visitor, codePointMapper));
 	}
 
-	static OrderedText method_34910(String string, Style style) {
-		return string.isEmpty() ? EMPTY : characterVisitor -> TextVisitFactory.visitBackwards(string, style, characterVisitor);
+	static OrderedText styledBackwardsVisitedString(String string, Style style) {
+		return string.isEmpty() ? EMPTY : visitor -> TextVisitFactory.visitBackwards(string, style, visitor);
 	}
 
-	static OrderedText styledStringMapped(String string, Style style, Int2IntFunction codePointMapper) {
+	static OrderedText styledBackwardsVisitedString(String string, Style style, Int2IntFunction codePointMapper) {
 		return string.isEmpty() ? EMPTY : visitor -> TextVisitFactory.visitBackwards(string, style, map(visitor, codePointMapper));
 	}
 

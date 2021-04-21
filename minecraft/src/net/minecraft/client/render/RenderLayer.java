@@ -49,7 +49,7 @@ public abstract class RenderLayer extends RenderPhase {
 		RenderLayer.MultiPhaseParameters.builder().lightmap(ENABLE_LIGHTMAP).shader(CUTOUT_SHADER).texture(BLOCK_ATLAS_TEXTURE).build(true)
 	);
 	private static final RenderLayer TRANSLUCENT = of(
-		"translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 262144, true, true, of(TRANSLUCENT_SHADER)
+		"translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 2097152, true, true, of(TRANSLUCENT_SHADER)
 	);
 	private static final RenderLayer TRANSLUCENT_MOVING_BLOCK = of(
 		"translucent_moving_block", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 262144, false, true, getItemPhaseData()
@@ -446,8 +446,24 @@ public abstract class RenderLayer extends RenderPhase {
 					.build(false)
 			))
 	);
-	private static final Function<Identifier, RenderLayer> TEXT_SEE_THROUGH = Util.memoize(
+	private static final Function<Identifier, RenderLayer> field_33630 = Util.memoize(
 		(Function<Identifier, RenderLayer>)(texture -> of(
+				"text_intensity",
+				VertexFormats.POSITION_COLOR_TEXTURE_LIGHT,
+				VertexFormat.DrawMode.QUADS,
+				256,
+				false,
+				true,
+				RenderLayer.MultiPhaseParameters.builder()
+					.shader(field_33628)
+					.texture(new RenderPhase.Texture(texture, false, false))
+					.transparency(TRANSLUCENT_TRANSPARENCY)
+					.lightmap(ENABLE_LIGHTMAP)
+					.build(false)
+			))
+	);
+	private static final Function<Identifier, RenderLayer> TEXT_SEE_THROUGH = Util.memoize(
+		(Function<Identifier, RenderLayer>)(identifier -> of(
 				"text_see_through",
 				VertexFormats.POSITION_COLOR_TEXTURE_LIGHT,
 				VertexFormat.DrawMode.QUADS,
@@ -456,7 +472,25 @@ public abstract class RenderLayer extends RenderPhase {
 				true,
 				RenderLayer.MultiPhaseParameters.builder()
 					.shader(TRANSPARENT_TEXT_SHADER)
-					.texture(new RenderPhase.Texture(texture, false, false))
+					.texture(new RenderPhase.Texture(identifier, false, false))
+					.transparency(TRANSLUCENT_TRANSPARENCY)
+					.lightmap(ENABLE_LIGHTMAP)
+					.depthTest(ALWAYS_DEPTH_TEST)
+					.writeMaskState(COLOR_MASK)
+					.build(false)
+			))
+	);
+	private static final Function<Identifier, RenderLayer> field_33631 = Util.memoize(
+		(Function<Identifier, RenderLayer>)(identifier -> of(
+				"text_intensity_see_through",
+				VertexFormats.POSITION_COLOR_TEXTURE_LIGHT,
+				VertexFormat.DrawMode.QUADS,
+				256,
+				false,
+				true,
+				RenderLayer.MultiPhaseParameters.builder()
+					.shader(field_33629)
+					.texture(new RenderPhase.Texture(identifier, false, false))
 					.transparency(TRANSLUCENT_TRANSPARENCY)
 					.lightmap(ENABLE_LIGHTMAP)
 					.depthTest(ALWAYS_DEPTH_TEST)
@@ -736,8 +770,16 @@ public abstract class RenderLayer extends RenderPhase {
 		return (RenderLayer)TEXT.apply(texture);
 	}
 
+	public static RenderLayer method_36434(Identifier identifier) {
+		return (RenderLayer)field_33630.apply(identifier);
+	}
+
 	public static RenderLayer getTextSeeThrough(Identifier texture) {
 		return (RenderLayer)TEXT_SEE_THROUGH.apply(texture);
+	}
+
+	public static RenderLayer method_36435(Identifier identifier) {
+		return (RenderLayer)field_33631.apply(identifier);
 	}
 
 	public static RenderLayer getLightning() {

@@ -116,10 +116,9 @@ public class BigDripleafStemBlock extends HorizontalFacingBlock implements Ferti
 		if (optional.isPresent()) {
 			BlockPos blockPos = (BlockPos)optional.get();
 			BlockPos blockPos2 = blockPos.up();
-			FluidState fluidState = world.getFluidState(blockPos2);
 			Direction direction = state.get(FACING);
-			placeStemAt(world, blockPos, state.getFluidState(), direction);
-			BigDripleafBlock.placeDripleafAt(world, blockPos2, fluidState, direction);
+			placeStemAt(world, blockPos, world.getFluidState(blockPos), direction);
+			BigDripleafBlock.placeDripleafAt(world, blockPos2, world.getFluidState(blockPos2), direction);
 		}
 	}
 

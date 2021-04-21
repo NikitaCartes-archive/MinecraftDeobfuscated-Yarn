@@ -16,11 +16,11 @@ public class SelectorText extends BaseText implements ParsableText {
 	private final String pattern;
 	@Nullable
 	private final EntitySelector selector;
-	protected final Optional<Text> field_33540;
+	protected final Optional<Text> separator;
 
-	public SelectorText(String pattern, Optional<Text> optional) {
+	public SelectorText(String pattern, Optional<Text> separator) {
 		this.pattern = pattern;
-		this.field_33540 = optional;
+		this.separator = separator;
 		EntitySelector entitySelector = null;
 
 		try {
@@ -42,15 +42,15 @@ public class SelectorText extends BaseText implements ParsableText {
 		return this.selector;
 	}
 
-	public Optional<Text> method_36339() {
-		return this.field_33540;
+	public Optional<Text> getSeparator() {
+		return this.separator;
 	}
 
 	@Override
 	public MutableText parse(@Nullable ServerCommandSource source, @Nullable Entity sender, int depth) throws CommandSyntaxException {
 		if (source != null && this.selector != null) {
-			Optional<? extends Text> optional = Texts.method_36330(source, this.field_33540, sender, depth);
-			return Texts.method_36331(this.selector.getEntities(source), optional, Entity::getDisplayName);
+			Optional<? extends Text> optional = Texts.parse(source, this.separator, sender, depth);
+			return Texts.join(this.selector.getEntities(source), optional, Entity::getDisplayName);
 		} else {
 			return new LiteralText("");
 		}
@@ -62,7 +62,7 @@ public class SelectorText extends BaseText implements ParsableText {
 	}
 
 	public SelectorText copy() {
-		return new SelectorText(this.pattern, this.field_33540);
+		return new SelectorText(this.pattern, this.separator);
 	}
 
 	@Override

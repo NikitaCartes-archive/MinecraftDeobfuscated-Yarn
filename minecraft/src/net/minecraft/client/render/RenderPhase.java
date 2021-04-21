@@ -124,7 +124,9 @@ public abstract class RenderPhase {
 	protected static final RenderPhase.Shader DIRECT_ENTITY_GLINT_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeEntityGlintDirectShader);
 	protected static final RenderPhase.Shader CRUMBLING_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeCrumblingShader);
 	protected static final RenderPhase.Shader TEXT_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeTextShader);
+	protected static final RenderPhase.Shader field_33628 = new RenderPhase.Shader(GameRenderer::method_36432);
 	protected static final RenderPhase.Shader TRANSPARENT_TEXT_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeTextSeeThroughShader);
+	protected static final RenderPhase.Shader field_33629 = new RenderPhase.Shader(GameRenderer::method_36433);
 	protected static final RenderPhase.Shader LIGHTNING_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeLightningShader);
 	protected static final RenderPhase.Shader TRIPWIRE_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeTripwireShader);
 	protected static final RenderPhase.Shader END_PORTAL_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeEndPortalShader);

@@ -17,7 +17,7 @@ public class ResettingNormalWorldTask extends ResettingWorldTask {
 	}
 
 	@Override
-	protected void method_32517(RealmsClient realmsClient, long l) throws RealmsServiceException {
-		realmsClient.resetWorldWithSeed(l, this.info);
+	protected void resetWorld(RealmsClient client, long worldId) throws RealmsServiceException {
+		client.resetWorldWithSeed(worldId, this.info);
 	}
 }

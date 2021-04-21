@@ -464,7 +464,13 @@ public class Schemas {
 		builder.addFixer(ItemNameFix.create(schema69, "Item renamening fix", replacing(EntityTheRenameningBlock.ITEMS)));
 		builder.addFixer(new RecipeRenamingFix(schema69, false));
 		builder.addFixer(new EntityTheRenameningBlock(schema69, true));
-		builder.addFixer(new SwimStatsRenameFix(schema69, false));
+		builder.addFixer(
+			new SwimStatsRenameFix(
+				schema69,
+				"SwimStatsRenameFix",
+				ImmutableMap.of("minecraft:swim_one_cm", "minecraft:walk_on_water_one_cm", "minecraft:dive_one_cm", "minecraft:walk_under_water_one_cm")
+			)
+		);
 		Schema schema70 = builder.addSchema(1514, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new ObjectiveDisplayNameFix(schema70, false));
 		builder.addFixer(new TeamDisplayNameFix(schema70, false));
@@ -747,6 +753,10 @@ public class Schemas {
 		builder.addFixer(new ChoiceTypesFix(schema138, "Added Goat", TypeReferences.ENTITY));
 		Schema schema139 = builder.addSchema(2707, Schema2707::new);
 		builder.addFixer(new ChoiceTypesFix(schema139, "Added Marker", TypeReferences.ENTITY));
+		Schema schema140 = builder.addSchema(2710, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(
+			new SwimStatsRenameFix(schema140, "Renamed play_one_minute stat to play_time", ImmutableMap.of("minecraft:play_one_minute", "minecraft:play_time"))
+		);
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

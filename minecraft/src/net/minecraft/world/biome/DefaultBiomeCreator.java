@@ -47,7 +47,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDungeons(builder2);
 		DefaultBiomeFeatures.addMossyRocks(builder2);
 		DefaultBiomeFeatures.addLargeFerns(builder2);
-		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.method_36453(builder2);
 		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, spruce ? ConfiguredFeatures.TREES_GIANT_SPRUCE : ConfiguredFeatures.TREES_GIANT);
@@ -91,7 +91,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addAmethystGeodes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
 		DefaultBiomeFeatures.addForestFlowers(builder2);
-		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.method_36453(builder2);
 		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		if (tallTrees) {
@@ -190,7 +190,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultLakes(builder2);
 		DefaultBiomeFeatures.addAmethystGeodes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
-		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.method_36453(builder2);
 		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		if (bamboo) {
@@ -248,7 +248,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultLakes(builder2);
 		DefaultBiomeFeatures.addAmethystGeodes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
-		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.method_36453(builder2);
 		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		if (extraTrees) {
@@ -303,7 +303,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDesertLakes(builder2);
 		DefaultBiomeFeatures.addAmethystGeodes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
-		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.method_36453(builder2);
 		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		DefaultBiomeFeatures.addDefaultFlowers(builder2);
@@ -352,7 +352,7 @@ public class DefaultBiomeCreator {
 			builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.PATCH_SUNFLOWER);
 		}
 
-		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.method_36453(builder2);
 		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		DefaultBiomeFeatures.addPlainsFeatures(builder2);
@@ -445,7 +445,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultLakes(builder2);
 		DefaultBiomeFeatures.addAmethystGeodes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
-		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.method_36453(builder2);
 		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		DefaultBiomeFeatures.addMushroomFieldsFeatures(builder2);
@@ -487,7 +487,7 @@ public class DefaultBiomeCreator {
 			DefaultBiomeFeatures.addSavannaTallGrass(builder);
 		}
 
-		DefaultBiomeFeatures.addMineables(builder);
+		DefaultBiomeFeatures.method_36453(builder);
 		DefaultBiomeFeatures.addDefaultOres(builder);
 		DefaultBiomeFeatures.addDefaultDisks(builder);
 		if (shattered) {
@@ -557,7 +557,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultLakes(builder2);
 		DefaultBiomeFeatures.addAmethystGeodes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
-		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.method_36453(builder2);
 		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addExtraGoldOre(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
@@ -655,7 +655,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultLakes(builder);
 		DefaultBiomeFeatures.addAmethystGeodes(builder);
 		DefaultBiomeFeatures.addDungeons(builder);
-		DefaultBiomeFeatures.addMineables(builder);
+		DefaultBiomeFeatures.addMineables(builder, true);
 		DefaultBiomeFeatures.addDefaultOres(builder);
 		DefaultBiomeFeatures.addDefaultDisks(builder);
 		DefaultBiomeFeatures.addWaterBiomeOakTrees(builder);
@@ -758,7 +758,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addAmethystGeodes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
 		DefaultBiomeFeatures.addBlueIce(builder2);
-		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.addMineables(builder2, true);
 		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		DefaultBiomeFeatures.addWaterBiomeOakTrees(builder2);
@@ -798,7 +798,7 @@ public class DefaultBiomeCreator {
 			DefaultBiomeFeatures.addForestFlowers(builder);
 		}
 
-		DefaultBiomeFeatures.addMineables(builder);
+		DefaultBiomeFeatures.method_36453(builder);
 		DefaultBiomeFeatures.addDefaultOres(builder);
 		DefaultBiomeFeatures.addDefaultDisks(builder);
 		if (flower) {
@@ -878,7 +878,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addAmethystGeodes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
 		DefaultBiomeFeatures.addLargeFerns(builder2);
-		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.method_36453(builder2);
 		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		DefaultBiomeFeatures.addTaigaTrees(builder2);
@@ -931,7 +931,7 @@ public class DefaultBiomeCreator {
 			GenerationStep.Feature.VEGETAL_DECORATION, hills ? ConfiguredFeatures.DARK_FOREST_VEGETATION_RED : ConfiguredFeatures.DARK_FOREST_VEGETATION_BROWN
 		);
 		DefaultBiomeFeatures.addForestFlowers(builder2);
-		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.method_36453(builder2);
 		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		DefaultBiomeFeatures.addDefaultFlowers(builder2);
@@ -982,7 +982,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultLakes(builder2);
 		DefaultBiomeFeatures.addAmethystGeodes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
-		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.method_36453(builder2);
 		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addClayDisk(builder2);
 		DefaultBiomeFeatures.addSwampFeatures(builder2);
@@ -1043,7 +1043,7 @@ public class DefaultBiomeCreator {
 			builder2.feature(GenerationStep.Feature.SURFACE_STRUCTURES, ConfiguredFeatures.ICE_PATCH);
 		}
 
-		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.method_36453(builder2);
 		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		DefaultBiomeFeatures.addSnowySpruceTrees(builder2);
@@ -1081,7 +1081,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultLakes(builder2);
 		DefaultBiomeFeatures.addAmethystGeodes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
-		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.method_36453(builder2);
 		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		DefaultBiomeFeatures.addWaterBiomeOakTrees(builder2);
@@ -1138,7 +1138,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultLakes(builder2);
 		DefaultBiomeFeatures.addAmethystGeodes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
-		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.method_36453(builder2);
 		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		DefaultBiomeFeatures.addDefaultFlowers(builder2);
@@ -1460,7 +1460,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addAmethystGeodes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
 		DefaultBiomeFeatures.addPlainsTallGrass(builder2);
-		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.method_36453(builder2);
 		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addClayOre(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
@@ -1489,7 +1489,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addAmethystGeodes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
 		DefaultBiomeFeatures.addPlainsTallGrass(builder2);
-		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.method_36453(builder2);
 		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		DefaultBiomeFeatures.addPlainsFeatures(builder2);

@@ -558,7 +558,11 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		}
 	}
 
-	private static boolean inflictsFireDamage(BlockState state) {
-		return state.isIn(BlockTags.FIRE) || state.isOf(Blocks.LAVA) || state.isOf(Blocks.MAGMA_BLOCK) || CampfireBlock.isLitCampfire(state);
+	public static boolean inflictsFireDamage(BlockState state) {
+		return state.isIn(BlockTags.FIRE)
+			|| state.isOf(Blocks.LAVA)
+			|| state.isOf(Blocks.MAGMA_BLOCK)
+			|| CampfireBlock.isLitCampfire(state)
+			|| state.isOf(Blocks.LAVA_CAULDRON);
 	}
 }

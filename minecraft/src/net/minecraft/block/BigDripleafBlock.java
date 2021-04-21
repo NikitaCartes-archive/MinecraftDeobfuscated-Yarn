@@ -133,7 +133,7 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		BlockPos blockPos = pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
-		return blockState.isOf(Blocks.BIG_DRIPLEAF_STEM) || blockState.isSideSolidFullSquare(world, blockPos, Direction.UP);
+		return blockState.isOf(Blocks.BIG_DRIPLEAF_STEM) || blockState.isOf(this) || blockState.isSideSolidFullSquare(world, blockPos, Direction.UP);
 	}
 
 	@Override
@@ -147,7 +147,9 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 				world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 			}
 
-			return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+			return direction == Direction.UP && neighborState.isOf(this)
+				? Blocks.BIG_DRIPLEAF_STEM.getStateWithProperties(state)
+				: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 		}
 	}
 
@@ -252,16 +254,12 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
 		BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos().down());
-		Direction direction;
-		if (blockState.isOf(Blocks.BIG_DRIPLEAF_STEM)) {
-			direction = blockState.get(BigDripleafStemBlock.FACING);
-		} else {
-			direction = ctx.getPlayerFacing().getOpposite();
-		}
-
-		return this.getDefaultState().with(WATERLOGGED, Boolean.valueOf(fluidState.isEqualAndStill(Fluids.WATER))).with(FACING, direction);
+		FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
+		boolean bl = blockState.isOf(Blocks.BIG_DRIPLEAF) || blockState.isOf(Blocks.BIG_DRIPLEAF_STEM);
+		return this.getDefaultState()
+			.with(WATERLOGGED, Boolean.valueOf(fluidState.isEqualAndStill(Fluids.WATER)))
+			.with(FACING, bl ? (Direction)blockState.get(FACING) : ctx.getPlayerFacing().getOpposite());
 	}
 
 	@Override

@@ -18,8 +18,8 @@ public abstract class Request<T extends Request<T>> {
 	protected HttpURLConnection connection;
 	private boolean connected;
 	protected String url;
-	private static final int field_32096 = 60000;
-	private static final int field_32097 = 5000;
+	private static final int READ_TIMEOUT = 60000;
+	private static final int CONNECT_TIMEOUT = 5000;
 
 	public Request(String url, int connectTimeout, int readTimeout) {
 		try {
@@ -53,8 +53,8 @@ public abstract class Request<T extends Request<T>> {
 		}
 	}
 
-	public T method_35685(String string, String string2) {
-		this.connection.addRequestProperty(string, string2);
+	public T withHeader(String name, String value) {
+		this.connection.addRequestProperty(name, value);
 		return (T)this;
 	}
 

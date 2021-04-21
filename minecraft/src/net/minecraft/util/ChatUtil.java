@@ -7,7 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 
 public class ChatUtil {
 	private static final Pattern PATTERN = Pattern.compile("(?i)\\u00A7[0-9A-FK-OR]");
-	private static final Pattern LINE_BREAK = Pattern.compile("\r\n|[\n\r\u2028\u2029\u0085]");
+	private static final Pattern LINE_BREAK = Pattern.compile("\\r\\n|\\v");
+	private static final Pattern ENDS_WITH_LINE_BREAK = Pattern.compile("(?:\\r\\n|\\v)$");
 
 	public static String ticksToString(int ticks) {
 		int i = ticks / 20;
@@ -45,5 +46,9 @@ public class ChatUtil {
 
 			return i;
 		}
+	}
+
+	public static boolean endsWithLineBreak(String text) {
+		return ENDS_WITH_LINE_BREAK.matcher(text).find();
 	}
 }

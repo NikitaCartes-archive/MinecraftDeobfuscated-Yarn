@@ -335,7 +335,7 @@ public class AxolotlEntity extends AnimalEntity implements Bucketable {
 
 	@Override
 	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return 0.275F;
+		return dimensions.height * 0.655F;
 	}
 
 	@Override

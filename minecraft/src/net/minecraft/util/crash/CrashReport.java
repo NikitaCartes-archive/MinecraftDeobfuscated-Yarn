@@ -79,7 +79,7 @@ public class CrashReport {
 		return this.cause;
 	}
 
-	public String method_36147() {
+	public String getStackTrace() {
 		StringBuilder stringBuilder = new StringBuilder();
 		this.addStackTrace(stringBuilder);
 		return stringBuilder.toString();

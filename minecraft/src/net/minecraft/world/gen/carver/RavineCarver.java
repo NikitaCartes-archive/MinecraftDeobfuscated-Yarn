@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import java.util.BitSet;
 import java.util.Random;
 import java.util.function.Function;
+import net.minecraft.class_6350;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -29,21 +30,21 @@ public class RavineCarver extends Carver<RavineCarverConfig> {
 		Chunk chunk,
 		Function<BlockPos, Biome> function,
 		Random random,
-		int i,
+		class_6350 arg,
 		ChunkPos chunkPos,
 		BitSet bitSet
 	) {
-		int j = (this.getBranchFactor() * 2 - 1) * 16;
+		int i = (this.getBranchFactor() * 2 - 1) * 16;
 		double d = (double)chunkPos.getOffsetX(random.nextInt(16));
-		int k = ravineCarverConfig.y.get(random, carverContext);
+		int j = ravineCarverConfig.y.get(random, carverContext);
 		double e = (double)chunkPos.getOffsetZ(random.nextInt(16));
 		float f = random.nextFloat() * (float) (Math.PI * 2);
 		float g = ravineCarverConfig.verticalRotation.get(random);
 		double h = (double)ravineCarverConfig.yScale.get(random);
-		float l = ravineCarverConfig.shape.thickness.get(random);
-		int m = (int)((float)j * ravineCarverConfig.shape.distanceFactor.get(random));
-		int n = 0;
-		this.carveRavine(carverContext, ravineCarverConfig, chunk, function, random.nextLong(), i, d, (double)k, e, l, f, g, 0, m, h, bitSet);
+		float k = ravineCarverConfig.shape.thickness.get(random);
+		int l = (int)((float)i * ravineCarverConfig.shape.distanceFactor.get(random));
+		int m = 0;
+		this.carveRavine(carverContext, ravineCarverConfig, chunk, function, random.nextLong(), arg, d, (double)j, e, k, f, g, 0, l, h, bitSet);
 		return true;
 	}
 
@@ -53,7 +54,7 @@ public class RavineCarver extends Carver<RavineCarverConfig> {
 		Chunk chunk,
 		Function<BlockPos, Biome> posToBiome,
 		long seed,
-		int seaLevel,
+		class_6350 arg,
 		double x,
 		double y,
 		double z,
@@ -98,7 +99,7 @@ public class RavineCarver extends Carver<RavineCarverConfig> {
 					chunk,
 					posToBiome,
 					seed,
-					seaLevel,
+					arg,
 					x,
 					y,
 					z,

@@ -12,29 +12,31 @@ public class SharedConstants {
 	@Deprecated
 	public static final boolean field_29709 = true;
 	@Deprecated
-	public static final int field_29732 = 2709;
+	public static final int WORLD_VERSION = 2711;
 	@Deprecated
-	public static final String field_29733 = "21w15a";
+	public static final String VERSION_NAME = "21w16a";
 	@Deprecated
-	public static final String field_29734 = "1.17";
+	public static final String RELEASE_TARGET = "1.17";
 	@Deprecated
 	public static final int field_29735 = 755;
 	@Deprecated
-	public static final int field_29736 = 22;
-	public static final int field_29737 = 2678;
+	public static final int field_29736 = 23;
+	public static final int SNBT_TOO_OLD_THRESHOLD = 2678;
 	private static final int field_29708 = 30;
 	@Deprecated
 	public static final int field_29738 = 7;
 	@Deprecated
 	public static final int field_29739 = 7;
-	public static final String field_29740 = "DataVersion";
+	public static final String DATA_VERSION_KEY = "DataVersion";
 	public static final boolean field_29741 = false;
 	public static final boolean field_29742 = false;
+	public static final boolean field_33556 = false;
 	public static final boolean field_29743 = false;
 	public static final boolean field_29744 = false;
 	public static final boolean field_29745 = false;
 	public static final boolean field_29746 = false;
 	public static final boolean field_29747 = false;
+	public static final boolean field_33557 = false;
 	public static final boolean field_29748 = false;
 	public static final boolean field_29749 = false;
 	public static final boolean field_29750 = false;
@@ -69,6 +71,7 @@ public class SharedConstants {
 	public static final boolean field_29698 = false;
 	public static final boolean field_29699 = false;
 	public static final boolean field_29700 = false;
+	public static final boolean field_33554 = false;
 	public static final boolean field_29701 = false;
 	public static final boolean field_29710 = false;
 	public static final boolean field_29711 = false;
@@ -79,7 +82,8 @@ public class SharedConstants {
 	public static final boolean field_29716 = false;
 	public static final boolean field_29717 = false;
 	public static final boolean field_29718 = false;
-	public static final int field_29719 = 25565;
+	public static final boolean field_33555 = false;
+	public static final int DEFAULT_PORT = 25565;
 	public static final boolean field_29720 = false;
 	public static final boolean field_29721 = false;
 	public static final int field_29722 = 0;
@@ -98,7 +102,7 @@ public class SharedConstants {
 	public static boolean isDevelopment;
 	public static final int field_29729 = 16;
 	public static final int field_29730 = 256;
-	public static final int field_29731 = 32500;
+	public static final int COMMAND_MAX_LENGTH = 32500;
 	public static final char[] INVALID_CHARS_LEVEL_NAME = new char[]{'/', '\n', '\r', '\t', '\u0000', '\f', '`', '?', '*', '\\', '<', '>', '|', '"', ':'};
 	public static final int field_29702 = 20;
 	public static final int field_29703 = 1200;
@@ -148,7 +152,7 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 1073741846;
+		return 1073741847;
 	}
 
 	static {

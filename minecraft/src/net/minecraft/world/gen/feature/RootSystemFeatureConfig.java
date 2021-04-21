@@ -26,7 +26,10 @@ public class RootSystemFeatureConfig implements FeatureConfig {
 						.forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.hangingRootStateProvider),
 					Codec.intRange(1, 256)
 						.fieldOf("hanging_root_placement_attempts")
-						.forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.hangingRootPlacementAttempts)
+						.forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.hangingRootPlacementAttempts),
+					Codec.intRange(1, 64)
+						.fieldOf("allowed_vertical_water_for_tree")
+						.forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.requiredVerticalSpaceForTree)
 				)
 				.apply(instance, RootSystemFeatureConfig::new)
 	);
@@ -41,6 +44,7 @@ public class RootSystemFeatureConfig implements FeatureConfig {
 	public final int hangingRootVerticalSpan;
 	public final BlockStateProvider hangingRootStateProvider;
 	public final int hangingRootPlacementAttempts;
+	public final int field_33616;
 
 	public RootSystemFeatureConfig(
 		Supplier<ConfiguredFeature<?, ?>> feature,
@@ -53,7 +57,8 @@ public class RootSystemFeatureConfig implements FeatureConfig {
 		int hangingRootRadius,
 		int hangingRootVerticalSpan,
 		BlockStateProvider hangingRootStateProvider,
-		int hangingRootPlacementAttempts
+		int hangingRootPlacementAttempts,
+		int i
 	) {
 		this.feature = feature;
 		this.requiredVerticalSpaceForTree = requiredVerticalSpaceForTree;
@@ -66,5 +71,6 @@ public class RootSystemFeatureConfig implements FeatureConfig {
 		this.hangingRootVerticalSpan = hangingRootVerticalSpan;
 		this.hangingRootStateProvider = hangingRootStateProvider;
 		this.hangingRootPlacementAttempts = hangingRootPlacementAttempts;
+		this.field_33616 = i;
 	}
 }

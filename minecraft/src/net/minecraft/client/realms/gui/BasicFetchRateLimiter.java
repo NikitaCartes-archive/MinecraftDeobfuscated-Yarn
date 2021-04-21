@@ -25,9 +25,9 @@ public class BasicFetchRateLimiter implements FetchRateLimiter {
 	}
 
 	@VisibleForTesting
-	protected BasicFetchRateLimiter(Duration duration, Supplier<Clock> supplier) {
-		this.period = duration;
-		this.clock = supplier;
+	protected BasicFetchRateLimiter(Duration period, Supplier<Clock> clock) {
+		this.period = period;
+		this.clock = clock;
 	}
 
 	@Override

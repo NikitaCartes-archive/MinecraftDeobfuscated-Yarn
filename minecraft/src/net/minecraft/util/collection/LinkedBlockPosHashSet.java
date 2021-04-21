@@ -20,7 +20,7 @@ import net.minecraft.util.math.MathHelper;
  * <li>Positions that are geometrically close together are grouped together in memory. This localises adjacent reads and writes.</li>
  * <li>A larger number of positions can be comprised together into one long allowing for a smaller memory footprint.</li>
  * </ol>
- * @see LevelPropagator
+ * @see net.minecraft.world.chunk.light.LevelPropagator
  */
 public class LinkedBlockPosHashSet extends LongLinkedOpenHashSet {
 	private final LinkedBlockPosHashSet.Storage buffer;
@@ -120,7 +120,7 @@ public class LinkedBlockPosHashSet extends LongLinkedOpenHashSet {
 		/**
 		 * Ensures that this collection contains the specified element (optional operation).
 		 * 
-		 * @see Collection#add(Object)
+		 * @see java.util.Collection#add(Object)
 		 */
 		public boolean add(long posLong) {
 			long l = getKey(posLong);

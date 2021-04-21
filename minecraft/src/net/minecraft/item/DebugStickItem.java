@@ -45,20 +45,25 @@ public class DebugStickItem extends Item {
 		World world = context.getWorld();
 		if (!world.isClient && playerEntity != null) {
 			BlockPos blockPos = context.getBlockPos();
-			this.use(playerEntity, world.getBlockState(blockPos), world, blockPos, true, context.getStack());
+			if (!this.use(playerEntity, world.getBlockState(blockPos), world, blockPos, true, context.getStack())) {
+				return ActionResult.FAIL;
+			}
 		}
 
 		return ActionResult.success(world.isClient);
 	}
 
-	private void use(PlayerEntity player, BlockState state, WorldAccess world, BlockPos pos, boolean update, ItemStack stack) {
-		if (player.isCreativeLevelTwoOp()) {
+	private boolean use(PlayerEntity player, BlockState state, WorldAccess world, BlockPos pos, boolean update, ItemStack stack) {
+		if (!player.isCreativeLevelTwoOp()) {
+			return false;
+		} else {
 			Block block = state.getBlock();
 			StateManager<Block, BlockState> stateManager = block.getStateManager();
 			Collection<Property<?>> collection = stateManager.getProperties();
 			String string = Registry.BLOCK.getId(block).toString();
 			if (collection.isEmpty()) {
 				sendMessage(player, new TranslatableText(this.getTranslationKey() + ".empty", string));
+				return false;
 			} else {
 				NbtCompound nbtCompound = stack.getOrCreateSubTag("DebugProperty");
 				String string2 = nbtCompound.getString(string);
@@ -77,6 +82,8 @@ public class DebugStickItem extends Item {
 					nbtCompound.putString(string, string3);
 					sendMessage(player, new TranslatableText(this.getTranslationKey() + ".select", string3, getValueString(state, property)));
 				}
+
+				return true;
 			}
 		}
 	}

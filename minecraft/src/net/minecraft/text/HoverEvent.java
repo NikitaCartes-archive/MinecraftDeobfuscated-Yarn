@@ -98,7 +98,7 @@ public class HoverEvent {
 		public static final HoverEvent.Action<HoverEvent.ItemStackContent> SHOW_ITEM = new HoverEvent.Action<>(
 			"show_item",
 			true,
-			jsonElement -> HoverEvent.ItemStackContent.parse(jsonElement),
+			json -> HoverEvent.ItemStackContent.parse(json),
 			object -> ((HoverEvent.ItemStackContent)object).toJson(),
 			text -> HoverEvent.ItemStackContent.parse(text)
 		);
