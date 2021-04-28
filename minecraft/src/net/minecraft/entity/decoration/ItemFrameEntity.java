@@ -74,15 +74,15 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 		Validate.notNull(facing);
 		this.facing = facing;
 		if (facing.getAxis().isHorizontal()) {
-			this.pitch = 0.0F;
-			this.yaw = (float)(this.facing.getHorizontal() * 90);
+			this.setPitch(0.0F);
+			this.setYaw((float)(this.facing.getHorizontal() * 90));
 		} else {
-			this.pitch = (float)(-90 * facing.getDirection().offset());
-			this.yaw = 0.0F;
+			this.setPitch((float)(-90 * facing.getDirection().offset()));
+			this.setYaw(0.0F);
 		}
 
-		this.prevPitch = this.pitch;
-		this.prevYaw = this.yaw;
+		this.prevPitch = this.getPitch();
+		this.prevYaw = this.getYaw();
 		this.updateAttachmentPosition();
 	}
 

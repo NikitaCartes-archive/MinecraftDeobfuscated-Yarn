@@ -60,7 +60,7 @@ public class ArgumentTypes {
 		register("color", ColorArgumentType.class, new ConstantArgumentSerializer(ColorArgumentType::color));
 		register("component", TextArgumentType.class, new ConstantArgumentSerializer(TextArgumentType::text));
 		register("message", MessageArgumentType.class, new ConstantArgumentSerializer(MessageArgumentType::message));
-		register("nbt_compound_tag", NbtCompoundTagArgumentType.class, new ConstantArgumentSerializer(NbtCompoundTagArgumentType::nbtCompound));
+		register("nbt_compound_tag", NbtCompoundArgumentType.class, new ConstantArgumentSerializer(NbtCompoundArgumentType::nbtCompound));
 		register("nbt_tag", NbtElementArgumentType.class, new ConstantArgumentSerializer(NbtElementArgumentType::nbtElement));
 		register("nbt_path", NbtPathArgumentType.class, new ConstantArgumentSerializer(NbtPathArgumentType::nbtPath));
 		register("objective", ScoreboardObjectiveArgumentType.class, new ConstantArgumentSerializer(ScoreboardObjectiveArgumentType::scoreboardObjective));

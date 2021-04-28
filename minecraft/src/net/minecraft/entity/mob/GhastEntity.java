@@ -237,16 +237,16 @@ public class GhastEntity extends FlyingEntity implements Monster {
 		public void tick() {
 			if (this.ghast.getTarget() == null) {
 				Vec3d vec3d = this.ghast.getVelocity();
-				this.ghast.yaw = -((float)MathHelper.atan2(vec3d.x, vec3d.z)) * (180.0F / (float)Math.PI);
-				this.ghast.bodyYaw = this.ghast.yaw;
+				this.ghast.setYaw(-((float)MathHelper.atan2(vec3d.x, vec3d.z)) * (180.0F / (float)Math.PI));
+				this.ghast.bodyYaw = this.ghast.getYaw();
 			} else {
 				LivingEntity livingEntity = this.ghast.getTarget();
 				double d = 64.0;
 				if (livingEntity.squaredDistanceTo(this.ghast) < 4096.0) {
 					double e = livingEntity.getX() - this.ghast.getX();
 					double f = livingEntity.getZ() - this.ghast.getZ();
-					this.ghast.yaw = -((float)MathHelper.atan2(e, f)) * (180.0F / (float)Math.PI);
-					this.ghast.bodyYaw = this.ghast.yaw;
+					this.ghast.setYaw(-((float)MathHelper.atan2(e, f)) * (180.0F / (float)Math.PI));
+					this.ghast.bodyYaw = this.ghast.getYaw();
 				}
 			}
 		}

@@ -621,21 +621,21 @@ public class ChunkPalettedStorageFix extends DataFix {
 		private int sidesToUpgrade;
 		private final ChunkPalettedStorageFix.Section[] sections = new ChunkPalettedStorageFix.Section[16];
 		private final Dynamic<?> level;
-		private final int xPos;
-		private final int yPos;
+		private final int x;
+		private final int z;
 		private final Int2ObjectMap<Dynamic<?>> blockEntities = new Int2ObjectLinkedOpenHashMap<>(16);
 
 		public Level(Dynamic<?> dynamic) {
 			this.level = dynamic;
-			this.xPos = dynamic.get("xPos").asInt(0) << 4;
-			this.yPos = dynamic.get("zPos").asInt(0) << 4;
+			this.x = dynamic.get("xPos").asInt(0) << 4;
+			this.z = dynamic.get("zPos").asInt(0) << 4;
 			dynamic.get("TileEntities").asStreamOpt().result().ifPresent(stream -> stream.forEach(dynamicx -> {
-					int ixx = dynamicx.get("x").asInt(0) - this.xPos & 15;
+					int ixx = dynamicx.get("x").asInt(0) - this.x & 15;
 					int jxx = dynamicx.get("y").asInt(0);
-					int k = dynamicx.get("z").asInt(0) - this.yPos & 15;
+					int k = dynamicx.get("z").asInt(0) - this.z & 15;
 					int l = jxx << 8 | k << 4 | ixx;
 					if (this.blockEntities.put(l, dynamicx) != null) {
-						ChunkPalettedStorageFix.LOGGER.warn("In chunk: {}x{} found a duplicate block entity at position: [{}, {}, {}]", this.xPos, this.yPos, ixx, jxx, k);
+						ChunkPalettedStorageFix.LOGGER.warn("In chunk: {}x{} found a duplicate block entity at position: [{}, {}, {}]", this.x, this.z, ixx, jxx, k);
 					}
 				}));
 			boolean bl = dynamic.get("convertedFromAlphaFormat").asBoolean(false);

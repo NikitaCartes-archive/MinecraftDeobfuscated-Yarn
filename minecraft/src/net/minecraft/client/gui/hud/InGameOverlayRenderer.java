@@ -66,7 +66,7 @@ public class InGameOverlayRenderer {
 		return null;
 	}
 
-	private static void renderInWallOverlay(Sprite sprite, MatrixStack matrixStack) {
+	private static void renderInWallOverlay(Sprite sprite, MatrixStack matrices) {
 		RenderSystem.setShaderTexture(0, sprite.getAtlas().getId());
 		RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
@@ -80,7 +80,7 @@ public class InGameOverlayRenderer {
 		float m = sprite.getMaxU();
 		float n = sprite.getMinV();
 		float o = sprite.getMaxV();
-		Matrix4f matrix4f = matrixStack.peek().getModel();
+		Matrix4f matrix4f = matrices.peek().getModel();
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
 		bufferBuilder.vertex(matrix4f, -1.0F, -1.0F, -0.5F).color(0.1F, 0.1F, 0.1F, 1.0F).texture(m, o).next();
 		bufferBuilder.vertex(matrix4f, 1.0F, -1.0F, -0.5F).color(0.1F, 0.1F, 0.1F, 1.0F).texture(l, o).next();
@@ -90,12 +90,12 @@ public class InGameOverlayRenderer {
 		BufferRenderer.draw(bufferBuilder);
 	}
 
-	private static void renderUnderwaterOverlay(MinecraftClient minecraftClient, MatrixStack matrixStack) {
+	private static void renderUnderwaterOverlay(MinecraftClient client, MatrixStack matrices) {
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.enableTexture();
 		RenderSystem.setShaderTexture(0, UNDERWATER_TEXTURE);
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-		float f = minecraftClient.player.getBrightnessAtEyes();
+		float f = client.player.getBrightnessAtEyes();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.setShaderColor(f, f, f, 0.1F);
@@ -105,9 +105,9 @@ public class InGameOverlayRenderer {
 		float j = -1.0F;
 		float k = 1.0F;
 		float l = -0.5F;
-		float m = -minecraftClient.player.yaw / 64.0F;
-		float n = minecraftClient.player.pitch / 64.0F;
-		Matrix4f matrix4f = matrixStack.peek().getModel();
+		float m = -client.player.getYaw() / 64.0F;
+		float n = client.player.getPitch() / 64.0F;
+		Matrix4f matrix4f = matrices.peek().getModel();
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
 		bufferBuilder.vertex(matrix4f, -1.0F, -1.0F, -0.5F).texture(4.0F + m, 4.0F + n).next();
 		bufferBuilder.vertex(matrix4f, 1.0F, -1.0F, -0.5F).texture(0.0F + m, 4.0F + n).next();

@@ -66,7 +66,7 @@ public class ItemPickupParticle extends Particle {
 				h - vec3d.getX(),
 				i - vec3d.getY(),
 				j - vec3d.getZ(),
-				this.itemEntity.yaw,
+				this.itemEntity.getYaw(),
 				tickDelta,
 				new MatrixStack(),
 				immediate,

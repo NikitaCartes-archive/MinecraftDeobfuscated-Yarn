@@ -157,8 +157,8 @@ public class TeleportCommand {
 				destination.getY(),
 				destination.getZ(),
 				EnumSet.noneOf(PlayerPositionLookS2CPacket.Flag.class),
-				destination.yaw,
-				destination.pitch,
+				destination.getYaw(),
+				destination.getPitch(),
 				null
 			);
 		}
@@ -212,7 +212,7 @@ public class TeleportCommand {
 
 		for(Entity entity : targets) {
 			if (rotation == null) {
-				teleport(source, entity, world, vec3d.x, vec3d.y, vec3d.z, set, entity.yaw, entity.pitch, facingLocation);
+				teleport(source, entity, world, vec3d.x, vec3d.y, vec3d.z, set, entity.getYaw(), entity.getPitch(), facingLocation);
 			} else {
 				teleport(source, entity, world, vec3d.x, vec3d.y, vec3d.z, set, vec2f.y, vec2f.x, facingLocation);
 			}
@@ -278,8 +278,8 @@ public class TeleportCommand {
 					target.copyFrom(entity);
 					target.refreshPositionAndAngles(x, y, z, f, h);
 					target.setHeadYaw(f);
-					world.onDimensionChanged(target);
 					entity.setRemoved(Entity.RemovalReason.CHANGED_DIMENSION);
+					world.onDimensionChanged(target);
 				}
 			}
 

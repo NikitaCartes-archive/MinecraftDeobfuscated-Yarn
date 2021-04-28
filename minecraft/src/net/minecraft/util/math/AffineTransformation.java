@@ -138,11 +138,11 @@ public final class AffineTransformation {
 		return this.rotation1.copy();
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (object != null && this.getClass() == object.getClass()) {
-			AffineTransformation affineTransformation = (AffineTransformation)object;
+		} else if (o != null && this.getClass() == o.getClass()) {
+			AffineTransformation affineTransformation = (AffineTransformation)o;
 			return Objects.equals(this.matrix, affineTransformation.matrix);
 		} else {
 			return false;

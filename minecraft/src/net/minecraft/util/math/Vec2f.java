@@ -20,46 +20,46 @@ public class Vec2f {
 		this.y = y;
 	}
 
-	public Vec2f method_35582(float f) {
-		return new Vec2f(this.x * f, this.y * f);
+	public Vec2f multiply(float value) {
+		return new Vec2f(this.x * value, this.y * value);
 	}
 
-	public float method_35583(Vec2f vec2f) {
-		return this.x * vec2f.x + this.y * vec2f.y;
+	public float dot(Vec2f vec) {
+		return this.x * vec.x + this.y * vec.y;
 	}
 
-	public Vec2f method_35586(Vec2f vec2f) {
-		return new Vec2f(this.x + vec2f.x, this.y + vec2f.y);
+	public Vec2f add(Vec2f vec) {
+		return new Vec2f(this.x + vec.x, this.y + vec.y);
 	}
 
-	public Vec2f method_35585(float f) {
-		return new Vec2f(this.x + f, this.y + f);
+	public Vec2f add(float value) {
+		return new Vec2f(this.x + value, this.y + value);
 	}
 
 	public boolean equals(Vec2f other) {
 		return this.x == other.x && this.y == other.y;
 	}
 
-	public Vec2f method_35581() {
+	public Vec2f normalize() {
 		float f = MathHelper.sqrt(this.x * this.x + this.y * this.y);
 		return f < 1.0E-4F ? ZERO : new Vec2f(this.x / f, this.y / f);
 	}
 
-	public float method_35584() {
+	public float length() {
 		return MathHelper.sqrt(this.x * this.x + this.y * this.y);
 	}
 
-	public float method_35587() {
+	public float lengthSquared() {
 		return this.x * this.x + this.y * this.y;
 	}
 
-	public float method_35589(Vec2f vec2f) {
-		float f = vec2f.x - this.x;
-		float g = vec2f.y - this.y;
+	public float distanceSquared(Vec2f vec) {
+		float f = vec.x - this.x;
+		float g = vec.y - this.y;
 		return f * f + g * g;
 	}
 
-	public Vec2f method_35588() {
+	public Vec2f negate() {
 		return new Vec2f(-this.x, -this.y);
 	}
 }

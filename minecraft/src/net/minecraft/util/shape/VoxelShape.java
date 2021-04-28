@@ -74,8 +74,8 @@ public abstract class VoxelShape {
 	public VoxelShape simplify() {
 		VoxelShape[] voxelShapes = new VoxelShape[]{VoxelShapes.empty()};
 		this.forEachBox(
-			(xMin, yMin, zMin, xMax, yMax, zMax) -> voxelShapes[0] = VoxelShapes.combine(
-					voxelShapes[0], VoxelShapes.cuboid(xMin, yMin, zMin, xMax, yMax, zMax), BooleanBiFunction.OR
+			(minX, minY, minZ, maxX, maxY, maxZ) -> voxelShapes[0] = VoxelShapes.combine(
+					voxelShapes[0], VoxelShapes.cuboid(minX, minY, minZ, maxX, maxY, maxZ), BooleanBiFunction.OR
 				)
 		);
 		return voxelShapes[0];

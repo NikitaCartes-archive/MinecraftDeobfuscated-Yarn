@@ -53,7 +53,7 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 		double d = (double)blockPos.getX() + 0.5;
 		double e = (double)blockPos.getY() + 0.5;
 		double f = (double)blockPos.getZ() + 0.5;
-		this.refreshPositionAndAngles(d, e, f, this.yaw, this.pitch);
+		this.refreshPositionAndAngles(d, e, f, this.getYaw(), this.getPitch());
 		this.target = target;
 		this.direction = Direction.UP;
 		this.method_7486(axis);

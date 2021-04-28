@@ -87,7 +87,7 @@ public class TestContext {
 		}
 
 		Vec3d vec3d = this.getAbsolute(pos);
-		entity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, entity.yaw, entity.pitch);
+		entity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, entity.getYaw(), entity.getPitch());
 		serverWorld.spawnEntity(entity);
 		return entity;
 	}

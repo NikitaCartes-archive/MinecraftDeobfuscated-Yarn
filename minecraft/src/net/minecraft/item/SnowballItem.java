@@ -30,7 +30,7 @@ public class SnowballItem extends Item {
 		if (!world.isClient) {
 			SnowballEntity snowballEntity = new SnowballEntity(world, user);
 			snowballEntity.setItem(itemStack);
-			snowballEntity.setProperties(user, user.pitch, user.yaw, 0.0F, 1.5F, 1.0F);
+			snowballEntity.setProperties(user, user.getPitch(), user.getYaw(), 0.0F, 1.5F, 1.0F);
 			world.spawnEntity(snowballEntity);
 		}
 

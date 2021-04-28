@@ -9,14 +9,14 @@ import java.util.Collection;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
 
-public class NbtCompoundTagArgumentType implements ArgumentType<NbtCompound> {
+public class NbtCompoundArgumentType implements ArgumentType<NbtCompound> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("{}", "{foo=bar}");
 
-	private NbtCompoundTagArgumentType() {
+	private NbtCompoundArgumentType() {
 	}
 
-	public static NbtCompoundTagArgumentType nbtCompound() {
-		return new NbtCompoundTagArgumentType();
+	public static NbtCompoundArgumentType nbtCompound() {
+		return new NbtCompoundArgumentType();
 	}
 
 	public static <S> NbtCompound getNbtCompound(CommandContext<S> context, String name) {

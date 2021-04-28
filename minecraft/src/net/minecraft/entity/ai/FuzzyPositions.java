@@ -32,9 +32,9 @@ public class FuzzyPositions {
 	 */
 	@Nullable
 	public static BlockPos localFuzz(
-		Random random, int horizontalRange, int verticalRange, int startHeight, double xDirection, double zDirection, double angleRange
+		Random random, int horizontalRange, int verticalRange, int startHeight, double directionX, double directionZ, double angleRange
 	) {
-		double d = MathHelper.atan2(zDirection, xDirection) - (float) (Math.PI / 2);
+		double d = MathHelper.atan2(directionZ, directionX) - (float) (Math.PI / 2);
 		double e = d + (double)(2.0F * random.nextFloat() - 1.0F) * angleRange;
 		double f = Math.sqrt(random.nextDouble()) * (double)MathHelper.SQUARE_ROOT_OF_TWO * (double)horizontalRange;
 		double g = -f * Math.sin(e);

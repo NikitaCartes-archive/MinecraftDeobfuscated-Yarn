@@ -47,15 +47,24 @@ public class EulerAngle {
 		return this.roll;
 	}
 
-	public float method_35845() {
+	/**
+	 * Returns the pitch that is wrapped to the interval {@code [-180, 180)}.
+	 */
+	public float getWrappedPitch() {
 		return MathHelper.wrapDegrees(this.pitch);
 	}
 
-	public float method_35846() {
+	/**
+	 * Returns the yaw that is wrapped to the interval {@code [-180, 180)}.
+	 */
+	public float getWrappedYaw() {
 		return MathHelper.wrapDegrees(this.yaw);
 	}
 
-	public float method_35847() {
+	/**
+	 * Returns the roll that is wrapped to the interval {@code [-180, 180)}.
+	 */
+	public float getWrappedRoll() {
 		return MathHelper.wrapDegrees(this.roll);
 	}
 }

@@ -13,7 +13,7 @@ public class HayBlock extends PillarBlock {
 	}
 
 	@Override
-	public void onLandedUpon(World world, BlockPos pos, Entity entity, float distance) {
-		entity.handleFallDamage(distance, 0.2F, DamageSource.FALL);
+	public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
+		entity.handleFallDamage(fallDistance, 0.2F, DamageSource.FALL);
 	}
 }

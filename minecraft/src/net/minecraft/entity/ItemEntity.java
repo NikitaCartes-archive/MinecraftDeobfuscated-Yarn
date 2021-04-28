@@ -54,7 +54,7 @@ public class ItemEntity extends Entity {
 	public ItemEntity(World world, double x, double y, double z) {
 		this(EntityType.ITEM, world);
 		this.setPosition(x, y, z);
-		this.yaw = this.random.nextFloat() * 360.0F;
+		this.setYaw(this.random.nextFloat() * 360.0F);
 		this.setVelocity(this.random.nextDouble() * 0.2 - 0.1, 0.2, this.random.nextDouble() * 0.2 - 0.1);
 	}
 

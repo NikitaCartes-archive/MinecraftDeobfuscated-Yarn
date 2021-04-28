@@ -42,11 +42,11 @@ public class SubtitlesHud extends DrawableHelper implements SoundInstanceListene
 			RenderSystem.defaultBlendFunc();
 			Vec3d vec3d = new Vec3d(this.client.player.getX(), this.client.player.getEyeY(), this.client.player.getZ());
 			Vec3d vec3d2 = new Vec3d(0.0, 0.0, -1.0)
-				.rotateX(-this.client.player.pitch * (float) (Math.PI / 180.0))
-				.rotateY(-this.client.player.yaw * (float) (Math.PI / 180.0));
+				.rotateX(-this.client.player.getPitch() * (float) (Math.PI / 180.0))
+				.rotateY(-this.client.player.getYaw() * (float) (Math.PI / 180.0));
 			Vec3d vec3d3 = new Vec3d(0.0, 1.0, 0.0)
-				.rotateX(-this.client.player.pitch * (float) (Math.PI / 180.0))
-				.rotateY(-this.client.player.yaw * (float) (Math.PI / 180.0));
+				.rotateX(-this.client.player.getPitch() * (float) (Math.PI / 180.0))
+				.rotateY(-this.client.player.getYaw() * (float) (Math.PI / 180.0));
 			Vec3d vec3d4 = vec3d2.crossProduct(vec3d3);
 			int i = 0;
 			int j = 0;

@@ -170,9 +170,9 @@ public class BatEntity extends AmbientEntity {
 			Vec3d vec3d2 = vec3d.add((Math.signum(d) * 0.5 - vec3d.x) * 0.1F, (Math.signum(e) * 0.7F - vec3d.y) * 0.1F, (Math.signum(f) * 0.5 - vec3d.z) * 0.1F);
 			this.setVelocity(vec3d2);
 			float g = (float)(MathHelper.atan2(vec3d2.z, vec3d2.x) * 180.0F / (float)Math.PI) - 90.0F;
-			float h = MathHelper.wrapDegrees(g - this.yaw);
+			float h = MathHelper.wrapDegrees(g - this.getYaw());
 			this.forwardSpeed = 0.5F;
-			this.yaw += h;
+			this.setYaw(this.getYaw() + h);
 			if (this.random.nextInt(100) == 0 && this.world.getBlockState(blockPos2).isSolidBlock(this.world, blockPos2)) {
 				this.setRoosting(true);
 			}

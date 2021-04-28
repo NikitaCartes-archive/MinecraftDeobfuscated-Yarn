@@ -1,4 +1,4 @@
-package net.minecraft.client.util;
+package net.minecraft.client.util.math;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -17,15 +17,15 @@ public class Rect2i {
 		this.height = height;
 	}
 
-	public Rect2i method_35780(Rect2i rect2i) {
+	public Rect2i intersection(Rect2i rect) {
 		int i = this.x;
 		int j = this.y;
 		int k = this.x + this.width;
 		int l = this.y + this.height;
-		int m = rect2i.getX();
-		int n = rect2i.getY();
-		int o = m + rect2i.getWidth();
-		int p = n + rect2i.getHeight();
+		int m = rect.getX();
+		int n = rect.getY();
+		int o = m + rect.getWidth();
+		int p = n + rect.getHeight();
 		this.x = Math.max(i, m);
 		this.y = Math.max(j, n);
 		this.width = Math.max(0, Math.min(k, o) - this.x);
@@ -41,12 +41,12 @@ public class Rect2i {
 		return this.y;
 	}
 
-	public void method_35778(int i) {
-		this.x = i;
+	public void setX(int x) {
+		this.x = x;
 	}
 
-	public void method_35781(int i) {
-		this.y = i;
+	public void setY(int y) {
+		this.y = y;
 	}
 
 	public int getWidth() {
@@ -57,17 +57,17 @@ public class Rect2i {
 		return this.height;
 	}
 
-	public void method_35782(int i) {
-		this.width = i;
+	public void setWidth(int width) {
+		this.width = width;
 	}
 
-	public void method_35783(int i) {
-		this.height = i;
+	public void setHeight(int height) {
+		this.height = height;
 	}
 
-	public void method_35779(int i, int j) {
-		this.x = i;
-		this.y = j;
+	public void setStartPos(int x, int y) {
+		this.x = x;
+		this.y = y;
 	}
 
 	public boolean contains(int x, int y) {

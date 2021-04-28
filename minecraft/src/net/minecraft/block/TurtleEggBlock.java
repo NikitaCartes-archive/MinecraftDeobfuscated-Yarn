@@ -41,27 +41,24 @@ public class TurtleEggBlock extends Block {
 	}
 
 	@Override
-	public void onSteppedOn(World world, BlockPos pos, Entity entity) {
-		this.tryBreakEgg(world, pos, entity, 100);
-		super.onSteppedOn(world, pos, entity);
+	public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
+		this.tryBreakEgg(world, state, pos, entity, 100);
+		super.onSteppedOn(world, pos, state, entity);
 	}
 
 	@Override
-	public void onLandedUpon(World world, BlockPos pos, Entity entity, float distance) {
+	public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
 		if (!(entity instanceof ZombieEntity)) {
-			this.tryBreakEgg(world, pos, entity, 3);
+			this.tryBreakEgg(world, state, pos, entity, 3);
 		}
 
-		super.onLandedUpon(world, pos, entity, distance);
+		super.onLandedUpon(world, state, pos, entity, fallDistance);
 	}
 
-	private void tryBreakEgg(World world, BlockPos pos, Entity entity, int inverseChance) {
+	private void tryBreakEgg(World world, BlockState state, BlockPos pos, Entity entity, int inverseChance) {
 		if (this.breaksEgg(world, entity)) {
-			if (!world.isClient && world.random.nextInt(inverseChance) == 0) {
-				BlockState blockState = world.getBlockState(pos);
-				if (blockState.isOf(Blocks.TURTLE_EGG)) {
-					this.breakEgg(world, pos, blockState);
-				}
+			if (!world.isClient && world.random.nextInt(inverseChance) == 0 && state.isOf(Blocks.TURTLE_EGG)) {
+				this.breakEgg(world, pos, state);
 			}
 		}
 	}

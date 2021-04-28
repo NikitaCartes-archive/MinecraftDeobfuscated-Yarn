@@ -279,11 +279,11 @@ public class InputUtil {
 			}
 		}
 
-		public boolean equals(Object other) {
-			if (this == other) {
+		public boolean equals(Object o) {
+			if (this == o) {
 				return true;
-			} else if (other != null && this.getClass() == other.getClass()) {
-				InputUtil.Key key = (InputUtil.Key)other;
+			} else if (o != null && this.getClass() == o.getClass()) {
+				InputUtil.Key key = (InputUtil.Key)o;
 				return this.code == key.code && this.type == key.type;
 			} else {
 				return false;

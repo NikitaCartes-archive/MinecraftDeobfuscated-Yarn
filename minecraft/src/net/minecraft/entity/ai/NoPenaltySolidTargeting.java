@@ -12,10 +12,10 @@ import net.minecraft.util.math.Vec3d;
 public class NoPenaltySolidTargeting {
 	@Nullable
 	public static Vec3d find(
-		PathAwareEntity entity, int horizontalRange, int verticalRange, int startHeight, double xDirection, double zDirection, double rangeAngle
+		PathAwareEntity entity, int horizontalRange, int verticalRange, int startHeight, double directionX, double directionZ, double rangeAngle
 	) {
 		boolean bl = NavigationConditions.isPositionTargetInRange(entity, horizontalRange);
-		return FuzzyPositions.guessBestPathTarget(entity, () -> tryMake(entity, horizontalRange, verticalRange, startHeight, xDirection, zDirection, rangeAngle, bl));
+		return FuzzyPositions.guessBestPathTarget(entity, () -> tryMake(entity, horizontalRange, verticalRange, startHeight, directionX, directionZ, rangeAngle, bl));
 	}
 
 	@Nullable
@@ -24,12 +24,12 @@ public class NoPenaltySolidTargeting {
 		int horizontalRange,
 		int verticalRange,
 		int startHeight,
-		double xDirection,
-		double zDirection,
+		double directionX,
+		double directionZ,
 		double rangeAngle,
 		boolean posTargetInRange
 	) {
-		BlockPos blockPos = FuzzyPositions.localFuzz(entity.getRandom(), horizontalRange, verticalRange, startHeight, xDirection, zDirection, rangeAngle);
+		BlockPos blockPos = FuzzyPositions.localFuzz(entity.getRandom(), horizontalRange, verticalRange, startHeight, directionX, directionZ, rangeAngle);
 		if (blockPos == null) {
 			return null;
 		} else {

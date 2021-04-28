@@ -167,7 +167,7 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 			((ServerWorld)this.world).spawnParticles(ParticleTypes.EXPLOSION, this.getX(), this.getBodyY(0.5), this.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
 			this.discard();
 			CowEntity cowEntity = EntityType.COW.create(this.world);
-			cowEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
+			cowEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
 			cowEntity.setHealth(this.getHealth());
 			cowEntity.bodyYaw = this.bodyYaw;
 			if (this.hasCustomName()) {

@@ -78,7 +78,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			k = j - h;
 		}
 
-		float m = MathHelper.lerp(g, livingEntity.prevPitch, livingEntity.pitch);
+		float m = MathHelper.lerp(g, livingEntity.prevPitch, livingEntity.getPitch());
 		if (livingEntity.getPose() == EntityPose.SLEEPING) {
 			Direction direction = livingEntity.getSleepingDirection();
 			if (direction != null) {
@@ -198,7 +198,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 
 			matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(f * this.getLyingAngle(entity)));
 		} else if (entity.isUsingRiptide()) {
-			matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0F - entity.pitch));
+			matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0F - entity.getPitch()));
 			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(((float)entity.age + tickDelta) * -75.0F));
 		} else if (entityPose == EntityPose.SLEEPING) {
 			Direction direction = entity.getSleepingDirection();

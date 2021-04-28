@@ -21,8 +21,8 @@ public class PlayerSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.x = player.getX();
 		this.y = player.getY();
 		this.z = player.getZ();
-		this.yaw = (byte)((int)(player.yaw * 256.0F / 360.0F));
-		this.pitch = (byte)((int)(player.pitch * 256.0F / 360.0F));
+		this.yaw = (byte)((int)(player.getYaw() * 256.0F / 360.0F));
+		this.pitch = (byte)((int)(player.getPitch() * 256.0F / 360.0F));
 	}
 
 	public PlayerSpawnS2CPacket(PacketByteBuf buf) {

@@ -95,8 +95,8 @@ public abstract class DrawableHelper {
 		RenderSystem.disableBlend();
 	}
 
-	protected void fillGradient(MatrixStack matrices, int xStart, int yStart, int xEnd, int yEnd, int colorStart, int colorEnd) {
-		method_33284(matrices, xStart, yStart, xEnd, yEnd, colorStart, colorEnd, this.zOffset);
+	protected void fillGradient(MatrixStack matrices, int startX, int startY, int endX, int endY, int colorStart, int colorEnd) {
+		method_33284(matrices, startX, startY, endX, endY, colorStart, colorEnd, this.zOffset);
 	}
 
 	protected static void method_33284(MatrixStack matrixStack, int i, int j, int k, int l, int m, int n, int o) {
@@ -114,7 +114,7 @@ public abstract class DrawableHelper {
 	}
 
 	protected static void fillGradient(
-		Matrix4f matrix, BufferBuilder bufferBuilder, int xStart, int yStart, int xEnd, int yEnd, int z, int colorStart, int colorEnd
+		Matrix4f matrix, BufferBuilder bufferBuilder, int startX, int startY, int endX, int endY, int z, int colorStart, int colorEnd
 	) {
 		float f = (float)(colorStart >> 24 & 0xFF) / 255.0F;
 		float g = (float)(colorStart >> 16 & 0xFF) / 255.0F;
@@ -124,10 +124,10 @@ public abstract class DrawableHelper {
 		float k = (float)(colorEnd >> 16 & 0xFF) / 255.0F;
 		float l = (float)(colorEnd >> 8 & 0xFF) / 255.0F;
 		float m = (float)(colorEnd & 0xFF) / 255.0F;
-		bufferBuilder.vertex(matrix, (float)xEnd, (float)yStart, (float)z).color(g, h, i, f).next();
-		bufferBuilder.vertex(matrix, (float)xStart, (float)yStart, (float)z).color(g, h, i, f).next();
-		bufferBuilder.vertex(matrix, (float)xStart, (float)yEnd, (float)z).color(k, l, m, j).next();
-		bufferBuilder.vertex(matrix, (float)xEnd, (float)yEnd, (float)z).color(k, l, m, j).next();
+		bufferBuilder.vertex(matrix, (float)endX, (float)startY, (float)z).color(g, h, i, f).next();
+		bufferBuilder.vertex(matrix, (float)startX, (float)startY, (float)z).color(g, h, i, f).next();
+		bufferBuilder.vertex(matrix, (float)startX, (float)endY, (float)z).color(k, l, m, j).next();
+		bufferBuilder.vertex(matrix, (float)endX, (float)endY, (float)z).color(k, l, m, j).next();
 	}
 
 	public static void drawCenteredString(MatrixStack matrices, TextRenderer textRenderer, String text, int centerX, int y, int color) {

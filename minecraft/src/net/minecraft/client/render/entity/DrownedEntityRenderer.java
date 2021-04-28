@@ -35,7 +35,7 @@ public class DrownedEntityRenderer extends ZombieBaseEntityRenderer<DrownedEntit
 		super.setupTransforms(drownedEntity, matrixStack, f, g, h);
 		float i = drownedEntity.getLeaningPitch(h);
 		if (i > 0.0F) {
-			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(MathHelper.lerp(i, drownedEntity.pitch, -10.0F - drownedEntity.pitch)));
+			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(MathHelper.lerp(i, drownedEntity.getPitch(), -10.0F - drownedEntity.getPitch())));
 		}
 	}
 }

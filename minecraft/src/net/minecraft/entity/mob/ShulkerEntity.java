@@ -279,8 +279,8 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	public EntityData initialize(
 		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
-		this.yaw = 0.0F;
-		this.headYaw = this.yaw;
+		this.setYaw(0.0F);
+		this.headYaw = this.getYaw();
 		this.resetPosition();
 		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}

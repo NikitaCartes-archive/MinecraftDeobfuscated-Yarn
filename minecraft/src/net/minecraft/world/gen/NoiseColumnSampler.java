@@ -1,6 +1,7 @@
 package net.minecraft.world.gen;
 
 import javax.annotation.Nullable;
+import net.minecraft.class_6357;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.InterpolatedNoiseSampler;
@@ -44,8 +45,7 @@ public class NoiseColumnSampler {
 	private final double bottomSlideOffset;
 	private final double densityFactor;
 	private final double densityOffset;
-	@Nullable
-	private final NoiseCaveSampler noiseCaveSampler;
+	private final class_6357 field_33653;
 
 	public NoiseColumnSampler(
 		BiomeSource biomeSource,
@@ -56,7 +56,7 @@ public class NoiseColumnSampler {
 		InterpolatedNoiseSampler noise,
 		@Nullable SimplexNoiseSampler islandNoise,
 		OctavePerlinNoiseSampler densityNoise,
-		@Nullable NoiseCaveSampler noiseCaveSampler
+		class_6357 arg
 	) {
 		this.horizontalNoiseResolution = horizontalNoiseResolution;
 		this.verticalNoiseResolution = verticalNoiseResolution;
@@ -74,7 +74,7 @@ public class NoiseColumnSampler {
 		this.bottomSlideOffset = (double)config.getBottomSlide().getOffset();
 		this.densityFactor = config.getDensityFactor();
 		this.densityOffset = config.getDensityOffset();
-		this.noiseCaveSampler = noiseCaveSampler;
+		this.field_33653 = arg;
 	}
 
 	/**
@@ -139,14 +139,10 @@ public class NoiseColumnSampler {
 			int ae = ad + minY;
 			double af = this.noise.sample(x, ae, z, y, aa, ab, ac);
 			double ag = this.getOffset(ae, d, e, v) + af;
-			ag = this.sampleNoiseCaves(x * this.horizontalNoiseResolution, ae * this.verticalNoiseResolution, z * this.horizontalNoiseResolution, ag);
+			ag = this.field_33653.sample(ag, ae * this.verticalNoiseResolution, z * this.horizontalNoiseResolution, x * this.horizontalNoiseResolution);
 			ag = this.applySlides(ag, ae);
 			buffer[ad] = ag;
 		}
-	}
-
-	private double sampleNoiseCaves(int x, int y, int z, double noise) {
-		return this.noiseCaveSampler != null ? this.noiseCaveSampler.sample(x, y, z, noise) : noise;
 	}
 
 	/**

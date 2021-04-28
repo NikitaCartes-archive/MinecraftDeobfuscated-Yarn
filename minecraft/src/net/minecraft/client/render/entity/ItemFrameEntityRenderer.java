@@ -56,8 +56,8 @@ public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRe
 		matrixStack.translate(-vec3d.getX(), -vec3d.getY(), -vec3d.getZ());
 		double d = 0.46875;
 		matrixStack.translate((double)direction.getOffsetX() * 0.46875, (double)direction.getOffsetY() * 0.46875, (double)direction.getOffsetZ() * 0.46875);
-		matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(itemFrameEntity.pitch));
-		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F - itemFrameEntity.yaw));
+		matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(itemFrameEntity.getPitch()));
+		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F - itemFrameEntity.getYaw()));
 		boolean bl = itemFrameEntity.isInvisible();
 		ItemStack itemStack = itemFrameEntity.getHeldItemStack();
 		if (!bl) {

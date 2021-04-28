@@ -106,8 +106,8 @@ public class ChunkPos {
 		return this.z & 31;
 	}
 
-	public BlockPos method_35231(int i, int j, int k) {
-		return new BlockPos(this.getOffsetX(i), j, this.getOffsetZ(k));
+	public BlockPos getBlockPos(int offsetX, int y, int offsetZ) {
+		return new BlockPos(this.getOffsetX(offsetX), y, this.getOffsetZ(offsetZ));
 	}
 
 	public int getOffsetX(int offset) {

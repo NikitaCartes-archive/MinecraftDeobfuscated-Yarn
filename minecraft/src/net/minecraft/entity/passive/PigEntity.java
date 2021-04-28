@@ -219,7 +219,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 		if (world.getDifficulty() != Difficulty.PEACEFUL) {
 			ZombifiedPiglinEntity zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(world);
 			zombifiedPiglinEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
-			zombifiedPiglinEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
+			zombifiedPiglinEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
 			zombifiedPiglinEntity.setAiDisabled(this.isAiDisabled());
 			zombifiedPiglinEntity.setBaby(this.isBaby());
 			if (this.hasCustomName()) {

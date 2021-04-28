@@ -84,16 +84,16 @@ public class FarmlandBlock extends Block {
 	}
 
 	@Override
-	public void onLandedUpon(World world, BlockPos pos, Entity entity, float distance) {
+	public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
 		if (!world.isClient
-			&& world.random.nextFloat() < distance - 0.5F
+			&& world.random.nextFloat() < fallDistance - 0.5F
 			&& entity instanceof LivingEntity
 			&& (entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING))
 			&& entity.getWidth() * entity.getWidth() * entity.getHeight() > 0.512F) {
-			setToDirt(world.getBlockState(pos), world, pos);
+			setToDirt(state, world, pos);
 		}
 
-		super.onLandedUpon(world, pos, entity, distance);
+		super.onLandedUpon(world, state, pos, entity, fallDistance);
 	}
 
 	public static void setToDirt(BlockState state, World world, BlockPos pos) {

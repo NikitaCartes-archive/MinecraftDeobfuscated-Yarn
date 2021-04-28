@@ -22,13 +22,13 @@ public final class EntityModelLayer {
 		return this.name;
 	}
 
-	public boolean equals(Object other) {
-		if (this == other) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (!(other instanceof EntityModelLayer)) {
+		} else if (!(o instanceof EntityModelLayer)) {
 			return false;
 		} else {
-			EntityModelLayer entityModelLayer = (EntityModelLayer)other;
+			EntityModelLayer entityModelLayer = (EntityModelLayer)o;
 			return this.id.equals(entityModelLayer.id) && this.name.equals(entityModelLayer.name);
 		}
 	}

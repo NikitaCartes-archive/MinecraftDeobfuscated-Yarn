@@ -21,7 +21,7 @@ import net.minecraft.command.BlockDataObject;
 import net.minecraft.command.DataCommandObject;
 import net.minecraft.command.EntityDataObject;
 import net.minecraft.command.StorageDataObject;
-import net.minecraft.command.argument.NbtCompoundTagArgumentType;
+import net.minecraft.command.argument.NbtCompoundArgumentType;
 import net.minecraft.command.argument.NbtElementArgumentType;
 import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.nbt.AbstractNbtList;
@@ -69,8 +69,8 @@ public class DataCommand {
 					objectType.addArgumentsToBuilder(
 						CommandManager.literal("merge"),
 						builder -> builder.then(
-								CommandManager.argument("nbt", NbtCompoundTagArgumentType.nbtCompound())
-									.executes(context -> executeMerge(context.getSource(), objectType.getObject(context), NbtCompoundTagArgumentType.getNbtCompound(context, "nbt")))
+								CommandManager.argument("nbt", NbtCompoundArgumentType.nbtCompound())
+									.executes(context -> executeMerge(context.getSource(), objectType.getObject(context), NbtCompoundArgumentType.getNbtCompound(context, "nbt")))
 							)
 					)
 				)

@@ -219,7 +219,7 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	private void lookTowards(double x, double z) {
-		this.yaw = (float)(MathHelper.atan2(z - this.getZ(), x - this.getX()) * 180.0F / (float)Math.PI) - 90.0F;
+		this.setYaw((float)(MathHelper.atan2(z - this.getZ(), x - this.getX()) * 180.0F / (float)Math.PI) - 90.0F);
 	}
 
 	private void method_6611() {

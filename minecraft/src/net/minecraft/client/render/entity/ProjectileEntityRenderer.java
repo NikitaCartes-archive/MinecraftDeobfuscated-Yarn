@@ -21,8 +21,10 @@ public abstract class ProjectileEntityRenderer<T extends PersistentProjectileEnt
 
 	public void render(T persistentProjectileEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
-		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(MathHelper.lerp(g, persistentProjectileEntity.prevYaw, persistentProjectileEntity.yaw) - 90.0F));
-		matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.lerp(g, persistentProjectileEntity.prevPitch, persistentProjectileEntity.pitch)));
+		matrixStack.multiply(
+			Vec3f.POSITIVE_Y.getDegreesQuaternion(MathHelper.lerp(g, persistentProjectileEntity.prevYaw, persistentProjectileEntity.getYaw()) - 90.0F)
+		);
+		matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.lerp(g, persistentProjectileEntity.prevPitch, persistentProjectileEntity.getPitch())));
 		int j = 0;
 		float h = 0.0F;
 		float k = 0.5F;

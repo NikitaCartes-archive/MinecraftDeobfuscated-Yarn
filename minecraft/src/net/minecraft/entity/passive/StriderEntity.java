@@ -205,11 +205,11 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	@Override
 	public Vec3d updatePassengerForDismount(LivingEntity passenger) {
 		Vec3d[] vec3ds = new Vec3d[]{
-			getPassengerDismountOffset((double)this.getWidth(), (double)passenger.getWidth(), passenger.yaw),
-			getPassengerDismountOffset((double)this.getWidth(), (double)passenger.getWidth(), passenger.yaw - 22.5F),
-			getPassengerDismountOffset((double)this.getWidth(), (double)passenger.getWidth(), passenger.yaw + 22.5F),
-			getPassengerDismountOffset((double)this.getWidth(), (double)passenger.getWidth(), passenger.yaw - 45.0F),
-			getPassengerDismountOffset((double)this.getWidth(), (double)passenger.getWidth(), passenger.yaw + 45.0F)
+			getPassengerDismountOffset((double)this.getWidth(), (double)passenger.getWidth(), passenger.getYaw()),
+			getPassengerDismountOffset((double)this.getWidth(), (double)passenger.getWidth(), passenger.getYaw() - 22.5F),
+			getPassengerDismountOffset((double)this.getWidth(), (double)passenger.getWidth(), passenger.getYaw() + 22.5F),
+			getPassengerDismountOffset((double)this.getWidth(), (double)passenger.getWidth(), passenger.getYaw() - 45.0F),
+			getPassengerDismountOffset((double)this.getWidth(), (double)passenger.getWidth(), passenger.getYaw() + 45.0F)
 		};
 		Set<BlockPos> set = Sets.<BlockPos>newLinkedHashSet();
 		double d = this.getBoundingBox().maxY;
@@ -462,7 +462,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	}
 
 	private EntityData initializeRider(ServerWorldAccess world, LocalDifficulty difficulty, MobEntity rider, @Nullable EntityData entityData) {
-		rider.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0F);
+		rider.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), 0.0F);
 		rider.initialize(world, difficulty, SpawnReason.JOCKEY, entityData, null);
 		rider.startRiding(this, true);
 		return new PassiveEntity.PassiveData(0.0F);

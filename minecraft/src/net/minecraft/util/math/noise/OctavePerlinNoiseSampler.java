@@ -30,8 +30,8 @@ public class OctavePerlinNoiseSampler implements NoiseSampler {
 		this(random, new IntRBTreeSet(octaves));
 	}
 
-	public static OctavePerlinNoiseSampler method_35480(WorldGenRandom worldGenRandom, int i, double... ds) {
-		return create(worldGenRandom, i, new DoubleArrayList(ds));
+	public static OctavePerlinNoiseSampler create(WorldGenRandom random, int offset, double... amplitudes) {
+		return create(random, offset, new DoubleArrayList(amplitudes));
 	}
 
 	public static OctavePerlinNoiseSampler create(WorldGenRandom random, int offset, DoubleList amplitudes) {

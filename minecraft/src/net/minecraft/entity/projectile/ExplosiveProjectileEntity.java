@@ -29,7 +29,7 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 		EntityType<? extends ExplosiveProjectileEntity> type, double x, double y, double z, double directionX, double directionY, double directionZ, World world
 	) {
 		this(type, world);
-		this.refreshPositionAndAngles(x, y, z, this.yaw, this.pitch);
+		this.refreshPositionAndAngles(x, y, z, this.getYaw(), this.getPitch());
 		this.refreshPosition();
 		double d = (double)MathHelper.sqrt(directionX * directionX + directionY * directionY + directionZ * directionZ);
 		if (d != 0.0) {
@@ -44,7 +44,7 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 	) {
 		this(type, owner.getX(), owner.getY(), owner.getZ(), directionX, directionY, directionZ, world);
 		this.setOwner(owner);
-		this.setRotation(owner.yaw, owner.pitch);
+		this.setRotation(owner.getYaw(), owner.getPitch());
 	}
 
 	@Override
@@ -182,8 +182,8 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 			this.getX(),
 			this.getY(),
 			this.getZ(),
-			this.pitch,
-			this.yaw,
+			this.getPitch(),
+			this.getYaw(),
 			this.getType(),
 			i,
 			new Vec3d(this.powerX, this.powerY, this.powerZ)

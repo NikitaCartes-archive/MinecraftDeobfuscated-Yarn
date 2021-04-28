@@ -311,12 +311,12 @@ public class BlockPos extends Vec3i {
 	 * negative z offset.
 	 * 
 	 * @param center the center of iteration
-	 * @param xRange the maximum x difference from the center
-	 * @param yRange the maximum y difference from the center
-	 * @param zRange the maximum z difference from the center
+	 * @param rangeX the maximum x difference from the center
+	 * @param rangeY the maximum y difference from the center
+	 * @param rangeZ the maximum z difference from the center
 	 */
-	public static Iterable<BlockPos> iterateOutwards(BlockPos center, int xRange, int yRange, int zRange) {
-		int i = xRange + yRange + zRange;
+	public static Iterable<BlockPos> iterateOutwards(BlockPos center, int rangeX, int rangeY, int rangeZ) {
+		int i = rangeX + rangeY + rangeZ;
 		int j = center.getX();
 		int k = center.getY();
 		int l = center.getZ();
@@ -345,18 +345,18 @@ public class BlockPos extends Vec3i {
 										return this.endOfData();
 									}
 
-									this.limitX = Math.min(xRange, this.manhattanDistance);
+									this.limitX = Math.min(rangeX, this.manhattanDistance);
 									this.dx = -this.limitX;
 								}
 
-								this.limitY = Math.min(yRange, this.manhattanDistance - Math.abs(this.dx));
+								this.limitY = Math.min(rangeY, this.manhattanDistance - Math.abs(this.dx));
 								this.dy = -this.limitY;
 							}
 
 							int ix = this.dx;
 							int jx = this.dy;
 							int kx = this.manhattanDistance - Math.abs(ix) - Math.abs(jx);
-							if (kx <= zRange) {
+							if (kx <= rangeZ) {
 								this.swapZ = kx != 0;
 								blockPos = this.pos.set(j + ix, k + jx, l + kx);
 							}

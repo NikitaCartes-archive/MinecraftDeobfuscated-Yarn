@@ -471,13 +471,13 @@ public class Style {
 			+ '}';
 	}
 
-	public boolean equals(Object obj) {
-		if (this == obj) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (!(obj instanceof Style)) {
+		} else if (!(o instanceof Style)) {
 			return false;
 		} else {
-			Style style = (Style)obj;
+			Style style = (Style)o;
 			return this.isBold() == style.isBold()
 				&& Objects.equals(this.getColor(), style.getColor())
 				&& this.isItalic() == style.isItalic()

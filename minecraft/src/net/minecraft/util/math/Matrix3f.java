@@ -313,11 +313,11 @@ public final class Matrix3f {
 		return Triple.of(quaternion, vec3f, quaternion2);
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (object != null && this.getClass() == object.getClass()) {
-			Matrix3f matrix3f = (Matrix3f)object;
+		} else if (o != null && this.getClass() == o.getClass()) {
+			Matrix3f matrix3f = (Matrix3f)o;
 			return Float.compare(matrix3f.a00, this.a00) == 0
 				&& Float.compare(matrix3f.a01, this.a01) == 0
 				&& Float.compare(matrix3f.a02, this.a02) == 0

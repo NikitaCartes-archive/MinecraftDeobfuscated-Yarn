@@ -439,11 +439,11 @@ public class GameRules {
 			return this.name;
 		}
 
-		public boolean equals(Object obj) {
-			if (this == obj) {
+		public boolean equals(Object o) {
+			if (this == o) {
 				return true;
 			} else {
-				return obj instanceof GameRules.Key && ((GameRules.Key)obj).name.equals(this.name);
+				return o instanceof GameRules.Key && ((GameRules.Key)o).name.equals(this.name);
 			}
 		}
 

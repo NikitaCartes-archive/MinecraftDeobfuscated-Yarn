@@ -1,9 +1,10 @@
 package net.minecraft.world.gen;
 
+import net.minecraft.class_6357;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 
-public class NoiseCaveSampler {
+public class NoiseCaveSampler implements class_6357 {
 	private final int minY;
 	private final DoublePerlinNoiseSampler terrainAdditionNoise;
 	private final DoublePerlinNoiseSampler pillarNoise;
@@ -44,23 +45,24 @@ public class NoiseCaveSampler {
 		this.caveDensityNoise = DoublePerlinNoiseSampler.create(new SimpleRandom(random.nextLong()), -8, 0.5, 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 2.0, 0.0);
 	}
 
-	public double sample(int x, int y, int z, double offset) {
-		boolean bl = offset < 170.0;
-		double d = this.getTunnelOffsetNoise(x, y, z);
-		double e = this.getTunnelNoise(x, y, z);
+	@Override
+	public double sample(double d, int i, int j, int k) {
+		boolean bl = d < 170.0;
+		double e = this.getTunnelOffsetNoise(k, i, j);
+		double f = this.getTunnelNoise(k, i, j);
 		if (bl) {
-			return Math.min(offset, (e + d) * 128.0 * 5.0);
+			return Math.min(d, (f + e) * 128.0 * 5.0);
 		} else {
-			double f = this.caveDensityNoise.sample((double)x, (double)y / 1.5, (double)z);
-			double g = MathHelper.clamp(f + 0.25, -1.0, 1.0);
-			double h = (double)((float)(30 - y) / 8.0F);
-			double i = g + MathHelper.clampedLerp(0.5, 0.0, h);
-			double j = this.getTerrainAdditionNoise(x, y, z);
-			double k = this.getCaveNoise(x, y, z);
-			double l = i + j;
-			double m = Math.min(l, Math.min(e, k) + d);
-			double n = Math.max(m, this.getPillarNoise(x, y, z));
-			return 128.0 * MathHelper.clamp(n, -1.0, 1.0);
+			double g = this.caveDensityNoise.sample((double)k, (double)i / 1.5, (double)j);
+			double h = MathHelper.clamp(g + 0.25, -1.0, 1.0);
+			double l = (double)((float)(30 - i) / 8.0F);
+			double m = h + MathHelper.clampedLerp(0.5, 0.0, l);
+			double n = this.getTerrainAdditionNoise(k, i, j);
+			double o = this.getCaveNoise(k, i, j);
+			double p = m + n;
+			double q = Math.min(p, Math.min(f, o) + e);
+			double r = Math.max(q, this.getPillarNoise(k, i, j));
+			return 128.0 * MathHelper.clamp(r, -1.0, 1.0);
 		}
 	}
 

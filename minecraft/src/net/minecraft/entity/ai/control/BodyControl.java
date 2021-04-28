@@ -17,7 +17,7 @@ public class BodyControl implements Control {
 
 	public void tick() {
 		if (this.isMoving()) {
-			this.entity.bodyYaw = this.entity.yaw;
+			this.entity.bodyYaw = this.entity.getYaw();
 			this.rotateHead();
 			this.lastHeadYaw = this.entity.headYaw;
 			this.activeTicks = 0;

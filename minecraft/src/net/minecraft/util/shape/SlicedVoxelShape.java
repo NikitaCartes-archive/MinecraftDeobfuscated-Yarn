@@ -20,9 +20,9 @@ public class SlicedVoxelShape extends VoxelShape {
 			axis.choose(sliceWidth, 0, 0),
 			axis.choose(0, sliceWidth, 0),
 			axis.choose(0, 0, sliceWidth),
-			axis.choose(sliceWidth + 1, voxelSet.xSize, voxelSet.xSize),
-			axis.choose(voxelSet.ySize, sliceWidth + 1, voxelSet.ySize),
-			axis.choose(voxelSet.zSize, voxelSet.zSize, sliceWidth + 1)
+			axis.choose(sliceWidth + 1, voxelSet.sizeX, voxelSet.sizeX),
+			axis.choose(voxelSet.sizeY, sliceWidth + 1, voxelSet.sizeY),
+			axis.choose(voxelSet.sizeZ, voxelSet.sizeZ, sliceWidth + 1)
 		);
 	}
 

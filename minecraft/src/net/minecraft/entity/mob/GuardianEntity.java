@@ -281,13 +281,13 @@ public class GuardianEntity extends HostileEntity {
 				this.setVelocity(
 					this.getVelocity().add((double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.4F), 0.5, (double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.4F))
 				);
-				this.yaw = this.random.nextFloat() * 360.0F;
+				this.setYaw(this.random.nextFloat() * 360.0F);
 				this.onGround = false;
 				this.velocityDirty = true;
 			}
 
 			if (this.hasBeamTarget()) {
-				this.yaw = this.headYaw;
+				this.setYaw(this.headYaw);
 			}
 		}
 
@@ -444,14 +444,14 @@ public class GuardianEntity extends HostileEntity {
 				double f = vec3d.y / d;
 				double g = vec3d.z / d;
 				float h = (float)(MathHelper.atan2(vec3d.z, vec3d.x) * 180.0F / (float)Math.PI) - 90.0F;
-				this.guardian.yaw = this.wrapDegrees(this.guardian.yaw, h, 90.0F);
-				this.guardian.bodyYaw = this.guardian.yaw;
+				this.guardian.setYaw(this.wrapDegrees(this.guardian.getYaw(), h, 90.0F));
+				this.guardian.bodyYaw = this.guardian.getYaw();
 				float i = (float)(this.speed * this.guardian.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
 				float j = MathHelper.lerp(0.125F, this.guardian.getMovementSpeed(), i);
 				this.guardian.setMovementSpeed(j);
 				double k = Math.sin((double)(this.guardian.age + this.guardian.getId()) * 0.5) * 0.05;
-				double l = Math.cos((double)(this.guardian.yaw * (float) (Math.PI / 180.0)));
-				double m = Math.sin((double)(this.guardian.yaw * (float) (Math.PI / 180.0)));
+				double l = Math.cos((double)(this.guardian.getYaw() * (float) (Math.PI / 180.0)));
+				double m = Math.sin((double)(this.guardian.getYaw() * (float) (Math.PI / 180.0)));
 				double n = Math.sin((double)(this.guardian.age + this.guardian.getId()) * 0.75) * 0.05;
 				this.guardian.setVelocity(this.guardian.getVelocity().add(k * l, n * (m + l) * 0.25 + (double)j * f * 0.1, k * m));
 				LookControl lookControl = this.guardian.getLookControl();

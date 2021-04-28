@@ -144,8 +144,8 @@ public class StairsBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public void onSteppedOn(World world, BlockPos pos, Entity entity) {
-		this.baseBlock.onSteppedOn(world, pos, entity);
+	public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
+		this.baseBlock.onSteppedOn(world, pos, state, entity);
 	}
 
 	@Override

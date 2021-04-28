@@ -114,10 +114,10 @@ public abstract class ProjectileEntity extends Entity {
 			.multiply((double)speed);
 		this.setVelocity(vec3d);
 		float f = MathHelper.sqrt(squaredHorizontalLength(vec3d));
-		this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
-		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI);
-		this.prevYaw = this.yaw;
-		this.prevPitch = this.pitch;
+		this.setYaw((float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI));
+		this.setPitch((float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI));
+		this.prevYaw = this.getYaw();
+		this.prevPitch = this.getPitch();
 	}
 
 	public void setProperties(Entity user, float pitch, float yaw, float roll, float modifierZ, float modifierXYZ) {
@@ -155,11 +155,11 @@ public abstract class ProjectileEntity extends Entity {
 		this.setVelocity(x, y, z);
 		if (this.prevPitch == 0.0F && this.prevYaw == 0.0F) {
 			float f = MathHelper.sqrt(x * x + z * z);
-			this.pitch = (float)(MathHelper.atan2(y, (double)f) * 180.0F / (float)Math.PI);
-			this.yaw = (float)(MathHelper.atan2(x, z) * 180.0F / (float)Math.PI);
-			this.prevPitch = this.pitch;
-			this.prevYaw = this.yaw;
-			this.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
+			this.setPitch((float)(MathHelper.atan2(y, (double)f) * 180.0F / (float)Math.PI));
+			this.setYaw((float)(MathHelper.atan2(x, z) * 180.0F / (float)Math.PI));
+			this.prevPitch = this.getPitch();
+			this.prevYaw = this.getYaw();
+			this.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
 		}
 	}
 
@@ -175,8 +175,8 @@ public abstract class ProjectileEntity extends Entity {
 	protected void updateRotation() {
 		Vec3d vec3d = this.getVelocity();
 		float f = MathHelper.sqrt(squaredHorizontalLength(vec3d));
-		this.pitch = updateRotation(this.prevPitch, (float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI));
-		this.yaw = updateRotation(this.prevYaw, (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI));
+		this.setPitch(updateRotation(this.prevPitch, (float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI)));
+		this.setYaw(updateRotation(this.prevYaw, (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI)));
 	}
 
 	public static float updateRotation(float prevRot, float newRot) {
