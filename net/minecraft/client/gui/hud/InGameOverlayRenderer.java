@@ -63,7 +63,7 @@ public class InGameOverlayRenderer {
         return null;
     }
 
-    private static void renderInWallOverlay(Sprite sprite, MatrixStack matrixStack) {
+    private static void renderInWallOverlay(Sprite sprite, MatrixStack matrices) {
         RenderSystem.setShaderTexture(0, sprite.getAtlas().getId());
         RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
@@ -77,7 +77,7 @@ public class InGameOverlayRenderer {
         float m = sprite.getMaxU();
         float n = sprite.getMinV();
         float o = sprite.getMaxV();
-        Matrix4f matrix4f = matrixStack.peek().getModel();
+        Matrix4f matrix4f = matrices.peek().getModel();
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
         bufferBuilder.vertex(matrix4f, -1.0f, -1.0f, -0.5f).color(0.1f, 0.1f, 0.1f, 1.0f).texture(m, o).next();
         bufferBuilder.vertex(matrix4f, 1.0f, -1.0f, -0.5f).color(0.1f, 0.1f, 0.1f, 1.0f).texture(l, o).next();
@@ -87,12 +87,12 @@ public class InGameOverlayRenderer {
         BufferRenderer.draw(bufferBuilder);
     }
 
-    private static void renderUnderwaterOverlay(MinecraftClient minecraftClient, MatrixStack matrixStack) {
+    private static void renderUnderwaterOverlay(MinecraftClient client, MatrixStack matrices) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.enableTexture();
         RenderSystem.setShaderTexture(0, UNDERWATER_TEXTURE);
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        float f = minecraftClient.player.getBrightnessAtEyes();
+        float f = client.player.getBrightnessAtEyes();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShaderColor(f, f, f, 0.1f);
@@ -102,9 +102,9 @@ public class InGameOverlayRenderer {
         float j = -1.0f;
         float k = 1.0f;
         float l = -0.5f;
-        float m = -minecraftClient.player.yaw / 64.0f;
-        float n = minecraftClient.player.pitch / 64.0f;
-        Matrix4f matrix4f = matrixStack.peek().getModel();
+        float m = -client.player.getYaw() / 64.0f;
+        float n = client.player.getPitch() / 64.0f;
+        Matrix4f matrix4f = matrices.peek().getModel();
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         bufferBuilder.vertex(matrix4f, -1.0f, -1.0f, -0.5f).texture(4.0f + m, 4.0f + n).next();
         bufferBuilder.vertex(matrix4f, 1.0f, -1.0f, -0.5f).texture(0.0f + m, 4.0f + n).next();

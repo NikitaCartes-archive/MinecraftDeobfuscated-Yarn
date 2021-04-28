@@ -71,8 +71,8 @@ implements Control {
                 j = 1.0f;
             }
             j = g / j;
-            float k = MathHelper.sin(this.entity.yaw * ((float)Math.PI / 180));
-            float l = MathHelper.cos(this.entity.yaw * ((float)Math.PI / 180));
+            float k = MathHelper.sin(this.entity.getYaw() * ((float)Math.PI / 180));
+            float l = MathHelper.cos(this.entity.getYaw() * ((float)Math.PI / 180));
             float m = (h *= j) * l - (i *= j) * k;
             if (!this.method_25946(m, n = i * l + h * k)) {
                 this.forwardMovement = 1.0f;
@@ -93,7 +93,7 @@ implements Control {
                 return;
             }
             float n = (float)(MathHelper.atan2(e, d) * 57.2957763671875) - 90.0f;
-            this.entity.yaw = this.wrapDegrees(this.entity.yaw, n, 90.0f);
+            this.entity.setYaw(this.wrapDegrees(this.entity.getYaw(), n, 90.0f));
             this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
             BlockPos blockPos = this.entity.getBlockPos();
             BlockState blockState = this.entity.world.getBlockState(blockPos);

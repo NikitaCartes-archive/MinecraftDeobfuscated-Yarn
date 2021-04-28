@@ -36,10 +36,10 @@ extends StuckObjectsFeatureRenderer<T, M> {
     protected void renderObject(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Entity entity, float directionX, float directionY, float directionZ, float tickDelta) {
         float f = MathHelper.sqrt(directionX * directionX + directionZ * directionZ);
         ArrowEntity arrowEntity = new ArrowEntity(entity.world, entity.getX(), entity.getY(), entity.getZ());
-        arrowEntity.yaw = (float)(Math.atan2(directionX, directionZ) * 57.2957763671875);
-        arrowEntity.pitch = (float)(Math.atan2(directionY, f) * 57.2957763671875);
-        arrowEntity.prevYaw = arrowEntity.yaw;
-        arrowEntity.prevPitch = arrowEntity.pitch;
+        arrowEntity.setYaw((float)(Math.atan2(directionX, directionZ) * 57.2957763671875));
+        arrowEntity.setPitch((float)(Math.atan2(directionY, f) * 57.2957763671875));
+        arrowEntity.prevYaw = arrowEntity.getYaw();
+        arrowEntity.prevPitch = arrowEntity.getPitch();
         this.dispatcher.render(arrowEntity, 0.0, 0.0, 0.0, 0.0f, tickDelta, matrices, vertexConsumers, light);
     }
 }

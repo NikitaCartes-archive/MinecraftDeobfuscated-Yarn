@@ -51,12 +51,12 @@ implements Control {
 
     public void tick() {
         if (this.shouldStayHorizontal()) {
-            this.entity.pitch = 0.0f;
+            this.entity.setPitch(0.0f);
         }
         if (this.active) {
             this.active = false;
             this.entity.headYaw = this.changeAngle(this.entity.headYaw, this.getTargetYaw(), this.yawSpeed);
-            this.entity.pitch = this.changeAngle(this.entity.pitch, this.getTargetPitch(), this.pitchSpeed);
+            this.entity.setPitch(this.changeAngle(this.entity.getPitch(), this.getTargetPitch(), this.pitchSpeed));
         } else {
             this.entity.headYaw = this.changeAngle(this.entity.headYaw, this.entity.bodyYaw, 10.0f);
         }

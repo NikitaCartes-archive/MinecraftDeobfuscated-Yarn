@@ -33,7 +33,7 @@ implements Predicate<CachedBlockPosition> {
         return this.state;
     }
 
-    public Set<Property<?>> method_35759() {
+    public Set<Property<?>> getProperties() {
         return this.properties;
     }
 
@@ -54,24 +54,24 @@ implements Predicate<CachedBlockPosition> {
         return true;
     }
 
-    public boolean method_35758(ServerWorld serverWorld, BlockPos blockPos) {
-        return this.test(new CachedBlockPosition(serverWorld, blockPos, false));
+    public boolean test(ServerWorld world, BlockPos pos) {
+        return this.test(new CachedBlockPosition(world, pos, false));
     }
 
-    public boolean setBlockState(ServerWorld serverWorld, BlockPos blockPos, int i) {
+    public boolean setBlockState(ServerWorld world, BlockPos pos, int flags) {
         BlockEntity blockEntity;
-        BlockState blockState = Block.postProcessState(this.state, serverWorld, blockPos);
+        BlockState blockState = Block.postProcessState(this.state, world, pos);
         if (blockState.isAir()) {
             blockState = this.state;
         }
-        if (!serverWorld.setBlockState(blockPos, blockState, i)) {
+        if (!world.setBlockState(pos, blockState, flags)) {
             return false;
         }
-        if (this.data != null && (blockEntity = serverWorld.getBlockEntity(blockPos)) != null) {
+        if (this.data != null && (blockEntity = world.getBlockEntity(pos)) != null) {
             NbtCompound nbtCompound = this.data.copy();
-            nbtCompound.putInt("x", blockPos.getX());
-            nbtCompound.putInt("y", blockPos.getY());
-            nbtCompound.putInt("z", blockPos.getZ());
+            nbtCompound.putInt("x", pos.getX());
+            nbtCompound.putInt("y", pos.getY());
+            nbtCompound.putInt("z", pos.getZ());
             blockEntity.readNbt(nbtCompound);
         }
         return true;

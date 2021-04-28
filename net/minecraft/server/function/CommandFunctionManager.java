@@ -23,7 +23,7 @@ import net.minecraft.world.GameRules;
 import org.jetbrains.annotations.Nullable;
 
 public class CommandFunctionManager {
-    private static final Text field_33542 = new TranslatableText("commands.debug.function.noRecursion");
+    private static final Text NO_RECURSION_TEXT = new TranslatableText("commands.debug.function.noRecursion");
     private static final Identifier TICK_FUNCTION = new Identifier("tick");
     private static final Identifier LOAD_FUNCTION = new Identifier("load");
     private final MinecraftServer server;
@@ -65,24 +65,24 @@ public class CommandFunctionManager {
     }
 
     public int execute(CommandFunction function, ServerCommandSource source) {
-        return this.method_36341(function, source, null);
+        return this.execute(function, source, null);
     }
 
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public int method_36341(CommandFunction commandFunction, ServerCommandSource serverCommandSource, @Nullable class_6346 arg) {
+    public int execute(CommandFunction function, ServerCommandSource source, @Nullable Tracer tracer) {
         if (this.field_33543 != null) {
-            if (arg != null) {
-                this.field_33543.method_36344(field_33542.getString());
+            if (tracer != null) {
+                this.field_33543.reportError(NO_RECURSION_TEXT.getString());
                 return 0;
             }
-            this.field_33543.method_36343(commandFunction, serverCommandSource);
+            this.field_33543.method_36343(function, source);
             return 0;
         }
         try {
-            this.field_33543 = new class_6345(arg);
-            int n = this.field_33543.method_36346(commandFunction, serverCommandSource);
+            this.field_33543 = new class_6345(tracer);
+            int n = this.field_33543.method_36346(function, source);
             return n;
         } finally {
             this.field_33543 = null;
@@ -125,50 +125,50 @@ public class CommandFunctionManager {
         return this.loader.getTags().getTagIds();
     }
 
-    public static interface class_6346 {
-        public void method_36349(int var1, String var2);
+    public static interface Tracer {
+        public void traceCommandStart(int var1, String var2);
 
-        public void method_36350(int var1, String var2, int var3);
+        public void traceCommandEnd(int var1, String var2, int var3);
 
-        public void method_36352(int var1, String var2);
+        public void traceError(int var1, String var2);
 
-        public void method_36351(int var1, Identifier var2, int var3);
+        public void traceFunctionCall(int var1, Identifier var2, int var3);
     }
 
     class class_6345 {
-        private int field_33545;
+        private int depth;
         @Nullable
-        private final class_6346 field_33546;
+        private final Tracer tracer;
         private final Deque<Entry> field_33547 = Queues.newArrayDeque();
         private final List<Entry> field_33548 = Lists.newArrayList();
 
-        private class_6345(class_6346 arg) {
-            this.field_33546 = arg;
+        private class_6345(Tracer tracer) {
+            this.tracer = tracer;
         }
 
-        private void method_36343(CommandFunction commandFunction, ServerCommandSource serverCommandSource) {
+        private void method_36343(CommandFunction function, ServerCommandSource source) {
             int i = CommandFunctionManager.this.getMaxCommandChainLength();
             if (this.field_33547.size() + this.field_33548.size() < i) {
-                this.field_33548.add(new Entry(serverCommandSource, this.field_33545, new CommandFunction.FunctionElement(commandFunction)));
+                this.field_33548.add(new Entry(source, this.depth, new CommandFunction.FunctionElement(function)));
             }
         }
 
         /*
          * WARNING - Removed try catching itself - possible behaviour change.
          */
-        private int method_36346(CommandFunction commandFunction, ServerCommandSource serverCommandSource) {
+        private int method_36346(CommandFunction function, ServerCommandSource source) {
             int i = CommandFunctionManager.this.getMaxCommandChainLength();
             int j = 0;
-            CommandFunction.Element[] elements = commandFunction.getElements();
+            CommandFunction.Element[] elements = function.getElements();
             for (int k = elements.length - 1; k >= 0; --k) {
-                this.field_33547.push(new Entry(serverCommandSource, 0, elements[k]));
+                this.field_33547.push(new Entry(source, 0, elements[k]));
             }
             while (!this.field_33547.isEmpty()) {
                 try {
                     Entry entry = this.field_33547.removeFirst();
                     CommandFunctionManager.this.server.getProfiler().push(entry::toString);
-                    this.field_33545 = entry.field_33549;
-                    entry.execute(CommandFunctionManager.this, this.field_33547, i, this.field_33546);
+                    this.depth = entry.depth;
+                    entry.execute(CommandFunctionManager.this, this.field_33547, i, this.tracer);
                     if (!this.field_33548.isEmpty()) {
                         Lists.reverse(this.field_33548).forEach(this.field_33547::addFirst);
                         this.field_33548.clear();
@@ -182,35 +182,35 @@ public class CommandFunctionManager {
             return j;
         }
 
-        public void method_36344(String string) {
-            if (this.field_33546 != null) {
-                this.field_33546.method_36352(this.field_33545, string);
+        public void reportError(String message) {
+            if (this.tracer != null) {
+                this.tracer.traceError(this.depth, message);
             }
         }
     }
 
     public static class Entry {
         private final ServerCommandSource source;
-        private final int field_33549;
+        private final int depth;
         private final CommandFunction.Element element;
 
-        public Entry(ServerCommandSource serverCommandSource, int i, CommandFunction.Element element) {
-            this.source = serverCommandSource;
-            this.field_33549 = i;
+        public Entry(ServerCommandSource source, int depth, CommandFunction.Element element) {
+            this.source = source;
+            this.depth = depth;
             this.element = element;
         }
 
-        public void execute(CommandFunctionManager commandFunctionManager, Deque<Entry> deque, int i, @Nullable class_6346 arg) {
+        public void execute(CommandFunctionManager manager, Deque<Entry> deque, int maxChainLength, @Nullable Tracer tracer) {
             block4: {
                 try {
-                    this.element.execute(commandFunctionManager, this.source, deque, i, this.field_33549, arg);
+                    this.element.execute(manager, this.source, deque, maxChainLength, this.depth, tracer);
                 } catch (CommandSyntaxException commandSyntaxException) {
-                    if (arg != null) {
-                        arg.method_36352(this.field_33549, commandSyntaxException.getRawMessage().getString());
+                    if (tracer != null) {
+                        tracer.traceError(this.depth, commandSyntaxException.getRawMessage().getString());
                     }
                 } catch (Exception exception) {
-                    if (arg == null) break block4;
-                    arg.method_36352(this.field_33549, exception.getMessage());
+                    if (tracer == null) break block4;
+                    tracer.traceError(this.depth, exception.getMessage());
                 }
             }
         }

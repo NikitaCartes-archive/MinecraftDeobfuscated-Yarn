@@ -25,12 +25,12 @@ public final class EntityModelLayer {
         return this.name;
     }
 
-    public boolean equals(Object other) {
-        if (this == other) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (other instanceof EntityModelLayer) {
-            EntityModelLayer entityModelLayer = (EntityModelLayer)other;
+        if (o instanceof EntityModelLayer) {
+            EntityModelLayer entityModelLayer = (EntityModelLayer)o;
             return this.id.equals(entityModelLayer.id) && this.name.equals(entityModelLayer.name);
         }
         return false;

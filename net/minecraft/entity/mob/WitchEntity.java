@@ -211,7 +211,7 @@ implements RangedAttackMob {
         }
         PotionEntity potionEntity = new PotionEntity(this.world, this);
         potionEntity.setItem(PotionUtil.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
-        potionEntity.pitch -= -20.0f;
+        potionEntity.setPitch(potionEntity.getPitch() - -20.0f);
         potionEntity.setVelocity(d, e + (double)(g * 0.2f), f, 0.75f, 8.0f);
         if (!this.isSilent()) {
             this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_WITCH_THROW, this.getSoundCategory(), 1.0f, 0.8f + this.random.nextFloat() * 0.4f);

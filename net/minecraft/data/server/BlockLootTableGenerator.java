@@ -172,6 +172,10 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         return LootTable.builder().pool(BlockLootTableGenerator.addSurvivesExplosionCondition(drop, LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)((LeafEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(drop).apply(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY))).apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY).withOperation("Lock", "BlockEntityTag.Lock").withOperation("LootTable", "BlockEntityTag.LootTable").withOperation("LootTableSeed", "BlockEntityTag.LootTableSeed"))).apply(SetContentsLootFunction.builder().withEntry(DynamicEntry.builder(ShulkerBoxBlock.CONTENTS))))));
     }
 
+    private static LootTable.Builder method_36545(Block block) {
+        return BlockLootTableGenerator.dropsWithSilkTouch(block, (LootPoolEntry.Builder)BlockLootTableGenerator.applyExplosionDecay(block, ((LeafEntry.Builder)ItemEntry.builder(Items.RAW_COPPER).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0f, 3.0f)))).apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE))));
+    }
+
     private static LootTable.Builder method_34057(Block block) {
         return BlockLootTableGenerator.dropsWithSilkTouch(block, (LootPoolEntry.Builder)BlockLootTableGenerator.applyExplosionDecay(block, ((LeafEntry.Builder)ItemEntry.builder(Items.LAPIS_LAZULI).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(4.0f, 9.0f)))).apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE))));
     }
@@ -955,8 +959,8 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.NETHER_QUARTZ_ORE, (Block block) -> BlockLootTableGenerator.oreDrops(block, Items.QUARTZ));
         this.addDrop(Blocks.DIAMOND_ORE, (Block block) -> BlockLootTableGenerator.oreDrops(block, Items.DIAMOND));
         this.addDrop(Blocks.DEEPSLATE_DIAMOND_ORE, (Block block) -> BlockLootTableGenerator.oreDrops(block, Items.DIAMOND));
-        this.addDrop(Blocks.COPPER_ORE, (Block block) -> BlockLootTableGenerator.oreDrops(block, Items.RAW_COPPER));
-        this.addDrop(Blocks.DEEPSLATE_COPPER_ORE, (Block block) -> BlockLootTableGenerator.oreDrops(block, Items.RAW_COPPER));
+        this.addDrop(Blocks.COPPER_ORE, BlockLootTableGenerator::method_36545);
+        this.addDrop(Blocks.DEEPSLATE_COPPER_ORE, BlockLootTableGenerator::method_36545);
         this.addDrop(Blocks.IRON_ORE, (Block block) -> BlockLootTableGenerator.oreDrops(block, Items.RAW_IRON));
         this.addDrop(Blocks.DEEPSLATE_IRON_ORE, (Block block) -> BlockLootTableGenerator.oreDrops(block, Items.RAW_IRON));
         this.addDrop(Blocks.GOLD_ORE, (Block block) -> BlockLootTableGenerator.oreDrops(block, Items.RAW_GOLD));

@@ -40,7 +40,7 @@ extends BlockEntity {
     public static final String TICKS_IN_HIVE_KEY = "TicksInHive";
     public static final String HAS_NECTAR_KEY = "HasNectar";
     public static final String BEES_KEY = "Bees";
-    private static final List<String> field_33570 = Arrays.asList("Air", "ArmorDropChances", "ArmorItems", "Brain", "CanPickUpLoot", "DeathTime", "FallDistance", "FallFlying", "Fire", "HandDropChances", "HandItems", "HurtByTimestamp", "HurtTime", "LeftHanded", "Motion", "NoGravity", "OnGround", "PortalCooldown", "Pos", "Rotation", "CannotEnterHiveTicks", "TicksSincePollination", "CropsGrownSincePollination", "HivePos", "Passengers", "Leash", "UUID");
+    private static final List<String> IRRELEVANT_BEE_NBT_KEYS = Arrays.asList("Air", "ArmorDropChances", "ArmorItems", "Brain", "CanPickUpLoot", "DeathTime", "FallDistance", "FallFlying", "Fire", "HandDropChances", "HandItems", "HurtByTimestamp", "HurtTime", "LeftHanded", "Motion", "NoGravity", "OnGround", "PortalCooldown", "Pos", "Rotation", "CannotEnterHiveTicks", "TicksSincePollination", "CropsGrownSincePollination", "HivePos", "Passengers", "Leash", "UUID");
     public static final int MAX_BEE_COUNT = 3;
     private static final int ANGERED_CANNOT_ENTER_HIVE_TICKS = 400;
     private static final int MIN_OCCUPATION_TICKS_WITH_NECTAR = 2400;
@@ -150,7 +150,7 @@ extends BlockEntity {
             return false;
         }
         NbtCompound nbtCompound = bee.entityData;
-        BeehiveBlockEntity.method_36379(nbtCompound);
+        BeehiveBlockEntity.removeIrrelevantNbtKeys(nbtCompound);
         nbtCompound.put("HivePos", NbtHelper.fromBlockPos(pos));
         nbtCompound.putBoolean("NoGravity", true);
         Direction direction = state.get(BeehiveBlock.FACING);
@@ -190,7 +190,7 @@ extends BlockEntity {
                 double e = (double)pos.getX() + 0.5 + d * (double)direction.getOffsetX();
                 double g = (double)pos.getY() + 0.5 - (double)(entity2.getHeight() / 2.0f);
                 double h = (double)pos.getZ() + 0.5 + d * (double)direction.getOffsetZ();
-                entity2.refreshPositionAndAngles(e, g, h, entity2.yaw, entity2.pitch);
+                entity2.refreshPositionAndAngles(e, g, h, entity2.getYaw(), entity2.getPitch());
             }
             world.playSound(null, pos, SoundEvents.BLOCK_BEEHIVE_EXIT, SoundCategory.BLOCKS, 1.0f, 1.0f);
             return world.spawnEntity(entity2);
@@ -198,9 +198,9 @@ extends BlockEntity {
         return false;
     }
 
-    private static void method_36379(NbtCompound nbtCompound) {
-        for (String string : field_33570) {
-            nbtCompound.remove(string);
+    private static void removeIrrelevantNbtKeys(NbtCompound compound) {
+        for (String string : IRRELEVANT_BEE_NBT_KEYS) {
+            compound.remove(string);
         }
     }
 
@@ -289,7 +289,7 @@ extends BlockEntity {
         private final int minOccupationTicks;
 
         private Bee(NbtCompound entityData, int ticksInHive, int minOccupationTicks) {
-            BeehiveBlockEntity.method_36379(entityData);
+            BeehiveBlockEntity.removeIrrelevantNbtKeys(entityData);
             this.entityData = entityData;
             this.ticksInHive = ticksInHive;
             this.minOccupationTicks = minOccupationTicks;

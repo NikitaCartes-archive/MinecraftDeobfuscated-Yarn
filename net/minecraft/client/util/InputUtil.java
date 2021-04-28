@@ -275,14 +275,14 @@ public class InputUtil {
             return OptionalInt.empty();
         }
 
-        public boolean equals(Object other) {
-            if (this == other) {
+        public boolean equals(Object o) {
+            if (this == o) {
                 return true;
             }
-            if (other == null || this.getClass() != other.getClass()) {
+            if (o == null || this.getClass() != o.getClass()) {
                 return false;
             }
-            Key key = (Key)other;
+            Key key = (Key)o;
             return this.code == key.code && this.type == key.type;
         }
 

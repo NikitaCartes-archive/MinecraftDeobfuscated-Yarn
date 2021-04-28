@@ -345,7 +345,7 @@ public class Structure {
             nbtCompound.remove("UUID");
             Structure.getEntity(world, nbtCompound).ifPresent(entity -> {
                 float f = entity.applyMirror(mirror);
-                entity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f += entity.yaw - entity.applyRotation(rotation), entity.pitch);
+                entity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f += entity.getYaw() - entity.applyRotation(rotation), entity.getPitch());
                 if (bl && entity instanceof MobEntity) {
                     ((MobEntity)entity).initialize(world, world.getLocalDifficulty(new BlockPos(vec3d2)), SpawnReason.STRUCTURE, null, nbtCompound);
                 }

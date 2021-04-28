@@ -104,12 +104,12 @@ implements PosArgument {
         return new DefaultPosArgument(coordinateArgument, coordinateArgument2, coordinateArgument3);
     }
 
-    public static DefaultPosArgument method_35810(double d, double e, double f) {
-        return new DefaultPosArgument(new CoordinateArgument(false, d), new CoordinateArgument(false, e), new CoordinateArgument(false, f));
+    public static DefaultPosArgument absolute(double x, double y, double z) {
+        return new DefaultPosArgument(new CoordinateArgument(false, x), new CoordinateArgument(false, y), new CoordinateArgument(false, z));
     }
 
-    public static DefaultPosArgument method_35811(Vec2f vec2f) {
-        return new DefaultPosArgument(new CoordinateArgument(false, vec2f.x), new CoordinateArgument(false, vec2f.y), new CoordinateArgument(true, 0.0));
+    public static DefaultPosArgument absolute(Vec2f vec) {
+        return new DefaultPosArgument(new CoordinateArgument(false, vec.x), new CoordinateArgument(false, vec.y), new CoordinateArgument(true, 0.0));
     }
 
     public static DefaultPosArgument zero() {

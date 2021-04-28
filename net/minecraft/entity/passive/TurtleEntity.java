@@ -406,11 +406,13 @@ extends AnimalEntity {
             double e = this.targetY - this.turtle.getY();
             double f = this.targetZ - this.turtle.getZ();
             double g = MathHelper.sqrt(d * d + e * e + f * f);
+            e /= g;
             float h = (float)(MathHelper.atan2(f, d) * 57.2957763671875) - 90.0f;
-            this.turtle.bodyYaw = this.turtle.yaw = this.wrapDegrees(this.turtle.yaw, h, 90.0f);
+            this.turtle.setYaw(this.wrapDegrees(this.turtle.getYaw(), h, 90.0f));
+            this.turtle.bodyYaw = this.turtle.getYaw();
             float i = (float)(this.speed * this.turtle.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
             this.turtle.setMovementSpeed(MathHelper.lerp(0.125f, this.turtle.getMovementSpeed(), i));
-            this.turtle.setVelocity(this.turtle.getVelocity().add(0.0, (double)this.turtle.getMovementSpeed() * (e /= g) * 0.1, 0.0));
+            this.turtle.setVelocity(this.turtle.getVelocity().add(0.0, (double)this.turtle.getMovementSpeed() * e * 0.1, 0.0));
         }
     }
 

@@ -110,12 +110,12 @@ implements Comparable<Identifier> {
         return this.namespace + ':' + this.path;
     }
 
-    public boolean equals(Object other) {
-        if (this == other) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (other instanceof Identifier) {
-            Identifier identifier = (Identifier)other;
+        if (o instanceof Identifier) {
+            Identifier identifier = (Identifier)o;
             return this.namespace.equals(identifier.namespace) && this.path.equals(identifier.path);
         }
         return false;

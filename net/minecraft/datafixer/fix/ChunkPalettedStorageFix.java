@@ -437,21 +437,21 @@ extends DataFix {
         private int sidesToUpgrade;
         private final Section[] sections = new Section[16];
         private final Dynamic<?> level;
-        private final int xPos;
-        private final int yPos;
+        private final int x;
+        private final int z;
         private final Int2ObjectMap<Dynamic<?>> blockEntities = new Int2ObjectLinkedOpenHashMap(16);
 
         public Level(Dynamic<?> dynamic) {
             this.level = dynamic;
-            this.xPos = dynamic.get("xPos").asInt(0) << 4;
-            this.yPos = dynamic.get("zPos").asInt(0) << 4;
+            this.x = dynamic.get("xPos").asInt(0) << 4;
+            this.z = dynamic.get("zPos").asInt(0) << 4;
             dynamic.get("TileEntities").asStreamOpt().result().ifPresent(stream -> stream.forEach(dynamic -> {
                 int k;
-                int i = dynamic.get("x").asInt(0) - this.xPos & 0xF;
+                int i = dynamic.get("x").asInt(0) - this.x & 0xF;
                 int j = dynamic.get("y").asInt(0);
-                int l = j << 8 | (k = dynamic.get("z").asInt(0) - this.yPos & 0xF) << 4 | i;
+                int l = j << 8 | (k = dynamic.get("z").asInt(0) - this.z & 0xF) << 4 | i;
                 if (this.blockEntities.put(l, (Dynamic<?>)dynamic) != null) {
-                    LOGGER.warn("In chunk: {}x{} found a duplicate block entity at position: [{}, {}, {}]", (Object)this.xPos, (Object)this.yPos, (Object)i, (Object)j, (Object)k);
+                    LOGGER.warn("In chunk: {}x{} found a duplicate block entity at position: [{}, {}, {}]", (Object)this.x, (Object)this.z, (Object)i, (Object)j, (Object)k);
                 }
             }));
             boolean bl = dynamic.get("convertedFromAlphaFormat").asBoolean(false);

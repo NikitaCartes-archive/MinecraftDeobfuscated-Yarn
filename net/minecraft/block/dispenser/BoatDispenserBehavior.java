@@ -41,7 +41,7 @@ extends ItemDispenserBehavior {
         }
         BoatEntity boatEntity = new BoatEntity(world, d, e + g, f);
         boatEntity.setBoatType(this.boatType);
-        boatEntity.yaw = direction.asRotation();
+        boatEntity.setYaw(direction.asRotation());
         world.spawnEntity(boatEntity);
         stack.decrement(1);
         return stack;

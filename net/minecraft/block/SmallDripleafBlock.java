@@ -8,7 +8,6 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BigDripleafBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.Fertilizable;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.TallPlantBlock;
@@ -24,6 +23,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
@@ -56,7 +56,7 @@ Waterloggable {
 
     @Override
     protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-        return floor.isOf(Blocks.CLAY) || super.canPlantOnTop(floor, world, pos);
+        return floor.isIn(BlockTags.SMALL_DRIPLEAF_PLACEABLE) || world.getFluidState(pos.up()).isEqualAndStill(Fluids.WATER) && super.canPlantOnTop(floor, world, pos);
     }
 
     @Override
@@ -91,7 +91,7 @@ Waterloggable {
         }
         BlockPos blockPos = pos.down();
         BlockState blockState = world.getBlockState(blockPos);
-        return blockState.isOf(Blocks.CLAY) || world.getFluidState(pos).isEqualAndStill(Fluids.WATER) && this.canPlantOnTop(blockState, world, blockPos);
+        return this.canPlantOnTop(blockState, world, blockPos);
     }
 
     @Override

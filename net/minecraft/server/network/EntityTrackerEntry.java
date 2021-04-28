@@ -27,6 +27,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAttributesS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
@@ -71,8 +72,8 @@ public class EntityTrackerEntry {
         this.tickInterval = tickInterval;
         this.alwaysUpdateVelocity = alwaysUpdateVelocity;
         this.storeEncodedCoordinates();
-        this.lastYaw = MathHelper.floor(entity.yaw * 256.0f / 360.0f);
-        this.lastPitch = MathHelper.floor(entity.pitch * 256.0f / 360.0f);
+        this.lastYaw = MathHelper.floor(entity.getYaw() * 256.0f / 360.0f);
+        this.lastPitch = MathHelper.floor(entity.getPitch() * 256.0f / 360.0f);
         this.lastHeadPitch = MathHelper.floor(entity.getHeadYaw() * 256.0f / 360.0f);
         this.lastOnGround = entity.isOnGround();
     }
@@ -102,8 +103,8 @@ public class EntityTrackerEntry {
             int i;
             if (this.entity.hasVehicle()) {
                 boolean bl;
-                i = MathHelper.floor(this.entity.yaw * 256.0f / 360.0f);
-                int j = MathHelper.floor(this.entity.pitch * 256.0f / 360.0f);
+                i = MathHelper.floor(this.entity.getYaw() * 256.0f / 360.0f);
+                int j = MathHelper.floor(this.entity.getPitch() * 256.0f / 360.0f);
                 boolean bl2 = bl = Math.abs(i - this.lastYaw) >= 1 || Math.abs(j - this.lastPitch) >= 1;
                 if (bl) {
                     this.receiver.accept(new EntityS2CPacket.Rotate(this.entity.getId(), (byte)i, (byte)j, this.entity.isOnGround()));
@@ -118,8 +119,8 @@ public class EntityTrackerEntry {
                 double d;
                 boolean bl4;
                 ++this.updatesWithoutVehicle;
-                i = MathHelper.floor(this.entity.yaw * 256.0f / 360.0f);
-                int j = MathHelper.floor(this.entity.pitch * 256.0f / 360.0f);
+                i = MathHelper.floor(this.entity.getYaw() * 256.0f / 360.0f);
+                int j = MathHelper.floor(this.entity.getPitch() * 256.0f / 360.0f);
                 Vec3d vec3d = this.entity.getPos().subtract(EntityS2CPacket.decodePacketCoordinates(this.lastX, this.lastY, this.lastZ));
                 boolean bl2 = vec3d.lengthSquared() >= 7.62939453125E-6;
                 Packet<ClientPlayPacketListener> packet2 = null;
@@ -176,13 +177,12 @@ public class EntityTrackerEntry {
 
     public void stopTracking(ServerPlayerEntity player) {
         this.entity.onStoppedTrackingBy(player);
-        player.onStoppedTracking(this.entity);
+        player.networkHandler.sendPacket(new EntityDestroyS2CPacket(this.entity.getId()));
     }
 
     public void startTracking(ServerPlayerEntity player) {
         this.sendPackets(player.networkHandler::sendPacket);
         this.entity.onStartedTrackingBy(player);
-        player.onStartedTracking(this.entity);
     }
 
     public void sendPackets(Consumer<Packet<?>> sender) {

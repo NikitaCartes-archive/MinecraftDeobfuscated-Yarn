@@ -517,7 +517,7 @@ extends LivingEntity {
     @Override
     protected float turnHead(float bodyRotation, float headRotation) {
         this.prevBodyYaw = this.prevYaw;
-        this.bodyYaw = this.yaw;
+        this.bodyYaw = this.getYaw();
         return 0.0f;
     }
 
@@ -540,9 +540,9 @@ extends LivingEntity {
     }
 
     @Override
-    public void setYaw(float yaw) {
-        this.prevBodyYaw = this.prevYaw = yaw;
-        this.prevHeadYaw = this.headYaw = yaw;
+    public void setBodyYaw(float bodyYaw) {
+        this.prevBodyYaw = this.prevYaw = bodyYaw;
+        this.prevHeadYaw = this.headYaw = bodyYaw;
     }
 
     @Override

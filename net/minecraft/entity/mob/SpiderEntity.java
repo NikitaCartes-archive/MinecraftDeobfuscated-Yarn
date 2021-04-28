@@ -159,7 +159,7 @@ extends HostileEntity {
         entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
         if (world.getRandom().nextInt(100) == 0) {
             SkeletonEntity skeletonEntity = EntityType.SKELETON.create(this.world);
-            skeletonEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0f);
+            skeletonEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), 0.0f);
             skeletonEntity.initialize(world, difficulty, spawnReason, null, null);
             skeletonEntity.startRiding(this);
         }

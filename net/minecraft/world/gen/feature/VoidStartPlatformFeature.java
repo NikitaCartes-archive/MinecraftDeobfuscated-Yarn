@@ -35,7 +35,7 @@ extends Feature<DefaultFeatureConfig> {
         if (VoidStartPlatformFeature.getDistance(chunkPos.x, chunkPos.z, VoidStartPlatformFeature.START_CHUNK.x, VoidStartPlatformFeature.START_CHUNK.z) > 1) {
             return true;
         }
-        BlockPos blockPos = context.getOrigin().add(START_BLOCK);
+        BlockPos blockPos = START_BLOCK.withY(context.getOrigin().getY() + START_BLOCK.getY());
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int i = chunkPos.getStartZ(); i <= chunkPos.getEndZ(); ++i) {
             for (int j = chunkPos.getStartX(); j <= chunkPos.getEndX(); ++j) {

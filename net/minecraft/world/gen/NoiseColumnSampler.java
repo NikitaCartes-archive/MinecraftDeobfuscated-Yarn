@@ -3,6 +3,7 @@
  */
 package net.minecraft.world.gen;
 
+import net.minecraft.class_6357;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.InterpolatedNoiseSampler;
@@ -11,7 +12,6 @@ import net.minecraft.util.math.noise.SimplexNoiseSampler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.TheEndBiomeSource;
-import net.minecraft.world.gen.NoiseCaveSampler;
 import net.minecraft.world.gen.chunk.GenerationShapeConfig;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,10 +48,9 @@ public class NoiseColumnSampler {
     private final double bottomSlideOffset;
     private final double densityFactor;
     private final double densityOffset;
-    @Nullable
-    private final NoiseCaveSampler noiseCaveSampler;
+    private final class_6357 field_33653;
 
-    public NoiseColumnSampler(BiomeSource biomeSource, int horizontalNoiseResolution, int verticalNoiseResolution, int noiseSizeY, GenerationShapeConfig config, InterpolatedNoiseSampler noise, @Nullable SimplexNoiseSampler islandNoise, OctavePerlinNoiseSampler densityNoise, @Nullable NoiseCaveSampler noiseCaveSampler) {
+    public NoiseColumnSampler(BiomeSource biomeSource, int horizontalNoiseResolution, int verticalNoiseResolution, int noiseSizeY, GenerationShapeConfig config, InterpolatedNoiseSampler noise, @Nullable SimplexNoiseSampler islandNoise, OctavePerlinNoiseSampler densityNoise, class_6357 arg) {
         this.horizontalNoiseResolution = horizontalNoiseResolution;
         this.verticalNoiseResolution = verticalNoiseResolution;
         this.biomeSource = biomeSource;
@@ -68,7 +67,7 @@ public class NoiseColumnSampler {
         this.bottomSlideOffset = config.getBottomSlide().getOffset();
         this.densityFactor = config.getDensityFactor();
         this.densityOffset = config.getDensityOffset();
-        this.noiseCaveSampler = noiseCaveSampler;
+        this.field_33653 = arg;
     }
 
     /**
@@ -125,16 +124,9 @@ public class NoiseColumnSampler {
             int ae = ad + minY;
             double af = this.noise.sample(x, ae, z, y, aa, ab, ac);
             double ag = this.getOffset(ae, d, e, v) + af;
-            ag = this.sampleNoiseCaves(x * this.horizontalNoiseResolution, ae * this.verticalNoiseResolution, z * this.horizontalNoiseResolution, ag);
+            ag = this.field_33653.sample(ag, ae * this.verticalNoiseResolution, z * this.horizontalNoiseResolution, x * this.horizontalNoiseResolution);
             buffer[ad] = ag = this.applySlides(ag, ae);
         }
-    }
-
-    private double sampleNoiseCaves(int x, int y, int z, double noise) {
-        if (this.noiseCaveSampler == null) {
-            return noise;
-        }
-        return this.noiseCaveSampler.sample(x, y, z, noise);
     }
 
     /**

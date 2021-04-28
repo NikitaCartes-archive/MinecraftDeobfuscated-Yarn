@@ -1064,15 +1064,15 @@ public class Blocks {
     public static final Block BLACK_CANDLE_CAKE = Blocks.register("black_candle_cake", new CandleCakeBlock(BLACK_CANDLE, AbstractBlock.Settings.copy(CANDLE_CAKE)));
     public static final Block AMETHYST_BLOCK = Blocks.register("amethyst_block", new AmethystBlock(AbstractBlock.Settings.of(Material.AMETHYST, MapColor.PURPLE).strength(1.5f).sounds(BlockSoundGroup.AMETHYST_BLOCK).requiresTool()));
     public static final Block BUDDING_AMETHYST = Blocks.register("budding_amethyst", new BuddingAmethystBlock(AbstractBlock.Settings.of(Material.AMETHYST).ticksRandomly().strength(1.5f).sounds(BlockSoundGroup.AMETHYST_BLOCK).requiresTool()));
-    public static final Block AMETHYST_CLUSTER = Blocks.register("amethyst_cluster", new AmethystClusterBlock(7, 3, AbstractBlock.Settings.of(Material.AMETHYST).nonOpaque().ticksRandomly().sounds(BlockSoundGroup.AMETHYST_CLUSTER).strength(1.5f).luminance(Blocks.createLightLevelFromLitBlockState(5))));
-    public static final Block LARGE_AMETHYST_BUD = Blocks.register("large_amethyst_bud", new AmethystClusterBlock(5, 3, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.MEDIUM_AMETHYST_BUD).luminance(Blocks.createLightLevelFromLitBlockState(4))));
-    public static final Block MEDIUM_AMETHYST_BUD = Blocks.register("medium_amethyst_bud", new AmethystClusterBlock(4, 3, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.LARGE_AMETHYST_BUD).luminance(Blocks.createLightLevelFromLitBlockState(2))));
-    public static final Block SMALL_AMETHYST_BUD = Blocks.register("small_amethyst_bud", new AmethystClusterBlock(3, 4, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.SMALL_AMETHYST_BUD).luminance(Blocks.createLightLevelFromLitBlockState(1))));
+    public static final Block AMETHYST_CLUSTER = Blocks.register("amethyst_cluster", new AmethystClusterBlock(7, 3, AbstractBlock.Settings.of(Material.AMETHYST).nonOpaque().ticksRandomly().sounds(BlockSoundGroup.AMETHYST_CLUSTER).strength(1.5f).luminance(state -> 5)));
+    public static final Block LARGE_AMETHYST_BUD = Blocks.register("large_amethyst_bud", new AmethystClusterBlock(5, 3, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.MEDIUM_AMETHYST_BUD).luminance(blockState -> 4)));
+    public static final Block MEDIUM_AMETHYST_BUD = Blocks.register("medium_amethyst_bud", new AmethystClusterBlock(4, 3, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.LARGE_AMETHYST_BUD).luminance(blockState -> 2)));
+    public static final Block SMALL_AMETHYST_BUD = Blocks.register("small_amethyst_bud", new AmethystClusterBlock(3, 4, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.SMALL_AMETHYST_BUD).luminance(blockState -> 1)));
     public static final Block TUFF = Blocks.register("tuff", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.TERRACOTTA_GRAY).sounds(BlockSoundGroup.TUFF).requiresTool().strength(1.5f, 6.0f)));
     public static final Block CALCITE = Blocks.register("calcite", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.TERRACOTTA_WHITE).sounds(BlockSoundGroup.CALCITE).requiresTool().strength(0.75f)));
     public static final Block TINTED_GLASS = Blocks.register("tinted_glass", new TintedGlassBlock(AbstractBlock.Settings.copy(GLASS).mapColor(MapColor.GRAY).nonOpaque().allowsSpawning(Blocks::never).solidBlock(Blocks::never).suffocates(Blocks::never).blockVision(Blocks::never)));
     public static final Block POWDER_SNOW = Blocks.register("powder_snow", new PowderSnowBlock(AbstractBlock.Settings.of(Material.POWDER_SNOW).strength(0.25f).sounds(BlockSoundGroup.POWDER_SNOW).dynamicBounds()));
-    public static final Block SCULK_SENSOR = Blocks.register("sculk_sensor", new SculkSensorBlock(AbstractBlock.Settings.of(Material.SCULK, MapColor.CYAN).strength(1.5f).sounds(BlockSoundGroup.SCULK_SENSOR).luminance(state -> 1).emissiveLighting((state, world, pos) -> SculkSensorBlock.getPhase(state) == SculkSensorPhase.ACTIVE), 8));
+    public static final Block SCULK_SENSOR = Blocks.register("sculk_sensor", new SculkSensorBlock(AbstractBlock.Settings.of(Material.SCULK, MapColor.CYAN).strength(1.5f).sounds(BlockSoundGroup.SCULK_SENSOR).luminance(blockState -> 1).emissiveLighting((state, world, pos) -> SculkSensorBlock.getPhase(state) == SculkSensorPhase.ACTIVE), 8));
     public static final Block OXIDIZED_COPPER = Blocks.register("oxidized_copper", new OxidizableBlock(Oxidizable.OxidizationLevel.OXIDIZED, AbstractBlock.Settings.of(Material.METAL, MapColor.TEAL).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER)));
     public static final Block WEATHERED_COPPER = Blocks.register("weathered_copper", new OxidizableBlock(Oxidizable.OxidizationLevel.WEATHERED, AbstractBlock.Settings.of(Material.METAL, MapColor.DARK_AQUA).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER)));
     public static final Block EXPOSED_COPPER = Blocks.register("exposed_copper", new OxidizableBlock(Oxidizable.OxidizationLevel.EXPOSED, AbstractBlock.Settings.of(Material.METAL, MapColor.TERRACOTTA_LIGHT_GRAY).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER)));
@@ -1239,8 +1239,8 @@ public class Blocks {
 
     static {
         for (Block block : Registry.BLOCK) {
-            for (BlockState blockState : block.getStateManager().getStates()) {
-                Block.STATE_IDS.add(blockState);
+            for (BlockState blockState2 : block.getStateManager().getStates()) {
+                Block.STATE_IDS.add(blockState2);
             }
             block.getLootTableId();
         }

@@ -105,10 +105,10 @@ implements FlyingItemEntity {
         this.setVelocity(x, y, z);
         if (this.prevPitch == 0.0f && this.prevYaw == 0.0f) {
             float f = MathHelper.sqrt(x * x + z * z);
-            this.yaw = (float)(MathHelper.atan2(x, z) * 57.2957763671875);
-            this.pitch = (float)(MathHelper.atan2(y, f) * 57.2957763671875);
-            this.prevYaw = this.yaw;
-            this.prevPitch = this.pitch;
+            this.setYaw((float)(MathHelper.atan2(x, z) * 57.2957763671875));
+            this.setPitch((float)(MathHelper.atan2(y, f) * 57.2957763671875));
+            this.prevYaw = this.getYaw();
+            this.prevPitch = this.getPitch();
         }
     }
 
@@ -120,8 +120,8 @@ implements FlyingItemEntity {
         double e = this.getY() + vec3d.y;
         double f = this.getZ() + vec3d.z;
         float g = MathHelper.sqrt(EyeOfEnderEntity.squaredHorizontalLength(vec3d));
-        this.pitch = ProjectileEntity.updateRotation(this.prevPitch, (float)(MathHelper.atan2(vec3d.y, g) * 57.2957763671875));
-        this.yaw = ProjectileEntity.updateRotation(this.prevYaw, (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875));
+        this.setPitch(ProjectileEntity.updateRotation(this.prevPitch, (float)(MathHelper.atan2(vec3d.y, g) * 57.2957763671875)));
+        this.setYaw(ProjectileEntity.updateRotation(this.prevYaw, (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875)));
         if (!this.world.isClient) {
             double h = this.targetX - d;
             double i = this.targetZ - f;

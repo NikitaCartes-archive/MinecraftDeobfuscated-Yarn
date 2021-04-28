@@ -161,7 +161,7 @@ RangedAttackMob {
         }
         this.setVelocity(vec3d);
         if (WitherEntity.squaredHorizontalLength(vec3d) > 0.05) {
-            this.yaw = (float)MathHelper.atan2(vec3d.z, vec3d.x) * 57.295776f - 90.0f;
+            this.setYaw((float)MathHelper.atan2(vec3d.z, vec3d.x) * 57.295776f - 90.0f);
         }
         super.tickMovement();
         for (i = 0; i < 2; ++i) {

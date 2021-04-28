@@ -448,11 +448,11 @@ public class GameRules {
             return this.name;
         }
 
-        public boolean equals(Object obj) {
-            if (this == obj) {
+        public boolean equals(Object o) {
+            if (this == o) {
                 return true;
             }
-            return obj instanceof Key && ((Key)obj).name.equals(this.name);
+            return o instanceof Key && ((Key)o).name.equals(this.name);
         }
 
         public int hashCode() {

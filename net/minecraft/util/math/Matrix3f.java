@@ -320,14 +320,14 @@ public final class Matrix3f {
         return Triple.of(quaternion, vec3f, quaternion2);
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (object == null || this.getClass() != object.getClass()) {
+        if (o == null || this.getClass() != o.getClass()) {
             return false;
         }
-        Matrix3f matrix3f = (Matrix3f)object;
+        Matrix3f matrix3f = (Matrix3f)o;
         return Float.compare(matrix3f.a00, this.a00) == 0 && Float.compare(matrix3f.a01, this.a01) == 0 && Float.compare(matrix3f.a02, this.a02) == 0 && Float.compare(matrix3f.a10, this.a10) == 0 && Float.compare(matrix3f.a11, this.a11) == 0 && Float.compare(matrix3f.a12, this.a12) == 0 && Float.compare(matrix3f.a20, this.a20) == 0 && Float.compare(matrix3f.a21, this.a21) == 0 && Float.compare(matrix3f.a22, this.a22) == 0;
     }
 

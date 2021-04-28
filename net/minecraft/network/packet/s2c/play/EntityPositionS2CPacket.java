@@ -23,8 +23,8 @@ implements Packet<ClientPlayPacketListener> {
         this.x = entity.getX();
         this.y = entity.getY();
         this.z = entity.getZ();
-        this.yaw = (byte)(entity.yaw * 256.0f / 360.0f);
-        this.pitch = (byte)(entity.pitch * 256.0f / 360.0f);
+        this.yaw = (byte)(entity.getYaw() * 256.0f / 360.0f);
+        this.pitch = (byte)(entity.getPitch() * 256.0f / 360.0f);
         this.onGround = entity.isOnGround();
     }
 

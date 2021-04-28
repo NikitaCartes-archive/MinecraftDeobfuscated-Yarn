@@ -101,7 +101,7 @@ public class CommandFunction {
 
         @Nullable
         public Identifier getId() {
-            return this.function.map(commandFunction -> ((CommandFunction)commandFunction).id).orElse(this.id);
+            return this.function.map(function -> ((CommandFunction)function).id).orElse(this.id);
         }
     }
 
@@ -114,20 +114,20 @@ public class CommandFunction {
         }
 
         @Override
-        public void execute(CommandFunctionManager manager, ServerCommandSource source, Deque<CommandFunctionManager.Entry> entries, int maxChainLength, int i, @Nullable CommandFunctionManager.class_6346 arg) {
-            Util.ifPresentOrElse(this.function.get(manager), commandFunction -> {
-                Element[] elements = commandFunction.getElements();
-                if (arg != null) {
-                    arg.method_36351(i, commandFunction.getId(), elements.length);
+        public void execute(CommandFunctionManager manager, ServerCommandSource source, Deque<CommandFunctionManager.Entry> entries, int maxChainLength, int depth, @Nullable CommandFunctionManager.Tracer tracer) {
+            Util.ifPresentOrElse(this.function.get(manager), function -> {
+                Element[] elements = function.getElements();
+                if (tracer != null) {
+                    tracer.traceFunctionCall(depth, function.getId(), elements.length);
                 }
                 int k = maxChainLength - entries.size();
                 int l = Math.min(elements.length, k);
                 for (int m = l - 1; m >= 0; --m) {
-                    entries.addFirst(new CommandFunctionManager.Entry(source, i + 1, elements[m]));
+                    entries.addFirst(new CommandFunctionManager.Entry(source, depth + 1, elements[m]));
                 }
             }, () -> {
-                if (arg != null) {
-                    arg.method_36351(i, this.function.getId(), -1);
+                if (tracer != null) {
+                    tracer.traceFunctionCall(depth, this.function.getId(), -1);
                 }
             });
         }
@@ -146,19 +146,19 @@ public class CommandFunction {
         }
 
         @Override
-        public void execute(CommandFunctionManager manager, ServerCommandSource source, Deque<CommandFunctionManager.Entry> entries, int maxChainLength, int i, @Nullable CommandFunctionManager.class_6346 arg) throws CommandSyntaxException {
-            if (arg != null) {
+        public void execute(CommandFunctionManager manager, ServerCommandSource source, Deque<CommandFunctionManager.Entry> entries, int maxChainLength, int depth, @Nullable CommandFunctionManager.Tracer tracer) throws CommandSyntaxException {
+            if (tracer != null) {
                 String string = this.parsed.getReader().getString();
-                arg.method_36349(i, string);
-                int j = this.method_36318(manager, source);
-                arg.method_36350(i, string, j);
+                tracer.traceCommandStart(depth, string);
+                int i = this.execute(manager, source);
+                tracer.traceCommandEnd(depth, string, i);
             } else {
-                this.method_36318(manager, source);
+                this.execute(manager, source);
             }
         }
 
-        private int method_36318(CommandFunctionManager commandFunctionManager, ServerCommandSource serverCommandSource) throws CommandSyntaxException {
-            return commandFunctionManager.getDispatcher().execute(new ParseResults<ServerCommandSource>(this.parsed.getContext().withSource(serverCommandSource), this.parsed.getReader(), this.parsed.getExceptions()));
+        private int execute(CommandFunctionManager manager, ServerCommandSource source) throws CommandSyntaxException {
+            return manager.getDispatcher().execute(new ParseResults<ServerCommandSource>(this.parsed.getContext().withSource(source), this.parsed.getReader(), this.parsed.getExceptions()));
         }
 
         public String toString() {
@@ -168,7 +168,7 @@ public class CommandFunction {
 
     @FunctionalInterface
     public static interface Element {
-        public void execute(CommandFunctionManager var1, ServerCommandSource var2, Deque<CommandFunctionManager.Entry> var3, int var4, int var5, @Nullable CommandFunctionManager.class_6346 var6) throws CommandSyntaxException;
+        public void execute(CommandFunctionManager var1, ServerCommandSource var2, Deque<CommandFunctionManager.Entry> var3, int var4, int var5, @Nullable CommandFunctionManager.Tracer var6) throws CommandSyntaxException;
     }
 }
 

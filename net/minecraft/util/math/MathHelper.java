@@ -98,14 +98,14 @@ public class MathHelper {
         return value > (double)i ? i + 1 : i;
     }
 
-    public static byte method_34939(byte b, byte c, byte d) {
-        if (b < c) {
-            return c;
+    public static byte clamp(byte value, byte min, byte max) {
+        if (value < min) {
+            return min;
         }
-        if (b > d) {
-            return d;
+        if (value > max) {
+            return max;
         }
-        return b;
+        return value;
     }
 
     public static int clamp(int value, int min, int max) {
@@ -221,6 +221,9 @@ public class MathHelper {
         return (dividend % divisor + divisor) % divisor;
     }
 
+    /**
+     * Wraps an angle in degrees to the interval {@code [-180, 180)}.
+     */
     public static int wrapDegrees(int degrees) {
         int i = degrees % 360;
         if (i >= 180) {
@@ -232,6 +235,9 @@ public class MathHelper {
         return i;
     }
 
+    /**
+     * Wraps an angle in degrees to the interval {@code [-180, 180)}.
+     */
     public static float wrapDegrees(float degrees) {
         float f = degrees % 360.0f;
         if (f >= 180.0f) {
@@ -243,6 +249,9 @@ public class MathHelper {
         return f;
     }
 
+    /**
+     * Wraps an angle in degrees to the interval {@code [-180, 180)}.
+     */
     public static double wrapDegrees(double degrees) {
         double d = degrees % 360.0;
         if (d >= 180.0) {
@@ -300,16 +309,16 @@ public class MathHelper {
         return Math.max(j, MathHelper.parseInt(string, i));
     }
 
-    public static double method_34947(String string, double d) {
+    public static double parseDouble(String string, double fallback) {
         try {
             return Double.parseDouble(string);
         } catch (Throwable throwable) {
-            return d;
+            return fallback;
         }
     }
 
     public static double method_34948(String string, double d, double e) {
-        return Math.max(e, MathHelper.method_34947(string, d));
+        return Math.max(e, MathHelper.parseDouble(string, d));
     }
 
     public static int smallestEncompassingPowerOfTwo(int value) {
@@ -598,20 +607,20 @@ public class MathHelper {
         return l;
     }
 
-    public static double[] method_34951(double ... ds) {
+    public static double[] getCumulativeDistribution(double ... values) {
         float f = 0.0f;
-        for (double d : ds) {
+        for (double d : values) {
             f = (float)((double)f + d);
         }
         int i = 0;
-        while (i < ds.length) {
+        while (i < values.length) {
             int n = i++;
-            ds[n] = ds[n] / (double)f;
+            values[n] = values[n] / (double)f;
         }
-        for (i = 0; i < ds.length; ++i) {
-            ds[i] = (i == 0 ? 0.0 : ds[i - 1]) + ds[i];
+        for (i = 0; i < values.length; ++i) {
+            values[i] = (i == 0 ? 0.0 : values[i - 1]) + values[i];
         }
-        return ds;
+        return values;
     }
 
     public static int method_34950(Random random, double[] ds) {
@@ -766,8 +775,8 @@ public class MathHelper {
         return n * n;
     }
 
-    public static int method_34954(int i) {
-        return i * i;
+    public static int square(int n) {
+        return n * n;
     }
 
     public static double clampedLerpFromProgress(double lerpValue, double lerpStart, double lerpEnd, double start, double end) {

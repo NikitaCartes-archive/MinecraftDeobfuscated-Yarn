@@ -155,7 +155,7 @@ Saddleable {
     }
 
     public boolean isTame() {
-        return this.getHorseFlag(2);
+        return this.getHorseFlag(TAMED_FLAG);
     }
 
     @Nullable
@@ -172,7 +172,7 @@ Saddleable {
     }
 
     public void setTame(boolean tame) {
-        this.setHorseFlag(2, tame);
+        this.setHorseFlag(TAMED_FLAG, tame);
     }
 
     public void setInAir(boolean inAir) {
@@ -187,19 +187,19 @@ Saddleable {
     }
 
     public boolean isEatingGrass() {
-        return this.getHorseFlag(16);
+        return this.getHorseFlag(EATING_GRASS_FLAG);
     }
 
     public boolean isAngry() {
-        return this.getHorseFlag(32);
+        return this.getHorseFlag(ANGRY_FLAG);
     }
 
     public boolean isBred() {
-        return this.getHorseFlag(8);
+        return this.getHorseFlag(BRED_FLAG);
     }
 
     public void setBred(boolean bred) {
-        this.setHorseFlag(8, bred);
+        this.setHorseFlag(BRED_FLAG, bred);
     }
 
     @Override
@@ -217,7 +217,7 @@ Saddleable {
 
     @Override
     public boolean isSaddled() {
-        return this.getHorseFlag(4);
+        return this.getHorseFlag(SADDLED_FLAG);
     }
 
     public int getTemper() {
@@ -295,7 +295,7 @@ Saddleable {
         if (this.world.isClient) {
             return;
         }
-        this.setHorseFlag(4, !this.items.getStack(0).isEmpty());
+        this.setHorseFlag(SADDLED_FLAG, !this.items.getStack(0).isEmpty());
     }
 
     @Override
@@ -479,8 +479,8 @@ Saddleable {
         this.setEatingGrass(false);
         this.setAngry(false);
         if (!this.world.isClient) {
-            player.yaw = this.yaw;
-            player.pitch = this.pitch;
+            player.setYaw(this.getYaw());
+            player.setPitch(this.getPitch());
             player.startRiding(this);
         }
     }
@@ -552,7 +552,7 @@ Saddleable {
         super.tick();
         if (this.eatingTicks > 0 && ++this.eatingTicks > 30) {
             this.eatingTicks = 0;
-            this.setHorseFlag(64, false);
+            this.setHorseFlag(EATING_FLAG, false);
         }
         if ((this.isLogicalSideForUpdatingMovement() || this.canMoveVoluntarily()) && this.angryTicks > 0 && ++this.angryTicks > 20) {
             this.angryTicks = 0;
@@ -594,7 +594,7 @@ Saddleable {
             }
         }
         this.lastEatingAnimationProgress = this.eatingAnimationProgress;
-        if (this.getHorseFlag(64)) {
+        if (this.getHorseFlag(EATING_FLAG)) {
             this.eatingAnimationProgress += (1.0f - this.eatingAnimationProgress) * 0.7f + 0.05f;
             if (this.eatingAnimationProgress > 1.0f) {
                 this.eatingAnimationProgress = 1.0f;
@@ -610,19 +610,19 @@ Saddleable {
     private void setEating() {
         if (!this.world.isClient) {
             this.eatingTicks = 1;
-            this.setHorseFlag(64, true);
+            this.setHorseFlag(EATING_FLAG, true);
         }
     }
 
     public void setEatingGrass(boolean eatingGrass) {
-        this.setHorseFlag(16, eatingGrass);
+        this.setHorseFlag(EATING_GRASS_FLAG, eatingGrass);
     }
 
     public void setAngry(boolean angry) {
         if (angry) {
             this.setEatingGrass(false);
         }
-        this.setHorseFlag(32, angry);
+        this.setHorseFlag(ANGRY_FLAG, angry);
     }
 
     private void updateAnger() {
@@ -663,10 +663,11 @@ Saddleable {
             return;
         }
         LivingEntity livingEntity = (LivingEntity)this.getPrimaryPassenger();
-        this.prevYaw = this.yaw = livingEntity.yaw;
-        this.pitch = livingEntity.pitch * 0.5f;
-        this.setRotation(this.yaw, this.pitch);
-        this.headYaw = this.bodyYaw = this.yaw;
+        this.setYaw(livingEntity.getYaw());
+        this.prevYaw = this.getYaw();
+        this.setPitch(livingEntity.getPitch() * 0.5f);
+        this.setRotation(this.getYaw(), this.getPitch());
+        this.headYaw = this.bodyYaw = this.getYaw();
         float f = livingEntity.sidewaysSpeed * 0.5f;
         float g = livingEntity.forwardSpeed;
         if (g <= 0.0f) {
@@ -685,8 +686,8 @@ Saddleable {
             this.setInAir(true);
             this.velocityDirty = true;
             if (g > 0.0f) {
-                float h = MathHelper.sin(this.yaw * ((float)Math.PI / 180));
-                float i = MathHelper.cos(this.yaw * ((float)Math.PI / 180));
+                float h = MathHelper.sin(this.getYaw() * ((float)Math.PI / 180));
+                float i = MathHelper.cos(this.getYaw() * ((float)Math.PI / 180));
                 this.setVelocity(this.getVelocity().add(-0.4f * h * this.jumpStrength, 0.0, 0.4f * i * this.jumpStrength));
             }
             this.jumpStrength = 0.0f;
@@ -987,12 +988,12 @@ Saddleable {
 
     @Override
     public Vec3d updatePassengerForDismount(LivingEntity passenger) {
-        Vec3d vec3d = HorseBaseEntity.getPassengerDismountOffset(this.getWidth(), passenger.getWidth(), this.yaw + (passenger.getMainArm() == Arm.RIGHT ? 90.0f : -90.0f));
+        Vec3d vec3d = HorseBaseEntity.getPassengerDismountOffset(this.getWidth(), passenger.getWidth(), this.getYaw() + (passenger.getMainArm() == Arm.RIGHT ? 90.0f : -90.0f));
         Vec3d vec3d2 = this.method_27930(vec3d, passenger);
         if (vec3d2 != null) {
             return vec3d2;
         }
-        Vec3d vec3d3 = HorseBaseEntity.getPassengerDismountOffset(this.getWidth(), passenger.getWidth(), this.yaw + (passenger.getMainArm() == Arm.LEFT ? 90.0f : -90.0f));
+        Vec3d vec3d3 = HorseBaseEntity.getPassengerDismountOffset(this.getWidth(), passenger.getWidth(), this.getYaw() + (passenger.getMainArm() == Arm.LEFT ? 90.0f : -90.0f));
         Vec3d vec3d4 = this.method_27930(vec3d3, passenger);
         if (vec3d4 != null) {
             return vec3d4;

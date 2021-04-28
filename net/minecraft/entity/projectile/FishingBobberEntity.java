@@ -81,8 +81,8 @@ extends ProjectileEntity {
     public FishingBobberEntity(PlayerEntity thrower, World world, int lureLevel, int luckOfTheSeaLevel) {
         this(EntityType.FISHING_BOBBER, world, lureLevel, luckOfTheSeaLevel);
         this.setOwner(thrower);
-        float f = thrower.pitch;
-        float g = thrower.yaw;
+        float f = thrower.getPitch();
+        float g = thrower.getYaw();
         float h = MathHelper.cos(-g * ((float)Math.PI / 180) - (float)Math.PI);
         float i = MathHelper.sin(-g * ((float)Math.PI / 180) - (float)Math.PI);
         float j = -MathHelper.cos(-f * ((float)Math.PI / 180));
@@ -95,10 +95,10 @@ extends ProjectileEntity {
         double m = vec3d.length();
         vec3d = vec3d.multiply(0.6 / m + 0.5 + this.random.nextGaussian() * 0.0045, 0.6 / m + 0.5 + this.random.nextGaussian() * 0.0045, 0.6 / m + 0.5 + this.random.nextGaussian() * 0.0045);
         this.setVelocity(vec3d);
-        this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875);
-        this.pitch = (float)(MathHelper.atan2(vec3d.y, MathHelper.sqrt(FishingBobberEntity.squaredHorizontalLength(vec3d))) * 57.2957763671875);
-        this.prevYaw = this.yaw;
-        this.prevPitch = this.pitch;
+        this.setYaw((float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875));
+        this.setPitch((float)(MathHelper.atan2(vec3d.y, MathHelper.sqrt(FishingBobberEntity.squaredHorizontalLength(vec3d))) * 57.2957763671875));
+        this.prevYaw = this.getYaw();
+        this.prevPitch = this.getPitch();
     }
 
     @Override

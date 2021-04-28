@@ -162,8 +162,8 @@ CommandOutput {
     private Vec3d pos;
     private BlockPos blockPos;
     private Vec3d velocity = Vec3d.ZERO;
-    public float yaw;
-    public float pitch;
+    private float yaw;
+    private float pitch;
     public float prevYaw;
     public float prevPitch;
     private Box entityBounds = NULL_BOX;
@@ -382,8 +382,8 @@ CommandOutput {
     }
 
     protected void setRotation(float yaw, float pitch) {
-        this.yaw = yaw % 360.0f;
-        this.pitch = pitch % 360.0f;
+        this.setYaw(yaw % 360.0f);
+        this.setPitch(pitch % 360.0f);
     }
 
     public final void setPosition(Vec3d pos) {
@@ -404,13 +404,13 @@ CommandOutput {
     }
 
     public void changeLookDirection(double cursorDeltaX, double cursorDeltaY) {
-        double d = cursorDeltaY * 0.15;
-        double e = cursorDeltaX * 0.15;
-        this.pitch = (float)((double)this.pitch + d);
-        this.yaw = (float)((double)this.yaw + e);
-        this.pitch = MathHelper.clamp(this.pitch, -90.0f, 90.0f);
-        this.prevPitch = (float)((double)this.prevPitch + d);
-        this.prevYaw = (float)((double)this.prevYaw + e);
+        float f = (float)cursorDeltaY * 0.15f;
+        float g = (float)cursorDeltaX * 0.15f;
+        this.setPitch(this.getPitch() + f);
+        this.setYaw(this.getYaw() + g);
+        this.setPitch(MathHelper.clamp(this.getPitch(), -90.0f, 90.0f));
+        this.prevPitch += f;
+        this.prevYaw += g;
         this.prevPitch = MathHelper.clamp(this.prevPitch, -90.0f, 90.0f);
         if (this.vehicle != null) {
             this.vehicle.onPassengerLookAround(this);
@@ -430,8 +430,8 @@ CommandOutput {
             --this.ridingCooldown;
         }
         this.prevHorizontalSpeed = this.horizontalSpeed;
-        this.prevPitch = this.pitch;
-        this.prevYaw = this.yaw;
+        this.prevPitch = this.getPitch();
+        this.prevYaw = this.getYaw();
         this.tickNetherPortal();
         if (this.shouldSpawnSprintingParticles()) {
             this.spawnSprintingParticles();
@@ -588,6 +588,9 @@ CommandOutput {
         BlockPos blockPos = this.getLandingPos();
         BlockState blockState = this.world.getBlockState(blockPos);
         this.fall(vec3d.y, this.onGround, blockState, blockPos);
+        if (this.isRemoved()) {
+            return;
+        }
         Vec3d vec3d2 = this.getVelocity();
         if (movement.x != vec3d.x) {
             this.setVelocity(0.0, vec3d2.y, vec3d2.z);
@@ -600,7 +603,7 @@ CommandOutput {
             block.onEntityLand(this.world, this);
         }
         if (this.onGround && !this.bypassesSteppingEffects()) {
-            block.onSteppedOn(this.world, blockPos, this);
+            block.onSteppedOn(this.world, blockPos, blockState, this);
         }
         if ((moveEffect = this.getMoveEffect()).hasAny() && !this.hasVehicle()) {
             double d = vec3d.x;
@@ -978,7 +981,7 @@ CommandOutput {
     protected void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
         if (onGround) {
             if (this.fallDistance > 0.0f) {
-                landedState.getBlock().onLandedUpon(this.world, landedPosition, this, this.fallDistance);
+                landedState.getBlock().onLandedUpon(this.world, landedState, landedPosition, this, this.fallDistance);
                 if (!landedState.isIn(BlockTags.OCCLUDES_VIBRATION_SIGNALS)) {
                     this.emitGameEvent(GameEvent.HIT_GROUND);
                 }
@@ -1158,7 +1161,7 @@ CommandOutput {
     }
 
     public void updateVelocity(float speed, Vec3d movementInput) {
-        Vec3d vec3d = Entity.movementInputToVelocity(movementInput, speed, this.yaw);
+        Vec3d vec3d = Entity.movementInputToVelocity(movementInput, speed, this.getYaw());
         this.setVelocity(this.getVelocity().add(vec3d));
     }
 
@@ -1182,10 +1185,10 @@ CommandOutput {
 
     public void updatePositionAndAngles(double x, double y, double z, float yaw, float pitch) {
         this.updatePosition(x, y, z);
-        this.yaw = yaw % 360.0f;
-        this.pitch = MathHelper.clamp(pitch, -90.0f, 90.0f) % 360.0f;
-        this.prevYaw = this.yaw;
-        this.prevPitch = this.pitch;
+        this.setYaw(yaw % 360.0f);
+        this.setPitch(MathHelper.clamp(pitch, -90.0f, 90.0f) % 360.0f);
+        this.prevYaw = this.getYaw();
+        this.prevPitch = this.getPitch();
     }
 
     public void updatePosition(double x, double y, double z) {
@@ -1202,7 +1205,7 @@ CommandOutput {
     }
 
     public void refreshPositionAfterTeleport(double x, double y, double z) {
-        this.refreshPositionAndAngles(x, y, z, this.yaw, this.pitch);
+        this.refreshPositionAndAngles(x, y, z, this.getYaw(), this.getPitch());
     }
 
     public void refreshPositionAndAngles(BlockPos pos, float yaw, float pitch) {
@@ -1211,8 +1214,8 @@ CommandOutput {
 
     public void refreshPositionAndAngles(double x, double y, double z, float yaw, float pitch) {
         this.setPos(x, y, z);
-        this.yaw = yaw;
-        this.pitch = pitch;
+        this.setYaw(yaw);
+        this.setPitch(pitch);
         this.resetPosition();
         this.refreshPosition();
     }
@@ -1227,8 +1230,8 @@ CommandOutput {
         this.lastRenderX = d;
         this.lastRenderY = e;
         this.lastRenderZ = f;
-        this.prevYaw = this.yaw;
-        this.prevPitch = this.pitch;
+        this.prevYaw = this.getYaw();
+        this.prevPitch = this.getPitch();
     }
 
     public float distanceTo(Entity entity) {
@@ -1313,16 +1316,16 @@ CommandOutput {
 
     public float getPitch(float tickDelta) {
         if (tickDelta == 1.0f) {
-            return this.pitch;
+            return this.getPitch();
         }
-        return MathHelper.lerp(tickDelta, this.prevPitch, this.pitch);
+        return MathHelper.lerp(tickDelta, this.prevPitch, this.getPitch());
     }
 
     public float getYaw(float tickDelta) {
         if (tickDelta == 1.0f) {
-            return this.yaw;
+            return this.getYaw();
         }
-        return MathHelper.lerp(tickDelta, this.prevYaw, this.yaw);
+        return MathHelper.lerp(tickDelta, this.prevYaw, this.getYaw());
     }
 
     protected final Vec3d getRotationVector(float pitch, float yaw) {
@@ -1433,7 +1436,7 @@ CommandOutput {
             }
             Vec3d vec3d = this.getVelocity();
             nbt.put("Motion", this.toNbtList(vec3d.x, vec3d.y, vec3d.z));
-            nbt.put("Rotation", this.toNbtList(this.yaw, this.pitch));
+            nbt.put("Rotation", this.toNbtList(this.getYaw(), this.getPitch()));
             nbt.putFloat("FallDistance", this.fallDistance);
             nbt.putShort("Fire", (short)this.fireTicks);
             nbt.putShort("Air", (short)this.getAir());
@@ -1498,11 +1501,11 @@ CommandOutput {
             double f = nbtList2.getDouble(2);
             this.setVelocity(Math.abs(d) > 10.0 ? 0.0 : d, Math.abs(e) > 10.0 ? 0.0 : e, Math.abs(f) > 10.0 ? 0.0 : f);
             this.setPos(nbtList.getDouble(0), nbtList.getDouble(1), nbtList.getDouble(2));
-            this.yaw = nbtList3.getFloat(0);
-            this.pitch = nbtList3.getFloat(1);
+            this.setYaw(nbtList3.getFloat(0));
+            this.setPitch(nbtList3.getFloat(1));
             this.resetPosition();
-            this.setHeadYaw(this.yaw);
-            this.setYaw(this.yaw);
+            this.setHeadYaw(this.getYaw());
+            this.setBodyYaw(this.getYaw());
             this.fallDistance = nbt.getFloat("FallDistance");
             this.fireTicks = nbt.getShort("Fire");
             if (nbt.contains("Air")) {
@@ -1518,11 +1521,11 @@ CommandOutput {
             if (!(Double.isFinite(this.getX()) && Double.isFinite(this.getY()) && Double.isFinite(this.getZ()))) {
                 throw new IllegalStateException("Entity has invalid position");
             }
-            if (!Double.isFinite(this.yaw) || !Double.isFinite(this.pitch)) {
+            if (!Double.isFinite(this.getYaw()) || !Double.isFinite(this.getPitch())) {
                 throw new IllegalStateException("Entity has invalid rotation");
             }
             this.refreshPosition();
-            this.setRotation(this.yaw, this.pitch);
+            this.setRotation(this.getYaw(), this.getPitch());
             if (nbt.contains("CustomName", 8)) {
                 String string = nbt.getString("CustomName");
                 try {
@@ -1783,11 +1786,11 @@ CommandOutput {
     }
 
     public Vec3d getRotationVector() {
-        return this.getRotationVector(this.pitch, this.yaw);
+        return this.getRotationVector(this.getPitch(), this.getYaw());
     }
 
     public Vec2f getRotationClient() {
-        return new Vec2f(this.pitch, this.yaw);
+        return new Vec2f(this.getPitch(), this.getYaw());
     }
 
     public Vec3d getRotationVecClient() {
@@ -2147,7 +2150,7 @@ CommandOutput {
     public void setHeadYaw(float headYaw) {
     }
 
-    public void setYaw(float yaw) {
+    public void setBodyYaw(float bodyYaw) {
     }
 
     public boolean isAttackable() {
@@ -2175,7 +2178,7 @@ CommandOutput {
     }
 
     public void copyPositionAndRotation(Entity entity) {
-        this.refreshPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.yaw, entity.pitch);
+        this.refreshPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.getYaw(), entity.getPitch());
     }
 
     public void copyFrom(Entity original) {
@@ -2209,7 +2212,7 @@ CommandOutput {
         Object entity = this.getType().create(destination);
         if (entity != null) {
             ((Entity)entity).copyFrom(this);
-            ((Entity)entity).refreshPositionAndAngles(teleportTarget.position.x, teleportTarget.position.y, teleportTarget.position.z, teleportTarget.yaw, ((Entity)entity).pitch);
+            ((Entity)entity).refreshPositionAndAngles(teleportTarget.position.x, teleportTarget.position.y, teleportTarget.position.z, teleportTarget.yaw, ((Entity)entity).getPitch());
             ((Entity)entity).setVelocity(teleportTarget.velocity);
             destination.onDimensionChanged((Entity)entity);
             if (destination.getRegistryKey() == World.END) {
@@ -2228,6 +2231,11 @@ CommandOutput {
         this.setRemoved(RemovalReason.CHANGED_DIMENSION);
     }
 
+    /**
+     * Determines a {@link TeleportTarget} for the entity
+     * based on its current and destination worlds, plus
+     * any portals that may be present.
+     */
     @Nullable
     protected TeleportTarget getTeleportTarget(ServerWorld destination) {
         boolean bl3;
@@ -2236,7 +2244,7 @@ CommandOutput {
         boolean bl4 = bl2 = destination.getRegistryKey() == World.END;
         if (bl || bl2) {
             BlockPos blockPos = bl2 ? ServerWorld.END_SPAWN_POS : destination.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, destination.getSpawnPos());
-            return new TeleportTarget(new Vec3d((double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5), this.getVelocity(), this.yaw, this.pitch);
+            return new TeleportTarget(new Vec3d((double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5), this.getVelocity(), this.getYaw(), this.getPitch());
         }
         boolean bl5 = bl3 = destination.getRegistryKey() == World.NETHER;
         if (this.world.getRegistryKey() != World.NETHER && !bl3) {
@@ -2261,7 +2269,7 @@ CommandOutput {
                 axis = Direction.Axis.X;
                 vec3d = new Vec3d(0.5, 0.0, 0.0);
             }
-            return AreaHelper.getNetherTeleportTarget(destination, rect, axis, vec3d, this.getDimensions(this.getPose()), this.getVelocity(), this.yaw, this.pitch);
+            return AreaHelper.getNetherTeleportTarget(destination, rect, axis, vec3d, this.getDimensions(this.getPose()), this.getVelocity(), this.getYaw(), this.getPitch());
         }).orElse(null);
     }
 
@@ -2302,7 +2310,7 @@ CommandOutput {
         Vec3d vec3d = this.getVelocity();
         section.add("Entity's Momentum", String.format(Locale.ROOT, "%.2f, %.2f, %.2f", vec3d.x, vec3d.y, vec3d.z));
         section.add("Entity's Passengers", () -> this.getPassengerList().toString());
-        section.add("Entity's Vehicle", () -> this.getVehicle().toString());
+        section.add("Entity's Vehicle", () -> String.valueOf(this.getVehicle()));
     }
 
     public boolean doesRenderOnFire() {
@@ -2385,7 +2393,7 @@ CommandOutput {
         if (!(this.world instanceof ServerWorld)) {
             return;
         }
-        this.refreshPositionAndAngles(destX, destY, destZ, this.yaw, this.pitch);
+        this.refreshPositionAndAngles(destX, destY, destZ, this.getYaw(), this.getPitch());
         this.streamSelfAndPassengers().forEach(entity -> {
             for (Entity entity2 : entity.passengerList) {
                 entity.updatePassengerPosition(entity2, Entity::refreshPositionAfterTeleport);
@@ -2420,7 +2428,7 @@ CommandOutput {
     }
 
     public Direction getHorizontalFacing() {
-        return Direction.fromRotation(this.yaw);
+        return Direction.fromRotation(this.getYaw());
     }
 
     public Direction getMovementDirection() {
@@ -2519,7 +2527,7 @@ CommandOutput {
     }
 
     public float applyRotation(BlockRotation rotation) {
-        float f = MathHelper.wrapDegrees(this.yaw);
+        float f = MathHelper.wrapDegrees(this.getYaw());
         switch (rotation) {
             case CLOCKWISE_180: {
                 return f + 180.0f;
@@ -2535,7 +2543,7 @@ CommandOutput {
     }
 
     public float applyMirror(BlockMirror mirror) {
-        float f = MathHelper.wrapDegrees(this.yaw);
+        float f = MathHelper.wrapDegrees(this.getYaw());
         switch (mirror) {
             case LEFT_RIGHT: {
                 return -f;
@@ -2694,11 +2702,11 @@ CommandOutput {
         double e = target.y - vec3d.y;
         double f = target.z - vec3d.z;
         double g = MathHelper.sqrt(d * d + f * f);
-        this.pitch = MathHelper.wrapDegrees((float)(-(MathHelper.atan2(e, g) * 57.2957763671875)));
-        this.yaw = MathHelper.wrapDegrees((float)(MathHelper.atan2(f, d) * 57.2957763671875) - 90.0f);
-        this.setHeadYaw(this.yaw);
-        this.prevPitch = this.pitch;
-        this.prevYaw = this.yaw;
+        this.setPitch(MathHelper.wrapDegrees((float)(-(MathHelper.atan2(e, g) * 57.2957763671875))));
+        this.setYaw(MathHelper.wrapDegrees((float)(MathHelper.atan2(f, d) * 57.2957763671875) - 90.0f));
+        this.setHeadYaw(this.getYaw());
+        this.prevPitch = this.getPitch();
+        this.prevYaw = this.getYaw();
     }
 
     public boolean updateMovementInFluid(Tag<Fluid> tag, double d) {
@@ -2921,8 +2929,8 @@ CommandOutput {
         double f = packet.getZ();
         this.updateTrackedPosition(d, e, f);
         this.refreshPositionAfterTeleport(d, e, f);
-        this.pitch = (float)(packet.getPitch() * 360) / 256.0f;
-        this.yaw = (float)(packet.getYaw() * 360) / 256.0f;
+        this.setPitch((float)(packet.getPitch() * 360) / 256.0f);
+        this.setYaw((float)(packet.getYaw() * 360) / 256.0f);
         this.setEntityId(i);
         this.setUuid(packet.getUuid());
     }
@@ -2940,6 +2948,28 @@ CommandOutput {
         return !EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES.contains(this.getType());
     }
 
+    public float getYaw() {
+        return this.yaw;
+    }
+
+    public void setYaw(float yaw) {
+        if (!Float.isFinite(yaw)) {
+            throw new IllegalStateException("Invalid entity rotation");
+        }
+        this.yaw = yaw;
+    }
+
+    public float getPitch() {
+        return this.pitch;
+    }
+
+    public void setPitch(float pitch) {
+        if (!Float.isFinite(pitch)) {
+            throw new IllegalStateException("Invalid entity rotation");
+        }
+        this.pitch = pitch;
+    }
+
     public final boolean isRemoved() {
         return this.removalReason != null;
     }
@@ -2953,6 +2983,9 @@ CommandOutput {
     public final void setRemoved(RemovalReason reason) {
         if (this.removalReason == null) {
             this.removalReason = reason;
+        }
+        if (this.removalReason.shouldDestroy()) {
+            this.stopRiding();
         }
         this.getPassengerList().forEach(Entity::stopRiding);
         this.entityChangeListener.remove(reason);

@@ -60,14 +60,14 @@ public final class TextColor {
         return String.format("#%06X", this.rgb);
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (object == null || this.getClass() != object.getClass()) {
+        if (o == null || this.getClass() != o.getClass()) {
             return false;
         }
-        TextColor textColor = (TextColor)object;
+        TextColor textColor = (TextColor)o;
         return this.rgb == textColor.rgb;
     }
 

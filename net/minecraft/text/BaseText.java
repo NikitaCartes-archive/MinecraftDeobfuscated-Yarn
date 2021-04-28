@@ -69,12 +69,12 @@ implements MutableText {
         return this.orderedText;
     }
 
-    public boolean equals(Object obj) {
-        if (this == obj) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (obj instanceof BaseText) {
-            BaseText baseText = (BaseText)obj;
+        if (o instanceof BaseText) {
+            BaseText baseText = (BaseText)o;
             return this.siblings.equals(baseText.siblings) && Objects.equals(this.getStyle(), baseText.getStyle());
         }
         return false;

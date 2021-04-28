@@ -48,7 +48,7 @@ public class TeleportCommand {
 
     private static int execute(ServerCommandSource source, Collection<? extends Entity> targets, Entity destination) throws CommandSyntaxException {
         for (Entity entity : targets) {
-            TeleportCommand.teleport(source, entity, (ServerWorld)destination.world, destination.getX(), destination.getY(), destination.getZ(), EnumSet.noneOf(PlayerPositionLookS2CPacket.Flag.class), destination.yaw, destination.pitch, null);
+            TeleportCommand.teleport(source, entity, (ServerWorld)destination.world, destination.getX(), destination.getY(), destination.getZ(), EnumSet.noneOf(PlayerPositionLookS2CPacket.Flag.class), destination.getYaw(), destination.getPitch(), null);
         }
         if (targets.size() == 1) {
             source.sendFeedback(new TranslatableText("commands.teleport.success.entity.single", targets.iterator().next().getDisplayName(), destination.getDisplayName()), true);
@@ -84,7 +84,7 @@ public class TeleportCommand {
         }
         for (Entity entity : targets) {
             if (rotation == null) {
-                TeleportCommand.teleport(source, entity, world, vec3d.x, vec3d.y, vec3d.z, set, entity.yaw, entity.pitch, facingLocation);
+                TeleportCommand.teleport(source, entity, world, vec3d.x, vec3d.y, vec3d.z, set, entity.getYaw(), entity.getPitch(), facingLocation);
                 continue;
             }
             TeleportCommand.teleport(source, entity, world, vec3d.x, vec3d.y, vec3d.z, set, vec2f.y, vec2f.x, facingLocation);
@@ -130,8 +130,8 @@ public class TeleportCommand {
                     target.copyFrom(entity);
                     target.refreshPositionAndAngles(x, y, z, f, h);
                     target.setHeadYaw(f);
-                    world.onDimensionChanged(target);
                     entity.setRemoved(Entity.RemovalReason.CHANGED_DIMENSION);
+                    world.onDimensionChanged(target);
                 } else {
                     return;
                 }

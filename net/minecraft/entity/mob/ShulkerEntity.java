@@ -266,7 +266,8 @@ implements Monster {
     @Override
     @Nullable
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
-        this.headYaw = this.yaw = 0.0f;
+        this.setYaw(0.0f);
+        this.headYaw = this.getYaw();
         this.resetPosition();
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }

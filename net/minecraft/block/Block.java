@@ -177,8 +177,8 @@ implements ItemConvertible {
         return to;
     }
 
-    public static VoxelShape createCuboidShape(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
-        return VoxelShapes.cuboid(xMin / 16.0, yMin / 16.0, zMin / 16.0, xMax / 16.0, yMax / 16.0, zMax / 16.0);
+    public static VoxelShape createCuboidShape(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
+        return VoxelShapes.cuboid(minX / 16.0, minY / 16.0, minZ / 16.0, maxX / 16.0, maxY / 16.0, maxZ / 16.0);
     }
 
     public static BlockState postProcessState(BlockState state, WorldAccess world, BlockPos pos) {
@@ -384,7 +384,7 @@ implements ItemConvertible {
     /**
      * Called when an entity steps on this block.
      */
-    public void onSteppedOn(World world, BlockPos pos, Entity entity) {
+    public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
     }
 
     @Nullable
@@ -416,8 +416,8 @@ implements ItemConvertible {
         return this.translationKey;
     }
 
-    public void onLandedUpon(World world, BlockPos pos, Entity entity, float distance) {
-        entity.handleFallDamage(distance, 1.0f, DamageSource.FALL);
+    public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
+        entity.handleFallDamage(fallDistance, 1.0f, DamageSource.FALL);
     }
 
     public void onEntityLand(BlockView world, Entity entity) {

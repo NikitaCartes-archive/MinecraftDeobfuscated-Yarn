@@ -351,8 +351,8 @@ implements TypeFilter<Entity, T> {
         ((Entity)entity).refreshPositionAndAngles((double)pos.getX() + 0.5, (double)pos.getY() + d, (double)pos.getZ() + 0.5, MathHelper.wrapDegrees(world.random.nextFloat() * 360.0f), 0.0f);
         if (entity instanceof MobEntity) {
             MobEntity mobEntity = (MobEntity)entity;
-            mobEntity.headYaw = mobEntity.yaw;
-            mobEntity.bodyYaw = mobEntity.yaw;
+            mobEntity.headYaw = mobEntity.getYaw();
+            mobEntity.bodyYaw = mobEntity.getYaw();
             mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), spawnReason, null, itemNbt);
             mobEntity.playAmbientSound();
         }

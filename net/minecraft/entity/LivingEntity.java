@@ -252,7 +252,8 @@ extends Entity {
         this.randomSmallSeed = (float)((Math.random() + 1.0) * (double)0.01f);
         this.refreshPosition();
         this.randomLargeSeed = (float)Math.random() * 12398.0f;
-        this.headYaw = this.yaw = (float)(Math.random() * 6.2831854820251465);
+        this.setYaw((float)(Math.random() * 6.2831854820251465));
+        this.headYaw = this.getYaw();
         this.stepHeight = 0.6f;
         NbtOps nbtOps = NbtOps.INSTANCE;
         this.brain = this.deserializeBrain(new Dynamic<NbtElement>(nbtOps, nbtOps.createMap(ImmutableMap.of(nbtOps.createString("memories"), nbtOps.emptyMap()))));
@@ -407,8 +408,8 @@ extends Entity {
         this.prevLookDirection = this.lookDirection;
         this.prevBodyYaw = this.bodyYaw;
         this.prevHeadYaw = this.headYaw;
-        this.prevYaw = this.yaw;
-        this.prevPitch = this.pitch;
+        this.prevYaw = this.getYaw();
+        this.prevPitch = this.getPitch();
         this.world.getProfiler().pop();
     }
 
@@ -741,7 +742,7 @@ extends Entity {
         if (this.effectsChanged) {
             if (!this.world.isClient) {
                 this.updatePotionVisibility();
-                this.method_36362();
+                this.updateGlowing();
             }
             this.effectsChanged = false;
         }
@@ -773,7 +774,7 @@ extends Entity {
         }
     }
 
-    private void method_36362() {
+    private void updateGlowing() {
         boolean bl = this.isGlowing();
         if (this.getFlag(6) != bl) {
             this.setFlag(6, bl);
@@ -1059,7 +1060,7 @@ extends Entity {
                     d = (Math.random() - Math.random()) * 0.01;
                     e = (Math.random() - Math.random()) * 0.01;
                 }
-                this.knockbackVelocity = (float)(MathHelper.atan2(e, d) * 57.2957763671875 - (double)this.yaw);
+                this.knockbackVelocity = (float)(MathHelper.atan2(e, d) * 57.2957763671875 - (double)this.getYaw());
                 this.takeKnockback(0.4f, d, e);
             } else {
                 this.knockbackVelocity = (int)(Math.random() * 2.0) * 180;
@@ -1776,7 +1777,15 @@ extends Entity {
     }
 
     private void onDismounted(Entity vehicle) {
-        Vec3d vec3d = vehicle.isRemoved() || this.world.getBlockState(vehicle.getBlockPos()).isIn(BlockTags.PORTALS) ? new Vec3d(vehicle.getX(), vehicle.getY() + (double)vehicle.getHeight(), vehicle.getZ()) : vehicle.updatePassengerForDismount(this);
+        Vec3d vec3d;
+        if (this.isRemoved()) {
+            vec3d = this.getPos();
+        } else if (vehicle.isRemoved() || this.world.getBlockState(vehicle.getBlockPos()).isIn(BlockTags.PORTALS)) {
+            double d = Math.max(this.getY(), vehicle.getY());
+            vec3d = new Vec3d(this.getX(), d, this.getZ());
+        } else {
+            vec3d = vehicle.updatePassengerForDismount(this);
+        }
         this.requestTeleportAndDismount(vec3d.x, vec3d.y, vec3d.z);
     }
 
@@ -1797,7 +1806,7 @@ extends Entity {
         Vec3d vec3d = this.getVelocity();
         this.setVelocity(vec3d.x, f, vec3d.z);
         if (this.isSprinting()) {
-            float g = this.yaw * ((float)Math.PI / 180);
+            float g = this.getYaw() * ((float)Math.PI / 180);
             this.setVelocity(this.getVelocity().add(-MathHelper.sin(g) * 0.2f, 0.0, MathHelper.cos(g) * 0.2f));
         }
         this.velocityDirty = true;
@@ -1887,7 +1896,7 @@ extends Entity {
                     this.fallDistance = 1.0f;
                 }
                 Vec3d vec3d5 = this.getRotationVector();
-                float f = this.pitch * ((float)Math.PI / 180);
+                float f = this.getPitch() * ((float)Math.PI / 180);
                 double i = Math.sqrt(vec3d5.x * vec3d5.x + vec3d5.z * vec3d5.z);
                 double j = Math.sqrt(LivingEntity.squaredHorizontalLength(vec3d4));
                 double k = vec3d5.length();
@@ -2053,11 +2062,11 @@ extends Entity {
             k = 1.0f;
             h = (float)Math.sqrt(f) * 3.0f;
             float l = (float)MathHelper.atan2(e, d) * 57.295776f - 90.0f;
-            float m = MathHelper.abs(MathHelper.wrapDegrees(this.yaw) - l);
+            float m = MathHelper.abs(MathHelper.wrapDegrees(this.getYaw()) - l);
             g = 95.0f < m && m < 265.0f ? l - 180.0f : l;
         }
         if (this.handSwingProgress > 0.0f) {
-            g = this.yaw;
+            g = this.getYaw();
         }
         if (!this.onGround) {
             k = 0.0f;
@@ -2067,10 +2076,10 @@ extends Entity {
         h = this.turnHead(g, h);
         this.world.getProfiler().pop();
         this.world.getProfiler().push("rangeChecks");
-        while (this.yaw - this.prevYaw < -180.0f) {
+        while (this.getYaw() - this.prevYaw < -180.0f) {
             this.prevYaw -= 360.0f;
         }
-        while (this.yaw - this.prevYaw >= 180.0f) {
+        while (this.getYaw() - this.prevYaw >= 180.0f) {
             this.prevYaw += 360.0f;
         }
         while (this.bodyYaw - this.prevBodyYaw < -180.0f) {
@@ -2079,10 +2088,10 @@ extends Entity {
         while (this.bodyYaw - this.prevBodyYaw >= 180.0f) {
             this.prevBodyYaw += 360.0f;
         }
-        while (this.pitch - this.prevPitch < -180.0f) {
+        while (this.getPitch() - this.prevPitch < -180.0f) {
             this.prevPitch -= 360.0f;
         }
-        while (this.pitch - this.prevPitch >= 180.0f) {
+        while (this.getPitch() - this.prevPitch >= 180.0f) {
             this.prevPitch += 360.0f;
         }
         while (this.headYaw - this.prevHeadYaw < -180.0f) {
@@ -2095,7 +2104,7 @@ extends Entity {
         this.lookDirection += h;
         this.roll = this.isFallFlying() ? ++this.roll : 0;
         if (this.isSleeping()) {
-            this.pitch = 0.0f;
+            this.setPitch(0.0f);
         }
     }
 
@@ -2192,7 +2201,7 @@ extends Entity {
         boolean bl;
         float f = MathHelper.wrapDegrees(bodyRotation - this.bodyYaw);
         this.bodyYaw += f * 0.3f;
-        float g = MathHelper.wrapDegrees(this.yaw - this.bodyYaw);
+        float g = MathHelper.wrapDegrees(this.getYaw() - this.bodyYaw);
         boolean bl2 = bl = g < -90.0f || g >= 90.0f;
         if (g < -75.0f) {
             g = -75.0f;
@@ -2200,7 +2209,7 @@ extends Entity {
         if (g >= 75.0f) {
             g = 75.0f;
         }
-        this.bodyYaw = this.yaw - g;
+        this.bodyYaw = this.getYaw() - g;
         if (g * g > 2500.0f) {
             this.bodyYaw += g * 0.2f;
         }
@@ -2223,12 +2232,12 @@ extends Entity {
             double d = this.getX() + (this.serverX - this.getX()) / (double)this.bodyTrackingIncrements;
             double e = this.getY() + (this.serverY - this.getY()) / (double)this.bodyTrackingIncrements;
             double f = this.getZ() + (this.serverZ - this.getZ()) / (double)this.bodyTrackingIncrements;
-            double g = MathHelper.wrapDegrees(this.serverYaw - (double)this.yaw);
-            this.yaw = (float)((double)this.yaw + g / (double)this.bodyTrackingIncrements);
-            this.pitch = (float)((double)this.pitch + (this.serverPitch - (double)this.pitch) / (double)this.bodyTrackingIncrements);
+            double g = MathHelper.wrapDegrees(this.serverYaw - (double)this.getYaw());
+            this.setYaw(this.getYaw() + (float)g / (float)this.bodyTrackingIncrements);
+            this.setPitch(this.getPitch() + (float)(this.serverPitch - (double)this.getPitch()) / (float)this.bodyTrackingIncrements);
             --this.bodyTrackingIncrements;
             this.setPosition(d, e, f);
-            this.setRotation(this.yaw, this.pitch);
+            this.setRotation(this.getYaw(), this.getPitch());
         } else if (!this.canMoveVoluntarily()) {
             this.setVelocity(this.getVelocity().multiply(0.98));
         }
@@ -2384,7 +2393,7 @@ extends Entity {
             this.riptideTicks = 0;
         }
         if (!this.world.isClient && this.riptideTicks <= 0) {
-            this.setLivingFlag(4, false);
+            this.setLivingFlag(USING_RIPTIDE_FLAG, false);
         }
     }
 
@@ -2398,7 +2407,7 @@ extends Entity {
     public void setRiptideTicks(int riptideTicks) {
         this.riptideTicks = riptideTicks;
         if (!this.world.isClient) {
-            this.setLivingFlag(4, true);
+            this.setLivingFlag(USING_RIPTIDE_FLAG, true);
         }
     }
 
@@ -2513,8 +2522,8 @@ extends Entity {
     }
 
     @Override
-    public void setYaw(float yaw) {
-        this.bodyYaw = yaw;
+    public void setBodyYaw(float bodyYaw) {
+        this.bodyYaw = bodyYaw;
     }
 
     @Override
@@ -2600,8 +2609,8 @@ extends Entity {
         this.activeItemStack = itemStack;
         this.itemUseTimeLeft = itemStack.getMaxUseTime();
         if (!this.world.isClient) {
-            this.setLivingFlag(1, true);
-            this.setLivingFlag(2, hand == Hand.OFF_HAND);
+            this.setLivingFlag(USING_ITEM_FLAG, true);
+            this.setLivingFlag(OFF_HAND_ACTIVE_FLAG, hand == Hand.OFF_HAND);
         }
     }
 
@@ -2648,12 +2657,12 @@ extends Entity {
     private void spawnItemParticles(ItemStack stack, int count) {
         for (int i = 0; i < count; ++i) {
             Vec3d vec3d = new Vec3d(((double)this.random.nextFloat() - 0.5) * 0.1, Math.random() * 0.1 + 0.1, 0.0);
-            vec3d = vec3d.rotateX(-this.pitch * ((float)Math.PI / 180));
-            vec3d = vec3d.rotateY(-this.yaw * ((float)Math.PI / 180));
+            vec3d = vec3d.rotateX(-this.getPitch() * ((float)Math.PI / 180));
+            vec3d = vec3d.rotateY(-this.getYaw() * ((float)Math.PI / 180));
             double d = (double)(-this.random.nextFloat()) * 0.6 - 0.3;
             Vec3d vec3d2 = new Vec3d(((double)this.random.nextFloat() - 0.5) * 0.3, d, 0.6);
-            vec3d2 = vec3d2.rotateX(-this.pitch * ((float)Math.PI / 180));
-            vec3d2 = vec3d2.rotateY(-this.yaw * ((float)Math.PI / 180));
+            vec3d2 = vec3d2.rotateX(-this.getPitch() * ((float)Math.PI / 180));
+            vec3d2 = vec3d2.rotateY(-this.getYaw() * ((float)Math.PI / 180));
             vec3d2 = vec3d2.add(this.getX(), this.getEyeY(), this.getZ());
             this.world.addParticle(new ItemStackParticleEffect(ParticleTypes.ITEM, stack), vec3d2.x, vec3d2.y, vec3d2.z, vec3d.x, vec3d.y + 0.05, vec3d.z);
         }
@@ -2702,7 +2711,7 @@ extends Entity {
 
     public void clearActiveItem() {
         if (!this.world.isClient) {
-            this.setLivingFlag(1, false);
+            this.setLivingFlag(USING_ITEM_FLAG, false);
         }
         this.activeItemStack = ItemStack.EMPTY;
         this.itemUseTimeLeft = 0;
@@ -2858,15 +2867,15 @@ extends Entity {
             BlockState blockState = this.world.getBlockState((BlockPos)pos);
             if (blockState.getBlock() instanceof BedBlock) {
                 this.world.setBlockState((BlockPos)pos, (BlockState)blockState.with(BedBlock.OCCUPIED, false), Block.NOTIFY_ALL);
-                Vec3d vec3d = BedBlock.findWakeUpPosition(this.getType(), this.world, pos, this.yaw).orElseGet(() -> {
+                Vec3d vec3d = BedBlock.findWakeUpPosition(this.getType(), this.world, pos, this.getYaw()).orElseGet(() -> {
                     BlockPos blockPos2 = pos.up();
                     return new Vec3d((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.1, (double)blockPos2.getZ() + 0.5);
                 });
                 Vec3d vec3d2 = Vec3d.ofBottomCenter(pos).subtract(vec3d).normalize();
                 float f = (float)MathHelper.wrapDegrees(MathHelper.atan2(vec3d2.z, vec3d2.x) * 57.2957763671875 - 90.0);
                 this.setPosition(vec3d.x, vec3d.y, vec3d.z);
-                this.yaw = f;
-                this.pitch = 0.0f;
+                this.setYaw(f);
+                this.setPitch(0.0f);
             }
         });
         Vec3d vec3d = this.getPos();

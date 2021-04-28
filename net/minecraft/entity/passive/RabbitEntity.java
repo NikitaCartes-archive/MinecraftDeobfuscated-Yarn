@@ -218,7 +218,7 @@ extends AnimalEntity {
     }
 
     private void lookTowards(double x, double z) {
-        this.yaw = (float)(MathHelper.atan2(z - this.getZ(), x - this.getX()) * 57.2957763671875) - 90.0f;
+        this.setYaw((float)(MathHelper.atan2(z - this.getZ(), x - this.getX()) * 57.2957763671875) - 90.0f);
     }
 
     private void method_6611() {

@@ -155,11 +155,11 @@ extends HostileEntity {
     }
 
     public boolean isCharging() {
-        return this.areFlagsSet(1);
+        return this.areFlagsSet(CHARGING_FLAG);
     }
 
     public void setCharging(boolean charging) {
-        this.setVexFlag(1, charging);
+        this.setVexFlag(CHARGING_FLAG, charging);
     }
 
     public void setOwner(MobEntity owner) {
@@ -328,11 +328,13 @@ extends HostileEntity {
                 VexEntity.this.setVelocity(VexEntity.this.getVelocity().add(vec3d.multiply(this.speed * 0.05 / d)));
                 if (VexEntity.this.getTarget() == null) {
                     Vec3d vec3d2 = VexEntity.this.getVelocity();
-                    VexEntity.this.bodyYaw = VexEntity.this.yaw = -((float)MathHelper.atan2(vec3d2.x, vec3d2.z)) * 57.295776f;
+                    VexEntity.this.setYaw(-((float)MathHelper.atan2(vec3d2.x, vec3d2.z)) * 57.295776f);
+                    VexEntity.this.bodyYaw = VexEntity.this.getYaw();
                 } else {
                     double e = VexEntity.this.getTarget().getX() - VexEntity.this.getX();
                     double f = VexEntity.this.getTarget().getZ() - VexEntity.this.getZ();
-                    VexEntity.this.bodyYaw = VexEntity.this.yaw = -((float)MathHelper.atan2(e, f)) * 57.295776f;
+                    VexEntity.this.setYaw(-((float)MathHelper.atan2(e, f)) * 57.295776f);
+                    VexEntity.this.bodyYaw = VexEntity.this.getYaw();
                 }
             }
         }

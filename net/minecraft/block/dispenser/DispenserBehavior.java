@@ -214,7 +214,7 @@ public interface DispenserBehavior {
                 ServerWorld world = pointer.getWorld();
                 ArmorStandEntity armorStandEntity = new ArmorStandEntity(world, (double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5);
                 EntityType.loadFromEntityNbt(world, null, armorStandEntity, stack.getTag());
-                armorStandEntity.yaw = direction.asRotation();
+                armorStandEntity.setYaw(direction.asRotation());
                 world.spawnEntity(armorStandEntity);
                 stack.decrement(1);
                 return stack;

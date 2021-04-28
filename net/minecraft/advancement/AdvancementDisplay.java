@@ -30,8 +30,8 @@ public class AdvancementDisplay {
     private final boolean showToast;
     private final boolean announceToChat;
     private final boolean hidden;
-    private float xPos;
-    private float yPos;
+    private float x;
+    private float y;
 
     public AdvancementDisplay(ItemStack icon, Text title, Text description, @Nullable Identifier background, AdvancementFrame frame, boolean showToast, boolean announceToChat, boolean hidden) {
         this.title = title;
@@ -44,9 +44,9 @@ public class AdvancementDisplay {
         this.hidden = hidden;
     }
 
-    public void setPosition(float xPos, float yPos) {
-        this.xPos = xPos;
-        this.yPos = yPos;
+    public void setPos(float x, float y) {
+        this.x = x;
+        this.y = y;
     }
 
     public Text getTitle() {
@@ -71,11 +71,11 @@ public class AdvancementDisplay {
     }
 
     public float getX() {
-        return this.xPos;
+        return this.x;
     }
 
     public float getY() {
-        return this.yPos;
+        return this.y;
     }
 
     public boolean shouldShowToast() {
@@ -144,8 +144,8 @@ public class AdvancementDisplay {
         if (this.background != null) {
             buf.writeIdentifier(this.background);
         }
-        buf.writeFloat(this.xPos);
-        buf.writeFloat(this.yPos);
+        buf.writeFloat(this.x);
+        buf.writeFloat(this.y);
     }
 
     public static AdvancementDisplay fromPacket(PacketByteBuf buf) {
@@ -158,7 +158,7 @@ public class AdvancementDisplay {
         boolean bl = (i & 2) != 0;
         boolean bl2 = (i & 4) != 0;
         AdvancementDisplay advancementDisplay = new AdvancementDisplay(itemStack, text, text2, identifier, advancementFrame, bl, false, bl2);
-        advancementDisplay.setPosition(buf.readFloat(), buf.readFloat());
+        advancementDisplay.setPos(buf.readFloat(), buf.readFloat());
         return advancementDisplay;
     }
 

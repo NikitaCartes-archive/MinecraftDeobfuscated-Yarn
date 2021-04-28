@@ -20,8 +20,8 @@ implements Packet<ClientPlayPacketListener> {
         this.x = entity.getX();
         this.y = entity.getY();
         this.z = entity.getZ();
-        this.yaw = entity.yaw;
-        this.pitch = entity.pitch;
+        this.yaw = entity.getYaw();
+        this.pitch = entity.getPitch();
     }
 
     public VehicleMoveS2CPacket(PacketByteBuf buf) {

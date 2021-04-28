@@ -132,12 +132,11 @@ Waterloggable {
     }
 
     @Override
-    public void onLandedUpon(World world, BlockPos pos, Entity entity, float distance) {
-        BlockState blockState = world.getBlockState(pos);
-        if (blockState.get(VERTICAL_DIRECTION) == Direction.UP && blockState.get(THICKNESS) == Thickness.TIP) {
-            entity.handleFallDamage(distance + 2.0f, 2.0f, DamageSource.STALAGMITE);
+    public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
+        if (state.get(VERTICAL_DIRECTION) == Direction.UP && state.get(THICKNESS) == Thickness.TIP) {
+            entity.handleFallDamage(fallDistance + 2.0f, 2.0f, DamageSource.STALAGMITE);
         } else {
-            super.onLandedUpon(world, pos, entity, distance);
+            super.onLandedUpon(world, state, pos, entity, fallDistance);
         }
     }
 

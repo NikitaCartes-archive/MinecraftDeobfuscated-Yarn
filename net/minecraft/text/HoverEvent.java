@@ -53,14 +53,14 @@ public class HoverEvent {
         return null;
     }
 
-    public boolean equals(Object obj) {
-        if (this == obj) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (obj == null || this.getClass() != obj.getClass()) {
+        if (o == null || this.getClass() != o.getClass()) {
             return false;
         }
-        HoverEvent hoverEvent = (HoverEvent)obj;
+        HoverEvent hoverEvent = (HoverEvent)o;
         return this.action == hoverEvent.action && Objects.equals(this.contents, hoverEvent.contents);
     }
 
@@ -183,14 +183,14 @@ public class HoverEvent {
             this(stack.getItem(), stack.getCount(), stack.getTag() != null ? stack.getTag().copy() : null);
         }
 
-        public boolean equals(Object object) {
-            if (this == object) {
+        public boolean equals(Object o) {
+            if (this == o) {
                 return true;
             }
-            if (object == null || this.getClass() != object.getClass()) {
+            if (o == null || this.getClass() != o.getClass()) {
                 return false;
             }
-            ItemStackContent itemStackContent = (ItemStackContent)object;
+            ItemStackContent itemStackContent = (ItemStackContent)o;
             return this.count == itemStackContent.count && this.item.equals(itemStackContent.item) && Objects.equals(this.nbt, itemStackContent.nbt);
         }
 
@@ -315,14 +315,14 @@ public class HoverEvent {
             return this.tooltip;
         }
 
-        public boolean equals(Object object) {
-            if (this == object) {
+        public boolean equals(Object o) {
+            if (this == o) {
                 return true;
             }
-            if (object == null || this.getClass() != object.getClass()) {
+            if (o == null || this.getClass() != o.getClass()) {
                 return false;
             }
-            EntityContent entityContent = (EntityContent)object;
+            EntityContent entityContent = (EntityContent)o;
             return this.entityType.equals(entityContent.entityType) && this.uuid.equals(entityContent.uuid) && Objects.equals(this.name, entityContent.name);
         }
 

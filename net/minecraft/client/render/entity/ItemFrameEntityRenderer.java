@@ -67,8 +67,8 @@ extends EntityRenderer<T> {
         matrixStack.translate(-vec3d.getX(), -vec3d.getY(), -vec3d.getZ());
         double d = 0.46875;
         matrixStack.translate((double)direction.getOffsetX() * 0.46875, (double)direction.getOffsetY() * 0.46875, (double)direction.getOffsetZ() * 0.46875);
-        matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(((ItemFrameEntity)itemFrameEntity).pitch));
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f - ((ItemFrameEntity)itemFrameEntity).yaw));
+        matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(((Entity)itemFrameEntity).getPitch()));
+        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f - ((Entity)itemFrameEntity).getYaw()));
         boolean bl = ((Entity)itemFrameEntity).isInvisible();
         ItemStack itemStack = ((ItemFrameEntity)itemFrameEntity).getHeldItemStack();
         if (!bl) {

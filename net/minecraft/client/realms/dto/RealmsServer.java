@@ -203,17 +203,17 @@ extends ValueObject {
         return Objects.hash(new Object[]{this.id, this.name, this.motd, this.state, this.owner, this.expired});
     }
 
-    public boolean equals(Object obj) {
-        if (obj == null) {
+    public boolean equals(Object o) {
+        if (o == null) {
             return false;
         }
-        if (obj == this) {
+        if (o == this) {
             return true;
         }
-        if (obj.getClass() != this.getClass()) {
+        if (o.getClass() != this.getClass()) {
             return false;
         }
-        RealmsServer realmsServer = (RealmsServer)obj;
+        RealmsServer realmsServer = (RealmsServer)o;
         return new EqualsBuilder().append(this.id, realmsServer.id).append(this.name, realmsServer.name).append(this.motd, realmsServer.motd).append((Object)this.state, (Object)realmsServer.state).append(this.owner, realmsServer.owner).append(this.expired, realmsServer.expired).append((Object)this.worldType, (Object)this.worldType).isEquals();
     }
 

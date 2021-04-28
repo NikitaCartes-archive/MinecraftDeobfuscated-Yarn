@@ -176,17 +176,17 @@ extends AbstractSet<T> {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (object instanceof SortedArraySet) {
-            SortedArraySet sortedArraySet = (SortedArraySet)object;
+        if (o instanceof SortedArraySet) {
+            SortedArraySet sortedArraySet = (SortedArraySet)o;
             if (this.comparator.equals(sortedArraySet.comparator)) {
                 return this.size == sortedArraySet.size && Arrays.equals(this.elements, sortedArraySet.elements);
             }
         }
-        return super.equals(object);
+        return super.equals(o);
     }
 
     class SetIterator

@@ -150,7 +150,7 @@ extends WaterCreatureEntity {
             Vec3d vec3d = this.getVelocity();
             float g = MathHelper.sqrt(SquidEntity.squaredHorizontalLength(vec3d));
             this.bodyYaw += (-((float)MathHelper.atan2(vec3d.x, vec3d.z)) * 57.295776f - this.bodyYaw) * 0.1f;
-            this.yaw = this.bodyYaw;
+            this.setYaw(this.bodyYaw);
             this.rollAngle = (float)((double)this.rollAngle + Math.PI * (double)this.turningSpeed * 1.5);
             this.tiltAngle += (-((float)MathHelper.atan2(g, vec3d.y)) * 57.295776f - this.tiltAngle) * 0.1f;
         } else {

@@ -80,7 +80,7 @@ implements Vanishable {
             stack.damage(1, playerEntity, p -> p.sendToolBreakStatus(user.getActiveHand()));
             if (j == 0) {
                 TridentEntity tridentEntity = new TridentEntity(world, (LivingEntity)playerEntity, stack);
-                tridentEntity.setProperties(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0f, 2.5f + (float)j * 0.5f, 1.0f);
+                tridentEntity.setProperties(playerEntity, playerEntity.getPitch(), playerEntity.getYaw(), 0.0f, 2.5f + (float)j * 0.5f, 1.0f);
                 if (playerEntity.getAbilities().creativeMode) {
                     tridentEntity.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
                 }
@@ -93,8 +93,8 @@ implements Vanishable {
         }
         playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
         if (j > 0) {
-            float f = playerEntity.yaw;
-            float g = playerEntity.pitch;
+            float f = playerEntity.getYaw();
+            float g = playerEntity.getPitch();
             float h = -MathHelper.sin(f * ((float)Math.PI / 180)) * MathHelper.cos(g * ((float)Math.PI / 180));
             float k = -MathHelper.sin(g * ((float)Math.PI / 180));
             float l = MathHelper.cos(f * ((float)Math.PI / 180)) * MathHelper.cos(g * ((float)Math.PI / 180));

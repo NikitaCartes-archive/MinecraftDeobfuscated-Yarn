@@ -128,8 +128,8 @@ implements BlockEntityProvider {
     }
 
     @Override
-    public void onLandedUpon(World world, BlockPos pos, Entity entity, float distance) {
-        super.onLandedUpon(world, pos, entity, distance * 0.5f);
+    public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
+        super.onLandedUpon(world, state, pos, entity, fallDistance * 0.5f);
     }
 
     @Override

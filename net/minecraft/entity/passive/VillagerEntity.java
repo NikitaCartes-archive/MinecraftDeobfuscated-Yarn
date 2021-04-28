@@ -682,7 +682,7 @@ VillagerDataContainer {
         if (world.getDifficulty() != Difficulty.PEACEFUL) {
             LOGGER.info("Villager {} was struck by lightning {}.", (Object)this, (Object)lightning);
             WitchEntity witchEntity = EntityType.WITCH.create(world);
-            witchEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
+            witchEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
             witchEntity.initialize(world, world.getLocalDifficulty(witchEntity.getBlockPos()), SpawnReason.CONVERSION, null, null);
             witchEntity.setAiDisabled(this.isAiDisabled());
             if (this.hasCustomName()) {

@@ -38,8 +38,8 @@ implements ArgumentType<PosArgument> {
         return new Vec2ArgumentType(true);
     }
 
-    public static Vec2ArgumentType method_35802(boolean bl) {
-        return new Vec2ArgumentType(bl);
+    public static Vec2ArgumentType vec2(boolean centerIntegers) {
+        return new Vec2ArgumentType(centerIntegers);
     }
 
     public static Vec2f getVec2(CommandContext<ServerCommandSource> context, String name) {
@@ -79,8 +79,8 @@ implements ArgumentType<PosArgument> {
     }
 
     @Override
-    public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+    public /* synthetic */ Object parse(StringReader reader) throws CommandSyntaxException {
+        return this.parse(reader);
     }
 }
 

@@ -208,7 +208,8 @@ implements Bucketable {
             }
             if (d != 0.0 || g != 0.0) {
                 float i = (float)(MathHelper.atan2(g, d) * 57.2957763671875) - 90.0f;
-                this.fish.bodyYaw = this.fish.yaw = this.wrapDegrees(this.fish.yaw, i, 90.0f);
+                this.fish.setYaw(this.wrapDegrees(this.fish.getYaw(), i, 90.0f));
+                this.fish.bodyYaw = this.fish.getYaw();
             }
         }
     }

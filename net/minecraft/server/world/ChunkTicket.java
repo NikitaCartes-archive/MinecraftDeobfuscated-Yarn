@@ -35,14 +35,14 @@ implements Comparable<ChunkTicket<?>> {
         return this.type.getArgumentComparator().compare(this.argument, chunkTicket.argument);
     }
 
-    public boolean equals(Object obj) {
-        if (this == obj) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (!(obj instanceof ChunkTicket)) {
+        if (!(o instanceof ChunkTicket)) {
             return false;
         }
-        ChunkTicket chunkTicket = (ChunkTicket)obj;
+        ChunkTicket chunkTicket = (ChunkTicket)o;
         return this.level == chunkTicket.level && Objects.equals(this.type, chunkTicket.type) && Objects.equals(this.argument, chunkTicket.argument);
     }
 

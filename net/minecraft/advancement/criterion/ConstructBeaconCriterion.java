@@ -46,7 +46,7 @@ extends AbstractCriterion<Conditions> {
             this.level = level;
         }
 
-        public static Conditions method_35110() {
+        public static Conditions create() {
             return new Conditions(EntityPredicate.Extended.EMPTY, NumberRange.IntRange.ANY);
         }
 

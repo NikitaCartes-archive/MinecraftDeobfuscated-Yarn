@@ -48,12 +48,12 @@ extends TransparentBlock {
     }
 
     @Override
-    public void onLandedUpon(World world, BlockPos pos, Entity entity, float distance) {
+    public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
         entity.playSound(SoundEvents.BLOCK_HONEY_BLOCK_SLIDE, 1.0f, 1.0f);
         if (!world.isClient) {
             world.sendEntityStatus(entity, (byte)54);
         }
-        if (entity.handleFallDamage(distance, 0.2f, DamageSource.FALL)) {
+        if (entity.handleFallDamage(fallDistance, 0.2f, DamageSource.FALL)) {
             entity.playSound(this.soundGroup.getFallSound(), this.soundGroup.getVolume() * 0.5f, this.soundGroup.getPitch() * 0.75f);
         }
     }

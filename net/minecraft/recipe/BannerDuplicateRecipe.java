@@ -28,8 +28,11 @@ extends SpecialCraftingRecipe {
         ItemStack itemStack2 = null;
         for (int i = 0; i < craftingInventory.size(); ++i) {
             ItemStack itemStack3 = craftingInventory.getStack(i);
+            if (itemStack3.isEmpty()) continue;
             Item item = itemStack3.getItem();
-            if (!(item instanceof BannerItem)) continue;
+            if (!(item instanceof BannerItem)) {
+                return false;
+            }
             BannerItem bannerItem = (BannerItem)item;
             if (dyeColor == null) {
                 dyeColor = bannerItem.getColor();

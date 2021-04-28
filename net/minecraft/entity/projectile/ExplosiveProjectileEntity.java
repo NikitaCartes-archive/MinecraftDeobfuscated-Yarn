@@ -32,7 +32,7 @@ extends ProjectileEntity {
 
     public ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> type, double x, double y, double z, double directionX, double directionY, double directionZ, World world) {
         this(type, world);
-        this.refreshPositionAndAngles(x, y, z, this.yaw, this.pitch);
+        this.refreshPositionAndAngles(x, y, z, this.getYaw(), this.getPitch());
         this.refreshPosition();
         double d = MathHelper.sqrt(directionX * directionX + directionY * directionY + directionZ * directionZ);
         if (d != 0.0) {
@@ -45,7 +45,7 @@ extends ProjectileEntity {
     public ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> type, LivingEntity owner, double directionX, double directionY, double directionZ, World world) {
         this(type, owner.getX(), owner.getY(), owner.getZ(), directionX, directionY, directionZ, world);
         this.setOwner(owner);
-        this.setRotation(owner.yaw, owner.pitch);
+        this.setRotation(owner.getYaw(), owner.getPitch());
     }
 
     @Override
@@ -167,7 +167,7 @@ extends ProjectileEntity {
     public Packet<?> createSpawnPacket() {
         Entity entity = this.getOwner();
         int i = entity == null ? 0 : entity.getId();
-        return new EntitySpawnS2CPacket(this.getId(), this.getUuid(), this.getX(), this.getY(), this.getZ(), this.pitch, this.yaw, this.getType(), i, new Vec3d(this.powerX, this.powerY, this.powerZ));
+        return new EntitySpawnS2CPacket(this.getId(), this.getUuid(), this.getX(), this.getY(), this.getZ(), this.getPitch(), this.getYaw(), this.getType(), i, new Vec3d(this.powerX, this.powerY, this.powerZ));
     }
 
     @Override

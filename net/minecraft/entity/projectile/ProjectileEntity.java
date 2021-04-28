@@ -103,10 +103,10 @@ extends Entity {
         Vec3d vec3d = new Vec3d(x, y, z).normalize().add(this.random.nextGaussian() * (double)0.0075f * (double)divergence, this.random.nextGaussian() * (double)0.0075f * (double)divergence, this.random.nextGaussian() * (double)0.0075f * (double)divergence).multiply(speed);
         this.setVelocity(vec3d);
         float f = MathHelper.sqrt(ProjectileEntity.squaredHorizontalLength(vec3d));
-        this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875);
-        this.pitch = (float)(MathHelper.atan2(vec3d.y, f) * 57.2957763671875);
-        this.prevYaw = this.yaw;
-        this.prevPitch = this.pitch;
+        this.setYaw((float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875));
+        this.setPitch((float)(MathHelper.atan2(vec3d.y, f) * 57.2957763671875));
+        this.prevYaw = this.getYaw();
+        this.prevPitch = this.getPitch();
     }
 
     public void setProperties(Entity user, float pitch, float yaw, float roll, float modifierZ, float modifierXYZ) {
@@ -143,11 +143,11 @@ extends Entity {
         this.setVelocity(x, y, z);
         if (this.prevPitch == 0.0f && this.prevYaw == 0.0f) {
             float f = MathHelper.sqrt(x * x + z * z);
-            this.pitch = (float)(MathHelper.atan2(y, f) * 57.2957763671875);
-            this.yaw = (float)(MathHelper.atan2(x, z) * 57.2957763671875);
-            this.prevPitch = this.pitch;
-            this.prevYaw = this.yaw;
-            this.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
+            this.setPitch((float)(MathHelper.atan2(y, f) * 57.2957763671875));
+            this.setYaw((float)(MathHelper.atan2(x, z) * 57.2957763671875));
+            this.prevPitch = this.getPitch();
+            this.prevYaw = this.getYaw();
+            this.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
         }
     }
 
@@ -162,8 +162,8 @@ extends Entity {
     protected void updateRotation() {
         Vec3d vec3d = this.getVelocity();
         float f = MathHelper.sqrt(ProjectileEntity.squaredHorizontalLength(vec3d));
-        this.pitch = ProjectileEntity.updateRotation(this.prevPitch, (float)(MathHelper.atan2(vec3d.y, f) * 57.2957763671875));
-        this.yaw = ProjectileEntity.updateRotation(this.prevYaw, (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875));
+        this.setPitch(ProjectileEntity.updateRotation(this.prevPitch, (float)(MathHelper.atan2(vec3d.y, f) * 57.2957763671875)));
+        this.setYaw(ProjectileEntity.updateRotation(this.prevYaw, (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875)));
     }
 
     protected static float updateRotation(float prevRot, float newRot) {

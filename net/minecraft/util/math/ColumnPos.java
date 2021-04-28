@@ -26,16 +26,16 @@ public class ColumnPos {
         this.z = pos.getZ();
     }
 
-    public ChunkPos method_34873() {
+    public ChunkPos toChunkPos() {
         return new ChunkPos(ChunkSectionPos.getSectionCoord(this.x), ChunkSectionPos.getSectionCoord(this.z));
     }
 
-    public long method_34875() {
-        return ColumnPos.method_34874(this.x, this.z);
+    public long pack() {
+        return ColumnPos.pack(this.x, this.z);
     }
 
-    public static long method_34874(int i, int j) {
-        return (long)i & 0xFFFFFFFFL | ((long)j & 0xFFFFFFFFL) << 32;
+    public static long pack(int x, int z) {
+        return (long)x & 0xFFFFFFFFL | ((long)z & 0xFFFFFFFFL) << 32;
     }
 
     public String toString() {
@@ -48,12 +48,12 @@ public class ColumnPos {
         return i ^ j;
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (object instanceof ColumnPos) {
-            ColumnPos columnPos = (ColumnPos)object;
+        if (o instanceof ColumnPos) {
+            ColumnPos columnPos = (ColumnPos)o;
             return this.x == columnPos.x && this.z == columnPos.z;
         }
         return false;

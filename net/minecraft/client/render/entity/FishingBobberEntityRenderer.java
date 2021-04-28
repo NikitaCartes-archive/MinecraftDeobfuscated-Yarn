@@ -99,7 +99,7 @@ extends EntityRenderer<FishingBobberEntity> {
         MatrixStack.Entry entry2 = matrixStack.peek();
         int y = 16;
         for (int z = 0; z <= 16; ++z) {
-            FishingBobberEntityRenderer.method_23172(v, w, x, vertexConsumer2, entry2, FishingBobberEntityRenderer.percentage(z, 16), FishingBobberEntityRenderer.percentage(z + 1, 17));
+            FishingBobberEntityRenderer.method_23172(v, w, x, vertexConsumer2, entry2, FishingBobberEntityRenderer.percentage(z, 16), FishingBobberEntityRenderer.percentage(z + 1, 16));
         }
         matrixStack.pop();
         super.render(fishingBobberEntity, f, g, matrixStack, vertexConsumerProvider, i);

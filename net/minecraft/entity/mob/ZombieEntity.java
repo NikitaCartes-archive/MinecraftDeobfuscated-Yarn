@@ -442,7 +442,7 @@ extends HostileEntity {
                         }
                     } else if ((double)world.getRandom().nextFloat() < 0.05) {
                         ChickenEntity chickenEntity2 = EntityType.CHICKEN.create(this.world);
-                        chickenEntity2.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0f);
+                        chickenEntity2.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), 0.0f);
                         chickenEntity2.initialize(world, difficulty, SpawnReason.JOCKEY, null, null);
                         chickenEntity2.setHasJockey(true);
                         this.startRiding(chickenEntity2);

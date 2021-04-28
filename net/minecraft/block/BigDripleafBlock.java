@@ -65,8 +65,8 @@ Waterloggable {
     private static final int field_31018 = 11;
     private static final int field_31019 = 13;
     private static final Map<Tilt, VoxelShape> SHAPES_FOR_TILT = ImmutableMap.of(Tilt.NONE, Block.createCuboidShape(0.0, 11.0, 0.0, 16.0, 15.0, 16.0), Tilt.UNSTABLE, Block.createCuboidShape(0.0, 11.0, 0.0, 16.0, 15.0, 16.0), Tilt.PARTIAL, Block.createCuboidShape(0.0, 11.0, 0.0, 16.0, 13.0, 16.0), Tilt.FULL, VoxelShapes.empty());
-    private static final VoxelShape field_31020 = Block.createCuboidShape(0.0, 13.0, 0.0, 16.0, 16.0, 16.0);
-    private static final Map<Direction, VoxelShape> SHAPES_FOR_DIRECTION = ImmutableMap.of(Direction.NORTH, VoxelShapes.combine(BigDripleafStemBlock.NORTH_SHAPE, field_31020, BooleanBiFunction.ONLY_FIRST), Direction.SOUTH, VoxelShapes.combine(BigDripleafStemBlock.SOUTH_SHAPE, field_31020, BooleanBiFunction.ONLY_FIRST), Direction.EAST, VoxelShapes.combine(BigDripleafStemBlock.EAST_SHAPE, field_31020, BooleanBiFunction.ONLY_FIRST), Direction.WEST, VoxelShapes.combine(BigDripleafStemBlock.WEST_SHAPE, field_31020, BooleanBiFunction.ONLY_FIRST));
+    private static final VoxelShape BASE_SHAPE = Block.createCuboidShape(0.0, 13.0, 0.0, 16.0, 16.0, 16.0);
+    private static final Map<Direction, VoxelShape> SHAPES_FOR_DIRECTION = ImmutableMap.of(Direction.NORTH, VoxelShapes.combine(BigDripleafStemBlock.NORTH_SHAPE, BASE_SHAPE, BooleanBiFunction.ONLY_FIRST), Direction.SOUTH, VoxelShapes.combine(BigDripleafStemBlock.SOUTH_SHAPE, BASE_SHAPE, BooleanBiFunction.ONLY_FIRST), Direction.EAST, VoxelShapes.combine(BigDripleafStemBlock.EAST_SHAPE, BASE_SHAPE, BooleanBiFunction.ONLY_FIRST), Direction.WEST, VoxelShapes.combine(BigDripleafStemBlock.WEST_SHAPE, BASE_SHAPE, BooleanBiFunction.ONLY_FIRST));
     private final Map<BlockState, VoxelShape> shapes;
 
     protected BigDripleafBlock(AbstractBlock.Settings settings) {

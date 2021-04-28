@@ -55,11 +55,11 @@ public final class VoxelShapes {
         return FULL_CUBE;
     }
 
-    public static VoxelShape cuboid(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
-        if (xMin > xMax || yMin > yMax || zMin > zMax) {
+    public static VoxelShape cuboid(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
+        if (minX > maxX || minY > maxY || minZ > maxZ) {
             throw new IllegalArgumentException("The min values need to be smaller or equals to the max values");
         }
-        return VoxelShapes.cuboidUnchecked(xMin, yMin, zMin, xMax, yMax, zMax);
+        return VoxelShapes.cuboidUnchecked(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
     public static VoxelShape cuboidUnchecked(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {

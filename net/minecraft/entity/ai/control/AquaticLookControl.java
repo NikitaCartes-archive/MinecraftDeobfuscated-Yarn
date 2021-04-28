@@ -23,10 +23,10 @@ extends LookControl {
         if (this.active) {
             this.active = false;
             this.entity.headYaw = this.changeAngle(this.entity.headYaw, this.getTargetYaw() + 20.0f, this.yawSpeed);
-            this.entity.pitch = this.changeAngle(this.entity.pitch, this.getTargetPitch() + 10.0f, this.pitchSpeed);
+            this.entity.setPitch(this.changeAngle(this.entity.getPitch(), this.getTargetPitch() + 10.0f, this.pitchSpeed));
         } else {
             if (this.entity.getNavigation().isIdle()) {
-                this.entity.pitch = this.changeAngle(this.entity.pitch, 0.0f, 5.0f);
+                this.entity.setPitch(this.changeAngle(this.entity.getPitch(), 0.0f, 5.0f));
             }
             this.entity.headYaw = this.changeAngle(this.entity.headYaw, this.entity.bodyYaw, this.yawSpeed);
         }

@@ -68,6 +68,7 @@ import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.font.FontManager;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.gl.GlDebug;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.screen.BackupPromptScreen;
@@ -1833,7 +1834,7 @@ WindowEventHandler {
         return this.multiplayerEnabled && this.socialInteractionsService.serversAllowed();
     }
 
-    public boolean method_35706() {
+    public boolean isRealmsEnabled() {
         return this.socialInteractionsService.realmsAllowed();
     }
 
@@ -1881,7 +1882,7 @@ WindowEventHandler {
     }
 
     public static boolean isFabulousGraphicsOrBetter() {
-        return !MinecraftClient.instance.gameRenderer.method_35765() && MinecraftClient.instance.options.graphicsMode.getId() >= GraphicsMode.FABULOUS.getId();
+        return !MinecraftClient.instance.gameRenderer.isRenderingPanorama() && MinecraftClient.instance.options.graphicsMode.getId() >= GraphicsMode.FABULOUS.getId();
     }
 
     public static boolean isAmbientOcclusionEnabled() {
@@ -1976,6 +1977,7 @@ WindowEventHandler {
         crashReportSection.add("Backend library", RenderSystem::getBackendDescription);
         crashReportSection.add("Backend API", RenderSystem::getApiDescription);
         crashReportSection.add("GL Caps", RenderSystem::getCapsString);
+        crashReportSection.add("GL debug messages", () -> GlDebug.method_36479() ? String.join((CharSequence)"\n", GlDebug.method_36478()) : "<disabled>");
         crashReportSection.add("Using VBOs", () -> "Yes");
         crashReportSection.add("Is Modded", () -> {
             String string = ClientBrandRetriever.getClientModName();
@@ -2260,7 +2262,7 @@ WindowEventHandler {
         return this.searchManager.get(key);
     }
 
-    public static int method_35702() {
+    public static int getCurrentFps() {
         return currentFps;
     }
 
@@ -2336,54 +2338,50 @@ WindowEventHandler {
         int k = this.window.getFramebufferWidth();
         int l = this.window.getFramebufferHeight();
         Framebuffer framebuffer = new Framebuffer(i, j, true, IS_SYSTEM_MAC);
-        float f = this.player.pitch;
-        float g = this.player.yaw;
+        float f = this.player.getPitch();
+        float g = this.player.getYaw();
         float h = this.player.prevPitch;
         float m = this.player.prevYaw;
-        this.gameRenderer.method_35769(false);
+        this.gameRenderer.setBlockOutlineEnabled(false);
         try {
-            this.gameRenderer.method_35770(true);
+            this.gameRenderer.setRenderingPanorama(true);
             this.worldRenderer.method_35774();
             this.window.setFramebufferWidth(i);
             this.window.setFramebufferHeight(j);
             for (int n = 0; n < 6; ++n) {
                 switch (n) {
                     case 0: {
-                        this.player.prevYaw = this.player.yaw = g;
-                        this.player.pitch = 0.0f;
-                        this.player.prevPitch = 0.0f;
+                        this.player.setYaw(g);
+                        this.player.setPitch(0.0f);
                         break;
                     }
                     case 1: {
-                        this.player.prevYaw = this.player.yaw = (g + 90.0f) % 360.0f;
-                        this.player.pitch = 0.0f;
-                        this.player.prevPitch = 0.0f;
+                        this.player.setYaw((g + 90.0f) % 360.0f);
+                        this.player.setPitch(0.0f);
                         break;
                     }
                     case 2: {
-                        this.player.prevYaw = this.player.yaw = (g + 180.0f) % 360.0f;
-                        this.player.pitch = 0.0f;
-                        this.player.prevPitch = 0.0f;
+                        this.player.setYaw((g + 180.0f) % 360.0f);
+                        this.player.setPitch(0.0f);
                         break;
                     }
                     case 3: {
-                        this.player.prevYaw = this.player.yaw = (g - 90.0f) % 360.0f;
-                        this.player.pitch = 0.0f;
-                        this.player.prevPitch = 0.0f;
+                        this.player.setYaw((g - 90.0f) % 360.0f);
+                        this.player.setPitch(0.0f);
                         break;
                     }
                     case 4: {
-                        this.player.prevYaw = this.player.yaw = g;
-                        this.player.pitch = -90.0f;
-                        this.player.prevPitch = -90.0f;
+                        this.player.setYaw(g);
+                        this.player.setPitch(-90.0f);
                         break;
                     }
                     default: {
-                        this.player.prevYaw = this.player.yaw = g;
-                        this.player.pitch = 90.0f;
-                        this.player.prevPitch = 90.0f;
+                        this.player.setYaw(g);
+                        this.player.setPitch(90.0f);
                     }
                 }
+                this.player.prevYaw = this.player.getYaw();
+                this.player.prevPitch = this.player.getPitch();
                 framebuffer.beginWrite(true);
                 this.gameRenderer.renderWorld(1.0f, 0L, new MatrixStack());
                 try {
@@ -2401,15 +2399,15 @@ WindowEventHandler {
             TranslatableText translatableText = new TranslatableText("screenshot.failure", exception.getMessage());
             return translatableText;
         } finally {
-            this.player.pitch = f;
-            this.player.yaw = g;
+            this.player.setPitch(f);
+            this.player.setYaw(g);
             this.player.prevPitch = h;
             this.player.prevYaw = m;
-            this.gameRenderer.method_35769(true);
+            this.gameRenderer.setBlockOutlineEnabled(true);
             this.window.setFramebufferWidth(k);
             this.window.setFramebufferHeight(l);
             framebuffer.delete();
-            this.gameRenderer.method_35770(false);
+            this.gameRenderer.setRenderingPanorama(false);
             this.worldRenderer.method_35774();
             this.getFramebuffer().beginWrite(true);
         }
@@ -2455,7 +2453,7 @@ WindowEventHandler {
     }
 
     @Nullable
-    public WorldGenerationProgressTracker method_35703() {
+    public WorldGenerationProgressTracker getWorldGenerationProgressTracker() {
         return this.worldGenProgressTracker.get();
     }
 

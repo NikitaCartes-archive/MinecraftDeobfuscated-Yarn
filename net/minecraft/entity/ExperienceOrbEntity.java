@@ -43,7 +43,7 @@ extends Entity {
     public ExperienceOrbEntity(World world, double x, double y, double z, int amount) {
         this((EntityType<? extends ExperienceOrbEntity>)EntityType.EXPERIENCE_ORB, world);
         this.setPosition(x, y, z);
-        this.yaw = (float)(this.random.nextDouble() * 360.0);
+        this.setYaw((float)(this.random.nextDouble() * 360.0));
         this.setVelocity((this.random.nextDouble() * (double)0.2f - (double)0.1f) * 2.0, this.random.nextDouble() * 0.2 * 2.0, (this.random.nextDouble() * (double)0.2f - (double)0.1f) * 2.0);
         this.amount = amount;
     }

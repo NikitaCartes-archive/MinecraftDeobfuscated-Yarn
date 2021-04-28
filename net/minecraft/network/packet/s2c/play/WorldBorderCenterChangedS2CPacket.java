@@ -34,11 +34,11 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onWorldBorderCenterChanged(this);
     }
 
-    public double getCenterX() {
+    public double getCenterZ() {
         return this.centerZ;
     }
 
-    public double getCenterZ() {
+    public double getCenterX() {
         return this.centerX;
     }
 }

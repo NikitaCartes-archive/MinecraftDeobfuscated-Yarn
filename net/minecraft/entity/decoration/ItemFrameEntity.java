@@ -78,14 +78,14 @@ extends AbstractDecorationEntity {
         Validate.notNull(facing);
         this.facing = facing;
         if (facing.getAxis().isHorizontal()) {
-            this.pitch = 0.0f;
-            this.yaw = this.facing.getHorizontal() * 90;
+            this.setPitch(0.0f);
+            this.setYaw(this.facing.getHorizontal() * 90);
         } else {
-            this.pitch = -90 * facing.getDirection().offset();
-            this.yaw = 0.0f;
+            this.setPitch(-90 * facing.getDirection().offset());
+            this.setYaw(0.0f);
         }
-        this.prevPitch = this.pitch;
-        this.prevYaw = this.yaw;
+        this.prevPitch = this.getPitch();
+        this.prevYaw = this.getYaw();
         this.updateAttachmentPosition();
     }
 

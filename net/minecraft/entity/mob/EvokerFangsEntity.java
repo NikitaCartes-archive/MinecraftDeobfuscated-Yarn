@@ -40,7 +40,7 @@ extends Entity {
         this((EntityType<? extends EvokerFangsEntity>)EntityType.EVOKER_FANGS, world);
         this.warmup = warmup;
         this.setOwner(owner);
-        this.yaw = yaw * 57.295776f;
+        this.setYaw(yaw * 57.295776f);
         this.setPosition(x, y, z);
     }
 

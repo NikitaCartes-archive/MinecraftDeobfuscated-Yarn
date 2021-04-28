@@ -113,7 +113,7 @@ public abstract class MobSpawnerLogic {
             double d2 = f = j >= 3 ? nbtList.getDouble(2) : (double)pos.getZ() + (world.random.nextDouble() - world.random.nextDouble()) * (double)this.spawnRange + 0.5;
             if (!world.isSpaceEmpty(optional.get().createSimpleBoundingBox(d, e, f)) || !SpawnRestriction.canSpawn(optional.get(), world, SpawnReason.SPAWNER, new BlockPos(d, e, f), world.getRandom())) continue;
             Entity entity2 = EntityType.loadEntityWithPassengers(nbtCompound, world, entity -> {
-                entity.refreshPositionAndAngles(d, e, f, entity.yaw, entity.pitch);
+                entity.refreshPositionAndAngles(d, e, f, entity.getYaw(), entity.getPitch());
                 return entity;
             });
             if (entity2 == null) {

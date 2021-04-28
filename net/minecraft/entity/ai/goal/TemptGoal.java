@@ -58,7 +58,7 @@ extends Goal {
                 if (this.closestPlayer.squaredDistanceTo(this.lastPlayerX, this.lastPlayerY, this.lastPlayerZ) > 0.010000000000000002) {
                     return false;
                 }
-                if (Math.abs((double)this.closestPlayer.pitch - this.lastPlayerPitch) > 5.0 || Math.abs((double)this.closestPlayer.yaw - this.lastPlayerYaw) > 5.0) {
+                if (Math.abs((double)this.closestPlayer.getPitch() - this.lastPlayerPitch) > 5.0 || Math.abs((double)this.closestPlayer.getYaw() - this.lastPlayerYaw) > 5.0) {
                     return false;
                 }
             } else {
@@ -66,8 +66,8 @@ extends Goal {
                 this.lastPlayerY = this.closestPlayer.getY();
                 this.lastPlayerZ = this.closestPlayer.getZ();
             }
-            this.lastPlayerPitch = this.closestPlayer.pitch;
-            this.lastPlayerYaw = this.closestPlayer.yaw;
+            this.lastPlayerPitch = this.closestPlayer.getPitch();
+            this.lastPlayerYaw = this.closestPlayer.getYaw();
         }
         return this.canStart();
     }

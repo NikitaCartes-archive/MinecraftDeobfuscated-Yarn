@@ -374,12 +374,12 @@ extends Entity {
         double d = this.getX() + (this.x - this.getX()) / (double)this.field_7708;
         double e = this.getY() + (this.y - this.getY()) / (double)this.field_7708;
         double f = this.getZ() + (this.z - this.getZ()) / (double)this.field_7708;
-        double g = MathHelper.wrapDegrees(this.boatYaw - (double)this.yaw);
-        this.yaw = (float)((double)this.yaw + g / (double)this.field_7708);
-        this.pitch = (float)((double)this.pitch + (this.boatPitch - (double)this.pitch) / (double)this.field_7708);
+        double g = MathHelper.wrapDegrees(this.boatYaw - (double)this.getYaw());
+        this.setYaw(this.getYaw() + (float)g / (float)this.field_7708);
+        this.setPitch(this.getPitch() + (float)(this.boatPitch - (double)this.getPitch()) / (float)this.field_7708);
         --this.field_7708;
         this.setPosition(d, e, f);
-        this.setRotation(this.yaw, this.pitch);
+        this.setRotation(this.getYaw(), this.getPitch());
     }
 
     public void setPaddleMovings(boolean leftMoving, boolean rightMoving) {
@@ -576,14 +576,14 @@ extends Entity {
         if (this.pressingRight != this.pressingLeft && !this.pressingForward && !this.pressingBack) {
             f += 0.005f;
         }
-        this.yaw += this.yawVelocity;
+        this.setYaw(this.getYaw() + this.yawVelocity);
         if (this.pressingForward) {
             f += 0.04f;
         }
         if (this.pressingBack) {
             f -= 0.005f;
         }
-        this.setVelocity(this.getVelocity().add(MathHelper.sin(-this.yaw * ((float)Math.PI / 180)) * f, 0.0, MathHelper.cos(this.yaw * ((float)Math.PI / 180)) * f));
+        this.setVelocity(this.getVelocity().add(MathHelper.sin(-this.getYaw() * ((float)Math.PI / 180)) * f, 0.0, MathHelper.cos(this.getYaw() * ((float)Math.PI / 180)) * f));
         this.setPaddleMovings(this.pressingRight && !this.pressingLeft || this.pressingForward, this.pressingLeft && !this.pressingRight || this.pressingForward);
     }
 
@@ -601,14 +601,14 @@ extends Entity {
                 f = (float)((double)f + 0.2);
             }
         }
-        Vec3d vec3d = new Vec3d(f, 0.0, 0.0).rotateY(-this.yaw * ((float)Math.PI / 180) - 1.5707964f);
+        Vec3d vec3d = new Vec3d(f, 0.0, 0.0).rotateY(-this.getYaw() * ((float)Math.PI / 180) - 1.5707964f);
         passenger.setPosition(this.getX() + vec3d.x, this.getY() + (double)g, this.getZ() + vec3d.z);
-        passenger.yaw += this.yawVelocity;
+        passenger.setYaw(passenger.getYaw() + this.yawVelocity);
         passenger.setHeadYaw(passenger.getHeadYaw() + this.yawVelocity);
         this.copyEntityData(passenger);
         if (passenger instanceof AnimalEntity && this.getPassengerList().size() > 1) {
             int j = passenger.getId() % 2 == 0 ? 90 : 270;
-            passenger.setYaw(((AnimalEntity)passenger).bodyYaw + (float)j);
+            passenger.setBodyYaw(((AnimalEntity)passenger).bodyYaw + (float)j);
             passenger.setHeadYaw(passenger.getHeadYaw() + (float)j);
         }
     }
@@ -616,7 +616,7 @@ extends Entity {
     @Override
     public Vec3d updatePassengerForDismount(LivingEntity passenger) {
         double e;
-        Vec3d vec3d = BoatEntity.getPassengerDismountOffset(this.getWidth() * MathHelper.SQUARE_ROOT_OF_TWO, passenger.getWidth(), passenger.yaw);
+        Vec3d vec3d = BoatEntity.getPassengerDismountOffset(this.getWidth() * MathHelper.SQUARE_ROOT_OF_TWO, passenger.getWidth(), passenger.getYaw());
         double d = this.getX() + vec3d.x;
         BlockPos blockPos = new BlockPos(d, this.getBoundingBox().maxY, e = this.getZ() + vec3d.z);
         BlockPos blockPos2 = blockPos.down();
@@ -642,12 +642,12 @@ extends Entity {
     }
 
     protected void copyEntityData(Entity entity) {
-        entity.setYaw(this.yaw);
-        float f = MathHelper.wrapDegrees(entity.yaw - this.yaw);
+        entity.setBodyYaw(this.getYaw());
+        float f = MathHelper.wrapDegrees(entity.getYaw() - this.getYaw());
         float g = MathHelper.clamp(f, -105.0f, 105.0f);
         entity.prevYaw += g - f;
-        entity.yaw += g - f;
-        entity.setHeadYaw(entity.yaw);
+        entity.setYaw(entity.getYaw() + g - f);
+        entity.setHeadYaw(entity.getYaw());
     }
 
     @Override

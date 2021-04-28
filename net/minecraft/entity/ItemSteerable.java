@@ -28,11 +28,12 @@ public interface ItemSteerable {
             this.setMovementInput(movementInput);
             return false;
         }
-        entity.prevYaw = entity.yaw = entity2.yaw;
-        entity.pitch = entity2.pitch * 0.5f;
-        entity.setRotation(entity.yaw, entity.pitch);
-        entity.bodyYaw = entity.yaw;
-        entity.headYaw = entity.yaw;
+        entity.setYaw(entity2.getYaw());
+        entity.prevYaw = entity.getYaw();
+        entity.setPitch(entity2.getPitch() * 0.5f);
+        entity.setRotation(entity.getYaw(), entity.getPitch());
+        entity.bodyYaw = entity.getYaw();
+        entity.headYaw = entity.getYaw();
         entity.stepHeight = 1.0f;
         entity.flyingSpeed = entity.getMovementSpeed() * 0.1f;
         if (saddledEntity.boosted && saddledEntity.boostedTime++ > saddledEntity.currentBoostTime) {

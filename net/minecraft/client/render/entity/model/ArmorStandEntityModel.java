@@ -62,7 +62,7 @@ extends ArmorStandArmorEntityModel {
     @Override
     public void animateModel(ArmorStandEntity armorStandEntity, float f, float g, float h) {
         this.basePlate.pitch = 0.0f;
-        this.basePlate.yaw = (float)Math.PI / 180 * -MathHelper.lerpAngleDegrees(h, armorStandEntity.prevYaw, armorStandEntity.yaw);
+        this.basePlate.yaw = (float)Math.PI / 180 * -MathHelper.lerpAngleDegrees(h, armorStandEntity.prevYaw, armorStandEntity.getYaw());
         this.basePlate.roll = 0.0f;
     }
 

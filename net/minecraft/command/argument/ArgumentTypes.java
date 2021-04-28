@@ -37,7 +37,7 @@ import net.minecraft.command.argument.ItemPredicateArgumentType;
 import net.minecraft.command.argument.ItemSlotArgumentType;
 import net.minecraft.command.argument.ItemStackArgumentType;
 import net.minecraft.command.argument.MessageArgumentType;
-import net.minecraft.command.argument.NbtCompoundTagArgumentType;
+import net.minecraft.command.argument.NbtCompoundArgumentType;
 import net.minecraft.command.argument.NbtElementArgumentType;
 import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.command.argument.NumberRangeArgumentType;
@@ -104,7 +104,7 @@ public class ArgumentTypes {
         ArgumentTypes.register("color", ColorArgumentType.class, new ConstantArgumentSerializer<ColorArgumentType>(ColorArgumentType::color));
         ArgumentTypes.register("component", TextArgumentType.class, new ConstantArgumentSerializer<TextArgumentType>(TextArgumentType::text));
         ArgumentTypes.register("message", MessageArgumentType.class, new ConstantArgumentSerializer<MessageArgumentType>(MessageArgumentType::message));
-        ArgumentTypes.register("nbt_compound_tag", NbtCompoundTagArgumentType.class, new ConstantArgumentSerializer<NbtCompoundTagArgumentType>(NbtCompoundTagArgumentType::nbtCompound));
+        ArgumentTypes.register("nbt_compound_tag", NbtCompoundArgumentType.class, new ConstantArgumentSerializer<NbtCompoundArgumentType>(NbtCompoundArgumentType::nbtCompound));
         ArgumentTypes.register("nbt_tag", NbtElementArgumentType.class, new ConstantArgumentSerializer<NbtElementArgumentType>(NbtElementArgumentType::nbtElement));
         ArgumentTypes.register("nbt_path", NbtPathArgumentType.class, new ConstantArgumentSerializer<NbtPathArgumentType>(NbtPathArgumentType::nbtPath));
         ArgumentTypes.register("objective", ScoreboardObjectiveArgumentType.class, new ConstantArgumentSerializer<ScoreboardObjectiveArgumentType>(ScoreboardObjectiveArgumentType::scoreboardObjective));

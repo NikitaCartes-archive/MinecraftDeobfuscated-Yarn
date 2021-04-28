@@ -94,7 +94,7 @@ extends WaterCreatureEntity {
     @Nullable
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         this.setAir(this.getMaxAir());
-        this.pitch = 0.0f;
+        this.setPitch(0.0f);
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
@@ -263,15 +263,15 @@ extends WaterCreatureEntity {
             }
             if (this.onGround) {
                 this.setVelocity(this.getVelocity().add((this.random.nextFloat() * 2.0f - 1.0f) * 0.2f, 0.5, (this.random.nextFloat() * 2.0f - 1.0f) * 0.2f));
-                this.yaw = this.random.nextFloat() * 360.0f;
+                this.setYaw(this.random.nextFloat() * 360.0f);
                 this.onGround = false;
                 this.velocityDirty = true;
             }
         }
         if (this.world.isClient && this.isTouchingWater() && this.getVelocity().lengthSquared() > 0.03) {
             Vec3d vec3d = this.getRotationVec(0.0f);
-            float f = MathHelper.cos(this.yaw * ((float)Math.PI / 180)) * 0.3f;
-            float g = MathHelper.sin(this.yaw * ((float)Math.PI / 180)) * 0.3f;
+            float f = MathHelper.cos(this.getYaw() * ((float)Math.PI / 180)) * 0.3f;
+            float g = MathHelper.sin(this.getYaw() * ((float)Math.PI / 180)) * 0.3f;
             float h = 1.2f - this.random.nextFloat() * 0.7f;
             for (int i = 0; i < 2; ++i) {
                 this.world.addParticle(ParticleTypes.DOLPHIN, this.getX() - vec3d.x * (double)h + (double)f, this.getY() - vec3d.y, this.getZ() - vec3d.z * (double)h + (double)g, 0.0, 0.0, 0.0);
@@ -574,7 +574,7 @@ extends WaterCreatureEntity {
             float f = 0.3f;
             float g = DolphinEntity.this.random.nextFloat() * ((float)Math.PI * 2);
             float h = 0.02f * DolphinEntity.this.random.nextFloat();
-            itemEntity.setVelocity(0.3f * -MathHelper.sin(DolphinEntity.this.yaw * ((float)Math.PI / 180)) * MathHelper.cos(DolphinEntity.this.pitch * ((float)Math.PI / 180)) + MathHelper.cos(g) * h, 0.3f * MathHelper.sin(DolphinEntity.this.pitch * ((float)Math.PI / 180)) * 1.5f, 0.3f * MathHelper.cos(DolphinEntity.this.yaw * ((float)Math.PI / 180)) * MathHelper.cos(DolphinEntity.this.pitch * ((float)Math.PI / 180)) + MathHelper.sin(g) * h);
+            itemEntity.setVelocity(0.3f * -MathHelper.sin(DolphinEntity.this.getYaw() * ((float)Math.PI / 180)) * MathHelper.cos(DolphinEntity.this.getPitch() * ((float)Math.PI / 180)) + MathHelper.cos(g) * h, 0.3f * MathHelper.sin(DolphinEntity.this.getPitch() * ((float)Math.PI / 180)) * 1.5f, 0.3f * MathHelper.cos(DolphinEntity.this.getYaw() * ((float)Math.PI / 180)) * MathHelper.cos(DolphinEntity.this.getPitch() * ((float)Math.PI / 180)) + MathHelper.sin(g) * h);
             DolphinEntity.this.world.spawnEntity(itemEntity);
         }
     }

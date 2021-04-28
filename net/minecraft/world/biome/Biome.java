@@ -347,14 +347,14 @@ public final class Biome {
             return "temp: " + this.temperature + ", hum: " + this.humidity + ", alt: " + this.altitude + ", weird: " + this.weirdness + ", offset: " + this.weight;
         }
 
-        public boolean equals(Object object) {
-            if (this == object) {
+        public boolean equals(Object o) {
+            if (this == o) {
                 return true;
             }
-            if (object == null || this.getClass() != object.getClass()) {
+            if (o == null || this.getClass() != o.getClass()) {
                 return false;
             }
-            MixedNoisePoint mixedNoisePoint = (MixedNoisePoint)object;
+            MixedNoisePoint mixedNoisePoint = (MixedNoisePoint)o;
             if (Float.compare(mixedNoisePoint.temperature, this.temperature) != 0) {
                 return false;
             }

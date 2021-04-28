@@ -55,11 +55,11 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     public EntitySpawnS2CPacket(Entity entity, int entityData) {
-        this(entity.getId(), entity.getUuid(), entity.getX(), entity.getY(), entity.getZ(), entity.pitch, entity.yaw, entity.getType(), entityData, entity.getVelocity());
+        this(entity.getId(), entity.getUuid(), entity.getX(), entity.getY(), entity.getZ(), entity.getPitch(), entity.getYaw(), entity.getType(), entityData, entity.getVelocity());
     }
 
     public EntitySpawnS2CPacket(Entity entity, EntityType<?> entityType, int data, BlockPos pos) {
-        this(entity.getId(), entity.getUuid(), pos.getX(), pos.getY(), pos.getZ(), entity.pitch, entity.yaw, entityType, data, entity.getVelocity());
+        this(entity.getId(), entity.getUuid(), pos.getX(), pos.getY(), pos.getZ(), entity.getPitch(), entity.getYaw(), entityType, data, entity.getVelocity());
     }
 
     public EntitySpawnS2CPacket(PacketByteBuf buf) {

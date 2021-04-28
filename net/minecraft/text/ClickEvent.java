@@ -24,14 +24,14 @@ public class ClickEvent {
         return this.value;
     }
 
-    public boolean equals(Object obj) {
-        if (this == obj) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (obj == null || this.getClass() != obj.getClass()) {
+        if (o == null || this.getClass() != o.getClass()) {
             return false;
         }
-        ClickEvent clickEvent = (ClickEvent)obj;
+        ClickEvent clickEvent = (ClickEvent)o;
         if (this.action != clickEvent.action) {
             return false;
         }

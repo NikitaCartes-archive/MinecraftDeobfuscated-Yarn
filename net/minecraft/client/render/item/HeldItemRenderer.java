@@ -281,7 +281,7 @@ public class HeldItemRenderer {
         float j;
         float f = player.getHandSwingProgress(tickDelta);
         Hand hand = MoreObjects.firstNonNull(player.preferredHand, Hand.MAIN_HAND);
-        float g = MathHelper.lerp(tickDelta, player.prevPitch, player.pitch);
+        float g = MathHelper.lerp(tickDelta, player.prevPitch, player.getPitch());
         HandRenderType handRenderType = HeldItemRenderer.getHandRenderType(player);
         float h = MathHelper.lerp(tickDelta, player.lastRenderPitch, player.renderPitch);
         float i = MathHelper.lerp(tickDelta, player.lastRenderYaw, player.renderYaw);

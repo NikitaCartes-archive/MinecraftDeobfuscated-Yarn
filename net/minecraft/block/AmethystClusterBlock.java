@@ -32,7 +32,6 @@ import org.jetbrains.annotations.Nullable;
 public class AmethystClusterBlock
 extends AmethystBlock
 implements Waterloggable {
-    public static final BooleanProperty LIT = Properties.LIT;
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
     public static final DirectionProperty FACING = Properties.FACING;
     protected final VoxelShape NORTH_SHAPE;
@@ -44,7 +43,7 @@ implements Waterloggable {
 
     public AmethystClusterBlock(int height, int xzOffset, AbstractBlock.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)this.getDefaultState().with(LIT, true)).with(WATERLOGGED, false)).with(FACING, Direction.UP));
+        this.setDefaultState((BlockState)((BlockState)this.getDefaultState().with(WATERLOGGED, false)).with(FACING, Direction.UP));
         this.UP_SHAPE = Block.createCuboidShape(xzOffset, 0.0, xzOffset, 16 - xzOffset, height, 16 - xzOffset);
         this.DOWN_SHAPE = Block.createCuboidShape(xzOffset, 16 - height, xzOffset, 16 - xzOffset, 16.0, 16 - xzOffset);
         this.NORTH_SHAPE = Block.createCuboidShape(xzOffset, xzOffset, 16 - height, 16 - xzOffset, 16 - xzOffset, 16.0);
@@ -122,7 +121,7 @@ implements Waterloggable {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(WATERLOGGED, LIT, FACING);
+        builder.add(WATERLOGGED, FACING);
     }
 
     @Override

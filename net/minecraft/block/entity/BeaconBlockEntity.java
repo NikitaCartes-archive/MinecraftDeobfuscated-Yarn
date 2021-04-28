@@ -57,7 +57,7 @@ implements NamedScreenHandlerFactory {
     private List<BeamSegment> beamSegments = Lists.newArrayList();
     private List<BeamSegment> field_19178 = Lists.newArrayList();
     private int level;
-    private int field_19179;
+    private int minY;
     @Nullable
     private StatusEffect primary;
     @Nullable
@@ -119,12 +119,12 @@ implements NamedScreenHandlerFactory {
         int i = pos.getX();
         int j = pos.getY();
         int k = pos.getZ();
-        if (blockEntity.field_19179 < j) {
+        if (blockEntity.minY < j) {
             blockPos = pos;
             blockEntity.field_19178 = Lists.newArrayList();
-            blockEntity.field_19179 = blockPos.getY() - 1;
+            blockEntity.minY = blockPos.getY() - 1;
         } else {
-            blockPos = new BlockPos(i, blockEntity.field_19179 + 1, k);
+            blockPos = new BlockPos(i, blockEntity.minY + 1, k);
         }
         BeamSegment beamSegment = blockEntity.field_19178.isEmpty() ? null : blockEntity.field_19178.get(blockEntity.field_19178.size() - 1);
         int l = world.getTopY(Heightmap.Type.WORLD_SURFACE, i, k);
@@ -156,12 +156,12 @@ implements NamedScreenHandlerFactory {
                     beamSegment.increaseHeight();
                 } else {
                     blockEntity.field_19178.clear();
-                    blockEntity.field_19179 = l;
+                    blockEntity.minY = l;
                     break;
                 }
             }
             blockPos = blockPos.up();
-            ++blockEntity.field_19179;
+            ++blockEntity.minY;
         }
         m = blockEntity.level;
         if (world.getTime() % 80L == 0L) {
@@ -173,8 +173,8 @@ implements NamedScreenHandlerFactory {
                 BeaconBlockEntity.playSound(world, pos, SoundEvents.BLOCK_BEACON_AMBIENT);
             }
         }
-        if (blockEntity.field_19179 >= l) {
-            blockEntity.field_19179 = world.getBottomY() - 1;
+        if (blockEntity.minY >= l) {
+            blockEntity.minY = world.getBottomY() - 1;
             boolean bl = m > 0;
             blockEntity.beamSegments = blockEntity.field_19178;
             if (!world.isClient) {
@@ -309,7 +309,7 @@ implements NamedScreenHandlerFactory {
     @Override
     public void setWorld(World world) {
         super.setWorld(world);
-        this.field_19179 = world.getBottomY() - 1;
+        this.minY = world.getBottomY() - 1;
     }
 
     public static class BeamSegment {

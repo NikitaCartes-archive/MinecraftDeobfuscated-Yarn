@@ -98,8 +98,8 @@ extends NetworkSyncedItem {
             return;
         }
         int i = 1 << state.scale;
-        int j = state.xCenter;
-        int k = state.zCenter;
+        int j = state.centerX;
+        int k = state.centerZ;
         int l = MathHelper.floor(entity.getX() - (double)j) / i + 64;
         int m = MathHelper.floor(entity.getZ() - (double)k) / i + 64;
         int n = 128 / i;
@@ -218,8 +218,8 @@ extends NetworkSyncedItem {
             return;
         }
         int i = 1 << mapState.scale;
-        int j = mapState.xCenter;
-        int k = mapState.zCenter;
+        int j = mapState.centerX;
+        int k = mapState.centerZ;
         Biome[] biomes = new Biome[128 * i * 128 * i];
         for (l = 0; l < 128 * i; ++l) {
             for (m = 0; m < 128 * i; ++m) {

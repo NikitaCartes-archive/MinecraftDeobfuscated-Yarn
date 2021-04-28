@@ -164,9 +164,9 @@ extends AbstractClientPlayerEntity {
             this.client.getSoundManager().play(new MinecartInsideSoundInstance(this, (AbstractMinecartEntity)entity, false));
         }
         if (entity instanceof BoatEntity) {
-            this.prevYaw = entity.yaw;
-            this.yaw = entity.yaw;
-            this.setHeadYaw(entity.yaw);
+            this.prevYaw = entity.getYaw();
+            this.setYaw(entity.getYaw());
+            this.setHeadYaw(entity.getYaw());
         }
         return true;
     }
@@ -179,7 +179,7 @@ extends AbstractClientPlayerEntity {
 
     @Override
     public float getPitch(float tickDelta) {
-        return this.pitch;
+        return this.getPitch();
     }
 
     @Override
@@ -187,7 +187,7 @@ extends AbstractClientPlayerEntity {
         if (this.hasVehicle()) {
             return super.getYaw(tickDelta);
         }
-        return this.yaw;
+        return this.getYaw();
     }
 
     @Override
@@ -197,7 +197,7 @@ extends AbstractClientPlayerEntity {
         }
         super.tick();
         if (this.hasVehicle()) {
-            this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(this.yaw, this.pitch, this.onGround));
+            this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(this.getYaw(), this.getPitch(), this.onGround));
             this.networkHandler.sendPacket(new PlayerInputC2SPacket(this.sidewaysSpeed, this.forwardSpeed, this.input.jumping, this.input.sneaking));
             Entity entity = this.getRootVehicle();
             if (entity != this && entity.isLogicalSideForUpdatingMovement()) {
@@ -241,21 +241,21 @@ extends AbstractClientPlayerEntity {
             double d = this.getX() - this.lastX;
             double e = this.getY() - this.lastBaseY;
             double f = this.getZ() - this.lastZ;
-            double g = this.yaw - this.lastYaw;
-            double h = this.pitch - this.lastPitch;
+            double g = this.getYaw() - this.lastYaw;
+            double h = this.getPitch() - this.lastPitch;
             ++this.ticksSinceLastPositionPacketSent;
             boolean bl3 = d * d + e * e + f * f > 9.0E-4 || this.ticksSinceLastPositionPacketSent >= 20;
             boolean bl5 = bl4 = g != 0.0 || h != 0.0;
             if (this.hasVehicle()) {
                 Vec3d vec3d = this.getVelocity();
-                this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Full(vec3d.x, -999.0, vec3d.z, this.yaw, this.pitch, this.onGround));
+                this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Full(vec3d.x, -999.0, vec3d.z, this.getYaw(), this.getPitch(), this.onGround));
                 bl3 = false;
             } else if (bl3 && bl4) {
-                this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Full(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch, this.onGround));
+                this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Full(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch(), this.onGround));
             } else if (bl3) {
                 this.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(this.getX(), this.getY(), this.getZ(), this.onGround));
             } else if (bl4) {
-                this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(this.yaw, this.pitch, this.onGround));
+                this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(this.getYaw(), this.getPitch(), this.onGround));
             } else if (this.lastOnGround != this.onGround) {
                 this.networkHandler.sendPacket(new PlayerMoveC2SPacket.OnGroundOnly(this.onGround));
             }
@@ -266,8 +266,8 @@ extends AbstractClientPlayerEntity {
                 this.ticksSinceLastPositionPacketSent = 0;
             }
             if (bl4) {
-                this.lastYaw = this.yaw;
-                this.lastPitch = this.pitch;
+                this.lastYaw = this.getYaw();
+                this.lastPitch = this.getPitch();
             }
             this.lastOnGround = this.onGround;
             this.autoJumpEnabled = this.client.options.autoJump;
@@ -612,8 +612,8 @@ extends AbstractClientPlayerEntity {
             this.jumping = this.input.jumping;
             this.lastRenderYaw = this.renderYaw;
             this.lastRenderPitch = this.renderPitch;
-            this.renderPitch = (float)((double)this.renderPitch + (double)(this.pitch - this.renderPitch) * 0.5);
-            this.renderYaw = (float)((double)this.renderYaw + (double)(this.yaw - this.renderYaw) * 0.5);
+            this.renderPitch = (float)((double)this.renderPitch + (double)(this.getPitch() - this.renderPitch) * 0.5);
+            this.renderYaw = (float)((double)this.renderYaw + (double)(this.getYaw() - this.renderYaw) * 0.5);
         }
     }
 
@@ -629,7 +629,7 @@ extends AbstractClientPlayerEntity {
                 if (this.world.isSpaceEmpty(this)) break;
             }
             this.setVelocity(Vec3d.ZERO);
-            this.pitch = 0.0f;
+            this.setPitch(0.0f);
         }
         this.setHealth(this.getMaxHealth());
         this.deathTime = 0;
@@ -853,8 +853,8 @@ extends AbstractClientPlayerEntity {
             Vec2f vec2f = this.input.getMovementInput();
             float h = f * vec2f.x;
             float i = f * vec2f.y;
-            j = MathHelper.sin(this.yaw * ((float)Math.PI / 180));
-            float k = MathHelper.cos(this.yaw * ((float)Math.PI / 180));
+            j = MathHelper.sin(this.getYaw() * ((float)Math.PI / 180));
+            float k = MathHelper.cos(this.getYaw() * ((float)Math.PI / 180));
             vec3d3 = new Vec3d(h * k - i * j, vec3d3.y, i * k + h * j);
             g = (float)vec3d3.lengthSquared();
             if (g <= 0.001f) {
@@ -993,8 +993,8 @@ extends AbstractClientPlayerEntity {
     @Override
     public Vec3d method_30951(float f) {
         if (this.client.options.getPerspective().isFirstPerson()) {
-            float g = MathHelper.lerp(f * 0.5f, this.yaw, this.prevYaw) * ((float)Math.PI / 180);
-            float h = MathHelper.lerp(f * 0.5f, this.pitch, this.prevPitch) * ((float)Math.PI / 180);
+            float g = MathHelper.lerp(f * 0.5f, this.getYaw(), this.prevYaw) * ((float)Math.PI / 180);
+            float h = MathHelper.lerp(f * 0.5f, this.getPitch(), this.prevPitch) * ((float)Math.PI / 180);
             double d = this.getMainArm() == Arm.RIGHT ? -1.0 : 1.0;
             Vec3d vec3d = new Vec3d(0.39 * d, -0.6, 0.3);
             return vec3d.rotateX(-h).rotateY(-g).add(this.getCameraPosVec(f));

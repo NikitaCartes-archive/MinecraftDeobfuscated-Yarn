@@ -44,14 +44,14 @@ implements Comparable<BlockBreakingInfo> {
         return this.lastUpdateTick;
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (object == null || this.getClass() != object.getClass()) {
+        if (o == null || this.getClass() != o.getClass()) {
             return false;
         }
-        BlockBreakingInfo blockBreakingInfo = (BlockBreakingInfo)object;
+        BlockBreakingInfo blockBreakingInfo = (BlockBreakingInfo)o;
         return this.actorNetworkId == blockBreakingInfo.actorNetworkId;
     }
 

@@ -515,7 +515,7 @@ AutoCloseable {
     }
 
     protected boolean canDrawEntityOutlines() {
-        return !this.client.gameRenderer.method_35765() && this.entityOutlinesFramebuffer != null && this.entityOutlineShader != null && this.client.player != null;
+        return !this.client.gameRenderer.isRenderingPanorama() && this.entityOutlinesFramebuffer != null && this.entityOutlineShader != null && this.client.player != null;
     }
 
     private void renderDarkSky() {
@@ -1186,7 +1186,7 @@ AutoCloseable {
         double d = MathHelper.lerp((double)tickDelta, entity.lastRenderX, entity.getX());
         double e = MathHelper.lerp((double)tickDelta, entity.lastRenderY, entity.getY());
         double f = MathHelper.lerp((double)tickDelta, entity.lastRenderZ, entity.getZ());
-        float g = MathHelper.lerp(tickDelta, entity.prevYaw, entity.yaw);
+        float g = MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw());
         this.entityRenderDispatcher.render(entity, d - cameraX, e - cameraY, f - cameraZ, g, tickDelta, matrices, vertexConsumers, this.entityRenderDispatcher.getLight(entity, tickDelta));
     }
 
@@ -1263,7 +1263,7 @@ AutoCloseable {
             bl2 = true;
         }
         if (glUniform != null) {
-            glUniform.set(Vec3f.field_29501);
+            glUniform.set(Vec3f.ZERO);
         }
         shader.bind();
         if (bl2) {

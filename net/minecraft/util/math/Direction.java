@@ -165,13 +165,13 @@ public enum Direction implements StringIdentifiable
         return Direction.byId(this.idOpposite);
     }
 
-    public Direction method_35833(Axis axis) {
+    public Direction rotateClockwise(Axis axis) {
         switch (axis) {
             case X: {
                 if (this == WEST || this == EAST) {
                     return this;
                 }
-                return this.method_35835();
+                return this.rotateXClockwise();
             }
             case Y: {
                 if (this == UP || this == DOWN) {
@@ -183,19 +183,19 @@ public enum Direction implements StringIdentifiable
                 if (this == NORTH || this == SOUTH) {
                     return this;
                 }
-                return this.method_35837();
+                return this.rotateZClockwise();
             }
         }
         throw new IllegalStateException("Unable to get CW facing for axis " + axis);
     }
 
-    public Direction method_35834(Axis axis) {
+    public Direction rotateCounterclockwise(Axis axis) {
         switch (axis) {
             case X: {
                 if (this == WEST || this == EAST) {
                     return this;
                 }
-                return this.method_35836();
+                return this.rotateXCounterclockwise();
             }
             case Y: {
                 if (this == UP || this == DOWN) {
@@ -207,7 +207,7 @@ public enum Direction implements StringIdentifiable
                 if (this == NORTH || this == SOUTH) {
                     return this;
                 }
-                return this.method_35838();
+                return this.rotateZCounterclockwise();
             }
         }
         throw new IllegalStateException("Unable to get CW facing for axis " + axis);
@@ -231,7 +231,7 @@ public enum Direction implements StringIdentifiable
         throw new IllegalStateException("Unable to get Y-rotated facing of " + this);
     }
 
-    private Direction method_35835() {
+    private Direction rotateXClockwise() {
         switch (this) {
             case UP: {
                 return NORTH;
@@ -249,7 +249,7 @@ public enum Direction implements StringIdentifiable
         throw new IllegalStateException("Unable to get X-rotated facing of " + this);
     }
 
-    private Direction method_35836() {
+    private Direction rotateXCounterclockwise() {
         switch (this) {
             case UP: {
                 return SOUTH;
@@ -267,7 +267,7 @@ public enum Direction implements StringIdentifiable
         throw new IllegalStateException("Unable to get X-rotated facing of " + this);
     }
 
-    private Direction method_35837() {
+    private Direction rotateZClockwise() {
         switch (this) {
             case UP: {
                 return EAST;
@@ -285,7 +285,7 @@ public enum Direction implements StringIdentifiable
         throw new IllegalStateException("Unable to get Z-rotated facing of " + this);
     }
 
-    private Direction method_35838() {
+    private Direction rotateZCounterclockwise() {
         switch (this) {
             case UP: {
                 return WEST;
@@ -362,8 +362,8 @@ public enum Direction implements StringIdentifiable
     }
 
     @Nullable
-    public static Direction method_35832(BlockPos blockPos) {
-        return (Direction)VECTOR_TO_DIRECTION.get(blockPos.asLong());
+    public static Direction fromVector(BlockPos pos) {
+        return (Direction)VECTOR_TO_DIRECTION.get(pos.asLong());
     }
 
     @Nullable
@@ -445,7 +445,7 @@ public enum Direction implements StringIdentifiable
         NAME_MAP = Arrays.stream(ALL).collect(Collectors.toMap(Direction::getName, direction -> direction));
         VALUES = (Direction[])Arrays.stream(ALL).sorted(Comparator.comparingInt(direction -> direction.id)).toArray(Direction[]::new);
         HORIZONTAL = (Direction[])Arrays.stream(ALL).filter(direction -> direction.getAxis().isHorizontal()).sorted(Comparator.comparingInt(direction -> direction.idHorizontal)).toArray(Direction[]::new);
-        VECTOR_TO_DIRECTION = Arrays.stream(ALL).collect(Collectors.toMap(direction -> new BlockPos(direction.getVector()).asLong(), direction -> direction, (direction, direction2) -> {
+        VECTOR_TO_DIRECTION = Arrays.stream(ALL).collect(Collectors.toMap(direction -> new BlockPos(direction.getVector()).asLong(), direction -> direction, (direction1, direction2) -> {
             throw new IllegalArgumentException("Duplicate keys");
         }, Long2ObjectOpenHashMap::new));
     }
@@ -508,7 +508,7 @@ public enum Direction implements StringIdentifiable
             return this.offset;
         }
 
-        public String method_35839() {
+        public String getDescription() {
             return this.description;
         }
 

@@ -397,30 +397,30 @@ public class Box {
     }
 
     @Nullable
-    private static Direction traceCollisionSide(Box box, Vec3d intersectingVector, double[] traceDistanceResult, @Nullable Direction approachDirection, double xDelta, double yDelta, double zDelta) {
-        if (xDelta > 1.0E-7) {
-            approachDirection = Box.traceCollisionSide(traceDistanceResult, approachDirection, xDelta, yDelta, zDelta, box.minX, box.minY, box.maxY, box.minZ, box.maxZ, Direction.WEST, intersectingVector.x, intersectingVector.y, intersectingVector.z);
-        } else if (xDelta < -1.0E-7) {
-            approachDirection = Box.traceCollisionSide(traceDistanceResult, approachDirection, xDelta, yDelta, zDelta, box.maxX, box.minY, box.maxY, box.minZ, box.maxZ, Direction.EAST, intersectingVector.x, intersectingVector.y, intersectingVector.z);
+    private static Direction traceCollisionSide(Box box, Vec3d intersectingVector, double[] traceDistanceResult, @Nullable Direction approachDirection, double deltaX, double deltaY, double deltaZ) {
+        if (deltaX > 1.0E-7) {
+            approachDirection = Box.traceCollisionSide(traceDistanceResult, approachDirection, deltaX, deltaY, deltaZ, box.minX, box.minY, box.maxY, box.minZ, box.maxZ, Direction.WEST, intersectingVector.x, intersectingVector.y, intersectingVector.z);
+        } else if (deltaX < -1.0E-7) {
+            approachDirection = Box.traceCollisionSide(traceDistanceResult, approachDirection, deltaX, deltaY, deltaZ, box.maxX, box.minY, box.maxY, box.minZ, box.maxZ, Direction.EAST, intersectingVector.x, intersectingVector.y, intersectingVector.z);
         }
-        if (yDelta > 1.0E-7) {
-            approachDirection = Box.traceCollisionSide(traceDistanceResult, approachDirection, yDelta, zDelta, xDelta, box.minY, box.minZ, box.maxZ, box.minX, box.maxX, Direction.DOWN, intersectingVector.y, intersectingVector.z, intersectingVector.x);
-        } else if (yDelta < -1.0E-7) {
-            approachDirection = Box.traceCollisionSide(traceDistanceResult, approachDirection, yDelta, zDelta, xDelta, box.maxY, box.minZ, box.maxZ, box.minX, box.maxX, Direction.UP, intersectingVector.y, intersectingVector.z, intersectingVector.x);
+        if (deltaY > 1.0E-7) {
+            approachDirection = Box.traceCollisionSide(traceDistanceResult, approachDirection, deltaY, deltaZ, deltaX, box.minY, box.minZ, box.maxZ, box.minX, box.maxX, Direction.DOWN, intersectingVector.y, intersectingVector.z, intersectingVector.x);
+        } else if (deltaY < -1.0E-7) {
+            approachDirection = Box.traceCollisionSide(traceDistanceResult, approachDirection, deltaY, deltaZ, deltaX, box.maxY, box.minZ, box.maxZ, box.minX, box.maxX, Direction.UP, intersectingVector.y, intersectingVector.z, intersectingVector.x);
         }
-        if (zDelta > 1.0E-7) {
-            approachDirection = Box.traceCollisionSide(traceDistanceResult, approachDirection, zDelta, xDelta, yDelta, box.minZ, box.minX, box.maxX, box.minY, box.maxY, Direction.NORTH, intersectingVector.z, intersectingVector.x, intersectingVector.y);
-        } else if (zDelta < -1.0E-7) {
-            approachDirection = Box.traceCollisionSide(traceDistanceResult, approachDirection, zDelta, xDelta, yDelta, box.maxZ, box.minX, box.maxX, box.minY, box.maxY, Direction.SOUTH, intersectingVector.z, intersectingVector.x, intersectingVector.y);
+        if (deltaZ > 1.0E-7) {
+            approachDirection = Box.traceCollisionSide(traceDistanceResult, approachDirection, deltaZ, deltaX, deltaY, box.minZ, box.minX, box.maxX, box.minY, box.maxY, Direction.NORTH, intersectingVector.z, intersectingVector.x, intersectingVector.y);
+        } else if (deltaZ < -1.0E-7) {
+            approachDirection = Box.traceCollisionSide(traceDistanceResult, approachDirection, deltaZ, deltaX, deltaY, box.maxZ, box.minX, box.maxX, box.minY, box.maxY, Direction.SOUTH, intersectingVector.z, intersectingVector.x, intersectingVector.y);
         }
         return approachDirection;
     }
 
     @Nullable
-    private static Direction traceCollisionSide(double[] traceDistanceResult, @Nullable Direction approachDirection, double xDelta, double yDelta, double zDelta, double begin, double minX, double maxX, double minZ, double maxZ, Direction resultDirection, double startX, double startY, double startZ) {
-        double d = (begin - startX) / xDelta;
-        double e = startY + d * yDelta;
-        double f = startZ + d * zDelta;
+    private static Direction traceCollisionSide(double[] traceDistanceResult, @Nullable Direction approachDirection, double deltaX, double deltaY, double deltaZ, double begin, double minX, double maxX, double minZ, double maxZ, Direction resultDirection, double startX, double startY, double startZ) {
+        double d = (begin - startX) / deltaX;
+        double e = startY + d * deltaY;
+        double f = startZ + d * deltaZ;
         if (0.0 < d && d < traceDistanceResult[0] && minX - 1.0E-7 < e && e < maxX + 1.0E-7 && minZ - 1.0E-7 < f && f < maxZ + 1.0E-7) {
             traceDistanceResult[0] = d;
             return resultDirection;

@@ -30,8 +30,8 @@ extends FeatureRenderer<DolphinEntity, DolphinEntityModel<DolphinEntity>> {
         matrixStack.push();
         float m = 1.0f;
         float n = -1.0f;
-        float o = MathHelper.abs(dolphinEntity.pitch) / 60.0f;
-        if (dolphinEntity.pitch < 0.0f) {
+        float o = MathHelper.abs(dolphinEntity.getPitch()) / 60.0f;
+        if (dolphinEntity.getPitch() < 0.0f) {
             matrixStack.translate(0.0, 1.0f - o * 0.5f, -1.0f + o * 0.5f);
         } else {
             matrixStack.translate(0.0, 1.0f + o * 0.8f, -1.0f + o * 0.2f);

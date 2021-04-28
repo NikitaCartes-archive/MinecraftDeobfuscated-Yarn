@@ -99,22 +99,22 @@ public final class ProjectileUtil {
             return;
         }
         float g = MathHelper.sqrt(Entity.squaredHorizontalLength(vec3d));
-        entity.yaw = (float)(MathHelper.atan2(vec3d.z, vec3d.x) * 57.2957763671875) + 90.0f;
-        entity.pitch = (float)(MathHelper.atan2(g, vec3d.y) * 57.2957763671875) - 90.0f;
-        while (entity.pitch - entity.prevPitch < -180.0f) {
+        entity.setYaw((float)(MathHelper.atan2(vec3d.z, vec3d.x) * 57.2957763671875) + 90.0f);
+        entity.setPitch((float)(MathHelper.atan2(g, vec3d.y) * 57.2957763671875) - 90.0f);
+        while (entity.getPitch() - entity.prevPitch < -180.0f) {
             entity.prevPitch -= 360.0f;
         }
-        while (entity.pitch - entity.prevPitch >= 180.0f) {
+        while (entity.getPitch() - entity.prevPitch >= 180.0f) {
             entity.prevPitch += 360.0f;
         }
-        while (entity.yaw - entity.prevYaw < -180.0f) {
+        while (entity.getYaw() - entity.prevYaw < -180.0f) {
             entity.prevYaw -= 360.0f;
         }
-        while (entity.yaw - entity.prevYaw >= 180.0f) {
+        while (entity.getYaw() - entity.prevYaw >= 180.0f) {
             entity.prevYaw += 360.0f;
         }
-        entity.pitch = MathHelper.lerp(f, entity.prevPitch, entity.pitch);
-        entity.yaw = MathHelper.lerp(f, entity.prevYaw, entity.yaw);
+        entity.setPitch(MathHelper.lerp(f, entity.prevPitch, entity.getPitch()));
+        entity.setYaw(MathHelper.lerp(f, entity.prevYaw, entity.getYaw()));
     }
 
     public static Hand getHandPossiblyHolding(LivingEntity entity, Item item) {

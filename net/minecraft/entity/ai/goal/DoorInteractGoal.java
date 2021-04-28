@@ -19,8 +19,8 @@ extends Goal {
     protected BlockPos doorPos = BlockPos.ORIGIN;
     protected boolean doorValid;
     private boolean shouldStop;
-    private float xOffset;
-    private float zOffset;
+    private float offsetX;
+    private float offsetZ;
 
     public DoorInteractGoal(MobEntity mob) {
         this.mob = mob;
@@ -82,15 +82,15 @@ extends Goal {
     @Override
     public void start() {
         this.shouldStop = false;
-        this.xOffset = (float)((double)this.doorPos.getX() + 0.5 - this.mob.getX());
-        this.zOffset = (float)((double)this.doorPos.getZ() + 0.5 - this.mob.getZ());
+        this.offsetX = (float)((double)this.doorPos.getX() + 0.5 - this.mob.getX());
+        this.offsetZ = (float)((double)this.doorPos.getZ() + 0.5 - this.mob.getZ());
     }
 
     @Override
     public void tick() {
         float g;
         float f = (float)((double)this.doorPos.getX() + 0.5 - this.mob.getX());
-        float h = this.xOffset * f + this.zOffset * (g = (float)((double)this.doorPos.getZ() + 0.5 - this.mob.getZ()));
+        float h = this.offsetX * f + this.offsetZ * (g = (float)((double)this.doorPos.getZ() + 0.5 - this.mob.getZ()));
         if (h < 0.0f) {
             this.shouldStop = true;
         }

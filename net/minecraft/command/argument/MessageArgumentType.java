@@ -41,8 +41,8 @@ implements ArgumentType<MessageFormat> {
     }
 
     @Override
-    public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+    public /* synthetic */ Object parse(StringReader reader) throws CommandSyntaxException {
+        return this.parse(reader);
     }
 
     public static class MessageSelector {
@@ -50,10 +50,10 @@ implements ArgumentType<MessageFormat> {
         private final int end;
         private final EntitySelector selector;
 
-        public MessageSelector(int i, int j, EntitySelector entitySelector) {
-            this.start = i;
-            this.end = j;
-            this.selector = entitySelector;
+        public MessageSelector(int start, int end, EntitySelector selector) {
+            this.start = start;
+            this.end = end;
+            this.selector = selector;
         }
 
         public int getStart() {
@@ -64,13 +64,13 @@ implements ArgumentType<MessageFormat> {
             return this.end;
         }
 
-        public EntitySelector method_35693() {
+        public EntitySelector getSelector() {
             return this.selector;
         }
 
         @Nullable
-        public Text format(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
-            return EntitySelector.getNames(this.selector.getEntities(serverCommandSource));
+        public Text format(ServerCommandSource source) throws CommandSyntaxException {
+            return EntitySelector.getNames(this.selector.getEntities(source));
         }
     }
 
@@ -78,27 +78,27 @@ implements ArgumentType<MessageFormat> {
         private final String contents;
         private final MessageSelector[] selectors;
 
-        public MessageFormat(String string, MessageSelector[] messageSelectors) {
-            this.contents = string;
-            this.selectors = messageSelectors;
+        public MessageFormat(String contents, MessageSelector[] selectors) {
+            this.contents = contents;
+            this.selectors = selectors;
         }
 
-        public String method_35691() {
+        public String getContents() {
             return this.contents;
         }
 
-        public MessageSelector[] method_35692() {
+        public MessageSelector[] getSelectors() {
             return this.selectors;
         }
 
-        public Text format(ServerCommandSource serverCommandSource, boolean bl) throws CommandSyntaxException {
+        public Text format(ServerCommandSource source, boolean bl) throws CommandSyntaxException {
             if (this.selectors.length == 0 || !bl) {
                 return new LiteralText(this.contents);
             }
             LiteralText mutableText = new LiteralText(this.contents.substring(0, this.selectors[0].getStart()));
             int i = this.selectors[0].getStart();
             for (MessageSelector messageSelector : this.selectors) {
-                Text text = messageSelector.format(serverCommandSource);
+                Text text = messageSelector.format(source);
                 if (i < messageSelector.getStart()) {
                     mutableText.append(this.contents.substring(i, messageSelector.getStart()));
                 }
@@ -113,32 +113,32 @@ implements ArgumentType<MessageFormat> {
             return mutableText;
         }
 
-        public static MessageFormat parse(StringReader stringReader, boolean bl) throws CommandSyntaxException {
-            String string = stringReader.getString().substring(stringReader.getCursor(), stringReader.getTotalLength());
+        public static MessageFormat parse(StringReader reader, boolean bl) throws CommandSyntaxException {
+            String string = reader.getString().substring(reader.getCursor(), reader.getTotalLength());
             if (!bl) {
-                stringReader.setCursor(stringReader.getTotalLength());
+                reader.setCursor(reader.getTotalLength());
                 return new MessageFormat(string, new MessageSelector[0]);
             }
             ArrayList<MessageSelector> list = Lists.newArrayList();
-            int i = stringReader.getCursor();
-            while (stringReader.canRead()) {
-                if (stringReader.peek() == '@') {
+            int i = reader.getCursor();
+            while (reader.canRead()) {
+                if (reader.peek() == '@') {
                     EntitySelector entitySelector;
-                    int j = stringReader.getCursor();
+                    int j = reader.getCursor();
                     try {
-                        EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
+                        EntitySelectorReader entitySelectorReader = new EntitySelectorReader(reader);
                         entitySelector = entitySelectorReader.read();
                     } catch (CommandSyntaxException commandSyntaxException) {
                         if (commandSyntaxException.getType() == EntitySelectorReader.MISSING_EXCEPTION || commandSyntaxException.getType() == EntitySelectorReader.UNKNOWN_SELECTOR_EXCEPTION) {
-                            stringReader.setCursor(j + 1);
+                            reader.setCursor(j + 1);
                             continue;
                         }
                         throw commandSyntaxException;
                     }
-                    list.add(new MessageSelector(j - i, stringReader.getCursor() - i, entitySelector));
+                    list.add(new MessageSelector(j - i, reader.getCursor() - i, entitySelector));
                     continue;
                 }
-                stringReader.skip();
+                reader.skip();
             }
             return new MessageFormat(string, list.toArray(new MessageSelector[list.size()]));
         }

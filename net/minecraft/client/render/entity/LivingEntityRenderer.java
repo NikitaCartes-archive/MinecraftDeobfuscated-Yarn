@@ -87,7 +87,7 @@ implements FeatureRendererContext<T, M> {
             }
             k = j - h;
         }
-        float m = MathHelper.lerp(g, ((LivingEntity)livingEntity).prevPitch, ((LivingEntity)livingEntity).pitch);
+        float m = MathHelper.lerp(g, ((LivingEntity)livingEntity).prevPitch, ((Entity)livingEntity).getPitch());
         if (((Entity)livingEntity).getPose() == EntityPose.SLEEPING && (direction = ((LivingEntity)livingEntity).getSleepingDirection()) != null) {
             n = ((Entity)livingEntity).getEyeHeight(EntityPose.STANDING) - 0.1f;
             matrixStack.translate((float)(-direction.getOffsetX()) * n, 0.0, (float)(-direction.getOffsetZ()) * n);
@@ -202,7 +202,7 @@ implements FeatureRendererContext<T, M> {
             }
             matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(f * this.getLyingAngle(entity)));
         } else if (((LivingEntity)entity).isUsingRiptide()) {
-            matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0f - ((LivingEntity)entity).pitch));
+            matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0f - ((Entity)entity).getPitch()));
             matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(((float)((LivingEntity)entity).age + tickDelta) * -75.0f));
         } else if (entityPose == EntityPose.SLEEPING) {
             Direction direction = ((LivingEntity)entity).getSleepingDirection();

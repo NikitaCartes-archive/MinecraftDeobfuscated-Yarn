@@ -125,6 +125,7 @@ extends AbstractTagProvider<Block> {
         this.getOrCreateTagBuilder(BlockTags.CAVE_VINES).add(Blocks.CAVE_VINES_PLANT).add(Blocks.CAVE_VINES);
         this.getOrCreateTagBuilder(BlockTags.MOSS_REPLACEABLE).addTag(BlockTags.BASE_STONE_OVERWORLD).addTag(BlockTags.CAVE_VINES).addTag(BlockTags.DIRT);
         this.getOrCreateTagBuilder(BlockTags.LUSH_GROUND_REPLACEABLE).addTag(BlockTags.MOSS_REPLACEABLE).add(Blocks.CLAY).add(Blocks.GRAVEL).add(Blocks.MOSS_BLOCK).add(Blocks.SAND);
+        this.getOrCreateTagBuilder(BlockTags.SMALL_DRIPLEAF_PLACEABLE).add(Blocks.CLAY).add(Blocks.MOSS_BLOCK);
         this.getOrCreateTagBuilder(BlockTags.OCCLUDES_VIBRATION_SIGNALS).addTag(BlockTags.WOOL);
         this.getOrCreateTagBuilder(BlockTags.SNOW).add((Block[])new Block[]{Blocks.SNOW, Blocks.SNOW_BLOCK, Blocks.POWDER_SNOW});
     }

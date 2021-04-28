@@ -80,7 +80,8 @@ Waterloggable {
     public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         BlockPos blockPos = pos.down();
         BlockState blockState = world.getBlockState(blockPos);
-        return blockState.isOf(this) || blockState.isSideSolidFullSquare(world, blockPos, Direction.UP);
+        BlockState blockState2 = world.getBlockState(pos.up());
+        return !(!blockState.isOf(this) && !blockState.isSideSolidFullSquare(world, blockPos, Direction.UP) || !blockState2.isOf(this) && !blockState2.isOf(Blocks.BIG_DRIPLEAF));
     }
 
     protected static boolean placeStemAt(WorldAccess world, BlockPos pos, FluidState fluidState, Direction direction) {
@@ -90,7 +91,7 @@ Waterloggable {
 
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        if (direction == Direction.DOWN && !state.canPlaceAt(world, pos)) {
+        if (!(direction != Direction.DOWN && direction != Direction.UP || state.canPlaceAt(world, pos))) {
             world.getBlockTickScheduler().schedule(pos, this, 1);
         }
         if (state.get(WATERLOGGED).booleanValue()) {

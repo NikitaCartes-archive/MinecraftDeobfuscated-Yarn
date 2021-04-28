@@ -96,7 +96,7 @@ extends Task<E> {
     protected void keepRunning(ServerWorld serverWorld, E mobEntity, long l) {
         if (this.lastTarget.isPresent()) {
             if (l - this.targetTime >= 40L) {
-                ((MobEntity)mobEntity).yaw = ((MobEntity)mobEntity).bodyYaw;
+                ((Entity)mobEntity).setYaw(((MobEntity)mobEntity).bodyYaw);
                 ((LivingEntity)mobEntity).setNoDrag(true);
                 ((Entity)mobEntity).setVelocity(this.lastTarget.get().getRammingVelocity());
                 ((LivingEntity)mobEntity).getBrain().remember(MemoryModuleType.LONG_JUMP_MID_JUMP, true);

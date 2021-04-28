@@ -160,7 +160,7 @@ public class Mouse {
     }
 
     public void setup(long window2) {
-        InputUtil.setMouseCallbacks(window2, (window, x, y) -> this.client.execute(() -> this.onCursorPos(window, x, y)), (window, button, action, modifiers) -> this.client.execute(() -> this.onMouseButton(window, button, action, modifiers)), (window, xOffset, yOffset) -> this.client.execute(() -> this.onMouseScroll(window, xOffset, yOffset)), (window, count, names) -> {
+        InputUtil.setMouseCallbacks(window2, (window, x, y) -> this.client.execute(() -> this.onCursorPos(window, x, y)), (window, button, action, modifiers) -> this.client.execute(() -> this.onMouseButton(window, button, action, modifiers)), (window, offsetX, offsetY) -> this.client.execute(() -> this.onMouseScroll(window, offsetX, offsetY)), (window, count, names) -> {
             Path[] paths = new Path[count];
             for (int i = 0; i < count; ++i) {
                 paths[i] = Paths.get(GLFWDropCallback.getName(names, i), new String[0]);
@@ -246,7 +246,7 @@ public class Mouse {
         return this.leftButtonClicked;
     }
 
-    public boolean method_35707() {
+    public boolean wasMiddleButtonClicked() {
         return this.middleButtonClicked;
     }
 

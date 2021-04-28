@@ -161,8 +161,8 @@ extends BlockEntity {
         }
     }
 
-    public void setEditor(UUID uUID) {
-        this.editor = uUID;
+    public void setEditor(UUID editor) {
+        this.editor = editor;
     }
 
     @Nullable

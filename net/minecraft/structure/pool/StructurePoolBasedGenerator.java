@@ -132,13 +132,13 @@ public class StructurePoolBasedGenerator {
                 Identifier identifier = new Identifier(structureBlockInfo2.nbt.getString("pool"));
                 Optional<StructurePool> optional = this.registry.getOrEmpty(identifier);
                 if (!optional.isPresent() || optional.get().getElementCount() == 0 && !Objects.equals(identifier, StructurePools.EMPTY.getValue())) {
-                    LOGGER.warn("Empty or none existent pool: {}", (Object)identifier);
+                    LOGGER.warn("Empty or non-existent pool: {}", (Object)identifier);
                     continue;
                 }
                 Identifier identifier2 = optional.get().getTerminatorsId();
                 Optional<StructurePool> optional2 = this.registry.getOrEmpty(identifier2);
                 if (!optional2.isPresent() || optional2.get().getElementCount() == 0 && !Objects.equals(identifier2, StructurePools.EMPTY.getValue())) {
-                    LOGGER.warn("Empty or none existent fallback pool: {}", (Object)identifier2);
+                    LOGGER.warn("Empty or non-existent fallback pool: {}", (Object)identifier2);
                     continue;
                 }
                 boolean bl3 = blockBox.contains(blockPos3);

@@ -85,7 +85,7 @@ extends MobEntityRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
         }
         if ((q = pandaEntity.getScaredAnimationProgress(h)) > 0.0f) {
             matrixStack.translate(0.0, 0.8f * q, 0.0);
-            matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(MathHelper.lerp(q, pandaEntity.pitch, pandaEntity.pitch + 90.0f)));
+            matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(MathHelper.lerp(q, pandaEntity.getPitch(), pandaEntity.getPitch() + 90.0f)));
             matrixStack.translate(0.0, -1.0f * q, 0.0);
             if (pandaEntity.isScaredByThunderstorm()) {
                 float r2 = (float)(Math.cos((double)pandaEntity.age * 1.25) * Math.PI * (double)0.05f);
@@ -98,7 +98,7 @@ extends MobEntityRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
         if ((r = pandaEntity.getLieOnBackAnimationProgress(h)) > 0.0f) {
             k = pandaEntity.isBaby() ? 0.5f : 1.3f;
             matrixStack.translate(0.0, k * r, 0.0);
-            matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(MathHelper.lerp(r, pandaEntity.pitch, pandaEntity.pitch + 180.0f)));
+            matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(MathHelper.lerp(r, pandaEntity.getPitch(), pandaEntity.getPitch() + 180.0f)));
         }
     }
 

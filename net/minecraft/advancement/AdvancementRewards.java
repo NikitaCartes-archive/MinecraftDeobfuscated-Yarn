@@ -135,12 +135,12 @@ public class AdvancementRewards {
             return this;
         }
 
-        public static Builder method_34899(Identifier identifier) {
-            return new Builder().method_34900(identifier);
+        public static Builder loot(Identifier loot) {
+            return new Builder().addLoot(loot);
         }
 
-        public Builder method_34900(Identifier identifier) {
-            this.loot.add(identifier);
+        public Builder addLoot(Identifier loot) {
+            this.loot.add(loot);
             return this;
         }
 
@@ -153,12 +153,12 @@ public class AdvancementRewards {
             return this;
         }
 
-        public static Builder method_34901(Identifier identifier) {
-            return new Builder().method_34902(identifier);
+        public static Builder function(Identifier function) {
+            return new Builder().setFunction(function);
         }
 
-        public Builder method_34902(Identifier identifier) {
-            this.function = identifier;
+        public Builder setFunction(Identifier function) {
+            this.function = function;
             return this;
         }
 

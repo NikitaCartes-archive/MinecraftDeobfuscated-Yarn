@@ -51,7 +51,8 @@ extends Entity {
         Validate.notNull(facing);
         Validate.isTrue(facing.getAxis().isHorizontal());
         this.facing = facing;
-        this.prevYaw = this.yaw = (float)(this.facing.getHorizontal() * 90);
+        this.setYaw(this.facing.getHorizontal() * 90);
+        this.prevYaw = this.getYaw();
         this.updateAttachmentPosition();
     }
 
@@ -234,7 +235,7 @@ extends Entity {
                 }
             }
         }
-        float f = MathHelper.wrapDegrees(this.yaw);
+        float f = MathHelper.wrapDegrees(this.getYaw());
         switch (rotation) {
             case CLOCKWISE_180: {
                 return f + 180.0f;

@@ -14,8 +14,8 @@ public enum AxisCycleDirection {
         }
 
         @Override
-        public double method_35819(double d, double e, double f, Direction.Axis axis) {
-            return axis.choose(d, e, f);
+        public double choose(double x, double y, double z, Direction.Axis axis) {
+            return axis.choose(x, y, z);
         }
 
         @Override
@@ -37,8 +37,8 @@ public enum AxisCycleDirection {
         }
 
         @Override
-        public double method_35819(double d, double e, double f, Direction.Axis axis) {
-            return axis.choose(f, d, e);
+        public double choose(double x, double y, double z, Direction.Axis axis) {
+            return axis.choose(z, x, y);
         }
 
         @Override
@@ -60,8 +60,8 @@ public enum AxisCycleDirection {
         }
 
         @Override
-        public double method_35819(double d, double e, double f, Direction.Axis axis) {
-            return axis.choose(e, f, d);
+        public double choose(double x, double y, double z, Direction.Axis axis) {
+            return axis.choose(y, z, x);
         }
 
         @Override
@@ -80,7 +80,7 @@ public enum AxisCycleDirection {
 
     public abstract int choose(int var1, int var2, int var3, Direction.Axis var4);
 
-    public abstract double method_35819(double var1, double var3, double var5, Direction.Axis var7);
+    public abstract double choose(double var1, double var3, double var5, Direction.Axis var7);
 
     public abstract Direction.Axis cycle(Direction.Axis var1);
 

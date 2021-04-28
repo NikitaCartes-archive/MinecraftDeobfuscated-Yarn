@@ -101,14 +101,14 @@ extends HostileEntity {
 
     @Override
     public void tick() {
-        this.bodyYaw = this.yaw;
+        this.bodyYaw = this.getYaw();
         super.tick();
     }
 
     @Override
-    public void setYaw(float yaw) {
-        this.yaw = yaw;
-        super.setYaw(yaw);
+    public void setBodyYaw(float bodyYaw) {
+        this.setYaw(bodyYaw);
+        super.setBodyYaw(bodyYaw);
     }
 
     @Override

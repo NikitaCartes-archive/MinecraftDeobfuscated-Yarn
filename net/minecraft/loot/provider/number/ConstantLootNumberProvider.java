@@ -38,14 +38,14 @@ implements LootNumberProvider {
         return new ConstantLootNumberProvider(value);
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (object == null || this.getClass() != object.getClass()) {
+        if (o == null || this.getClass() != o.getClass()) {
             return false;
         }
-        return Float.compare(((ConstantLootNumberProvider)object).value, this.value) == 0;
+        return Float.compare(((ConstantLootNumberProvider)o).value, this.value) == 0;
     }
 
     public int hashCode() {

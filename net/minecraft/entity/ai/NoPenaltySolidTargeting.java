@@ -16,14 +16,14 @@ import org.jetbrains.annotations.Nullable;
  */
 public class NoPenaltySolidTargeting {
     @Nullable
-    public static Vec3d find(PathAwareEntity entity, int horizontalRange, int verticalRange, int startHeight, double xDirection, double zDirection, double rangeAngle) {
+    public static Vec3d find(PathAwareEntity entity, int horizontalRange, int verticalRange, int startHeight, double directionX, double directionZ, double rangeAngle) {
         boolean bl = NavigationConditions.isPositionTargetInRange(entity, horizontalRange);
-        return FuzzyPositions.guessBestPathTarget(entity, () -> NoPenaltySolidTargeting.tryMake(entity, horizontalRange, verticalRange, startHeight, xDirection, zDirection, rangeAngle, bl));
+        return FuzzyPositions.guessBestPathTarget(entity, () -> NoPenaltySolidTargeting.tryMake(entity, horizontalRange, verticalRange, startHeight, directionX, directionZ, rangeAngle, bl));
     }
 
     @Nullable
-    public static BlockPos tryMake(PathAwareEntity entity, int horizontalRange, int verticalRange, int startHeight, double xDirection, double zDirection, double rangeAngle, boolean posTargetInRange) {
-        BlockPos blockPos = FuzzyPositions.localFuzz(entity.getRandom(), horizontalRange, verticalRange, startHeight, xDirection, zDirection, rangeAngle);
+    public static BlockPos tryMake(PathAwareEntity entity, int horizontalRange, int verticalRange, int startHeight, double directionX, double directionZ, double rangeAngle, boolean posTargetInRange) {
+        BlockPos blockPos = FuzzyPositions.localFuzz(entity.getRandom(), horizontalRange, verticalRange, startHeight, directionX, directionZ, rangeAngle);
         if (blockPos == null) {
             return null;
         }

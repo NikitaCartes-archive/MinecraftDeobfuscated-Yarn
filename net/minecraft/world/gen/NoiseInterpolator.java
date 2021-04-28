@@ -30,15 +30,15 @@ public class NoiseInterpolator {
     private final int startX;
     private final int startZ;
 
-    public NoiseInterpolator(int sizeX, int sizeY, int sizeZ, ChunkPos chunkPos, int chunkZ, ColumnSampler columnSampler) {
+    public NoiseInterpolator(int sizeX, int sizeY, int sizeZ, ChunkPos pos, int minY, ColumnSampler columnSampler) {
         this.sizeY = sizeY;
         this.sizeZ = sizeZ;
-        this.minY = chunkZ;
+        this.minY = minY;
         this.columnSampler = columnSampler;
         this.startNoiseBuffer = NoiseInterpolator.createBuffer(sizeY, sizeZ);
         this.endNoiseBuffer = NoiseInterpolator.createBuffer(sizeY, sizeZ);
-        this.startX = chunkPos.x * sizeX;
-        this.startZ = chunkPos.z * sizeZ;
+        this.startX = pos.x * sizeX;
+        this.startZ = pos.z * sizeZ;
     }
 
     private static double[][] createBuffer(int sizeY, int sizeZ) {

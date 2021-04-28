@@ -135,10 +135,10 @@ extends ProjectileEntity {
         Vec3d vec3d = this.getVelocity();
         if (this.prevPitch == 0.0f && this.prevYaw == 0.0f) {
             float f = MathHelper.sqrt(PersistentProjectileEntity.squaredHorizontalLength(vec3d));
-            this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875);
-            this.pitch = (float)(MathHelper.atan2(vec3d.y, f) * 57.2957763671875);
-            this.prevYaw = this.yaw;
-            this.prevPitch = this.pitch;
+            this.setYaw((float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875));
+            this.setPitch((float)(MathHelper.atan2(vec3d.y, f) * 57.2957763671875));
+            this.prevYaw = this.getYaw();
+            this.prevPitch = this.getPitch();
         }
         if (!((blockState = this.world.getBlockState(blockPos = this.getBlockPos())).isAir() || bl || (voxelShape = blockState.getCollisionShape(this.world, blockPos)).isEmpty())) {
             vec3d2 = this.getPos();
@@ -202,10 +202,14 @@ extends ProjectileEntity {
         double j = this.getY() + e;
         double k = this.getZ() + g;
         float l = MathHelper.sqrt(PersistentProjectileEntity.squaredHorizontalLength(vec3d));
-        this.yaw = bl ? (float)(MathHelper.atan2(-d, -g) * 57.2957763671875) : (float)(MathHelper.atan2(d, g) * 57.2957763671875);
-        this.pitch = (float)(MathHelper.atan2(e, l) * 57.2957763671875);
-        this.pitch = PersistentProjectileEntity.updateRotation(this.prevPitch, this.pitch);
-        this.yaw = PersistentProjectileEntity.updateRotation(this.prevYaw, this.yaw);
+        if (bl) {
+            this.setYaw((float)(MathHelper.atan2(-d, -g) * 57.2957763671875));
+        } else {
+            this.setYaw((float)(MathHelper.atan2(d, g) * 57.2957763671875));
+        }
+        this.setPitch((float)(MathHelper.atan2(e, l) * 57.2957763671875));
+        this.setPitch(PersistentProjectileEntity.updateRotation(this.prevPitch, this.getPitch()));
+        this.setYaw(PersistentProjectileEntity.updateRotation(this.prevYaw, this.getYaw()));
         float m = 0.99f;
         float n = 0.05f;
         if (this.isTouchingWater()) {
@@ -338,7 +342,7 @@ extends ProjectileEntity {
         } else {
             entity.setFireTicks(j);
             this.setVelocity(this.getVelocity().multiply(-0.1));
-            this.yaw += 180.0f;
+            this.setYaw(this.getYaw() + 180.0f);
             this.prevYaw += 180.0f;
             if (!this.world.isClient && this.getVelocity().lengthSquared() < 1.0E-7) {
                 if (this.pickupType == PickupPermission.ALLOWED) {
@@ -491,7 +495,7 @@ extends ProjectileEntity {
     }
 
     public void setCritical(boolean critical) {
-        this.setProjectileFlag(1, critical);
+        this.setProjectileFlag(CRITICAL_FLAG, critical);
     }
 
     public void setPierceLevel(byte level) {
@@ -542,7 +546,7 @@ extends ProjectileEntity {
 
     public void setNoClip(boolean noClip) {
         this.noClip = noClip;
-        this.setProjectileFlag(2, noClip);
+        this.setProjectileFlag(NO_CLIP_FLAG, noClip);
     }
 
     public boolean isNoClip() {
@@ -553,7 +557,7 @@ extends ProjectileEntity {
     }
 
     public void setShotFromCrossbow(boolean shotFromCrossbow) {
-        this.setProjectileFlag(4, shotFromCrossbow);
+        this.setProjectileFlag(SHOT_FROM_CROSSBOW_FLAG, shotFromCrossbow);
     }
 
     public static enum PickupPermission {

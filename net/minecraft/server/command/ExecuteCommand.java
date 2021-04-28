@@ -160,7 +160,7 @@ public class ExecuteCommand {
             try {
                 NbtCompound nbtCompound = object.getNbt();
                 int i = requestResult ? result : (success ? 1 : 0);
-                path.put(nbtCompound, () -> (NbtElement)nbtSetter.apply(i));
+                path.put((NbtElement)nbtCompound, () -> (NbtElement)nbtSetter.apply(i));
                 object.setNbt(nbtCompound);
             } catch (CommandSyntaxException commandSyntaxException) {
                 // empty catch block

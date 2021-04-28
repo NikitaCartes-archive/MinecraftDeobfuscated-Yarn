@@ -36,8 +36,8 @@ extends Block {
     private static final int field_30991 = 3;
     private static final int field_30992 = 2;
     protected static final int field_30988 = 4;
-    private static final VoxelShape RAY_TRACE_SHAPE = AbstractCauldronBlock.createCuboidShape(2.0, 4.0, 2.0, 14.0, 16.0, 14.0);
-    protected static final VoxelShape OUTLINE_SHAPE = VoxelShapes.combineAndSimplify(VoxelShapes.fullCube(), VoxelShapes.union(AbstractCauldronBlock.createCuboidShape(0.0, 0.0, 4.0, 16.0, 3.0, 12.0), AbstractCauldronBlock.createCuboidShape(4.0, 0.0, 0.0, 12.0, 3.0, 16.0), AbstractCauldronBlock.createCuboidShape(2.0, 0.0, 2.0, 14.0, 3.0, 14.0), RAY_TRACE_SHAPE), BooleanBiFunction.ONLY_FIRST);
+    private static final VoxelShape RAYCAST_SHAPE = AbstractCauldronBlock.createCuboidShape(2.0, 4.0, 2.0, 14.0, 16.0, 14.0);
+    protected static final VoxelShape OUTLINE_SHAPE = VoxelShapes.combineAndSimplify(VoxelShapes.fullCube(), VoxelShapes.union(AbstractCauldronBlock.createCuboidShape(0.0, 0.0, 4.0, 16.0, 3.0, 12.0), AbstractCauldronBlock.createCuboidShape(4.0, 0.0, 0.0, 12.0, 3.0, 16.0), AbstractCauldronBlock.createCuboidShape(2.0, 0.0, 2.0, 14.0, 3.0, 14.0), RAYCAST_SHAPE), BooleanBiFunction.ONLY_FIRST);
     private final Map<Item, CauldronBehavior> behaviorMap;
 
     public AbstractCauldronBlock(AbstractBlock.Settings settings, Map<Item, CauldronBehavior> behaviorMap) {
@@ -67,7 +67,7 @@ extends Block {
 
     @Override
     public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
-        return RAY_TRACE_SHAPE;
+        return RAYCAST_SHAPE;
     }
 
     @Override

@@ -231,7 +231,7 @@ implements Shearable {
         if (this.eatGrassTimer > 0) {
             return 0.62831855f;
         }
-        return this.pitch * ((float)Math.PI / 180);
+        return this.getPitch() * ((float)Math.PI / 180);
     }
 
     @Override

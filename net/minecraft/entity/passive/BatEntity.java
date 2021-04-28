@@ -170,9 +170,9 @@ extends AmbientEntity {
             Vec3d vec3d2 = vec3d.add((Math.signum(d) * 0.5 - vec3d.x) * (double)0.1f, (Math.signum(e) * (double)0.7f - vec3d.y) * (double)0.1f, (Math.signum(f) * 0.5 - vec3d.z) * (double)0.1f);
             this.setVelocity(vec3d2);
             float g = (float)(MathHelper.atan2(vec3d2.z, vec3d2.x) * 57.2957763671875) - 90.0f;
-            float h = MathHelper.wrapDegrees(g - this.yaw);
+            float h = MathHelper.wrapDegrees(g - this.getYaw());
             this.forwardSpeed = 0.5f;
-            this.yaw += h;
+            this.setYaw(this.getYaw() + h);
             if (this.random.nextInt(100) == 0 && this.world.getBlockState(blockPos2).isSolidBlock(this.world, blockPos2)) {
                 this.setRoosting(true);
             }

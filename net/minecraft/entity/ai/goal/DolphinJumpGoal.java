@@ -42,19 +42,19 @@ extends DiveJumpingGoal {
         return true;
     }
 
-    private boolean isWater(BlockPos pos, int xOffset, int zOffset, int multiplier) {
-        BlockPos blockPos = pos.add(xOffset * multiplier, 0, zOffset * multiplier);
+    private boolean isWater(BlockPos pos, int offsetX, int offsetZ, int multiplier) {
+        BlockPos blockPos = pos.add(offsetX * multiplier, 0, offsetZ * multiplier);
         return this.dolphin.world.getFluidState(blockPos).isIn(FluidTags.WATER) && !this.dolphin.world.getBlockState(blockPos).getMaterial().blocksMovement();
     }
 
-    private boolean isAirAbove(BlockPos pos, int xOffset, int zOffset, int multiplier) {
-        return this.dolphin.world.getBlockState(pos.add(xOffset * multiplier, 1, zOffset * multiplier)).isAir() && this.dolphin.world.getBlockState(pos.add(xOffset * multiplier, 2, zOffset * multiplier)).isAir();
+    private boolean isAirAbove(BlockPos pos, int offsetX, int offsetZ, int multiplier) {
+        return this.dolphin.world.getBlockState(pos.add(offsetX * multiplier, 1, offsetZ * multiplier)).isAir() && this.dolphin.world.getBlockState(pos.add(offsetX * multiplier, 2, offsetZ * multiplier)).isAir();
     }
 
     @Override
     public boolean shouldContinue() {
         double d = this.dolphin.getVelocity().y;
-        return !(d * d < (double)0.03f && this.dolphin.pitch != 0.0f && Math.abs(this.dolphin.pitch) < 10.0f && this.dolphin.isTouchingWater() || this.dolphin.isOnGround());
+        return !(d * d < (double)0.03f && this.dolphin.getPitch() != 0.0f && Math.abs(this.dolphin.getPitch()) < 10.0f && this.dolphin.isTouchingWater() || this.dolphin.isOnGround());
     }
 
     @Override
@@ -71,7 +71,7 @@ extends DiveJumpingGoal {
 
     @Override
     public void stop() {
-        this.dolphin.pitch = 0.0f;
+        this.dolphin.setPitch(0.0f);
     }
 
     @Override
@@ -85,12 +85,12 @@ extends DiveJumpingGoal {
             this.dolphin.playSound(SoundEvents.ENTITY_DOLPHIN_JUMP, 1.0f, 1.0f);
         }
         Vec3d vec3d = this.dolphin.getVelocity();
-        if (vec3d.y * vec3d.y < (double)0.03f && this.dolphin.pitch != 0.0f) {
-            this.dolphin.pitch = MathHelper.lerpAngle(this.dolphin.pitch, 0.0f, 0.2f);
+        if (vec3d.y * vec3d.y < (double)0.03f && this.dolphin.getPitch() != 0.0f) {
+            this.dolphin.setPitch(MathHelper.lerpAngle(this.dolphin.getPitch(), 0.0f, 0.2f));
         } else {
             double d = Math.sqrt(Entity.squaredHorizontalLength(vec3d));
             double e = Math.signum(-vec3d.y) * Math.acos(d / vec3d.length()) * 57.2957763671875;
-            this.dolphin.pitch = (float)e;
+            this.dolphin.setPitch((float)e);
         }
     }
 }

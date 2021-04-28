@@ -186,7 +186,7 @@ public class AdvancementPositioner {
 
     private void apply() {
         if (this.advancement.getDisplay() != null) {
-            this.advancement.getDisplay().setPosition(this.depth, this.row);
+            this.advancement.getDisplay().setPos(this.depth, this.row);
         }
         if (!this.children.isEmpty()) {
             for (AdvancementPositioner advancementPositioner : this.children) {

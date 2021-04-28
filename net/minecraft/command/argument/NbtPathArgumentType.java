@@ -590,8 +590,8 @@ implements ArgumentType<NbtPath> {
             return elements.stream().map(operation).reduce(0, (integer, integer2) -> integer + integer2);
         }
 
-        public int method_35722(NbtElement nbtElement, NbtElement nbtElement2) throws CommandSyntaxException {
-            return this.put(nbtElement, nbtElement2::copy);
+        public int put(NbtElement element, NbtElement source) throws CommandSyntaxException {
+            return this.put(element, source::copy);
         }
 
         public int put(NbtElement element, Supplier<NbtElement> source) throws CommandSyntaxException {

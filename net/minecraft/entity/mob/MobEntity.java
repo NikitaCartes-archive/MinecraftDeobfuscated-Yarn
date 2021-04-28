@@ -705,8 +705,8 @@ extends LivingEntity {
         double g = MathHelper.sqrt(d * d + e * e);
         float h = (float)(MathHelper.atan2(e, d) * 57.2957763671875) - 90.0f;
         float i = (float)(-(MathHelper.atan2(f, g) * 57.2957763671875));
-        this.pitch = this.changeAngle(this.pitch, i, maxPitchChange);
-        this.yaw = this.changeAngle(this.yaw, h, maxYawChange);
+        this.setPitch(this.changeAngle(this.getPitch(), i, maxPitchChange));
+        this.setYaw(this.changeAngle(this.getYaw(), h, maxYawChange));
     }
 
     private float changeAngle(float oldAngle, float newAngle, float maxChangeInAngle) {
@@ -1286,7 +1286,7 @@ extends LivingEntity {
         }
         if (bl = target.damage(DamageSource.mob(this), f)) {
             if (g > 0.0f && target instanceof LivingEntity) {
-                ((LivingEntity)target).takeKnockback(g * 0.5f, MathHelper.sin(this.yaw * ((float)Math.PI / 180)), -MathHelper.cos(this.yaw * ((float)Math.PI / 180)));
+                ((LivingEntity)target).takeKnockback(g * 0.5f, MathHelper.sin(this.getYaw() * ((float)Math.PI / 180)), -MathHelper.cos(this.getYaw() * ((float)Math.PI / 180)));
                 this.setVelocity(this.getVelocity().multiply(0.6, 1.0, 0.6));
             }
             if (target instanceof PlayerEntity) {

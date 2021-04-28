@@ -12,6 +12,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix3f;
@@ -28,8 +29,8 @@ extends EntityRenderer<T> {
     @Override
     public void render(T persistentProjectileEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(MathHelper.lerp(g, ((PersistentProjectileEntity)persistentProjectileEntity).prevYaw, ((PersistentProjectileEntity)persistentProjectileEntity).yaw) - 90.0f));
-        matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.lerp(g, ((PersistentProjectileEntity)persistentProjectileEntity).prevPitch, ((PersistentProjectileEntity)persistentProjectileEntity).pitch)));
+        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(MathHelper.lerp(g, ((PersistentProjectileEntity)persistentProjectileEntity).prevYaw, ((Entity)persistentProjectileEntity).getYaw()) - 90.0f));
+        matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.lerp(g, ((PersistentProjectileEntity)persistentProjectileEntity).prevPitch, ((Entity)persistentProjectileEntity).getPitch())));
         boolean j = false;
         float h = 0.0f;
         float k = 0.5f;

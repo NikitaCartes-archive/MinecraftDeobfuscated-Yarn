@@ -153,7 +153,7 @@ public class ModelPredicateProviderRegistry {
                 boolean bl = livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).isMainPlayer();
                 double e = 0.0;
                 if (bl) {
-                    e = livingEntity.yaw;
+                    e = livingEntity.getYaw();
                 } else if (entity instanceof ItemFrameEntity) {
                     e = this.getItemFrameAngleOffset((ItemFrameEntity)entity);
                 } else if (entity instanceof ItemEntity) {

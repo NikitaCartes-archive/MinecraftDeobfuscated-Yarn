@@ -431,7 +431,7 @@ extends LivingEntity {
     protected void tickNewAi() {
         super.tickNewAi();
         this.tickHandSwing();
-        this.headYaw = this.yaw;
+        this.headYaw = this.getYaw();
     }
 
     @Override
@@ -517,7 +517,7 @@ extends LivingEntity {
             this.drop(source);
         }
         if (source != null) {
-            this.setVelocity(-MathHelper.cos((this.knockbackVelocity + this.yaw) * ((float)Math.PI / 180)) * 0.1f, 0.1f, -MathHelper.sin((this.knockbackVelocity + this.yaw) * ((float)Math.PI / 180)) * 0.1f);
+            this.setVelocity(-MathHelper.cos((this.knockbackVelocity + this.getYaw()) * ((float)Math.PI / 180)) * 0.1f, 0.1f, -MathHelper.sin((this.knockbackVelocity + this.getYaw()) * ((float)Math.PI / 180)) * 0.1f);
         } else {
             this.setVelocity(0.0, 0.1, 0.0);
         }
@@ -599,10 +599,10 @@ extends LivingEntity {
             itemEntity.setVelocity(-MathHelper.sin(g) * f, 0.2f, MathHelper.cos(g) * f);
         } else {
             float f = 0.3f;
-            float g = MathHelper.sin(this.pitch * ((float)Math.PI / 180));
-            float h = MathHelper.cos(this.pitch * ((float)Math.PI / 180));
-            float i = MathHelper.sin(this.yaw * ((float)Math.PI / 180));
-            float j = MathHelper.cos(this.yaw * ((float)Math.PI / 180));
+            float g = MathHelper.sin(this.getPitch() * ((float)Math.PI / 180));
+            float h = MathHelper.cos(this.getPitch() * ((float)Math.PI / 180));
+            float i = MathHelper.sin(this.getYaw() * ((float)Math.PI / 180));
+            float j = MathHelper.cos(this.getYaw() * ((float)Math.PI / 180));
             float k = this.random.nextFloat() * ((float)Math.PI * 2);
             float l = 0.02f * this.random.nextFloat();
             itemEntity.setVelocity((double)(-i * h * 0.3f) + Math.cos(k) * (double)l, -g * 0.3f + 0.1f + (this.random.nextFloat() - this.random.nextFloat()) * 0.1f, (double)(j * h * 0.3f) + Math.sin(k) * (double)l);
@@ -1047,9 +1047,9 @@ extends LivingEntity {
             if (bl6) {
                 if (i > 0) {
                     if (target instanceof LivingEntity) {
-                        ((LivingEntity)target).takeKnockback((float)i * 0.5f, MathHelper.sin(this.yaw * ((float)Math.PI / 180)), -MathHelper.cos(this.yaw * ((float)Math.PI / 180)));
+                        ((LivingEntity)target).takeKnockback((float)i * 0.5f, MathHelper.sin(this.getYaw() * ((float)Math.PI / 180)), -MathHelper.cos(this.getYaw() * ((float)Math.PI / 180)));
                     } else {
-                        target.addVelocity(-MathHelper.sin(this.yaw * ((float)Math.PI / 180)) * (float)i * 0.5f, 0.1, MathHelper.cos(this.yaw * ((float)Math.PI / 180)) * (float)i * 0.5f);
+                        target.addVelocity(-MathHelper.sin(this.getYaw() * ((float)Math.PI / 180)) * (float)i * 0.5f, 0.1, MathHelper.cos(this.getYaw() * ((float)Math.PI / 180)) * (float)i * 0.5f);
                     }
                     this.setVelocity(this.getVelocity().multiply(0.6, 1.0, 0.6));
                     this.setSprinting(false);
@@ -1059,7 +1059,7 @@ extends LivingEntity {
                     List<LivingEntity> list = this.world.getNonSpectatingEntities(LivingEntity.class, target.getBoundingBox().expand(1.0, 0.25, 1.0));
                     for (LivingEntity livingEntity : list) {
                         if (livingEntity == this || livingEntity == target || this.isTeammate(livingEntity) || livingEntity instanceof ArmorStandEntity && ((ArmorStandEntity)livingEntity).isMarker() || !(this.squaredDistanceTo(livingEntity) < 9.0)) continue;
-                        livingEntity.takeKnockback(0.4f, MathHelper.sin(this.yaw * ((float)Math.PI / 180)), -MathHelper.cos(this.yaw * ((float)Math.PI / 180)));
+                        livingEntity.takeKnockback(0.4f, MathHelper.sin(this.getYaw() * ((float)Math.PI / 180)), -MathHelper.cos(this.getYaw() * ((float)Math.PI / 180)));
                         livingEntity.damage(DamageSource.player(this), l);
                     }
                     this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, this.getSoundCategory(), 1.0f, 1.0f);
@@ -1145,8 +1145,8 @@ extends LivingEntity {
     }
 
     public void spawnSweepAttackParticles() {
-        double d = -MathHelper.sin(this.yaw * ((float)Math.PI / 180));
-        double e = MathHelper.cos(this.yaw * ((float)Math.PI / 180));
+        double d = -MathHelper.sin(this.getYaw() * ((float)Math.PI / 180));
+        double e = MathHelper.cos(this.getYaw() * ((float)Math.PI / 180));
         if (this.world instanceof ServerWorld) {
             ((ServerWorld)this.world).spawnParticles(ParticleTypes.SWEEP_ATTACK, this.getX() + d, this.getBodyY(0.5), this.getZ() + e, 0, d, 0.0, e, 0.0);
         }
@@ -1893,7 +1893,7 @@ extends LivingEntity {
     @Override
     public Vec3d method_30951(float f) {
         double d = 0.22 * (this.getMainArm() == Arm.RIGHT ? -1.0 : 1.0);
-        float g = MathHelper.lerp(f * 0.5f, this.pitch, this.prevPitch) * ((float)Math.PI / 180);
+        float g = MathHelper.lerp(f * 0.5f, this.getPitch(), this.prevPitch) * ((float)Math.PI / 180);
         float h = MathHelper.lerp(f, this.prevBodyYaw, this.bodyYaw) * ((float)Math.PI / 180);
         if (this.isFallFlying() || this.isUsingRiptide()) {
             float l;

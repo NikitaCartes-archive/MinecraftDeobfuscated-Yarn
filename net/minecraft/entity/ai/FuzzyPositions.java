@@ -34,8 +34,8 @@ public class FuzzyPositions {
      * and {@code verticalRange} and returns {@code null} if it cannot do so.
      */
     @Nullable
-    public static BlockPos localFuzz(Random random, int horizontalRange, int verticalRange, int startHeight, double xDirection, double zDirection, double angleRange) {
-        double d = MathHelper.atan2(zDirection, xDirection) - 1.5707963705062866;
+    public static BlockPos localFuzz(Random random, int horizontalRange, int verticalRange, int startHeight, double directionX, double directionZ, double angleRange) {
+        double d = MathHelper.atan2(directionZ, directionX) - 1.5707963705062866;
         double e = d + (double)(2.0f * random.nextFloat() - 1.0f) * angleRange;
         double f = Math.sqrt(random.nextDouble()) * (double)MathHelper.SQUARE_ROOT_OF_TWO * (double)horizontalRange;
         double g = -f * Math.sin(e);

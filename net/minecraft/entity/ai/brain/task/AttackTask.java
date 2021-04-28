@@ -34,7 +34,7 @@ extends Task<E> {
     protected void run(ServerWorld serverWorld, E mobEntity, long l) {
         ((LivingEntity)mobEntity).getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(this.getAttackTarget(mobEntity), true));
         ((MobEntity)mobEntity).getMoveControl().strafeTo(-this.forwardMovement, 0.0f);
-        ((MobEntity)mobEntity).yaw = MathHelper.stepAngleTowards(((MobEntity)mobEntity).yaw, ((MobEntity)mobEntity).headYaw, 0.0f);
+        ((Entity)mobEntity).setYaw(MathHelper.stepAngleTowards(((Entity)mobEntity).getYaw(), ((MobEntity)mobEntity).headYaw, 0.0f));
     }
 
     private boolean isAttackTargetVisible(E entity) {

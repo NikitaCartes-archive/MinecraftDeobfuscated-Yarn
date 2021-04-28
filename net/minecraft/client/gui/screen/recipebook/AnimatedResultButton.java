@@ -100,7 +100,7 @@ extends AbstractButtonWidget {
         ItemStack itemStack = list.get(this.currentResultIndex).getOutput();
         int k = 4;
         if (this.results.hasSingleOutput() && this.getResults().size() > 1) {
-            minecraftClient.getItemRenderer().renderInGuiWithOverrides(itemStack, this.x + k + 1, this.y + k + 1);
+            minecraftClient.getItemRenderer().method_36542(itemStack, this.x + k + 1, this.y + k + 1, 0, 10);
             --k;
         }
         minecraftClient.getItemRenderer().renderInGui(itemStack, this.x + k, this.y + k);

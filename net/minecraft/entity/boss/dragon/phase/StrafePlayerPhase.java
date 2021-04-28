@@ -60,7 +60,7 @@ extends AbstractPhase {
             if (this.dragon.canSee(this.target)) {
                 ++this.seenTargetTimes;
                 Vec3d vec3d = new Vec3d(this.target.getX() - this.dragon.getX(), 0.0, this.target.getZ() - this.dragon.getZ()).normalize();
-                Vec3d vec3d2 = new Vec3d(MathHelper.sin(this.dragon.yaw * ((float)Math.PI / 180)), 0.0, -MathHelper.cos(this.dragon.yaw * ((float)Math.PI / 180))).normalize();
+                Vec3d vec3d2 = new Vec3d(MathHelper.sin(this.dragon.getYaw() * ((float)Math.PI / 180)), 0.0, -MathHelper.cos(this.dragon.getYaw() * ((float)Math.PI / 180))).normalize();
                 float j = (float)vec3d2.dotProduct(vec3d);
                 float k = (float)(Math.acos(j) * 57.2957763671875);
                 k += 0.5f;

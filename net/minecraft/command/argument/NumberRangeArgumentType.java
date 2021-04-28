@@ -26,8 +26,8 @@ extends ArgumentType<T> {
     implements NumberRangeArgumentType<NumberRange.FloatRange> {
         private static final Collection<String> EXAMPLES = Arrays.asList("0..5.2", "0", "-5.4", "-100.76..", "..100");
 
-        public static NumberRange.FloatRange method_35738(CommandContext<ServerCommandSource> commandContext, String string) {
-            return commandContext.getArgument(string, NumberRange.FloatRange.class);
+        public static NumberRange.FloatRange getRangeArgument(CommandContext<ServerCommandSource> context, String name) {
+            return context.getArgument(name, NumberRange.FloatRange.class);
         }
 
         @Override
@@ -41,8 +41,8 @@ extends ArgumentType<T> {
         }
 
         @Override
-        public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-            return this.parse(stringReader);
+        public /* synthetic */ Object parse(StringReader reader) throws CommandSyntaxException {
+            return this.parse(reader);
         }
     }
 
@@ -50,8 +50,8 @@ extends ArgumentType<T> {
     implements NumberRangeArgumentType<NumberRange.IntRange> {
         private static final Collection<String> EXAMPLES = Arrays.asList("0..5", "0", "-5", "-100..", "..100");
 
-        public static NumberRange.IntRange getRangeArgument(CommandContext<ServerCommandSource> commandContext, String string) {
-            return commandContext.getArgument(string, NumberRange.IntRange.class);
+        public static NumberRange.IntRange getRangeArgument(CommandContext<ServerCommandSource> context, String name) {
+            return context.getArgument(name, NumberRange.IntRange.class);
         }
 
         @Override
@@ -65,8 +65,8 @@ extends ArgumentType<T> {
         }
 
         @Override
-        public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-            return this.parse(stringReader);
+        public /* synthetic */ Object parse(StringReader reader) throws CommandSyntaxException {
+            return this.parse(reader);
         }
     }
 }

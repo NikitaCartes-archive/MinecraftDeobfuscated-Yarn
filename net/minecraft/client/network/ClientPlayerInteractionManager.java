@@ -294,7 +294,7 @@ public class ClientPlayerInteractionManager {
             return ActionResult.PASS;
         }
         this.syncSelectedSlot();
-        this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Full(player.getX(), player.getY(), player.getZ(), player.yaw, player.pitch, player.isOnGround()));
+        this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Full(player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch(), player.isOnGround()));
         this.networkHandler.sendPacket(new PlayerInteractItemC2SPacket(hand));
         ItemStack itemStack = player.getStackInHand(hand);
         if (player.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {

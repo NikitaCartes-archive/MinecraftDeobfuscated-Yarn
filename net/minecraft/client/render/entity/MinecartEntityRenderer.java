@@ -51,7 +51,7 @@ extends EntityRenderer<T> {
         double m = MathHelper.lerp((double)g, ((AbstractMinecartEntity)abstractMinecartEntity).lastRenderZ, ((Entity)abstractMinecartEntity).getZ());
         double n = 0.3f;
         Vec3d vec3d = ((AbstractMinecartEntity)abstractMinecartEntity).snapPositionToRail(d, e, m);
-        float o = MathHelper.lerp(g, ((AbstractMinecartEntity)abstractMinecartEntity).prevPitch, ((AbstractMinecartEntity)abstractMinecartEntity).pitch);
+        float o = MathHelper.lerp(g, ((AbstractMinecartEntity)abstractMinecartEntity).prevPitch, ((Entity)abstractMinecartEntity).getPitch());
         if (vec3d != null) {
             Vec3d vec3d2 = ((AbstractMinecartEntity)abstractMinecartEntity).snapPositionToRailWithOffset(d, e, m, 0.3f);
             Vec3d vec3d3 = ((AbstractMinecartEntity)abstractMinecartEntity).snapPositionToRailWithOffset(d, e, m, -0.3f);

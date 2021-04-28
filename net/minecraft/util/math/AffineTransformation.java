@@ -139,14 +139,14 @@ public final class AffineTransformation {
         return this.rotation1.copy();
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (object == null || this.getClass() != object.getClass()) {
+        if (o == null || this.getClass() != o.getClass()) {
             return false;
         }
-        AffineTransformation affineTransformation = (AffineTransformation)object;
+        AffineTransformation affineTransformation = (AffineTransformation)o;
         return Objects.equals(this.matrix, affineTransformation.matrix);
     }
 
