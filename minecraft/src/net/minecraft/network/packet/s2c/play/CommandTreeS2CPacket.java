@@ -42,20 +42,20 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	public CommandTreeS2CPacket(PacketByteBuf buf) {
 		List<CommandTreeS2CPacket.CommandNodeData> list = buf.readList(CommandTreeS2CPacket::readCommandNode);
-		method_30946(list);
+		build(list);
 		int i = buf.readVarInt();
 		this.commandTree = (RootCommandNode<CommandSource>)((CommandTreeS2CPacket.CommandNodeData)list.get(i)).node;
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
-		Object2IntMap<CommandNode<CommandSource>> object2IntMap = method_30944(this.commandTree);
-		List<CommandNode<CommandSource>> list = method_30945(object2IntMap);
-		buf.writeCollection(list, (packetByteBuf, commandNode) -> writeNode(packetByteBuf, commandNode, object2IntMap));
+		Object2IntMap<CommandNode<CommandSource>> object2IntMap = traverse(this.commandTree);
+		List<CommandNode<CommandSource>> list = collectNodes(object2IntMap);
+		buf.writeCollection(list, (packetByteBuf, node) -> writeNode(packetByteBuf, node, object2IntMap));
 		buf.writeVarInt(object2IntMap.get(this.commandTree));
 	}
 
-	private static void method_30946(List<CommandTreeS2CPacket.CommandNodeData> nodeDatas) {
+	private static void build(List<CommandTreeS2CPacket.CommandNodeData> nodeDatas) {
 		List<CommandTreeS2CPacket.CommandNodeData> list = Lists.<CommandTreeS2CPacket.CommandNodeData>newArrayList(nodeDatas);
 
 		while (!list.isEmpty()) {
@@ -66,10 +66,10 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	private static Object2IntMap<CommandNode<CommandSource>> method_30944(RootCommandNode<CommandSource> rootCommandNode) {
+	private static Object2IntMap<CommandNode<CommandSource>> traverse(RootCommandNode<CommandSource> commandTree) {
 		Object2IntMap<CommandNode<CommandSource>> object2IntMap = new Object2IntOpenHashMap<>();
 		Queue<CommandNode<CommandSource>> queue = Queues.<CommandNode<CommandSource>>newArrayDeque();
-		queue.add(rootCommandNode);
+		queue.add(commandTree);
 
 		CommandNode<CommandSource> commandNode;
 		while ((commandNode = (CommandNode<CommandSource>)queue.poll()) != null) {
@@ -86,11 +86,11 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 		return object2IntMap;
 	}
 
-	private static List<CommandNode<CommandSource>> method_30945(Object2IntMap<CommandNode<CommandSource>> object2IntMap) {
-		ObjectArrayList<CommandNode<CommandSource>> objectArrayList = new ObjectArrayList<>(object2IntMap.size());
-		objectArrayList.size(object2IntMap.size());
+	private static List<CommandNode<CommandSource>> collectNodes(Object2IntMap<CommandNode<CommandSource>> nodes) {
+		ObjectArrayList<CommandNode<CommandSource>> objectArrayList = new ObjectArrayList<>(nodes.size());
+		objectArrayList.size(nodes.size());
 
-		for (Entry<CommandNode<CommandSource>> entry : Object2IntMaps.fastIterable(object2IntMap)) {
+		for (Entry<CommandNode<CommandSource>> entry : Object2IntMaps.fastIterable(nodes)) {
 			objectArrayList.set(entry.getIntValue(), (CommandNode<CommandSource>)entry.getKey());
 		}
 
@@ -126,51 +126,51 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	private static void writeNode(PacketByteBuf buf, CommandNode<CommandSource> commandNode, Map<CommandNode<CommandSource>, Integer> map) {
+	private static void writeNode(PacketByteBuf buf, CommandNode<CommandSource> node, Map<CommandNode<CommandSource>, Integer> nodeToIndex) {
 		byte b = 0;
-		if (commandNode.getRedirect() != null) {
+		if (node.getRedirect() != null) {
 			b = (byte)(b | 8);
 		}
 
-		if (commandNode.getCommand() != null) {
+		if (node.getCommand() != null) {
 			b = (byte)(b | 4);
 		}
 
-		if (commandNode instanceof RootCommandNode) {
+		if (node instanceof RootCommandNode) {
 			b = (byte)(b | 0);
-		} else if (commandNode instanceof ArgumentCommandNode) {
+		} else if (node instanceof ArgumentCommandNode) {
 			b = (byte)(b | 2);
-			if (((ArgumentCommandNode)commandNode).getCustomSuggestions() != null) {
+			if (((ArgumentCommandNode)node).getCustomSuggestions() != null) {
 				b = (byte)(b | 16);
 			}
 		} else {
-			if (!(commandNode instanceof LiteralCommandNode)) {
-				throw new UnsupportedOperationException("Unknown node type " + commandNode);
+			if (!(node instanceof LiteralCommandNode)) {
+				throw new UnsupportedOperationException("Unknown node type " + node);
 			}
 
 			b = (byte)(b | 1);
 		}
 
 		buf.writeByte(b);
-		buf.writeVarInt(commandNode.getChildren().size());
+		buf.writeVarInt(node.getChildren().size());
 
-		for (CommandNode<CommandSource> commandNode2 : commandNode.getChildren()) {
-			buf.writeVarInt((Integer)map.get(commandNode2));
+		for (CommandNode<CommandSource> commandNode : node.getChildren()) {
+			buf.writeVarInt((Integer)nodeToIndex.get(commandNode));
 		}
 
-		if (commandNode.getRedirect() != null) {
-			buf.writeVarInt((Integer)map.get(commandNode.getRedirect()));
+		if (node.getRedirect() != null) {
+			buf.writeVarInt((Integer)nodeToIndex.get(node.getRedirect()));
 		}
 
-		if (commandNode instanceof ArgumentCommandNode) {
-			ArgumentCommandNode<CommandSource, ?> argumentCommandNode = (ArgumentCommandNode<CommandSource, ?>)commandNode;
+		if (node instanceof ArgumentCommandNode) {
+			ArgumentCommandNode<CommandSource, ?> argumentCommandNode = (ArgumentCommandNode<CommandSource, ?>)node;
 			buf.writeString(argumentCommandNode.getName());
 			ArgumentTypes.toPacket(buf, argumentCommandNode.getType());
 			if (argumentCommandNode.getCustomSuggestions() != null) {
 				buf.writeIdentifier(SuggestionProviders.computeName(argumentCommandNode.getCustomSuggestions()));
 			}
-		} else if (commandNode instanceof LiteralCommandNode) {
-			buf.writeString(((LiteralCommandNode)commandNode).getLiteral());
+		} else if (node instanceof LiteralCommandNode) {
+			buf.writeString(((LiteralCommandNode)node).getLiteral());
 		}
 	}
 
@@ -212,7 +212,7 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 					}
 
 					if ((this.flags & 4) != 0) {
-						this.argumentBuilder.executes(commandContext -> 0);
+						this.argumentBuilder.executes(context -> 0);
 					}
 
 					this.node = this.argumentBuilder.build();

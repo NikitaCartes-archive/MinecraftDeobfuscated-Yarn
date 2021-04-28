@@ -286,15 +286,15 @@ public abstract class AbstractMinecartEntity extends Entity {
 				double d = this.getX() + (this.clientX - this.getX()) / (double)this.clientInterpolationSteps;
 				double e = this.getY() + (this.clientY - this.getY()) / (double)this.clientInterpolationSteps;
 				double f = this.getZ() + (this.clientZ - this.getZ()) / (double)this.clientInterpolationSteps;
-				double g = MathHelper.wrapDegrees(this.clientYaw - (double)this.yaw);
-				this.yaw = (float)((double)this.yaw + g / (double)this.clientInterpolationSteps);
-				this.pitch = (float)((double)this.pitch + (this.clientPitch - (double)this.pitch) / (double)this.clientInterpolationSteps);
+				double g = MathHelper.wrapDegrees(this.clientYaw - (double)this.getYaw());
+				this.setYaw(this.getYaw() + (float)g / (float)this.clientInterpolationSteps);
+				this.setPitch(this.getPitch() + (float)(this.clientPitch - (double)this.getPitch()) / (float)this.clientInterpolationSteps);
 				this.clientInterpolationSteps--;
 				this.setPosition(d, e, f);
-				this.setRotation(this.yaw, this.pitch);
+				this.setRotation(this.getYaw(), this.getPitch());
 			} else {
 				this.refreshPosition();
-				this.setRotation(this.yaw, this.pitch);
+				this.setRotation(this.getYaw(), this.getPitch());
 			}
 		} else {
 			if (!this.hasNoGravity()) {
@@ -321,23 +321,23 @@ public abstract class AbstractMinecartEntity extends Entity {
 			}
 
 			this.checkBlockCollision();
-			this.pitch = 0.0F;
+			this.setPitch(0.0F);
 			double h = this.prevX - this.getX();
 			double l = this.prevZ - this.getZ();
 			if (h * h + l * l > 0.001) {
-				this.yaw = (float)(MathHelper.atan2(l, h) * 180.0 / Math.PI);
+				this.setYaw((float)(MathHelper.atan2(l, h) * 180.0 / Math.PI));
 				if (this.yawFlipped) {
-					this.yaw += 180.0F;
+					this.setYaw(this.getYaw() + 180.0F);
 				}
 			}
 
-			double m = (double)MathHelper.wrapDegrees(this.yaw - this.prevYaw);
+			double m = (double)MathHelper.wrapDegrees(this.getYaw() - this.prevYaw);
 			if (m < -170.0 || m >= 170.0) {
-				this.yaw += 180.0F;
+				this.setYaw(this.getYaw() + 180.0F);
 				this.yawFlipped = !this.yawFlipped;
 			}
 
-			this.setRotation(this.yaw, this.pitch);
+			this.setRotation(this.getYaw(), this.getPitch());
 			if (this.getMinecartType() == AbstractMinecartEntity.Type.RIDEABLE && squaredHorizontalLength(this.getVelocity()) > 0.01) {
 				List<Entity> list = this.world.getOtherEntities(this, this.getBoundingBox().expand(0.2F, 0.0, 0.2F), EntityPredicates.canBePushedBy(this));
 				if (!list.isEmpty()) {
@@ -709,7 +709,9 @@ public abstract class AbstractMinecartEntity extends Entity {
 							double h = entity.getX() - this.getX();
 							double i = entity.getZ() - this.getZ();
 							Vec3d vec3d = new Vec3d(h, 0.0, i).normalize();
-							Vec3d vec3d2 = new Vec3d((double)MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)), 0.0, (double)MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)))
+							Vec3d vec3d2 = new Vec3d(
+									(double)MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)), 0.0, (double)MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0))
+								)
 								.normalize();
 							double j = Math.abs(vec3d.dotProduct(vec3d2));
 							if (j < 0.8F) {

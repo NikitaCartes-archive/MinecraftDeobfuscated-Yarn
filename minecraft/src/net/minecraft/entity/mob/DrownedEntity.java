@@ -299,8 +299,8 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 				double g = (double)MathHelper.sqrt(d * d + e * e + f * f);
 				e /= g;
 				float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F;
-				this.drowned.yaw = this.wrapDegrees(this.drowned.yaw, h, 90.0F);
-				this.drowned.bodyYaw = this.drowned.yaw;
+				this.drowned.setYaw(this.wrapDegrees(this.drowned.getYaw(), h, 90.0F));
+				this.drowned.bodyYaw = this.drowned.getYaw();
 				float i = (float)(this.speed * this.drowned.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
 				float j = MathHelper.lerp(0.125F, this.drowned.getMovementSpeed(), i);
 				this.drowned.setMovementSpeed(j);

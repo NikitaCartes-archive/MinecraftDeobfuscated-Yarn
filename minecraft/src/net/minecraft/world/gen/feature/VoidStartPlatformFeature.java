@@ -29,7 +29,7 @@ public class VoidStartPlatformFeature extends Feature<DefaultFeatureConfig> {
 		if (getDistance(chunkPos.x, chunkPos.z, START_CHUNK.x, START_CHUNK.z) > 1) {
 			return true;
 		} else {
-			BlockPos blockPos = context.getOrigin().add(START_BLOCK);
+			BlockPos blockPos = START_BLOCK.withY(context.getOrigin().getY() + START_BLOCK.getY());
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 			for (int i = chunkPos.getStartZ(); i <= chunkPos.getEndZ(); i++) {

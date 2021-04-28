@@ -3,8 +3,6 @@ package net.minecraft.server.network;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Either;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -56,7 +54,6 @@ import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EndCombatS2CPacket;
 import net.minecraft.network.packet.s2c.play.EnterCombatS2CPacket;
-import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
@@ -145,7 +142,6 @@ public class ServerPlayerEntity extends PlayerEntity {
 	public ServerPlayNetworkHandler networkHandler;
 	public final MinecraftServer server;
 	public final ServerPlayerInteractionManager interactionManager;
-	private final IntList removedEntities = new IntArrayList();
 	private final PlayerAdvancementTracker advancementTracker;
 	private final ServerStatHandler statHandler;
 	private float lastHealthScore = Float.MIN_VALUE;
@@ -433,15 +429,10 @@ public class ServerPlayerEntity extends PlayerEntity {
 			this.currentScreenHandler = this.playerScreenHandler;
 		}
 
-		if (!this.removedEntities.isEmpty()) {
-			this.networkHandler.sendPacket(new EntitiesDestroyS2CPacket(this.removedEntities));
-			this.removedEntities.clear();
-		}
-
 		Entity entity = this.getCameraEntity();
 		if (entity != this) {
 			if (entity.isAlive()) {
-				this.updatePositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.yaw, entity.pitch);
+				this.updatePositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.getYaw(), entity.getPitch());
 				this.getServerWorld().getChunkManager().updatePosition(this);
 				if (this.shouldDismount()) {
 					this.setCameraEntity(this);
@@ -832,7 +823,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		} else if (this.isBedObstructed(pos, direction)) {
 			return Either.left(PlayerEntity.SleepFailureReason.OBSTRUCTED);
 		} else {
-			this.setSpawnPoint(this.world.getRegistryKey(), pos, this.yaw, false, true);
+			this.setSpawnPoint(this.world.getRegistryKey(), pos, this.getYaw(), false, true);
 			if (this.world.isDay()) {
 				return Either.left(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_NOW);
 			} else {
@@ -893,7 +884,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 		super.wakeUp(bl, updateSleepingPlayers);
 		if (this.networkHandler != null) {
-			this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
+			this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
 		}
 	}
 
@@ -905,7 +896,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		} else {
 			Entity entity3 = this.getVehicle();
 			if (entity3 != entity2 && this.networkHandler != null) {
-				this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
+				this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
 			}
 
 			return true;
@@ -918,7 +909,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		super.stopRiding();
 		Entity entity2 = this.getVehicle();
 		if (entity2 != entity && this.networkHandler != null) {
-			this.networkHandler.requestTeleportAndDismount(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
+			this.networkHandler.requestTeleportAndDismount(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
 		}
 	}
 
@@ -926,7 +917,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	public void requestTeleportAndDismount(double destX, double destY, double destZ) {
 		this.dismountVehicle();
 		if (this.networkHandler != null) {
-			this.networkHandler.requestTeleportAndDismount(destX, destY, destZ, this.yaw, this.pitch);
+			this.networkHandler.requestTeleportAndDismount(destX, destY, destZ, this.getYaw(), this.getPitch());
 		}
 	}
 
@@ -1162,7 +1153,6 @@ public class ServerPlayerEntity extends PlayerEntity {
 		this.syncedHealth = -1.0F;
 		this.syncedFoodLevel = -1;
 		this.recipeBook.copyFrom(oldPlayer.recipeBook);
-		this.removedEntities.addAll(oldPlayer.removedEntities);
 		this.seenCredits = oldPlayer.seenCredits;
 		this.enteredNetherPos = oldPlayer.enteredNetherPos;
 		this.setShoulderEntityLeft(oldPlayer.getShoulderEntityLeft());
@@ -1201,7 +1191,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Override
 	public void requestTeleport(double destX, double destY, double destZ) {
-		this.networkHandler.requestTeleport(destX, destY, destZ, this.yaw, this.pitch);
+		this.networkHandler.requestTeleport(destX, destY, destZ, this.getYaw(), this.getPitch());
 	}
 
 	@Override
@@ -1338,18 +1328,6 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	public ServerRecipeBook getRecipeBook() {
 		return this.recipeBook;
-	}
-
-	public void onStoppedTracking(Entity entity) {
-		if (entity instanceof PlayerEntity) {
-			this.networkHandler.sendPacket(new EntitiesDestroyS2CPacket(entity.getId()));
-		} else {
-			this.removedEntities.add(entity.getId());
-		}
-	}
-
-	public void onStartedTracking(Entity entity) {
-		this.removedEntities.rem(entity.getId());
 	}
 
 	@Override

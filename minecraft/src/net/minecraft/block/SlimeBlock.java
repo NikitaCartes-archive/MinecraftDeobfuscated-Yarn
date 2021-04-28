@@ -14,11 +14,11 @@ public class SlimeBlock extends TransparentBlock {
 	}
 
 	@Override
-	public void onLandedUpon(World world, BlockPos pos, Entity entity, float distance) {
+	public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
 		if (entity.bypassesLandingEffects()) {
-			super.onLandedUpon(world, pos, entity, distance);
+			super.onLandedUpon(world, state, pos, entity, fallDistance);
 		} else {
-			entity.handleFallDamage(distance, 0.0F, DamageSource.FALL);
+			entity.handleFallDamage(fallDistance, 0.0F, DamageSource.FALL);
 		}
 	}
 
@@ -40,13 +40,13 @@ public class SlimeBlock extends TransparentBlock {
 	}
 
 	@Override
-	public void onSteppedOn(World world, BlockPos pos, Entity entity) {
+	public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
 		double d = Math.abs(entity.getVelocity().y);
 		if (d < 0.1 && !entity.bypassesSteppingEffects()) {
 			double e = 0.4 + d * 0.2;
 			entity.setVelocity(entity.getVelocity().multiply(e, 1.0, e));
 		}
 
-		super.onSteppedOn(world, pos, entity);
+		super.onSteppedOn(world, pos, state, entity);
 	}
 }

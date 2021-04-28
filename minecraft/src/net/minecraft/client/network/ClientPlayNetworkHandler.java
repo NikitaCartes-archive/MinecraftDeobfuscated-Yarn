@@ -154,10 +154,10 @@ import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.play.EndCombatS2CPacket;
 import net.minecraft.network.packet.s2c.play.EnterCombatS2CPacket;
-import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAttributesS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
@@ -357,7 +357,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.client.joinWorld(this.world);
 		if (this.client.player == null) {
 			this.client.player = this.client.interactionManager.createPlayer(this.world, new StatHandler(), new ClientRecipeBook());
-			this.client.player.yaw = -180.0F;
+			this.client.player.setYaw(-180.0F);
 			if (this.client.getServer() != null) {
 				this.client.getServer().setLocalPlayerUuid(this.client.player.getUuid());
 			}
@@ -404,8 +404,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		double f = packet.getZ();
 		Entity entity = new ExperienceOrbEntity(this.world, d, e, f, packet.getExperience());
 		entity.updateTrackedPosition(d, e, f);
-		entity.yaw = 0.0F;
-		entity.pitch = 0.0F;
+		entity.setYaw(0.0F);
+		entity.setPitch(0.0F);
 		entity.setEntityId(packet.getId());
 		this.world.addEntity(packet.getId(), entity);
 	}
@@ -500,8 +500,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				if (packet.isPositionChanged()) {
 					Vec3d vec3d = packet.calculateDeltaPosition(entity.getTrackedPosition());
 					entity.updateTrackedPosition(vec3d);
-					float f = packet.hasRotation() ? (float)(packet.getYaw() * 360) / 256.0F : entity.yaw;
-					float g = packet.hasRotation() ? (float)(packet.getPitch() * 360) / 256.0F : entity.pitch;
+					float f = packet.hasRotation() ? (float)(packet.getYaw() * 360) / 256.0F : entity.getYaw();
+					float g = packet.hasRotation() ? (float)(packet.getPitch() * 360) / 256.0F : entity.getPitch();
 					entity.updateTrackedPositionAndAngles(vec3d.getX(), vec3d.getY(), vec3d.getZ(), f, g, 3, false);
 				} else if (packet.hasRotation()) {
 					float h = (float)(packet.getYaw() * 360) / 256.0F;
@@ -525,9 +525,10 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void onEntitiesDestroy(EntitiesDestroyS2CPacket packet) {
+	public void onEntityDestroy(EntityDestroyS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		packet.getEntityIds().forEach(i -> this.world.removeEntity(i, Entity.RemovalReason.DISCARDED));
+		int i = packet.getEntityId();
+		this.world.removeEntity(i, Entity.RemovalReason.DISCARDED);
 	}
 
 	@Override
@@ -586,17 +587,17 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		float j = packet.getYaw();
 		float k = packet.getPitch();
 		if (packet.getFlags().contains(PlayerPositionLookS2CPacket.Flag.X_ROT)) {
-			k += playerEntity.pitch;
+			k += playerEntity.getPitch();
 		}
 
 		if (packet.getFlags().contains(PlayerPositionLookS2CPacket.Flag.Y_ROT)) {
-			j += playerEntity.yaw;
+			j += playerEntity.getYaw();
 		}
 
 		playerEntity.updatePositionAndAngles(e, g, i, j, k);
 		this.connection.send(new TeleportConfirmC2SPacket(packet.getTeleportId()));
 		this.connection
-			.send(new PlayerMoveC2SPacket.Full(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), playerEntity.yaw, playerEntity.pitch, false));
+			.send(new PlayerMoveC2SPacket.Full(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), playerEntity.getYaw(), playerEntity.getPitch(), false));
 		if (!this.positionLookSetup) {
 			this.positionLookSetup = true;
 			this.client.openScreen(null);
@@ -926,7 +927,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		clientPlayerEntity2.init();
 		clientPlayerEntity2.setServerBrand(string);
 		this.world.addPlayer(i, clientPlayerEntity2);
-		clientPlayerEntity2.yaw = -180.0F;
+		clientPlayerEntity2.setYaw(-180.0F);
 		clientPlayerEntity2.input = new KeyboardInput(this.client.options);
 		this.client.interactionManager.copyAbilities(clientPlayerEntity2);
 		clientPlayerEntity2.setReducedDebugInfo(clientPlayerEntity.hasReducedDebugInfo());
@@ -1406,7 +1407,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onWorldBorderCenterChanged(WorldBorderCenterChangedS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.world.getWorldBorder().setCenter(packet.getCenterZ(), packet.getCenterX());
+		this.world.getWorldBorder().setCenter(packet.getCenterX(), packet.getCenterZ());
 	}
 
 	@Override

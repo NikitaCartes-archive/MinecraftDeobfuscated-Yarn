@@ -106,14 +106,14 @@ public class SilverfishEntity extends HostileEntity {
 
 	@Override
 	public void tick() {
-		this.bodyYaw = this.yaw;
+		this.bodyYaw = this.getYaw();
 		super.tick();
 	}
 
 	@Override
-	public void setYaw(float yaw) {
-		this.yaw = yaw;
-		super.setYaw(yaw);
+	public void setBodyYaw(float bodyYaw) {
+		this.setYaw(bodyYaw);
+		super.setBodyYaw(bodyYaw);
 	}
 
 	@Override
@@ -172,7 +172,7 @@ public class SilverfishEntity extends HostileEntity {
 								if (world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 									world.breakBlock(blockPos2, true, this.silverfish);
 								} else {
-									world.setBlockState(blockPos2, ((InfestedBlock)block).fromRegularBlock(world.getBlockState(blockPos2)), Block.NOTIFY_ALL);
+									world.setBlockState(blockPos2, ((InfestedBlock)block).toRegularState(world.getBlockState(blockPos2)), Block.NOTIFY_ALL);
 								}
 
 								if (random.nextBoolean()) {
@@ -232,7 +232,7 @@ public class SilverfishEntity extends HostileEntity {
 				BlockPos blockPos = new BlockPos(this.mob.getX(), this.mob.getY() + 0.5, this.mob.getZ()).offset(this.direction);
 				BlockState blockState = worldAccess.getBlockState(blockPos);
 				if (InfestedBlock.isInfestable(blockState)) {
-					worldAccess.setBlockState(blockPos, InfestedBlock.method_36366(blockState), Block.NOTIFY_ALL);
+					worldAccess.setBlockState(blockPos, InfestedBlock.fromRegularState(blockState), Block.NOTIFY_ALL);
 					this.mob.playSpawnEffects();
 					this.mob.discard();
 				}

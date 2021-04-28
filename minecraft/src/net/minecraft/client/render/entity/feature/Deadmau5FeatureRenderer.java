@@ -37,9 +37,9 @@ public class Deadmau5FeatureRenderer extends FeatureRenderer<AbstractClientPlaye
 			int m = LivingEntityRenderer.getOverlay(abstractClientPlayerEntity, 0.0F);
 
 			for (int n = 0; n < 2; n++) {
-				float o = MathHelper.lerp(h, abstractClientPlayerEntity.prevYaw, abstractClientPlayerEntity.yaw)
+				float o = MathHelper.lerp(h, abstractClientPlayerEntity.prevYaw, abstractClientPlayerEntity.getYaw())
 					- MathHelper.lerp(h, abstractClientPlayerEntity.prevBodyYaw, abstractClientPlayerEntity.bodyYaw);
-				float p = MathHelper.lerp(h, abstractClientPlayerEntity.prevPitch, abstractClientPlayerEntity.pitch);
+				float p = MathHelper.lerp(h, abstractClientPlayerEntity.prevPitch, abstractClientPlayerEntity.getPitch());
 				matrixStack.push();
 				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(o));
 				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(p));

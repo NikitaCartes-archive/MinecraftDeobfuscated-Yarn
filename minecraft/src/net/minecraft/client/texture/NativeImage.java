@@ -366,8 +366,8 @@ public final class NativeImage implements AutoCloseable {
 
 	private void uploadInternal(
 		int level,
-		int xOffset,
-		int yOffset,
+		int offsetX,
+		int offsetY,
 		int unpackSkipPixels,
 		int unpackSkipRows,
 		int width,
@@ -389,7 +389,7 @@ public final class NativeImage implements AutoCloseable {
 		GlStateManager._pixelStore(3316, unpackSkipPixels);
 		GlStateManager._pixelStore(3315, unpackSkipRows);
 		this.format.setUnpackAlignment();
-		GlStateManager._texSubImage2D(3553, level, xOffset, yOffset, width, height, this.format.getPixelDataFormat(), 5121, this.pointer);
+		GlStateManager._texSubImage2D(3553, level, offsetX, offsetY, width, height, this.format.getPixelDataFormat(), 5121, this.pointer);
 		if (clamp) {
 			GlStateManager._texParameter(3553, 10242, 33071);
 			GlStateManager._texParameter(3553, 10243, 33071);

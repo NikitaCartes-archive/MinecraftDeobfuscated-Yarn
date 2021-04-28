@@ -131,11 +131,11 @@ public enum DirectionTransformation implements StringIdentifiable {
 		return COMBINATIONS[this.ordinal()][transformation.ordinal()];
 	}
 
-	public DirectionTransformation method_35813() {
+	public DirectionTransformation inverse() {
 		return INVERSES[this.ordinal()];
 	}
 
-	public Matrix3f method_35814() {
+	public Matrix3f getMatrix() {
 		return this.matrix.copy();
 	}
 

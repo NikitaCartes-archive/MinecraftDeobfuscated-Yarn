@@ -34,8 +34,8 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.client.util.Rect2i;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Rect2i;
 import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.OrderedText;
@@ -81,7 +81,7 @@ public class CommandSuggestor {
 		Screen owner,
 		TextFieldWidget textField,
 		TextRenderer textRenderer,
-		boolean slashRequired,
+		boolean slashOptional,
 		boolean suggestingWhenEmpty,
 		int inWindowIndexOffset,
 		int maxSuggestionSize,
@@ -92,7 +92,7 @@ public class CommandSuggestor {
 		this.owner = owner;
 		this.textField = textField;
 		this.textRenderer = textRenderer;
-		this.slashOptional = slashRequired;
+		this.slashOptional = slashOptional;
 		this.suggestingWhenEmpty = suggestingWhenEmpty;
 		this.inWindowIndexOffset = inWindowIndexOffset;
 		this.maxSuggestionSize = maxSuggestionSize;

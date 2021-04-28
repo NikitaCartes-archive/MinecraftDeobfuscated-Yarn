@@ -54,11 +54,11 @@ public class SpriteIdentifier {
 			.getTextureSpecificVertexConsumer(ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, this.getRenderLayer(layerFactory), true, bl));
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (object != null && this.getClass() == object.getClass()) {
-			SpriteIdentifier spriteIdentifier = (SpriteIdentifier)object;
+		} else if (o != null && this.getClass() == o.getClass()) {
+			SpriteIdentifier spriteIdentifier = (SpriteIdentifier)o;
 			return this.atlas.equals(spriteIdentifier.atlas) && this.texture.equals(spriteIdentifier.texture);
 		} else {
 			return false;

@@ -26,6 +26,7 @@ import net.minecraft.network.packet.s2c.login.LoginCompressionS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginDisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginHelloS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginSuccessS2CPacket;
+import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -146,11 +147,19 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 
 			this.connection.send(new LoginSuccessS2CPacket(this.profile));
 			ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId());
-			if (serverPlayerEntity != null) {
-				this.state = ServerLoginNetworkHandler.State.DELAY_ACCEPT;
-				this.delayedPlayer = this.server.getPlayerManager().createPlayer(this.profile);
-			} else {
-				this.addToServer(this.server.getPlayerManager().createPlayer(this.profile));
+
+			try {
+				ServerPlayerEntity serverPlayerEntity2 = this.server.getPlayerManager().createPlayer(this.profile);
+				if (serverPlayerEntity != null) {
+					this.state = ServerLoginNetworkHandler.State.DELAY_ACCEPT;
+					this.delayedPlayer = serverPlayerEntity2;
+				} else {
+					this.addToServer(serverPlayerEntity2);
+				}
+			} catch (Exception var5) {
+				Text text2 = new TranslatableText("multiplayer.disconnect.invalid_player_data");
+				this.connection.send(new DisconnectS2CPacket(text2));
+				this.connection.disconnect(text2);
 			}
 		}
 	}

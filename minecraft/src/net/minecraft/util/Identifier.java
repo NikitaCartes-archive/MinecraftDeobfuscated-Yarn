@@ -103,13 +103,13 @@ public class Identifier implements Comparable<Identifier> {
 		return this.namespace + ':' + this.path;
 	}
 
-	public boolean equals(Object other) {
-		if (this == other) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (!(other instanceof Identifier)) {
+		} else if (!(o instanceof Identifier)) {
 			return false;
 		} else {
-			Identifier identifier = (Identifier)other;
+			Identifier identifier = (Identifier)o;
 			return this.namespace.equals(identifier.namespace) && this.path.equals(identifier.path);
 		}
 	}

@@ -22,6 +22,7 @@ import net.minecraft.item.map.MapState;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAttributesS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
@@ -65,8 +66,8 @@ public class EntityTrackerEntry {
 		this.tickInterval = tickInterval;
 		this.alwaysUpdateVelocity = alwaysUpdateVelocity;
 		this.storeEncodedCoordinates();
-		this.lastYaw = MathHelper.floor(entity.yaw * 256.0F / 360.0F);
-		this.lastPitch = MathHelper.floor(entity.pitch * 256.0F / 360.0F);
+		this.lastYaw = MathHelper.floor(entity.getYaw() * 256.0F / 360.0F);
+		this.lastPitch = MathHelper.floor(entity.getPitch() * 256.0F / 360.0F);
 		this.lastHeadPitch = MathHelper.floor(entity.getHeadYaw() * 256.0F / 360.0F);
 		this.lastOnGround = entity.isOnGround();
 	}
@@ -100,8 +101,8 @@ public class EntityTrackerEntry {
 
 		if (this.trackingTick % this.tickInterval == 0 || this.entity.velocityDirty || this.entity.getDataTracker().isDirty()) {
 			if (this.entity.hasVehicle()) {
-				int i = MathHelper.floor(this.entity.yaw * 256.0F / 360.0F);
-				int j = MathHelper.floor(this.entity.pitch * 256.0F / 360.0F);
+				int i = MathHelper.floor(this.entity.getYaw() * 256.0F / 360.0F);
+				int j = MathHelper.floor(this.entity.getPitch() * 256.0F / 360.0F);
 				boolean bl = Math.abs(i - this.lastYaw) >= 1 || Math.abs(j - this.lastPitch) >= 1;
 				if (bl) {
 					this.receiver.accept(new EntityS2CPacket.Rotate(this.entity.getId(), (byte)i, (byte)j, this.entity.isOnGround()));
@@ -114,8 +115,8 @@ public class EntityTrackerEntry {
 				this.hadVehicle = true;
 			} else {
 				this.updatesWithoutVehicle++;
-				int i = MathHelper.floor(this.entity.yaw * 256.0F / 360.0F);
-				int j = MathHelper.floor(this.entity.pitch * 256.0F / 360.0F);
+				int i = MathHelper.floor(this.entity.getYaw() * 256.0F / 360.0F);
+				int j = MathHelper.floor(this.entity.getPitch() * 256.0F / 360.0F);
 				Vec3d vec3d = this.entity.getPos().subtract(EntityS2CPacket.decodePacketCoordinates(this.lastX, this.lastY, this.lastZ));
 				boolean bl2 = vec3d.lengthSquared() >= 7.6293945E-6F;
 				Packet<?> packet2 = null;
@@ -188,13 +189,12 @@ public class EntityTrackerEntry {
 
 	public void stopTracking(ServerPlayerEntity player) {
 		this.entity.onStoppedTrackingBy(player);
-		player.onStoppedTracking(this.entity);
+		player.networkHandler.sendPacket(new EntityDestroyS2CPacket(this.entity.getId()));
 	}
 
 	public void startTracking(ServerPlayerEntity player) {
 		this.sendPackets(player.networkHandler::sendPacket);
 		this.entity.onStartedTrackingBy(player);
-		player.onStartedTracking(this.entity);
 	}
 
 	public void sendPackets(Consumer<Packet<?>> sender) {

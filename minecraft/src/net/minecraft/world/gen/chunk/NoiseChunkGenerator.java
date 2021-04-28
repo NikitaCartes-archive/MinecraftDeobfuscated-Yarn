@@ -2,7 +2,6 @@ package net.minecraft.world.gen.chunk;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
@@ -12,13 +11,14 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
-import java.util.function.DoubleConsumer;
+import java.util.function.DoubleFunction;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import net.minecraft.class_6350;
-import net.minecraft.class_6353;
+import net.minecraft.class_6357;
+import net.minecraft.class_6358;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.SpawnGroup;
@@ -52,6 +52,7 @@ import net.minecraft.world.gen.DeepslateBlockSource;
 import net.minecraft.world.gen.NoiseCaveSampler;
 import net.minecraft.world.gen.NoiseColumnSampler;
 import net.minecraft.world.gen.NoiseInterpolator;
+import net.minecraft.world.gen.OreVeinGenerator;
 import net.minecraft.world.gen.SimpleRandom;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.StructureWeightSampler;
@@ -84,7 +85,8 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	private final int worldHeight;
 	private final NoiseColumnSampler noiseColumnSampler;
 	private final BlockSource deepslateSource;
-	private final class_6353 field_33579;
+	private final OreVeinGenerator oreVeinGenerator;
+	private final class_6358 field_33644;
 
 	public NoiseChunkGenerator(BiomeSource biomeSource, long seed, Supplier<ChunkGeneratorSettings> settings) {
 		this(biomeSource, biomeSource, seed, settings);
@@ -123,9 +125,13 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		this.edgeDensityNoise = DoublePerlinNoiseSampler.create(new SimpleRandom(chunkRandom.nextLong()), -3, 1.0);
 		this.waterLevelNoise = DoublePerlinNoiseSampler.create(new SimpleRandom(chunkRandom.nextLong()), -3, 1.0, 0.0, 2.0);
 		this.field_33578 = DoublePerlinNoiseSampler.create(new SimpleRandom(chunkRandom.nextLong()), -1, 1.0, 0.0);
-		NoiseCaveSampler noiseCaveSampler = chunkGeneratorSettings.hasNoiseCaves()
-			? new NoiseCaveSampler(chunkRandom, generationShapeConfig.getMinimumY() / this.verticalNoiseResolution)
-			: null;
+		class_6357 lv;
+		if (chunkGeneratorSettings.hasNoiseCaves()) {
+			lv = new NoiseCaveSampler(chunkRandom, generationShapeConfig.getMinimumY() / this.verticalNoiseResolution);
+		} else {
+			lv = class_6357.field_33652;
+		}
+
 		this.noiseColumnSampler = new NoiseColumnSampler(
 			populationSource,
 			this.horizontalNoiseResolution,
@@ -135,12 +141,13 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 			interpolatedNoiseSampler,
 			simplexNoiseSampler,
 			octavePerlinNoiseSampler,
-			noiseCaveSampler
+			lv
 		);
 		this.deepslateSource = new DeepslateBlockSource(seed, this.defaultBlock, Blocks.DEEPSLATE.getDefaultState(), chunkGeneratorSettings);
-		this.field_33579 = new class_6353(
+		this.oreVeinGenerator = new OreVeinGenerator(
 			seed, this.defaultBlock, this.horizontalNoiseResolution, this.verticalNoiseResolution, chunkGeneratorSettings.getGenerationShapeConfig().getMinimumY()
 		);
+		this.field_33644 = new class_6358(seed);
 	}
 
 	private boolean hasAquifers() {
@@ -241,7 +248,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 				double w = MathHelper.lerp3(v, d, e, f, q, h, s, g, r, p, t);
 				int y = o * this.verticalNoiseResolution + u;
 				int aa = y + minY * this.verticalNoiseResolution;
-				BlockState blockState = this.getBlockState(StructureWeightSampler.INSTANCE, lv, this.deepslateSource, x, aa, z, w);
+				BlockState blockState = this.getBlockState(StructureWeightSampler.INSTANCE, lv, this.deepslateSource, class_6357.field_33652, x, aa, z, w);
 				if (states != null) {
 					states[y] = blockState;
 				}
@@ -271,12 +278,13 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	}
 
 	protected BlockState getBlockState(
-		StructureWeightSampler structures, class_6350 aquiferSampler, BlockSource blockInterpolator, int x, int y, int z, double noise
+		StructureWeightSampler structures, class_6350 aquiferSampler, BlockSource blockInterpolator, class_6357 arg, int i, int j, int k, double d
 	) {
-		double d = MathHelper.clamp(noise / 200.0, -1.0, 1.0);
-		d = d / 2.0 - d * d * d / 24.0;
-		d += structures.getWeight(x, y, z);
-		return aquiferSampler.apply(blockInterpolator, x, y, z, d);
+		double e = MathHelper.clamp(d / 200.0, -1.0, 1.0);
+		e = e / 2.0 - e * e * e / 24.0;
+		e = arg.sample(e, i, j, k);
+		e += structures.getWeight(i, j, k);
+		return aquiferSampler.apply(blockInterpolator, i, j, k, e);
 	}
 
 	@Override
@@ -381,9 +389,9 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		class_6350 lv = this.method_36386(i, j, chunkPos);
 		NoiseInterpolator noiseInterpolator = new NoiseInterpolator(this.noiseSizeX, j, this.noiseSizeZ, chunkPos, i, this::sampleNoiseColumn);
 		List<NoiseInterpolator> list = Lists.<NoiseInterpolator>newArrayList(noiseInterpolator);
-		Pair<BlockSource, DoubleConsumer> pair = this.method_36387(i, chunkPos, list::add);
-		BlockSource blockSource = pair.getFirst();
-		DoubleConsumer doubleConsumer = pair.getSecond();
+		Consumer<NoiseInterpolator> consumer = list::add;
+		DoubleFunction<BlockSource> doubleFunction = this.method_36387(i, chunkPos, consumer);
+		DoubleFunction<class_6357> doubleFunction2 = this.method_36462(i, chunkPos, consumer);
 		list.forEach(NoiseInterpolator::sampleStartNoise);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
@@ -421,8 +429,9 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 								int ab = aa & 15;
 								double f = (double)z / (double)this.horizontalNoiseResolution;
 								double g = noiseInterpolator.sampleNoise(f);
-								doubleConsumer.accept(f);
-								BlockState blockState = this.getBlockState(structureWeightSampler, lv, blockSource, x, t, aa, g);
+								BlockState blockState = this.getBlockState(
+									structureWeightSampler, lv, (BlockSource)doubleFunction.apply(f), (class_6357)doubleFunction2.apply(f), x, t, aa, g
+								);
 								if (blockState != AIR) {
 									if (blockState.getLuminance() != 0 && chunk instanceof ProtoChunk) {
 										mutable.set(x, t, aa);
@@ -449,18 +458,30 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		return chunk;
 	}
 
-	private Pair<BlockSource, DoubleConsumer> method_36387(int i, ChunkPos chunkPos, Consumer<NoiseInterpolator> consumer) {
-		if (!((ChunkGeneratorSettings)this.settings.get()).method_36396()) {
-			return Pair.of(this.deepslateSource, d -> {
-			});
+	private DoubleFunction<class_6357> method_36462(int i, ChunkPos chunkPos, Consumer<NoiseInterpolator> consumer) {
+		if (!((ChunkGeneratorSettings)this.settings.get()).method_36468()) {
+			return d -> class_6357.field_33652;
 		} else {
-			NoiseChunkGenerator.class_6352 lv = new NoiseChunkGenerator.class_6352(chunkPos, i, this.seed + 1L);
-			lv.method_36395(consumer);
+			NoiseChunkGenerator.class_6356 lv = new NoiseChunkGenerator.class_6356(chunkPos, i);
+			lv.method_36467(consumer);
+			return lv::method_36466;
+		}
+	}
+
+	private DoubleFunction<BlockSource> method_36387(int i, ChunkPos chunkPos, Consumer<NoiseInterpolator> consumer) {
+		if (!((ChunkGeneratorSettings)this.settings.get()).method_36396()) {
+			return d -> this.deepslateSource;
+		} else {
+			NoiseChunkGenerator.OreVeinSource oreVeinSource = new NoiseChunkGenerator.OreVeinSource(chunkPos, i, this.seed + 1L);
+			oreVeinSource.method_36395(consumer);
 			BlockSource blockSource = (ix, j, k) -> {
-				BlockState blockState = lv.sample(ix, j, k);
+				BlockState blockState = oreVeinSource.sample(ix, j, k);
 				return blockState != this.defaultBlock ? blockState : this.deepslateSource.sample(ix, j, k);
 			};
-			return Pair.of(blockSource, lv::method_36394);
+			return d -> {
+				oreVeinSource.method_36394(d);
+				return blockSource;
+			};
 		}
 	}
 
@@ -529,40 +550,40 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		}
 	}
 
-	class class_6352 implements BlockSource {
+	class OreVeinSource implements BlockSource {
 		private final NoiseInterpolator field_33581;
 		private final NoiseInterpolator field_33582;
 		private final NoiseInterpolator field_33583;
 		private double field_33584;
-		private final long field_33585;
-		private final ChunkRandom field_33586 = new ChunkRandom();
+		private final long seed;
+		private final ChunkRandom random = new ChunkRandom();
 
-		public class_6352(ChunkPos chunkPos, int i, long l) {
+		public OreVeinSource(ChunkPos pos, int i, long seed) {
 			this.field_33581 = new NoiseInterpolator(
 				NoiseChunkGenerator.this.noiseSizeX,
 				NoiseChunkGenerator.this.noiseSizeY,
 				NoiseChunkGenerator.this.noiseSizeZ,
-				chunkPos,
+				pos,
 				i,
-				NoiseChunkGenerator.this.field_33579::method_36401
+				NoiseChunkGenerator.this.oreVeinGenerator::method_36401
 			);
 			this.field_33582 = new NoiseInterpolator(
 				NoiseChunkGenerator.this.noiseSizeX,
 				NoiseChunkGenerator.this.noiseSizeY,
 				NoiseChunkGenerator.this.noiseSizeZ,
-				chunkPos,
+				pos,
 				i,
-				NoiseChunkGenerator.this.field_33579::method_36404
+				NoiseChunkGenerator.this.oreVeinGenerator::method_36404
 			);
 			this.field_33583 = new NoiseInterpolator(
 				NoiseChunkGenerator.this.noiseSizeX,
 				NoiseChunkGenerator.this.noiseSizeY,
 				NoiseChunkGenerator.this.noiseSizeZ,
-				chunkPos,
+				pos,
 				i,
-				NoiseChunkGenerator.this.field_33579::method_36405
+				NoiseChunkGenerator.this.oreVeinGenerator::method_36405
 			);
-			this.field_33585 = l;
+			this.seed = seed;
 		}
 
 		public void method_36395(Consumer<NoiseInterpolator> consumer) {
@@ -580,8 +601,72 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 			double d = this.field_33581.sampleNoise(this.field_33584);
 			double e = this.field_33582.sampleNoise(this.field_33584);
 			double f = this.field_33583.sampleNoise(this.field_33584);
-			this.field_33586.setGrimstoneSeed(this.field_33585, x, y, z);
-			return NoiseChunkGenerator.this.field_33579.method_36400(this.field_33586, y, d, e, f);
+			this.random.setGrimstoneSeed(this.seed, x, y, z);
+			return NoiseChunkGenerator.this.oreVeinGenerator.sample(this.random, x, y, z, d, e, f);
+		}
+	}
+
+	class class_6356 implements class_6357 {
+		private final NoiseInterpolator field_33646;
+		private final NoiseInterpolator field_33647;
+		private final NoiseInterpolator field_33648;
+		private final NoiseInterpolator field_33649;
+		private double field_33650;
+
+		public class_6356(ChunkPos chunkPos, int i) {
+			this.field_33646 = new NoiseInterpolator(
+				NoiseChunkGenerator.this.noiseSizeX,
+				NoiseChunkGenerator.this.noiseSizeY,
+				NoiseChunkGenerator.this.noiseSizeZ,
+				chunkPos,
+				i,
+				NoiseChunkGenerator.this.field_33644::method_36471
+			);
+			this.field_33647 = new NoiseInterpolator(
+				NoiseChunkGenerator.this.noiseSizeX,
+				NoiseChunkGenerator.this.noiseSizeY,
+				NoiseChunkGenerator.this.noiseSizeZ,
+				chunkPos,
+				i,
+				NoiseChunkGenerator.this.field_33644::method_36474
+			);
+			this.field_33648 = new NoiseInterpolator(
+				NoiseChunkGenerator.this.noiseSizeX,
+				NoiseChunkGenerator.this.noiseSizeY,
+				NoiseChunkGenerator.this.noiseSizeZ,
+				chunkPos,
+				i,
+				NoiseChunkGenerator.this.field_33644::method_36475
+			);
+			this.field_33649 = new NoiseInterpolator(
+				NoiseChunkGenerator.this.noiseSizeX,
+				NoiseChunkGenerator.this.noiseSizeY,
+				NoiseChunkGenerator.this.noiseSizeZ,
+				chunkPos,
+				i,
+				NoiseChunkGenerator.this.field_33644::method_36476
+			);
+		}
+
+		public class_6357 method_36466(double d) {
+			this.field_33650 = d;
+			return this;
+		}
+
+		@Override
+		public double sample(double d, int i, int j, int k) {
+			double e = this.field_33646.sampleNoise(this.field_33650);
+			double f = this.field_33647.sampleNoise(this.field_33650);
+			double g = this.field_33648.sampleNoise(this.field_33650);
+			double h = this.field_33649.sampleNoise(this.field_33650);
+			return NoiseChunkGenerator.this.field_33644.method_36470(d, i, j, k, e, f, g, h, NoiseChunkGenerator.this.getMinimumY());
+		}
+
+		public void method_36467(Consumer<NoiseInterpolator> consumer) {
+			consumer.accept(this.field_33646);
+			consumer.accept(this.field_33647);
+			consumer.accept(this.field_33648);
+			consumer.accept(this.field_33649);
 		}
 	}
 }

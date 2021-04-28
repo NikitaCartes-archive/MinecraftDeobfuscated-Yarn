@@ -164,8 +164,8 @@ public class Keyboard {
 								this.client.player.getX(),
 								this.client.player.getY(),
 								this.client.player.getZ(),
-								this.client.player.yaw,
-								this.client.player.pitch
+								this.client.player.getYaw(),
+								this.client.player.getPitch()
 							)
 						);
 						return true;

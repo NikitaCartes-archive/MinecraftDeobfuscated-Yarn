@@ -34,7 +34,9 @@ public class SittingScanningPhase extends AbstractSittingPhase {
 			} else {
 				Vec3d vec3d = new Vec3d(livingEntity.getX() - this.dragon.getX(), 0.0, livingEntity.getZ() - this.dragon.getZ()).normalize();
 				Vec3d vec3d2 = new Vec3d(
-						(double)MathHelper.sin(this.dragon.yaw * (float) (Math.PI / 180.0)), 0.0, (double)(-MathHelper.cos(this.dragon.yaw * (float) (Math.PI / 180.0)))
+						(double)MathHelper.sin(this.dragon.getYaw() * (float) (Math.PI / 180.0)),
+						0.0,
+						(double)(-MathHelper.cos(this.dragon.getYaw() * (float) (Math.PI / 180.0)))
 					)
 					.normalize();
 				float f = (float)vec3d2.dotProduct(vec3d);
@@ -42,7 +44,7 @@ public class SittingScanningPhase extends AbstractSittingPhase {
 				if (g < 0.0F || g > 10.0F) {
 					double d = livingEntity.getX() - this.dragon.head.getX();
 					double e = livingEntity.getZ() - this.dragon.head.getZ();
-					double h = MathHelper.clamp(MathHelper.wrapDegrees(180.0 - MathHelper.atan2(d, e) * 180.0F / (float)Math.PI - (double)this.dragon.yaw), -100.0, 100.0);
+					double h = MathHelper.clamp(MathHelper.wrapDegrees(180.0 - MathHelper.atan2(d, e) * 180.0F / (float)Math.PI - (double)this.dragon.getYaw()), -100.0, 100.0);
 					this.dragon.yawAcceleration *= 0.8F;
 					float i = MathHelper.sqrt(d * d + e * e) + 1.0F;
 					float j = i;
@@ -51,7 +53,7 @@ public class SittingScanningPhase extends AbstractSittingPhase {
 					}
 
 					this.dragon.yawAcceleration = (float)((double)this.dragon.yawAcceleration + h * (double)(0.7F / i / j));
-					this.dragon.yaw = this.dragon.yaw + this.dragon.yawAcceleration;
+					this.dragon.setYaw(this.dragon.getYaw() + this.dragon.yawAcceleration);
 				}
 			}
 		} else if (this.ticks >= 100) {

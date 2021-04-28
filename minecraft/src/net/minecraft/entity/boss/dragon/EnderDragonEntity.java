@@ -196,13 +196,13 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 				this.wingPosition += g;
 			}
 
-			this.yaw = MathHelper.wrapDegrees(this.yaw);
+			this.setYaw(MathHelper.wrapDegrees(this.getYaw()));
 			if (this.isAiDisabled()) {
 				this.wingPosition = 0.5F;
 			} else {
 				if (this.latestSegment < 0) {
 					for (int i = 0; i < this.segmentCircularBuffer.length; i++) {
-						this.segmentCircularBuffer[i][0] = (double)this.yaw;
+						this.segmentCircularBuffer[i][0] = (double)this.getYaw();
 						this.segmentCircularBuffer[i][1] = this.getY();
 					}
 				}
@@ -211,19 +211,19 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 					this.latestSegment = 0;
 				}
 
-				this.segmentCircularBuffer[this.latestSegment][0] = (double)this.yaw;
+				this.segmentCircularBuffer[this.latestSegment][0] = (double)this.getYaw();
 				this.segmentCircularBuffer[this.latestSegment][1] = this.getY();
 				if (this.world.isClient) {
 					if (this.bodyTrackingIncrements > 0) {
 						double d = this.getX() + (this.serverX - this.getX()) / (double)this.bodyTrackingIncrements;
 						double e = this.getY() + (this.serverY - this.getY()) / (double)this.bodyTrackingIncrements;
 						double j = this.getZ() + (this.serverZ - this.getZ()) / (double)this.bodyTrackingIncrements;
-						double k = MathHelper.wrapDegrees(this.serverYaw - (double)this.yaw);
-						this.yaw = (float)((double)this.yaw + k / (double)this.bodyTrackingIncrements);
-						this.pitch = (float)((double)this.pitch + (this.serverPitch - (double)this.pitch) / (double)this.bodyTrackingIncrements);
+						double k = MathHelper.wrapDegrees(this.serverYaw - (double)this.getYaw());
+						this.setYaw(this.getYaw() + (float)k / (float)this.bodyTrackingIncrements);
+						this.setPitch(this.getPitch() + (float)(this.serverPitch - (double)this.getPitch()) / (float)this.bodyTrackingIncrements);
 						this.bodyTrackingIncrements--;
 						this.setPosition(d, e, j);
-						this.setRotation(this.yaw, this.pitch);
+						this.setRotation(this.getYaw(), this.getPitch());
 					}
 
 					this.phaseManager.getCurrent().clientTick();
@@ -248,17 +248,19 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 						}
 
 						this.setVelocity(this.getVelocity().add(0.0, j * 0.01, 0.0));
-						this.yaw = MathHelper.wrapDegrees(this.yaw);
-						double o = MathHelper.clamp(MathHelper.wrapDegrees(180.0 - MathHelper.atan2(e, k) * 180.0F / (float)Math.PI - (double)this.yaw), -50.0, 50.0);
+						this.setYaw(MathHelper.wrapDegrees(this.getYaw()));
+						double o = MathHelper.clamp(MathHelper.wrapDegrees(180.0 - MathHelper.atan2(e, k) * 180.0F / (float)Math.PI - (double)this.getYaw()), -50.0, 50.0);
 						Vec3d vec3d3 = vec3d2.subtract(this.getX(), this.getY(), this.getZ()).normalize();
 						Vec3d vec3d4 = new Vec3d(
-								(double)MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)), this.getVelocity().y, (double)(-MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)))
+								(double)MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0)),
+								this.getVelocity().y,
+								(double)(-MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)))
 							)
 							.normalize();
 						float p = Math.max(((float)vec3d4.dotProduct(vec3d3) + 0.5F) / 1.5F, 0.0F);
 						this.yawAcceleration *= 0.8F;
 						this.yawAcceleration = (float)((double)this.yawAcceleration + o * (double)phase.getYawAcceleration());
-						this.yaw = this.yaw + this.yawAcceleration * 0.1F;
+						this.setYaw(this.getYaw() + this.yawAcceleration * 0.1F);
 						float q = (float)(2.0 / (l + 1.0));
 						float r = 0.06F;
 						this.updateVelocity(0.06F * (p * q + (1.0F - q)), new Vec3d(0.0, 0.0, -1.0));
@@ -274,7 +276,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 					}
 				}
 
-				this.bodyYaw = this.yaw;
+				this.bodyYaw = this.getYaw();
 				Vec3d[] vec3ds = new Vec3d[this.parts.length];
 
 				for (int t = 0; t < this.parts.length; t++) {
@@ -284,7 +286,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 				float u = (float)(this.getSegmentProperties(5, 1.0F)[1] - this.getSegmentProperties(10, 1.0F)[1]) * 10.0F * (float) (Math.PI / 180.0);
 				float v = MathHelper.cos(u);
 				float w = MathHelper.sin(u);
-				float x = this.yaw * (float) (Math.PI / 180.0);
+				float x = this.getYaw() * (float) (Math.PI / 180.0);
 				float y = MathHelper.sin(x);
 				float z = MathHelper.cos(x);
 				this.movePart(this.body, (double)(y * 0.5F), 0.0, (double)(-z * 0.5F));
@@ -303,8 +305,8 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 					this.damageLivingEntities(this.world.getOtherEntities(this, this.neck.getBoundingBox().expand(1.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
 				}
 
-				float aa = MathHelper.sin(this.yaw * (float) (Math.PI / 180.0) - this.yawAcceleration * 0.01F);
-				float ab = MathHelper.cos(this.yaw * (float) (Math.PI / 180.0) - this.yawAcceleration * 0.01F);
+				float aa = MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0) - this.yawAcceleration * 0.01F);
+				float ab = MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0) - this.yawAcceleration * 0.01F);
 				float ac = this.getHeadVerticalMovement();
 				this.movePart(this.head, (double)(aa * 6.5F * v), (double)(ac + w * 6.5F), (double)(-ab * 6.5F * v));
 				this.movePart(this.neck, (double)(aa * 5.5F * v), (double)(ac + w * 5.5F), (double)(-ab * 5.5F * v));
@@ -325,7 +327,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 					}
 
 					double[] es = this.getSegmentProperties(12 + ad * 2, 1.0F);
-					float ae = this.yaw * (float) (Math.PI / 180.0) + this.wrapYawChange(es[0] - ds[0]) * (float) (Math.PI / 180.0);
+					float ae = this.getYaw() * (float) (Math.PI / 180.0) + this.wrapYawChange(es[0] - ds[0]) * (float) (Math.PI / 180.0);
 					float af = MathHelper.sin(ae);
 					float ag = MathHelper.cos(ae);
 					float p = 1.5F;
@@ -553,8 +555,8 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		}
 
 		this.move(MovementType.SELF, new Vec3d(0.0, 0.1F, 0.0));
-		this.yaw += 20.0F;
-		this.bodyYaw = this.yaw;
+		this.setYaw(this.getYaw() + 20.0F);
+		this.bodyYaw = this.getYaw();
 		if (this.ticksSinceDeath == 200 && this.world instanceof ServerWorld) {
 			if (bl) {
 				ExperienceOrbEntity.spawn((ServerWorld)this.world, this.getPos(), MathHelper.floor((float)i * 0.2F));
@@ -814,17 +816,17 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 			BlockPos blockPos = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
 			float f = Math.max(MathHelper.sqrt(blockPos.getSquaredDistance(this.getPos(), true)) / 4.0F, 1.0F);
 			float g = 6.0F / f;
-			float h = this.pitch;
+			float h = this.getPitch();
 			float i = 1.5F;
-			this.pitch = -g * 1.5F * 5.0F;
+			this.setPitch(-g * 1.5F * 5.0F);
 			vec3d = this.getRotationVec(tickDelta);
-			this.pitch = h;
+			this.setPitch(h);
 		} else if (phase.isSittingOrHovering()) {
-			float j = this.pitch;
+			float j = this.getPitch();
 			float f = 1.5F;
-			this.pitch = -45.0F;
+			this.setPitch(-45.0F);
 			vec3d = this.getRotationVec(tickDelta);
-			this.pitch = j;
+			this.setPitch(j);
 		} else {
 			vec3d = this.getRotationVec(tickDelta);
 		}

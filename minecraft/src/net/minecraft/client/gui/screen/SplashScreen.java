@@ -26,9 +26,9 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class SplashScreen extends Overlay {
 	private static final Identifier LOGO = new Identifier("textures/gui/title/mojangstudios.png");
-	private static final int field_32249 = BackgroundHelper.ColorMixer.getArgb(255, 239, 50, 61);
-	private static final int field_32250 = BackgroundHelper.ColorMixer.getArgb(255, 0, 0, 0);
-	private static final IntSupplier BRAND_ARGB = () -> MinecraftClient.getInstance().options.monochromeLogo ? field_32250 : field_32249;
+	private static final int MOJANG_RED = BackgroundHelper.ColorMixer.getArgb(255, 239, 50, 61);
+	private static final int MONOCHROME_BLACK = BackgroundHelper.ColorMixer.getArgb(255, 0, 0, 0);
+	private static final IntSupplier BRAND_ARGB = () -> MinecraftClient.getInstance().options.monochromeLogo ? MONOCHROME_BLACK : MOJANG_RED;
 	private static final int field_32251 = 240;
 	private static final float field_32252 = 60.0F;
 	private static final int field_32253 = 60;

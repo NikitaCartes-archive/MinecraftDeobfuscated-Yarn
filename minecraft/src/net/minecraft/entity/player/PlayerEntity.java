@@ -479,7 +479,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	protected void tickNewAi() {
 		super.tickNewAi();
 		this.tickHandSwing();
-		this.headYaw = this.yaw;
+		this.headYaw = this.getYaw();
 	}
 
 	@Override
@@ -599,9 +599,9 @@ public abstract class PlayerEntity extends LivingEntity {
 
 		if (source != null) {
 			this.setVelocity(
-				(double)(-MathHelper.cos((this.knockbackVelocity + this.yaw) * (float) (Math.PI / 180.0)) * 0.1F),
+				(double)(-MathHelper.cos((this.knockbackVelocity + this.getYaw()) * (float) (Math.PI / 180.0)) * 0.1F),
 				0.1F,
-				(double)(-MathHelper.sin((this.knockbackVelocity + this.yaw) * (float) (Math.PI / 180.0)) * 0.1F)
+				(double)(-MathHelper.sin((this.knockbackVelocity + this.getYaw()) * (float) (Math.PI / 180.0)) * 0.1F)
 			);
 		} else {
 			this.setVelocity(0.0, 0.1, 0.0);
@@ -692,10 +692,10 @@ public abstract class PlayerEntity extends LivingEntity {
 				itemEntity.setVelocity((double)(-MathHelper.sin(g) * f), 0.2F, (double)(MathHelper.cos(g) * f));
 			} else {
 				float f = 0.3F;
-				float g = MathHelper.sin(this.pitch * (float) (Math.PI / 180.0));
-				float h = MathHelper.cos(this.pitch * (float) (Math.PI / 180.0));
-				float i = MathHelper.sin(this.yaw * (float) (Math.PI / 180.0));
-				float j = MathHelper.cos(this.yaw * (float) (Math.PI / 180.0));
+				float g = MathHelper.sin(this.getPitch() * (float) (Math.PI / 180.0));
+				float h = MathHelper.cos(this.getPitch() * (float) (Math.PI / 180.0));
+				float i = MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0));
+				float j = MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0));
 				float k = this.random.nextFloat() * (float) (Math.PI * 2);
 				float l = 0.02F * this.random.nextFloat();
 				itemEntity.setVelocity(
@@ -1180,13 +1180,15 @@ public abstract class PlayerEntity extends LivingEntity {
 							if (target instanceof LivingEntity) {
 								((LivingEntity)target)
 									.takeKnockback(
-										(float)i * 0.5F, (double)MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)), (double)(-MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)))
+										(float)i * 0.5F,
+										(double)MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0)),
+										(double)(-MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)))
 									);
 							} else {
 								target.addVelocity(
-									(double)(-MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)) * (float)i * 0.5F),
+									(double)(-MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0)) * (float)i * 0.5F),
 									0.1,
-									(double)(MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)) * (float)i * 0.5F)
+									(double)(MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)) * (float)i * 0.5F)
 								);
 							}
 
@@ -1204,7 +1206,7 @@ public abstract class PlayerEntity extends LivingEntity {
 									&& (!(livingEntity instanceof ArmorStandEntity) || !((ArmorStandEntity)livingEntity).isMarker())
 									&& this.squaredDistanceTo(livingEntity) < 9.0) {
 									livingEntity.takeKnockback(
-										0.4F, (double)MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)), (double)(-MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)))
+										0.4F, (double)MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0)), (double)(-MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)))
 									);
 									livingEntity.damage(DamageSource.player(this), l);
 								}
@@ -1306,8 +1308,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public void spawnSweepAttackParticles() {
-		double d = (double)(-MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)));
-		double e = (double)MathHelper.cos(this.yaw * (float) (Math.PI / 180.0));
+		double d = (double)(-MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0)));
+		double e = (double)MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0));
 		if (this.world instanceof ServerWorld) {
 			((ServerWorld)this.world).spawnParticles(ParticleTypes.SWEEP_ATTACK, this.getX() + d, this.getBodyY(0.5), this.getZ() + e, 0, d, 0.0, e, 0.0);
 		}
@@ -2065,7 +2067,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Override
 	public Vec3d method_30951(float f) {
 		double d = 0.22 * (this.getMainArm() == Arm.RIGHT ? -1.0 : 1.0);
-		float g = MathHelper.lerp(f * 0.5F, this.pitch, this.prevPitch) * (float) (Math.PI / 180.0);
+		float g = MathHelper.lerp(f * 0.5F, this.getPitch(), this.prevPitch) * (float) (Math.PI / 180.0);
 		float h = MathHelper.lerp(f, this.prevBodyYaw, this.bodyYaw) * (float) (Math.PI / 180.0);
 		if (this.isFallFlying() || this.isUsingRiptide()) {
 			Vec3d vec3d = this.getRotationVec(f);

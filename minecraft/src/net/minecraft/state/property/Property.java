@@ -11,6 +11,15 @@ import net.minecraft.state.State;
 
 public abstract class Property<T extends Comparable<T>> {
 	private final Class<T> type;
+	/**
+	 * The name of this property.
+	 * 
+	 * <p>Note that the name is required to match the {@linkplain
+	 * net.minecraft.state.StateManager#VALID_NAME_PATTERN valid name pattern}.
+	 * Otherwise, {@link IllegalArgumentException} will be thrown during the
+	 * {@linkplain net.minecraft.state.StateManager.Builder#validate(Property)
+	 * validation of a property}.
+	 */
 	private final String name;
 	private Integer hashCodeCache;
 	private final Codec<T> codec = Codec.STRING
@@ -47,19 +56,28 @@ public abstract class Property<T extends Comparable<T>> {
 		return this.valueCodec;
 	}
 
+	/**
+	 * Returns the name of this property.
+	 */
 	public String getName() {
 		return this.name;
 	}
 
+	/**
+	 * Returns the type of the values of this property.
+	 */
 	public Class<T> getType() {
 		return this.type;
 	}
 
 	/**
-	 * Returns all possible values the property can take.
+	 * Returns all possible values of this property.
 	 */
 	public abstract Collection<T> getValues();
 
+	/**
+	 * Returns the name of the given value of this property.
+	 */
 	public abstract String name(T value);
 
 	public abstract Optional<T> parse(String name);

@@ -4,7 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.command.argument.EntitySummonArgumentType;
-import net.minecraft.command.argument.NbtCompoundTagArgumentType;
+import net.minecraft.command.argument.NbtCompoundArgumentType;
 import net.minecraft.command.argument.Vec3ArgumentType;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.entity.Entity;
@@ -46,13 +46,13 @@ public class SummonCommand {
 										)
 								)
 								.then(
-									CommandManager.argument("nbt", NbtCompoundTagArgumentType.nbtCompound())
+									CommandManager.argument("nbt", NbtCompoundArgumentType.nbtCompound())
 										.executes(
 											context -> execute(
 													context.getSource(),
 													EntitySummonArgumentType.getEntitySummon(context, "entity"),
 													Vec3ArgumentType.getVec3(context, "pos"),
-													NbtCompoundTagArgumentType.getNbtCompound(context, "nbt"),
+													NbtCompoundArgumentType.getNbtCompound(context, "nbt"),
 													false
 												)
 										)
@@ -71,7 +71,7 @@ public class SummonCommand {
 			nbtCompound.putString("id", entity.toString());
 			ServerWorld serverWorld = source.getWorld();
 			Entity entity2 = EntityType.loadEntityWithPassengers(nbtCompound, serverWorld, entityx -> {
-				entityx.refreshPositionAndAngles(pos.x, pos.y, pos.z, entityx.yaw, entityx.pitch);
+				entityx.refreshPositionAndAngles(pos.x, pos.y, pos.z, entityx.getYaw(), entityx.getPitch());
 				return entityx;
 			});
 			if (entity2 == null) {

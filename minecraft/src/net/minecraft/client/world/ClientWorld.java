@@ -261,15 +261,15 @@ public class ClientWorld extends World {
 		this.netHandler.getConnection().disconnect(new TranslatableText("multiplayer.status.quitting"));
 	}
 
-	public void doRandomBlockDisplayTicks(int xCenter, int yCenter, int zCenter) {
+	public void doRandomBlockDisplayTicks(int centerX, int centerY, int centerZ) {
 		int i = 32;
 		Random random = new Random();
 		ClientWorld.BlockParticle blockParticle = this.getBlockParticle();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int j = 0; j < 667; j++) {
-			this.randomBlockDisplayTick(xCenter, yCenter, zCenter, 16, random, blockParticle, mutable);
-			this.randomBlockDisplayTick(xCenter, yCenter, zCenter, 32, random, blockParticle, mutable);
+			this.randomBlockDisplayTick(centerX, centerY, centerZ, 16, random, blockParticle, mutable);
+			this.randomBlockDisplayTick(centerX, centerY, centerZ, 32, random, blockParticle, mutable);
 		}
 	}
 
@@ -290,11 +290,11 @@ public class ClientWorld extends World {
 	}
 
 	public void randomBlockDisplayTick(
-		int xCenter, int yCenter, int zCenter, int radius, Random random, @Nullable ClientWorld.BlockParticle blockParticle, BlockPos.Mutable pos
+		int centerX, int centerY, int centerZ, int radius, Random random, @Nullable ClientWorld.BlockParticle blockParticle, BlockPos.Mutable pos
 	) {
-		int i = xCenter + this.random.nextInt(radius) - this.random.nextInt(radius);
-		int j = yCenter + this.random.nextInt(radius) - this.random.nextInt(radius);
-		int k = zCenter + this.random.nextInt(radius) - this.random.nextInt(radius);
+		int i = centerX + this.random.nextInt(radius) - this.random.nextInt(radius);
+		int j = centerY + this.random.nextInt(radius) - this.random.nextInt(radius);
+		int k = centerZ + this.random.nextInt(radius) - this.random.nextInt(radius);
 		pos.set(i, j, k);
 		BlockState blockState = this.getBlockState(pos);
 		blockState.getBlock().randomDisplayTick(blockState, this, pos, random);

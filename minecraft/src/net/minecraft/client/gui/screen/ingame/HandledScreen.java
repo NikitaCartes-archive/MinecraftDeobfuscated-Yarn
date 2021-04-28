@@ -172,14 +172,14 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		}
 	}
 
-	private void drawItem(ItemStack stack, int xPosition, int yPosition, String amountText) {
+	private void drawItem(ItemStack stack, int x, int y, String amountText) {
 		MatrixStack matrixStack = RenderSystem.getModelViewStack();
 		matrixStack.translate(0.0, 0.0, 32.0);
 		RenderSystem.applyModelViewMatrix();
 		this.setZOffset(200);
 		this.itemRenderer.zOffset = 200.0F;
-		this.itemRenderer.renderInGuiWithOverrides(stack, xPosition, yPosition);
-		this.itemRenderer.renderGuiItemOverlay(this.textRenderer, stack, xPosition, yPosition - (this.touchDragStack.isEmpty() ? 0 : 8), amountText);
+		this.itemRenderer.renderInGuiWithOverrides(stack, x, y);
+		this.itemRenderer.renderGuiItemOverlay(this.textRenderer, stack, x, y - (this.touchDragStack.isEmpty() ? 0 : 8), amountText);
 		this.setZOffset(0);
 		this.itemRenderer.zOffset = 0.0F;
 	}
@@ -273,10 +273,10 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	}
 
 	@Nullable
-	private Slot getSlotAt(double xPosition, double yPosition) {
+	private Slot getSlotAt(double x, double y) {
 		for (int i = 0; i < this.handler.slots.size(); i++) {
 			Slot slot = this.handler.slots.get(i);
-			if (this.isPointOverSlot(slot, xPosition, yPosition) && slot.doDrawHoveringEffect()) {
+			if (this.isPointOverSlot(slot, x, y) && slot.doDrawHoveringEffect()) {
 				return slot;
 			}
 		}
@@ -543,15 +543,12 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		return this.isPointWithinBounds(slot.x, slot.y, 16, 16, pointX, pointY);
 	}
 
-	protected boolean isPointWithinBounds(int xPosition, int yPosition, int width, int height, double pointX, double pointY) {
+	protected boolean isPointWithinBounds(int x, int y, int width, int height, double pointX, double pointY) {
 		int i = this.field_2776;
 		int j = this.field_2800;
 		pointX -= (double)i;
 		pointY -= (double)j;
-		return pointX >= (double)(xPosition - 1)
-			&& pointX < (double)(xPosition + width + 1)
-			&& pointY >= (double)(yPosition - 1)
-			&& pointY < (double)(yPosition + height + 1);
+		return pointX >= (double)(x - 1) && pointX < (double)(x + width + 1) && pointY >= (double)(y - 1) && pointY < (double)(y + height + 1);
 	}
 
 	/**

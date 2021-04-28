@@ -1,6 +1,7 @@
 package net.minecraft.server.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -20,10 +21,10 @@ public class WorldBorderCommand {
 		new TranslatableText("commands.worldborder.set.failed.nochange")
 	);
 	private static final SimpleCommandExceptionType SET_FAILED_SMALL_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableText("commands.worldborder.set.failed.small.")
+		new TranslatableText("commands.worldborder.set.failed.small")
 	);
 	private static final SimpleCommandExceptionType SET_FAILED_BIG_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableText("commands.worldborder.set.failed.big.")
+		new TranslatableText("commands.worldborder.set.failed.big", 5.999997E7F)
 	);
 	private static final SimpleCommandExceptionType WARNING_TIME_FAILED_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.worldborder.warning.time.failed")
@@ -45,10 +46,10 @@ public class WorldBorderCommand {
 				.then(
 					CommandManager.literal("add")
 						.then(
-							CommandManager.argument("distance", FloatArgumentType.floatArg(-6.0E7F, 6.0E7F))
+							CommandManager.argument("distance", DoubleArgumentType.doubleArg(-5.999997E7F, 5.999997E7F))
 								.executes(
 									context -> executeSet(
-											context.getSource(), context.getSource().getWorld().getWorldBorder().getSize() + (double)FloatArgumentType.getFloat(context, "distance"), 0L
+											context.getSource(), context.getSource().getWorld().getWorldBorder().getSize() + DoubleArgumentType.getDouble(context, "distance"), 0L
 										)
 								)
 								.then(
@@ -56,7 +57,7 @@ public class WorldBorderCommand {
 										.executes(
 											context -> executeSet(
 													context.getSource(),
-													context.getSource().getWorld().getWorldBorder().getSize() + (double)FloatArgumentType.getFloat(context, "distance"),
+													context.getSource().getWorld().getWorldBorder().getSize() + DoubleArgumentType.getDouble(context, "distance"),
 													context.getSource().getWorld().getWorldBorder().getSizeLerpTime() + (long)IntegerArgumentType.getInteger(context, "time") * 1000L
 												)
 										)
@@ -66,13 +67,13 @@ public class WorldBorderCommand {
 				.then(
 					CommandManager.literal("set")
 						.then(
-							CommandManager.argument("distance", FloatArgumentType.floatArg(-6.0E7F, 6.0E7F))
-								.executes(context -> executeSet(context.getSource(), (double)FloatArgumentType.getFloat(context, "distance"), 0L))
+							CommandManager.argument("distance", DoubleArgumentType.doubleArg(-5.999997E7F, 5.999997E7F))
+								.executes(context -> executeSet(context.getSource(), DoubleArgumentType.getDouble(context, "distance"), 0L))
 								.then(
 									CommandManager.argument("time", IntegerArgumentType.integer(0))
 										.executes(
 											context -> executeSet(
-													context.getSource(), (double)FloatArgumentType.getFloat(context, "distance"), (long)IntegerArgumentType.getInteger(context, "time") * 1000L
+													context.getSource(), DoubleArgumentType.getDouble(context, "distance"), (long)IntegerArgumentType.getInteger(context, "time") * 1000L
 												)
 										)
 								)
@@ -193,7 +194,7 @@ public class WorldBorderCommand {
 			throw SET_FAILED_NO_CHANGE_EXCEPTION.create();
 		} else if (distance < 1.0) {
 			throw SET_FAILED_SMALL_EXCEPTION.create();
-		} else if (distance > 6.0E7) {
+		} else if (distance > 5.999997E7F) {
 			throw SET_FAILED_BIG_EXCEPTION.create();
 		} else {
 			if (time > 0L) {

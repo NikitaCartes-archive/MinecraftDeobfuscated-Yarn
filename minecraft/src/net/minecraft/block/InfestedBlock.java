@@ -17,9 +17,9 @@ import net.minecraft.world.explosion.Explosion;
 
 public class InfestedBlock extends Block {
 	private final Block regularBlock;
-	private static final Map<Block, Block> REGULAR_TO_INFESTED = Maps.<Block, Block>newIdentityHashMap();
-	private static final Map<BlockState, BlockState> field_33564 = Maps.<BlockState, BlockState>newIdentityHashMap();
-	private static final Map<BlockState, BlockState> field_33565 = Maps.<BlockState, BlockState>newIdentityHashMap();
+	private static final Map<Block, Block> REGULAR_TO_INFESTED_BLOCK = Maps.<Block, Block>newIdentityHashMap();
+	private static final Map<BlockState, BlockState> REGULAR_TO_INFESTED_STATE = Maps.<BlockState, BlockState>newIdentityHashMap();
+	private static final Map<BlockState, BlockState> INFESTED_TO_REGULAR_STATE = Maps.<BlockState, BlockState>newIdentityHashMap();
 
 	/**
 	 * Creates an infested block
@@ -30,7 +30,7 @@ public class InfestedBlock extends Block {
 	public InfestedBlock(Block regularBlock, AbstractBlock.Settings settings) {
 		super(settings);
 		this.regularBlock = regularBlock;
-		REGULAR_TO_INFESTED.put(regularBlock, this);
+		REGULAR_TO_INFESTED_BLOCK.put(regularBlock, this);
 	}
 
 	public Block getRegularBlock() {
@@ -38,7 +38,7 @@ public class InfestedBlock extends Block {
 	}
 
 	public static boolean isInfestable(BlockState block) {
-		return REGULAR_TO_INFESTED.containsKey(block.getBlock());
+		return REGULAR_TO_INFESTED_BLOCK.containsKey(block.getBlock());
 	}
 
 	private void spawnSilverfish(ServerWorld world, BlockPos pos) {
@@ -63,23 +63,23 @@ public class InfestedBlock extends Block {
 		}
 	}
 
-	public static BlockState method_36366(BlockState blockState) {
-		return method_36363(field_33564, blockState, () -> ((Block)REGULAR_TO_INFESTED.get(blockState.getBlock())).getDefaultState());
+	public static BlockState fromRegularState(BlockState regularState) {
+		return copyProperties(REGULAR_TO_INFESTED_STATE, regularState, () -> ((Block)REGULAR_TO_INFESTED_BLOCK.get(regularState.getBlock())).getDefaultState());
 	}
 
-	public BlockState fromRegularBlock(BlockState blockState) {
-		return method_36363(field_33565, blockState, () -> this.getRegularBlock().getDefaultState());
+	public BlockState toRegularState(BlockState infestedState) {
+		return copyProperties(INFESTED_TO_REGULAR_STATE, infestedState, () -> this.getRegularBlock().getDefaultState());
 	}
 
-	private static BlockState method_36363(Map<BlockState, BlockState> map, BlockState blockState, Supplier<BlockState> supplier) {
-		return (BlockState)map.computeIfAbsent(blockState, blockStatex -> {
-			BlockState blockState2 = (BlockState)supplier.get();
+	private static BlockState copyProperties(Map<BlockState, BlockState> stateMap, BlockState fromState, Supplier<BlockState> toStateSupplier) {
+		return (BlockState)stateMap.computeIfAbsent(fromState, infestedState -> {
+			BlockState blockState = (BlockState)toStateSupplier.get();
 
-			for (Property property : blockStatex.getProperties()) {
-				blockState2 = blockState2.contains(property) ? blockState2.with(property, blockStatex.get(property)) : blockState2;
+			for (Property property : infestedState.getProperties()) {
+				blockState = blockState.contains(property) ? blockState.with(property, infestedState.get(property)) : blockState;
 			}
 
-			return blockState2;
+			return blockState;
 		});
 	}
 }

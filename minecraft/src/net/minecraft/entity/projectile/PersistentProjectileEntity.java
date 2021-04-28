@@ -128,10 +128,10 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		Vec3d vec3d = this.getVelocity();
 		if (this.prevPitch == 0.0F && this.prevYaw == 0.0F) {
 			float f = MathHelper.sqrt(squaredHorizontalLength(vec3d));
-			this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
-			this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI);
-			this.prevYaw = this.yaw;
-			this.prevPitch = this.pitch;
+			this.setYaw((float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI));
+			this.setPitch((float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI));
+			this.prevYaw = this.getYaw();
+			this.prevPitch = this.getPitch();
 		}
 
 		BlockPos blockPos = this.getBlockPos();
@@ -220,14 +220,14 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			double k = this.getZ() + g;
 			float l = MathHelper.sqrt(squaredHorizontalLength(vec3d));
 			if (bl) {
-				this.yaw = (float)(MathHelper.atan2(-d, -g) * 180.0F / (float)Math.PI);
+				this.setYaw((float)(MathHelper.atan2(-d, -g) * 180.0F / (float)Math.PI));
 			} else {
-				this.yaw = (float)(MathHelper.atan2(d, g) * 180.0F / (float)Math.PI);
+				this.setYaw((float)(MathHelper.atan2(d, g) * 180.0F / (float)Math.PI));
 			}
 
-			this.pitch = (float)(MathHelper.atan2(e, (double)l) * 180.0F / (float)Math.PI);
-			this.pitch = updateRotation(this.prevPitch, this.pitch);
-			this.yaw = updateRotation(this.prevYaw, this.yaw);
+			this.setPitch((float)(MathHelper.atan2(e, (double)l) * 180.0F / (float)Math.PI));
+			this.setPitch(updateRotation(this.prevPitch, this.getPitch()));
+			this.setYaw(updateRotation(this.prevYaw, this.getYaw()));
 			float m = 0.99F;
 			float n = 0.05F;
 			if (this.isTouchingWater()) {
@@ -382,7 +382,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		} else {
 			entity.setFireTicks(j);
 			this.setVelocity(this.getVelocity().multiply(-0.1));
-			this.yaw += 180.0F;
+			this.setYaw(this.getYaw() + 180.0F);
 			this.prevYaw += 180.0F;
 			if (!this.world.isClient && this.getVelocity().lengthSquared() < 1.0E-7) {
 				if (this.pickupType == PersistentProjectileEntity.PickupPermission.ALLOWED) {
@@ -542,7 +542,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	}
 
 	public void setCritical(boolean critical) {
-		this.setProjectileFlag(1, critical);
+		this.setProjectileFlag(CRITICAL_FLAG, critical);
 	}
 
 	public void setPierceLevel(byte level) {
@@ -595,7 +595,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 	public void setNoClip(boolean noClip) {
 		this.noClip = noClip;
-		this.setProjectileFlag(2, noClip);
+		this.setProjectileFlag(NO_CLIP_FLAG, noClip);
 	}
 
 	public boolean isNoClip() {
@@ -603,7 +603,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	}
 
 	public void setShotFromCrossbow(boolean shotFromCrossbow) {
-		this.setProjectileFlag(4, shotFromCrossbow);
+		this.setProjectileFlag(SHOT_FROM_CROSSBOW_FLAG, shotFromCrossbow);
 	}
 
 	public static enum PickupPermission {

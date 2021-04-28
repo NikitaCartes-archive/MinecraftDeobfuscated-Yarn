@@ -155,7 +155,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 
 		this.setVelocity(vec3d);
 		if (squaredHorizontalLength(vec3d) > 0.05) {
-			this.yaw = (float)MathHelper.atan2(vec3d.z, vec3d.x) * (180.0F / (float)Math.PI) - 90.0F;
+			this.setYaw((float)MathHelper.atan2(vec3d.z, vec3d.x) * (180.0F / (float)Math.PI) - 90.0F);
 		}
 
 		super.tickMovement();

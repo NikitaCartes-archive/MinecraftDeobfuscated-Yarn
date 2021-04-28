@@ -33,10 +33,10 @@ public class StuckArrowsFeatureRenderer<T extends LivingEntity, M extends Player
 	) {
 		float f = MathHelper.sqrt(directionX * directionX + directionZ * directionZ);
 		ArrowEntity arrowEntity = new ArrowEntity(entity.world, entity.getX(), entity.getY(), entity.getZ());
-		arrowEntity.yaw = (float)(Math.atan2((double)directionX, (double)directionZ) * 180.0F / (float)Math.PI);
-		arrowEntity.pitch = (float)(Math.atan2((double)directionY, (double)f) * 180.0F / (float)Math.PI);
-		arrowEntity.prevYaw = arrowEntity.yaw;
-		arrowEntity.prevPitch = arrowEntity.pitch;
+		arrowEntity.setYaw((float)(Math.atan2((double)directionX, (double)directionZ) * 180.0F / (float)Math.PI));
+		arrowEntity.setPitch((float)(Math.atan2((double)directionY, (double)f) * 180.0F / (float)Math.PI));
+		arrowEntity.prevYaw = arrowEntity.getYaw();
+		arrowEntity.prevPitch = arrowEntity.getPitch();
 		this.dispatcher.render(arrowEntity, 0.0, 0.0, 0.0, 0.0F, tickDelta, matrices, vertexConsumers, light);
 	}
 }

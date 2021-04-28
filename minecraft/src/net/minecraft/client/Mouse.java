@@ -167,7 +167,7 @@ public class Mouse {
 			window,
 			(windowx, x, y) -> this.client.execute(() -> this.onCursorPos(windowx, x, y)),
 			(windowx, button, action, modifiers) -> this.client.execute(() -> this.onMouseButton(windowx, button, action, modifiers)),
-			(windowx, xOffset, yOffset) -> this.client.execute(() -> this.onMouseScroll(windowx, xOffset, yOffset)),
+			(windowx, offsetX, offsetY) -> this.client.execute(() -> this.onMouseScroll(windowx, offsetX, offsetY)),
 			(windowx, count, names) -> {
 				Path[] paths = new Path[count];
 
@@ -261,7 +261,7 @@ public class Mouse {
 		return this.leftButtonClicked;
 	}
 
-	public boolean method_35707() {
+	public boolean wasMiddleButtonClicked() {
 		return this.middleButtonClicked;
 	}
 

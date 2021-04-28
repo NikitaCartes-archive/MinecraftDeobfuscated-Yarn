@@ -490,7 +490,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	public boolean hasNectar() {
-		return this.getBeeFlag(8);
+		return this.getBeeFlag(HAS_NECTAR_FLAG);
 	}
 
 	private void setHasNectar(boolean hasNectar) {
@@ -498,23 +498,23 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 			this.resetPollinationTicks();
 		}
 
-		this.setBeeFlag(8, hasNectar);
+		this.setBeeFlag(HAS_NECTAR_FLAG, hasNectar);
 	}
 
 	public boolean hasStung() {
-		return this.getBeeFlag(4);
+		return this.getBeeFlag(HAS_STUNG_FLAG);
 	}
 
 	private void setHasStung(boolean hasStung) {
-		this.setBeeFlag(4, hasStung);
+		this.setBeeFlag(HAS_STUNG_FLAG, hasStung);
 	}
 
 	private boolean isNearTarget() {
-		return this.getBeeFlag(2);
+		return this.getBeeFlag(NEAR_TARGET_FLAG);
 	}
 
 	private void setNearTarget(boolean nearTarget) {
-		this.setBeeFlag(2, nearTarget);
+		this.setBeeFlag(NEAR_TARGET_FLAG, nearTarget);
 	}
 
 	private boolean isTooFar(BlockPos pos) {

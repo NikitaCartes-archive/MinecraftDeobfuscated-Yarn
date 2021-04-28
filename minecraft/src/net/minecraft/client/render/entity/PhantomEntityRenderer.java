@@ -32,6 +32,6 @@ public class PhantomEntityRenderer extends MobEntityRenderer<PhantomEntity, Phan
 
 	protected void setupTransforms(PhantomEntity phantomEntity, MatrixStack matrixStack, float f, float g, float h) {
 		super.setupTransforms(phantomEntity, matrixStack, f, g, h);
-		matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(phantomEntity.pitch));
+		matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(phantomEntity.getPitch()));
 	}
 }

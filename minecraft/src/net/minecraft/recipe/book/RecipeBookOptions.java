@@ -112,8 +112,8 @@ public final class RecipeBookOptions {
 		}
 	}
 
-	public boolean equals(Object object) {
-		return this == object || object instanceof RecipeBookOptions && this.categoryOptions.equals(((RecipeBookOptions)object).categoryOptions);
+	public boolean equals(Object o) {
+		return this == o || o instanceof RecipeBookOptions && this.categoryOptions.equals(((RecipeBookOptions)o).categoryOptions);
 	}
 
 	public int hashCode() {
@@ -133,13 +133,13 @@ public final class RecipeBookOptions {
 			return new RecipeBookOptions.CategoryOption(this.guiOpen, this.filteringCraftable);
 		}
 
-		public boolean equals(Object object) {
-			if (this == object) {
+		public boolean equals(Object o) {
+			if (this == o) {
 				return true;
-			} else if (!(object instanceof RecipeBookOptions.CategoryOption)) {
+			} else if (!(o instanceof RecipeBookOptions.CategoryOption)) {
 				return false;
 			} else {
-				RecipeBookOptions.CategoryOption categoryOption = (RecipeBookOptions.CategoryOption)object;
+				RecipeBookOptions.CategoryOption categoryOption = (RecipeBookOptions.CategoryOption)o;
 				return this.guiOpen == categoryOption.guiOpen && this.filteringCraftable == categoryOption.filteringCraftable;
 			}
 		}

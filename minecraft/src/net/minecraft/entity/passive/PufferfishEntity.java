@@ -97,20 +97,20 @@ public class PufferfishEntity extends FishEntity {
 			if (this.inflateTicks > 0) {
 				if (this.getPuffState() == 0) {
 					this.playSound(SoundEvents.ENTITY_PUFFER_FISH_BLOW_UP, this.getSoundVolume(), this.getSoundPitch());
-					this.setPuffState(1);
+					this.setPuffState(SEMI_PUFFED);
 				} else if (this.inflateTicks > 40 && this.getPuffState() == 1) {
 					this.playSound(SoundEvents.ENTITY_PUFFER_FISH_BLOW_UP, this.getSoundVolume(), this.getSoundPitch());
-					this.setPuffState(2);
+					this.setPuffState(FULLY_PUFFED);
 				}
 
 				this.inflateTicks++;
 			} else if (this.getPuffState() != 0) {
 				if (this.deflateTicks > 60 && this.getPuffState() == 2) {
 					this.playSound(SoundEvents.ENTITY_PUFFER_FISH_BLOW_OUT, this.getSoundVolume(), this.getSoundPitch());
-					this.setPuffState(1);
+					this.setPuffState(SEMI_PUFFED);
 				} else if (this.deflateTicks > 100 && this.getPuffState() == 1) {
 					this.playSound(SoundEvents.ENTITY_PUFFER_FISH_BLOW_OUT, this.getSoundVolume(), this.getSoundPitch());
-					this.setPuffState(0);
+					this.setPuffState(NOT_PUFFED);
 				}
 
 				this.deflateTicks++;

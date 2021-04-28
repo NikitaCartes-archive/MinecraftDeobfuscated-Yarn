@@ -19,7 +19,6 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class AmethystClusterBlock extends AmethystBlock implements Waterloggable {
-	public static final BooleanProperty LIT = Properties.LIT;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final DirectionProperty FACING = Properties.FACING;
 	protected final VoxelShape NORTH_SHAPE;
@@ -31,7 +30,7 @@ public class AmethystClusterBlock extends AmethystBlock implements Waterloggable
 
 	public AmethystClusterBlock(int height, int xzOffset, AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.getDefaultState().with(LIT, Boolean.valueOf(true)).with(WATERLOGGED, Boolean.valueOf(false)).with(FACING, Direction.UP));
+		this.setDefaultState(this.getDefaultState().with(WATERLOGGED, Boolean.valueOf(false)).with(FACING, Direction.UP));
 		this.UP_SHAPE = Block.createCuboidShape((double)xzOffset, 0.0, (double)xzOffset, (double)(16 - xzOffset), (double)height, (double)(16 - xzOffset));
 		this.DOWN_SHAPE = Block.createCuboidShape((double)xzOffset, (double)(16 - height), (double)xzOffset, (double)(16 - xzOffset), 16.0, (double)(16 - xzOffset));
 		this.NORTH_SHAPE = Block.createCuboidShape((double)xzOffset, (double)xzOffset, (double)(16 - height), (double)(16 - xzOffset), (double)(16 - xzOffset), 16.0);
@@ -105,7 +104,7 @@ public class AmethystClusterBlock extends AmethystBlock implements Waterloggable
 
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-		builder.add(WATERLOGGED, LIT, FACING);
+		builder.add(WATERLOGGED, FACING);
 	}
 
 	@Override

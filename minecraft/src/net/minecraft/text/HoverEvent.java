@@ -43,11 +43,11 @@ public class HoverEvent {
 		return this.action == action ? action.cast(this.contents) : null;
 	}
 
-	public boolean equals(Object obj) {
-		if (this == obj) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (obj != null && this.getClass() == obj.getClass()) {
-			HoverEvent hoverEvent = (HoverEvent)obj;
+		} else if (o != null && this.getClass() == o.getClass()) {
+			HoverEvent hoverEvent = (HoverEvent)o;
 			return this.action == hoverEvent.action && Objects.equals(this.contents, hoverEvent.contents);
 		} else {
 			return false;
@@ -224,11 +224,11 @@ public class HoverEvent {
 			return this.tooltip;
 		}
 
-		public boolean equals(Object object) {
-			if (this == object) {
+		public boolean equals(Object o) {
+			if (this == o) {
 				return true;
-			} else if (object != null && this.getClass() == object.getClass()) {
-				HoverEvent.EntityContent entityContent = (HoverEvent.EntityContent)object;
+			} else if (o != null && this.getClass() == o.getClass()) {
+				HoverEvent.EntityContent entityContent = (HoverEvent.EntityContent)o;
 				return this.entityType.equals(entityContent.entityType) && this.uuid.equals(entityContent.uuid) && Objects.equals(this.name, entityContent.name);
 			} else {
 				return false;
@@ -260,11 +260,11 @@ public class HoverEvent {
 			this(stack.getItem(), stack.getCount(), stack.getTag() != null ? stack.getTag().copy() : null);
 		}
 
-		public boolean equals(Object object) {
-			if (this == object) {
+		public boolean equals(Object o) {
+			if (this == o) {
 				return true;
-			} else if (object != null && this.getClass() == object.getClass()) {
-				HoverEvent.ItemStackContent itemStackContent = (HoverEvent.ItemStackContent)object;
+			} else if (o != null && this.getClass() == o.getClass()) {
+				HoverEvent.ItemStackContent itemStackContent = (HoverEvent.ItemStackContent)o;
 				return this.count == itemStackContent.count && this.item.equals(itemStackContent.item) && Objects.equals(this.nbt, itemStackContent.nbt);
 			} else {
 				return false;

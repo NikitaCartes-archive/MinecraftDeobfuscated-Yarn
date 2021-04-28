@@ -96,7 +96,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
 		this.setAir(this.getMaxAir());
-		this.pitch = 0.0F;
+		this.setPitch(0.0F);
 		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
@@ -270,7 +270,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 					this.setVelocity(
 						this.getVelocity().add((double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.2F), 0.5, (double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.2F))
 					);
-					this.yaw = this.random.nextFloat() * 360.0F;
+					this.setYaw(this.random.nextFloat() * 360.0F);
 					this.onGround = false;
 					this.velocityDirty = true;
 				}
@@ -278,8 +278,8 @@ public class DolphinEntity extends WaterCreatureEntity {
 
 			if (this.world.isClient && this.isTouchingWater() && this.getVelocity().lengthSquared() > 0.03) {
 				Vec3d vec3d = this.getRotationVec(0.0F);
-				float f = MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)) * 0.3F;
-				float g = MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)) * 0.3F;
+				float f = MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)) * 0.3F;
+				float g = MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0)) * 0.3F;
 				float h = 1.2F - this.random.nextFloat() * 0.7F;
 
 				for (int i = 0; i < 2; i++) {
@@ -562,12 +562,16 @@ public class DolphinEntity extends WaterCreatureEntity {
 				float h = 0.02F * DolphinEntity.this.random.nextFloat();
 				itemEntity.setVelocity(
 					(double)(
-						0.3F * -MathHelper.sin(DolphinEntity.this.yaw * (float) (Math.PI / 180.0)) * MathHelper.cos(DolphinEntity.this.pitch * (float) (Math.PI / 180.0))
+						0.3F
+								* -MathHelper.sin(DolphinEntity.this.getYaw() * (float) (Math.PI / 180.0))
+								* MathHelper.cos(DolphinEntity.this.getPitch() * (float) (Math.PI / 180.0))
 							+ MathHelper.cos(g) * h
 					),
-					(double)(0.3F * MathHelper.sin(DolphinEntity.this.pitch * (float) (Math.PI / 180.0)) * 1.5F),
+					(double)(0.3F * MathHelper.sin(DolphinEntity.this.getPitch() * (float) (Math.PI / 180.0)) * 1.5F),
 					(double)(
-						0.3F * MathHelper.cos(DolphinEntity.this.yaw * (float) (Math.PI / 180.0)) * MathHelper.cos(DolphinEntity.this.pitch * (float) (Math.PI / 180.0))
+						0.3F
+								* MathHelper.cos(DolphinEntity.this.getYaw() * (float) (Math.PI / 180.0))
+								* MathHelper.cos(DolphinEntity.this.getPitch() * (float) (Math.PI / 180.0))
 							+ MathHelper.sin(g) * h
 					)
 				);

@@ -42,7 +42,7 @@ public class EntitySelectorReader {
 	private static final char ALL_ENTITIES = 'e';
 	public static final SimpleCommandExceptionType INVALID_ENTITY_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.entity.invalid"));
 	public static final DynamicCommandExceptionType UNKNOWN_SELECTOR_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableText("argument.entity.selector.unknown", object)
+		selectorType -> new TranslatableText("argument.entity.selector.unknown", selectorType)
 	);
 	public static final SimpleCommandExceptionType NOT_ALLOWED_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("argument.entity.selector.not_allowed")
@@ -52,18 +52,18 @@ public class EntitySelectorReader {
 		new TranslatableText("argument.entity.options.unterminated")
 	);
 	public static final DynamicCommandExceptionType VALUELESS_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableText("argument.entity.options.valueless", object)
+		option -> new TranslatableText("argument.entity.options.valueless", option)
 	);
-	public static final BiConsumer<Vec3d, List<? extends Entity>> ARBITRARY = (vec3d, list) -> {
+	public static final BiConsumer<Vec3d, List<? extends Entity>> ARBITRARY = (pos, entities) -> {
 	};
-	public static final BiConsumer<Vec3d, List<? extends Entity>> NEAREST = (vec3d, list) -> list.sort(
-			(entity, entity2) -> Doubles.compare(entity.squaredDistanceTo(vec3d), entity2.squaredDistanceTo(vec3d))
+	public static final BiConsumer<Vec3d, List<? extends Entity>> NEAREST = (pos, entities) -> entities.sort(
+			(entity1, entity2) -> Doubles.compare(entity1.squaredDistanceTo(pos), entity2.squaredDistanceTo(pos))
 		);
-	public static final BiConsumer<Vec3d, List<? extends Entity>> FURTHEST = (vec3d, list) -> list.sort(
-			(entity, entity2) -> Doubles.compare(entity2.squaredDistanceTo(vec3d), entity.squaredDistanceTo(vec3d))
+	public static final BiConsumer<Vec3d, List<? extends Entity>> FURTHEST = (pos, entities) -> entities.sort(
+			(entity1, entity2) -> Doubles.compare(entity2.squaredDistanceTo(pos), entity1.squaredDistanceTo(pos))
 		);
-	public static final BiConsumer<Vec3d, List<? extends Entity>> RANDOM = (vec3d, list) -> Collections.shuffle(list);
-	public static final BiFunction<SuggestionsBuilder, Consumer<SuggestionsBuilder>, CompletableFuture<Suggestions>> DEFAULT_SUGGESTION_PROVIDER = (suggestionsBuilder, consumer) -> suggestionsBuilder.buildFuture();
+	public static final BiConsumer<Vec3d, List<? extends Entity>> RANDOM = (pos, entities) -> Collections.shuffle(entities);
+	public static final BiFunction<SuggestionsBuilder, Consumer<SuggestionsBuilder>, CompletableFuture<Suggestions>> DEFAULT_SUGGESTION_PROVIDER = (builder, consumer) -> builder.buildFuture();
 	private final StringReader reader;
 	private final boolean atAllowed;
 	private int limit;
@@ -133,9 +133,9 @@ public class EntitySelectorReader {
 
 		Function<Vec3d, Vec3d> function;
 		if (this.x == null && this.y == null && this.z == null) {
-			function = vec3d -> vec3d;
+			function = pos -> pos;
 		} else {
-			function = vec3d -> new Vec3d(this.x == null ? vec3d.x : this.x, this.y == null ? vec3d.y : this.y, this.z == null ? vec3d.z : this.z);
+			function = pos -> new Vec3d(this.x == null ? pos.x : this.x, this.y == null ? pos.y : this.y, this.z == null ? pos.z : this.z);
 		}
 
 		return new EntitySelector(
@@ -170,11 +170,11 @@ public class EntitySelectorReader {
 
 	private void buildPredicate() {
 		if (this.pitchRange != FloatRangeArgument.ANY) {
-			this.predicate = this.predicate.and(this.rotationPredicate(this.pitchRange, entity -> (double)entity.pitch));
+			this.predicate = this.predicate.and(this.rotationPredicate(this.pitchRange, Entity::getPitch));
 		}
 
 		if (this.yawRange != FloatRangeArgument.ANY) {
-			this.predicate = this.predicate.and(this.rotationPredicate(this.yawRange, entity -> (double)entity.yaw));
+			this.predicate = this.predicate.and(this.rotationPredicate(this.yawRange, Entity::getYaw));
 		}
 
 		if (!this.levelRange.isDummy()) {
@@ -183,11 +183,11 @@ public class EntitySelectorReader {
 		}
 	}
 
-	private Predicate<Entity> rotationPredicate(FloatRangeArgument floatRangeArgument, ToDoubleFunction<Entity> toDoubleFunction) {
-		double d = (double)MathHelper.wrapDegrees(floatRangeArgument.getMin() == null ? 0.0F : floatRangeArgument.getMin());
-		double e = (double)MathHelper.wrapDegrees(floatRangeArgument.getMax() == null ? 359.0F : floatRangeArgument.getMax());
+	private Predicate<Entity> rotationPredicate(FloatRangeArgument angleRange, ToDoubleFunction<Entity> entityToAngle) {
+		double d = (double)MathHelper.wrapDegrees(angleRange.getMin() == null ? 0.0F : angleRange.getMin());
+		double e = (double)MathHelper.wrapDegrees(angleRange.getMax() == null ? 359.0F : angleRange.getMax());
 		return entity -> {
-			double f = MathHelper.wrapDegrees(toDoubleFunction.applyAsDouble(entity));
+			double f = MathHelper.wrapDegrees(entityToAngle.applyAsDouble(entity));
 			return d > e ? f >= d || f <= e : f >= d && f <= e;
 		};
 	}
@@ -541,8 +541,8 @@ public class EntitySelectorReader {
 		return this.excludesName;
 	}
 
-	public void setExcludesName(boolean bl) {
-		this.excludesName = bl;
+	public void setExcludesName(boolean excludesName) {
+		this.excludesName = excludesName;
 	}
 
 	public boolean hasLimit() {
@@ -585,7 +585,7 @@ public class EntitySelectorReader {
 		this.selectsTeam = selectsTeam;
 	}
 
-	public boolean method_35816() {
+	public boolean excludesTeam() {
 		return this.excludesTeam;
 	}
 

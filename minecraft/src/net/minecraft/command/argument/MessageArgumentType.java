@@ -41,26 +41,26 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 		private final String contents;
 		private final MessageArgumentType.MessageSelector[] selectors;
 
-		public MessageFormat(String string, MessageArgumentType.MessageSelector[] messageSelectors) {
-			this.contents = string;
-			this.selectors = messageSelectors;
+		public MessageFormat(String contents, MessageArgumentType.MessageSelector[] selectors) {
+			this.contents = contents;
+			this.selectors = selectors;
 		}
 
-		public String method_35691() {
+		public String getContents() {
 			return this.contents;
 		}
 
-		public MessageArgumentType.MessageSelector[] method_35692() {
+		public MessageArgumentType.MessageSelector[] getSelectors() {
 			return this.selectors;
 		}
 
-		public Text format(ServerCommandSource serverCommandSource, boolean bl) throws CommandSyntaxException {
+		public Text format(ServerCommandSource source, boolean bl) throws CommandSyntaxException {
 			if (this.selectors.length != 0 && bl) {
 				MutableText mutableText = new LiteralText(this.contents.substring(0, this.selectors[0].getStart()));
 				int i = this.selectors[0].getStart();
 
 				for (MessageArgumentType.MessageSelector messageSelector : this.selectors) {
-					Text text = messageSelector.format(serverCommandSource);
+					Text text = messageSelector.format(source);
 					if (i < messageSelector.getStart()) {
 						mutableText.append(this.contents.substring(i, messageSelector.getStart()));
 					}
@@ -82,30 +82,30 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 			}
 		}
 
-		public static MessageArgumentType.MessageFormat parse(StringReader stringReader, boolean bl) throws CommandSyntaxException {
-			String string = stringReader.getString().substring(stringReader.getCursor(), stringReader.getTotalLength());
+		public static MessageArgumentType.MessageFormat parse(StringReader reader, boolean bl) throws CommandSyntaxException {
+			String string = reader.getString().substring(reader.getCursor(), reader.getTotalLength());
 			if (!bl) {
-				stringReader.setCursor(stringReader.getTotalLength());
+				reader.setCursor(reader.getTotalLength());
 				return new MessageArgumentType.MessageFormat(string, new MessageArgumentType.MessageSelector[0]);
 			} else {
 				List<MessageArgumentType.MessageSelector> list = Lists.<MessageArgumentType.MessageSelector>newArrayList();
-				int i = stringReader.getCursor();
+				int i = reader.getCursor();
 
 				while (true) {
 					int j;
 					EntitySelector entitySelector;
 					while (true) {
-						if (!stringReader.canRead()) {
+						if (!reader.canRead()) {
 							return new MessageArgumentType.MessageFormat(
 								string, (MessageArgumentType.MessageSelector[])list.toArray(new MessageArgumentType.MessageSelector[list.size()])
 							);
 						}
 
-						if (stringReader.peek() == '@') {
-							j = stringReader.getCursor();
+						if (reader.peek() == '@') {
+							j = reader.getCursor();
 
 							try {
-								EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
+								EntitySelectorReader entitySelectorReader = new EntitySelectorReader(reader);
 								entitySelector = entitySelectorReader.read();
 								break;
 							} catch (CommandSyntaxException var8) {
@@ -113,14 +113,14 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 									throw var8;
 								}
 
-								stringReader.setCursor(j + 1);
+								reader.setCursor(j + 1);
 							}
 						} else {
-							stringReader.skip();
+							reader.skip();
 						}
 					}
 
-					list.add(new MessageArgumentType.MessageSelector(j - i, stringReader.getCursor() - i, entitySelector));
+					list.add(new MessageArgumentType.MessageSelector(j - i, reader.getCursor() - i, entitySelector));
 				}
 			}
 		}
@@ -131,10 +131,10 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 		private final int end;
 		private final EntitySelector selector;
 
-		public MessageSelector(int i, int j, EntitySelector entitySelector) {
-			this.start = i;
-			this.end = j;
-			this.selector = entitySelector;
+		public MessageSelector(int start, int end, EntitySelector selector) {
+			this.start = start;
+			this.end = end;
+			this.selector = selector;
 		}
 
 		public int getStart() {
@@ -145,13 +145,13 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 			return this.end;
 		}
 
-		public EntitySelector method_35693() {
+		public EntitySelector getSelector() {
 			return this.selector;
 		}
 
 		@Nullable
-		public Text format(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
-			return EntitySelector.getNames(this.selector.getEntities(serverCommandSource));
+		public Text format(ServerCommandSource source) throws CommandSyntaxException {
+			return EntitySelector.getNames(this.selector.getEntities(source));
 		}
 	}
 }

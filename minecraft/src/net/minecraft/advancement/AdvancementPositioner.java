@@ -200,7 +200,7 @@ public class AdvancementPositioner {
 
 	private void apply() {
 		if (this.advancement.getDisplay() != null) {
-			this.advancement.getDisplay().setPosition((float)this.depth, this.row);
+			this.advancement.getDisplay().setPos((float)this.depth, this.row);
 		}
 
 		if (!this.children.isEmpty()) {

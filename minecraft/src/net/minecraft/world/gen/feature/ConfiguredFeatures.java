@@ -996,27 +996,15 @@ public class ConfiguredFeatures {
 	);
 	public static final ConfiguredFeature<?, ?> ORE_COAL = register(
 		"ore_coal",
-		Feature.ORE
-			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.COAL_ORE, 17))
-			.method_36296(YOffset.getBottom(), YOffset.fixed(127))
-			.spreadHorizontally()
-			.repeat(20)
+		Feature.ORE.configure(new OreFeatureConfig(field_33636, 17)).method_36296(YOffset.getBottom(), YOffset.fixed(127)).spreadHorizontally().repeat(20)
 	);
 	public static final ConfiguredFeature<?, ?> PROTOTYPE_ORE_COAL_UPPER = register(
 		"prototype_ore_coal_upper",
-		Feature.ORE
-			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.COAL_ORE, 17))
-			.method_36296(YOffset.fixed(136), YOffset.getTop())
-			.spreadHorizontally()
-			.repeat(30)
+		Feature.ORE.configure(new OreFeatureConfig(field_33636, 17)).method_36296(YOffset.fixed(136), YOffset.getTop()).spreadHorizontally().repeat(30)
 	);
 	public static final ConfiguredFeature<?, ?> PROTOTYPE_ORE_COAL_LOWER = register(
 		"prototype_ore_coal_lower",
-		Feature.ORE
-			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.COAL_ORE, 17, 0.5F))
-			.method_36297(YOffset.fixed(0), YOffset.fixed(192))
-			.spreadHorizontally()
-			.repeat(20)
+		Feature.ORE.configure(new OreFeatureConfig(field_33636, 17, 0.5F)).method_36297(YOffset.fixed(0), YOffset.fixed(192)).spreadHorizontally().repeat(20)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_IRON = register(
 		"ore_iron",
@@ -1123,20 +1111,11 @@ public class ConfiguredFeatures {
 			.spreadHorizontally()
 	);
 	public static final ConfiguredFeature<?, ?> ORE_COPPER = register(
-		"ore_copper",
-		Feature.ORE
-			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.COPPER_ORE, 10))
-			.method_36297(YOffset.fixed(0), YOffset.fixed(96))
-			.spreadHorizontally()
-			.repeat(6)
+		"ore_copper", Feature.ORE.configure(new OreFeatureConfig(field_33635, 10)).method_36297(YOffset.fixed(0), YOffset.fixed(96)).spreadHorizontally().repeat(6)
 	);
 	public static final ConfiguredFeature<?, ?> PROTOTYPE_ORE_COPPER = register(
 		"prototype_ore_copper",
-		Feature.ORE
-			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.COPPER_ORE, 10))
-			.method_36296(YOffset.fixed(0), YOffset.fixed(63))
-			.spreadHorizontally()
-			.repeat(10)
+		Feature.ORE.configure(new OreFeatureConfig(field_33635, 10)).method_36296(YOffset.fixed(0), YOffset.fixed(63)).spreadHorizontally().repeat(10)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_CLAY = register(
 		"ore_clay",

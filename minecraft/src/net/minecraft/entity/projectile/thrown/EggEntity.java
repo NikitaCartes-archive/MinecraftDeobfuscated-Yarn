@@ -65,7 +65,7 @@ public class EggEntity extends ThrownItemEntity {
 				for (int j = 0; j < i; j++) {
 					ChickenEntity chickenEntity = EntityType.CHICKEN.create(this.world);
 					chickenEntity.setBreedingAge(-24000);
-					chickenEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0F);
+					chickenEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), 0.0F);
 					this.world.spawnEntity(chickenEntity);
 				}
 			}

@@ -30,8 +30,8 @@ public class MobSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.x = entity.getX();
 		this.y = entity.getY();
 		this.z = entity.getZ();
-		this.yaw = (byte)((int)(entity.yaw * 256.0F / 360.0F));
-		this.pitch = (byte)((int)(entity.pitch * 256.0F / 360.0F));
+		this.yaw = (byte)((int)(entity.getYaw() * 256.0F / 360.0F));
+		this.pitch = (byte)((int)(entity.getPitch() * 256.0F / 360.0F));
 		this.headYaw = (byte)((int)(entity.headYaw * 256.0F / 360.0F));
 		double d = 3.9;
 		Vec3d vec3d = entity.getVelocity();

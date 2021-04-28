@@ -43,7 +43,7 @@ public enum Direction implements StringIdentifiable {
 		.sorted(Comparator.comparingInt(direction -> direction.idHorizontal))
 		.toArray(Direction[]::new);
 	private static final Long2ObjectMap<Direction> VECTOR_TO_DIRECTION = (Long2ObjectMap<Direction>)Arrays.stream(ALL)
-		.collect(Collectors.toMap(direction -> new BlockPos(direction.getVector()).asLong(), direction -> direction, (direction, direction2) -> {
+		.collect(Collectors.toMap(direction -> new BlockPos(direction.getVector()).asLong(), direction -> direction, (direction1, direction2) -> {
 			throw new IllegalArgumentException("Duplicate keys");
 		}, Long2ObjectOpenHashMap::new));
 
@@ -152,17 +152,17 @@ public enum Direction implements StringIdentifiable {
 		return byId(this.idOpposite);
 	}
 
-	public Direction method_35833(Direction.Axis axis) {
+	public Direction rotateClockwise(Direction.Axis axis) {
 		switch (axis) {
 			case X:
 				if (this != WEST && this != EAST) {
-					return this.method_35835();
+					return this.rotateXClockwise();
 				}
 
 				return this;
 			case Z:
 				if (this != NORTH && this != SOUTH) {
-					return this.method_35837();
+					return this.rotateZClockwise();
 				}
 
 				return this;
@@ -177,17 +177,17 @@ public enum Direction implements StringIdentifiable {
 		}
 	}
 
-	public Direction method_35834(Direction.Axis axis) {
+	public Direction rotateCounterclockwise(Direction.Axis axis) {
 		switch (axis) {
 			case X:
 				if (this != WEST && this != EAST) {
-					return this.method_35836();
+					return this.rotateXCounterclockwise();
 				}
 
 				return this;
 			case Z:
 				if (this != NORTH && this != SOUTH) {
-					return this.method_35838();
+					return this.rotateZCounterclockwise();
 				}
 
 				return this;
@@ -217,7 +217,7 @@ public enum Direction implements StringIdentifiable {
 		}
 	}
 
-	private Direction method_35835() {
+	private Direction rotateXClockwise() {
 		switch (this) {
 			case DOWN:
 				return SOUTH;
@@ -232,7 +232,7 @@ public enum Direction implements StringIdentifiable {
 		}
 	}
 
-	private Direction method_35836() {
+	private Direction rotateXCounterclockwise() {
 		switch (this) {
 			case DOWN:
 				return NORTH;
@@ -247,7 +247,7 @@ public enum Direction implements StringIdentifiable {
 		}
 	}
 
-	private Direction method_35837() {
+	private Direction rotateZClockwise() {
 		switch (this) {
 			case DOWN:
 				return WEST;
@@ -264,7 +264,7 @@ public enum Direction implements StringIdentifiable {
 		}
 	}
 
-	private Direction method_35838() {
+	private Direction rotateZCounterclockwise() {
 		switch (this) {
 			case DOWN:
 				return EAST;
@@ -334,8 +334,8 @@ public enum Direction implements StringIdentifiable {
 	}
 
 	@Nullable
-	public static Direction method_35832(BlockPos blockPos) {
-		return VECTOR_TO_DIRECTION.get(blockPos.asLong());
+	public static Direction fromVector(BlockPos pos) {
+		return VECTOR_TO_DIRECTION.get(pos.asLong());
 	}
 
 	@Nullable
@@ -528,7 +528,7 @@ public enum Direction implements StringIdentifiable {
 			return this.offset;
 		}
 
-		public String method_35839() {
+		public String getDescription() {
 			return this.description;
 		}
 

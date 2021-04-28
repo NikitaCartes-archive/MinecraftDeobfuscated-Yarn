@@ -66,7 +66,7 @@ public class FloatRangeArgument {
 		return this.max;
 	}
 
-	public JsonElement method_35407() {
+	public JsonElement toJson() {
 		if (this == ANY) {
 			return JsonNull.INSTANCE;
 		} else if (this.min != null && this.max != null && this.min.equals(this.max)) {
@@ -85,22 +85,22 @@ public class FloatRangeArgument {
 		}
 	}
 
-	public static FloatRangeArgument method_35403(@Nullable JsonElement jsonElement) {
-		if (jsonElement == null || jsonElement.isJsonNull()) {
+	public static FloatRangeArgument fromJson(@Nullable JsonElement json) {
+		if (json == null || json.isJsonNull()) {
 			return ANY;
-		} else if (JsonHelper.isNumber(jsonElement)) {
-			float f = JsonHelper.asFloat(jsonElement, "value");
+		} else if (JsonHelper.isNumber(json)) {
+			float f = JsonHelper.asFloat(json, "value");
 			return new FloatRangeArgument(f, f);
 		} else {
-			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "value");
+			JsonObject jsonObject = JsonHelper.asObject(json, "value");
 			Float float_ = jsonObject.has("min") ? JsonHelper.getFloat(jsonObject, "min") : null;
 			Float float2 = jsonObject.has("max") ? JsonHelper.getFloat(jsonObject, "max") : null;
 			return new FloatRangeArgument(float_, float2);
 		}
 	}
 
-	public static FloatRangeArgument method_35404(StringReader stringReader, boolean bl) throws CommandSyntaxException {
-		return parse(stringReader, bl, float_ -> float_);
+	public static FloatRangeArgument parse(StringReader reader, boolean allowFloats) throws CommandSyntaxException {
+		return parse(reader, allowFloats, value -> value);
 	}
 
 	public static FloatRangeArgument parse(StringReader reader, boolean allowFloats, Function<Float, Float> transform) throws CommandSyntaxException {
@@ -170,7 +170,7 @@ public class FloatRangeArgument {
 	}
 
 	@Nullable
-	private static Float mapFloat(@Nullable Float float_, Function<Float, Float> function) {
-		return float_ == null ? null : (Float)function.apply(float_);
+	private static Float mapFloat(@Nullable Float value, Function<Float, Float> function) {
+		return value == null ? null : (Float)function.apply(value);
 	}
 }

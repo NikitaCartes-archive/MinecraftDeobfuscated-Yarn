@@ -22,18 +22,18 @@ public class SnowyBlock extends Block {
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		return direction == Direction.UP
-			? state.with(SNOWY, Boolean.valueOf(method_35291(neighborState)))
+			? state.with(SNOWY, Boolean.valueOf(isSnow(neighborState)))
 			: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 	}
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos().up());
-		return this.getDefaultState().with(SNOWY, Boolean.valueOf(method_35291(blockState)));
+		return this.getDefaultState().with(SNOWY, Boolean.valueOf(isSnow(blockState)));
 	}
 
-	private static boolean method_35291(BlockState blockState) {
-		return blockState.isIn(BlockTags.SNOW);
+	private static boolean isSnow(BlockState state) {
+		return state.isIn(BlockTags.SNOW);
 	}
 
 	@Override

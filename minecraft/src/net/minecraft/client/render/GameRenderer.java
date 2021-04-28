@@ -1,13 +1,17 @@
 package net.minecraft.client.render;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.datafixers.util.Pair;
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -215,11 +219,11 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 	@Nullable
 	private static Shader renderTypeTextShader;
 	@Nullable
-	private static Shader field_33626;
+	private static Shader renderTypeTextIntensityShader;
 	@Nullable
 	private static Shader renderTypeTextSeeThroughShader;
 	@Nullable
-	private static Shader field_33627;
+	private static Shader renderTypeTextIntensitySeeThroughShader;
 	@Nullable
 	private static Shader renderTypeLightningShader;
 	@Nullable
@@ -254,19 +258,19 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 		}
 	}
 
-	public void method_35768(boolean bl) {
-		this.renderHand = bl;
+	public void setRenderHand(boolean renderHand) {
+		this.renderHand = renderHand;
 	}
 
-	public void method_35769(boolean bl) {
-		this.blockOutlineEnabled = bl;
+	public void setBlockOutlineEnabled(boolean blockOutlineEnabled) {
+		this.blockOutlineEnabled = blockOutlineEnabled;
 	}
 
-	public void method_35770(boolean bl) {
-		this.renderingPanorama = bl;
+	public void setRenderingPanorama(boolean renderingPanorama) {
+		this.renderingPanorama = renderingPanorama;
 	}
 
-	public boolean method_35765() {
+	public boolean isRenderingPanorama() {
 		return this.renderingPanorama;
 	}
 
@@ -373,72 +377,175 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 
 	public void loadShaders(ResourceManager manager) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		this.clearShaders();
+		List<Pair<Shader, Consumer<Shader>>> list = Lists.<Pair<Shader, Consumer<Shader>>>newArrayListWithCapacity(this.shaders.size());
 
 		try {
-			blockShader = this.loadShader(manager, "block", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
-			newEntityShader = this.loadShader(manager, "new_entity", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			particleShader = this.loadShader(manager, "particle", VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
-			positionShader = this.loadShader(manager, "position", VertexFormats.POSITION);
-			positionColorShader = this.loadShader(manager, "position_color", VertexFormats.POSITION_COLOR);
-			positionColorLightmapShader = this.loadShader(manager, "position_color_lightmap", VertexFormats.POSITION_COLOR_LIGHT);
-			positionColorTexShader = this.loadShader(manager, "position_color_tex", VertexFormats.POSITION_COLOR_TEXTURE);
-			positionColorTexLightmapShader = this.loadShader(manager, "position_color_tex_lightmap", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
-			positionTexShader = this.loadShader(manager, "position_tex", VertexFormats.POSITION_TEXTURE);
-			positionTexColorShader = this.loadShader(manager, "position_tex_color", VertexFormats.POSITION_TEXTURE_COLOR);
-			positionTexColorNormalShader = this.loadShader(manager, "position_tex_color_normal", VertexFormats.POSITION_TEXTURE_COLOR_NORMAL);
-			positionTexLightmapColorShader = this.loadShader(manager, "position_tex_lightmap_color", VertexFormats.POSITION_TEXTURE_LIGHT_COLOR);
-			renderTypeSolidShader = this.loadShader(manager, "rendertype_solid", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
-			renderTypeCutoutMippedShader = this.loadShader(manager, "rendertype_cutout_mipped", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
-			renderTypeCutoutShader = this.loadShader(manager, "rendertype_cutout", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
-			renderTypeTranslucentShader = this.loadShader(manager, "rendertype_translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
-			renderTypeTranslucentMovingBlockShader = this.loadShader(manager, "rendertype_translucent_moving_block", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
-			renderTypeTranslucentNoCrumblingShader = this.loadShader(manager, "rendertype_translucent_no_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
-			renderTypeArmorCutoutNoCullShader = this.loadShader(manager, "rendertype_armor_cutout_no_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			renderTypeEntitySolidShader = this.loadShader(manager, "rendertype_entity_solid", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			renderTypeEntityCutoutShader = this.loadShader(manager, "rendertype_entity_cutout", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			renderTypeEntityCutoutNoNullShader = this.loadShader(manager, "rendertype_entity_cutout_no_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			renderTypeEntityCutoutNoNullZOffsetShader = this.loadShader(
-				manager, "rendertype_entity_cutout_no_cull_z_offset", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL
+			list.add(Pair.of(new Shader(manager, "block", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> blockShader = shader));
+			list.add(Pair.of(new Shader(manager, "new_entity", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> newEntityShader = shader));
+			list.add(Pair.of(new Shader(manager, "particle", VertexFormats.POSITION_TEXTURE_COLOR_LIGHT), shader -> particleShader = shader));
+			list.add(Pair.of(new Shader(manager, "position", VertexFormats.POSITION), shader -> positionShader = shader));
+			list.add(Pair.of(new Shader(manager, "position_color", VertexFormats.POSITION_COLOR), shader -> positionColorShader = shader));
+			list.add(Pair.of(new Shader(manager, "position_color_lightmap", VertexFormats.POSITION_COLOR_LIGHT), shader -> positionColorLightmapShader = shader));
+			list.add(Pair.of(new Shader(manager, "position_color_tex", VertexFormats.POSITION_COLOR_TEXTURE), shader -> positionColorTexShader = shader));
+			list.add(
+				Pair.of(new Shader(manager, "position_color_tex_lightmap", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), shader -> positionColorTexLightmapShader = shader)
 			);
-			renderTypeItemEntityTranslucentCullShader = this.loadShader(
-				manager, "rendertype_item_entity_translucent_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL
+			list.add(Pair.of(new Shader(manager, "position_tex", VertexFormats.POSITION_TEXTURE), shader -> positionTexShader = shader));
+			list.add(Pair.of(new Shader(manager, "position_tex_color", VertexFormats.POSITION_TEXTURE_COLOR), shader -> positionTexColorShader = shader));
+			list.add(
+				Pair.of(new Shader(manager, "position_tex_color_normal", VertexFormats.POSITION_TEXTURE_COLOR_NORMAL), shader -> positionTexColorNormalShader = shader)
 			);
-			renderTypeEntityTranslucentCullShader = this.loadShader(
-				manager, "rendertype_entity_translucent_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL
+			list.add(
+				Pair.of(new Shader(manager, "position_tex_lightmap_color", VertexFormats.POSITION_TEXTURE_LIGHT_COLOR), shader -> positionTexLightmapColorShader = shader)
 			);
-			renderTypeEntityTranslucentShader = this.loadShader(manager, "rendertype_entity_translucent", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			renderTypeEntitySmoothCutoutShader = this.loadShader(manager, "rendertype_entity_smooth_cutout", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			renderTypeBeaconBeamShader = this.loadShader(manager, "rendertype_beacon_beam", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
-			renderTypeEntityDecalShader = this.loadShader(manager, "rendertype_entity_decal", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			renderTypeEntityNoOutlineShader = this.loadShader(manager, "rendertype_entity_no_outline", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			renderTypeEntityShadowShader = this.loadShader(manager, "rendertype_entity_shadow", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			renderTypeEntityAlphaShader = this.loadShader(manager, "rendertype_entity_alpha", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			renderTypeEyesShader = this.loadShader(manager, "rendertype_eyes", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			renderTypeEnergySwirlShader = this.loadShader(manager, "rendertype_energy_swirl", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
-			renderTypeLeashShader = this.loadShader(manager, "rendertype_leash", VertexFormats.POSITION_COLOR_LIGHT);
-			renderTypeWaterMaskShader = this.loadShader(manager, "rendertype_water_mask", VertexFormats.POSITION);
-			renderTypeOutlineShader = this.loadShader(manager, "rendertype_outline", VertexFormats.POSITION_COLOR_TEXTURE);
-			renderTypeArmorGlintShader = this.loadShader(manager, "rendertype_armor_glint", VertexFormats.POSITION_TEXTURE);
-			renderTypeArmorEntityGlintShader = this.loadShader(manager, "rendertype_armor_entity_glint", VertexFormats.POSITION_TEXTURE);
-			renderTypeGlintTranslucentShader = this.loadShader(manager, "rendertype_glint_translucent", VertexFormats.POSITION_TEXTURE);
-			renderTypeGlintShader = this.loadShader(manager, "rendertype_glint", VertexFormats.POSITION_TEXTURE);
-			renderTypeGlintDirectShader = this.loadShader(manager, "rendertype_glint_direct", VertexFormats.POSITION_TEXTURE);
-			renderTypeEntityGlintShader = this.loadShader(manager, "rendertype_entity_glint", VertexFormats.POSITION_TEXTURE);
-			renderTypeEntityGlintDirectShader = this.loadShader(manager, "rendertype_entity_glint_direct", VertexFormats.POSITION_TEXTURE);
-			renderTypeTextShader = this.loadShader(manager, "rendertype_text", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
-			field_33626 = this.loadShader(manager, "rendertype_text_intensity", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
-			renderTypeTextSeeThroughShader = this.loadShader(manager, "rendertype_text_see_through", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
-			field_33627 = this.loadShader(manager, "rendertype_text_intensity_see_through", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
-			renderTypeLightningShader = this.loadShader(manager, "rendertype_lightning", VertexFormats.POSITION_COLOR);
-			renderTypeTripwireShader = this.loadShader(manager, "rendertype_tripwire", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
-			renderTypeEndPortalShader = this.loadShader(manager, "rendertype_end_portal", VertexFormats.POSITION);
-			renderTypeEndGatewayShader = this.loadShader(manager, "rendertype_end_gateway", VertexFormats.POSITION);
-			renderTypeLinesShader = this.loadShader(manager, "rendertype_lines", VertexFormats.LINES);
-			renderTypeCrumblingShader = this.loadShader(manager, "rendertype_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
-		} catch (IOException var3) {
-			throw new RuntimeException("could not reload shaders", var3);
+			list.add(Pair.of(new Shader(manager, "rendertype_solid", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> renderTypeSolidShader = shader));
+			list.add(
+				Pair.of(new Shader(manager, "rendertype_cutout_mipped", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> renderTypeCutoutMippedShader = shader)
+			);
+			list.add(Pair.of(new Shader(manager, "rendertype_cutout", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> renderTypeCutoutShader = shader));
+			list.add(
+				Pair.of(new Shader(manager, "rendertype_translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> renderTypeTranslucentShader = shader)
+			);
+			list.add(
+				Pair.of(
+					new Shader(manager, "rendertype_translucent_moving_block", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL),
+					shader -> renderTypeTranslucentMovingBlockShader = shader
+				)
+			);
+			list.add(
+				Pair.of(
+					new Shader(manager, "rendertype_translucent_no_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL),
+					shader -> renderTypeTranslucentNoCrumblingShader = shader
+				)
+			);
+			list.add(
+				Pair.of(
+					new Shader(manager, "rendertype_armor_cutout_no_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL),
+					shader -> renderTypeArmorCutoutNoCullShader = shader
+				)
+			);
+			list.add(
+				Pair.of(
+					new Shader(manager, "rendertype_entity_solid", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> renderTypeEntitySolidShader = shader
+				)
+			);
+			list.add(
+				Pair.of(
+					new Shader(manager, "rendertype_entity_cutout", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL),
+					shader -> renderTypeEntityCutoutShader = shader
+				)
+			);
+			list.add(
+				Pair.of(
+					new Shader(manager, "rendertype_entity_cutout_no_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL),
+					shader -> renderTypeEntityCutoutNoNullShader = shader
+				)
+			);
+			list.add(
+				Pair.of(
+					new Shader(manager, "rendertype_entity_cutout_no_cull_z_offset", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL),
+					shader -> renderTypeEntityCutoutNoNullZOffsetShader = shader
+				)
+			);
+			list.add(
+				Pair.of(
+					new Shader(manager, "rendertype_item_entity_translucent_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL),
+					shader -> renderTypeItemEntityTranslucentCullShader = shader
+				)
+			);
+			list.add(
+				Pair.of(
+					new Shader(manager, "rendertype_entity_translucent_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL),
+					shader -> renderTypeEntityTranslucentCullShader = shader
+				)
+			);
+			list.add(
+				Pair.of(
+					new Shader(manager, "rendertype_entity_translucent", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL),
+					shader -> renderTypeEntityTranslucentShader = shader
+				)
+			);
+			list.add(
+				Pair.of(
+					new Shader(manager, "rendertype_entity_smooth_cutout", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL),
+					shader -> renderTypeEntitySmoothCutoutShader = shader
+				)
+			);
+			list.add(
+				Pair.of(new Shader(manager, "rendertype_beacon_beam", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> renderTypeBeaconBeamShader = shader)
+			);
+			list.add(
+				Pair.of(
+					new Shader(manager, "rendertype_entity_decal", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> renderTypeEntityDecalShader = shader
+				)
+			);
+			list.add(
+				Pair.of(
+					new Shader(manager, "rendertype_entity_no_outline", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL),
+					shader -> renderTypeEntityNoOutlineShader = shader
+				)
+			);
+			list.add(
+				Pair.of(
+					new Shader(manager, "rendertype_entity_shadow", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL),
+					shader -> renderTypeEntityShadowShader = shader
+				)
+			);
+			list.add(
+				Pair.of(
+					new Shader(manager, "rendertype_entity_alpha", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> renderTypeEntityAlphaShader = shader
+				)
+			);
+			list.add(Pair.of(new Shader(manager, "rendertype_eyes", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> renderTypeEyesShader = shader));
+			list.add(
+				Pair.of(
+					new Shader(manager, "rendertype_energy_swirl", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> renderTypeEnergySwirlShader = shader
+				)
+			);
+			list.add(Pair.of(new Shader(manager, "rendertype_leash", VertexFormats.POSITION_COLOR_LIGHT), shader -> renderTypeLeashShader = shader));
+			list.add(Pair.of(new Shader(manager, "rendertype_water_mask", VertexFormats.POSITION), shader -> renderTypeWaterMaskShader = shader));
+			list.add(Pair.of(new Shader(manager, "rendertype_outline", VertexFormats.POSITION_COLOR_TEXTURE), shader -> renderTypeOutlineShader = shader));
+			list.add(Pair.of(new Shader(manager, "rendertype_armor_glint", VertexFormats.POSITION_TEXTURE), shader -> renderTypeArmorGlintShader = shader));
+			list.add(Pair.of(new Shader(manager, "rendertype_armor_entity_glint", VertexFormats.POSITION_TEXTURE), shader -> renderTypeArmorEntityGlintShader = shader));
+			list.add(Pair.of(new Shader(manager, "rendertype_glint_translucent", VertexFormats.POSITION_TEXTURE), shader -> renderTypeGlintTranslucentShader = shader));
+			list.add(Pair.of(new Shader(manager, "rendertype_glint", VertexFormats.POSITION_TEXTURE), shader -> renderTypeGlintShader = shader));
+			list.add(Pair.of(new Shader(manager, "rendertype_glint_direct", VertexFormats.POSITION_TEXTURE), shader -> renderTypeGlintDirectShader = shader));
+			list.add(Pair.of(new Shader(manager, "rendertype_entity_glint", VertexFormats.POSITION_TEXTURE), shader -> renderTypeEntityGlintShader = shader));
+			list.add(
+				Pair.of(new Shader(manager, "rendertype_entity_glint_direct", VertexFormats.POSITION_TEXTURE), shader -> renderTypeEntityGlintDirectShader = shader)
+			);
+			list.add(Pair.of(new Shader(manager, "rendertype_text", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), shader -> renderTypeTextShader = shader));
+			list.add(
+				Pair.of(new Shader(manager, "rendertype_text_intensity", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), shader -> renderTypeTextIntensityShader = shader)
+			);
+			list.add(
+				Pair.of(new Shader(manager, "rendertype_text_see_through", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), shader -> renderTypeTextSeeThroughShader = shader)
+			);
+			list.add(
+				Pair.of(
+					new Shader(manager, "rendertype_text_intensity_see_through", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT),
+					shader -> renderTypeTextIntensitySeeThroughShader = shader
+				)
+			);
+			list.add(Pair.of(new Shader(manager, "rendertype_lightning", VertexFormats.POSITION_COLOR), shader -> renderTypeLightningShader = shader));
+			list.add(Pair.of(new Shader(manager, "rendertype_tripwire", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> renderTypeTripwireShader = shader));
+			list.add(Pair.of(new Shader(manager, "rendertype_end_portal", VertexFormats.POSITION), shader -> renderTypeEndPortalShader = shader));
+			list.add(Pair.of(new Shader(manager, "rendertype_end_gateway", VertexFormats.POSITION), shader -> renderTypeEndGatewayShader = shader));
+			list.add(Pair.of(new Shader(manager, "rendertype_lines", VertexFormats.LINES), shader -> renderTypeLinesShader = shader));
+			list.add(
+				Pair.of(new Shader(manager, "rendertype_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> renderTypeCrumblingShader = shader)
+			);
+		} catch (IOException var4) {
+			list.forEach(pair -> ((Shader)pair.getFirst()).close());
+			throw new RuntimeException("could not reload shaders", var4);
 		}
+
+		this.clearShaders();
+		list.forEach(pair -> {
+			Shader shader = (Shader)pair.getFirst();
+			this.shaders.put(shader.method_35787(), shader);
+			((Consumer)pair.getSecond()).accept(shader);
+		});
 	}
 
 	private void clearShaders() {
@@ -626,8 +733,8 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 		this.zoom = f;
 		this.zoomX = g;
 		this.zoomY = h;
-		this.method_35769(false);
-		this.method_35768(false);
+		this.setBlockOutlineEnabled(false);
+		this.setRenderHand(false);
 		this.renderWorld(1.0F, 0L, new MatrixStack());
 		this.zoom = 1.0F;
 	}
@@ -1092,7 +1199,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 	}
 
 	@Nullable
-	public static Shader method_35764() {
+	public static Shader getPositionTexLightmapColorShader() {
 		return positionTexLightmapColorShader;
 	}
 
@@ -1262,8 +1369,8 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 	}
 
 	@Nullable
-	public static Shader method_36432() {
-		return field_33626;
+	public static Shader getRenderTypeTextIntensityShader() {
+		return renderTypeTextIntensityShader;
 	}
 
 	@Nullable
@@ -1272,8 +1379,8 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 	}
 
 	@Nullable
-	public static Shader method_36433() {
-		return field_33627;
+	public static Shader getRenderTypeTextIntensitySeeThroughShader() {
+		return renderTypeTextIntensitySeeThroughShader;
 	}
 
 	@Nullable

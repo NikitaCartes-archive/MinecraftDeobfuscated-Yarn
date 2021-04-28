@@ -783,7 +783,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		if (world.getDifficulty() != Difficulty.PEACEFUL) {
 			LOGGER.info("Villager {} was struck by lightning {}.", this, lightning);
 			WitchEntity witchEntity = EntityType.WITCH.create(world);
-			witchEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
+			witchEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
 			witchEntity.initialize(world, world.getLocalDifficulty(witchEntity.getBlockPos()), SpawnReason.CONVERSION, null, null);
 			witchEntity.setAiDisabled(this.isAiDisabled());
 			if (this.hasCustomName()) {

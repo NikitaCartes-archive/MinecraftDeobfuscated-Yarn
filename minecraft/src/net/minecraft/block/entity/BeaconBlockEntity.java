@@ -52,7 +52,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	private List<BeaconBlockEntity.BeamSegment> beamSegments = Lists.<BeaconBlockEntity.BeamSegment>newArrayList();
 	private List<BeaconBlockEntity.BeamSegment> field_19178 = Lists.<BeaconBlockEntity.BeamSegment>newArrayList();
 	private int level;
-	private int field_19179;
+	private int minY;
 	@Nullable
 	private StatusEffect primary;
 	@Nullable
@@ -108,12 +108,12 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 		int j = pos.getY();
 		int k = pos.getZ();
 		BlockPos blockPos;
-		if (blockEntity.field_19179 < j) {
+		if (blockEntity.minY < j) {
 			blockPos = pos;
 			blockEntity.field_19178 = Lists.<BeaconBlockEntity.BeamSegment>newArrayList();
-			blockEntity.field_19179 = pos.getY() - 1;
+			blockEntity.minY = pos.getY() - 1;
 		} else {
-			blockPos = new BlockPos(i, blockEntity.field_19179 + 1, k);
+			blockPos = new BlockPos(i, blockEntity.minY + 1, k);
 		}
 
 		BeaconBlockEntity.BeamSegment beamSegment = blockEntity.field_19178.isEmpty()
@@ -142,7 +142,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 			} else {
 				if (beamSegment == null || blockState.getOpacity(world, blockPos) >= 15 && !blockState.isOf(Blocks.BEDROCK)) {
 					blockEntity.field_19178.clear();
-					blockEntity.field_19179 = l;
+					blockEntity.minY = l;
 					break;
 				}
 
@@ -150,7 +150,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 			}
 
 			blockPos = blockPos.up();
-			blockEntity.field_19179++;
+			blockEntity.minY++;
 		}
 
 		int m = blockEntity.level;
@@ -165,8 +165,8 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 			}
 		}
 
-		if (blockEntity.field_19179 >= l) {
-			blockEntity.field_19179 = world.getBottomY() - 1;
+		if (blockEntity.minY >= l) {
+			blockEntity.minY = world.getBottomY() - 1;
 			boolean bl = m > 0;
 			blockEntity.beamSegments = blockEntity.field_19178;
 			if (!world.isClient) {
@@ -317,7 +317,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	@Override
 	public void setWorld(World world) {
 		super.setWorld(world);
-		this.field_19179 = world.getBottomY() - 1;
+		this.minY = world.getBottomY() - 1;
 	}
 
 	public static class BeamSegment {

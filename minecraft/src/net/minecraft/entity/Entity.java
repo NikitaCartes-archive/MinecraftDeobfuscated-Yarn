@@ -147,8 +147,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	private Vec3d pos;
 	private BlockPos blockPos;
 	private Vec3d velocity = Vec3d.ZERO;
-	public float yaw;
-	public float pitch;
+	private float yaw;
+	private float pitch;
 	public float prevYaw;
 	public float prevPitch;
 	private Box entityBounds = NULL_BOX;
@@ -359,8 +359,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	protected void setRotation(float yaw, float pitch) {
-		this.yaw = yaw % 360.0F;
-		this.pitch = pitch % 360.0F;
+		this.setYaw(yaw % 360.0F);
+		this.setPitch(pitch % 360.0F);
 	}
 
 	public final void setPosition(Vec3d pos) {
@@ -381,13 +381,13 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public void changeLookDirection(double cursorDeltaX, double cursorDeltaY) {
-		double d = cursorDeltaY * 0.15;
-		double e = cursorDeltaX * 0.15;
-		this.pitch = (float)((double)this.pitch + d);
-		this.yaw = (float)((double)this.yaw + e);
-		this.pitch = MathHelper.clamp(this.pitch, -90.0F, 90.0F);
-		this.prevPitch = (float)((double)this.prevPitch + d);
-		this.prevYaw = (float)((double)this.prevYaw + e);
+		float f = (float)cursorDeltaY * 0.15F;
+		float g = (float)cursorDeltaX * 0.15F;
+		this.setPitch(this.getPitch() + f);
+		this.setYaw(this.getYaw() + g);
+		this.setPitch(MathHelper.clamp(this.getPitch(), -90.0F, 90.0F));
+		this.prevPitch += f;
+		this.prevYaw += g;
 		this.prevPitch = MathHelper.clamp(this.prevPitch, -90.0F, 90.0F);
 		if (this.vehicle != null) {
 			this.vehicle.onPassengerLookAround(this);
@@ -409,8 +409,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 
 		this.prevHorizontalSpeed = this.horizontalSpeed;
-		this.prevPitch = this.pitch;
-		this.prevYaw = this.yaw;
+		this.prevPitch = this.getPitch();
+		this.prevYaw = this.getYaw();
 		this.tickNetherPortal();
 		if (this.shouldSpawnSprintingParticles()) {
 			this.spawnSprintingParticles();
@@ -579,93 +579,95 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			BlockPos blockPos = this.getLandingPos();
 			BlockState blockState = this.world.getBlockState(blockPos);
 			this.fall(vec3d.y, this.onGround, blockState, blockPos);
-			Vec3d vec3d2 = this.getVelocity();
-			if (movement.x != vec3d.x) {
-				this.setVelocity(0.0, vec3d2.y, vec3d2.z);
-			}
-
-			if (movement.z != vec3d.z) {
-				this.setVelocity(vec3d2.x, vec3d2.y, 0.0);
-			}
-
-			Block block = blockState.getBlock();
-			if (movement.y != vec3d.y) {
-				block.onEntityLand(this.world, this);
-			}
-
-			if (this.onGround && !this.bypassesSteppingEffects()) {
-				block.onSteppedOn(this.world, blockPos, this);
-			}
-
-			Entity.MoveEffect moveEffect = this.getMoveEffect();
-			if (moveEffect.hasAny() && !this.hasVehicle()) {
-				double d = vec3d.x;
-				double e = vec3d.y;
-				double f = vec3d.z;
-				this.field_28627 = (float)((double)this.field_28627 + vec3d.length() * 0.6);
-				if (!blockState.isIn(BlockTags.CLIMBABLE) && !blockState.isOf(Blocks.POWDER_SNOW)) {
-					e = 0.0;
+			if (!this.isRemoved()) {
+				Vec3d vec3d2 = this.getVelocity();
+				if (movement.x != vec3d.x) {
+					this.setVelocity(0.0, vec3d2.y, vec3d2.z);
 				}
 
-				this.horizontalSpeed = (float)((double)this.horizontalSpeed + (double)MathHelper.sqrt(squaredHorizontalLength(vec3d)) * 0.6);
-				this.distanceTraveled = (float)((double)this.distanceTraveled + (double)MathHelper.sqrt(d * d + e * e + f * f) * 0.6);
-				if (this.distanceTraveled > this.nextStepSoundDistance && !blockState.isAir()) {
-					this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
-					if (this.isTouchingWater()) {
-						if (moveEffect.playsSounds()) {
-							Entity entity = this.hasPassengers() && this.getPrimaryPassenger() != null ? this.getPrimaryPassenger() : this;
-							float g = entity == this ? 0.35F : 0.4F;
-							Vec3d vec3d3 = entity.getVelocity();
-							float h = MathHelper.sqrt(vec3d3.x * vec3d3.x * 0.2F + vec3d3.y * vec3d3.y + vec3d3.z * vec3d3.z * 0.2F) * g;
-							if (h > 1.0F) {
-								h = 1.0F;
+				if (movement.z != vec3d.z) {
+					this.setVelocity(vec3d2.x, vec3d2.y, 0.0);
+				}
+
+				Block block = blockState.getBlock();
+				if (movement.y != vec3d.y) {
+					block.onEntityLand(this.world, this);
+				}
+
+				if (this.onGround && !this.bypassesSteppingEffects()) {
+					block.onSteppedOn(this.world, blockPos, blockState, this);
+				}
+
+				Entity.MoveEffect moveEffect = this.getMoveEffect();
+				if (moveEffect.hasAny() && !this.hasVehicle()) {
+					double d = vec3d.x;
+					double e = vec3d.y;
+					double f = vec3d.z;
+					this.field_28627 = (float)((double)this.field_28627 + vec3d.length() * 0.6);
+					if (!blockState.isIn(BlockTags.CLIMBABLE) && !blockState.isOf(Blocks.POWDER_SNOW)) {
+						e = 0.0;
+					}
+
+					this.horizontalSpeed = (float)((double)this.horizontalSpeed + (double)MathHelper.sqrt(squaredHorizontalLength(vec3d)) * 0.6);
+					this.distanceTraveled = (float)((double)this.distanceTraveled + (double)MathHelper.sqrt(d * d + e * e + f * f) * 0.6);
+					if (this.distanceTraveled > this.nextStepSoundDistance && !blockState.isAir()) {
+						this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
+						if (this.isTouchingWater()) {
+							if (moveEffect.playsSounds()) {
+								Entity entity = this.hasPassengers() && this.getPrimaryPassenger() != null ? this.getPrimaryPassenger() : this;
+								float g = entity == this ? 0.35F : 0.4F;
+								Vec3d vec3d3 = entity.getVelocity();
+								float h = MathHelper.sqrt(vec3d3.x * vec3d3.x * 0.2F + vec3d3.y * vec3d3.y + vec3d3.z * vec3d3.z * 0.2F) * g;
+								if (h > 1.0F) {
+									h = 1.0F;
+								}
+
+								this.playSwimSound(h);
 							}
 
-							this.playSwimSound(h);
-						}
+							if (moveEffect.emitsGameEvents()) {
+								this.emitGameEvent(GameEvent.SWIM);
+							}
+						} else {
+							if (moveEffect.playsSounds()) {
+								this.playStepSound(blockPos, blockState);
+							}
 
-						if (moveEffect.emitsGameEvents()) {
-							this.emitGameEvent(GameEvent.SWIM);
+							if (moveEffect.emitsGameEvents() && !blockState.isIn(BlockTags.OCCLUDES_VIBRATION_SIGNALS)) {
+								this.emitGameEvent(GameEvent.STEP);
+							}
 						}
-					} else {
-						if (moveEffect.playsSounds()) {
-							this.playStepSound(blockPos, blockState);
-						}
-
-						if (moveEffect.emitsGameEvents() && !blockState.isIn(BlockTags.OCCLUDES_VIBRATION_SIGNALS)) {
-							this.emitGameEvent(GameEvent.STEP);
-						}
+					} else if (blockState.isAir()) {
+						this.addAirTravelEffects();
 					}
-				} else if (blockState.isAir()) {
-					this.addAirTravelEffects();
-				}
-			}
-
-			try {
-				this.checkBlockCollision();
-			} catch (Throwable var19) {
-				CrashReport crashReport = CrashReport.create(var19, "Checking entity block collision");
-				CrashReportSection crashReportSection = crashReport.addElement("Entity being checked for collision");
-				this.populateCrashReport(crashReportSection);
-				throw new CrashException(crashReport);
-			}
-
-			float i = this.getVelocityMultiplier();
-			this.setVelocity(this.getVelocity().multiply((double)i, 1.0, (double)i));
-			if (this.world.getStatesInBoxIfLoaded(this.getBoundingBox().contract(1.0E-6)).noneMatch(state -> state.isIn(BlockTags.FIRE) || state.isOf(Blocks.LAVA))
-				&& this.fireTicks <= 0) {
-				this.setFireTicks(-this.getBurningDuration());
-			}
-
-			if ((this.isWet() || this.inPowderSnow) && this.isOnFire()) {
-				if (this.wasOnFire) {
-					this.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.7F, 1.6F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
 				}
 
-				this.setFireTicks(-this.getBurningDuration());
-			}
+				try {
+					this.checkBlockCollision();
+				} catch (Throwable var19) {
+					CrashReport crashReport = CrashReport.create(var19, "Checking entity block collision");
+					CrashReportSection crashReportSection = crashReport.addElement("Entity being checked for collision");
+					this.populateCrashReport(crashReportSection);
+					throw new CrashException(crashReport);
+				}
 
-			this.world.getProfiler().pop();
+				float i = this.getVelocityMultiplier();
+				this.setVelocity(this.getVelocity().multiply((double)i, 1.0, (double)i));
+				if (this.world.getStatesInBoxIfLoaded(this.getBoundingBox().contract(1.0E-6)).noneMatch(state -> state.isIn(BlockTags.FIRE) || state.isOf(Blocks.LAVA))
+					&& this.fireTicks <= 0) {
+					this.setFireTicks(-this.getBurningDuration());
+				}
+
+				if ((this.isWet() || this.inPowderSnow) && this.isOnFire()) {
+					if (this.wasOnFire) {
+						this.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.7F, 1.6F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
+					}
+
+					this.setFireTicks(-this.getBurningDuration());
+				}
+
+				this.world.getProfiler().pop();
+			}
 		}
 	}
 
@@ -1025,7 +1027,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	protected void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
 		if (onGround) {
 			if (this.fallDistance > 0.0F) {
-				landedState.getBlock().onLandedUpon(this.world, landedPosition, this, this.fallDistance);
+				landedState.getBlock().onLandedUpon(this.world, landedState, landedPosition, this, this.fallDistance);
 				if (!landedState.isIn(BlockTags.OCCLUDES_VIBRATION_SIGNALS)) {
 					this.emitGameEvent(GameEvent.HIT_GROUND);
 				}
@@ -1223,7 +1225,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public void updateVelocity(float speed, Vec3d movementInput) {
-		Vec3d vec3d = movementInputToVelocity(movementInput, speed, this.yaw);
+		Vec3d vec3d = movementInputToVelocity(movementInput, speed, this.getYaw());
 		this.setVelocity(this.getVelocity().add(vec3d));
 	}
 
@@ -1245,10 +1247,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	public void updatePositionAndAngles(double x, double y, double z, float yaw, float pitch) {
 		this.updatePosition(x, y, z);
-		this.yaw = yaw % 360.0F;
-		this.pitch = MathHelper.clamp(pitch, -90.0F, 90.0F) % 360.0F;
-		this.prevYaw = this.yaw;
-		this.prevPitch = this.pitch;
+		this.setYaw(yaw % 360.0F);
+		this.setPitch(MathHelper.clamp(pitch, -90.0F, 90.0F) % 360.0F);
+		this.prevYaw = this.getYaw();
+		this.prevPitch = this.getPitch();
 	}
 
 	public void updatePosition(double x, double y, double z) {
@@ -1265,7 +1267,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public void refreshPositionAfterTeleport(double x, double y, double z) {
-		this.refreshPositionAndAngles(x, y, z, this.yaw, this.pitch);
+		this.refreshPositionAndAngles(x, y, z, this.getYaw(), this.getPitch());
 	}
 
 	public void refreshPositionAndAngles(BlockPos pos, float yaw, float pitch) {
@@ -1274,8 +1276,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	public void refreshPositionAndAngles(double x, double y, double z, float yaw, float pitch) {
 		this.setPos(x, y, z);
-		this.yaw = yaw;
-		this.pitch = pitch;
+		this.setYaw(yaw);
+		this.setPitch(pitch);
 		this.resetPosition();
 		this.refreshPosition();
 	}
@@ -1290,8 +1292,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.lastRenderX = d;
 		this.lastRenderY = e;
 		this.lastRenderZ = f;
-		this.prevYaw = this.yaw;
-		this.prevPitch = this.pitch;
+		this.prevYaw = this.getYaw();
+		this.prevPitch = this.getPitch();
 	}
 
 	public float distanceTo(Entity entity) {
@@ -1376,11 +1378,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public float getPitch(float tickDelta) {
-		return tickDelta == 1.0F ? this.pitch : MathHelper.lerp(tickDelta, this.prevPitch, this.pitch);
+		return tickDelta == 1.0F ? this.getPitch() : MathHelper.lerp(tickDelta, this.prevPitch, this.getPitch());
 	}
 
 	public float getYaw(float tickDelta) {
-		return tickDelta == 1.0F ? this.yaw : MathHelper.lerp(tickDelta, this.prevYaw, this.yaw);
+		return tickDelta == 1.0F ? this.getYaw() : MathHelper.lerp(tickDelta, this.prevYaw, this.getYaw());
 	}
 
 	protected final Vec3d getRotationVector(float pitch, float yaw) {
@@ -1496,7 +1498,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 			Vec3d vec3d = this.getVelocity();
 			nbt.put("Motion", this.toNbtList(vec3d.x, vec3d.y, vec3d.z));
-			nbt.put("Rotation", this.toNbtList(this.yaw, this.pitch));
+			nbt.put("Rotation", this.toNbtList(this.getYaw(), this.getPitch()));
 			nbt.putFloat("FallDistance", this.fallDistance);
 			nbt.putShort("Fire", (short)this.fireTicks);
 			nbt.putShort("Air", (short)this.getAir());
@@ -1575,11 +1577,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			double f = nbtList2.getDouble(2);
 			this.setVelocity(Math.abs(d) > 10.0 ? 0.0 : d, Math.abs(e) > 10.0 ? 0.0 : e, Math.abs(f) > 10.0 ? 0.0 : f);
 			this.setPos(nbtList.getDouble(0), nbtList.getDouble(1), nbtList.getDouble(2));
-			this.yaw = nbtList3.getFloat(0);
-			this.pitch = nbtList3.getFloat(1);
+			this.setYaw(nbtList3.getFloat(0));
+			this.setPitch(nbtList3.getFloat(1));
 			this.resetPosition();
-			this.setHeadYaw(this.yaw);
-			this.setYaw(this.yaw);
+			this.setHeadYaw(this.getYaw());
+			this.setBodyYaw(this.getYaw());
 			this.fallDistance = nbt.getFloat("FallDistance");
 			this.fireTicks = nbt.getShort("Fire");
 			if (nbt.contains("Air")) {
@@ -1596,9 +1598,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 			if (!Double.isFinite(this.getX()) || !Double.isFinite(this.getY()) || !Double.isFinite(this.getZ())) {
 				throw new IllegalStateException("Entity has invalid position");
-			} else if (Double.isFinite((double)this.yaw) && Double.isFinite((double)this.pitch)) {
+			} else if (Double.isFinite((double)this.getYaw()) && Double.isFinite((double)this.getPitch())) {
 				this.refreshPosition();
-				this.setRotation(this.yaw, this.pitch);
+				this.setRotation(this.getYaw(), this.getPitch());
 				if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
 					String string = nbt.getString("CustomName");
 
@@ -1878,11 +1880,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public Vec3d getRotationVector() {
-		return this.getRotationVector(this.pitch, this.yaw);
+		return this.getRotationVector(this.getPitch(), this.getYaw());
 	}
 
 	public Vec2f getRotationClient() {
-		return new Vec2f(this.pitch, this.yaw);
+		return new Vec2f(this.getPitch(), this.getYaw());
 	}
 
 	public Vec3d getRotationVecClient() {
@@ -2253,7 +2255,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	public void setHeadYaw(float headYaw) {
 	}
 
-	public void setYaw(float yaw) {
+	public void setBodyYaw(float bodyYaw) {
 	}
 
 	public boolean isAttackable() {
@@ -2291,7 +2293,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public void copyPositionAndRotation(Entity entity) {
-		this.refreshPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.yaw, entity.pitch);
+		this.refreshPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.getYaw(), entity.getPitch());
 	}
 
 	public void copyFrom(Entity original) {
@@ -2323,7 +2325,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				Entity entity = this.getType().create(destination);
 				if (entity != null) {
 					entity.copyFrom(this);
-					entity.refreshPositionAndAngles(teleportTarget.position.x, teleportTarget.position.y, teleportTarget.position.z, teleportTarget.yaw, entity.pitch);
+					entity.refreshPositionAndAngles(teleportTarget.position.x, teleportTarget.position.y, teleportTarget.position.z, teleportTarget.yaw, entity.getPitch());
 					entity.setVelocity(teleportTarget.velocity);
 					destination.onDimensionChanged(entity);
 					if (destination.getRegistryKey() == World.END) {
@@ -2347,6 +2349,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.setRemoved(Entity.RemovalReason.CHANGED_DIMENSION);
 	}
 
+	/**
+	 * Determines a {@link TeleportTarget} for the entity
+	 * based on its current and destination worlds, plus
+	 * any portals that may be present.
+	 */
 	@Nullable
 	protected TeleportTarget getTeleportTarget(ServerWorld destination) {
 		boolean bl = this.world.getRegistryKey() == World.END && destination.getRegistryKey() == World.OVERWORLD;
@@ -2380,7 +2387,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 								vec3d = new Vec3d(0.5, 0.0, 0.0);
 							}
 
-							return AreaHelper.getNetherTeleportTarget(destination, rect, axis, vec3d, this.getDimensions(this.getPose()), this.getVelocity(), this.yaw, this.pitch);
+							return AreaHelper.getNetherTeleportTarget(
+								destination, rect, axis, vec3d, this.getDimensions(this.getPose()), this.getVelocity(), this.getYaw(), this.getPitch()
+							);
 						}
 					)
 					.orElse(null);
@@ -2394,7 +2403,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			}
 
 			return new TeleportTarget(
-				new Vec3d((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5), this.getVelocity(), this.yaw, this.pitch
+				new Vec3d((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5), this.getVelocity(), this.getYaw(), this.getPitch()
 			);
 		}
 	}
@@ -2439,7 +2448,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		Vec3d vec3d = this.getVelocity();
 		section.add("Entity's Momentum", String.format(Locale.ROOT, "%.2f, %.2f, %.2f", vec3d.x, vec3d.y, vec3d.z));
 		section.add("Entity's Passengers", (CrashCallable<String>)(() -> this.getPassengerList().toString()));
-		section.add("Entity's Vehicle", (CrashCallable<String>)(() -> this.getVehicle().toString()));
+		section.add("Entity's Vehicle", (CrashCallable<String>)(() -> String.valueOf(this.getVehicle())));
 	}
 
 	public boolean doesRenderOnFire() {
@@ -2520,7 +2529,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	public void requestTeleport(double destX, double destY, double destZ) {
 		if (this.world instanceof ServerWorld) {
-			this.refreshPositionAndAngles(destX, destY, destZ, this.yaw, this.pitch);
+			this.refreshPositionAndAngles(destX, destY, destZ, this.getYaw(), this.getPitch());
 			this.streamSelfAndPassengers().forEach(entity -> {
 				for (Entity entity2 : entity.passengerList) {
 					entity.updatePassengerPosition(entity2, Entity::refreshPositionAfterTeleport);
@@ -2561,7 +2570,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public Direction getHorizontalFacing() {
-		return Direction.fromRotation((double)this.yaw);
+		return Direction.fromRotation((double)this.getYaw());
 	}
 
 	public Direction getMovementDirection() {
@@ -2661,7 +2670,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public float applyRotation(BlockRotation rotation) {
-		float f = MathHelper.wrapDegrees(this.yaw);
+		float f = MathHelper.wrapDegrees(this.getYaw());
 		switch (rotation) {
 			case CLOCKWISE_180:
 				return f + 180.0F;
@@ -2675,7 +2684,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public float applyMirror(BlockMirror mirror) {
-		float f = MathHelper.wrapDegrees(this.yaw);
+		float f = MathHelper.wrapDegrees(this.getYaw());
 		switch (mirror) {
 			case LEFT_RIGHT:
 				return -f;
@@ -2846,11 +2855,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		double e = target.y - vec3d.y;
 		double f = target.z - vec3d.z;
 		double g = (double)MathHelper.sqrt(d * d + f * f);
-		this.pitch = MathHelper.wrapDegrees((float)(-(MathHelper.atan2(e, g) * 180.0F / (float)Math.PI)));
-		this.yaw = MathHelper.wrapDegrees((float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F);
-		this.setHeadYaw(this.yaw);
-		this.prevPitch = this.pitch;
-		this.prevYaw = this.yaw;
+		this.setPitch(MathHelper.wrapDegrees((float)(-(MathHelper.atan2(e, g) * 180.0F / (float)Math.PI))));
+		this.setYaw(MathHelper.wrapDegrees((float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F));
+		this.setHeadYaw(this.getYaw());
+		this.prevPitch = this.getPitch();
+		this.prevYaw = this.getYaw();
 	}
 
 	public boolean updateMovementInFluid(Tag<Fluid> tag, double d) {
@@ -3086,8 +3095,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		double f = packet.getZ();
 		this.updateTrackedPosition(d, e, f);
 		this.refreshPositionAfterTeleport(d, e, f);
-		this.pitch = (float)(packet.getPitch() * 360) / 256.0F;
-		this.yaw = (float)(packet.getYaw() * 360) / 256.0F;
+		this.setPitch((float)(packet.getPitch() * 360) / 256.0F);
+		this.setYaw((float)(packet.getYaw() * 360) / 256.0F);
 		this.setEntityId(i);
 		this.setUuid(packet.getUuid());
 	}
@@ -3105,6 +3114,30 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return !EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES.contains(this.getType());
 	}
 
+	public float getYaw() {
+		return this.yaw;
+	}
+
+	public void setYaw(float yaw) {
+		if (!Float.isFinite(yaw)) {
+			throw new IllegalStateException("Invalid entity rotation");
+		} else {
+			this.yaw = yaw;
+		}
+	}
+
+	public float getPitch() {
+		return this.pitch;
+	}
+
+	public void setPitch(float pitch) {
+		if (!Float.isFinite(pitch)) {
+			throw new IllegalStateException("Invalid entity rotation");
+		} else {
+			this.pitch = pitch;
+		}
+	}
+
 	public final boolean isRemoved() {
 		return this.removalReason != null;
 	}
@@ -3118,6 +3151,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	public final void setRemoved(Entity.RemovalReason reason) {
 		if (this.removalReason == null) {
 			this.removalReason = reason;
+		}
+
+		if (this.removalReason.shouldDestroy()) {
+			this.stopRiding();
 		}
 
 		this.getPassengerList().forEach(Entity::stopRiding);

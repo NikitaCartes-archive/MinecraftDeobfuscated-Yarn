@@ -8,8 +8,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class BlockPlacementDispenserBehavior extends FallibleItemDispenserBehavior {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	@Override
 	protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 		this.setSuccess(false);
@@ -18,7 +22,12 @@ public class BlockPlacementDispenserBehavior extends FallibleItemDispenserBehavi
 			Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
 			BlockPos blockPos = pointer.getBlockPos().offset(direction);
 			Direction direction2 = pointer.getWorld().isAir(blockPos.down()) ? direction : Direction.UP;
-			this.setSuccess(((BlockItem)item).place(new AutomaticItemPlacementContext(pointer.getWorld(), blockPos, direction, stack, direction2)).isAccepted());
+
+			try {
+				this.setSuccess(((BlockItem)item).place(new AutomaticItemPlacementContext(pointer.getWorld(), blockPos, direction, stack, direction2)).isAccepted());
+			} catch (Exception var8) {
+				LOGGER.error("Error trying to place shulker box at {}", blockPos, var8);
+			}
 		}
 
 		return stack;

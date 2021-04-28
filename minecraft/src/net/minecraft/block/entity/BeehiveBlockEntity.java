@@ -34,7 +34,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 	public static final String TICKS_IN_HIVE_KEY = "TicksInHive";
 	public static final String HAS_NECTAR_KEY = "HasNectar";
 	public static final String BEES_KEY = "Bees";
-	private static final List<String> field_33570 = Arrays.asList(
+	private static final List<String> IRRELEVANT_BEE_NBT_KEYS = Arrays.asList(
 		"Air",
 		"ArmorDropChances",
 		"ArmorItems",
@@ -191,7 +191,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 			return false;
 		} else {
 			NbtCompound nbtCompound = bee.entityData;
-			method_36379(nbtCompound);
+			removeIrrelevantNbtKeys(nbtCompound);
 			nbtCompound.put("HivePos", NbtHelper.fromBlockPos(pos));
 			nbtCompound.putBoolean("NoGravity", true);
 			Direction direction = state.get(BeehiveBlock.FACING);
@@ -236,7 +236,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 							double e = (double)pos.getX() + 0.5 + d * (double)direction.getOffsetX();
 							double g = (double)pos.getY() + 0.5 - (double)(entity.getHeight() / 2.0F);
 							double h = (double)pos.getZ() + 0.5 + d * (double)direction.getOffsetZ();
-							entity.refreshPositionAndAngles(e, g, h, entity.yaw, entity.pitch);
+							entity.refreshPositionAndAngles(e, g, h, entity.getYaw(), entity.getPitch());
 						}
 
 						world.playSound(null, pos, SoundEvents.BLOCK_BEEHIVE_EXIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
@@ -249,9 +249,9 @@ public class BeehiveBlockEntity extends BlockEntity {
 		}
 	}
 
-	private static void method_36379(NbtCompound nbtCompound) {
-		for (String string : field_33570) {
-			nbtCompound.remove(string);
+	private static void removeIrrelevantNbtKeys(NbtCompound compound) {
+		for (String string : IRRELEVANT_BEE_NBT_KEYS) {
+			compound.remove(string);
 		}
 	}
 
@@ -352,7 +352,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 		private final int minOccupationTicks;
 
 		private Bee(NbtCompound entityData, int ticksInHive, int minOccupationTicks) {
-			BeehiveBlockEntity.method_36379(entityData);
+			BeehiveBlockEntity.removeIrrelevantNbtKeys(entityData);
 			this.entityData = entityData;
 			this.ticksInHive = ticksInHive;
 			this.minOccupationTicks = minOccupationTicks;

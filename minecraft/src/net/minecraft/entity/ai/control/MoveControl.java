@@ -68,8 +68,8 @@ public class MoveControl implements Control {
 			j = g / j;
 			h *= j;
 			i *= j;
-			float k = MathHelper.sin(this.entity.yaw * (float) (Math.PI / 180.0));
-			float l = MathHelper.cos(this.entity.yaw * (float) (Math.PI / 180.0));
+			float k = MathHelper.sin(this.entity.getYaw() * (float) (Math.PI / 180.0));
+			float l = MathHelper.cos(this.entity.getYaw() * (float) (Math.PI / 180.0));
 			float m = h * l - i * k;
 			float n = i * l + h * k;
 			if (!this.method_25946(m, n)) {
@@ -93,7 +93,7 @@ public class MoveControl implements Control {
 			}
 
 			float n = (float)(MathHelper.atan2(e, d) * 180.0F / (float)Math.PI) - 90.0F;
-			this.entity.yaw = this.wrapDegrees(this.entity.yaw, n, 90.0F);
+			this.entity.setYaw(this.wrapDegrees(this.entity.getYaw(), n, 90.0F));
 			this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
 			BlockPos blockPos = this.entity.getBlockPos();
 			BlockState blockState = this.entity.world.getBlockState(blockPos);

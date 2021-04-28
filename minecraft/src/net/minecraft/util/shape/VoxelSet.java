@@ -5,17 +5,17 @@ import net.minecraft.util.math.Direction;
 
 public abstract class VoxelSet {
 	private static final Direction.Axis[] AXES = Direction.Axis.values();
-	protected final int xSize;
-	protected final int ySize;
-	protected final int zSize;
+	protected final int sizeX;
+	protected final int sizeY;
+	protected final int sizeZ;
 
-	protected VoxelSet(int xSize, int ySize, int zSize) {
-		if (xSize >= 0 && ySize >= 0 && zSize >= 0) {
-			this.xSize = xSize;
-			this.ySize = ySize;
-			this.zSize = zSize;
+	protected VoxelSet(int sizeX, int sizeY, int sizeZ) {
+		if (sizeX >= 0 && sizeY >= 0 && sizeZ >= 0) {
+			this.sizeX = sizeX;
+			this.sizeY = sizeY;
+			this.sizeZ = sizeZ;
 		} else {
-			throw new IllegalArgumentException("Need all positive sizes: x: " + xSize + ", y: " + ySize + ", z: " + zSize);
+			throw new IllegalArgumentException("Need all positive sizes: x: " + sizeX + ", y: " + sizeY + ", z: " + sizeZ);
 		}
 	}
 
@@ -27,7 +27,7 @@ public abstract class VoxelSet {
 		if (x < 0 || y < 0 || z < 0) {
 			return false;
 		} else {
-			return x < this.xSize && y < this.ySize && z < this.zSize ? this.contains(x, y, z) : false;
+			return x < this.sizeX && y < this.sizeY && z < this.sizeZ ? this.contains(x, y, z) : false;
 		}
 	}
 
@@ -100,7 +100,7 @@ public abstract class VoxelSet {
 	}
 
 	public int getSize(Direction.Axis axis) {
-		return axis.choose(this.xSize, this.ySize, this.zSize);
+		return axis.choose(this.sizeX, this.sizeY, this.sizeZ);
 	}
 
 	public int getXSize() {

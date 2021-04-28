@@ -76,8 +76,8 @@ public class CraftingScreen extends HandledScreen<CraftingScreenHandler> impleme
 	}
 
 	@Override
-	protected boolean isPointWithinBounds(int xPosition, int yPosition, int width, int height, double pointX, double pointY) {
-		return (!this.narrow || !this.recipeBook.isOpen()) && super.isPointWithinBounds(xPosition, yPosition, width, height, pointX, pointY);
+	protected boolean isPointWithinBounds(int x, int y, int width, int height, double pointX, double pointY) {
+		return (!this.narrow || !this.recipeBook.isOpen()) && super.isPointWithinBounds(x, y, width, height, pointX, pointY);
 	}
 
 	@Override

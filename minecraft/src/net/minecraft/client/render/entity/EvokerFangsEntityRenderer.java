@@ -31,12 +31,12 @@ public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity>
 			}
 
 			matrixStack.push();
-			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0F - evokerFangsEntity.yaw));
+			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0F - evokerFangsEntity.getYaw()));
 			matrixStack.scale(-j, -j, j);
 			float k = 0.03125F;
 			matrixStack.translate(0.0, -0.626F, 0.0);
 			matrixStack.scale(0.5F, 0.5F, 0.5F);
-			this.model.setAngles(evokerFangsEntity, h, 0.0F, 0.0F, evokerFangsEntity.yaw, evokerFangsEntity.pitch);
+			this.model.setAngles(evokerFangsEntity, h, 0.0F, 0.0F, evokerFangsEntity.getYaw(), evokerFangsEntity.getPitch());
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(TEXTURE));
 			this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 			matrixStack.pop();

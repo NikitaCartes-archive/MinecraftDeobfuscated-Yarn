@@ -60,7 +60,8 @@ public class TemptGoal extends Goal {
 					return false;
 				}
 
-				if (Math.abs((double)this.closestPlayer.pitch - this.lastPlayerPitch) > 5.0 || Math.abs((double)this.closestPlayer.yaw - this.lastPlayerYaw) > 5.0) {
+				if (Math.abs((double)this.closestPlayer.getPitch() - this.lastPlayerPitch) > 5.0
+					|| Math.abs((double)this.closestPlayer.getYaw() - this.lastPlayerYaw) > 5.0) {
 					return false;
 				}
 			} else {
@@ -69,8 +70,8 @@ public class TemptGoal extends Goal {
 				this.lastPlayerZ = this.closestPlayer.getZ();
 			}
 
-			this.lastPlayerPitch = (double)this.closestPlayer.pitch;
-			this.lastPlayerYaw = (double)this.closestPlayer.yaw;
+			this.lastPlayerPitch = (double)this.closestPlayer.getPitch();
+			this.lastPlayerYaw = (double)this.closestPlayer.getYaw();
 		}
 
 		return this.canStart();

@@ -155,7 +155,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	}
 
 	public boolean isTame() {
-		return this.getHorseFlag(2);
+		return this.getHorseFlag(TAMED_FLAG);
 	}
 
 	@Nullable
@@ -172,7 +172,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	}
 
 	public void setTame(boolean tame) {
-		this.setHorseFlag(2, tame);
+		this.setHorseFlag(TAMED_FLAG, tame);
 	}
 
 	public void setInAir(boolean inAir) {
@@ -187,19 +187,19 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	}
 
 	public boolean isEatingGrass() {
-		return this.getHorseFlag(16);
+		return this.getHorseFlag(EATING_GRASS_FLAG);
 	}
 
 	public boolean isAngry() {
-		return this.getHorseFlag(32);
+		return this.getHorseFlag(ANGRY_FLAG);
 	}
 
 	public boolean isBred() {
-		return this.getHorseFlag(8);
+		return this.getHorseFlag(BRED_FLAG);
 	}
 
 	public void setBred(boolean bred) {
-		this.setHorseFlag(8, bred);
+		this.setHorseFlag(BRED_FLAG, bred);
 	}
 
 	@Override
@@ -217,7 +217,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 
 	@Override
 	public boolean isSaddled() {
-		return this.getHorseFlag(4);
+		return this.getHorseFlag(SADDLED_FLAG);
 	}
 
 	public int getTemper() {
@@ -304,7 +304,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 
 	protected void updateSaddle() {
 		if (!this.world.isClient) {
-			this.setHorseFlag(4, !this.items.getStack(0).isEmpty());
+			this.setHorseFlag(SADDLED_FLAG, !this.items.getStack(0).isEmpty());
 		}
 	}
 
@@ -502,8 +502,8 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		this.setEatingGrass(false);
 		this.setAngry(false);
 		if (!this.world.isClient) {
-			player.yaw = this.yaw;
-			player.pitch = this.pitch;
+			player.setYaw(this.getYaw());
+			player.setPitch(this.getPitch());
 			player.startRiding(this);
 		}
 	}
@@ -584,7 +584,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		super.tick();
 		if (this.eatingTicks > 0 && ++this.eatingTicks > 30) {
 			this.eatingTicks = 0;
-			this.setHorseFlag(64, false);
+			this.setHorseFlag(EATING_FLAG, false);
 		}
 
 		if ((this.isLogicalSideForUpdatingMovement() || this.canMoveVoluntarily()) && this.angryTicks > 0 && ++this.angryTicks > 20) {
@@ -634,7 +634,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		}
 
 		this.lastEatingAnimationProgress = this.eatingAnimationProgress;
-		if (this.getHorseFlag(64)) {
+		if (this.getHorseFlag(EATING_FLAG)) {
 			this.eatingAnimationProgress = this.eatingAnimationProgress + (1.0F - this.eatingAnimationProgress) * 0.7F + 0.05F;
 			if (this.eatingAnimationProgress > 1.0F) {
 				this.eatingAnimationProgress = 1.0F;
@@ -650,12 +650,12 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	private void setEating() {
 		if (!this.world.isClient) {
 			this.eatingTicks = 1;
-			this.setHorseFlag(64, true);
+			this.setHorseFlag(EATING_FLAG, true);
 		}
 	}
 
 	public void setEatingGrass(boolean eatingGrass) {
-		this.setHorseFlag(16, eatingGrass);
+		this.setHorseFlag(EATING_GRASS_FLAG, eatingGrass);
 	}
 
 	public void setAngry(boolean angry) {
@@ -663,7 +663,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 			this.setEatingGrass(false);
 		}
 
-		this.setHorseFlag(32, angry);
+		this.setHorseFlag(ANGRY_FLAG, angry);
 	}
 
 	private void updateAnger() {
@@ -699,11 +699,11 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		if (this.isAlive()) {
 			if (this.hasPassengers() && this.canBeControlledByRider() && this.isSaddled()) {
 				LivingEntity livingEntity = (LivingEntity)this.getPrimaryPassenger();
-				this.yaw = livingEntity.yaw;
-				this.prevYaw = this.yaw;
-				this.pitch = livingEntity.pitch * 0.5F;
-				this.setRotation(this.yaw, this.pitch);
-				this.bodyYaw = this.yaw;
+				this.setYaw(livingEntity.getYaw());
+				this.prevYaw = this.getYaw();
+				this.setPitch(livingEntity.getPitch() * 0.5F);
+				this.setRotation(this.getYaw(), this.getPitch());
+				this.bodyYaw = this.getYaw();
 				this.headYaw = this.bodyYaw;
 				float f = livingEntity.sidewaysSpeed * 0.5F;
 				float g = livingEntity.forwardSpeed;
@@ -731,8 +731,8 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 					this.setInAir(true);
 					this.velocityDirty = true;
 					if (g > 0.0F) {
-						float h = MathHelper.sin(this.yaw * (float) (Math.PI / 180.0));
-						float i = MathHelper.cos(this.yaw * (float) (Math.PI / 180.0));
+						float h = MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0));
+						float i = MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0));
 						this.setVelocity(this.getVelocity().add((double)(-0.4F * h * this.jumpStrength), 0.0, (double)(0.4F * i * this.jumpStrength)));
 					}
 
@@ -1072,14 +1072,14 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	@Override
 	public Vec3d updatePassengerForDismount(LivingEntity passenger) {
 		Vec3d vec3d = getPassengerDismountOffset(
-			(double)this.getWidth(), (double)passenger.getWidth(), this.yaw + (passenger.getMainArm() == Arm.RIGHT ? 90.0F : -90.0F)
+			(double)this.getWidth(), (double)passenger.getWidth(), this.getYaw() + (passenger.getMainArm() == Arm.RIGHT ? 90.0F : -90.0F)
 		);
 		Vec3d vec3d2 = this.method_27930(vec3d, passenger);
 		if (vec3d2 != null) {
 			return vec3d2;
 		} else {
 			Vec3d vec3d3 = getPassengerDismountOffset(
-				(double)this.getWidth(), (double)passenger.getWidth(), this.yaw + (passenger.getMainArm() == Arm.LEFT ? 90.0F : -90.0F)
+				(double)this.getWidth(), (double)passenger.getWidth(), this.getYaw() + (passenger.getMainArm() == Arm.LEFT ? 90.0F : -90.0F)
 			);
 			Vec3d vec3d4 = this.method_27930(vec3d3, passenger);
 			return vec3d4 != null ? vec3d4 : this.getPos();

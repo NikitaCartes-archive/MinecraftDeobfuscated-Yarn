@@ -257,8 +257,8 @@ public class FoxEntity extends AnimalEntity {
 			if (!itemStack.isEmpty()) {
 				for (int i = 0; i < 8; i++) {
 					Vec3d vec3d = new Vec3d(((double)this.random.nextFloat() - 0.5) * 0.1, Math.random() * 0.1 + 0.1, 0.0)
-						.rotateX(-this.pitch * (float) (Math.PI / 180.0))
-						.rotateY(-this.yaw * (float) (Math.PI / 180.0));
+						.rotateX(-this.getPitch() * (float) (Math.PI / 180.0))
+						.rotateY(-this.getYaw() * (float) (Math.PI / 180.0));
 					this.world
 						.addParticle(
 							new ItemStackParticleEffect(ParticleTypes.ITEM, itemStack),
@@ -407,36 +407,36 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	public boolean isSitting() {
-		return this.getFoxFlag(1);
+		return this.getFoxFlag(SITTING_FLAG);
 	}
 
 	public void setSitting(boolean sitting) {
-		this.setFoxFlag(1, sitting);
+		this.setFoxFlag(SITTING_FLAG, sitting);
 	}
 
 	public boolean isWalking() {
-		return this.getFoxFlag(64);
+		return this.getFoxFlag(WALKING_FLAG);
 	}
 
 	private void setWalking(boolean walking) {
-		this.setFoxFlag(64, walking);
+		this.setFoxFlag(WALKING_FLAG, walking);
 	}
 
 	private boolean isAggressive() {
-		return this.getFoxFlag(128);
+		return this.getFoxFlag(AGGRESSIVE_FLAG);
 	}
 
 	private void setAggressive(boolean aggressive) {
-		this.setFoxFlag(128, aggressive);
+		this.setFoxFlag(AGGRESSIVE_FLAG, aggressive);
 	}
 
 	@Override
 	public boolean isSleeping() {
-		return this.getFoxFlag(32);
+		return this.getFoxFlag(SLEEPING_FLAG);
 	}
 
 	private void setSleeping(boolean sleeping) {
-		this.setFoxFlag(32, sleeping);
+		this.setFoxFlag(SLEEPING_FLAG, sleeping);
 	}
 
 	private void setFoxFlag(int mask, boolean value) {
@@ -549,11 +549,11 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	public boolean isChasing() {
-		return this.getFoxFlag(16);
+		return this.getFoxFlag(CHASING_FLAG);
 	}
 
 	public void setChasing(boolean chasing) {
-		this.setFoxFlag(16, chasing);
+		this.setFoxFlag(CHASING_FLAG, chasing);
 	}
 
 	public boolean isJumping() {
@@ -565,20 +565,20 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	public void setCrouching(boolean crouching) {
-		this.setFoxFlag(4, crouching);
+		this.setFoxFlag(CROUCHING_FLAG, crouching);
 	}
 
 	@Override
 	public boolean isInSneakingPose() {
-		return this.getFoxFlag(4);
+		return this.getFoxFlag(CROUCHING_FLAG);
 	}
 
 	public void setRollingHead(boolean rollingHead) {
-		this.setFoxFlag(8, rollingHead);
+		this.setFoxFlag(ROLLING_HEAD_FLAG, rollingHead);
 	}
 
 	public boolean isRollingHead() {
-		return this.getFoxFlag(8);
+		return this.getFoxFlag(ROLLING_HEAD_FLAG);
 	}
 
 	public float getHeadRoll(float tickDelta) {
@@ -1112,7 +1112,7 @@ public class FoxEntity extends AnimalEntity {
 			LivingEntity livingEntity = FoxEntity.this.getTarget();
 			if (livingEntity != null && livingEntity.isAlive()) {
 				double d = FoxEntity.this.getVelocity().y;
-				return (!(d * d < 0.05F) || !(Math.abs(FoxEntity.this.pitch) < 15.0F) || !FoxEntity.this.onGround) && !FoxEntity.this.isWalking();
+				return (!(d * d < 0.05F) || !(Math.abs(FoxEntity.this.getPitch()) < 15.0F) || !FoxEntity.this.onGround) && !FoxEntity.this.isWalking();
 			} else {
 				return false;
 			}
@@ -1156,22 +1156,22 @@ public class FoxEntity extends AnimalEntity {
 
 			if (!FoxEntity.this.isWalking()) {
 				Vec3d vec3d = FoxEntity.this.getVelocity();
-				if (vec3d.y * vec3d.y < 0.03F && FoxEntity.this.pitch != 0.0F) {
-					FoxEntity.this.pitch = MathHelper.lerpAngle(FoxEntity.this.pitch, 0.0F, 0.2F);
+				if (vec3d.y * vec3d.y < 0.03F && FoxEntity.this.getPitch() != 0.0F) {
+					FoxEntity.this.setPitch(MathHelper.lerpAngle(FoxEntity.this.getPitch(), 0.0F, 0.2F));
 				} else {
 					double d = Math.sqrt(Entity.squaredHorizontalLength(vec3d));
 					double e = Math.signum(-vec3d.y) * Math.acos(d / vec3d.length()) * 180.0F / (float)Math.PI;
-					FoxEntity.this.pitch = (float)e;
+					FoxEntity.this.setPitch((float)e);
 				}
 			}
 
 			if (livingEntity != null && FoxEntity.this.distanceTo(livingEntity) <= 2.0F) {
 				FoxEntity.this.tryAttack(livingEntity);
-			} else if (FoxEntity.this.pitch > 0.0F
+			} else if (FoxEntity.this.getPitch() > 0.0F
 				&& FoxEntity.this.onGround
 				&& (float)FoxEntity.this.getVelocity().y != 0.0F
 				&& FoxEntity.this.world.getBlockState(FoxEntity.this.getBlockPos()).isOf(Blocks.SNOW)) {
-				FoxEntity.this.pitch = 60.0F;
+				FoxEntity.this.setPitch(60.0F);
 				FoxEntity.this.setTarget(null);
 				FoxEntity.this.setWalking(true);
 			}

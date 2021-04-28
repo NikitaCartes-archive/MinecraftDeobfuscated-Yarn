@@ -31,11 +31,11 @@ public final class ConstantLootNumberProvider implements LootNumberProvider {
 		return new ConstantLootNumberProvider(value);
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
 		} else {
-			return object != null && this.getClass() == object.getClass() ? Float.compare(((ConstantLootNumberProvider)object).value, this.value) == 0 : false;
+			return o != null && this.getClass() == o.getClass() ? Float.compare(((ConstantLootNumberProvider)o).value, this.value) == 0 : false;
 		}
 	}
 

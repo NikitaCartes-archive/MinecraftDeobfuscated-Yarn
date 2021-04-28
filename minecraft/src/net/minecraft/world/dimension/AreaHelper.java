@@ -194,6 +194,11 @@ public class AreaHelper {
 		return new Vec3d(g, h, i);
 	}
 
+	/**
+	 * Determines a {@link TeleportTarget} based on a specific portal.
+	 * 
+	 * <p>The offset, velocity, and angle are modified based on the portal's axis.
+	 */
 	public static TeleportTarget getNetherTeleportTarget(
 		ServerWorld destination,
 		PortalUtil.Rectangle portalRect,

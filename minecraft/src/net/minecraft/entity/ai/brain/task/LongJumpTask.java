@@ -104,7 +104,7 @@ public class LongJumpTask<E extends MobEntity> extends Task<E> {
 	protected void keepRunning(ServerWorld serverWorld, E mobEntity, long l) {
 		if (this.lastTarget.isPresent()) {
 			if (l - this.targetTime >= 40L) {
-				mobEntity.yaw = mobEntity.bodyYaw;
+				mobEntity.setYaw(mobEntity.bodyYaw);
 				mobEntity.setNoDrag(true);
 				mobEntity.setVelocity(((LongJumpTask.Target)this.lastTarget.get()).getRammingVelocity());
 				mobEntity.getBrain().remember(MemoryModuleType.LONG_JUMP_MID_JUMP, true);

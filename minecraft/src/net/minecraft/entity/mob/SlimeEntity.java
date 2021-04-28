@@ -168,7 +168,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 	public void onTrackedDataSet(TrackedData<?> data) {
 		if (SLIME_SIZE.equals(data)) {
 			this.calculateDimensions();
-			this.yaw = this.headYaw;
+			this.setYaw(this.headYaw);
 			this.bodyYaw = this.headYaw;
 			if (this.isTouchingWater() && this.random.nextInt(20) == 0) {
 				this.onSwimmingStart();
@@ -391,7 +391,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 		@Override
 		public void tick() {
 			this.slime.lookAtEntity(this.slime.getTarget(), 10.0F, 10.0F);
-			((SlimeEntity.SlimeMoveControl)this.slime.getMoveControl()).look(this.slime.yaw, this.slime.canAttack());
+			((SlimeEntity.SlimeMoveControl)this.slime.getMoveControl()).look(this.slime.getYaw(), this.slime.canAttack());
 		}
 	}
 
@@ -451,7 +451,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 		public SlimeMoveControl(SlimeEntity slime) {
 			super(slime);
 			this.slime = slime;
-			this.targetYaw = 180.0F * slime.yaw / (float) Math.PI;
+			this.targetYaw = 180.0F * slime.getYaw() / (float) Math.PI;
 		}
 
 		public void look(float targetYaw, boolean jumpOften) {
@@ -466,9 +466,9 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 		@Override
 		public void tick() {
-			this.entity.yaw = this.wrapDegrees(this.entity.yaw, this.targetYaw, 90.0F);
-			this.entity.headYaw = this.entity.yaw;
-			this.entity.bodyYaw = this.entity.yaw;
+			this.entity.setYaw(this.wrapDegrees(this.entity.getYaw(), this.targetYaw, 90.0F));
+			this.entity.headYaw = this.entity.getYaw();
+			this.entity.bodyYaw = this.entity.getYaw();
 			if (this.state != MoveControl.State.MOVE_TO) {
 				this.entity.setForwardSpeed(0.0F);
 			} else {

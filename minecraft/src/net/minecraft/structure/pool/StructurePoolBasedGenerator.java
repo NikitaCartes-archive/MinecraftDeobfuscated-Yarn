@@ -334,10 +334,10 @@ public class StructurePoolBasedGenerator {
 							}
 						}
 					} else {
-						StructurePoolBasedGenerator.LOGGER.warn("Empty or none existent fallback pool: {}", identifier2);
+						StructurePoolBasedGenerator.LOGGER.warn("Empty or non-existent fallback pool: {}", identifier2);
 					}
 				} else {
-					StructurePoolBasedGenerator.LOGGER.warn("Empty or none existent pool: {}", identifier);
+					StructurePoolBasedGenerator.LOGGER.warn("Empty or non-existent pool: {}", identifier);
 				}
 			}
 		}

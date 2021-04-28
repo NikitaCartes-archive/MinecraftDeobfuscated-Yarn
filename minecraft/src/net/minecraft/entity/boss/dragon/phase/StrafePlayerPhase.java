@@ -53,7 +53,9 @@ public class StrafePlayerPhase extends AbstractPhase {
 					this.seenTargetTimes++;
 					Vec3d vec3d = new Vec3d(this.target.getX() - this.dragon.getX(), 0.0, this.target.getZ() - this.dragon.getZ()).normalize();
 					Vec3d vec3d2 = new Vec3d(
-							(double)MathHelper.sin(this.dragon.yaw * (float) (Math.PI / 180.0)), 0.0, (double)(-MathHelper.cos(this.dragon.yaw * (float) (Math.PI / 180.0)))
+							(double)MathHelper.sin(this.dragon.getYaw() * (float) (Math.PI / 180.0)),
+							0.0,
+							(double)(-MathHelper.cos(this.dragon.getYaw() * (float) (Math.PI / 180.0)))
 						)
 						.normalize();
 					float j = (float)vec3d2.dotProduct(vec3d);

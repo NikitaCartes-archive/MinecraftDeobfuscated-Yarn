@@ -20,9 +20,9 @@ public class ChunkRendererRegion implements BlockRenderView {
 	protected final int chunkXOffset;
 	protected final int chunkZOffset;
 	protected final BlockPos offset;
-	protected final int xSize;
-	protected final int ySize;
-	protected final int zSize;
+	protected final int sizeX;
+	protected final int sizeY;
+	protected final int sizeZ;
 	protected final WorldChunk[][] chunks;
 	protected final BlockState[] blockStates;
 	protected final FluidState[] fluidStates;
@@ -71,11 +71,11 @@ public class ChunkRendererRegion implements BlockRenderView {
 		this.chunkZOffset = chunkZ;
 		this.chunks = chunks;
 		this.offset = startPos;
-		this.xSize = endPos.getX() - startPos.getX() + 1;
-		this.ySize = endPos.getY() - startPos.getY() + 1;
-		this.zSize = endPos.getZ() - startPos.getZ() + 1;
-		this.blockStates = new BlockState[this.xSize * this.ySize * this.zSize];
-		this.fluidStates = new FluidState[this.xSize * this.ySize * this.zSize];
+		this.sizeX = endPos.getX() - startPos.getX() + 1;
+		this.sizeY = endPos.getY() - startPos.getY() + 1;
+		this.sizeZ = endPos.getZ() - startPos.getZ() + 1;
+		this.blockStates = new BlockState[this.sizeX * this.sizeY * this.sizeZ];
+		this.fluidStates = new FluidState[this.sizeX * this.sizeY * this.sizeZ];
 
 		for (BlockPos blockPos : BlockPos.iterate(startPos, endPos)) {
 			int i = ChunkSectionPos.getSectionCoord(blockPos.getX()) - chunkX;
@@ -95,7 +95,7 @@ public class ChunkRendererRegion implements BlockRenderView {
 		int i = x - this.offset.getX();
 		int j = y - this.offset.getY();
 		int k = z - this.offset.getZ();
-		return k * this.xSize * this.ySize + j * this.xSize + i;
+		return k * this.sizeX * this.sizeY + j * this.sizeX + i;
 	}
 
 	@Override

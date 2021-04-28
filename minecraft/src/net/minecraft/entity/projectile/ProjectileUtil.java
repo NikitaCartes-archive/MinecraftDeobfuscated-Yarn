@@ -98,27 +98,27 @@ public final class ProjectileUtil {
 		Vec3d vec3d = entity.getVelocity();
 		if (vec3d.lengthSquared() != 0.0) {
 			float g = MathHelper.sqrt(Entity.squaredHorizontalLength(vec3d));
-			entity.yaw = (float)(MathHelper.atan2(vec3d.z, vec3d.x) * 180.0F / (float)Math.PI) + 90.0F;
-			entity.pitch = (float)(MathHelper.atan2((double)g, vec3d.y) * 180.0F / (float)Math.PI) - 90.0F;
+			entity.setYaw((float)(MathHelper.atan2(vec3d.z, vec3d.x) * 180.0F / (float)Math.PI) + 90.0F);
+			entity.setPitch((float)(MathHelper.atan2((double)g, vec3d.y) * 180.0F / (float)Math.PI) - 90.0F);
 
-			while (entity.pitch - entity.prevPitch < -180.0F) {
+			while (entity.getPitch() - entity.prevPitch < -180.0F) {
 				entity.prevPitch -= 360.0F;
 			}
 
-			while (entity.pitch - entity.prevPitch >= 180.0F) {
+			while (entity.getPitch() - entity.prevPitch >= 180.0F) {
 				entity.prevPitch += 360.0F;
 			}
 
-			while (entity.yaw - entity.prevYaw < -180.0F) {
+			while (entity.getYaw() - entity.prevYaw < -180.0F) {
 				entity.prevYaw -= 360.0F;
 			}
 
-			while (entity.yaw - entity.prevYaw >= 180.0F) {
+			while (entity.getYaw() - entity.prevYaw >= 180.0F) {
 				entity.prevYaw += 360.0F;
 			}
 
-			entity.pitch = MathHelper.lerp(f, entity.prevPitch, entity.pitch);
-			entity.yaw = MathHelper.lerp(f, entity.prevYaw, entity.yaw);
+			entity.setPitch(MathHelper.lerp(f, entity.prevPitch, entity.getPitch()));
+			entity.setYaw(MathHelper.lerp(f, entity.prevYaw, entity.getYaw()));
 		}
 	}
 

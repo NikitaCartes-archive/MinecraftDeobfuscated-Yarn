@@ -712,6 +712,7 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 			.add(Blocks.GRAVEL)
 			.add(Blocks.MOSS_BLOCK)
 			.add(Blocks.SAND);
+		this.getOrCreateTagBuilder(BlockTags.SMALL_DRIPLEAF_PLACEABLE).add(Blocks.CLAY).add(Blocks.MOSS_BLOCK);
 		this.getOrCreateTagBuilder(BlockTags.OCCLUDES_VIBRATION_SIGNALS).addTag(BlockTags.WOOL);
 		this.getOrCreateTagBuilder(BlockTags.SNOW).add(Blocks.SNOW, Blocks.SNOW_BLOCK, Blocks.POWDER_SNOW);
 	}

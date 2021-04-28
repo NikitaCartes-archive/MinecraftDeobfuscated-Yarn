@@ -2126,8 +2126,8 @@ public class PacketByteBuf extends ByteBuf {
 	}
 
 	@Override
-	public boolean equals(Object object) {
-		return this.parent.equals(object);
+	public boolean equals(Object o) {
+		return this.parent.equals(o);
 	}
 
 	@Override

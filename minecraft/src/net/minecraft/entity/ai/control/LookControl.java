@@ -46,13 +46,13 @@ public class LookControl implements Control {
 
 	public void tick() {
 		if (this.shouldStayHorizontal()) {
-			this.entity.pitch = 0.0F;
+			this.entity.setPitch(0.0F);
 		}
 
 		if (this.active) {
 			this.active = false;
 			this.entity.headYaw = this.changeAngle(this.entity.headYaw, this.getTargetYaw(), this.yawSpeed);
-			this.entity.pitch = this.changeAngle(this.entity.pitch, this.getTargetPitch(), this.pitchSpeed);
+			this.entity.setPitch(this.changeAngle(this.entity.getPitch(), this.getTargetPitch(), this.pitchSpeed));
 		} else {
 			this.entity.headYaw = this.changeAngle(this.entity.headYaw, this.entity.bodyYaw, 10.0F);
 		}

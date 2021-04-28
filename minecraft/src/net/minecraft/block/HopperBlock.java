@@ -44,11 +44,11 @@ public class HopperBlock extends BlockWithEntity {
 	private static final VoxelShape NORTH_SHAPE = VoxelShapes.union(DEFAULT_SHAPE, Block.createCuboidShape(6.0, 4.0, 0.0, 10.0, 8.0, 4.0));
 	private static final VoxelShape SOUTH_SHAPE = VoxelShapes.union(DEFAULT_SHAPE, Block.createCuboidShape(6.0, 4.0, 12.0, 10.0, 8.0, 16.0));
 	private static final VoxelShape WEST_SHAPE = VoxelShapes.union(DEFAULT_SHAPE, Block.createCuboidShape(0.0, 4.0, 6.0, 4.0, 8.0, 10.0));
-	private static final VoxelShape DOWN_RAY_TRACE_SHAPE = Hopper.INSIDE_SHAPE;
-	private static final VoxelShape EAST_RAY_TRACE_SHAPE = VoxelShapes.union(Hopper.INSIDE_SHAPE, Block.createCuboidShape(12.0, 8.0, 6.0, 16.0, 10.0, 10.0));
-	private static final VoxelShape NORTH_RAY_TRACE_SHAPE = VoxelShapes.union(Hopper.INSIDE_SHAPE, Block.createCuboidShape(6.0, 8.0, 0.0, 10.0, 10.0, 4.0));
-	private static final VoxelShape SOUTH_RAY_TRACE_SHAPE = VoxelShapes.union(Hopper.INSIDE_SHAPE, Block.createCuboidShape(6.0, 8.0, 12.0, 10.0, 10.0, 16.0));
-	private static final VoxelShape WEST_RAY_TRACE_SHAPE = VoxelShapes.union(Hopper.INSIDE_SHAPE, Block.createCuboidShape(0.0, 8.0, 6.0, 4.0, 10.0, 10.0));
+	private static final VoxelShape DOWN_RAYCAST_SHAPE = Hopper.INSIDE_SHAPE;
+	private static final VoxelShape EAST_RAYCAST_SHAPE = VoxelShapes.union(Hopper.INSIDE_SHAPE, Block.createCuboidShape(12.0, 8.0, 6.0, 16.0, 10.0, 10.0));
+	private static final VoxelShape NORTH_RAYCAST_SHAPE = VoxelShapes.union(Hopper.INSIDE_SHAPE, Block.createCuboidShape(6.0, 8.0, 0.0, 10.0, 10.0, 4.0));
+	private static final VoxelShape SOUTH_RAYCAST_SHAPE = VoxelShapes.union(Hopper.INSIDE_SHAPE, Block.createCuboidShape(6.0, 8.0, 12.0, 10.0, 10.0, 16.0));
+	private static final VoxelShape WEST_RAYCAST_SHAPE = VoxelShapes.union(Hopper.INSIDE_SHAPE, Block.createCuboidShape(0.0, 8.0, 6.0, 4.0, 10.0, 10.0));
 
 	public HopperBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -77,15 +77,15 @@ public class HopperBlock extends BlockWithEntity {
 	public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
 		switch ((Direction)state.get(FACING)) {
 			case DOWN:
-				return DOWN_RAY_TRACE_SHAPE;
+				return DOWN_RAYCAST_SHAPE;
 			case NORTH:
-				return NORTH_RAY_TRACE_SHAPE;
+				return NORTH_RAYCAST_SHAPE;
 			case SOUTH:
-				return SOUTH_RAY_TRACE_SHAPE;
+				return SOUTH_RAYCAST_SHAPE;
 			case WEST:
-				return WEST_RAY_TRACE_SHAPE;
+				return WEST_RAYCAST_SHAPE;
 			case EAST:
-				return EAST_RAY_TRACE_SHAPE;
+				return EAST_RAYCAST_SHAPE;
 			default:
 				return Hopper.INSIDE_SHAPE;
 		}

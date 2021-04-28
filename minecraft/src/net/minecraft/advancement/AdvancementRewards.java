@@ -179,12 +179,12 @@ public class AdvancementRewards {
 			return this;
 		}
 
-		public static AdvancementRewards.Builder method_34899(Identifier identifier) {
-			return new AdvancementRewards.Builder().method_34900(identifier);
+		public static AdvancementRewards.Builder loot(Identifier loot) {
+			return new AdvancementRewards.Builder().addLoot(loot);
 		}
 
-		public AdvancementRewards.Builder method_34900(Identifier identifier) {
-			this.loot.add(identifier);
+		public AdvancementRewards.Builder addLoot(Identifier loot) {
+			this.loot.add(loot);
 			return this;
 		}
 
@@ -197,12 +197,12 @@ public class AdvancementRewards {
 			return this;
 		}
 
-		public static AdvancementRewards.Builder method_34901(Identifier identifier) {
-			return new AdvancementRewards.Builder().method_34902(identifier);
+		public static AdvancementRewards.Builder function(Identifier function) {
+			return new AdvancementRewards.Builder().setFunction(function);
 		}
 
-		public AdvancementRewards.Builder method_34902(Identifier identifier) {
-			this.function = identifier;
+		public AdvancementRewards.Builder setFunction(Identifier function) {
+			this.function = function;
 			return this;
 		}
 

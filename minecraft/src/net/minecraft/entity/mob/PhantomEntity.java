@@ -135,8 +135,8 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 			}
 
 			int i = this.getPhantomSize();
-			float h = MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)) * (1.3F + 0.21F * (float)i);
-			float j = MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)) * (1.3F + 0.21F * (float)i);
+			float h = MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)) * (1.3F + 0.21F * (float)i);
+			float j = MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0)) * (1.3F + 0.21F * (float)i);
 			float k = (0.3F + f * 0.45F) * ((float)i * 0.2F + 1.0F);
 			this.world.addParticle(ParticleTypes.MYCELIUM, this.getX() + (double)h, this.getY() + (double)k, this.getZ() + (double)j, 0.0, 0.0, 0.0);
 			this.world.addParticle(ParticleTypes.MYCELIUM, this.getX() - (double)h, this.getY() + (double)k, this.getZ() - (double)j, 0.0, 0.0, 0.0);
@@ -356,7 +356,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		@Override
 		public void tick() {
 			PhantomEntity.this.headYaw = PhantomEntity.this.bodyYaw;
-			PhantomEntity.this.bodyYaw = PhantomEntity.this.yaw;
+			PhantomEntity.this.bodyYaw = PhantomEntity.this.getYaw();
 		}
 	}
 
@@ -383,7 +383,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		@Override
 		public void tick() {
 			if (PhantomEntity.this.horizontalCollision) {
-				PhantomEntity.this.yaw += 180.0F;
+				PhantomEntity.this.setYaw(PhantomEntity.this.getYaw() + 180.0F);
 				this.targetSpeed = 0.1F;
 			}
 
@@ -391,31 +391,33 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 			float g = (float)(PhantomEntity.this.targetPosition.y - PhantomEntity.this.getY());
 			float h = (float)(PhantomEntity.this.targetPosition.z - PhantomEntity.this.getZ());
 			double d = (double)MathHelper.sqrt(f * f + h * h);
-			double e = 1.0 - (double)MathHelper.abs(g * 0.7F) / d;
-			f = (float)((double)f * e);
-			h = (float)((double)h * e);
-			d = (double)MathHelper.sqrt(f * f + h * h);
-			double i = (double)MathHelper.sqrt(f * f + h * h + g * g);
-			float j = PhantomEntity.this.yaw;
-			float k = (float)MathHelper.atan2((double)h, (double)f);
-			float l = MathHelper.wrapDegrees(PhantomEntity.this.yaw + 90.0F);
-			float m = MathHelper.wrapDegrees(k * (180.0F / (float)Math.PI));
-			PhantomEntity.this.yaw = MathHelper.stepUnwrappedAngleTowards(l, m, 4.0F) - 90.0F;
-			PhantomEntity.this.bodyYaw = PhantomEntity.this.yaw;
-			if (MathHelper.angleBetween(j, PhantomEntity.this.yaw) < 3.0F) {
-				this.targetSpeed = MathHelper.stepTowards(this.targetSpeed, 1.8F, 0.005F * (1.8F / this.targetSpeed));
-			} else {
-				this.targetSpeed = MathHelper.stepTowards(this.targetSpeed, 0.2F, 0.025F);
-			}
+			if (Math.abs(d) > 1.0E-5F) {
+				double e = 1.0 - (double)MathHelper.abs(g * 0.7F) / d;
+				f = (float)((double)f * e);
+				h = (float)((double)h * e);
+				d = (double)MathHelper.sqrt(f * f + h * h);
+				double i = (double)MathHelper.sqrt(f * f + h * h + g * g);
+				float j = PhantomEntity.this.getYaw();
+				float k = (float)MathHelper.atan2((double)h, (double)f);
+				float l = MathHelper.wrapDegrees(PhantomEntity.this.getYaw() + 90.0F);
+				float m = MathHelper.wrapDegrees(k * (180.0F / (float)Math.PI));
+				PhantomEntity.this.setYaw(MathHelper.stepUnwrappedAngleTowards(l, m, 4.0F) - 90.0F);
+				PhantomEntity.this.bodyYaw = PhantomEntity.this.getYaw();
+				if (MathHelper.angleBetween(j, PhantomEntity.this.getYaw()) < 3.0F) {
+					this.targetSpeed = MathHelper.stepTowards(this.targetSpeed, 1.8F, 0.005F * (1.8F / this.targetSpeed));
+				} else {
+					this.targetSpeed = MathHelper.stepTowards(this.targetSpeed, 0.2F, 0.025F);
+				}
 
-			float n = (float)(-(MathHelper.atan2((double)(-g), d) * 180.0F / (float)Math.PI));
-			PhantomEntity.this.pitch = n;
-			float o = PhantomEntity.this.yaw + 90.0F;
-			double p = (double)(this.targetSpeed * MathHelper.cos(o * (float) (Math.PI / 180.0))) * Math.abs((double)f / i);
-			double q = (double)(this.targetSpeed * MathHelper.sin(o * (float) (Math.PI / 180.0))) * Math.abs((double)h / i);
-			double r = (double)(this.targetSpeed * MathHelper.sin(n * (float) (Math.PI / 180.0))) * Math.abs((double)g / i);
-			Vec3d vec3d = PhantomEntity.this.getVelocity();
-			PhantomEntity.this.setVelocity(vec3d.add(new Vec3d(p, r, q).subtract(vec3d).multiply(0.2)));
+				float n = (float)(-(MathHelper.atan2((double)(-g), d) * 180.0F / (float)Math.PI));
+				PhantomEntity.this.setPitch(n);
+				float o = PhantomEntity.this.getYaw() + 90.0F;
+				double p = (double)(this.targetSpeed * MathHelper.cos(o * (float) (Math.PI / 180.0))) * Math.abs((double)f / i);
+				double q = (double)(this.targetSpeed * MathHelper.sin(o * (float) (Math.PI / 180.0))) * Math.abs((double)h / i);
+				double r = (double)(this.targetSpeed * MathHelper.sin(n * (float) (Math.PI / 180.0))) * Math.abs((double)g / i);
+				Vec3d vec3d = PhantomEntity.this.getVelocity();
+				PhantomEntity.this.setVelocity(vec3d.add(new Vec3d(p, r, q).subtract(vec3d).multiply(0.2)));
+			}
 		}
 	}
 

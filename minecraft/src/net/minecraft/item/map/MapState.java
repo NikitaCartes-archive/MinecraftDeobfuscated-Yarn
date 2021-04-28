@@ -40,13 +40,13 @@ public class MapState extends PersistentState {
 	 * <p>
 	 * Always {@code 0} for the client.
 	 */
-	public final int xCenter;
+	public final int centerX;
 	/**
 	 * The scaled center coordinate of the map state on the Z axis.
 	 * <p>
 	 * Always {@code 0} for the client.
 	 */
-	public final int zCenter;
+	public final int centerZ;
 	public final RegistryKey<World> dimension;
 	private final boolean showIcons;
 	private final boolean unlimitedTracking;
@@ -64,10 +64,10 @@ public class MapState extends PersistentState {
 	private final Map<String, MapIcon> icons = Maps.<String, MapIcon>newLinkedHashMap();
 	private final Map<String, MapFrameMarker> frames = Maps.<String, MapFrameMarker>newHashMap();
 
-	private MapState(int xCenter, int zCenter, byte scale, boolean showIcons, boolean unlimitedTracking, boolean locked, RegistryKey<World> dimension) {
+	private MapState(int centerX, int centerZ, byte scale, boolean showIcons, boolean unlimitedTracking, boolean locked, RegistryKey<World> dimension) {
 		this.scale = scale;
-		this.xCenter = xCenter;
-		this.zCenter = zCenter;
+		this.centerX = centerX;
+		this.centerZ = centerZ;
 		this.dimension = dimension;
 		this.showIcons = showIcons;
 		this.unlimitedTracking = unlimitedTracking;
@@ -78,13 +78,13 @@ public class MapState extends PersistentState {
 	/**
 	 * Creates a new map state instance.
 	 * 
-	 * @param xCenter the absolute center X-coordinate
-	 * @param zCenter the absolute center Z-coordinate
+	 * @param centerX the absolute center X-coordinate
+	 * @param centerZ the absolute center Z-coordinate
 	 */
-	public static MapState of(double xCenter, double zCenter, byte scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<World> dimension) {
+	public static MapState of(double centerX, double centerZ, byte scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<World> dimension) {
 		int i = 128 * (1 << scale);
-		int j = MathHelper.floor((xCenter + 64.0) / (double)i);
-		int k = MathHelper.floor((zCenter + 64.0) / (double)i);
+		int j = MathHelper.floor((centerX + 64.0) / (double)i);
+		int k = MathHelper.floor((centerZ + 64.0) / (double)i);
 		int l = j * i + i / 2 - 64;
 		int m = k * i + i / 2 - 64;
 		return new MapState(l, m, scale, showIcons, unlimitedTracking, false, dimension);
@@ -156,8 +156,8 @@ public class MapState extends PersistentState {
 			.encodeStart(NbtOps.INSTANCE, this.dimension.getValue())
 			.resultOrPartial(field_25019::error)
 			.ifPresent(nbtElement -> nbt.put("dimension", nbtElement));
-		nbt.putInt("xCenter", this.xCenter);
-		nbt.putInt("zCenter", this.zCenter);
+		nbt.putInt("xCenter", this.centerX);
+		nbt.putInt("zCenter", this.centerZ);
 		nbt.putByte("scale", this.scale);
 		nbt.putByteArray("colors", this.colors);
 		nbt.putBoolean("trackingPosition", this.showIcons);
@@ -181,7 +181,7 @@ public class MapState extends PersistentState {
 	}
 
 	public MapState copy() {
-		MapState mapState = new MapState(this.xCenter, this.zCenter, this.scale, this.showIcons, this.unlimitedTracking, true, this.dimension);
+		MapState mapState = new MapState(this.centerX, this.centerZ, this.scale, this.showIcons, this.unlimitedTracking, true, this.dimension);
 		mapState.banners.putAll(this.banners);
 		mapState.icons.putAll(this.icons);
 		System.arraycopy(this.colors, 0, mapState.colors, 0, this.colors.length);
@@ -200,7 +200,7 @@ public class MapState extends PersistentState {
 	 */
 	public MapState zoomOut(int zoomOutScale) {
 		return of(
-			(double)this.xCenter, (double)this.zCenter, (byte)MathHelper.clamp(this.scale + zoomOutScale, 0, 4), this.showIcons, this.unlimitedTracking, this.dimension
+			(double)this.centerX, (double)this.centerZ, (byte)MathHelper.clamp(this.scale + zoomOutScale, 0, 4), this.showIcons, this.unlimitedTracking, this.dimension
 		);
 	}
 
@@ -226,7 +226,7 @@ public class MapState extends PersistentState {
 						string,
 						playerUpdateTracker2.player.getX(),
 						playerUpdateTracker2.player.getZ(),
-						(double)playerUpdateTracker2.player.yaw,
+						(double)playerUpdateTracker2.player.getYaw(),
 						null
 					);
 				}
@@ -308,8 +308,8 @@ public class MapState extends PersistentState {
 
 	private void addIcon(MapIcon.Type type, @Nullable WorldAccess world, String key, double x, double z, double rotation, @Nullable Text text) {
 		int i = 1 << this.scale;
-		float f = (float)(x - (double)this.xCenter) / (float)i;
-		float g = (float)(z - (double)this.zCenter) / (float)i;
+		float f = (float)(x - (double)this.centerX) / (float)i;
+		float g = (float)(z - (double)this.centerZ) / (float)i;
 		byte b = (byte)((int)((double)(f * 2.0F) + 0.5));
 		byte c = (byte)((int)((double)(g * 2.0F) + 0.5));
 		int j = 63;
@@ -398,8 +398,8 @@ public class MapState extends PersistentState {
 		double d = (double)pos.getX() + 0.5;
 		double e = (double)pos.getZ() + 0.5;
 		int i = 1 << this.scale;
-		double f = (d - (double)this.xCenter) / (double)i;
-		double g = (e - (double)this.zCenter) / (double)i;
+		double f = (d - (double)this.centerX) / (double)i;
+		double g = (e - (double)this.centerZ) / (double)i;
 		int j = 63;
 		if (f >= -63.0 && g >= -63.0 && f <= 63.0 && g <= 63.0) {
 			MapBannerMarker mapBannerMarker = MapBannerMarker.fromWorldBlock(world, pos);

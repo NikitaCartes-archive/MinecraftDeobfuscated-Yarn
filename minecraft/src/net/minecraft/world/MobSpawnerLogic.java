@@ -112,7 +112,7 @@ public abstract class MobSpawnerLogic {
 					if (world.isSpaceEmpty(((EntityType)optional.get()).createSimpleBoundingBox(d, e, f))
 						&& SpawnRestriction.canSpawn((EntityType)optional.get(), world, SpawnReason.SPAWNER, new BlockPos(d, e, f), world.getRandom())) {
 						Entity entity = EntityType.loadEntityWithPassengers(nbtCompound, world, entityx -> {
-							entityx.refreshPositionAndAngles(d, e, f, entityx.yaw, entityx.pitch);
+							entityx.refreshPositionAndAngles(d, e, f, entityx.getYaw(), entityx.getPitch());
 							return entityx;
 						});
 						if (entity == null) {

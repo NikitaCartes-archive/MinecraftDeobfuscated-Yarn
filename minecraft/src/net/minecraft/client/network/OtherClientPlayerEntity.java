@@ -49,11 +49,11 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 			double d = this.getX() + (this.serverX - this.getX()) / (double)this.bodyTrackingIncrements;
 			double e = this.getY() + (this.serverY - this.getY()) / (double)this.bodyTrackingIncrements;
 			double f = this.getZ() + (this.serverZ - this.getZ()) / (double)this.bodyTrackingIncrements;
-			this.yaw = (float)((double)this.yaw + MathHelper.wrapDegrees(this.serverYaw - (double)this.yaw) / (double)this.bodyTrackingIncrements);
-			this.pitch = (float)((double)this.pitch + (this.serverPitch - (double)this.pitch) / (double)this.bodyTrackingIncrements);
+			this.setYaw(this.getYaw() + (float)MathHelper.wrapDegrees(this.serverYaw - (double)this.getYaw()) / (float)this.bodyTrackingIncrements);
+			this.setPitch(this.getPitch() + (float)(this.serverPitch - (double)this.getPitch()) / (float)this.bodyTrackingIncrements);
 			this.bodyTrackingIncrements--;
 			this.setPosition(d, e, f);
-			this.setRotation(this.yaw, this.pitch);
+			this.setRotation(this.getYaw(), this.getPitch());
 		}
 
 		if (this.headTrackingIncrements > 0) {

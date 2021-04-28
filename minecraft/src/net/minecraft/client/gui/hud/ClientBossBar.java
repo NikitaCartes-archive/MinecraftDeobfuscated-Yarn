@@ -14,14 +14,14 @@ public class ClientBossBar extends BossBar {
 	protected float healthLatest;
 	protected long timeHealthSet;
 
-	public ClientBossBar(UUID uUID, Text text, float f, BossBar.Color color, BossBar.Style style, boolean bl, boolean bl2, boolean bl3) {
-		super(uUID, text, color, style);
-		this.healthLatest = f;
-		this.percent = f;
+	public ClientBossBar(UUID uuid, Text name, float percent, BossBar.Color color, BossBar.Style style, boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
+		super(uuid, name, color, style);
+		this.healthLatest = percent;
+		this.percent = percent;
 		this.timeHealthSet = Util.getMeasuringTimeMs();
-		this.setDarkenSky(bl);
-		this.setDragonMusic(bl2);
-		this.setThickenFog(bl3);
+		this.setDarkenSky(darkenSky);
+		this.setDragonMusic(dragonMusic);
+		this.setThickenFog(thickenFog);
 	}
 
 	@Override

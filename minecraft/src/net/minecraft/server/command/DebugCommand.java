@@ -59,7 +59,7 @@ public class DebugCommand {
 						.then(
 							CommandManager.argument("name", CommandFunctionArgumentType.commandFunction())
 								.suggests(FunctionCommand.SUGGESTION_PROVIDER)
-								.executes(commandContext -> method_36354(commandContext.getSource(), CommandFunctionArgumentType.getFunctions(commandContext, "name")))
+								.executes(context -> executeFunction(context.getSource(), CommandFunctionArgumentType.getFunctions(context, "name")))
 						)
 				)
 		);
@@ -137,9 +137,9 @@ public class DebugCommand {
 		}
 	}
 
-	private static int method_36354(ServerCommandSource serverCommandSource, Collection<CommandFunction> collection) {
+	private static int executeFunction(ServerCommandSource source, Collection<CommandFunction> functions) {
 		int i = 0;
-		MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
+		MinecraftServer minecraftServer = source.getMinecraftServer();
 		String string = "debug-trace-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + ".txt";
 
 		try {
@@ -151,12 +151,10 @@ public class DebugCommand {
 			try {
 				PrintWriter printWriter = new PrintWriter(writer);
 
-				for (CommandFunction commandFunction : collection) {
+				for (CommandFunction commandFunction : functions) {
 					printWriter.println(commandFunction.getId());
-					DebugCommand.class_6347 lv = new DebugCommand.class_6347(printWriter);
-					i += serverCommandSource.getMinecraftServer()
-						.getCommandFunctionManager()
-						.method_36341(commandFunction, serverCommandSource.withOutput(lv).withMaxLevel(2), lv);
+					DebugCommand.Tracer tracer = new DebugCommand.Tracer(printWriter);
+					i += source.getMinecraftServer().getCommandFunctionManager().execute(commandFunction, source.withOutput(tracer).withMaxLevel(2), tracer);
 				}
 			} catch (Throwable var20) {
 				var7 = var20;
@@ -176,101 +174,99 @@ public class DebugCommand {
 			}
 		} catch (IOException | UncheckedIOException var22) {
 			LOGGER.warn("Tracing failed", (Throwable)var22);
-			serverCommandSource.sendError(new TranslatableText("commands.debug.function.traceFailed"));
+			source.sendError(new TranslatableText("commands.debug.function.traceFailed"));
 		}
 
-		if (collection.size() == 1) {
-			serverCommandSource.sendFeedback(
-				new TranslatableText("commands.debug.function.success.single", i, ((CommandFunction)collection.iterator().next()).getId(), string), true
-			);
+		if (functions.size() == 1) {
+			source.sendFeedback(new TranslatableText("commands.debug.function.success.single", i, ((CommandFunction)functions.iterator().next()).getId(), string), true);
 		} else {
-			serverCommandSource.sendFeedback(new TranslatableText("commands.debug.function.success.multiple", i, collection.size(), string), true);
+			source.sendFeedback(new TranslatableText("commands.debug.function.success.multiple", i, functions.size(), string), true);
 		}
 
 		return i;
 	}
 
-	static class class_6347 implements CommandOutput, CommandFunctionManager.class_6346 {
-		public static final int field_33550 = 1;
-		private final PrintWriter field_33551;
-		private int field_33552;
-		private boolean field_33553;
+	static class Tracer implements CommandOutput, CommandFunctionManager.Tracer {
+		public static final int MARGIN = 1;
+		private final PrintWriter writer;
+		private int lastIndentWidth;
+		private boolean expectsCommandResult;
 
-		private class_6347(PrintWriter printWriter) {
-			this.field_33551 = printWriter;
+		private Tracer(PrintWriter writer) {
+			this.writer = writer;
 		}
 
-		private void method_36355(int i) {
-			this.method_36356(i);
-			this.field_33552 = i;
+		private void writeIndent(int width) {
+			this.writeIndentWithoutRememberingWidth(width);
+			this.lastIndentWidth = width;
 		}
 
-		private void method_36356(int i) {
-			for (int j = 0; j < i + 1; j++) {
-				this.field_33551.write("    ");
+		private void writeIndentWithoutRememberingWidth(int width) {
+			for (int i = 0; i < width + 1; i++) {
+				this.writer.write("    ");
 			}
 		}
 
-		private void method_36357() {
-			if (this.field_33553) {
-				this.field_33551.println();
-				this.field_33553 = false;
+		private void writeNewLine() {
+			if (this.expectsCommandResult) {
+				this.writer.println();
+				this.expectsCommandResult = false;
 			}
 		}
 
 		@Override
-		public void method_36349(int i, String string) {
-			this.method_36357();
-			this.method_36355(i);
-			this.field_33551.print("[C] ");
-			this.field_33551.print(string);
-			this.field_33553 = true;
+		public void traceCommandStart(int depth, String command) {
+			this.writeNewLine();
+			this.writeIndent(depth);
+			this.writer.print("[C] ");
+			this.writer.print(command);
+			this.expectsCommandResult = true;
 		}
 
 		@Override
-		public void method_36350(int i, String string, int j) {
-			if (this.field_33553) {
-				this.field_33551.print(" -> ");
-				this.field_33551.println(j);
-				this.field_33553 = false;
+		public void traceCommandEnd(int depth, String command, int result) {
+			if (this.expectsCommandResult) {
+				this.writer.print(" -> ");
+				this.writer.println(result);
+				this.expectsCommandResult = false;
 			} else {
-				this.method_36355(i);
-				this.field_33551.print("[R = ");
-				this.field_33551.print(j);
-				this.field_33551.print("] ");
-				this.field_33551.println(string);
+				this.writeIndent(depth);
+				this.writer.print("[R = ");
+				this.writer.print(result);
+				this.writer.print("] ");
+				this.writer.println(command);
 			}
 		}
 
 		@Override
-		public void method_36351(int i, Identifier identifier, int j) {
-			this.method_36357();
-			this.method_36355(i);
-			this.field_33551.print("[F] ");
-			this.field_33551.print(identifier);
-			this.field_33551.print(" size=");
-			this.field_33551.println(j);
+		public void traceFunctionCall(int depth, Identifier function, int size) {
+			this.writeNewLine();
+			this.writeIndent(depth);
+			this.writer.print("[F] ");
+			this.writer.print(function);
+			this.writer.print(" size=");
+			this.writer.println(size);
 		}
 
 		@Override
-		public void method_36352(int i, String string) {
-			this.method_36357();
-			this.method_36355(i + 1);
-			this.field_33551.print("[E] ");
-			this.field_33551.print(string);
+		public void traceError(int depth, String message) {
+			this.writeNewLine();
+			this.writeIndent(depth + 1);
+			this.writer.print("[E] ");
+			this.writer.print(message);
 		}
 
 		@Override
 		public void sendSystemMessage(Text message, UUID sender) {
-			this.method_36357();
-			this.method_36356(this.field_33552 + 1);
-			this.field_33551.print("[M] ");
+			this.writeNewLine();
+			this.writeIndentWithoutRememberingWidth(this.lastIndentWidth + 1);
+			this.writer.print("[M] ");
 			if (sender != Util.NIL_UUID) {
-				this.field_33551.print(sender);
-				this.field_33551.print(": ");
+				this.writer.print(sender);
+				this.writer.print(": ");
 			}
 
-			this.field_33551.println(message.getString());
+			this.writer.println(message.getString());
 		}
 
 		@Override

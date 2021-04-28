@@ -211,7 +211,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 			float f = ((float)(this.eatGrassTimer - 4) - delta) / 32.0F;
 			return (float) (Math.PI / 5) + 0.21991149F * MathHelper.sin(f * 28.7F);
 		} else {
-			return this.eatGrassTimer > 0 ? (float) (Math.PI / 5) : this.pitch * (float) (Math.PI / 180.0);
+			return this.eatGrassTimer > 0 ? (float) (Math.PI / 5) : this.getPitch() * (float) (Math.PI / 180.0);
 		}
 	}
 

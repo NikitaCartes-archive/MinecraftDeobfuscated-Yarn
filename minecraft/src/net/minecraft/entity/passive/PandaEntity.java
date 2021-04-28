@@ -113,23 +113,23 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	public boolean isSneezing() {
-		return this.hasPandaFlag(2);
+		return this.hasPandaFlag(SNEEZING_FLAG);
 	}
 
 	public boolean isScared() {
-		return this.hasPandaFlag(8);
+		return this.hasPandaFlag(SCARED_FLAG);
 	}
 
 	public void setScared(boolean scared) {
-		this.setPandaFlag(8, scared);
+		this.setPandaFlag(SCARED_FLAG, scared);
 	}
 
 	public boolean isLyingOnBack() {
-		return this.hasPandaFlag(16);
+		return this.hasPandaFlag(LYING_ON_BACK_FLAG);
 	}
 
 	public void setLyingOnBack(boolean lyingOnBack) {
-		this.setPandaFlag(16, lyingOnBack);
+		this.setPandaFlag(LYING_ON_BACK_FLAG, lyingOnBack);
 	}
 
 	public boolean isEating() {
@@ -149,7 +149,7 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	public void setSneezing(boolean sneezing) {
-		this.setPandaFlag(2, sneezing);
+		this.setPandaFlag(SNEEZING_FLAG, sneezing);
 		if (!sneezing) {
 			this.setSneezeProgress(0);
 		}
@@ -188,11 +188,11 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	public boolean isPlaying() {
-		return this.hasPandaFlag(4);
+		return this.hasPandaFlag(PLAYING_FLAG);
 	}
 
 	public void setPlaying(boolean playing) {
-		this.setPandaFlag(4, playing);
+		this.setPandaFlag(PLAYING_FLAG, playing);
 	}
 
 	@Override
@@ -360,7 +360,7 @@ public class PandaEntity extends AnimalEntity {
 		}
 
 		if (this.isScared()) {
-			this.pitch = 0.0F;
+			this.setPitch(0.0F);
 		}
 
 		this.updateScaredAnimation();
@@ -410,8 +410,8 @@ public class PandaEntity extends AnimalEntity {
 
 			for (int i = 0; i < 6; i++) {
 				Vec3d vec3d = new Vec3d(((double)this.random.nextFloat() - 0.5) * 0.1, Math.random() * 0.1 + 0.1, ((double)this.random.nextFloat() - 0.5) * 0.1);
-				vec3d = vec3d.rotateX(-this.pitch * (float) (Math.PI / 180.0));
-				vec3d = vec3d.rotateY(-this.yaw * (float) (Math.PI / 180.0));
+				vec3d = vec3d.rotateX(-this.getPitch() * (float) (Math.PI / 180.0));
+				vec3d = vec3d.rotateY(-this.getYaw() * (float) (Math.PI / 180.0));
 				double d = (double)(-this.random.nextFloat()) * 0.6 - 0.3;
 				Vec3d vec3d2 = new Vec3d(((double)this.random.nextFloat() - 0.5) * 0.8, d, 1.0 + ((double)this.random.nextFloat() - 0.5) * 0.4);
 				vec3d2 = vec3d2.rotateY(-this.bodyYaw * (float) (Math.PI / 180.0));
@@ -477,7 +477,7 @@ public class PandaEntity extends AnimalEntity {
 			if (!this.world.isClient) {
 				Vec3d vec3d = this.getVelocity();
 				if (this.playingTicks == 1) {
-					float f = this.yaw * (float) (Math.PI / 180.0);
+					float f = this.getYaw() * (float) (Math.PI / 180.0);
 					float g = this.isBaby() ? 0.1F : 0.2F;
 					this.playingJump = new Vec3d(vec3d.x + (double)(-MathHelper.sin(f) * g), 0.0, vec3d.z + (double)(MathHelper.cos(f) * g));
 					this.setVelocity(this.playingJump.add(0.0, 0.27, 0.0));
@@ -1073,7 +1073,7 @@ public class PandaEntity extends AnimalEntity {
 				if (!this.panda.isIdle()) {
 					return false;
 				} else {
-					float f = this.panda.yaw * (float) (Math.PI / 180.0);
+					float f = this.panda.getYaw() * (float) (Math.PI / 180.0);
 					int i = 0;
 					int j = 0;
 					float g = -MathHelper.sin(f);

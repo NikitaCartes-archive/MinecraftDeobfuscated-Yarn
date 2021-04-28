@@ -711,8 +711,8 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 			);
 			if (entity instanceof MobEntity) {
 				MobEntity mobEntity = (MobEntity)entity;
-				mobEntity.headYaw = mobEntity.yaw;
-				mobEntity.bodyYaw = mobEntity.yaw;
+				mobEntity.headYaw = mobEntity.getYaw();
+				mobEntity.bodyYaw = mobEntity.getYaw();
 				mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), spawnReason, null, itemNbt);
 				mobEntity.playAmbientSound();
 			}

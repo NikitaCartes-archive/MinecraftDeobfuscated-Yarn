@@ -740,8 +740,8 @@ public abstract class MobEntity extends LivingEntity {
 		double g = (double)MathHelper.sqrt(d * d + e * e);
 		float h = (float)(MathHelper.atan2(e, d) * 180.0F / (float)Math.PI) - 90.0F;
 		float i = (float)(-(MathHelper.atan2(f, g) * 180.0F / (float)Math.PI));
-		this.pitch = this.changeAngle(this.pitch, i, maxPitchChange);
-		this.yaw = this.changeAngle(this.yaw, h, maxYawChange);
+		this.setPitch(this.changeAngle(this.getPitch(), i, maxPitchChange));
+		this.setYaw(this.changeAngle(this.getYaw(), h, maxYawChange));
 	}
 
 	private float changeAngle(float oldAngle, float newAngle, float maxChangeInAngle) {
@@ -1342,7 +1342,9 @@ public abstract class MobEntity extends LivingEntity {
 		if (bl) {
 			if (g > 0.0F && target instanceof LivingEntity) {
 				((LivingEntity)target)
-					.takeKnockback(g * 0.5F, (double)MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)), (double)(-MathHelper.cos(this.yaw * (float) (Math.PI / 180.0))));
+					.takeKnockback(
+						g * 0.5F, (double)MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0)), (double)(-MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)))
+					);
 				this.setVelocity(this.getVelocity().multiply(0.6, 1.0, 0.6));
 			}
 

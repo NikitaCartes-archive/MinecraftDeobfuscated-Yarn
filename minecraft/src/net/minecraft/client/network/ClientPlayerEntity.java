@@ -168,9 +168,9 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			}
 
 			if (entity instanceof BoatEntity) {
-				this.prevYaw = entity.yaw;
-				this.yaw = entity.yaw;
-				this.setHeadYaw(entity.yaw);
+				this.prevYaw = entity.getYaw();
+				this.setYaw(entity.getYaw());
+				this.setHeadYaw(entity.getYaw());
 			}
 
 			return true;
@@ -185,12 +185,12 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public float getPitch(float tickDelta) {
-		return this.pitch;
+		return this.getPitch();
 	}
 
 	@Override
 	public float getYaw(float tickDelta) {
-		return this.hasVehicle() ? super.getYaw(tickDelta) : this.yaw;
+		return this.hasVehicle() ? super.getYaw(tickDelta) : this.getYaw();
 	}
 
 	@Override
@@ -198,7 +198,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		if (this.world.isPosLoaded(this.getBlockX(), this.getBlockZ())) {
 			super.tick();
 			if (this.hasVehicle()) {
-				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(this.yaw, this.pitch, this.onGround));
+				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(this.getYaw(), this.getPitch(), this.onGround));
 				this.networkHandler.sendPacket(new PlayerInputC2SPacket(this.sidewaysSpeed, this.forwardSpeed, this.input.jumping, this.input.sneaking));
 				Entity entity = this.getRootVehicle();
 				if (entity != this && entity.isLogicalSideForUpdatingMovement()) {
@@ -247,21 +247,21 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			double d = this.getX() - this.lastX;
 			double e = this.getY() - this.lastBaseY;
 			double f = this.getZ() - this.lastZ;
-			double g = (double)(this.yaw - this.lastYaw);
-			double h = (double)(this.pitch - this.lastPitch);
+			double g = (double)(this.getYaw() - this.lastYaw);
+			double h = (double)(this.getPitch() - this.lastPitch);
 			this.ticksSinceLastPositionPacketSent++;
 			boolean bl3 = d * d + e * e + f * f > 9.0E-4 || this.ticksSinceLastPositionPacketSent >= 20;
 			boolean bl4 = g != 0.0 || h != 0.0;
 			if (this.hasVehicle()) {
 				Vec3d vec3d = this.getVelocity();
-				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Full(vec3d.x, -999.0, vec3d.z, this.yaw, this.pitch, this.onGround));
+				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Full(vec3d.x, -999.0, vec3d.z, this.getYaw(), this.getPitch(), this.onGround));
 				bl3 = false;
 			} else if (bl3 && bl4) {
-				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Full(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch, this.onGround));
+				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Full(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch(), this.onGround));
 			} else if (bl3) {
 				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(this.getX(), this.getY(), this.getZ(), this.onGround));
 			} else if (bl4) {
-				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(this.yaw, this.pitch, this.onGround));
+				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(this.getYaw(), this.getPitch(), this.onGround));
 			} else if (this.lastOnGround != this.onGround) {
 				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.OnGroundOnly(this.onGround));
 			}
@@ -274,8 +274,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			}
 
 			if (bl4) {
-				this.lastYaw = this.yaw;
-				this.lastPitch = this.pitch;
+				this.lastYaw = this.getYaw();
+				this.lastPitch = this.getPitch();
 			}
 
 			this.lastOnGround = this.onGround;
@@ -627,8 +627,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			this.jumping = this.input.jumping;
 			this.lastRenderYaw = this.renderYaw;
 			this.lastRenderPitch = this.renderPitch;
-			this.renderPitch = (float)((double)this.renderPitch + (double)(this.pitch - this.renderPitch) * 0.5);
-			this.renderYaw = (float)((double)this.renderYaw + (double)(this.yaw - this.renderYaw) * 0.5);
+			this.renderPitch = (float)((double)this.renderPitch + (double)(this.getPitch() - this.renderPitch) * 0.5);
+			this.renderYaw = (float)((double)this.renderYaw + (double)(this.getYaw() - this.renderYaw) * 0.5);
 		}
 	}
 
@@ -647,7 +647,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			}
 
 			this.setVelocity(Vec3d.ZERO);
-			this.pitch = 0.0F;
+			this.setPitch(0.0F);
 		}
 
 		this.setHealth(this.getMaxHealth());
@@ -911,8 +911,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 				Vec2f vec2f = this.input.getMovementInput();
 				float h = f * vec2f.x;
 				float i = f * vec2f.y;
-				float j = MathHelper.sin(this.yaw * (float) (Math.PI / 180.0));
-				float k = MathHelper.cos(this.yaw * (float) (Math.PI / 180.0));
+				float j = MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0));
+				float k = MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0));
 				vec3d3 = new Vec3d((double)(h * k - i * j), vec3d3.y, (double)(i * k + h * j));
 				g = (float)vec3d3.lengthSquared();
 				if (g <= 0.001F) {
@@ -1069,8 +1069,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	@Override
 	public Vec3d method_30951(float f) {
 		if (this.client.options.getPerspective().isFirstPerson()) {
-			float g = MathHelper.lerp(f * 0.5F, this.yaw, this.prevYaw) * (float) (Math.PI / 180.0);
-			float h = MathHelper.lerp(f * 0.5F, this.pitch, this.prevPitch) * (float) (Math.PI / 180.0);
+			float g = MathHelper.lerp(f * 0.5F, this.getYaw(), this.prevYaw) * (float) (Math.PI / 180.0);
+			float h = MathHelper.lerp(f * 0.5F, this.getPitch(), this.prevPitch) * (float) (Math.PI / 180.0);
 			double d = this.getMainArm() == Arm.RIGHT ? -1.0 : 1.0;
 			Vec3d vec3d = new Vec3d(0.39 * d, -0.6, 0.3);
 			return vec3d.rotateX(-h).rotateY(-g).add(this.getCameraPosVec(f));

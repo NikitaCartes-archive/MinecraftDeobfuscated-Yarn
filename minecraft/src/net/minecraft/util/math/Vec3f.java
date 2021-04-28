@@ -12,8 +12,7 @@ public final class Vec3f {
 	public static final Codec<Vec3f> CODEC = Codec.FLOAT
 		.listOf()
 		.comapFlatMap(
-			list -> Util.toArray(list, 3).map(listx -> new Vec3f((Float)listx.get(0), (Float)listx.get(1), (Float)listx.get(2))),
-			vec3f -> ImmutableList.of(vec3f.x, vec3f.y, vec3f.z)
+			vec -> Util.toArray(vec, 3).map(vecx -> new Vec3f((Float)vecx.get(0), (Float)vecx.get(1), (Float)vecx.get(2))), vec -> ImmutableList.of(vec.x, vec.y, vec.z)
 		);
 	public static Vec3f NEGATIVE_X = new Vec3f(-1.0F, 0.0F, 0.0F);
 	public static Vec3f POSITIVE_X = new Vec3f(1.0F, 0.0F, 0.0F);
@@ -21,7 +20,7 @@ public final class Vec3f {
 	public static Vec3f POSITIVE_Y = new Vec3f(0.0F, 1.0F, 0.0F);
 	public static Vec3f NEGATIVE_Z = new Vec3f(0.0F, 0.0F, -1.0F);
 	public static Vec3f POSITIVE_Z = new Vec3f(0.0F, 0.0F, 1.0F);
-	public static Vec3f field_29501 = new Vec3f(0.0F, 0.0F, 0.0F);
+	public static Vec3f ZERO = new Vec3f(0.0F, 0.0F, 0.0F);
 	private float x;
 	private float y;
 	private float z;
@@ -35,8 +34,8 @@ public final class Vec3f {
 		this.z = z;
 	}
 
-	public Vec3f(Vector4f vector4f) {
-		this(vector4f.getX(), vector4f.getY(), vector4f.getZ());
+	public Vec3f(Vector4f vec) {
+		this(vec.getX(), vec.getY(), vec.getZ());
 	}
 
 	public Vec3f(Vec3d other) {
@@ -88,10 +87,10 @@ public final class Vec3f {
 		this.z *= z;
 	}
 
-	public void method_35921(Vec3f vec3f, Vec3f vec3f2) {
-		this.x = MathHelper.clamp(this.x, vec3f.getX(), vec3f2.getX());
-		this.y = MathHelper.clamp(this.y, vec3f.getX(), vec3f2.getY());
-		this.z = MathHelper.clamp(this.z, vec3f.getZ(), vec3f2.getZ());
+	public void clamp(Vec3f min, Vec3f max) {
+		this.x = MathHelper.clamp(this.x, min.getX(), max.getX());
+		this.y = MathHelper.clamp(this.y, min.getX(), max.getY());
+		this.z = MathHelper.clamp(this.z, min.getZ(), max.getZ());
 	}
 
 	public void clamp(float min, float max) {
@@ -106,10 +105,10 @@ public final class Vec3f {
 		this.z = z;
 	}
 
-	public void method_35920(Vec3f vec3f) {
-		this.x = vec3f.x;
-		this.y = vec3f.y;
-		this.z = vec3f.z;
+	public void set(Vec3f vec) {
+		this.x = vec.x;
+		this.y = vec.y;
+		this.z = vec.z;
 	}
 
 	public void add(float x, float y, float z) {
@@ -159,13 +158,13 @@ public final class Vec3f {
 		this.z = f * j - g * i;
 	}
 
-	public void transform(Matrix3f matrix3f) {
+	public void transform(Matrix3f matrix) {
 		float f = this.x;
 		float g = this.y;
 		float h = this.z;
-		this.x = matrix3f.a00 * f + matrix3f.a01 * g + matrix3f.a02 * h;
-		this.y = matrix3f.a10 * f + matrix3f.a11 * g + matrix3f.a12 * h;
-		this.z = matrix3f.a20 * f + matrix3f.a21 * g + matrix3f.a22 * h;
+		this.x = matrix.a00 * f + matrix.a01 * g + matrix.a02 * h;
+		this.y = matrix.a10 * f + matrix.a11 * g + matrix.a12 * h;
+		this.z = matrix.a20 * f + matrix.a21 * g + matrix.a22 * h;
 	}
 
 	public void rotate(Quaternion rotation) {

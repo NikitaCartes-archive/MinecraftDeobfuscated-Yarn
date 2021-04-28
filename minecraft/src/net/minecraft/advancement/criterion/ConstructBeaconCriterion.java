@@ -35,7 +35,7 @@ public class ConstructBeaconCriterion extends AbstractCriterion<ConstructBeaconC
 			this.level = level;
 		}
 
-		public static ConstructBeaconCriterion.Conditions method_35110() {
+		public static ConstructBeaconCriterion.Conditions create() {
 			return new ConstructBeaconCriterion.Conditions(EntityPredicate.Extended.EMPTY, NumberRange.IntRange.ANY);
 		}
 

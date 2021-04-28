@@ -15,6 +15,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 
 public class WorldBorder {
+	public static final double field_33643 = 5.999997E7F;
 	private final List<WorldBorderListener> listeners = Lists.<WorldBorderListener>newArrayList();
 	private double damagePerBlock = 0.2;
 	private double safeZone = 5.0;
@@ -23,8 +24,8 @@ public class WorldBorder {
 	private double centerX;
 	private double centerZ;
 	private int maxRadius = 29999984;
-	private WorldBorder.Area area = new WorldBorder.StaticArea(6.0E7);
-	public static final WorldBorder.Properties DEFAULT_BORDER = new WorldBorder.Properties(0.0, 0.0, 0.2, 5.0, 5, 15, 6.0E7, 0L, 0.0);
+	private WorldBorder.Area area = new WorldBorder.StaticArea(5.999997E7F);
+	public static final WorldBorder.Properties DEFAULT_BORDER = new WorldBorder.Properties(0.0, 0.0, 0.2, 5.0, 5, 15, 5.999997E7F, 0L, 0.0);
 
 	public boolean contains(BlockPos pos) {
 		return (double)(pos.getX() + 1) > this.getBoundWest()
@@ -327,22 +328,22 @@ public class WorldBorder {
 
 		@Override
 		public double getBoundWest() {
-			return Math.max(WorldBorder.this.getCenterX() - this.getSize() / 2.0, (double)(-WorldBorder.this.maxRadius));
+			return MathHelper.clamp(WorldBorder.this.getCenterX() - this.getSize() / 2.0, (double)(-WorldBorder.this.maxRadius), (double)WorldBorder.this.maxRadius);
 		}
 
 		@Override
 		public double getBoundNorth() {
-			return Math.max(WorldBorder.this.getCenterZ() - this.getSize() / 2.0, (double)(-WorldBorder.this.maxRadius));
+			return MathHelper.clamp(WorldBorder.this.getCenterZ() - this.getSize() / 2.0, (double)(-WorldBorder.this.maxRadius), (double)WorldBorder.this.maxRadius);
 		}
 
 		@Override
 		public double getBoundEast() {
-			return Math.min(WorldBorder.this.getCenterX() + this.getSize() / 2.0, (double)WorldBorder.this.maxRadius);
+			return MathHelper.clamp(WorldBorder.this.getCenterX() + this.getSize() / 2.0, (double)(-WorldBorder.this.maxRadius), (double)WorldBorder.this.maxRadius);
 		}
 
 		@Override
 		public double getBoundSouth() {
-			return Math.min(WorldBorder.this.getCenterZ() + this.getSize() / 2.0, (double)WorldBorder.this.maxRadius);
+			return MathHelper.clamp(WorldBorder.this.getCenterZ() + this.getSize() / 2.0, (double)(-WorldBorder.this.maxRadius), (double)WorldBorder.this.maxRadius);
 		}
 
 		@Override
@@ -567,10 +568,14 @@ public class WorldBorder {
 		}
 
 		private void recalculateBounds() {
-			this.boundWest = Math.max(WorldBorder.this.getCenterX() - this.size / 2.0, (double)(-WorldBorder.this.maxRadius));
-			this.boundNorth = Math.max(WorldBorder.this.getCenterZ() - this.size / 2.0, (double)(-WorldBorder.this.maxRadius));
-			this.boundEast = Math.min(WorldBorder.this.getCenterX() + this.size / 2.0, (double)WorldBorder.this.maxRadius);
-			this.boundSouth = Math.min(WorldBorder.this.getCenterZ() + this.size / 2.0, (double)WorldBorder.this.maxRadius);
+			this.boundWest = MathHelper.clamp(WorldBorder.this.getCenterX() - this.size / 2.0, (double)(-WorldBorder.this.maxRadius), (double)WorldBorder.this.maxRadius);
+			this.boundNorth = MathHelper.clamp(
+				WorldBorder.this.getCenterZ() - this.size / 2.0, (double)(-WorldBorder.this.maxRadius), (double)WorldBorder.this.maxRadius
+			);
+			this.boundEast = MathHelper.clamp(WorldBorder.this.getCenterX() + this.size / 2.0, (double)(-WorldBorder.this.maxRadius), (double)WorldBorder.this.maxRadius);
+			this.boundSouth = MathHelper.clamp(
+				WorldBorder.this.getCenterZ() + this.size / 2.0, (double)(-WorldBorder.this.maxRadius), (double)WorldBorder.this.maxRadius
+			);
 			this.shape = VoxelShapes.combineAndSimplify(
 				VoxelShapes.UNBOUNDED,
 				VoxelShapes.cuboid(

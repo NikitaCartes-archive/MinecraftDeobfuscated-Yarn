@@ -64,11 +64,11 @@ public class Vector4f {
 		return this.w;
 	}
 
-	public void method_35927(float f) {
-		this.x *= f;
-		this.y *= f;
-		this.z *= f;
-		this.w *= f;
+	public void multiply(float value) {
+		this.x *= value;
+		this.y *= value;
+		this.z *= value;
+		this.w *= value;
 	}
 
 	public void multiplyComponentwise(Vec3f vector) {
@@ -84,11 +84,11 @@ public class Vector4f {
 		this.w = w;
 	}
 
-	public void method_35929(float f, float g, float h, float i) {
-		this.x += f;
-		this.y += g;
-		this.z += h;
-		this.w += i;
+	public void add(float x, float y, float z, float w) {
+		this.x += x;
+		this.y += y;
+		this.z += z;
+		this.w += w;
 	}
 
 	public float dotProduct(Vector4f other) {
@@ -136,12 +136,12 @@ public class Vector4f {
 		this.w = 1.0F;
 	}
 
-	public void method_35928(Vector4f vector4f, float f) {
-		float g = 1.0F - f;
-		this.x = this.x * g + vector4f.x * f;
-		this.y = this.y * g + vector4f.y * f;
-		this.z = this.z * g + vector4f.z * f;
-		this.w = this.w * g + vector4f.w * f;
+	public void lerp(Vector4f to, float delta) {
+		float f = 1.0F - delta;
+		this.x = this.x * f + to.x * delta;
+		this.y = this.y * f + to.y * delta;
+		this.z = this.z * f + to.z * delta;
+		this.w = this.w * f + to.w * delta;
 	}
 
 	public String toString() {

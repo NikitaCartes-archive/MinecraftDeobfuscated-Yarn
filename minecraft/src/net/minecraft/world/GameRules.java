@@ -435,8 +435,8 @@ public class GameRules {
 			return this.name;
 		}
 
-		public boolean equals(Object obj) {
-			return this == obj ? true : obj instanceof GameRules.Key && ((GameRules.Key)obj).name.equals(this.name);
+		public boolean equals(Object o) {
+			return this == o ? true : o instanceof GameRules.Key && ((GameRules.Key)o).name.equals(this.name);
 		}
 
 		public int hashCode() {

@@ -133,8 +133,8 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	}
 
 	@Override
-	public void onLandedUpon(World world, BlockPos pos, Entity entity, float distance) {
-		super.onLandedUpon(world, pos, entity, distance * 0.5F);
+	public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
+		super.onLandedUpon(world, state, pos, entity, fallDistance * 0.5F);
 	}
 
 	@Override

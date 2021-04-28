@@ -2963,33 +2963,20 @@ public class Blocks {
 	public static final Block AMETHYST_CLUSTER = register(
 		"amethyst_cluster",
 		new AmethystClusterBlock(
-			7,
-			3,
-			AbstractBlock.Settings.of(Material.AMETHYST)
-				.nonOpaque()
-				.ticksRandomly()
-				.sounds(BlockSoundGroup.AMETHYST_CLUSTER)
-				.strength(1.5F)
-				.luminance(createLightLevelFromLitBlockState(5))
+			7, 3, AbstractBlock.Settings.of(Material.AMETHYST).nonOpaque().ticksRandomly().sounds(BlockSoundGroup.AMETHYST_CLUSTER).strength(1.5F).luminance(state -> 5)
 		)
 	);
 	public static final Block LARGE_AMETHYST_BUD = register(
 		"large_amethyst_bud",
-		new AmethystClusterBlock(
-			5, 3, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.MEDIUM_AMETHYST_BUD).luminance(createLightLevelFromLitBlockState(4))
-		)
+		new AmethystClusterBlock(5, 3, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.MEDIUM_AMETHYST_BUD).luminance(blockStatex -> 4))
 	);
 	public static final Block MEDIUM_AMETHYST_BUD = register(
 		"medium_amethyst_bud",
-		new AmethystClusterBlock(
-			4, 3, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.LARGE_AMETHYST_BUD).luminance(createLightLevelFromLitBlockState(2))
-		)
+		new AmethystClusterBlock(4, 3, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.LARGE_AMETHYST_BUD).luminance(blockStatex -> 2))
 	);
 	public static final Block SMALL_AMETHYST_BUD = register(
 		"small_amethyst_bud",
-		new AmethystClusterBlock(
-			3, 4, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.SMALL_AMETHYST_BUD).luminance(createLightLevelFromLitBlockState(1))
-		)
+		new AmethystClusterBlock(3, 4, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.SMALL_AMETHYST_BUD).luminance(blockStatex -> 1))
 	);
 	public static final Block TUFF = register(
 		"tuff", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.TERRACOTTA_GRAY).sounds(BlockSoundGroup.TUFF).requiresTool().strength(1.5F, 6.0F))
@@ -3018,7 +3005,7 @@ public class Blocks {
 			AbstractBlock.Settings.of(Material.SCULK, MapColor.CYAN)
 				.strength(1.5F)
 				.sounds(BlockSoundGroup.SCULK_SENSOR)
-				.luminance(state -> 1)
+				.luminance(blockStatex -> 1)
 				.emissiveLighting((state, world, pos) -> SculkSensorBlock.getPhase(state) == SculkSensorPhase.ACTIVE),
 			8
 		)

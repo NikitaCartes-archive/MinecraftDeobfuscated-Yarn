@@ -93,7 +93,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			int y = 16;
 
 			for (int z = 0; z <= 16; z++) {
-				method_23172(v, w, x, vertexConsumer2, entry2, percentage(z, 16), percentage(z + 1, 17));
+				method_23172(v, w, x, vertexConsumer2, entry2, percentage(z, 16), percentage(z + 1, 16));
 			}
 
 			matrixStack.pop();

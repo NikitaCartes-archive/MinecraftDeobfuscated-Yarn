@@ -576,11 +576,11 @@ public final class Biome {
 			return "temp: " + this.temperature + ", hum: " + this.humidity + ", alt: " + this.altitude + ", weird: " + this.weirdness + ", offset: " + this.weight;
 		}
 
-		public boolean equals(Object object) {
-			if (this == object) {
+		public boolean equals(Object o) {
+			if (this == o) {
 				return true;
-			} else if (object != null && this.getClass() == object.getClass()) {
-				Biome.MixedNoisePoint mixedNoisePoint = (Biome.MixedNoisePoint)object;
+			} else if (o != null && this.getClass() == o.getClass()) {
+				Biome.MixedNoisePoint mixedNoisePoint = (Biome.MixedNoisePoint)o;
 				if (Float.compare(mixedNoisePoint.temperature, this.temperature) != 0) {
 					return false;
 				} else if (Float.compare(mixedNoisePoint.humidity, this.humidity) != 0) {

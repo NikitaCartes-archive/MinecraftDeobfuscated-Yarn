@@ -120,15 +120,15 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 		quaternion.hamiltonProduct(quaternion2);
 		matrixStack2.multiply(quaternion);
 		float h = entity.bodyYaw;
-		float i = entity.yaw;
-		float j = entity.pitch;
+		float i = entity.getYaw();
+		float j = entity.getPitch();
 		float k = entity.prevHeadYaw;
 		float l = entity.headYaw;
 		entity.bodyYaw = 180.0F + f * 20.0F;
-		entity.yaw = 180.0F + f * 40.0F;
-		entity.pitch = -g * 20.0F;
-		entity.headYaw = entity.yaw;
-		entity.prevHeadYaw = entity.yaw;
+		entity.setYaw(180.0F + f * 40.0F);
+		entity.setPitch(-g * 20.0F);
+		entity.headYaw = entity.getYaw();
+		entity.prevHeadYaw = entity.getYaw();
 		DiffuseLighting.method_34742();
 		EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
 		quaternion2.conjugate();
@@ -139,8 +139,8 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 		immediate.draw();
 		entityRenderDispatcher.setRenderShadows(true);
 		entity.bodyYaw = h;
-		entity.yaw = i;
-		entity.pitch = j;
+		entity.setYaw(i);
+		entity.setPitch(j);
 		entity.prevHeadYaw = k;
 		entity.headYaw = l;
 		matrixStack.pop();
@@ -149,8 +149,8 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 	}
 
 	@Override
-	protected boolean isPointWithinBounds(int xPosition, int yPosition, int width, int height, double pointX, double pointY) {
-		return (!this.narrow || !this.recipeBook.isOpen()) && super.isPointWithinBounds(xPosition, yPosition, width, height, pointX, pointY);
+	protected boolean isPointWithinBounds(int x, int y, int width, int height, double pointX, double pointY) {
+		return (!this.narrow || !this.recipeBook.isOpen()) && super.isPointWithinBounds(x, y, width, height, pointX, pointY);
 	}
 
 	@Override

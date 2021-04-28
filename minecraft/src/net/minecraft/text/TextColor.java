@@ -58,11 +58,11 @@ public final class TextColor {
 		return String.format("#%06X", this.rgb);
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (object != null && this.getClass() == object.getClass()) {
-			TextColor textColor = (TextColor)object;
+		} else if (o != null && this.getClass() == o.getClass()) {
+			TextColor textColor = (TextColor)o;
 			return this.rgb == textColor.rgb;
 		} else {
 			return false;

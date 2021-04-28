@@ -34,8 +34,8 @@ public class DolphinHeldItemFeatureRenderer extends FeatureRenderer<DolphinEntit
 		matrixStack.push();
 		float m = 1.0F;
 		float n = -1.0F;
-		float o = MathHelper.abs(dolphinEntity.pitch) / 60.0F;
-		if (dolphinEntity.pitch < 0.0F) {
+		float o = MathHelper.abs(dolphinEntity.getPitch()) / 60.0F;
+		if (dolphinEntity.getPitch() < 0.0F) {
 			matrixStack.translate(0.0, (double)(1.0F - o * 0.5F), (double)(-1.0F + o * 0.5F));
 		} else {
 			matrixStack.translate(0.0, (double)(1.0F + o * 0.8F), (double)(-1.0F + o * 0.2F));

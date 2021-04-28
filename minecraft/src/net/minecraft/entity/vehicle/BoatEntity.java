@@ -405,12 +405,12 @@ public class BoatEntity extends Entity {
 			double d = this.getX() + (this.x - this.getX()) / (double)this.field_7708;
 			double e = this.getY() + (this.y - this.getY()) / (double)this.field_7708;
 			double f = this.getZ() + (this.z - this.getZ()) / (double)this.field_7708;
-			double g = MathHelper.wrapDegrees(this.boatYaw - (double)this.yaw);
-			this.yaw = (float)((double)this.yaw + g / (double)this.field_7708);
-			this.pitch = (float)((double)this.pitch + (this.boatPitch - (double)this.pitch) / (double)this.field_7708);
+			double g = MathHelper.wrapDegrees(this.boatYaw - (double)this.getYaw());
+			this.setYaw(this.getYaw() + (float)g / (float)this.field_7708);
+			this.setPitch(this.getPitch() + (float)(this.boatPitch - (double)this.getPitch()) / (float)this.field_7708);
 			this.field_7708--;
 			this.setPosition(d, e, f);
-			this.setRotation(this.yaw, this.pitch);
+			this.setRotation(this.getYaw(), this.getPitch());
 		}
 	}
 
@@ -633,7 +633,7 @@ public class BoatEntity extends Entity {
 				f += 0.005F;
 			}
 
-			this.yaw = this.yaw + this.yawVelocity;
+			this.setYaw(this.getYaw() + this.yawVelocity);
 			if (this.pressingForward) {
 				f += 0.04F;
 			}
@@ -644,7 +644,9 @@ public class BoatEntity extends Entity {
 
 			this.setVelocity(
 				this.getVelocity()
-					.add((double)(MathHelper.sin(-this.yaw * (float) (Math.PI / 180.0)) * f), 0.0, (double)(MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)) * f))
+					.add(
+						(double)(MathHelper.sin(-this.getYaw() * (float) (Math.PI / 180.0)) * f), 0.0, (double)(MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)) * f)
+					)
 			);
 			this.setPaddleMovings(this.pressingRight && !this.pressingLeft || this.pressingForward, this.pressingLeft && !this.pressingRight || this.pressingForward);
 		}
@@ -668,14 +670,14 @@ public class BoatEntity extends Entity {
 				}
 			}
 
-			Vec3d vec3d = new Vec3d((double)f, 0.0, 0.0).rotateY(-this.yaw * (float) (Math.PI / 180.0) - (float) (Math.PI / 2));
+			Vec3d vec3d = new Vec3d((double)f, 0.0, 0.0).rotateY(-this.getYaw() * (float) (Math.PI / 180.0) - (float) (Math.PI / 2));
 			passenger.setPosition(this.getX() + vec3d.x, this.getY() + (double)g, this.getZ() + vec3d.z);
-			passenger.yaw = passenger.yaw + this.yawVelocity;
+			passenger.setYaw(passenger.getYaw() + this.yawVelocity);
 			passenger.setHeadYaw(passenger.getHeadYaw() + this.yawVelocity);
 			this.copyEntityData(passenger);
 			if (passenger instanceof AnimalEntity && this.getPassengerList().size() > 1) {
 				int j = passenger.getId() % 2 == 0 ? 90 : 270;
-				passenger.setYaw(((AnimalEntity)passenger).bodyYaw + (float)j);
+				passenger.setBodyYaw(((AnimalEntity)passenger).bodyYaw + (float)j);
 				passenger.setHeadYaw(passenger.getHeadYaw() + (float)j);
 			}
 		}
@@ -683,7 +685,7 @@ public class BoatEntity extends Entity {
 
 	@Override
 	public Vec3d updatePassengerForDismount(LivingEntity passenger) {
-		Vec3d vec3d = getPassengerDismountOffset((double)(this.getWidth() * MathHelper.SQUARE_ROOT_OF_TWO), (double)passenger.getWidth(), passenger.yaw);
+		Vec3d vec3d = getPassengerDismountOffset((double)(this.getWidth() * MathHelper.SQUARE_ROOT_OF_TWO), (double)passenger.getWidth(), passenger.getYaw());
 		double d = this.getX() + vec3d.x;
 		double e = this.getZ() + vec3d.z;
 		BlockPos blockPos = new BlockPos(d, this.getBoundingBox().maxY, e);
@@ -714,12 +716,12 @@ public class BoatEntity extends Entity {
 	}
 
 	protected void copyEntityData(Entity entity) {
-		entity.setYaw(this.yaw);
-		float f = MathHelper.wrapDegrees(entity.yaw - this.yaw);
+		entity.setBodyYaw(this.getYaw());
+		float f = MathHelper.wrapDegrees(entity.getYaw() - this.getYaw());
 		float g = MathHelper.clamp(f, -105.0F, 105.0F);
 		entity.prevYaw += g - f;
-		entity.yaw += g - f;
-		entity.setHeadYaw(entity.yaw);
+		entity.setYaw(entity.getYaw() + g - f);
+		entity.setHeadYaw(entity.getYaw());
 	}
 
 	@Override

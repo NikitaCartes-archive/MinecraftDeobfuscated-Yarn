@@ -35,17 +35,17 @@ public class AquaticMoveControl extends MoveControl {
 				this.entity.setForwardSpeed(0.0F);
 			} else {
 				float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F;
-				this.entity.yaw = this.wrapDegrees(this.entity.yaw, h, (float)this.yawChange);
-				this.entity.bodyYaw = this.entity.yaw;
-				this.entity.headYaw = this.entity.yaw;
+				this.entity.setYaw(this.wrapDegrees(this.entity.getYaw(), h, (float)this.yawChange));
+				this.entity.bodyYaw = this.entity.getYaw();
+				this.entity.headYaw = this.entity.getYaw();
 				float i = (float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
 				if (this.entity.isTouchingWater()) {
 					this.entity.setMovementSpeed(i * this.speedInWater);
 					float j = -((float)(MathHelper.atan2(e, (double)MathHelper.sqrt(d * d + f * f)) * 180.0F / (float)Math.PI));
 					j = MathHelper.clamp(MathHelper.wrapDegrees(j), (float)(-this.pitchChange), (float)this.pitchChange);
-					this.entity.pitch = this.wrapDegrees(this.entity.pitch, j, 5.0F);
-					float k = MathHelper.cos(this.entity.pitch * (float) (Math.PI / 180.0));
-					float l = MathHelper.sin(this.entity.pitch * (float) (Math.PI / 180.0));
+					this.entity.setPitch(this.wrapDegrees(this.entity.getPitch(), j, 5.0F));
+					float k = MathHelper.cos(this.entity.getPitch() * (float) (Math.PI / 180.0));
+					float l = MathHelper.sin(this.entity.getPitch() * (float) (Math.PI / 180.0));
 					this.entity.forwardSpeed = k * i;
 					this.entity.upwardSpeed = -l * i;
 				} else {

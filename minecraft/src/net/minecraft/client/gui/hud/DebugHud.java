@@ -258,7 +258,9 @@ public class DebugHud extends DrawableHelper {
 				)
 			);
 			list.add(
-				String.format(Locale.ROOT, "Facing: %s (%s) (%.1f / %.1f)", direction, string2, MathHelper.wrapDegrees(entity.yaw), MathHelper.wrapDegrees(entity.pitch))
+				String.format(
+					Locale.ROOT, "Facing: %s (%s) (%.1f / %.1f)", direction, string2, MathHelper.wrapDegrees(entity.getYaw()), MathHelper.wrapDegrees(entity.getPitch())
+				)
 			);
 			WorldChunk worldChunk = this.getClientChunk();
 			if (worldChunk.isEmpty()) {

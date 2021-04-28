@@ -295,8 +295,8 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 		return blockPos3;
 	}
 
-	private static void createPortal(ServerWorld world, BlockPos pos, EndGatewayFeatureConfig endGatewayFeatureConfig) {
-		Feature.END_GATEWAY.configure(endGatewayFeatureConfig).generate(world, world.getChunkManager().getChunkGenerator(), new Random(), pos);
+	private static void createPortal(ServerWorld world, BlockPos pos, EndGatewayFeatureConfig config) {
+		Feature.END_GATEWAY.configure(config).generate(world, world.getChunkManager().getChunkGenerator(), new Random(), pos);
 	}
 
 	@Override

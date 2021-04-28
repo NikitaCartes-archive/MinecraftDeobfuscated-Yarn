@@ -72,20 +72,19 @@ public class RecipesProvider implements DataProvider {
 	private static final ImmutableList<ItemConvertible> EMERALD_ORES = ImmutableList.of(Items.EMERALD_ORE, Items.DEEPSLATE_EMERALD_ORE);
 	private final DataGenerator root;
 	private static final Map<BlockFamily.Variant, BiFunction<ItemConvertible, ItemConvertible, CraftingRecipeJsonFactory>> VARIANT_FACTORIES = ImmutableMap.<BlockFamily.Variant, BiFunction<ItemConvertible, ItemConvertible, CraftingRecipeJsonFactory>>builder()
-		.put(BlockFamily.Variant.BUTTON, (itemConvertible, itemConvertible2) -> createTransmutationRecipe(itemConvertible, Ingredient.ofItems(itemConvertible2)))
-		.put(BlockFamily.Variant.CHISELED, (itemConvertible, itemConvertible2) -> createChiseledBlockRecipe(itemConvertible, Ingredient.ofItems(itemConvertible2)))
-		.put(BlockFamily.Variant.DOOR, (itemConvertible, itemConvertible2) -> createDoorRecipe(itemConvertible, Ingredient.ofItems(itemConvertible2)))
-		.put(BlockFamily.Variant.FENCE, (itemConvertible, itemConvertible2) -> createFenceRecipe(itemConvertible, Ingredient.ofItems(itemConvertible2)))
-		.put(BlockFamily.Variant.FENCE_GATE, (itemConvertible, itemConvertible2) -> createFenceGateRecipe(itemConvertible, Ingredient.ofItems(itemConvertible2)))
-		.put(BlockFamily.Variant.SIGN, (itemConvertible, itemConvertible2) -> createSignRecipe(itemConvertible, Ingredient.ofItems(itemConvertible2)))
-		.put(BlockFamily.Variant.SLAB, (itemConvertible, itemConvertible2) -> createSlabRecipe(itemConvertible, Ingredient.ofItems(itemConvertible2)))
-		.put(BlockFamily.Variant.STAIRS, (itemConvertible, itemConvertible2) -> createStairsRecipe(itemConvertible, Ingredient.ofItems(itemConvertible2)))
-		.put(
-			BlockFamily.Variant.PRESSURE_PLATE, (itemConvertible, itemConvertible2) -> createPressurePlateRecipe(itemConvertible, Ingredient.ofItems(itemConvertible2))
-		)
-		.put(BlockFamily.Variant.POLISHED, (itemConvertible, itemConvertible2) -> createCondensingRecipe(itemConvertible, Ingredient.ofItems(itemConvertible2)))
-		.put(BlockFamily.Variant.TRAPDOOR, (itemConvertible, itemConvertible2) -> createTrapdoorRecipe(itemConvertible, Ingredient.ofItems(itemConvertible2)))
-		.put(BlockFamily.Variant.WALL, (itemConvertible, itemConvertible2) -> getWallRecipe(itemConvertible, Ingredient.ofItems(itemConvertible2)))
+		.put(BlockFamily.Variant.BUTTON, (output, input) -> createTransmutationRecipe(output, Ingredient.ofItems(input)))
+		.put(BlockFamily.Variant.CHISELED, (output, input) -> createChiseledBlockRecipe(output, Ingredient.ofItems(input)))
+		.put(BlockFamily.Variant.CUT, (output, input) -> createCutCopperRecipe(output, Ingredient.ofItems(input)))
+		.put(BlockFamily.Variant.DOOR, (output, input) -> createDoorRecipe(output, Ingredient.ofItems(input)))
+		.put(BlockFamily.Variant.FENCE, (output, input) -> createFenceRecipe(output, Ingredient.ofItems(input)))
+		.put(BlockFamily.Variant.FENCE_GATE, (output, input) -> createFenceGateRecipe(output, Ingredient.ofItems(input)))
+		.put(BlockFamily.Variant.SIGN, (output, input) -> createSignRecipe(output, Ingredient.ofItems(input)))
+		.put(BlockFamily.Variant.SLAB, (output, input) -> createSlabRecipe(output, Ingredient.ofItems(input)))
+		.put(BlockFamily.Variant.STAIRS, (output, input) -> createStairsRecipe(output, Ingredient.ofItems(input)))
+		.put(BlockFamily.Variant.PRESSURE_PLATE, (output, input) -> createPressurePlateRecipe(output, Ingredient.ofItems(input)))
+		.put(BlockFamily.Variant.POLISHED, (output, input) -> createCondensingRecipe(output, Ingredient.ofItems(input)))
+		.put(BlockFamily.Variant.TRAPDOOR, (output, input) -> createTrapdoorRecipe(output, Ingredient.ofItems(input)))
+		.put(BlockFamily.Variant.WALL, (output, input) -> getWallRecipe(output, Ingredient.ofItems(input)))
 		.build();
 
 	public RecipesProvider(DataGenerator root) {
@@ -492,7 +491,7 @@ public class RecipesProvider implements DataProvider {
 			.group("black_dye")
 			.criterion("has_ink_sac", conditionsFromItem(Items.INK_SAC))
 			.offerTo(exporter);
-		method_36444(exporter, Items.BLACK_DYE, Blocks.WITHER_ROSE, "black_dye");
+		offerSingleOutputShapelessRecipe(exporter, Items.BLACK_DYE, Blocks.WITHER_ROSE, "black_dye");
 		ShapelessRecipeJsonFactory.create(Items.BLAZE_POWDER, 2)
 			.input(Items.BLAZE_ROD)
 			.criterion("has_blaze_rod", conditionsFromItem(Items.BLAZE_ROD))
@@ -502,7 +501,7 @@ public class RecipesProvider implements DataProvider {
 			.group("blue_dye")
 			.criterion("has_lapis_lazuli", conditionsFromItem(Items.LAPIS_LAZULI))
 			.offerTo(exporter);
-		method_36444(exporter, Items.BLUE_DYE, Blocks.CORNFLOWER, "blue_dye");
+		offerSingleOutputShapelessRecipe(exporter, Items.BLUE_DYE, Blocks.CORNFLOWER, "blue_dye");
 		ShapedRecipeJsonFactory.create(Blocks.BLUE_ICE)
 			.input('#', Blocks.PACKED_ICE)
 			.pattern("###")
@@ -515,7 +514,7 @@ public class RecipesProvider implements DataProvider {
 			.group("bonemeal")
 			.criterion("has_bone", conditionsFromItem(Items.BONE))
 			.offerTo(exporter);
-		method_36449(exporter, Items.BONE_MEAL, Items.BONE_BLOCK, "bone_meal_from_bone_block", "bonemeal");
+		offerReversibleCompactingRecipesWithInputItemGroup(exporter, Items.BONE_MEAL, Items.BONE_BLOCK, "bone_meal_from_bone_block", "bonemeal");
 		ShapelessRecipeJsonFactory.create(Items.BOOK)
 			.input(Items.PAPER, 3)
 			.input(Items.LEATHER)
@@ -722,31 +721,13 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_cut_red_sandstone", conditionsFromItem(Blocks.CUT_RED_SANDSTONE))
 			.offerTo(exporter);
 		offerChiseledBlockRecipe(exporter, Blocks.CHISELED_SANDSTONE, Blocks.SANDSTONE_SLAB);
-		ShapedRecipeJsonFactory.create(Blocks.COPPER_BLOCK)
-			.input('#', Items.COPPER_INGOT)
-			.pattern("##")
-			.pattern("##")
-			.criterion("has_copper_ingot", conditionsFromItem(Items.COPPER_INGOT))
-			.offerTo(exporter);
-		ShapelessRecipeJsonFactory.create(Items.COPPER_INGOT, 4)
-			.input(Blocks.COPPER_BLOCK)
-			.group(getItemPath(Items.COPPER_INGOT))
-			.criterion(hasItem(Blocks.COPPER_BLOCK), conditionsFromItem(Blocks.COPPER_BLOCK))
-			.offerTo(exporter, convertBetween(Items.COPPER_INGOT, Blocks.COPPER_BLOCK));
-		ShapelessRecipeJsonFactory.create(Items.COPPER_INGOT, 4)
+		offerReversibleCompactingRecipes(exporter, Items.COPPER_INGOT, Items.COPPER_BLOCK);
+		ShapelessRecipeJsonFactory.create(Items.COPPER_INGOT, 9)
 			.input(Blocks.WAXED_COPPER_BLOCK)
 			.group(getItemPath(Items.COPPER_INGOT))
 			.criterion(hasItem(Blocks.WAXED_COPPER_BLOCK), conditionsFromItem(Blocks.WAXED_COPPER_BLOCK))
 			.offerTo(exporter, convertBetween(Items.COPPER_INGOT, Blocks.WAXED_COPPER_BLOCK));
-		offerCutCopperRecipe(exporter, Blocks.CUT_COPPER, Blocks.COPPER_BLOCK);
-		offerCutCopperRecipe(exporter, Blocks.EXPOSED_CUT_COPPER, Blocks.EXPOSED_COPPER);
-		offerCutCopperRecipe(exporter, Blocks.WEATHERED_CUT_COPPER, Blocks.WEATHERED_COPPER);
-		offerCutCopperRecipe(exporter, Blocks.OXIDIZED_CUT_COPPER, Blocks.OXIDIZED_COPPER);
 		offerWaxingRecipes(exporter);
-		offerCutCopperRecipe(exporter, Blocks.WAXED_CUT_COPPER, Blocks.WAXED_COPPER_BLOCK);
-		offerCutCopperRecipe(exporter, Blocks.WAXED_EXPOSED_CUT_COPPER, Blocks.WAXED_EXPOSED_COPPER);
-		offerCutCopperRecipe(exporter, Blocks.WAXED_WEATHERED_CUT_COPPER, Blocks.WAXED_WEATHERED_COPPER);
-		offerCutCopperRecipe(exporter, Blocks.WAXED_OXIDIZED_CUT_COPPER, Blocks.WAXED_OXIDIZED_COPPER);
 		ShapelessRecipeJsonFactory.create(Items.CYAN_DYE, 2)
 			.input(Items.BLUE_DYE)
 			.input(Items.GREEN_DYE)
@@ -1100,8 +1081,8 @@ public class RecipesProvider implements DataProvider {
 			.pattern("#")
 			.criterion("has_gold_ingot", conditionsFromItem(Items.GOLD_INGOT))
 			.offerTo(exporter);
-		method_36449(exporter, Items.GOLD_INGOT, Items.GOLD_BLOCK, "gold_ingot_from_gold_block", "gold_ingot");
-		method_36446(exporter, Items.GOLD_NUGGET, Items.GOLD_INGOT, "gold_ingot_from_nuggets", "gold_ingot");
+		offerReversibleCompactingRecipesWithInputItemGroup(exporter, Items.GOLD_INGOT, Items.GOLD_BLOCK, "gold_ingot_from_gold_block", "gold_ingot");
+		offerReversibleCompactingRecipesWithCompactedItemGroup(exporter, Items.GOLD_NUGGET, Items.GOLD_INGOT, "gold_ingot_from_nuggets", "gold_ingot");
 		ShapelessRecipeJsonFactory.create(Blocks.GRANITE)
 			.input(Blocks.DIORITE)
 			.input(Items.QUARTZ)
@@ -1197,8 +1178,8 @@ public class RecipesProvider implements DataProvider {
 			.pattern(" #")
 			.criterion("has_iron_ingot", conditionsFromItem(Items.IRON_INGOT))
 			.offerTo(exporter);
-		method_36449(exporter, Items.IRON_INGOT, Items.IRON_BLOCK, "iron_ingot_from_iron_block", "iron_ingot");
-		method_36446(exporter, Items.IRON_NUGGET, Items.IRON_INGOT, "iron_ingot_from_nuggets", "iron_ingot");
+		offerReversibleCompactingRecipesWithInputItemGroup(exporter, Items.IRON_INGOT, Items.IRON_BLOCK, "iron_ingot_from_iron_block", "iron_ingot");
+		offerReversibleCompactingRecipesWithCompactedItemGroup(exporter, Items.IRON_NUGGET, Items.IRON_INGOT, "iron_ingot_from_nuggets", "iron_ingot");
 		ShapedRecipeJsonFactory.create(Items.IRON_LEGGINGS)
 			.input('X', Items.IRON_INGOT)
 			.pattern("XXX")
@@ -1322,7 +1303,7 @@ public class RecipesProvider implements DataProvider {
 			.pattern("#")
 			.criterion("has_cobblestone", conditionsFromItem(Blocks.COBBLESTONE))
 			.offerTo(exporter);
-		method_36444(exporter, Items.LIGHT_BLUE_DYE, Blocks.BLUE_ORCHID, "light_blue_dye");
+		offerSingleOutputShapelessRecipe(exporter, Items.LIGHT_BLUE_DYE, Blocks.BLUE_ORCHID, "light_blue_dye");
 		ShapelessRecipeJsonFactory.create(Items.LIGHT_BLUE_DYE, 2)
 			.input(Items.BLUE_DYE)
 			.input(Items.WHITE_DYE)
@@ -1330,7 +1311,7 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_blue_dye", conditionsFromItem(Items.BLUE_DYE))
 			.criterion("has_white_dye", conditionsFromItem(Items.WHITE_DYE))
 			.offerTo(exporter, "light_blue_dye_from_blue_white_dye");
-		method_36444(exporter, Items.LIGHT_GRAY_DYE, Blocks.AZURE_BLUET, "light_gray_dye");
+		offerSingleOutputShapelessRecipe(exporter, Items.LIGHT_GRAY_DYE, Blocks.AZURE_BLUET, "light_gray_dye");
 		ShapelessRecipeJsonFactory.create(Items.LIGHT_GRAY_DYE, 2)
 			.input(Items.GRAY_DYE)
 			.input(Items.WHITE_DYE)
@@ -1345,8 +1326,8 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_white_dye", conditionsFromItem(Items.WHITE_DYE))
 			.criterion("has_black_dye", conditionsFromItem(Items.BLACK_DYE))
 			.offerTo(exporter, "light_gray_dye_from_black_white_dye");
-		method_36444(exporter, Items.LIGHT_GRAY_DYE, Blocks.OXEYE_DAISY, "light_gray_dye");
-		method_36444(exporter, Items.LIGHT_GRAY_DYE, Blocks.WHITE_TULIP, "light_gray_dye");
+		offerSingleOutputShapelessRecipe(exporter, Items.LIGHT_GRAY_DYE, Blocks.OXEYE_DAISY, "light_gray_dye");
+		offerSingleOutputShapelessRecipe(exporter, Items.LIGHT_GRAY_DYE, Blocks.WHITE_TULIP, "light_gray_dye");
 		createPressurePlateRecipe(exporter, Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE, Items.GOLD_INGOT);
 		ShapedRecipeJsonFactory.create(Blocks.LIGHTNING_ROD)
 			.input('#', Items.COPPER_INGOT)
@@ -1368,7 +1349,7 @@ public class RecipesProvider implements DataProvider {
 			.pattern("B")
 			.criterion("has_carved_pumpkin", conditionsFromItem(Blocks.CARVED_PUMPKIN))
 			.offerTo(exporter);
-		method_36444(exporter, Items.MAGENTA_DYE, Blocks.ALLIUM, "magenta_dye");
+		offerSingleOutputShapelessRecipe(exporter, Items.MAGENTA_DYE, Blocks.ALLIUM, "magenta_dye");
 		ShapelessRecipeJsonFactory.create(Items.MAGENTA_DYE, 4)
 			.input(Items.BLUE_DYE)
 			.input(Items.RED_DYE, 2)
@@ -1387,7 +1368,7 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_blue_dye", conditionsFromItem(Items.BLUE_DYE))
 			.criterion("has_red_dye", conditionsFromItem(Items.RED_DYE))
 			.offerTo(exporter, "magenta_dye_from_blue_red_pink");
-		method_36445(exporter, Items.MAGENTA_DYE, Blocks.LILAC, "magenta_dye", 2);
+		offerShapelessRecipe(exporter, Items.MAGENTA_DYE, Blocks.LILAC, "magenta_dye", 2);
 		ShapelessRecipeJsonFactory.create(Items.MAGENTA_DYE, 2)
 			.input(Items.PURPLE_DYE)
 			.input(Items.PINK_DYE)
@@ -1431,22 +1412,26 @@ public class RecipesProvider implements DataProvider {
 		ShapelessRecipeJsonFactory.create(Blocks.MOSSY_COBBLESTONE)
 			.input(Blocks.COBBLESTONE)
 			.input(Blocks.VINE)
+			.group("mossy_cobblestone")
 			.criterion("has_vine", conditionsFromItem(Blocks.VINE))
 			.offerTo(exporter, convertBetween(Blocks.MOSSY_COBBLESTONE, Blocks.VINE));
 		ShapelessRecipeJsonFactory.create(Blocks.MOSSY_STONE_BRICKS)
 			.input(Blocks.STONE_BRICKS)
 			.input(Blocks.VINE)
-			.criterion("has_mossy_cobblestone", conditionsFromItem(Blocks.MOSSY_COBBLESTONE))
+			.group("mossy_stone_bricks")
+			.criterion("has_vine", conditionsFromItem(Blocks.VINE))
 			.offerTo(exporter, convertBetween(Blocks.MOSSY_STONE_BRICKS, Blocks.VINE));
 		ShapelessRecipeJsonFactory.create(Blocks.MOSSY_COBBLESTONE)
 			.input(Blocks.COBBLESTONE)
 			.input(Blocks.MOSS_BLOCK)
+			.group("mossy_cobblestone")
 			.criterion("has_moss_block", conditionsFromItem(Blocks.MOSS_BLOCK))
 			.offerTo(exporter, convertBetween(Blocks.MOSSY_COBBLESTONE, Blocks.MOSS_BLOCK));
 		ShapelessRecipeJsonFactory.create(Blocks.MOSSY_STONE_BRICKS)
 			.input(Blocks.STONE_BRICKS)
 			.input(Blocks.MOSS_BLOCK)
-			.criterion("has_mossy_cobblestone", conditionsFromItem(Blocks.MOSSY_COBBLESTONE))
+			.group("mossy_stone_bricks")
+			.criterion("has_moss_block", conditionsFromItem(Blocks.MOSS_BLOCK))
 			.offerTo(exporter, convertBetween(Blocks.MOSSY_STONE_BRICKS, Blocks.MOSS_BLOCK));
 		ShapelessRecipeJsonFactory.create(Items.MUSHROOM_STEW)
 			.input(Blocks.BROWN_MUSHROOM)
@@ -1487,7 +1472,7 @@ public class RecipesProvider implements DataProvider {
 			.pattern("###")
 			.criterion("has_quartz", conditionsFromItem(Items.QUARTZ))
 			.offerTo(exporter);
-		method_36444(exporter, Items.ORANGE_DYE, Blocks.ORANGE_TULIP, "orange_dye");
+		offerSingleOutputShapelessRecipe(exporter, Items.ORANGE_DYE, Blocks.ORANGE_TULIP, "orange_dye");
 		ShapelessRecipeJsonFactory.create(Items.ORANGE_DYE, 2)
 			.input(Items.RED_DYE)
 			.input(Items.YELLOW_DYE)
@@ -1517,8 +1502,8 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_quartz_pillar", conditionsFromItem(Blocks.QUARTZ_PILLAR))
 			.offerTo(exporter);
 		ShapelessRecipeJsonFactory.create(Blocks.PACKED_ICE).input(Blocks.ICE, 9).criterion("has_ice", conditionsFromItem(Blocks.ICE)).offerTo(exporter);
-		method_36445(exporter, Items.PINK_DYE, Blocks.PEONY, "pink_dye", 2);
-		method_36444(exporter, Items.PINK_DYE, Blocks.PINK_TULIP, "pink_dye");
+		offerShapelessRecipe(exporter, Items.PINK_DYE, Blocks.PEONY, "pink_dye", 2);
+		offerSingleOutputShapelessRecipe(exporter, Items.PINK_DYE, Blocks.PINK_TULIP, "pink_dye");
 		ShapelessRecipeJsonFactory.create(Items.PINK_DYE, 2)
 			.input(Items.RED_DYE)
 			.input(Items.WHITE_DYE)
@@ -1657,9 +1642,9 @@ public class RecipesProvider implements DataProvider {
 			.pattern("#")
 			.criterion("has_redstone", conditionsFromItem(Items.REDSTONE))
 			.offerTo(exporter);
-		method_36444(exporter, Items.RED_DYE, Items.BEETROOT, "red_dye");
-		method_36444(exporter, Items.RED_DYE, Blocks.POPPY, "red_dye");
-		method_36445(exporter, Items.RED_DYE, Blocks.ROSE_BUSH, "red_dye", 2);
+		offerSingleOutputShapelessRecipe(exporter, Items.RED_DYE, Items.BEETROOT, "red_dye");
+		offerSingleOutputShapelessRecipe(exporter, Items.RED_DYE, Blocks.POPPY, "red_dye");
+		offerShapelessRecipe(exporter, Items.RED_DYE, Blocks.ROSE_BUSH, "red_dye", 2);
 		ShapelessRecipeJsonFactory.create(Items.RED_DYE)
 			.input(Blocks.RED_TULIP)
 			.group("red_dye")
@@ -1860,7 +1845,7 @@ public class RecipesProvider implements DataProvider {
 			.pattern("##")
 			.criterion("has_string", conditionsFromItem(Items.STRING))
 			.offerTo(exporter, convertBetween(Blocks.WHITE_WOOL, Items.STRING));
-		method_36444(exporter, Items.SUGAR, Blocks.SUGAR_CANE, "sugar");
+		offerSingleOutputShapelessRecipe(exporter, Items.SUGAR, Blocks.SUGAR_CANE, "sugar");
 		ShapelessRecipeJsonFactory.create(Items.SUGAR, 3)
 			.input(Items.HONEY_BOTTLE)
 			.group("sugar")
@@ -1949,7 +1934,7 @@ public class RecipesProvider implements DataProvider {
 			.group("white_dye")
 			.criterion("has_bone_meal", conditionsFromItem(Items.BONE_MEAL))
 			.offerTo(exporter);
-		method_36444(exporter, Items.WHITE_DYE, Blocks.LILY_OF_THE_VALLEY, "white_dye");
+		offerSingleOutputShapelessRecipe(exporter, Items.WHITE_DYE, Blocks.LILY_OF_THE_VALLEY, "white_dye");
 		ShapedRecipeJsonFactory.create(Items.WOODEN_AXE)
 			.input('#', Items.STICK)
 			.input('X', ItemTags.PLANKS)
@@ -1996,8 +1981,8 @@ public class RecipesProvider implements DataProvider {
 			.input(Items.FEATHER)
 			.criterion("has_book", conditionsFromItem(Items.BOOK))
 			.offerTo(exporter);
-		method_36444(exporter, Items.YELLOW_DYE, Blocks.DANDELION, "yellow_dye");
-		method_36445(exporter, Items.YELLOW_DYE, Blocks.SUNFLOWER, "yellow_dye", 2);
+		offerSingleOutputShapelessRecipe(exporter, Items.YELLOW_DYE, Blocks.DANDELION, "yellow_dye");
+		offerShapelessRecipe(exporter, Items.YELLOW_DYE, Blocks.SUNFLOWER, "yellow_dye", 2);
 		offerReversibleCompactingRecipes(exporter, Items.DRIED_KELP, Items.DRIED_KELP_BLOCK);
 		ShapedRecipeJsonFactory.create(Blocks.CONDUIT)
 			.input('#', Items.NAUTILUS_SHELL)
@@ -2103,7 +2088,9 @@ public class RecipesProvider implements DataProvider {
 			.pattern("SSS")
 			.criterion("has_netherite_ingot", conditionsFromItem(Items.NETHERITE_INGOT))
 			.offerTo(exporter);
-		method_36449(exporter, Items.NETHERITE_INGOT, Items.NETHERITE_BLOCK, "netherite_ingot_from_netherite_block", "netherite_ingot");
+		offerReversibleCompactingRecipesWithInputItemGroup(
+			exporter, Items.NETHERITE_INGOT, Items.NETHERITE_BLOCK, "netherite_ingot_from_netherite_block", "netherite_ingot"
+		);
 		ShapelessRecipeJsonFactory.create(Items.NETHERITE_INGOT)
 			.input(Items.NETHERITE_SCRAP, 4)
 			.input(Items.GOLD_INGOT, 4)
@@ -2193,7 +2180,7 @@ public class RecipesProvider implements DataProvider {
 			.offerTo(exporter);
 		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.KELP), Items.DRIED_KELP, 0.1F, 200)
 			.criterion("has_kelp", conditionsFromItem(Blocks.KELP))
-			.offerTo(exporter, method_36451(Items.DRIED_KELP));
+			.offerTo(exporter, getSmeltingItemPath(Items.DRIED_KELP));
 		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Items.SALMON), Items.COOKED_SALMON, 0.35F, 200)
 			.criterion("has_salmon", conditionsFromItem(Items.SALMON))
 			.offerTo(exporter);
@@ -2206,14 +2193,14 @@ public class RecipesProvider implements DataProvider {
 		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Items.RABBIT), Items.COOKED_RABBIT, 0.35F, 200)
 			.criterion("has_rabbit", conditionsFromItem(Items.RABBIT))
 			.offerTo(exporter);
-		offerSmelting(exporter, COAL_ORES, Items.COAL, 0.1F, 200);
-		offerSmelting(exporter, IRON_ORES, Items.IRON_INGOT, 0.7F, 200);
-		offerSmelting(exporter, COPPER_ORES, Items.COPPER_INGOT, 0.7F, 200);
-		offerSmelting(exporter, GOLD_ORES, Items.GOLD_INGOT, 1.0F, 200);
-		offerSmelting(exporter, DIAMOND_ORES, Items.DIAMOND, 1.0F, 200);
-		offerSmelting(exporter, LAPIS_ORES, Items.LAPIS_LAZULI, 0.2F, 200);
-		offerSmelting(exporter, REDSTONE_ORES, Items.REDSTONE, 0.7F, 200);
-		offerSmelting(exporter, EMERALD_ORES, Items.EMERALD, 1.0F, 200);
+		offerSmelting(exporter, COAL_ORES, Items.COAL, 0.1F, 200, "coal");
+		offerSmelting(exporter, IRON_ORES, Items.IRON_INGOT, 0.7F, 200, "iron_ingot");
+		offerSmelting(exporter, COPPER_ORES, Items.COPPER_INGOT, 0.7F, 200, "copper_ingot");
+		offerSmelting(exporter, GOLD_ORES, Items.GOLD_INGOT, 1.0F, 200, "gold_ingot");
+		offerSmelting(exporter, DIAMOND_ORES, Items.DIAMOND, 1.0F, 200, "diamond");
+		offerSmelting(exporter, LAPIS_ORES, Items.LAPIS_LAZULI, 0.2F, 200, "lapus_lazuli");
+		offerSmelting(exporter, REDSTONE_ORES, Items.REDSTONE, 0.7F, 200, "redstone");
+		offerSmelting(exporter, EMERALD_ORES, Items.EMERALD, 1.0F, 200, "emerald");
 		offerReversibleCompactingRecipes(exporter, Items.RAW_IRON, Items.RAW_IRON_BLOCK);
 		offerReversibleCompactingRecipes(exporter, Items.RAW_COPPER, Items.RAW_COPPER_BLOCK);
 		offerReversibleCompactingRecipes(exporter, Items.RAW_GOLD, Items.RAW_GOLD_BLOCK);
@@ -2222,7 +2209,7 @@ public class RecipesProvider implements DataProvider {
 			.offerTo(exporter);
 		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.SEA_PICKLE), Items.LIME_DYE, 0.1F, 200)
 			.criterion("has_sea_pickle", conditionsFromItem(Blocks.SEA_PICKLE))
-			.offerTo(exporter, method_36451(Items.LIME_DYE));
+			.offerTo(exporter, getSmeltingItemPath(Items.LIME_DYE));
 		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.CACTUS.asItem()), Items.GREEN_DYE, 1.0F, 200)
 			.criterion("has_cactus", conditionsFromItem(Blocks.CACTUS))
 			.offerTo(exporter);
@@ -2253,7 +2240,7 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_golden_leggings", conditionsFromItem(Items.GOLDEN_LEGGINGS))
 			.criterion("has_golden_boots", conditionsFromItem(Items.GOLDEN_BOOTS))
 			.criterion("has_golden_horse_armor", conditionsFromItem(Items.GOLDEN_HORSE_ARMOR))
-			.offerTo(exporter, method_36451(Items.GOLD_NUGGET));
+			.offerTo(exporter, getSmeltingItemPath(Items.GOLD_NUGGET));
 		CookingRecipeJsonFactory.createSmelting(
 				Ingredient.ofItems(
 					Items.IRON_PICKAXE,
@@ -2289,7 +2276,7 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_chainmail_chestplate", conditionsFromItem(Items.CHAINMAIL_CHESTPLATE))
 			.criterion("has_chainmail_leggings", conditionsFromItem(Items.CHAINMAIL_LEGGINGS))
 			.criterion("has_chainmail_boots", conditionsFromItem(Items.CHAINMAIL_BOOTS))
-			.offerTo(exporter, method_36451(Items.IRON_NUGGET));
+			.offerTo(exporter, getSmeltingItemPath(Items.IRON_NUGGET));
 		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.CLAY), Blocks.TERRACOTTA.asItem(), 0.35F, 200)
 			.criterion("has_clay_block", conditionsFromItem(Blocks.CLAY))
 			.offerTo(exporter);
@@ -2377,17 +2364,17 @@ public class RecipesProvider implements DataProvider {
 		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.COBBLED_DEEPSLATE), Blocks.DEEPSLATE, 0.1F, 200)
 			.criterion("has_cobbled_deepslate", conditionsFromItem(Blocks.COBBLED_DEEPSLATE))
 			.offerTo(exporter);
-		offerBlasting(exporter, COAL_ORES, Items.COAL, 0.1F, 100);
-		offerBlasting(exporter, IRON_ORES, Items.IRON_INGOT, 0.7F, 100);
-		offerBlasting(exporter, COPPER_ORES, Items.COPPER_INGOT, 0.7F, 100);
-		offerBlasting(exporter, GOLD_ORES, Items.GOLD_INGOT, 1.0F, 100);
-		offerBlasting(exporter, DIAMOND_ORES, Items.DIAMOND, 1.0F, 100);
-		offerBlasting(exporter, LAPIS_ORES, Items.LAPIS_LAZULI, 0.2F, 100);
-		offerBlasting(exporter, REDSTONE_ORES, Items.REDSTONE, 0.7F, 100);
-		offerBlasting(exporter, EMERALD_ORES, Items.EMERALD, 1.0F, 100);
+		offerBlasting(exporter, COAL_ORES, Items.COAL, 0.1F, 100, "coal");
+		offerBlasting(exporter, IRON_ORES, Items.IRON_INGOT, 0.7F, 100, "iron_ingot");
+		offerBlasting(exporter, COPPER_ORES, Items.COPPER_INGOT, 0.7F, 100, "copper_ingot");
+		offerBlasting(exporter, GOLD_ORES, Items.GOLD_INGOT, 1.0F, 100, "gold_ingot");
+		offerBlasting(exporter, DIAMOND_ORES, Items.DIAMOND, 1.0F, 100, "diamond");
+		offerBlasting(exporter, LAPIS_ORES, Items.LAPIS_LAZULI, 0.2F, 100, "lapus_lazuli");
+		offerBlasting(exporter, REDSTONE_ORES, Items.REDSTONE, 0.7F, 100, "redstone");
+		offerBlasting(exporter, EMERALD_ORES, Items.EMERALD, 1.0F, 100, "emerald");
 		CookingRecipeJsonFactory.createBlasting(Ingredient.ofItems(Blocks.NETHER_QUARTZ_ORE), Items.QUARTZ, 0.2F, 100)
 			.criterion("has_nether_quartz_ore", conditionsFromItem(Blocks.NETHER_QUARTZ_ORE))
-			.offerTo(exporter, method_36452(Items.QUARTZ));
+			.offerTo(exporter, getBlastingItemPath(Items.QUARTZ));
 		CookingRecipeJsonFactory.createBlasting(
 				Ingredient.ofItems(
 					Items.GOLDEN_PICKAXE,
@@ -2415,7 +2402,7 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_golden_leggings", conditionsFromItem(Items.GOLDEN_LEGGINGS))
 			.criterion("has_golden_boots", conditionsFromItem(Items.GOLDEN_BOOTS))
 			.criterion("has_golden_horse_armor", conditionsFromItem(Items.GOLDEN_HORSE_ARMOR))
-			.offerTo(exporter, method_36452(Items.GOLD_NUGGET));
+			.offerTo(exporter, getBlastingItemPath(Items.GOLD_NUGGET));
 		CookingRecipeJsonFactory.createBlasting(
 				Ingredient.ofItems(
 					Items.IRON_PICKAXE,
@@ -2451,10 +2438,10 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_chainmail_chestplate", conditionsFromItem(Items.CHAINMAIL_CHESTPLATE))
 			.criterion("has_chainmail_leggings", conditionsFromItem(Items.CHAINMAIL_LEGGINGS))
 			.criterion("has_chainmail_boots", conditionsFromItem(Items.CHAINMAIL_BOOTS))
-			.offerTo(exporter, method_36452(Items.IRON_NUGGET));
+			.offerTo(exporter, getBlastingItemPath(Items.IRON_NUGGET));
 		CookingRecipeJsonFactory.createBlasting(Ingredient.ofItems(Blocks.ANCIENT_DEBRIS), Items.NETHERITE_SCRAP, 2.0F, 100)
 			.criterion("has_ancient_debris", conditionsFromItem(Blocks.ANCIENT_DEBRIS))
-			.offerTo(exporter, method_36452(Items.NETHERITE_SCRAP));
+			.offerTo(exporter, getBlastingItemPath(Items.NETHERITE_SCRAP));
 		generateCookingRecipes(exporter, "smoking", RecipeSerializer.SMOKING, 100);
 		generateCookingRecipes(exporter, "campfire_cooking", RecipeSerializer.CAMPFIRE_COOKING, 600);
 		offerRecipe(exporter, Blocks.STONE_SLAB, Blocks.STONE, 2);
@@ -2690,32 +2677,32 @@ public class RecipesProvider implements DataProvider {
 		offerNetheriteUpgradeRecipe(exporter, Items.DIAMOND_SHOVEL, Items.NETHERITE_SHOVEL);
 	}
 
-	private static void method_36444(
-		Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2, @Nullable String string
+	private static void offerSingleOutputShapelessRecipe(
+		Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input, @Nullable String group
 	) {
-		method_36445(consumer, itemConvertible, itemConvertible2, string, 1);
+		offerShapelessRecipe(exporter, output, input, group, 1);
 	}
 
-	private static void method_36445(
-		Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2, @Nullable String string, int i
+	private static void offerShapelessRecipe(
+		Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input, @Nullable String group, int outputCount
 	) {
-		ShapelessRecipeJsonFactory.create(itemConvertible, i)
-			.input(itemConvertible2)
-			.group(string)
-			.criterion(hasItem(itemConvertible2), conditionsFromItem(itemConvertible2))
-			.offerTo(consumer, convertBetween(itemConvertible, itemConvertible2));
+		ShapelessRecipeJsonFactory.create(output, outputCount)
+			.input(input)
+			.group(group)
+			.criterion(hasItem(input), conditionsFromItem(input))
+			.offerTo(exporter, convertBetween(output, input));
 	}
 
 	private static void offerSmelting(
-		Consumer<RecipeJsonProvider> exporter, List<ItemConvertible> inputs, ItemConvertible output, float experience, int cookingTime
+		Consumer<RecipeJsonProvider> exporter, List<ItemConvertible> inputs, ItemConvertible output, float experience, int cookingTime, String group
 	) {
-		offerMultipleOptions(exporter, RecipeSerializer.SMELTING, inputs, output, experience, cookingTime, "_from_smelting");
+		offerMultipleOptions(exporter, RecipeSerializer.SMELTING, inputs, output, experience, cookingTime, group, "_from_smelting");
 	}
 
 	private static void offerBlasting(
-		Consumer<RecipeJsonProvider> exporter, List<ItemConvertible> inputs, ItemConvertible output, float experience, int cookingTime
+		Consumer<RecipeJsonProvider> exporter, List<ItemConvertible> inputs, ItemConvertible output, float experience, int cookingTime, String group
 	) {
-		offerMultipleOptions(exporter, RecipeSerializer.BLASTING, inputs, output, experience, cookingTime, "_from_blasting");
+		offerMultipleOptions(exporter, RecipeSerializer.BLASTING, inputs, output, experience, cookingTime, group, "_from_blasting");
 	}
 
 	private static void offerMultipleOptions(
@@ -2725,10 +2712,12 @@ public class RecipesProvider implements DataProvider {
 		ItemConvertible output,
 		float experience,
 		int cookingTime,
+		String group,
 		String baseIdString
 	) {
 		for (ItemConvertible itemConvertible : inputs) {
 			CookingRecipeJsonFactory.create(Ingredient.ofItems(itemConvertible), output, experience, cookingTime, serializer)
+				.group(group)
 				.criterion(hasItem(itemConvertible), conditionsFromItem(itemConvertible))
 				.offerTo(exporter, getItemPath(output) + baseIdString + "_" + getItemPath(itemConvertible));
 		}
@@ -2936,7 +2925,12 @@ public class RecipesProvider implements DataProvider {
 	}
 
 	public static void offerCandleDyeingRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {
-		ShapelessRecipeJsonFactory.create(output).input(Blocks.CANDLE).input(input).criterion(hasItem(input), conditionsFromItem(input)).offerTo(exporter);
+		ShapelessRecipeJsonFactory.create(output)
+			.input(Blocks.CANDLE)
+			.input(input)
+			.group("dyed_candle")
+			.criterion(hasItem(input), conditionsFromItem(input))
+			.offerTo(exporter);
 	}
 
 	public static void offerWallRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {
@@ -2956,12 +2950,11 @@ public class RecipesProvider implements DataProvider {
 	}
 
 	public static void offerCutCopperRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {
-		ShapedRecipeJsonFactory.create(output, 4)
-			.input('#', input)
-			.pattern("##")
-			.pattern("##")
-			.criterion(hasItem(input), conditionsFromItem(input))
-			.offerTo(exporter);
+		createCutCopperRecipe(output, Ingredient.ofItems(input)).criterion(hasItem(input), conditionsFromItem(input)).offerTo(exporter);
+	}
+
+	public static ShapedRecipeJsonFactory createCutCopperRecipe(ItemConvertible output, Ingredient input) {
+		return ShapedRecipeJsonFactory.create(output, 4).input('#', input).pattern("##").pattern("##");
 	}
 
 	public static void offerChiseledBlockRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {
@@ -2994,71 +2987,74 @@ public class RecipesProvider implements DataProvider {
 	 * 
 	 * <p>The shaped recipe converts 9 items in a square to a compacted form of the item.
 	 * <p>The shapeless recipe converts the compacted form to 9 of the normal form.
+	 * 
+	 * @param compacted compacted output item, e.g. block of copper
+	 * @param input input item used to craft compacted item, e.g. copper ingot
 	 */
-	private static void offerReversibleCompactingRecipes(Consumer<RecipeJsonProvider> exporter, ItemConvertible itemConvertible, ItemConvertible itemConvertible2) {
-		method_36447(exporter, itemConvertible, itemConvertible2, method_36450(itemConvertible2), null, method_36450(itemConvertible), null);
+	private static void offerReversibleCompactingRecipes(Consumer<RecipeJsonProvider> exporter, ItemConvertible compacted, ItemConvertible input) {
+		offerReversibleCompactingRecipes(exporter, compacted, input, method_36450(input), null, method_36450(compacted), null);
 	}
 
-	private static void method_36446(
-		Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2, String string, String string2
+	private static void offerReversibleCompactingRecipesWithCompactedItemGroup(
+		Consumer<RecipeJsonProvider> exporter, ItemConvertible compacted, ItemConvertible input, String compactedItemId, String compactedItemGroup
 	) {
-		method_36447(consumer, itemConvertible, itemConvertible2, string, string2, method_36450(itemConvertible), null);
+		offerReversibleCompactingRecipes(exporter, compacted, input, compactedItemId, compactedItemGroup, method_36450(compacted), null);
 	}
 
-	private static void method_36449(
-		Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2, String string, String string2
+	private static void offerReversibleCompactingRecipesWithInputItemGroup(
+		Consumer<RecipeJsonProvider> exporter, ItemConvertible input, ItemConvertible compacted, String inputItemId, String inputItemGroup
 	) {
-		method_36447(consumer, itemConvertible, itemConvertible2, method_36450(itemConvertible2), null, string, string2);
+		offerReversibleCompactingRecipes(exporter, input, compacted, method_36450(compacted), null, inputItemId, inputItemGroup);
 	}
 
-	private static void method_36447(
-		Consumer<RecipeJsonProvider> consumer,
-		ItemConvertible itemConvertible,
-		ItemConvertible itemConvertible2,
-		String string,
-		@Nullable String string2,
-		String string3,
-		@Nullable String string4
+	private static void offerReversibleCompactingRecipes(
+		Consumer<RecipeJsonProvider> exporter,
+		ItemConvertible input,
+		ItemConvertible compacted,
+		String compactedItemId,
+		@Nullable String compactedItemGroup,
+		String inputItemId,
+		@Nullable String inputItemGroup
 	) {
-		ShapelessRecipeJsonFactory.create(itemConvertible, 9)
-			.input(itemConvertible2)
-			.group(string4)
-			.criterion(hasItem(itemConvertible2), conditionsFromItem(itemConvertible2))
-			.offerTo(consumer, new Identifier(string3));
-		ShapedRecipeJsonFactory.create(itemConvertible2)
-			.input('#', itemConvertible)
+		ShapelessRecipeJsonFactory.create(input, 9)
+			.input(compacted)
+			.group(inputItemGroup)
+			.criterion(hasItem(compacted), conditionsFromItem(compacted))
+			.offerTo(exporter, new Identifier(inputItemId));
+		ShapedRecipeJsonFactory.create(compacted)
+			.input('#', input)
 			.pattern("###")
 			.pattern("###")
 			.pattern("###")
-			.group(string2)
-			.criterion(hasItem(itemConvertible), conditionsFromItem(itemConvertible))
-			.offerTo(consumer, new Identifier(string));
+			.group(compactedItemGroup)
+			.criterion(hasItem(input), conditionsFromItem(input))
+			.offerTo(exporter, new Identifier(compactedItemId));
 	}
 
 	private static void generateCookingRecipes(Consumer<RecipeJsonProvider> exporter, String cooker, CookingRecipeSerializer<?> serializer, int cookingTime) {
-		method_36448(exporter, cooker, serializer, cookingTime, Items.BEEF, Items.COOKED_BEEF, 0.35F);
-		method_36448(exporter, cooker, serializer, cookingTime, Items.CHICKEN, Items.COOKED_CHICKEN, 0.35F);
-		method_36448(exporter, cooker, serializer, cookingTime, Items.COD, Items.COOKED_COD, 0.35F);
-		method_36448(exporter, cooker, serializer, cookingTime, Items.KELP, Items.DRIED_KELP, 0.1F);
-		method_36448(exporter, cooker, serializer, cookingTime, Items.SALMON, Items.COOKED_SALMON, 0.35F);
-		method_36448(exporter, cooker, serializer, cookingTime, Items.MUTTON, Items.COOKED_MUTTON, 0.35F);
-		method_36448(exporter, cooker, serializer, cookingTime, Items.PORKCHOP, Items.COOKED_PORKCHOP, 0.35F);
-		method_36448(exporter, cooker, serializer, cookingTime, Items.POTATO, Items.BAKED_POTATO, 0.35F);
-		method_36448(exporter, cooker, serializer, cookingTime, Items.RABBIT, Items.COOKED_RABBIT, 0.35F);
+		offerCookingRecipe(exporter, cooker, serializer, cookingTime, Items.BEEF, Items.COOKED_BEEF, 0.35F);
+		offerCookingRecipe(exporter, cooker, serializer, cookingTime, Items.CHICKEN, Items.COOKED_CHICKEN, 0.35F);
+		offerCookingRecipe(exporter, cooker, serializer, cookingTime, Items.COD, Items.COOKED_COD, 0.35F);
+		offerCookingRecipe(exporter, cooker, serializer, cookingTime, Items.KELP, Items.DRIED_KELP, 0.1F);
+		offerCookingRecipe(exporter, cooker, serializer, cookingTime, Items.SALMON, Items.COOKED_SALMON, 0.35F);
+		offerCookingRecipe(exporter, cooker, serializer, cookingTime, Items.MUTTON, Items.COOKED_MUTTON, 0.35F);
+		offerCookingRecipe(exporter, cooker, serializer, cookingTime, Items.PORKCHOP, Items.COOKED_PORKCHOP, 0.35F);
+		offerCookingRecipe(exporter, cooker, serializer, cookingTime, Items.POTATO, Items.BAKED_POTATO, 0.35F);
+		offerCookingRecipe(exporter, cooker, serializer, cookingTime, Items.RABBIT, Items.COOKED_RABBIT, 0.35F);
 	}
 
-	private static void method_36448(
-		Consumer<RecipeJsonProvider> consumer,
-		String string,
-		CookingRecipeSerializer<?> cookingRecipeSerializer,
-		int i,
-		ItemConvertible itemConvertible,
-		ItemConvertible itemConvertible2,
-		float f
+	private static void offerCookingRecipe(
+		Consumer<RecipeJsonProvider> exporter,
+		String cooker,
+		CookingRecipeSerializer<?> serializer,
+		int cookingTime,
+		ItemConvertible input,
+		ItemConvertible output,
+		float experience
 	) {
-		CookingRecipeJsonFactory.create(Ingredient.ofItems(itemConvertible), itemConvertible2, f, i, cookingRecipeSerializer)
-			.criterion(hasItem(itemConvertible), conditionsFromItem(itemConvertible))
-			.offerTo(consumer, getItemPath(itemConvertible2) + "_from_" + string);
+		CookingRecipeJsonFactory.create(Ingredient.ofItems(input), output, experience, cookingTime, serializer)
+			.criterion(hasItem(input), conditionsFromItem(input))
+			.offerTo(exporter, getItemPath(output) + "_from_" + cooker);
 	}
 
 	private static void offerWaxingRecipes(Consumer<RecipeJsonProvider> exporter) {
@@ -3067,6 +3063,7 @@ public class RecipesProvider implements DataProvider {
 				(input, output) -> ShapelessRecipeJsonFactory.create(output)
 						.input(input)
 						.input(Items.HONEYCOMB)
+						.group(getItemPath(output))
 						.criterion(hasItem(input), conditionsFromItem(input))
 						.offerTo(exporter, convertBetween(output, Items.HONEYCOMB))
 			);
@@ -3082,7 +3079,7 @@ public class RecipesProvider implements DataProvider {
 					ItemConvertible itemConvertible = getVariantRecipeInput(family, variant);
 					if (biFunction != null) {
 						CraftingRecipeJsonFactory craftingRecipeJsonFactory = (CraftingRecipeJsonFactory)biFunction.apply(block, itemConvertible);
-						family.getGroup().ifPresent(group -> craftingRecipeJsonFactory.group(group + "_" + variant.getName()));
+						family.getGroup().ifPresent(group -> craftingRecipeJsonFactory.group(group + (variant == BlockFamily.Variant.CUT ? "" : "_" + variant.getName())));
 						craftingRecipeJsonFactory.criterion(
 							(String)family.getUnlockCriterionName().orElseGet(() -> hasItem(itemConvertible)), conditionsFromItem(itemConvertible)
 						);
@@ -3146,20 +3143,20 @@ public class RecipesProvider implements DataProvider {
 		return Registry.ITEM.getId(item.asItem()).getPath();
 	}
 
-	private static String method_36450(ItemConvertible itemConvertible) {
-		return getItemPath(itemConvertible);
+	private static String method_36450(ItemConvertible item) {
+		return getItemPath(item);
 	}
 
 	private static String convertBetween(ItemConvertible from, ItemConvertible to) {
 		return getItemPath(from) + "_from_" + getItemPath(to);
 	}
 
-	private static String method_36451(ItemConvertible itemConvertible) {
-		return getItemPath(itemConvertible) + "_from_smelting";
+	private static String getSmeltingItemPath(ItemConvertible item) {
+		return getItemPath(item) + "_from_smelting";
 	}
 
-	private static String method_36452(ItemConvertible itemConvertible) {
-		return getItemPath(itemConvertible) + "_from_blasting";
+	private static String getBlastingItemPath(ItemConvertible item) {
+		return getItemPath(item) + "_from_blasting";
 	}
 
 	@Override
