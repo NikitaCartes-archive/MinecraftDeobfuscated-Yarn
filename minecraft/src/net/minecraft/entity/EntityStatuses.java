@@ -60,4 +60,5 @@ public class EntityStatuses {
 	public static final byte DAMAGE_FROM_FREEZING = 57;
 	public static final byte field_33454 = 58;
 	public static final byte field_33455 = 59;
+	public static final byte field_33691 = 60;
 }

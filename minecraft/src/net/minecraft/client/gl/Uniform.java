@@ -23,19 +23,19 @@ public class Uniform {
 	public void setForDataType(float value1, float value2, float value3, float value4) {
 	}
 
+	public void setForDataType(int value1, int value2, int value3, int value4) {
+	}
+
+	public void set(int value) {
+	}
+
+	public void set(int value1, int value2) {
+	}
+
+	public void set(int value1, int value2, int value3) {
+	}
+
 	public void set(int value1, int value2, int value3, int value4) {
-	}
-
-	public void method_35649(int i) {
-	}
-
-	public void method_35650(int i, int j) {
-	}
-
-	public void method_35651(int i, int j, int k) {
-	}
-
-	public void method_35656(int i, int j, int k, int l) {
 	}
 
 	public void set(float[] values) {
@@ -44,35 +44,76 @@ public class Uniform {
 	public void set(Vec3f vector) {
 	}
 
-	public void method_35652(Vector4f vector4f) {
+	public void set(Vector4f vec) {
 	}
 
-	public void method_35657(float f, float g, float h, float i) {
+	public void method_35657(float value1, float value2, float value3, float value4) {
 	}
 
-	public void method_35644(float f, float g, float h, float i, float j, float k) {
+	public void set(float value1, float value2, float value3, float value4, float value5, float value6) {
 	}
 
-	public void method_35645(float f, float g, float h, float i, float j, float k, float l, float m) {
+	public void set(float value1, float value2, float value3, float value4, float value5, float value6, float value7, float value8) {
 	}
 
-	public void method_35653(float f, float g, float h, float i, float j, float k) {
+	public void method_35653(float value1, float value2, float value3, float value4, float value5, float value6) {
 	}
 
-	public void method_35646(float f, float g, float h, float i, float j, float k, float l, float m, float n) {
+	public void set(float value1, float value2, float value3, float value4, float value5, float value6, float value7, float value8, float value9) {
 	}
 
-	public void method_35647(float f, float g, float h, float i, float j, float k, float l, float m, float n, float o, float p, float q) {
+	public void set(
+		float value1,
+		float value2,
+		float value3,
+		float value4,
+		float value5,
+		float value6,
+		float value7,
+		float value8,
+		float value9,
+		float value10,
+		float value11,
+		float value12
+	) {
 	}
 
-	public void method_35654(float f, float g, float h, float i, float j, float k, float l, float m) {
+	public void method_35654(float value1, float value2, float value3, float value4, float value5, float value6, float value7, float value8) {
 	}
 
-	public void method_35655(float f, float g, float h, float i, float j, float k, float l, float m, float n, float o, float p, float q) {
+	public void method_35655(
+		float value1,
+		float value2,
+		float value3,
+		float value4,
+		float value5,
+		float value6,
+		float value7,
+		float value8,
+		float value9,
+		float value10,
+		float value11,
+		float value12
+	) {
 	}
 
-	public void method_35648(
-		float f, float g, float h, float i, float j, float k, float l, float m, float n, float o, float p, float q, float r, float s, float t, float u
+	public void set(
+		float value1,
+		float value2,
+		float value3,
+		float value4,
+		float value5,
+		float value6,
+		float value7,
+		float value8,
+		float value9,
+		float value10,
+		float value11,
+		float value12,
+		float value13,
+		float value14,
+		float value15,
+		float value16
 	) {
 	}
 

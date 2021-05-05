@@ -61,7 +61,7 @@ public class ShaderParseException extends IOException {
 		}
 
 		@Nullable
-		public String method_36182() {
+		public String getFileName() {
 			return this.fileName;
 		}
 

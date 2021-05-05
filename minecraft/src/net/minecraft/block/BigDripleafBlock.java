@@ -83,7 +83,7 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 	}
 
 	public static void grow(WorldAccess world, Random random, BlockPos pos, Direction direction) {
-		int i = 1 + random.nextInt(5);
+		int i = MathHelper.nextInt(random, 2, 5);
 		BlockPos.Mutable mutable = pos.mutableCopy();
 		int j = 0;
 

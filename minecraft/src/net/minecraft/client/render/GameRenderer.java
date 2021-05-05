@@ -358,21 +358,27 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 		} else {
 			try {
 				this.blitScreenShader = new Shader(factory, "blit_screen", VertexFormats.BLIT_SCREEN);
-				positionShader = this.loadShader(factory, "position", VertexFormats.POSITION);
-				positionColorShader = this.loadShader(factory, "position_color", VertexFormats.POSITION_COLOR);
-				positionColorTexShader = this.loadShader(factory, "position_color_tex", VertexFormats.POSITION_COLOR_TEXTURE);
-				positionTexShader = this.loadShader(factory, "position_tex", VertexFormats.POSITION_TEXTURE);
-				positionTexColorShader = this.loadShader(factory, "position_tex_color", VertexFormats.POSITION_TEXTURE_COLOR);
 			} catch (IOException var3) {
 				throw new RuntimeException("could not preload blit shader", var3);
 			}
+
+			positionShader = this.loadShader(factory, "position", VertexFormats.POSITION);
+			positionColorShader = this.loadShader(factory, "position_color", VertexFormats.POSITION_COLOR);
+			positionColorTexShader = this.loadShader(factory, "position_color_tex", VertexFormats.POSITION_COLOR_TEXTURE);
+			positionTexShader = this.loadShader(factory, "position_tex", VertexFormats.POSITION_TEXTURE);
+			positionTexColorShader = this.loadShader(factory, "position_tex_color", VertexFormats.POSITION_TEXTURE_COLOR);
+			renderTypeTextShader = this.loadShader(factory, "rendertype_text", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
 		}
 	}
 
-	private Shader loadShader(ResourceFactory factory, String name, VertexFormat vertexFormat) throws IOException {
-		Shader shader = new Shader(factory, name, vertexFormat);
-		this.shaders.put(name, shader);
-		return shader;
+	private Shader loadShader(ResourceFactory factory, String name, VertexFormat vertexFormat) {
+		try {
+			Shader shader = new Shader(factory, name, vertexFormat);
+			this.shaders.put(name, shader);
+			return shader;
+		} catch (Exception var5) {
+			throw new IllegalStateException("could not preload shader " + name, var5);
+		}
 	}
 
 	public void loadShaders(ResourceManager manager) {

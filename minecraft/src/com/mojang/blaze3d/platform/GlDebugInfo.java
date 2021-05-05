@@ -12,11 +12,11 @@ public class GlDebugInfo {
 	public static void method_35612(FixedDataSetter fixedDataSetter) {
 	}
 
-	public static ByteBuffer method_35611(int i) {
-		return MemoryUtil.memAlloc(i);
+	public static ByteBuffer allocateMemory(int size) {
+		return MemoryUtil.memAlloc(size);
 	}
 
-	public static void method_35613(Buffer buffer) {
+	public static void freeMemory(Buffer buffer) {
 		MemoryUtil.memFree(buffer);
 	}
 

@@ -74,7 +74,10 @@ public abstract class Carver<C extends CarverConfig> {
 		Blocks.GRANITE,
 		Blocks.IRON_ORE,
 		Blocks.DEEPSLATE_IRON_ORE,
-		Blocks.COPPER_ORE
+		Blocks.RAW_IRON_BLOCK,
+		Blocks.COPPER_ORE,
+		Blocks.DEEPSLATE_COPPER_ORE,
+		Blocks.RAW_COPPER_BLOCK
 	);
 	protected Set<Fluid> carvableFluids = ImmutableSet.of(Fluids.WATER);
 	private final Codec<ConfiguredCarver<C>> codec;

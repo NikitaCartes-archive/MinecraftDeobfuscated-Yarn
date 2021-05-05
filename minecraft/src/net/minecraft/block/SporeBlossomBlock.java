@@ -23,7 +23,7 @@ public class SporeBlossomBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		return Block.sideCoversSmallSquare(world, pos.up(), Direction.DOWN);
+		return Block.sideCoversSmallSquare(world, pos.up(), Direction.DOWN) && !world.isWater(pos);
 	}
 
 	@Override

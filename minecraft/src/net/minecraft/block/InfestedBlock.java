@@ -28,7 +28,7 @@ public class InfestedBlock extends Block {
 	 * @param settings block settings
 	 */
 	public InfestedBlock(Block regularBlock, AbstractBlock.Settings settings) {
-		super(settings);
+		super(settings.hardness(regularBlock.method_36555() / 2.0F).resistance(0.75F));
 		this.regularBlock = regularBlock;
 		REGULAR_TO_INFESTED_BLOCK.put(regularBlock, this);
 	}

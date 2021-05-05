@@ -12,6 +12,6 @@ public class GrassColors {
 		int i = (int)((1.0 - temperature) * 255.0);
 		int j = (int)((1.0 - humidity) * 255.0);
 		int k = j << 8 | i;
-		return k > colorMap.length ? -65281 : colorMap[k];
+		return k >= colorMap.length ? -65281 : colorMap[k];
 	}
 }

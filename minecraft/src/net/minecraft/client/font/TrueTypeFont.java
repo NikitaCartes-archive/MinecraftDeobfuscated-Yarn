@@ -66,7 +66,7 @@ public class TrueTypeFont implements Font {
 				);
 				int k = intBuffer3.get(0) - intBuffer.get(0);
 				int l = intBuffer4.get(0) - intBuffer2.get(0);
-				if (k == 0 || l == 0) {
+				if (k <= 0 || l <= 0) {
 					return null;
 				}
 

@@ -499,7 +499,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				this.setOnFireFor(15);
 			}
 
-			this.damage(DamageSource.LAVA, 4.0F);
+			if (this.damage(DamageSource.LAVA, 4.0F)) {
+				this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
+			}
 		}
 	}
 
@@ -1374,7 +1376,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			return false;
 		} else {
 			this.scheduleVelocityUpdate();
-			return false;
+			return true;
 		}
 	}
 

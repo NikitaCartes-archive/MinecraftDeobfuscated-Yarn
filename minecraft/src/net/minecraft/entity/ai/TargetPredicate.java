@@ -3,6 +3,7 @@ package net.minecraft.entity.ai;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.mob.MobEntity;
 
 public class TargetPredicate {
@@ -75,6 +76,13 @@ public class TargetPredicate {
 		} else if (this.predicate != null && !this.predicate.test(targetEntity)) {
 			return false;
 		} else {
+			if (targetEntity instanceof ArmorStandEntity) {
+				ArmorStandEntity armorStandEntity = (ArmorStandEntity)targetEntity;
+				if (armorStandEntity.isInvisible() || armorStandEntity.isMarker()) {
+					return false;
+				}
+			}
+
 			if (baseEntity != null) {
 				if (!this.ignoreEntityTargetRules) {
 					if (!baseEntity.canTarget(targetEntity)) {

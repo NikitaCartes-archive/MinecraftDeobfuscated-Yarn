@@ -62,7 +62,7 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	@Override
-	protected float getSoundPitch() {
+	public float getSoundPitch() {
 		return super.getSoundPitch() * 0.95F;
 	}
 
