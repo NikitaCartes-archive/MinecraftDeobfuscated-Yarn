@@ -28,7 +28,7 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	public static final int field_32047 = 9;
 	public static final int field_32048 = 10;
 	private static final boolean field_32049 = false;
-	private int loc;
+	private int location;
 	private final int count;
 	private final int dataType;
 	private final IntBuffer intData;
@@ -50,7 +50,7 @@ public class GlUniform extends Uniform implements AutoCloseable {
 			this.floatData = MemoryUtil.memAllocFloat(count);
 		}
 
-		this.loc = -1;
+		this.location = -1;
 		this.markStateDirty();
 	}
 
@@ -107,7 +107,7 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	}
 
 	public void setLoc(int loc) {
-		this.loc = loc;
+		this.location = loc;
 	}
 
 	public String getName() {
@@ -129,9 +129,9 @@ public class GlUniform extends Uniform implements AutoCloseable {
 		this.markStateDirty();
 	}
 
-	public final void method_35659(int i, float f) {
+	public final void set(int index, float value) {
 		this.floatData.position(0);
-		this.floatData.put(i, f);
+		this.floatData.put(index, value);
 		this.markStateDirty();
 	}
 
@@ -165,12 +165,12 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	}
 
 	@Override
-	public final void method_35652(Vector4f vector4f) {
+	public final void set(Vector4f vec) {
 		this.floatData.position(0);
-		this.floatData.put(0, vector4f.getX());
-		this.floatData.put(1, vector4f.getY());
-		this.floatData.put(2, vector4f.getZ());
-		this.floatData.put(3, vector4f.getW());
+		this.floatData.put(0, vec.getX());
+		this.floatData.put(1, vec.getY());
+		this.floatData.put(2, vec.getZ());
+		this.floatData.put(3, vec.getW());
 		this.markStateDirty();
 	}
 
@@ -197,7 +197,7 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	}
 
 	@Override
-	public final void set(int value1, int value2, int value3, int value4) {
+	public final void setForDataType(int value1, int value2, int value3, int value4) {
 		this.intData.position(0);
 		if (this.dataType >= 0) {
 			this.intData.put(0, value1);
@@ -219,36 +219,36 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	}
 
 	@Override
-	public final void method_35649(int i) {
+	public final void set(int value) {
 		this.intData.position(0);
-		this.intData.put(0, i);
+		this.intData.put(0, value);
 		this.markStateDirty();
 	}
 
 	@Override
-	public final void method_35650(int i, int j) {
+	public final void set(int value1, int value2) {
 		this.intData.position(0);
-		this.intData.put(0, i);
-		this.intData.put(1, j);
+		this.intData.put(0, value1);
+		this.intData.put(1, value2);
 		this.markStateDirty();
 	}
 
 	@Override
-	public final void method_35651(int i, int j, int k) {
+	public final void set(int value1, int value2, int value3) {
 		this.intData.position(0);
-		this.intData.put(0, i);
-		this.intData.put(1, j);
-		this.intData.put(2, k);
+		this.intData.put(0, value1);
+		this.intData.put(1, value2);
+		this.intData.put(2, value3);
 		this.markStateDirty();
 	}
 
 	@Override
-	public final void method_35656(int i, int j, int k, int l) {
+	public final void set(int value1, int value2, int value3, int value4) {
 		this.intData.position(0);
-		this.intData.put(0, i);
-		this.intData.put(1, j);
-		this.intData.put(2, k);
-		this.intData.put(3, l);
+		this.intData.put(0, value1);
+		this.intData.put(1, value2);
+		this.intData.put(2, value3);
+		this.intData.put(3, value4);
 		this.markStateDirty();
 	}
 
@@ -265,139 +265,180 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	}
 
 	@Override
-	public final void method_35657(float f, float g, float h, float i) {
+	public final void method_35657(float value1, float value2, float value3, float value4) {
 		this.floatData.position(0);
-		this.floatData.put(0, f);
-		this.floatData.put(1, g);
-		this.floatData.put(2, h);
-		this.floatData.put(3, i);
+		this.floatData.put(0, value1);
+		this.floatData.put(1, value2);
+		this.floatData.put(2, value3);
+		this.floatData.put(3, value4);
 		this.markStateDirty();
 	}
 
 	@Override
-	public final void method_35644(float f, float g, float h, float i, float j, float k) {
+	public final void set(float value1, float value2, float value3, float value4, float value5, float value6) {
 		this.floatData.position(0);
-		this.floatData.put(0, f);
-		this.floatData.put(1, g);
-		this.floatData.put(2, h);
-		this.floatData.put(3, i);
-		this.floatData.put(4, j);
-		this.floatData.put(5, k);
+		this.floatData.put(0, value1);
+		this.floatData.put(1, value2);
+		this.floatData.put(2, value3);
+		this.floatData.put(3, value4);
+		this.floatData.put(4, value5);
+		this.floatData.put(5, value6);
 		this.markStateDirty();
 	}
 
 	@Override
-	public final void method_35645(float f, float g, float h, float i, float j, float k, float l, float m) {
+	public final void set(float value1, float value2, float value3, float value4, float value5, float value6, float value7, float value8) {
 		this.floatData.position(0);
-		this.floatData.put(0, f);
-		this.floatData.put(1, g);
-		this.floatData.put(2, h);
-		this.floatData.put(3, i);
-		this.floatData.put(4, j);
-		this.floatData.put(5, k);
-		this.floatData.put(6, l);
-		this.floatData.put(7, m);
+		this.floatData.put(0, value1);
+		this.floatData.put(1, value2);
+		this.floatData.put(2, value3);
+		this.floatData.put(3, value4);
+		this.floatData.put(4, value5);
+		this.floatData.put(5, value6);
+		this.floatData.put(6, value7);
+		this.floatData.put(7, value8);
 		this.markStateDirty();
 	}
 
 	@Override
-	public final void method_35653(float f, float g, float h, float i, float j, float k) {
+	public final void method_35653(float value1, float value2, float value3, float value4, float value5, float value6) {
 		this.floatData.position(0);
-		this.floatData.put(0, f);
-		this.floatData.put(1, g);
-		this.floatData.put(2, h);
-		this.floatData.put(3, i);
-		this.floatData.put(4, j);
-		this.floatData.put(5, k);
+		this.floatData.put(0, value1);
+		this.floatData.put(1, value2);
+		this.floatData.put(2, value3);
+		this.floatData.put(3, value4);
+		this.floatData.put(4, value5);
+		this.floatData.put(5, value6);
 		this.markStateDirty();
 	}
 
 	@Override
-	public final void method_35646(float f, float g, float h, float i, float j, float k, float l, float m, float n) {
+	public final void set(float value1, float value2, float value3, float value4, float value5, float value6, float value7, float value8, float value9) {
 		this.floatData.position(0);
-		this.floatData.put(0, f);
-		this.floatData.put(1, g);
-		this.floatData.put(2, h);
-		this.floatData.put(3, i);
-		this.floatData.put(4, j);
-		this.floatData.put(5, k);
-		this.floatData.put(6, l);
-		this.floatData.put(7, m);
-		this.floatData.put(8, n);
+		this.floatData.put(0, value1);
+		this.floatData.put(1, value2);
+		this.floatData.put(2, value3);
+		this.floatData.put(3, value4);
+		this.floatData.put(4, value5);
+		this.floatData.put(5, value6);
+		this.floatData.put(6, value7);
+		this.floatData.put(7, value8);
+		this.floatData.put(8, value9);
 		this.markStateDirty();
 	}
 
 	@Override
-	public final void method_35647(float f, float g, float h, float i, float j, float k, float l, float m, float n, float o, float p, float q) {
-		this.floatData.position(0);
-		this.floatData.put(0, f);
-		this.floatData.put(1, g);
-		this.floatData.put(2, h);
-		this.floatData.put(3, i);
-		this.floatData.put(4, j);
-		this.floatData.put(5, k);
-		this.floatData.put(6, l);
-		this.floatData.put(7, m);
-		this.floatData.put(8, n);
-		this.floatData.put(9, o);
-		this.floatData.put(10, p);
-		this.floatData.put(11, q);
-		this.markStateDirty();
-	}
-
-	@Override
-	public final void method_35654(float f, float g, float h, float i, float j, float k, float l, float m) {
-		this.floatData.position(0);
-		this.floatData.put(0, f);
-		this.floatData.put(1, g);
-		this.floatData.put(2, h);
-		this.floatData.put(3, i);
-		this.floatData.put(4, j);
-		this.floatData.put(5, k);
-		this.floatData.put(6, l);
-		this.floatData.put(7, m);
-		this.markStateDirty();
-	}
-
-	@Override
-	public final void method_35655(float f, float g, float h, float i, float j, float k, float l, float m, float n, float o, float p, float q) {
-		this.floatData.position(0);
-		this.floatData.put(0, f);
-		this.floatData.put(1, g);
-		this.floatData.put(2, h);
-		this.floatData.put(3, i);
-		this.floatData.put(4, j);
-		this.floatData.put(5, k);
-		this.floatData.put(6, l);
-		this.floatData.put(7, m);
-		this.floatData.put(8, n);
-		this.floatData.put(9, o);
-		this.floatData.put(10, p);
-		this.floatData.put(11, q);
-		this.markStateDirty();
-	}
-
-	@Override
-	public final void method_35648(
-		float f, float g, float h, float i, float j, float k, float l, float m, float n, float o, float p, float q, float r, float s, float t, float u
+	public final void set(
+		float value1,
+		float value2,
+		float value3,
+		float value4,
+		float value5,
+		float value6,
+		float value7,
+		float value8,
+		float value9,
+		float value10,
+		float value11,
+		float value12
 	) {
 		this.floatData.position(0);
-		this.floatData.put(0, f);
-		this.floatData.put(1, g);
-		this.floatData.put(2, h);
-		this.floatData.put(3, i);
-		this.floatData.put(4, j);
-		this.floatData.put(5, k);
-		this.floatData.put(6, l);
-		this.floatData.put(7, m);
-		this.floatData.put(8, n);
-		this.floatData.put(9, o);
-		this.floatData.put(10, p);
-		this.floatData.put(11, q);
-		this.floatData.put(12, r);
-		this.floatData.put(13, s);
-		this.floatData.put(14, t);
-		this.floatData.put(15, u);
+		this.floatData.put(0, value1);
+		this.floatData.put(1, value2);
+		this.floatData.put(2, value3);
+		this.floatData.put(3, value4);
+		this.floatData.put(4, value5);
+		this.floatData.put(5, value6);
+		this.floatData.put(6, value7);
+		this.floatData.put(7, value8);
+		this.floatData.put(8, value9);
+		this.floatData.put(9, value10);
+		this.floatData.put(10, value11);
+		this.floatData.put(11, value12);
+		this.markStateDirty();
+	}
+
+	@Override
+	public final void method_35654(float value1, float value2, float value3, float value4, float value5, float value6, float value7, float value8) {
+		this.floatData.position(0);
+		this.floatData.put(0, value1);
+		this.floatData.put(1, value2);
+		this.floatData.put(2, value3);
+		this.floatData.put(3, value4);
+		this.floatData.put(4, value5);
+		this.floatData.put(5, value6);
+		this.floatData.put(6, value7);
+		this.floatData.put(7, value8);
+		this.markStateDirty();
+	}
+
+	@Override
+	public final void method_35655(
+		float value1,
+		float value2,
+		float value3,
+		float value4,
+		float value5,
+		float value6,
+		float value7,
+		float value8,
+		float value9,
+		float value10,
+		float value11,
+		float value12
+	) {
+		this.floatData.position(0);
+		this.floatData.put(0, value1);
+		this.floatData.put(1, value2);
+		this.floatData.put(2, value3);
+		this.floatData.put(3, value4);
+		this.floatData.put(4, value5);
+		this.floatData.put(5, value6);
+		this.floatData.put(6, value7);
+		this.floatData.put(7, value8);
+		this.floatData.put(8, value9);
+		this.floatData.put(9, value10);
+		this.floatData.put(10, value11);
+		this.floatData.put(11, value12);
+		this.markStateDirty();
+	}
+
+	@Override
+	public final void set(
+		float value1,
+		float value2,
+		float value3,
+		float value4,
+		float value5,
+		float value6,
+		float value7,
+		float value8,
+		float value9,
+		float value10,
+		float value11,
+		float value12,
+		float value13,
+		float value14,
+		float value15,
+		float value16
+	) {
+		this.floatData.position(0);
+		this.floatData.put(0, value1);
+		this.floatData.put(1, value2);
+		this.floatData.put(2, value3);
+		this.floatData.put(3, value4);
+		this.floatData.put(4, value5);
+		this.floatData.put(5, value6);
+		this.floatData.put(6, value7);
+		this.floatData.put(7, value8);
+		this.floatData.put(8, value9);
+		this.floatData.put(9, value10);
+		this.floatData.put(10, value11);
+		this.floatData.put(11, value12);
+		this.floatData.put(12, value13);
+		this.floatData.put(13, value14);
+		this.floatData.put(14, value15);
+		this.floatData.put(15, value16);
 		this.markStateDirty();
 	}
 
@@ -431,16 +472,16 @@ public class GlUniform extends Uniform implements AutoCloseable {
 		this.intData.rewind();
 		switch (this.dataType) {
 			case 0:
-				RenderSystem.glUniform1(this.loc, this.intData);
+				RenderSystem.glUniform1(this.location, this.intData);
 				break;
 			case 1:
-				RenderSystem.glUniform2(this.loc, this.intData);
+				RenderSystem.glUniform2(this.location, this.intData);
 				break;
 			case 2:
-				RenderSystem.glUniform3(this.loc, this.intData);
+				RenderSystem.glUniform3(this.location, this.intData);
 				break;
 			case 3:
-				RenderSystem.glUniform4(this.loc, this.intData);
+				RenderSystem.glUniform4(this.location, this.intData);
 				break;
 			default:
 				LOGGER.warn("Uniform.upload called, but count value ({}) is  not in the range of 1 to 4. Ignoring.", this.count);
@@ -451,16 +492,16 @@ public class GlUniform extends Uniform implements AutoCloseable {
 		this.floatData.rewind();
 		switch (this.dataType) {
 			case 4:
-				RenderSystem.glUniform1(this.loc, this.floatData);
+				RenderSystem.glUniform1(this.location, this.floatData);
 				break;
 			case 5:
-				RenderSystem.glUniform2(this.loc, this.floatData);
+				RenderSystem.glUniform2(this.location, this.floatData);
 				break;
 			case 6:
-				RenderSystem.glUniform3(this.loc, this.floatData);
+				RenderSystem.glUniform3(this.location, this.floatData);
 				break;
 			case 7:
-				RenderSystem.glUniform4(this.loc, this.floatData);
+				RenderSystem.glUniform4(this.location, this.floatData);
 				break;
 			default:
 				LOGGER.warn("Uniform.upload called, but count value ({}) is not in the range of 1 to 4. Ignoring.", this.count);
@@ -471,33 +512,33 @@ public class GlUniform extends Uniform implements AutoCloseable {
 		this.floatData.clear();
 		switch (this.dataType) {
 			case 8:
-				RenderSystem.glUniformMatrix2(this.loc, false, this.floatData);
+				RenderSystem.glUniformMatrix2(this.location, false, this.floatData);
 				break;
 			case 9:
-				RenderSystem.glUniformMatrix3(this.loc, false, this.floatData);
+				RenderSystem.glUniformMatrix3(this.location, false, this.floatData);
 				break;
 			case 10:
-				RenderSystem.glUniformMatrix4(this.loc, false, this.floatData);
+				RenderSystem.glUniformMatrix4(this.location, false, this.floatData);
 		}
 	}
 
-	public int method_35660() {
-		return this.loc;
+	public int getLocation() {
+		return this.location;
 	}
 
-	public int method_35661() {
+	public int getCount() {
 		return this.count;
 	}
 
-	public int method_35662() {
+	public int getDataType() {
 		return this.dataType;
 	}
 
-	public IntBuffer method_35663() {
+	public IntBuffer getIntData() {
 		return this.intData;
 	}
 
-	public FloatBuffer method_35664() {
+	public FloatBuffer getFloatData() {
 		return this.floatData;
 	}
 }

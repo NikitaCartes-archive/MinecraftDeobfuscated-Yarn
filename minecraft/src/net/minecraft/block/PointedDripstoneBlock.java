@@ -43,12 +43,12 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	public static final DirectionProperty VERTICAL_DIRECTION = Properties.VERTICAL_DIRECTION;
 	public static final EnumProperty<Thickness> THICKNESS = Properties.THICKNESS;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
-	private static final int field_31205 = 10;
+	private static final int field_31205 = 11;
 	private static final int field_31206 = Integer.MAX_VALUE;
 	private static final int field_31207 = 2;
 	private static final float field_31208 = 0.02F;
 	private static final float field_31209 = 0.12F;
-	private static final int field_31210 = 10;
+	private static final int field_31210 = 11;
 	private static final float field_31211 = 0.17578125F;
 	private static final float field_31212 = 0.05859375F;
 	private static final double field_31213 = 0.6;
@@ -177,7 +177,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 				}
 
 				if (!(dripChance >= f)) {
-					BlockPos blockPos = getTipPos(state, world, pos, 10, false);
+					BlockPos blockPos = getTipPos(state, world, pos, 11, false);
 					if (blockPos != null) {
 						BlockPos blockPos2 = getCauldronPos(world, blockPos, fluid);
 						if (blockPos2 != null) {
@@ -318,20 +318,17 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 
 	@VisibleForTesting
 	public static void tryGrow(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		Optional<BlockPos> optional = getSupportingPos(world, pos, state, 7);
-		if (optional.isPresent()) {
-			BlockState blockState = world.getBlockState((BlockPos)optional.get());
-			BlockState blockState2 = world.getBlockState(((BlockPos)optional.get()).up());
-			if (canGrow(blockState, blockState2)) {
-				BlockPos blockPos = getTipPos(state, world, pos, 7, false);
-				if (blockPos != null) {
-					BlockState blockState3 = world.getBlockState(blockPos);
-					if (canDrip(blockState3) && canGrow(blockState3, world, blockPos)) {
-						if (random.nextBoolean()) {
-							tryGrow(world, blockPos, Direction.DOWN);
-						} else {
-							tryGrowStalagmite(world, blockPos);
-						}
+		BlockState blockState = world.getBlockState(pos.up(1));
+		BlockState blockState2 = world.getBlockState(pos.up(2));
+		if (canGrow(blockState, blockState2)) {
+			BlockPos blockPos = getTipPos(state, world, pos, 7, false);
+			if (blockPos != null) {
+				BlockState blockState3 = world.getBlockState(blockPos);
+				if (canDrip(blockState3) && canGrow(blockState3, world, blockPos)) {
+					if (random.nextBoolean()) {
+						tryGrow(world, blockPos, Direction.DOWN);
+					} else {
+						tryGrowStalagmite(world, blockPos);
 					}
 				}
 			}
@@ -519,12 +516,12 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	private static BlockPos getCauldronPos(World world, BlockPos pos, Fluid fluid) {
 		Predicate<BlockState> predicate = state -> state.getBlock() instanceof AbstractCauldronBlock
 				&& ((AbstractCauldronBlock)state.getBlock()).canBeFilledByDripstone(fluid);
-		return (BlockPos)searchInDirection(world, pos, Direction.DOWN.getDirection(), AbstractBlock.AbstractBlockState::isAir, predicate, 10).orElse(null);
+		return (BlockPos)searchInDirection(world, pos, Direction.DOWN.getDirection(), AbstractBlock.AbstractBlockState::isAir, predicate, 11).orElse(null);
 	}
 
 	@Nullable
 	public static BlockPos getDripPos(World world, BlockPos pos) {
-		return (BlockPos)searchInDirection(world, pos, Direction.UP.getDirection(), AbstractBlock.AbstractBlockState::isAir, PointedDripstoneBlock::canDrip, 10)
+		return (BlockPos)searchInDirection(world, pos, Direction.UP.getDirection(), AbstractBlock.AbstractBlockState::isAir, PointedDripstoneBlock::canDrip, 11)
 			.orElse(null);
 	}
 
@@ -533,7 +530,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	}
 
 	private static Optional<Fluid> getFluid(World world, BlockPos pos, BlockState state) {
-		return !isPointingDown(state) ? Optional.empty() : getSupportingPos(world, pos, state, 10).map(posx -> world.getFluidState(posx.up()).getFluid());
+		return !isPointingDown(state) ? Optional.empty() : getSupportingPos(world, pos, state, 11).map(posx -> world.getFluidState(posx.up()).getFluid());
 	}
 
 	/**
@@ -561,11 +558,11 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 		Direction direction2 = Direction.get(direction, Direction.Axis.Y);
 		BlockPos.Mutable mutable = pos.mutableCopy();
 
-		for (int i = 0; i < range; i++) {
+		for (int i = 1; i < range; i++) {
 			mutable.move(direction2);
 			BlockState blockState = world.getBlockState(mutable);
 			if (stopPredicate.test(blockState)) {
-				return Optional.of(mutable);
+				return Optional.of(mutable.toImmutable());
 			}
 
 			if (world.isOutOfHeightLimit(mutable.getY()) || !continuePredicate.test(blockState)) {

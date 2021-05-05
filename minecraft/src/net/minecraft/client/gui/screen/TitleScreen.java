@@ -209,7 +209,7 @@ public class TitleScreen extends Screen {
 				this.client.startIntegratedServer("Demo_World");
 			} else {
 				DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
-				this.client.method_29607("Demo_World", MinecraftServer.DEMO_LEVEL_INFO, impl, GeneratorOptions.createDemo(impl));
+				this.client.createWorld("Demo_World", MinecraftServer.DEMO_LEVEL_INFO, impl, GeneratorOptions.createDemo(impl));
 			}
 		}));
 		this.buttonResetDemo = this.addButton(

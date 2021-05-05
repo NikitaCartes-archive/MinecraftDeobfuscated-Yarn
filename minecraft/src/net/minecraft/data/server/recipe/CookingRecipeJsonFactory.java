@@ -57,13 +57,13 @@ public class CookingRecipeJsonFactory implements CraftingRecipeJsonFactory {
 		return create(result, ingredient, experience, cookingTime, RecipeSerializer.SMOKING);
 	}
 
-	public CookingRecipeJsonFactory criterion(String criterionName, CriterionConditions conditions) {
-		this.builder.criterion(criterionName, conditions);
+	public CookingRecipeJsonFactory criterion(String string, CriterionConditions criterionConditions) {
+		this.builder.criterion(string, criterionConditions);
 		return this;
 	}
 
-	public CookingRecipeJsonFactory group(@Nullable String group) {
-		this.group = group;
+	public CookingRecipeJsonFactory group(@Nullable String string) {
+		this.group = string;
 		return this;
 	}
 

@@ -1,5 +1,6 @@
 package net.minecraft.world.biome.source;
 
+import java.util.Arrays;
 import javax.annotation.Nullable;
 import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.util.math.ChunkPos;
@@ -29,16 +30,24 @@ public class BiomeArray implements BiomeAccess.Storage {
 
 	public BiomeArray(IndexedIterable<Biome> indexedIterable, HeightLimitView world, int[] ids) {
 		this(indexedIterable, world, new Biome[ids.length]);
+		int i = -1;
 
-		for (int i = 0; i < this.data.length; i++) {
-			int j = ids[i];
-			Biome biome = indexedIterable.get(j);
+		for (int j = 0; j < this.data.length; j++) {
+			int k = ids[j];
+			Biome biome = indexedIterable.get(k);
 			if (biome == null) {
-				LOGGER.warn("Received invalid biome id: {}", j);
-				this.data[i] = indexedIterable.get(0);
+				if (i == -1) {
+					i = j;
+				}
+
+				this.data[j] = indexedIterable.get(0);
 			} else {
-				this.data[i] = biome;
+				this.data[j] = biome;
 			}
+		}
+
+		if (i != -1) {
+			LOGGER.warn("Invalid biome data received, starting from {}: {}", i, Arrays.toString(ids));
 		}
 	}
 

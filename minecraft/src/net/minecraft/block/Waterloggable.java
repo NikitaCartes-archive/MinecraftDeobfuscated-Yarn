@@ -36,6 +36,10 @@ public interface Waterloggable extends FluidDrainable, FluidFillable {
 	default ItemStack tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state) {
 		if ((Boolean)state.get(Properties.WATERLOGGED)) {
 			world.setBlockState(pos, state.with(Properties.WATERLOGGED, Boolean.valueOf(false)), Block.NOTIFY_ALL);
+			if (!state.canPlaceAt(world, pos)) {
+				world.breakBlock(pos, true);
+			}
+
 			return new ItemStack(Items.WATER_BUCKET);
 		} else {
 			return ItemStack.EMPTY;

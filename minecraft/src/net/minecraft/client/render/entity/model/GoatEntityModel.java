@@ -23,9 +23,10 @@ public class GoatEntityModel<T extends GoatEntity> extends QuadrupedEntityModel<
 			EntityModelPartNames.HEAD,
 			ModelPartBuilder.create()
 				.uv(2, 61)
-				.cuboid("left ear", 2.0F, -11.0F, -10.0F, 3.0F, 2.0F, 1.0F)
-				.uv(2, 61)
 				.cuboid("right ear", -6.0F, -11.0F, -10.0F, 3.0F, 2.0F, 1.0F)
+				.uv(2, 61)
+				.mirrored()
+				.cuboid("left ear", 2.0F, -11.0F, -10.0F, 3.0F, 2.0F, 1.0F)
 				.uv(23, 52)
 				.cuboid("goatee", -0.5F, -3.0F, -14.0F, 0.0F, 7.0F, 5.0F),
 			ModelTransform.pivot(1.0F, 14.0F, 0.0F)
@@ -61,12 +62,12 @@ public class GoatEntityModel<T extends GoatEntity> extends QuadrupedEntityModel<
 		modelPartData.addChild(
 			EntityModelPartNames.LEFT_FRONT_LEG,
 			ModelPartBuilder.create().uv(49, 2).cuboid(0.0F, 0.0F, 0.0F, 3.0F, 10.0F, 3.0F),
-			ModelTransform.pivot(-3.0F, 14.0F, -6.0F)
+			ModelTransform.pivot(1.0F, 14.0F, -6.0F)
 		);
 		modelPartData.addChild(
 			EntityModelPartNames.RIGHT_FRONT_LEG,
 			ModelPartBuilder.create().uv(35, 2).cuboid(0.0F, 0.0F, 0.0F, 3.0F, 10.0F, 3.0F),
-			ModelTransform.pivot(1.0F, 14.0F, -6.0F)
+			ModelTransform.pivot(-3.0F, 14.0F, -6.0F)
 		);
 		return TexturedModelData.of(modelData, 64, 64);
 	}

@@ -14,7 +14,7 @@ import org.apache.commons.io.FilenameUtils;
 
 public class FileNameUtil {
 	private static final Pattern FILE_NAME_WITH_COUNT = Pattern.compile("(<name>.*) \\((<count>\\d*)\\)", 66);
-	private static final int field_33384 = 255;
+	private static final int MAX_NAME_LENGTH = 255;
 	private static final Pattern RESERVED_WINDOWS_NAMES = Pattern.compile(".*\\.|(?:COM|CLOCK\\$|CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\\..*)?", 2);
 
 	public static String getNextUniqueName(Path path, String name, String extension) throws IOException {

@@ -140,18 +140,23 @@ public class Blocks {
 	);
 	public static final Block GOLD_ORE = register("gold_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0F, 3.0F)));
 	public static final Block DEEPSLATE_GOLD_ORE = register(
-		"deepslate_gold_ore", new OreBlock(AbstractBlock.Settings.copy(GOLD_ORE).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE))
+		"deepslate_gold_ore",
+		new OreBlock(AbstractBlock.Settings.copy(GOLD_ORE).mapColor(MapColor.DEEPSLATE_GRAY).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE))
 	);
 	public static final Block IRON_ORE = register("iron_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0F, 3.0F)));
 	public static final Block DEEPSLATE_IRON_ORE = register(
-		"deepslate_iron_ore", new OreBlock(AbstractBlock.Settings.copy(IRON_ORE).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE))
+		"deepslate_iron_ore",
+		new OreBlock(AbstractBlock.Settings.copy(IRON_ORE).mapColor(MapColor.DEEPSLATE_GRAY).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE))
 	);
 	public static final Block COAL_ORE = register(
 		"coal_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0F, 3.0F), UniformIntProvider.create(0, 2))
 	);
 	public static final Block DEEPSLATE_COAL_ORE = register(
 		"deepslate_coal_ore",
-		new OreBlock(AbstractBlock.Settings.copy(COAL_ORE).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE), UniformIntProvider.create(0, 2))
+		new OreBlock(
+			AbstractBlock.Settings.copy(COAL_ORE).mapColor(MapColor.DEEPSLATE_GRAY).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE),
+			UniformIntProvider.create(0, 2)
+		)
 	);
 	public static final Block NETHER_GOLD_ORE = register(
 		"nether_gold_ore",
@@ -238,7 +243,10 @@ public class Blocks {
 	);
 	public static final Block DEEPSLATE_LAPIS_ORE = register(
 		"deepslate_lapis_ore",
-		new OreBlock(AbstractBlock.Settings.copy(LAPIS_ORE).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE), UniformIntProvider.create(2, 5))
+		new OreBlock(
+			AbstractBlock.Settings.copy(LAPIS_ORE).mapColor(MapColor.DEEPSLATE_GRAY).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE),
+			UniformIntProvider.create(2, 5)
+		)
 	);
 	public static final Block LAPIS_BLOCK = register(
 		"lapis_block", new Block(AbstractBlock.Settings.of(Material.METAL, MapColor.LAPIS_BLUE).requiresTool().strength(3.0F, 3.0F))
@@ -493,7 +501,10 @@ public class Blocks {
 	);
 	public static final Block DEEPSLATE_DIAMOND_ORE = register(
 		"deepslate_diamond_ore",
-		new OreBlock(AbstractBlock.Settings.copy(DIAMOND_ORE).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE), UniformIntProvider.create(3, 7))
+		new OreBlock(
+			AbstractBlock.Settings.copy(DIAMOND_ORE).mapColor(MapColor.DEEPSLATE_GRAY).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE),
+			UniformIntProvider.create(3, 7)
+		)
 	);
 	public static final Block DIAMOND_BLOCK = register(
 		"diamond_block",
@@ -662,7 +673,8 @@ public class Blocks {
 		)
 	);
 	public static final Block DEEPSLATE_REDSTONE_ORE = register(
-		"deepslate_redstone_ore", new RedstoneOreBlock(AbstractBlock.Settings.copy(REDSTONE_ORE).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE))
+		"deepslate_redstone_ore",
+		new RedstoneOreBlock(AbstractBlock.Settings.copy(REDSTONE_ORE).mapColor(MapColor.DEEPSLATE_GRAY).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE))
 	);
 	public static final Block REDSTONE_TORCH = register(
 		"redstone_torch",
@@ -842,23 +854,21 @@ public class Blocks {
 	public static final Block CHISELED_STONE_BRICKS = register(
 		"chiseled_stone_bricks", new Block(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(1.5F, 6.0F))
 	);
-	public static final Block INFESTED_STONE = register(
-		"infested_stone", new InfestedBlock(STONE, AbstractBlock.Settings.of(Material.ORGANIC_PRODUCT).strength(0.0F, 0.75F))
-	);
+	public static final Block INFESTED_STONE = register("infested_stone", new InfestedBlock(STONE, AbstractBlock.Settings.of(Material.ORGANIC_PRODUCT)));
 	public static final Block INFESTED_COBBLESTONE = register(
-		"infested_cobblestone", new InfestedBlock(COBBLESTONE, AbstractBlock.Settings.of(Material.ORGANIC_PRODUCT).strength(0.0F, 0.75F))
+		"infested_cobblestone", new InfestedBlock(COBBLESTONE, AbstractBlock.Settings.of(Material.ORGANIC_PRODUCT))
 	);
 	public static final Block INFESTED_STONE_BRICKS = register(
-		"infested_stone_bricks", new InfestedBlock(STONE_BRICKS, AbstractBlock.Settings.of(Material.ORGANIC_PRODUCT).strength(0.0F, 0.75F))
+		"infested_stone_bricks", new InfestedBlock(STONE_BRICKS, AbstractBlock.Settings.of(Material.ORGANIC_PRODUCT))
 	);
 	public static final Block INFESTED_MOSSY_STONE_BRICKS = register(
-		"infested_mossy_stone_bricks", new InfestedBlock(MOSSY_STONE_BRICKS, AbstractBlock.Settings.of(Material.ORGANIC_PRODUCT).strength(0.0F, 0.75F))
+		"infested_mossy_stone_bricks", new InfestedBlock(MOSSY_STONE_BRICKS, AbstractBlock.Settings.of(Material.ORGANIC_PRODUCT))
 	);
 	public static final Block INFESTED_CRACKED_STONE_BRICKS = register(
-		"infested_cracked_stone_bricks", new InfestedBlock(CRACKED_STONE_BRICKS, AbstractBlock.Settings.of(Material.ORGANIC_PRODUCT).strength(0.0F, 0.75F))
+		"infested_cracked_stone_bricks", new InfestedBlock(CRACKED_STONE_BRICKS, AbstractBlock.Settings.of(Material.ORGANIC_PRODUCT))
 	);
 	public static final Block INFESTED_CHISELED_STONE_BRICKS = register(
-		"infested_chiseled_stone_bricks", new InfestedBlock(CHISELED_STONE_BRICKS, AbstractBlock.Settings.of(Material.ORGANIC_PRODUCT).strength(0.0F, 0.75F))
+		"infested_chiseled_stone_bricks", new InfestedBlock(CHISELED_STONE_BRICKS, AbstractBlock.Settings.of(Material.ORGANIC_PRODUCT))
 	);
 	public static final Block BROWN_MUSHROOM_BLOCK = register(
 		"brown_mushroom_block", new MushroomBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.DIRT_BROWN).strength(0.2F).sounds(BlockSoundGroup.WOOD))
@@ -1006,7 +1016,10 @@ public class Blocks {
 	);
 	public static final Block DEEPSLATE_EMERALD_ORE = register(
 		"deepslate_emerald_ore",
-		new OreBlock(AbstractBlock.Settings.copy(EMERALD_ORE).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE), UniformIntProvider.create(3, 7))
+		new OreBlock(
+			AbstractBlock.Settings.copy(EMERALD_ORE).mapColor(MapColor.DEEPSLATE_GRAY).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE),
+			UniformIntProvider.create(3, 7)
+		)
 	);
 	public static final Block ENDER_CHEST = register(
 		"ender_chest", new EnderChestBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(22.5F, 600.0F).luminance(state -> 7))
@@ -3040,7 +3053,8 @@ public class Blocks {
 	);
 	public static final Block COPPER_ORE = register("copper_ore", new OreBlock(AbstractBlock.Settings.copy(IRON_ORE)));
 	public static final Block DEEPSLATE_COPPER_ORE = register(
-		"deepslate_copper_ore", new OreBlock(AbstractBlock.Settings.copy(COPPER_ORE).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE))
+		"deepslate_copper_ore",
+		new OreBlock(AbstractBlock.Settings.copy(COPPER_ORE).mapColor(MapColor.DEEPSLATE_GRAY).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE))
 	);
 	public static final Block OXIDIZED_CUT_COPPER = register(
 		"oxidized_cut_copper", new OxidizableBlock(Oxidizable.OxidizationLevel.OXIDIZED, AbstractBlock.Settings.copy(OXIDIZED_COPPER))
@@ -3229,9 +3243,7 @@ public class Blocks {
 	public static final Block CRACKED_DEEPSLATE_TILES = register("cracked_deepslate_tiles", new Block(AbstractBlock.Settings.copy(DEEPSLATE_TILES)));
 	public static final Block INFESTED_DEEPSLATE = register(
 		"infested_deepslate",
-		new RotatedInfestedBlock(
-			DEEPSLATE, AbstractBlock.Settings.of(Material.ORGANIC_PRODUCT, MapColor.DEEPSLATE_GRAY).strength(0.0F, 0.75F).sounds(BlockSoundGroup.DEEPSLATE)
-		)
+		new RotatedInfestedBlock(DEEPSLATE, AbstractBlock.Settings.of(Material.ORGANIC_PRODUCT, MapColor.DEEPSLATE_GRAY).sounds(BlockSoundGroup.DEEPSLATE))
 	);
 	public static final Block SMOOTH_BASALT = register("smooth_basalt", new Block(AbstractBlock.Settings.copy(BASALT)));
 	public static final Block RAW_IRON_BLOCK = register(

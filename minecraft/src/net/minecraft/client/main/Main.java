@@ -161,7 +161,7 @@ public class Main {
 		} catch (Throwable var69) {
 			CrashReport crashReport = CrashReport.create(var69, "Initializing game");
 			crashReport.addElement("Initialization");
-			MinecraftClient.addSystemDetailsToCrashReport(null, runArgs.game.version, null, crashReport);
+			MinecraftClient.addSystemDetailsToCrashReport(null, null, runArgs.game.version, null, crashReport);
 			MinecraftClient.printCrashReport(crashReport);
 			return;
 		}

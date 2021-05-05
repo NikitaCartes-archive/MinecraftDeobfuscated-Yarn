@@ -383,7 +383,7 @@ public class JsonEffectGlShader implements EffectGlShader, AutoCloseable {
 			int l = j > 1 && j <= 4 && i < 8 ? j - 1 : 0;
 			GlUniform glUniform = new GlUniform(string, i + l, j, this);
 			if (i <= 3) {
-				glUniform.set((int)fs[0], (int)fs[1], (int)fs[2], (int)fs[3]);
+				glUniform.setForDataType((int)fs[0], (int)fs[1], (int)fs[2], (int)fs[3]);
 			} else if (i <= 7) {
 				glUniform.setForDataType(fs[0], fs[1], fs[2], fs[3]);
 			} else {

@@ -288,7 +288,7 @@ public class CreateWorldScreen extends Screen {
 				);
 			}
 
-			this.client.method_29607(this.saveDirectoryName, levelInfo, this.moreOptionsDialog.getRegistryManager(), generatorOptions);
+			this.client.createWorld(this.saveDirectoryName, levelInfo, this.moreOptionsDialog.getRegistryManager(), generatorOptions);
 		}
 	}
 

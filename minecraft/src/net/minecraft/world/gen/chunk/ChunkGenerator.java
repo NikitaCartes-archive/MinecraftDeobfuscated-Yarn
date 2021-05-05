@@ -146,9 +146,6 @@ public abstract class ChunkGenerator {
 		ChunkRandom chunkRandom = new ChunkRandom();
 		int i = 8;
 		ChunkPos chunkPos = chunk.getPos();
-		GenerationSettings generationSettings = this.populationSource
-			.getBiomeForNoiseGen(BiomeCoords.fromBlock(chunkPos.getStartX()), 0, BiomeCoords.fromBlock(chunkPos.getStartZ()))
-			.getGenerationSettings();
 		CarverContext carverContext = new CarverContext(this);
 		class_6350 lv = this.method_36380(chunk);
 		BitSet bitSet = ((ProtoChunk)chunk).getOrCreateCarvingMask(carver);
@@ -156,6 +153,9 @@ public abstract class ChunkGenerator {
 		for (int j = -8; j <= 8; j++) {
 			for (int k = -8; k <= 8; k++) {
 				ChunkPos chunkPos2 = new ChunkPos(chunkPos.x + j, chunkPos.z + k);
+				GenerationSettings generationSettings = this.populationSource
+					.getBiomeForNoiseGen(BiomeCoords.fromBlock(chunkPos2.getStartX()), 0, BiomeCoords.fromBlock(chunkPos2.getStartZ()))
+					.getGenerationSettings();
 				List<Supplier<ConfiguredCarver<?>>> list = generationSettings.getCarversForStep(carver);
 				ListIterator<Supplier<ConfiguredCarver<?>>> listIterator = list.listIterator();
 

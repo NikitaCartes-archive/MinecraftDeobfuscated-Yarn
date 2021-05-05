@@ -16,7 +16,6 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.ItemTags;
@@ -138,14 +137,8 @@ public class ItemEntity extends Entity {
 				|| MathHelper.floor(this.prevY) != MathHelper.floor(this.getY())
 				|| MathHelper.floor(this.prevZ) != MathHelper.floor(this.getZ());
 			int i = bl ? 2 : 40;
-			if (this.age % i == 0) {
-				if (this.world.getFluidState(this.getBlockPos()).isIn(FluidTags.LAVA) && !this.isFireImmune()) {
-					this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
-				}
-
-				if (!this.world.isClient && this.canMerge()) {
-					this.tryMerge();
-				}
+			if (this.age % i == 0 && !this.world.isClient && this.canMerge()) {
+				this.tryMerge();
 			}
 
 			if (this.itemAge != -32768) {
@@ -261,7 +254,7 @@ public class ItemEntity extends Entity {
 				this.discard();
 			}
 
-			return false;
+			return true;
 		}
 	}
 

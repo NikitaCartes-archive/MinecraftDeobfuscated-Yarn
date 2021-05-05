@@ -39,13 +39,13 @@ public class SingleItemRecipeJsonFactory implements CraftingRecipeJsonFactory {
 		return new SingleItemRecipeJsonFactory(RecipeSerializer.STONECUTTING, input, output, outputCount);
 	}
 
-	public SingleItemRecipeJsonFactory criterion(String criterionName, CriterionConditions conditions) {
-		this.builder.criterion(criterionName, conditions);
+	public SingleItemRecipeJsonFactory criterion(String string, CriterionConditions criterionConditions) {
+		this.builder.criterion(string, criterionConditions);
 		return this;
 	}
 
-	public SingleItemRecipeJsonFactory group(@Nullable String group) {
-		this.group = group;
+	public SingleItemRecipeJsonFactory group(@Nullable String string) {
+		this.group = string;
 		return this;
 	}
 

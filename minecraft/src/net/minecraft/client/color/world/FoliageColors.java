@@ -11,7 +11,8 @@ public class FoliageColors {
 		humidity *= temperature;
 		int i = (int)((1.0 - temperature) * 255.0);
 		int j = (int)((1.0 - humidity) * 255.0);
-		return colorMap[j << 8 | i];
+		int k = j << 8 | i;
+		return k >= colorMap.length ? getDefaultColor() : colorMap[k];
 	}
 
 	public static int getSpruceColor() {

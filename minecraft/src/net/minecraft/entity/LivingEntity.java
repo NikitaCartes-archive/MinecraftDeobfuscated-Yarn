@@ -557,15 +557,9 @@ public abstract class LivingEntity extends Entity {
 
 	protected void updatePostDeath() {
 		this.deathTime++;
-		if (this.deathTime == 20) {
+		if (this.deathTime == 20 && !this.world.isClient()) {
+			this.world.sendEntityStatus(this, (byte)60);
 			this.remove(Entity.RemovalReason.KILLED);
-
-			for (int i = 0; i < 20; i++) {
-				double d = this.random.nextGaussian() * 0.02;
-				double e = this.random.nextGaussian() * 0.02;
-				double f = this.random.nextGaussian() * 0.02;
-				this.world.addParticle(ParticleTypes.POOF, this.getParticleX(1.0), this.getRandomBodyY(), this.getParticleZ(1.0), d, e, f);
-			}
 		}
 	}
 
@@ -1219,7 +1213,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	protected void knockback(LivingEntity target) {
-		target.takeKnockback(0.5F, target.getX() - this.getX(), target.getZ() - this.getZ());
+		target.takeKnockback(0.5, target.getX() - this.getX(), target.getZ() - this.getZ());
 	}
 
 	private boolean tryUseTotem(DamageSource source) {
@@ -1431,13 +1425,13 @@ public abstract class LivingEntity extends Entity {
 		return builder;
 	}
 
-	public void takeKnockback(float f, double d, double e) {
-		f = (float)((double)f * (1.0 - this.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)));
-		if (!(f <= 0.0F)) {
+	public void takeKnockback(double d, double e, double f) {
+		d *= 1.0 - this.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE);
+		if (!(d <= 0.0)) {
 			this.velocityDirty = true;
 			Vec3d vec3d = this.getVelocity();
-			Vec3d vec3d2 = new Vec3d(d, 0.0, e).normalize().multiply((double)f);
-			this.setVelocity(vec3d.x / 2.0 - vec3d2.x, this.onGround ? Math.min(0.4, vec3d.y / 2.0 + (double)f) : vec3d.y, vec3d.z / 2.0 - vec3d2.z);
+			Vec3d vec3d2 = new Vec3d(e, 0.0, f).normalize().multiply(d);
+			this.setVelocity(vec3d.x / 2.0 - vec3d2.x, this.onGround ? Math.min(0.4, vec3d.y / 2.0 + d) : vec3d.y, vec3d.z / 2.0 - vec3d2.z);
 		}
 	}
 
@@ -1781,6 +1775,8 @@ public abstract class LivingEntity extends Entity {
 			case 45:
 			case 53:
 			case 56:
+			case 58:
+			case 59:
 			default:
 				super.handleStatus(status);
 				break;
@@ -1827,6 +1823,18 @@ public abstract class LivingEntity extends Entity {
 				break;
 			case 55:
 				this.swapHandStacks();
+				break;
+			case 60:
+				this.method_36549();
+		}
+	}
+
+	private void method_36549() {
+		for (int i = 0; i < 20; i++) {
+			double d = this.random.nextGaussian() * 0.02;
+			double e = this.random.nextGaussian() * 0.02;
+			double f = this.random.nextGaussian() * 0.02;
+			this.world.addParticle(ParticleTypes.POOF, this.getParticleX(1.0), this.getRandomBodyY(), this.getParticleZ(1.0), d, e, f);
 		}
 	}
 
@@ -1970,7 +1978,7 @@ public abstract class LivingEntity extends Entity {
 		return 1.0F;
 	}
 
-	protected float getSoundPitch() {
+	public float getSoundPitch() {
 		return this.isBaby() ? (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.5F : (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F;
 	}
 

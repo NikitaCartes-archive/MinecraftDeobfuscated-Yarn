@@ -377,6 +377,10 @@ public abstract class AbstractBlock {
 		return (MapColor)this.settings.mapColorProvider.apply(this.asBlock().getDefaultState());
 	}
 
+	public float method_36555() {
+		return this.settings.hardness;
+	}
+
 	public abstract static class AbstractBlockState extends State<Block, BlockState> {
 		private final int luminance;
 		private final boolean hasSidedTransparency;
@@ -954,9 +958,7 @@ public abstract class AbstractBlock {
 		}
 
 		public AbstractBlock.Settings strength(float hardness, float resistance) {
-			this.hardness = hardness;
-			this.resistance = Math.max(0.0F, resistance);
-			return this;
+			return this.hardness(hardness).resistance(resistance);
 		}
 
 		/**
@@ -1054,6 +1056,16 @@ public abstract class AbstractBlock {
 
 		public AbstractBlock.Settings mapColor(MapColor color) {
 			this.mapColorProvider = state -> color;
+			return this;
+		}
+
+		public AbstractBlock.Settings hardness(float hardness) {
+			this.hardness = hardness;
+			return this;
+		}
+
+		public AbstractBlock.Settings resistance(float resistance) {
+			this.resistance = Math.max(0.0F, resistance);
 			return this;
 		}
 	}

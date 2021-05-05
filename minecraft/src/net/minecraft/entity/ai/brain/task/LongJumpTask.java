@@ -61,7 +61,7 @@ public class LongJumpTask<E extends MobEntity> extends Task<E> {
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, MobEntity mobEntity) {
-		return mobEntity.isOnGround() && !serverWorld.getBlockState(mobEntity.getBlockPos().down()).isOf(Blocks.HONEY_BLOCK);
+		return mobEntity.isOnGround() && !serverWorld.getBlockState(mobEntity.getBlockPos()).isOf(Blocks.HONEY_BLOCK);
 	}
 
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {

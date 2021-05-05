@@ -95,37 +95,42 @@ public class Framebuffer {
 
 	public void initFbo(int width, int height, boolean getError) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-		this.viewportWidth = width;
-		this.viewportHeight = height;
-		this.textureWidth = width;
-		this.textureHeight = height;
-		this.fbo = GlStateManager.glGenFramebuffers();
-		this.colorAttachment = TextureUtil.generateTextureId();
-		if (this.useDepthAttachment) {
-			this.depthAttachment = TextureUtil.generateTextureId();
-			GlStateManager._bindTexture(this.depthAttachment);
-			GlStateManager._texParameter(3553, 10241, 9728);
-			GlStateManager._texParameter(3553, 10240, 9728);
-			GlStateManager._texParameter(3553, 34892, 0);
+		int i = RenderSystem.maxSupportedTextureSize();
+		if (width > 0 && width <= i && height > 0 && height <= i) {
+			this.viewportWidth = width;
+			this.viewportHeight = height;
+			this.textureWidth = width;
+			this.textureHeight = height;
+			this.fbo = GlStateManager.glGenFramebuffers();
+			this.colorAttachment = TextureUtil.generateTextureId();
+			if (this.useDepthAttachment) {
+				this.depthAttachment = TextureUtil.generateTextureId();
+				GlStateManager._bindTexture(this.depthAttachment);
+				GlStateManager._texParameter(3553, 10241, 9728);
+				GlStateManager._texParameter(3553, 10240, 9728);
+				GlStateManager._texParameter(3553, 34892, 0);
+				GlStateManager._texParameter(3553, 10242, 33071);
+				GlStateManager._texParameter(3553, 10243, 33071);
+				GlStateManager._texImage2D(3553, 0, 6402, this.textureWidth, this.textureHeight, 0, 6402, 5126, null);
+			}
+
+			this.setTexFilter(9728);
+			GlStateManager._bindTexture(this.colorAttachment);
 			GlStateManager._texParameter(3553, 10242, 33071);
 			GlStateManager._texParameter(3553, 10243, 33071);
-			GlStateManager._texImage2D(3553, 0, 6402, this.textureWidth, this.textureHeight, 0, 6402, 5126, null);
-		}
+			GlStateManager._texImage2D(3553, 0, 32856, this.textureWidth, this.textureHeight, 0, 6408, 5121, null);
+			GlStateManager._glBindFramebuffer(36160, this.fbo);
+			GlStateManager._glFramebufferTexture2D(36160, 36064, 3553, this.colorAttachment, 0);
+			if (this.useDepthAttachment) {
+				GlStateManager._glFramebufferTexture2D(36160, 36096, 3553, this.depthAttachment, 0);
+			}
 
-		this.setTexFilter(9728);
-		GlStateManager._bindTexture(this.colorAttachment);
-		GlStateManager._texParameter(3553, 10242, 33071);
-		GlStateManager._texParameter(3553, 10243, 33071);
-		GlStateManager._texImage2D(3553, 0, 32856, this.textureWidth, this.textureHeight, 0, 6408, 5121, null);
-		GlStateManager._glBindFramebuffer(36160, this.fbo);
-		GlStateManager._glFramebufferTexture2D(36160, 36064, 3553, this.colorAttachment, 0);
-		if (this.useDepthAttachment) {
-			GlStateManager._glFramebufferTexture2D(36160, 36096, 3553, this.depthAttachment, 0);
+			this.checkFramebufferStatus();
+			this.clear(getError);
+			this.endRead();
+		} else {
+			throw new IllegalArgumentException("Window " + width + "x" + height + " size out of bounds (max. size: " + i + ")");
 		}
-
-		this.checkFramebufferStatus();
-		this.clear(getError);
-		this.endRead();
 	}
 
 	public void setTexFilter(int i) {

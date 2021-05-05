@@ -38,7 +38,7 @@ public enum ActionResult {
 		return this == SUCCESS;
 	}
 
-	public boolean method_36360() {
+	public boolean shouldIncrementStat() {
 		return this == SUCCESS || this == CONSUME;
 	}
 

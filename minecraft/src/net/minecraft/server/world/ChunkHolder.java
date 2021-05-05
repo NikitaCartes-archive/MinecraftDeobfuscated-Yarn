@@ -348,9 +348,7 @@ public class ChunkHolder {
 			for (int i = bl2 ? chunkStatus2.getIndex() + 1 : 0; i <= chunkStatus.getIndex(); i++) {
 				CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = (CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>)this.futuresByStatus
 					.get(i);
-				if (completableFuture != null) {
-					this.futuresByStatus.set(i, completableFuture.thenApply(either2 -> either));
-				} else {
+				if (completableFuture == null) {
 					this.futuresByStatus.set(i, CompletableFuture.completedFuture(either));
 				}
 			}

@@ -31,6 +31,7 @@ import net.minecraft.item.Items;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
+import net.minecraft.world.Difficulty;
 
 public class GoatBrain {
 	public static final int field_33490 = 20;
@@ -47,7 +48,12 @@ public class GoatBrain {
 	public static final int field_33493 = 5;
 	public static final float field_33494 = 1.5F;
 	private static final UniformIntProvider RAM_COOLDOWN_RANGE = UniformIntProvider.create(600, 6000);
-	private static final TargetPredicate IS_GOAT_PREDICATE = new TargetPredicate().setPredicate(livingEntity -> !livingEntity.getType().equals(EntityType.GOAT));
+	private static final UniformIntProvider field_33693 = UniformIntProvider.create(100, 300);
+	private static final TargetPredicate IS_GOAT_PREDICATE = new TargetPredicate()
+		.setPredicate(
+			livingEntity -> !livingEntity.getType().equals(EntityType.GOAT)
+					&& (livingEntity.world.getDifficulty() != Difficulty.PEACEFUL || !livingEntity.getType().equals(EntityType.PLAYER))
+		);
 	private static final float field_33501 = 3.0F;
 	public static final int field_33495 = 4;
 	private static final int field_33502 = 2;
@@ -137,18 +143,18 @@ public class GoatBrain {
 				Pair.of(
 					0,
 					new RamTask<>(
-						RAM_COOLDOWN_RANGE,
+						goatEntity -> goatEntity.isScreaming() ? field_33693 : RAM_COOLDOWN_RANGE,
 						IS_GOAT_PREDICATE,
 						goatEntity -> goatEntity.isBaby() ? 1 : 2,
 						3.0F,
-						goatEntity -> goatEntity.isBaby() ? 1.0F : 2.5F,
+						goatEntity -> goatEntity.isBaby() ? 1.0 : 2.5,
 						goatEntity -> goatEntity.isScreaming() ? SoundEvents.ENTITY_GOAT_SCREAMING_RAM_IMPACT : SoundEvents.ENTITY_GOAT_RAM_IMPACT
 					)
 				),
 				Pair.of(
 					1,
 					new class_6336<>(
-						RAM_COOLDOWN_RANGE.getMin(),
+						goatEntity -> goatEntity.isScreaming() ? field_33693.getMin() : RAM_COOLDOWN_RANGE.getMin(),
 						4,
 						7,
 						1.25F,

@@ -235,7 +235,8 @@ public class PickaxeItem extends MiningToolItem {
 				Blocks.WAXED_OXIDIZED_COPPER,
 				Blocks.WAXED_OXIDIZED_CUT_COPPER_SLAB,
 				Blocks.WAXED_OXIDIZED_CUT_COPPER_STAIRS,
-				Blocks.WAXED_OXIDIZED_CUT_COPPER
+				Blocks.WAXED_OXIDIZED_CUT_COPPER,
+				Blocks.LIGHTNING_ROD
 			)) {
 				miningLevels.put(block, 1);
 			}

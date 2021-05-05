@@ -1343,7 +1343,9 @@ public abstract class MobEntity extends LivingEntity {
 			if (g > 0.0F && target instanceof LivingEntity) {
 				((LivingEntity)target)
 					.takeKnockback(
-						g * 0.5F, (double)MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0)), (double)(-MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)))
+						(double)(g * 0.5F),
+						(double)MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0)),
+						(double)(-MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)))
 					);
 				this.setVelocity(this.getVelocity().multiply(0.6, 1.0, 0.6));
 			}

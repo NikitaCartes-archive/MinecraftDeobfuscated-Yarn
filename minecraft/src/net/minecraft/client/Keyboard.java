@@ -63,8 +63,8 @@ public class Keyboard {
 		this.client = client;
 	}
 
-	private boolean method_35696(int i) {
-		switch (i) {
+	private boolean method_35696(int key) {
+		switch (key) {
 			case 69:
 				this.client.debugChunkInfo = !this.client.debugChunkInfo;
 				this.method_35697("ChunkPath: {0}", this.client.debugChunkInfo ? "shown" : "hidden");
@@ -96,7 +96,7 @@ public class Keyboard {
 		}
 	}
 
-	private void debugWarn(String string, Object... objects) {
+	private void debugWarn(String key, Object... args) {
 		this.client
 			.inGameHud
 			.getChatHud()
@@ -104,11 +104,11 @@ public class Keyboard {
 				new LiteralText("")
 					.append(new TranslatableText("debug.prefix").formatted(new Formatting[]{Formatting.YELLOW, Formatting.BOLD}))
 					.append(" ")
-					.append(new TranslatableText(string, objects))
+					.append(new TranslatableText(key, args))
 			);
 	}
 
-	private void debugError(String string, Object... objects) {
+	private void debugError(String key, Object... args) {
 		this.client
 			.inGameHud
 			.getChatHud()
@@ -116,11 +116,11 @@ public class Keyboard {
 				new LiteralText("")
 					.append(new TranslatableText("debug.prefix").formatted(new Formatting[]{Formatting.RED, Formatting.BOLD}))
 					.append(" ")
-					.append(new TranslatableText(string, objects))
+					.append(new TranslatableText(key, args))
 			);
 	}
 
-	private void method_35697(String string, Object... objects) {
+	private void method_35697(String key, Object... args) {
 		this.client
 			.inGameHud
 			.getChatHud()
@@ -128,7 +128,7 @@ public class Keyboard {
 				new LiteralText("")
 					.append(new TranslatableText("debug.prefix").formatted(new Formatting[]{Formatting.YELLOW, Formatting.BOLD}))
 					.append(" ")
-					.append(MessageFormat.format(string, objects))
+					.append(MessageFormat.format(key, args))
 			);
 	}
 
@@ -289,8 +289,8 @@ public class Keyboard {
 					Identifier identifier = Registry.ENTITY_TYPE.getId(entity.getType());
 					if (bl) {
 						if (bl2) {
-							this.client.player.networkHandler.getDataQueryHandler().queryEntityNbt(entity.getId(), nbtCompoundx -> {
-								this.copyEntity(identifier, entity.getPos(), nbtCompoundx);
+							this.client.player.networkHandler.getDataQueryHandler().queryEntityNbt(entity.getId(), nbt -> {
+								this.copyEntity(identifier, entity.getPos(), nbt);
 								this.debugWarn("debug.inspect.server.entity");
 							});
 						} else {
@@ -338,7 +338,7 @@ public class Keyboard {
 		this.setClipboard(string2);
 	}
 
-	public void onKey(long window, int key, int scancode, int i, int j) {
+	public void onKey(long window, int key, int scancode, int i, int modifiers) {
 		if (window == this.client.getWindow().getHandle()) {
 			if (this.debugCrashStartTime > 0L) {
 				if (!InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_C)
@@ -372,7 +372,7 @@ public class Keyboard {
 						this.client.getWindow().getFramebufferWidth(),
 						this.client.getWindow().getFramebufferHeight(),
 						this.client.getFramebuffer(),
-						text -> this.client.execute(() -> this.client.inGameHud.getChatHud().addMessage(text))
+						message -> this.client.execute(() -> this.client.inGameHud.getChatHud().addMessage(message))
 					);
 					return;
 				}
@@ -394,10 +394,10 @@ public class Keyboard {
 				Screen.wrapScreenError(() -> {
 					if (i != 1 && (i != 2 || !this.repeatEvents)) {
 						if (i == 0) {
-							bls[0] = parentElement.keyReleased(key, scancode, j);
+							bls[0] = parentElement.keyReleased(key, scancode, modifiers);
 						}
 					} else {
-						bls[0] = parentElement.keyPressed(key, scancode, j);
+						bls[0] = parentElement.keyPressed(key, scancode, modifiers);
 					}
 				}, "keyPressed event handler", parentElement.getClass().getCanonicalName());
 				if (bls[0]) {
@@ -452,15 +452,15 @@ public class Keyboard {
 		}
 	}
 
-	private void onChar(long window, int i, int j) {
+	private void onChar(long window, int i, int modifiers) {
 		if (window == this.client.getWindow().getHandle()) {
 			Element element = this.client.currentScreen;
 			if (element != null && this.client.getOverlay() == null) {
 				if (Character.charCount(i) == 1) {
-					Screen.wrapScreenError(() -> element.charTyped((char)i, j), "charTyped event handler", element.getClass().getCanonicalName());
+					Screen.wrapScreenError(() -> element.charTyped((char)i, modifiers), "charTyped event handler", element.getClass().getCanonicalName());
 				} else {
 					for (char c : Character.toChars(i)) {
-						Screen.wrapScreenError(() -> element.charTyped(c, j), "charTyped event handler", element.getClass().getCanonicalName());
+						Screen.wrapScreenError(() -> element.charTyped(c, modifiers), "charTyped event handler", element.getClass().getCanonicalName());
 					}
 				}
 			}
@@ -471,9 +471,11 @@ public class Keyboard {
 		this.repeatEvents = repeatEvents;
 	}
 
-	public void setup(long l) {
+	public void setup(long window) {
 		InputUtil.setKeyboardCallbacks(
-			l, (lx, i, j, k, m) -> this.client.execute(() -> this.onKey(lx, i, j, k, m)), (lx, i, j) -> this.client.execute(() -> this.onChar(lx, i, j))
+			window,
+			(windowx, key, i, j, modifiers) -> this.client.execute(() -> this.onKey(windowx, key, i, j, modifiers)),
+			(windowx, i, modifiers) -> this.client.execute(() -> this.onChar(windowx, i, modifiers))
 		);
 	}
 

@@ -7,7 +7,7 @@ import net.minecraft.world.gen.NoiseHelper;
 import net.minecraft.world.gen.SimpleRandom;
 
 public class class_6358 {
-	private static final int field_33654 = 100;
+	private static final int field_33654 = 30;
 	private static final double field_33655 = 1.5;
 	private static final double field_33656 = 2.6666666666666665;
 	private static final double field_33657 = 2.6666666666666665;
@@ -54,7 +54,7 @@ public class class_6358 {
 			int r = p * 8;
 			int s = j * 4;
 			double f;
-			if (r < 108) {
+			if (r < 38) {
 				f = NoiseHelper.lerpFromProgress(doublePerlinNoiseSampler, (double)q * d, (double)r * e, (double)s * d, -1.0, 1.0);
 			} else {
 				f = 1.0;
@@ -65,7 +65,7 @@ public class class_6358 {
 	}
 
 	public double method_36470(double d, int i, int j, int k, double e, double f, double g, double h, int l) {
-		if (j > 100 || j < l + 4) {
+		if (j > 30 || j < l + 4) {
 			return d;
 		} else if (d < 0.0) {
 			return d;
@@ -73,8 +73,8 @@ public class class_6358 {
 			return d;
 		} else {
 			double m = 0.05;
-			double n = 0.07;
-			double o = MathHelper.clampedLerpFromProgress(f, -1.0, 1.0, 0.05, 0.07);
+			double n = 0.1;
+			double o = MathHelper.clampedLerpFromProgress(f, -1.0, 1.0, 0.05, 0.1);
 			double p = Math.abs(1.5 * g) - o;
 			double q = Math.abs(1.5 * h) - o;
 			double r = Math.max(p, q);

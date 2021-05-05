@@ -131,6 +131,7 @@ import net.minecraft.client.resource.FoliageColormapResourceSupplier;
 import net.minecraft.client.resource.Format3ResourcePack;
 import net.minecraft.client.resource.Format4ResourcePack;
 import net.minecraft.client.resource.GrassColormapResourceSupplier;
+import net.minecraft.client.resource.ResourceReloadLogger;
 import net.minecraft.client.resource.SplashTextResourceSupplier;
 import net.minecraft.client.resource.VideoWarningManager;
 import net.minecraft.client.resource.language.I18n;
@@ -445,6 +446,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	@Nullable
 	private ProfileResult tickProfilerResult;
 	private Recorder debugRecorder = DummyRecorder.INSTANCE;
+	private final ResourceReloadLogger resourceReloadLogger = new ResourceReloadLogger();
 	private String openProfilerSection = "root";
 
 	public MinecraftClient(RunArgs args) {
@@ -603,14 +605,17 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.gameRenderer.preloadShaders(this.getResourcePackProvider().getPack());
 		SplashScreen.init(this);
 		List<ResourcePack> list = this.resourcePackManager.createResourcePacks();
+		this.resourceReloadLogger.reload(ResourceReloadLogger.ReloadReason.INITIAL, list);
 		this.setOverlay(
 			new SplashScreen(
 				this,
 				this.resourceManager.reload(Util.getMainWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list),
-				optional -> Util.ifPresentOrElse(optional, this::handleResourceReloadException, () -> {
+				throwable -> Util.ifPresentOrElse(throwable, this::handleResourceReloadException, () -> {
 						if (SharedConstants.isDevelopment) {
 							this.checkGameData();
 						}
+
+						this.resourceReloadLogger.finish();
 					}),
 				false
 			)
@@ -681,11 +686,12 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public void onResourceReloadFailure(Throwable exception, @Nullable Text resourceName) {
 		LOGGER.info("Caught error loading resourcepacks, removing all selected resourcepacks", exception);
+		this.resourceReloadLogger.recover(exception);
 		this.resourcePackManager.setEnabledProfiles(Collections.emptyList());
 		this.options.resourcePacks.clear();
 		this.options.incompatibleResourcePacks.clear();
 		this.options.write();
-		this.reloadResources().thenRun(() -> {
+		this.reloadResources(true).thenRun(() -> {
 			ToastManager toastManager = this.getToastManager();
 			SystemToast.show(toastManager, SystemToast.Type.PACK_LOAD_FAILURE, new TranslatableText("resourcePack.load_fail"), resourceName);
 		});
@@ -831,22 +837,31 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public CompletableFuture<Void> reloadResources() {
+		return this.reloadResources(false);
+	}
+
+	private CompletableFuture<Void> reloadResources(boolean force) {
 		if (this.resourceReloadFuture != null) {
 			return this.resourceReloadFuture;
 		} else {
 			CompletableFuture<Void> completableFuture = new CompletableFuture();
-			if (this.overlay instanceof SplashScreen) {
+			if (!force && this.overlay instanceof SplashScreen) {
 				this.resourceReloadFuture = completableFuture;
 				return completableFuture;
 			} else {
 				this.resourcePackManager.scanPacks();
 				List<ResourcePack> list = this.resourcePackManager.createResourcePacks();
+				if (!force) {
+					this.resourceReloadLogger.reload(ResourceReloadLogger.ReloadReason.MANUAL, list);
+				}
+
 				this.setOverlay(
 					new SplashScreen(
 						this,
 						this.resourceManager.reload(Util.getMainWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list),
-						optional -> Util.ifPresentOrElse(optional, this::handleResourceReloadException, () -> {
+						throwable -> Util.ifPresentOrElse(throwable, this::handleResourceReloadException, () -> {
 								this.worldRenderer.reload();
+								this.resourceReloadLogger.finish();
 								completableFuture.complete(null);
 							}),
 						true
@@ -1760,7 +1775,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public static SaveProperties createSaveProperties(
 		LevelStorage.Session session, DynamicRegistryManager.Impl registryTracker, ResourceManager resourceManager, DataPackSettings dataPackSettings
 	) {
-		RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, resourceManager, registryTracker);
+		RegistryOps<NbtElement> registryOps = RegistryOps.method_36574(NbtOps.INSTANCE, resourceManager, registryTracker);
 		SaveProperties saveProperties = session.readLevelProperties(registryOps, dataPackSettings);
 		if (saveProperties == null) {
 			throw new IllegalStateException("Failed to load world");
@@ -1780,18 +1795,18 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		);
 	}
 
-	public void method_29607(String worldName, LevelInfo levelInfo, DynamicRegistryManager.Impl registryTracker, GeneratorOptions generatorOptions) {
+	public void createWorld(String worldName, LevelInfo levelInfo, DynamicRegistryManager.Impl registryTracker, GeneratorOptions generatorOptions) {
 		this.startIntegratedServer(
 			worldName,
 			registryTracker,
 			session -> levelInfo.getDataPackSettings(),
-			(session, impl2, resourceManager, dataPackSettings) -> {
+			(session, registryManager, resourceManager, dataPackSettings) -> {
 				RegistryReadingOps<JsonElement> registryReadingOps = RegistryReadingOps.of(JsonOps.INSTANCE, registryTracker);
-				RegistryOps<JsonElement> registryOps = RegistryOps.of(JsonOps.INSTANCE, resourceManager, registryTracker);
+				RegistryOps<JsonElement> registryOps = RegistryOps.method_36574(JsonOps.INSTANCE, resourceManager, registryTracker);
 				DataResult<GeneratorOptions> dataResult = GeneratorOptions.CODEC
 					.encodeStart(registryReadingOps, generatorOptions)
 					.setLifecycle(Lifecycle.stable())
-					.flatMap(jsonElement -> GeneratorOptions.CODEC.parse(registryOps, jsonElement));
+					.flatMap(json -> GeneratorOptions.CODEC.parse(registryOps, json));
 				GeneratorOptions generatorOptions2 = (GeneratorOptions)dataResult.resultOrPartial(
 						Util.addPrefix("Error reading worldgen settings after loading data packs: ", LOGGER::error)
 					)
@@ -2224,19 +2239,30 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public CrashReport addDetailsToCrashReport(CrashReport report) {
-		addSystemDetailsToCrashReport(this.languageManager, this.gameVersion, this.options, report);
+		addSystemDetailsToCrashReport(this, this.languageManager, this.gameVersion, this.options, report);
 		if (this.world != null) {
 			this.world.addDetailsToCrashReport(report);
 		}
 
+		if (this.server != null) {
+			this.server.populateCrashReport(report.addElement("Integrated server"));
+		}
+
+		this.resourceReloadLogger.addReloadSection(report);
 		return report;
 	}
 
-	public static void addSystemDetailsToCrashReport(@Nullable LanguageManager languageManager, String version, @Nullable GameOptions options, CrashReport report) {
+	public static void addSystemDetailsToCrashReport(
+		@Nullable MinecraftClient client, @Nullable LanguageManager languageManager, String version, @Nullable GameOptions options, CrashReport report
+	) {
 		CrashReportSection crashReportSection = report.getSystemDetailsSection();
 		crashReportSection.add("Launched Version", (CrashCallable<String>)(() -> version));
 		crashReportSection.add("Backend library", RenderSystem::getBackendDescription);
 		crashReportSection.add("Backend API", RenderSystem::getApiDescription);
+		crashReportSection.add(
+			"Window size",
+			(CrashCallable<String>)(() -> client != null ? client.window.getFramebufferWidth() + "x" + client.window.getFramebufferHeight() : "<not initialized>")
+		);
 		crashReportSection.add("GL Caps", RenderSystem::getCapsString);
 		crashReportSection.add("GL debug messages", (CrashCallable<String>)(() -> GlDebug.method_36479() ? String.join("\n", GlDebug.method_36478()) : "<disabled>"));
 		crashReportSection.add("Using VBOs", (CrashCallable<String>)(() -> "Yes"));
@@ -2687,7 +2713,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	private Text method_35699(File file, int i, int j, int k, int l) {
 		try {
-			ByteBuffer byteBuffer = GlDebugInfo.method_35611(i * j * 3);
+			ByteBuffer byteBuffer = GlDebugInfo.allocateMemory(i * j * 3);
 			ScreenshotUtils screenshotUtils = new ScreenshotUtils(file, k, l, j);
 			float f = (float)k / (float)i;
 			float g = (float)l / (float)j;
@@ -2712,7 +2738,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			}
 
 			File file2 = screenshotUtils.method_35712();
-			GlDebugInfo.method_35613(byteBuffer);
+			GlDebugInfo.freeMemory(byteBuffer);
 			Text text = new LiteralText(file2.getName())
 				.formatted(Formatting.UNDERLINE)
 				.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file2.getAbsolutePath())));

@@ -11,9 +11,9 @@ import net.minecraft.SharedConstants;
 import net.minecraft.util.Util;
 
 public class Snooper {
-	private static final String field_29957 = "http://snoop.minecraft.net/";
+	private static final String BASE_URL = "http://snoop.minecraft.net/";
 	private static final long field_29958 = 900000L;
-	private static final int field_29959 = 2;
+	private static final int VERSION = 2;
 	private final Map<String, Object> initialInfo = Maps.<String, Object>newHashMap();
 	private final Map<String, Object> info = Maps.<String, Object>newHashMap();
 	private final String token = UUID.randomUUID().toString();
@@ -41,8 +41,8 @@ public class Snooper {
 		}
 	}
 
-	private void method_35030() {
-		this.method_35032();
+	private void addInfo() {
+		this.addJvmFlags();
 		this.addInfo("snooper_token", this.token);
 		this.addInitialInfo("snooper_token", this.token);
 		this.addInitialInfo("os_name", System.getProperty("os.name"));
@@ -53,9 +53,9 @@ public class Snooper {
 		this.listener.addInitialSnooperInfo(this);
 	}
 
-	private void method_35032() {
+	private void addJvmFlags() {
 		int[] is = new int[]{0};
-		Util.getJVMFlags().forEach(string -> this.addInfo("jvm_arg[" + is[0]++ + "]", string));
+		Util.getJVMFlags().forEach(flag -> this.addInfo("jvm_arg[" + is[0]++ + "]", flag));
 		this.addInfo("jvm_args", is[0]);
 	}
 
@@ -79,7 +79,7 @@ public class Snooper {
 		}
 	}
 
-	public Map<String, String> method_35024() {
+	public Map<String, String> getInfo() {
 		Map<String, String> map = Maps.<String, String>newLinkedHashMap();
 		synchronized (this.syncObject) {
 			this.update();

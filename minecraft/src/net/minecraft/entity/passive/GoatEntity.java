@@ -48,7 +48,12 @@ import net.minecraft.world.World;
 public class GoatEntity extends AnimalEntity {
 	public static final EntityDimensions LONG_JUMPING_DIMENSIONS = EntityDimensions.changing(0.9F, 1.3F).scaled(0.7F);
 	protected static final ImmutableList<SensorType<? extends Sensor<? super GoatEntity>>> SENSORS = ImmutableList.of(
-		SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS, SensorType.HURT_BY, SensorType.GOAT_TEMPTATIONS
+		SensorType.NEAREST_LIVING_ENTITIES,
+		SensorType.NEAREST_PLAYERS,
+		SensorType.NEAREST_ITEMS,
+		SensorType.NEAREST_ADULT,
+		SensorType.HURT_BY,
+		SensorType.GOAT_TEMPTATIONS
 	);
 	protected static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(
 		MemoryModuleType.LOOK_TARGET,
@@ -61,6 +66,7 @@ public class GoatEntity extends AnimalEntity {
 		MemoryModuleType.LONG_JUMP_COOLING_DOWN,
 		MemoryModuleType.LONG_JUMP_MID_JUMP,
 		MemoryModuleType.TEMPTING_PLAYER,
+		MemoryModuleType.NEAREST_VISIBLE_ADULT,
 		MemoryModuleType.TEMPTATION_COOLDOWN_TICKS,
 		MemoryModuleType.IS_TEMPTED,
 		MemoryModuleType.RAM_COOLDOWN_TICKS,
@@ -134,11 +140,6 @@ public class GoatEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return this.isBaby() ? dimensions.height * 0.95F : 1.3F;
-	}
-
-	@Override
 	public Brain<GoatEntity> getBrain() {
 		return (Brain<GoatEntity>)super.getBrain();
 	}
@@ -157,6 +158,14 @@ public class GoatEntity extends AnimalEntity {
 	@Override
 	public int getBodyYawSpeed() {
 		return 15;
+	}
+
+	@Override
+	public void setHeadYaw(float headYaw) {
+		int i = this.getBodyYawSpeed();
+		float f = MathHelper.subtractAngles(this.bodyYaw, headYaw);
+		float g = MathHelper.clamp(f, (float)(-i), (float)i);
+		super.setHeadYaw(this.bodyYaw + g);
 	}
 
 	@Override

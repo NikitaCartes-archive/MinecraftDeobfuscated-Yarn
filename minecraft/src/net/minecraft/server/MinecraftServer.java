@@ -102,6 +102,7 @@ import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -734,11 +735,12 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			LOGGER.error("Encountered an unexpected exception", var44);
 			CrashReport crashReport;
 			if (var44 instanceof CrashException) {
-				crashReport = this.populateCrashReport(((CrashException)var44).getReport());
+				crashReport = ((CrashException)var44).getReport();
 			} else {
-				crashReport = this.populateCrashReport(new CrashReport("Exception in server tick loop", var44));
+				crashReport = new CrashReport("Exception in server tick loop", var44);
 			}
 
+			this.populateCrashReport(crashReport.getSystemDetailsSection());
 			File file = new File(
 				new File(this.getRunDirectory(), "crash-reports"), "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-server.txt"
 			);
@@ -1003,20 +1005,19 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return "vanilla";
 	}
 
-	public CrashReport populateCrashReport(CrashReport report) {
+	public void populateCrashReport(CrashReportSection section) {
 		if (this.playerManager != null) {
-			report.getSystemDetailsSection()
-				.add(
-					"Player Count",
-					(CrashCallable<String>)(() -> this.playerManager.getCurrentPlayerCount()
-							+ " / "
-							+ this.playerManager.getMaxPlayerCount()
-							+ "; "
-							+ this.playerManager.getPlayerList())
-				);
+			section.add(
+				"Player Count",
+				(CrashCallable<String>)(() -> this.playerManager.getCurrentPlayerCount()
+						+ " / "
+						+ this.playerManager.getMaxPlayerCount()
+						+ "; "
+						+ this.playerManager.getPlayerList())
+			);
 		}
 
-		report.getSystemDetailsSection().add("Data Packs", (CrashCallable<String>)(() -> {
+		section.add("Data Packs", (CrashCallable<String>)(() -> {
 			StringBuilder stringBuilder = new StringBuilder();
 
 			for (ResourcePackProfile resourcePackProfile : this.dataPackManager.getEnabledProfiles()) {
@@ -1033,10 +1034,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			return stringBuilder.toString();
 		}));
 		if (this.serverId != null) {
-			report.getSystemDetailsSection().add("Server Id", (CrashCallable<String>)(() -> this.serverId));
+			section.add("Server Id", (CrashCallable<String>)(() -> this.serverId));
 		}
-
-		return report;
 	}
 
 	public abstract Optional<String> getModdedStatusMessage();
@@ -1646,7 +1645,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	private void dumpExampleCrash(Path path) throws IOException {
 		CrashReport crashReport = new CrashReport("Server dump", new Exception("dummy"));
-		this.populateCrashReport(crashReport);
+		this.populateCrashReport(crashReport.getSystemDetailsSection());
 		Writer writer = Files.newBufferedWriter(path);
 		Throwable var4 = null;
 

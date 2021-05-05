@@ -1180,7 +1180,7 @@ public abstract class PlayerEntity extends LivingEntity {
 							if (target instanceof LivingEntity) {
 								((LivingEntity)target)
 									.takeKnockback(
-										(float)i * 0.5F,
+										(double)((float)i * 0.5F),
 										(double)MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0)),
 										(double)(-MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)))
 									);

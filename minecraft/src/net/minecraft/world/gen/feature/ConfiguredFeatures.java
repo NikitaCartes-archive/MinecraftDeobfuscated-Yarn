@@ -1014,11 +1014,11 @@ public class ConfiguredFeatures {
 		"prototype_ore_iron_upper", Feature.ORE.configure(IRON_CONFIG).method_36297(YOffset.fixed(128), YOffset.fixed(384)).spreadHorizontally().repeat(40)
 	);
 	public static final ConfiguredFeature<?, ?> PROTOTYPE_ORE_IRON_MIDDLE = register(
-		"prototype_ore_iron_middle", Feature.ORE.configure(IRON_CONFIG).method_36297(YOffset.fixed(-24), YOffset.fixed(56)).spreadHorizontally().repeat(6)
+		"prototype_ore_iron_middle", Feature.ORE.configure(IRON_CONFIG).method_36297(YOffset.fixed(-24), YOffset.fixed(56)).spreadHorizontally().repeat(5)
 	);
-	public static final ConfiguredFeature<?, ?> PROTOTYPE_ORE_IRON_LOWER = register(
-		"prototype_ore_iron_lower",
-		Feature.ORE.configure(new OreFeatureConfig(IRON_ORE_TARGETS, 4)).method_36296(YOffset.getBottom(), YOffset.fixed(-32)).spreadHorizontally().repeat(3)
+	public static final ConfiguredFeature<?, ?> PROTOTYPE_ORE_IRON_SMALL = register(
+		"prototype_ore_iron_small",
+		Feature.ORE.configure(new OreFeatureConfig(IRON_ORE_TARGETS, 4)).method_36296(YOffset.getBottom(), YOffset.fixed(64)).spreadHorizontally().repeat(10)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_GOLD_EXTRA = register(
 		"ore_gold_extra",
@@ -1115,7 +1115,7 @@ public class ConfiguredFeatures {
 	);
 	public static final ConfiguredFeature<?, ?> PROTOTYPE_ORE_COPPER = register(
 		"prototype_ore_copper",
-		Feature.ORE.configure(new OreFeatureConfig(field_33635, 10)).method_36296(YOffset.fixed(0), YOffset.fixed(63)).spreadHorizontally().repeat(10)
+		Feature.ORE.configure(new OreFeatureConfig(field_33635, 10)).method_36296(YOffset.fixed(0), YOffset.fixed(63)).spreadHorizontally().repeat(8)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_CLAY = register(
 		"ore_clay",

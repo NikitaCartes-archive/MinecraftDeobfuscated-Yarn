@@ -38,9 +38,9 @@ public class ConfiguredCarvers {
 					YOffset.aboveBottom(8),
 					false,
 					CarverDebugConfig.create(false, Blocks.CRIMSON_BUTTON.getDefaultState()),
-					UniformFloatProvider.create(0.3F, 1.8F),
-					UniformFloatProvider.create(0.5F, 1.8F),
-					UniformFloatProvider.create(-1.0F, 0.0F)
+					UniformFloatProvider.create(0.7F, 1.4F),
+					UniformFloatProvider.create(0.8F, 1.3F),
+					UniformFloatProvider.create(-1.0F, -0.4F)
 				)
 			)
 	);
@@ -94,23 +94,6 @@ public class ConfiguredCarvers {
 					ConstantFloatProvider.create(1.0F),
 					ConstantFloatProvider.create(1.0F),
 					ConstantFloatProvider.create(-0.7F)
-				)
-			)
-	);
-	public static final ConfiguredCarver<CaveCarverConfig> PROTOTYPE_OCEAN_CAVE = register(
-		"prototype_ocean_cave",
-		Carver.CAVE
-			.configure(
-				new CaveCarverConfig(
-					0.14285715F,
-					BiasedToBottomHeightProvider.create(YOffset.fixed(0), YOffset.fixed(127), 8),
-					UniformFloatProvider.create(0.1F, 0.9F),
-					YOffset.aboveBottom(8),
-					false,
-					CarverDebugConfig.create(false, Blocks.CRIMSON_BUTTON.getDefaultState()),
-					ConstantFloatProvider.create(1.0F),
-					ConstantFloatProvider.create(1.0F),
-					UniformFloatProvider.create(-1.0F, 0.0F)
 				)
 			)
 	);
