@@ -95,6 +95,10 @@ public class Framebuffer {
 
     public void initFbo(int width, int height, boolean getError) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+        int i = RenderSystem.maxSupportedTextureSize();
+        if (width <= 0 || width > i || height <= 0 || height > i) {
+            throw new IllegalArgumentException("Window " + width + "x" + height + " size out of bounds (max. size: " + i + ")");
+        }
         this.viewportWidth = width;
         this.viewportHeight = height;
         this.textureWidth = width;

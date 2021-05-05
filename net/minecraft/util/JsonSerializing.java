@@ -53,10 +53,10 @@ public class JsonSerializing {
         }
 
         @Override
-        public E deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            if (jsonElement.isJsonObject()) {
+        public E deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
+            if (json.isJsonObject()) {
                 Object jsonSerializableType;
-                JsonObject jsonObject = JsonHelper.asObject(jsonElement, this.rootFieldName);
+                JsonObject jsonObject = JsonHelper.asObject(json, this.rootFieldName);
                 String string = JsonHelper.getString(jsonObject, this.idFieldName, "");
                 if (string.isEmpty()) {
                     jsonSerializableType = this.field_28445;
@@ -67,26 +67,26 @@ public class JsonSerializing {
                 if (jsonSerializableType == null) {
                     throw new JsonSyntaxException("Unknown type '" + string + "'");
                 }
-                return (E)((JsonSerializableType)jsonSerializableType).getJsonSerializer().fromJson(jsonObject, jsonDeserializationContext);
+                return (E)((JsonSerializableType)jsonSerializableType).getJsonSerializer().fromJson(jsonObject, context);
             }
             if (this.elementSerializer == null) {
-                throw new UnsupportedOperationException("Object " + jsonElement + " can't be deserialized");
+                throw new UnsupportedOperationException("Object " + json + " can't be deserialized");
             }
-            return this.elementSerializer.getSecond().fromJson(jsonElement, jsonDeserializationContext);
+            return this.elementSerializer.getSecond().fromJson(json, context);
         }
 
         @Override
-        public JsonElement serialize(E object, Type type, JsonSerializationContext jsonSerializationContext) {
+        public JsonElement serialize(E object, Type type, JsonSerializationContext context) {
             JsonSerializableType jsonSerializableType = (JsonSerializableType)this.typeIdentification.apply(object);
             if (this.elementSerializer != null && this.elementSerializer.getFirst() == jsonSerializableType) {
-                return this.elementSerializer.getSecond().toJson(object, jsonSerializationContext);
+                return this.elementSerializer.getSecond().toJson(object, context);
             }
             if (jsonSerializableType == null) {
                 throw new JsonSyntaxException("Unknown type: " + object);
             }
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty(this.idFieldName, this.registry.getId(jsonSerializableType).toString());
-            jsonSerializableType.getJsonSerializer().toJson(jsonObject, object, jsonSerializationContext);
+            jsonSerializableType.getJsonSerializer().toJson(jsonObject, object, context);
             return jsonObject;
         }
 

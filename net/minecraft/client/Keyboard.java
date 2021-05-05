@@ -66,8 +66,8 @@ public class Keyboard {
         this.client = client;
     }
 
-    private boolean method_35696(int i) {
-        switch (i) {
+    private boolean method_35696(int key) {
+        switch (key) {
             case 69: {
                 this.client.debugChunkInfo = !this.client.debugChunkInfo;
                 this.method_35697("ChunkPath: {0}", this.client.debugChunkInfo ? "shown" : "hidden");
@@ -102,16 +102,16 @@ public class Keyboard {
         return false;
     }
 
-    private void debugWarn(String string, Object ... objects) {
-        this.client.inGameHud.getChatHud().addMessage(new LiteralText("").append(new TranslatableText("debug.prefix").formatted(Formatting.YELLOW, Formatting.BOLD)).append(" ").append(new TranslatableText(string, objects)));
+    private void debugWarn(String key, Object ... args) {
+        this.client.inGameHud.getChatHud().addMessage(new LiteralText("").append(new TranslatableText("debug.prefix").formatted(Formatting.YELLOW, Formatting.BOLD)).append(" ").append(new TranslatableText(key, args)));
     }
 
-    private void debugError(String string, Object ... objects) {
-        this.client.inGameHud.getChatHud().addMessage(new LiteralText("").append(new TranslatableText("debug.prefix").formatted(Formatting.RED, Formatting.BOLD)).append(" ").append(new TranslatableText(string, objects)));
+    private void debugError(String key, Object ... args) {
+        this.client.inGameHud.getChatHud().addMessage(new LiteralText("").append(new TranslatableText("debug.prefix").formatted(Formatting.RED, Formatting.BOLD)).append(" ").append(new TranslatableText(key, args)));
     }
 
-    private void method_35697(String string, Object ... objects) {
-        this.client.inGameHud.getChatHud().addMessage(new LiteralText("").append(new TranslatableText("debug.prefix").formatted(Formatting.YELLOW, Formatting.BOLD)).append(" ").append(MessageFormat.format(string, objects)));
+    private void method_35697(String key, Object ... args) {
+        this.client.inGameHud.getChatHud().addMessage(new LiteralText("").append(new TranslatableText("debug.prefix").formatted(Formatting.YELLOW, Formatting.BOLD)).append(" ").append(MessageFormat.format(key, args)));
     }
 
     private boolean processF3(int key) {
@@ -261,8 +261,8 @@ public class Keyboard {
                 Identifier identifier = Registry.ENTITY_TYPE.getId(entity.getType());
                 if (bl) {
                     if (bl2) {
-                        this.client.player.networkHandler.getDataQueryHandler().queryEntityNbt(entity.getId(), nbtCompound -> {
-                            this.copyEntity(identifier, entity.getPos(), (NbtCompound)nbtCompound);
+                        this.client.player.networkHandler.getDataQueryHandler().queryEntityNbt(entity.getId(), nbt -> {
+                            this.copyEntity(identifier, entity.getPos(), (NbtCompound)nbt);
                             this.debugWarn("debug.inspect.server.entity", new Object[0]);
                         });
                         break;
@@ -308,7 +308,7 @@ public class Keyboard {
         this.setClipboard(string2);
     }
 
-    public void onKey(long window, int key, int scancode, int i, int j) {
+    public void onKey(long window, int key, int scancode, int i, int modifiers) {
         if (window != this.client.getWindow().getHandle()) {
             return;
         }
@@ -334,7 +334,7 @@ public class Keyboard {
                 if (Screen.hasControlDown()) {
                     // empty if block
                 }
-                ScreenshotUtils.saveScreenshot(this.client.runDirectory, this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight(), this.client.getFramebuffer(), text -> this.client.execute(() -> this.client.inGameHud.getChatHud().addMessage((Text)text)));
+                ScreenshotUtils.saveScreenshot(this.client.runDirectory, this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight(), this.client.getFramebuffer(), message -> this.client.execute(() -> this.client.inGameHud.getChatHud().addMessage((Text)message)));
                 return;
             }
         }
@@ -353,9 +353,9 @@ public class Keyboard {
             boolean[] bls = new boolean[]{false};
             Screen.wrapScreenError(() -> {
                 if (i == 1 || i == 2 && this.repeatEvents) {
-                    bls[0] = parentElement.keyPressed(key, scancode, j);
+                    bls[0] = parentElement.keyPressed(key, scancode, modifiers);
                 } else if (i == 0) {
-                    bls[0] = parentElement.keyReleased(key, scancode, j);
+                    bls[0] = parentElement.keyReleased(key, scancode, modifiers);
                 }
             }, "keyPressed event handler", parentElement.getClass().getCanonicalName());
             if (bls[0]) {
@@ -404,7 +404,7 @@ public class Keyboard {
         }
     }
 
-    private void onChar(long window, int i, int j) {
+    private void onChar(long window, int i, int modifiers) {
         if (window != this.client.getWindow().getHandle()) {
             return;
         }
@@ -413,10 +413,10 @@ public class Keyboard {
             return;
         }
         if (Character.charCount(i) == 1) {
-            Screen.wrapScreenError(() -> element.charTyped((char)i, j), "charTyped event handler", element.getClass().getCanonicalName());
+            Screen.wrapScreenError(() -> element.charTyped((char)i, modifiers), "charTyped event handler", element.getClass().getCanonicalName());
         } else {
             for (char c : Character.toChars(i)) {
-                Screen.wrapScreenError(() -> element.charTyped(c, j), "charTyped event handler", element.getClass().getCanonicalName());
+                Screen.wrapScreenError(() -> element.charTyped(c, modifiers), "charTyped event handler", element.getClass().getCanonicalName());
             }
         }
     }
@@ -425,8 +425,8 @@ public class Keyboard {
         this.repeatEvents = repeatEvents;
     }
 
-    public void setup(long l2) {
-        InputUtil.setKeyboardCallbacks(l2, (l, i, j, k, m) -> this.client.execute(() -> this.onKey(l, i, j, k, m)), (l, i, j) -> this.client.execute(() -> this.onChar(l, i, j)));
+    public void setup(long window2) {
+        InputUtil.setKeyboardCallbacks(window2, (window, key, i, j, modifiers) -> this.client.execute(() -> this.onKey(window, key, i, j, modifiers)), (window, i, modifiers) -> this.client.execute(() -> this.onChar(window, i, modifiers)));
     }
 
     public String getClipboard() {

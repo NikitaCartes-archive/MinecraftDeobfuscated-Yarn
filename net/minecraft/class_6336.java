@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.ToIntFunction;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
@@ -34,7 +35,7 @@ import net.minecraft.util.math.Vec3d;
 public class class_6336<E extends PathAwareEntity>
 extends Task<E> {
     public static final int field_33461 = 160;
-    private final int field_33462;
+    private final ToIntFunction<E> field_33462;
     private final int field_33463;
     private final int field_33464;
     private final float field_33465;
@@ -44,14 +45,14 @@ extends Task<E> {
     private Optional<Long> field_33469 = Optional.empty();
     private Optional<class_6337> field_33470 = Optional.empty();
 
-    public class_6336(int i, int j, int k, float f, TargetPredicate targetPredicate, int l, Function<E, SoundEvent> function) {
+    public class_6336(ToIntFunction<E> toIntFunction, int i, int j, float f, TargetPredicate targetPredicate, int k, Function<E, SoundEvent> function) {
         super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.RAM_COOLDOWN_TICKS, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.VISIBLE_MOBS, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.RAM_TARGET, MemoryModuleState.VALUE_ABSENT), 160);
-        this.field_33462 = i;
-        this.field_33463 = j;
-        this.field_33464 = k;
+        this.field_33462 = toIntFunction;
+        this.field_33463 = i;
+        this.field_33464 = j;
         this.field_33465 = f;
         this.field_33466 = targetPredicate;
-        this.field_33467 = l;
+        this.field_33467 = k;
         this.field_33468 = function;
     }
 
@@ -62,11 +63,11 @@ extends Task<E> {
     }
 
     @Override
-    protected void finishRunning(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
-        Brain<Vec3d> brain = pathAwareEntity.getBrain();
+    protected void finishRunning(ServerWorld serverWorld, E pathAwareEntity, long l) {
+        Brain<Vec3d> brain = ((LivingEntity)pathAwareEntity).getBrain();
         if (!brain.hasMemoryModule(MemoryModuleType.RAM_TARGET)) {
-            serverWorld.sendEntityStatus(pathAwareEntity, (byte)59);
-            brain.remember(MemoryModuleType.RAM_COOLDOWN_TICKS, this.field_33462);
+            serverWorld.sendEntityStatus((Entity)pathAwareEntity, (byte)59);
+            brain.remember(MemoryModuleType.RAM_COOLDOWN_TICKS, this.field_33462.applyAsInt(pathAwareEntity));
         }
     }
 
@@ -97,7 +98,7 @@ extends Task<E> {
                 }
                 if (l - this.field_33469.get() >= (long)this.field_33467) {
                     ((LivingEntity)pathAwareEntity).getBrain().remember(MemoryModuleType.RAM_TARGET, this.method_36266(blockPos, this.field_33470.get().method_36275()));
-                    serverWorld.playSoundFromEntity(null, (Entity)pathAwareEntity, this.field_33468.apply(pathAwareEntity), SoundCategory.HOSTILE, 1.0f, 1.0f);
+                    serverWorld.playSoundFromEntity(null, (Entity)pathAwareEntity, this.field_33468.apply(pathAwareEntity), SoundCategory.HOSTILE, 1.0f, ((LivingEntity)pathAwareEntity).getSoundPitch());
                     this.field_33470 = Optional.empty();
                 }
             }
@@ -151,7 +152,7 @@ extends Task<E> {
 
     @Override
     protected /* synthetic */ void finishRunning(ServerWorld world, LivingEntity entity, long time) {
-        this.finishRunning(world, (PathAwareEntity)entity, time);
+        this.finishRunning(world, (E)((PathAwareEntity)entity), time);
     }
 
     public static class class_6337 {

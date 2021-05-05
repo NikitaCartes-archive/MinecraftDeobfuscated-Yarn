@@ -134,7 +134,7 @@ extends Screen {
             GeneratorOptions generatorOptions = GeneratorType.DEFAULT.createDefaultOptions(impl, l, true, false);
             LevelInfo levelInfo = new LevelInfo("DEBUG world", GameMode.SPECTATOR, false, Difficulty.NORMAL, true, new GameRules(), DataPackSettings.SAFE_MODE);
             String string2 = FileNameUtil.getNextUniqueName(this.client.getLevelStorage().getSavesDirectory(), "DEBUG world", "");
-            this.client.method_29607(string2, levelInfo, impl, generatorOptions);
+            this.client.createWorld(string2, levelInfo, impl, generatorOptions);
         } catch (IOException iOException) {
             field_28783.error("Failed to recreate the debug world", (Throwable)iOException);
         }

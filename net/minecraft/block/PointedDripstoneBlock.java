@@ -57,12 +57,12 @@ Waterloggable {
     public static final DirectionProperty VERTICAL_DIRECTION = Properties.VERTICAL_DIRECTION;
     public static final EnumProperty<Thickness> THICKNESS = Properties.THICKNESS;
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
-    private static final int field_31205 = 10;
+    private static final int field_31205 = 11;
     private static final int field_31206 = Integer.MAX_VALUE;
     private static final int field_31207 = 2;
     private static final float field_31208 = 0.02f;
     private static final float field_31209 = 0.12f;
-    private static final int field_31210 = 10;
+    private static final int field_31210 = 11;
     private static final float field_31211 = 0.17578125f;
     private static final float field_31212 = 0.05859375f;
     private static final double field_31213 = 0.6;
@@ -189,7 +189,7 @@ Waterloggable {
         if (dripChance >= f) {
             return;
         }
-        BlockPos blockPos = PointedDripstoneBlock.getTipPos(state, world, pos, 10, false);
+        BlockPos blockPos = PointedDripstoneBlock.getTipPos(state, world, pos, 11, false);
         if (blockPos == null) {
             return;
         }
@@ -310,12 +310,8 @@ Waterloggable {
     @VisibleForTesting
     public static void tryGrow(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         BlockState blockState2;
-        Optional<BlockPos> optional = PointedDripstoneBlock.getSupportingPos(world, pos, state, 7);
-        if (!optional.isPresent()) {
-            return;
-        }
-        BlockState blockState = world.getBlockState(optional.get());
-        if (!PointedDripstoneBlock.canGrow(blockState, blockState2 = world.getBlockState(optional.get().up()))) {
+        BlockState blockState = world.getBlockState(pos.up(1));
+        if (!PointedDripstoneBlock.canGrow(blockState, blockState2 = world.getBlockState(pos.up(2)))) {
             return;
         }
         BlockPos blockPos = PointedDripstoneBlock.getTipPos(state, world, pos, 7, false);
@@ -506,12 +502,12 @@ Waterloggable {
     @Nullable
     private static BlockPos getCauldronPos(World world, BlockPos pos, Fluid fluid) {
         Predicate<BlockState> predicate = state -> state.getBlock() instanceof AbstractCauldronBlock && ((AbstractCauldronBlock)state.getBlock()).canBeFilledByDripstone(fluid);
-        return PointedDripstoneBlock.searchInDirection(world, pos, Direction.DOWN.getDirection(), AbstractBlock.AbstractBlockState::isAir, predicate, 10).orElse(null);
+        return PointedDripstoneBlock.searchInDirection(world, pos, Direction.DOWN.getDirection(), AbstractBlock.AbstractBlockState::isAir, predicate, 11).orElse(null);
     }
 
     @Nullable
     public static BlockPos getDripPos(World world, BlockPos pos) {
-        return PointedDripstoneBlock.searchInDirection(world, pos, Direction.UP.getDirection(), AbstractBlock.AbstractBlockState::isAir, PointedDripstoneBlock::canDrip, 10).orElse(null);
+        return PointedDripstoneBlock.searchInDirection(world, pos, Direction.UP.getDirection(), AbstractBlock.AbstractBlockState::isAir, PointedDripstoneBlock::canDrip, 11).orElse(null);
     }
 
     public static Fluid getDripFluid(World world, BlockPos pos) {
@@ -522,7 +518,7 @@ Waterloggable {
         if (!PointedDripstoneBlock.isPointingDown(state)) {
             return Optional.empty();
         }
-        return PointedDripstoneBlock.getSupportingPos(world, pos2, state, 10).map(pos -> world.getFluidState(pos.up()).getFluid());
+        return PointedDripstoneBlock.getSupportingPos(world, pos2, state, 11).map(pos -> world.getFluidState(pos.up()).getFluid());
     }
 
     /**
@@ -546,11 +542,11 @@ Waterloggable {
     private static Optional<BlockPos> searchInDirection(WorldAccess world, BlockPos pos, Direction.AxisDirection direction, Predicate<BlockState> continuePredicate, Predicate<BlockState> stopPredicate, int range) {
         Direction direction2 = Direction.get(direction, Direction.Axis.Y);
         BlockPos.Mutable mutable = pos.mutableCopy();
-        for (int i = 0; i < range; ++i) {
+        for (int i = 1; i < range; ++i) {
             mutable.move(direction2);
             BlockState blockState = world.getBlockState(mutable);
             if (stopPredicate.test(blockState)) {
-                return Optional.of(mutable);
+                return Optional.of(mutable.toImmutable());
             }
             if (!world.isOutOfHeightLimit(mutable.getY()) && continuePredicate.test(blockState)) continue;
             return Optional.empty();

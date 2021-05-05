@@ -15,10 +15,6 @@ public class EntityTrackingSoundInstance
 extends MovingSoundInstance {
     private final Entity entity;
 
-    public EntityTrackingSoundInstance(SoundEvent sound, SoundCategory category, Entity entity) {
-        this(sound, category, 1.0f, 1.0f, entity);
-    }
-
     public EntityTrackingSoundInstance(SoundEvent sound, SoundCategory category, float volume, float pitch, Entity entity) {
         super(sound, category);
         this.volume = volume;

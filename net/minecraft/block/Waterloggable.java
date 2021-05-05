@@ -43,6 +43,9 @@ FluidFillable {
     default public ItemStack tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state) {
         if (state.get(Properties.WATERLOGGED).booleanValue()) {
             world.setBlockState(pos, (BlockState)state.with(Properties.WATERLOGGED, false), Block.NOTIFY_ALL);
+            if (!state.canPlaceAt(world, pos)) {
+                world.breakBlock(pos, true);
+            }
             return new ItemStack(Items.WATER_BUCKET);
         }
         return ItemStack.EMPTY;

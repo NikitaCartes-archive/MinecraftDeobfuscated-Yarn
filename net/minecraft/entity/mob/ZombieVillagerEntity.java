@@ -235,7 +235,7 @@ implements VillagerDataContainer {
     }
 
     @Override
-    protected float getSoundPitch() {
+    public float getSoundPitch() {
         if (this.isBaby()) {
             return (this.random.nextFloat() - this.random.nextFloat()) * 0.2f + 2.0f;
         }

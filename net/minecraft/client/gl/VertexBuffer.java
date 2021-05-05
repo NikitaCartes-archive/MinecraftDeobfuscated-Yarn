@@ -162,7 +162,7 @@ implements AutoCloseable {
         }
         if (shader.screenSize != null) {
             Window window = MinecraftClient.getInstance().getWindow();
-            shader.screenSize.set(window.getFramebufferWidth(), window.getFramebufferHeight());
+            shader.screenSize.set((float)window.getFramebufferWidth(), (float)window.getFramebufferHeight());
         }
         if (shader.lineWidth != null && (this.drawMode == VertexFormat.DrawMode.LINES || this.drawMode == VertexFormat.DrawMode.LINE_STRIP)) {
             shader.lineWidth.set(RenderSystem.getShaderLineWidth());

@@ -62,14 +62,14 @@ implements CraftingRecipeJsonFactory {
     }
 
     @Override
-    public CookingRecipeJsonFactory criterion(String criterionName, CriterionConditions conditions) {
-        this.builder.criterion(criterionName, conditions);
+    public CookingRecipeJsonFactory criterion(String string, CriterionConditions criterionConditions) {
+        this.builder.criterion(string, criterionConditions);
         return this;
     }
 
     @Override
-    public CookingRecipeJsonFactory group(@Nullable String group) {
-        this.group = group;
+    public CookingRecipeJsonFactory group(@Nullable String string) {
+        this.group = string;
         return this;
     }
 

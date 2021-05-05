@@ -59,6 +59,9 @@ implements AutoCloseable {
     }
 
     public NativeImage(Format format, int width, int height, boolean useStb) {
+        if (width <= 0 || height <= 0) {
+            throw new IllegalArgumentException("Invalid texture size: " + width + "x" + height);
+        }
         this.format = format;
         this.width = width;
         this.height = height;
@@ -68,16 +71,23 @@ implements AutoCloseable {
     }
 
     private NativeImage(Format format, int width, int height, boolean useStb, long pointer) {
+        if (width <= 0 || height <= 0) {
+            throw new IllegalArgumentException("Invalid texture size: " + width + "x" + height);
+        }
         this.format = format;
         this.width = width;
         this.height = height;
         this.isStbImage = useStb;
         this.pointer = pointer;
-        this.sizeBytes = width * height * format.getChannelCount();
+        this.sizeBytes = (long)width * (long)height * (long)format.getChannelCount();
     }
 
     public String toString() {
         return "NativeImage[" + (Object)((Object)this.format) + " " + this.width + "x" + this.height + "@" + this.pointer + (this.isStbImage ? "S" : "N") + "]";
+    }
+
+    private boolean method_36559(int i, int j) {
+        return i < 0 || i >= this.width || j < 0 || j >= this.height;
     }
 
     public static NativeImage read(InputStream inputStream) throws IOException {
@@ -175,11 +185,11 @@ implements AutoCloseable {
         if (this.format != Format.ABGR) {
             throw new IllegalArgumentException(String.format("getPixelRGBA only works on RGBA images; have %s", new Object[]{this.format}));
         }
-        if (x > this.width || y > this.height) {
+        if (this.method_36559(x, y)) {
             throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
         }
         this.checkAllocated();
-        long l = (x + y * this.width) * 4;
+        long l = ((long)x + (long)y * (long)this.width) * 4L;
         return MemoryUtil.memGetInt(this.pointer + l);
     }
 
@@ -193,11 +203,11 @@ implements AutoCloseable {
         if (this.format != Format.ABGR) {
             throw new IllegalArgumentException(String.format("getPixelRGBA only works on RGBA images; have %s", new Object[]{this.format}));
         }
-        if (x > this.width || y > this.height) {
+        if (this.method_36559(x, y)) {
             throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
         }
         this.checkAllocated();
-        long l = (x + y * this.width) * 4;
+        long l = ((long)x + (long)y * (long)this.width) * 4L;
         MemoryUtil.memPutInt(this.pointer + l, color);
     }
 
@@ -206,11 +216,11 @@ implements AutoCloseable {
         if (!this.format.hasLuminance()) {
             throw new IllegalArgumentException(String.format("setPixelLuminance only works on image with luminance; have %s", new Object[]{this.format}));
         }
-        if (i > this.width || j > this.height) {
+        if (this.method_36559(i, j)) {
             throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", i, j, this.width, this.height));
         }
         this.checkAllocated();
-        long l = (i + j * this.width) * this.format.getChannelCount() + this.format.getLuminanceChannelOffset() / 8;
+        long l = ((long)i + (long)j * (long)this.width) * (long)this.format.getChannelCount() + (long)(this.format.getLuminanceChannelOffset() / 8);
         MemoryUtil.memPutByte(this.pointer + l, b);
     }
 
@@ -219,7 +229,7 @@ implements AutoCloseable {
         if (!this.format.hasRedChannel()) {
             throw new IllegalArgumentException(String.format("no red or luminance in %s", new Object[]{this.format}));
         }
-        if (i > this.width || j > this.height) {
+        if (this.method_36559(i, j)) {
             throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", i, j, this.width, this.height));
         }
         int k = (i + j * this.width) * this.format.getChannelCount() + this.format.getRedOrLuminanceOffset() / 8;
@@ -231,7 +241,7 @@ implements AutoCloseable {
         if (!this.format.hasGreenChannel()) {
             throw new IllegalArgumentException(String.format("no green or luminance in %s", new Object[]{this.format}));
         }
-        if (i > this.width || j > this.height) {
+        if (this.method_36559(i, j)) {
             throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", i, j, this.width, this.height));
         }
         int k = (i + j * this.width) * this.format.getChannelCount() + this.format.getGreenOrLuminanceOffset() / 8;
@@ -243,7 +253,7 @@ implements AutoCloseable {
         if (!this.format.hasBlueChannel()) {
             throw new IllegalArgumentException(String.format("no blue or luminance in %s", new Object[]{this.format}));
         }
-        if (i > this.width || j > this.height) {
+        if (this.method_36559(i, j)) {
             throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", i, j, this.width, this.height));
         }
         int k = (i + j * this.width) * this.format.getChannelCount() + this.format.getBlueOrLuminanceOffset() / 8;
@@ -254,7 +264,7 @@ implements AutoCloseable {
         if (!this.format.hasOpacityChannel()) {
             throw new IllegalArgumentException(String.format("no luminance or alpha in %s", new Object[]{this.format}));
         }
-        if (x > this.width || y > this.height) {
+        if (this.method_36559(x, y)) {
             throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
         }
         int i = (x + y * this.width) * this.format.getChannelCount() + this.format.getOpacityOffset() / 8;

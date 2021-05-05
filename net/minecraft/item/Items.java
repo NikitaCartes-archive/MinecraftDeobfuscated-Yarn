@@ -643,8 +643,8 @@ public class Items {
     public static final Item DIORITE_STAIRS = Items.register(Blocks.DIORITE_STAIRS, ItemGroup.BUILDING_BLOCKS);
     public static final Item COBBLED_DEEPSLATE_STAIRS = Items.register(Blocks.COBBLED_DEEPSLATE_STAIRS, ItemGroup.BUILDING_BLOCKS);
     public static final Item POLISHED_DEEPSLATE_STAIRS = Items.register(Blocks.POLISHED_DEEPSLATE_STAIRS, ItemGroup.BUILDING_BLOCKS);
-    public static final Item DEEPSLATE_TILE_STAIRS = Items.register(Blocks.DEEPSLATE_TILE_STAIRS, ItemGroup.BUILDING_BLOCKS);
     public static final Item DEEPSLATE_BRICK_STAIRS = Items.register(Blocks.DEEPSLATE_BRICK_STAIRS, ItemGroup.BUILDING_BLOCKS);
+    public static final Item DEEPSLATE_TILE_STAIRS = Items.register(Blocks.DEEPSLATE_TILE_STAIRS, ItemGroup.BUILDING_BLOCKS);
     public static final Item POLISHED_GRANITE_SLAB = Items.register(Blocks.POLISHED_GRANITE_SLAB, ItemGroup.BUILDING_BLOCKS);
     public static final Item SMOOTH_RED_SANDSTONE_SLAB = Items.register(Blocks.SMOOTH_RED_SANDSTONE_SLAB, ItemGroup.BUILDING_BLOCKS);
     public static final Item MOSSY_STONE_BRICK_SLAB = Items.register(Blocks.MOSSY_STONE_BRICK_SLAB, ItemGroup.BUILDING_BLOCKS);

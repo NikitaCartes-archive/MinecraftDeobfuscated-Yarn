@@ -45,14 +45,22 @@ extends ForwardingDynamicOps<T> {
     private final Map<RegistryKey<? extends Registry<?>>, ValueHolder<?>> valueHolders;
     private final RegistryOps<JsonElement> entryOps;
 
+    public static <T> RegistryOps<T> method_36574(DynamicOps<T> dynamicOps, ResourceManager resourceManager, DynamicRegistryManager dynamicRegistryManager) {
+        return RegistryOps.method_36575(dynamicOps, EntryLoader.resourceBacked(resourceManager), dynamicRegistryManager);
+    }
+
+    public static <T> RegistryOps<T> method_36575(DynamicOps<T> dynamicOps, EntryLoader entryLoader, DynamicRegistryManager dynamicRegistryManager) {
+        RegistryOps<T> registryOps = new RegistryOps<T>(dynamicOps, entryLoader, dynamicRegistryManager, Maps.newIdentityHashMap());
+        DynamicRegistryManager.load(dynamicRegistryManager, registryOps);
+        return registryOps;
+    }
+
     public static <T> RegistryOps<T> of(DynamicOps<T> delegate, ResourceManager resourceManager, DynamicRegistryManager dynamicRegistryManager) {
         return RegistryOps.of(delegate, EntryLoader.resourceBacked(resourceManager), dynamicRegistryManager);
     }
 
     public static <T> RegistryOps<T> of(DynamicOps<T> delegate, EntryLoader entryLoader, DynamicRegistryManager dynamicRegistryManager) {
-        RegistryOps<T> registryOps = new RegistryOps<T>(delegate, entryLoader, dynamicRegistryManager, Maps.newIdentityHashMap());
-        DynamicRegistryManager.load(dynamicRegistryManager, registryOps);
-        return registryOps;
+        return new RegistryOps<T>(delegate, entryLoader, dynamicRegistryManager, Maps.newIdentityHashMap());
     }
 
     private RegistryOps(DynamicOps<T> delegate, EntryLoader entryLoader, DynamicRegistryManager dynamicRegistryManager, IdentityHashMap<RegistryKey<? extends Registry<?>>, ValueHolder<?>> valueHolders) {

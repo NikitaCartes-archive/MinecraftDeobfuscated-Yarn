@@ -545,7 +545,11 @@ public abstract class ScreenHandler {
 
     public void close(PlayerEntity player) {
         if (!this.getCursorStack().isEmpty()) {
-            player.dropItem(this.getCursorStack(), false);
+            if (!player.isAlive() || player instanceof ServerPlayerEntity && ((ServerPlayerEntity)player).isDisconnected()) {
+                player.dropItem(this.getCursorStack(), false);
+            } else {
+                player.getInventory().offer(this.getCursorStack(), false);
+            }
             this.setCursorStack(ItemStack.EMPTY);
         }
     }

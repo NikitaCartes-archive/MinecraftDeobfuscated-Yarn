@@ -10,6 +10,7 @@ import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -35,14 +36,12 @@ extends FishEntity {
     private int inflateTicks;
     private int deflateTicks;
     private static final Predicate<LivingEntity> BLOW_UP_FILTER = entity -> {
-        if (entity == null) {
-            return false;
-        }
-        if (entity instanceof PlayerEntity && (entity.isSpectator() || ((PlayerEntity)entity).isCreative())) {
+        if (entity instanceof PlayerEntity && ((PlayerEntity)entity).isCreative()) {
             return false;
         }
         return entity.getGroup() != EntityGroup.AQUATIC;
     };
+    private static final TargetPredicate field_33692 = new TargetPredicate().includeInvulnerable().ignoreDistanceScalingFactor().ignoreEntityTargetRules().includeTeammates().includeHidden().setPredicate(BLOW_UP_FILTER);
     public static final int NOT_PUFFED = 0;
     public static final int SEMI_PUFFED = 1;
     public static final int FULLY_PUFFED = 2;
@@ -127,10 +126,10 @@ extends FishEntity {
     public void tickMovement() {
         super.tickMovement();
         if (this.isAlive() && this.getPuffState() > 0) {
-            List<LivingEntity> list = this.world.getEntitiesByClass(MobEntity.class, this.getBoundingBox().expand(0.3), BLOW_UP_FILTER);
-            for (MobEntity mobEntity : list) {
-                if (!mobEntity.isAlive()) continue;
-                this.sting(mobEntity);
+            List<MobEntity> list = this.world.getEntitiesByClass(MobEntity.class, this.getBoundingBox().expand(0.3), mobEntity -> field_33692.test(this, (LivingEntity)mobEntity));
+            for (MobEntity mobEntity2 : list) {
+                if (!mobEntity2.isAlive()) continue;
+                this.sting(mobEntity2);
             }
         }
     }
@@ -201,7 +200,7 @@ extends FishEntity {
 
         @Override
         public boolean canStart() {
-            List<LivingEntity> list = this.pufferfish.world.getEntitiesByClass(LivingEntity.class, this.pufferfish.getBoundingBox().expand(2.0), BLOW_UP_FILTER);
+            List<LivingEntity> list = this.pufferfish.world.getEntitiesByClass(LivingEntity.class, this.pufferfish.getBoundingBox().expand(2.0), livingEntity -> field_33692.test(this.pufferfish, (LivingEntity)livingEntity));
             return !list.isEmpty();
         }
 
@@ -214,12 +213,6 @@ extends FishEntity {
         @Override
         public void stop() {
             this.pufferfish.inflateTicks = 0;
-        }
-
-        @Override
-        public boolean shouldContinue() {
-            List<LivingEntity> list = this.pufferfish.world.getEntitiesByClass(LivingEntity.class, this.pufferfish.getBoundingBox().expand(2.0), BLOW_UP_FILTER);
-            return !list.isEmpty();
         }
     }
 }

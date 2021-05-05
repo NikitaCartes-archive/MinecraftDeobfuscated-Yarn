@@ -368,7 +368,7 @@ extends World {
     @Override
     public void playSoundFromEntity(@Nullable PlayerEntity player, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
         if (player == this.client.player) {
-            this.client.getSoundManager().play(new EntityTrackingSoundInstance(sound, category, entity));
+            this.client.getSoundManager().play(new EntityTrackingSoundInstance(sound, category, volume, pitch, entity));
         }
     }
 

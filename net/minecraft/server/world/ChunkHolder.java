@@ -315,7 +315,7 @@ public class ChunkHolder {
         LevelType levelType2 = ChunkHolder.getLevelType(this.level);
         if (bl) {
             int i;
-            Either either3 = Either.right(new Unloaded(){
+            Either either2 = Either.right(new Unloaded(){
 
                 public String toString() {
                     return "Unloaded ticket level " + ChunkHolder.this.pos;
@@ -324,10 +324,8 @@ public class ChunkHolder {
             int n = i = bl2 ? chunkStatus2.getIndex() + 1 : 0;
             while (i <= chunkStatus.getIndex()) {
                 completableFuture = this.futuresByStatus.get(i);
-                if (completableFuture != null) {
-                    this.futuresByStatus.set(i, (CompletableFuture<Either<Chunk, Unloaded>>)completableFuture.thenApply(either2 -> either3));
-                } else {
-                    this.futuresByStatus.set(i, CompletableFuture.completedFuture(either3));
+                if (completableFuture == null) {
+                    this.futuresByStatus.set(i, CompletableFuture.completedFuture(either2));
                 }
                 ++i;
             }

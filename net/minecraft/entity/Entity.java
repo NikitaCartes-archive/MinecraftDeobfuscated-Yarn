@@ -510,7 +510,9 @@ CommandOutput {
         if (!this.isWet() && !this.inPowderSnow) {
             this.setOnFireFor(15);
         }
-        this.damage(DamageSource.LAVA, 4.0f);
+        if (this.damage(DamageSource.LAVA, 4.0f)) {
+            this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4f, 2.0f + this.random.nextFloat() * 0.4f);
+        }
     }
 
     public void setOnFireFor(int seconds) {
@@ -1307,7 +1309,7 @@ CommandOutput {
             return false;
         }
         this.scheduleVelocityUpdate();
-        return false;
+        return true;
     }
 
     public final Vec3d getRotationVec(float tickDelta) {

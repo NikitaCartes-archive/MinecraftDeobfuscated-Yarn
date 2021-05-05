@@ -81,7 +81,7 @@ Waterloggable {
 
     public static void grow(WorldAccess world, Random random, BlockPos pos, Direction direction) {
         int j;
-        int i = 1 + random.nextInt(5);
+        int i = MathHelper.nextInt(random, 2, 5);
         BlockPos.Mutable mutable = pos.mutableCopy();
         for (j = 0; j < i && BigDripleafBlock.canGrowInto(world, mutable, world.getBlockState(mutable)); ++j) {
             mutable.move(Direction.UP);

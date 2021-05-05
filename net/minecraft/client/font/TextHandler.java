@@ -60,8 +60,8 @@ public class TextHandler {
 
     public float getWidth(OrderedText text) {
         MutableFloat mutableFloat = new MutableFloat();
-        text.accept((i, style, j) -> {
-            mutableFloat.add(this.widthRetriever.getWidth(j, style));
+        text.accept((index, style, codePoint) -> {
+            mutableFloat.add(this.widthRetriever.getWidth(codePoint, style));
             return true;
         });
         return mutableFloat.floatValue();
@@ -106,20 +106,20 @@ public class TextHandler {
     public String trimToWidthBackwards(String text, int maxWidth, Style style2) {
         MutableFloat mutableFloat = new MutableFloat();
         MutableInt mutableInt = new MutableInt(text.length());
-        TextVisitFactory.visitBackwards(text, style2, (j, style, codePoint) -> {
+        TextVisitFactory.visitBackwards(text, style2, (index, style, codePoint) -> {
             float f = mutableFloat.addAndGet(this.widthRetriever.getWidth(codePoint, style));
             if (f > (float)maxWidth) {
                 return false;
             }
-            mutableInt.setValue(j);
+            mutableInt.setValue(index);
             return true;
         });
         return text.substring(mutableInt.intValue());
     }
 
-    public int method_35715(String string, int i, Style style) {
-        WidthLimitingVisitor widthLimitingVisitor = new WidthLimitingVisitor(i);
-        TextVisitFactory.visitFormatted(string, style, (CharacterVisitor)widthLimitingVisitor);
+    public int method_35715(String text, int maxWidth, Style style) {
+        WidthLimitingVisitor widthLimitingVisitor = new WidthLimitingVisitor(maxWidth);
+        TextVisitFactory.visitFormatted(text, style, (CharacterVisitor)widthLimitingVisitor);
         return widthLimitingVisitor.getLength();
     }
 
@@ -131,9 +131,9 @@ public class TextHandler {
      * @param x the position in the text
      */
     @Nullable
-    public Style getStyleAt(StringVisitable text, int x) {
+    public Style getStyleAt(StringVisitable text2, int x) {
         WidthLimitingVisitor widthLimitingVisitor = new WidthLimitingVisitor(x);
-        return text.visit((style, string) -> TextVisitFactory.visitFormatted(string, style, (CharacterVisitor)widthLimitingVisitor) ? Optional.empty() : Optional.of(style), Style.EMPTY).orElse(null);
+        return text2.visit((style, text) -> TextVisitFactory.visitFormatted(text, style, (CharacterVisitor)widthLimitingVisitor) ? Optional.empty() : Optional.of(style), Style.EMPTY).orElse(null);
     }
 
     /**
@@ -147,8 +147,8 @@ public class TextHandler {
     public Style getStyleAt(OrderedText text, int x) {
         WidthLimitingVisitor widthLimitingVisitor = new WidthLimitingVisitor(x);
         MutableObject mutableObject = new MutableObject();
-        text.accept((i, style, j) -> {
-            if (!widthLimitingVisitor.accept(i, style, j)) {
+        text.accept((index, style, codePoint) -> {
+            if (!widthLimitingVisitor.accept(index, style, codePoint)) {
                 mutableObject.setValue(style);
                 return false;
             }
@@ -157,8 +157,8 @@ public class TextHandler {
         return (Style)mutableObject.getValue();
     }
 
-    public String method_35716(String string, int i, Style style) {
-        return string.substring(0, this.method_35715(string, i, style));
+    public String method_35716(String text, int maxWidth, Style style) {
+        return text.substring(0, this.method_35715(text, maxWidth, style));
     }
 
     public StringVisitable trimToWidth(StringVisitable text, int width, Style style) {
@@ -184,9 +184,9 @@ public class TextHandler {
         }, style).orElse(text);
     }
 
-    public int method_35717(String string, int i, Style style) {
-        LineBreakingVisitor lineBreakingVisitor = new LineBreakingVisitor(i);
-        TextVisitFactory.visitFormatted(string, style, (CharacterVisitor)lineBreakingVisitor);
+    public int method_35717(String text, int maxWidth, Style style) {
+        LineBreakingVisitor lineBreakingVisitor = new LineBreakingVisitor(maxWidth);
+        TextVisitFactory.visitFormatted(text, style, (CharacterVisitor)lineBreakingVisitor);
         return lineBreakingVisitor.getEndingIndex();
     }
 
@@ -241,27 +241,27 @@ public class TextHandler {
 
     public List<StringVisitable> wrapLines(String text, int maxWidth, Style style2) {
         ArrayList<StringVisitable> list = Lists.newArrayList();
-        this.wrapLines(text, maxWidth, style2, false, (style, i, j) -> list.add(StringVisitable.styled(text.substring(i, j), style)));
+        this.wrapLines(text, maxWidth, style2, false, (style, start, end) -> list.add(StringVisitable.styled(text.substring(start, end), style)));
         return list;
     }
 
-    public List<StringVisitable> wrapLines(StringVisitable text, int maxWidth, Style style) {
+    public List<StringVisitable> wrapLines(StringVisitable text2, int maxWidth, Style style) {
         ArrayList<StringVisitable> list = Lists.newArrayList();
-        this.wrapLines(text, maxWidth, style, (stringVisitable, boolean_) -> list.add((StringVisitable)stringVisitable));
+        this.wrapLines(text2, maxWidth, style, (text, boolean_) -> list.add((StringVisitable)text));
         return list;
     }
 
-    public List<StringVisitable> method_35714(StringVisitable stringVisitable, int i, Style style, StringVisitable stringVisitable22) {
+    public List<StringVisitable> method_35714(StringVisitable stringVisitable, int maxWidth, Style style, StringVisitable stringVisitable22) {
         ArrayList<StringVisitable> list = Lists.newArrayList();
-        this.wrapLines(stringVisitable, i, style, (stringVisitable2, boolean_) -> list.add(boolean_ != false ? StringVisitable.concat(stringVisitable22, stringVisitable2) : stringVisitable2));
+        this.wrapLines(stringVisitable, maxWidth, style, (stringVisitable2, boolean_) -> list.add(boolean_ != false ? StringVisitable.concat(stringVisitable22, stringVisitable2) : stringVisitable2));
         return list;
     }
 
-    public void wrapLines(StringVisitable text, int maxWidth, Style style2, BiConsumer<StringVisitable, Boolean> biConsumer) {
+    public void wrapLines(StringVisitable text2, int maxWidth, Style style2, BiConsumer<StringVisitable, Boolean> biConsumer) {
         ArrayList<StyledString> list = Lists.newArrayList();
-        text.visit((style, string) -> {
-            if (!string.isEmpty()) {
-                list.add(new StyledString(string, style));
+        text2.visit((style, text) -> {
+            if (!text.isEmpty()) {
+                list.add(new StyledString(text, style));
             }
             return Optional.empty();
         }, style2);

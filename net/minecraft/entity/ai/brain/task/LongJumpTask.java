@@ -59,7 +59,7 @@ extends Task<E> {
 
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, MobEntity mobEntity) {
-        return mobEntity.isOnGround() && !serverWorld.getBlockState(mobEntity.getBlockPos().down()).isOf(Blocks.HONEY_BLOCK);
+        return mobEntity.isOnGround() && !serverWorld.getBlockState(mobEntity.getBlockPos()).isOf(Blocks.HONEY_BLOCK);
     }
 
     @Override

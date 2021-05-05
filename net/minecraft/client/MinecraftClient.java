@@ -140,6 +140,7 @@ import net.minecraft.client.resource.FoliageColormapResourceSupplier;
 import net.minecraft.client.resource.Format3ResourcePack;
 import net.minecraft.client.resource.Format4ResourcePack;
 import net.minecraft.client.resource.GrassColormapResourceSupplier;
+import net.minecraft.client.resource.ResourceReloadLogger;
 import net.minecraft.client.resource.SplashTextResourceSupplier;
 import net.minecraft.client.resource.VideoWarningManager;
 import net.minecraft.client.resource.language.I18n;
@@ -458,6 +459,7 @@ WindowEventHandler {
     @Nullable
     private ProfileResult tickProfilerResult;
     private Recorder debugRecorder = DummyRecorder.INSTANCE;
+    private final ResourceReloadLogger resourceReloadLogger = new ResourceReloadLogger();
     private String openProfilerSection = "root";
 
     public MinecraftClient(RunArgs args) {
@@ -595,10 +597,12 @@ WindowEventHandler {
         this.gameRenderer.preloadShaders(this.getResourcePackProvider().getPack());
         SplashScreen.init(this);
         List<ResourcePack> list = this.resourcePackManager.createResourcePacks();
-        this.setOverlay(new SplashScreen(this, this.resourceManager.reload(Util.getMainWorkerExecutor(), (Executor)this, COMPLETED_UNIT_FUTURE, list), optional -> Util.ifPresentOrElse(optional, this::handleResourceReloadException, () -> {
+        this.resourceReloadLogger.reload(ResourceReloadLogger.ReloadReason.INITIAL, list);
+        this.setOverlay(new SplashScreen(this, this.resourceManager.reload(Util.getMainWorkerExecutor(), (Executor)this, COMPLETED_UNIT_FUTURE, list), throwable -> Util.ifPresentOrElse(throwable, this::handleResourceReloadException, () -> {
             if (SharedConstants.isDevelopment) {
                 this.checkGameData();
             }
+            this.resourceReloadLogger.finish();
         }), false));
     }
 
@@ -658,11 +662,12 @@ WindowEventHandler {
 
     public void onResourceReloadFailure(Throwable exception, @Nullable Text resourceName) {
         LOGGER.info("Caught error loading resourcepacks, removing all selected resourcepacks", exception);
+        this.resourceReloadLogger.recover(exception);
         this.resourcePackManager.setEnabledProfiles(Collections.emptyList());
         this.options.resourcePacks.clear();
         this.options.incompatibleResourcePacks.clear();
         this.options.write();
-        this.reloadResources().thenRun(() -> {
+        this.reloadResources(true).thenRun(() -> {
             ToastManager toastManager = this.getToastManager();
             SystemToast.show(toastManager, SystemToast.Type.PACK_LOAD_FAILURE, new TranslatableText("resourcePack.load_fail"), resourceName);
         });
@@ -784,18 +789,26 @@ WindowEventHandler {
     }
 
     public CompletableFuture<Void> reloadResources() {
+        return this.reloadResources(false);
+    }
+
+    private CompletableFuture<Void> reloadResources(boolean force) {
         if (this.resourceReloadFuture != null) {
             return this.resourceReloadFuture;
         }
         CompletableFuture<Void> completableFuture = new CompletableFuture<Void>();
-        if (this.overlay instanceof SplashScreen) {
+        if (!force && this.overlay instanceof SplashScreen) {
             this.resourceReloadFuture = completableFuture;
             return completableFuture;
         }
         this.resourcePackManager.scanPacks();
         List<ResourcePack> list = this.resourcePackManager.createResourcePacks();
-        this.setOverlay(new SplashScreen(this, this.resourceManager.reload(Util.getMainWorkerExecutor(), (Executor)this, COMPLETED_UNIT_FUTURE, list), optional -> Util.ifPresentOrElse(optional, this::handleResourceReloadException, () -> {
+        if (!force) {
+            this.resourceReloadLogger.reload(ResourceReloadLogger.ReloadReason.MANUAL, list);
+        }
+        this.setOverlay(new SplashScreen(this, this.resourceManager.reload(Util.getMainWorkerExecutor(), (Executor)this, COMPLETED_UNIT_FUTURE, list), throwable -> Util.ifPresentOrElse(throwable, this::handleResourceReloadException, () -> {
             this.worldRenderer.reload();
+            this.resourceReloadLogger.finish();
             completableFuture.complete(null);
         }), true));
         return completableFuture;
@@ -1593,7 +1606,7 @@ WindowEventHandler {
     }
 
     public static SaveProperties createSaveProperties(LevelStorage.Session session, DynamicRegistryManager.Impl registryTracker, ResourceManager resourceManager, DataPackSettings dataPackSettings) {
-        RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, resourceManager, (DynamicRegistryManager)registryTracker);
+        RegistryOps<NbtElement> registryOps = RegistryOps.method_36574(NbtOps.INSTANCE, resourceManager, registryTracker);
         SaveProperties saveProperties = session.readLevelProperties(registryOps, dataPackSettings);
         if (saveProperties == null) {
             throw new IllegalStateException("Failed to load world");
@@ -1605,11 +1618,11 @@ WindowEventHandler {
         this.startIntegratedServer(worldName, DynamicRegistryManager.create(), MinecraftClient::loadDataPackSettings, MinecraftClient::createSaveProperties, false, WorldLoadAction.BACKUP);
     }
 
-    public void method_29607(String worldName, LevelInfo levelInfo, DynamicRegistryManager.Impl registryTracker, GeneratorOptions generatorOptions) {
-        this.startIntegratedServer(worldName, registryTracker, session -> levelInfo.getDataPackSettings(), (session, impl2, resourceManager, dataPackSettings) -> {
+    public void createWorld(String worldName, LevelInfo levelInfo, DynamicRegistryManager.Impl registryTracker, GeneratorOptions generatorOptions) {
+        this.startIntegratedServer(worldName, registryTracker, session -> levelInfo.getDataPackSettings(), (session, registryManager, resourceManager, dataPackSettings) -> {
             RegistryReadingOps<JsonElement> registryReadingOps = RegistryReadingOps.of(JsonOps.INSTANCE, registryTracker);
-            RegistryOps<JsonElement> registryOps = RegistryOps.of(JsonOps.INSTANCE, resourceManager, (DynamicRegistryManager)registryTracker);
-            DataResult dataResult = GeneratorOptions.CODEC.encodeStart(registryReadingOps, generatorOptions).setLifecycle(Lifecycle.stable()).flatMap(jsonElement -> GeneratorOptions.CODEC.parse(registryOps, jsonElement));
+            RegistryOps<JsonElement> registryOps = RegistryOps.method_36574(JsonOps.INSTANCE, resourceManager, registryTracker);
+            DataResult dataResult = GeneratorOptions.CODEC.encodeStart(registryReadingOps, generatorOptions).setLifecycle(Lifecycle.stable()).flatMap(json -> GeneratorOptions.CODEC.parse(registryOps, json));
             GeneratorOptions generatorOptions2 = dataResult.resultOrPartial(Util.addPrefix("Error reading worldgen settings after loading data packs: ", LOGGER::error)).orElse(generatorOptions);
             return new LevelProperties(levelInfo, generatorOptions2, dataResult.lifecycle());
         }, false, WorldLoadAction.CREATE);
@@ -1964,18 +1977,23 @@ WindowEventHandler {
     }
 
     public CrashReport addDetailsToCrashReport(CrashReport report) {
-        MinecraftClient.addSystemDetailsToCrashReport(this.languageManager, this.gameVersion, this.options, report);
+        MinecraftClient.addSystemDetailsToCrashReport(this, this.languageManager, this.gameVersion, this.options, report);
         if (this.world != null) {
             this.world.addDetailsToCrashReport(report);
         }
+        if (this.server != null) {
+            this.server.populateCrashReport(report.addElement("Integrated server"));
+        }
+        this.resourceReloadLogger.addReloadSection(report);
         return report;
     }
 
-    public static void addSystemDetailsToCrashReport(@Nullable LanguageManager languageManager, String version, @Nullable GameOptions options, CrashReport report) {
+    public static void addSystemDetailsToCrashReport(@Nullable MinecraftClient client, @Nullable LanguageManager languageManager, String version, @Nullable GameOptions options, CrashReport report) {
         CrashReportSection crashReportSection = report.getSystemDetailsSection();
         crashReportSection.add("Launched Version", () -> version);
         crashReportSection.add("Backend library", RenderSystem::getBackendDescription);
         crashReportSection.add("Backend API", RenderSystem::getApiDescription);
+        crashReportSection.add("Window size", () -> client != null ? minecraftClient.window.getFramebufferWidth() + "x" + minecraftClient.window.getFramebufferHeight() : "<not initialized>");
         crashReportSection.add("GL Caps", RenderSystem::getCapsString);
         crashReportSection.add("GL debug messages", () -> GlDebug.method_36479() ? String.join((CharSequence)"\n", GlDebug.method_36478()) : "<disabled>");
         crashReportSection.add("Using VBOs", () -> "Yes");
@@ -2415,7 +2433,7 @@ WindowEventHandler {
 
     private Text method_35699(File file, int i, int j, int k, int l) {
         try {
-            ByteBuffer byteBuffer = GlDebugInfo.method_35611(i * j * 3);
+            ByteBuffer byteBuffer = GlDebugInfo.allocateMemory(i * j * 3);
             ScreenshotUtils screenshotUtils = new ScreenshotUtils(file, k, l, j);
             float f = (float)k / (float)i;
             float g = (float)l / (float)j;
@@ -2435,7 +2453,7 @@ WindowEventHandler {
                 screenshotUtils.method_35710();
             }
             File file2 = screenshotUtils.method_35712();
-            GlDebugInfo.method_35613(byteBuffer);
+            GlDebugInfo.freeMemory(byteBuffer);
             MutableText text = new LiteralText(file2.getName()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file2.getAbsolutePath())));
             return new TranslatableText("screenshot.success", text);
         } catch (Exception exception) {

@@ -52,7 +52,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.logging.UncaughtExceptionHandler;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.BlockPos;
@@ -255,11 +255,10 @@ implements DedicatedServer {
     }
 
     @Override
-    public CrashReport populateCrashReport(CrashReport report) {
-        report = super.populateCrashReport(report);
-        report.getSystemDetailsSection().add("Is Modded", () -> this.getModdedStatusMessage().orElse("Unknown (can't tell)"));
-        report.getSystemDetailsSection().add("Type", () -> "Dedicated Server (map_server.txt)");
-        return report;
+    public void populateCrashReport(CrashReportSection section) {
+        super.populateCrashReport(section);
+        section.add("Is Modded", () -> this.getModdedStatusMessage().orElse("Unknown (can't tell)"));
+        section.add("Type", () -> "Dedicated Server (map_server.txt)");
     }
 
     @Override

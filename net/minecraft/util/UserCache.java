@@ -45,7 +45,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class UserCache {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final int field_29788 = 1000;
+    private static final int MAX_SAVED_ENTRIES = 1000;
     private static final int field_29789 = 1;
     private static boolean useRemote;
     private final Map<String, Entry> byName = Maps.newConcurrentMap();
@@ -53,18 +53,18 @@ public class UserCache {
     private final GameProfileRepository profileRepository;
     private final Gson gson = new GsonBuilder().create();
     private final File cacheFile;
-    private final AtomicLong field_25724 = new AtomicLong();
+    private final AtomicLong accessCount = new AtomicLong();
 
     public UserCache(GameProfileRepository profileRepository, File cacheFile) {
         this.profileRepository = profileRepository;
         this.cacheFile = cacheFile;
-        Lists.reverse(this.load()).forEach(this::method_30164);
+        Lists.reverse(this.load()).forEach(this::add);
     }
 
-    private void method_30164(Entry entry) {
+    private void add(Entry entry) {
         UUID uUID;
         GameProfile gameProfile = entry.getProfile();
-        entry.method_30171(this.method_30169());
+        entry.setLastAccessed(this.incrementAndGetAccessCount());
         String string = gameProfile.getName();
         if (string != null) {
             this.byName.put(string.toLowerCase(Locale.ROOT), entry);
@@ -106,18 +106,18 @@ public class UserCache {
         return useRemote;
     }
 
-    public void add(GameProfile gameProfile) {
+    public void add(GameProfile profile) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.add(2, 1);
         Date date = calendar.getTime();
-        Entry entry = new Entry(gameProfile, date);
-        this.method_30164(entry);
+        Entry entry = new Entry(profile, date);
+        this.add(entry);
         this.save();
     }
 
-    private long method_30169() {
-        return this.field_25724.incrementAndGet();
+    private long incrementAndGetAccessCount() {
+        return this.accessCount.incrementAndGet();
     }
 
     @Nullable
@@ -133,7 +133,7 @@ public class UserCache {
             entry = null;
         }
         if (entry != null) {
-            entry.method_30171(this.method_30169());
+            entry.setLastAccessed(this.incrementAndGetAccessCount());
             gameProfile = entry.getProfile();
         } else {
             gameProfile = UserCache.findProfileByName(this.profileRepository, string);
@@ -154,7 +154,7 @@ public class UserCache {
         if (entry == null) {
             return null;
         }
-        entry.method_30171(this.method_30169());
+        entry.setLastAccessed(this.incrementAndGetAccessCount());
         return entry.getProfile();
     }
 
@@ -176,8 +176,8 @@ public class UserCache {
                 return arrayList;
             }
             DateFormat dateFormat = UserCache.getDateFormat();
-            jsonArray.forEach(jsonElement -> {
-                Entry entry = UserCache.method_30167(jsonElement, dateFormat);
+            jsonArray.forEach(json -> {
+                Entry entry = UserCache.entryFromJson(json, dateFormat);
                 if (entry != null) {
                     list.add(entry);
                 }
@@ -194,7 +194,7 @@ public class UserCache {
     public void save() {
         JsonArray jsonArray = new JsonArray();
         DateFormat dateFormat = UserCache.getDateFormat();
-        this.getLastAccessedEntries(1000).forEach(entry -> jsonArray.add(UserCache.method_30165(entry, dateFormat)));
+        this.getLastAccessedEntries(1000).forEach(entry -> jsonArray.add(UserCache.entryToJson(entry, dateFormat)));
         String string = this.gson.toJson(jsonArray);
         try (BufferedWriter writer = Files.newWriter(this.cacheFile, StandardCharsets.UTF_8);){
             writer.write(string);
@@ -203,11 +203,11 @@ public class UserCache {
         }
     }
 
-    private Stream<Entry> getLastAccessedEntries(int i) {
-        return ImmutableList.copyOf(this.byUuid.values()).stream().sorted(Comparator.comparing(Entry::method_30172).reversed()).limit(i);
+    private Stream<Entry> getLastAccessedEntries(int limit) {
+        return ImmutableList.copyOf(this.byUuid.values()).stream().sorted(Comparator.comparing(Entry::getLastAccessed).reversed()).limit(limit);
     }
 
-    private static JsonElement method_30165(Entry entry, DateFormat dateFormat) {
+    private static JsonElement entryToJson(Entry entry, DateFormat dateFormat) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("name", entry.getProfile().getName());
         UUID uUID = entry.getProfile().getId();
@@ -217,22 +217,22 @@ public class UserCache {
     }
 
     @Nullable
-    private static Entry method_30167(JsonElement jsonElement, DateFormat dateFormat) {
-        if (jsonElement.isJsonObject()) {
+    private static Entry entryFromJson(JsonElement json, DateFormat dateFormat) {
+        if (json.isJsonObject()) {
             UUID uUID;
-            JsonObject jsonObject = jsonElement.getAsJsonObject();
-            JsonElement jsonElement2 = jsonObject.get("name");
-            JsonElement jsonElement3 = jsonObject.get("uuid");
-            JsonElement jsonElement4 = jsonObject.get("expiresOn");
-            if (jsonElement2 == null || jsonElement3 == null) {
+            JsonObject jsonObject = json.getAsJsonObject();
+            JsonElement jsonElement = jsonObject.get("name");
+            JsonElement jsonElement2 = jsonObject.get("uuid");
+            JsonElement jsonElement3 = jsonObject.get("expiresOn");
+            if (jsonElement == null || jsonElement2 == null) {
                 return null;
             }
-            String string = jsonElement3.getAsString();
-            String string2 = jsonElement2.getAsString();
+            String string = jsonElement2.getAsString();
+            String string2 = jsonElement.getAsString();
             Date date = null;
-            if (jsonElement4 != null) {
+            if (jsonElement3 != null) {
                 try {
-                    date = dateFormat.parse(jsonElement4.getAsString());
+                    date = dateFormat.parse(jsonElement3.getAsString());
                 } catch (ParseException parseException) {
                     // empty catch block
                 }
@@ -253,7 +253,7 @@ public class UserCache {
     static class Entry {
         private final GameProfile profile;
         private final Date expirationDate;
-        private volatile long field_25726;
+        private volatile long lastAccessed;
 
         private Entry(GameProfile profile, Date expirationDate) {
             this.profile = profile;
@@ -268,12 +268,12 @@ public class UserCache {
             return this.expirationDate;
         }
 
-        public void method_30171(long l) {
-            this.field_25726 = l;
+        public void setLastAccessed(long lastAccessed) {
+            this.lastAccessed = lastAccessed;
         }
 
-        public long method_30172() {
-            return this.field_25726;
+        public long getLastAccessed() {
+            return this.lastAccessed;
         }
     }
 }

@@ -356,7 +356,7 @@ implements Flutterer {
     }
 
     @Override
-    protected float getSoundPitch() {
+    public float getSoundPitch() {
         return ParrotEntity.getSoundPitch(this.random);
     }
 

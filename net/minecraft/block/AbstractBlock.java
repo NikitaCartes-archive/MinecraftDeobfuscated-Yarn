@@ -383,6 +383,10 @@ public abstract class AbstractBlock {
         return (MapColor)this.settings.mapColorProvider.apply(this.asBlock().getDefaultState());
     }
 
+    public float method_36555() {
+        return this.settings.hardness;
+    }
+
     public static interface TypedContextPredicate<A> {
         public boolean test(BlockState var1, BlockView var2, BlockPos var3, A var4);
     }
@@ -946,9 +950,7 @@ public abstract class AbstractBlock {
         }
 
         public Settings strength(float hardness, float resistance) {
-            this.hardness = hardness;
-            this.resistance = Math.max(0.0f, resistance);
-            return this;
+            return this.hardness(hardness).resistance(resistance);
         }
 
         public Settings breakInstantly() {
@@ -1022,6 +1024,16 @@ public abstract class AbstractBlock {
 
         public Settings mapColor(MapColor color) {
             this.mapColorProvider = state -> color;
+            return this;
+        }
+
+        public Settings hardness(float hardness) {
+            this.hardness = hardness;
+            return this;
+        }
+
+        public Settings resistance(float resistance) {
+            this.resistance = Math.max(0.0f, resistance);
             return this;
         }
     }

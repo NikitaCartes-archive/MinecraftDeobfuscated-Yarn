@@ -17,12 +17,15 @@ public class OreVeinGenerator {
     private static final float field_33588 = 1.0f;
     private static final float field_33589 = 4.0f;
     private static final float field_33590 = 0.08f;
-    private static final float field_33591 = 0.4f;
+    private static final float field_33591 = 0.5f;
+    private static final double field_33694 = 1.5;
+    private static final int field_33695 = 20;
+    private static final double field_33696 = 0.2;
     private static final float field_33592 = 0.7f;
     private static final float field_33662 = 0.1f;
     private static final float field_33663 = 0.3f;
     private static final float field_33664 = 0.6f;
-    private static final float field_33665 = 0.01f;
+    private static final float field_33665 = 0.02f;
     private static final float field_33666 = -0.3f;
     private final int field_33595;
     private final int field_33596;
@@ -48,7 +51,7 @@ public class OreVeinGenerator {
     }
 
     public void method_36401(double[] ds, int i, int j, int k, int l) {
-        this.method_36402(ds, i, j, this.field_33598, 1.0, k, l);
+        this.method_36402(ds, i, j, this.field_33598, 1.5, k, l);
     }
 
     public void method_36404(double[] ds, int i, int j, int k, int l) {
@@ -72,17 +75,17 @@ public class OreVeinGenerator {
 
     public BlockState sample(WorldGenRandom random, int x, int y, int z, double d, double e, double f) {
         BlockState blockState = this.defaultState;
-        VeinType veinType = this.getVeinType(d);
-        if (veinType == null || y < veinType.minY || y > veinType.maxY) {
+        VeinType veinType = this.getVeinType(d, y);
+        if (veinType == null) {
             return blockState;
         }
         if (random.nextFloat() > 0.7f) {
             return blockState;
         }
         if (this.method_36398(e, f)) {
-            double g = MathHelper.clampedLerpFromProgress(Math.abs(d), 0.4f, 0.6f, 0.1f, 0.3f);
+            double g = MathHelper.clampedLerpFromProgress(Math.abs(d), 0.5, 0.6f, 0.1f, 0.3f);
             if ((double)random.nextFloat() < g && this.field_33667.sample(x, y, z) > (double)-0.3f) {
-                return random.nextFloat() < 0.01f ? veinType.rawBlock : veinType.ore;
+                return random.nextFloat() < 0.02f ? veinType.rawBlock : veinType.ore;
             }
             return veinType.stone;
         }
@@ -96,11 +99,19 @@ public class OreVeinGenerator {
     }
 
     @Nullable
-    private VeinType getVeinType(double d) {
-        if (Math.abs(d) < (double)0.4f) {
+    private VeinType getVeinType(double d, int i) {
+        VeinType veinType = d > 0.0 ? VeinType.COPPER : VeinType.IRON;
+        int j = veinType.maxY - i;
+        int k = i - veinType.minY;
+        if (k < 0 || j < 0) {
             return null;
         }
-        return d > 0.0 ? VeinType.COPPER : VeinType.IRON;
+        int l = Math.min(j, k);
+        double e = MathHelper.clampedLerpFromProgress(l, 0.0, 20.0, -0.2, 0.0);
+        if (Math.abs(d) + e < 0.5) {
+            return null;
+        }
+        return veinType;
     }
 
     static enum VeinType {

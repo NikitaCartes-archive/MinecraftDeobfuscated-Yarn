@@ -117,6 +117,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -670,7 +671,8 @@ AutoCloseable {
             }
         } catch (Throwable throwable) {
             LOGGER.error("Encountered an unexpected exception", throwable);
-            CrashReport crashReport = throwable instanceof CrashException ? this.populateCrashReport(((CrashException)throwable).getReport()) : this.populateCrashReport(new CrashReport("Exception in server tick loop", throwable));
+            CrashReport crashReport = throwable instanceof CrashException ? ((CrashException)throwable).getReport() : new CrashReport("Exception in server tick loop", throwable);
+            this.populateCrashReport(crashReport.getSystemDetailsSection());
             File file = new File(new File(this.getRunDirectory(), "crash-reports"), "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-server.txt");
             if (crashReport.writeToFile(file)) {
                 LOGGER.error("This crash report has been saved to: {}", (Object)file.getAbsolutePath());
@@ -917,11 +919,11 @@ AutoCloseable {
         return "vanilla";
     }
 
-    public CrashReport populateCrashReport(CrashReport report) {
+    public void populateCrashReport(CrashReportSection section) {
         if (this.playerManager != null) {
-            report.getSystemDetailsSection().add("Player Count", () -> this.playerManager.getCurrentPlayerCount() + " / " + this.playerManager.getMaxPlayerCount() + "; " + this.playerManager.getPlayerList());
+            section.add("Player Count", () -> this.playerManager.getCurrentPlayerCount() + " / " + this.playerManager.getMaxPlayerCount() + "; " + this.playerManager.getPlayerList());
         }
-        report.getSystemDetailsSection().add("Data Packs", () -> {
+        section.add("Data Packs", () -> {
             StringBuilder stringBuilder = new StringBuilder();
             for (ResourcePackProfile resourcePackProfile : this.dataPackManager.getEnabledProfiles()) {
                 if (stringBuilder.length() > 0) {
@@ -934,9 +936,8 @@ AutoCloseable {
             return stringBuilder.toString();
         });
         if (this.serverId != null) {
-            report.getSystemDetailsSection().add("Server Id", () -> this.serverId);
+            section.add("Server Id", () -> this.serverId);
         }
-        return report;
     }
 
     public abstract Optional<String> getModdedStatusMessage();
@@ -1494,7 +1495,7 @@ AutoCloseable {
 
     private void dumpExampleCrash(Path path) throws IOException {
         CrashReport crashReport = new CrashReport("Server dump", new Exception("dummy"));
-        this.populateCrashReport(crashReport);
+        this.populateCrashReport(crashReport.getSystemDetailsSection());
         try (BufferedWriter writer = Files.newBufferedWriter(path, new OpenOption[0]);){
             writer.write(crashReport.asString());
         }

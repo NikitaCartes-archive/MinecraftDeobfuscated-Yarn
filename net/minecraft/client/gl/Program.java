@@ -67,8 +67,8 @@ public class Program {
         return i;
     }
 
-    private static Program method_35658(Type type, String string, int i) {
-        return new Program(type, i, string);
+    private static Program create(Type shaderType, String name, int shaderRef) {
+        return new Program(shaderType, shaderRef, name);
     }
 
     protected int getShaderRef() {

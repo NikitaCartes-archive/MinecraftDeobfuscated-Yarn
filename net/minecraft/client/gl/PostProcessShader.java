@@ -67,14 +67,14 @@ implements AutoCloseable {
         this.program.bindSampler("DiffuseSampler", this.input::getColorAttachment);
         for (int i = 0; i < this.samplerValues.size(); ++i) {
             this.program.bindSampler(this.samplerNames.get(i), this.samplerValues.get(i));
-            this.program.getUniformByNameOrDummy("AuxSize" + i).set(this.samplerWidths.get(i).intValue(), this.samplerHeights.get(i).intValue());
+            this.program.getUniformByNameOrDummy("AuxSize" + i).set((float)this.samplerWidths.get(i).intValue(), (float)this.samplerHeights.get(i).intValue());
         }
         this.program.getUniformByNameOrDummy("ProjMat").set(this.projectionMatrix);
-        this.program.getUniformByNameOrDummy("InSize").set(this.input.textureWidth, this.input.textureHeight);
+        this.program.getUniformByNameOrDummy("InSize").set((float)this.input.textureWidth, (float)this.input.textureHeight);
         this.program.getUniformByNameOrDummy("OutSize").set(f, g);
         this.program.getUniformByNameOrDummy("Time").set(time);
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        this.program.getUniformByNameOrDummy("ScreenSize").set(minecraftClient.getWindow().getFramebufferWidth(), minecraftClient.getWindow().getFramebufferHeight());
+        this.program.getUniformByNameOrDummy("ScreenSize").set((float)minecraftClient.getWindow().getFramebufferWidth(), (float)minecraftClient.getWindow().getFramebufferHeight());
         this.program.enable();
         this.output.clear(MinecraftClient.IS_SYSTEM_MAC);
         this.output.beginWrite(false);

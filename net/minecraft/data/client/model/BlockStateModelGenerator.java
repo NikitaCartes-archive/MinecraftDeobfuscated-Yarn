@@ -720,7 +720,7 @@ public class BlockStateModelGenerator {
     }
 
     private void registerAmethyst(Block block) {
-        this.registerItemModel(block);
+        this.excludeFromSimpleItemModelGeneration(block);
         this.blockStateCollector.accept(VariantsBlockStateSupplier.create(block, BlockStateVariant.create().put(VariantSettings.MODEL, Models.CROSS.upload(block, Texture.cross(block), this.modelCollector))).coordinate(this.createUpDefaultFacingVariantMap()));
     }
 

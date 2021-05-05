@@ -5,6 +5,7 @@ package net.minecraft.entity.ai;
 
 import java.util.function.Predicate;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.mob.MobEntity;
 import org.jetbrains.annotations.Nullable;
 
@@ -67,6 +68,7 @@ public class TargetPredicate {
     }
 
     public boolean test(@Nullable LivingEntity baseEntity, LivingEntity targetEntity) {
+        ArmorStandEntity armorStandEntity;
         if (baseEntity == targetEntity) {
             return false;
         }
@@ -80,6 +82,9 @@ public class TargetPredicate {
             return false;
         }
         if (this.predicate != null && !this.predicate.test(targetEntity)) {
+            return false;
+        }
+        if (targetEntity instanceof ArmorStandEntity && ((armorStandEntity = (ArmorStandEntity)targetEntity).isInvisible() || armorStandEntity.isMarker())) {
             return false;
         }
         if (baseEntity != null) {

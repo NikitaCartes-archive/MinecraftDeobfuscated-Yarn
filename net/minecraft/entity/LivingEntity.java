@@ -517,14 +517,9 @@ extends Entity {
 
     protected void updatePostDeath() {
         ++this.deathTime;
-        if (this.deathTime == 20) {
+        if (this.deathTime == 20 && !this.world.isClient()) {
+            this.world.sendEntityStatus(this, (byte)60);
             this.remove(Entity.RemovalReason.KILLED);
-            for (int i = 0; i < 20; ++i) {
-                double d = this.random.nextGaussian() * 0.02;
-                double e = this.random.nextGaussian() * 0.02;
-                double f = this.random.nextGaussian() * 0.02;
-                this.world.addParticle(ParticleTypes.POOF, this.getParticleX(1.0), this.getRandomBodyY(), this.getParticleZ(1.0), d, e, f);
-            }
         }
     }
 
@@ -1099,7 +1094,7 @@ extends Entity {
     }
 
     protected void knockback(LivingEntity target) {
-        target.takeKnockback(0.5f, target.getX() - this.getX(), target.getZ() - this.getZ());
+        target.takeKnockback(0.5, target.getX() - this.getX(), target.getZ() - this.getZ());
     }
 
     private boolean tryUseTotem(DamageSource source) {
@@ -1277,14 +1272,14 @@ extends Entity {
         return builder;
     }
 
-    public void takeKnockback(float f, double d, double e) {
-        if ((f = (float)((double)f * (1.0 - this.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)))) <= 0.0f) {
+    public void takeKnockback(double d, double e, double f) {
+        if ((d *= 1.0 - this.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)) <= 0.0) {
             return;
         }
         this.velocityDirty = true;
         Vec3d vec3d = this.getVelocity();
-        Vec3d vec3d2 = new Vec3d(d, 0.0, e).normalize().multiply(f);
-        this.setVelocity(vec3d.x / 2.0 - vec3d2.x, this.onGround ? Math.min(0.4, vec3d.y / 2.0 + (double)f) : vec3d.y, vec3d.z / 2.0 - vec3d2.z);
+        Vec3d vec3d2 = new Vec3d(e, 0.0, f).normalize().multiply(d);
+        this.setVelocity(vec3d.x / 2.0 - vec3d2.x, this.onGround ? Math.min(0.4, vec3d.y / 2.0 + d) : vec3d.y, vec3d.z / 2.0 - vec3d2.z);
     }
 
     @Nullable
@@ -1619,9 +1614,22 @@ extends Entity {
                 this.swapHandStacks();
                 break;
             }
+            case 60: {
+                this.method_36549();
+                break;
+            }
             default: {
                 super.handleStatus(status);
             }
+        }
+    }
+
+    private void method_36549() {
+        for (int i = 0; i < 20; ++i) {
+            double d = this.random.nextGaussian() * 0.02;
+            double e = this.random.nextGaussian() * 0.02;
+            double f = this.random.nextGaussian() * 0.02;
+            this.world.addParticle(ParticleTypes.POOF, this.getParticleX(1.0), this.getRandomBodyY(), this.getParticleZ(1.0), d, e, f);
         }
     }
 
@@ -1758,7 +1766,7 @@ extends Entity {
         return 1.0f;
     }
 
-    protected float getSoundPitch() {
+    public float getSoundPitch() {
         if (this.isBaby()) {
             return (this.random.nextFloat() - this.random.nextFloat()) * 0.2f + 1.5f;
         }

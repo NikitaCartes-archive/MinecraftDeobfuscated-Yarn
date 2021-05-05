@@ -29,6 +29,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.snooper.Snooper;
@@ -138,11 +139,10 @@ extends MinecraftServer {
     }
 
     @Override
-    public CrashReport populateCrashReport(CrashReport report) {
-        report = super.populateCrashReport(report);
-        report.getSystemDetailsSection().add("Type", "Integrated Server (map_client.txt)");
-        report.getSystemDetailsSection().add("Is Modded", () -> this.getModdedStatusMessage().orElse("Probably not. Jar signature remains and both client + server brands are untouched."));
-        return report;
+    public void populateCrashReport(CrashReportSection section) {
+        super.populateCrashReport(section);
+        section.add("Type", "Integrated Server (map_client.txt)");
+        section.add("Is Modded", () -> this.getModdedStatusMessage().orElse("Probably not. Jar signature remains and both client + server brands are untouched."));
     }
 
     @Override
