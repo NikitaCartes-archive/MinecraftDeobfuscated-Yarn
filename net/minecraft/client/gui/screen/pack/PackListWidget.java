@@ -4,6 +4,7 @@
 package net.minecraft.client.gui.screen.pack;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -30,16 +31,16 @@ import net.minecraft.util.Language;
 @Environment(value=EnvType.CLIENT)
 public class PackListWidget
 extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
-    private static final Identifier RESOURCE_PACKS_TEXTURE = new Identifier("textures/gui/resource_packs.png");
-    private static final Text INCOMPATIBLE = new TranslatableText("pack.incompatible");
-    private static final Text INCOMPATIBLE_CONFIRM = new TranslatableText("pack.incompatible.confirm.title");
+    static final Identifier RESOURCE_PACKS_TEXTURE = new Identifier("textures/gui/resource_packs.png");
+    static final Text INCOMPATIBLE = new TranslatableText("pack.incompatible");
+    static final Text INCOMPATIBLE_CONFIRM = new TranslatableText("pack.incompatible.confirm.title");
     private final Text title;
 
     public PackListWidget(MinecraftClient client, int width, int height, Text title) {
         super(client, width, height, 32, height - 55 + 4, 36);
         this.title = title;
         this.centerListVertically = false;
-        client.textRenderer.getClass();
+        Objects.requireNonNull(client.textRenderer);
         this.setRenderHeader(true, (int)(9.0f * 1.5f));
     }
 

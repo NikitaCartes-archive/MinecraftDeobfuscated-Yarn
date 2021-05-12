@@ -74,7 +74,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 
 public class ExecuteCommand {
-    private static final int field_33390 = 32768;
+    private static final int MAX_BLOCKS = 32768;
     private static final Dynamic2CommandExceptionType BLOCKS_TOOBIG_EXCEPTION = new Dynamic2CommandExceptionType((maxCount, count) -> new TranslatableText("commands.execute.blocks.toobig", maxCount, count));
     private static final SimpleCommandExceptionType CONDITIONAL_FAIL_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.execute.conditional.fail"));
     private static final DynamicCommandExceptionType CONDITIONAL_FAIL_COUNT_EXCEPTION = new DynamicCommandExceptionType(count -> new TranslatableText("commands.execute.conditional.fail_count", count));
@@ -319,13 +319,13 @@ public class ExecuteCommand {
     }
 
     @FunctionalInterface
-    static interface ExistsCondition {
-        public int test(CommandContext<ServerCommandSource> var1) throws CommandSyntaxException;
+    static interface Condition {
+        public boolean test(CommandContext<ServerCommandSource> var1) throws CommandSyntaxException;
     }
 
     @FunctionalInterface
-    static interface Condition {
-        public boolean test(CommandContext<ServerCommandSource> var1) throws CommandSyntaxException;
+    static interface ExistsCondition {
+        public int test(CommandContext<ServerCommandSource> var1) throws CommandSyntaxException;
     }
 }
 

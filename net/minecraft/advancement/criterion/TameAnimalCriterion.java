@@ -16,7 +16,7 @@ import net.minecraft.util.Identifier;
 
 public class TameAnimalCriterion
 extends AbstractCriterion<Conditions> {
-    private static final Identifier ID = new Identifier("tame_animal");
+    static final Identifier ID = new Identifier("tame_animal");
 
     @Override
     public Identifier getId() {

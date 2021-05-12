@@ -48,12 +48,12 @@ import org.apache.logging.log4j.Logger;
  */
 public class ServerEntityManager<T extends EntityLike>
 implements AutoCloseable {
-    private static final Logger LOGGER = LogManager.getLogger();
-    private final Set<UUID> entityUuids = Sets.newHashSet();
-    private final EntityHandler<T> handler;
+    static final Logger LOGGER = LogManager.getLogger();
+    final Set<UUID> entityUuids = Sets.newHashSet();
+    final EntityHandler<T> handler;
     private final ChunkDataAccess<T> dataAccess;
     private final EntityIndex<T> index;
-    private final SectionedEntityCache<T> cache;
+    final SectionedEntityCache<T> cache;
     private final EntityLookup<T> lookup;
     private final Long2ObjectMap<EntityTrackingStatus> trackingStatuses = new Long2ObjectOpenHashMap<EntityTrackingStatus>();
     private final Long2ObjectMap<Status> managedStatuses = new Long2ObjectOpenHashMap<Status>();
@@ -70,7 +70,7 @@ implements AutoCloseable {
         this.lookup = new SimpleEntityLookup<T>(this.index, this.cache);
     }
 
-    private void entityLeftSection(long sectionPos, EntityTrackingSection<T> section) {
+    void entityLeftSection(long sectionPos, EntityTrackingSection<T> section) {
         if (section.isEmpty()) {
             this.cache.removeSection(sectionPos);
         }
@@ -111,7 +111,7 @@ implements AutoCloseable {
         long l = ChunkSectionPos.toLong(entity.getBlockPos());
         EntityTrackingSection<T> entityTrackingSection = this.cache.getTrackingSection(l);
         entityTrackingSection.add(entity);
-        entity.setListener(new Listener(this, (EntityLike)entity, l, entityTrackingSection));
+        entity.setListener(new Listener(this, entity, l, entityTrackingSection));
         if (!existing) {
             this.handler.create(entity);
         }
@@ -124,7 +124,7 @@ implements AutoCloseable {
         return true;
     }
 
-    private static <T extends EntityLike> EntityTrackingStatus getNeededLoadStatus(T entity, EntityTrackingStatus current) {
+    static <T extends EntityLike> EntityTrackingStatus getNeededLoadStatus(T entity, EntityTrackingStatus current) {
         return entity.isPlayer() ? EntityTrackingStatus.TICKING : current;
     }
 
@@ -142,20 +142,20 @@ implements AutoCloseable {
         entities.forEach(entity -> this.addEntity(entity, false));
     }
 
-    private void startTicking(T entity) {
+    void startTicking(T entity) {
         this.handler.startTicking(entity);
     }
 
-    private void stopTicking(T entity) {
+    void stopTicking(T entity) {
         this.handler.stopTicking(entity);
     }
 
-    private void startTracking(T entity) {
+    void startTracking(T entity) {
         this.index.add(entity);
         this.handler.startTracking(entity);
     }
 
-    private void stopTracking(T entity) {
+    void stopTracking(T entity) {
         this.handler.stopTracking(entity);
         this.index.remove(entity);
     }
@@ -364,6 +364,13 @@ implements AutoCloseable {
         return this.entityUuids.size() + "," + this.index.size() + "," + this.cache.sectionCount() + "," + this.managedStatuses.size() + "," + this.trackingStatuses.size() + "," + this.loadingQueue.size() + "," + this.pendingUnloads.size();
     }
 
+    static enum Status {
+        FRESH,
+        PENDING,
+        LOADED;
+
+    }
+
     static class Listener
     implements EntityChangeListener {
         private final T entity;
@@ -375,12 +382,12 @@ implements AutoCloseable {
          * WARNING - Possible parameter corruption
          * WARNING - void declaration
          */
-        private Listener(T entity, long sectionPos, EntityTrackingSection<T> section) {
+        Listener(T entityLike, long l, EntityTrackingSection<T> entityTrackingSection) {
             void var3_3;
             this.manager = serverEntityManager;
-            this.entity = entity;
+            this.entity = entityLike;
             this.sectionPos = var3_3;
-            this.section = section;
+            this.section = entityTrackingSection;
         }
 
         @Override
@@ -442,13 +449,6 @@ implements AutoCloseable {
             this.entity.setListener(NONE);
             this.manager.entityLeftSection(this.sectionPos, this.section);
         }
-    }
-
-    static enum Status {
-        FRESH,
-        PENDING,
-        LOADED;
-
     }
 }
 

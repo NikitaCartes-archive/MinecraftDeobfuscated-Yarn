@@ -26,13 +26,13 @@ import net.minecraft.util.JsonHelper;
 
 public class SetBannerPatternFunction
 extends ConditionalLootFunction {
-    private final List<Pair<BannerPattern, DyeColor>> patterns;
-    private final boolean append;
+    final List<Pair<BannerPattern, DyeColor>> patterns;
+    final boolean append;
 
-    private SetBannerPatternFunction(LootCondition[] conditions, List<Pair<BannerPattern, DyeColor>> patterns, boolean append) {
-        super(conditions);
-        this.patterns = patterns;
-        this.append = append;
+    SetBannerPatternFunction(LootCondition[] lootConditions, List<Pair<BannerPattern, DyeColor>> list, boolean bl) {
+        super(lootConditions);
+        this.patterns = list;
+        this.append = bl;
     }
 
     @Override
@@ -59,6 +59,36 @@ extends ConditionalLootFunction {
 
     public static Builder method_35531(boolean bl) {
         return new Builder(bl);
+    }
+
+    public static class Builder
+    extends ConditionalLootFunction.Builder<Builder> {
+        private final ImmutableList.Builder<Pair<BannerPattern, DyeColor>> patterns = ImmutableList.builder();
+        private final boolean append;
+
+        Builder(boolean bl) {
+            this.append = bl;
+        }
+
+        @Override
+        protected Builder getThisBuilder() {
+            return this;
+        }
+
+        @Override
+        public LootFunction build() {
+            return new SetBannerPatternFunction(this.getConditions(), (List<Pair<BannerPattern, DyeColor>>)((Object)this.patterns.build()), this.append);
+        }
+
+        public Builder pattern(BannerPattern pattern, DyeColor color) {
+            this.patterns.add((Object)Pair.of(pattern, color));
+            return this;
+        }
+
+        @Override
+        protected /* synthetic */ ConditionalLootFunction.Builder getThisBuilder() {
+            return this.getThisBuilder();
+        }
     }
 
     public static class Serializer
@@ -96,42 +126,12 @@ extends ConditionalLootFunction {
                 builder.add(Pair.of(bannerPattern, dyeColor));
             }
             boolean bl = JsonHelper.getBoolean(jsonObject, "append");
-            return new SetBannerPatternFunction(lootConditions, (List)((Object)builder.build()), bl);
+            return new SetBannerPatternFunction(lootConditions, (List<Pair<BannerPattern, DyeColor>>)((Object)builder.build()), bl);
         }
 
         @Override
         public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
             return this.fromJson(json, context, conditions);
-        }
-    }
-
-    public static class Builder
-    extends ConditionalLootFunction.Builder<Builder> {
-        private final ImmutableList.Builder<Pair<BannerPattern, DyeColor>> patterns = ImmutableList.builder();
-        private final boolean append;
-
-        private Builder(boolean append) {
-            this.append = append;
-        }
-
-        @Override
-        protected Builder getThisBuilder() {
-            return this;
-        }
-
-        @Override
-        public LootFunction build() {
-            return new SetBannerPatternFunction(this.getConditions(), (List)((Object)this.patterns.build()), this.append);
-        }
-
-        public Builder pattern(BannerPattern pattern, DyeColor color) {
-            this.patterns.add((Object)Pair.of(pattern, color));
-            return this;
-        }
-
-        @Override
-        protected /* synthetic */ ConditionalLootFunction.Builder getThisBuilder() {
-            return this.getThisBuilder();
         }
     }
 }

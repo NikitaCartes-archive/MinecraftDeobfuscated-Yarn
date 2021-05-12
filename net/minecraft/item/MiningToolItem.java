@@ -5,7 +5,7 @@ package net.minecraft.item;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
-import java.util.Set;
+import net.fabricmc.yarn.constants.MiningLevels;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EquipmentSlot;
@@ -18,18 +18,20 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ToolItem;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.item.Vanishable;
+import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.Tag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class MiningToolItem
 extends ToolItem
 implements Vanishable {
-    private final Set<Block> effectiveBlocks;
+    private final Tag<Block> effectiveBlocks;
     protected final float miningSpeed;
     private final float attackDamage;
     private final Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers;
 
-    protected MiningToolItem(float attackDamage, float attackSpeed, ToolMaterial material, Set<Block> effectiveBlocks, Item.Settings settings) {
+    protected MiningToolItem(float attackDamage, float attackSpeed, ToolMaterial material, Tag<Block> effectiveBlocks, Item.Settings settings) {
         super(material, settings);
         this.effectiveBlocks = effectiveBlocks;
         this.miningSpeed = material.getMiningSpeedMultiplier();
@@ -69,6 +71,21 @@ implements Vanishable {
 
     public float getAttackDamage() {
         return this.attackDamage;
+    }
+
+    @Override
+    public boolean isSuitableFor(BlockState state) {
+        int i = this.getMaterial().getMiningLevel();
+        if (i < MiningLevels.DIAMOND && state.isIn(BlockTags.NEEDS_DIAMOND_TOOL)) {
+            return false;
+        }
+        if (i < MiningLevels.IRON && state.isIn(BlockTags.NEEDS_IRON_TOOL)) {
+            return false;
+        }
+        if (i < MiningLevels.STONE && state.isIn(BlockTags.NEEDS_STONE_TOOL)) {
+            return false;
+        }
+        return state.isIn(this.effectiveBlocks);
     }
 }
 

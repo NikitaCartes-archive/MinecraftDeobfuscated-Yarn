@@ -43,7 +43,7 @@ extends Item {
     }
 
     public static Optional<BlockState> getWaxedState(BlockState state) {
-        return Optional.ofNullable(UNWAXED_TO_WAXED_BLOCKS.get().get(state.getBlock())).map(block -> block.getStateWithProperties(state));
+        return Optional.ofNullable((Block)UNWAXED_TO_WAXED_BLOCKS.get().get(state.getBlock())).map(block -> block.getStateWithProperties(state));
     }
 }
 

@@ -27,27 +27,27 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
-public class RamTask<E extends PathAwareEntity>
+public class RamImpactTask<E extends PathAwareEntity>
 extends Task<E> {
-    public static final int field_33474 = 200;
-    public static final float field_33475 = 1.65f;
-    private final Function<E, UniformIntProvider> field_33476;
-    private final TargetPredicate field_33477;
-    private final ToIntFunction<E> field_33478;
-    private final float field_33479;
-    private final ToDoubleFunction<E> field_33480;
-    private Vec3d field_33481;
-    private final Function<E, SoundEvent> field_33482;
+    public static final int RUN_TIME = 200;
+    public static final float SPEED_STRENGTH_MULTIPLIER = 1.65f;
+    private final Function<E, UniformIntProvider> cooldownRangeFactory;
+    private final TargetPredicate targetPredicate;
+    private final ToIntFunction<E> damage;
+    private final float speed;
+    private final ToDoubleFunction<E> strengthMultiplierFactory;
+    private Vec3d direction;
+    private final Function<E, SoundEvent> soundFactory;
 
-    public RamTask(Function<E, UniformIntProvider> function, TargetPredicate targetPredicate, ToIntFunction<E> toIntFunction, float f, ToDoubleFunction<E> toDoubleFunction, Function<E, SoundEvent> function2) {
+    public RamImpactTask(Function<E, UniformIntProvider> cooldownRangeFactory, TargetPredicate targetPredicate, ToIntFunction<E> damage, float speed, ToDoubleFunction<E> strengthMultiplierFactory, Function<E, SoundEvent> soundFactory) {
         super(ImmutableMap.of(MemoryModuleType.RAM_COOLDOWN_TICKS, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.RAM_TARGET, MemoryModuleState.VALUE_PRESENT), 200);
-        this.field_33476 = function;
-        this.field_33477 = targetPredicate;
-        this.field_33478 = toIntFunction;
-        this.field_33479 = f;
-        this.field_33480 = toDoubleFunction;
-        this.field_33482 = function2;
-        this.field_33481 = Vec3d.ZERO;
+        this.cooldownRangeFactory = cooldownRangeFactory;
+        this.targetPredicate = targetPredicate;
+        this.damage = damage;
+        this.speed = speed;
+        this.strengthMultiplierFactory = strengthMultiplierFactory;
+        this.soundFactory = soundFactory;
+        this.direction = Vec3d.ZERO;
     }
 
     @Override
@@ -65,37 +65,37 @@ extends Task<E> {
         BlockPos blockPos = pathAwareEntity.getBlockPos();
         Brain<?> brain = pathAwareEntity.getBrain();
         Vec3d vec3d = brain.getOptionalMemory(MemoryModuleType.RAM_TARGET).get();
-        this.field_33481 = new Vec3d((double)blockPos.getX() - vec3d.getX(), 0.0, (double)blockPos.getZ() - vec3d.getZ()).normalize();
-        brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, this.field_33479, 0));
+        this.direction = new Vec3d((double)blockPos.getX() - vec3d.getX(), 0.0, (double)blockPos.getZ() - vec3d.getZ()).normalize();
+        brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, this.speed, 0));
     }
 
     @Override
     protected void keepRunning(ServerWorld serverWorld, E pathAwareEntity, long l) {
-        List<LivingEntity> list = serverWorld.getTargets(LivingEntity.class, this.field_33477, (LivingEntity)pathAwareEntity, ((Entity)pathAwareEntity).getBoundingBox());
+        List<LivingEntity> list = serverWorld.getTargets(LivingEntity.class, this.targetPredicate, (LivingEntity)pathAwareEntity, ((Entity)pathAwareEntity).getBoundingBox());
         Brain<?> brain = ((LivingEntity)pathAwareEntity).getBrain();
         if (!list.isEmpty()) {
             LivingEntity livingEntity = list.get(0);
-            livingEntity.damage(DamageSource.mob(pathAwareEntity), this.field_33478.applyAsInt(pathAwareEntity));
+            livingEntity.damage(DamageSource.mob(pathAwareEntity), this.damage.applyAsInt(pathAwareEntity));
             float f = livingEntity.blockedByShield(DamageSource.mob(pathAwareEntity)) ? 0.5f : 1.0f;
             float g = MathHelper.clamp(((LivingEntity)pathAwareEntity).getMovementSpeed() * 1.65f, 0.2f, 3.0f);
-            livingEntity.takeKnockback((double)(f * g) * this.field_33480.applyAsDouble(pathAwareEntity), this.field_33481.getX(), this.field_33481.getZ());
-            this.method_36279(serverWorld, pathAwareEntity);
-            serverWorld.playSoundFromEntity(null, (Entity)pathAwareEntity, this.field_33482.apply(pathAwareEntity), SoundCategory.HOSTILE, 1.0f, 1.0f);
+            livingEntity.takeKnockback((double)(f * g) * this.strengthMultiplierFactory.applyAsDouble(pathAwareEntity), this.direction.getX(), this.direction.getZ());
+            this.finishRam(serverWorld, pathAwareEntity);
+            serverWorld.playSoundFromEntity(null, (Entity)pathAwareEntity, this.soundFactory.apply(pathAwareEntity), SoundCategory.HOSTILE, 1.0f, 1.0f);
         } else {
             boolean bl;
             Optional<WalkTarget> optional = brain.getOptionalMemory(MemoryModuleType.WALK_TARGET);
             Optional<Vec3d> optional2 = brain.getOptionalMemory(MemoryModuleType.RAM_TARGET);
             boolean bl2 = bl = !optional.isPresent() || !optional2.isPresent() || optional.get().getLookTarget().getPos().distanceTo(optional2.get()) < 0.25;
             if (bl) {
-                this.method_36279(serverWorld, pathAwareEntity);
+                this.finishRam(serverWorld, pathAwareEntity);
             }
         }
     }
 
-    protected void method_36279(ServerWorld serverWorld, E pathAwareEntity) {
-        serverWorld.sendEntityStatus((Entity)pathAwareEntity, (byte)59);
-        ((LivingEntity)pathAwareEntity).getBrain().remember(MemoryModuleType.RAM_COOLDOWN_TICKS, this.field_33476.apply(pathAwareEntity).get(serverWorld.random));
-        ((LivingEntity)pathAwareEntity).getBrain().forget(MemoryModuleType.RAM_TARGET);
+    protected void finishRam(ServerWorld world, E entity) {
+        world.sendEntityStatus((Entity)entity, (byte)59);
+        ((LivingEntity)entity).getBrain().remember(MemoryModuleType.RAM_COOLDOWN_TICKS, this.cooldownRangeFactory.apply(entity).get(world.random));
+        ((LivingEntity)entity).getBrain().forget(MemoryModuleType.RAM_TARGET);
     }
 
     @Override

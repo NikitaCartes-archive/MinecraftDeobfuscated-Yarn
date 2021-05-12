@@ -136,19 +136,6 @@ public class CloneCommand {
         return l;
     }
 
-    static class BlockInfo {
-        public final BlockPos pos;
-        public final BlockState state;
-        @Nullable
-        public final NbtCompound blockEntityTag;
-
-        public BlockInfo(BlockPos pos, BlockState state, @Nullable NbtCompound blockEntityTag) {
-            this.pos = pos;
-            this.state = state;
-            this.blockEntityTag = blockEntityTag;
-        }
-    }
-
     static enum Mode {
         FORCE(true),
         MOVE(true),
@@ -162,6 +149,19 @@ public class CloneCommand {
 
         public boolean allowsOverlap() {
             return this.allowsOverlap;
+        }
+    }
+
+    static class BlockInfo {
+        public final BlockPos pos;
+        public final BlockState state;
+        @Nullable
+        public final NbtCompound blockEntityTag;
+
+        public BlockInfo(BlockPos pos, BlockState state, @Nullable NbtCompound blockEntityTag) {
+            this.pos = pos;
+            this.state = state;
+            this.blockEntityTag = blockEntityTag;
         }
     }
 }

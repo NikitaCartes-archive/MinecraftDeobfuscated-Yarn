@@ -12,7 +12,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -31,7 +31,7 @@ import org.lwjgl.glfw.GLFW;
 @Environment(value=EnvType.CLIENT)
 public class GameModeSelectionScreen
 extends Screen {
-    private static final Identifier TEXTURE = new Identifier("textures/gui/container/gamemode_switcher.png");
+    static final Identifier TEXTURE = new Identifier("textures/gui/container/gamemode_switcher.png");
     private static final int field_32310 = 128;
     private static final int field_32311 = 128;
     private static final int field_32312 = 26;
@@ -85,7 +85,7 @@ extends Screen {
         GameModeSelectionScreen.drawTexture(matrices, i, j, 0.0f, 0.0f, 125, 75, 128, 128);
         matrices.pop();
         super.render(matrices, mouseX, mouseY, delta);
-        this.gameMode.ifPresent(gameMode -> GameModeSelectionScreen.drawCenteredText(matrices, this.textRenderer, ((GameMode)gameMode).getText(), this.width / 2, this.height / 2 - 31 - 20, -1));
+        this.gameMode.ifPresent(gameMode -> GameModeSelectionScreen.drawCenteredText(matrices, this.textRenderer, gameMode.getText(), this.width / 2, this.height / 2 - 31 - 20, -1));
         GameModeSelectionScreen.drawCenteredText(matrices, this.textRenderer, SELECT_NEXT_TEXT, this.width / 2, this.height / 2 + 5, 0xFFFFFF);
         if (!this.mouseUsedForSelection) {
             this.lastMouseX = mouseX;
@@ -109,7 +109,7 @@ extends Screen {
         if (client.interactionManager == null || client.player == null || !gameMode.isPresent()) {
             return;
         }
-        Optional optional = GameMode.of(client.interactionManager.getCurrentGameMode());
+        Optional<GameMode> optional = GameMode.of(client.interactionManager.getCurrentGameMode());
         GameMode gameMode2 = gameMode.get();
         if (optional.isPresent() && client.player.hasPermissionLevel(2) && gameMode2 != optional.get()) {
             client.player.sendChatMessage(gameMode2.getCommand());
@@ -141,9 +141,79 @@ extends Screen {
     }
 
     @Environment(value=EnvType.CLIENT)
+    static enum GameMode {
+        CREATIVE(new TranslatableText("gameMode.creative"), "/gamemode creative", new ItemStack(Blocks.GRASS_BLOCK)),
+        SURVIVAL(new TranslatableText("gameMode.survival"), "/gamemode survival", new ItemStack(Items.IRON_SWORD)),
+        ADVENTURE(new TranslatableText("gameMode.adventure"), "/gamemode adventure", new ItemStack(Items.MAP)),
+        SPECTATOR(new TranslatableText("gameMode.spectator"), "/gamemode spectator", new ItemStack(Items.ENDER_EYE));
+
+        protected static final GameMode[] VALUES;
+        private static final int field_32317 = 16;
+        protected static final int field_32316 = 5;
+        final Text text;
+        final String command;
+        final ItemStack icon;
+
+        private GameMode(Text text, String command, ItemStack icon) {
+            this.text = text;
+            this.command = command;
+            this.icon = icon;
+        }
+
+        void renderIcon(ItemRenderer itemRenderer, int x, int y) {
+            itemRenderer.renderInGuiWithOverrides(this.icon, x, y);
+        }
+
+        Text getText() {
+            return this.text;
+        }
+
+        String getCommand() {
+            return this.command;
+        }
+
+        Optional<GameMode> next() {
+            switch (this) {
+                case CREATIVE: {
+                    return Optional.of(SURVIVAL);
+                }
+                case SURVIVAL: {
+                    return Optional.of(ADVENTURE);
+                }
+                case ADVENTURE: {
+                    return Optional.of(SPECTATOR);
+                }
+            }
+            return Optional.of(CREATIVE);
+        }
+
+        static Optional<GameMode> of(net.minecraft.world.GameMode gameMode) {
+            switch (gameMode) {
+                case SPECTATOR: {
+                    return Optional.of(SPECTATOR);
+                }
+                case SURVIVAL: {
+                    return Optional.of(SURVIVAL);
+                }
+                case CREATIVE: {
+                    return Optional.of(CREATIVE);
+                }
+                case ADVENTURE: {
+                    return Optional.of(ADVENTURE);
+                }
+            }
+            return Optional.empty();
+        }
+
+        static {
+            VALUES = GameMode.values();
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
     public class ButtonWidget
-    extends AbstractButtonWidget {
-        private final GameMode gameMode;
+    extends ClickableWidget {
+        final GameMode gameMode;
         private boolean selected;
 
         public ButtonWidget(GameMode gameMode, int x, int y) {
@@ -187,76 +257,6 @@ extends Screen {
             matrices.translate(this.x, this.y, 0.0);
             ButtonWidget.drawTexture(matrices, 0, 0, 26.0f, 75.0f, 26, 26, 128, 128);
             matrices.pop();
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static enum GameMode {
-        CREATIVE(new TranslatableText("gameMode.creative"), "/gamemode creative", new ItemStack(Blocks.GRASS_BLOCK)),
-        SURVIVAL(new TranslatableText("gameMode.survival"), "/gamemode survival", new ItemStack(Items.IRON_SWORD)),
-        ADVENTURE(new TranslatableText("gameMode.adventure"), "/gamemode adventure", new ItemStack(Items.MAP)),
-        SPECTATOR(new TranslatableText("gameMode.spectator"), "/gamemode spectator", new ItemStack(Items.ENDER_EYE));
-
-        protected static final GameMode[] VALUES;
-        private static final int field_32317 = 16;
-        protected static final int field_32316 = 5;
-        final Text text;
-        final String command;
-        final ItemStack icon;
-
-        private GameMode(Text text, String command, ItemStack icon) {
-            this.text = text;
-            this.command = command;
-            this.icon = icon;
-        }
-
-        private void renderIcon(ItemRenderer itemRenderer, int x, int y) {
-            itemRenderer.renderInGuiWithOverrides(this.icon, x, y);
-        }
-
-        private Text getText() {
-            return this.text;
-        }
-
-        private String getCommand() {
-            return this.command;
-        }
-
-        private Optional<GameMode> next() {
-            switch (this) {
-                case CREATIVE: {
-                    return Optional.of(SURVIVAL);
-                }
-                case SURVIVAL: {
-                    return Optional.of(ADVENTURE);
-                }
-                case ADVENTURE: {
-                    return Optional.of(SPECTATOR);
-                }
-            }
-            return Optional.of(CREATIVE);
-        }
-
-        private static Optional<GameMode> of(net.minecraft.world.GameMode gameMode) {
-            switch (gameMode) {
-                case SPECTATOR: {
-                    return Optional.of(SPECTATOR);
-                }
-                case SURVIVAL: {
-                    return Optional.of(SURVIVAL);
-                }
-                case CREATIVE: {
-                    return Optional.of(CREATIVE);
-                }
-                case ADVENTURE: {
-                    return Optional.of(ADVENTURE);
-                }
-            }
-            return Optional.empty();
-        }
-
-        static {
-            VALUES = GameMode.values();
         }
     }
 }

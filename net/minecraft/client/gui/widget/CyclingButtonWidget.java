@@ -11,7 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
-import net.minecraft.client.gui.widget.AbstractPressableButtonWidget;
+import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.client.util.OrderableTooltip;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
@@ -21,9 +21,9 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class CyclingButtonWidget<T>
-extends AbstractPressableButtonWidget
+extends PressableWidget
 implements OrderableTooltip {
-    private static final BooleanSupplier HAS_ALT_DOWN = Screen::hasAltDown;
+    static final BooleanSupplier HAS_ALT_DOWN = Screen::hasAltDown;
     private static final List<Boolean> BOOLEAN_VALUES = ImmutableList.of(Boolean.TRUE, Boolean.FALSE);
     private final Text optionText;
     private int index;
@@ -35,17 +35,17 @@ implements OrderableTooltip {
     private final TooltipFactory<T> tooltipFactory;
     private final boolean optionTextOmitted;
 
-    private CyclingButtonWidget(int x, int y, int width, int height, Text message, Text optionText, int index, T value, Values<T> values, Function<T, Text> valueToText, Function<CyclingButtonWidget<T>, MutableText> narrationMessageFactory, UpdateCallback<T> callback, TooltipFactory<T> tooltipFactory, boolean optionTextOmitted) {
-        super(x, y, width, height, message);
-        this.optionText = optionText;
-        this.index = index;
-        this.value = value;
+    CyclingButtonWidget(int i, int j, int k, int l, Text text, Text text2, int m, T object, Values<T> values, Function<T, Text> function, Function<CyclingButtonWidget<T>, MutableText> function2, UpdateCallback<T> updateCallback, TooltipFactory<T> tooltipFactory, boolean bl) {
+        super(i, j, k, l, text);
+        this.optionText = text2;
+        this.index = m;
+        this.value = object;
         this.values = values;
-        this.valueToText = valueToText;
-        this.narrationMessageFactory = narrationMessageFactory;
-        this.callback = callback;
+        this.valueToText = function;
+        this.narrationMessageFactory = function2;
+        this.callback = updateCallback;
         this.tooltipFactory = tooltipFactory;
-        this.optionTextOmitted = optionTextOmitted;
+        this.optionTextOmitted = bl;
     }
 
     @Override
@@ -199,6 +199,17 @@ implements OrderableTooltip {
     }
 
     @Environment(value=EnvType.CLIENT)
+    public static interface UpdateCallback<T> {
+        public void onValueChange(CyclingButtonWidget var1, T var2);
+    }
+
+    @FunctionalInterface
+    @Environment(value=EnvType.CLIENT)
+    public static interface TooltipFactory<T>
+    extends Function<T, List<OrderedText>> {
+    }
+
+    @Environment(value=EnvType.CLIENT)
     public static class Builder<T> {
         private int initialIndex;
         @Nullable
@@ -269,19 +280,8 @@ implements OrderableTooltip {
             T object = this.value != null ? this.value : list.get(this.initialIndex);
             Text text = this.valueToText.apply(object);
             Text text2 = this.optionTextOmitted ? text : ScreenTexts.composeGenericOptionText(optionText, text);
-            return new CyclingButtonWidget(x, y, width, height, text2, optionText, this.initialIndex, object, this.values, this.valueToText, this.narrationMessageFactory, callback, this.tooltipFactory, this.optionTextOmitted);
+            return new CyclingButtonWidget<T>(x, y, width, height, text2, optionText, this.initialIndex, object, this.values, this.valueToText, this.narrationMessageFactory, callback, this.tooltipFactory, this.optionTextOmitted);
         }
-    }
-
-    @FunctionalInterface
-    @Environment(value=EnvType.CLIENT)
-    public static interface TooltipFactory<T>
-    extends Function<T, List<OrderedText>> {
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public static interface UpdateCallback<T> {
-        public void onValueChange(CyclingButtonWidget var1, T var2);
     }
 }
 

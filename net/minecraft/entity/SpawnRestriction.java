@@ -141,24 +141,24 @@ public class SpawnRestriction {
         SpawnRestriction.register(EntityType.WANDERING_TRADER, Location.NO_RESTRICTIONS, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MobEntity::canMobSpawn);
     }
 
-    public static enum Location {
-        ON_GROUND,
-        IN_WATER,
-        NO_RESTRICTIONS,
-        IN_LAVA;
-
-    }
-
     static class Entry {
-        private final Heightmap.Type heightmapType;
-        private final Location location;
-        private final SpawnPredicate<?> predicate;
+        final Heightmap.Type heightmapType;
+        final Location location;
+        final SpawnPredicate<?> predicate;
 
         public Entry(Heightmap.Type heightmapType, Location location, SpawnPredicate<?> predicate) {
             this.heightmapType = heightmapType;
             this.location = location;
             this.predicate = predicate;
         }
+    }
+
+    public static enum Location {
+        ON_GROUND,
+        IN_WATER,
+        NO_RESTRICTIONS,
+        IN_LAVA;
+
     }
 
     @FunctionalInterface

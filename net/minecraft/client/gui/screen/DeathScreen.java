@@ -9,8 +9,8 @@ import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
@@ -53,8 +53,8 @@ extends Screen {
         if (!this.isHardcore && this.client.getSession() == null) {
             buttonWidget2.active = false;
         }
-        for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
-            abstractButtonWidget.active = false;
+        for (ClickableWidget clickableWidget : this.buttons) {
+            clickableWidget.active = false;
         }
         this.scoreText = new TranslatableText("deathScreen.score").append(": ").append(new LiteralText(Integer.toString(this.client.player.getScore())).formatted(Formatting.YELLOW));
     }
@@ -133,8 +133,8 @@ extends Screen {
         super.tick();
         ++this.ticksSinceDeath;
         if (this.ticksSinceDeath == 20) {
-            for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
-                abstractButtonWidget.active = true;
+            for (ClickableWidget clickableWidget : this.buttons) {
+                clickableWidget.active = true;
             }
         }
     }

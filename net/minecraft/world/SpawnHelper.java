@@ -59,7 +59,7 @@ public final class SpawnHelper {
     private static final int field_30974 = 24;
     public static final int field_30972 = 8;
     public static final int field_30973 = 128;
-    private static final int CHUNK_AREA = (int)Math.pow(17.0, 2.0);
+    static final int CHUNK_AREA = (int)Math.pow(17.0, 2.0);
     private static final SpawnGroup[] SPAWNABLE_GROUPS = (SpawnGroup[])Stream.of(SpawnGroup.values()).filter(spawnGroup -> spawnGroup != SpawnGroup.MISC).toArray(SpawnGroup[]::new);
 
     private SpawnHelper() {
@@ -67,7 +67,7 @@ public final class SpawnHelper {
 
     public static Info setupSpawn(int spawningChunkCount, Iterable<Entity> entities, ChunkSource chunkSource) {
         GravityField gravityField = new GravityField();
-        Object2IntOpenHashMap object2IntOpenHashMap = new Object2IntOpenHashMap();
+        Object2IntOpenHashMap<SpawnGroup> object2IntOpenHashMap = new Object2IntOpenHashMap<SpawnGroup>();
         for (Entity entity : entities) {
             SpawnGroup spawnGroup;
             MobEntity mobEntity;
@@ -85,15 +85,15 @@ public final class SpawnHelper {
         return new Info(spawningChunkCount, object2IntOpenHashMap, gravityField);
     }
 
-    private static Biome getBiomeDirectly(BlockPos pos, Chunk chunk) {
+    static Biome getBiomeDirectly(BlockPos pos, Chunk chunk) {
         return DirectBiomeAccessType.INSTANCE.getBiome(0L, pos.getX(), pos.getY(), pos.getZ(), chunk.getBiomeArray());
     }
 
-    public static void spawn(ServerWorld world, WorldChunk chunk2, Info info, boolean spawnAnimals, boolean spawnMonsters, boolean rareSpawn) {
+    public static void spawn(ServerWorld world, WorldChunk chunk, Info info, boolean spawnAnimals, boolean spawnMonsters, boolean rareSpawn) {
         world.getProfiler().push("spawner");
         for (SpawnGroup spawnGroup : SPAWNABLE_GROUPS) {
             if (!spawnAnimals && spawnGroup.isPeaceful() || !spawnMonsters && !spawnGroup.isPeaceful() || !rareSpawn && spawnGroup.isRare() || !info.isBelowCap(spawnGroup)) continue;
-            SpawnHelper.spawnEntitiesInChunk(spawnGroup, world, chunk2, (entityType, pos, chunk) -> info.test(entityType, pos, chunk), (entity, chunk) -> info.run(entity, chunk));
+            SpawnHelper.spawnEntitiesInChunk(spawnGroup, world, chunk, info::test, info::run);
         }
         world.getProfiler().pop();
     }
@@ -362,16 +362,6 @@ public final class SpawnHelper {
         public void query(long var1, Consumer<WorldChunk> var3);
     }
 
-    @FunctionalInterface
-    public static interface Runner {
-        public void run(MobEntity var1, Chunk var2);
-    }
-
-    @FunctionalInterface
-    public static interface Checker {
-        public boolean test(EntityType<?> var1, BlockPos var2, Chunk var3);
-    }
-
     public static class Info {
         private final int spawningChunkCount;
         private final Object2IntOpenHashMap<SpawnGroup> groupToCount;
@@ -383,11 +373,11 @@ public final class SpawnHelper {
         private EntityType<?> cachedEntityType;
         private double cachedDensityMass;
 
-        private Info(int spawningChunkCount, Object2IntOpenHashMap<SpawnGroup> groupToCount, GravityField densityField) {
-            this.spawningChunkCount = spawningChunkCount;
-            this.groupToCount = groupToCount;
-            this.densityField = densityField;
-            this.groupToCountView = Object2IntMaps.unmodifiable(groupToCount);
+        Info(int i, Object2IntOpenHashMap<SpawnGroup> object2IntOpenHashMap, GravityField gravityField) {
+            this.spawningChunkCount = i;
+            this.groupToCount = object2IntOpenHashMap;
+            this.densityField = gravityField;
+            this.groupToCountView = Object2IntMaps.unmodifiable(object2IntOpenHashMap);
         }
 
         private boolean test(EntityType<?> type, BlockPos pos, Chunk chunk) {
@@ -421,10 +411,20 @@ public final class SpawnHelper {
             return this.groupToCountView;
         }
 
-        private boolean isBelowCap(SpawnGroup group) {
+        boolean isBelowCap(SpawnGroup group) {
             int i = group.getCapacity() * this.spawningChunkCount / CHUNK_AREA;
             return this.groupToCount.getInt(group) < i;
         }
+    }
+
+    @FunctionalInterface
+    public static interface Checker {
+        public boolean test(EntityType<?> var1, BlockPos var2, Chunk var3);
+    }
+
+    @FunctionalInterface
+    public static interface Runner {
+        public void run(MobEntity var1, Chunk var2);
     }
 }
 

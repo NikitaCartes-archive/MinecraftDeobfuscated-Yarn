@@ -226,7 +226,6 @@ StringVisitable {
             }
             if (jsonElement.isJsonObject()) {
                 void var5_17;
-                String string;
                 JsonObject jsonObject = jsonElement.getAsJsonObject();
                 if (jsonObject.has("text")) {
                     LiteralText literalText = new LiteralText(JsonHelper.getString(jsonObject, "text"));

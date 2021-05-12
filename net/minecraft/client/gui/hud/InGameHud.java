@@ -629,7 +629,7 @@ extends DrawableHelper {
         for (Pair pair : list2) {
             ScoreboardPlayerScore scoreboardPlayerScore2 = (ScoreboardPlayerScore)pair.getFirst();
             Text text3 = (Text)pair.getSecond();
-            String string = (Object)((Object)Formatting.RED) + "" + scoreboardPlayerScore2.getScore();
+            String string = "" + Formatting.RED + scoreboardPlayerScore2.getScore();
             int s = o;
             int t = m - ++p * this.getFontRenderer().fontHeight;
             int u = this.scaledWidth - 3 + 2;

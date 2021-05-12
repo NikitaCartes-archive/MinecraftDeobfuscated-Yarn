@@ -44,7 +44,7 @@ implements Waterloggable {
     public static final BooleanProperty POWERED = Properties.POWERED;
     private static final int field_31192 = 8;
     public static final int field_31190 = 128;
-    public static final int field_31191 = 200;
+    private static final int field_31191 = 200;
 
     public LightningRodBlock(AbstractBlock.Settings settings) {
         super(settings);
@@ -112,20 +112,25 @@ implements Waterloggable {
         ParticleUtil.spawnParticle(state.get(FACING).getAxis(), world, pos, 0.125, ParticleTypes.ELECTRIC_SPARK, UniformIntProvider.create(1, 2));
     }
 
-    public static double method_35282(Random random, Direction.Axis axis, double d, Direction.Axis axis2) {
-        double e = axis == axis2 ? 1.0 : 0.25;
-        return d + random.nextDouble() * e - e / 2.0;
-    }
-
     @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (moved || state.isOf(newState.getBlock())) {
+        if (state.isOf(newState.getBlock())) {
             return;
         }
         if (state.get(POWERED).booleanValue()) {
             this.updateNeighbors(state, world, pos);
         }
         super.onStateReplaced(state, world, pos, newState, moved);
+    }
+
+    @Override
+    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+        if (state.isOf(oldState.getBlock())) {
+            return;
+        }
+        if (state.get(POWERED).booleanValue() && !world.getBlockTickScheduler().isScheduled(pos, this)) {
+            world.setBlockState(pos, (BlockState)state.with(POWERED, false), Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
+        }
     }
 
     @Override

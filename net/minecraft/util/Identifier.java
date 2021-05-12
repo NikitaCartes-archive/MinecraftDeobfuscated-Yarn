@@ -39,10 +39,10 @@ implements Comparable<Identifier> {
         this.namespace = StringUtils.isEmpty(id[0]) ? DEFAULT_NAMESPACE : id[0];
         this.path = id[1];
         if (!Identifier.isNamespaceValid(this.namespace)) {
-            throw new InvalidIdentifierException("Non [a-z0-9_.-] character in namespace of location: " + this.namespace + ':' + this.path);
+            throw new InvalidIdentifierException("Non [a-z0-9_.-] character in namespace of location: " + this.namespace + ":" + this.path);
         }
         if (!Identifier.isPathValid(this.path)) {
-            throw new InvalidIdentifierException("Non [a-z0-9/._-] character in path of location: " + this.namespace + ':' + this.path);
+            throw new InvalidIdentifierException("Non [a-z0-9/._-] character in path of location: " + this.namespace + ":" + this.path);
         }
     }
 
@@ -107,7 +107,7 @@ implements Comparable<Identifier> {
     }
 
     public String toString() {
-        return this.namespace + ':' + this.path;
+        return this.namespace + ":" + this.path;
     }
 
     public boolean equals(Object o) {

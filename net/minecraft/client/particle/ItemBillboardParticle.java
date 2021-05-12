@@ -19,9 +19,9 @@ import net.minecraft.particle.DefaultParticleType;
 @Environment(value=EnvType.CLIENT)
 public class ItemBillboardParticle
 extends SpriteBillboardParticle {
-    private ItemBillboardParticle(ClientWorld world, double x, double y, double z, ItemConvertible item) {
-        super(world, x, y, z);
-        this.setSprite(MinecraftClient.getInstance().getItemRenderer().getModels().getSprite(item));
+    ItemBillboardParticle(ClientWorld clientWorld, double d, double e, double f, ItemConvertible itemConvertible) {
+        super(clientWorld, d, e, f);
+        this.setSprite(MinecraftClient.getInstance().getItemRenderer().getModels().getSprite(itemConvertible));
         this.gravityStrength = 0.0f;
         this.maxAge = 80;
         this.collidesWithWorld = false;

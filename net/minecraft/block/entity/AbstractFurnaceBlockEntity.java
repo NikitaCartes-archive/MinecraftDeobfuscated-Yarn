@@ -68,10 +68,10 @@ RecipeInputProvider {
     public static final int field_31294 = 200;
     public static final int field_31295 = 2;
     protected DefaultedList<ItemStack> inventory = DefaultedList.ofSize(3, ItemStack.EMPTY);
-    private int burnTime;
-    private int fuelTime;
-    private int cookTime;
-    private int cookTimeTotal;
+    int burnTime;
+    int fuelTime;
+    int cookTime;
+    int cookTimeTotal;
     protected final PropertyDelegate propertyDelegate = new PropertyDelegate(){
 
         @Override

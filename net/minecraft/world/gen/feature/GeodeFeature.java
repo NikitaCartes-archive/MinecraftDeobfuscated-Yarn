@@ -50,11 +50,11 @@ extends Feature<GeodeFeatureConfig> {
         int i = geodeFeatureConfig.minGenOffset;
         int j = geodeFeatureConfig.maxGenOffset;
         LinkedList<Pair<BlockPos, Integer>> list = Lists.newLinkedList();
-        int k = geodeFeatureConfig.field_33517.get(random);
+        int k = geodeFeatureConfig.distributionPoints.get(random);
         ChunkRandom chunkRandom = new ChunkRandom(structureWorldAccess.getSeed());
         DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.create((WorldGenRandom)chunkRandom, -4, 1.0);
         LinkedList<BlockPos> list2 = Lists.newLinkedList();
-        double d = (double)k / (double)geodeFeatureConfig.field_33516.getMax();
+        double d = (double)k / (double)geodeFeatureConfig.outerWallDistance.getMax();
         GeodeLayerThicknessConfig geodeLayerThicknessConfig = geodeFeatureConfig.layerThicknessConfig;
         GeodeLayerConfig geodeLayerConfig = geodeFeatureConfig.layerConfig;
         GeodeCrackConfig geodeCrackConfig = geodeFeatureConfig.crackConfig;
@@ -68,13 +68,13 @@ extends Feature<GeodeFeatureConfig> {
         for (n = 0; n < k; ++n) {
             int q;
             int p;
-            o = geodeFeatureConfig.field_33516.get(random);
-            BlockPos blockPos2 = blockPos.add(o, p = geodeFeatureConfig.field_33516.get(random), q = geodeFeatureConfig.field_33516.get(random));
+            o = geodeFeatureConfig.outerWallDistance.get(random);
+            BlockPos blockPos2 = blockPos.add(o, p = geodeFeatureConfig.outerWallDistance.get(random), q = geodeFeatureConfig.outerWallDistance.get(random));
             BlockState blockState = structureWorldAccess.getBlockState(blockPos2);
             if ((blockState.isAir() || blockState.isOf(Blocks.WATER) || blockState.isOf(Blocks.LAVA)) && ++m > geodeFeatureConfig.invalidBlocksThreshold) {
                 return false;
             }
-            list.add(Pair.of(blockPos2, geodeFeatureConfig.field_33518.get(random)));
+            list.add(Pair.of(blockPos2, geodeFeatureConfig.pointOffset.get(random)));
         }
         if (bl) {
             n = random.nextInt(4);

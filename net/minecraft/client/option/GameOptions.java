@@ -65,7 +65,7 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(value=EnvType.CLIENT)
 public class GameOptions {
-    private static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogManager.getLogger();
     private static final Gson GSON = new Gson();
     private static final TypeToken<List<String>> STRING_LIST_TYPE = new TypeToken<List<String>>(){};
     public static final int field_32149 = 2;
@@ -423,11 +423,11 @@ public class GameOptions {
         }
     }
 
-    private static boolean isTrue(String value) {
+    static boolean isTrue(String value) {
         return "true".equals(value);
     }
 
-    private static boolean isFalse(String value) {
+    static boolean isFalse(String value) {
         return "false".equals(value);
     }
 

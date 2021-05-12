@@ -24,7 +24,6 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
-import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
@@ -85,7 +84,7 @@ extends Screen {
         }
     }
 
-    private void setTooltipDescription(@Nullable List<OrderedText> description) {
+    void setTooltipDescription(@Nullable List<OrderedText> description) {
         this.tooltip = description;
     }
 
@@ -93,12 +92,12 @@ extends Screen {
         this.doneButton.active = this.invalidRuleWidgets.isEmpty();
     }
 
-    private void markInvalid(AbstractRuleWidget ruleWidget) {
+    void markInvalid(AbstractRuleWidget ruleWidget) {
         this.invalidRuleWidgets.add(ruleWidget);
         this.updateDoneButton();
     }
 
-    private void markValid(AbstractRuleWidget ruleWidget) {
+    void markValid(AbstractRuleWidget ruleWidget) {
         this.invalidRuleWidgets.remove(ruleWidget);
         this.updateDoneButton();
     }
@@ -122,7 +121,7 @@ extends Screen {
                 }
 
                 private <T extends GameRules.Rule<T>> void createRuleWidget(GameRules.Key<T> key, RuleWidgetFactory<T> widgetFactory) {
-                    String string3;
+                    Object string3;
                     ImmutableCollection list;
                     TranslatableText text = new TranslatableText(key.getTranslationKey());
                     MutableText text2 = new LiteralText(key.getName()).formatted(Formatting.YELLOW);
@@ -140,12 +139,12 @@ extends Screen {
                         list = ImmutableList.of(text2.asOrderedText(), text3.asOrderedText());
                         string3 = text3.getString();
                     }
-                    map.computeIfAbsent(key.getCategory(), category -> Maps.newHashMap()).put(key, widgetFactory.create(text, (List<OrderedText>)((Object)list), string3, rule));
+                    map.computeIfAbsent(key.getCategory(), category -> Maps.newHashMap()).put(key, widgetFactory.create(text, (List<OrderedText>)((Object)list), (String)string3, rule));
                 }
             });
             map.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry2 -> {
                 this.addEntry(new RuleCategoryWidget(new TranslatableText(((GameRules.Category)((Object)((Object)entry2.getKey()))).getCategory()).formatted(Formatting.BOLD, Formatting.YELLOW)));
-                ((Map)entry2.getValue()).entrySet().stream().sorted(Map.Entry.comparingByKey(Comparator.comparing(GameRules.Key::getName))).forEach(entry -> this.addEntry((EntryListWidget.Entry)entry.getValue()));
+                ((Map)entry2.getValue()).entrySet().stream().sorted(Map.Entry.comparingByKey(Comparator.comparing(GameRules.Key::getName))).forEach(entry -> this.addEntry((AbstractRuleWidget)entry.getValue()));
             });
         }
 
@@ -267,7 +266,7 @@ extends Screen {
     public abstract class AbstractRuleWidget
     extends ElementListWidget.Entry<AbstractRuleWidget> {
         @Nullable
-        private final List<OrderedText> description;
+        final List<OrderedText> description;
 
         public AbstractRuleWidget(List<OrderedText> description) {
             this.description = description;

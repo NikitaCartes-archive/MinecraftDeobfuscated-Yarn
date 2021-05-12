@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class HoldingPatternPhase
 extends AbstractPhase {
-    private static final TargetPredicate PLAYERS_IN_RANGE_PREDICATE = new TargetPredicate().setBaseMaxDistance(64.0);
+    private static final TargetPredicate PLAYERS_IN_RANGE_PREDICATE = TargetPredicate.createAttackable().setBaseMaxDistance(64.0);
     private Path path;
     private Vec3d pathTarget;
     private boolean shouldFindNewPath;

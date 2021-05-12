@@ -623,25 +623,12 @@ extends LivingEntity {
             f *= 1.0f + (float)(StatusEffectUtil.getHasteAmplifier(this) + 1) * 0.2f;
         }
         if (this.hasStatusEffect(StatusEffects.MINING_FATIGUE)) {
-            float g;
-            switch (this.getStatusEffect(StatusEffects.MINING_FATIGUE).getAmplifier()) {
-                case 0: {
-                    g = 0.3f;
-                    break;
-                }
-                case 1: {
-                    g = 0.09f;
-                    break;
-                }
-                case 2: {
-                    g = 0.0027f;
-                    break;
-                }
-                default: {
-                    g = 8.1E-4f;
-                }
-            }
-            f *= g;
+            f *= (switch (this.getStatusEffect(StatusEffects.MINING_FATIGUE).getAmplifier()) {
+                case 0 -> 0.3f;
+                case 1 -> 0.09f;
+                case 2 -> 0.0027f;
+                default -> 8.1E-4f;
+            });
         }
         if (this.isSubmergedIn(FluidTags.WATER) && !EnchantmentHelper.hasAquaAffinity(this)) {
             f /= 5.0f;
@@ -1315,7 +1302,7 @@ extends LivingEntity {
             this.setVelocity(vec3d2.x, g * 0.6, vec3d2.z);
             this.flyingSpeed = i;
             this.fallDistance = 0.0f;
-            this.setFlag(7, false);
+            this.setFlag(Entity.FALL_FLYING_FLAG_INDEX, false);
         } else {
             super.travel(movementInput);
         }
@@ -1430,12 +1417,12 @@ extends LivingEntity {
     }
 
     public void startFallFlying() {
-        this.setFlag(7, true);
+        this.setFlag(Entity.FALL_FLYING_FLAG_INDEX, true);
     }
 
     public void stopFallFlying() {
-        this.setFlag(7, true);
-        this.setFlag(7, false);
+        this.setFlag(Entity.FALL_FLYING_FLAG_INDEX, true);
+        this.setFlag(Entity.FALL_FLYING_FLAG_INDEX, false);
     }
 
     @Override

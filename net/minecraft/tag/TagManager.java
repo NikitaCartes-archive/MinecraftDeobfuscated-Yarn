@@ -23,11 +23,11 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class TagManager {
-    private static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogManager.getLogger();
     public static final TagManager EMPTY = new TagManager(ImmutableMap.of());
     private final Map<RegistryKey<? extends Registry<?>>, TagGroup<?>> tagGroups;
 
-    private TagManager(Map<RegistryKey<? extends Registry<?>>, TagGroup<?>> tagGroups) {
+    TagManager(Map<RegistryKey<? extends Registry<?>>, TagGroup<?>> tagGroups) {
         this.tagGroups = tagGroups;
     }
 
@@ -109,6 +109,11 @@ public class TagManager {
         }
     }
 
+    @FunctionalInterface
+    static interface Visitor {
+        public <T> void visit(RegistryKey<? extends Registry<T>> var1, TagGroup<T> var2);
+    }
+
     public static class Builder {
         private final ImmutableMap.Builder<RegistryKey<? extends Registry<?>>, TagGroup<?>> groups = ImmutableMap.builder();
 
@@ -120,11 +125,6 @@ public class TagManager {
         public TagManager build() {
             return new TagManager(this.groups.build());
         }
-    }
-
-    @FunctionalInterface
-    static interface Visitor {
-        public <T> void visit(RegistryKey<? extends Registry<T>> var1, TagGroup<T> var2);
     }
 }
 

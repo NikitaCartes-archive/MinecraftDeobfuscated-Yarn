@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class BrewedPotionCriterion
 extends AbstractCriterion<Conditions> {
-    private static final Identifier ID = new Identifier("brewed_potion");
+    static final Identifier ID = new Identifier("brewed_potion");
 
     @Override
     public Identifier getId() {

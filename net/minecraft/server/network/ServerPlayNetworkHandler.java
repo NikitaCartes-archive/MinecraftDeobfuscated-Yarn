@@ -79,6 +79,7 @@ import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.JigsawGeneratingC2SPacket;
 import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
 import net.minecraft.network.packet.c2s.play.PickFromInventoryC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayPongC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInputC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
@@ -163,7 +164,7 @@ import org.jetbrains.annotations.Nullable;
 public class ServerPlayNetworkHandler
 implements EntityTrackingListener,
 ServerPlayPacketListener {
-    private static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogManager.getLogger();
     private static final int field_29778 = 15000;
     public final ClientConnection connection;
     private final MinecraftServer server;
@@ -474,24 +475,14 @@ ServerPlayPacketListener {
         String string = packet.getCommand();
         boolean bl = packet.shouldTrackOutput();
         if (commandBlockExecutor != null) {
-            BlockState blockState2;
             CommandBlockBlockEntity.Type type = commandBlockBlockEntity.getCommandBlockType();
             BlockState blockState = this.player.world.getBlockState(blockPos);
             Direction direction = blockState.get(CommandBlock.FACING);
-            switch (packet.getType()) {
-                case SEQUENCE: {
-                    blockState2 = Blocks.CHAIN_COMMAND_BLOCK.getDefaultState();
-                    break;
-                }
-                case AUTO: {
-                    blockState2 = Blocks.REPEATING_COMMAND_BLOCK.getDefaultState();
-                    break;
-                }
-                default: {
-                    blockState2 = Blocks.COMMAND_BLOCK.getDefaultState();
-                }
-            }
-            BlockState blockState3 = (BlockState)((BlockState)blockState2.with(CommandBlock.FACING, direction)).with(CommandBlock.CONDITIONAL, packet.isConditional());
+            BlockState blockState3 = (BlockState)((BlockState)(switch (packet.getType()) {
+                case CommandBlockBlockEntity.Type.SEQUENCE -> Blocks.CHAIN_COMMAND_BLOCK.getDefaultState();
+                case CommandBlockBlockEntity.Type.AUTO -> Blocks.REPEATING_COMMAND_BLOCK.getDefaultState();
+                default -> Blocks.COMMAND_BLOCK.getDefaultState();
+            }).with(CommandBlock.FACING, direction)).with(CommandBlock.CONDITIONAL, packet.isConditional());
             if (blockState3 != blockState) {
                 this.player.world.setBlockState(blockPos, blockState3, Block.NOTIFY_LISTENERS);
                 blockEntity.setCachedState(blockState3);
@@ -551,7 +542,7 @@ ServerPlayPacketListener {
         if (this.player.currentScreenHandler instanceof AnvilScreenHandler) {
             AnvilScreenHandler anvilScreenHandler = (AnvilScreenHandler)this.player.currentScreenHandler;
             String string = SharedConstants.stripInvalidChars(packet.getName());
-            if (string.length() <= 35) {
+            if (string.length() <= 50) {
                 anvilScreenHandler.setNewItemName(string);
             }
         }
@@ -1032,6 +1023,10 @@ ServerPlayPacketListener {
         if (entity instanceof BoatEntity) {
             ((BoatEntity)entity).setPaddleMovings(packet.isLeftPaddling(), packet.isRightPaddling());
         }
+    }
+
+    @Override
+    public void onPong(PlayPongC2SPacket packet) {
     }
 
     @Override

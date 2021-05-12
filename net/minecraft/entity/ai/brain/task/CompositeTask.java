@@ -29,7 +29,7 @@ extends Task<E> {
         this.memoriesToForgetWhenStopped = memoriesToForgetWhenStopped;
         this.order = order;
         this.runMode = runMode;
-        tasks.forEach(pair -> this.tasks.add((Task<E>)pair.getFirst(), (Integer)pair.getSecond()));
+        tasks.forEach(pair -> this.tasks.add((Task)pair.getFirst(), (Integer)pair.getSecond()));
     }
 
     @Override
@@ -65,6 +65,21 @@ extends Task<E> {
         return "(" + this.getClass().getSimpleName() + "): " + set;
     }
 
+    public static enum Order {
+        ORDERED(weightedList -> {}),
+        SHUFFLED(WeightedList::shuffle);
+
+        private final Consumer<WeightedList<?>> listModifier;
+
+        private Order(Consumer<WeightedList<?>> listModifier) {
+            this.listModifier = listModifier;
+        }
+
+        public void apply(WeightedList<?> list) {
+            this.listModifier.accept(list);
+        }
+    }
+
     public static enum RunMode {
         RUN_ONE{
 
@@ -84,21 +99,6 @@ extends Task<E> {
 
 
         public abstract <E extends LivingEntity> void run(Stream<Task<? super E>> var1, ServerWorld var2, E var3, long var4);
-    }
-
-    public static enum Order {
-        ORDERED(weightedList -> {}),
-        SHUFFLED(WeightedList::shuffle);
-
-        private final Consumer<WeightedList<?>> listModifier;
-
-        private Order(Consumer<WeightedList<?>> listModifier) {
-            this.listModifier = listModifier;
-        }
-
-        public void apply(WeightedList<?> list) {
-            this.listModifier.accept(list);
-        }
     }
 }
 

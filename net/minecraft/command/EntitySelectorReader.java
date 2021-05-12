@@ -202,7 +202,7 @@ public class EntitySelectorReader {
             this.predicate = Entity::isAlive;
         } else {
             this.reader.setCursor(i);
-            throw UNKNOWN_SELECTOR_EXCEPTION.createWithContext(this.reader, '@' + String.valueOf(c));
+            throw UNKNOWN_SELECTOR_EXCEPTION.createWithContext(this.reader, "@" + String.valueOf(c));
         }
         this.suggestionProvider = this::suggestOpen;
         if (this.reader.canRead() && this.reader.peek() == '[') {

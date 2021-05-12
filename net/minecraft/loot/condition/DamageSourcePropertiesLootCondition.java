@@ -21,10 +21,10 @@ import net.minecraft.util.math.Vec3d;
 
 public class DamageSourcePropertiesLootCondition
 implements LootCondition {
-    private final DamageSourcePredicate predicate;
+    final DamageSourcePredicate predicate;
 
-    private DamageSourcePropertiesLootCondition(DamageSourcePredicate predicate) {
-        this.predicate = predicate;
+    DamageSourcePropertiesLootCondition(DamageSourcePredicate damageSourcePredicate) {
+        this.predicate = damageSourcePredicate;
     }
 
     @Override

@@ -20,8 +20,8 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class Channel {
     private final Set<SourceManager> sources = Sets.newIdentityHashSet();
-    private final SoundEngine soundEngine;
-    private final Executor executor;
+    final SoundEngine soundEngine;
+    final Executor executor;
 
     public Channel(SoundEngine soundEngine, Executor executor) {
         this.soundEngine = soundEngine;
@@ -44,7 +44,7 @@ public class Channel {
     }
 
     public void execute(Consumer<Stream<Source>> consumer) {
-        this.executor.execute(() -> consumer.accept(this.sources.stream().map(sourceManager -> ((SourceManager)sourceManager).source).filter(Objects::nonNull)));
+        this.executor.execute(() -> consumer.accept(this.sources.stream().map(sourceManager -> sourceManager.source).filter(Objects::nonNull)));
     }
 
     public void tick() {
@@ -68,7 +68,7 @@ public class Channel {
     @Environment(value=EnvType.CLIENT)
     public class SourceManager {
         @Nullable
-        private Source source;
+        Source source;
         private boolean stopped;
 
         public boolean isStopped() {

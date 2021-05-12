@@ -41,7 +41,7 @@ extends Screen {
     private static final Text SELECTED_HIDDEN_TAB_TITLE = HIDDEN_TAB_TITLE.copy().formatted(Formatting.UNDERLINE);
     private static final Text SELECTED_BLOCKED_TAB_TITLE = BLOCKED_TAB_TITLE.copy().formatted(Formatting.UNDERLINE);
     private static final Text SEARCH_TEXT = new TranslatableText("gui.socialInteractions.search_hint").formatted(Formatting.ITALIC).formatted(Formatting.GRAY);
-    private static final Text EMPTY_SEARCH_TEXT = new TranslatableText("gui.socialInteractions.search_empty").formatted(Formatting.GRAY);
+    static final Text EMPTY_SEARCH_TEXT = new TranslatableText("gui.socialInteractions.search_empty").formatted(Formatting.GRAY);
     private static final Text EMPTY_HIDDEN_TEXT = new TranslatableText("gui.socialInteractions.empty_hidden").formatted(Formatting.GRAY);
     private static final Text EMPTY_BLOCKED_TEXT = new TranslatableText("gui.socialInteractions.empty_blocked").formatted(Formatting.GRAY);
     private static final Text BLOCKING_TEXT = new TranslatableText("gui.socialInteractions.blocking_hint");
@@ -56,8 +56,8 @@ extends Screen {
     private static final int field_32429 = 238;
     private static final int field_32430 = 20;
     private static final int field_32431 = 36;
-    private SocialInteractionsPlayerListWidget playerList;
-    private TextFieldWidget searchBox;
+    SocialInteractionsPlayerListWidget playerList;
+    TextFieldWidget searchBox;
     private String currentSearch = "";
     private Tab currentTab = Tab.ALL;
     private ButtonWidget allTabButton;
@@ -150,32 +150,26 @@ extends Screen {
     }
 
     private void setCurrentTab(Tab currentTab) {
-        Collection<UUID> collection;
         this.currentTab = currentTab;
         this.allTabButton.setMessage(ALL_TAB_TITLE);
         this.hiddenTabButton.setMessage(HIDDEN_TAB_TITLE);
         this.blockedTabButton.setMessage(BLOCKED_TAB_TITLE);
-        switch (currentTab) {
-            case ALL: {
+        Collection<UUID> collection = switch (currentTab) {
+            case Tab.ALL -> {
                 this.allTabButton.setMessage(SELECTED_ALL_TAB_TITLE);
-                collection = this.client.player.networkHandler.getPlayerUuids();
-                break;
+                yield this.client.player.networkHandler.getPlayerUuids();
             }
-            case HIDDEN: {
+            case Tab.HIDDEN -> {
                 this.hiddenTabButton.setMessage(SELECTED_HIDDEN_TAB_TITLE);
-                collection = this.client.getSocialInteractionsManager().getHiddenPlayers();
-                break;
+                yield this.client.getSocialInteractionsManager().getHiddenPlayers();
             }
-            case BLOCKED: {
+            case Tab.BLOCKED -> {
                 this.blockedTabButton.setMessage(SELECTED_BLOCKED_TAB_TITLE);
                 SocialInteractionsManager socialInteractionsManager = this.client.getSocialInteractionsManager();
-                collection = this.client.player.networkHandler.getPlayerUuids().stream().filter(socialInteractionsManager::isPlayerBlocked).collect(Collectors.toSet());
-                break;
+                yield this.client.player.networkHandler.getPlayerUuids().stream().filter(socialInteractionsManager::isPlayerBlocked).collect(Collectors.toSet());
             }
-            default: {
-                collection = ImmutableList.of();
-            }
-        }
+            default -> ImmutableList.of();
+        };
         this.playerList.update(collection, this.playerList.getScrollAmount());
         if (!this.searchBox.getText().isEmpty() && this.playerList.isEmpty() && !this.searchBox.isFocused()) {
             NarratorManager.INSTANCE.narrate(EMPTY_SEARCH_TEXT.getString());

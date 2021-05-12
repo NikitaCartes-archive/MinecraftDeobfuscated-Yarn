@@ -95,7 +95,6 @@ ModelWithHead {
 
     @Override
     public void setAngles(T livingEntity, float f, float g, float h, float i, float j) {
-        boolean bl4;
         boolean bl3;
         boolean bl = ((LivingEntity)livingEntity).getRoll() > 4;
         boolean bl2 = ((LivingEntity)livingEntity).isInSwimmingPose();
@@ -137,16 +136,16 @@ ModelWithHead {
         }
         this.rightArm.yaw = 0.0f;
         this.leftArm.yaw = 0.0f;
-        boolean bl5 = bl3 = ((LivingEntity)livingEntity).getMainArm() == Arm.RIGHT;
+        boolean bl4 = bl3 = ((LivingEntity)livingEntity).getMainArm() == Arm.RIGHT;
         if (((LivingEntity)livingEntity).isUsingItem()) {
-            boolean bl6 = bl4 = ((LivingEntity)livingEntity).getActiveHand() == Hand.MAIN_HAND;
+            boolean bl5 = bl4 = ((LivingEntity)livingEntity).getActiveHand() == Hand.MAIN_HAND;
             if (bl4 == bl3) {
                 this.positionRightArm(livingEntity);
             } else {
                 this.positionLeftArm(livingEntity);
             }
         } else {
-            boolean bl7 = bl4 = bl3 ? this.leftArmPose.isTwoHanded() : this.rightArmPose.isTwoHanded();
+            boolean bl6 = bl4 = bl3 ? this.leftArmPose.isTwoHanded() : this.rightArmPose.isTwoHanded();
             if (bl3 != bl4) {
                 this.positionLeftArm(livingEntity);
                 this.positionRightArm(livingEntity);

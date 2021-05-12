@@ -72,9 +72,9 @@ extends JsonDataLoader {
         private final LootCondition[] terms;
         private final Predicate<LootContext> predicate;
 
-        private AndCondition(LootCondition[] elements) {
-            this.terms = elements;
-            this.predicate = LootConditionTypes.joinAnd(elements);
+        AndCondition(LootCondition[] lootConditions) {
+            this.terms = lootConditions;
+            this.predicate = LootConditionTypes.joinAnd(lootConditions);
         }
 
         @Override

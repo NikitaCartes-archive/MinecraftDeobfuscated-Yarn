@@ -1066,7 +1066,7 @@ extends PlayerEntity {
         }
         this.enchantmentTableSeed = oldPlayer.enchantmentTableSeed;
         this.enderChestInventory = oldPlayer.enderChestInventory;
-        this.getDataTracker().set(PLAYER_MODEL_PARTS, oldPlayer.getDataTracker().get(PLAYER_MODEL_PARTS));
+        this.getDataTracker().set(PLAYER_MODEL_PARTS, (Byte)oldPlayer.getDataTracker().get(PLAYER_MODEL_PARTS));
         this.syncedExperience = -1;
         this.syncedHealth = -1.0f;
         this.syncedFoodLevel = -1;

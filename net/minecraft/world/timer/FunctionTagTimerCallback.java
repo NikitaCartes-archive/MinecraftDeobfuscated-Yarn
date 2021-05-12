@@ -14,7 +14,7 @@ import net.minecraft.world.timer.TimerCallback;
 
 public class FunctionTagTimerCallback
 implements TimerCallback<MinecraftServer> {
-    private final Identifier name;
+    final Identifier name;
 
     public FunctionTagTimerCallback(Identifier name) {
         this.name = name;

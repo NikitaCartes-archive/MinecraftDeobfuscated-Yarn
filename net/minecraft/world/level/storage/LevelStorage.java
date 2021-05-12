@@ -72,13 +72,13 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class LevelStorage {
-    private static final Logger LOGGER = LogManager.getLogger();
-    private static final DateTimeFormatter TIME_FORMATTER = new DateTimeFormatterBuilder().appendValue(ChronoField.YEAR, 4, 10, SignStyle.EXCEEDS_PAD).appendLiteral('-').appendValue(ChronoField.MONTH_OF_YEAR, 2).appendLiteral('-').appendValue(ChronoField.DAY_OF_MONTH, 2).appendLiteral('_').appendValue(ChronoField.HOUR_OF_DAY, 2).appendLiteral('-').appendValue(ChronoField.MINUTE_OF_HOUR, 2).appendLiteral('-').appendValue(ChronoField.SECOND_OF_MINUTE, 2).toFormatter();
+    static final Logger LOGGER = LogManager.getLogger();
+    static final DateTimeFormatter TIME_FORMATTER = new DateTimeFormatterBuilder().appendValue(ChronoField.YEAR, 4, 10, SignStyle.EXCEEDS_PAD).appendLiteral('-').appendValue(ChronoField.MONTH_OF_YEAR, 2).appendLiteral('-').appendValue(ChronoField.DAY_OF_MONTH, 2).appendLiteral('_').appendValue(ChronoField.HOUR_OF_DAY, 2).appendLiteral('-').appendValue(ChronoField.MINUTE_OF_HOUR, 2).appendLiteral('-').appendValue(ChronoField.SECOND_OF_MINUTE, 2).toFormatter();
     private static final String DEFAULT_ICON = "icon.png";
     private static final ImmutableList<String> GENERATOR_OPTION_KEYS = ImmutableList.of("RandomSeed", "generatorName", "generatorOptions", "generatorVersion", "legacy_custom_options", "MapFeatures", "BonusChest");
-    private final Path savesDirectory;
+    final Path savesDirectory;
     private final Path backupsDirectory;
-    private final DataFixer dataFixer;
+    final DataFixer dataFixer;
 
     public LevelStorage(Path savesDirectory, Path backupsDirectory, DataFixer dataFixer) {
         this.dataFixer = dataFixer;
@@ -142,12 +142,12 @@ public class LevelStorage {
         return list;
     }
 
-    private int getCurrentVersion() {
+    int getCurrentVersion() {
         return 19133;
     }
 
     @Nullable
-    private <T> T readLevelProperties(File file, BiFunction<File, DataFixer, T> levelDataParser) {
+    <T> T readLevelProperties(File file, BiFunction<File, DataFixer, T> levelDataParser) {
         T object;
         if (!file.exists()) {
             return null;
@@ -178,7 +178,7 @@ public class LevelStorage {
         }
     }
 
-    private static BiFunction<File, DataFixer, LevelProperties> createLevelDataParser(DynamicOps<NbtElement> dynamicOps, DataPackSettings dataPackSettings) {
+    static BiFunction<File, DataFixer, LevelProperties> createLevelDataParser(DynamicOps<NbtElement> dynamicOps, DataPackSettings dataPackSettings) {
         return (file, dataFixer) -> {
             try {
                 NbtCompound nbtCompound = NbtIo.readCompressed(file);
@@ -198,7 +198,7 @@ public class LevelStorage {
         };
     }
 
-    private BiFunction<File, DataFixer, LevelSummary> createLevelDataParser(File file, boolean locked) {
+    BiFunction<File, DataFixer, LevelSummary> createLevelDataParser(File file, boolean locked) {
         return (file2, dataFixer) -> {
             try {
                 NbtCompound nbtCompound = NbtIo.readCompressed(file2);
@@ -252,8 +252,8 @@ public class LevelStorage {
 
     public class Session
     implements AutoCloseable {
-        private final SessionLock lock;
-        private final Path directory;
+        final SessionLock lock;
+        final Path directory;
         private final String directoryName;
         private final Map<WorldSavePath, Path> paths = Maps.newHashMap();
 
@@ -299,19 +299,19 @@ public class LevelStorage {
         @Nullable
         public LevelSummary getLevelSummary() {
             this.checkValid();
-            return (LevelSummary)LevelStorage.this.readLevelProperties(this.directory.toFile(), LevelStorage.this.createLevelDataParser(this.directory.toFile(), false));
+            return LevelStorage.this.readLevelProperties(this.directory.toFile(), LevelStorage.this.createLevelDataParser(this.directory.toFile(), false));
         }
 
         @Nullable
         public SaveProperties readLevelProperties(DynamicOps<NbtElement> dynamicOps, DataPackSettings dataPackSettings) {
             this.checkValid();
-            return (SaveProperties)LevelStorage.this.readLevelProperties(this.directory.toFile(), LevelStorage.createLevelDataParser(dynamicOps, dataPackSettings));
+            return LevelStorage.this.readLevelProperties(this.directory.toFile(), LevelStorage.createLevelDataParser(dynamicOps, dataPackSettings));
         }
 
         @Nullable
         public DataPackSettings getDataPackSettings() {
             this.checkValid();
-            return (DataPackSettings)LevelStorage.this.readLevelProperties(this.directory.toFile(), (file, dataFixer) -> LevelStorage.readDataPackSettings(file, dataFixer));
+            return LevelStorage.this.readLevelProperties(this.directory.toFile(), LevelStorage::readDataPackSettings);
         }
 
         public void backupLevelDataFile(DynamicRegistryManager dynamicRegistryManager, SaveProperties saveProperties) {

@@ -27,7 +27,7 @@ public interface StringIdentifiable {
      */
     public static <E extends Enum<E>> Codec<E> createCodec(Supplier<E[]> enumValues, Function<? super String, ? extends E> fromString) {
         Enum[] enums = (Enum[])enumValues.get();
-        return StringIdentifiable.createCodec(Enum::ordinal, ordinal -> enums[ordinal], fromString);
+        return StringIdentifiable.createCodec(object -> ((Enum)object).ordinal(), ordinal -> enums[ordinal], fromString);
     }
 
     /**
@@ -49,9 +49,9 @@ public interface StringIdentifiable {
             @Override
             public <T> DataResult<Pair<E, T>> decode(DynamicOps<T> dynamicOps, T object) {
                 if (dynamicOps.compressMaps()) {
-                    return dynamicOps.getNumberValue(object).flatMap((? super R id) -> Optional.ofNullable(compressedDecoder.apply(id.intValue())).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown element id: " + id))).map((? super R stringIdentifiable) -> Pair.of(stringIdentifiable, dynamicOps.empty()));
+                    return dynamicOps.getNumberValue(object).flatMap((? super R id) -> Optional.ofNullable((StringIdentifiable)compressedDecoder.apply(id.intValue())).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown element id: " + id))).map((? super R stringIdentifiable) -> Pair.of(stringIdentifiable, dynamicOps.empty()));
                 }
-                return dynamicOps.getStringValue(object).flatMap((? super R name) -> Optional.ofNullable(decoder.apply(name)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown element name: " + name))).map((? super R stringIdentifiable) -> Pair.of(stringIdentifiable, dynamicOps.empty()));
+                return dynamicOps.getStringValue(object).flatMap((? super R name) -> Optional.ofNullable((StringIdentifiable)decoder.apply(name)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown element name: " + name))).map((? super R stringIdentifiable) -> Pair.of(stringIdentifiable, dynamicOps.empty()));
             }
 
             public String toString() {

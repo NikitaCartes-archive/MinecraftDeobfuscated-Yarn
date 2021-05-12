@@ -126,7 +126,7 @@ public class BlockArgumentParser {
         String string = suggestionsBuilder.getRemaining().toLowerCase(Locale.ROOT);
         for (Property<?> property : this.blockState.getProperties()) {
             if (this.blockProperties.containsKey(property) || !property.getName().startsWith(string)) continue;
-            suggestionsBuilder.suggest(property.getName() + '=');
+            suggestionsBuilder.suggest(property.getName() + "=");
         }
         return suggestionsBuilder.buildFuture();
     }
@@ -138,7 +138,7 @@ public class BlockArgumentParser {
             for (Block block : tag.values()) {
                 for (Property<?> property : block.getStateManager().getProperties()) {
                     if (this.tagProperties.containsKey(property.getName()) || !property.getName().startsWith(string)) continue;
-                    suggestionsBuilder.suggest(property.getName() + '=');
+                    suggestionsBuilder.suggest(property.getName() + "=");
                 }
             }
         }
@@ -381,7 +381,7 @@ public class BlockArgumentParser {
             throw INVALID_PROPERTY_EXCEPTION.createWithContext(this.reader, this.blockId.toString(), property.getName(), string);
         }
         this.blockState = (BlockState)this.blockState.with(property, (Comparable)optional.get());
-        this.blockProperties.put(property, (Comparable<?>)optional.get());
+        this.blockProperties.put(property, (Comparable)optional.get());
     }
 
     public static String stringifyBlockState(BlockState blockState) {

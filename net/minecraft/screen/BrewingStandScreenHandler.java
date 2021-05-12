@@ -104,44 +104,6 @@ extends ScreenHandler {
         return this.propertyDelegate.get(0);
     }
 
-    static class FuelSlot
-    extends Slot {
-        public FuelSlot(Inventory inventory, int i, int j, int k) {
-            super(inventory, i, j, k);
-        }
-
-        @Override
-        public boolean canInsert(ItemStack stack) {
-            return FuelSlot.matches(stack);
-        }
-
-        public static boolean matches(ItemStack stack) {
-            return stack.isOf(Items.BLAZE_POWDER);
-        }
-
-        @Override
-        public int getMaxItemCount() {
-            return 64;
-        }
-    }
-
-    static class IngredientSlot
-    extends Slot {
-        public IngredientSlot(Inventory inventory, int i, int j, int k) {
-            super(inventory, i, j, k);
-        }
-
-        @Override
-        public boolean canInsert(ItemStack stack) {
-            return BrewingRecipeRegistry.isValidIngredient(stack);
-        }
-
-        @Override
-        public int getMaxItemCount() {
-            return 64;
-        }
-    }
-
     static class PotionSlot
     extends Slot {
         public PotionSlot(Inventory inventory, int i, int j, int k) {
@@ -169,6 +131,44 @@ extends ScreenHandler {
 
         public static boolean matches(ItemStack stack) {
             return stack.isOf(Items.POTION) || stack.isOf(Items.SPLASH_POTION) || stack.isOf(Items.LINGERING_POTION) || stack.isOf(Items.GLASS_BOTTLE);
+        }
+    }
+
+    static class IngredientSlot
+    extends Slot {
+        public IngredientSlot(Inventory inventory, int i, int j, int k) {
+            super(inventory, i, j, k);
+        }
+
+        @Override
+        public boolean canInsert(ItemStack stack) {
+            return BrewingRecipeRegistry.isValidIngredient(stack);
+        }
+
+        @Override
+        public int getMaxItemCount() {
+            return 64;
+        }
+    }
+
+    static class FuelSlot
+    extends Slot {
+        public FuelSlot(Inventory inventory, int i, int j, int k) {
+            super(inventory, i, j, k);
+        }
+
+        @Override
+        public boolean canInsert(ItemStack stack) {
+            return FuelSlot.matches(stack);
+        }
+
+        public static boolean matches(ItemStack stack) {
+            return stack.isOf(Items.BLAZE_POWDER);
+        }
+
+        @Override
+        public int getMaxItemCount() {
+            return 64;
         }
     }
 }

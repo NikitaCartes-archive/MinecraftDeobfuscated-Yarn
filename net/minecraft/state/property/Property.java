@@ -34,11 +34,11 @@ public abstract class Property<T extends Comparable<T>> {
     }
 
     public Value<T> createValue(T value) {
-        return new Value(this, (Comparable)value, null);
+        return new Value<T>(this, value);
     }
 
     public Value<T> createValue(State<?, ?> state) {
-        return new Value(this, (Comparable)state.get(this), null);
+        return new Value(this, state.get(this));
     }
 
     public Stream<Value<T>> stream() {
@@ -114,7 +114,7 @@ public abstract class Property<T extends Comparable<T>> {
         private final Property<T> property;
         private final T value;
 
-        private Value(Property<T> property, T value) {
+        Value(Property<T> property, T value) {
             if (!property.getValues().contains(value)) {
                 throw new IllegalArgumentException("Value " + value + " does not belong to property " + property);
             }
@@ -149,10 +149,6 @@ public abstract class Property<T extends Comparable<T>> {
             int i = this.property.hashCode();
             i = 31 * i + this.value.hashCode();
             return i;
-        }
-
-        /* synthetic */ Value(Property property, Comparable comparable, _1 arg) {
-            this(property, comparable);
         }
     }
 }

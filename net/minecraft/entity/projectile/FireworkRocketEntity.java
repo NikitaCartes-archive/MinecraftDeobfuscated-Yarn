@@ -101,7 +101,6 @@ implements FlyingItemEntity {
 
     @Override
     public void tick() {
-        Vec3d vec3d;
         super.tick();
         if (this.wasShotByEntity()) {
             if (this.shooter == null) {

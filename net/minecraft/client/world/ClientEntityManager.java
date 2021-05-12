@@ -23,10 +23,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ClientEntityManager<T extends EntityLike> {
-    private static final Logger LOGGER = LogManager.getLogger();
-    private final EntityHandler<T> handler;
-    private final EntityIndex<T> index;
-    private final SectionedEntityCache<T> cache;
+    static final Logger LOGGER = LogManager.getLogger();
+    final EntityHandler<T> handler;
+    final EntityIndex<T> index;
+    final SectionedEntityCache<T> cache;
     private final LongSet tickingChunkSections = new LongOpenHashSet();
     private final EntityLookup<T> lookup;
 
@@ -68,7 +68,7 @@ public class ClientEntityManager<T extends EntityLike> {
         long l = ChunkSectionPos.toLong(entity.getBlockPos());
         EntityTrackingSection<T> entityTrackingSection = this.cache.getTrackingSection(l);
         entityTrackingSection.add(entity);
-        entity.setListener(new Listener(this, (EntityLike)entity, l, entityTrackingSection));
+        entity.setListener(new Listener(this, entity, l, entityTrackingSection));
         this.handler.create(entity);
         this.handler.startTracking(entity);
         if (entity.isPlayer() || entityTrackingSection.getStatus().shouldTick()) {
@@ -81,7 +81,7 @@ public class ClientEntityManager<T extends EntityLike> {
         return this.index.size();
     }
 
-    private void removeIfEmpty(long packedChunkSection, EntityTrackingSection<T> entities) {
+    void removeIfEmpty(long packedChunkSection, EntityTrackingSection<T> entities) {
         if (entities.isEmpty()) {
             this.cache.removeSection(packedChunkSection);
         }
@@ -103,12 +103,12 @@ public class ClientEntityManager<T extends EntityLike> {
          * WARNING - Possible parameter corruption
          * WARNING - void declaration
          */
-        private Listener(T entity, long lastSectionPos, EntityTrackingSection<T> section) {
+        Listener(T entityLike, long l, EntityTrackingSection<T> entityTrackingSection) {
             void var3_3;
             this.manager = clientEntityManager;
-            this.entity = entity;
+            this.entity = entityLike;
             this.lastSectionPos = var3_3;
-            this.section = section;
+            this.section = entityTrackingSection;
         }
 
         @Override

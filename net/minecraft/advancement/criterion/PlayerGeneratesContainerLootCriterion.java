@@ -15,7 +15,7 @@ import net.minecraft.util.JsonHelper;
 
 public class PlayerGeneratesContainerLootCriterion
 extends AbstractCriterion<Conditions> {
-    private static final Identifier ID = new Identifier("player_generates_container_loot");
+    static final Identifier ID = new Identifier("player_generates_container_loot");
 
     @Override
     public Identifier getId() {

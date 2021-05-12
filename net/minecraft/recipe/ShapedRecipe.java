@@ -31,12 +31,12 @@ import net.minecraft.world.World;
 
 public class ShapedRecipe
 implements CraftingRecipe {
-    private final int width;
-    private final int height;
-    private final DefaultedList<Ingredient> input;
-    private final ItemStack output;
+    final int width;
+    final int height;
+    final DefaultedList<Ingredient> input;
+    final ItemStack output;
     private final Identifier id;
-    private final String group;
+    final String group;
 
     public ShapedRecipe(Identifier id, String group, int width, int height, DefaultedList<Ingredient> input, ItemStack output) {
         this.id = id;
@@ -124,7 +124,7 @@ implements CraftingRecipe {
      * Compiles a pattern and series of symbols into a list of ingredients (the matrix) suitable for matching
      * against a crafting grid.
      */
-    private static DefaultedList<Ingredient> createPatternMatrix(String[] pattern, Map<String, Ingredient> symbols, int width, int height) {
+    static DefaultedList<Ingredient> createPatternMatrix(String[] pattern, Map<String, Ingredient> symbols, int width, int height) {
         DefaultedList<Ingredient> defaultedList = DefaultedList.ofSize(width * height, Ingredient.EMPTY);
         HashSet<String> set = Sets.newHashSet(symbols.keySet());
         set.remove(" ");
@@ -216,7 +216,7 @@ implements CraftingRecipe {
         return i;
     }
 
-    private static String[] getPattern(JsonArray json) {
+    static String[] getPattern(JsonArray json) {
         String[] strings = new String[json.size()];
         if (strings.length > 3) {
             throw new JsonSyntaxException("Invalid pattern: too many rows, 3 is maximum");
@@ -242,7 +242,7 @@ implements CraftingRecipe {
      * 
      * @return a mapping from a symbol to the ingredient it represents
      */
-    private static Map<String, Ingredient> readSymbols(JsonObject json) {
+    static Map<String, Ingredient> readSymbols(JsonObject json) {
         HashMap<String, Ingredient> map = Maps.newHashMap();
         for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
             if (entry.getKey().length() != 1) {
@@ -283,11 +283,11 @@ implements CraftingRecipe {
         @Override
         public ShapedRecipe read(Identifier identifier, JsonObject jsonObject) {
             String string = JsonHelper.getString(jsonObject, "group", "");
-            Map map = ShapedRecipe.readSymbols(JsonHelper.getObject(jsonObject, "key"));
+            Map<String, Ingredient> map = ShapedRecipe.readSymbols(JsonHelper.getObject(jsonObject, "key"));
             String[] strings = ShapedRecipe.removePadding(ShapedRecipe.getPattern(JsonHelper.getArray(jsonObject, "pattern")));
             int i = strings[0].length();
             int j = strings.length;
-            DefaultedList defaultedList = ShapedRecipe.createPatternMatrix(strings, map, i, j);
+            DefaultedList<Ingredient> defaultedList = ShapedRecipe.createPatternMatrix(strings, map, i, j);
             ItemStack itemStack = ShapedRecipe.outputFromJson(JsonHelper.getObject(jsonObject, "result"));
             return new ShapedRecipe(identifier, string, i, j, defaultedList, itemStack);
         }

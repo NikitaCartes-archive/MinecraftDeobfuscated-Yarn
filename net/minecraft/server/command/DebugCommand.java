@@ -139,7 +139,7 @@ public class DebugCommand {
         private int lastIndentWidth;
         private boolean expectsCommandResult;
 
-        private Tracer(PrintWriter writer) {
+        Tracer(PrintWriter writer) {
             this.writer = writer;
         }
 
@@ -231,7 +231,7 @@ public class DebugCommand {
         }
 
         @Override
-        public boolean method_36320() {
+        public boolean cannotBeSilenced() {
             return true;
         }
     }

@@ -87,7 +87,7 @@ extends DiveJumpingGoal {
         Vec3d vec3d = this.dolphin.getVelocity();
         if (vec3d.y * vec3d.y < (double)0.03f && this.dolphin.getPitch() != 0.0f) {
             this.dolphin.setPitch(MathHelper.lerpAngle(this.dolphin.getPitch(), 0.0f, 0.2f));
-        } else {
+        } else if (vec3d.length() > (double)1.0E-5f) {
             double d = Math.sqrt(Entity.squaredHorizontalLength(vec3d));
             double e = Math.signum(-vec3d.y) * Math.acos(d / vec3d.length()) * 57.2957763671875;
             this.dolphin.setPitch((float)e);

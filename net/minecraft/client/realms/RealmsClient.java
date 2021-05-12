@@ -414,14 +414,6 @@ public class RealmsClient {
     }
 
     @net.fabricmc.api.Environment(value=EnvType.CLIENT)
-    public static enum CompatibleVersionResponse {
-        COMPATIBLE,
-        OUTDATED,
-        OTHER;
-
-    }
-
-    @net.fabricmc.api.Environment(value=EnvType.CLIENT)
     public static enum Environment {
         PRODUCTION("pc.realms.minecraft.net", "https"),
         STAGE("pc-stage.realms.minecraft.net", "https"),
@@ -434,6 +426,14 @@ public class RealmsClient {
             this.baseUrl = baseUrl;
             this.protocol = protocol;
         }
+    }
+
+    @net.fabricmc.api.Environment(value=EnvType.CLIENT)
+    public static enum CompatibleVersionResponse {
+        COMPATIBLE,
+        OUTDATED,
+        OTHER;
+
     }
 }
 

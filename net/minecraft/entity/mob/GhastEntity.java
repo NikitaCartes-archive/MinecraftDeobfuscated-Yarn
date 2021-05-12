@@ -149,6 +149,113 @@ implements Monster {
         return 2.6f;
     }
 
+    static class GhastMoveControl
+    extends MoveControl {
+        private final GhastEntity ghast;
+        private int collisionCheckCooldown;
+
+        public GhastMoveControl(GhastEntity ghast) {
+            super(ghast);
+            this.ghast = ghast;
+        }
+
+        @Override
+        public void tick() {
+            if (this.state != MoveControl.State.MOVE_TO) {
+                return;
+            }
+            if (this.collisionCheckCooldown-- <= 0) {
+                this.collisionCheckCooldown += this.ghast.getRandom().nextInt(5) + 2;
+                Vec3d vec3d = new Vec3d(this.targetX - this.ghast.getX(), this.targetY - this.ghast.getY(), this.targetZ - this.ghast.getZ());
+                double d = vec3d.length();
+                if (this.willCollide(vec3d = vec3d.normalize(), MathHelper.ceil(d))) {
+                    this.ghast.setVelocity(this.ghast.getVelocity().add(vec3d.multiply(0.1)));
+                } else {
+                    this.state = MoveControl.State.WAIT;
+                }
+            }
+        }
+
+        private boolean willCollide(Vec3d direction, int steps) {
+            Box box = this.ghast.getBoundingBox();
+            for (int i = 1; i < steps; ++i) {
+                if (this.ghast.world.isSpaceEmpty(this.ghast, box = box.offset(direction))) continue;
+                return false;
+            }
+            return true;
+        }
+    }
+
+    static class FlyRandomlyGoal
+    extends Goal {
+        private final GhastEntity ghast;
+
+        public FlyRandomlyGoal(GhastEntity ghast) {
+            this.ghast = ghast;
+            this.setControls(EnumSet.of(Goal.Control.MOVE));
+        }
+
+        @Override
+        public boolean canStart() {
+            double f;
+            double e;
+            MoveControl moveControl = this.ghast.getMoveControl();
+            if (!moveControl.isMoving()) {
+                return true;
+            }
+            double d = moveControl.getTargetX() - this.ghast.getX();
+            double g = d * d + (e = moveControl.getTargetY() - this.ghast.getY()) * e + (f = moveControl.getTargetZ() - this.ghast.getZ()) * f;
+            return g < 1.0 || g > 3600.0;
+        }
+
+        @Override
+        public boolean shouldContinue() {
+            return false;
+        }
+
+        @Override
+        public void start() {
+            Random random = this.ghast.getRandom();
+            double d = this.ghast.getX() + (double)((random.nextFloat() * 2.0f - 1.0f) * 16.0f);
+            double e = this.ghast.getY() + (double)((random.nextFloat() * 2.0f - 1.0f) * 16.0f);
+            double f = this.ghast.getZ() + (double)((random.nextFloat() * 2.0f - 1.0f) * 16.0f);
+            this.ghast.getMoveControl().moveTo(d, e, f, 1.0);
+        }
+    }
+
+    static class LookAtTargetGoal
+    extends Goal {
+        private final GhastEntity ghast;
+
+        public LookAtTargetGoal(GhastEntity ghast) {
+            this.ghast = ghast;
+            this.setControls(EnumSet.of(Goal.Control.LOOK));
+        }
+
+        @Override
+        public boolean canStart() {
+            return true;
+        }
+
+        @Override
+        public void tick() {
+            if (this.ghast.getTarget() == null) {
+                Vec3d vec3d = this.ghast.getVelocity();
+                this.ghast.setYaw(-((float)MathHelper.atan2(vec3d.x, vec3d.z)) * 57.295776f);
+                this.ghast.bodyYaw = this.ghast.getYaw();
+            } else {
+                LivingEntity livingEntity = this.ghast.getTarget();
+                double d = 64.0;
+                if (livingEntity.squaredDistanceTo(this.ghast) < 4096.0) {
+                    double e = livingEntity.getX() - this.ghast.getX();
+                    double f = livingEntity.getZ() - this.ghast.getZ();
+                    this.ghast.setYaw(-((float)MathHelper.atan2(e, f)) * 57.295776f);
+                    this.ghast.bodyYaw = this.ghast.getYaw();
+                }
+            }
+        }
+    }
+
     static class ShootFireballGoal
     extends Goal {
         private final GhastEntity ghast;
@@ -202,113 +309,6 @@ implements Monster {
                 --this.cooldown;
             }
             this.ghast.setShooting(this.cooldown > 10);
-        }
-    }
-
-    static class LookAtTargetGoal
-    extends Goal {
-        private final GhastEntity ghast;
-
-        public LookAtTargetGoal(GhastEntity ghast) {
-            this.ghast = ghast;
-            this.setControls(EnumSet.of(Goal.Control.LOOK));
-        }
-
-        @Override
-        public boolean canStart() {
-            return true;
-        }
-
-        @Override
-        public void tick() {
-            if (this.ghast.getTarget() == null) {
-                Vec3d vec3d = this.ghast.getVelocity();
-                this.ghast.setYaw(-((float)MathHelper.atan2(vec3d.x, vec3d.z)) * 57.295776f);
-                this.ghast.bodyYaw = this.ghast.getYaw();
-            } else {
-                LivingEntity livingEntity = this.ghast.getTarget();
-                double d = 64.0;
-                if (livingEntity.squaredDistanceTo(this.ghast) < 4096.0) {
-                    double e = livingEntity.getX() - this.ghast.getX();
-                    double f = livingEntity.getZ() - this.ghast.getZ();
-                    this.ghast.setYaw(-((float)MathHelper.atan2(e, f)) * 57.295776f);
-                    this.ghast.bodyYaw = this.ghast.getYaw();
-                }
-            }
-        }
-    }
-
-    static class FlyRandomlyGoal
-    extends Goal {
-        private final GhastEntity ghast;
-
-        public FlyRandomlyGoal(GhastEntity ghast) {
-            this.ghast = ghast;
-            this.setControls(EnumSet.of(Goal.Control.MOVE));
-        }
-
-        @Override
-        public boolean canStart() {
-            double f;
-            double e;
-            MoveControl moveControl = this.ghast.getMoveControl();
-            if (!moveControl.isMoving()) {
-                return true;
-            }
-            double d = moveControl.getTargetX() - this.ghast.getX();
-            double g = d * d + (e = moveControl.getTargetY() - this.ghast.getY()) * e + (f = moveControl.getTargetZ() - this.ghast.getZ()) * f;
-            return g < 1.0 || g > 3600.0;
-        }
-
-        @Override
-        public boolean shouldContinue() {
-            return false;
-        }
-
-        @Override
-        public void start() {
-            Random random = this.ghast.getRandom();
-            double d = this.ghast.getX() + (double)((random.nextFloat() * 2.0f - 1.0f) * 16.0f);
-            double e = this.ghast.getY() + (double)((random.nextFloat() * 2.0f - 1.0f) * 16.0f);
-            double f = this.ghast.getZ() + (double)((random.nextFloat() * 2.0f - 1.0f) * 16.0f);
-            this.ghast.getMoveControl().moveTo(d, e, f, 1.0);
-        }
-    }
-
-    static class GhastMoveControl
-    extends MoveControl {
-        private final GhastEntity ghast;
-        private int collisionCheckCooldown;
-
-        public GhastMoveControl(GhastEntity ghast) {
-            super(ghast);
-            this.ghast = ghast;
-        }
-
-        @Override
-        public void tick() {
-            if (this.state != MoveControl.State.MOVE_TO) {
-                return;
-            }
-            if (this.collisionCheckCooldown-- <= 0) {
-                this.collisionCheckCooldown += this.ghast.getRandom().nextInt(5) + 2;
-                Vec3d vec3d = new Vec3d(this.targetX - this.ghast.getX(), this.targetY - this.ghast.getY(), this.targetZ - this.ghast.getZ());
-                double d = vec3d.length();
-                if (this.willCollide(vec3d = vec3d.normalize(), MathHelper.ceil(d))) {
-                    this.ghast.setVelocity(this.ghast.getVelocity().add(vec3d.multiply(0.1)));
-                } else {
-                    this.state = MoveControl.State.WAIT;
-                }
-            }
-        }
-
-        private boolean willCollide(Vec3d direction, int steps) {
-            Box box = this.ghast.getBoundingBox();
-            for (int i = 1; i < steps; ++i) {
-                if (this.ghast.world.isSpaceEmpty(this.ghast, box = box.offset(direction))) continue;
-                return false;
-            }
-            return true;
         }
     }
 }

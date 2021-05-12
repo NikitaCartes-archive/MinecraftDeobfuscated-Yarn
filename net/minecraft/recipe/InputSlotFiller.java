@@ -55,7 +55,7 @@ implements RecipeGridAligner<Integer> {
 
     protected void returnInputs(boolean bl) {
         for (int i = 0; i < this.handler.getCraftingSlotCount(); ++i) {
-            if (!this.handler.method_32339(i)) continue;
+            if (!this.handler.canInsertIntoSlot(i)) continue;
             ItemStack itemStack = this.handler.getSlot(i).getStack().copy();
             this.inventory.offer(itemStack, false);
             this.handler.getSlot(i).setStack(itemStack);

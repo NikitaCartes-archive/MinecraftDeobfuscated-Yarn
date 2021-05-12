@@ -36,11 +36,11 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class ClientChunkManager
 extends ChunkManager {
-    private static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogManager.getLogger();
     private final WorldChunk emptyChunk;
     private final LightingProvider lightingProvider;
-    private volatile ClientChunkMap chunks;
-    private final ClientWorld world;
+    volatile ClientChunkMap chunks;
+    final ClientWorld world;
 
     public ClientChunkManager(ClientWorld world, int loadDistance) {
         this.world = world;
@@ -98,7 +98,7 @@ extends ChunkManager {
             return null;
         }
         int i = this.chunks.getIndex(x, z);
-        WorldChunk worldChunk = (WorldChunk)this.chunks.chunks.get(i);
+        WorldChunk worldChunk = this.chunks.chunks.get(i);
         ChunkPos chunkPos = new ChunkPos(x, z);
         if (!ClientChunkManager.positionEquals(worldChunk, x, z)) {
             worldChunk = new WorldChunk(this.world, chunkPos, biomes);
@@ -129,14 +129,14 @@ extends ChunkManager {
     }
 
     public void updateLoadDistance(int loadDistance) {
-        int j;
         int i = this.chunks.radius;
-        if (i != (j = ClientChunkManager.getChunkMapRadius(loadDistance))) {
+        int j = ClientChunkManager.getChunkMapRadius(loadDistance);
+        if (i != j) {
             ClientChunkMap clientChunkMap = new ClientChunkMap(j);
             clientChunkMap.centerChunkX = this.chunks.centerChunkX;
             clientChunkMap.centerChunkZ = this.chunks.centerChunkZ;
             for (int k = 0; k < this.chunks.chunks.length(); ++k) {
-                WorldChunk worldChunk = (WorldChunk)this.chunks.chunks.get(k);
+                WorldChunk worldChunk = this.chunks.chunks.get(k);
                 if (worldChunk == null) continue;
                 ChunkPos chunkPos = worldChunk.getPos();
                 if (!clientChunkMap.isInRadius(chunkPos.x, chunkPos.z)) continue;
@@ -183,20 +183,20 @@ extends ChunkManager {
 
     @Environment(value=EnvType.CLIENT)
     final class ClientChunkMap {
-        private final AtomicReferenceArray<WorldChunk> chunks;
-        private final int radius;
+        final AtomicReferenceArray<WorldChunk> chunks;
+        final int radius;
         private final int diameter;
-        private volatile int centerChunkX;
-        private volatile int centerChunkZ;
-        private int loadedChunkCount;
+        volatile int centerChunkX;
+        volatile int centerChunkZ;
+        int loadedChunkCount;
 
-        private ClientChunkMap(int loadDistance) {
-            this.radius = loadDistance;
-            this.diameter = loadDistance * 2 + 1;
+        ClientChunkMap(int i) {
+            this.radius = i;
+            this.diameter = i * 2 + 1;
             this.chunks = new AtomicReferenceArray(this.diameter * this.diameter);
         }
 
-        private int getIndex(int chunkX, int chunkZ) {
+        int getIndex(int chunkX, int chunkZ) {
             return Math.floorMod(chunkZ, this.diameter) * this.diameter + Math.floorMod(chunkX, this.diameter);
         }
 
@@ -219,7 +219,7 @@ extends ChunkManager {
             return expect;
         }
 
-        private boolean isInRadius(int chunkX, int chunkZ) {
+        boolean isInRadius(int chunkX, int chunkZ) {
             return Math.abs(chunkX - this.centerChunkX) <= this.radius && Math.abs(chunkZ - this.centerChunkZ) <= this.radius;
         }
 
@@ -230,10 +230,10 @@ extends ChunkManager {
 
         private void method_35751(String string) {
             try (FileOutputStream fileOutputStream = new FileOutputStream(new File(string));){
-                int i = ((ClientChunkManager)ClientChunkManager.this).chunks.radius;
+                int i = ClientChunkManager.this.chunks.radius;
                 for (int j = this.centerChunkZ - i; j <= this.centerChunkZ + i; ++j) {
                     for (int k = this.centerChunkX - i; k <= this.centerChunkX + i; ++k) {
-                        WorldChunk worldChunk = ((ClientChunkManager)ClientChunkManager.this).chunks.chunks.get(ClientChunkManager.this.chunks.getIndex(k, j));
+                        WorldChunk worldChunk = ClientChunkManager.this.chunks.chunks.get(ClientChunkManager.this.chunks.getIndex(k, j));
                         if (worldChunk == null) continue;
                         ChunkPos chunkPos = worldChunk.getPos();
                         fileOutputStream.write((chunkPos.x + "\t" + chunkPos.z + "\t" + worldChunk.isEmpty() + "\n").getBytes(StandardCharsets.UTF_8));

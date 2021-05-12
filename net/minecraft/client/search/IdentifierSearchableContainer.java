@@ -81,7 +81,7 @@ implements SearchableContainer<T> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static class Iterator<T>
+    protected static class Iterator<T>
     extends AbstractIterator<T> {
         private final PeekingIterator<T> field_5490;
         private final PeekingIterator<T> field_5491;

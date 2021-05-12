@@ -103,7 +103,7 @@ implements TestListener {
     }
 
     protected static void finishFailedTest(GameTestState test, Throwable output) {
-        String string = output.getMessage() + (output.getCause() == null ? "" : " cause: " + Util.getInnermostMessage(output.getCause()));
+        String string = output.getMessage() + (String)(output.getCause() == null ? "" : " cause: " + Util.getInnermostMessage(output.getCause()));
         String string2 = (test.isRequired() ? "" : "(optional) ") + test.getStructurePath() + " failed! " + string;
         StructureTestListener.sendMessageToAllPlayers(test.getWorld(), test.isRequired() ? Formatting.RED : Formatting.YELLOW, string2);
         Throwable throwable = MoreObjects.firstNonNull(ExceptionUtils.getRootCause(output), output);

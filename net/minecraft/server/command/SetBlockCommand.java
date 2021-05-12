@@ -54,15 +54,15 @@ public class SetBlockCommand {
         return 1;
     }
 
-    public static interface Filter {
-        @Nullable
-        public BlockStateArgument filter(BlockBox var1, BlockPos var2, BlockStateArgument var3, ServerWorld var4);
-    }
-
     public static enum Mode {
         REPLACE,
         DESTROY;
 
+    }
+
+    public static interface Filter {
+        @Nullable
+        public BlockStateArgument filter(BlockBox var1, BlockPos var2, BlockStateArgument var3, ServerWorld var4);
     }
 }
 

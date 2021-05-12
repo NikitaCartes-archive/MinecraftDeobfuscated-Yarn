@@ -84,7 +84,7 @@ public class ArgumentTypes {
         if (idMap.containsKey(identifier)) {
             throw new IllegalArgumentException("'" + identifier + "' is already a registered serializer!");
         }
-        Entry entry = new Entry(class_, argumentSerializer, identifier);
+        Entry<T> entry = new Entry<T>(class_, argumentSerializer, identifier);
         classMap.put(class_, entry);
         idMap.put(identifier, entry);
     }
@@ -246,10 +246,10 @@ public class ArgumentTypes {
         public final ArgumentSerializer<T> serializer;
         public final Identifier id;
 
-        private Entry(Class<T> argumentClass, ArgumentSerializer<T> serializer, Identifier id) {
-            this.argClass = argumentClass;
-            this.serializer = serializer;
-            this.id = id;
+        Entry(Class<T> class_, ArgumentSerializer<T> argumentSerializer, Identifier identifier) {
+            this.argClass = class_;
+            this.serializer = argumentSerializer;
+            this.id = identifier;
         }
     }
 }

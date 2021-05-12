@@ -24,8 +24,8 @@ extends MessageToMessageDecoder<ByteBuf> {
     }
 
     @Override
-    protected /* synthetic */ void decode(ChannelHandlerContext channelHandlerContext, Object object, List list) throws Exception {
-        this.decode(channelHandlerContext, (ByteBuf)object, (List<Object>)list);
+    protected /* synthetic */ void decode(ChannelHandlerContext context, Object buf, List result) throws Exception {
+        this.decode(context, (ByteBuf)buf, (List<Object>)result);
     }
 }
 

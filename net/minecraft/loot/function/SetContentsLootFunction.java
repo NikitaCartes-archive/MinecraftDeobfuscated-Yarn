@@ -27,11 +27,11 @@ import net.minecraft.util.collection.DefaultedList;
 
 public class SetContentsLootFunction
 extends ConditionalLootFunction {
-    private final List<LootPoolEntry> entries;
+    final List<LootPoolEntry> entries;
 
-    private SetContentsLootFunction(LootCondition[] conditions, List<LootPoolEntry> entries) {
-        super(conditions);
-        this.entries = ImmutableList.copyOf(entries);
+    SetContentsLootFunction(LootCondition[] lootConditions, List<LootPoolEntry> list) {
+        super(lootConditions);
+        this.entries = ImmutableList.copyOf(list);
     }
 
     @Override
@@ -65,26 +65,6 @@ extends ConditionalLootFunction {
         return new Builer();
     }
 
-    public static class Serializer
-    extends ConditionalLootFunction.Serializer<SetContentsLootFunction> {
-        @Override
-        public void toJson(JsonObject jsonObject, SetContentsLootFunction setContentsLootFunction, JsonSerializationContext jsonSerializationContext) {
-            super.toJson(jsonObject, setContentsLootFunction, jsonSerializationContext);
-            jsonObject.add("entries", jsonSerializationContext.serialize(setContentsLootFunction.entries));
-        }
-
-        @Override
-        public SetContentsLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            LootPoolEntry[] lootPoolEntrys = JsonHelper.deserialize(jsonObject, "entries", jsonDeserializationContext, LootPoolEntry[].class);
-            return new SetContentsLootFunction(lootConditions, Arrays.asList(lootPoolEntrys));
-        }
-
-        @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
-            return this.fromJson(json, context, conditions);
-        }
-    }
-
     public static class Builer
     extends ConditionalLootFunction.Builder<Builer> {
         private final List<LootPoolEntry> entries = Lists.newArrayList();
@@ -107,6 +87,26 @@ extends ConditionalLootFunction {
         @Override
         protected /* synthetic */ ConditionalLootFunction.Builder getThisBuilder() {
             return this.getThisBuilder();
+        }
+    }
+
+    public static class Serializer
+    extends ConditionalLootFunction.Serializer<SetContentsLootFunction> {
+        @Override
+        public void toJson(JsonObject jsonObject, SetContentsLootFunction setContentsLootFunction, JsonSerializationContext jsonSerializationContext) {
+            super.toJson(jsonObject, setContentsLootFunction, jsonSerializationContext);
+            jsonObject.add("entries", jsonSerializationContext.serialize(setContentsLootFunction.entries));
+        }
+
+        @Override
+        public SetContentsLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+            LootPoolEntry[] lootPoolEntrys = JsonHelper.deserialize(jsonObject, "entries", jsonDeserializationContext, LootPoolEntry[].class);
+            return new SetContentsLootFunction(lootConditions, Arrays.asList(lootPoolEntrys));
+        }
+
+        @Override
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
+            return this.fromJson(json, context, conditions);
         }
     }
 }

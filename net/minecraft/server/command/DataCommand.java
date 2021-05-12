@@ -119,7 +119,7 @@ public class DataCommand {
                         return DataCommand.executeModify(context, objectType, modifier, list);
                     }))));
                 }
-                subArgumentAdder.accept(argumentBuilder, modifier -> (LiteralArgumentBuilder)CommandManager.literal("value").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("value", NbtElementArgumentType.nbtElement()).executes(context -> {
+                subArgumentAdder.accept(argumentBuilder, modifier -> CommandManager.literal("value").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("value", NbtElementArgumentType.nbtElement()).executes(context -> {
                     List<NbtElement> list = Collections.singletonList(NbtElementArgumentType.getNbtElement(context, "value"));
                     return DataCommand.executeModify(context, objectType, modifier, list);
                 })));
@@ -213,12 +213,12 @@ public class DataCommand {
         public ArgumentBuilder<ServerCommandSource, ?> addArgumentsToBuilder(ArgumentBuilder<ServerCommandSource, ?> var1, Function<ArgumentBuilder<ServerCommandSource, ?>, ArgumentBuilder<ServerCommandSource, ?>> var2);
     }
 
-    static interface ModifyArgumentCreator {
-        public ArgumentBuilder<ServerCommandSource, ?> create(ModifyOperation var1);
-    }
-
     static interface ModifyOperation {
         public int modify(CommandContext<ServerCommandSource> var1, NbtCompound var2, NbtPathArgumentType.NbtPath var3, List<NbtElement> var4) throws CommandSyntaxException;
+    }
+
+    static interface ModifyArgumentCreator {
+        public ArgumentBuilder<ServerCommandSource, ?> create(ModifyOperation var1);
     }
 }
 

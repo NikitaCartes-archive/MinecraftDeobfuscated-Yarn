@@ -27,8 +27,8 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.pack.PackScreen;
 import net.minecraft.client.gui.screen.world.EditGameRulesScreen;
 import net.minecraft.client.gui.screen.world.MoreOptionsDialog;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
@@ -68,7 +68,7 @@ import org.lwjgl.glfw.GLFW;
 public class CreateWorldScreen
 extends Screen {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final String field_32434 = "mcworld-";
+    private static final String TEMP_DIR_PREFIX = "mcworld-";
     private static final Text GAME_MODE_TEXT = new TranslatableText("selectWorld.gameMode");
     private static final Text ENTER_SEED_TEXT = new TranslatableText("selectWorld.enterSeed");
     private static final Text SEED_INFO_TEXT = new TranslatableText("selectWorld.seedInfo");
@@ -77,7 +77,7 @@ extends Screen {
     private static final Text ALLOW_COMMANDS_INFO_TEXT = new TranslatableText("selectWorld.allowCommands.info");
     private final Screen parent;
     private TextFieldWidget levelNameField;
-    private String saveDirectoryName;
+    String saveDirectoryName;
     private Mode currentMode = Mode.SURVIVAL;
     @Nullable
     private Mode lastMode;
@@ -159,7 +159,7 @@ extends Screen {
         this.children.add(this.levelNameField);
         int i = this.width / 2 - 155;
         int j = this.width / 2 + 5;
-        this.gameModeSwitchButton = this.addButton(CyclingButtonWidget.builder(Mode::asText).values((Mode[])new Mode[]{Mode.SURVIVAL, Mode.HARDCORE, Mode.CREATIVE}).initially(this.currentMode).narration(cyclingButtonWidget -> AbstractButtonWidget.getNarrationMessage(cyclingButtonWidget.getMessage()).append(". ").append(this.firstGameModeDescriptionLine).append(" ").append(this.secondGameModeDescriptionLine)).build(i, 100, 150, 20, GAME_MODE_TEXT, (cyclingButtonWidget, mode) -> this.tweakDefaultsTo((Mode)((Object)mode))));
+        this.gameModeSwitchButton = this.addButton(CyclingButtonWidget.builder(Mode::asText).values((Mode[])new Mode[]{Mode.SURVIVAL, Mode.HARDCORE, Mode.CREATIVE}).initially(this.currentMode).narration(cyclingButtonWidget -> ClickableWidget.getNarrationMessage(cyclingButtonWidget.getMessage()).append(". ").append(this.firstGameModeDescriptionLine).append(" ").append(this.secondGameModeDescriptionLine)).build(i, 100, 150, 20, GAME_MODE_TEXT, (cyclingButtonWidget, mode) -> this.tweakDefaultsTo((Mode)((Object)mode))));
         this.difficultyButton = this.addButton(CyclingButtonWidget.builder(Difficulty::getTranslatableName).values((Difficulty[])Difficulty.values()).initially(this.getDifficulty()).build(j, 100, 150, 20, new TranslatableText("options.difficulty"), (cyclingButtonWidget, difficulty) -> {
             this.currentDifficulty = difficulty;
         }));
@@ -167,7 +167,7 @@ extends Screen {
             this.tweakedCheats = true;
             this.cheatsEnabled = boolean_;
         }));
-        this.dataPacksButton = this.addButton(new ButtonWidget(j, 151, 150, 20, new TranslatableText("selectWorld.dataPacks"), button -> this.method_29694()));
+        this.dataPacksButton = this.addButton(new ButtonWidget(j, 151, 150, 20, new TranslatableText("selectWorld.dataPacks"), button -> this.openPackScreen()));
         this.gameRulesButton = this.addButton(new ButtonWidget(i, 185, 150, 20, new TranslatableText("selectWorld.gameRules"), button -> this.client.openScreen(new EditGameRulesScreen(this.gameRules.copy(), optional -> {
             this.client.openScreen(this);
             optional.ifPresent(gameRules -> {
@@ -356,7 +356,7 @@ extends Screen {
     }
 
     @Override
-    protected <T extends AbstractButtonWidget> T addButton(T button) {
+    protected <T extends ClickableWidget> T addButton(T button) {
         return super.addButton(button);
     }
 
@@ -364,7 +364,7 @@ extends Screen {
     protected Path getDataPackTempDir() {
         if (this.dataPackTempDir == null) {
             try {
-                this.dataPackTempDir = Files.createTempDirectory(field_32434, new FileAttribute[0]);
+                this.dataPackTempDir = Files.createTempDirectory(TEMP_DIR_PREFIX, new FileAttribute[0]);
             } catch (IOException iOException) {
                 LOGGER.warn("Failed to create temporary dir", (Throwable)iOException);
                 SystemToast.addPackCopyFailure(this.client, this.saveDirectoryName);
@@ -374,14 +374,14 @@ extends Screen {
         return this.dataPackTempDir;
     }
 
-    private void method_29694() {
+    private void openPackScreen() {
         Pair<File, ResourcePackManager> pair = this.method_30296();
         if (pair != null) {
-            this.client.openScreen(new PackScreen(this, pair.getSecond(), this::method_29682, pair.getFirst(), new TranslatableText("dataPack.title")));
+            this.client.openScreen(new PackScreen(this, pair.getSecond(), this::applyDataPacks, pair.getFirst(), new TranslatableText("dataPack.title")));
         }
     }
 
-    private void method_29682(ResourcePackManager resourcePackManager) {
+    private void applyDataPacks(ResourcePackManager resourcePackManager) {
         ImmutableList<String> list = ImmutableList.copyOf(resourcePackManager.getEnabledNames());
         List list2 = resourcePackManager.getNames().stream().filter(string -> !list.contains(string)).collect(ImmutableList.toImmutableList());
         DataPackSettings dataPackSettings = new DataPackSettings(list, list2);
@@ -395,7 +395,7 @@ extends Screen {
                 LOGGER.warn("Failed to validate datapack", (Throwable)throwable);
                 this.client.send(() -> this.client.openScreen(new ConfirmScreen(bl -> {
                     if (bl) {
-                        this.method_29694();
+                        this.openPackScreen();
                     } else {
                         this.dataPackSettings = DataPackSettings.SAFE_MODE;
                         this.client.openScreen(this);
@@ -464,7 +464,7 @@ extends Screen {
                 Path path3 = (Path)mutableObject.getValue();
                 if (path3 == null) {
                     try {
-                        path3 = Files.createTempDirectory(field_32434, new FileAttribute[0]);
+                        path3 = Files.createTempDirectory(TEMP_DIR_PREFIX, new FileAttribute[0]);
                     } catch (IOException iOException) {
                         LOGGER.warn("Failed to create temporary dir");
                         throw new WorldCreationException(iOException);
@@ -497,22 +497,14 @@ extends Screen {
     }
 
     @Environment(value=EnvType.CLIENT)
-    static class WorldCreationException
-    extends RuntimeException {
-        public WorldCreationException(Throwable throwable) {
-            super(throwable);
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
     static enum Mode {
         SURVIVAL("survival", GameMode.SURVIVAL),
         HARDCORE("hardcore", GameMode.SURVIVAL),
         CREATIVE("creative", GameMode.CREATIVE),
         DEBUG("spectator", GameMode.SPECTATOR);
 
-        private final String translationSuffix;
-        private final GameMode defaultGameMode;
+        final String translationSuffix;
+        final GameMode defaultGameMode;
         private final Text text;
 
         private Mode(String translationSuffix, GameMode defaultGameMode) {
@@ -523,6 +515,14 @@ extends Screen {
 
         public Text asText() {
             return this.text;
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static class WorldCreationException
+    extends RuntimeException {
+        public WorldCreationException(Throwable throwable) {
+            super(throwable);
         }
     }
 }

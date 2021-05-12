@@ -41,12 +41,12 @@ implements RecipeBookProvider {
         super.init();
         this.narrow = this.width < 379;
         this.recipeBook.initialize(this.width, this.height, this.client, this.narrow, (AbstractRecipeScreenHandler)this.handler);
-        this.field_2776 = this.recipeBook.findLeftEdge(this.narrow, this.width, this.backgroundWidth);
-        this.addButton(new TexturedButtonWidget(this.field_2776 + 20, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, buttonWidget -> {
+        this.x = this.recipeBook.findLeftEdge(this.narrow, this.width, this.backgroundWidth);
+        this.addButton(new TexturedButtonWidget(this.x + 20, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, buttonWidget -> {
             this.recipeBook.reset(this.narrow);
             this.recipeBook.toggleOpen();
-            this.field_2776 = this.recipeBook.findLeftEdge(this.narrow, this.width, this.backgroundWidth);
-            ((TexturedButtonWidget)buttonWidget).setPos(this.field_2776 + 20, this.height / 2 - 49);
+            this.x = this.recipeBook.findLeftEdge(this.narrow, this.width, this.backgroundWidth);
+            ((TexturedButtonWidget)buttonWidget).setPos(this.x + 20, this.height / 2 - 49);
         }));
         this.titleX = (this.backgroundWidth - this.textRenderer.getWidth(this.title)) / 2;
     }
@@ -66,10 +66,10 @@ implements RecipeBookProvider {
         } else {
             this.recipeBook.render(matrices, mouseX, mouseY, delta);
             super.render(matrices, mouseX, mouseY, delta);
-            this.recipeBook.drawGhostSlots(matrices, this.field_2776, this.field_2800, true, delta);
+            this.recipeBook.drawGhostSlots(matrices, this.x, this.y, true, delta);
         }
         this.drawMouseoverTooltip(matrices, mouseX, mouseY);
-        this.recipeBook.drawTooltip(matrices, this.field_2776, this.field_2800, mouseX, mouseY);
+        this.recipeBook.drawTooltip(matrices, this.x, this.y, mouseX, mouseY);
     }
 
     @Override
@@ -78,8 +78,8 @@ implements RecipeBookProvider {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, this.background);
-        int i = this.field_2776;
-        int j = this.field_2800;
+        int i = this.x;
+        int j = this.y;
         this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
         if (((AbstractFurnaceScreenHandler)this.handler).isBurning()) {
             k = ((AbstractFurnaceScreenHandler)this.handler).getFuelProgress();
@@ -117,7 +117,7 @@ implements RecipeBookProvider {
     @Override
     protected boolean isClickOutsideBounds(double mouseX, double mouseY, int left, int top, int button) {
         boolean bl = mouseX < (double)left || mouseY < (double)top || mouseX >= (double)(left + this.backgroundWidth) || mouseY >= (double)(top + this.backgroundHeight);
-        return this.recipeBook.isClickOutsideBounds(mouseX, mouseY, this.field_2776, this.field_2800, this.backgroundWidth, this.backgroundHeight, button) && bl;
+        return this.recipeBook.isClickOutsideBounds(mouseX, mouseY, this.x, this.y, this.backgroundWidth, this.backgroundHeight, button) && bl;
     }
 
     @Override

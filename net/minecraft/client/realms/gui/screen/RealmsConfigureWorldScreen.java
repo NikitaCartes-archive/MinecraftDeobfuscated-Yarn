@@ -152,7 +152,7 @@ extends RealmsScreen {
                         break;
                     }
                     default: {
-                        throw new IllegalStateException("Unknown action " + (Object)((Object)state.action));
+                        throw new IllegalStateException("Unknown action " + state.action);
                     }
                 }
             }
@@ -193,7 +193,7 @@ extends RealmsScreen {
         int j = this.server.state == RealmsServer.State.CLOSED ? 0xA0A0A0 : 0x7FFF7F;
         int k = this.textRenderer.getWidth(CONFIGURE_REALM_TITLE);
         RealmsConfigureWorldScreen.drawCenteredText(matrices, this.textRenderer, CONFIGURE_REALM_TITLE, this.width / 2, 12, 0xFFFFFF);
-        RealmsConfigureWorldScreen.drawCenteredString(matrices, this.textRenderer, string, this.width / 2, 24, j);
+        RealmsConfigureWorldScreen.drawCenteredText(matrices, this.textRenderer, string, this.width / 2, 24, j);
         int l = Math.min(this.buttonCenter(2, 3) + 80 - 11, this.width / 2 + i / 2 + k / 2 + 10);
         this.drawServerStatus(matrices, l, 7, mouseX, mouseY);
         if (this.isMinigame()) {

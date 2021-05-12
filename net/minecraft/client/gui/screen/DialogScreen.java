@@ -72,8 +72,8 @@ extends Screen {
 
     @Environment(value=EnvType.CLIENT)
     public static final class ChoiceButton {
-        private final Text message;
-        private final ButtonWidget.PressAction pressAction;
+        final Text message;
+        final ButtonWidget.PressAction pressAction;
 
         public ChoiceButton(Text message, ButtonWidget.PressAction pressAction) {
             this.message = message;

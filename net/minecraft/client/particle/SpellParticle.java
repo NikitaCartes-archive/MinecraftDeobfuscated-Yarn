@@ -20,14 +20,14 @@ extends SpriteBillboardParticle {
     private static final Random RANDOM = new Random();
     private final SpriteProvider spriteProvider;
 
-    private SpellParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
-        super(world, x, y, z, 0.5 - RANDOM.nextDouble(), velocityY, 0.5 - RANDOM.nextDouble());
+    SpellParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
+        super(clientWorld, d, e, f, 0.5 - RANDOM.nextDouble(), h, 0.5 - RANDOM.nextDouble());
         this.field_28786 = 0.96f;
         this.gravityStrength = -0.1f;
         this.field_28787 = true;
         this.spriteProvider = spriteProvider;
         this.velocityY *= (double)0.2f;
-        if (velocityX == 0.0 && velocityZ == 0.0) {
+        if (g == 0.0 && i == 0.0) {
             this.velocityX *= (double)0.1f;
             this.velocityZ *= (double)0.1f;
         }

@@ -136,13 +136,13 @@ public abstract class NumberRange<T extends Number> {
     }
 
     @FunctionalInterface
-    public static interface CommandFactory<T extends Number, R extends NumberRange<T>> {
-        public R create(StringReader var1, @Nullable T var2, @Nullable T var3) throws CommandSyntaxException;
+    protected static interface Factory<T extends Number, R extends NumberRange<T>> {
+        public R create(@Nullable T var1, @Nullable T var2);
     }
 
     @FunctionalInterface
-    public static interface Factory<T extends Number, R extends NumberRange<T>> {
-        public R create(@Nullable T var1, @Nullable T var2);
+    protected static interface CommandFactory<T extends Number, R extends NumberRange<T>> {
+        public R create(StringReader var1, @Nullable T var2, @Nullable T var3) throws CommandSyntaxException;
     }
 
     public static class FloatRange

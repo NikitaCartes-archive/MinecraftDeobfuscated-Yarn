@@ -54,7 +54,7 @@ extends IntProvider {
     }
 
     public String toString() {
-        return "[" + this.min + '-' + this.max + ']';
+        return "[" + this.min + "-" + this.max + "]";
     }
 }
 

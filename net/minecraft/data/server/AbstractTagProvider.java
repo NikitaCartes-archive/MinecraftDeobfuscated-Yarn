@@ -74,19 +74,19 @@ implements DataProvider {
 
     protected ObjectBuilder<T> getOrCreateTagBuilder(Tag.Identified<T> tag) {
         Tag.Builder builder = this.getTagBuilder(tag);
-        return new ObjectBuilder(builder, this.registry, "vanilla");
+        return new ObjectBuilder<T>(builder, this.registry, "vanilla");
     }
 
     protected Tag.Builder getTagBuilder(Tag.Identified<T> tag) {
         return this.tagBuilders.computeIfAbsent(tag.getId(), id -> new Tag.Builder());
     }
 
-    public static class ObjectBuilder<T> {
+    protected static class ObjectBuilder<T> {
         private final Tag.Builder builder;
         private final Registry<T> registry;
         private final String source;
 
-        private ObjectBuilder(Tag.Builder builder, Registry<T> registry, String source) {
+        ObjectBuilder(Tag.Builder builder, Registry<T> registry, String source) {
             this.builder = builder;
             this.registry = registry;
             this.source = source;

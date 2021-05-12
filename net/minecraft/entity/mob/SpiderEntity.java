@@ -49,6 +49,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class SpiderEntity
 extends HostileEntity {
+    /**
+     * The tracked flags of spiders. Only has the {@code 1} bit for {@linkplain
+     * #isClimbingWall() wall climbing}.
+     */
     private static final TrackedData<Byte> SPIDER_FLAGS = DataTracker.registerData(SpiderEntity.class, TrackedDataHandlerRegistry.BYTE);
     private static final float field_30498 = 0.1f;
 
@@ -180,22 +184,6 @@ extends HostileEntity {
         return 0.65f;
     }
 
-    static class FollowTargetGoal<T extends LivingEntity>
-    extends net.minecraft.entity.ai.goal.FollowTargetGoal<T> {
-        public FollowTargetGoal(SpiderEntity spider, Class<T> targetEntityClass) {
-            super((MobEntity)spider, targetEntityClass, true);
-        }
-
-        @Override
-        public boolean canStart() {
-            float f = this.mob.getBrightnessAtEyes();
-            if (f >= 0.5f) {
-                return false;
-            }
-            return super.canStart();
-        }
-    }
-
     static class AttackGoal
     extends MeleeAttackGoal {
         public AttackGoal(SpiderEntity spider) {
@@ -220,6 +208,22 @@ extends HostileEntity {
         @Override
         protected double getSquaredMaxAttackDistance(LivingEntity entity) {
             return 4.0f + entity.getWidth();
+        }
+    }
+
+    static class FollowTargetGoal<T extends LivingEntity>
+    extends net.minecraft.entity.ai.goal.FollowTargetGoal<T> {
+        public FollowTargetGoal(SpiderEntity spider, Class<T> targetEntityClass) {
+            super((MobEntity)spider, targetEntityClass, true);
+        }
+
+        @Override
+        public boolean canStart() {
+            float f = this.mob.getBrightnessAtEyes();
+            if (f >= 0.5f) {
+                return false;
+            }
+            return super.canStart();
         }
     }
 

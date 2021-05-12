@@ -534,7 +534,6 @@ public class MathHelper {
     }
 
     public static int hsvToRgb(float hue, float saturation, float value) {
-        float m;
         float l;
         float k;
         int i = (int)(hue * 6.0f) % 6;
@@ -542,47 +541,39 @@ public class MathHelper {
         float g = value * (1.0f - saturation);
         float h = value * (1.0f - f * saturation);
         float j = value * (1.0f - (1.0f - f) * saturation);
-        switch (i) {
-            case 0: {
+        float m = switch (i) {
+            case 0 -> {
                 k = value;
                 l = j;
-                m = g;
-                break;
+                yield g;
             }
-            case 1: {
+            case 1 -> {
                 k = h;
                 l = value;
-                m = g;
-                break;
+                yield g;
             }
-            case 2: {
+            case 2 -> {
                 k = g;
                 l = value;
-                m = j;
-                break;
+                yield j;
             }
-            case 3: {
+            case 3 -> {
                 k = g;
                 l = h;
-                m = value;
-                break;
+                yield value;
             }
-            case 4: {
+            case 4 -> {
                 k = j;
                 l = g;
-                m = value;
-                break;
+                yield value;
             }
-            case 5: {
+            case 5 -> {
                 k = value;
                 l = g;
-                m = h;
-                break;
+                yield h;
             }
-            default: {
-                throw new RuntimeException("Something went wrong when converting from HSV to RGB. Input was " + hue + ", " + saturation + ", " + value);
-            }
-        }
+            default -> throw new RuntimeException("Something went wrong when converting from HSV to RGB. Input was " + hue + ", " + saturation + ", " + value);
+        };
         int n = MathHelper.clamp((int)(k * 255.0f), 0, 255);
         int o = MathHelper.clamp((int)(l * 255.0f), 0, 255);
         int p = MathHelper.clamp((int)(m * 255.0f), 0, 255);

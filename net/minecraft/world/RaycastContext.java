@@ -46,6 +46,24 @@ public class RaycastContext {
         return this.fluid.handled(state) ? state.getShape(world, pos) : VoxelShapes.empty();
     }
 
+    public static enum ShapeType implements ShapeProvider
+    {
+        COLLIDER(AbstractBlock.AbstractBlockState::getCollisionShape),
+        OUTLINE(AbstractBlock.AbstractBlockState::getOutlineShape),
+        VISUAL(AbstractBlock.AbstractBlockState::getCameraCollisionShape);
+
+        private final ShapeProvider provider;
+
+        private ShapeType(ShapeProvider provider) {
+            this.provider = provider;
+        }
+
+        @Override
+        public VoxelShape get(BlockState blockState, BlockView blockView, BlockPos blockPos, ShapeContext shapeContext) {
+            return this.provider.get(blockState, blockView, blockPos, shapeContext);
+        }
+    }
+
     public static enum FluidHandling {
         NONE(fluidState -> false),
         SOURCE_ONLY(FluidState::isStill),
@@ -64,24 +82,6 @@ public class RaycastContext {
 
     public static interface ShapeProvider {
         public VoxelShape get(BlockState var1, BlockView var2, BlockPos var3, ShapeContext var4);
-    }
-
-    public static enum ShapeType implements ShapeProvider
-    {
-        COLLIDER(AbstractBlock.AbstractBlockState::getCollisionShape),
-        OUTLINE(AbstractBlock.AbstractBlockState::getOutlineShape),
-        VISUAL(AbstractBlock.AbstractBlockState::getCameraCollisionShape);
-
-        private final ShapeProvider provider;
-
-        private ShapeType(ShapeProvider provider) {
-            this.provider = provider;
-        }
-
-        @Override
-        public VoxelShape get(BlockState blockState, BlockView blockView, BlockPos blockPos, ShapeContext shapeContext) {
-            return this.provider.get(blockState, blockView, blockPos, shapeContext);
-        }
     }
 }
 

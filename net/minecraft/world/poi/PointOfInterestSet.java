@@ -118,7 +118,7 @@ public class PointOfInterestSet {
     }
 
     private Optional<PointOfInterest> get(BlockPos pos) {
-        return Optional.ofNullable(this.pointsOfInterestByPos.get(ChunkSectionPos.packLocal(pos)));
+        return Optional.ofNullable((PointOfInterest)this.pointsOfInterestByPos.get(ChunkSectionPos.packLocal(pos)));
     }
 
     public void updatePointsOfInterest(Consumer<BiConsumer<BlockPos, PointOfInterestType>> consumer) {

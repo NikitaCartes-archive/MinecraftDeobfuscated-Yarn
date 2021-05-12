@@ -13,7 +13,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookResults;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -28,7 +28,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class AnimatedResultButton
-extends AbstractButtonWidget {
+extends ClickableWidget {
     private static final Identifier BACKGROUND_TEXTURE = new Identifier("textures/gui/recipe_book.png");
     private static final float field_32414 = 15.0f;
     private static final int field_32415 = 25;

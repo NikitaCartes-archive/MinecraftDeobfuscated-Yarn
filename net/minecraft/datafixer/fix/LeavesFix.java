@@ -50,7 +50,7 @@ extends DataFix {
     private static final int field_29894 = 7;
     private static final int field_29895 = 12;
     private static final int field_29896 = 4096;
-    private static final Object2IntMap<String> LEAVES_MAP = DataFixUtils.make(new Object2IntOpenHashMap(), object2IntOpenHashMap -> {
+    static final Object2IntMap<String> LEAVES_MAP = DataFixUtils.make(new Object2IntOpenHashMap(), object2IntOpenHashMap -> {
         object2IntOpenHashMap.put("minecraft:acacia_leaves", 0);
         object2IntOpenHashMap.put("minecraft:birch_leaves", 1);
         object2IntOpenHashMap.put("minecraft:dark_oak_leaves", 2);
@@ -58,7 +58,7 @@ extends DataFix {
         object2IntOpenHashMap.put("minecraft:oak_leaves", 4);
         object2IntOpenHashMap.put("minecraft:spruce_leaves", 5);
     });
-    private static final Set<String> LOGS_MAP = ImmutableSet.of("minecraft:acacia_bark", "minecraft:birch_bark", "minecraft:dark_oak_bark", "minecraft:jungle_bark", "minecraft:oak_bark", "minecraft:spruce_bark", new String[]{"minecraft:acacia_log", "minecraft:birch_log", "minecraft:dark_oak_log", "minecraft:jungle_log", "minecraft:oak_log", "minecraft:spruce_log", "minecraft:stripped_acacia_log", "minecraft:stripped_birch_log", "minecraft:stripped_dark_oak_log", "minecraft:stripped_jungle_log", "minecraft:stripped_oak_log", "minecraft:stripped_spruce_log"});
+    static final Set<String> LOGS_MAP = ImmutableSet.of("minecraft:acacia_bark", "minecraft:birch_bark", "minecraft:dark_oak_bark", "minecraft:jungle_bark", "minecraft:oak_bark", "minecraft:spruce_bark", new String[]{"minecraft:acacia_log", "minecraft:birch_log", "minecraft:dark_oak_log", "minecraft:jungle_log", "minecraft:oak_log", "minecraft:spruce_log", "minecraft:stripped_acacia_log", "minecraft:stripped_birch_log", "minecraft:stripped_dark_oak_log", "minecraft:stripped_jungle_log", "minecraft:stripped_oak_log", "minecraft:stripped_spruce_log"});
 
     public LeavesFix(Schema outputSchema, boolean changesType) {
         super(outputSchema, changesType);
@@ -221,14 +221,14 @@ extends DataFix {
             return this.leafIndices.contains(i);
         }
 
-        private int getDistanceToLog(int i) {
+        int getDistanceToLog(int i) {
             if (this.isLog(i)) {
                 return 0;
             }
             return Integer.parseInt(((Dynamic)this.properties.get(i)).get("Properties").get(field_29899).asString(""));
         }
 
-        private void computeLeafStates(int i, int j, int k) {
+        void computeLeafStates(int i, int j, int k) {
             int m;
             boolean bl;
             Dynamic dynamic = (Dynamic)this.properties.get(j);

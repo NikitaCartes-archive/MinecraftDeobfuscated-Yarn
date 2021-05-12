@@ -9,6 +9,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -67,16 +68,16 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class WorldListWidget
 extends AlwaysSelectedEntryListWidget<Entry> {
-    private static final Logger LOGGER = LogManager.getLogger();
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
-    private static final Identifier UNKNOWN_SERVER_LOCATION = new Identifier("textures/misc/unknown_server.png");
-    private static final Identifier WORLD_SELECTION_LOCATION = new Identifier("textures/gui/world_selection.png");
-    private static final Text FROM_NEWER_VERSION_FIRST_LINE = new TranslatableText("selectWorld.tooltip.fromNewerVersion1").formatted(Formatting.RED);
-    private static final Text FROM_NEWER_VERSION_SECOND_LINE = new TranslatableText("selectWorld.tooltip.fromNewerVersion2").formatted(Formatting.RED);
-    private static final Text SNAPSHOT_FIRST_LINE = new TranslatableText("selectWorld.tooltip.snapshot1").formatted(Formatting.GOLD);
-    private static final Text SNAPSHOT_SECOND_LINE = new TranslatableText("selectWorld.tooltip.snapshot2").formatted(Formatting.GOLD);
-    private static final Text LOCKED_TEXT = new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
-    private static final Text PRE_WORLDHEIGHT_TEXT = new TranslatableText("selectWorld.pre_worldheight").formatted(Formatting.RED);
+    static final Logger LOGGER = LogManager.getLogger();
+    static final DateFormat DATE_FORMAT = new SimpleDateFormat();
+    static final Identifier UNKNOWN_SERVER_LOCATION = new Identifier("textures/misc/unknown_server.png");
+    static final Identifier WORLD_SELECTION_LOCATION = new Identifier("textures/gui/world_selection.png");
+    static final Text FROM_NEWER_VERSION_FIRST_LINE = new TranslatableText("selectWorld.tooltip.fromNewerVersion1").formatted(Formatting.RED);
+    static final Text FROM_NEWER_VERSION_SECOND_LINE = new TranslatableText("selectWorld.tooltip.fromNewerVersion2").formatted(Formatting.RED);
+    static final Text SNAPSHOT_FIRST_LINE = new TranslatableText("selectWorld.tooltip.snapshot1").formatted(Formatting.GOLD);
+    static final Text SNAPSHOT_SECOND_LINE = new TranslatableText("selectWorld.tooltip.snapshot2").formatted(Formatting.GOLD);
+    static final Text LOCKED_TEXT = new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
+    static final Text PRE_WORLDHEIGHT_TEXT = new TranslatableText("selectWorld.pre_worldheight").formatted(Formatting.RED);
     private final SelectWorldScreen parent;
     @Nullable
     private List<LevelSummary> levels;
@@ -141,11 +142,11 @@ extends AlwaysSelectedEntryListWidget<Entry> {
 
     @Override
     protected void moveSelection(EntryListWidget.MoveDirection direction) {
-        this.moveSelectionIf(direction, entry -> !((Entry)entry).level.isUnavailable());
+        this.moveSelectionIf(direction, entry -> !entry.level.isUnavailable());
     }
 
     public Optional<Entry> getSelectedAsOptional() {
-        return Optional.ofNullable(this.getSelected());
+        return Optional.ofNullable((Entry)this.getSelected());
     }
 
     public SelectWorldScreen getParent() {
@@ -166,7 +167,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         private static final int field_32442 = 32;
         private final MinecraftClient client;
         private final SelectWorldScreen screen;
-        private final LevelSummary level;
+        final LevelSummary level;
         private final Identifier iconLocation;
         private File iconFile;
         @Nullable
@@ -188,13 +189,13 @@ extends AlwaysSelectedEntryListWidget<Entry> {
 
         @Override
         public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            String string = this.level.getDisplayName();
+            Object string = this.level.getDisplayName();
             String string2 = this.level.getName() + " (" + DATE_FORMAT.format(new Date(this.level.getLastPlayed())) + ")";
-            if (StringUtils.isEmpty(string)) {
+            if (StringUtils.isEmpty((CharSequence)string)) {
                 string = I18n.translate("selectWorld.world", new Object[0]) + " " + (index + 1);
             }
             Text text = this.level.getDetails();
-            this.client.textRenderer.draw(matrices, string, (float)(x + 32 + 3), (float)(y + 1), 0xFFFFFF);
+            this.client.textRenderer.draw(matrices, (String)string, (float)(x + 32 + 3), (float)(y + 1), 0xFFFFFF);
             this.client.textRenderer.draw(matrices, string2, (float)(x + 32 + 3), (float)(y + this.client.textRenderer.fontHeight + 3), 0x808080);
             this.client.textRenderer.draw(matrices, text, (float)(x + 32 + 3), (float)(y + this.client.textRenderer.fontHeight + this.client.textRenderer.fontHeight + 3), 0x808080);
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
@@ -303,17 +304,17 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             }
         }
 
-        public void delete() {
-            this.client.openScreen(new ConfirmScreen(bl -> {
-                if (bl) {
+        public void deleteIfConfirmed() {
+            this.client.openScreen(new ConfirmScreen(confirmed -> {
+                if (confirmed) {
                     this.client.openScreen(new ProgressScreen(true));
-                    this.method_33685();
+                    this.delete();
                 }
                 this.client.openScreen(this.screen);
             }, new TranslatableText("selectWorld.deleteQuestion"), new TranslatableText("selectWorld.deleteWarning", this.level.getDisplayName()), new TranslatableText("selectWorld.deleteButton"), ScreenTexts.CANCEL));
         }
 
-        public void method_33685() {
+        public void delete() {
             LevelStorage levelStorage = this.client.getLevelStorage();
             String string = this.level.getName();
             try (LevelStorage.Session session = levelStorage.createSession(string);){
@@ -379,32 +380,39 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             this.client.method_29970(new SaveLevelScreen(new TranslatableText("selectWorld.data_read")));
         }
 
-        /*
-         * Enabled aggressive block sorting
-         * Enabled unnecessary exception pruning
-         * Enabled aggressive exception aggregation
-         */
         @Nullable
         private NativeImageBackedTexture getIconTexture() {
             boolean bl;
             boolean bl2 = bl = this.iconFile != null && this.iconFile.isFile();
-            if (!bl) {
-                this.client.getTextureManager().destroyTexture(this.iconLocation);
-                return null;
-            }
-            try (FileInputStream inputStream = new FileInputStream(this.iconFile);){
-                NativeImage nativeImage = NativeImage.read(inputStream);
-                Validate.validState(nativeImage.getWidth() == 64, "Must be 64 pixels wide", new Object[0]);
-                Validate.validState(nativeImage.getHeight() == 64, "Must be 64 pixels high", new Object[0]);
-                NativeImageBackedTexture nativeImageBackedTexture2 = new NativeImageBackedTexture(nativeImage);
-                this.client.getTextureManager().registerTexture(this.iconLocation, nativeImageBackedTexture2);
-                NativeImageBackedTexture nativeImageBackedTexture = nativeImageBackedTexture2;
+            if (bl) {
+                NativeImageBackedTexture nativeImageBackedTexture;
+                FileInputStream inputStream = new FileInputStream(this.iconFile);
+                try {
+                    NativeImage nativeImage = NativeImage.read(inputStream);
+                    Validate.validState(nativeImage.getWidth() == 64, "Must be 64 pixels wide", new Object[0]);
+                    Validate.validState(nativeImage.getHeight() == 64, "Must be 64 pixels high", new Object[0]);
+                    NativeImageBackedTexture nativeImageBackedTexture2 = new NativeImageBackedTexture(nativeImage);
+                    this.client.getTextureManager().registerTexture(this.iconLocation, nativeImageBackedTexture2);
+                    nativeImageBackedTexture = nativeImageBackedTexture2;
+                } catch (Throwable throwable) {
+                    try {
+                        try {
+                            ((InputStream)inputStream).close();
+                        } catch (Throwable throwable2) {
+                            throwable.addSuppressed(throwable2);
+                        }
+                        throw throwable;
+                    } catch (Throwable throwable3) {
+                        LOGGER.error("Invalid icon for world {}", (Object)this.level.getName(), (Object)throwable3);
+                        this.iconFile = null;
+                        return null;
+                    }
+                }
+                ((InputStream)inputStream).close();
                 return nativeImageBackedTexture;
-            } catch (Throwable throwable6) {
-                LOGGER.error("Invalid icon for world {}", (Object)this.level.getName(), (Object)throwable6);
-                this.iconFile = null;
-                return null;
             }
+            this.client.getTextureManager().destroyTexture(this.iconLocation);
+            return null;
         }
 
         @Override

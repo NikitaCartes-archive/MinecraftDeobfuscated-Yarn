@@ -42,7 +42,7 @@ import org.lwjgl.glfw.GLFWErrorCallbackI;
 @Environment(value=EnvType.CLIENT)
 @DeobfuscateClass
 public class RenderSystem {
-    private static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogManager.getLogger();
     private static final ConcurrentLinkedQueue<RenderCall> recordingQueue = Queues.newConcurrentLinkedQueue();
     private static final Tessellator RENDER_THREAD_TESSELATOR = new Tessellator();
     private static final int MINIMUM_ATLAS_TEXTURE_SIZE = 1024;
@@ -1115,13 +1115,13 @@ public class RenderSystem {
         private VertexFormat.IntType elementFormat = VertexFormat.IntType.BYTE;
         private int size;
 
-        private IndexBuffer(int sizeMultiplier, int increment, IndexMapper indexMapper) {
-            this.sizeMultiplier = sizeMultiplier;
-            this.increment = increment;
+        IndexBuffer(int i, int j, IndexMapper indexMapper) {
+            this.sizeMultiplier = i;
+            this.increment = j;
             this.indexMapper = indexMapper;
         }
 
-        private void grow(int newSize) {
+        void grow(int newSize) {
             if (newSize <= this.size) {
                 return;
             }

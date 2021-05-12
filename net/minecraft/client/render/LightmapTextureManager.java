@@ -117,10 +117,10 @@ implements AutoCloseable {
                     vec3f4.scale(r);
                     vec3f2.lerp(vec3f4, i);
                 }
-                s = (float)this.client.options.gamma;
+                float s2 = (float)this.client.options.gamma;
                 Vec3f vec3f5 = vec3f2.copy();
                 vec3f5.modify(this::method_23795);
-                vec3f2.lerp(vec3f5, s);
+                vec3f2.lerp(vec3f5, s2);
                 vec3f2.lerp(new Vec3f(0.75f, 0.75f, 0.75f), 0.04f);
                 vec3f2.clamp(0.0f, 1.0f);
                 vec3f2.scale(255.0f);

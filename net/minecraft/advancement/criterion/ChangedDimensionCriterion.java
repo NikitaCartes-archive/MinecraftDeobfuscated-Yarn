@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class ChangedDimensionCriterion
 extends AbstractCriterion<Conditions> {
-    private static final Identifier ID = new Identifier("changed_dimension");
+    static final Identifier ID = new Identifier("changed_dimension");
 
     @Override
     public Identifier getId() {

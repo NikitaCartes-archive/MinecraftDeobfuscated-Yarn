@@ -104,39 +104,6 @@ public class VertexFormatElement {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static enum DataType {
-        FLOAT(4, "Float", 5126),
-        UBYTE(1, "Unsigned Byte", 5121),
-        BYTE(1, "Byte", 5120),
-        USHORT(2, "Unsigned Short", 5123),
-        SHORT(2, "Short", 5122),
-        UINT(4, "Unsigned Int", 5125),
-        INT(4, "Int", 5124);
-
-        private final int byteLength;
-        private final String name;
-        private final int id;
-
-        private DataType(int byteCount, String name, int id) {
-            this.byteLength = byteCount;
-            this.name = name;
-            this.id = id;
-        }
-
-        public int getByteLength() {
-            return this.byteLength;
-        }
-
-        public String getName() {
-            return this.name;
-        }
-
-        public int getId() {
-            return this.id;
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
     public static enum Type {
         POSITION("Position", (size, type, stride, pointer, textureIndex, elementIndex) -> {
             GlStateManager._enableVertexAttribArray(elementIndex);
@@ -174,7 +141,7 @@ public class VertexFormatElement {
             this.finisher = finisher;
         }
 
-        private void startDrawing(int size, int type, int stride, long pointer, int textureIndex, int elementIndex) {
+        void startDrawing(int size, int type, int stride, long pointer, int textureIndex, int elementIndex) {
             this.starter.setupBufferState(size, type, stride, pointer, textureIndex, elementIndex);
         }
 
@@ -188,14 +155,47 @@ public class VertexFormatElement {
 
         @FunctionalInterface
         @Environment(value=EnvType.CLIENT)
-        static interface Finisher {
-            public void clearBufferState(int var1, int var2);
+        static interface Starter {
+            public void setupBufferState(int var1, int var2, int var3, long var4, int var6, int var7);
         }
 
         @FunctionalInterface
         @Environment(value=EnvType.CLIENT)
-        static interface Starter {
-            public void setupBufferState(int var1, int var2, int var3, long var4, int var6, int var7);
+        static interface Finisher {
+            public void clearBufferState(int var1, int var2);
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static enum DataType {
+        FLOAT(4, "Float", 5126),
+        UBYTE(1, "Unsigned Byte", 5121),
+        BYTE(1, "Byte", 5120),
+        USHORT(2, "Unsigned Short", 5123),
+        SHORT(2, "Short", 5122),
+        UINT(4, "Unsigned Int", 5125),
+        INT(4, "Int", 5124);
+
+        private final int byteLength;
+        private final String name;
+        private final int id;
+
+        private DataType(int byteCount, String name, int id) {
+            this.byteLength = byteCount;
+            this.name = name;
+            this.id = id;
+        }
+
+        public int getByteLength() {
+            return this.byteLength;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        public int getId() {
+            return this.id;
         }
     }
 }

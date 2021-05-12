@@ -57,8 +57,8 @@ implements ScreenHandlerProvider<T> {
     private Slot touchHoveredSlot;
     @Nullable
     private Slot lastClickedSlot;
-    protected int field_2776;
-    protected int field_2800;
+    protected int x;
+    protected int y;
     private boolean touchIsRightClickDrag;
     private ItemStack touchDragStack = ItemStack.EMPTY;
     private int touchDropX;
@@ -91,16 +91,16 @@ implements ScreenHandlerProvider<T> {
     @Override
     protected void init() {
         super.init();
-        this.field_2776 = (this.width - this.backgroundWidth) / 2;
-        this.field_2800 = (this.height - this.backgroundHeight) / 2;
+        this.x = (this.width - this.backgroundWidth) / 2;
+        this.y = (this.height - this.backgroundHeight) / 2;
     }
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         ItemStack itemStack;
         int l;
-        int i = this.field_2776;
-        int j = this.field_2800;
+        int i = this.x;
+        int j = this.y;
         this.drawBackground(matrices, delta, mouseX, mouseY);
         RenderSystem.disableDepthTest();
         super.render(matrices, mouseX, mouseY, delta);
@@ -136,7 +136,7 @@ implements ScreenHandlerProvider<T> {
                 itemStack = itemStack.copy();
                 itemStack.setCount(this.draggedStackRemainder);
                 if (itemStack.isEmpty()) {
-                    string = "" + (Object)((Object)Formatting.YELLOW) + "0";
+                    string = Formatting.YELLOW + "0";
                 }
             }
             this.drawItem(itemStack, mouseX - i - 8, mouseY - j - l, string);
@@ -158,10 +158,10 @@ implements ScreenHandlerProvider<T> {
         RenderSystem.enableDepthTest();
     }
 
-    public static void method_33285(MatrixStack matrixStack, int i, int j, int k) {
+    public static void method_33285(MatrixStack matrices, int x, int y, int color) {
         RenderSystem.disableDepthTest();
         RenderSystem.colorMask(true, true, true, false);
-        HandledScreen.method_33284(matrixStack, i, j, i + 16, j + 16, -2130706433, -2130706433, k);
+        HandledScreen.fillGradient(matrices, x, y, x + 16, y + 16, -2130706433, -2130706433, color);
         RenderSystem.colorMask(true, true, true, true);
         RenderSystem.enableDepthTest();
     }
@@ -285,8 +285,8 @@ implements ScreenHandlerProvider<T> {
         this.doubleClicking = this.lastClickedSlot == slot && l - this.lastButtonClickTime < 250L && this.lastClickedButton == button;
         this.cancelNextRelease = false;
         if (button == 0 || button == GLFW.GLFW_MOUSE_BUTTON_RIGHT || bl) {
-            int i = this.field_2776;
-            int j = this.field_2800;
+            int i = this.x;
+            int j = this.y;
             boolean bl2 = this.isClickOutsideBounds(mouseX, mouseY, i, j, button);
             int k = -1;
             if (slot != null) {
@@ -400,8 +400,8 @@ implements ScreenHandlerProvider<T> {
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         Slot slot = this.getSlotAt(mouseX, mouseY);
-        int i = this.field_2776;
-        int j = this.field_2800;
+        int i = this.x;
+        int j = this.y;
         boolean bl = this.isClickOutsideBounds(mouseX, mouseY, i, j, button);
         int k = GLFW.GLFW_KEY_UNKNOWN;
         if (slot != null) {
@@ -494,8 +494,8 @@ implements ScreenHandlerProvider<T> {
     }
 
     protected boolean isPointWithinBounds(int x, int y, int width, int height, double pointX, double pointY) {
-        int i = this.field_2776;
-        int j = this.field_2800;
+        int i = this.x;
+        int j = this.y;
         return (pointX -= (double)i) >= (double)(x - 1) && pointX < (double)(x + width + 1) && (pointY -= (double)j) >= (double)(y - 1) && pointY < (double)(y + height + 1);
     }
 

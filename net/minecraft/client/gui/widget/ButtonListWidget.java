@@ -12,7 +12,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.Option;
@@ -52,32 +52,32 @@ extends ElementListWidget<ButtonEntry> {
     }
 
     @Nullable
-    public AbstractButtonWidget getButtonFor(Option option) {
+    public ClickableWidget getButtonFor(Option option) {
         for (ButtonEntry buttonEntry : this.children()) {
-            AbstractButtonWidget abstractButtonWidget = (AbstractButtonWidget)buttonEntry.field_27983.get(option);
-            if (abstractButtonWidget == null) continue;
-            return abstractButtonWidget;
+            ClickableWidget clickableWidget = buttonEntry.field_27983.get(option);
+            if (clickableWidget == null) continue;
+            return clickableWidget;
         }
         return null;
     }
 
-    public Optional<AbstractButtonWidget> getHoveredButton(double mouseX, double mouseY) {
+    public Optional<ClickableWidget> getHoveredButton(double mouseX, double mouseY) {
         for (ButtonEntry buttonEntry : this.children()) {
-            for (AbstractButtonWidget abstractButtonWidget : buttonEntry.buttons) {
-                if (!abstractButtonWidget.isMouseOver(mouseX, mouseY)) continue;
-                return Optional.of(abstractButtonWidget);
+            for (ClickableWidget clickableWidget : buttonEntry.buttons) {
+                if (!clickableWidget.isMouseOver(mouseX, mouseY)) continue;
+                return Optional.of(clickableWidget);
             }
         }
         return Optional.empty();
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static class ButtonEntry
+    protected static class ButtonEntry
     extends ElementListWidget.Entry<ButtonEntry> {
-        private final Map<Option, AbstractButtonWidget> field_27983;
-        private final List<AbstractButtonWidget> buttons;
+        final Map<Option, ClickableWidget> field_27983;
+        final List<ClickableWidget> buttons;
 
-        private ButtonEntry(Map<Option, AbstractButtonWidget> map) {
+        private ButtonEntry(Map<Option, ClickableWidget> map) {
             this.field_27983 = map;
             this.buttons = ImmutableList.copyOf(map.values());
         }
@@ -87,11 +87,11 @@ extends ElementListWidget<ButtonEntry> {
         }
 
         public static ButtonEntry create(GameOptions options, int width, Option firstOption, @Nullable Option secondOption) {
-            AbstractButtonWidget abstractButtonWidget = firstOption.createButton(options, width / 2 - 155, 0, 150);
+            ClickableWidget clickableWidget = firstOption.createButton(options, width / 2 - 155, 0, 150);
             if (secondOption == null) {
-                return new ButtonEntry(ImmutableMap.of(firstOption, abstractButtonWidget));
+                return new ButtonEntry(ImmutableMap.of(firstOption, clickableWidget));
             }
-            return new ButtonEntry(ImmutableMap.of(firstOption, abstractButtonWidget, secondOption, secondOption.createButton(options, width / 2 - 155 + 160, 0, 150)));
+            return new ButtonEntry(ImmutableMap.of(firstOption, clickableWidget, secondOption, secondOption.createButton(options, width / 2 - 155 + 160, 0, 150)));
         }
 
         @Override

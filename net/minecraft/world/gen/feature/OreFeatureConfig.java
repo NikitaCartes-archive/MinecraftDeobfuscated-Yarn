@@ -42,7 +42,7 @@ implements FeatureConfig {
         this(ImmutableList.of(new Target(test, state)), size, 0.0f);
     }
 
-    public static Target create(RuleTest test, BlockState state) {
+    public static Target createTarget(RuleTest test, BlockState state) {
         return new Target(test, state);
     }
 
@@ -51,9 +51,9 @@ implements FeatureConfig {
         public final RuleTest target;
         public final BlockState state;
 
-        private Target(RuleTest target, BlockState state) {
-            this.target = target;
-            this.state = state;
+        Target(RuleTest ruleTest, BlockState blockState) {
+            this.target = ruleTest;
+            this.state = blockState;
         }
     }
 

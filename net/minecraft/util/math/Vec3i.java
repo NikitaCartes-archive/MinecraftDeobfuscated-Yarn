@@ -248,7 +248,7 @@ implements Comparable<Vec3i> {
     }
 
     public String toShortString() {
-        return "" + this.getX() + ", " + this.getY() + ", " + this.getZ();
+        return this.getX() + ", " + this.getY() + ", " + this.getZ();
     }
 
     @Override

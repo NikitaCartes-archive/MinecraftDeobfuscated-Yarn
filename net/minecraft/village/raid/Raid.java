@@ -456,7 +456,7 @@ public class Raid {
             int j = this.getCount(member, i, bl2) + this.getBonusCount(member, this.random, i, localDifficulty, bl2);
             int k = 0;
             for (int l = 0; l < j; ++l) {
-                RaiderEntity raiderEntity = (RaiderEntity)member.type.create(this.world);
+                RaiderEntity raiderEntity = member.type.create(this.world);
                 if (!bl && raiderEntity.canLead()) {
                     raiderEntity.setPatrolLeader(true);
                     this.setWaveCaptain(i, raiderEntity);
@@ -724,27 +724,6 @@ public class Raid {
         this.heroesOfTheVillage.add(entity.getUuid());
     }
 
-    static enum Member {
-        VINDICATOR(EntityType.VINDICATOR, new int[]{0, 0, 2, 0, 1, 4, 2, 5}),
-        EVOKER(EntityType.EVOKER, new int[]{0, 0, 0, 0, 0, 1, 1, 2}),
-        PILLAGER(EntityType.PILLAGER, new int[]{0, 4, 3, 3, 4, 4, 4, 2}),
-        WITCH(EntityType.WITCH, new int[]{0, 0, 0, 0, 3, 0, 0, 1}),
-        RAVAGER(EntityType.RAVAGER, new int[]{0, 0, 0, 1, 0, 1, 0, 2});
-
-        private static final Member[] VALUES;
-        private final EntityType<? extends RaiderEntity> type;
-        private final int[] countInWave;
-
-        private Member(EntityType<? extends RaiderEntity> type, int[] countInWave) {
-            this.type = type;
-            this.countInWave = countInWave;
-        }
-
-        static {
-            VALUES = Member.values();
-        }
-    }
-
     static enum Status {
         ONGOING,
         VICTORY,
@@ -753,7 +732,7 @@ public class Raid {
 
         private static final Status[] VALUES;
 
-        private static Status fromName(String name) {
+        static Status fromName(String name) {
             for (Status status : VALUES) {
                 if (!name.equalsIgnoreCase(status.name())) continue;
                 return status;
@@ -767,6 +746,27 @@ public class Raid {
 
         static {
             VALUES = Status.values();
+        }
+    }
+
+    static enum Member {
+        VINDICATOR(EntityType.VINDICATOR, new int[]{0, 0, 2, 0, 1, 4, 2, 5}),
+        EVOKER(EntityType.EVOKER, new int[]{0, 0, 0, 0, 0, 1, 1, 2}),
+        PILLAGER(EntityType.PILLAGER, new int[]{0, 4, 3, 3, 4, 4, 4, 2}),
+        WITCH(EntityType.WITCH, new int[]{0, 0, 0, 0, 3, 0, 0, 1}),
+        RAVAGER(EntityType.RAVAGER, new int[]{0, 0, 0, 1, 0, 1, 0, 2});
+
+        static final Member[] VALUES;
+        final EntityType<? extends RaiderEntity> type;
+        final int[] countInWave;
+
+        private Member(EntityType<? extends RaiderEntity> type, int[] countInWave) {
+            this.type = type;
+            this.countInWave = countInWave;
+        }
+
+        static {
+            VALUES = Member.values();
         }
     }
 }

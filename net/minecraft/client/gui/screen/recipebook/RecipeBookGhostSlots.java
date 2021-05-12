@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 public class RecipeBookGhostSlots {
     private Recipe<?> recipe;
     private final List<GhostInputSlot> slots = Lists.newArrayList();
-    private float time;
+    float time;
 
     public void reset() {
         this.recipe = null;

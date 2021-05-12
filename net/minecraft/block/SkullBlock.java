@@ -62,6 +62,9 @@ extends AbstractSkullBlock {
         builder.add(ROTATION);
     }
 
+    public static interface SkullType {
+    }
+
     public static enum Type implements SkullType
     {
         SKELETON,
@@ -71,9 +74,6 @@ extends AbstractSkullBlock {
         CREEPER,
         DRAGON;
 
-    }
-
-    public static interface SkullType {
     }
 }
 

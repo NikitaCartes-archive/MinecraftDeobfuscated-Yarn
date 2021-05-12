@@ -177,7 +177,7 @@ public class DebugInfoSender {
             ArrayList list = Lists.newArrayList();
             map.forEach((uUID, object2IntMap) -> {
                 String string = NameGenerator.name(uUID);
-                object2IntMap.forEach((villageGossipType, integer) -> list.add(string + ": " + (Object)villageGossipType + ": " + integer));
+                object2IntMap.forEach((villageGossipType, integer) -> list.add(string + ": " + villageGossipType + ": " + integer));
             });
             packetByteBuf2.writeCollection(list, PacketByteBuf::writeString);
         } else {
@@ -189,7 +189,7 @@ public class DebugInfoSender {
         Map<MemoryModuleType<?>, Optional<Memory<?>>> map = livingEntity.getBrain().method_35058();
         ArrayList<String> list = Lists.newArrayList();
         for (Map.Entry<MemoryModuleType<?>, Optional<Memory<?>>> entry : map.entrySet()) {
-            String string;
+            Object string;
             MemoryModuleType<?> memoryModuleType = entry.getKey();
             Optional<Memory<?>> optional = entry.getValue();
             if (optional.isPresent()) {
@@ -197,14 +197,14 @@ public class DebugInfoSender {
                 Object object = memory.getValue();
                 if (memoryModuleType == MemoryModuleType.HEARD_BELL_TIME) {
                     long m = l - (Long)object;
-                    string = "" + m + " ticks ago";
+                    string = m + " ticks ago";
                 } else {
                     string = memory.isTimed() ? DebugInfoSender.method_36156((ServerWorld)livingEntity.world, object) + " (ttl: " + memory.getExpiry() + ")" : DebugInfoSender.method_36156((ServerWorld)livingEntity.world, object);
                 }
             } else {
                 string = "-";
             }
-            list.add(Registry.MEMORY_MODULE_TYPE.getId(memoryModuleType).getPath() + ": " + string);
+            list.add(Registry.MEMORY_MODULE_TYPE.getId(memoryModuleType).getPath() + ": " + (String)string);
         }
         list.sort(String::compareTo);
         return list;

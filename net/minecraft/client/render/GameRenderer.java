@@ -39,7 +39,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.util.ScreenshotUtils;
+import net.minecraft.client.util.Screenshooter;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
@@ -718,10 +718,10 @@ AutoCloseable {
         matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(Math.abs(MathHelper.cos(h * (float)Math.PI - 0.2f) * i) * 5.0f));
     }
 
-    public void method_35766(float f, float g, float h) {
-        this.zoom = f;
-        this.zoomX = g;
-        this.zoomY = h;
+    public void renderWithZoom(float zoom, float zoomX, float zoomY) {
+        this.zoom = zoom;
+        this.zoomX = zoomX;
+        this.zoomY = zoomY;
         this.setBlockOutlineEnabled(false);
         this.setRenderHand(false);
         this.renderWorld(1.0f, 0L, new MatrixStack());
@@ -818,7 +818,7 @@ AutoCloseable {
         }
         Window window = this.client.getWindow();
         RenderSystem.clear(256, MinecraftClient.IS_SYSTEM_MAC);
-        Matrix4f matrix4f = Matrix4f.method_34239(0.0f, (float)((double)window.getFramebufferWidth() / window.getScaleFactor()), 0.0f, (float)((double)window.getFramebufferHeight() / window.getScaleFactor()), 1000.0f, 3000.0f);
+        Matrix4f matrix4f = Matrix4f.projectionMatrix(0.0f, (float)((double)window.getFramebufferWidth() / window.getScaleFactor()), 0.0f, (float)((double)window.getFramebufferHeight() / window.getScaleFactor()), 1000.0f, 3000.0f);
         RenderSystem.setProjectionMatrix(matrix4f);
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.loadIdentity();
@@ -865,7 +865,7 @@ AutoCloseable {
 
     private void updateWorldIcon() {
         if (this.client.worldRenderer.getCompletedChunkCount() > 10 && this.client.worldRenderer.isTerrainRenderComplete() && !this.client.getServer().hasIconFile()) {
-            NativeImage nativeImage = ScreenshotUtils.takeScreenshot(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight(), this.client.getFramebuffer());
+            NativeImage nativeImage = Screenshooter.takeScreenshot(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight(), this.client.getFramebuffer());
             Util.getIoWorkerExecutor().execute(() -> {
                 int i = nativeImage.getWidth();
                 int j = nativeImage.getHeight();

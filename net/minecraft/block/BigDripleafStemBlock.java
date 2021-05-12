@@ -86,7 +86,7 @@ Waterloggable {
 
     protected static boolean placeStemAt(WorldAccess world, BlockPos pos, FluidState fluidState, Direction direction) {
         BlockState blockState = (BlockState)((BlockState)Blocks.BIG_DRIPLEAF_STEM.getDefaultState().with(WATERLOGGED, fluidState.isEqualAndStill(Fluids.WATER))).with(FACING, direction);
-        return world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
+        return world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
     }
 
     @Override

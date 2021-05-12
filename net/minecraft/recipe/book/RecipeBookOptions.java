@@ -30,19 +30,19 @@ public final class RecipeBookOptions {
     }
 
     public boolean isGuiOpen(RecipeBookCategory category) {
-        return this.categoryOptions.get((Object)category).guiOpen;
+        return this.categoryOptions.get((Object)((Object)category)).guiOpen;
     }
 
     public void setGuiOpen(RecipeBookCategory category, boolean open) {
-        this.categoryOptions.get((Object)category).guiOpen = open;
+        this.categoryOptions.get((Object)((Object)category)).guiOpen = open;
     }
 
     public boolean isFilteringCraftable(RecipeBookCategory category) {
-        return this.categoryOptions.get((Object)category).filteringCraftable;
+        return this.categoryOptions.get((Object)((Object)category)).filteringCraftable;
     }
 
     public void setFilteringCraftable(RecipeBookCategory category, boolean filtering) {
-        this.categoryOptions.get((Object)category).filteringCraftable = filtering;
+        this.categoryOptions.get((Object)((Object)category)).filteringCraftable = filtering;
     }
 
     public static RecipeBookOptions fromPacket(PacketByteBuf buf) {
@@ -112,8 +112,8 @@ public final class RecipeBookOptions {
     }
 
     static final class CategoryOption {
-        private boolean guiOpen;
-        private boolean filteringCraftable;
+        boolean guiOpen;
+        boolean filteringCraftable;
 
         public CategoryOption(boolean guiOpen, boolean filteringCraftable) {
             this.guiOpen = guiOpen;
@@ -142,7 +142,7 @@ public final class RecipeBookOptions {
         }
 
         public String toString() {
-            return "[open=" + this.guiOpen + ", filtering=" + this.filteringCraftable + ']';
+            return "[open=" + this.guiOpen + ", filtering=" + this.filteringCraftable + "]";
         }
     }
 }

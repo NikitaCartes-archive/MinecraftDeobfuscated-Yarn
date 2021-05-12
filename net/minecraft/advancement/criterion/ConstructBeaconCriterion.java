@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 
 public class ConstructBeaconCriterion
 extends AbstractCriterion<Conditions> {
-    private static final Identifier ID = new Identifier("construct_beacon");
+    static final Identifier ID = new Identifier("construct_beacon");
 
     @Override
     public Identifier getId() {

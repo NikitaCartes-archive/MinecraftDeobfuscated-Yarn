@@ -61,7 +61,7 @@ public class TextRenderer {
         this.handler = new TextHandler((i, style) -> this.getFontStorage(style.getFont()).getGlyph(i).getAdvance(style.isBold()));
     }
 
-    private FontStorage getFontStorage(Identifier id) {
+    FontStorage getFontStorage(Identifier id) {
         return this.fontStorageAccessor.apply(id);
     }
 
@@ -213,7 +213,7 @@ public class TextRenderer {
         return drawer.drawLayer(underlineColor, x);
     }
 
-    private void drawGlyph(GlyphRenderer glyphRenderer, boolean bold, boolean italic, float weight, float x, float y, Matrix4f matrix, VertexConsumer vertexConsumer, float red, float green, float blue, float alpha, int light) {
+    void drawGlyph(GlyphRenderer glyphRenderer, boolean bold, boolean italic, float weight, float x, float y, Matrix4f matrix, VertexConsumer vertexConsumer, float red, float green, float blue, float alpha, int light) {
         glyphRenderer.draw(italic, x, y, matrix, vertexConsumer, red, green, blue, alpha, light);
         if (bold) {
             glyphRenderer.draw(italic, x + weight, y, matrix, vertexConsumer, red, green, blue, alpha, light);

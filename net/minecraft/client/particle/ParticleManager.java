@@ -509,12 +509,18 @@ implements ResourceReloader {
         return this.groupCounts.getInt(group) < group.getMaxCount();
     }
 
+    @FunctionalInterface
+    @Environment(value=EnvType.CLIENT)
+    static interface SpriteAwareFactory<T extends ParticleEffect> {
+        public ParticleFactory<T> create(SpriteProvider var1);
+    }
+
     @Environment(value=EnvType.CLIENT)
     class SimpleSpriteProvider
     implements SpriteProvider {
         private List<Sprite> sprites;
 
-        private SimpleSpriteProvider() {
+        SimpleSpriteProvider() {
         }
 
         @Override
@@ -530,12 +536,6 @@ implements ResourceReloader {
         public void setSprites(List<Sprite> sprites) {
             this.sprites = ImmutableList.copyOf(sprites);
         }
-    }
-
-    @FunctionalInterface
-    @Environment(value=EnvType.CLIENT)
-    static interface SpriteAwareFactory<T extends ParticleEffect> {
-        public ParticleFactory<T> create(SpriteProvider var1);
     }
 }
 

@@ -82,7 +82,7 @@ implements ReadableProfiler {
             return;
         }
         if (!this.location.isEmpty()) {
-            this.location = this.location + '\u001e';
+            this.location = this.location + "\u001e";
         }
         this.location = this.location + location;
         this.path.add(this.location);
@@ -110,8 +110,8 @@ implements ReadableProfiler {
         this.path.remove(this.path.size() - 1);
         long n = l - m;
         LocatedInfo locatedInfo = this.getCurrentInfo();
-        locatedInfo.time = locatedInfo.time + n;
-        locatedInfo.visits = locatedInfo.visits + 1L;
+        locatedInfo.time += n;
+        ++locatedInfo.visits;
         if (this.checkTimeout && n > TIMEOUT_NANOSECONDS) {
             LOGGER.warn("Something's taking too long! '{}' took aprox {} ms", () -> ProfileResult.getHumanReadableName(this.location), () -> (double)n / 1000000.0);
         }
@@ -161,9 +161,9 @@ implements ReadableProfiler {
 
     public static class LocatedInfo
     implements ProfileLocationInfo {
-        private long time;
-        private long visits;
-        private final Object2LongOpenHashMap<String> counts = new Object2LongOpenHashMap();
+        long time;
+        long visits;
+        final Object2LongOpenHashMap<String> counts = new Object2LongOpenHashMap();
 
         @Override
         public long getTotalTime() {

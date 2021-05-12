@@ -256,24 +256,6 @@ extends AnimalEntity {
         return this.createChild(world, entity);
     }
 
-    static class GoatPathNodeMaker
-    extends LandPathNodeMaker {
-        private final BlockPos.Mutable pos = new BlockPos.Mutable();
-
-        private GoatPathNodeMaker() {
-        }
-
-        @Override
-        public PathNodeType getDefaultNodeType(BlockView world, int x, int y, int z) {
-            this.pos.set(x, y - 1, z);
-            PathNodeType pathNodeType = GoatPathNodeMaker.getCommonNodeType(world, this.pos);
-            if (pathNodeType == PathNodeType.POWDER_SNOW) {
-                return PathNodeType.BLOCKED;
-            }
-            return GoatPathNodeMaker.getLandNodeType(world, this.pos.move(Direction.UP));
-        }
-    }
-
     static class GoatNavigation
     extends MobNavigation {
         GoatNavigation(GoatEntity goat, World world) {
@@ -284,6 +266,24 @@ extends AnimalEntity {
         protected PathNodeNavigator createPathNodeNavigator(int range) {
             this.nodeMaker = new GoatPathNodeMaker();
             return new PathNodeNavigator(this.nodeMaker, range);
+        }
+    }
+
+    static class GoatPathNodeMaker
+    extends LandPathNodeMaker {
+        private final BlockPos.Mutable pos = new BlockPos.Mutable();
+
+        GoatPathNodeMaker() {
+        }
+
+        @Override
+        public PathNodeType getDefaultNodeType(BlockView world, int x, int y, int z) {
+            this.pos.set(x, y - 1, z);
+            PathNodeType pathNodeType = GoatPathNodeMaker.getCommonNodeType(world, this.pos);
+            if (pathNodeType == PathNodeType.POWDER_SNOW) {
+                return PathNodeType.BLOCKED;
+            }
+            return GoatPathNodeMaker.getLandNodeType(world, this.pos.move(Direction.UP));
         }
     }
 }

@@ -50,9 +50,9 @@ implements StatsListener {
     private static final Text DOWNLOADING_STATS_TEXT = new TranslatableText("multiplayer.downloadingStats");
     protected final Screen parent;
     private GeneralStatsListWidget generalStats;
-    private ItemStatsListWidget itemStats;
+    ItemStatsListWidget itemStats;
     private EntityStatsListWidget mobStats;
-    private final StatHandler statHandler;
+    final StatHandler statHandler;
     @Nullable
     private AlwaysSelectedEntryListWidget<?> selectedList;
     private boolean downloadingStats = true;
@@ -105,7 +105,7 @@ implements StatsListener {
         if (this.downloadingStats) {
             this.renderBackground(matrices);
             StatsScreen.drawCenteredText(matrices, this.textRenderer, DOWNLOADING_STATS_TEXT, this.width / 2, this.height / 2, 0xFFFFFF);
-            StatsScreen.drawCenteredString(matrices, this.textRenderer, PROGRESS_BAR_STAGES[(int)(Util.getMeasuringTimeMs() / 150L % (long)PROGRESS_BAR_STAGES.length)], this.width / 2, this.height / 2 + this.textRenderer.fontHeight * 2, 0xFFFFFF);
+            StatsScreen.drawCenteredText(matrices, this.textRenderer, PROGRESS_BAR_STAGES[(int)(Util.getMeasuringTimeMs() / 150L % (long)PROGRESS_BAR_STAGES.length)], this.width / 2, this.height / 2 + this.textRenderer.fontHeight * 2, 0xFFFFFF);
         } else {
             this.getSelectedStatList().render(matrices, mouseX, mouseY, delta);
             StatsScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 0xFFFFFF);
@@ -143,20 +143,20 @@ implements StatsListener {
         }
     }
 
-    private static String getStatTranslationKey(Stat<Identifier> stat) {
+    static String getStatTranslationKey(Stat<Identifier> stat) {
         return "stat." + stat.getValue().toString().replace(':', '.');
     }
 
-    private int getColumnX(int index) {
+    int getColumnX(int index) {
         return 115 + 40 * index;
     }
 
-    private void renderStatItem(MatrixStack matrices, int x, int y, Item item) {
+    void renderStatItem(MatrixStack matrices, int x, int y, Item item) {
         this.renderIcon(matrices, x + 1, y + 1, 0, 0);
         this.itemRenderer.renderGuiItemIcon(item.getDefaultStack(), x + 2, y + 2);
     }
 
-    private void renderIcon(MatrixStack matrices, int x, int y, int u, int v) {
+    void renderIcon(MatrixStack matrices, int x, int y, int u, int v) {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, STATS_ICON_TEXTURE);
@@ -164,13 +164,14 @@ implements StatsListener {
     }
 
     @Environment(value=EnvType.CLIENT)
-    class EntityStatsListWidget
+    class GeneralStatsListWidget
     extends AlwaysSelectedEntryListWidget<Entry> {
-        public EntityStatsListWidget(MinecraftClient client) {
-            super(client, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, ((StatsScreen)StatsScreen.this).textRenderer.fontHeight * 4);
-            for (EntityType entityType : Registry.ENTITY_TYPE) {
-                if (StatsScreen.this.statHandler.getStat(Stats.KILLED.getOrCreateStat(entityType)) <= 0 && StatsScreen.this.statHandler.getStat(Stats.KILLED_BY.getOrCreateStat(entityType)) <= 0) continue;
-                this.addEntry(new Entry(entityType));
+        public GeneralStatsListWidget(MinecraftClient client) {
+            super(client, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, 10);
+            ObjectArrayList<Stat<Identifier>> objectArrayList = new ObjectArrayList<Stat<Identifier>>(Stats.CUSTOM.iterator());
+            objectArrayList.sort(Comparator.comparing(stat -> I18n.translate(StatsScreen.getStatTranslationKey(stat), new Object[0])));
+            for (Stat stat2 : objectArrayList) {
+                this.addEntry(new Entry(stat2));
             }
         }
 
@@ -182,39 +183,19 @@ implements StatsListener {
         @Environment(value=EnvType.CLIENT)
         class Entry
         extends AlwaysSelectedEntryListWidget.Entry<Entry> {
-            private final EntityType<?> entityType;
-            private final Text entityTypeName;
-            private final Text killedText;
-            private final boolean killedAny;
-            private final Text killedByText;
-            private final boolean killedByAny;
+            private final Stat<Identifier> stat;
+            private final Text displayName;
 
-            public Entry(EntityType<?> entityType) {
-                this.entityType = entityType;
-                this.entityTypeName = entityType.getName();
-                int i = StatsScreen.this.statHandler.getStat(Stats.KILLED.getOrCreateStat(entityType));
-                if (i == 0) {
-                    this.killedText = new TranslatableText("stat_type.minecraft.killed.none", this.entityTypeName);
-                    this.killedAny = false;
-                } else {
-                    this.killedText = new TranslatableText("stat_type.minecraft.killed", i, this.entityTypeName);
-                    this.killedAny = true;
-                }
-                int j = StatsScreen.this.statHandler.getStat(Stats.KILLED_BY.getOrCreateStat(entityType));
-                if (j == 0) {
-                    this.killedByText = new TranslatableText("stat_type.minecraft.killed_by.none", this.entityTypeName);
-                    this.killedByAny = false;
-                } else {
-                    this.killedByText = new TranslatableText("stat_type.minecraft.killed_by", this.entityTypeName, j);
-                    this.killedByAny = true;
-                }
+            Entry(Stat<Identifier> stat) {
+                this.stat = stat;
+                this.displayName = new TranslatableText(StatsScreen.getStatTranslationKey(stat));
             }
 
             @Override
             public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-                DrawableHelper.drawTextWithShadow(matrices, StatsScreen.this.textRenderer, this.entityTypeName, x + 2, y + 1, 0xFFFFFF);
-                DrawableHelper.drawTextWithShadow(matrices, StatsScreen.this.textRenderer, this.killedText, x + 2 + 10, y + 1 + ((StatsScreen)StatsScreen.this).textRenderer.fontHeight, this.killedAny ? 0x909090 : 0x606060);
-                DrawableHelper.drawTextWithShadow(matrices, StatsScreen.this.textRenderer, this.killedByText, x + 2 + 10, y + 1 + ((StatsScreen)StatsScreen.this).textRenderer.fontHeight * 2, this.killedByAny ? 0x909090 : 0x606060);
+                DrawableHelper.drawTextWithShadow(matrices, StatsScreen.this.textRenderer, this.displayName, x + 2, y + 1, index % 2 == 0 ? 0xFFFFFF : 0x909090);
+                String string = this.stat.format(StatsScreen.this.statHandler.getStat(this.stat));
+                DrawableHelper.drawStringWithShadow(matrices, StatsScreen.this.textRenderer, string, x + 2 + 213 - StatsScreen.this.textRenderer.getWidth(string), y + 1, index % 2 == 0 ? 0xFFFFFF : 0x909090);
             }
         }
     }
@@ -393,35 +374,9 @@ implements StatsListener {
         }
 
         @Environment(value=EnvType.CLIENT)
-        class Entry
-        extends AlwaysSelectedEntryListWidget.Entry<Entry> {
-            private Entry() {
-            }
-
-            @Override
-            public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-                int i;
-                Item item = ((StatsScreen)StatsScreen.this).itemStats.items.get(index);
-                StatsScreen.this.renderStatItem(matrices, x + 40, y, item);
-                for (i = 0; i < ((StatsScreen)StatsScreen.this).itemStats.blockStatTypes.size(); ++i) {
-                    Stat<Block> stat = item instanceof BlockItem ? ((StatsScreen)StatsScreen.this).itemStats.blockStatTypes.get(i).getOrCreateStat(((BlockItem)item).getBlock()) : null;
-                    this.render(matrices, stat, x + StatsScreen.this.getColumnX(i), y, index % 2 == 0);
-                }
-                for (i = 0; i < ((StatsScreen)StatsScreen.this).itemStats.itemStatTypes.size(); ++i) {
-                    this.render(matrices, ((StatsScreen)StatsScreen.this).itemStats.itemStatTypes.get(i).getOrCreateStat(item), x + StatsScreen.this.getColumnX(i + ((StatsScreen)StatsScreen.this).itemStats.blockStatTypes.size()), y, index % 2 == 0);
-                }
-            }
-
-            protected void render(MatrixStack matrices, @Nullable Stat<?> stat, int x, int y, boolean bl) {
-                String string = stat == null ? "-" : stat.format(StatsScreen.this.statHandler.getStat(stat));
-                DrawableHelper.drawStringWithShadow(matrices, StatsScreen.this.textRenderer, string, x - StatsScreen.this.textRenderer.getWidth(string), y + 5, bl ? 0xFFFFFF : 0x909090);
-            }
-        }
-
-        @Environment(value=EnvType.CLIENT)
         class ItemComparator
         implements Comparator<Item> {
-            private ItemComparator() {
+            ItemComparator() {
             }
 
             @Override
@@ -451,17 +406,42 @@ implements StatsListener {
                 return this.compare((Item)object, (Item)object2);
             }
         }
+
+        @Environment(value=EnvType.CLIENT)
+        class Entry
+        extends AlwaysSelectedEntryListWidget.Entry<Entry> {
+            Entry() {
+            }
+
+            @Override
+            public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+                int i;
+                Item item = StatsScreen.this.itemStats.items.get(index);
+                StatsScreen.this.renderStatItem(matrices, x + 40, y, item);
+                for (i = 0; i < StatsScreen.this.itemStats.blockStatTypes.size(); ++i) {
+                    Stat<Block> stat = item instanceof BlockItem ? StatsScreen.this.itemStats.blockStatTypes.get(i).getOrCreateStat(((BlockItem)item).getBlock()) : null;
+                    this.render(matrices, stat, x + StatsScreen.this.getColumnX(i), y, index % 2 == 0);
+                }
+                for (i = 0; i < StatsScreen.this.itemStats.itemStatTypes.size(); ++i) {
+                    this.render(matrices, StatsScreen.this.itemStats.itemStatTypes.get(i).getOrCreateStat(item), x + StatsScreen.this.getColumnX(i + StatsScreen.this.itemStats.blockStatTypes.size()), y, index % 2 == 0);
+                }
+            }
+
+            protected void render(MatrixStack matrices, @Nullable Stat<?> stat, int x, int y, boolean bl) {
+                String string = stat == null ? "-" : stat.format(StatsScreen.this.statHandler.getStat(stat));
+                DrawableHelper.drawStringWithShadow(matrices, StatsScreen.this.textRenderer, string, x - StatsScreen.this.textRenderer.getWidth(string), y + 5, bl ? 0xFFFFFF : 0x909090);
+            }
+        }
     }
 
     @Environment(value=EnvType.CLIENT)
-    class GeneralStatsListWidget
+    class EntityStatsListWidget
     extends AlwaysSelectedEntryListWidget<Entry> {
-        public GeneralStatsListWidget(MinecraftClient client) {
-            super(client, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, 10);
-            ObjectArrayList<Stat<Identifier>> objectArrayList = new ObjectArrayList<Stat<Identifier>>(Stats.CUSTOM.iterator());
-            objectArrayList.sort(Comparator.comparing(stat -> I18n.translate(StatsScreen.getStatTranslationKey(stat), new Object[0])));
-            for (Stat stat2 : objectArrayList) {
-                this.addEntry(new Entry(stat2));
+        public EntityStatsListWidget(MinecraftClient client) {
+            super(client, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, ((StatsScreen)StatsScreen.this).textRenderer.fontHeight * 4);
+            for (EntityType entityType : Registry.ENTITY_TYPE) {
+                if (StatsScreen.this.statHandler.getStat(Stats.KILLED.getOrCreateStat(entityType)) <= 0 && StatsScreen.this.statHandler.getStat(Stats.KILLED_BY.getOrCreateStat(entityType)) <= 0) continue;
+                this.addEntry(new Entry(entityType));
             }
         }
 
@@ -473,19 +453,39 @@ implements StatsListener {
         @Environment(value=EnvType.CLIENT)
         class Entry
         extends AlwaysSelectedEntryListWidget.Entry<Entry> {
-            private final Stat<Identifier> stat;
-            private final Text displayName;
+            private final EntityType<?> entityType;
+            private final Text entityTypeName;
+            private final Text killedText;
+            private final boolean killedAny;
+            private final Text killedByText;
+            private final boolean killedByAny;
 
-            private Entry(Stat<Identifier> stat) {
-                this.stat = stat;
-                this.displayName = new TranslatableText(StatsScreen.getStatTranslationKey(stat));
+            public Entry(EntityType<?> entityType) {
+                this.entityType = entityType;
+                this.entityTypeName = entityType.getName();
+                int i = StatsScreen.this.statHandler.getStat(Stats.KILLED.getOrCreateStat(entityType));
+                if (i == 0) {
+                    this.killedText = new TranslatableText("stat_type.minecraft.killed.none", this.entityTypeName);
+                    this.killedAny = false;
+                } else {
+                    this.killedText = new TranslatableText("stat_type.minecraft.killed", i, this.entityTypeName);
+                    this.killedAny = true;
+                }
+                int j = StatsScreen.this.statHandler.getStat(Stats.KILLED_BY.getOrCreateStat(entityType));
+                if (j == 0) {
+                    this.killedByText = new TranslatableText("stat_type.minecraft.killed_by.none", this.entityTypeName);
+                    this.killedByAny = false;
+                } else {
+                    this.killedByText = new TranslatableText("stat_type.minecraft.killed_by", this.entityTypeName, j);
+                    this.killedByAny = true;
+                }
             }
 
             @Override
             public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-                DrawableHelper.drawTextWithShadow(matrices, StatsScreen.this.textRenderer, this.displayName, x + 2, y + 1, index % 2 == 0 ? 0xFFFFFF : 0x909090);
-                String string = this.stat.format(StatsScreen.this.statHandler.getStat(this.stat));
-                DrawableHelper.drawStringWithShadow(matrices, StatsScreen.this.textRenderer, string, x + 2 + 213 - StatsScreen.this.textRenderer.getWidth(string), y + 1, index % 2 == 0 ? 0xFFFFFF : 0x909090);
+                DrawableHelper.drawTextWithShadow(matrices, StatsScreen.this.textRenderer, this.entityTypeName, x + 2, y + 1, 0xFFFFFF);
+                DrawableHelper.drawTextWithShadow(matrices, StatsScreen.this.textRenderer, this.killedText, x + 2 + 10, y + 1 + ((StatsScreen)StatsScreen.this).textRenderer.fontHeight, this.killedAny ? 0x909090 : 0x606060);
+                DrawableHelper.drawTextWithShadow(matrices, StatsScreen.this.textRenderer, this.killedByText, x + 2 + 10, y + 1 + ((StatsScreen)StatsScreen.this).textRenderer.fontHeight * 2, this.killedByAny ? 0x909090 : 0x606060);
             }
         }
     }

@@ -43,7 +43,7 @@ extends Screen {
     private static final Text SHOW_AIR_TEXT = new TranslatableText("structure_block.show_air");
     private static final Text SHOW_BOUNDING_BOX_TEXT = new TranslatableText("structure_block.show_boundingbox");
     private static final ImmutableList<StructureBlockMode> MODES = ImmutableList.copyOf(StructureBlockMode.values());
-    private static final ImmutableList<StructureBlockMode> MODES_EXCEPT_DATA = MODES.stream().filter(structureBlockMode -> structureBlockMode != StructureBlockMode.DATA).collect(ImmutableList.toImmutableList());
+    private static final ImmutableList<StructureBlockMode> MODES_EXCEPT_DATA = MODES.stream().filter(mode -> mode != StructureBlockMode.DATA).collect(ImmutableList.toImmutableList());
     private final StructureBlockBlockEntity structureBlock;
     private BlockMirror mirror = BlockMirror.NONE;
     private BlockRotation rotation = BlockRotation.NONE;
@@ -135,7 +135,7 @@ extends Screen {
         }));
         this.addButton(CyclingButtonWidget.builder(structureBlockMode -> new TranslatableText("structure_block.mode." + structureBlockMode.asString())).values((List<StructureBlockMode>)MODES_EXCEPT_DATA, (List<StructureBlockMode>)MODES).omitKeyText().initially(this.mode).build(this.width / 2 - 4 - 150, 185, 50, 20, new LiteralText("MODE"), (cyclingButtonWidget, structureBlockMode) -> {
             this.structureBlock.setMode((StructureBlockMode)structureBlockMode);
-            this.method_32650((StructureBlockMode)structureBlockMode);
+            this.updateWidgets((StructureBlockMode)structureBlockMode);
         }));
         this.buttonDetect = this.addButton(new ButtonWidget(this.width / 2 + 4 + 100, 120, 50, 20, new TranslatableText("structure_block.button.detect_size"), buttonWidget -> {
             if (this.structureBlock.getMode() == StructureBlockMode.SAVE) {
@@ -215,7 +215,7 @@ extends Screen {
         this.inputMetadata.setText(this.structureBlock.getMetadata());
         this.children.add(this.inputMetadata);
         this.updateRotationButton();
-        this.method_32650(this.mode);
+        this.updateWidgets(this.mode);
         this.setInitialFocus(this.inputName);
     }
 
@@ -273,7 +273,7 @@ extends Screen {
         }
     }
 
-    private void method_32650(StructureBlockMode structureBlockMode) {
+    private void updateWidgets(StructureBlockMode mode) {
         this.inputName.setVisible(false);
         this.inputPosX.setVisible(false);
         this.inputPosY.setVisible(false);
@@ -295,7 +295,7 @@ extends Screen {
         this.buttonRotate270.visible = false;
         this.buttonShowAir.visible = false;
         this.buttonShowBoundingBox.visible = false;
-        switch (structureBlockMode) {
+        switch (mode) {
             case SAVE: {
                 this.inputName.setVisible(true);
                 this.inputPosX.setVisible(true);

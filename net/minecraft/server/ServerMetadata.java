@@ -60,103 +60,6 @@ public class ServerMetadata {
         return this.favicon;
     }
 
-    public static class Deserializer
-    implements JsonDeserializer<ServerMetadata>,
-    JsonSerializer<ServerMetadata> {
-        @Override
-        public ServerMetadata deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            JsonObject jsonObject = JsonHelper.asObject(jsonElement, "status");
-            ServerMetadata serverMetadata = new ServerMetadata();
-            if (jsonObject.has("description")) {
-                serverMetadata.setDescription((Text)jsonDeserializationContext.deserialize(jsonObject.get("description"), (Type)((Object)Text.class)));
-            }
-            if (jsonObject.has("players")) {
-                serverMetadata.setPlayers((Players)jsonDeserializationContext.deserialize(jsonObject.get("players"), (Type)((Object)Players.class)));
-            }
-            if (jsonObject.has("version")) {
-                serverMetadata.setVersion((Version)jsonDeserializationContext.deserialize(jsonObject.get("version"), (Type)((Object)Version.class)));
-            }
-            if (jsonObject.has("favicon")) {
-                serverMetadata.setFavicon(JsonHelper.getString(jsonObject, "favicon"));
-            }
-            return serverMetadata;
-        }
-
-        @Override
-        public JsonElement serialize(ServerMetadata serverMetadata, Type type, JsonSerializationContext jsonSerializationContext) {
-            JsonObject jsonObject = new JsonObject();
-            if (serverMetadata.getDescription() != null) {
-                jsonObject.add("description", jsonSerializationContext.serialize(serverMetadata.getDescription()));
-            }
-            if (serverMetadata.getPlayers() != null) {
-                jsonObject.add("players", jsonSerializationContext.serialize(serverMetadata.getPlayers()));
-            }
-            if (serverMetadata.getVersion() != null) {
-                jsonObject.add("version", jsonSerializationContext.serialize(serverMetadata.getVersion()));
-            }
-            if (serverMetadata.getFavicon() != null) {
-                jsonObject.addProperty("favicon", serverMetadata.getFavicon());
-            }
-            return jsonObject;
-        }
-
-        @Override
-        public /* synthetic */ JsonElement serialize(Object serverMetadata, Type type, JsonSerializationContext context) {
-            return this.serialize((ServerMetadata)serverMetadata, type, context);
-        }
-
-        @Override
-        public /* synthetic */ Object deserialize(JsonElement functionJson, Type unused, JsonDeserializationContext context) throws JsonParseException {
-            return this.deserialize(functionJson, unused, context);
-        }
-    }
-
-    public static class Version {
-        private final String gameVersion;
-        private final int protocolVersion;
-
-        public Version(String gameVersion, int protocolVersion) {
-            this.gameVersion = gameVersion;
-            this.protocolVersion = protocolVersion;
-        }
-
-        public String getGameVersion() {
-            return this.gameVersion;
-        }
-
-        public int getProtocolVersion() {
-            return this.protocolVersion;
-        }
-
-        public static class Serializer
-        implements JsonDeserializer<Version>,
-        JsonSerializer<Version> {
-            @Override
-            public Version deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-                JsonObject jsonObject = JsonHelper.asObject(jsonElement, "version");
-                return new Version(JsonHelper.getString(jsonObject, "name"), JsonHelper.getInt(jsonObject, "protocol"));
-            }
-
-            @Override
-            public JsonElement serialize(Version version, Type type, JsonSerializationContext jsonSerializationContext) {
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("name", version.getGameVersion());
-                jsonObject.addProperty("protocol", version.getProtocolVersion());
-                return jsonObject;
-            }
-
-            @Override
-            public /* synthetic */ JsonElement serialize(Object entry, Type unused, JsonSerializationContext context) {
-                return this.serialize((Version)entry, unused, context);
-            }
-
-            @Override
-            public /* synthetic */ Object deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
-                return this.deserialize(json, type, context);
-            }
-        }
-    }
-
     public static class Players {
         private final int max;
         private final int online;
@@ -231,6 +134,103 @@ public class ServerMetadata {
             public /* synthetic */ Object deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
                 return this.deserialize(json, type, jsonDeserializationContext);
             }
+        }
+    }
+
+    public static class Version {
+        private final String gameVersion;
+        private final int protocolVersion;
+
+        public Version(String gameVersion, int protocolVersion) {
+            this.gameVersion = gameVersion;
+            this.protocolVersion = protocolVersion;
+        }
+
+        public String getGameVersion() {
+            return this.gameVersion;
+        }
+
+        public int getProtocolVersion() {
+            return this.protocolVersion;
+        }
+
+        public static class Serializer
+        implements JsonDeserializer<Version>,
+        JsonSerializer<Version> {
+            @Override
+            public Version deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+                JsonObject jsonObject = JsonHelper.asObject(jsonElement, "version");
+                return new Version(JsonHelper.getString(jsonObject, "name"), JsonHelper.getInt(jsonObject, "protocol"));
+            }
+
+            @Override
+            public JsonElement serialize(Version version, Type type, JsonSerializationContext jsonSerializationContext) {
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("name", version.getGameVersion());
+                jsonObject.addProperty("protocol", version.getProtocolVersion());
+                return jsonObject;
+            }
+
+            @Override
+            public /* synthetic */ JsonElement serialize(Object entry, Type unused, JsonSerializationContext context) {
+                return this.serialize((Version)entry, unused, context);
+            }
+
+            @Override
+            public /* synthetic */ Object deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
+                return this.deserialize(json, type, context);
+            }
+        }
+    }
+
+    public static class Deserializer
+    implements JsonDeserializer<ServerMetadata>,
+    JsonSerializer<ServerMetadata> {
+        @Override
+        public ServerMetadata deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            JsonObject jsonObject = JsonHelper.asObject(jsonElement, "status");
+            ServerMetadata serverMetadata = new ServerMetadata();
+            if (jsonObject.has("description")) {
+                serverMetadata.setDescription((Text)jsonDeserializationContext.deserialize(jsonObject.get("description"), (Type)((Object)Text.class)));
+            }
+            if (jsonObject.has("players")) {
+                serverMetadata.setPlayers((Players)jsonDeserializationContext.deserialize(jsonObject.get("players"), (Type)((Object)Players.class)));
+            }
+            if (jsonObject.has("version")) {
+                serverMetadata.setVersion((Version)jsonDeserializationContext.deserialize(jsonObject.get("version"), (Type)((Object)Version.class)));
+            }
+            if (jsonObject.has("favicon")) {
+                serverMetadata.setFavicon(JsonHelper.getString(jsonObject, "favicon"));
+            }
+            return serverMetadata;
+        }
+
+        @Override
+        public JsonElement serialize(ServerMetadata serverMetadata, Type type, JsonSerializationContext jsonSerializationContext) {
+            JsonObject jsonObject = new JsonObject();
+            if (serverMetadata.getDescription() != null) {
+                jsonObject.add("description", jsonSerializationContext.serialize(serverMetadata.getDescription()));
+            }
+            if (serverMetadata.getPlayers() != null) {
+                jsonObject.add("players", jsonSerializationContext.serialize(serverMetadata.getPlayers()));
+            }
+            if (serverMetadata.getVersion() != null) {
+                jsonObject.add("version", jsonSerializationContext.serialize(serverMetadata.getVersion()));
+            }
+            if (serverMetadata.getFavicon() != null) {
+                jsonObject.addProperty("favicon", serverMetadata.getFavicon());
+            }
+            return jsonObject;
+        }
+
+        @Override
+        public /* synthetic */ JsonElement serialize(Object serverMetadata, Type type, JsonSerializationContext context) {
+            return this.serialize((ServerMetadata)serverMetadata, type, context);
+        }
+
+        @Override
+        public /* synthetic */ Object deserialize(JsonElement functionJson, Type unused, JsonDeserializationContext context) throws JsonParseException {
+            return this.deserialize(functionJson, unused, context);
         }
     }
 }

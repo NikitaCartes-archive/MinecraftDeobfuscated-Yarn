@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class AdvancementProgress
 implements Comparable<AdvancementProgress> {
-    private final Map<String, CriterionProgress> criteriaProgresses;
+    final Map<String, CriterionProgress> criteriaProgresses;
     private String[][] requirements = new String[0][];
 
     private AdvancementProgress(Map<String, CriterionProgress> map) {
@@ -92,7 +92,7 @@ implements Comparable<AdvancementProgress> {
     }
 
     public String toString() {
-        return "AdvancementProgress{criteria=" + this.criteriaProgresses + ", requirements=" + Arrays.deepToString((Object[])this.requirements) + '}';
+        return "AdvancementProgress{criteria=" + this.criteriaProgresses + ", requirements=" + Arrays.deepToString((Object[])this.requirements) + "}";
     }
 
     public void toPacket(PacketByteBuf buf) {
@@ -203,10 +203,10 @@ implements Comparable<AdvancementProgress> {
         public JsonElement serialize(AdvancementProgress advancementProgress, Type type, JsonSerializationContext jsonSerializationContext) {
             JsonObject jsonObject = new JsonObject();
             JsonObject jsonObject2 = new JsonObject();
-            for (Map.Entry entry : advancementProgress.criteriaProgresses.entrySet()) {
-                CriterionProgress criterionProgress = (CriterionProgress)entry.getValue();
+            for (Map.Entry<String, CriterionProgress> entry : advancementProgress.criteriaProgresses.entrySet()) {
+                CriterionProgress criterionProgress = entry.getValue();
                 if (!criterionProgress.isObtained()) continue;
-                jsonObject2.add((String)entry.getKey(), criterionProgress.toJson());
+                jsonObject2.add(entry.getKey(), criterionProgress.toJson());
             }
             if (!jsonObject2.entrySet().isEmpty()) {
                 jsonObject.add("criteria", jsonObject2);

@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class BeeNestDestroyedCriterion
 extends AbstractCriterion<Conditions> {
-    private static final Identifier ID = new Identifier("bee_nest_destroyed");
+    static final Identifier ID = new Identifier("bee_nest_destroyed");
 
     @Override
     public Identifier getId() {

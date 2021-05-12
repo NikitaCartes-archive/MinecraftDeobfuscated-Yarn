@@ -117,7 +117,7 @@ extends HostileEntity {
         return this.dataTracker.get(SPIKES_RETRACTED);
     }
 
-    private void setSpikesRetracted(boolean retracted) {
+    void setSpikesRetracted(boolean retracted) {
         this.dataTracker.set(SPIKES_RETRACTED, retracted);
     }
 
@@ -125,7 +125,7 @@ extends HostileEntity {
         return 80;
     }
 
-    private void setBeamTarget(int entityId) {
+    void setBeamTarget(int entityId) {
         this.dataTracker.set(BEAM_TARGET_ID, entityId);
     }
 

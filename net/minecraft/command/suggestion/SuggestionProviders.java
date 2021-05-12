@@ -54,10 +54,10 @@ public class SuggestionProviders {
         return ASK_SERVER;
     }
 
-    public static class LocalProvider
+    protected static class LocalProvider
     implements SuggestionProvider<CommandSource> {
         private final SuggestionProvider<CommandSource> provider;
-        private final Identifier name;
+        final Identifier name;
 
         public LocalProvider(Identifier name, SuggestionProvider<CommandSource> suggestionProvider) {
             this.provider = suggestionProvider;

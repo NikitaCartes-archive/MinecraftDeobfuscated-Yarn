@@ -101,7 +101,7 @@ ResourceFactory {
                 }
                 while (enumeration != null && enumeration.hasMoreElements()) {
                     try {
-                        uRI = ((URL)enumeration.nextElement()).toURI();
+                        uRI = enumeration.nextElement().toURI();
                         if (!"file".equals(uRI.getScheme())) continue;
                         DefaultResourcePack.getIdentifiers(set, maxDepth, namespace, Paths.get(uRI), prefix, pathFilter);
                     } catch (IOException | URISyntaxException uRI2) {}

@@ -26,11 +26,11 @@ public class SamplingRecorder {
     @Nullable
     private final ValueConsumer writeAction;
 
-    private <T> SamplingRecorder(Metric metric, DoubleSupplier timeGetter, @Nullable Runnable startAction, @Nullable ValueConsumer writeAction) {
+    <T> SamplingRecorder(Metric metric, DoubleSupplier doubleSupplier, @Nullable Runnable runnable, @Nullable ValueConsumer valueConsumer) {
         this.metric = metric;
-        this.startAction = startAction;
-        this.timeGetter = timeGetter;
-        this.writeAction = writeAction;
+        this.startAction = runnable;
+        this.timeGetter = doubleSupplier;
+        this.writeAction = valueConsumer;
         this.buffer = new PacketByteBuf(Unpooled.directBuffer());
         this.active = true;
     }
@@ -98,6 +98,11 @@ public class SamplingRecorder {
     }
 
     @Environment(value=EnvType.CLIENT)
+    public static interface ValueConsumer {
+        public void accept(double var1);
+    }
+
+    @Environment(value=EnvType.CLIENT)
     public static class Builder<T> {
         private final Metric metric;
         private final DoubleSupplier timeGetter;
@@ -149,11 +154,6 @@ public class SamplingRecorder {
             }
             this.lastValue = value;
         }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public static interface ValueConsumer {
-        public void accept(double var1);
     }
 }
 

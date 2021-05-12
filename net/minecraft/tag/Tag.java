@@ -269,11 +269,11 @@ public interface Tag<T> {
         }
 
         public void forEachTagId(Consumer<Identifier> consumer) {
-            this.entries.forEach(trackedEntry -> ((TrackedEntry)trackedEntry).entry.forEachTagId(consumer));
+            this.entries.forEach(trackedEntry -> trackedEntry.entry.forEachTagId(consumer));
         }
 
         public void forEachGroupId(Consumer<Identifier> consumer) {
-            this.entries.forEach(trackedEntry -> ((TrackedEntry)trackedEntry).entry.forEachGroupId(consumer));
+            this.entries.forEach(trackedEntry -> trackedEntry.entry.forEachGroupId(consumer));
         }
 
         public Builder read(JsonObject json, String source) {
@@ -322,10 +322,10 @@ public interface Tag<T> {
     }
 
     public static class TrackedEntry {
-        private final Entry entry;
+        final Entry entry;
         private final String source;
 
-        private TrackedEntry(Entry entry, String source) {
+        TrackedEntry(Entry entry, String source) {
             this.entry = entry;
             this.source = source;
         }

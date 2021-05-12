@@ -385,7 +385,7 @@ extends DataFix {
     @Nullable
     public static String getItem(@Nullable String originalName, int damage) {
         if (ORIGINAL_ITEM_NAMES.contains(originalName)) {
-            String string = FLATTENING_MAP.get(originalName + '.' + damage);
+            String string = FLATTENING_MAP.get(originalName + "." + damage);
             return string == null ? FLATTENING_MAP.get(originalName + ".0") : string;
         }
         return null;

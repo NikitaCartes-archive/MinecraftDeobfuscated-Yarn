@@ -22,13 +22,13 @@ import net.minecraft.util.JsonHelper;
 
 public class EnchantWithLevelsLootFunction
 extends ConditionalLootFunction {
-    private final LootNumberProvider range;
-    private final boolean treasureEnchantmentsAllowed;
+    final LootNumberProvider range;
+    final boolean treasureEnchantmentsAllowed;
 
-    private EnchantWithLevelsLootFunction(LootCondition[] conditions, LootNumberProvider range, boolean treasureEnchantmentsAllowed) {
-        super(conditions);
-        this.range = range;
-        this.treasureEnchantmentsAllowed = treasureEnchantmentsAllowed;
+    EnchantWithLevelsLootFunction(LootCondition[] lootConditions, LootNumberProvider lootNumberProvider, boolean bl) {
+        super(lootConditions);
+        this.range = lootNumberProvider;
+        this.treasureEnchantmentsAllowed = bl;
     }
 
     @Override
@@ -49,28 +49,6 @@ extends ConditionalLootFunction {
 
     public static Builder builder(LootNumberProvider range) {
         return new Builder(range);
-    }
-
-    public static class Serializer
-    extends ConditionalLootFunction.Serializer<EnchantWithLevelsLootFunction> {
-        @Override
-        public void toJson(JsonObject jsonObject, EnchantWithLevelsLootFunction enchantWithLevelsLootFunction, JsonSerializationContext jsonSerializationContext) {
-            super.toJson(jsonObject, enchantWithLevelsLootFunction, jsonSerializationContext);
-            jsonObject.add("levels", jsonSerializationContext.serialize(enchantWithLevelsLootFunction.range));
-            jsonObject.addProperty("treasure", enchantWithLevelsLootFunction.treasureEnchantmentsAllowed);
-        }
-
-        @Override
-        public EnchantWithLevelsLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            LootNumberProvider lootNumberProvider = JsonHelper.deserialize(jsonObject, "levels", jsonDeserializationContext, LootNumberProvider.class);
-            boolean bl = JsonHelper.getBoolean(jsonObject, "treasure", false);
-            return new EnchantWithLevelsLootFunction(lootConditions, lootNumberProvider, bl);
-        }
-
-        @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
-            return this.fromJson(json, context, conditions);
-        }
     }
 
     public static class Builder
@@ -100,6 +78,28 @@ extends ConditionalLootFunction {
         @Override
         protected /* synthetic */ ConditionalLootFunction.Builder getThisBuilder() {
             return this.getThisBuilder();
+        }
+    }
+
+    public static class Serializer
+    extends ConditionalLootFunction.Serializer<EnchantWithLevelsLootFunction> {
+        @Override
+        public void toJson(JsonObject jsonObject, EnchantWithLevelsLootFunction enchantWithLevelsLootFunction, JsonSerializationContext jsonSerializationContext) {
+            super.toJson(jsonObject, enchantWithLevelsLootFunction, jsonSerializationContext);
+            jsonObject.add("levels", jsonSerializationContext.serialize(enchantWithLevelsLootFunction.range));
+            jsonObject.addProperty("treasure", enchantWithLevelsLootFunction.treasureEnchantmentsAllowed);
+        }
+
+        @Override
+        public EnchantWithLevelsLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+            LootNumberProvider lootNumberProvider = JsonHelper.deserialize(jsonObject, "levels", jsonDeserializationContext, LootNumberProvider.class);
+            boolean bl = JsonHelper.getBoolean(jsonObject, "treasure", false);
+            return new EnchantWithLevelsLootFunction(lootConditions, lootNumberProvider, bl);
+        }
+
+        @Override
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
+            return this.fromJson(json, context, conditions);
         }
     }
 }

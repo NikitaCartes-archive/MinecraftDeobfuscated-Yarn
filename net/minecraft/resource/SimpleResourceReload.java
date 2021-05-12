@@ -43,7 +43,7 @@ implements ResourceReload {
     protected final ResourceManager manager;
     protected final CompletableFuture<Unit> prepareStageFuture = new CompletableFuture();
     protected final CompletableFuture<List<S>> applyStageFuture;
-    private final Set<ResourceReloader> waitingReloaders;
+    final Set<ResourceReloader> waitingReloaders;
     private final int reloaderCount;
     private int toApplyCount;
     private int appliedCount;
@@ -123,7 +123,7 @@ implements ResourceReload {
         }
     }
 
-    public static interface Factory<S> {
+    protected static interface Factory<S> {
         public CompletableFuture<S> create(ResourceReloader.Synchronizer var1, ResourceManager var2, ResourceReloader var3, Executor var4, Executor var5);
     }
 }

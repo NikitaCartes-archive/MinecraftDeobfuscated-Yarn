@@ -256,7 +256,7 @@ extends Entity {
         this.headYaw = this.getYaw();
         this.stepHeight = 0.6f;
         NbtOps nbtOps = NbtOps.INSTANCE;
-        this.brain = this.deserializeBrain(new Dynamic<NbtElement>(nbtOps, nbtOps.createMap(ImmutableMap.of(nbtOps.createString("memories"), nbtOps.emptyMap()))));
+        this.brain = this.deserializeBrain(new Dynamic<NbtElement>(nbtOps, nbtOps.createMap(ImmutableMap.of(nbtOps.createString("memories"), (NbtElement)nbtOps.emptyMap()))));
     }
 
     public Brain<?> getBrain() {
@@ -701,7 +701,7 @@ extends Entity {
             }
         }
         if (nbt.getBoolean("FallFlying")) {
-            this.setFlag(7, true);
+            this.setFlag(Entity.FALL_FLYING_FLAG_INDEX, true);
         }
         if (nbt.contains("SleepingX", 99) && nbt.contains("SleepingY", 99) && nbt.contains("SleepingZ", 99)) {
             BlockPos blockPos = new BlockPos(nbt.getInt("SleepingX"), nbt.getInt("SleepingY"), nbt.getInt("SleepingZ"));
@@ -771,8 +771,8 @@ extends Entity {
 
     private void updateGlowing() {
         boolean bl = this.isGlowing();
-        if (this.getFlag(6) != bl) {
-            this.setFlag(6, bl);
+        if (this.getFlag(Entity.GLOWING_FLAG_INDEX) != bl) {
+            this.setFlag(Entity.GLOWING_FLAG_INDEX, bl);
         }
     }
 
@@ -807,7 +807,11 @@ extends Entity {
     }
 
     public boolean canTakeDamage() {
-        return true;
+        return !this.isInvulnerable() && this.isPartOfGame();
+    }
+
+    public boolean isPartOfGame() {
+        return !this.isSpectator() && this.isAlive();
     }
 
     public static boolean containsOnlyAmbientEffects(Collection<StatusEffectInstance> effects) {
@@ -1272,14 +1276,14 @@ extends Entity {
         return builder;
     }
 
-    public void takeKnockback(double d, double e, double f) {
-        if ((d *= 1.0 - this.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)) <= 0.0) {
+    public void takeKnockback(double strength, double x, double z) {
+        if ((strength *= 1.0 - this.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)) <= 0.0) {
             return;
         }
         this.velocityDirty = true;
         Vec3d vec3d = this.getVelocity();
-        Vec3d vec3d2 = new Vec3d(e, 0.0, f).normalize().multiply(d);
-        this.setVelocity(vec3d.x / 2.0 - vec3d2.x, this.onGround ? Math.min(0.4, vec3d.y / 2.0 + d) : vec3d.y, vec3d.z / 2.0 - vec3d2.z);
+        Vec3d vec3d2 = new Vec3d(x, 0.0, z).normalize().multiply(strength);
+        this.setVelocity(vec3d.x / 2.0 - vec3d2.x, this.onGround ? Math.min(0.4, vec3d.y / 2.0 + strength) : vec3d.y, vec3d.z / 2.0 - vec3d2.z);
     }
 
     @Nullable
@@ -1324,7 +1328,7 @@ extends Entity {
             return false;
         }
         BlockPos blockPos = this.getBlockPos();
-        BlockState blockState = this.getBlockState();
+        BlockState blockState = this.method_36601();
         if (blockState.isIn(BlockTags.CLIMBABLE)) {
             this.climbingPos = Optional.of(blockPos);
             return true;
@@ -1334,10 +1338,6 @@ extends Entity {
             return true;
         }
         return false;
-    }
-
-    public BlockState getBlockState() {
-        return this.world.getBlockState(this.getBlockPos());
     }
 
     private boolean canEnterTrapdoor(BlockPos pos, BlockState state) {
@@ -1712,7 +1712,7 @@ extends Entity {
         if (hand == Hand.OFF_HAND) {
             return this.getEquippedStack(EquipmentSlot.OFFHAND);
         }
-        throw new IllegalArgumentException("Invalid hand " + (Object)((Object)hand));
+        throw new IllegalArgumentException("Invalid hand " + hand);
     }
 
     public void setStackInHand(Hand hand, ItemStack stack) {
@@ -1721,7 +1721,7 @@ extends Entity {
         } else if (hand == Hand.OFF_HAND) {
             this.equipStack(EquipmentSlot.OFFHAND, stack);
         } else {
-            throw new IllegalArgumentException("Invalid hand " + (Object)((Object)hand));
+            throw new IllegalArgumentException("Invalid hand " + hand);
         }
     }
 
@@ -1929,7 +1929,7 @@ extends Entity {
                     this.damage(DamageSource.FLY_INTO_WALL, o);
                 }
                 if (this.onGround && !this.world.isClient) {
-                    this.setFlag(7, false);
+                    this.setFlag(Entity.FALL_FLYING_FLAG_INDEX, false);
                 }
             } else {
                 BlockPos blockPos = this.getVelocityAffectingPos();
@@ -1975,7 +1975,7 @@ extends Entity {
         this.setVelocity(this.applyClimbingSpeed(this.getVelocity()));
         this.move(MovementType.SELF, this.getVelocity());
         Vec3d vec3d2 = this.getVelocity();
-        if ((this.horizontalCollision || this.jumping) && (this.isClimbing() || this.getBlockState().isOf(Blocks.POWDER_SNOW) && PowderSnowBlock.canWalkOnPowderSnow(this))) {
+        if ((this.horizontalCollision || this.jumping) && (this.isClimbing() || this.method_36601().isOf(Blocks.POWDER_SNOW) && PowderSnowBlock.canWalkOnPowderSnow(this))) {
             vec3d2 = new Vec3d(vec3d2.x, 0.2, vec3d2.z);
         }
         return vec3d2;
@@ -1996,7 +1996,7 @@ extends Entity {
             double d = MathHelper.clamp(motion.x, (double)-0.15f, (double)0.15f);
             double e = MathHelper.clamp(motion.z, (double)-0.15f, (double)0.15f);
             double g = Math.max(motion.y, (double)-0.15f);
-            if (g < 0.0 && !this.getBlockState().isOf(Blocks.SCAFFOLDING) && this.isHoldingOntoLadder() && this instanceof PlayerEntity) {
+            if (g < 0.0 && !this.method_36601().isOf(Blocks.SCAFFOLDING) && this.isHoldingOntoLadder() && this instanceof PlayerEntity) {
                 g = 0.0;
             }
             motion = new Vec3d(d, g, e);
@@ -2298,7 +2298,7 @@ extends Entity {
         this.world.getProfiler().push("travel");
         this.sidewaysSpeed *= 0.98f;
         this.forwardSpeed *= 0.98f;
-        this.initAi();
+        this.tickFallFlying();
         Box box = this.getBoundingBox();
         this.travel(new Vec3d(this.sidewaysSpeed, this.upwardSpeed, this.forwardSpeed));
         this.world.getProfiler().pop();
@@ -2335,8 +2335,8 @@ extends Entity {
         return false;
     }
 
-    private void initAi() {
-        boolean bl = this.getFlag(7);
+    private void tickFallFlying() {
+        boolean bl = this.getFlag(Entity.FALL_FLYING_FLAG_INDEX);
         if (bl && !this.onGround && !this.hasVehicle() && !this.hasStatusEffect(StatusEffects.LEVITATION)) {
             ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
             if (itemStack.isOf(Items.ELYTRA) && ElytraItem.isUsable(itemStack)) {
@@ -2356,7 +2356,7 @@ extends Entity {
             bl = false;
         }
         if (!this.world.isClient) {
-            this.setFlag(7, bl);
+            this.setFlag(Entity.FALL_FLYING_FLAG_INDEX, bl);
         }
     }
 
@@ -2745,7 +2745,7 @@ extends Entity {
     }
 
     public boolean isFallFlying() {
-        return this.getFlag(7);
+        return this.getFlag(Entity.FALL_FLYING_FLAG_INDEX);
     }
 
     @Override

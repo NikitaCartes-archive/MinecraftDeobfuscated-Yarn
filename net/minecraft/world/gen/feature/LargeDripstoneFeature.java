@@ -79,37 +79,6 @@ extends Feature<LargeDripstoneFeatureConfig> {
         }
     }
 
-    static final class WindModifier {
-        private final int y;
-        @Nullable
-        private final Vec3d wind;
-
-        private WindModifier(int y, Random random, FloatProvider wind) {
-            this.y = y;
-            float f = wind.get(random);
-            float g = MathHelper.nextBetween(random, 0.0f, (float)Math.PI);
-            this.wind = new Vec3d(MathHelper.cos(g) * f, 0.0, MathHelper.sin(g) * f);
-        }
-
-        private WindModifier() {
-            this.y = 0;
-            this.wind = null;
-        }
-
-        private static WindModifier create() {
-            return new WindModifier();
-        }
-
-        private BlockPos modify(BlockPos pos) {
-            if (this.wind == null) {
-                return pos;
-            }
-            int i = this.y - pos.getY();
-            Vec3d vec3d = this.wind.multiply(i);
-            return pos.add(vec3d.x, 0.0, vec3d.z);
-        }
-    }
-
     static final class DripstoneGenerator {
         private BlockPos pos;
         private final boolean isStalagmite;
@@ -117,12 +86,12 @@ extends Feature<LargeDripstoneFeatureConfig> {
         private final double bluntness;
         private final double heightScale;
 
-        private DripstoneGenerator(BlockPos pos, boolean isStalagmite, int scale, double bluntness, double heightScale) {
-            this.pos = pos;
-            this.isStalagmite = isStalagmite;
-            this.scale = scale;
-            this.bluntness = bluntness;
-            this.heightScale = heightScale;
+        DripstoneGenerator(BlockPos blockPos, boolean bl, int i, double d, double e) {
+            this.pos = blockPos;
+            this.isStalagmite = bl;
+            this.scale = i;
+            this.bluntness = d;
+            this.heightScale = e;
         }
 
         private int getBaseScale() {
@@ -143,7 +112,7 @@ extends Feature<LargeDripstoneFeatureConfig> {
             return this.pos.getY() + this.getBaseScale();
         }
 
-        private boolean canGenerate(StructureWorldAccess world, WindModifier wind) {
+        boolean canGenerate(StructureWorldAccess world, WindModifier wind) {
             while (this.scale > 1) {
                 BlockPos.Mutable mutable = this.pos.mutableCopy();
                 int i = Math.min(10, this.getBaseScale());
@@ -166,7 +135,7 @@ extends Feature<LargeDripstoneFeatureConfig> {
             return (int)DripstoneHelper.scaleHeightFromRadius(height, this.scale, this.heightScale, this.bluntness);
         }
 
-        private void generate(StructureWorldAccess world, Random random, WindModifier wind) {
+        void generate(StructureWorldAccess world, Random random, WindModifier wind) {
             for (int i = -this.scale; i <= this.scale; ++i) {
                 block1: for (int j = -this.scale; j <= this.scale; ++j) {
                     int k;
@@ -190,8 +159,39 @@ extends Feature<LargeDripstoneFeatureConfig> {
             }
         }
 
-        private boolean generateWind(LargeDripstoneFeatureConfig config) {
+        boolean generateWind(LargeDripstoneFeatureConfig config) {
             return this.scale >= config.minRadiusForWind && this.bluntness >= (double)config.minBluntnessForWind;
+        }
+    }
+
+    static final class WindModifier {
+        private final int y;
+        @Nullable
+        private final Vec3d wind;
+
+        WindModifier(int y, Random random, FloatProvider wind) {
+            this.y = y;
+            float f = wind.get(random);
+            float g = MathHelper.nextBetween(random, 0.0f, (float)Math.PI);
+            this.wind = new Vec3d(MathHelper.cos(g) * f, 0.0, MathHelper.sin(g) * f);
+        }
+
+        private WindModifier() {
+            this.y = 0;
+            this.wind = null;
+        }
+
+        static WindModifier create() {
+            return new WindModifier();
+        }
+
+        BlockPos modify(BlockPos pos) {
+            if (this.wind == null) {
+                return pos;
+            }
+            int i = this.y - pos.getY();
+            Vec3d vec3d = this.wind.multiply(i);
+            return pos.add(vec3d.x, 0.0, vec3d.z);
         }
     }
 }

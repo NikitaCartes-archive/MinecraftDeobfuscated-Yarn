@@ -15,10 +15,11 @@ import net.minecraft.client.render.Shader;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Matrix4f;
 
 @Environment(value=EnvType.CLIENT)
-public class Framebuffer {
+public abstract class Framebuffer {
     private static final int field_31901 = 0;
     private static final int field_31902 = 1;
     private static final int field_31903 = 2;
@@ -29,23 +30,19 @@ public class Framebuffer {
     public int viewportHeight;
     public final boolean useDepthAttachment;
     public int fbo;
-    private int colorAttachment;
-    private int depthAttachment;
-    public final float[] clearColor;
+    protected int colorAttachment;
+    protected int depthAttachment;
+    private final float[] clearColor = Util.make(() -> {
+        float[] fs = new float[]{1.0f, 1.0f, 1.0f, 0.0f};
+        return fs;
+    });
     public int texFilter;
 
-    public Framebuffer(int width, int height, boolean useDepth, boolean getError) {
-        RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+    public Framebuffer(boolean useDepth) {
         this.useDepthAttachment = useDepth;
         this.fbo = -1;
         this.colorAttachment = -1;
         this.depthAttachment = -1;
-        this.clearColor = new float[4];
-        this.clearColor[0] = 1.0f;
-        this.clearColor[1] = 1.0f;
-        this.clearColor[2] = 1.0f;
-        this.clearColor[3] = 0.0f;
-        this.resize(width, height, getError);
     }
 
     public void resize(int width, int height, boolean getError) {
@@ -156,6 +153,12 @@ public class Framebuffer {
         }
         if (i == 36060) {
             throw new RuntimeException("GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER");
+        }
+        if (i == 36061) {
+            throw new RuntimeException("GL_FRAMEBUFFER_UNSUPPORTED");
+        }
+        if (i == 1285) {
+            throw new RuntimeException("GL_OUT_OF_MEMORY");
         }
         throw new RuntimeException("glCheckFramebufferStatus returned unknown status:" + i);
     }

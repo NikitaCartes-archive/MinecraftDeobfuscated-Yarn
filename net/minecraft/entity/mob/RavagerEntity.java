@@ -327,17 +327,16 @@ extends RaiderEntity {
         return false;
     }
 
-    static class PathNodeMaker
-    extends LandPathNodeMaker {
-        private PathNodeMaker() {
+    class AttackGoal
+    extends MeleeAttackGoal {
+        public AttackGoal() {
+            super(RavagerEntity.this, 1.0, true);
         }
 
         @Override
-        protected PathNodeType adjustNodeType(BlockView world, boolean canOpenDoors, boolean canEnterOpenDoors, BlockPos pos, PathNodeType type) {
-            if (type == PathNodeType.LEAVES) {
-                return PathNodeType.OPEN;
-            }
-            return super.adjustNodeType(world, canOpenDoors, canEnterOpenDoors, pos, type);
+        protected double getSquaredMaxAttackDistance(LivingEntity entity) {
+            float f = RavagerEntity.this.getWidth() - 0.1f;
+            return f * 2.0f * (f * 2.0f) + entity.getWidth();
         }
     }
 
@@ -354,16 +353,17 @@ extends RaiderEntity {
         }
     }
 
-    class AttackGoal
-    extends MeleeAttackGoal {
-        public AttackGoal() {
-            super(RavagerEntity.this, 1.0, true);
+    static class PathNodeMaker
+    extends LandPathNodeMaker {
+        PathNodeMaker() {
         }
 
         @Override
-        protected double getSquaredMaxAttackDistance(LivingEntity entity) {
-            float f = RavagerEntity.this.getWidth() - 0.1f;
-            return f * 2.0f * (f * 2.0f) + entity.getWidth();
+        protected PathNodeType adjustNodeType(BlockView world, boolean canOpenDoors, boolean canEnterOpenDoors, BlockPos pos, PathNodeType type) {
+            if (type == PathNodeType.LEAVES) {
+                return PathNodeType.OPEN;
+            }
+            return super.adjustNodeType(world, canOpenDoors, canEnterOpenDoors, pos, type);
         }
     }
 }

@@ -51,7 +51,7 @@ implements ServerHandshakePacketListener {
                 break;
             }
             default: {
-                throw new UnsupportedOperationException("Invalid intention " + (Object)((Object)packet.getIntendedState()));
+                throw new UnsupportedOperationException("Invalid intention " + packet.getIntendedState());
             }
         }
     }

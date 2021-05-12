@@ -3,6 +3,7 @@
  */
 package net.minecraft.item;
 
+import java.util.Optional;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
@@ -170,11 +171,43 @@ public class Items {
     public static final Item RAW_COPPER_BLOCK = Items.register(Blocks.RAW_COPPER_BLOCK, ItemGroup.BUILDING_BLOCKS);
     public static final Item RAW_GOLD_BLOCK = Items.register(Blocks.RAW_GOLD_BLOCK, ItemGroup.BUILDING_BLOCKS);
     public static final Item AMETHYST_BLOCK = Items.register(Blocks.AMETHYST_BLOCK, ItemGroup.BUILDING_BLOCKS);
+    public static final Item BUDDING_AMETHYST = Items.register(Blocks.BUDDING_AMETHYST, ItemGroup.BUILDING_BLOCKS);
     public static final Item IRON_BLOCK = Items.register(Blocks.IRON_BLOCK, ItemGroup.BUILDING_BLOCKS);
     public static final Item COPPER_BLOCK = Items.register(Blocks.COPPER_BLOCK, ItemGroup.BUILDING_BLOCKS);
     public static final Item GOLD_BLOCK = Items.register(Blocks.GOLD_BLOCK, ItemGroup.BUILDING_BLOCKS);
     public static final Item DIAMOND_BLOCK = Items.register(Blocks.DIAMOND_BLOCK, ItemGroup.BUILDING_BLOCKS);
     public static final Item NETHERITE_BLOCK = Items.register(new BlockItem(Blocks.NETHERITE_BLOCK, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS).fireproof()));
+    public static final Item EXPOSED_COPPER = Items.register(Blocks.EXPOSED_COPPER, ItemGroup.BUILDING_BLOCKS);
+    public static final Item WEATHERED_COPPER = Items.register(Blocks.WEATHERED_COPPER, ItemGroup.BUILDING_BLOCKS);
+    public static final Item OXIDIZED_COPPER = Items.register(Blocks.OXIDIZED_COPPER, ItemGroup.BUILDING_BLOCKS);
+    public static final Item CUT_COPPER = Items.register(Blocks.CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
+    public static final Item EXPOSED_CUT_COPPER = Items.register(Blocks.EXPOSED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
+    public static final Item WEATHERED_CUT_COPPER = Items.register(Blocks.WEATHERED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
+    public static final Item OXIDIZED_CUT_COPPER = Items.register(Blocks.OXIDIZED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
+    public static final Item CUT_COPPER_STAIRS = Items.register(Blocks.CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
+    public static final Item EXPOSED_CUT_COPPER_STAIRS = Items.register(Blocks.EXPOSED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
+    public static final Item WEATHERED_CUT_COPPER_STAIRS = Items.register(Blocks.WEATHERED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
+    public static final Item OXIDIZED_CUT_COPPER_STAIRS = Items.register(Blocks.OXIDIZED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
+    public static final Item CUT_COPPER_SLAB = Items.register(Blocks.CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
+    public static final Item EXPOSED_CUT_COPPER_SLAB = Items.register(Blocks.EXPOSED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
+    public static final Item WEATHERED_CUT_COPPER_SLAB = Items.register(Blocks.WEATHERED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
+    public static final Item OXIDIZED_CUT_COPPER_SLAB = Items.register(Blocks.OXIDIZED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
+    public static final Item WAXED_COPPER = Items.register(Blocks.WAXED_COPPER_BLOCK, ItemGroup.BUILDING_BLOCKS);
+    public static final Item WAXED_EXPOSED_COPPER = Items.register(Blocks.WAXED_EXPOSED_COPPER, ItemGroup.BUILDING_BLOCKS);
+    public static final Item WAXED_WEATHERED_COPPER = Items.register(Blocks.WAXED_WEATHERED_COPPER, ItemGroup.BUILDING_BLOCKS);
+    public static final Item WAXED_OXIDIZED_COPPER = Items.register(Blocks.WAXED_OXIDIZED_COPPER, ItemGroup.BUILDING_BLOCKS);
+    public static final Item WAXED_CUT_COPPER = Items.register(Blocks.WAXED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
+    public static final Item WAXED_EXPOSED_CUT_COPPER = Items.register(Blocks.WAXED_EXPOSED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
+    public static final Item WAXED_WEATHERED_CUT_COPPER = Items.register(Blocks.WAXED_WEATHERED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
+    public static final Item WAXED_OXIDIZED_CUT_COPPER = Items.register(Blocks.WAXED_OXIDIZED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
+    public static final Item WAXED_CUT_COPPER_STAIRS = Items.register(Blocks.WAXED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
+    public static final Item WAXED_EXPOSED_CUT_COPPER_STAIRS = Items.register(Blocks.WAXED_EXPOSED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
+    public static final Item WAXED_WEATHERED_CUT_COPPER_STAIRS = Items.register(Blocks.WAXED_WEATHERED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
+    public static final Item WAXED_OXIDIZED_CUT_COPPER_STAIRS = Items.register(Blocks.WAXED_OXIDIZED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
+    public static final Item WAXED_CUT_COPPER_SLAB = Items.register(Blocks.WAXED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
+    public static final Item WAXED_EXPOSED_CUT_COPPER_SLAB = Items.register(Blocks.WAXED_EXPOSED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
+    public static final Item WAXED_WEATHERED_CUT_COPPER_SLAB = Items.register(Blocks.WAXED_WEATHERED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
+    public static final Item WAXED_OXIDIZED_CUT_COPPER_SLAB = Items.register(Blocks.WAXED_OXIDIZED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
     public static final Item OAK_LOG = Items.register(Blocks.OAK_LOG, ItemGroup.BUILDING_BLOCKS);
     public static final Item SPRUCE_LOG = Items.register(Blocks.SPRUCE_LOG, ItemGroup.BUILDING_BLOCKS);
     public static final Item BIRCH_LOG = Items.register(Blocks.BIRCH_LOG, ItemGroup.BUILDING_BLOCKS);
@@ -260,9 +293,9 @@ public class Items {
     public static final Item PINK_TULIP = Items.register(Blocks.PINK_TULIP, ItemGroup.DECORATIONS);
     public static final Item OXEYE_DAISY = Items.register(Blocks.OXEYE_DAISY, ItemGroup.DECORATIONS);
     public static final Item CORNFLOWER = Items.register(Blocks.CORNFLOWER, ItemGroup.DECORATIONS);
-    public static final Item SPORE_BLOSSOM = Items.register(Blocks.SPORE_BLOSSOM, ItemGroup.DECORATIONS);
     public static final Item LILY_OF_THE_VALLEY = Items.register(Blocks.LILY_OF_THE_VALLEY, ItemGroup.DECORATIONS);
     public static final Item WITHER_ROSE = Items.register(Blocks.WITHER_ROSE, ItemGroup.DECORATIONS);
+    public static final Item SPORE_BLOSSOM = Items.register(Blocks.SPORE_BLOSSOM, ItemGroup.DECORATIONS);
     public static final Item BROWN_MUSHROOM = Items.register(Blocks.BROWN_MUSHROOM, ItemGroup.DECORATIONS);
     public static final Item RED_MUSHROOM = Items.register(Blocks.RED_MUSHROOM, ItemGroup.DECORATIONS);
     public static final Item CRIMSON_FUNGUS = Items.register(Blocks.CRIMSON_FUNGUS, ItemGroup.DECORATIONS);
@@ -681,7 +714,7 @@ public class Items {
     public static final Item LEVER = Items.register(Blocks.LEVER, ItemGroup.REDSTONE);
     public static final Item LIGHTNING_ROD = Items.register(Blocks.LIGHTNING_ROD, ItemGroup.REDSTONE);
     public static final Item DAYLIGHT_DETECTOR = Items.register(Blocks.DAYLIGHT_DETECTOR, ItemGroup.REDSTONE);
-    public static final Item SCULK_SENSOR = Items.register(Blocks.SCULK_SENSOR, ItemGroup.REDSTONE);
+    public static final Item SCULK_SENSOR = Items.register(Blocks.SCULK_SENSOR, Items.createEmptyOptional(ItemGroup.REDSTONE));
     public static final Item TRIPWIRE_HOOK = Items.register(Blocks.TRIPWIRE_HOOK, ItemGroup.REDSTONE);
     public static final Item TRAPPED_CHEST = Items.register(Blocks.TRAPPED_CHEST, ItemGroup.REDSTONE);
     public static final Item TNT = Items.register(Blocks.TNT, ItemGroup.REDSTONE);
@@ -746,6 +779,10 @@ public class Items {
     public static final Item COAL = Items.register("coal", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item CHARCOAL = Items.register("charcoal", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item DIAMOND = Items.register("diamond", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
+    public static final Item EMERALD = Items.register("emerald", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
+    public static final Item LAPIS_LAZULI = Items.register("lapis_lazuli", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
+    public static final Item QUARTZ = Items.register("quartz", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
+    public static final Item AMETHYST_SHARD = Items.register("amethyst_shard", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item RAW_IRON = Items.register("raw_iron", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item IRON_INGOT = Items.register("iron_ingot", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item RAW_COPPER = Items.register("raw_copper", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
@@ -855,9 +892,10 @@ public class Items {
     public static final Item FURNACE_MINECART = Items.register("furnace_minecart", (Item)new MinecartItem(AbstractMinecartEntity.Type.FURNACE, new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION)));
     public static final Item EGG = Items.register("egg", (Item)new EggItem(new Item.Settings().maxCount(16).group(ItemGroup.MATERIALS)));
     public static final Item COMPASS = Items.register("compass", (Item)new CompassItem(new Item.Settings().group(ItemGroup.TOOLS)));
-    public static final Item BUNDLE = Items.register("bundle", (Item)new BundleItem(new Item.Settings().maxCount(1).group(ItemGroup.TOOLS)));
+    public static final Item BUNDLE = Items.register("bundle", (Item)new BundleItem(new Item.Settings().maxCount(1).group(Items.createEmptyOptional(ItemGroup.TOOLS).orElse(null))));
     public static final Item FISHING_ROD = Items.register("fishing_rod", (Item)new FishingRodItem(new Item.Settings().maxDamage(64).group(ItemGroup.TOOLS)));
     public static final Item CLOCK = Items.register("clock", new Item(new Item.Settings().group(ItemGroup.TOOLS)));
+    public static final Item SPYGLASS = Items.register("spyglass", (Item)new SpyglassItem(new Item.Settings().group(ItemGroup.TOOLS).maxCount(1)));
     public static final Item GLOWSTONE_DUST = Items.register("glowstone_dust", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item COD = Items.register("cod", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.COD)));
     public static final Item SALMON = Items.register("salmon", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.SALMON)));
@@ -868,7 +906,6 @@ public class Items {
     public static final Item INK_SAC = Items.register("ink_sac", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item GLOW_INK_SAC = Items.register("glow_ink_sac", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item COCOA_BEANS = Items.register("cocoa_beans", (Item)new AliasedBlockItem(Blocks.COCOA, new Item.Settings().group(ItemGroup.MATERIALS)));
-    public static final Item LAPIS_LAZULI = Items.register("lapis_lazuli", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item WHITE_DYE = Items.register("white_dye", (Item)new DyeItem(DyeColor.WHITE, new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item ORANGE_DYE = Items.register("orange_dye", (Item)new DyeItem(DyeColor.ORANGE, new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item MAGENTA_DYE = Items.register("magenta_dye", (Item)new DyeItem(DyeColor.MAGENTA, new Item.Settings().group(ItemGroup.MATERIALS)));
@@ -1003,7 +1040,6 @@ public class Items {
     public static final Item FIRE_CHARGE = Items.register("fire_charge", (Item)new FireChargeItem(new Item.Settings().group(ItemGroup.MISC)));
     public static final Item WRITABLE_BOOK = Items.register("writable_book", (Item)new WritableBookItem(new Item.Settings().maxCount(1).group(ItemGroup.MISC)));
     public static final Item WRITTEN_BOOK = Items.register("written_book", (Item)new WrittenBookItem(new Item.Settings().maxCount(16)));
-    public static final Item EMERALD = Items.register("emerald", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item ITEM_FRAME = Items.register("item_frame", (Item)new ItemFrameItem(EntityType.ITEM_FRAME, new Item.Settings().group(ItemGroup.DECORATIONS)));
     public static final Item GLOW_ITEM_FRAME = Items.register("glow_item_frame", (Item)new ItemFrameItem(EntityType.GLOW_ITEM_FRAME, new Item.Settings().group(ItemGroup.DECORATIONS)));
     public static final Item FLOWER_POT = Items.register(Blocks.FLOWER_POT, ItemGroup.DECORATIONS);
@@ -1027,7 +1063,6 @@ public class Items {
     public static final Item FIREWORK_STAR = Items.register("firework_star", (Item)new FireworkChargeItem(new Item.Settings().group(ItemGroup.MISC)));
     public static final Item ENCHANTED_BOOK = Items.register("enchanted_book", (Item)new EnchantedBookItem(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON)));
     public static final Item NETHER_BRICK = Items.register("nether_brick", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
-    public static final Item QUARTZ = Items.register("quartz", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item TNT_MINECART = Items.register("tnt_minecart", (Item)new MinecartItem(AbstractMinecartEntity.Type.TNT, new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION)));
     public static final Item HOPPER_MINECART = Items.register("hopper_minecart", (Item)new MinecartItem(AbstractMinecartEntity.Type.HOPPER, new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION)));
     public static final Item PRISMARINE_SHARD = Items.register("prismarine_shard", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
@@ -1149,63 +1184,33 @@ public class Items {
     public static final Item POLISHED_BLACKSTONE_BRICK_STAIRS = Items.register(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS, ItemGroup.BUILDING_BLOCKS);
     public static final Item CRACKED_POLISHED_BLACKSTONE_BRICKS = Items.register(Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS, ItemGroup.BUILDING_BLOCKS);
     public static final Item RESPAWN_ANCHOR = Items.register(Blocks.RESPAWN_ANCHOR, ItemGroup.DECORATIONS);
-    public static final Item CANDLE = Items.register(Blocks.CANDLE, ItemGroup.DECORATIONS);
-    public static final Item WHITE_CANDLE = Items.register(Blocks.WHITE_CANDLE, ItemGroup.DECORATIONS);
-    public static final Item ORANGE_CANDLE = Items.register(Blocks.ORANGE_CANDLE, ItemGroup.DECORATIONS);
-    public static final Item MAGENTA_CANDLE = Items.register(Blocks.MAGENTA_CANDLE, ItemGroup.DECORATIONS);
-    public static final Item LIGHT_BLUE_CANDLE = Items.register(Blocks.LIGHT_BLUE_CANDLE, ItemGroup.DECORATIONS);
-    public static final Item YELLOW_CANDLE = Items.register(Blocks.YELLOW_CANDLE, ItemGroup.DECORATIONS);
-    public static final Item LIME_CANDLE = Items.register(Blocks.LIME_CANDLE, ItemGroup.DECORATIONS);
-    public static final Item PINK_CANDLE = Items.register(Blocks.PINK_CANDLE, ItemGroup.DECORATIONS);
-    public static final Item GRAY_CANDLE = Items.register(Blocks.GRAY_CANDLE, ItemGroup.DECORATIONS);
-    public static final Item LIGHT_GRAY_CANDLE = Items.register(Blocks.LIGHT_GRAY_CANDLE, ItemGroup.DECORATIONS);
-    public static final Item CYAN_CANDLE = Items.register(Blocks.CYAN_CANDLE, ItemGroup.DECORATIONS);
-    public static final Item PURPLE_CANDLE = Items.register(Blocks.PURPLE_CANDLE, ItemGroup.DECORATIONS);
-    public static final Item BLUE_CANDLE = Items.register(Blocks.BLUE_CANDLE, ItemGroup.DECORATIONS);
-    public static final Item BROWN_CANDLE = Items.register(Blocks.BROWN_CANDLE, ItemGroup.DECORATIONS);
-    public static final Item GREEN_CANDLE = Items.register(Blocks.GREEN_CANDLE, ItemGroup.DECORATIONS);
-    public static final Item RED_CANDLE = Items.register(Blocks.RED_CANDLE, ItemGroup.DECORATIONS);
-    public static final Item BLACK_CANDLE = Items.register(Blocks.BLACK_CANDLE, ItemGroup.DECORATIONS);
-    public static final Item AMETHYST_SHARD = Items.register("amethyst_shard", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
-    public static final Item BUDDING_AMETHYST = Items.register(Blocks.BUDDING_AMETHYST, ItemGroup.BUILDING_BLOCKS);
+    public static final Item CANDLE = Items.register(Blocks.CANDLE, Items.createEmptyOptional(ItemGroup.DECORATIONS));
+    public static final Item WHITE_CANDLE = Items.register(Blocks.WHITE_CANDLE, Items.createEmptyOptional(ItemGroup.DECORATIONS));
+    public static final Item ORANGE_CANDLE = Items.register(Blocks.ORANGE_CANDLE, Items.createEmptyOptional(ItemGroup.DECORATIONS));
+    public static final Item MAGENTA_CANDLE = Items.register(Blocks.MAGENTA_CANDLE, Items.createEmptyOptional(ItemGroup.DECORATIONS));
+    public static final Item LIGHT_BLUE_CANDLE = Items.register(Blocks.LIGHT_BLUE_CANDLE, Items.createEmptyOptional(ItemGroup.DECORATIONS));
+    public static final Item YELLOW_CANDLE = Items.register(Blocks.YELLOW_CANDLE, Items.createEmptyOptional(ItemGroup.DECORATIONS));
+    public static final Item LIME_CANDLE = Items.register(Blocks.LIME_CANDLE, Items.createEmptyOptional(ItemGroup.DECORATIONS));
+    public static final Item PINK_CANDLE = Items.register(Blocks.PINK_CANDLE, Items.createEmptyOptional(ItemGroup.DECORATIONS));
+    public static final Item GRAY_CANDLE = Items.register(Blocks.GRAY_CANDLE, Items.createEmptyOptional(ItemGroup.DECORATIONS));
+    public static final Item LIGHT_GRAY_CANDLE = Items.register(Blocks.LIGHT_GRAY_CANDLE, Items.createEmptyOptional(ItemGroup.DECORATIONS));
+    public static final Item CYAN_CANDLE = Items.register(Blocks.CYAN_CANDLE, Items.createEmptyOptional(ItemGroup.DECORATIONS));
+    public static final Item PURPLE_CANDLE = Items.register(Blocks.PURPLE_CANDLE, Items.createEmptyOptional(ItemGroup.DECORATIONS));
+    public static final Item BLUE_CANDLE = Items.register(Blocks.BLUE_CANDLE, Items.createEmptyOptional(ItemGroup.DECORATIONS));
+    public static final Item BROWN_CANDLE = Items.register(Blocks.BROWN_CANDLE, Items.createEmptyOptional(ItemGroup.DECORATIONS));
+    public static final Item GREEN_CANDLE = Items.register(Blocks.GREEN_CANDLE, Items.createEmptyOptional(ItemGroup.DECORATIONS));
+    public static final Item RED_CANDLE = Items.register(Blocks.RED_CANDLE, Items.createEmptyOptional(ItemGroup.DECORATIONS));
+    public static final Item BLACK_CANDLE = Items.register(Blocks.BLACK_CANDLE, Items.createEmptyOptional(ItemGroup.DECORATIONS));
     public static final Item SMALL_AMETHYST_BUD = Items.register(Blocks.SMALL_AMETHYST_BUD, ItemGroup.DECORATIONS);
     public static final Item MEDIUM_AMETHYST_BUD = Items.register(Blocks.MEDIUM_AMETHYST_BUD, ItemGroup.DECORATIONS);
     public static final Item LARGE_AMETHYST_BUD = Items.register(Blocks.LARGE_AMETHYST_BUD, ItemGroup.DECORATIONS);
     public static final Item AMETHYST_CLUSTER = Items.register(Blocks.AMETHYST_CLUSTER, ItemGroup.DECORATIONS);
-    public static final Item SPYGLASS = Items.register("spyglass", (Item)new SpyglassItem(new Item.Settings().group(ItemGroup.TOOLS).maxCount(1)));
-    public static final Item EXPOSED_COPPER = Items.register(Blocks.EXPOSED_COPPER, ItemGroup.BUILDING_BLOCKS);
-    public static final Item WEATHERED_COPPER = Items.register(Blocks.WEATHERED_COPPER, ItemGroup.BUILDING_BLOCKS);
-    public static final Item OXIDIZED_COPPER = Items.register(Blocks.OXIDIZED_COPPER, ItemGroup.BUILDING_BLOCKS);
-    public static final Item CUT_COPPER = Items.register(Blocks.CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
-    public static final Item EXPOSED_CUT_COPPER = Items.register(Blocks.EXPOSED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
-    public static final Item WEATHERED_CUT_COPPER = Items.register(Blocks.WEATHERED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
-    public static final Item OXIDIZED_CUT_COPPER = Items.register(Blocks.OXIDIZED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
-    public static final Item CUT_COPPER_STAIRS = Items.register(Blocks.CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
-    public static final Item EXPOSED_CUT_COPPER_STAIRS = Items.register(Blocks.EXPOSED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
-    public static final Item WEATHERED_CUT_COPPER_STAIRS = Items.register(Blocks.WEATHERED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
-    public static final Item OXIDIZED_CUT_COPPER_STAIRS = Items.register(Blocks.OXIDIZED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
-    public static final Item CUT_COPPER_SLAB = Items.register(Blocks.CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
-    public static final Item EXPOSED_CUT_COPPER_SLAB = Items.register(Blocks.EXPOSED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
-    public static final Item WEATHERED_CUT_COPPER_SLAB = Items.register(Blocks.WEATHERED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
-    public static final Item OXIDIZED_CUT_COPPER_SLAB = Items.register(Blocks.OXIDIZED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
-    public static final Item WAXED_COPPER = Items.register(Blocks.WAXED_COPPER_BLOCK, ItemGroup.BUILDING_BLOCKS);
-    public static final Item WAXED_EXPOSED_COPPER = Items.register(Blocks.WAXED_EXPOSED_COPPER, ItemGroup.BUILDING_BLOCKS);
-    public static final Item WAXED_WEATHERED_COPPER = Items.register(Blocks.WAXED_WEATHERED_COPPER, ItemGroup.BUILDING_BLOCKS);
-    public static final Item WAXED_OXIDIZED_COPPER = Items.register(Blocks.WAXED_OXIDIZED_COPPER, ItemGroup.BUILDING_BLOCKS);
-    public static final Item WAXED_CUT_COPPER = Items.register(Blocks.WAXED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
-    public static final Item WAXED_EXPOSED_CUT_COPPER = Items.register(Blocks.WAXED_EXPOSED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
-    public static final Item WAXED_WEATHERED_CUT_COPPER = Items.register(Blocks.WAXED_WEATHERED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
-    public static final Item WAXED_OXIDIZED_CUT_COPPER = Items.register(Blocks.WAXED_OXIDIZED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
-    public static final Item WAXED_CUT_COPPER_STAIRS = Items.register(Blocks.WAXED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
-    public static final Item WAXED_EXPOSED_CUT_COPPER_STAIRS = Items.register(Blocks.WAXED_EXPOSED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
-    public static final Item WAXED_WEATHERED_CUT_COPPER_STAIRS = Items.register(Blocks.WAXED_WEATHERED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
-    public static final Item WAXED_OXIDIZED_CUT_COPPER_STAIRS = Items.register(Blocks.WAXED_OXIDIZED_CUT_COPPER_STAIRS, ItemGroup.BUILDING_BLOCKS);
-    public static final Item WAXED_CUT_COPPER_SLAB = Items.register(Blocks.WAXED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
-    public static final Item WAXED_EXPOSED_CUT_COPPER_SLAB = Items.register(Blocks.WAXED_EXPOSED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
-    public static final Item WAXED_WEATHERED_CUT_COPPER_SLAB = Items.register(Blocks.WAXED_WEATHERED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
-    public static final Item WAXED_OXIDIZED_CUT_COPPER_SLAB = Items.register(Blocks.WAXED_OXIDIZED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
     public static final Item POWDER_SNOW_BUCKET = Items.register("powder_snow_bucket", (Item)new PowderSnowBucketItem(Blocks.POWDER_SNOW, SoundEvents.ITEM_BUCKET_EMPTY_POWDER_SNOW, new Item.Settings().maxCount(1).group(ItemGroup.MISC)));
     public static final Item POINTED_DRIPSTONE = Items.register(Blocks.POINTED_DRIPSTONE, ItemGroup.DECORATIONS);
+
+    private static <T> Optional<T> createEmptyOptional(T of) {
+        return Optional.empty();
+    }
 
     private static Item register(Block block) {
         return Items.register(new BlockItem(block, new Item.Settings()));
@@ -1213,6 +1218,10 @@ public class Items {
 
     private static Item register(Block block, ItemGroup group) {
         return Items.register(new BlockItem(block, new Item.Settings().group(group)));
+    }
+
+    private static Item register(Block block, Optional<ItemGroup> group2) {
+        return group2.map(group -> Items.register(block, group)).orElseGet(() -> Items.register(block));
     }
 
     private static Item register(Block block, ItemGroup group, Block ... blocks) {

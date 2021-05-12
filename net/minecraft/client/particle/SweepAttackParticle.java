@@ -18,15 +18,15 @@ public class SweepAttackParticle
 extends SpriteBillboardParticle {
     private final SpriteProvider spriteProvider;
 
-    private SweepAttackParticle(ClientWorld world, double x, double y, double z, double scaleMultiplier, SpriteProvider spriteProvider) {
-        super(world, x, y, z, 0.0, 0.0, 0.0);
-        float f;
+    SweepAttackParticle(ClientWorld clientWorld, double d, double e, double f, double g, SpriteProvider spriteProvider) {
+        super(clientWorld, d, e, f, 0.0, 0.0, 0.0);
+        float h;
         this.spriteProvider = spriteProvider;
         this.maxAge = 4;
-        this.colorRed = f = this.random.nextFloat() * 0.6f + 0.4f;
-        this.colorGreen = f;
-        this.colorBlue = f;
-        this.scale = 1.0f - (float)scaleMultiplier * 0.5f;
+        this.colorRed = h = this.random.nextFloat() * 0.6f + 0.4f;
+        this.colorGreen = h;
+        this.colorBlue = h;
+        this.scale = 1.0f - (float)g * 0.5f;
         this.setSpriteForAge(spriteProvider);
     }
 

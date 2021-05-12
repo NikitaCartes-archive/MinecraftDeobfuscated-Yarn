@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class BredAnimalsCriterion
 extends AbstractCriterion<Conditions> {
-    private static final Identifier ID = new Identifier("bred_animals");
+    static final Identifier ID = new Identifier("bred_animals");
 
     @Override
     public Identifier getId() {

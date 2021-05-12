@@ -78,7 +78,7 @@ implements AutoCloseable {
             for (i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); ++i) {
                 super.setSectionStatus(ChunkSectionPos.from(pos, i), true);
             }
-        }, () -> "updateChunkStatus " + pos + " " + true));
+        }, () -> "updateChunkStatus " + pos + " true"));
     }
 
     @Override

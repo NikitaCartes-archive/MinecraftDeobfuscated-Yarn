@@ -46,8 +46,8 @@ public class OreVeinGenerator {
         this.field_33667 = DoublePerlinNoiseSampler.create((WorldGenRandom)new SimpleRandom(0L), -5, 1.0);
         this.field_33601 = i;
         this.field_33602 = j;
-        this.field_33595 = Stream.of(VeinType.values()).mapToInt(veinType -> ((VeinType)veinType).maxY).max().orElse(k);
-        this.field_33596 = Stream.of(VeinType.values()).mapToInt(veinType -> ((VeinType)veinType).minY).min().orElse(k);
+        this.field_33595 = Stream.of(VeinType.values()).mapToInt(veinType -> veinType.maxY).max().orElse(k);
+        this.field_33596 = Stream.of(VeinType.values()).mapToInt(veinType -> veinType.minY).min().orElse(k);
     }
 
     public void method_36401(double[] ds, int i, int j, int k, int l) {
@@ -118,11 +118,11 @@ public class OreVeinGenerator {
         COPPER(Blocks.COPPER_ORE.getDefaultState(), Blocks.RAW_COPPER_BLOCK.getDefaultState(), Blocks.GRANITE.getDefaultState(), 0, 50),
         IRON(Blocks.DEEPSLATE_IRON_ORE.getDefaultState(), Blocks.RAW_IRON_BLOCK.getDefaultState(), Blocks.TUFF.getDefaultState(), -60, -8);
 
-        private final BlockState ore;
-        private final BlockState rawBlock;
-        private final BlockState stone;
-        private final int minY;
-        private final int maxY;
+        final BlockState ore;
+        final BlockState rawBlock;
+        final BlockState stone;
+        final int minY;
+        final int maxY;
 
         private VeinType(BlockState ore, BlockState rawBlock, BlockState stone, int minY, int maxY) {
             this.ore = ore;

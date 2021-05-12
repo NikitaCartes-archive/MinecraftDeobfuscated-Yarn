@@ -50,164 +50,6 @@ public class WoodlandMansionGenerator {
         mansionParameters.method_35472();
     }
 
-    static class ThirdFloorRoomPool
-    extends SecondFloorRoomPool {
-        private ThirdFloorRoomPool() {
-        }
-    }
-
-    static class SecondFloorRoomPool
-    extends RoomPool {
-        private SecondFloorRoomPool() {
-        }
-
-        @Override
-        public String getSmallRoom(Random random) {
-            return "1x1_b" + (random.nextInt(4) + 1);
-        }
-
-        @Override
-        public String getSmallSecretRoom(Random random) {
-            return "1x1_as" + (random.nextInt(4) + 1);
-        }
-
-        @Override
-        public String getMediumFunctionalRoom(Random random, boolean staircase) {
-            if (staircase) {
-                return "1x2_c_stairs";
-            }
-            return "1x2_c" + (random.nextInt(4) + 1);
-        }
-
-        @Override
-        public String getMediumGenericRoom(Random random, boolean staircase) {
-            if (staircase) {
-                return "1x2_d_stairs";
-            }
-            return "1x2_d" + (random.nextInt(5) + 1);
-        }
-
-        @Override
-        public String getMediumSecretRoom(Random random) {
-            return "1x2_se" + (random.nextInt(1) + 1);
-        }
-
-        @Override
-        public String getBigRoom(Random random) {
-            return "2x2_b" + (random.nextInt(5) + 1);
-        }
-
-        @Override
-        public String getBigSecretRoom(Random random) {
-            return "2x2_s1";
-        }
-    }
-
-    static class FirstFloorRoomPool
-    extends RoomPool {
-        private FirstFloorRoomPool() {
-        }
-
-        @Override
-        public String getSmallRoom(Random random) {
-            return "1x1_a" + (random.nextInt(5) + 1);
-        }
-
-        @Override
-        public String getSmallSecretRoom(Random random) {
-            return "1x1_as" + (random.nextInt(4) + 1);
-        }
-
-        @Override
-        public String getMediumFunctionalRoom(Random random, boolean staircase) {
-            return "1x2_a" + (random.nextInt(9) + 1);
-        }
-
-        @Override
-        public String getMediumGenericRoom(Random random, boolean staircase) {
-            return "1x2_b" + (random.nextInt(5) + 1);
-        }
-
-        @Override
-        public String getMediumSecretRoom(Random random) {
-            return "1x2_s" + (random.nextInt(2) + 1);
-        }
-
-        @Override
-        public String getBigRoom(Random random) {
-            return "2x2_a" + (random.nextInt(4) + 1);
-        }
-
-        @Override
-        public String getBigSecretRoom(Random random) {
-            return "2x2_s1";
-        }
-    }
-
-    static abstract class RoomPool {
-        private RoomPool() {
-        }
-
-        public abstract String getSmallRoom(Random var1);
-
-        public abstract String getSmallSecretRoom(Random var1);
-
-        public abstract String getMediumFunctionalRoom(Random var1, boolean var2);
-
-        public abstract String getMediumGenericRoom(Random var1, boolean var2);
-
-        public abstract String getMediumSecretRoom(Random var1);
-
-        public abstract String getBigRoom(Random var1);
-
-        public abstract String getBigSecretRoom(Random var1);
-    }
-
-    static class FlagMatrix {
-        private final int[][] array;
-        private final int n;
-        private final int m;
-        private final int fallback;
-
-        public FlagMatrix(int n, int m, int fallback) {
-            this.n = n;
-            this.m = m;
-            this.fallback = fallback;
-            this.array = new int[n][m];
-        }
-
-        public void set(int i, int j, int value) {
-            if (i >= 0 && i < this.n && j >= 0 && j < this.m) {
-                this.array[i][j] = value;
-            }
-        }
-
-        public void fill(int i0, int j0, int i1, int j1, int value) {
-            for (int i = j0; i <= j1; ++i) {
-                for (int j = i0; j <= i1; ++j) {
-                    this.set(j, i, value);
-                }
-            }
-        }
-
-        public int get(int i, int j) {
-            if (i >= 0 && i < this.n && j >= 0 && j < this.m) {
-                return this.array[i][j];
-            }
-            return this.fallback;
-        }
-
-        public void update(int i, int j, int expected, int newValue) {
-            if (this.get(i, j) == expected) {
-                this.set(i, j, newValue);
-            }
-        }
-
-        public boolean anyMatchAround(int i, int j, int value) {
-            return this.get(i - 1, j) == value || this.get(i + 1, j) == value || this.get(i, j + 1) == value || this.get(i, j - 1) == value;
-        }
-    }
-
     static class MansionParameters {
         private static final int field_31665 = 11;
         private static final int field_31666 = 0;
@@ -226,11 +68,11 @@ public class WoodlandMansionGenerator {
         private static final int field_31679 = 983040;
         private static final int field_31680 = 65535;
         private final Random random;
-        private final FlagMatrix field_15440;
-        private final FlagMatrix field_15439;
-        private final FlagMatrix[] field_15443;
-        private final int field_15442;
-        private final int field_15441;
+        final FlagMatrix field_15440;
+        final FlagMatrix field_15439;
+        final FlagMatrix[] field_15443;
+        final int field_15442;
+        final int field_15441;
 
         public MansionParameters(Random random) {
             this.random = random;
@@ -958,12 +800,170 @@ public class WoodlandMansionGenerator {
         }
     }
 
+    static class ThirdFloorRoomPool
+    extends SecondFloorRoomPool {
+        ThirdFloorRoomPool() {
+        }
+    }
+
+    static class SecondFloorRoomPool
+    extends RoomPool {
+        SecondFloorRoomPool() {
+        }
+
+        @Override
+        public String getSmallRoom(Random random) {
+            return "1x1_b" + (random.nextInt(4) + 1);
+        }
+
+        @Override
+        public String getSmallSecretRoom(Random random) {
+            return "1x1_as" + (random.nextInt(4) + 1);
+        }
+
+        @Override
+        public String getMediumFunctionalRoom(Random random, boolean staircase) {
+            if (staircase) {
+                return "1x2_c_stairs";
+            }
+            return "1x2_c" + (random.nextInt(4) + 1);
+        }
+
+        @Override
+        public String getMediumGenericRoom(Random random, boolean staircase) {
+            if (staircase) {
+                return "1x2_d_stairs";
+            }
+            return "1x2_d" + (random.nextInt(5) + 1);
+        }
+
+        @Override
+        public String getMediumSecretRoom(Random random) {
+            return "1x2_se" + (random.nextInt(1) + 1);
+        }
+
+        @Override
+        public String getBigRoom(Random random) {
+            return "2x2_b" + (random.nextInt(5) + 1);
+        }
+
+        @Override
+        public String getBigSecretRoom(Random random) {
+            return "2x2_s1";
+        }
+    }
+
+    static class FirstFloorRoomPool
+    extends RoomPool {
+        FirstFloorRoomPool() {
+        }
+
+        @Override
+        public String getSmallRoom(Random random) {
+            return "1x1_a" + (random.nextInt(5) + 1);
+        }
+
+        @Override
+        public String getSmallSecretRoom(Random random) {
+            return "1x1_as" + (random.nextInt(4) + 1);
+        }
+
+        @Override
+        public String getMediumFunctionalRoom(Random random, boolean staircase) {
+            return "1x2_a" + (random.nextInt(9) + 1);
+        }
+
+        @Override
+        public String getMediumGenericRoom(Random random, boolean staircase) {
+            return "1x2_b" + (random.nextInt(5) + 1);
+        }
+
+        @Override
+        public String getMediumSecretRoom(Random random) {
+            return "1x2_s" + (random.nextInt(2) + 1);
+        }
+
+        @Override
+        public String getBigRoom(Random random) {
+            return "2x2_a" + (random.nextInt(4) + 1);
+        }
+
+        @Override
+        public String getBigSecretRoom(Random random) {
+            return "2x2_s1";
+        }
+    }
+
+    static abstract class RoomPool {
+        RoomPool() {
+        }
+
+        public abstract String getSmallRoom(Random var1);
+
+        public abstract String getSmallSecretRoom(Random var1);
+
+        public abstract String getMediumFunctionalRoom(Random var1, boolean var2);
+
+        public abstract String getMediumGenericRoom(Random var1, boolean var2);
+
+        public abstract String getMediumSecretRoom(Random var1);
+
+        public abstract String getBigRoom(Random var1);
+
+        public abstract String getBigSecretRoom(Random var1);
+    }
+
+    static class FlagMatrix {
+        private final int[][] array;
+        final int n;
+        final int m;
+        private final int fallback;
+
+        public FlagMatrix(int n, int m, int fallback) {
+            this.n = n;
+            this.m = m;
+            this.fallback = fallback;
+            this.array = new int[n][m];
+        }
+
+        public void set(int i, int j, int value) {
+            if (i >= 0 && i < this.n && j >= 0 && j < this.m) {
+                this.array[i][j] = value;
+            }
+        }
+
+        public void fill(int i0, int j0, int i1, int j1, int value) {
+            for (int i = j0; i <= j1; ++i) {
+                for (int j = i0; j <= i1; ++j) {
+                    this.set(j, i, value);
+                }
+            }
+        }
+
+        public int get(int i, int j) {
+            if (i >= 0 && i < this.n && j >= 0 && j < this.m) {
+                return this.array[i][j];
+            }
+            return this.fallback;
+        }
+
+        public void update(int i, int j, int expected, int newValue) {
+            if (this.get(i, j) == expected) {
+                this.set(i, j, newValue);
+            }
+        }
+
+        public boolean anyMatchAround(int i, int j, int value) {
+            return this.get(i - 1, j) == value || this.get(i + 1, j) == value || this.get(i, j + 1) == value || this.get(i, j - 1) == value;
+        }
+    }
+
     static class GenerationPiece {
         public BlockRotation rotation;
         public BlockPos position;
         public String template;
 
-        private GenerationPiece() {
+        GenerationPiece() {
         }
     }
 

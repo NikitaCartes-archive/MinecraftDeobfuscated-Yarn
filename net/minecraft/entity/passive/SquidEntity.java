@@ -19,6 +19,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -98,6 +99,11 @@ extends WaterCreatureEntity {
 
     protected SoundEvent getSquirtSound() {
         return SoundEvents.ENTITY_SQUID_SQUIRT;
+    }
+
+    @Override
+    public boolean canBeLeashedBy(PlayerEntity player) {
+        return !this.isLeashed();
     }
 
     @Override
@@ -228,6 +234,34 @@ extends WaterCreatureEntity {
         return this.swimX != 0.0f || this.swimY != 0.0f || this.swimZ != 0.0f;
     }
 
+    class SwimGoal
+    extends Goal {
+        private final SquidEntity squid;
+
+        public SwimGoal(SquidEntity squid) {
+            this.squid = squid;
+        }
+
+        @Override
+        public boolean canStart() {
+            return true;
+        }
+
+        @Override
+        public void tick() {
+            int i = this.squid.getDespawnCounter();
+            if (i > 100) {
+                this.squid.setSwimmingVector(0.0f, 0.0f, 0.0f);
+            } else if (this.squid.getRandom().nextInt(50) == 0 || !this.squid.touchingWater || !this.squid.hasSwimmingVector()) {
+                float f = this.squid.getRandom().nextFloat() * ((float)Math.PI * 2);
+                float g = MathHelper.cos(f) * 0.2f;
+                float h = -0.1f + this.squid.getRandom().nextFloat() * 0.2f;
+                float j = MathHelper.sin(f) * 0.2f;
+                this.squid.setSwimmingVector(g, h, j);
+            }
+        }
+    }
+
     class EscapeAttackerGoal
     extends Goal {
         private static final float field_30375 = 3.0f;
@@ -235,7 +269,7 @@ extends WaterCreatureEntity {
         private static final float field_30377 = 10.0f;
         private int timer;
 
-        private EscapeAttackerGoal() {
+        EscapeAttackerGoal() {
         }
 
         @Override
@@ -281,34 +315,6 @@ extends WaterCreatureEntity {
             }
             if (this.timer % 10 == 5) {
                 SquidEntity.this.world.addParticle(ParticleTypes.BUBBLE, SquidEntity.this.getX(), SquidEntity.this.getY(), SquidEntity.this.getZ(), 0.0, 0.0, 0.0);
-            }
-        }
-    }
-
-    class SwimGoal
-    extends Goal {
-        private final SquidEntity squid;
-
-        public SwimGoal(SquidEntity squid) {
-            this.squid = squid;
-        }
-
-        @Override
-        public boolean canStart() {
-            return true;
-        }
-
-        @Override
-        public void tick() {
-            int i = this.squid.getDespawnCounter();
-            if (i > 100) {
-                this.squid.setSwimmingVector(0.0f, 0.0f, 0.0f);
-            } else if (this.squid.getRandom().nextInt(50) == 0 || !this.squid.touchingWater || !this.squid.hasSwimmingVector()) {
-                float f = this.squid.getRandom().nextFloat() * ((float)Math.PI * 2);
-                float g = MathHelper.cos(f) * 0.2f;
-                float h = -0.1f + this.squid.getRandom().nextFloat() * 0.2f;
-                float j = MathHelper.sin(f) * 0.2f;
-                this.squid.setSwimmingVector(g, h, j);
             }
         }
     }

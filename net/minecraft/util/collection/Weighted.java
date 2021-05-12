@@ -13,7 +13,7 @@ public interface Weighted {
     public Weight getWeight();
 
     public static <T> Present<T> of(T data, int weight) {
-        return new Present(data, Weight.of(weight));
+        return new Present<T>(data, Weight.of(weight));
     }
 
     public static class Present<T>
@@ -21,7 +21,7 @@ public interface Weighted {
         private final T data;
         private final Weight weight;
 
-        private Present(T data, Weight weight) {
+        Present(T data, Weight weight) {
             this.data = data;
             this.weight = weight;
         }

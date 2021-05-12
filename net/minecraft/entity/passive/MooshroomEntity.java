@@ -207,7 +207,7 @@ implements Shearable {
     }
 
     public Type getMooshroomType() {
-        return Type.fromName(this.dataTracker.get(MooshroomEntity.TYPE));
+        return Type.fromName(this.dataTracker.get(TYPE));
     }
 
     @Override
@@ -238,8 +238,8 @@ implements Shearable {
         RED("red", Blocks.RED_MUSHROOM.getDefaultState()),
         BROWN("brown", Blocks.BROWN_MUSHROOM.getDefaultState());
 
-        private final String name;
-        private final BlockState mushroom;
+        final String name;
+        final BlockState mushroom;
 
         private Type(String name, BlockState mushroom) {
             this.name = name;
@@ -250,7 +250,7 @@ implements Shearable {
             return this.mushroom;
         }
 
-        private static Type fromName(String name) {
+        static Type fromName(String name) {
             for (Type type : Type.values()) {
                 if (!type.name.equals(name)) continue;
                 return type;

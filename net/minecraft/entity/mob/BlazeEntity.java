@@ -37,6 +37,10 @@ public class BlazeEntity
 extends HostileEntity {
     private float eyeOffset = 0.5f;
     private int eyeOffsetCooldown;
+    /**
+     * The tracked flags of blazes. Only has the {@code 1} bit for {@linkplain
+     * #isFireActive() fire activation}.
+     */
     private static final TrackedData<Byte> BLAZE_FLAGS = DataTracker.registerData(BlazeEntity.class, TrackedDataHandlerRegistry.BYTE);
 
     public BlazeEntity(EntityType<? extends BlazeEntity> entityType, World world) {
@@ -140,7 +144,7 @@ extends HostileEntity {
         return (this.dataTracker.get(BLAZE_FLAGS) & 1) != 0;
     }
 
-    private void setFireActive(boolean fireActive) {
+    void setFireActive(boolean fireActive) {
         byte b = this.dataTracker.get(BLAZE_FLAGS);
         b = fireActive ? (byte)(b | 1) : (byte)(b & 0xFFFFFFFE);
         this.dataTracker.set(BLAZE_FLAGS, b);

@@ -11,7 +11,6 @@ import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_6350;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
@@ -19,6 +18,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.carver.CarverContext;
 import net.minecraft.world.gen.carver.CaveCarver;
 import net.minecraft.world.gen.carver.CaveCarverConfig;
+import net.minecraft.world.gen.chunk.AquiferSampler;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class NetherCaveCarver
@@ -45,7 +45,7 @@ extends CaveCarver {
     }
 
     @Override
-    protected boolean carveAtPoint(CarverContext carverContext, CaveCarverConfig caveCarverConfig, Chunk chunk, Function<BlockPos, Biome> function, BitSet bitSet, Random random, BlockPos.Mutable mutable, BlockPos.Mutable mutable2, class_6350 arg, MutableBoolean mutableBoolean) {
+    protected boolean carveAtPoint(CarverContext carverContext, CaveCarverConfig caveCarverConfig, Chunk chunk, Function<BlockPos, Biome> function, BitSet bitSet, Random random, BlockPos.Mutable mutable, BlockPos.Mutable mutable2, AquiferSampler aquiferSampler, MutableBoolean mutableBoolean) {
         if (this.canAlwaysCarveBlock(chunk.getBlockState(mutable))) {
             BlockState blockState = mutable.getY() <= carverContext.getMinY() + 31 ? LAVA.getBlockState() : CAVE_AIR;
             chunk.setBlockState(mutable, blockState, false);

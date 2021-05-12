@@ -64,11 +64,11 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Nullable
-    private static Text readOptionalText(PacketByteBuf buf) {
+    static Text readOptionalText(PacketByteBuf buf) {
         return buf.readBoolean() ? buf.readText() : null;
     }
 
-    private static void writeOptionalText(PacketByteBuf buf, @Nullable Text text) {
+    static void writeOptionalText(PacketByteBuf buf, @Nullable Text text) {
         if (text == null) {
             buf.writeBoolean(false);
         } else {
@@ -79,42 +79,6 @@ implements Packet<ClientPlayPacketListener> {
 
     public String toString() {
         return MoreObjects.toStringHelper(this).add("action", (Object)this.action).add("entries", this.entries).toString();
-    }
-
-    public static class Entry {
-        private final int latency;
-        private final GameMode gameMode;
-        private final GameProfile profile;
-        @Nullable
-        private final Text displayName;
-
-        public Entry(GameProfile profile, int latency, @Nullable GameMode gameMode, @Nullable Text displayName) {
-            this.profile = profile;
-            this.latency = latency;
-            this.gameMode = gameMode;
-            this.displayName = displayName;
-        }
-
-        public GameProfile getProfile() {
-            return this.profile;
-        }
-
-        public int getLatency() {
-            return this.latency;
-        }
-
-        public GameMode getGameMode() {
-            return this.gameMode;
-        }
-
-        @Nullable
-        public Text getDisplayName() {
-            return this.displayName;
-        }
-
-        public String toString() {
-            return MoreObjects.toStringHelper(this).add("latency", this.latency).add("gameMode", (Object)this.gameMode).add("profile", this.profile).add("displayName", this.displayName == null ? null : Text.Serializer.toJson(this.displayName)).toString();
-        }
     }
 
     public static enum Action {
@@ -226,6 +190,42 @@ implements Packet<ClientPlayPacketListener> {
         protected abstract Entry read(PacketByteBuf var1);
 
         protected abstract void write(PacketByteBuf var1, Entry var2);
+    }
+
+    public static class Entry {
+        private final int latency;
+        private final GameMode gameMode;
+        private final GameProfile profile;
+        @Nullable
+        private final Text displayName;
+
+        public Entry(GameProfile profile, int latency, @Nullable GameMode gameMode, @Nullable Text displayName) {
+            this.profile = profile;
+            this.latency = latency;
+            this.gameMode = gameMode;
+            this.displayName = displayName;
+        }
+
+        public GameProfile getProfile() {
+            return this.profile;
+        }
+
+        public int getLatency() {
+            return this.latency;
+        }
+
+        public GameMode getGameMode() {
+            return this.gameMode;
+        }
+
+        @Nullable
+        public Text getDisplayName() {
+            return this.displayName;
+        }
+
+        public String toString() {
+            return MoreObjects.toStringHelper(this).add("latency", this.latency).add("gameMode", (Object)this.gameMode).add("profile", this.profile).add("displayName", this.displayName == null ? null : Text.Serializer.toJson(this.displayName)).toString();
+        }
     }
 }
 

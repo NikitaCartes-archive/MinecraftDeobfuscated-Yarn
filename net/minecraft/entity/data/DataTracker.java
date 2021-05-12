@@ -68,7 +68,7 @@ public class DataTracker {
             i = j;
         }
         if (i > 254) {
-            throw new IllegalArgumentException("Data value id is too big with " + i + "! (Max is " + 254 + ")");
+            throw new IllegalArgumentException("Data value id is too big with " + i + "! (Max is 254)");
         }
         TRACKED_ENTITIES.put(entityClass, i);
         return dataHandler.create(i);
@@ -77,7 +77,7 @@ public class DataTracker {
     public <T> void startTracking(TrackedData<T> key, T initialValue) {
         int i = key.getId();
         if (i > 254) {
-            throw new IllegalArgumentException("Data value id is too big with " + i + "! (Max is " + 254 + ")");
+            throw new IllegalArgumentException("Data value id is too big with " + i + "! (Max is 254)");
         }
         if (this.entries.containsKey(i)) {
             throw new IllegalArgumentException("Duplicate id value for " + i + "!");
@@ -218,8 +218,8 @@ public class DataTracker {
     }
 
     private <T> void copyToFrom(Entry<T> entry, Entry<?> entry2) {
-        if (!Objects.equals(((Entry)entry2).data.getType(), ((Entry)entry).data.getType())) {
-            throw new IllegalStateException(String.format("Invalid entity data item type for field %d on entity %s: old=%s(%s), new=%s(%s)", ((Entry)entry).data.getId(), this.trackedEntity, ((Entry)entry).value, ((Entry)entry).value.getClass(), ((Entry)entry2).value, ((Entry)entry2).value.getClass()));
+        if (!Objects.equals(entry2.data.getType(), entry.data.getType())) {
+            throw new IllegalStateException(String.format("Invalid entity data item type for field %d on entity %s: old=%s(%s), new=%s(%s)", entry.data.getId(), this.trackedEntity, entry.value, entry.value.getClass(), entry2.value, entry2.value.getClass()));
         }
         entry.set(entry2.get());
     }
@@ -238,8 +238,8 @@ public class DataTracker {
     }
 
     public static class Entry<T> {
-        private final TrackedData<T> data;
-        private T value;
+        final TrackedData<T> data;
+        T value;
         private boolean dirty;
 
         public Entry(TrackedData<T> data, T value) {

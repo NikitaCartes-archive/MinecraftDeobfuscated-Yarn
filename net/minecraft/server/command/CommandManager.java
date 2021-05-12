@@ -196,7 +196,7 @@ public class CommandManager {
             PublishCommand.register(this.dispatcher);
         }
         this.dispatcher.findAmbiguities((commandNode, commandNode2, commandNode3, collection) -> LOGGER.warn("Ambiguity between arguments {} and {} with inputs: {}", (Object)this.dispatcher.getPath(commandNode2), (Object)this.dispatcher.getPath(commandNode3), (Object)collection));
-        this.dispatcher.setConsumer((commandContext, bl, i) -> ((ServerCommandSource)commandContext.getSource()).onCommandComplete(commandContext, bl, i));
+        this.dispatcher.setConsumer((context, success, result) -> ((ServerCommandSource)context.getSource()).onCommandComplete(context, success, result));
     }
 
     /*
@@ -263,14 +263,14 @@ public class CommandManager {
         player.networkHandler.sendPacket(new CommandTreeS2CPacket(rootCommandNode));
     }
 
-    private void makeTreeForSource(CommandNode<ServerCommandSource> tree, CommandNode<CommandSource> result, ServerCommandSource source, Map<CommandNode<ServerCommandSource>, CommandNode<CommandSource>> resultNodes) {
+    private void makeTreeForSource(CommandNode<ServerCommandSource> tree, CommandNode<CommandSource> result, ServerCommandSource source2, Map<CommandNode<ServerCommandSource>, CommandNode<CommandSource>> resultNodes) {
         for (CommandNode<ServerCommandSource> commandNode : tree.getChildren()) {
             RequiredArgumentBuilder requiredArgumentBuilder;
-            if (!commandNode.canUse(source)) continue;
+            if (!commandNode.canUse(source2)) continue;
             ArgumentBuilder<ServerCommandSource, ?> argumentBuilder = commandNode.createBuilder();
-            argumentBuilder.requires(commandSource -> true);
+            argumentBuilder.requires(source -> true);
             if (argumentBuilder.getCommand() != null) {
-                argumentBuilder.executes(commandContext -> 0);
+                argumentBuilder.executes(context -> 0);
             }
             if (argumentBuilder instanceof RequiredArgumentBuilder && (requiredArgumentBuilder = (RequiredArgumentBuilder)argumentBuilder).getSuggestionsProvider() != null) {
                 requiredArgumentBuilder.suggests(SuggestionProviders.getLocalProvider(requiredArgumentBuilder.getSuggestionsProvider()));
@@ -282,7 +282,7 @@ public class CommandManager {
             resultNodes.put(commandNode, commandNode2);
             result.addChild(commandNode2);
             if (commandNode.getChildren().isEmpty()) continue;
-            this.makeTreeForSource(commandNode, commandNode2, source, resultNodes);
+            this.makeTreeForSource(commandNode, commandNode2, source2, resultNodes);
         }
     }
 
@@ -326,9 +326,9 @@ public class CommandManager {
     public static void checkMissing() {
         RootCommandNode<ServerCommandSource> rootCommandNode = new CommandManager(RegistrationEnvironment.ALL).getDispatcher().getRoot();
         Set<ArgumentType<?>> set = ArgumentTypes.getAllArgumentTypes(rootCommandNode);
-        Set set2 = set.stream().filter(argumentType -> !ArgumentTypes.hasClass(argumentType)).collect(Collectors.toSet());
+        Set set2 = set.stream().filter(type -> !ArgumentTypes.hasClass(type)).collect(Collectors.toSet());
         if (!set2.isEmpty()) {
-            LOGGER.warn("Missing type registration for following arguments:\n {}", (Object)set2.stream().map(argumentType -> "\t" + argumentType).collect(Collectors.joining(",\n")));
+            LOGGER.warn("Missing type registration for following arguments:\n {}", (Object)set2.stream().map(type -> "\t" + type).collect(Collectors.joining(",\n")));
             throw new IllegalStateException("Unregistered argument types");
         }
     }
@@ -338,8 +338,8 @@ public class CommandManager {
         DEDICATED(false, true),
         INTEGRATED(true, false);
 
-        private final boolean integrated;
-        private final boolean dedicated;
+        final boolean integrated;
+        final boolean dedicated;
 
         private RegistrationEnvironment(boolean integrated, boolean dedicated) {
             this.integrated = integrated;

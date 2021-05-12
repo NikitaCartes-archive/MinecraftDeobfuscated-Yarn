@@ -17,7 +17,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.TitleScreen;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.AsyncTexture;
@@ -129,7 +129,7 @@ AutoCloseable {
             integer = 1;
         } else {
             Integer n = integer;
-            Integer n2 = integer = Integer.valueOf(integer + 1);
+            integer = integer + 1;
         }
         this.dynamicIdCounters.put(prefix, integer);
         Identifier identifier = new Identifier(String.format("dynamic/%s_%d", prefix, integer));
@@ -174,7 +174,7 @@ AutoCloseable {
 
     @Override
     public CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
-        return ((CompletableFuture)CompletableFuture.allOf(TitleScreen.loadTexturesAsync(this, prepareExecutor), this.loadTextureAsync(AbstractButtonWidget.WIDGETS_LOCATION, prepareExecutor)).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(void_ -> {
+        return ((CompletableFuture)CompletableFuture.allOf(TitleScreen.loadTexturesAsync(this, prepareExecutor), this.loadTextureAsync(ClickableWidget.WIDGETS_TEXTURE, prepareExecutor)).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(void_ -> {
             MissingSprite.getMissingSpriteTexture();
             RealmsMainScreen.method_23765(this.resourceContainer);
             Iterator<Map.Entry<Identifier, AbstractTexture>> iterator = this.textures.entrySet().iterator();

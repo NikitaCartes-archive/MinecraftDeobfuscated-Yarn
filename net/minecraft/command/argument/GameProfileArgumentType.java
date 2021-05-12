@@ -89,6 +89,11 @@ implements ArgumentType<GameProfileArgument> {
         return this.parse(stringReader);
     }
 
+    @FunctionalInterface
+    public static interface GameProfileArgument {
+        public Collection<GameProfile> getNames(ServerCommandSource var1) throws CommandSyntaxException;
+    }
+
     public static class SelectorBacked
     implements GameProfileArgument {
         private final EntitySelector selector;
@@ -109,11 +114,6 @@ implements ArgumentType<GameProfileArgument> {
             }
             return list2;
         }
-    }
-
-    @FunctionalInterface
-    public static interface GameProfileArgument {
-        public Collection<GameProfile> getNames(ServerCommandSource var1) throws CommandSyntaxException;
     }
 }
 

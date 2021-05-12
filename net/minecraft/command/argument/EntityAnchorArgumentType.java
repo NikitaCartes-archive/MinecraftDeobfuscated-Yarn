@@ -68,7 +68,7 @@ implements ArgumentType<EntityAnchor> {
         FEET("feet", (vec3d, entity) -> vec3d),
         EYES("eyes", (vec3d, entity) -> new Vec3d(vec3d.x, vec3d.y + (double)entity.getStandingEyeHeight(), vec3d.z));
 
-        private static final Map<String, EntityAnchor> anchors;
+        static final Map<String, EntityAnchor> anchors;
         private final String id;
         private final BiFunction<Vec3d, Entity, Vec3d> offset;
 

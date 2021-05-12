@@ -3,15 +3,15 @@
  */
 package net.minecraft.world.gen;
 
-import net.minecraft.class_6357;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.world.gen.NoiseHelper;
 import net.minecraft.world.gen.SimpleRandom;
 import net.minecraft.world.gen.WorldGenRandom;
+import net.minecraft.world.gen.chunk.WeightSampler;
 
 public class NoiseCaveSampler
-implements class_6357 {
+implements WeightSampler {
     private final int minY;
     private final DoublePerlinNoiseSampler terrainAdditionNoise;
     private final DoublePerlinNoiseSampler pillarNoise;
@@ -53,23 +53,23 @@ implements class_6357 {
     }
 
     @Override
-    public double sample(double d, int i, int j, int k) {
-        boolean bl = d < 170.0;
-        double e = this.getTunnelOffsetNoise(k, i, j);
-        double f = this.getTunnelNoise(k, i, j);
+    public double sample(double weight, int x, int y, int z) {
+        boolean bl = weight < 170.0;
+        double d = this.getTunnelOffsetNoise(z, x, y);
+        double e = this.getTunnelNoise(z, x, y);
         if (bl) {
-            return Math.min(d, (f + e) * 128.0 * 5.0);
+            return Math.min(weight, (e + d) * 128.0 * 5.0);
         }
-        double g = this.caveDensityNoise.sample(k, (double)i / 1.5, j);
-        double h = MathHelper.clamp(g + 0.25, -1.0, 1.0);
-        double l = (float)(30 - i) / 8.0f;
-        double m = h + MathHelper.clampedLerp(0.5, 0.0, l);
-        double n = this.getTerrainAdditionNoise(k, i, j);
-        double o = this.getCaveNoise(k, i, j);
-        double p = m + n;
-        double q = Math.min(p, Math.min(f, o) + e);
-        double r = Math.max(q, this.getPillarNoise(k, i, j));
-        return 128.0 * MathHelper.clamp(r, -1.0, 1.0);
+        double f = this.caveDensityNoise.sample(z, (double)x / 1.5, y);
+        double g = MathHelper.clamp(f + 0.25, -1.0, 1.0);
+        double h = (float)(30 - x) / 8.0f;
+        double i = g + MathHelper.clampedLerp(0.5, 0.0, h);
+        double j = this.getTerrainAdditionNoise(z, x, y);
+        double k = this.getCaveNoise(z, x, y);
+        double l = i + j;
+        double m = Math.min(l, Math.min(e, k) + d);
+        double n = Math.max(m, this.getPillarNoise(z, x, y));
+        return 128.0 * MathHelper.clamp(n, -1.0, 1.0);
     }
 
     private double method_35325(double d, int i, int j, int k) {
@@ -152,7 +152,7 @@ implements class_6357 {
         private CaveScaler() {
         }
 
-        private static double scaleCaves(double value) {
+        static double scaleCaves(double value) {
             if (value < -0.75) {
                 return 0.5;
             }
@@ -168,7 +168,7 @@ implements class_6357 {
             return 3.0;
         }
 
-        private static double scaleTunnels(double value) {
+        static double scaleTunnels(double value) {
             if (value < -0.5) {
                 return 0.75;
             }

@@ -165,11 +165,11 @@ implements StructureWorldAccess {
      * all players have left and the world does not contain any forced chunks.
      */
     private static final int SERVER_IDLE_COOLDOWN = 300;
-    private final List<ServerPlayerEntity> players = Lists.newArrayList();
+    final List<ServerPlayerEntity> players = Lists.newArrayList();
     private final ServerChunkManager serverChunkManager;
     private final MinecraftServer server;
     private final ServerWorldProperties worldProperties;
-    private final EntityList entityList = new EntityList();
+    final EntityList entityList = new EntityList();
     private final ServerEntityManager<Entity> entityManager;
     public boolean savingDisabled;
     private final SleepManager sleepManager;
@@ -177,14 +177,14 @@ implements StructureWorldAccess {
     private final PortalForcer portalForcer;
     private final ServerTickScheduler<Block> blockTickScheduler = new ServerTickScheduler<Block>(this, block -> block == null || block.getDefaultState().isAir(), Registry.BLOCK::getId, this::tickBlock);
     private final ServerTickScheduler<Fluid> fluidTickScheduler = new ServerTickScheduler<Fluid>(this, fluid -> fluid == null || fluid == Fluids.EMPTY, Registry.FLUID::getId, this::tickFluid);
-    private final Set<MobEntity> loadedMobs = new ObjectOpenHashSet<MobEntity>();
+    final Set<MobEntity> loadedMobs = new ObjectOpenHashSet<MobEntity>();
     protected final RaidManager raidManager;
     private final ObjectLinkedOpenHashSet<BlockEvent> syncedBlockEventQueue = new ObjectLinkedOpenHashSet();
     private boolean inBlockTick;
     private final List<Spawner> spawners;
     @Nullable
     private final EnderDragonFight enderDragonFight;
-    private final Int2ObjectMap<EnderDragonPart> dragonParts = new Int2ObjectOpenHashMap<EnderDragonPart>();
+    final Int2ObjectMap<EnderDragonPart> dragonParts = new Int2ObjectOpenHashMap<EnderDragonPart>();
     private final StructureAccessor structureAccessor;
     private final boolean shouldTickTime;
 
@@ -1054,13 +1054,12 @@ implements StructureWorldAccess {
     }
 
     public void dump(Path path) throws IOException {
-        Object info;
         ThreadedAnvilChunkStorage threadedAnvilChunkStorage = this.getChunkManager().threadedAnvilChunkStorage;
         try (BufferedWriter writer = Files.newBufferedWriter(path.resolve("stats.txt"), new OpenOption[0]);){
             writer.write(String.format("spawning_chunks: %d\n", threadedAnvilChunkStorage.getTicketManager().getSpawningChunkCount()));
-            info = this.getChunkManager().getSpawnInfo();
+            SpawnHelper.Info info = this.getChunkManager().getSpawnInfo();
             if (info != null) {
-                for (Object2IntMap.Entry entry : ((SpawnHelper.Info)info).getGroupToCount().object2IntEntrySet()) {
+                for (Object2IntMap.Entry entry : info.getGroupToCount().object2IntEntrySet()) {
                     writer.write(String.format("spawn_count.%s: %d\n", ((SpawnGroup)entry.getKey()).getName(), entry.getIntValue()));
                 }
             }
@@ -1073,58 +1072,20 @@ implements StructureWorldAccess {
         }
         CrashReport crashReport = new CrashReport("Level dump", new Exception("dummy"));
         this.addDetailsToCrashReport(crashReport);
-        BufferedWriter writer2 = Files.newBufferedWriter(path.resolve("example_crash.txt"), new OpenOption[0]);
-        info = null;
-        try {
+        try (BufferedWriter writer2 = Files.newBufferedWriter(path.resolve("example_crash.txt"), new OpenOption[0]);){
             writer2.write(crashReport.asString());
-        } catch (Throwable throwable) {
-            info = throwable;
-            throw throwable;
-        } finally {
-            if (writer2 != null) {
-                if (info != null) {
-                    try {
-                        ((Writer)writer2).close();
-                    } catch (Throwable throwable) {
-                        ((Throwable)info).addSuppressed(throwable);
-                    }
-                } else {
-                    ((Writer)writer2).close();
-                }
-            }
         }
         Path path2 = path.resolve("chunks.csv");
-        BufferedWriter writer3 = Files.newBufferedWriter(path2, new OpenOption[0]);
-        Object object = null;
-        try {
+        try (BufferedWriter writer3 = Files.newBufferedWriter(path2, new OpenOption[0]);){
             threadedAnvilChunkStorage.dump(writer3);
-        } catch (Throwable throwable) {
-            object = throwable;
-            throw throwable;
-        } finally {
-            if (writer3 != null) {
-                if (object != null) {
-                    try {
-                        ((Writer)writer3).close();
-                    } catch (Throwable throwable) {
-                        ((Throwable)object).addSuppressed(throwable);
-                    }
-                } else {
-                    ((Writer)writer3).close();
-                }
-            }
         }
         Path path3 = path.resolve("entity_chunks.csv");
-        Throwable throwable = null;
-        try (BufferedWriter writer4 = Files.newBufferedWriter(path3, new OpenOption[0]);){
-            this.entityManager.dump(writer4);
-        } catch (Throwable throwable2) {
-            Throwable throwable3 = throwable2;
-            throw throwable2;
+        try (BufferedWriter bufferedWriter = Files.newBufferedWriter(path3, new OpenOption[0]);){
+            this.entityManager.dump(bufferedWriter);
         }
         Path path4 = path.resolve("entities.csv");
-        try (BufferedWriter bufferedWriter = Files.newBufferedWriter(path4, new OpenOption[0]);){
-            ServerWorld.dumpEntities(bufferedWriter, this.getEntityLookup().iterate());
+        try (BufferedWriter writer5 = Files.newBufferedWriter(path4, new OpenOption[0]);){
+            ServerWorld.dumpEntities(writer5, this.getEntityLookup().iterate());
         }
         Path path5 = path.resolve("block_entities.csv");
         try (BufferedWriter writer6 = Files.newBufferedWriter(path5, new OpenOption[0]);){
@@ -1276,7 +1237,7 @@ implements StructureWorldAccess {
 
     final class ServerEntityHandler
     implements EntityHandler<Entity> {
-        private ServerEntityHandler() {
+        ServerEntityHandler() {
         }
 
         @Override

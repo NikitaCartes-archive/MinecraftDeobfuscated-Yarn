@@ -49,7 +49,7 @@ extends HeightProvider {
     }
 
     public String toString() {
-        return "[" + this.minOffset + '-' + this.maxOffset + ']';
+        return "[" + this.minOffset + "-" + this.maxOffset + "]";
     }
 }
 

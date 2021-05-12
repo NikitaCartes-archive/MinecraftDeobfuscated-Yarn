@@ -17,6 +17,8 @@ import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
@@ -29,11 +31,9 @@ implements BlockEntityRenderer<StructureBlockBlockEntity> {
 
     @Override
     public void render(StructureBlockBlockEntity structureBlockBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
-        double p;
         double o;
         double n;
         double m;
-        double l;
         double k;
         if (!MinecraftClient.getInstance().player.isCreativeLevelTwoOp() && !MinecraftClient.getInstance().player.isSpectator()) {
             return;
@@ -50,51 +50,46 @@ implements BlockEntityRenderer<StructureBlockBlockEntity> {
         double e = blockPos.getZ();
         double g = blockPos.getY();
         double h = g + (double)vec3i.getY();
-        switch (structureBlockBlockEntity.getMirror()) {
-            case LEFT_RIGHT: {
+        double l = switch (structureBlockBlockEntity.getMirror()) {
+            case BlockMirror.LEFT_RIGHT -> {
                 k = vec3i.getX();
-                l = -vec3i.getZ();
-                break;
+                yield -vec3i.getZ();
             }
-            case FRONT_BACK: {
+            case BlockMirror.FRONT_BACK -> {
                 k = -vec3i.getX();
-                l = vec3i.getZ();
-                break;
+                yield vec3i.getZ();
             }
-            default: {
+            default -> {
                 k = vec3i.getX();
-                l = vec3i.getZ();
+                yield vec3i.getZ();
             }
-        }
-        switch (structureBlockBlockEntity.getRotation()) {
-            case CLOCKWISE_90: {
+        };
+        double p = switch (structureBlockBlockEntity.getRotation()) {
+            case BlockRotation.CLOCKWISE_90 -> {
                 m = l < 0.0 ? d : d + 1.0;
                 n = k < 0.0 ? e + 1.0 : e;
                 o = m - l;
-                p = n + k;
-                break;
+                yield n + k;
             }
-            case CLOCKWISE_180: {
+            case BlockRotation.CLOCKWISE_180 -> {
                 m = k < 0.0 ? d : d + 1.0;
                 n = l < 0.0 ? e : e + 1.0;
                 o = m - k;
-                p = n - l;
-                break;
+                yield n - l;
             }
-            case COUNTERCLOCKWISE_90: {
+            case BlockRotation.COUNTERCLOCKWISE_90 -> {
                 m = l < 0.0 ? d + 1.0 : d;
                 n = k < 0.0 ? e : e + 1.0;
                 o = m + l;
-                p = n - k;
-                break;
+                yield n - k;
             }
-            default: {
+            default -> {
                 m = k < 0.0 ? d + 1.0 : d;
                 n = l < 0.0 ? e + 1.0 : e;
                 o = m + k;
-                p = n + l;
+                yield n + l;
             }
-        }
+        };
         float q = 1.0f;
         float r = 0.9f;
         float s = 0.5f;

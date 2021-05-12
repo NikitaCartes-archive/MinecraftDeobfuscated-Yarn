@@ -185,12 +185,12 @@ public abstract class VoxelSet {
         }
     }
 
-    public static interface PositionConsumer {
-        public void consume(Direction var1, int var2, int var3, int var4);
-    }
-
     public static interface PositionBiConsumer {
         public void consume(int var1, int var2, int var3, int var4, int var5, int var6);
+    }
+
+    public static interface PositionConsumer {
+        public void consume(Direction var1, int var2, int var3, int var4);
     }
 }
 

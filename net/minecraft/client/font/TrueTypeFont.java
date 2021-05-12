@@ -25,13 +25,13 @@ import org.lwjgl.system.MemoryUtil;
 public class TrueTypeFont
 implements Font {
     private final ByteBuffer field_21839;
-    private final STBTTFontinfo info;
-    private final float oversample;
+    final STBTTFontinfo info;
+    final float oversample;
     private final IntSet excludedCharacters = new IntArraySet();
-    private final float shiftX;
-    private final float shiftY;
-    private final float scaleFactor;
-    private final float ascent;
+    final float shiftX;
+    final float shiftY;
+    final float scaleFactor;
+    final float ascent;
 
     public TrueTypeFont(ByteBuffer byteBuffer, STBTTFontinfo info, float f, float oversample, float g, float h, String string) {
         this.field_21839 = byteBuffer;
@@ -108,13 +108,13 @@ implements Font {
         private final float advance;
         private final int glyphIndex;
 
-        private TtfGlyph(int minX, int maxX, int maxY, int minY, float advance, float bearing, int index) {
-            this.width = maxX - minX;
-            this.height = maxY - minY;
-            this.advance = advance / TrueTypeFont.this.oversample;
-            this.bearingX = (bearing + (float)minX + TrueTypeFont.this.shiftX) / TrueTypeFont.this.oversample;
-            this.ascent = (TrueTypeFont.this.ascent - (float)maxY + TrueTypeFont.this.shiftY) / TrueTypeFont.this.oversample;
-            this.glyphIndex = index;
+        TtfGlyph(int i, int j, int k, int l, float f, float g, int m) {
+            this.width = j - i;
+            this.height = k - l;
+            this.advance = f / TrueTypeFont.this.oversample;
+            this.bearingX = (g + (float)i + TrueTypeFont.this.shiftX) / TrueTypeFont.this.oversample;
+            this.ascent = (TrueTypeFont.this.ascent - (float)k + TrueTypeFont.this.shiftY) / TrueTypeFont.this.oversample;
+            this.glyphIndex = m;
         }
 
         @Override

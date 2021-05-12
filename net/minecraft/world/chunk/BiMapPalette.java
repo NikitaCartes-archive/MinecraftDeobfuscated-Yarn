@@ -6,6 +6,7 @@ package net.minecraft.world.chunk;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.collection.IdList;
@@ -98,7 +99,7 @@ implements Palette<T> {
 
     public void writeNbt(NbtList nbt) {
         for (int i = 0; i < this.getIndexBits(); ++i) {
-            nbt.add(this.elementSerializer.apply(this.map.get(i)));
+            nbt.add((NbtElement)this.elementSerializer.apply(this.map.get(i)));
         }
     }
 }

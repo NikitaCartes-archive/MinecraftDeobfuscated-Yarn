@@ -35,7 +35,7 @@ extends Block {
      * @param settings block settings
      */
     public InfestedBlock(Block regularBlock, AbstractBlock.Settings settings) {
-        super(settings.hardness(regularBlock.method_36555() / 2.0f).resistance(0.75f));
+        super(settings.hardness(regularBlock.getHardness() / 2.0f).resistance(0.75f));
         this.regularBlock = regularBlock;
         REGULAR_TO_INFESTED_BLOCK.put(regularBlock, this);
     }

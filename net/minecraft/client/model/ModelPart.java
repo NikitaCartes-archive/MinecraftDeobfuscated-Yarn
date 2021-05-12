@@ -148,53 +148,10 @@ public final class ModelPart {
         return Stream.concat(Stream.of(this), this.children.values().stream().flatMap(ModelPart::traverse));
     }
 
+    @FunctionalInterface
     @Environment(value=EnvType.CLIENT)
-    static class Vertex {
-        public final Vec3f pos;
-        public final float u;
-        public final float v;
-
-        public Vertex(float x, float y, float z, float u, float v) {
-            this(new Vec3f(x, y, z), u, v);
-        }
-
-        public Vertex remap(float u, float v) {
-            return new Vertex(this.pos, u, v);
-        }
-
-        public Vertex(Vec3f pos, float u, float v) {
-            this.pos = pos;
-            this.u = u;
-            this.v = v;
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static class Quad {
-        public final Vertex[] vertices;
-        public final Vec3f direction;
-
-        public Quad(Vertex[] vertices, float u1, float v1, float u2, float v2, float squishU, float squishV, boolean flip, Direction direction) {
-            this.vertices = vertices;
-            float f = 0.0f / squishU;
-            float g = 0.0f / squishV;
-            vertices[0] = vertices[0].remap(u2 / squishU - f, v1 / squishV + g);
-            vertices[1] = vertices[1].remap(u1 / squishU + f, v1 / squishV + g);
-            vertices[2] = vertices[2].remap(u1 / squishU + f, v2 / squishV - g);
-            vertices[3] = vertices[3].remap(u2 / squishU - f, v2 / squishV - g);
-            if (flip) {
-                int i = vertices.length;
-                for (int j = 0; j < i / 2; ++j) {
-                    Vertex vertex = vertices[j];
-                    vertices[j] = vertices[i - 1 - j];
-                    vertices[i - 1 - j] = vertex;
-                }
-            }
-            this.direction = direction.getUnitVector();
-            if (flip) {
-                this.direction.multiplyComponentwise(-1.0f, 1.0f, 1.0f);
-            }
-        }
+    public static interface CuboidConsumer {
+        public void accept(MatrixStack.Entry var1, String var2, int var3, Cuboid var4);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -275,10 +232,53 @@ public final class ModelPart {
         }
     }
 
-    @FunctionalInterface
     @Environment(value=EnvType.CLIENT)
-    public static interface CuboidConsumer {
-        public void accept(MatrixStack.Entry var1, String var2, int var3, Cuboid var4);
+    static class Vertex {
+        public final Vec3f pos;
+        public final float u;
+        public final float v;
+
+        public Vertex(float x, float y, float z, float u, float v) {
+            this(new Vec3f(x, y, z), u, v);
+        }
+
+        public Vertex remap(float u, float v) {
+            return new Vertex(this.pos, u, v);
+        }
+
+        public Vertex(Vec3f pos, float u, float v) {
+            this.pos = pos;
+            this.u = u;
+            this.v = v;
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static class Quad {
+        public final Vertex[] vertices;
+        public final Vec3f direction;
+
+        public Quad(Vertex[] vertices, float u1, float v1, float u2, float v2, float squishU, float squishV, boolean flip, Direction direction) {
+            this.vertices = vertices;
+            float f = 0.0f / squishU;
+            float g = 0.0f / squishV;
+            vertices[0] = vertices[0].remap(u2 / squishU - f, v1 / squishV + g);
+            vertices[1] = vertices[1].remap(u1 / squishU + f, v1 / squishV + g);
+            vertices[2] = vertices[2].remap(u1 / squishU + f, v2 / squishV - g);
+            vertices[3] = vertices[3].remap(u2 / squishU - f, v2 / squishV - g);
+            if (flip) {
+                int i = vertices.length;
+                for (int j = 0; j < i / 2; ++j) {
+                    Vertex vertex = vertices[j];
+                    vertices[j] = vertices[i - 1 - j];
+                    vertices[i - 1 - j] = vertex;
+                }
+            }
+            this.direction = direction.getUnitVector();
+            if (flip) {
+                this.direction.multiplyComponentwise(-1.0f, 1.0f, 1.0f);
+            }
+        }
     }
 }
 

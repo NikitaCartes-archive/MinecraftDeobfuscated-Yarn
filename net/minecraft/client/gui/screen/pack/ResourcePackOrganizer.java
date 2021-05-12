@@ -22,10 +22,10 @@ import net.minecraft.util.Identifier;
 @Environment(value=EnvType.CLIENT)
 public class ResourcePackOrganizer {
     private final ResourcePackManager resourcePackManager;
-    private final List<ResourcePackProfile> enabledPacks;
-    private final List<ResourcePackProfile> disabledPacks;
-    private final Function<ResourcePackProfile, Identifier> field_25785;
-    private final Runnable updateCallback;
+    final List<ResourcePackProfile> enabledPacks;
+    final List<ResourcePackProfile> disabledPacks;
+    final Function<ResourcePackProfile, Identifier> field_25785;
+    final Runnable updateCallback;
     private final Consumer<ResourcePackManager> applier;
 
     public ResourcePackOrganizer(Runnable updateCallback, Function<ResourcePackProfile, Identifier> function, ResourcePackManager resourcePackManager, Consumer<ResourcePackManager> consumer) {
@@ -61,38 +61,6 @@ public class ResourcePackOrganizer {
     }
 
     @Environment(value=EnvType.CLIENT)
-    class DisabledPack
-    extends AbstractPack {
-        public DisabledPack(ResourcePackProfile resourcePackProfile) {
-            super(resourcePackProfile);
-        }
-
-        @Override
-        protected List<ResourcePackProfile> getCurrentList() {
-            return ResourcePackOrganizer.this.disabledPacks;
-        }
-
-        @Override
-        protected List<ResourcePackProfile> getOppositeList() {
-            return ResourcePackOrganizer.this.enabledPacks;
-        }
-
-        @Override
-        public boolean isEnabled() {
-            return false;
-        }
-
-        @Override
-        public void enable() {
-            this.toggle();
-        }
-
-        @Override
-        public void disable() {
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
     class EnabledPack
     extends AbstractPack {
         public EnabledPack(ResourcePackProfile resourcePackProfile) {
@@ -125,6 +93,38 @@ public class ResourcePackOrganizer {
     }
 
     @Environment(value=EnvType.CLIENT)
+    class DisabledPack
+    extends AbstractPack {
+        public DisabledPack(ResourcePackProfile resourcePackProfile) {
+            super(resourcePackProfile);
+        }
+
+        @Override
+        protected List<ResourcePackProfile> getCurrentList() {
+            return ResourcePackOrganizer.this.disabledPacks;
+        }
+
+        @Override
+        protected List<ResourcePackProfile> getOppositeList() {
+            return ResourcePackOrganizer.this.enabledPacks;
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return false;
+        }
+
+        @Override
+        public void enable() {
+            this.toggle();
+        }
+
+        @Override
+        public void disable() {
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
     abstract class AbstractPack
     implements Pack {
         private final ResourcePackProfile profile;
@@ -139,7 +139,7 @@ public class ResourcePackOrganizer {
 
         @Override
         public Identifier method_30286() {
-            return (Identifier)ResourcePackOrganizer.this.field_25785.apply(this.profile);
+            return ResourcePackOrganizer.this.field_25785.apply(this.profile);
         }
 
         @Override

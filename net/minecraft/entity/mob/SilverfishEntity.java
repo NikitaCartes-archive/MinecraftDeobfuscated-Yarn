@@ -138,6 +138,60 @@ extends HostileEntity {
         return EntityGroup.ARTHROPOD;
     }
 
+    static class CallForHelpGoal
+    extends Goal {
+        private final SilverfishEntity silverfish;
+        private int delay;
+
+        public CallForHelpGoal(SilverfishEntity silverfish) {
+            this.silverfish = silverfish;
+        }
+
+        public void onHurt() {
+            if (this.delay == 0) {
+                this.delay = 20;
+            }
+        }
+
+        @Override
+        public boolean canStart() {
+            return this.delay > 0;
+        }
+
+        @Override
+        public void tick() {
+            --this.delay;
+            if (this.delay <= 0) {
+                World world = this.silverfish.world;
+                Random random = this.silverfish.getRandom();
+                BlockPos blockPos = this.silverfish.getBlockPos();
+                int i = 0;
+                block0: while (i <= 5 && i >= -5) {
+                    int j = 0;
+                    while (j <= 10 && j >= -10) {
+                        int k = 0;
+                        while (k <= 10 && k >= -10) {
+                            BlockPos blockPos2 = blockPos.add(j, i, k);
+                            BlockState blockState = world.getBlockState(blockPos2);
+                            Block block = blockState.getBlock();
+                            if (block instanceof InfestedBlock) {
+                                if (world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+                                    world.breakBlock(blockPos2, true, this.silverfish);
+                                } else {
+                                    world.setBlockState(blockPos2, ((InfestedBlock)block).toRegularState(world.getBlockState(blockPos2)), Block.NOTIFY_ALL);
+                                }
+                                if (random.nextBoolean()) break block0;
+                            }
+                            k = (k <= 0 ? 1 : 0) - k;
+                        }
+                        j = (j <= 0 ? 1 : 0) - j;
+                    }
+                    i = (i <= 0 ? 1 : 0) - i;
+                }
+            }
+        }
+    }
+
     static class WanderAndInfestGoal
     extends WanderAroundGoal {
         private Direction direction;
@@ -191,60 +245,6 @@ extends HostileEntity {
                 worldAccess.setBlockState(blockPos, InfestedBlock.fromRegularState(blockState), Block.NOTIFY_ALL);
                 this.mob.playSpawnEffects();
                 this.mob.discard();
-            }
-        }
-    }
-
-    static class CallForHelpGoal
-    extends Goal {
-        private final SilverfishEntity silverfish;
-        private int delay;
-
-        public CallForHelpGoal(SilverfishEntity silverfish) {
-            this.silverfish = silverfish;
-        }
-
-        public void onHurt() {
-            if (this.delay == 0) {
-                this.delay = 20;
-            }
-        }
-
-        @Override
-        public boolean canStart() {
-            return this.delay > 0;
-        }
-
-        @Override
-        public void tick() {
-            --this.delay;
-            if (this.delay <= 0) {
-                World world = this.silverfish.world;
-                Random random = this.silverfish.getRandom();
-                BlockPos blockPos = this.silverfish.getBlockPos();
-                int i = 0;
-                block0: while (i <= 5 && i >= -5) {
-                    int j = 0;
-                    while (j <= 10 && j >= -10) {
-                        int k = 0;
-                        while (k <= 10 && k >= -10) {
-                            BlockPos blockPos2 = blockPos.add(j, i, k);
-                            BlockState blockState = world.getBlockState(blockPos2);
-                            Block block = blockState.getBlock();
-                            if (block instanceof InfestedBlock) {
-                                if (world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
-                                    world.breakBlock(blockPos2, true, this.silverfish);
-                                } else {
-                                    world.setBlockState(blockPos2, ((InfestedBlock)block).toRegularState(world.getBlockState(blockPos2)), Block.NOTIFY_ALL);
-                                }
-                                if (random.nextBoolean()) break block0;
-                            }
-                            k = (k <= 0 ? 1 : 0) - k;
-                        }
-                        j = (j <= 0 ? 1 : 0) - j;
-                    }
-                    i = (i <= 0 ? 1 : 0) - i;
-                }
             }
         }
     }

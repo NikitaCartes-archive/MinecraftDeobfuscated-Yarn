@@ -42,7 +42,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class ServerConfigHandler {
-    private static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogManager.getLogger();
     public static final File BANNED_IPS_FILE = new File("banned-ips.txt");
     public static final File BANNED_PLAYERS_FILE = new File("banned-players.txt");
     public static final File OPERATORS_FILE = new File("ops.txt");
@@ -348,7 +348,7 @@ public class ServerConfigHandler {
         return true;
     }
 
-    private static void createDirectory(File directory) {
+    static void createDirectory(File directory) {
         if (directory.exists()) {
             if (directory.isDirectory()) {
                 return;
@@ -423,7 +423,7 @@ public class ServerConfigHandler {
         file.renameTo(file2);
     }
 
-    private static Date parseDate(String dateString, Date fallback) {
+    static Date parseDate(String dateString, Date fallback) {
         Date date;
         try {
             date = BanEntry.DATE_FORMAT.parse(dateString);
@@ -435,11 +435,11 @@ public class ServerConfigHandler {
 
     static class ServerConfigException
     extends RuntimeException {
-        private ServerConfigException(String title, Throwable other) {
+        ServerConfigException(String title, Throwable other) {
             super(title, other);
         }
 
-        private ServerConfigException(String title) {
+        ServerConfigException(String title) {
             super(title);
         }
     }

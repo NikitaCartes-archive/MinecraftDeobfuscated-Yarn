@@ -68,7 +68,7 @@ extends PersistentState {
      * Empty for the client.
      */
     private final Map<String, MapBannerMarker> banners = Maps.newHashMap();
-    private final Map<String, MapIcon> icons = Maps.newLinkedHashMap();
+    final Map<String, MapIcon> icons = Maps.newLinkedHashMap();
     private final Map<String, MapFrameMarker> frames = Maps.newHashMap();
 
     private MapState(int centerX, int centerZ, byte scale, boolean showIcons, boolean unlimitedTracking, boolean locked, RegistryKey<World> dimension) {
@@ -251,7 +251,6 @@ extends PersistentState {
     private void addIcon(MapIcon.Type type, @Nullable WorldAccess world, String key, double x, double z, double rotation, @Nullable Text text) {
         MapIcon mapIcon2;
         MapIcon mapIcon;
-        int k;
         byte d;
         int i = 1 << this.scale;
         float f = (float)(x - (double)this.centerX) / (float)i;
@@ -315,7 +314,7 @@ extends PersistentState {
 
     private void markIconsDirty() {
         this.markDirty();
-        this.updateTrackers.forEach(object -> ((PlayerUpdateTracker)object).markIconsDirty());
+        this.updateTrackers.forEach(PlayerUpdateTracker::markIconsDirty);
     }
 
     public PlayerUpdateTracker getPlayerSyncData(PlayerEntity player) {
@@ -419,8 +418,8 @@ extends PersistentState {
         private int emptyPacketsRequested;
         public int field_131;
 
-        private PlayerUpdateTracker(PlayerEntity player) {
-            this.player = player;
+        PlayerUpdateTracker(PlayerEntity playerEntity) {
+            this.player = playerEntity;
         }
 
         private UpdateData getMapUpdateData() {
@@ -438,8 +437,8 @@ extends PersistentState {
         }
 
         @Nullable
-        private Packet<?> getPacket(int mapId) {
-            Collection collection;
+        Packet<?> getPacket(int mapId) {
+            Collection<MapIcon> collection;
             UpdateData updateData;
             if (this.dirty) {
                 this.dirty = false;
@@ -459,7 +458,7 @@ extends PersistentState {
             return null;
         }
 
-        private void markDirty(int startX, int startZ) {
+        void markDirty(int startX, int startZ) {
             if (this.dirty) {
                 this.startX = Math.min(this.startX, startX);
                 this.startZ = Math.min(this.startZ, startZ);

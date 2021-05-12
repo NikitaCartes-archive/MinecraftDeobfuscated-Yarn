@@ -77,7 +77,6 @@ implements BlockEntityRenderer<BannerBlockEntity> {
             matrixStack.translate(0.5, 0.5, 0.5);
             this.pillar.visible = true;
         } else {
-            float h;
             l = bannerBlockEntity.getWorld().getTime();
             BlockState blockState = bannerBlockEntity.getCachedState();
             if (blockState.getBlock() instanceof BannerBlock) {

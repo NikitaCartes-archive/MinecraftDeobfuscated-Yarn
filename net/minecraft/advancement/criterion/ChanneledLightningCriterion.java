@@ -20,7 +20,7 @@ import net.minecraft.util.Identifier;
 
 public class ChanneledLightningCriterion
 extends AbstractCriterion<Conditions> {
-    private static final Identifier ID = new Identifier("channeled_lightning");
+    static final Identifier ID = new Identifier("channeled_lightning");
 
     @Override
     public Identifier getId() {

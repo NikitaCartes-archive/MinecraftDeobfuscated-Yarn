@@ -76,7 +76,7 @@ extends LongLinkedOpenHashSet {
         return this.buffer.isEmpty();
     }
 
-    public static class Storage
+    protected static class Storage
     extends Long2LongLinkedOpenHashMap {
         private static final int STARTING_OFFSET = MathHelper.log2(60000000);
         private static final int HORIZONTAL_COLUMN_BIT_SEPARATION = MathHelper.log2(60000000);

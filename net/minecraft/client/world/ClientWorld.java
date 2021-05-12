@@ -94,14 +94,14 @@ extends World {
      * A minor offset applied when spawning particles.
      */
     private static final double PARTICLE_Y_OFFSET = 0.05;
-    private final EntityList entityList = new EntityList();
+    final EntityList entityList = new EntityList();
     private final ClientEntityManager<Entity> entityManager = new ClientEntityManager<Entity>(Entity.class, new ClientEntityHandler());
     private final ClientPlayNetworkHandler netHandler;
     private final WorldRenderer worldRenderer;
     private final Properties clientWorldProperties;
     private final SkyProperties skyProperties;
     private final MinecraftClient client = MinecraftClient.getInstance();
-    private final List<AbstractClientPlayerEntity> players = Lists.newArrayList();
+    final List<AbstractClientPlayerEntity> players = Lists.newArrayList();
     private Scoreboard scoreboard = new Scoreboard();
     private final Map<String, MapState> mapStates = Maps.newHashMap();
     private static final long field_32640 = 0xFFFFFFL;
@@ -732,23 +732,9 @@ extends World {
     }
 
     @Environment(value=EnvType.CLIENT)
-    static enum BlockParticle {
-        BARRIER(Blocks.BARRIER, ParticleTypes.BARRIER),
-        LIGHT(Blocks.LIGHT, ParticleTypes.LIGHT);
-
-        private final Block block;
-        private final ParticleEffect particle;
-
-        private BlockParticle(Block block, ParticleEffect particle) {
-            this.block = block;
-            this.particle = particle;
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
     final class ClientEntityHandler
     implements EntityHandler<Entity> {
-        private ClientEntityHandler() {
+        ClientEntityHandler() {
         }
 
         @Override
@@ -962,6 +948,20 @@ extends World {
                 return 1.0;
             }
             return 0.03125;
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static enum BlockParticle {
+        BARRIER(Blocks.BARRIER, ParticleTypes.BARRIER),
+        LIGHT(Blocks.LIGHT, ParticleTypes.LIGHT);
+
+        final Block block;
+        final ParticleEffect particle;
+
+        private BlockParticle(Block block, ParticleEffect particle) {
+            this.block = block;
+            this.particle = particle;
         }
     }
 }

@@ -191,7 +191,7 @@ extends RealmsScreen {
         bufferBuilder.vertex(e, 80.0, 0.0).color(128, 128, 128, 255).next();
         tessellator.draw();
         RenderSystem.enableTexture();
-        RealmsDownloadLatestWorldScreen.drawCenteredString(matrices, this.textRenderer, this.progress + " %", this.width / 2, 84, 0xFFFFFF);
+        RealmsDownloadLatestWorldScreen.drawCenteredText(matrices, this.textRenderer, this.progress + " %", this.width / 2, 84, 0xFFFFFF);
     }
 
     private void drawDownloadSpeed(MatrixStack matrices) {

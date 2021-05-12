@@ -25,6 +25,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -36,7 +37,7 @@ import net.minecraft.world.WorldEvents;
 public class PowderSnowBlock
 extends Block
 implements FluidDrainable {
-    private static final int field_31216 = 12;
+    private static final float field_31216 = 0.083333336f;
     private static final float field_31217 = 0.9f;
     private static final float field_31218 = 1.5f;
     private static final float field_31219 = 2.5f;
@@ -61,21 +62,23 @@ implements FluidDrainable {
 
     @Override
     public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-        if (!(entity instanceof LivingEntity) || ((LivingEntity)entity).getBlockState().isOf(Blocks.POWDER_SNOW)) {
+        if (!(entity instanceof LivingEntity) || entity.method_36601().isOf(this)) {
             entity.slowMovement(state, new Vec3d(0.9f, 1.5, 0.9f));
+            if (world.isClient) {
+                boolean bl;
+                Random random = world.getRandom();
+                boolean bl2 = bl = entity.lastRenderX != entity.getX() || entity.lastRenderZ != entity.getZ();
+                if (bl && random.nextBoolean()) {
+                    world.addParticle(ParticleTypes.SNOWFLAKE, entity.getX(), pos.getY() + 1, entity.getZ(), MathHelper.nextBetween(random, -1.0f, 1.0f) * 0.083333336f, 0.05f, MathHelper.nextBetween(random, -1.0f, 1.0f) * 0.083333336f);
+                }
+            }
         }
         entity.setInPowderSnow(true);
         if (entity.isOnFire()) {
-            world.setBlockState(pos, Blocks.AIR.getDefaultState());
-            world.addBlockBreakParticles(pos, state);
+            world.breakBlock(pos, false);
         }
-        if (world.isClient) {
-            entity.extinguish();
-        } else {
+        if (!world.isClient) {
             entity.setOnFire(false);
-        }
-        if (!entity.isSpectator() && (entity.lastRenderX != entity.getX() || entity.lastRenderZ != entity.getZ()) && world.random.nextBoolean()) {
-            PowderSnowBlock.spawnParticles(world, new Vec3d(entity.getX(), pos.getY(), entity.getZ()));
         }
     }
 
@@ -99,17 +102,6 @@ implements FluidDrainable {
     @Override
     public VoxelShape getCameraCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return VoxelShapes.empty();
-    }
-
-    public static void spawnParticles(World world, Vec3d pos) {
-        if (!world.isClient) {
-            return;
-        }
-        Random random = world.getRandom();
-        double d = pos.y + 1.0;
-        for (int i = 0; i < random.nextInt(3); ++i) {
-            world.addParticle(ParticleTypes.SNOWFLAKE, pos.x, d, pos.z, (-1.0f + random.nextFloat() * 2.0f) / 12.0f, 0.05f, (-1.0f + random.nextFloat() * 2.0f) / 12.0f);
-        }
     }
 
     public static boolean canWalkOnPowderSnow(Entity entity) {

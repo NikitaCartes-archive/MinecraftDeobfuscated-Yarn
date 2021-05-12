@@ -91,7 +91,7 @@ public class StructureTestUtil {
                 return 3;
             }
         }
-        throw new IllegalArgumentException("Unknown rotation value, don't know how many steps it represents: " + (Object)((Object)rotation));
+        throw new IllegalArgumentException("Unknown rotation value, don't know how many steps it represents: " + rotation);
     }
 
     public static void main(String[] args) throws IOException {
@@ -156,7 +156,7 @@ public class StructureTestUtil {
         } else if (rotation == BlockRotation.COUNTERCLOCKWISE_90) {
             blockPos = pos.add(0, 0, vec3i.getX() - 1);
         } else {
-            throw new IllegalArgumentException("Invalid rotation: " + (Object)((Object)rotation));
+            throw new IllegalArgumentException("Invalid rotation: " + rotation);
         }
         StructureTestUtil.forceLoadNearbyChunks(pos, world);
         StructureTestUtil.clearArea(blockBox, pos.getY(), world);

@@ -70,45 +70,64 @@ public class StructureManager {
         this.structures.clear();
     }
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     */
     @Nullable
     private Structure loadStructureFromResource(Identifier id) {
-        Identifier identifier = new Identifier(id.getNamespace(), "structures/" + id.getPath() + field_31685);
-        try (Resource resource = this.resourceManager.getResource(identifier);){
-            Structure structure = this.readStructure(resource.getInputStream());
-            return structure;
-        } catch (FileNotFoundException fileNotFoundException) {
-            return null;
-        } catch (Throwable throwable6) {
-            LOGGER.error("Couldn't load structure {}: {}", (Object)id, (Object)throwable6.toString());
-            return null;
+        Structure structure;
+        block9: {
+            Identifier identifier = new Identifier(id.getNamespace(), "structures/" + id.getPath() + field_31685);
+            Resource resource = this.resourceManager.getResource(identifier);
+            try {
+                structure = this.readStructure(resource.getInputStream());
+                if (resource == null) break block9;
+            } catch (Throwable throwable) {
+                try {
+                    if (resource != null) {
+                        try {
+                            resource.close();
+                        } catch (Throwable throwable2) {
+                            throwable.addSuppressed(throwable2);
+                        }
+                    }
+                    throw throwable;
+                } catch (FileNotFoundException fileNotFoundException) {
+                    return null;
+                } catch (Throwable throwable3) {
+                    LOGGER.error("Couldn't load structure {}: {}", (Object)id, (Object)throwable3.toString());
+                    return null;
+                }
+            }
+            resource.close();
         }
+        return structure;
     }
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     */
     @Nullable
     private Structure loadStructureFromFile(Identifier id) {
+        Structure structure;
         if (!this.generatedPath.toFile().isDirectory()) {
             return null;
         }
         Path path = this.getAndCheckStructurePath(id, field_31685);
-        try (FileInputStream inputStream = new FileInputStream(path.toFile());){
-            Structure structure = this.readStructure(inputStream);
-            return structure;
-        } catch (FileNotFoundException fileNotFoundException) {
-            return null;
-        } catch (IOException iOException) {
-            LOGGER.error("Couldn't load structure from {}", (Object)path, (Object)iOException);
-            return null;
+        FileInputStream inputStream = new FileInputStream(path.toFile());
+        try {
+            structure = this.readStructure(inputStream);
+        } catch (Throwable throwable) {
+            try {
+                try {
+                    ((InputStream)inputStream).close();
+                } catch (Throwable throwable2) {
+                    throwable.addSuppressed(throwable2);
+                }
+                throw throwable;
+            } catch (FileNotFoundException fileNotFoundException) {
+                return null;
+            } catch (IOException iOException) {
+                LOGGER.error("Couldn't load structure from {}", (Object)path, (Object)iOException);
+                return null;
+            }
         }
+        ((InputStream)inputStream).close();
+        return structure;
     }
 
     private Structure readStructure(InputStream structureInputStream) throws IOException {

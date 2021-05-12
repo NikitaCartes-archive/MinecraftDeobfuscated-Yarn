@@ -89,7 +89,7 @@ enum AdvancementTabType {
                 return 248;
             }
         }
-        throw new UnsupportedOperationException("Don't know what this tab type is!" + (Object)((Object)this));
+        throw new UnsupportedOperationException("Don't know what this tab type is!" + this);
     }
 
     public int getTabY(int index) {
@@ -107,7 +107,7 @@ enum AdvancementTabType {
                 return this.height * index;
             }
         }
-        throw new UnsupportedOperationException("Don't know what this tab type is!" + (Object)((Object)this));
+        throw new UnsupportedOperationException("Don't know what this tab type is!" + this);
     }
 
     public boolean isClickOnTab(int screenX, int screenY, int index, double mouseX, double mouseY) {

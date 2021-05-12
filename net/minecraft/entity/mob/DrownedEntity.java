@@ -65,7 +65,7 @@ public class DrownedEntity
 extends ZombieEntity
 implements RangedAttackMob {
     public static final float field_30460 = 0.03f;
-    private boolean targetingUnderwater;
+    boolean targetingUnderwater;
     protected final SwimNavigation waterNavigation;
     protected final MobNavigation landNavigation;
 
@@ -213,7 +213,7 @@ implements RangedAttackMob {
         return !this.isSwimming();
     }
 
-    private boolean isTargetingUnderwater() {
+    boolean isTargetingUnderwater() {
         if (this.targetingUnderwater) {
             return true;
         }
@@ -309,26 +309,6 @@ implements RangedAttackMob {
         }
     }
 
-    static class DrownedAttackGoal
-    extends ZombieAttackGoal {
-        private final DrownedEntity drowned;
-
-        public DrownedAttackGoal(DrownedEntity drowned, double speed, boolean pauseWhenMobIdle) {
-            super(drowned, speed, pauseWhenMobIdle);
-            this.drowned = drowned;
-        }
-
-        @Override
-        public boolean canStart() {
-            return super.canStart() && this.drowned.canDrownedAttackTarget(this.drowned.getTarget());
-        }
-
-        @Override
-        public boolean shouldContinue() {
-            return super.shouldContinue() && this.drowned.canDrownedAttackTarget(this.drowned.getTarget());
-        }
-    }
-
     static class WanderAroundOnSurfaceGoal
     extends Goal {
         private final PathAwareEntity mob;
@@ -383,6 +363,55 @@ implements RangedAttackMob {
                 return Vec3d.ofBottomCenter(blockPos2);
             }
             return null;
+        }
+    }
+
+    static class TridentAttackGoal
+    extends ProjectileAttackGoal {
+        private final DrownedEntity drowned;
+
+        public TridentAttackGoal(RangedAttackMob rangedAttackMob, double d, int i, float f) {
+            super(rangedAttackMob, d, i, f);
+            this.drowned = (DrownedEntity)rangedAttackMob;
+        }
+
+        @Override
+        public boolean canStart() {
+            return super.canStart() && this.drowned.getMainHandStack().isOf(Items.TRIDENT);
+        }
+
+        @Override
+        public void start() {
+            super.start();
+            this.drowned.setAttacking(true);
+            this.drowned.setCurrentHand(Hand.MAIN_HAND);
+        }
+
+        @Override
+        public void stop() {
+            super.stop();
+            this.drowned.clearActiveItem();
+            this.drowned.setAttacking(false);
+        }
+    }
+
+    static class DrownedAttackGoal
+    extends ZombieAttackGoal {
+        private final DrownedEntity drowned;
+
+        public DrownedAttackGoal(DrownedEntity drowned, double speed, boolean pauseWhenMobIdle) {
+            super(drowned, speed, pauseWhenMobIdle);
+            this.drowned = drowned;
+        }
+
+        @Override
+        public boolean canStart() {
+            return super.canStart() && this.drowned.canDrownedAttackTarget(this.drowned.getTarget());
+        }
+
+        @Override
+        public boolean shouldContinue() {
+            return super.shouldContinue() && this.drowned.canDrownedAttackTarget(this.drowned.getTarget());
         }
     }
 
@@ -471,35 +500,6 @@ implements RangedAttackMob {
         @Override
         public void stop() {
             this.drowned.setTargetingUnderwater(false);
-        }
-    }
-
-    static class TridentAttackGoal
-    extends ProjectileAttackGoal {
-        private final DrownedEntity drowned;
-
-        public TridentAttackGoal(RangedAttackMob rangedAttackMob, double d, int i, float f) {
-            super(rangedAttackMob, d, i, f);
-            this.drowned = (DrownedEntity)rangedAttackMob;
-        }
-
-        @Override
-        public boolean canStart() {
-            return super.canStart() && this.drowned.getMainHandStack().isOf(Items.TRIDENT);
-        }
-
-        @Override
-        public void start() {
-            super.start();
-            this.drowned.setAttacking(true);
-            this.drowned.setCurrentHand(Hand.MAIN_HAND);
-        }
-
-        @Override
-        public void stop() {
-            super.stop();
-            this.drowned.clearActiveItem();
-            this.drowned.setAttacking(false);
         }
     }
 }

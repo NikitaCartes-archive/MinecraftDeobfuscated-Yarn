@@ -64,7 +64,7 @@ extends HeightProvider {
         if (this.plateau == 0) {
             return "triangle (" + this.minOffset + "-" + this.maxOffset + ")";
         }
-        return "trapezoid(" + this.plateau + ") in [" + this.minOffset + '-' + this.maxOffset + ']';
+        return "trapezoid(" + this.plateau + ") in [" + this.minOffset + "-" + this.maxOffset + "]";
     }
 }
 

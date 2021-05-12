@@ -45,35 +45,6 @@ implements ArgumentType<MessageFormat> {
         return this.parse(reader);
     }
 
-    public static class MessageSelector {
-        private final int start;
-        private final int end;
-        private final EntitySelector selector;
-
-        public MessageSelector(int start, int end, EntitySelector selector) {
-            this.start = start;
-            this.end = end;
-            this.selector = selector;
-        }
-
-        public int getStart() {
-            return this.start;
-        }
-
-        public int getEnd() {
-            return this.end;
-        }
-
-        public EntitySelector getSelector() {
-            return this.selector;
-        }
-
-        @Nullable
-        public Text format(ServerCommandSource source) throws CommandSyntaxException {
-            return EntitySelector.getNames(this.selector.getEntities(source));
-        }
-    }
-
     public static class MessageFormat {
         private final String contents;
         private final MessageSelector[] selectors;
@@ -141,6 +112,35 @@ implements ArgumentType<MessageFormat> {
                 reader.skip();
             }
             return new MessageFormat(string, list.toArray(new MessageSelector[list.size()]));
+        }
+    }
+
+    public static class MessageSelector {
+        private final int start;
+        private final int end;
+        private final EntitySelector selector;
+
+        public MessageSelector(int start, int end, EntitySelector selector) {
+            this.start = start;
+            this.end = end;
+            this.selector = selector;
+        }
+
+        public int getStart() {
+            return this.start;
+        }
+
+        public int getEnd() {
+            return this.end;
+        }
+
+        public EntitySelector getSelector() {
+            return this.selector;
+        }
+
+        @Nullable
+        public Text format(ServerCommandSource source) throws CommandSyntaxException {
+            return EntitySelector.getNames(this.selector.getEntities(source));
         }
     }
 }

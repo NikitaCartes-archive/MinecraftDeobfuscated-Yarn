@@ -27,7 +27,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class BlockDataObject
 implements DataCommandObject {
-    private static final SimpleCommandExceptionType INVALID_BLOCK_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.data.block.invalid"));
+    static final SimpleCommandExceptionType INVALID_BLOCK_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.data.block.invalid"));
     public static final Function<String, DataCommand.ObjectType> TYPE_FACTORY = string -> new DataCommand.ObjectType((String)string){
         final /* synthetic */ String field_13787;
         {

@@ -44,7 +44,7 @@ extends Goal {
         this.inclusionSelector = inclusionSelector;
         this.fleeingEntityNavigation = mob.getNavigation();
         this.setControls(EnumSet.of(Goal.Control.MOVE));
-        this.withinRangePredicate = new TargetPredicate().setBaseMaxDistance(distance).setPredicate(inclusionSelector.and(extraInclusionSelector));
+        this.withinRangePredicate = TargetPredicate.createAttackable().setBaseMaxDistance(distance).setPredicate(inclusionSelector.and(extraInclusionSelector));
     }
 
     public FleeEntityGoal(PathAwareEntity fleeingEntity, Class<T> classToFleeFrom, float fleeDistance, double fleeSlowSpeed, double fleeFastSpeed, Predicate<LivingEntity> inclusionSelector) {

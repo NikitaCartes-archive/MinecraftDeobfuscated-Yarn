@@ -87,25 +87,37 @@ implements DataProvider {
         return string.substring(0, string.length() - ".snbt".length());
     }
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     */
     private CompressedData toCompressedNbt(Path path, String name) {
-        try (BufferedReader bufferedReader = Files.newBufferedReader(path);){
-            String string = IOUtils.toString(bufferedReader);
-            NbtCompound nbtCompound = this.write(name, NbtHelper.method_32260(string));
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            NbtIo.writeCompressed(nbtCompound, byteArrayOutputStream);
-            byte[] bs = byteArrayOutputStream.toByteArray();
-            String string2 = SHA1.hashBytes(bs).toString();
-            String string3 = DEBUG_OUTPUT_DIRECTORY != null ? NbtHelper.toPrettyPrintedString(nbtCompound) : null;
-            CompressedData compressedData = new CompressedData(name, bs, string3, string2);
-            return compressedData;
-        } catch (Throwable throwable) {
-            throw new CompressionException(path, throwable);
+        CompressedData compressedData;
+        block8: {
+            BufferedReader bufferedReader = Files.newBufferedReader(path);
+            try {
+                String string = IOUtils.toString(bufferedReader);
+                NbtCompound nbtCompound = this.write(name, NbtHelper.method_32260(string));
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                NbtIo.writeCompressed(nbtCompound, byteArrayOutputStream);
+                byte[] bs = byteArrayOutputStream.toByteArray();
+                String string2 = SHA1.hashBytes(bs).toString();
+                String string3 = DEBUG_OUTPUT_DIRECTORY != null ? NbtHelper.toPrettyPrintedString(nbtCompound) : null;
+                compressedData = new CompressedData(name, bs, string3, string2);
+                if (bufferedReader == null) break block8;
+            } catch (Throwable throwable) {
+                try {
+                    if (bufferedReader != null) {
+                        try {
+                            bufferedReader.close();
+                        } catch (Throwable throwable2) {
+                            throwable.addSuppressed(throwable2);
+                        }
+                    }
+                    throw throwable;
+                } catch (Throwable throwable3) {
+                    throw new CompressionException(path, throwable3);
+                }
+            }
+            bufferedReader.close();
         }
+        return compressedData;
     }
 
     private void write(DataCache cache, CompressedData data, Path root) {
@@ -132,30 +144,30 @@ implements DataProvider {
         }
     }
 
-    static class CompressionException
-    extends RuntimeException {
-        public CompressionException(Path path, Throwable cause) {
-            super(path.toAbsolutePath().toString(), cause);
-        }
-    }
-
     @FunctionalInterface
     public static interface Tweaker {
         public NbtCompound write(String var1, NbtCompound var2);
     }
 
     static class CompressedData {
-        private final String name;
-        private final byte[] bytes;
+        final String name;
+        final byte[] bytes;
         @Nullable
-        private final String snbtContent;
-        private final String sha1;
+        final String snbtContent;
+        final String sha1;
 
         public CompressedData(String name, byte[] bytes, @Nullable String snbtContent, String sha1) {
             this.name = name;
             this.bytes = bytes;
             this.snbtContent = snbtContent;
             this.sha1 = sha1;
+        }
+    }
+
+    static class CompressionException
+    extends RuntimeException {
+        public CompressionException(Path path, Throwable cause) {
+            super(path.toAbsolutePath().toString(), cause);
         }
     }
 }

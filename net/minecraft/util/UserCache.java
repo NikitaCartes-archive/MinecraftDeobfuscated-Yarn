@@ -169,8 +169,8 @@ public class UserCache {
      */
     public List<Entry> load() {
         ArrayList<Entry> list = Lists.newArrayList();
-        try (BufferedReader reader2 = Files.newReader(this.cacheFile, StandardCharsets.UTF_8);){
-            JsonArray jsonArray = this.gson.fromJson((Reader)reader2, JsonArray.class);
+        try (BufferedReader reader2222 = Files.newReader(this.cacheFile, StandardCharsets.UTF_8);){
+            JsonArray jsonArray = this.gson.fromJson((Reader)reader2222, JsonArray.class);
             if (jsonArray == null) {
                 ArrayList<Entry> arrayList = list;
                 return arrayList;
@@ -183,7 +183,7 @@ public class UserCache {
                 }
             });
             return list;
-        } catch (FileNotFoundException reader2) {
+        } catch (FileNotFoundException reader2222) {
             return list;
         } catch (JsonParseException | IOException exception) {
             LOGGER.warn("Failed to load profile cache {}", (Object)this.cacheFile, (Object)exception);
@@ -252,10 +252,10 @@ public class UserCache {
 
     static class Entry {
         private final GameProfile profile;
-        private final Date expirationDate;
+        final Date expirationDate;
         private volatile long lastAccessed;
 
-        private Entry(GameProfile profile, Date expirationDate) {
+        Entry(GameProfile profile, Date expirationDate) {
             this.profile = profile;
             this.expirationDate = expirationDate;
         }

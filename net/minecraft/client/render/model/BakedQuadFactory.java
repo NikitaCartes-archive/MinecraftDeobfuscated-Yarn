@@ -135,31 +135,25 @@ public class BakedQuadFactory {
     }
 
     private void rotateVertex(Vec3f vector, @Nullable ModelRotation rotation) {
-        Vec3f vec3f2;
         Vec3f vec3f;
         if (rotation == null) {
             return;
         }
-        switch (rotation.axis) {
-            case X: {
+        Vec3f vec3f2 = switch (rotation.axis) {
+            case Direction.Axis.X -> {
                 vec3f = Vec3f.POSITIVE_X;
-                vec3f2 = new Vec3f(0.0f, 1.0f, 1.0f);
-                break;
+                yield new Vec3f(0.0f, 1.0f, 1.0f);
             }
-            case Y: {
+            case Direction.Axis.Y -> {
                 vec3f = Vec3f.POSITIVE_Y;
-                vec3f2 = new Vec3f(1.0f, 0.0f, 1.0f);
-                break;
+                yield new Vec3f(1.0f, 0.0f, 1.0f);
             }
-            case Z: {
+            case Direction.Axis.Z -> {
                 vec3f = Vec3f.POSITIVE_Z;
-                vec3f2 = new Vec3f(1.0f, 1.0f, 0.0f);
-                break;
+                yield new Vec3f(1.0f, 1.0f, 0.0f);
             }
-            default: {
-                throw new IllegalArgumentException("There are only 3 axes");
-            }
-        }
+            default -> throw new IllegalArgumentException("There are only 3 axes");
+        };
         Quaternion quaternion = vec3f.getDegreesQuaternion(rotation.angle);
         if (rotation.rescale) {
             if (Math.abs(rotation.angle) == 22.5f) {

@@ -22,7 +22,7 @@ extends EntryListWidget<E> {
     public boolean changeFocus(boolean lookForwards) {
         boolean bl = super.changeFocus(lookForwards);
         if (bl) {
-            this.ensureVisible(this.getFocused());
+            this.ensureVisible((Entry)this.getFocused());
         }
         return bl;
     }

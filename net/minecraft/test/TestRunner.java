@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
 public class TestRunner {
     private static final Logger LOGGER = LogManager.getLogger();
     private final BlockPos pos;
-    private final ServerWorld world;
+    final ServerWorld world;
     private final TestManager testManager;
     private final int sizeZ;
     private final List<GameTestState> tests;
@@ -57,7 +57,7 @@ public class TestRunner {
         this.runBatch(0);
     }
 
-    private void runBatch(final int index) {
+    void runBatch(final int index) {
         if (index >= this.batches.size()) {
             return;
         }

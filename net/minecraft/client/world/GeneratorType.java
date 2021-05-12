@@ -105,8 +105,8 @@ public abstract class GeneratorType {
     }, Optional.of(SINGLE_BIOME_SURFACE), (screen, generatorOptions) -> new CustomizeBuffetLevelScreen(screen, screen.moreOptionsDialog.getRegistryManager(), biome -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(GeneratorType.createFixedBiomeOptions(createWorldScreen.moreOptionsDialog.getRegistryManager(), generatorOptions, SINGLE_BIOME_SURFACE, biome)), GeneratorType.getFirstBiome(screen.moreOptionsDialog.getRegistryManager(), generatorOptions)), Optional.of(SINGLE_BIOME_CAVES), (screen, generatorOptions) -> new CustomizeBuffetLevelScreen(screen, screen.moreOptionsDialog.getRegistryManager(), biome -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(GeneratorType.createFixedBiomeOptions(createWorldScreen.moreOptionsDialog.getRegistryManager(), generatorOptions, SINGLE_BIOME_CAVES, biome)), GeneratorType.getFirstBiome(screen.moreOptionsDialog.getRegistryManager(), generatorOptions)), Optional.of(SINGLE_BIOME_FLOATING_ISLANDS), (screen, generatorOptions) -> new CustomizeBuffetLevelScreen(screen, screen.moreOptionsDialog.getRegistryManager(), biome -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(GeneratorType.createFixedBiomeOptions(createWorldScreen.moreOptionsDialog.getRegistryManager(), generatorOptions, SINGLE_BIOME_FLOATING_ISLANDS, biome)), GeneratorType.getFirstBiome(screen.moreOptionsDialog.getRegistryManager(), generatorOptions)));
     private final Text translationKey;
 
-    private GeneratorType(String translationKey) {
-        this.translationKey = new TranslatableText("generator." + translationKey);
+    GeneratorType(String string) {
+        this.translationKey = new TranslatableText("generator." + string);
     }
 
     private static GeneratorOptions createFixedBiomeOptions(DynamicRegistryManager registryManager, GeneratorOptions generatorOptions, GeneratorType type, Biome biome) {

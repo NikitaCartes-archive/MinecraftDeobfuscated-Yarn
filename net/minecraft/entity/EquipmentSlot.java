@@ -56,7 +56,7 @@ public enum EquipmentSlot {
             if (equipmentSlot.getType() != type || equipmentSlot.getEntitySlotId() != index) continue;
             return equipmentSlot;
         }
-        throw new IllegalArgumentException("Invalid slot '" + (Object)((Object)type) + "': " + index);
+        throw new IllegalArgumentException("Invalid slot '" + type + "': " + index);
     }
 
     public static enum Type {

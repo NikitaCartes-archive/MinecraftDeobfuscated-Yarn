@@ -48,8 +48,8 @@ extends AbstractNbtNumber {
     };
     private final long value;
 
-    private NbtLong(long value) {
-        this.value = value;
+    NbtLong(long l) {
+        this.value = l;
     }
 
     public static NbtLong of(long value) {

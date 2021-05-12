@@ -24,7 +24,7 @@ import net.minecraft.util.JsonHelper;
 
 public class InventoryChangedCriterion
 extends AbstractCriterion<Conditions> {
-    private static final Identifier ID = new Identifier("inventory_changed");
+    static final Identifier ID = new Identifier("inventory_changed");
 
     @Override
     public Identifier getId() {

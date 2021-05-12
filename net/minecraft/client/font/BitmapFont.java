@@ -31,13 +31,13 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class BitmapFont
 implements Font {
-    private static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogManager.getLogger();
     private final NativeImage image;
     private final Int2ObjectMap<BitmapFontGlyph> glyphs;
 
-    private BitmapFont(NativeImage image, Int2ObjectMap<BitmapFontGlyph> glyphs) {
-        this.image = image;
-        this.glyphs = glyphs;
+    BitmapFont(NativeImage nativeImage, Int2ObjectMap<BitmapFontGlyph> int2ObjectMap) {
+        this.image = nativeImage;
+        this.glyphs = int2ObjectMap;
     }
 
     @Override
@@ -68,15 +68,15 @@ implements Font {
         private final int advance;
         private final int ascent;
 
-        private BitmapFontGlyph(float scaleFactor, NativeImage image, int x, int y, int width, int height, int advance, int ascent) {
-            this.scaleFactor = scaleFactor;
-            this.image = image;
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-            this.advance = advance;
-            this.ascent = ascent;
+        BitmapFontGlyph(float f, NativeImage nativeImage, int i, int j, int k, int l, int m, int n) {
+            this.scaleFactor = f;
+            this.image = nativeImage;
+            this.x = i;
+            this.y = j;
+            this.width = k;
+            this.height = l;
+            this.advance = m;
+            this.ascent = n;
         }
 
         @Override
@@ -153,48 +153,49 @@ implements Font {
             return new Loader(new Identifier(JsonHelper.getString(json, "file")), i, j, list);
         }
 
-        /*
-         * Enabled aggressive block sorting
-         * Enabled unnecessary exception pruning
-         * Enabled aggressive exception aggregation
-         */
         @Override
         @Nullable
         public Font load(ResourceManager manager) {
-            try (Resource resource = manager.getResource(this.filename);){
-                NativeImage nativeImage = NativeImage.read(NativeImage.Format.ABGR, resource.getInputStream());
-                int i = nativeImage.getWidth();
-                int j = nativeImage.getHeight();
-                int k = i / this.chars.get(0).length;
-                int l = j / this.chars.size();
-                float f = (float)this.height / (float)l;
-                Int2ObjectOpenHashMap<BitmapFontGlyph> int2ObjectMap = new Int2ObjectOpenHashMap<BitmapFontGlyph>();
-                int m = 0;
-                while (true) {
-                    int n;
-                    int[] nArray;
-                    int n2;
-                    if (m < this.chars.size()) {
-                        n2 = 0;
-                        nArray = this.chars.get(m);
-                        n = nArray.length;
-                    } else {
-                        BitmapFont bitmapFont = new BitmapFont(nativeImage, int2ObjectMap);
-                        return bitmapFont;
+            BitmapFont bitmapFont;
+            block10: {
+                Resource resource = manager.getResource(this.filename);
+                try {
+                    NativeImage nativeImage = NativeImage.read(NativeImage.Format.ABGR, resource.getInputStream());
+                    int i = nativeImage.getWidth();
+                    int j = nativeImage.getHeight();
+                    int k = i / this.chars.get(0).length;
+                    int l = j / this.chars.size();
+                    float f = (float)this.height / (float)l;
+                    Int2ObjectOpenHashMap<BitmapFontGlyph> int2ObjectMap = new Int2ObjectOpenHashMap<BitmapFontGlyph>();
+                    for (int m = 0; m < this.chars.size(); ++m) {
+                        int n = 0;
+                        for (int o : this.chars.get(m)) {
+                            int q;
+                            BitmapFontGlyph bitmapFontGlyph;
+                            int p = n++;
+                            if (o == 0 || o == 32 || (bitmapFontGlyph = int2ObjectMap.put(o, new BitmapFontGlyph(f, nativeImage, p * k, m * l, k, l, (int)(0.5 + (double)((float)(q = this.findCharacterStartX(nativeImage, k, l, p, m)) * f)) + 1, this.ascent))) == null) continue;
+                            LOGGER.warn("Codepoint '{}' declared multiple times in {}", (Object)Integer.toHexString(o), (Object)this.filename);
+                        }
                     }
-                    for (int i2 = 0; i2 < n; ++i2) {
-                        int q;
-                        BitmapFontGlyph bitmapFontGlyph;
-                        int o = nArray[i2];
-                        int p = n2++;
-                        if (o == 0 || o == 32 || (bitmapFontGlyph = int2ObjectMap.put(o, new BitmapFontGlyph(f, nativeImage, p * k, m * l, k, l, (int)(0.5 + (double)((float)(q = this.findCharacterStartX(nativeImage, k, l, p, m)) * f)) + 1, this.ascent))) == null) continue;
-                        LOGGER.warn("Codepoint '{}' declared multiple times in {}", (Object)Integer.toHexString(o), (Object)this.filename);
+                    bitmapFont = new BitmapFont(nativeImage, int2ObjectMap);
+                    if (resource == null) break block10;
+                } catch (Throwable throwable) {
+                    try {
+                        if (resource != null) {
+                            try {
+                                resource.close();
+                            } catch (Throwable throwable2) {
+                                throwable.addSuppressed(throwable2);
+                            }
+                        }
+                        throw throwable;
+                    } catch (IOException iOException) {
+                        throw new RuntimeException(iOException.getMessage());
                     }
-                    ++m;
                 }
-            } catch (IOException iOException) {
-                throw new RuntimeException(iOException.getMessage());
+                resource.close();
             }
+            return bitmapFont;
         }
 
         private int findCharacterStartX(NativeImage image, int characterWidth, int characterHeight, int charPosX, int charPosY) {

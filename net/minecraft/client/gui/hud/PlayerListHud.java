@@ -194,22 +194,22 @@ extends DrawableHelper {
             boolean bl;
             RenderSystem.setShaderTexture(0, GUI_ICONS_TEXTURE);
             long m = Util.getMeasuringTimeMs();
-            if (this.showTime == entry.method_2976()) {
-                if (l < entry.method_2973()) {
+            if (this.showTime == entry.getShowTime()) {
+                if (l < entry.getHealth()) {
                     entry.method_2978(m);
                     entry.method_2975(this.inGameHud.getTicks() + 20);
-                } else if (l > entry.method_2973()) {
+                } else if (l > entry.getHealth()) {
                     entry.method_2978(m);
                     entry.method_2975(this.inGameHud.getTicks() + 10);
                 }
             }
-            if (m - entry.method_2974() > 1000L || this.showTime != entry.method_2976()) {
-                entry.method_2972(l);
+            if (m - entry.method_2974() > 1000L || this.showTime != entry.getShowTime()) {
+                entry.setHealth(l);
                 entry.method_2965(l);
                 entry.method_2978(m);
             }
-            entry.method_2964(this.showTime);
-            entry.method_2972(l);
+            entry.setShowTime(this.showTime);
+            entry.setHealth(l);
             int n = MathHelper.ceil((float)Math.max(l, entry.method_2960()) / 2.0f);
             int o = Math.max(MathHelper.ceil(l / 2), Math.max(MathHelper.ceil(entry.method_2960() / 2), 10));
             boolean bl2 = bl = entry.method_2961() > (long)this.inGameHud.getTicks() && (entry.method_2961() - (long)this.inGameHud.getTicks()) / 3L % 2L == 1L;
@@ -247,7 +247,7 @@ extends DrawableHelper {
                 }
             }
         } else {
-            String string3 = (Object)((Object)Formatting.YELLOW) + "" + l;
+            String string3 = "" + Formatting.YELLOW + l;
             this.client.textRenderer.drawWithShadow(matrices, string3, (float)(k - this.client.textRenderer.getWidth(string3)), (float)i, 0xFFFFFF);
         }
     }
@@ -268,7 +268,7 @@ extends DrawableHelper {
     @Environment(value=EnvType.CLIENT)
     static class EntryOrderComparator
     implements Comparator<PlayerListEntry> {
-        private EntryOrderComparator() {
+        EntryOrderComparator() {
         }
 
         @Override

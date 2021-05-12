@@ -47,8 +47,8 @@ public class UpgradeData {
     private static final EightWayDirection[] EIGHT_WAYS = EightWayDirection.values();
     private final EnumSet<EightWayDirection> sidesToUpgrade = EnumSet.noneOf(EightWayDirection.class);
     private final int[][] centerIndicesToUpgrade;
-    private static final Map<Block, Logic> BLOCK_TO_LOGIC = new IdentityHashMap<Block, Logic>();
-    private static final Set<Logic> CALLBACK_LOGICS = Sets.newHashSet();
+    static final Map<Block, Logic> BLOCK_TO_LOGIC = new IdentityHashMap<Block, Logic>();
+    static final Set<Logic> CALLBACK_LOGICS = Sets.newHashSet();
 
     private UpgradeData(HeightLimitView world) {
         this.centerIndicesToUpgrade = new int[world.countVerticalSections()][];
@@ -278,11 +278,11 @@ public class UpgradeData {
 
         public static final Direction[] DIRECTIONS;
 
-        private BuiltinLogic(Block ... blocks) {
+        BuiltinLogic(Block ... blocks) {
             this(false, blocks);
         }
 
-        private BuiltinLogic(boolean bl, Block ... blocks) {
+        BuiltinLogic(boolean bl, Block ... blocks) {
             for (Block block : blocks) {
                 BLOCK_TO_LOGIC.put(block, this);
             }

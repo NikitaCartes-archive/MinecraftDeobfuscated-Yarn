@@ -27,7 +27,7 @@ import org.lwjgl.system.MemoryStack;
 @Environment(value=EnvType.CLIENT)
 public class SoundEngine {
     private static final int field_31896 = 3;
-    private static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogManager.getLogger();
     private static final int field_31897 = 30;
     private long devicePointer;
     private long contextPointer;
@@ -155,6 +155,20 @@ public class SoundEngine {
     }
 
     @Environment(value=EnvType.CLIENT)
+    static interface SourceSet {
+        @Nullable
+        public Source createSource();
+
+        public boolean release(Source var1);
+
+        public void close();
+
+        public int getMaxSourceCount();
+
+        public int getSourceCount();
+    }
+
+    @Environment(value=EnvType.CLIENT)
     static class SourceSetImpl
     implements SourceSet {
         private final int maxSourceCount;
@@ -202,20 +216,6 @@ public class SoundEngine {
         public int getSourceCount() {
             return this.sources.size();
         }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static interface SourceSet {
-        @Nullable
-        public Source createSource();
-
-        public boolean release(Source var1);
-
-        public void close();
-
-        public int getMaxSourceCount();
-
-        public int getSourceCount();
     }
 
     @Environment(value=EnvType.CLIENT)

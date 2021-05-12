@@ -68,7 +68,7 @@ public class TextureStitcher {
         }
     }
 
-    private static int applyMipLevel(int size, int mipLevel) {
+    static int applyMipLevel(int size, int mipLevel) {
         return (size >> mipLevel) + ((size & (1 << mipLevel) - 1) == 0 ? 0 : 1) << mipLevel;
     }
 
@@ -114,6 +114,23 @@ public class TextureStitcher {
         slot.fit(holder);
         this.slots.add(slot);
         return true;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static class Holder {
+        public final Sprite.Info sprite;
+        public final int width;
+        public final int height;
+
+        public Holder(Sprite.Info sprite, int mipLevel) {
+            this.sprite = sprite;
+            this.width = TextureStitcher.applyMipLevel(sprite.getWidth(), mipLevel);
+            this.height = TextureStitcher.applyMipLevel(sprite.getHeight(), mipLevel);
+        }
+
+        public String toString() {
+            return "Holder{width=" + this.width + ", height=" + this.height + "}";
+        }
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -196,24 +213,7 @@ public class TextureStitcher {
         }
 
         public String toString() {
-            return "Slot{originX=" + this.x + ", originY=" + this.y + ", width=" + this.width + ", height=" + this.height + ", texture=" + this.texture + ", subSlots=" + this.subSlots + '}';
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static class Holder {
-        public final Sprite.Info sprite;
-        public final int width;
-        public final int height;
-
-        public Holder(Sprite.Info sprite, int mipLevel) {
-            this.sprite = sprite;
-            this.width = TextureStitcher.applyMipLevel(sprite.getWidth(), mipLevel);
-            this.height = TextureStitcher.applyMipLevel(sprite.getHeight(), mipLevel);
-        }
-
-        public String toString() {
-            return "Holder{width=" + this.width + ", height=" + this.height + '}';
+            return "Slot{originX=" + this.x + ", originY=" + this.y + ", width=" + this.width + ", height=" + this.height + ", texture=" + this.texture + ", subSlots=" + this.subSlots + "}";
         }
     }
 

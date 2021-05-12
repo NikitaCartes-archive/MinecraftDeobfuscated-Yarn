@@ -380,11 +380,211 @@ public abstract class AbstractBlock {
     protected abstract Block asBlock();
 
     public MapColor getDefaultMapColor() {
-        return (MapColor)this.settings.mapColorProvider.apply(this.asBlock().getDefaultState());
+        return this.settings.mapColorProvider.apply(this.asBlock().getDefaultState());
     }
 
-    public float method_36555() {
+    public float getHardness() {
         return this.settings.hardness;
+    }
+
+    public static class Settings {
+        Material material;
+        Function<BlockState, MapColor> mapColorProvider;
+        boolean collidable = true;
+        BlockSoundGroup soundGroup = BlockSoundGroup.STONE;
+        ToIntFunction<BlockState> luminance = state -> 0;
+        float resistance;
+        float hardness;
+        boolean toolRequired;
+        boolean randomTicks;
+        float slipperiness = 0.6f;
+        float velocityMultiplier = 1.0f;
+        float jumpVelocityMultiplier = 1.0f;
+        Identifier lootTableId;
+        boolean opaque = true;
+        boolean isAir;
+        TypedContextPredicate<EntityType<?>> allowsSpawningPredicate = (state, world, pos, type) -> state.isSideSolidFullSquare(world, pos, Direction.UP) && state.getLuminance() < 14;
+        ContextPredicate solidBlockPredicate = (state, world, pos) -> state.getMaterial().blocksLight() && state.isFullCube(world, pos);
+        ContextPredicate suffocationPredicate;
+        ContextPredicate blockVisionPredicate = this.suffocationPredicate = (state, world, pos) -> this.material.blocksMovement() && state.isFullCube(world, pos);
+        ContextPredicate postProcessPredicate = (state, world, pos) -> false;
+        ContextPredicate emissiveLightingPredicate = (state, world, pos) -> false;
+        boolean dynamicBounds;
+
+        private Settings(Material material, MapColor mapColorProvider) {
+            this(material, (BlockState state) -> mapColorProvider);
+        }
+
+        private Settings(Material material, Function<BlockState, MapColor> mapColorProvider) {
+            this.material = material;
+            this.mapColorProvider = mapColorProvider;
+        }
+
+        public static Settings of(Material material) {
+            return Settings.of(material, material.getColor());
+        }
+
+        public static Settings of(Material material, DyeColor color) {
+            return Settings.of(material, color.getMapColor());
+        }
+
+        public static Settings of(Material material, MapColor color) {
+            return new Settings(material, color);
+        }
+
+        public static Settings of(Material material, Function<BlockState, MapColor> mapColor) {
+            return new Settings(material, mapColor);
+        }
+
+        public static Settings copy(AbstractBlock block) {
+            Settings settings = new Settings(block.material, block.settings.mapColorProvider);
+            settings.material = block.settings.material;
+            settings.hardness = block.settings.hardness;
+            settings.resistance = block.settings.resistance;
+            settings.collidable = block.settings.collidable;
+            settings.randomTicks = block.settings.randomTicks;
+            settings.luminance = block.settings.luminance;
+            settings.mapColorProvider = block.settings.mapColorProvider;
+            settings.soundGroup = block.settings.soundGroup;
+            settings.slipperiness = block.settings.slipperiness;
+            settings.velocityMultiplier = block.settings.velocityMultiplier;
+            settings.dynamicBounds = block.settings.dynamicBounds;
+            settings.opaque = block.settings.opaque;
+            settings.isAir = block.settings.isAir;
+            settings.toolRequired = block.settings.toolRequired;
+            return settings;
+        }
+
+        public Settings noCollision() {
+            this.collidable = false;
+            this.opaque = false;
+            return this;
+        }
+
+        public Settings nonOpaque() {
+            this.opaque = false;
+            return this;
+        }
+
+        public Settings slipperiness(float slipperiness) {
+            this.slipperiness = slipperiness;
+            return this;
+        }
+
+        public Settings velocityMultiplier(float velocityMultiplier) {
+            this.velocityMultiplier = velocityMultiplier;
+            return this;
+        }
+
+        public Settings jumpVelocityMultiplier(float jumpVelocityMultiplier) {
+            this.jumpVelocityMultiplier = jumpVelocityMultiplier;
+            return this;
+        }
+
+        public Settings sounds(BlockSoundGroup soundGroup) {
+            this.soundGroup = soundGroup;
+            return this;
+        }
+
+        public Settings luminance(ToIntFunction<BlockState> luminance) {
+            this.luminance = luminance;
+            return this;
+        }
+
+        public Settings strength(float hardness, float resistance) {
+            return this.hardness(hardness).resistance(resistance);
+        }
+
+        public Settings breakInstantly() {
+            return this.strength(0.0f);
+        }
+
+        public Settings strength(float strength) {
+            this.strength(strength, strength);
+            return this;
+        }
+
+        public Settings ticksRandomly() {
+            this.randomTicks = true;
+            return this;
+        }
+
+        public Settings dynamicBounds() {
+            this.dynamicBounds = true;
+            return this;
+        }
+
+        public Settings dropsNothing() {
+            this.lootTableId = LootTables.EMPTY;
+            return this;
+        }
+
+        public Settings dropsLike(Block source) {
+            this.lootTableId = source.getLootTableId();
+            return this;
+        }
+
+        public Settings air() {
+            this.isAir = true;
+            return this;
+        }
+
+        public Settings allowsSpawning(TypedContextPredicate<EntityType<?>> predicate) {
+            this.allowsSpawningPredicate = predicate;
+            return this;
+        }
+
+        public Settings solidBlock(ContextPredicate predicate) {
+            this.solidBlockPredicate = predicate;
+            return this;
+        }
+
+        public Settings suffocates(ContextPredicate predicate) {
+            this.suffocationPredicate = predicate;
+            return this;
+        }
+
+        public Settings blockVision(ContextPredicate predicate) {
+            this.blockVisionPredicate = predicate;
+            return this;
+        }
+
+        public Settings postProcess(ContextPredicate predicate) {
+            this.postProcessPredicate = predicate;
+            return this;
+        }
+
+        public Settings emissiveLighting(ContextPredicate predicate) {
+            this.emissiveLightingPredicate = predicate;
+            return this;
+        }
+
+        public Settings requiresTool() {
+            this.toolRequired = true;
+            return this;
+        }
+
+        public Settings mapColor(MapColor color) {
+            this.mapColorProvider = state -> color;
+            return this;
+        }
+
+        public Settings hardness(float hardness) {
+            this.hardness = hardness;
+            return this;
+        }
+
+        public Settings resistance(float resistance) {
+            this.resistance = Math.max(0.0f, resistance);
+            return this;
+        }
+    }
+
+    public static enum OffsetType {
+        NONE,
+        XZ,
+        XYZ;
+
     }
 
     public static interface TypedContextPredicate<A> {
@@ -420,7 +620,7 @@ public abstract class AbstractBlock {
             this.hasSidedTransparency = block.hasSidedTransparency(this.asBlockState());
             this.isAir = settings.isAir;
             this.material = settings.material;
-            this.mapColor = (MapColor)settings.mapColorProvider.apply(this.asBlockState());
+            this.mapColor = settings.mapColorProvider.apply(this.asBlockState());
             this.hardness = settings.hardness;
             this.toolRequired = settings.toolRequired;
             this.opaque = settings.opaque;
@@ -798,25 +998,25 @@ public abstract class AbstractBlock {
             private static final Direction[] DIRECTIONS = Direction.values();
             private static final int SHAPE_TYPE_LENGTH = SideShapeType.values().length;
             protected final boolean fullOpaque;
-            private final boolean translucent;
-            private final int lightSubtracted;
+            final boolean translucent;
+            final int lightSubtracted;
             @Nullable
-            private final VoxelShape[] extrudedFaces;
+            final VoxelShape[] extrudedFaces;
             protected final VoxelShape collisionShape;
             protected final boolean exceedsCube;
             private final boolean[] solidSides;
             protected final boolean isFullCube;
 
-            private ShapeCache(BlockState state) {
-                Block block = state.getBlock();
-                this.fullOpaque = state.isOpaqueFullCube(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
-                this.translucent = block.isTranslucent(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
-                this.lightSubtracted = block.getOpacity(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
-                if (!state.isOpaque()) {
+            ShapeCache(BlockState blockState) {
+                Block block = blockState.getBlock();
+                this.fullOpaque = blockState.isOpaqueFullCube(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+                this.translucent = block.isTranslucent(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+                this.lightSubtracted = block.getOpacity(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+                if (!blockState.isOpaque()) {
                     this.extrudedFaces = null;
                 } else {
                     this.extrudedFaces = new VoxelShape[DIRECTIONS.length];
-                    VoxelShape voxelShape = block.getCullingShape(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+                    VoxelShape voxelShape = block.getCullingShape(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
                     Direction[] directionArray = DIRECTIONS;
                     int n = directionArray.length;
                     for (int i = 0; i < n; ++i) {
@@ -824,15 +1024,15 @@ public abstract class AbstractBlock {
                         this.extrudedFaces[direction.ordinal()] = VoxelShapes.extrudeFace(voxelShape, direction);
                     }
                 }
-                this.collisionShape = block.getCollisionShape(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, ShapeContext.absent());
+                this.collisionShape = block.getCollisionShape(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, ShapeContext.absent());
                 this.exceedsCube = Arrays.stream(Direction.Axis.values()).anyMatch(axis -> this.collisionShape.getMin((Direction.Axis)axis) < 0.0 || this.collisionShape.getMax((Direction.Axis)axis) > 1.0);
                 this.solidSides = new boolean[DIRECTIONS.length * SHAPE_TYPE_LENGTH];
                 for (Direction direction2 : DIRECTIONS) {
                     for (SideShapeType sideShapeType : SideShapeType.values()) {
-                        this.solidSides[ShapeCache.indexSolidSide((Direction)direction2, (SideShapeType)sideShapeType)] = sideShapeType.matches(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, direction2);
+                        this.solidSides[ShapeCache.indexSolidSide((Direction)direction2, (SideShapeType)sideShapeType)] = sideShapeType.matches(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, direction2);
                     }
                 }
-                this.isFullCube = Block.isShapeFullCube(state.getCollisionShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN));
+                this.isFullCube = Block.isShapeFullCube(blockState.getCollisionShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN));
             }
 
             public boolean isSideSolid(Direction direction, SideShapeType shapeType) {
@@ -843,206 +1043,6 @@ public abstract class AbstractBlock {
                 return direction.ordinal() * SHAPE_TYPE_LENGTH + shapeType.ordinal();
             }
         }
-    }
-
-    public static class Settings {
-        private Material material;
-        private Function<BlockState, MapColor> mapColorProvider;
-        private boolean collidable = true;
-        private BlockSoundGroup soundGroup = BlockSoundGroup.STONE;
-        private ToIntFunction<BlockState> luminance = state -> 0;
-        private float resistance;
-        private float hardness;
-        private boolean toolRequired;
-        private boolean randomTicks;
-        private float slipperiness = 0.6f;
-        private float velocityMultiplier = 1.0f;
-        private float jumpVelocityMultiplier = 1.0f;
-        private Identifier lootTableId;
-        private boolean opaque = true;
-        private boolean isAir;
-        private TypedContextPredicate<EntityType<?>> allowsSpawningPredicate = (state, world, pos, type) -> state.isSideSolidFullSquare(world, pos, Direction.UP) && state.getLuminance() < 14;
-        private ContextPredicate solidBlockPredicate = (state, world, pos) -> state.getMaterial().blocksLight() && state.isFullCube(world, pos);
-        private ContextPredicate suffocationPredicate;
-        private ContextPredicate blockVisionPredicate = this.suffocationPredicate = (state, world, pos) -> this.material.blocksMovement() && state.isFullCube(world, pos);
-        private ContextPredicate postProcessPredicate = (state, world, pos) -> false;
-        private ContextPredicate emissiveLightingPredicate = (state, world, pos) -> false;
-        private boolean dynamicBounds;
-
-        private Settings(Material material, MapColor mapColorProvider) {
-            this(material, (BlockState state) -> mapColorProvider);
-        }
-
-        private Settings(Material material, Function<BlockState, MapColor> mapColorProvider) {
-            this.material = material;
-            this.mapColorProvider = mapColorProvider;
-        }
-
-        public static Settings of(Material material) {
-            return Settings.of(material, material.getColor());
-        }
-
-        public static Settings of(Material material, DyeColor color) {
-            return Settings.of(material, color.getMapColor());
-        }
-
-        public static Settings of(Material material, MapColor color) {
-            return new Settings(material, color);
-        }
-
-        public static Settings of(Material material, Function<BlockState, MapColor> mapColor) {
-            return new Settings(material, mapColor);
-        }
-
-        public static Settings copy(AbstractBlock block) {
-            Settings settings = new Settings(block.material, block.settings.mapColorProvider);
-            settings.material = block.settings.material;
-            settings.hardness = block.settings.hardness;
-            settings.resistance = block.settings.resistance;
-            settings.collidable = block.settings.collidable;
-            settings.randomTicks = block.settings.randomTicks;
-            settings.luminance = block.settings.luminance;
-            settings.mapColorProvider = block.settings.mapColorProvider;
-            settings.soundGroup = block.settings.soundGroup;
-            settings.slipperiness = block.settings.slipperiness;
-            settings.velocityMultiplier = block.settings.velocityMultiplier;
-            settings.dynamicBounds = block.settings.dynamicBounds;
-            settings.opaque = block.settings.opaque;
-            settings.isAir = block.settings.isAir;
-            settings.toolRequired = block.settings.toolRequired;
-            return settings;
-        }
-
-        public Settings noCollision() {
-            this.collidable = false;
-            this.opaque = false;
-            return this;
-        }
-
-        public Settings nonOpaque() {
-            this.opaque = false;
-            return this;
-        }
-
-        public Settings slipperiness(float slipperiness) {
-            this.slipperiness = slipperiness;
-            return this;
-        }
-
-        public Settings velocityMultiplier(float velocityMultiplier) {
-            this.velocityMultiplier = velocityMultiplier;
-            return this;
-        }
-
-        public Settings jumpVelocityMultiplier(float jumpVelocityMultiplier) {
-            this.jumpVelocityMultiplier = jumpVelocityMultiplier;
-            return this;
-        }
-
-        public Settings sounds(BlockSoundGroup soundGroup) {
-            this.soundGroup = soundGroup;
-            return this;
-        }
-
-        public Settings luminance(ToIntFunction<BlockState> luminance) {
-            this.luminance = luminance;
-            return this;
-        }
-
-        public Settings strength(float hardness, float resistance) {
-            return this.hardness(hardness).resistance(resistance);
-        }
-
-        public Settings breakInstantly() {
-            return this.strength(0.0f);
-        }
-
-        public Settings strength(float strength) {
-            this.strength(strength, strength);
-            return this;
-        }
-
-        public Settings ticksRandomly() {
-            this.randomTicks = true;
-            return this;
-        }
-
-        public Settings dynamicBounds() {
-            this.dynamicBounds = true;
-            return this;
-        }
-
-        public Settings dropsNothing() {
-            this.lootTableId = LootTables.EMPTY;
-            return this;
-        }
-
-        public Settings dropsLike(Block source) {
-            this.lootTableId = source.getLootTableId();
-            return this;
-        }
-
-        public Settings air() {
-            this.isAir = true;
-            return this;
-        }
-
-        public Settings allowsSpawning(TypedContextPredicate<EntityType<?>> predicate) {
-            this.allowsSpawningPredicate = predicate;
-            return this;
-        }
-
-        public Settings solidBlock(ContextPredicate predicate) {
-            this.solidBlockPredicate = predicate;
-            return this;
-        }
-
-        public Settings suffocates(ContextPredicate predicate) {
-            this.suffocationPredicate = predicate;
-            return this;
-        }
-
-        public Settings blockVision(ContextPredicate predicate) {
-            this.blockVisionPredicate = predicate;
-            return this;
-        }
-
-        public Settings postProcess(ContextPredicate predicate) {
-            this.postProcessPredicate = predicate;
-            return this;
-        }
-
-        public Settings emissiveLighting(ContextPredicate predicate) {
-            this.emissiveLightingPredicate = predicate;
-            return this;
-        }
-
-        public Settings requiresTool() {
-            this.toolRequired = true;
-            return this;
-        }
-
-        public Settings mapColor(MapColor color) {
-            this.mapColorProvider = state -> color;
-            return this;
-        }
-
-        public Settings hardness(float hardness) {
-            this.hardness = hardness;
-            return this;
-        }
-
-        public Settings resistance(float resistance) {
-            this.resistance = Math.max(0.0f, resistance);
-            return this;
-        }
-    }
-
-    public static enum OffsetType {
-        NONE,
-        XZ,
-        XYZ;
-
     }
 }
 

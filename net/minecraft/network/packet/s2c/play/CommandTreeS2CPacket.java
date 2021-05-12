@@ -48,7 +48,7 @@ implements Packet<ClientPlayPacketListener> {
         List<CommandNodeData> list = buf.readList(CommandTreeS2CPacket::readCommandNode);
         CommandTreeS2CPacket.build(list);
         int i = buf.readVarInt();
-        this.commandTree = (RootCommandNode)list.get(i).node;
+        this.commandTree = (RootCommandNode)list.get((int)i).node;
     }
 
     @Override
@@ -88,7 +88,7 @@ implements Packet<ClientPlayPacketListener> {
         ObjectArrayList<CommandNode<CommandSource>> objectArrayList = new ObjectArrayList<CommandNode<CommandSource>>(nodes.size());
         objectArrayList.size(nodes.size());
         for (Object2IntMap.Entry entry : Object2IntMaps.fastIterable(nodes)) {
-            objectArrayList.set(entry.getIntValue(), (CommandNode<CommandSource>)entry.getKey());
+            objectArrayList.set(entry.getIntValue(), (CommandNode)entry.getKey());
         }
         return objectArrayList;
     }
@@ -178,13 +178,13 @@ implements Packet<ClientPlayPacketListener> {
         private final int redirectNodeIndex;
         private final int[] childNodeIndices;
         @Nullable
-        private CommandNode<CommandSource> node;
+        CommandNode<CommandSource> node;
 
-        private CommandNodeData(@Nullable ArgumentBuilder<CommandSource, ?> argumentBuilder, byte flags, int redirectNodeIndex, int[] childNodeIndices) {
+        CommandNodeData(@Nullable ArgumentBuilder<CommandSource, ?> argumentBuilder, byte b, int i, int[] is) {
             this.argumentBuilder = argumentBuilder;
-            this.flags = flags;
-            this.redirectNodeIndex = redirectNodeIndex;
-            this.childNodeIndices = childNodeIndices;
+            this.flags = b;
+            this.redirectNodeIndex = i;
+            this.childNodeIndices = is;
         }
 
         public boolean build(List<CommandNodeData> list) {

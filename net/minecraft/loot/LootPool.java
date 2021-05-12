@@ -37,15 +37,15 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 public class LootPool {
-    private final LootPoolEntry[] entries;
-    private final LootCondition[] conditions;
+    final LootPoolEntry[] entries;
+    final LootCondition[] conditions;
     private final Predicate<LootContext> predicate;
-    private final LootFunction[] functions;
+    final LootFunction[] functions;
     private final BiFunction<ItemStack, LootContext, ItemStack> javaFunctions;
-    private final LootNumberProvider rolls;
-    private final LootNumberProvider bonusRolls;
+    final LootNumberProvider rolls;
+    final LootNumberProvider bonusRolls;
 
-    private LootPool(LootPoolEntry[] entries, LootCondition[] conditions, LootFunction[] functions, LootNumberProvider rolls, LootNumberProvider bonusRolls) {
+    LootPool(LootPoolEntry[] entries, LootCondition[] conditions, LootFunction[] functions, LootNumberProvider rolls, LootNumberProvider bonusRolls) {
         this.entries = entries;
         this.conditions = conditions;
         this.predicate = LootConditionTypes.joinAnd(conditions);
@@ -114,46 +114,6 @@ public class LootPool {
         return new Builder();
     }
 
-    public static class Serializer
-    implements JsonDeserializer<LootPool>,
-    JsonSerializer<LootPool> {
-        @Override
-        public LootPool deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            JsonObject jsonObject = JsonHelper.asObject(jsonElement, "loot pool");
-            LootPoolEntry[] lootPoolEntrys = JsonHelper.deserialize(jsonObject, "entries", jsonDeserializationContext, LootPoolEntry[].class);
-            LootCondition[] lootConditions = JsonHelper.deserialize(jsonObject, "conditions", new LootCondition[0], jsonDeserializationContext, LootCondition[].class);
-            LootFunction[] lootFunctions = JsonHelper.deserialize(jsonObject, "functions", new LootFunction[0], jsonDeserializationContext, LootFunction[].class);
-            LootNumberProvider lootNumberProvider = JsonHelper.deserialize(jsonObject, "rolls", jsonDeserializationContext, LootNumberProvider.class);
-            LootNumberProvider lootNumberProvider2 = JsonHelper.deserialize(jsonObject, "bonus_rolls", ConstantLootNumberProvider.create(0.0f), jsonDeserializationContext, LootNumberProvider.class);
-            return new LootPool(lootPoolEntrys, lootConditions, lootFunctions, lootNumberProvider, lootNumberProvider2);
-        }
-
-        @Override
-        public JsonElement serialize(LootPool lootPool, Type type, JsonSerializationContext jsonSerializationContext) {
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.add("rolls", jsonSerializationContext.serialize(lootPool.rolls));
-            jsonObject.add("bonus_rolls", jsonSerializationContext.serialize(lootPool.bonusRolls));
-            jsonObject.add("entries", jsonSerializationContext.serialize(lootPool.entries));
-            if (!ArrayUtils.isEmpty(lootPool.conditions)) {
-                jsonObject.add("conditions", jsonSerializationContext.serialize(lootPool.conditions));
-            }
-            if (!ArrayUtils.isEmpty(lootPool.functions)) {
-                jsonObject.add("functions", jsonSerializationContext.serialize(lootPool.functions));
-            }
-            return jsonObject;
-        }
-
-        @Override
-        public /* synthetic */ JsonElement serialize(Object entry, Type unused, JsonSerializationContext context) {
-            return this.serialize((LootPool)entry, unused, context);
-        }
-
-        @Override
-        public /* synthetic */ Object deserialize(JsonElement json, Type unused, JsonDeserializationContext context) throws JsonParseException {
-            return this.deserialize(json, unused, context);
-        }
-    }
-
     public static class Builder
     implements LootFunctionConsumingBuilder<Builder>,
     LootConditionConsumingBuilder<Builder> {
@@ -215,6 +175,46 @@ public class LootPool {
         @Override
         public /* synthetic */ Object conditionally(LootCondition.Builder condition) {
             return this.conditionally(condition);
+        }
+    }
+
+    public static class Serializer
+    implements JsonDeserializer<LootPool>,
+    JsonSerializer<LootPool> {
+        @Override
+        public LootPool deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            JsonObject jsonObject = JsonHelper.asObject(jsonElement, "loot pool");
+            LootPoolEntry[] lootPoolEntrys = JsonHelper.deserialize(jsonObject, "entries", jsonDeserializationContext, LootPoolEntry[].class);
+            LootCondition[] lootConditions = JsonHelper.deserialize(jsonObject, "conditions", new LootCondition[0], jsonDeserializationContext, LootCondition[].class);
+            LootFunction[] lootFunctions = JsonHelper.deserialize(jsonObject, "functions", new LootFunction[0], jsonDeserializationContext, LootFunction[].class);
+            LootNumberProvider lootNumberProvider = JsonHelper.deserialize(jsonObject, "rolls", jsonDeserializationContext, LootNumberProvider.class);
+            LootNumberProvider lootNumberProvider2 = JsonHelper.deserialize(jsonObject, "bonus_rolls", ConstantLootNumberProvider.create(0.0f), jsonDeserializationContext, LootNumberProvider.class);
+            return new LootPool(lootPoolEntrys, lootConditions, lootFunctions, lootNumberProvider, lootNumberProvider2);
+        }
+
+        @Override
+        public JsonElement serialize(LootPool lootPool, Type type, JsonSerializationContext jsonSerializationContext) {
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.add("rolls", jsonSerializationContext.serialize(lootPool.rolls));
+            jsonObject.add("bonus_rolls", jsonSerializationContext.serialize(lootPool.bonusRolls));
+            jsonObject.add("entries", jsonSerializationContext.serialize(lootPool.entries));
+            if (!ArrayUtils.isEmpty(lootPool.conditions)) {
+                jsonObject.add("conditions", jsonSerializationContext.serialize(lootPool.conditions));
+            }
+            if (!ArrayUtils.isEmpty(lootPool.functions)) {
+                jsonObject.add("functions", jsonSerializationContext.serialize(lootPool.functions));
+            }
+            return jsonObject;
+        }
+
+        @Override
+        public /* synthetic */ JsonElement serialize(Object entry, Type unused, JsonSerializationContext context) {
+            return this.serialize((LootPool)entry, unused, context);
+        }
+
+        @Override
+        public /* synthetic */ Object deserialize(JsonElement json, Type unused, JsonDeserializationContext context) throws JsonParseException {
+            return this.deserialize(json, unused, context);
         }
     }
 }

@@ -70,7 +70,7 @@ extends TorchBlock {
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         boolean bl = this.shouldUnpower(world, pos, state);
         List<BurnoutEntry> list = BURNOUT_MAP.get(world);
-        while (list != null && !list.isEmpty() && world.getTime() - list.get(0).time > 60L) {
+        while (list != null && !list.isEmpty() && world.getTime() - list.get((int)0).time > 60L) {
             list.remove(0);
         }
         if (state.get(LIT).booleanValue()) {
@@ -137,8 +137,8 @@ extends TorchBlock {
     }
 
     public static class BurnoutEntry {
-        private final BlockPos pos;
-        private final long time;
+        final BlockPos pos;
+        final long time;
 
         public BurnoutEntry(BlockPos pos, long time) {
             this.pos = pos;

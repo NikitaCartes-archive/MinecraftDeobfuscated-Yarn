@@ -140,7 +140,7 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
         return this.pointOfInterestDistanceTracker.getLevel(pos.asLong());
     }
 
-    private boolean isOccupied(long pos) {
+    boolean isOccupied(long pos) {
         Optional optional = this.getIfLoaded(pos);
         if (optional == null) {
             return false;

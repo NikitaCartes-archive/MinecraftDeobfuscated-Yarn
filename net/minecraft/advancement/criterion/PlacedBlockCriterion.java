@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class PlacedBlockCriterion
 extends AbstractCriterion<Conditions> {
-    private static final Identifier ID = new Identifier("placed_block");
+    static final Identifier ID = new Identifier("placed_block");
 
     @Override
     public Identifier getId() {

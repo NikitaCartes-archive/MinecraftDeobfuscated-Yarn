@@ -18,7 +18,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class TargetHitCriterion
 extends AbstractCriterion<Conditions> {
-    private static final Identifier ID = new Identifier("target_hit");
+    static final Identifier ID = new Identifier("target_hit");
 
     @Override
     public Identifier getId() {

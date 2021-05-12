@@ -21,6 +21,7 @@ import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.JigsawGeneratingC2SPacket;
 import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
 import net.minecraft.network.packet.c2s.play.PickFromInventoryC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayPongC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInputC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
@@ -77,6 +78,8 @@ extends PacketListener {
     public void onKeepAlive(KeepAliveC2SPacket var1);
 
     public void onPlayerMove(PlayerMoveC2SPacket var1);
+
+    public void onPong(PlayPongC2SPacket var1);
 
     public void onPlayerAbilities(UpdatePlayerAbilitiesC2SPacket var1);
 

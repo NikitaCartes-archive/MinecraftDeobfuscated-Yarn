@@ -61,7 +61,7 @@ extends MobEntity
 implements Monster {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final TrackedData<Integer> PHASE_TYPE = DataTracker.registerData(EnderDragonEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private static final TargetPredicate CLOSE_PLAYER_PREDICATE = new TargetPredicate().setBaseMaxDistance(64.0);
+    private static final TargetPredicate CLOSE_PLAYER_PREDICATE = TargetPredicate.createAttackable().setBaseMaxDistance(64.0);
     private static final int MAX_HEALTH = 200;
     private static final int field_30429 = 400;
     private static final float field_30430 = 0.25f;
@@ -167,9 +167,6 @@ implements Monster {
         int ad;
         float q;
         float p;
-        double k;
-        double j;
-        double e;
         this.addAirTravelEffects();
         if (this.world.isClient) {
             this.setHealth(this.getHealth());

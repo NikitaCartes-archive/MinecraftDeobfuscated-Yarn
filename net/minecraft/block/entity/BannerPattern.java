@@ -62,7 +62,7 @@ public enum BannerPattern {
     public static final int LOOM_APPLICABLE_COUNT;
     private final boolean hasPatternItem;
     private final String name;
-    private final String id;
+    final String id;
 
     private BannerPattern(String name, String id) {
         this(name, id, false);

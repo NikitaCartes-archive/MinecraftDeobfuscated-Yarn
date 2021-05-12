@@ -28,7 +28,7 @@ extends LightStorage<Data> {
         return chunkNibbleArray.get(ChunkSectionPos.getLocalCoord(BlockPos.unpackLongX(blockPos)), ChunkSectionPos.getLocalCoord(BlockPos.unpackLongY(blockPos)), ChunkSectionPos.getLocalCoord(BlockPos.unpackLongZ(blockPos)));
     }
 
-    public static final class Data
+    protected static final class Data
     extends ChunkToNibbleArrayMap<Data> {
         public Data(Long2ObjectOpenHashMap<ChunkNibbleArray> long2ObjectOpenHashMap) {
             super(long2ObjectOpenHashMap);

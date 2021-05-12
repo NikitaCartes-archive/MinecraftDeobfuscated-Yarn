@@ -34,7 +34,7 @@ extends Item {
     @Override
     public String getTranslationKey(ItemStack stack) {
         if (stack.getSubTag("BlockEntityTag") != null) {
-            return this.getTranslationKey() + '.' + ShieldItem.getColor(stack).getName();
+            return this.getTranslationKey() + "." + ShieldItem.getColor(stack).getName();
         }
         return super.getTranslationKey(stack);
     }

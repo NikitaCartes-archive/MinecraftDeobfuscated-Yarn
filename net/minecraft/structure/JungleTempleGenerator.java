@@ -229,7 +229,7 @@ extends StructurePieceWithDimensions {
 
     static class CobblestoneRandomizer
     extends StructurePiece.BlockRandomizer {
-        private CobblestoneRandomizer() {
+        CobblestoneRandomizer() {
         }
 
         @Override

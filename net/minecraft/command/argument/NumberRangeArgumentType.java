@@ -22,17 +22,17 @@ extends ArgumentType<T> {
         return new FloatRangeArgumentType();
     }
 
-    public static class FloatRangeArgumentType
-    implements NumberRangeArgumentType<NumberRange.FloatRange> {
-        private static final Collection<String> EXAMPLES = Arrays.asList("0..5.2", "0", "-5.4", "-100.76..", "..100");
+    public static class IntRangeArgumentType
+    implements NumberRangeArgumentType<NumberRange.IntRange> {
+        private static final Collection<String> EXAMPLES = Arrays.asList("0..5", "0", "-5", "-100..", "..100");
 
-        public static NumberRange.FloatRange getRangeArgument(CommandContext<ServerCommandSource> context, String name) {
-            return context.getArgument(name, NumberRange.FloatRange.class);
+        public static NumberRange.IntRange getRangeArgument(CommandContext<ServerCommandSource> context, String name) {
+            return context.getArgument(name, NumberRange.IntRange.class);
         }
 
         @Override
-        public NumberRange.FloatRange parse(StringReader stringReader) throws CommandSyntaxException {
-            return NumberRange.FloatRange.parse(stringReader);
+        public NumberRange.IntRange parse(StringReader stringReader) throws CommandSyntaxException {
+            return NumberRange.IntRange.parse(stringReader);
         }
 
         @Override
@@ -46,17 +46,17 @@ extends ArgumentType<T> {
         }
     }
 
-    public static class IntRangeArgumentType
-    implements NumberRangeArgumentType<NumberRange.IntRange> {
-        private static final Collection<String> EXAMPLES = Arrays.asList("0..5", "0", "-5", "-100..", "..100");
+    public static class FloatRangeArgumentType
+    implements NumberRangeArgumentType<NumberRange.FloatRange> {
+        private static final Collection<String> EXAMPLES = Arrays.asList("0..5.2", "0", "-5.4", "-100.76..", "..100");
 
-        public static NumberRange.IntRange getRangeArgument(CommandContext<ServerCommandSource> context, String name) {
-            return context.getArgument(name, NumberRange.IntRange.class);
+        public static NumberRange.FloatRange getRangeArgument(CommandContext<ServerCommandSource> context, String name) {
+            return context.getArgument(name, NumberRange.FloatRange.class);
         }
 
         @Override
-        public NumberRange.IntRange parse(StringReader stringReader) throws CommandSyntaxException {
-            return NumberRange.IntRange.parse(stringReader);
+        public NumberRange.FloatRange parse(StringReader stringReader) throws CommandSyntaxException {
+            return NumberRange.FloatRange.parse(stringReader);
         }
 
         @Override

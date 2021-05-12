@@ -29,9 +29,9 @@ public class SpectatorMenu {
     private static final SpectatorMenuCommand NEXT_PAGE_COMMAND = new ChangePageSpectatorMenuCommand(1, true);
     private static final SpectatorMenuCommand DISABLED_NEXT_PAGE_COMMAND = new ChangePageSpectatorMenuCommand(1, false);
     private static final int field_32443 = 8;
-    private static final Text CLOSE_TEXT = new TranslatableText("spectatorMenu.close");
-    private static final Text PREVIOUS_PAGE_TEXT = new TranslatableText("spectatorMenu.previous_page");
-    private static final Text NEXT_PAGE_TEXT = new TranslatableText("spectatorMenu.next_page");
+    static final Text CLOSE_TEXT = new TranslatableText("spectatorMenu.close");
+    static final Text PREVIOUS_PAGE_TEXT = new TranslatableText("spectatorMenu.previous_page");
+    static final Text NEXT_PAGE_TEXT = new TranslatableText("spectatorMenu.next_page");
     public static final SpectatorMenuCommand BLANK_COMMAND = new SpectatorMenuCommand(){
 
         @Override
@@ -55,7 +55,7 @@ public class SpectatorMenu {
     private final SpectatorMenuCloseCallback closeCallback;
     private SpectatorMenuCommandGroup currentGroup = new RootSpectatorCommandGroup();
     private int selectedSlot = -1;
-    private int page;
+    int page;
 
     public SpectatorMenu(SpectatorMenuCloseCallback closeCallback) {
         this.closeCallback = closeCallback;
@@ -127,46 +127,9 @@ public class SpectatorMenu {
     }
 
     @Environment(value=EnvType.CLIENT)
-    static class ChangePageSpectatorMenuCommand
-    implements SpectatorMenuCommand {
-        private final int direction;
-        private final boolean enabled;
-
-        public ChangePageSpectatorMenuCommand(int direction, boolean enabled) {
-            this.direction = direction;
-            this.enabled = enabled;
-        }
-
-        @Override
-        public void use(SpectatorMenu menu) {
-            menu.page = menu.page + this.direction;
-        }
-
-        @Override
-        public Text getName() {
-            return this.direction < 0 ? PREVIOUS_PAGE_TEXT : NEXT_PAGE_TEXT;
-        }
-
-        @Override
-        public void renderIcon(MatrixStack matrices, float f, int i) {
-            RenderSystem.setShaderTexture(0, SpectatorHud.SPECTATOR_TEXTURE);
-            if (this.direction < 0) {
-                DrawableHelper.drawTexture(matrices, 0, 0, 144.0f, 0.0f, 16, 16, 256, 256);
-            } else {
-                DrawableHelper.drawTexture(matrices, 0, 0, 160.0f, 0.0f, 16, 16, 256, 256);
-            }
-        }
-
-        @Override
-        public boolean isEnabled() {
-            return this.enabled;
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
     static class CloseSpectatorMenuCommand
     implements SpectatorMenuCommand {
-        private CloseSpectatorMenuCommand() {
+        CloseSpectatorMenuCommand() {
         }
 
         @Override
@@ -188,6 +151,43 @@ public class SpectatorMenu {
         @Override
         public boolean isEnabled() {
             return true;
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static class ChangePageSpectatorMenuCommand
+    implements SpectatorMenuCommand {
+        private final int direction;
+        private final boolean enabled;
+
+        public ChangePageSpectatorMenuCommand(int direction, boolean enabled) {
+            this.direction = direction;
+            this.enabled = enabled;
+        }
+
+        @Override
+        public void use(SpectatorMenu menu) {
+            menu.page += this.direction;
+        }
+
+        @Override
+        public Text getName() {
+            return this.direction < 0 ? PREVIOUS_PAGE_TEXT : NEXT_PAGE_TEXT;
+        }
+
+        @Override
+        public void renderIcon(MatrixStack matrices, float f, int i) {
+            RenderSystem.setShaderTexture(0, SpectatorHud.SPECTATOR_TEXTURE);
+            if (this.direction < 0) {
+                DrawableHelper.drawTexture(matrices, 0, 0, 144.0f, 0.0f, 16, 16, 256, 256);
+            } else {
+                DrawableHelper.drawTexture(matrices, 0, 0, 160.0f, 0.0f, 16, 16, 256, 256);
+            }
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return this.enabled;
         }
     }
 }

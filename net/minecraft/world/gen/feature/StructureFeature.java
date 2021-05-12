@@ -134,7 +134,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
         int i = nbt.getInt("references");
         NbtList nbtList = nbt.getList("Children", 10);
         try {
-            StructureStart<?> structureStart = super.createStart(chunkPos, i, worldSeed);
+            StructureStart<?> structureStart = structureFeature.createStart(chunkPos, i, worldSeed);
             for (int j = 0; j < nbtList.size(); ++j) {
                 NbtCompound nbtCompound = nbtList.getCompound(j);
                 String string2 = nbtCompound.getString("id").toLowerCase(Locale.ROOT);

@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 
 public class EffectsChangedCriterion
 extends AbstractCriterion<Conditions> {
-    private static final Identifier ID = new Identifier("effects_changed");
+    static final Identifier ID = new Identifier("effects_changed");
 
     @Override
     public Identifier getId() {

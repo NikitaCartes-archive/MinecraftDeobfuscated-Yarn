@@ -154,7 +154,7 @@ extends TrunkPlacer {
     }
 
     static class BranchPosition {
-        private final FoliagePlacer.TreeNode node;
+        final FoliagePlacer.TreeNode node;
         private final int endY;
 
         public BranchPosition(BlockPos pos, int width) {

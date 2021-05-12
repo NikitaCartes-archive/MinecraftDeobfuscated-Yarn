@@ -112,7 +112,7 @@ extends FeatureRenderer<T, M> {
     }
 
     private Identifier getArmorTexture(ArmorItem item, boolean legs, @Nullable String overlay) {
-        String string = "textures/models/armor/" + item.getMaterial().getName() + "_layer_" + (legs ? 2 : 1) + (overlay == null ? "" : "_" + overlay) + ".png";
+        String string = "textures/models/armor/" + item.getMaterial().getName() + "_layer_" + (legs ? 2 : 1) + (String)(overlay == null ? "" : "_" + overlay) + ".png";
         return ARMOR_TEXTURE_CACHE.computeIfAbsent(string, Identifier::new);
     }
 }

@@ -198,7 +198,7 @@ extends BlockEntity {
         return false;
     }
 
-    private static void removeIrrelevantNbtKeys(NbtCompound compound) {
+    static void removeIrrelevantNbtKeys(NbtCompound compound) {
         for (String string : IRRELEVANT_BEE_NBT_KEYS) {
             compound.remove(string);
         }
@@ -229,7 +229,7 @@ extends BlockEntity {
                     iterator.remove();
                 }
             }
-            bee.ticksInHive++;
+            ++bee.ticksInHive;
         }
     }
 
@@ -283,24 +283,24 @@ extends BlockEntity {
         return nbtList;
     }
 
-    static class Bee {
-        private final NbtCompound entityData;
-        private int ticksInHive;
-        private final int minOccupationTicks;
-
-        private Bee(NbtCompound entityData, int ticksInHive, int minOccupationTicks) {
-            BeehiveBlockEntity.removeIrrelevantNbtKeys(entityData);
-            this.entityData = entityData;
-            this.ticksInHive = ticksInHive;
-            this.minOccupationTicks = minOccupationTicks;
-        }
-    }
-
     public static enum BeeState {
         HONEY_DELIVERED,
         BEE_RELEASED,
         EMERGENCY;
 
+    }
+
+    static class Bee {
+        final NbtCompound entityData;
+        int ticksInHive;
+        final int minOccupationTicks;
+
+        Bee(NbtCompound nbtCompound, int i, int j) {
+            BeehiveBlockEntity.removeIrrelevantNbtKeys(nbtCompound);
+            this.entityData = nbtCompound;
+            this.ticksInHive = i;
+            this.minOccupationTicks = j;
+        }
     }
 }
 

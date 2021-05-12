@@ -327,7 +327,7 @@ implements Monster {
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
-    private float getJumpSoundPitch() {
+    float getJumpSoundPitch() {
         float f = this.isSmall() ? 1.4f : 0.8f;
         return ((this.random.nextFloat() - this.random.nextFloat()) * 0.2f + 1.0f) * f;
     }
@@ -341,23 +341,58 @@ implements Monster {
         return super.getDimensions(pose).scaled(0.255f * (float)this.getSize());
     }
 
-    static class MoveGoal
-    extends Goal {
+    static class SlimeMoveControl
+    extends MoveControl {
+        private float targetYaw;
+        private int ticksUntilJump;
         private final SlimeEntity slime;
+        private boolean jumpOften;
 
-        public MoveGoal(SlimeEntity slime) {
+        public SlimeMoveControl(SlimeEntity slime) {
+            super(slime);
             this.slime = slime;
-            this.setControls(EnumSet.of(Goal.Control.JUMP, Goal.Control.MOVE));
+            this.targetYaw = 180.0f * slime.getYaw() / (float)Math.PI;
         }
 
-        @Override
-        public boolean canStart() {
-            return !this.slime.hasVehicle();
+        public void look(float targetYaw, boolean jumpOften) {
+            this.targetYaw = targetYaw;
+            this.jumpOften = jumpOften;
+        }
+
+        public void move(double speed) {
+            this.speed = speed;
+            this.state = MoveControl.State.MOVE_TO;
         }
 
         @Override
         public void tick() {
-            ((SlimeMoveControl)this.slime.getMoveControl()).move(1.0);
+            this.entity.setYaw(this.wrapDegrees(this.entity.getYaw(), this.targetYaw, 90.0f));
+            this.entity.headYaw = this.entity.getYaw();
+            this.entity.bodyYaw = this.entity.getYaw();
+            if (this.state != MoveControl.State.MOVE_TO) {
+                this.entity.setForwardSpeed(0.0f);
+                return;
+            }
+            this.state = MoveControl.State.WAIT;
+            if (this.entity.isOnGround()) {
+                this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
+                if (this.ticksUntilJump-- <= 0) {
+                    this.ticksUntilJump = this.slime.getTicksUntilNextJump();
+                    if (this.jumpOften) {
+                        this.ticksUntilJump /= 3;
+                    }
+                    this.slime.getJumpControl().setActive();
+                    if (this.slime.makesJumpSound()) {
+                        this.slime.playSound(this.slime.getJumpSound(), this.slime.getSoundVolume(), this.slime.getJumpSoundPitch());
+                    }
+                } else {
+                    this.slime.sidewaysSpeed = 0.0f;
+                    this.slime.forwardSpeed = 0.0f;
+                    this.entity.setMovementSpeed(0.0f);
+                }
+            } else {
+                this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
+            }
         }
     }
 
@@ -382,32 +417,6 @@ implements Monster {
                 this.slime.getJumpControl().setActive();
             }
             ((SlimeMoveControl)this.slime.getMoveControl()).move(1.2);
-        }
-    }
-
-    static class RandomLookGoal
-    extends Goal {
-        private final SlimeEntity slime;
-        private float targetYaw;
-        private int timer;
-
-        public RandomLookGoal(SlimeEntity slime) {
-            this.slime = slime;
-            this.setControls(EnumSet.of(Goal.Control.LOOK));
-        }
-
-        @Override
-        public boolean canStart() {
-            return this.slime.getTarget() == null && (this.slime.onGround || this.slime.isTouchingWater() || this.slime.isInLava() || this.slime.hasStatusEffect(StatusEffects.LEVITATION)) && this.slime.getMoveControl() instanceof SlimeMoveControl;
-        }
-
-        @Override
-        public void tick() {
-            if (--this.timer <= 0) {
-                this.timer = 40 + this.slime.getRandom().nextInt(60);
-                this.targetYaw = this.slime.getRandom().nextInt(360);
-            }
-            ((SlimeMoveControl)this.slime.getMoveControl()).look(this.targetYaw, false);
         }
     }
 
@@ -464,58 +473,49 @@ implements Monster {
         }
     }
 
-    static class SlimeMoveControl
-    extends MoveControl {
-        private float targetYaw;
-        private int ticksUntilJump;
+    static class RandomLookGoal
+    extends Goal {
         private final SlimeEntity slime;
-        private boolean jumpOften;
+        private float targetYaw;
+        private int timer;
 
-        public SlimeMoveControl(SlimeEntity slime) {
-            super(slime);
+        public RandomLookGoal(SlimeEntity slime) {
             this.slime = slime;
-            this.targetYaw = 180.0f * slime.getYaw() / (float)Math.PI;
+            this.setControls(EnumSet.of(Goal.Control.LOOK));
         }
 
-        public void look(float targetYaw, boolean jumpOften) {
-            this.targetYaw = targetYaw;
-            this.jumpOften = jumpOften;
-        }
-
-        public void move(double speed) {
-            this.speed = speed;
-            this.state = MoveControl.State.MOVE_TO;
+        @Override
+        public boolean canStart() {
+            return this.slime.getTarget() == null && (this.slime.onGround || this.slime.isTouchingWater() || this.slime.isInLava() || this.slime.hasStatusEffect(StatusEffects.LEVITATION)) && this.slime.getMoveControl() instanceof SlimeMoveControl;
         }
 
         @Override
         public void tick() {
-            this.entity.setYaw(this.wrapDegrees(this.entity.getYaw(), this.targetYaw, 90.0f));
-            this.entity.headYaw = this.entity.getYaw();
-            this.entity.bodyYaw = this.entity.getYaw();
-            if (this.state != MoveControl.State.MOVE_TO) {
-                this.entity.setForwardSpeed(0.0f);
-                return;
+            if (--this.timer <= 0) {
+                this.timer = 40 + this.slime.getRandom().nextInt(60);
+                this.targetYaw = this.slime.getRandom().nextInt(360);
             }
-            this.state = MoveControl.State.WAIT;
-            if (this.entity.isOnGround()) {
-                this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
-                if (this.ticksUntilJump-- <= 0) {
-                    this.ticksUntilJump = this.slime.getTicksUntilNextJump();
-                    if (this.jumpOften) {
-                        this.ticksUntilJump /= 3;
-                    }
-                    this.slime.getJumpControl().setActive();
-                    if (this.slime.makesJumpSound()) {
-                        this.slime.playSound(this.slime.getJumpSound(), this.slime.getSoundVolume(), this.slime.getJumpSoundPitch());
-                    }
-                } else {
-                    this.slime.sidewaysSpeed = 0.0f;
-                    this.slime.forwardSpeed = 0.0f;
-                    this.entity.setMovementSpeed(0.0f);
-                }
-            } else {
-                this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
-            }
+            ((SlimeMoveControl)this.slime.getMoveControl()).look(this.targetYaw, false);
+        }
+    }
+
+    static class MoveGoal
+    extends Goal {
+        private final SlimeEntity slime;
+
+        public MoveGoal(SlimeEntity slime) {
+            this.slime = slime;
+            this.setControls(EnumSet.of(Goal.Control.JUMP, Goal.Control.MOVE));
+        }
+
+        @Override
+        public boolean canStart() {
+            return !this.slime.hasVehicle();
+        }
+
+        @Override
+        public void tick() {
+            ((SlimeMoveControl)this.slime.getMoveControl()).move(1.0);
         }
     }
 }

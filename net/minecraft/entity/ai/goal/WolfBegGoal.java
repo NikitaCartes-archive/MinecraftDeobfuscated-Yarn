@@ -26,7 +26,7 @@ extends Goal {
         this.wolf = wolf;
         this.world = wolf.world;
         this.begDistance = begDistance;
-        this.validPlayerPredicate = new TargetPredicate().setBaseMaxDistance(begDistance).includeInvulnerable().includeTeammates().ignoreEntityTargetRules();
+        this.validPlayerPredicate = TargetPredicate.createNonAttackable().setBaseMaxDistance(begDistance);
         this.setControls(EnumSet.of(Goal.Control.LOOK));
     }
 

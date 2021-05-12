@@ -118,13 +118,13 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private volatile Long2ObjectLinkedOpenHashMap<ChunkHolder> chunkHolders = this.currentChunkHolders.clone();
     private final Long2ObjectLinkedOpenHashMap<ChunkHolder> chunksToUnload = new Long2ObjectLinkedOpenHashMap();
     private final LongSet loadedChunks = new LongOpenHashSet();
-    private final ServerWorld world;
+    final ServerWorld world;
     private final ServerLightingProvider serverLightingProvider;
     private final ThreadExecutor<Runnable> mainThreadExecutor;
     private final ChunkGenerator chunkGenerator;
     private final Supplier<PersistentStateManager> persistentStateManagerFactory;
     private final PointOfInterestStorage pointOfInterestStorage;
-    private final LongSet unloadedChunks = new LongOpenHashSet();
+    final LongSet unloadedChunks = new LongOpenHashSet();
     private boolean chunkHolderListDirty;
     private final ChunkTaskPrioritySystem chunkTaskPrioritySystem;
     private final MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> worldGenExecutor;
@@ -139,7 +139,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private final Int2ObjectMap<EntityTracker> entityTrackers = new Int2ObjectOpenHashMap<EntityTracker>();
     private final Long2ByteMap chunkToType = new Long2ByteOpenHashMap();
     private final Queue<Runnable> unloadTaskQueue = Queues.newConcurrentLinkedQueue();
-    private int watchDistance;
+    int watchDistance;
 
     public ThreadedAnvilChunkStorage(ServerWorld serverWorld, LevelStorage.Session session, DataFixer dataFixer, StructureManager structureManager, Executor executor, ThreadExecutor<Runnable> mainThreadExecutor, ChunkProvider chunkProvider, ChunkGenerator chunkGenerator, WorldGenerationProgressListener worldGenerationProgressListener, ChunkStatusChangeListener chunkStatusChangeListener, Supplier<PersistentStateManager> supplier, int i, boolean bl) {
         super(new File(session.getWorldDirectory(serverWorld.getRegistryKey()), "region"), dataFixer, bl);
@@ -228,14 +228,14 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         ChunkStatus chunkStatus = chunkHolder.getCurrentStatus();
         Chunk chunk = chunkHolder.getCurrentChunk();
         if (chunkStatus != null) {
-            string = string + "St: \u00a7" + chunkStatus.getIndex() + chunkStatus + '\u00a7' + "r\n";
+            string = string + "St: \u00a7" + chunkStatus.getIndex() + chunkStatus + "\u00a7r\n";
         }
         if (chunk != null) {
-            string = string + "Ch: \u00a7" + chunk.getStatus().getIndex() + chunk.getStatus() + '\u00a7' + "r\n";
+            string = string + "Ch: \u00a7" + chunk.getStatus().getIndex() + chunk.getStatus() + "\u00a7r\n";
         }
         ChunkHolder.LevelType levelType = chunkHolder.getLevelType();
-        string = string + "\u00a7" + levelType.ordinal() + (Object)((Object)levelType);
-        return string + '\u00a7' + "r";
+        string = string + "\u00a7" + levelType.ordinal() + levelType;
+        return string + "\u00a7r";
     }
 
     private CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> getRegion(ChunkPos centerChunk, final int margin, IntFunction<ChunkStatus> distanceToStatus) {
@@ -263,7 +263,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         }
         CompletableFuture completableFuture2 = Util.combineSafe(list2);
         return completableFuture2.thenApply(list -> {
-            ArrayList list2 = Lists.newArrayList();
+            ArrayList<Chunk> list2 = Lists.newArrayList();
             int l = 0;
             for (final Either either : list) {
                 Optional optional = either.left();
@@ -276,7 +276,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                         }
                     });
                 }
-                list2.add(optional.get());
+                list2.add((Chunk)optional.get());
                 ++l;
             }
             return Either.left(list2);
@@ -288,7 +288,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     }
 
     @Nullable
-    private ChunkHolder setLevel(long pos, int level, @Nullable ChunkHolder holder, int i) {
+    ChunkHolder setLevel(long pos, int level, @Nullable ChunkHolder holder, int i) {
         if (i > MAX_LEVEL && level > MAX_LEVEL) {
             return holder;
         }
@@ -905,9 +905,9 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         ArrayList<ServerPlayerEntity> list = Lists.newArrayList();
         List<ServerPlayerEntity> list2 = this.world.getPlayers();
         for (EntityTracker entityTracker : this.entityTrackers.values()) {
-            ChunkSectionPos chunkSectionPos2;
             ChunkSectionPos chunkSectionPos = entityTracker.trackedSection;
-            if (!Objects.equals(chunkSectionPos, chunkSectionPos2 = ChunkSectionPos.from(entityTracker.entity))) {
+            ChunkSectionPos chunkSectionPos2 = ChunkSectionPos.from(entityTracker.entity);
+            if (!Objects.equals(chunkSectionPos, chunkSectionPos2)) {
                 entityTracker.updateTrackedStatus(list2);
                 Entity entity = entityTracker.entity;
                 if (entity instanceof ServerPlayerEntity) {
@@ -981,11 +981,35 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         this.field_26931.onChunkStatusChange(chunkPos, levelType);
     }
 
+    class TicketManager
+    extends ChunkTicketManager {
+        protected TicketManager(Executor mainThreadExecutor, Executor executor) {
+            super(mainThreadExecutor, executor);
+        }
+
+        @Override
+        protected boolean isUnloaded(long pos) {
+            return ThreadedAnvilChunkStorage.this.unloadedChunks.contains(pos);
+        }
+
+        @Override
+        @Nullable
+        protected ChunkHolder getChunkHolder(long pos) {
+            return ThreadedAnvilChunkStorage.this.getCurrentChunkHolder(pos);
+        }
+
+        @Override
+        @Nullable
+        protected ChunkHolder setLevel(long pos, int level, @Nullable ChunkHolder holder, int i) {
+            return ThreadedAnvilChunkStorage.this.setLevel(pos, level, holder, i);
+        }
+    }
+
     class EntityTracker {
-        private final EntityTrackerEntry entry;
-        private final Entity entity;
+        final EntityTrackerEntry entry;
+        final Entity entity;
         private final int maxDistance;
-        private ChunkSectionPos trackedSection;
+        ChunkSectionPos trackedSection;
         private final Set<EntityTrackingListener> listeners = Sets.newIdentityHashSet();
 
         public EntityTracker(Entity entity, int maxDistance, int tickInterval, boolean alwaysUpdateVelocity) {
@@ -1066,30 +1090,6 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             for (ServerPlayerEntity serverPlayerEntity : players) {
                 this.updateTrackedStatus(serverPlayerEntity);
             }
-        }
-    }
-
-    class TicketManager
-    extends ChunkTicketManager {
-        protected TicketManager(Executor mainThreadExecutor, Executor executor) {
-            super(mainThreadExecutor, executor);
-        }
-
-        @Override
-        protected boolean isUnloaded(long pos) {
-            return ThreadedAnvilChunkStorage.this.unloadedChunks.contains(pos);
-        }
-
-        @Override
-        @Nullable
-        protected ChunkHolder getChunkHolder(long pos) {
-            return ThreadedAnvilChunkStorage.this.getCurrentChunkHolder(pos);
-        }
-
-        @Override
-        @Nullable
-        protected ChunkHolder setLevel(long pos, int level, @Nullable ChunkHolder holder, int i) {
-            return ThreadedAnvilChunkStorage.this.setLevel(pos, level, holder, i);
         }
     }
 }

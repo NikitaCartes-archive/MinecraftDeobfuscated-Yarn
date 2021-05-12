@@ -23,32 +23,17 @@ extends EntityTransformFix {
     protected Pair<String, Typed<?>> transform(String choice, Typed<?> typed) {
         Dynamic<?> dynamic = typed.get(DSL.remainderFinder());
         if (Objects.equals("EntityHorse", choice)) {
-            String string;
             int i = dynamic.get("Type").asInt(0);
-            switch (i) {
-                default: {
-                    string = "Horse";
-                    break;
-                }
-                case 1: {
-                    string = "Donkey";
-                    break;
-                }
-                case 2: {
-                    string = "Mule";
-                    break;
-                }
-                case 3: {
-                    string = "ZombieHorse";
-                    break;
-                }
-                case 4: {
-                    string = "SkeletonHorse";
-                }
-            }
+            String string = switch (i) {
+                default -> "Horse";
+                case 1 -> "Donkey";
+                case 2 -> "Mule";
+                case 3 -> "ZombieHorse";
+                case 4 -> "SkeletonHorse";
+            };
             dynamic.remove("Type");
             Type<?> type = this.getOutputSchema().findChoiceType(TypeReferences.ENTITY).types().get(string);
-            return Pair.of(string, ((Pair)typed.write().flatMap(type::readTyped).result().orElseThrow(() -> new IllegalStateException("Could not parse the new horse"))).getFirst());
+            return Pair.of(string, (Typed)((Pair)typed.write().flatMap(type::readTyped).result().orElseThrow(() -> new IllegalStateException("Could not parse the new horse"))).getFirst());
         }
         return Pair.of(choice, typed);
     }

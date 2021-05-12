@@ -50,7 +50,7 @@ implements ResourceReloader {
                 list.add(requiredGroup);
             }
         });
-        return ((CompletableFuture)CompletableFuture.allOf((CompletableFuture[])list.stream().map(requiredGroup -> ((RequiredGroup)requiredGroup).groupLoadFuture).toArray(CompletableFuture[]::new)).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(void_ -> {
+        return ((CompletableFuture)CompletableFuture.allOf((CompletableFuture[])list.stream().map(requiredGroup -> requiredGroup.groupLoadFuture).toArray(CompletableFuture[]::new)).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(void_ -> {
             TagManager.Builder builder = new TagManager.Builder();
             list.forEach(requiredGroup -> requiredGroup.addTo(builder));
             TagManager tagManager = builder.build();
@@ -70,7 +70,7 @@ implements ResourceReloader {
             Registry<T> registry = optional.get();
             TagGroupLoader tagGroupLoader = new TagGroupLoader(registry::getOrEmpty, requirement.getDataType());
             CompletableFuture<TagGroup> completableFuture = CompletableFuture.supplyAsync(() -> tagGroupLoader.load(resourceManager), prepareExecutor);
-            return new RequiredGroup(requirement, completableFuture);
+            return new RequiredGroup<T>(requirement, completableFuture);
         }
         LOGGER.warn("Can't find registry for {}", (Object)requirement.getRegistryKey());
         return null;
@@ -78,11 +78,11 @@ implements ResourceReloader {
 
     static class RequiredGroup<T> {
         private final RequiredTagList<T> requirement;
-        private final CompletableFuture<? extends TagGroup<T>> groupLoadFuture;
+        final CompletableFuture<? extends TagGroup<T>> groupLoadFuture;
 
-        private RequiredGroup(RequiredTagList<T> requirement, CompletableFuture<? extends TagGroup<T>> groupLoadFuture) {
-            this.requirement = requirement;
-            this.groupLoadFuture = groupLoadFuture;
+        RequiredGroup(RequiredTagList<T> requiredTagList, CompletableFuture<? extends TagGroup<T>> completableFuture) {
+            this.requirement = requiredTagList;
+            this.groupLoadFuture = completableFuture;
         }
 
         public void addTo(TagManager.Builder builder) {

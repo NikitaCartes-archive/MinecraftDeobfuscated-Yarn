@@ -36,11 +36,11 @@ import net.minecraft.util.registry.Registry;
 
 public class SetStewEffectLootFunction
 extends ConditionalLootFunction {
-    private final Map<StatusEffect, LootNumberProvider> effects;
+    final Map<StatusEffect, LootNumberProvider> effects;
 
-    private SetStewEffectLootFunction(LootCondition[] conditions, Map<StatusEffect, LootNumberProvider> effects) {
-        super(conditions);
-        this.effects = ImmutableMap.copyOf(effects);
+    SetStewEffectLootFunction(LootCondition[] lootConditions, Map<StatusEffect, LootNumberProvider> map) {
+        super(lootConditions);
+        this.effects = ImmutableMap.copyOf(map);
     }
 
     @Override
@@ -72,6 +72,31 @@ extends ConditionalLootFunction {
 
     public static Builder builder() {
         return new Builder();
+    }
+
+    public static class Builder
+    extends ConditionalLootFunction.Builder<Builder> {
+        private final Map<StatusEffect, LootNumberProvider> map = Maps.newHashMap();
+
+        @Override
+        protected Builder getThisBuilder() {
+            return this;
+        }
+
+        public Builder withEffect(StatusEffect effect, LootNumberProvider durationRange) {
+            this.map.put(effect, durationRange);
+            return this;
+        }
+
+        @Override
+        public LootFunction build() {
+            return new SetStewEffectLootFunction(this.getConditions(), this.map);
+        }
+
+        @Override
+        protected /* synthetic */ ConditionalLootFunction.Builder getThisBuilder() {
+            return this.getThisBuilder();
+        }
     }
 
     public static class Serializer
@@ -113,31 +138,6 @@ extends ConditionalLootFunction {
         @Override
         public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
             return this.fromJson(json, context, conditions);
-        }
-    }
-
-    public static class Builder
-    extends ConditionalLootFunction.Builder<Builder> {
-        private final Map<StatusEffect, LootNumberProvider> map = Maps.newHashMap();
-
-        @Override
-        protected Builder getThisBuilder() {
-            return this;
-        }
-
-        public Builder withEffect(StatusEffect effect, LootNumberProvider durationRange) {
-            this.map.put(effect, durationRange);
-            return this;
-        }
-
-        @Override
-        public LootFunction build() {
-            return new SetStewEffectLootFunction(this.getConditions(), this.map);
-        }
-
-        @Override
-        protected /* synthetic */ ConditionalLootFunction.Builder getThisBuilder() {
-            return this.getThisBuilder();
         }
     }
 }

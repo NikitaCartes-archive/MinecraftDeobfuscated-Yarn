@@ -25,7 +25,7 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
 public class ForceLoadCommand {
-    private static final int field_33392 = 256;
+    private static final int MAX_CHUNKS = 256;
     private static final Dynamic2CommandExceptionType TOO_BIG_EXCEPTION = new Dynamic2CommandExceptionType((maxCount, count) -> new TranslatableText("commands.forceload.toobig", maxCount, count));
     private static final Dynamic2CommandExceptionType QUERY_FAILURE_EXCEPTION = new Dynamic2CommandExceptionType((chunkPos, registryKey) -> new TranslatableText("commands.forceload.query.failure", chunkPos, registryKey));
     private static final SimpleCommandExceptionType ADDED_FAILURE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.forceload.added.failure"));

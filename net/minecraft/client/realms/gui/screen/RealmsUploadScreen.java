@@ -184,7 +184,7 @@ extends RealmsScreen {
         bufferBuilder.vertex(e, 80.0, 0.0).color(128, 128, 128, 255).next();
         tessellator.draw();
         RenderSystem.enableTexture();
-        RealmsUploadScreen.drawCenteredString(matrices, this.textRenderer, this.progress + " %", this.width / 2, 84, 0xFFFFFF);
+        RealmsUploadScreen.drawCenteredText(matrices, this.textRenderer, this.progress + " %", this.width / 2, 84, 0xFFFFFF);
     }
 
     private void drawUploadSpeed(MatrixStack matrices) {
@@ -217,7 +217,7 @@ extends RealmsScreen {
         super.tick();
         ++this.animTick;
         if (this.status != null && this.narrationRateLimiter.tryAcquire(1)) {
-            ArrayList<String> list = Lists.newArrayList();
+            ArrayList<Object> list = Lists.newArrayList();
             list.add(this.status.getString());
             if (this.progress != null) {
                 list.add(this.progress + "%");

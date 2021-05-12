@@ -33,10 +33,10 @@ import org.jetbrains.annotations.Nullable;
 public class NetherFortressGenerator {
     private static final int field_31557 = 30;
     private static final int field_31558 = 10;
-    private static final PieceData[] ALL_BRIDGE_PIECES = new PieceData[]{new PieceData(Bridge.class, 30, 0, true), new PieceData(BridgeCrossing.class, 10, 4), new PieceData(BridgeSmallCrossing.class, 10, 4), new PieceData(BridgeStairs.class, 10, 3), new PieceData(BridgePlatform.class, 5, 2), new PieceData(CorridorExit.class, 5, 1)};
-    private static final PieceData[] ALL_CORRIDOR_PIECES = new PieceData[]{new PieceData(SmallCorridor.class, 25, 0, true), new PieceData(CorridorCrossing.class, 15, 5), new PieceData(CorridorRightTurn.class, 5, 10), new PieceData(CorridorLeftTurn.class, 5, 10), new PieceData(CorridorStairs.class, 10, 3, true), new PieceData(CorridorBalcony.class, 7, 2), new PieceData(CorridorNetherWartsRoom.class, 5, 2)};
+    static final PieceData[] ALL_BRIDGE_PIECES = new PieceData[]{new PieceData(Bridge.class, 30, 0, true), new PieceData(BridgeCrossing.class, 10, 4), new PieceData(BridgeSmallCrossing.class, 10, 4), new PieceData(BridgeStairs.class, 10, 3), new PieceData(BridgePlatform.class, 5, 2), new PieceData(CorridorExit.class, 5, 1)};
+    static final PieceData[] ALL_CORRIDOR_PIECES = new PieceData[]{new PieceData(SmallCorridor.class, 25, 0, true), new PieceData(CorridorCrossing.class, 15, 5), new PieceData(CorridorRightTurn.class, 5, 10), new PieceData(CorridorLeftTurn.class, 5, 10), new PieceData(CorridorStairs.class, 10, 3, true), new PieceData(CorridorBalcony.class, 7, 2), new PieceData(CorridorNetherWartsRoom.class, 5, 2)};
 
-    private static Piece createPiece(PieceData pieceData, StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength) {
+    static Piece createPiece(PieceData pieceData, StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength) {
         Class<? extends Piece> class_ = pieceData.pieceType;
         Piece piece = null;
         if (class_ == Bridge.class) {
@@ -69,87 +69,484 @@ public class NetherFortressGenerator {
         return piece;
     }
 
-    public static class CorridorBalcony
-    extends Piece {
-        private static final int field_31571 = 9;
-        private static final int field_31572 = 7;
-        private static final int field_31573 = 9;
+    static class PieceData {
+        public final Class<? extends Piece> pieceType;
+        public final int weight;
+        public int generatedCount;
+        public final int limit;
+        public final boolean repeatable;
 
-        public CorridorBalcony(int chainLength, BlockBox boundingBox, Direction orientation) {
-            super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_BALCONY, chainLength, boundingBox);
+        public PieceData(Class<? extends Piece> pieceType, int weight, int limit, boolean repeatable) {
+            this.pieceType = pieceType;
+            this.weight = weight;
+            this.limit = limit;
+            this.repeatable = repeatable;
+        }
+
+        public PieceData(Class<? extends Piece> pieceType, int weight, int limit) {
+            this(pieceType, weight, limit, false);
+        }
+
+        public boolean canGenerate(int chainLength) {
+            return this.limit == 0 || this.generatedCount < this.limit;
+        }
+
+        public boolean canGenerate() {
+            return this.limit == 0 || this.generatedCount < this.limit;
+        }
+    }
+
+    public static class Bridge
+    extends Piece {
+        private static final int field_31565 = 5;
+        private static final int field_31566 = 10;
+        private static final int field_31567 = 19;
+
+        public Bridge(int chainLength, Random random, BlockBox boundingBox, Direction orientation) {
+            super(StructurePieceType.NETHER_FORTRESS_BRIDGE, chainLength, boundingBox);
             this.setOrientation(orientation);
         }
 
-        public CorridorBalcony(ServerWorld serverWorld, NbtCompound nbt) {
-            super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_BALCONY, nbt);
+        public Bridge(ServerWorld serverWorld, NbtCompound nbt) {
+            super(StructurePieceType.NETHER_FORTRESS_BRIDGE, nbt);
         }
 
         @Override
         public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
-            int i = 1;
-            Direction direction = this.getFacing();
-            if (direction == Direction.WEST || direction == Direction.NORTH) {
-                i = 5;
-            }
-            this.fillNWOpening((Start)start, structurePiecesHolder, random, 0, i, random.nextInt(8) > 0);
-            this.fillSEOpening((Start)start, structurePiecesHolder, random, 0, i, random.nextInt(8) > 0);
+            this.fillForwardOpening((Start)start, structurePiecesHolder, random, 1, 3, false);
         }
 
-        public static CorridorBalcony create(StructurePiecesHolder structurePiecesHolder, int x, int y, int z, Direction orientation, int chainLength) {
-            BlockBox blockBox = BlockBox.rotated(x, y, z, -3, 0, 0, 9, 7, 9, orientation);
-            if (!CorridorBalcony.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
+        public static Bridge create(StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength) {
+            BlockBox blockBox = BlockBox.rotated(x, y, z, -1, -3, 0, 5, 10, 19, orientation);
+            if (!Bridge.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
                 return null;
             }
-            return new CorridorBalcony(chainLength, blockBox, orientation);
+            return new Bridge(chainLength, random, blockBox, orientation);
         }
 
         @Override
         public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+            this.fillWithOutline(world, boundingBox, 0, 3, 0, 4, 4, 18, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 1, 5, 0, 3, 7, 18, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 5, 0, 0, 5, 18, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 4, 5, 0, 4, 5, 18, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 2, 0, 4, 2, 5, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 2, 13, 4, 2, 18, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 0, 0, 4, 1, 3, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 0, 15, 4, 1, 18, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            for (int i = 0; i <= 4; ++i) {
+                for (int j = 0; j <= 2; ++j) {
+                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), i, -1, j, boundingBox);
+                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), i, -1, 18 - j, boundingBox);
+                }
+            }
             BlockState blockState = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.NORTH, true)).with(FenceBlock.SOUTH, true);
-            BlockState blockState2 = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.WEST, true)).with(FenceBlock.EAST, true);
-            this.fillWithOutline(world, boundingBox, 0, 0, 0, 8, 1, 8, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 2, 0, 8, 5, 8, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 6, 0, 8, 6, 5, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 2, 0, 2, 5, 0, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 6, 2, 0, 8, 5, 0, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 1, 3, 0, 1, 4, 0, blockState2, blockState2, false);
-            this.fillWithOutline(world, boundingBox, 7, 3, 0, 7, 4, 0, blockState2, blockState2, false);
-            this.fillWithOutline(world, boundingBox, 0, 2, 4, 8, 2, 8, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 1, 1, 4, 2, 2, 4, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 6, 1, 4, 7, 2, 4, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 1, 3, 8, 7, 3, 8, blockState2, blockState2, false);
-            this.addBlock(world, (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.EAST, true)).with(FenceBlock.SOUTH, true), 0, 3, 8, boundingBox);
-            this.addBlock(world, (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.WEST, true)).with(FenceBlock.SOUTH, true), 8, 3, 8, boundingBox);
-            this.fillWithOutline(world, boundingBox, 0, 3, 6, 0, 3, 7, blockState, blockState, false);
-            this.fillWithOutline(world, boundingBox, 8, 3, 6, 8, 3, 7, blockState, blockState, false);
-            this.fillWithOutline(world, boundingBox, 0, 3, 4, 0, 5, 5, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 8, 3, 4, 8, 5, 5, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 1, 3, 5, 2, 5, 5, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 6, 3, 5, 7, 5, 5, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 1, 4, 5, 1, 5, 5, blockState2, blockState2, false);
-            this.fillWithOutline(world, boundingBox, 7, 4, 5, 7, 5, 5, blockState2, blockState2, false);
-            for (int i = 0; i <= 5; ++i) {
-                for (int j = 0; j <= 8; ++j) {
-                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), j, -1, i, boundingBox);
+            BlockState blockState2 = (BlockState)blockState.with(FenceBlock.EAST, true);
+            BlockState blockState3 = (BlockState)blockState.with(FenceBlock.WEST, true);
+            this.fillWithOutline(world, boundingBox, 0, 1, 1, 0, 4, 1, blockState2, blockState2, false);
+            this.fillWithOutline(world, boundingBox, 0, 3, 4, 0, 4, 4, blockState2, blockState2, false);
+            this.fillWithOutline(world, boundingBox, 0, 3, 14, 0, 4, 14, blockState2, blockState2, false);
+            this.fillWithOutline(world, boundingBox, 0, 1, 17, 0, 4, 17, blockState2, blockState2, false);
+            this.fillWithOutline(world, boundingBox, 4, 1, 1, 4, 4, 1, blockState3, blockState3, false);
+            this.fillWithOutline(world, boundingBox, 4, 3, 4, 4, 4, 4, blockState3, blockState3, false);
+            this.fillWithOutline(world, boundingBox, 4, 3, 14, 4, 4, 14, blockState3, blockState3, false);
+            this.fillWithOutline(world, boundingBox, 4, 1, 17, 4, 4, 17, blockState3, blockState3, false);
+            return true;
+        }
+    }
+
+    public static class BridgeCrossing
+    extends Piece {
+        private static final int field_31559 = 19;
+        private static final int field_31560 = 10;
+        private static final int field_31561 = 19;
+
+        public BridgeCrossing(int chainLength, BlockBox boundingBox, Direction orientation) {
+            super(StructurePieceType.NETHER_FORTRESS_BRIDGE_CROSSING, chainLength, boundingBox);
+            this.setOrientation(orientation);
+        }
+
+        protected BridgeCrossing(int i, int j, Direction direction) {
+            super(StructurePieceType.NETHER_FORTRESS_BRIDGE_CROSSING, 0, StructurePiece.method_35454(i, 64, j, direction, 19, 10, 19));
+            this.setOrientation(direction);
+        }
+
+        protected BridgeCrossing(StructurePieceType structurePieceType, NbtCompound nbtCompound) {
+            super(structurePieceType, nbtCompound);
+        }
+
+        public BridgeCrossing(ServerWorld serverWorld, NbtCompound nbt) {
+            this(StructurePieceType.NETHER_FORTRESS_BRIDGE_CROSSING, nbt);
+        }
+
+        @Override
+        public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
+            this.fillForwardOpening((Start)start, structurePiecesHolder, random, 8, 3, false);
+            this.fillNWOpening((Start)start, structurePiecesHolder, random, 3, 8, false);
+            this.fillSEOpening((Start)start, structurePiecesHolder, random, 3, 8, false);
+        }
+
+        public static BridgeCrossing create(StructurePiecesHolder structurePiecesHolder, int x, int y, int z, Direction orientation, int chainLength) {
+            BlockBox blockBox = BlockBox.rotated(x, y, z, -8, -3, 0, 19, 10, 19, orientation);
+            if (!BridgeCrossing.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
+                return null;
+            }
+            return new BridgeCrossing(chainLength, blockBox, orientation);
+        }
+
+        @Override
+        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+            int j;
+            int i;
+            this.fillWithOutline(world, boundingBox, 7, 3, 0, 11, 4, 18, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 3, 7, 18, 4, 11, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 8, 5, 0, 10, 7, 18, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 5, 8, 18, 7, 10, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 7, 5, 0, 7, 5, 7, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 7, 5, 11, 7, 5, 18, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 11, 5, 0, 11, 5, 7, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 11, 5, 11, 11, 5, 18, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 5, 7, 7, 5, 7, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 11, 5, 7, 18, 5, 7, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 5, 11, 7, 5, 11, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 11, 5, 11, 18, 5, 11, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 7, 2, 0, 11, 2, 5, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 7, 2, 13, 11, 2, 18, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 7, 0, 0, 11, 1, 3, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 7, 0, 15, 11, 1, 18, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            for (i = 7; i <= 11; ++i) {
+                for (j = 0; j <= 2; ++j) {
+                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), i, -1, j, boundingBox);
+                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), i, -1, 18 - j, boundingBox);
+                }
+            }
+            this.fillWithOutline(world, boundingBox, 0, 2, 7, 5, 2, 11, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 13, 2, 7, 18, 2, 11, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 0, 7, 3, 1, 11, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 15, 0, 7, 18, 1, 11, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            for (i = 0; i <= 2; ++i) {
+                for (j = 7; j <= 11; ++j) {
+                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), i, -1, j, boundingBox);
+                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), 18 - i, -1, j, boundingBox);
                 }
             }
             return true;
         }
     }
 
-    public static class CorridorStairs
+    public static class BridgeSmallCrossing
     extends Piece {
-        private static final int field_31568 = 5;
-        private static final int field_31569 = 14;
-        private static final int field_31570 = 10;
+        private static final int field_31595 = 7;
+        private static final int field_31596 = 9;
+        private static final int field_31597 = 7;
 
-        public CorridorStairs(int chainLength, BlockBox boundingBox, Direction orientation) {
-            super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_STAIRS, chainLength, boundingBox);
+        public BridgeSmallCrossing(int chainLength, BlockBox boundingBox, Direction orientation) {
+            super(StructurePieceType.NETHER_FORTRESS_BRIDGE_SMALL_CROSSING, chainLength, boundingBox);
             this.setOrientation(orientation);
         }
 
-        public CorridorStairs(ServerWorld serverWorld, NbtCompound nbt) {
-            super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_STAIRS, nbt);
+        public BridgeSmallCrossing(ServerWorld serverWorld, NbtCompound nbt) {
+            super(StructurePieceType.NETHER_FORTRESS_BRIDGE_SMALL_CROSSING, nbt);
+        }
+
+        @Override
+        public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
+            this.fillForwardOpening((Start)start, structurePiecesHolder, random, 2, 0, false);
+            this.fillNWOpening((Start)start, structurePiecesHolder, random, 0, 2, false);
+            this.fillSEOpening((Start)start, structurePiecesHolder, random, 0, 2, false);
+        }
+
+        public static BridgeSmallCrossing create(StructurePiecesHolder structurePiecesHolder, int x, int y, int z, Direction orientation, int chainLength) {
+            BlockBox blockBox = BlockBox.rotated(x, y, z, -2, 0, 0, 7, 9, 7, orientation);
+            if (!BridgeSmallCrossing.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
+                return null;
+            }
+            return new BridgeSmallCrossing(chainLength, blockBox, orientation);
+        }
+
+        @Override
+        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+            this.fillWithOutline(world, boundingBox, 0, 0, 0, 6, 1, 6, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 2, 0, 6, 7, 6, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 2, 0, 1, 6, 0, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 2, 6, 1, 6, 6, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 5, 2, 0, 6, 6, 0, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 5, 2, 6, 6, 6, 6, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 2, 0, 0, 6, 1, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 2, 5, 0, 6, 6, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 6, 2, 0, 6, 6, 1, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 6, 2, 5, 6, 6, 6, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            BlockState blockState = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.WEST, true)).with(FenceBlock.EAST, true);
+            BlockState blockState2 = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.NORTH, true)).with(FenceBlock.SOUTH, true);
+            this.fillWithOutline(world, boundingBox, 2, 6, 0, 4, 6, 0, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 2, 5, 0, 4, 5, 0, blockState, blockState, false);
+            this.fillWithOutline(world, boundingBox, 2, 6, 6, 4, 6, 6, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 2, 5, 6, 4, 5, 6, blockState, blockState, false);
+            this.fillWithOutline(world, boundingBox, 0, 6, 2, 0, 6, 4, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 5, 2, 0, 5, 4, blockState2, blockState2, false);
+            this.fillWithOutline(world, boundingBox, 6, 6, 2, 6, 6, 4, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 6, 5, 2, 6, 5, 4, blockState2, blockState2, false);
+            for (int i = 0; i <= 6; ++i) {
+                for (int j = 0; j <= 6; ++j) {
+                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), i, -1, j, boundingBox);
+                }
+            }
+            return true;
+        }
+    }
+
+    public static class BridgeStairs
+    extends Piece {
+        private static final int field_31598 = 7;
+        private static final int field_31599 = 11;
+        private static final int field_31600 = 7;
+
+        public BridgeStairs(int chainLength, BlockBox boundingBox, Direction orientation) {
+            super(StructurePieceType.NETHER_FORTRESS_BRIDGE_STAIRS, chainLength, boundingBox);
+            this.setOrientation(orientation);
+        }
+
+        public BridgeStairs(ServerWorld serverWorld, NbtCompound nbt) {
+            super(StructurePieceType.NETHER_FORTRESS_BRIDGE_STAIRS, nbt);
+        }
+
+        @Override
+        public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
+            this.fillSEOpening((Start)start, structurePiecesHolder, random, 6, 2, false);
+        }
+
+        public static BridgeStairs create(StructurePiecesHolder structurePiecesHolder, int x, int y, int z, int chainlength, Direction orientation) {
+            BlockBox blockBox = BlockBox.rotated(x, y, z, -2, 0, 0, 7, 11, 7, orientation);
+            if (!BridgeStairs.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
+                return null;
+            }
+            return new BridgeStairs(chainlength, blockBox, orientation);
+        }
+
+        @Override
+        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+            this.fillWithOutline(world, boundingBox, 0, 0, 0, 6, 1, 6, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 2, 0, 6, 10, 6, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 2, 0, 1, 8, 0, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 5, 2, 0, 6, 8, 0, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 2, 1, 0, 8, 6, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 6, 2, 1, 6, 8, 6, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 1, 2, 6, 5, 8, 6, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            BlockState blockState = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.WEST, true)).with(FenceBlock.EAST, true);
+            BlockState blockState2 = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.NORTH, true)).with(FenceBlock.SOUTH, true);
+            this.fillWithOutline(world, boundingBox, 0, 3, 2, 0, 5, 4, blockState2, blockState2, false);
+            this.fillWithOutline(world, boundingBox, 6, 3, 2, 6, 5, 2, blockState2, blockState2, false);
+            this.fillWithOutline(world, boundingBox, 6, 3, 4, 6, 5, 4, blockState2, blockState2, false);
+            this.addBlock(world, Blocks.NETHER_BRICKS.getDefaultState(), 5, 2, 5, boundingBox);
+            this.fillWithOutline(world, boundingBox, 4, 2, 5, 4, 3, 5, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 3, 2, 5, 3, 4, 5, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 2, 2, 5, 2, 5, 5, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 1, 2, 5, 1, 6, 5, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 1, 7, 1, 5, 7, 4, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 6, 8, 2, 6, 8, 4, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 2, 6, 0, 4, 8, 0, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 2, 5, 0, 4, 5, 0, blockState, blockState, false);
+            for (int i = 0; i <= 6; ++i) {
+                for (int j = 0; j <= 6; ++j) {
+                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), i, -1, j, boundingBox);
+                }
+            }
+            return true;
+        }
+    }
+
+    public static class BridgePlatform
+    extends Piece {
+        private static final int field_31592 = 7;
+        private static final int field_31593 = 8;
+        private static final int field_31594 = 9;
+        private boolean hasBlazeSpawner;
+
+        public BridgePlatform(int chainLength, BlockBox boundingBox, Direction orientation) {
+            super(StructurePieceType.NETHER_FORTRESS_BRIDGE_PLATFORM, chainLength, boundingBox);
+            this.setOrientation(orientation);
+        }
+
+        public BridgePlatform(ServerWorld serverWorld, NbtCompound nbt) {
+            super(StructurePieceType.NETHER_FORTRESS_BRIDGE_PLATFORM, nbt);
+            this.hasBlazeSpawner = nbt.getBoolean("Mob");
+        }
+
+        @Override
+        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+            super.writeNbt(world, nbt);
+            nbt.putBoolean("Mob", this.hasBlazeSpawner);
+        }
+
+        public static BridgePlatform create(StructurePiecesHolder structurePiecesHolder, int x, int y, int z, int chainLength, Direction orientation) {
+            BlockBox blockBox = BlockBox.rotated(x, y, z, -2, 0, 0, 7, 8, 9, orientation);
+            if (!BridgePlatform.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
+                return null;
+            }
+            return new BridgePlatform(chainLength, blockBox, orientation);
+        }
+
+        @Override
+        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+            BlockPos.Mutable blockPos;
+            this.fillWithOutline(world, boundingBox, 0, 2, 0, 6, 7, 7, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 1, 0, 0, 5, 1, 7, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 1, 2, 1, 5, 2, 7, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 1, 3, 2, 5, 3, 7, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 1, 4, 3, 5, 4, 7, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 1, 2, 0, 1, 4, 2, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 5, 2, 0, 5, 4, 2, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 1, 5, 2, 1, 5, 3, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 5, 5, 2, 5, 5, 3, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 5, 3, 0, 5, 8, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 6, 5, 3, 6, 5, 8, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 1, 5, 8, 5, 5, 8, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            BlockState blockState = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.WEST, true)).with(FenceBlock.EAST, true);
+            BlockState blockState2 = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.NORTH, true)).with(FenceBlock.SOUTH, true);
+            this.addBlock(world, (BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.WEST, true), 1, 6, 3, boundingBox);
+            this.addBlock(world, (BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.EAST, true), 5, 6, 3, boundingBox);
+            this.addBlock(world, (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.EAST, true)).with(FenceBlock.NORTH, true), 0, 6, 3, boundingBox);
+            this.addBlock(world, (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.WEST, true)).with(FenceBlock.NORTH, true), 6, 6, 3, boundingBox);
+            this.fillWithOutline(world, boundingBox, 0, 6, 4, 0, 6, 7, blockState2, blockState2, false);
+            this.fillWithOutline(world, boundingBox, 6, 6, 4, 6, 6, 7, blockState2, blockState2, false);
+            this.addBlock(world, (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.EAST, true)).with(FenceBlock.SOUTH, true), 0, 6, 8, boundingBox);
+            this.addBlock(world, (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.WEST, true)).with(FenceBlock.SOUTH, true), 6, 6, 8, boundingBox);
+            this.fillWithOutline(world, boundingBox, 1, 6, 8, 5, 6, 8, blockState, blockState, false);
+            this.addBlock(world, (BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.EAST, true), 1, 7, 8, boundingBox);
+            this.fillWithOutline(world, boundingBox, 2, 7, 8, 4, 7, 8, blockState, blockState, false);
+            this.addBlock(world, (BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.WEST, true), 5, 7, 8, boundingBox);
+            this.addBlock(world, (BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.EAST, true), 2, 8, 8, boundingBox);
+            this.addBlock(world, blockState, 3, 8, 8, boundingBox);
+            this.addBlock(world, (BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.WEST, true), 4, 8, 8, boundingBox);
+            if (!this.hasBlazeSpawner && boundingBox.contains(blockPos = this.offsetPos(3, 5, 5))) {
+                this.hasBlazeSpawner = true;
+                world.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), Block.NOTIFY_LISTENERS);
+                BlockEntity blockEntity = world.getBlockEntity(blockPos);
+                if (blockEntity instanceof MobSpawnerBlockEntity) {
+                    ((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(EntityType.BLAZE);
+                }
+            }
+            for (int i = 0; i <= 6; ++i) {
+                for (int j = 0; j <= 6; ++j) {
+                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), i, -1, j, boundingBox);
+                }
+            }
+            return true;
+        }
+    }
+
+    public static class CorridorExit
+    extends Piece {
+        private static final int field_31574 = 13;
+        private static final int field_31575 = 14;
+        private static final int field_31576 = 13;
+
+        public CorridorExit(int chainLength, Random random, BlockBox boundingBox, Direction orientation) {
+            super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_EXIT, chainLength, boundingBox);
+            this.setOrientation(orientation);
+        }
+
+        public CorridorExit(ServerWorld serverWorld, NbtCompound nbt) {
+            super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_EXIT, nbt);
+        }
+
+        @Override
+        public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
+            this.fillForwardOpening((Start)start, structurePiecesHolder, random, 5, 3, true);
+        }
+
+        public static CorridorExit create(StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength) {
+            BlockBox blockBox = BlockBox.rotated(x, y, z, -5, -3, 0, 13, 14, 13, orientation);
+            if (!CorridorExit.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
+                return null;
+            }
+            return new CorridorExit(chainLength, random, blockBox, orientation);
+        }
+
+        @Override
+        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+            int j;
+            int i;
+            this.fillWithOutline(world, boundingBox, 0, 3, 0, 12, 4, 12, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 5, 0, 12, 13, 12, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 5, 0, 1, 12, 12, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 11, 5, 0, 12, 12, 12, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 2, 5, 11, 4, 12, 12, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 8, 5, 11, 10, 12, 12, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 5, 9, 11, 7, 12, 12, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 2, 5, 0, 4, 12, 1, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 8, 5, 0, 10, 12, 1, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 5, 9, 0, 7, 12, 1, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 2, 11, 2, 10, 12, 10, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 5, 8, 0, 7, 8, 0, Blocks.NETHER_BRICK_FENCE.getDefaultState(), Blocks.NETHER_BRICK_FENCE.getDefaultState(), false);
+            BlockState blockState = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.WEST, true)).with(FenceBlock.EAST, true);
+            BlockState blockState2 = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.NORTH, true)).with(FenceBlock.SOUTH, true);
+            for (i = 1; i <= 11; i += 2) {
+                this.fillWithOutline(world, boundingBox, i, 10, 0, i, 11, 0, blockState, blockState, false);
+                this.fillWithOutline(world, boundingBox, i, 10, 12, i, 11, 12, blockState, blockState, false);
+                this.fillWithOutline(world, boundingBox, 0, 10, i, 0, 11, i, blockState2, blockState2, false);
+                this.fillWithOutline(world, boundingBox, 12, 10, i, 12, 11, i, blockState2, blockState2, false);
+                this.addBlock(world, Blocks.NETHER_BRICKS.getDefaultState(), i, 13, 0, boundingBox);
+                this.addBlock(world, Blocks.NETHER_BRICKS.getDefaultState(), i, 13, 12, boundingBox);
+                this.addBlock(world, Blocks.NETHER_BRICKS.getDefaultState(), 0, 13, i, boundingBox);
+                this.addBlock(world, Blocks.NETHER_BRICKS.getDefaultState(), 12, 13, i, boundingBox);
+                if (i == 11) continue;
+                this.addBlock(world, blockState, i + 1, 13, 0, boundingBox);
+                this.addBlock(world, blockState, i + 1, 13, 12, boundingBox);
+                this.addBlock(world, blockState2, 0, 13, i + 1, boundingBox);
+                this.addBlock(world, blockState2, 12, 13, i + 1, boundingBox);
+            }
+            this.addBlock(world, (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.NORTH, true)).with(FenceBlock.EAST, true), 0, 13, 0, boundingBox);
+            this.addBlock(world, (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.SOUTH, true)).with(FenceBlock.EAST, true), 0, 13, 12, boundingBox);
+            this.addBlock(world, (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.SOUTH, true)).with(FenceBlock.WEST, true), 12, 13, 12, boundingBox);
+            this.addBlock(world, (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.NORTH, true)).with(FenceBlock.WEST, true), 12, 13, 0, boundingBox);
+            for (i = 3; i <= 9; i += 2) {
+                this.fillWithOutline(world, boundingBox, 1, 7, i, 1, 8, i, (BlockState)blockState2.with(FenceBlock.WEST, true), (BlockState)blockState2.with(FenceBlock.WEST, true), false);
+                this.fillWithOutline(world, boundingBox, 11, 7, i, 11, 8, i, (BlockState)blockState2.with(FenceBlock.EAST, true), (BlockState)blockState2.with(FenceBlock.EAST, true), false);
+            }
+            this.fillWithOutline(world, boundingBox, 4, 2, 0, 8, 2, 12, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 2, 4, 12, 2, 8, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 4, 0, 0, 8, 1, 3, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 4, 0, 9, 8, 1, 12, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 0, 4, 3, 1, 8, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 9, 0, 4, 12, 1, 8, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            for (i = 4; i <= 8; ++i) {
+                for (j = 0; j <= 2; ++j) {
+                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), i, -1, j, boundingBox);
+                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), i, -1, 12 - j, boundingBox);
+                }
+            }
+            for (i = 0; i <= 2; ++i) {
+                for (j = 4; j <= 8; ++j) {
+                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), i, -1, j, boundingBox);
+                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), 12 - i, -1, j, boundingBox);
+                }
+            }
+            this.fillWithOutline(world, boundingBox, 5, 5, 5, 7, 5, 7, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 6, 1, 6, 6, 4, 6, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
+            this.addBlock(world, Blocks.NETHER_BRICKS.getDefaultState(), 6, 0, 6, boundingBox);
+            this.addBlock(world, Blocks.LAVA.getDefaultState(), 6, 5, 6, boundingBox);
+            BlockPos.Mutable blockPos = this.offsetPos(6, 5, 6);
+            if (boundingBox.contains(blockPos)) {
+                world.getFluidTickScheduler().schedule(blockPos, Fluids.LAVA, 0);
+            }
+            return true;
+        }
+    }
+
+    public static class SmallCorridor
+    extends Piece {
+        private static final int field_31583 = 5;
+        private static final int field_31584 = 7;
+        private static final int field_31585 = 5;
+
+        public SmallCorridor(int chainLength, BlockBox boundingBox, Direction orientation) {
+            super(StructurePieceType.NETHER_FORTRESS_SMALL_CORRIDOR, chainLength, boundingBox);
+            this.setOrientation(orientation);
+        }
+
+        public SmallCorridor(ServerWorld serverWorld, NbtCompound nbt) {
+            super(StructurePieceType.NETHER_FORTRESS_SMALL_CORRIDOR, nbt);
         }
 
         @Override
@@ -157,98 +554,25 @@ public class NetherFortressGenerator {
             this.fillForwardOpening((Start)start, structurePiecesHolder, random, 1, 0, true);
         }
 
-        public static CorridorStairs create(StructurePiecesHolder structurePiecesHolder, int x, int y, int z, Direction orientation, int chainLength) {
-            BlockBox blockBox = BlockBox.rotated(x, y, z, -1, -7, 0, 5, 14, 10, orientation);
-            if (!CorridorStairs.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
-                return null;
-            }
-            return new CorridorStairs(chainLength, blockBox, orientation);
-        }
-
-        @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
-            BlockState blockState = (BlockState)Blocks.NETHER_BRICK_STAIRS.getDefaultState().with(StairsBlock.FACING, Direction.SOUTH);
-            BlockState blockState2 = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.NORTH, true)).with(FenceBlock.SOUTH, true);
-            for (int i = 0; i <= 9; ++i) {
-                int j = Math.max(1, 7 - i);
-                int k = Math.min(Math.max(j + 5, 14 - i), 13);
-                int l = i;
-                this.fillWithOutline(world, boundingBox, 0, 0, l, 4, j, l, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-                this.fillWithOutline(world, boundingBox, 1, j + 1, l, 3, k - 1, l, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
-                if (i <= 6) {
-                    this.addBlock(world, blockState, 1, j + 1, l, boundingBox);
-                    this.addBlock(world, blockState, 2, j + 1, l, boundingBox);
-                    this.addBlock(world, blockState, 3, j + 1, l, boundingBox);
-                }
-                this.fillWithOutline(world, boundingBox, 0, k, l, 4, k, l, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-                this.fillWithOutline(world, boundingBox, 0, j + 1, l, 0, k - 1, l, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-                this.fillWithOutline(world, boundingBox, 4, j + 1, l, 4, k - 1, l, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-                if ((i & 1) == 0) {
-                    this.fillWithOutline(world, boundingBox, 0, j + 2, l, 0, j + 3, l, blockState2, blockState2, false);
-                    this.fillWithOutline(world, boundingBox, 4, j + 2, l, 4, j + 3, l, blockState2, blockState2, false);
-                }
-                for (int m = 0; m <= 4; ++m) {
-                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), m, -1, l, boundingBox);
-                }
-            }
-            return true;
-        }
-    }
-
-    public static class CorridorLeftTurn
-    extends Piece {
-        private static final int field_31580 = 5;
-        private static final int field_31581 = 7;
-        private static final int field_31582 = 5;
-        private boolean containsChest;
-
-        public CorridorLeftTurn(int chainLength, Random random, BlockBox boundingBox, Direction orientation) {
-            super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_LEFT_TURN, chainLength, boundingBox);
-            this.setOrientation(orientation);
-            this.containsChest = random.nextInt(3) == 0;
-        }
-
-        public CorridorLeftTurn(ServerWorld serverWorld, NbtCompound nbt) {
-            super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_LEFT_TURN, nbt);
-            this.containsChest = nbt.getBoolean("Chest");
-        }
-
-        @Override
-        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-            super.writeNbt(world, nbt);
-            nbt.putBoolean("Chest", this.containsChest);
-        }
-
-        @Override
-        public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
-            this.fillNWOpening((Start)start, structurePiecesHolder, random, 0, 1, true);
-        }
-
-        public static CorridorLeftTurn create(StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength) {
+        public static SmallCorridor create(StructurePiecesHolder structurePiecesHolder, int x, int y, int z, Direction orientation, int chainLength) {
             BlockBox blockBox = BlockBox.rotated(x, y, z, -1, 0, 0, 5, 7, 5, orientation);
-            if (!CorridorLeftTurn.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
+            if (!SmallCorridor.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
                 return null;
             }
-            return new CorridorLeftTurn(chainLength, random, blockBox, orientation);
+            return new SmallCorridor(chainLength, blockBox, orientation);
         }
 
         @Override
         public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             this.fillWithOutline(world, boundingBox, 0, 0, 0, 4, 1, 4, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
             this.fillWithOutline(world, boundingBox, 0, 2, 0, 4, 5, 4, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
-            BlockState blockState = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.WEST, true)).with(FenceBlock.EAST, true);
-            BlockState blockState2 = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.NORTH, true)).with(FenceBlock.SOUTH, true);
+            BlockState blockState = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.NORTH, true)).with(FenceBlock.SOUTH, true);
+            this.fillWithOutline(world, boundingBox, 0, 2, 0, 0, 5, 4, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
             this.fillWithOutline(world, boundingBox, 4, 2, 0, 4, 5, 4, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 4, 3, 1, 4, 4, 1, blockState2, blockState2, false);
-            this.fillWithOutline(world, boundingBox, 4, 3, 3, 4, 4, 3, blockState2, blockState2, false);
-            this.fillWithOutline(world, boundingBox, 0, 2, 0, 0, 5, 0, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 2, 4, 3, 5, 4, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 1, 3, 4, 1, 4, 4, blockState, blockState, false);
-            this.fillWithOutline(world, boundingBox, 3, 3, 4, 3, 4, 4, blockState, blockState, false);
-            if (this.containsChest && boundingBox.contains(this.offsetPos(3, 2, 3))) {
-                this.containsChest = false;
-                this.addChest(world, boundingBox, random, 3, 2, 3, LootTables.NETHER_BRIDGE_CHEST);
-            }
+            this.fillWithOutline(world, boundingBox, 0, 3, 1, 0, 4, 1, blockState, blockState, false);
+            this.fillWithOutline(world, boundingBox, 0, 3, 3, 0, 4, 3, blockState, blockState, false);
+            this.fillWithOutline(world, boundingBox, 4, 3, 1, 4, 4, 1, blockState, blockState, false);
+            this.fillWithOutline(world, boundingBox, 4, 3, 3, 4, 4, 3, blockState, blockState, false);
             this.fillWithOutline(world, boundingBox, 0, 6, 0, 4, 6, 4, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
             for (int i = 0; i <= 4; ++i) {
                 for (int j = 0; j <= 4; ++j) {
@@ -323,6 +647,196 @@ public class NetherFortressGenerator {
         }
     }
 
+    public static class CorridorLeftTurn
+    extends Piece {
+        private static final int field_31580 = 5;
+        private static final int field_31581 = 7;
+        private static final int field_31582 = 5;
+        private boolean containsChest;
+
+        public CorridorLeftTurn(int chainLength, Random random, BlockBox boundingBox, Direction orientation) {
+            super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_LEFT_TURN, chainLength, boundingBox);
+            this.setOrientation(orientation);
+            this.containsChest = random.nextInt(3) == 0;
+        }
+
+        public CorridorLeftTurn(ServerWorld serverWorld, NbtCompound nbt) {
+            super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_LEFT_TURN, nbt);
+            this.containsChest = nbt.getBoolean("Chest");
+        }
+
+        @Override
+        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+            super.writeNbt(world, nbt);
+            nbt.putBoolean("Chest", this.containsChest);
+        }
+
+        @Override
+        public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
+            this.fillNWOpening((Start)start, structurePiecesHolder, random, 0, 1, true);
+        }
+
+        public static CorridorLeftTurn create(StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength) {
+            BlockBox blockBox = BlockBox.rotated(x, y, z, -1, 0, 0, 5, 7, 5, orientation);
+            if (!CorridorLeftTurn.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
+                return null;
+            }
+            return new CorridorLeftTurn(chainLength, random, blockBox, orientation);
+        }
+
+        @Override
+        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+            this.fillWithOutline(world, boundingBox, 0, 0, 0, 4, 1, 4, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 2, 0, 4, 5, 4, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
+            BlockState blockState = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.WEST, true)).with(FenceBlock.EAST, true);
+            BlockState blockState2 = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.NORTH, true)).with(FenceBlock.SOUTH, true);
+            this.fillWithOutline(world, boundingBox, 4, 2, 0, 4, 5, 4, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 4, 3, 1, 4, 4, 1, blockState2, blockState2, false);
+            this.fillWithOutline(world, boundingBox, 4, 3, 3, 4, 4, 3, blockState2, blockState2, false);
+            this.fillWithOutline(world, boundingBox, 0, 2, 0, 0, 5, 0, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 2, 4, 3, 5, 4, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 1, 3, 4, 1, 4, 4, blockState, blockState, false);
+            this.fillWithOutline(world, boundingBox, 3, 3, 4, 3, 4, 4, blockState, blockState, false);
+            if (this.containsChest && boundingBox.contains(this.offsetPos(3, 2, 3))) {
+                this.containsChest = false;
+                this.addChest(world, boundingBox, random, 3, 2, 3, LootTables.NETHER_BRIDGE_CHEST);
+            }
+            this.fillWithOutline(world, boundingBox, 0, 6, 0, 4, 6, 4, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            for (int i = 0; i <= 4; ++i) {
+                for (int j = 0; j <= 4; ++j) {
+                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), i, -1, j, boundingBox);
+                }
+            }
+            return true;
+        }
+    }
+
+    public static class CorridorStairs
+    extends Piece {
+        private static final int field_31568 = 5;
+        private static final int field_31569 = 14;
+        private static final int field_31570 = 10;
+
+        public CorridorStairs(int chainLength, BlockBox boundingBox, Direction orientation) {
+            super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_STAIRS, chainLength, boundingBox);
+            this.setOrientation(orientation);
+        }
+
+        public CorridorStairs(ServerWorld serverWorld, NbtCompound nbt) {
+            super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_STAIRS, nbt);
+        }
+
+        @Override
+        public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
+            this.fillForwardOpening((Start)start, structurePiecesHolder, random, 1, 0, true);
+        }
+
+        public static CorridorStairs create(StructurePiecesHolder structurePiecesHolder, int x, int y, int z, Direction orientation, int chainLength) {
+            BlockBox blockBox = BlockBox.rotated(x, y, z, -1, -7, 0, 5, 14, 10, orientation);
+            if (!CorridorStairs.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
+                return null;
+            }
+            return new CorridorStairs(chainLength, blockBox, orientation);
+        }
+
+        @Override
+        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+            BlockState blockState = (BlockState)Blocks.NETHER_BRICK_STAIRS.getDefaultState().with(StairsBlock.FACING, Direction.SOUTH);
+            BlockState blockState2 = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.NORTH, true)).with(FenceBlock.SOUTH, true);
+            for (int i = 0; i <= 9; ++i) {
+                int j = Math.max(1, 7 - i);
+                int k = Math.min(Math.max(j + 5, 14 - i), 13);
+                int l = i;
+                this.fillWithOutline(world, boundingBox, 0, 0, l, 4, j, l, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+                this.fillWithOutline(world, boundingBox, 1, j + 1, l, 3, k - 1, l, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
+                if (i <= 6) {
+                    this.addBlock(world, blockState, 1, j + 1, l, boundingBox);
+                    this.addBlock(world, blockState, 2, j + 1, l, boundingBox);
+                    this.addBlock(world, blockState, 3, j + 1, l, boundingBox);
+                }
+                this.fillWithOutline(world, boundingBox, 0, k, l, 4, k, l, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+                this.fillWithOutline(world, boundingBox, 0, j + 1, l, 0, k - 1, l, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+                this.fillWithOutline(world, boundingBox, 4, j + 1, l, 4, k - 1, l, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+                if ((i & 1) == 0) {
+                    this.fillWithOutline(world, boundingBox, 0, j + 2, l, 0, j + 3, l, blockState2, blockState2, false);
+                    this.fillWithOutline(world, boundingBox, 4, j + 2, l, 4, j + 3, l, blockState2, blockState2, false);
+                }
+                for (int m = 0; m <= 4; ++m) {
+                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), m, -1, l, boundingBox);
+                }
+            }
+            return true;
+        }
+    }
+
+    public static class CorridorBalcony
+    extends Piece {
+        private static final int field_31571 = 9;
+        private static final int field_31572 = 7;
+        private static final int field_31573 = 9;
+
+        public CorridorBalcony(int chainLength, BlockBox boundingBox, Direction orientation) {
+            super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_BALCONY, chainLength, boundingBox);
+            this.setOrientation(orientation);
+        }
+
+        public CorridorBalcony(ServerWorld serverWorld, NbtCompound nbt) {
+            super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_BALCONY, nbt);
+        }
+
+        @Override
+        public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
+            int i = 1;
+            Direction direction = this.getFacing();
+            if (direction == Direction.WEST || direction == Direction.NORTH) {
+                i = 5;
+            }
+            this.fillNWOpening((Start)start, structurePiecesHolder, random, 0, i, random.nextInt(8) > 0);
+            this.fillSEOpening((Start)start, structurePiecesHolder, random, 0, i, random.nextInt(8) > 0);
+        }
+
+        public static CorridorBalcony create(StructurePiecesHolder structurePiecesHolder, int x, int y, int z, Direction orientation, int chainLength) {
+            BlockBox blockBox = BlockBox.rotated(x, y, z, -3, 0, 0, 9, 7, 9, orientation);
+            if (!CorridorBalcony.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
+                return null;
+            }
+            return new CorridorBalcony(chainLength, blockBox, orientation);
+        }
+
+        @Override
+        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+            BlockState blockState = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.NORTH, true)).with(FenceBlock.SOUTH, true);
+            BlockState blockState2 = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.WEST, true)).with(FenceBlock.EAST, true);
+            this.fillWithOutline(world, boundingBox, 0, 0, 0, 8, 1, 8, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 2, 0, 8, 5, 8, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 6, 0, 8, 6, 5, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 0, 2, 0, 2, 5, 0, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 6, 2, 0, 8, 5, 0, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 1, 3, 0, 1, 4, 0, blockState2, blockState2, false);
+            this.fillWithOutline(world, boundingBox, 7, 3, 0, 7, 4, 0, blockState2, blockState2, false);
+            this.fillWithOutline(world, boundingBox, 0, 2, 4, 8, 2, 8, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 1, 1, 4, 2, 2, 4, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 6, 1, 4, 7, 2, 4, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 1, 3, 8, 7, 3, 8, blockState2, blockState2, false);
+            this.addBlock(world, (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.EAST, true)).with(FenceBlock.SOUTH, true), 0, 3, 8, boundingBox);
+            this.addBlock(world, (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.WEST, true)).with(FenceBlock.SOUTH, true), 8, 3, 8, boundingBox);
+            this.fillWithOutline(world, boundingBox, 0, 3, 6, 0, 3, 7, blockState, blockState, false);
+            this.fillWithOutline(world, boundingBox, 8, 3, 6, 8, 3, 7, blockState, blockState, false);
+            this.fillWithOutline(world, boundingBox, 0, 3, 4, 0, 5, 5, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 8, 3, 4, 8, 5, 5, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 1, 3, 5, 2, 5, 5, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 6, 3, 5, 7, 5, 5, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(world, boundingBox, 1, 4, 5, 1, 5, 5, blockState2, blockState2, false);
+            this.fillWithOutline(world, boundingBox, 7, 4, 5, 7, 5, 5, blockState2, blockState2, false);
+            for (int i = 0; i <= 5; ++i) {
+                for (int j = 0; j <= 8; ++j) {
+                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), j, -1, i, boundingBox);
+                }
+            }
+            return true;
+        }
+    }
+
     public static class CorridorCrossing
     extends Piece {
         private static final int field_31577 = 5;
@@ -361,55 +875,6 @@ public class NetherFortressGenerator {
             this.fillWithOutline(world, boundingBox, 4, 2, 0, 4, 5, 0, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
             this.fillWithOutline(world, boundingBox, 0, 2, 4, 0, 5, 4, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
             this.fillWithOutline(world, boundingBox, 4, 2, 4, 4, 5, 4, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 6, 0, 4, 6, 4, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            for (int i = 0; i <= 4; ++i) {
-                for (int j = 0; j <= 4; ++j) {
-                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), i, -1, j, boundingBox);
-                }
-            }
-            return true;
-        }
-    }
-
-    public static class SmallCorridor
-    extends Piece {
-        private static final int field_31583 = 5;
-        private static final int field_31584 = 7;
-        private static final int field_31585 = 5;
-
-        public SmallCorridor(int chainLength, BlockBox boundingBox, Direction orientation) {
-            super(StructurePieceType.NETHER_FORTRESS_SMALL_CORRIDOR, chainLength, boundingBox);
-            this.setOrientation(orientation);
-        }
-
-        public SmallCorridor(ServerWorld serverWorld, NbtCompound nbt) {
-            super(StructurePieceType.NETHER_FORTRESS_SMALL_CORRIDOR, nbt);
-        }
-
-        @Override
-        public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
-            this.fillForwardOpening((Start)start, structurePiecesHolder, random, 1, 0, true);
-        }
-
-        public static SmallCorridor create(StructurePiecesHolder structurePiecesHolder, int x, int y, int z, Direction orientation, int chainLength) {
-            BlockBox blockBox = BlockBox.rotated(x, y, z, -1, 0, 0, 5, 7, 5, orientation);
-            if (!SmallCorridor.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
-                return null;
-            }
-            return new SmallCorridor(chainLength, blockBox, orientation);
-        }
-
-        @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
-            this.fillWithOutline(world, boundingBox, 0, 0, 0, 4, 1, 4, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 2, 0, 4, 5, 4, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
-            BlockState blockState = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.NORTH, true)).with(FenceBlock.SOUTH, true);
-            this.fillWithOutline(world, boundingBox, 0, 2, 0, 0, 5, 4, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 4, 2, 0, 4, 5, 4, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 3, 1, 0, 4, 1, blockState, blockState, false);
-            this.fillWithOutline(world, boundingBox, 0, 3, 3, 0, 4, 3, blockState, blockState, false);
-            this.fillWithOutline(world, boundingBox, 4, 3, 1, 4, 4, 1, blockState, blockState, false);
-            this.fillWithOutline(world, boundingBox, 4, 3, 3, 4, 4, 3, blockState, blockState, false);
             this.fillWithOutline(world, boundingBox, 0, 6, 0, 4, 6, 4, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
             for (int i = 0; i <= 4; ++i) {
                 for (int j = 0; j <= 4; ++j) {
@@ -555,385 +1020,6 @@ public class NetherFortressGenerator {
         }
     }
 
-    public static class CorridorExit
-    extends Piece {
-        private static final int field_31574 = 13;
-        private static final int field_31575 = 14;
-        private static final int field_31576 = 13;
-
-        public CorridorExit(int chainLength, Random random, BlockBox boundingBox, Direction orientation) {
-            super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_EXIT, chainLength, boundingBox);
-            this.setOrientation(orientation);
-        }
-
-        public CorridorExit(ServerWorld serverWorld, NbtCompound nbt) {
-            super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_EXIT, nbt);
-        }
-
-        @Override
-        public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
-            this.fillForwardOpening((Start)start, structurePiecesHolder, random, 5, 3, true);
-        }
-
-        public static CorridorExit create(StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength) {
-            BlockBox blockBox = BlockBox.rotated(x, y, z, -5, -3, 0, 13, 14, 13, orientation);
-            if (!CorridorExit.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
-                return null;
-            }
-            return new CorridorExit(chainLength, random, blockBox, orientation);
-        }
-
-        @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
-            int j;
-            int i;
-            this.fillWithOutline(world, boundingBox, 0, 3, 0, 12, 4, 12, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 5, 0, 12, 13, 12, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 5, 0, 1, 12, 12, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 11, 5, 0, 12, 12, 12, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 2, 5, 11, 4, 12, 12, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 8, 5, 11, 10, 12, 12, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 5, 9, 11, 7, 12, 12, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 2, 5, 0, 4, 12, 1, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 8, 5, 0, 10, 12, 1, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 5, 9, 0, 7, 12, 1, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 2, 11, 2, 10, 12, 10, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 5, 8, 0, 7, 8, 0, Blocks.NETHER_BRICK_FENCE.getDefaultState(), Blocks.NETHER_BRICK_FENCE.getDefaultState(), false);
-            BlockState blockState = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.WEST, true)).with(FenceBlock.EAST, true);
-            BlockState blockState2 = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.NORTH, true)).with(FenceBlock.SOUTH, true);
-            for (i = 1; i <= 11; i += 2) {
-                this.fillWithOutline(world, boundingBox, i, 10, 0, i, 11, 0, blockState, blockState, false);
-                this.fillWithOutline(world, boundingBox, i, 10, 12, i, 11, 12, blockState, blockState, false);
-                this.fillWithOutline(world, boundingBox, 0, 10, i, 0, 11, i, blockState2, blockState2, false);
-                this.fillWithOutline(world, boundingBox, 12, 10, i, 12, 11, i, blockState2, blockState2, false);
-                this.addBlock(world, Blocks.NETHER_BRICKS.getDefaultState(), i, 13, 0, boundingBox);
-                this.addBlock(world, Blocks.NETHER_BRICKS.getDefaultState(), i, 13, 12, boundingBox);
-                this.addBlock(world, Blocks.NETHER_BRICKS.getDefaultState(), 0, 13, i, boundingBox);
-                this.addBlock(world, Blocks.NETHER_BRICKS.getDefaultState(), 12, 13, i, boundingBox);
-                if (i == 11) continue;
-                this.addBlock(world, blockState, i + 1, 13, 0, boundingBox);
-                this.addBlock(world, blockState, i + 1, 13, 12, boundingBox);
-                this.addBlock(world, blockState2, 0, 13, i + 1, boundingBox);
-                this.addBlock(world, blockState2, 12, 13, i + 1, boundingBox);
-            }
-            this.addBlock(world, (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.NORTH, true)).with(FenceBlock.EAST, true), 0, 13, 0, boundingBox);
-            this.addBlock(world, (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.SOUTH, true)).with(FenceBlock.EAST, true), 0, 13, 12, boundingBox);
-            this.addBlock(world, (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.SOUTH, true)).with(FenceBlock.WEST, true), 12, 13, 12, boundingBox);
-            this.addBlock(world, (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.NORTH, true)).with(FenceBlock.WEST, true), 12, 13, 0, boundingBox);
-            for (i = 3; i <= 9; i += 2) {
-                this.fillWithOutline(world, boundingBox, 1, 7, i, 1, 8, i, (BlockState)blockState2.with(FenceBlock.WEST, true), (BlockState)blockState2.with(FenceBlock.WEST, true), false);
-                this.fillWithOutline(world, boundingBox, 11, 7, i, 11, 8, i, (BlockState)blockState2.with(FenceBlock.EAST, true), (BlockState)blockState2.with(FenceBlock.EAST, true), false);
-            }
-            this.fillWithOutline(world, boundingBox, 4, 2, 0, 8, 2, 12, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 2, 4, 12, 2, 8, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 4, 0, 0, 8, 1, 3, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 4, 0, 9, 8, 1, 12, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 0, 4, 3, 1, 8, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 9, 0, 4, 12, 1, 8, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            for (i = 4; i <= 8; ++i) {
-                for (j = 0; j <= 2; ++j) {
-                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), i, -1, j, boundingBox);
-                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), i, -1, 12 - j, boundingBox);
-                }
-            }
-            for (i = 0; i <= 2; ++i) {
-                for (j = 4; j <= 8; ++j) {
-                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), i, -1, j, boundingBox);
-                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), 12 - i, -1, j, boundingBox);
-                }
-            }
-            this.fillWithOutline(world, boundingBox, 5, 5, 5, 7, 5, 7, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 6, 1, 6, 6, 4, 6, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
-            this.addBlock(world, Blocks.NETHER_BRICKS.getDefaultState(), 6, 0, 6, boundingBox);
-            this.addBlock(world, Blocks.LAVA.getDefaultState(), 6, 5, 6, boundingBox);
-            BlockPos.Mutable blockPos = this.offsetPos(6, 5, 6);
-            if (boundingBox.contains(blockPos)) {
-                world.getFluidTickScheduler().schedule(blockPos, Fluids.LAVA, 0);
-            }
-            return true;
-        }
-    }
-
-    public static class BridgePlatform
-    extends Piece {
-        private static final int field_31592 = 7;
-        private static final int field_31593 = 8;
-        private static final int field_31594 = 9;
-        private boolean hasBlazeSpawner;
-
-        public BridgePlatform(int chainLength, BlockBox boundingBox, Direction orientation) {
-            super(StructurePieceType.NETHER_FORTRESS_BRIDGE_PLATFORM, chainLength, boundingBox);
-            this.setOrientation(orientation);
-        }
-
-        public BridgePlatform(ServerWorld serverWorld, NbtCompound nbt) {
-            super(StructurePieceType.NETHER_FORTRESS_BRIDGE_PLATFORM, nbt);
-            this.hasBlazeSpawner = nbt.getBoolean("Mob");
-        }
-
-        @Override
-        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-            super.writeNbt(world, nbt);
-            nbt.putBoolean("Mob", this.hasBlazeSpawner);
-        }
-
-        public static BridgePlatform create(StructurePiecesHolder structurePiecesHolder, int x, int y, int z, int chainLength, Direction orientation) {
-            BlockBox blockBox = BlockBox.rotated(x, y, z, -2, 0, 0, 7, 8, 9, orientation);
-            if (!BridgePlatform.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
-                return null;
-            }
-            return new BridgePlatform(chainLength, blockBox, orientation);
-        }
-
-        @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
-            BlockPos.Mutable blockPos;
-            this.fillWithOutline(world, boundingBox, 0, 2, 0, 6, 7, 7, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 1, 0, 0, 5, 1, 7, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 1, 2, 1, 5, 2, 7, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 1, 3, 2, 5, 3, 7, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 1, 4, 3, 5, 4, 7, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 1, 2, 0, 1, 4, 2, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 5, 2, 0, 5, 4, 2, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 1, 5, 2, 1, 5, 3, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 5, 5, 2, 5, 5, 3, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 5, 3, 0, 5, 8, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 6, 5, 3, 6, 5, 8, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 1, 5, 8, 5, 5, 8, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            BlockState blockState = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.WEST, true)).with(FenceBlock.EAST, true);
-            BlockState blockState2 = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.NORTH, true)).with(FenceBlock.SOUTH, true);
-            this.addBlock(world, (BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.WEST, true), 1, 6, 3, boundingBox);
-            this.addBlock(world, (BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.EAST, true), 5, 6, 3, boundingBox);
-            this.addBlock(world, (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.EAST, true)).with(FenceBlock.NORTH, true), 0, 6, 3, boundingBox);
-            this.addBlock(world, (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.WEST, true)).with(FenceBlock.NORTH, true), 6, 6, 3, boundingBox);
-            this.fillWithOutline(world, boundingBox, 0, 6, 4, 0, 6, 7, blockState2, blockState2, false);
-            this.fillWithOutline(world, boundingBox, 6, 6, 4, 6, 6, 7, blockState2, blockState2, false);
-            this.addBlock(world, (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.EAST, true)).with(FenceBlock.SOUTH, true), 0, 6, 8, boundingBox);
-            this.addBlock(world, (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.WEST, true)).with(FenceBlock.SOUTH, true), 6, 6, 8, boundingBox);
-            this.fillWithOutline(world, boundingBox, 1, 6, 8, 5, 6, 8, blockState, blockState, false);
-            this.addBlock(world, (BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.EAST, true), 1, 7, 8, boundingBox);
-            this.fillWithOutline(world, boundingBox, 2, 7, 8, 4, 7, 8, blockState, blockState, false);
-            this.addBlock(world, (BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.WEST, true), 5, 7, 8, boundingBox);
-            this.addBlock(world, (BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.EAST, true), 2, 8, 8, boundingBox);
-            this.addBlock(world, blockState, 3, 8, 8, boundingBox);
-            this.addBlock(world, (BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.WEST, true), 4, 8, 8, boundingBox);
-            if (!this.hasBlazeSpawner && boundingBox.contains(blockPos = this.offsetPos(3, 5, 5))) {
-                this.hasBlazeSpawner = true;
-                world.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), Block.NOTIFY_LISTENERS);
-                BlockEntity blockEntity = world.getBlockEntity(blockPos);
-                if (blockEntity instanceof MobSpawnerBlockEntity) {
-                    ((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(EntityType.BLAZE);
-                }
-            }
-            for (int i = 0; i <= 6; ++i) {
-                for (int j = 0; j <= 6; ++j) {
-                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), i, -1, j, boundingBox);
-                }
-            }
-            return true;
-        }
-    }
-
-    public static class BridgeStairs
-    extends Piece {
-        private static final int field_31598 = 7;
-        private static final int field_31599 = 11;
-        private static final int field_31600 = 7;
-
-        public BridgeStairs(int chainLength, BlockBox boundingBox, Direction orientation) {
-            super(StructurePieceType.NETHER_FORTRESS_BRIDGE_STAIRS, chainLength, boundingBox);
-            this.setOrientation(orientation);
-        }
-
-        public BridgeStairs(ServerWorld serverWorld, NbtCompound nbt) {
-            super(StructurePieceType.NETHER_FORTRESS_BRIDGE_STAIRS, nbt);
-        }
-
-        @Override
-        public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
-            this.fillSEOpening((Start)start, structurePiecesHolder, random, 6, 2, false);
-        }
-
-        public static BridgeStairs create(StructurePiecesHolder structurePiecesHolder, int x, int y, int z, int chainlength, Direction orientation) {
-            BlockBox blockBox = BlockBox.rotated(x, y, z, -2, 0, 0, 7, 11, 7, orientation);
-            if (!BridgeStairs.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
-                return null;
-            }
-            return new BridgeStairs(chainlength, blockBox, orientation);
-        }
-
-        @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
-            this.fillWithOutline(world, boundingBox, 0, 0, 0, 6, 1, 6, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 2, 0, 6, 10, 6, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 2, 0, 1, 8, 0, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 5, 2, 0, 6, 8, 0, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 2, 1, 0, 8, 6, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 6, 2, 1, 6, 8, 6, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 1, 2, 6, 5, 8, 6, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            BlockState blockState = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.WEST, true)).with(FenceBlock.EAST, true);
-            BlockState blockState2 = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.NORTH, true)).with(FenceBlock.SOUTH, true);
-            this.fillWithOutline(world, boundingBox, 0, 3, 2, 0, 5, 4, blockState2, blockState2, false);
-            this.fillWithOutline(world, boundingBox, 6, 3, 2, 6, 5, 2, blockState2, blockState2, false);
-            this.fillWithOutline(world, boundingBox, 6, 3, 4, 6, 5, 4, blockState2, blockState2, false);
-            this.addBlock(world, Blocks.NETHER_BRICKS.getDefaultState(), 5, 2, 5, boundingBox);
-            this.fillWithOutline(world, boundingBox, 4, 2, 5, 4, 3, 5, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 3, 2, 5, 3, 4, 5, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 2, 2, 5, 2, 5, 5, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 1, 2, 5, 1, 6, 5, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 1, 7, 1, 5, 7, 4, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 6, 8, 2, 6, 8, 4, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 2, 6, 0, 4, 8, 0, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 2, 5, 0, 4, 5, 0, blockState, blockState, false);
-            for (int i = 0; i <= 6; ++i) {
-                for (int j = 0; j <= 6; ++j) {
-                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), i, -1, j, boundingBox);
-                }
-            }
-            return true;
-        }
-    }
-
-    public static class BridgeSmallCrossing
-    extends Piece {
-        private static final int field_31595 = 7;
-        private static final int field_31596 = 9;
-        private static final int field_31597 = 7;
-
-        public BridgeSmallCrossing(int chainLength, BlockBox boundingBox, Direction orientation) {
-            super(StructurePieceType.NETHER_FORTRESS_BRIDGE_SMALL_CROSSING, chainLength, boundingBox);
-            this.setOrientation(orientation);
-        }
-
-        public BridgeSmallCrossing(ServerWorld serverWorld, NbtCompound nbt) {
-            super(StructurePieceType.NETHER_FORTRESS_BRIDGE_SMALL_CROSSING, nbt);
-        }
-
-        @Override
-        public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
-            this.fillForwardOpening((Start)start, structurePiecesHolder, random, 2, 0, false);
-            this.fillNWOpening((Start)start, structurePiecesHolder, random, 0, 2, false);
-            this.fillSEOpening((Start)start, structurePiecesHolder, random, 0, 2, false);
-        }
-
-        public static BridgeSmallCrossing create(StructurePiecesHolder structurePiecesHolder, int x, int y, int z, Direction orientation, int chainLength) {
-            BlockBox blockBox = BlockBox.rotated(x, y, z, -2, 0, 0, 7, 9, 7, orientation);
-            if (!BridgeSmallCrossing.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
-                return null;
-            }
-            return new BridgeSmallCrossing(chainLength, blockBox, orientation);
-        }
-
-        @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
-            this.fillWithOutline(world, boundingBox, 0, 0, 0, 6, 1, 6, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 2, 0, 6, 7, 6, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 2, 0, 1, 6, 0, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 2, 6, 1, 6, 6, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 5, 2, 0, 6, 6, 0, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 5, 2, 6, 6, 6, 6, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 2, 0, 0, 6, 1, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 2, 5, 0, 6, 6, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 6, 2, 0, 6, 6, 1, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 6, 2, 5, 6, 6, 6, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            BlockState blockState = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.WEST, true)).with(FenceBlock.EAST, true);
-            BlockState blockState2 = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.NORTH, true)).with(FenceBlock.SOUTH, true);
-            this.fillWithOutline(world, boundingBox, 2, 6, 0, 4, 6, 0, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 2, 5, 0, 4, 5, 0, blockState, blockState, false);
-            this.fillWithOutline(world, boundingBox, 2, 6, 6, 4, 6, 6, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 2, 5, 6, 4, 5, 6, blockState, blockState, false);
-            this.fillWithOutline(world, boundingBox, 0, 6, 2, 0, 6, 4, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 5, 2, 0, 5, 4, blockState2, blockState2, false);
-            this.fillWithOutline(world, boundingBox, 6, 6, 2, 6, 6, 4, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 6, 5, 2, 6, 5, 4, blockState2, blockState2, false);
-            for (int i = 0; i <= 6; ++i) {
-                for (int j = 0; j <= 6; ++j) {
-                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), i, -1, j, boundingBox);
-                }
-            }
-            return true;
-        }
-    }
-
-    public static class BridgeCrossing
-    extends Piece {
-        private static final int field_31559 = 19;
-        private static final int field_31560 = 10;
-        private static final int field_31561 = 19;
-
-        public BridgeCrossing(int chainLength, BlockBox boundingBox, Direction orientation) {
-            super(StructurePieceType.NETHER_FORTRESS_BRIDGE_CROSSING, chainLength, boundingBox);
-            this.setOrientation(orientation);
-        }
-
-        protected BridgeCrossing(int i, int j, Direction direction) {
-            super(StructurePieceType.NETHER_FORTRESS_BRIDGE_CROSSING, 0, StructurePiece.method_35454(i, 64, j, direction, 19, 10, 19));
-            this.setOrientation(direction);
-        }
-
-        protected BridgeCrossing(StructurePieceType structurePieceType, NbtCompound nbtCompound) {
-            super(structurePieceType, nbtCompound);
-        }
-
-        public BridgeCrossing(ServerWorld serverWorld, NbtCompound nbt) {
-            this(StructurePieceType.NETHER_FORTRESS_BRIDGE_CROSSING, nbt);
-        }
-
-        @Override
-        public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
-            this.fillForwardOpening((Start)start, structurePiecesHolder, random, 8, 3, false);
-            this.fillNWOpening((Start)start, structurePiecesHolder, random, 3, 8, false);
-            this.fillSEOpening((Start)start, structurePiecesHolder, random, 3, 8, false);
-        }
-
-        public static BridgeCrossing create(StructurePiecesHolder structurePiecesHolder, int x, int y, int z, Direction orientation, int chainLength) {
-            BlockBox blockBox = BlockBox.rotated(x, y, z, -8, -3, 0, 19, 10, 19, orientation);
-            if (!BridgeCrossing.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
-                return null;
-            }
-            return new BridgeCrossing(chainLength, blockBox, orientation);
-        }
-
-        @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
-            int j;
-            int i;
-            this.fillWithOutline(world, boundingBox, 7, 3, 0, 11, 4, 18, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 3, 7, 18, 4, 11, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 8, 5, 0, 10, 7, 18, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 5, 8, 18, 7, 10, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 7, 5, 0, 7, 5, 7, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 7, 5, 11, 7, 5, 18, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 11, 5, 0, 11, 5, 7, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 11, 5, 11, 11, 5, 18, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 5, 7, 7, 5, 7, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 11, 5, 7, 18, 5, 7, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 5, 11, 7, 5, 11, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 11, 5, 11, 18, 5, 11, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 7, 2, 0, 11, 2, 5, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 7, 2, 13, 11, 2, 18, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 7, 0, 0, 11, 1, 3, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 7, 0, 15, 11, 1, 18, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            for (i = 7; i <= 11; ++i) {
-                for (j = 0; j <= 2; ++j) {
-                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), i, -1, j, boundingBox);
-                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), i, -1, 18 - j, boundingBox);
-                }
-            }
-            this.fillWithOutline(world, boundingBox, 0, 2, 7, 5, 2, 11, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 13, 2, 7, 18, 2, 11, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 0, 7, 3, 1, 11, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 15, 0, 7, 18, 1, 11, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            for (i = 0; i <= 2; ++i) {
-                for (j = 7; j <= 11; ++j) {
-                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), i, -1, j, boundingBox);
-                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), 18 - i, -1, j, boundingBox);
-                }
-            }
-            return true;
-        }
-    }
-
     public static class BridgeEnd
     extends Piece {
         private static final int field_31562 = 5;
@@ -992,65 +1078,6 @@ public class NetherFortressGenerator {
                     this.fillWithOutline(world, boundingBox, i, j, 0, i, j, k, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
                 }
             }
-            return true;
-        }
-    }
-
-    public static class Bridge
-    extends Piece {
-        private static final int field_31565 = 5;
-        private static final int field_31566 = 10;
-        private static final int field_31567 = 19;
-
-        public Bridge(int chainLength, Random random, BlockBox boundingBox, Direction orientation) {
-            super(StructurePieceType.NETHER_FORTRESS_BRIDGE, chainLength, boundingBox);
-            this.setOrientation(orientation);
-        }
-
-        public Bridge(ServerWorld serverWorld, NbtCompound nbt) {
-            super(StructurePieceType.NETHER_FORTRESS_BRIDGE, nbt);
-        }
-
-        @Override
-        public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
-            this.fillForwardOpening((Start)start, structurePiecesHolder, random, 1, 3, false);
-        }
-
-        public static Bridge create(StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength) {
-            BlockBox blockBox = BlockBox.rotated(x, y, z, -1, -3, 0, 5, 10, 19, orientation);
-            if (!Bridge.isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
-                return null;
-            }
-            return new Bridge(chainLength, random, blockBox, orientation);
-        }
-
-        @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
-            this.fillWithOutline(world, boundingBox, 0, 3, 0, 4, 4, 18, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 1, 5, 0, 3, 7, 18, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 5, 0, 0, 5, 18, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 4, 5, 0, 4, 5, 18, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 2, 0, 4, 2, 5, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 2, 13, 4, 2, 18, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 0, 0, 4, 1, 3, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            this.fillWithOutline(world, boundingBox, 0, 0, 15, 4, 1, 18, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-            for (int i = 0; i <= 4; ++i) {
-                for (int j = 0; j <= 2; ++j) {
-                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), i, -1, j, boundingBox);
-                    this.fillDownwards(world, Blocks.NETHER_BRICKS.getDefaultState(), i, -1, 18 - j, boundingBox);
-                }
-            }
-            BlockState blockState = (BlockState)((BlockState)Blocks.NETHER_BRICK_FENCE.getDefaultState().with(FenceBlock.NORTH, true)).with(FenceBlock.SOUTH, true);
-            BlockState blockState2 = (BlockState)blockState.with(FenceBlock.EAST, true);
-            BlockState blockState3 = (BlockState)blockState.with(FenceBlock.WEST, true);
-            this.fillWithOutline(world, boundingBox, 0, 1, 1, 0, 4, 1, blockState2, blockState2, false);
-            this.fillWithOutline(world, boundingBox, 0, 3, 4, 0, 4, 4, blockState2, blockState2, false);
-            this.fillWithOutline(world, boundingBox, 0, 3, 14, 0, 4, 14, blockState2, blockState2, false);
-            this.fillWithOutline(world, boundingBox, 0, 1, 17, 0, 4, 17, blockState2, blockState2, false);
-            this.fillWithOutline(world, boundingBox, 4, 1, 1, 4, 4, 1, blockState3, blockState3, false);
-            this.fillWithOutline(world, boundingBox, 4, 3, 4, 4, 4, 4, blockState3, blockState3, false);
-            this.fillWithOutline(world, boundingBox, 4, 3, 14, 4, 4, 14, blockState3, blockState3, false);
-            this.fillWithOutline(world, boundingBox, 4, 1, 17, 4, 4, 17, blockState3, blockState3, false);
             return true;
         }
     }
@@ -1214,33 +1241,6 @@ public class NetherFortressGenerator {
 
         protected static boolean isInBounds(BlockBox boundingBox) {
             return boundingBox != null && boundingBox.getMinY() > 10;
-        }
-    }
-
-    static class PieceData {
-        public final Class<? extends Piece> pieceType;
-        public final int weight;
-        public int generatedCount;
-        public final int limit;
-        public final boolean repeatable;
-
-        public PieceData(Class<? extends Piece> pieceType, int weight, int limit, boolean repeatable) {
-            this.pieceType = pieceType;
-            this.weight = weight;
-            this.limit = limit;
-            this.repeatable = repeatable;
-        }
-
-        public PieceData(Class<? extends Piece> pieceType, int weight, int limit) {
-            this(pieceType, weight, limit, false);
-        }
-
-        public boolean canGenerate(int chainLength) {
-            return this.limit == 0 || this.generatedCount < this.limit;
-        }
-
-        public boolean canGenerate() {
-            return this.limit == 0 || this.generatedCount < this.limit;
         }
     }
 }

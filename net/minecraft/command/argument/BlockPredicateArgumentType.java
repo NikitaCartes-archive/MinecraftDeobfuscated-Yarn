@@ -83,50 +83,6 @@ implements ArgumentType<BlockPredicate> {
         return this.parse(stringReader);
     }
 
-    static class TagPredicate
-    implements Predicate<CachedBlockPosition> {
-        private final Tag<Block> tag;
-        @Nullable
-        private final NbtCompound nbt;
-        private final Map<String, String> properties;
-
-        private TagPredicate(Tag<Block> tag, Map<String, String> map, @Nullable NbtCompound nbt) {
-            this.tag = tag;
-            this.properties = map;
-            this.nbt = nbt;
-        }
-
-        @Override
-        public boolean test(CachedBlockPosition cachedBlockPosition) {
-            BlockState blockState = cachedBlockPosition.getBlockState();
-            if (!blockState.isIn(this.tag)) {
-                return false;
-            }
-            for (Map.Entry<String, String> entry : this.properties.entrySet()) {
-                Property<?> property = blockState.getBlock().getStateManager().getProperty(entry.getKey());
-                if (property == null) {
-                    return false;
-                }
-                Comparable comparable = property.parse(entry.getValue()).orElse(null);
-                if (comparable == null) {
-                    return false;
-                }
-                if (blockState.get(property) == comparable) continue;
-                return false;
-            }
-            if (this.nbt != null) {
-                BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-                return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.writeNbt(new NbtCompound()), true);
-            }
-            return true;
-        }
-
-        @Override
-        public /* synthetic */ boolean test(Object object) {
-            return this.test((CachedBlockPosition)object);
-        }
-    }
-
     static class StatePredicate
     implements Predicate<CachedBlockPosition> {
         private final BlockState state;
@@ -165,6 +121,50 @@ implements ArgumentType<BlockPredicate> {
 
     public static interface BlockPredicate {
         public Predicate<CachedBlockPosition> create(TagManager var1) throws CommandSyntaxException;
+    }
+
+    static class TagPredicate
+    implements Predicate<CachedBlockPosition> {
+        private final Tag<Block> tag;
+        @Nullable
+        private final NbtCompound nbt;
+        private final Map<String, String> properties;
+
+        TagPredicate(Tag<Block> tag, Map<String, String> map, @Nullable NbtCompound nbtCompound) {
+            this.tag = tag;
+            this.properties = map;
+            this.nbt = nbtCompound;
+        }
+
+        @Override
+        public boolean test(CachedBlockPosition cachedBlockPosition) {
+            BlockState blockState = cachedBlockPosition.getBlockState();
+            if (!blockState.isIn(this.tag)) {
+                return false;
+            }
+            for (Map.Entry<String, String> entry : this.properties.entrySet()) {
+                Property<?> property = blockState.getBlock().getStateManager().getProperty(entry.getKey());
+                if (property == null) {
+                    return false;
+                }
+                Comparable comparable = property.parse(entry.getValue()).orElse(null);
+                if (comparable == null) {
+                    return false;
+                }
+                if (blockState.get(property) == comparable) continue;
+                return false;
+            }
+            if (this.nbt != null) {
+                BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
+                return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.writeNbt(new NbtCompound()), true);
+            }
+            return true;
+        }
+
+        @Override
+        public /* synthetic */ boolean test(Object object) {
+            return this.test((CachedBlockPosition)object);
+        }
     }
 }
 

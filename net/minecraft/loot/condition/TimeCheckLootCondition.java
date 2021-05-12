@@ -21,12 +21,12 @@ import org.jetbrains.annotations.Nullable;
 public class TimeCheckLootCondition
 implements LootCondition {
     @Nullable
-    private final Long period;
-    private final BoundedIntUnaryOperator value;
+    final Long period;
+    final BoundedIntUnaryOperator value;
 
-    private TimeCheckLootCondition(@Nullable Long period, BoundedIntUnaryOperator value) {
-        this.period = period;
-        this.value = value;
+    TimeCheckLootCondition(@Nullable Long long_, BoundedIntUnaryOperator boundedIntUnaryOperator) {
+        this.period = long_;
+        this.value = boundedIntUnaryOperator;
     }
 
     @Override
@@ -58,27 +58,6 @@ implements LootCondition {
         return this.test((LootContext)context);
     }
 
-    public static class Serializer
-    implements JsonSerializer<TimeCheckLootCondition> {
-        @Override
-        public void toJson(JsonObject jsonObject, TimeCheckLootCondition timeCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
-            jsonObject.addProperty("period", timeCheckLootCondition.period);
-            jsonObject.add("value", jsonSerializationContext.serialize(timeCheckLootCondition.value));
-        }
-
-        @Override
-        public TimeCheckLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            Long long_ = jsonObject.has("period") ? Long.valueOf(JsonHelper.getLong(jsonObject, "period")) : null;
-            BoundedIntUnaryOperator boundedIntUnaryOperator = JsonHelper.deserialize(jsonObject, "value", jsonDeserializationContext, BoundedIntUnaryOperator.class);
-            return new TimeCheckLootCondition(long_, boundedIntUnaryOperator);
-        }
-
-        @Override
-        public /* synthetic */ Object fromJson(JsonObject json, JsonDeserializationContext context) {
-            return this.fromJson(json, context);
-        }
-    }
-
     public static class Builder
     implements LootCondition.Builder {
         @Nullable
@@ -102,6 +81,27 @@ implements LootCondition {
         @Override
         public /* synthetic */ LootCondition build() {
             return this.build();
+        }
+    }
+
+    public static class Serializer
+    implements JsonSerializer<TimeCheckLootCondition> {
+        @Override
+        public void toJson(JsonObject jsonObject, TimeCheckLootCondition timeCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
+            jsonObject.addProperty("period", timeCheckLootCondition.period);
+            jsonObject.add("value", jsonSerializationContext.serialize(timeCheckLootCondition.value));
+        }
+
+        @Override
+        public TimeCheckLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+            Long long_ = jsonObject.has("period") ? Long.valueOf(JsonHelper.getLong(jsonObject, "period")) : null;
+            BoundedIntUnaryOperator boundedIntUnaryOperator = JsonHelper.deserialize(jsonObject, "value", jsonDeserializationContext, BoundedIntUnaryOperator.class);
+            return new TimeCheckLootCondition(long_, boundedIntUnaryOperator);
+        }
+
+        @Override
+        public /* synthetic */ Object fromJson(JsonObject json, JsonDeserializationContext context) {
+            return this.fromJson(json, context);
         }
     }
 }

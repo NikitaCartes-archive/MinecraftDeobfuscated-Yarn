@@ -62,15 +62,15 @@ extends Screen {
     private static final int field_32267 = 1;
     private static final int field_32268 = 2;
     private static final int field_32269 = 2;
-    private static final List<SuperflatPreset> PRESETS = Lists.newArrayList();
+    static final List<SuperflatPreset> PRESETS = Lists.newArrayList();
     private static final RegistryKey<Biome> BIOME_KEY = BiomeKeys.PLAINS;
-    private final CustomizeFlatLevelScreen parent;
+    final CustomizeFlatLevelScreen parent;
     private Text shareText;
     private Text listText;
     private SuperflatPresetsListWidget listWidget;
     private ButtonWidget selectPresetButton;
-    private TextFieldWidget customPresetField;
-    private FlatChunkGeneratorConfig config;
+    TextFieldWidget customPresetField;
+    FlatChunkGeneratorConfig config;
 
     public PresetsScreen(CustomizeFlatLevelScreen parent) {
         super(new TranslatableText("createWorld.customize.presets.title"));
@@ -156,7 +156,7 @@ extends Screen {
         return flatChunkGeneratorConfig;
     }
 
-    private static String getGeneratorConfigString(Registry<Biome> biomeRegistry, FlatChunkGeneratorConfig generatorConfig) {
+    static String getGeneratorConfigString(Registry<Biome> biomeRegistry, FlatChunkGeneratorConfig generatorConfig) {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < generatorConfig.getLayers().size(); ++i) {
             if (i > 0) {
@@ -273,23 +273,6 @@ extends Screen {
     }
 
     @Environment(value=EnvType.CLIENT)
-    static class SuperflatPreset {
-        public final Item icon;
-        public final Text name;
-        public final Function<Registry<Biome>, FlatChunkGeneratorConfig> generatorConfigProvider;
-
-        public SuperflatPreset(Item icon, Text name, Function<Registry<Biome>, FlatChunkGeneratorConfig> generatorConfigProvider) {
-            this.icon = icon;
-            this.name = name;
-            this.generatorConfigProvider = generatorConfigProvider;
-        }
-
-        public Text getName() {
-            return this.name;
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
     class SuperflatPresetsListWidget
     extends AlwaysSelectedEntryListWidget<SuperflatPresetEntry> {
         public SuperflatPresetsListWidget() {
@@ -303,7 +286,7 @@ extends Screen {
         public void setSelected(@Nullable SuperflatPresetEntry superflatPresetEntry) {
             super.setSelected(superflatPresetEntry);
             if (superflatPresetEntry != null) {
-                NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", ((SuperflatPreset)PRESETS.get(this.children().indexOf(superflatPresetEntry))).getName()).getString());
+                NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", PRESETS.get(this.children().indexOf(superflatPresetEntry)).getName()).getString());
             }
             PresetsScreen.this.updateSelectButton(superflatPresetEntry != null);
         }
@@ -329,7 +312,7 @@ extends Screen {
         extends AlwaysSelectedEntryListWidget.Entry<SuperflatPresetEntry> {
             @Override
             public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-                SuperflatPreset superflatPreset = (SuperflatPreset)PRESETS.get(index);
+                SuperflatPreset superflatPreset = PRESETS.get(index);
                 this.renderIcon(matrices, x, y, superflatPreset.icon);
                 PresetsScreen.this.textRenderer.draw(matrices, superflatPreset.name, (float)(x + 18 + 5), (float)(y + 6), 0xFFFFFF);
             }
@@ -342,10 +325,10 @@ extends Screen {
                 return false;
             }
 
-            private void setPreset() {
+            void setPreset() {
                 SuperflatPresetsListWidget.this.setSelected(this);
-                SuperflatPreset superflatPreset = (SuperflatPreset)PRESETS.get(SuperflatPresetsListWidget.this.children().indexOf(this));
-                Registry<Biome> registry = ((PresetsScreen)PresetsScreen.this).parent.parent.moreOptionsDialog.getRegistryManager().get(Registry.BIOME_KEY);
+                SuperflatPreset superflatPreset = PRESETS.get(SuperflatPresetsListWidget.this.children().indexOf(this));
+                Registry<Biome> registry = PresetsScreen.this.parent.parent.moreOptionsDialog.getRegistryManager().get(Registry.BIOME_KEY);
                 PresetsScreen.this.config = superflatPreset.generatorConfigProvider.apply(registry);
                 PresetsScreen.this.customPresetField.setText(PresetsScreen.getGeneratorConfigString(registry, PresetsScreen.this.config));
                 PresetsScreen.this.customPresetField.setCursorToStart();
@@ -361,6 +344,23 @@ extends Screen {
                 RenderSystem.setShaderTexture(0, DrawableHelper.STATS_ICON_TEXTURE);
                 DrawableHelper.drawTexture(matrices, x, y, PresetsScreen.this.getZOffset(), 0.0f, 0.0f, 18, 18, 128, 128);
             }
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static class SuperflatPreset {
+        public final Item icon;
+        public final Text name;
+        public final Function<Registry<Biome>, FlatChunkGeneratorConfig> generatorConfigProvider;
+
+        public SuperflatPreset(Item icon, Text name, Function<Registry<Biome>, FlatChunkGeneratorConfig> generatorConfigProvider) {
+            this.icon = icon;
+            this.name = name;
+            this.generatorConfigProvider = generatorConfigProvider;
+        }
+
+        public Text getName() {
+            return this.name;
         }
     }
 }

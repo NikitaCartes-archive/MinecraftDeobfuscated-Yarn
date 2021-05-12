@@ -334,22 +334,6 @@ implements DataProvider {
         RecipesProvider.offerConcretePowderDyeingRecipe(exporter, Blocks.RED_CONCRETE_POWDER, Items.RED_DYE);
         RecipesProvider.offerConcretePowderDyeingRecipe(exporter, Blocks.WHITE_CONCRETE_POWDER, Items.WHITE_DYE);
         RecipesProvider.offerConcretePowderDyeingRecipe(exporter, Blocks.YELLOW_CONCRETE_POWDER, Items.YELLOW_DYE);
-        RecipesProvider.offerCandleDyeingRecipe(exporter, Blocks.BLACK_CANDLE, Items.BLACK_DYE);
-        RecipesProvider.offerCandleDyeingRecipe(exporter, Blocks.BLUE_CANDLE, Items.BLUE_DYE);
-        RecipesProvider.offerCandleDyeingRecipe(exporter, Blocks.BROWN_CANDLE, Items.BROWN_DYE);
-        RecipesProvider.offerCandleDyeingRecipe(exporter, Blocks.CYAN_CANDLE, Items.CYAN_DYE);
-        RecipesProvider.offerCandleDyeingRecipe(exporter, Blocks.GRAY_CANDLE, Items.GRAY_DYE);
-        RecipesProvider.offerCandleDyeingRecipe(exporter, Blocks.GREEN_CANDLE, Items.GREEN_DYE);
-        RecipesProvider.offerCandleDyeingRecipe(exporter, Blocks.LIGHT_BLUE_CANDLE, Items.LIGHT_BLUE_DYE);
-        RecipesProvider.offerCandleDyeingRecipe(exporter, Blocks.LIGHT_GRAY_CANDLE, Items.LIGHT_GRAY_DYE);
-        RecipesProvider.offerCandleDyeingRecipe(exporter, Blocks.LIME_CANDLE, Items.LIME_DYE);
-        RecipesProvider.offerCandleDyeingRecipe(exporter, Blocks.MAGENTA_CANDLE, Items.MAGENTA_DYE);
-        RecipesProvider.offerCandleDyeingRecipe(exporter, Blocks.ORANGE_CANDLE, Items.ORANGE_DYE);
-        RecipesProvider.offerCandleDyeingRecipe(exporter, Blocks.PINK_CANDLE, Items.PINK_DYE);
-        RecipesProvider.offerCandleDyeingRecipe(exporter, Blocks.PURPLE_CANDLE, Items.PURPLE_DYE);
-        RecipesProvider.offerCandleDyeingRecipe(exporter, Blocks.RED_CANDLE, Items.RED_DYE);
-        RecipesProvider.offerCandleDyeingRecipe(exporter, Blocks.WHITE_CANDLE, Items.WHITE_DYE);
-        RecipesProvider.offerCandleDyeingRecipe(exporter, Blocks.YELLOW_CANDLE, Items.YELLOW_DYE);
         ShapedRecipeJsonFactory.create(Blocks.ACTIVATOR_RAIL, 6).input(Character.valueOf('#'), Blocks.REDSTONE_TORCH).input(Character.valueOf('S'), Items.STICK).input(Character.valueOf('X'), Items.IRON_INGOT).pattern("XSX").pattern("X#X").pattern("XSX").criterion("has_rail", RecipesProvider.conditionsFromItem(Blocks.RAIL)).offerTo(exporter);
         ShapelessRecipeJsonFactory.create(Blocks.ANDESITE, 2).input(Blocks.DIORITE).input(Blocks.COBBLESTONE).criterion("has_stone", RecipesProvider.conditionsFromItem(Blocks.DIORITE)).offerTo(exporter);
         ShapedRecipeJsonFactory.create(Blocks.ANVIL).input(Character.valueOf('I'), Blocks.IRON_BLOCK).input(Character.valueOf('i'), Items.IRON_INGOT).pattern("III").pattern(" i ").pattern("iii").criterion("has_iron_block", RecipesProvider.conditionsFromItem(Blocks.IRON_BLOCK)).offerTo(exporter);
@@ -398,7 +382,7 @@ implements DataProvider {
         ShapedRecipeJsonFactory.create(Blocks.LOOM).input(Character.valueOf('#'), ItemTags.PLANKS).input(Character.valueOf('@'), Items.STRING).pattern("@@").pattern("##").criterion("has_string", RecipesProvider.conditionsFromItem(Items.STRING)).offerTo(exporter);
         RecipesProvider.createChiseledBlockRecipe(Blocks.CHISELED_RED_SANDSTONE, Ingredient.ofItems(Blocks.RED_SANDSTONE_SLAB)).criterion("has_red_sandstone", RecipesProvider.conditionsFromItem(Blocks.RED_SANDSTONE)).criterion("has_chiseled_red_sandstone", RecipesProvider.conditionsFromItem(Blocks.CHISELED_RED_SANDSTONE)).criterion("has_cut_red_sandstone", RecipesProvider.conditionsFromItem(Blocks.CUT_RED_SANDSTONE)).offerTo(exporter);
         RecipesProvider.offerChiseledBlockRecipe(exporter, Blocks.CHISELED_SANDSTONE, Blocks.SANDSTONE_SLAB);
-        RecipesProvider.offerReversibleCompactingRecipes(exporter, Items.COPPER_INGOT, Items.COPPER_BLOCK);
+        RecipesProvider.offerReversibleCompactingRecipesWithInputItemGroup(exporter, Items.COPPER_INGOT, Items.COPPER_BLOCK, RecipesProvider.method_36450(Items.COPPER_INGOT), RecipesProvider.getItemPath(Items.COPPER_INGOT));
         ShapelessRecipeJsonFactory.create(Items.COPPER_INGOT, 9).input(Blocks.WAXED_COPPER_BLOCK).group(RecipesProvider.getItemPath(Items.COPPER_INGOT)).criterion(RecipesProvider.hasItem(Blocks.WAXED_COPPER_BLOCK), RecipesProvider.conditionsFromItem(Blocks.WAXED_COPPER_BLOCK)).offerTo(exporter, RecipesProvider.convertBetween(Items.COPPER_INGOT, Blocks.WAXED_COPPER_BLOCK));
         RecipesProvider.offerWaxingRecipes(exporter);
         ShapelessRecipeJsonFactory.create(Items.CYAN_DYE, 2).input(Items.BLUE_DYE).input(Items.GREEN_DYE).criterion("has_green_dye", RecipesProvider.conditionsFromItem(Items.GREEN_DYE)).criterion("has_blue_dye", RecipesProvider.conditionsFromItem(Items.BLUE_DYE)).offerTo(exporter);
@@ -634,13 +618,11 @@ implements DataProvider {
         ShapelessRecipeJsonFactory.create(Items.NETHERITE_INGOT).input(Items.NETHERITE_SCRAP, 4).input(Items.GOLD_INGOT, 4).group("netherite_ingot").criterion("has_netherite_scrap", RecipesProvider.conditionsFromItem(Items.NETHERITE_SCRAP)).offerTo(exporter);
         ShapedRecipeJsonFactory.create(Blocks.RESPAWN_ANCHOR).input(Character.valueOf('O'), Blocks.CRYING_OBSIDIAN).input(Character.valueOf('G'), Blocks.GLOWSTONE).pattern("OOO").pattern("GGG").pattern("OOO").criterion("has_obsidian", RecipesProvider.conditionsFromItem(Blocks.CRYING_OBSIDIAN)).offerTo(exporter);
         ShapedRecipeJsonFactory.create(Blocks.CHAIN).input(Character.valueOf('I'), Items.IRON_INGOT).input(Character.valueOf('N'), Items.IRON_NUGGET).pattern("N").pattern("I").pattern("N").criterion("has_iron_nugget", RecipesProvider.conditionsFromItem(Items.IRON_NUGGET)).criterion("has_iron_ingot", RecipesProvider.conditionsFromItem(Items.IRON_INGOT)).offerTo(exporter);
-        ShapedRecipeJsonFactory.create(Items.CANDLE).input(Character.valueOf('S'), Items.STRING).input(Character.valueOf('H'), Items.HONEYCOMB).pattern("S").pattern("H").criterion("has_string", RecipesProvider.conditionsFromItem(Items.STRING)).criterion("has_honeycomb", RecipesProvider.conditionsFromItem(Items.HONEYCOMB)).offerTo(exporter);
         ShapedRecipeJsonFactory.create(Blocks.TINTED_GLASS, 2).input(Character.valueOf('G'), Blocks.GLASS).input(Character.valueOf('S'), Items.AMETHYST_SHARD).pattern(" S ").pattern("SGS").pattern(" S ").criterion("has_amethyst_shard", RecipesProvider.conditionsFromItem(Items.AMETHYST_SHARD)).offerTo(exporter);
         ShapedRecipeJsonFactory.create(Blocks.AMETHYST_BLOCK).input(Character.valueOf('S'), Items.AMETHYST_SHARD).pattern("SS").pattern("SS").criterion("has_amethyst_shard", RecipesProvider.conditionsFromItem(Items.AMETHYST_SHARD)).offerTo(exporter);
         ComplexRecipeJsonFactory.create(RecipeSerializer.ARMOR_DYE).offerTo(exporter, "armor_dye");
         ComplexRecipeJsonFactory.create(RecipeSerializer.BANNER_DUPLICATE).offerTo(exporter, "banner_duplicate");
         ComplexRecipeJsonFactory.create(RecipeSerializer.BOOK_CLONING).offerTo(exporter, "book_cloning");
-        ShapedRecipeJsonFactory.create(Items.BUNDLE).input(Character.valueOf('#'), Items.RABBIT_HIDE).input(Character.valueOf('-'), Items.STRING).pattern("-#-").pattern("# #").pattern("###").criterion("has_string", RecipesProvider.conditionsFromItem(Items.STRING)).offerTo(exporter);
         ComplexRecipeJsonFactory.create(RecipeSerializer.FIREWORK_ROCKET).offerTo(exporter, "firework_rocket");
         ComplexRecipeJsonFactory.create(RecipeSerializer.FIREWORK_STAR).offerTo(exporter, "firework_star");
         ComplexRecipeJsonFactory.create(RecipeSerializer.FIREWORK_STAR_FADE).offerTo(exporter, "firework_star_fade");
@@ -1166,7 +1148,7 @@ implements DataProvider {
             Block itemConvertible = RecipesProvider.getVariantRecipeInput(family, variant);
             if (biFunction != null) {
                 CraftingRecipeJsonFactory craftingRecipeJsonFactory = biFunction.apply((ItemConvertible)block, itemConvertible);
-                family.getGroup().ifPresent(group -> craftingRecipeJsonFactory.group(group + (variant == BlockFamily.Variant.CUT ? "" : "_" + variant.getName())));
+                family.getGroup().ifPresent(group -> craftingRecipeJsonFactory.group(group + (String)(variant == BlockFamily.Variant.CUT ? "" : "_" + variant.getName())));
                 craftingRecipeJsonFactory.criterion(family.getUnlockCriterionName().orElseGet(() -> RecipesProvider.hasItem(itemConvertible)), RecipesProvider.conditionsFromItem(itemConvertible));
                 craftingRecipeJsonFactory.offerTo(exporter);
             }

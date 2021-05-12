@@ -39,11 +39,11 @@ import org.jetbrains.annotations.Nullable;
 
 public class SetAttributesLootFunction
 extends ConditionalLootFunction {
-    private final List<Attribute> attributes;
+    final List<Attribute> attributes;
 
-    private SetAttributesLootFunction(LootCondition[] conditions, List<Attribute> attributes) {
-        super(conditions);
-        this.attributes = ImmutableList.copyOf(attributes);
+    SetAttributesLootFunction(LootCondition[] lootConditions, List<Attribute> list) {
+        super(lootConditions);
+        this.attributes = ImmutableList.copyOf(list);
     }
 
     @Override
@@ -53,7 +53,7 @@ extends ConditionalLootFunction {
 
     @Override
     public Set<LootContextParameter<?>> getRequiredParameters() {
-        return this.attributes.stream().flatMap(attribute -> ((Attribute)attribute).amount.getRequiredParameters().stream()).collect(ImmutableSet.toImmutableSet());
+        return this.attributes.stream().flatMap(attribute -> attribute.amount.getRequiredParameters().stream()).collect(ImmutableSet.toImmutableSet());
     }
 
     @Override
@@ -79,21 +79,21 @@ extends ConditionalLootFunction {
     }
 
     static class Attribute {
-        private final String name;
-        private final EntityAttribute attribute;
-        private final EntityAttributeModifier.Operation operation;
-        private final LootNumberProvider amount;
+        final String name;
+        final EntityAttribute attribute;
+        final EntityAttributeModifier.Operation operation;
+        final LootNumberProvider amount;
         @Nullable
-        private final UUID id;
-        private final EquipmentSlot[] slots;
+        final UUID id;
+        final EquipmentSlot[] slots;
 
-        private Attribute(String name, EntityAttribute attribute, EntityAttributeModifier.Operation operation, LootNumberProvider amount, EquipmentSlot[] slots, @Nullable UUID id) {
-            this.name = name;
-            this.attribute = attribute;
+        Attribute(String string, EntityAttribute entityAttribute, EntityAttributeModifier.Operation operation, LootNumberProvider lootNumberProvider, EquipmentSlot[] equipmentSlots, @Nullable UUID uUID) {
+            this.name = string;
+            this.attribute = entityAttribute;
             this.operation = operation;
-            this.amount = amount;
-            this.id = id;
-            this.slots = slots;
+            this.amount = lootNumberProvider;
+            this.id = uUID;
+            this.slots = equipmentSlots;
         }
 
         public JsonObject serialize(JsonSerializationContext context) {
@@ -166,7 +166,7 @@ extends ConditionalLootFunction {
                     return "multiply_total";
                 }
             }
-            throw new IllegalArgumentException("Unknown operation " + (Object)((Object)operation));
+            throw new IllegalArgumentException("Unknown operation " + operation);
         }
 
         private static EntityAttributeModifier.Operation fromName(String name) {
@@ -182,62 +182,6 @@ extends ConditionalLootFunction {
                 }
             }
             throw new JsonSyntaxException("Unknown attribute modifier operation " + name);
-        }
-    }
-
-    public static class Serializer
-    extends ConditionalLootFunction.Serializer<SetAttributesLootFunction> {
-        @Override
-        public void toJson(JsonObject jsonObject, SetAttributesLootFunction setAttributesLootFunction, JsonSerializationContext jsonSerializationContext) {
-            super.toJson(jsonObject, setAttributesLootFunction, jsonSerializationContext);
-            JsonArray jsonArray = new JsonArray();
-            for (Attribute attribute : setAttributesLootFunction.attributes) {
-                jsonArray.add(attribute.serialize(jsonSerializationContext));
-            }
-            jsonObject.add("modifiers", jsonArray);
-        }
-
-        @Override
-        public SetAttributesLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            JsonArray jsonArray = JsonHelper.getArray(jsonObject, "modifiers");
-            ArrayList<Attribute> list = Lists.newArrayListWithExpectedSize(jsonArray.size());
-            for (JsonElement jsonElement : jsonArray) {
-                list.add(Attribute.deserialize(JsonHelper.asObject(jsonElement, "modifier"), jsonDeserializationContext));
-            }
-            if (list.isEmpty()) {
-                throw new JsonSyntaxException("Invalid attribute modifiers array; cannot be empty");
-            }
-            return new SetAttributesLootFunction(lootConditions, list);
-        }
-
-        @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
-            return this.fromJson(json, context, conditions);
-        }
-    }
-
-    public static class Builder
-    extends ConditionalLootFunction.Builder<Builder> {
-        private final List<Attribute> attributes = Lists.newArrayList();
-
-        @Override
-        protected Builder getThisBuilder() {
-            return this;
-        }
-
-        public Builder attribute(AttributeBuilder attribute) {
-            this.attributes.add(attribute.build());
-            return this;
-        }
-
-        @Override
-        public LootFunction build() {
-            return new SetAttributesLootFunction(this.getConditions(), this.attributes);
-        }
-
-        @Override
-        protected /* synthetic */ ConditionalLootFunction.Builder getThisBuilder() {
-            return this.getThisBuilder();
         }
     }
 
@@ -269,6 +213,62 @@ extends ConditionalLootFunction {
 
         public Attribute build() {
             return new Attribute(this.name, this.attribute, this.operation, this.amount, this.slots.toArray(new EquipmentSlot[0]), this.uuid);
+        }
+    }
+
+    public static class Builder
+    extends ConditionalLootFunction.Builder<Builder> {
+        private final List<Attribute> attributes = Lists.newArrayList();
+
+        @Override
+        protected Builder getThisBuilder() {
+            return this;
+        }
+
+        public Builder attribute(AttributeBuilder attribute) {
+            this.attributes.add(attribute.build());
+            return this;
+        }
+
+        @Override
+        public LootFunction build() {
+            return new SetAttributesLootFunction(this.getConditions(), this.attributes);
+        }
+
+        @Override
+        protected /* synthetic */ ConditionalLootFunction.Builder getThisBuilder() {
+            return this.getThisBuilder();
+        }
+    }
+
+    public static class Serializer
+    extends ConditionalLootFunction.Serializer<SetAttributesLootFunction> {
+        @Override
+        public void toJson(JsonObject jsonObject, SetAttributesLootFunction setAttributesLootFunction, JsonSerializationContext jsonSerializationContext) {
+            super.toJson(jsonObject, setAttributesLootFunction, jsonSerializationContext);
+            JsonArray jsonArray = new JsonArray();
+            for (Attribute attribute : setAttributesLootFunction.attributes) {
+                jsonArray.add(attribute.serialize(jsonSerializationContext));
+            }
+            jsonObject.add("modifiers", jsonArray);
+        }
+
+        @Override
+        public SetAttributesLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+            JsonArray jsonArray = JsonHelper.getArray(jsonObject, "modifiers");
+            ArrayList<Attribute> list = Lists.newArrayListWithExpectedSize(jsonArray.size());
+            for (JsonElement jsonElement : jsonArray) {
+                list.add(Attribute.deserialize(JsonHelper.asObject(jsonElement, "modifier"), jsonDeserializationContext));
+            }
+            if (list.isEmpty()) {
+                throw new JsonSyntaxException("Invalid attribute modifiers array; cannot be empty");
+            }
+            return new SetAttributesLootFunction(lootConditions, list);
+        }
+
+        @Override
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
+            return this.fromJson(json, context, conditions);
         }
     }
 }

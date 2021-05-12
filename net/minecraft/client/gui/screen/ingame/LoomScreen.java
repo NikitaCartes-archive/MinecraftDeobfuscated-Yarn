@@ -87,8 +87,8 @@ extends HandledScreen<LoomScreenHandler> {
         this.renderBackground(matrices);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, TEXTURE);
-        int i = this.field_2776;
-        int j = this.field_2800;
+        int i = this.x;
+        int j = this.y;
         this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
         Slot slot = ((LoomScreenHandler)this.handler).getBannerSlot();
         Slot slot2 = ((LoomScreenHandler)this.handler).getDyeSlot();
@@ -177,8 +177,8 @@ extends HandledScreen<LoomScreenHandler> {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         this.scrollbarClicked = false;
         if (this.canApplyDyePattern) {
-            int i = this.field_2776 + 60;
-            int j = this.field_2800 + 13;
+            int i = this.x + 60;
+            int j = this.y + 13;
             int k = this.firstPatternButtonId + 16;
             for (int l = this.firstPatternButtonId; l < k; ++l) {
                 int m = l - this.firstPatternButtonId;
@@ -189,8 +189,8 @@ extends HandledScreen<LoomScreenHandler> {
                 this.client.interactionManager.clickButton(((LoomScreenHandler)this.handler).syncId, l);
                 return true;
             }
-            i = this.field_2776 + 119;
-            j = this.field_2800 + 9;
+            i = this.x + 119;
+            j = this.y + 9;
             if (mouseX >= (double)i && mouseX < (double)(i + 12) && mouseY >= (double)j && mouseY < (double)(j + 56)) {
                 this.scrollbarClicked = true;
             }
@@ -201,7 +201,7 @@ extends HandledScreen<LoomScreenHandler> {
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         if (this.scrollbarClicked && this.canApplyDyePattern) {
-            int i = this.field_2800 + 13;
+            int i = this.y + 13;
             int j = i + 56;
             this.scrollPosition = ((float)mouseY - (float)i - 7.5f) / ((float)(j - i) - 15.0f);
             this.scrollPosition = MathHelper.clamp(this.scrollPosition, 0.0f, 1.0f);

@@ -192,7 +192,7 @@ extends ReentrantThreadExecutor<ServerTask>
 implements SnooperListener,
 CommandOutput,
 AutoCloseable {
-    private static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogManager.getLogger();
     private static final float field_33212 = 0.8f;
     private static final int field_33213 = 100;
     public static final int field_33206 = 50;
@@ -522,7 +522,7 @@ AutoCloseable {
         if (file.isFile()) {
             String string = this.session.getDirectoryName();
             try {
-                this.setResourcePack(field_33208 + URLEncoder.encode(string, StandardCharsets.UTF_8.toString()) + "/" + field_33209, "");
+                this.setResourcePack(field_33208 + URLEncoder.encode(string, StandardCharsets.UTF_8.toString()) + "/resources.zip", "");
             } catch (UnsupportedEncodingException unsupportedEncodingException) {
                 LOGGER.warn("Something went wrong url encoding {}", (Object)string);
             }
@@ -575,7 +575,7 @@ AutoCloseable {
         this.shutdown();
     }
 
-    protected void shutdown() {
+    public void shutdown() {
         LOGGER.info("Stopping server");
         if (this.getNetworkIo() != null) {
             this.getNetworkIo().stop();
@@ -778,10 +778,10 @@ AutoCloseable {
     protected void setCrashReport(CrashReport report) {
     }
 
-    protected void exit() {
+    public void exit() {
     }
 
-    protected void tick(BooleanSupplier shouldKeepTicking) {
+    public void tick(BooleanSupplier shouldKeepTicking) {
         long l = Util.getMeasuringTimeNano();
         ++this.ticks;
         this.tickWorlds(shouldKeepTicking);
@@ -822,7 +822,7 @@ AutoCloseable {
         this.profiler.pop();
     }
 
-    protected void tickWorlds(BooleanSupplier shouldKeepTicking) {
+    public void tickWorlds(BooleanSupplier shouldKeepTicking) {
         this.profiler.push("commandFunctions");
         this.getCommandFunctionManager().tick();
         this.profiler.swap("levels");
@@ -1009,7 +1009,7 @@ AutoCloseable {
         player.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
     }
 
-    protected boolean isMonsterSpawningEnabled() {
+    public boolean isMonsterSpawningEnabled() {
         return this.saveProperties.getDifficulty() != Difficulty.PEACEFUL;
     }
 

@@ -67,19 +67,19 @@ import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockStateModelGenerator {
-    private final Consumer<BlockStateSupplier> blockStateCollector;
-    private final BiConsumer<Identifier, Supplier<JsonElement>> modelCollector;
+    final Consumer<BlockStateSupplier> blockStateCollector;
+    final BiConsumer<Identifier, Supplier<JsonElement>> modelCollector;
     private final Consumer<Item> simpleItemModelExemptionCollector;
-    private final List<Block> nonOrientableTrapdoors = ImmutableList.of(Blocks.OAK_TRAPDOOR, Blocks.DARK_OAK_TRAPDOOR, Blocks.IRON_TRAPDOOR);
-    private final Map<Block, StateFactory> stoneStateFactories = ImmutableMap.builder().put(Blocks.STONE, BlockStateModelGenerator::createStoneState).put(Blocks.DEEPSLATE, BlockStateModelGenerator::createDeepslateState).build();
-    private final Map<Block, TexturedModel> sandstoneModels = ImmutableMap.builder().put(Blocks.SANDSTONE, TexturedModel.SIDE_TOP_BOTTOM_WALL.get(Blocks.SANDSTONE)).put(Blocks.RED_SANDSTONE, TexturedModel.SIDE_TOP_BOTTOM_WALL.get(Blocks.RED_SANDSTONE)).put(Blocks.SMOOTH_SANDSTONE, TexturedModel.getCubeAll(Texture.getSubId(Blocks.SANDSTONE, "_top"))).put(Blocks.SMOOTH_RED_SANDSTONE, TexturedModel.getCubeAll(Texture.getSubId(Blocks.RED_SANDSTONE, "_top"))).put(Blocks.CUT_SANDSTONE, TexturedModel.CUBE_COLUMN.get(Blocks.SANDSTONE).texture(texture -> texture.put(TextureKey.SIDE, Texture.getId(Blocks.CUT_SANDSTONE)))).put(Blocks.CUT_RED_SANDSTONE, TexturedModel.CUBE_COLUMN.get(Blocks.RED_SANDSTONE).texture(texture -> texture.put(TextureKey.SIDE, Texture.getId(Blocks.CUT_RED_SANDSTONE)))).put(Blocks.QUARTZ_BLOCK, TexturedModel.CUBE_COLUMN.get(Blocks.QUARTZ_BLOCK)).put(Blocks.SMOOTH_QUARTZ, TexturedModel.getCubeAll(Texture.getSubId(Blocks.QUARTZ_BLOCK, "_bottom"))).put(Blocks.BLACKSTONE, TexturedModel.SIDE_END_WALL.get(Blocks.BLACKSTONE)).put(Blocks.DEEPSLATE, TexturedModel.SIDE_END_WALL.get(Blocks.DEEPSLATE)).put(Blocks.CHISELED_QUARTZ_BLOCK, TexturedModel.CUBE_COLUMN.get(Blocks.CHISELED_QUARTZ_BLOCK).texture(texture -> texture.put(TextureKey.SIDE, Texture.getId(Blocks.CHISELED_QUARTZ_BLOCK)))).put(Blocks.CHISELED_SANDSTONE, TexturedModel.CUBE_COLUMN.get(Blocks.CHISELED_SANDSTONE).texture(texture -> {
+    final List<Block> nonOrientableTrapdoors = ImmutableList.of(Blocks.OAK_TRAPDOOR, Blocks.DARK_OAK_TRAPDOOR, Blocks.IRON_TRAPDOOR);
+    final Map<Block, StateFactory> stoneStateFactories = ImmutableMap.builder().put(Blocks.STONE, BlockStateModelGenerator::createStoneState).put(Blocks.DEEPSLATE, BlockStateModelGenerator::createDeepslateState).build();
+    final Map<Block, TexturedModel> sandstoneModels = ImmutableMap.builder().put(Blocks.SANDSTONE, TexturedModel.SIDE_TOP_BOTTOM_WALL.get(Blocks.SANDSTONE)).put(Blocks.RED_SANDSTONE, TexturedModel.SIDE_TOP_BOTTOM_WALL.get(Blocks.RED_SANDSTONE)).put(Blocks.SMOOTH_SANDSTONE, TexturedModel.getCubeAll(Texture.getSubId(Blocks.SANDSTONE, "_top"))).put(Blocks.SMOOTH_RED_SANDSTONE, TexturedModel.getCubeAll(Texture.getSubId(Blocks.RED_SANDSTONE, "_top"))).put(Blocks.CUT_SANDSTONE, TexturedModel.CUBE_COLUMN.get(Blocks.SANDSTONE).texture(texture -> texture.put(TextureKey.SIDE, Texture.getId(Blocks.CUT_SANDSTONE)))).put(Blocks.CUT_RED_SANDSTONE, TexturedModel.CUBE_COLUMN.get(Blocks.RED_SANDSTONE).texture(texture -> texture.put(TextureKey.SIDE, Texture.getId(Blocks.CUT_RED_SANDSTONE)))).put(Blocks.QUARTZ_BLOCK, TexturedModel.CUBE_COLUMN.get(Blocks.QUARTZ_BLOCK)).put(Blocks.SMOOTH_QUARTZ, TexturedModel.getCubeAll(Texture.getSubId(Blocks.QUARTZ_BLOCK, "_bottom"))).put(Blocks.BLACKSTONE, TexturedModel.SIDE_END_WALL.get(Blocks.BLACKSTONE)).put(Blocks.DEEPSLATE, TexturedModel.SIDE_END_WALL.get(Blocks.DEEPSLATE)).put(Blocks.CHISELED_QUARTZ_BLOCK, TexturedModel.CUBE_COLUMN.get(Blocks.CHISELED_QUARTZ_BLOCK).texture(texture -> texture.put(TextureKey.SIDE, Texture.getId(Blocks.CHISELED_QUARTZ_BLOCK)))).put(Blocks.CHISELED_SANDSTONE, TexturedModel.CUBE_COLUMN.get(Blocks.CHISELED_SANDSTONE).texture(texture -> {
         texture.put(TextureKey.END, Texture.getSubId(Blocks.SANDSTONE, "_top"));
         texture.put(TextureKey.SIDE, Texture.getId(Blocks.CHISELED_SANDSTONE));
     })).put(Blocks.CHISELED_RED_SANDSTONE, TexturedModel.CUBE_COLUMN.get(Blocks.CHISELED_RED_SANDSTONE).texture(texture -> {
         texture.put(TextureKey.END, Texture.getSubId(Blocks.RED_SANDSTONE, "_top"));
         texture.put(TextureKey.SIDE, Texture.getId(Blocks.CHISELED_RED_SANDSTONE));
     })).build();
-    private static final Map<BlockFamily.Variant, BiConsumer<BlockTexturePool, Block>> VARIANT_POOL_FUNCTIONS = ImmutableMap.builder().put(BlockFamily.Variant.BUTTON, BlockTexturePool::button).put(BlockFamily.Variant.DOOR, (object, block) -> BlockTexturePool.method_34660((BlockTexturePool)object, block)).put(BlockFamily.Variant.CHISELED, (object, block) -> BlockTexturePool.method_33526((BlockTexturePool)object, block)).put(BlockFamily.Variant.CRACKED, (object, block) -> BlockTexturePool.method_33526((BlockTexturePool)object, block)).put(BlockFamily.Variant.FENCE, BlockTexturePool::fence).put(BlockFamily.Variant.FENCE_GATE, BlockTexturePool::fenceGate).put(BlockFamily.Variant.SIGN, BlockTexturePool::sign).put(BlockFamily.Variant.SLAB, BlockTexturePool::slab).put(BlockFamily.Variant.STAIRS, BlockTexturePool::stairs).put(BlockFamily.Variant.PRESSURE_PLATE, BlockTexturePool::pressurePlate).put(BlockFamily.Variant.TRAPDOOR, (object, block) -> BlockTexturePool.method_33523((BlockTexturePool)object, block)).put(BlockFamily.Variant.WALL, BlockTexturePool::wall).build();
+    static final Map<BlockFamily.Variant, BiConsumer<BlockTexturePool, Block>> VARIANT_POOL_FUNCTIONS = ImmutableMap.builder().put(BlockFamily.Variant.BUTTON, BlockTexturePool::button).put(BlockFamily.Variant.DOOR, BlockTexturePool::door).put(BlockFamily.Variant.CHISELED, BlockTexturePool::sandstone).put(BlockFamily.Variant.CRACKED, BlockTexturePool::sandstone).put(BlockFamily.Variant.FENCE, BlockTexturePool::fence).put(BlockFamily.Variant.FENCE_GATE, BlockTexturePool::fenceGate).put(BlockFamily.Variant.SIGN, BlockTexturePool::sign).put(BlockFamily.Variant.SLAB, BlockTexturePool::slab).put(BlockFamily.Variant.STAIRS, BlockTexturePool::stairs).put(BlockFamily.Variant.PRESSURE_PLATE, BlockTexturePool::pressurePlate).put(BlockFamily.Variant.TRAPDOOR, BlockTexturePool::registerTrapdoor).put(BlockFamily.Variant.WALL, BlockTexturePool::wall).build();
     /**
      * A map from a boolean property about connection on one direction to a
      * function that creates a block state variant for connection on that
@@ -110,11 +110,11 @@ public class BlockStateModelGenerator {
         this.simpleItemModelExemptionCollector = simpleItemModelExemptionCollector;
     }
 
-    private void excludeFromSimpleItemModelGeneration(Block block) {
+    void excludeFromSimpleItemModelGeneration(Block block) {
         this.simpleItemModelExemptionCollector.accept(block.asItem());
     }
 
-    private void registerParentedItemModel(Block block, Identifier parentModelId) {
+    void registerParentedItemModel(Block block, Identifier parentModelId) {
         this.modelCollector.accept(ModelIds.getItemModelId(block.asItem()), new SimpleModelSupplier(parentModelId));
     }
 
@@ -122,7 +122,7 @@ public class BlockStateModelGenerator {
         this.modelCollector.accept(ModelIds.getItemModelId(item), new SimpleModelSupplier(parentModelId));
     }
 
-    private void registerItemModel(Item item) {
+    void registerItemModel(Item item) {
         Models.GENERATED.upload(ModelIds.getItemModelId(item), Texture.layer0(item), this.modelCollector);
     }
 
@@ -181,7 +181,7 @@ public class BlockStateModelGenerator {
         this.blockStateCollector.accept(BlockStateModelGenerator.createBlockStateWithRandomHorizontalRotations(block, identifier));
     }
 
-    private static BlockStateSupplier createButtonBlockState(Block buttonBlock, Identifier regularModelId, Identifier pressedModelId) {
+    static BlockStateSupplier createButtonBlockState(Block buttonBlock, Identifier regularModelId, Identifier pressedModelId) {
         return VariantsBlockStateSupplier.create(buttonBlock).coordinate(BlockStateVariantMap.create(Properties.POWERED).register((Boolean)false, BlockStateVariant.create().put(VariantSettings.MODEL, regularModelId)).register((Boolean)true, BlockStateVariant.create().put(VariantSettings.MODEL, pressedModelId))).coordinate(BlockStateVariantMap.create(Properties.WALL_MOUNT_LOCATION, Properties.HORIZONTAL_FACING).register(WallMountLocation.FLOOR, Direction.EAST, BlockStateVariant.create().put(VariantSettings.Y, VariantSettings.Rotation.R90)).register(WallMountLocation.FLOOR, Direction.WEST, BlockStateVariant.create().put(VariantSettings.Y, VariantSettings.Rotation.R270)).register(WallMountLocation.FLOOR, Direction.SOUTH, BlockStateVariant.create().put(VariantSettings.Y, VariantSettings.Rotation.R180)).register(WallMountLocation.FLOOR, Direction.NORTH, BlockStateVariant.create()).register(WallMountLocation.WALL, Direction.EAST, BlockStateVariant.create().put(VariantSettings.Y, VariantSettings.Rotation.R90).put(VariantSettings.X, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true)).register(WallMountLocation.WALL, Direction.WEST, BlockStateVariant.create().put(VariantSettings.Y, VariantSettings.Rotation.R270).put(VariantSettings.X, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true)).register(WallMountLocation.WALL, Direction.SOUTH, BlockStateVariant.create().put(VariantSettings.Y, VariantSettings.Rotation.R180).put(VariantSettings.X, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true)).register(WallMountLocation.WALL, Direction.NORTH, BlockStateVariant.create().put(VariantSettings.X, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true)).register(WallMountLocation.CEILING, Direction.EAST, BlockStateVariant.create().put(VariantSettings.Y, VariantSettings.Rotation.R270).put(VariantSettings.X, VariantSettings.Rotation.R180)).register(WallMountLocation.CEILING, Direction.WEST, BlockStateVariant.create().put(VariantSettings.Y, VariantSettings.Rotation.R90).put(VariantSettings.X, VariantSettings.Rotation.R180)).register(WallMountLocation.CEILING, Direction.SOUTH, BlockStateVariant.create().put(VariantSettings.X, VariantSettings.Rotation.R180)).register(WallMountLocation.CEILING, Direction.NORTH, BlockStateVariant.create().put(VariantSettings.Y, VariantSettings.Rotation.R180).put(VariantSettings.X, VariantSettings.Rotation.R180)));
     }
 
@@ -193,19 +193,19 @@ public class BlockStateModelGenerator {
         return VariantsBlockStateSupplier.create(doorBlock).coordinate(BlockStateModelGenerator.fillDoorVariantMap(BlockStateModelGenerator.fillDoorVariantMap(BlockStateVariantMap.create(Properties.HORIZONTAL_FACING, Properties.DOUBLE_BLOCK_HALF, Properties.DOOR_HINGE, Properties.OPEN), DoubleBlockHalf.LOWER, bottomModelId, bottomHingeModelId), DoubleBlockHalf.UPPER, topModelId, topHingeModelId));
     }
 
-    private static BlockStateSupplier createFenceBlockState(Block fenceBlock, Identifier postModelId, Identifier sideModelId) {
+    static BlockStateSupplier createFenceBlockState(Block fenceBlock, Identifier postModelId, Identifier sideModelId) {
         return MultipartBlockStateSupplier.create(fenceBlock).with(BlockStateVariant.create().put(VariantSettings.MODEL, postModelId)).with((When)When.create().set(Properties.NORTH, true), BlockStateVariant.create().put(VariantSettings.MODEL, sideModelId).put(VariantSettings.UVLOCK, true)).with((When)When.create().set(Properties.EAST, true), BlockStateVariant.create().put(VariantSettings.MODEL, sideModelId).put(VariantSettings.Y, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true)).with((When)When.create().set(Properties.SOUTH, true), BlockStateVariant.create().put(VariantSettings.MODEL, sideModelId).put(VariantSettings.Y, VariantSettings.Rotation.R180).put(VariantSettings.UVLOCK, true)).with((When)When.create().set(Properties.WEST, true), BlockStateVariant.create().put(VariantSettings.MODEL, sideModelId).put(VariantSettings.Y, VariantSettings.Rotation.R270).put(VariantSettings.UVLOCK, true));
     }
 
-    private static BlockStateSupplier createWallBlockState(Block wallBlock, Identifier postModelId, Identifier lowSideModelId, Identifier tallSideModelId) {
+    static BlockStateSupplier createWallBlockState(Block wallBlock, Identifier postModelId, Identifier lowSideModelId, Identifier tallSideModelId) {
         return MultipartBlockStateSupplier.create(wallBlock).with((When)When.create().set(Properties.UP, true), BlockStateVariant.create().put(VariantSettings.MODEL, postModelId)).with((When)When.create().set(Properties.NORTH_WALL_SHAPE, WallShape.LOW), BlockStateVariant.create().put(VariantSettings.MODEL, lowSideModelId).put(VariantSettings.UVLOCK, true)).with((When)When.create().set(Properties.EAST_WALL_SHAPE, WallShape.LOW), BlockStateVariant.create().put(VariantSettings.MODEL, lowSideModelId).put(VariantSettings.Y, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true)).with((When)When.create().set(Properties.SOUTH_WALL_SHAPE, WallShape.LOW), BlockStateVariant.create().put(VariantSettings.MODEL, lowSideModelId).put(VariantSettings.Y, VariantSettings.Rotation.R180).put(VariantSettings.UVLOCK, true)).with((When)When.create().set(Properties.WEST_WALL_SHAPE, WallShape.LOW), BlockStateVariant.create().put(VariantSettings.MODEL, lowSideModelId).put(VariantSettings.Y, VariantSettings.Rotation.R270).put(VariantSettings.UVLOCK, true)).with((When)When.create().set(Properties.NORTH_WALL_SHAPE, WallShape.TALL), BlockStateVariant.create().put(VariantSettings.MODEL, tallSideModelId).put(VariantSettings.UVLOCK, true)).with((When)When.create().set(Properties.EAST_WALL_SHAPE, WallShape.TALL), BlockStateVariant.create().put(VariantSettings.MODEL, tallSideModelId).put(VariantSettings.Y, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true)).with((When)When.create().set(Properties.SOUTH_WALL_SHAPE, WallShape.TALL), BlockStateVariant.create().put(VariantSettings.MODEL, tallSideModelId).put(VariantSettings.Y, VariantSettings.Rotation.R180).put(VariantSettings.UVLOCK, true)).with((When)When.create().set(Properties.WEST_WALL_SHAPE, WallShape.TALL), BlockStateVariant.create().put(VariantSettings.MODEL, tallSideModelId).put(VariantSettings.Y, VariantSettings.Rotation.R270).put(VariantSettings.UVLOCK, true));
     }
 
-    private static BlockStateSupplier createFenceGateBlockState(Block fenceGateBlock, Identifier openModelId, Identifier closedModelId, Identifier openWallModelId, Identifier closedWallModelId) {
+    static BlockStateSupplier createFenceGateBlockState(Block fenceGateBlock, Identifier openModelId, Identifier closedModelId, Identifier openWallModelId, Identifier closedWallModelId) {
         return VariantsBlockStateSupplier.create(fenceGateBlock, BlockStateVariant.create().put(VariantSettings.UVLOCK, true)).coordinate(BlockStateModelGenerator.createSouthDefaultHorizontalRotationStates()).coordinate(BlockStateVariantMap.create(Properties.IN_WALL, Properties.OPEN).register((Boolean)false, (Boolean)false, BlockStateVariant.create().put(VariantSettings.MODEL, closedModelId)).register((Boolean)true, (Boolean)false, BlockStateVariant.create().put(VariantSettings.MODEL, closedWallModelId)).register((Boolean)false, (Boolean)true, BlockStateVariant.create().put(VariantSettings.MODEL, openModelId)).register((Boolean)true, (Boolean)true, BlockStateVariant.create().put(VariantSettings.MODEL, openWallModelId)));
     }
 
-    private static BlockStateSupplier createStairsBlockState(Block stairsBlock, Identifier innerModelId, Identifier regularModelId, Identifier outerModelId) {
+    static BlockStateSupplier createStairsBlockState(Block stairsBlock, Identifier innerModelId, Identifier regularModelId, Identifier outerModelId) {
         return VariantsBlockStateSupplier.create(stairsBlock).coordinate(BlockStateVariantMap.create(Properties.HORIZONTAL_FACING, Properties.BLOCK_HALF, Properties.STAIR_SHAPE).register(Direction.EAST, BlockHalf.BOTTOM, StairShape.STRAIGHT, BlockStateVariant.create().put(VariantSettings.MODEL, regularModelId)).register(Direction.WEST, BlockHalf.BOTTOM, StairShape.STRAIGHT, BlockStateVariant.create().put(VariantSettings.MODEL, regularModelId).put(VariantSettings.Y, VariantSettings.Rotation.R180).put(VariantSettings.UVLOCK, true)).register(Direction.SOUTH, BlockHalf.BOTTOM, StairShape.STRAIGHT, BlockStateVariant.create().put(VariantSettings.MODEL, regularModelId).put(VariantSettings.Y, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true)).register(Direction.NORTH, BlockHalf.BOTTOM, StairShape.STRAIGHT, BlockStateVariant.create().put(VariantSettings.MODEL, regularModelId).put(VariantSettings.Y, VariantSettings.Rotation.R270).put(VariantSettings.UVLOCK, true)).register(Direction.EAST, BlockHalf.BOTTOM, StairShape.OUTER_RIGHT, BlockStateVariant.create().put(VariantSettings.MODEL, outerModelId)).register(Direction.WEST, BlockHalf.BOTTOM, StairShape.OUTER_RIGHT, BlockStateVariant.create().put(VariantSettings.MODEL, outerModelId).put(VariantSettings.Y, VariantSettings.Rotation.R180).put(VariantSettings.UVLOCK, true)).register(Direction.SOUTH, BlockHalf.BOTTOM, StairShape.OUTER_RIGHT, BlockStateVariant.create().put(VariantSettings.MODEL, outerModelId).put(VariantSettings.Y, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true)).register(Direction.NORTH, BlockHalf.BOTTOM, StairShape.OUTER_RIGHT, BlockStateVariant.create().put(VariantSettings.MODEL, outerModelId).put(VariantSettings.Y, VariantSettings.Rotation.R270).put(VariantSettings.UVLOCK, true)).register(Direction.EAST, BlockHalf.BOTTOM, StairShape.OUTER_LEFT, BlockStateVariant.create().put(VariantSettings.MODEL, outerModelId).put(VariantSettings.Y, VariantSettings.Rotation.R270).put(VariantSettings.UVLOCK, true)).register(Direction.WEST, BlockHalf.BOTTOM, StairShape.OUTER_LEFT, BlockStateVariant.create().put(VariantSettings.MODEL, outerModelId).put(VariantSettings.Y, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true)).register(Direction.SOUTH, BlockHalf.BOTTOM, StairShape.OUTER_LEFT, BlockStateVariant.create().put(VariantSettings.MODEL, outerModelId)).register(Direction.NORTH, BlockHalf.BOTTOM, StairShape.OUTER_LEFT, BlockStateVariant.create().put(VariantSettings.MODEL, outerModelId).put(VariantSettings.Y, VariantSettings.Rotation.R180).put(VariantSettings.UVLOCK, true)).register(Direction.EAST, BlockHalf.BOTTOM, StairShape.INNER_RIGHT, BlockStateVariant.create().put(VariantSettings.MODEL, innerModelId)).register(Direction.WEST, BlockHalf.BOTTOM, StairShape.INNER_RIGHT, BlockStateVariant.create().put(VariantSettings.MODEL, innerModelId).put(VariantSettings.Y, VariantSettings.Rotation.R180).put(VariantSettings.UVLOCK, true)).register(Direction.SOUTH, BlockHalf.BOTTOM, StairShape.INNER_RIGHT, BlockStateVariant.create().put(VariantSettings.MODEL, innerModelId).put(VariantSettings.Y, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true)).register(Direction.NORTH, BlockHalf.BOTTOM, StairShape.INNER_RIGHT, BlockStateVariant.create().put(VariantSettings.MODEL, innerModelId).put(VariantSettings.Y, VariantSettings.Rotation.R270).put(VariantSettings.UVLOCK, true)).register(Direction.EAST, BlockHalf.BOTTOM, StairShape.INNER_LEFT, BlockStateVariant.create().put(VariantSettings.MODEL, innerModelId).put(VariantSettings.Y, VariantSettings.Rotation.R270).put(VariantSettings.UVLOCK, true)).register(Direction.WEST, BlockHalf.BOTTOM, StairShape.INNER_LEFT, BlockStateVariant.create().put(VariantSettings.MODEL, innerModelId).put(VariantSettings.Y, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true)).register(Direction.SOUTH, BlockHalf.BOTTOM, StairShape.INNER_LEFT, BlockStateVariant.create().put(VariantSettings.MODEL, innerModelId)).register(Direction.NORTH, BlockHalf.BOTTOM, StairShape.INNER_LEFT, BlockStateVariant.create().put(VariantSettings.MODEL, innerModelId).put(VariantSettings.Y, VariantSettings.Rotation.R180).put(VariantSettings.UVLOCK, true)).register(Direction.EAST, BlockHalf.TOP, StairShape.STRAIGHT, BlockStateVariant.create().put(VariantSettings.MODEL, regularModelId).put(VariantSettings.X, VariantSettings.Rotation.R180).put(VariantSettings.UVLOCK, true)).register(Direction.WEST, BlockHalf.TOP, StairShape.STRAIGHT, BlockStateVariant.create().put(VariantSettings.MODEL, regularModelId).put(VariantSettings.X, VariantSettings.Rotation.R180).put(VariantSettings.Y, VariantSettings.Rotation.R180).put(VariantSettings.UVLOCK, true)).register(Direction.SOUTH, BlockHalf.TOP, StairShape.STRAIGHT, BlockStateVariant.create().put(VariantSettings.MODEL, regularModelId).put(VariantSettings.X, VariantSettings.Rotation.R180).put(VariantSettings.Y, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true)).register(Direction.NORTH, BlockHalf.TOP, StairShape.STRAIGHT, BlockStateVariant.create().put(VariantSettings.MODEL, regularModelId).put(VariantSettings.X, VariantSettings.Rotation.R180).put(VariantSettings.Y, VariantSettings.Rotation.R270).put(VariantSettings.UVLOCK, true)).register(Direction.EAST, BlockHalf.TOP, StairShape.OUTER_RIGHT, BlockStateVariant.create().put(VariantSettings.MODEL, outerModelId).put(VariantSettings.X, VariantSettings.Rotation.R180).put(VariantSettings.Y, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true)).register(Direction.WEST, BlockHalf.TOP, StairShape.OUTER_RIGHT, BlockStateVariant.create().put(VariantSettings.MODEL, outerModelId).put(VariantSettings.X, VariantSettings.Rotation.R180).put(VariantSettings.Y, VariantSettings.Rotation.R270).put(VariantSettings.UVLOCK, true)).register(Direction.SOUTH, BlockHalf.TOP, StairShape.OUTER_RIGHT, BlockStateVariant.create().put(VariantSettings.MODEL, outerModelId).put(VariantSettings.X, VariantSettings.Rotation.R180).put(VariantSettings.Y, VariantSettings.Rotation.R180).put(VariantSettings.UVLOCK, true)).register(Direction.NORTH, BlockHalf.TOP, StairShape.OUTER_RIGHT, BlockStateVariant.create().put(VariantSettings.MODEL, outerModelId).put(VariantSettings.X, VariantSettings.Rotation.R180).put(VariantSettings.UVLOCK, true)).register(Direction.EAST, BlockHalf.TOP, StairShape.OUTER_LEFT, BlockStateVariant.create().put(VariantSettings.MODEL, outerModelId).put(VariantSettings.X, VariantSettings.Rotation.R180).put(VariantSettings.UVLOCK, true)).register(Direction.WEST, BlockHalf.TOP, StairShape.OUTER_LEFT, BlockStateVariant.create().put(VariantSettings.MODEL, outerModelId).put(VariantSettings.X, VariantSettings.Rotation.R180).put(VariantSettings.Y, VariantSettings.Rotation.R180).put(VariantSettings.UVLOCK, true)).register(Direction.SOUTH, BlockHalf.TOP, StairShape.OUTER_LEFT, BlockStateVariant.create().put(VariantSettings.MODEL, outerModelId).put(VariantSettings.X, VariantSettings.Rotation.R180).put(VariantSettings.Y, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true)).register(Direction.NORTH, BlockHalf.TOP, StairShape.OUTER_LEFT, BlockStateVariant.create().put(VariantSettings.MODEL, outerModelId).put(VariantSettings.X, VariantSettings.Rotation.R180).put(VariantSettings.Y, VariantSettings.Rotation.R270).put(VariantSettings.UVLOCK, true)).register(Direction.EAST, BlockHalf.TOP, StairShape.INNER_RIGHT, BlockStateVariant.create().put(VariantSettings.MODEL, innerModelId).put(VariantSettings.X, VariantSettings.Rotation.R180).put(VariantSettings.Y, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true)).register(Direction.WEST, BlockHalf.TOP, StairShape.INNER_RIGHT, BlockStateVariant.create().put(VariantSettings.MODEL, innerModelId).put(VariantSettings.X, VariantSettings.Rotation.R180).put(VariantSettings.Y, VariantSettings.Rotation.R270).put(VariantSettings.UVLOCK, true)).register(Direction.SOUTH, BlockHalf.TOP, StairShape.INNER_RIGHT, BlockStateVariant.create().put(VariantSettings.MODEL, innerModelId).put(VariantSettings.X, VariantSettings.Rotation.R180).put(VariantSettings.Y, VariantSettings.Rotation.R180).put(VariantSettings.UVLOCK, true)).register(Direction.NORTH, BlockHalf.TOP, StairShape.INNER_RIGHT, BlockStateVariant.create().put(VariantSettings.MODEL, innerModelId).put(VariantSettings.X, VariantSettings.Rotation.R180).put(VariantSettings.UVLOCK, true)).register(Direction.EAST, BlockHalf.TOP, StairShape.INNER_LEFT, BlockStateVariant.create().put(VariantSettings.MODEL, innerModelId).put(VariantSettings.X, VariantSettings.Rotation.R180).put(VariantSettings.UVLOCK, true)).register(Direction.WEST, BlockHalf.TOP, StairShape.INNER_LEFT, BlockStateVariant.create().put(VariantSettings.MODEL, innerModelId).put(VariantSettings.X, VariantSettings.Rotation.R180).put(VariantSettings.Y, VariantSettings.Rotation.R180).put(VariantSettings.UVLOCK, true)).register(Direction.SOUTH, BlockHalf.TOP, StairShape.INNER_LEFT, BlockStateVariant.create().put(VariantSettings.MODEL, innerModelId).put(VariantSettings.X, VariantSettings.Rotation.R180).put(VariantSettings.Y, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true)).register(Direction.NORTH, BlockHalf.TOP, StairShape.INNER_LEFT, BlockStateVariant.create().put(VariantSettings.MODEL, innerModelId).put(VariantSettings.X, VariantSettings.Rotation.R180).put(VariantSettings.Y, VariantSettings.Rotation.R270).put(VariantSettings.UVLOCK, true)));
     }
 
@@ -217,7 +217,7 @@ public class BlockStateModelGenerator {
         return VariantsBlockStateSupplier.create(trapdoorBlock).coordinate(BlockStateVariantMap.create(Properties.HORIZONTAL_FACING, Properties.BLOCK_HALF, Properties.OPEN).register(Direction.NORTH, BlockHalf.BOTTOM, (Boolean)false, BlockStateVariant.create().put(VariantSettings.MODEL, bottomModelId)).register(Direction.SOUTH, BlockHalf.BOTTOM, (Boolean)false, BlockStateVariant.create().put(VariantSettings.MODEL, bottomModelId)).register(Direction.EAST, BlockHalf.BOTTOM, (Boolean)false, BlockStateVariant.create().put(VariantSettings.MODEL, bottomModelId)).register(Direction.WEST, BlockHalf.BOTTOM, (Boolean)false, BlockStateVariant.create().put(VariantSettings.MODEL, bottomModelId)).register(Direction.NORTH, BlockHalf.TOP, (Boolean)false, BlockStateVariant.create().put(VariantSettings.MODEL, topModelId)).register(Direction.SOUTH, BlockHalf.TOP, (Boolean)false, BlockStateVariant.create().put(VariantSettings.MODEL, topModelId)).register(Direction.EAST, BlockHalf.TOP, (Boolean)false, BlockStateVariant.create().put(VariantSettings.MODEL, topModelId)).register(Direction.WEST, BlockHalf.TOP, (Boolean)false, BlockStateVariant.create().put(VariantSettings.MODEL, topModelId)).register(Direction.NORTH, BlockHalf.BOTTOM, (Boolean)true, BlockStateVariant.create().put(VariantSettings.MODEL, openModelId)).register(Direction.SOUTH, BlockHalf.BOTTOM, (Boolean)true, BlockStateVariant.create().put(VariantSettings.MODEL, openModelId).put(VariantSettings.Y, VariantSettings.Rotation.R180)).register(Direction.EAST, BlockHalf.BOTTOM, (Boolean)true, BlockStateVariant.create().put(VariantSettings.MODEL, openModelId).put(VariantSettings.Y, VariantSettings.Rotation.R90)).register(Direction.WEST, BlockHalf.BOTTOM, (Boolean)true, BlockStateVariant.create().put(VariantSettings.MODEL, openModelId).put(VariantSettings.Y, VariantSettings.Rotation.R270)).register(Direction.NORTH, BlockHalf.TOP, (Boolean)true, BlockStateVariant.create().put(VariantSettings.MODEL, openModelId)).register(Direction.SOUTH, BlockHalf.TOP, (Boolean)true, BlockStateVariant.create().put(VariantSettings.MODEL, openModelId).put(VariantSettings.Y, VariantSettings.Rotation.R180)).register(Direction.EAST, BlockHalf.TOP, (Boolean)true, BlockStateVariant.create().put(VariantSettings.MODEL, openModelId).put(VariantSettings.Y, VariantSettings.Rotation.R90)).register(Direction.WEST, BlockHalf.TOP, (Boolean)true, BlockStateVariant.create().put(VariantSettings.MODEL, openModelId).put(VariantSettings.Y, VariantSettings.Rotation.R270)));
     }
 
-    private static VariantsBlockStateSupplier createSingletonBlockState(Block block, Identifier modelId) {
+    static VariantsBlockStateSupplier createSingletonBlockState(Block block, Identifier modelId) {
         return VariantsBlockStateSupplier.create(block, BlockStateVariant.create().put(VariantSettings.MODEL, modelId));
     }
 
@@ -225,7 +225,7 @@ public class BlockStateModelGenerator {
         return BlockStateVariantMap.create(Properties.AXIS).register(Direction.Axis.Y, BlockStateVariant.create()).register(Direction.Axis.Z, BlockStateVariant.create().put(VariantSettings.X, VariantSettings.Rotation.R90)).register(Direction.Axis.X, BlockStateVariant.create().put(VariantSettings.X, VariantSettings.Rotation.R90).put(VariantSettings.Y, VariantSettings.Rotation.R90));
     }
 
-    private static BlockStateSupplier createAxisRotatedBlockState(Block block, Identifier modelId) {
+    static BlockStateSupplier createAxisRotatedBlockState(Block block, Identifier modelId) {
         return VariantsBlockStateSupplier.create(block, BlockStateVariant.create().put(VariantSettings.MODEL, modelId)).coordinate(BlockStateModelGenerator.createAxisRotatedVariantMap());
     }
 
@@ -243,7 +243,7 @@ public class BlockStateModelGenerator {
         this.blockStateCollector.accept(VariantsBlockStateSupplier.create(block, BlockStateVariant.create().put(VariantSettings.MODEL, identifier)).coordinate(BlockStateModelGenerator.createNorthDefaultHorizontalRotationStates()));
     }
 
-    private static BlockStateSupplier createAxisRotatedBlockState(Block block, Identifier verticalModelId, Identifier horizontalModelId) {
+    static BlockStateSupplier createAxisRotatedBlockState(Block block, Identifier verticalModelId, Identifier horizontalModelId) {
         return VariantsBlockStateSupplier.create(block).coordinate(BlockStateVariantMap.create(Properties.AXIS).register(Direction.Axis.Y, BlockStateVariant.create().put(VariantSettings.MODEL, verticalModelId)).register(Direction.Axis.Z, BlockStateVariant.create().put(VariantSettings.MODEL, horizontalModelId).put(VariantSettings.X, VariantSettings.Rotation.R90)).register(Direction.Axis.X, BlockStateVariant.create().put(VariantSettings.MODEL, horizontalModelId).put(VariantSettings.X, VariantSettings.Rotation.R90).put(VariantSettings.Y, VariantSettings.Rotation.R90)));
     }
 
@@ -257,11 +257,11 @@ public class BlockStateModelGenerator {
         return model.upload(block, suffix, textureFactory.apply(Texture.getSubId(block, suffix)), this.modelCollector);
     }
 
-    private static BlockStateSupplier createPressurePlateBlockState(Block pressurePlateBlock, Identifier upModelId, Identifier downModelId) {
+    static BlockStateSupplier createPressurePlateBlockState(Block pressurePlateBlock, Identifier upModelId, Identifier downModelId) {
         return VariantsBlockStateSupplier.create(pressurePlateBlock).coordinate(BlockStateModelGenerator.createBooleanModelMap(Properties.POWERED, downModelId, upModelId));
     }
 
-    private static BlockStateSupplier createSlabBlockState(Block slabBlock, Identifier bottomModelId, Identifier topModelId, Identifier fullModelId) {
+    static BlockStateSupplier createSlabBlockState(Block slabBlock, Identifier bottomModelId, Identifier topModelId, Identifier fullModelId) {
         return VariantsBlockStateSupplier.create(slabBlock).coordinate(BlockStateVariantMap.create(Properties.SLAB_TYPE).register(SlabType.BOTTOM, BlockStateVariant.create().put(VariantSettings.MODEL, bottomModelId)).register(SlabType.TOP, BlockStateVariant.create().put(VariantSettings.MODEL, topModelId)).register(SlabType.DOUBLE, BlockStateVariant.create().put(VariantSettings.MODEL, fullModelId)));
     }
 
@@ -283,7 +283,7 @@ public class BlockStateModelGenerator {
         return new BlockTexturePool(texturedModel.getTexture()).base(block, texturedModel.getModel());
     }
 
-    private void registerDoor(Block doorBlock) {
+    void registerDoor(Block doorBlock) {
         Texture texture = Texture.topBottom(doorBlock);
         Identifier identifier = Models.DOOR_BOTTOM.upload(doorBlock, texture, this.modelCollector);
         Identifier identifier2 = Models.DOOR_BOTTOM_RH.upload(doorBlock, texture, this.modelCollector);
@@ -293,7 +293,7 @@ public class BlockStateModelGenerator {
         this.blockStateCollector.accept(BlockStateModelGenerator.createDoorBlockState(doorBlock, identifier, identifier2, identifier3, identifier4));
     }
 
-    private void registerOrientableTrapdoor(Block trapdoorBlock) {
+    void registerOrientableTrapdoor(Block trapdoorBlock) {
         Texture texture = Texture.texture(trapdoorBlock);
         Identifier identifier = Models.TEMPLATE_ORIENTABLE_TRAPDOOR_TOP.upload(trapdoorBlock, texture, this.modelCollector);
         Identifier identifier2 = Models.TEMPLATE_ORIENTABLE_TRAPDOOR_BOTTOM.upload(trapdoorBlock, texture, this.modelCollector);
@@ -302,7 +302,7 @@ public class BlockStateModelGenerator {
         this.registerParentedItemModel(trapdoorBlock, identifier2);
     }
 
-    private void registerTrapdoor(Block trapdoorBlock) {
+    void registerTrapdoor(Block trapdoorBlock) {
         Texture texture = Texture.texture(trapdoorBlock);
         Identifier identifier = Models.TEMPLATE_TRAPDOOR_TOP.upload(trapdoorBlock, texture, this.modelCollector);
         Identifier identifier2 = Models.TEMPLATE_TRAPDOOR_BOTTOM.upload(trapdoorBlock, texture, this.modelCollector);
@@ -680,9 +680,9 @@ public class BlockStateModelGenerator {
     private void registerCauldron() {
         this.registerItemModel(Items.CAULDRON);
         this.registerSimpleState(Blocks.CAULDRON);
-        this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(Blocks.LAVA_CAULDRON, Models.TEMPLATE_CAULDRON_FULL.upload(Blocks.LAVA_CAULDRON, Texture.method_32232(Texture.getSubId(Blocks.LAVA, "_still")), this.modelCollector)));
-        this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.WATER_CAULDRON).coordinate(BlockStateVariantMap.create(LeveledCauldronBlock.LEVEL).register((Integer)1, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_CAULDRON_LEVEL1.upload(Blocks.WATER_CAULDRON, "_level1", Texture.method_32232(Texture.getSubId(Blocks.WATER, "_still")), this.modelCollector))).register((Integer)2, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_CAULDRON_LEVEL2.upload(Blocks.WATER_CAULDRON, "_level2", Texture.method_32232(Texture.getSubId(Blocks.WATER, "_still")), this.modelCollector))).register((Integer)3, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_CAULDRON_FULL.upload(Blocks.WATER_CAULDRON, "_full", Texture.method_32232(Texture.getSubId(Blocks.WATER, "_still")), this.modelCollector)))));
-        this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.POWDER_SNOW_CAULDRON).coordinate(BlockStateVariantMap.create(LeveledCauldronBlock.LEVEL).register((Integer)1, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_CAULDRON_LEVEL1.upload(Blocks.POWDER_SNOW_CAULDRON, "_level1", Texture.method_32232(Texture.getId(Blocks.POWDER_SNOW)), this.modelCollector))).register((Integer)2, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_CAULDRON_LEVEL2.upload(Blocks.POWDER_SNOW_CAULDRON, "_level2", Texture.method_32232(Texture.getId(Blocks.POWDER_SNOW)), this.modelCollector))).register((Integer)3, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_CAULDRON_FULL.upload(Blocks.POWDER_SNOW_CAULDRON, "_full", Texture.method_32232(Texture.getId(Blocks.POWDER_SNOW)), this.modelCollector)))));
+        this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(Blocks.LAVA_CAULDRON, Models.TEMPLATE_CAULDRON_FULL.upload(Blocks.LAVA_CAULDRON, Texture.cauldron(Texture.getSubId(Blocks.LAVA, "_still")), this.modelCollector)));
+        this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.WATER_CAULDRON).coordinate(BlockStateVariantMap.create(LeveledCauldronBlock.LEVEL).register((Integer)1, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_CAULDRON_LEVEL1.upload(Blocks.WATER_CAULDRON, "_level1", Texture.cauldron(Texture.getSubId(Blocks.WATER, "_still")), this.modelCollector))).register((Integer)2, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_CAULDRON_LEVEL2.upload(Blocks.WATER_CAULDRON, "_level2", Texture.cauldron(Texture.getSubId(Blocks.WATER, "_still")), this.modelCollector))).register((Integer)3, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_CAULDRON_FULL.upload(Blocks.WATER_CAULDRON, "_full", Texture.cauldron(Texture.getSubId(Blocks.WATER, "_still")), this.modelCollector)))));
+        this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.POWDER_SNOW_CAULDRON).coordinate(BlockStateVariantMap.create(LeveledCauldronBlock.LEVEL).register((Integer)1, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_CAULDRON_LEVEL1.upload(Blocks.POWDER_SNOW_CAULDRON, "_level1", Texture.cauldron(Texture.getId(Blocks.POWDER_SNOW)), this.modelCollector))).register((Integer)2, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_CAULDRON_LEVEL2.upload(Blocks.POWDER_SNOW_CAULDRON, "_level2", Texture.cauldron(Texture.getId(Blocks.POWDER_SNOW)), this.modelCollector))).register((Integer)3, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_CAULDRON_FULL.upload(Blocks.POWDER_SNOW_CAULDRON, "_full", Texture.cauldron(Texture.getId(Blocks.POWDER_SNOW)), this.modelCollector)))));
     }
 
     private void registerChorusFlower() {
@@ -765,7 +765,7 @@ public class BlockStateModelGenerator {
         this.blockStateCollector.accept(VariantsBlockStateSupplier.create(block, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockModelId(block))).coordinate(this.createUpDefaultFacingVariantMap()));
     }
 
-    private void method_34852() {
+    private void registerLightningRod() {
         Block block = Blocks.LIGHTNING_ROD;
         Identifier identifier = ModelIds.getBlockSubModelId(block, "_on");
         Identifier identifier2 = ModelIds.getBlockModelId(block);
@@ -1123,7 +1123,7 @@ public class BlockStateModelGenerator {
         this.registerParentedItemModel(Blocks.INFESTED_STONE, identifier);
     }
 
-    private void method_36440() {
+    private void registerInfestedDeepslate() {
         Identifier identifier = ModelIds.getBlockModelId(Blocks.DEEPSLATE);
         Identifier identifier2 = ModelIds.getBlockSubModelId(Blocks.DEEPSLATE, "_mirrored");
         this.blockStateCollector.accept(BlockStateModelGenerator.createBlockStateWithTwoModelAndRandomInversion(Blocks.INFESTED_DEEPSLATE, identifier, identifier2).coordinate(BlockStateModelGenerator.createAxisRotatedVariantMap()));
@@ -1355,7 +1355,7 @@ public class BlockStateModelGenerator {
         this.registerDaylightDetector();
         this.registerEndPortalFrame();
         this.registerRod(Blocks.END_ROD);
-        this.method_34852();
+        this.registerLightningRod();
         this.registerFarmland();
         this.registerFire();
         this.registerSoulFire();
@@ -1568,7 +1568,7 @@ public class BlockStateModelGenerator {
         this.registerItemModel(Items.KELP);
         this.excludeFromSimpleItemModelGeneration(Blocks.KELP_PLANT);
         this.registerTintableCrossBlockState(Blocks.HANGING_ROOTS, TintType.NOT_TINTED);
-        this.registerItemModel(Blocks.HANGING_ROOTS);
+        this.excludeFromSimpleItemModelGeneration(Blocks.HANGING_ROOTS);
         this.excludeFromSimpleItemModelGeneration(Blocks.CAVE_VINES_PLANT);
         this.registerPlantPart(Blocks.WEEPING_VINES, Blocks.WEEPING_VINES_PLANT, TintType.NOT_TINTED);
         this.registerPlantPart(Blocks.TWISTING_VINES, Blocks.TWISTING_VINES_PLANT, TintType.NOT_TINTED);
@@ -1655,7 +1655,7 @@ public class BlockStateModelGenerator {
         this.registerInfested(Blocks.MOSSY_STONE_BRICKS, Blocks.INFESTED_MOSSY_STONE_BRICKS);
         this.registerInfestedStone();
         this.registerInfested(Blocks.STONE_BRICKS, Blocks.INFESTED_STONE_BRICKS);
-        this.method_36440();
+        this.registerInfestedDeepslate();
         SpawnEggItem.getAll().forEach(spawnEggItem -> this.registerParentedItemModel((Item)spawnEggItem, ModelIds.getMinecraftNamespacedItem("template_spawn_egg")));
     }
 
@@ -1671,78 +1671,12 @@ public class BlockStateModelGenerator {
         this.registerItemModel(candle.asItem());
         Texture texture = Texture.all(Texture.getId(candle));
         this.blockStateCollector.accept(VariantsBlockStateSupplier.create(candle).coordinate(BlockStateVariantMap.create(Properties.CANDLES).register((Integer)1, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_CANDLE.upload(candle, "_one_candle", texture, this.modelCollector))).register((Integer)2, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_TWO_CANDLES.upload(candle, "_two_candles", texture, this.modelCollector))).register((Integer)3, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_THREE_CANDLES.upload(candle, "_three_candles", texture, this.modelCollector))).register((Integer)4, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_FOUR_CANDLES.upload(candle, "_four_candles", texture, this.modelCollector)))));
-        this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(cake, Models.TEMPLATE_CAKE_WITH_CANDLE.upload(cake, Texture.method_32231(candle), this.modelCollector)));
+        this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(cake, Models.TEMPLATE_CAKE_WITH_CANDLE.upload(cake, Texture.candleCake(candle), this.modelCollector)));
     }
 
-    class BuiltinModelPool {
-        private final Identifier modelId;
-
-        public BuiltinModelPool(Identifier modelId, Block block) {
-            this.modelId = Models.PARTICLE.upload(modelId, Texture.particle(block), (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
-        }
-
-        public BuiltinModelPool includeWithItem(Block ... blocks) {
-            for (Block block : blocks) {
-                BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(block, this.modelId));
-            }
-            return this;
-        }
-
-        public BuiltinModelPool includeWithoutItem(Block ... blocks) {
-            for (Block block : blocks) {
-                BlockStateModelGenerator.this.excludeFromSimpleItemModelGeneration(block);
-            }
-            return this.includeWithItem(blocks);
-        }
-
-        public BuiltinModelPool includeWithItem(Model model, Block ... blocks) {
-            for (Block block : blocks) {
-                model.upload(ModelIds.getItemModelId(block.asItem()), Texture.particle(block), (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
-            }
-            return this.includeWithItem(blocks);
-        }
-    }
-
-    static enum TintType {
-        TINTED,
-        NOT_TINTED;
-
-
-        public Model getCrossModel() {
-            return this == TINTED ? Models.TINTED_CROSS : Models.CROSS;
-        }
-
-        public Model getFlowerPotCrossModel() {
-            return this == TINTED ? Models.TINTED_FLOWER_POT_CROSS : Models.FLOWER_POT_CROSS;
-        }
-    }
-
-    class LogTexturePool {
-        private final Texture texture;
-
-        public LogTexturePool(Texture texture) {
-            this.texture = texture;
-        }
-
-        public LogTexturePool wood(Block woodBlock) {
-            Texture texture = this.texture.copyAndAdd(TextureKey.END, this.texture.getTexture(TextureKey.SIDE));
-            Identifier identifier = Models.CUBE_COLUMN.upload(woodBlock, texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
-            BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createAxisRotatedBlockState(woodBlock, identifier));
-            return this;
-        }
-
-        public LogTexturePool stem(Block stemBlock) {
-            Identifier identifier = Models.CUBE_COLUMN.upload(stemBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
-            BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createAxisRotatedBlockState(stemBlock, identifier));
-            return this;
-        }
-
-        public LogTexturePool log(Block logBlock) {
-            Identifier identifier = Models.CUBE_COLUMN.upload(logBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
-            Identifier identifier2 = Models.CUBE_COLUMN_HORIZONTAL.upload(logBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
-            BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createAxisRotatedBlockState(logBlock, identifier, identifier2));
-            return this;
-        }
+    @FunctionalInterface
+    static interface StateFactory {
+        public BlockStateSupplier create(Block var1, Identifier var2, Texture var3, BiConsumer<Identifier, Supplier<JsonElement>> var4);
     }
 
     class BlockTexturePool {
@@ -1758,9 +1692,9 @@ public class BlockStateModelGenerator {
         }
 
         public BlockTexturePool base(Block block, Model model) {
-            this.baseModelId = model.upload(block, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
+            this.baseModelId = model.upload(block, this.texture, BlockStateModelGenerator.this.modelCollector);
             if (BlockStateModelGenerator.this.stoneStateFactories.containsKey(block)) {
-                BlockStateModelGenerator.this.blockStateCollector.accept(((StateFactory)BlockStateModelGenerator.this.stoneStateFactories.get(block)).create(block, this.baseModelId, this.texture, BlockStateModelGenerator.this.modelCollector));
+                BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.this.stoneStateFactories.get(block).create(block, this.baseModelId, this.texture, BlockStateModelGenerator.this.modelCollector));
             } else {
                 BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(block, this.baseModelId));
             }
@@ -1779,45 +1713,45 @@ public class BlockStateModelGenerator {
         }
 
         public BlockTexturePool button(Block buttonBlock) {
-            Identifier identifier = Models.BUTTON.upload(buttonBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
-            Identifier identifier2 = Models.BUTTON_PRESSED.upload(buttonBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
+            Identifier identifier = Models.BUTTON.upload(buttonBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
+            Identifier identifier2 = Models.BUTTON_PRESSED.upload(buttonBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
             BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createButtonBlockState(buttonBlock, identifier, identifier2));
-            Identifier identifier3 = Models.BUTTON_INVENTORY.upload(buttonBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
+            Identifier identifier3 = Models.BUTTON_INVENTORY.upload(buttonBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
             BlockStateModelGenerator.this.registerParentedItemModel(buttonBlock, identifier3);
             return this;
         }
 
         public BlockTexturePool wall(Block wallBlock) {
-            Identifier identifier = Models.TEMPLATE_WALL_POST.upload(wallBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
-            Identifier identifier2 = Models.TEMPLATE_WALL_SIDE.upload(wallBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
-            Identifier identifier3 = Models.TEMPLATE_WALL_SIDE_TALL.upload(wallBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
+            Identifier identifier = Models.TEMPLATE_WALL_POST.upload(wallBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
+            Identifier identifier2 = Models.TEMPLATE_WALL_SIDE.upload(wallBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
+            Identifier identifier3 = Models.TEMPLATE_WALL_SIDE_TALL.upload(wallBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
             BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createWallBlockState(wallBlock, identifier, identifier2, identifier3));
-            Identifier identifier4 = Models.WALL_INVENTORY.upload(wallBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
+            Identifier identifier4 = Models.WALL_INVENTORY.upload(wallBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
             BlockStateModelGenerator.this.registerParentedItemModel(wallBlock, identifier4);
             return this;
         }
 
         public BlockTexturePool fence(Block fenceBlock) {
-            Identifier identifier = Models.FENCE_POST.upload(fenceBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
-            Identifier identifier2 = Models.FENCE_SIDE.upload(fenceBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
+            Identifier identifier = Models.FENCE_POST.upload(fenceBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
+            Identifier identifier2 = Models.FENCE_SIDE.upload(fenceBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
             BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createFenceBlockState(fenceBlock, identifier, identifier2));
-            Identifier identifier3 = Models.FENCE_INVENTORY.upload(fenceBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
+            Identifier identifier3 = Models.FENCE_INVENTORY.upload(fenceBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
             BlockStateModelGenerator.this.registerParentedItemModel(fenceBlock, identifier3);
             return this;
         }
 
         public BlockTexturePool fenceGate(Block fenceGateBlock) {
-            Identifier identifier = Models.TEMPLATE_FENCE_GATE_OPEN.upload(fenceGateBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
-            Identifier identifier2 = Models.TEMPLATE_FENCE_GATE.upload(fenceGateBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
-            Identifier identifier3 = Models.TEMPLATE_FENCE_GATE_WALL_OPEN.upload(fenceGateBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
-            Identifier identifier4 = Models.TEMPLATE_FENCE_GATE_WALL.upload(fenceGateBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
+            Identifier identifier = Models.TEMPLATE_FENCE_GATE_OPEN.upload(fenceGateBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
+            Identifier identifier2 = Models.TEMPLATE_FENCE_GATE.upload(fenceGateBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
+            Identifier identifier3 = Models.TEMPLATE_FENCE_GATE_WALL_OPEN.upload(fenceGateBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
+            Identifier identifier4 = Models.TEMPLATE_FENCE_GATE_WALL.upload(fenceGateBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
             BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createFenceGateBlockState(fenceGateBlock, identifier, identifier2, identifier3, identifier4));
             return this;
         }
 
         public BlockTexturePool pressurePlate(Block pressurePlateBlock) {
-            Identifier identifier = Models.PRESSURE_PLATE_UP.upload(pressurePlateBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
-            Identifier identifier2 = Models.PRESSURE_PLATE_DOWN.upload(pressurePlateBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
+            Identifier identifier = Models.PRESSURE_PLATE_UP.upload(pressurePlateBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
+            Identifier identifier2 = Models.PRESSURE_PLATE_DOWN.upload(pressurePlateBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
             BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createPressurePlateBlockState(pressurePlateBlock, identifier, identifier2));
             return this;
         }
@@ -1827,7 +1761,7 @@ public class BlockStateModelGenerator {
                 throw new IllegalStateException("Family not defined");
             }
             Block block = this.family.getVariants().get((Object)BlockFamily.Variant.WALL_SIGN);
-            Identifier identifier = Models.PARTICLE.upload(signBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
+            Identifier identifier = Models.PARTICLE.upload(signBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
             BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(signBlock, identifier));
             BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(block, identifier));
             BlockStateModelGenerator.this.registerItemModel(signBlock.asItem());
@@ -1875,24 +1809,90 @@ public class BlockStateModelGenerator {
         }
 
         private Identifier ensureModel(Model model, Block block) {
-            return this.knownModels.computeIfAbsent(model, newModel -> newModel.upload(block, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector));
+            return this.knownModels.computeIfAbsent(model, newModel -> newModel.upload(block, this.texture, BlockStateModelGenerator.this.modelCollector));
         }
 
         public BlockTexturePool family(BlockFamily family) {
             this.family = family;
             family.getVariants().forEach((variant, block) -> {
-                BiConsumer biConsumer = (BiConsumer)VARIANT_POOL_FUNCTIONS.get(variant);
+                BiConsumer<BlockTexturePool, Block> biConsumer = VARIANT_POOL_FUNCTIONS.get(variant);
                 if (biConsumer != null) {
-                    biConsumer.accept(this, block);
+                    biConsumer.accept(this, (Block)block);
                 }
             });
             return this;
         }
     }
 
-    @FunctionalInterface
-    static interface StateFactory {
-        public BlockStateSupplier create(Block var1, Identifier var2, Texture var3, BiConsumer<Identifier, Supplier<JsonElement>> var4);
+    class LogTexturePool {
+        private final Texture texture;
+
+        public LogTexturePool(Texture texture) {
+            this.texture = texture;
+        }
+
+        public LogTexturePool wood(Block woodBlock) {
+            Texture texture = this.texture.copyAndAdd(TextureKey.END, this.texture.getTexture(TextureKey.SIDE));
+            Identifier identifier = Models.CUBE_COLUMN.upload(woodBlock, texture, BlockStateModelGenerator.this.modelCollector);
+            BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createAxisRotatedBlockState(woodBlock, identifier));
+            return this;
+        }
+
+        public LogTexturePool stem(Block stemBlock) {
+            Identifier identifier = Models.CUBE_COLUMN.upload(stemBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
+            BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createAxisRotatedBlockState(stemBlock, identifier));
+            return this;
+        }
+
+        public LogTexturePool log(Block logBlock) {
+            Identifier identifier = Models.CUBE_COLUMN.upload(logBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
+            Identifier identifier2 = Models.CUBE_COLUMN_HORIZONTAL.upload(logBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
+            BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createAxisRotatedBlockState(logBlock, identifier, identifier2));
+            return this;
+        }
+    }
+
+    static enum TintType {
+        TINTED,
+        NOT_TINTED;
+
+
+        public Model getCrossModel() {
+            return this == TINTED ? Models.TINTED_CROSS : Models.CROSS;
+        }
+
+        public Model getFlowerPotCrossModel() {
+            return this == TINTED ? Models.TINTED_FLOWER_POT_CROSS : Models.FLOWER_POT_CROSS;
+        }
+    }
+
+    class BuiltinModelPool {
+        private final Identifier modelId;
+
+        public BuiltinModelPool(Identifier modelId, Block block) {
+            this.modelId = Models.PARTICLE.upload(modelId, Texture.particle(block), BlockStateModelGenerator.this.modelCollector);
+        }
+
+        public BuiltinModelPool includeWithItem(Block ... blocks) {
+            for (Block block : blocks) {
+                BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(block, this.modelId));
+            }
+            return this;
+        }
+
+        public BuiltinModelPool includeWithoutItem(Block ... blocks) {
+            for (Block block : blocks) {
+                BlockStateModelGenerator.this.excludeFromSimpleItemModelGeneration(block);
+            }
+            return this.includeWithItem(blocks);
+        }
+
+        public BuiltinModelPool includeWithItem(Model model, Block ... blocks) {
+            for (Block block : blocks) {
+                model.upload(ModelIds.getItemModelId(block.asItem()), Texture.particle(block), BlockStateModelGenerator.this.modelCollector);
+            }
+            return this.includeWithItem(blocks);
+        }
     }
 }
 

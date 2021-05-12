@@ -40,27 +40,27 @@ public class Style {
      */
     public static final Identifier DEFAULT_FONT_ID = new Identifier("minecraft", "default");
     @Nullable
-    private final TextColor color;
+    final TextColor color;
     @Nullable
-    private final Boolean bold;
+    final Boolean bold;
     @Nullable
-    private final Boolean italic;
+    final Boolean italic;
     @Nullable
-    private final Boolean underlined;
+    final Boolean underlined;
     @Nullable
-    private final Boolean strikethrough;
+    final Boolean strikethrough;
     @Nullable
-    private final Boolean obfuscated;
+    final Boolean obfuscated;
     @Nullable
-    private final ClickEvent clickEvent;
+    final ClickEvent clickEvent;
     @Nullable
-    private final HoverEvent hoverEvent;
+    final HoverEvent hoverEvent;
     @Nullable
-    private final String insertion;
+    final String insertion;
     @Nullable
-    private final Identifier font;
+    final Identifier font;
 
-    private Style(@Nullable TextColor color, @Nullable Boolean bold, @Nullable Boolean italic, @Nullable Boolean underlined, @Nullable Boolean strikethrough, @Nullable Boolean obfuscated, @Nullable ClickEvent clickEvent, @Nullable HoverEvent hoverEvent, @Nullable String insertion, @Nullable Identifier font) {
+    Style(@Nullable TextColor color, @Nullable Boolean bold, @Nullable Boolean italic, @Nullable Boolean underlined, @Nullable Boolean strikethrough, @Nullable Boolean obfuscated, @Nullable ClickEvent clickEvent, @Nullable HoverEvent hoverEvent, @Nullable String insertion, @Nullable Identifier font) {
         this.color = color;
         this.bold = bold;
         this.italic = italic;
@@ -429,7 +429,7 @@ public class Style {
     }
 
     public String toString() {
-        return "Style{ color=" + this.color + ", bold=" + this.bold + ", italic=" + this.italic + ", underlined=" + this.underlined + ", strikethrough=" + this.strikethrough + ", obfuscated=" + this.obfuscated + ", clickEvent=" + this.getClickEvent() + ", hoverEvent=" + this.getHoverEvent() + ", insertion=" + this.getInsertion() + ", font=" + this.getFont() + '}';
+        return "Style{ color=" + this.color + ", bold=" + this.bold + ", italic=" + this.italic + ", underlined=" + this.underlined + ", strikethrough=" + this.strikethrough + ", obfuscated=" + this.obfuscated + ", clickEvent=" + this.getClickEvent() + ", hoverEvent=" + this.getHoverEvent() + ", insertion=" + this.getInsertion() + ", font=" + this.getFont() + "}";
     }
 
     public boolean equals(Object o) {

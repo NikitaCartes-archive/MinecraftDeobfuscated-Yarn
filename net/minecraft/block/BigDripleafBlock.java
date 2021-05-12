@@ -105,7 +105,7 @@ Waterloggable {
 
     protected static boolean placeDripleafAt(WorldAccess world, BlockPos pos, FluidState fluidState, Direction direction) {
         BlockState blockState = (BlockState)((BlockState)Blocks.BIG_DRIPLEAF.getDefaultState().with(WATERLOGGED, fluidState.isEqualAndStill(Fluids.WATER))).with(FACING, direction);
-        return world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
+        return world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
     }
 
     @Override
@@ -203,7 +203,7 @@ Waterloggable {
     }
 
     private static boolean isEntityAbove(BlockPos pos, Entity entity) {
-        return entity.getPos().y > (double)((float)pos.getY() + 0.6875f);
+        return entity.isOnGround() && entity.getPos().y > (double)((float)pos.getY() + 0.6875f);
     }
 
     private void changeTilt(BlockState state, World world, BlockPos pos, Tilt tilt, @Nullable SoundEvent sound) {

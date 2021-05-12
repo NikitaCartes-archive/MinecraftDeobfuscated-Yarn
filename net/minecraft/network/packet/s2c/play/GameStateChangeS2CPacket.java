@@ -61,8 +61,8 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     public static class Reason {
-        private static final Int2ObjectMap<Reason> REASONS = new Int2ObjectOpenHashMap<Reason>();
-        private final int id;
+        static final Int2ObjectMap<Reason> REASONS = new Int2ObjectOpenHashMap<Reason>();
+        final int id;
 
         public Reason(int id) {
             this.id = id;

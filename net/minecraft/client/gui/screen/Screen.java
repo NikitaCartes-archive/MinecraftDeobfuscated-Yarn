@@ -26,7 +26,7 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.ConfirmChatLinkScreen;
 import net.minecraft.client.gui.screen.TickableElement;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.item.TooltipData;
 import net.minecraft.client.render.BufferBuilder;
@@ -70,7 +70,7 @@ Drawable {
     protected ItemRenderer itemRenderer;
     public int width;
     public int height;
-    protected final List<AbstractButtonWidget> buttons = Lists.newArrayList();
+    protected final List<ClickableWidget> buttons = Lists.newArrayList();
     public boolean passEvents;
     protected TextRenderer textRenderer;
     private URI clickedLink;
@@ -126,7 +126,7 @@ Drawable {
      * Adds a button to this screen.
      * This method should be preferred over {@link Screen#addChild(Element)} since buttons are automatically rendered when added to a screen.
      */
-    protected <T extends AbstractButtonWidget> T addButton(T button) {
+    protected <T extends ClickableWidget> T addButton(T button) {
         this.buttons.add(button);
         return this.addChild(button);
     }

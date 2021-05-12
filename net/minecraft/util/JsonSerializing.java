@@ -22,7 +22,39 @@ import org.jetbrains.annotations.Nullable;
 
 public class JsonSerializing {
     public static <E, T extends JsonSerializableType<E>> TypeHandler<E, T> createTypeHandler(Registry<T> registry, String rootFieldName, String idFieldName, Function<E, T> typeIdentification) {
-        return new TypeHandler(registry, rootFieldName, idFieldName, typeIdentification);
+        return new TypeHandler<E, T>(registry, rootFieldName, idFieldName, typeIdentification);
+    }
+
+    public static class TypeHandler<E, T extends JsonSerializableType<E>> {
+        private final Registry<T> registry;
+        private final String rootFieldName;
+        private final String idFieldName;
+        private final Function<E, T> typeIdentification;
+        @Nullable
+        private Pair<T, CustomSerializer<? extends E>> customSerializer;
+        @Nullable
+        private T field_28444;
+
+        TypeHandler(Registry<T> registry, String rootFieldName, String idFieldName, Function<E, T> typeIdentification) {
+            this.registry = registry;
+            this.rootFieldName = rootFieldName;
+            this.idFieldName = idFieldName;
+            this.typeIdentification = typeIdentification;
+        }
+
+        public TypeHandler<E, T> method_32385(T jsonSerializableType, CustomSerializer<? extends E> customSerializer) {
+            this.customSerializer = Pair.of(jsonSerializableType, customSerializer);
+            return this;
+        }
+
+        public TypeHandler<E, T> method_33409(T jsonSerializableType) {
+            this.field_28444 = jsonSerializableType;
+            return this;
+        }
+
+        public Object createGsonSerializer() {
+            return new GsonSerializer<E, T>(this.registry, this.rootFieldName, this.idFieldName, this.typeIdentification, this.field_28444, this.customSerializer);
+        }
     }
 
     public static interface CustomSerializer<T> {
@@ -43,13 +75,13 @@ public class JsonSerializing {
         @Nullable
         private final Pair<T, CustomSerializer<? extends E>> elementSerializer;
 
-        private GsonSerializer(Registry<T> registry, String rootFieldName, String idFieldName, Function<E, T> typeIdentification, @Nullable T jsonSerializableType, @Nullable Pair<T, CustomSerializer<? extends E>> elementSerializer) {
+        GsonSerializer(Registry<T> registry, String string, String string2, Function<E, T> function, @Nullable T jsonSerializableType, @Nullable Pair<T, CustomSerializer<? extends E>> pair) {
             this.registry = registry;
-            this.rootFieldName = rootFieldName;
-            this.idFieldName = idFieldName;
-            this.typeIdentification = typeIdentification;
+            this.rootFieldName = string;
+            this.idFieldName = string2;
+            this.typeIdentification = function;
             this.field_28445 = jsonSerializableType;
-            this.elementSerializer = elementSerializer;
+            this.elementSerializer = pair;
         }
 
         @Override
@@ -88,42 +120,6 @@ public class JsonSerializing {
             jsonObject.addProperty(this.idFieldName, this.registry.getId(jsonSerializableType).toString());
             jsonSerializableType.getJsonSerializer().toJson(jsonObject, object, context);
             return jsonObject;
-        }
-
-        /* synthetic */ GsonSerializer(Registry registry, String string, String string2, Function function, JsonSerializableType jsonSerializableType, Pair pair, _1 arg) {
-            this(registry, string, string2, function, jsonSerializableType, pair);
-        }
-    }
-
-    public static class TypeHandler<E, T extends JsonSerializableType<E>> {
-        private final Registry<T> registry;
-        private final String rootFieldName;
-        private final String idFieldName;
-        private final Function<E, T> typeIdentification;
-        @Nullable
-        private Pair<T, CustomSerializer<? extends E>> customSerializer;
-        @Nullable
-        private T field_28444;
-
-        private TypeHandler(Registry<T> registry, String rootFieldName, String idFieldName, Function<E, T> typeIdentification) {
-            this.registry = registry;
-            this.rootFieldName = rootFieldName;
-            this.idFieldName = idFieldName;
-            this.typeIdentification = typeIdentification;
-        }
-
-        public TypeHandler<E, T> method_32385(T jsonSerializableType, CustomSerializer<? extends E> customSerializer) {
-            this.customSerializer = Pair.of(jsonSerializableType, customSerializer);
-            return this;
-        }
-
-        public TypeHandler<E, T> method_33409(T jsonSerializableType) {
-            this.field_28444 = jsonSerializableType;
-            return this;
-        }
-
-        public Object createGsonSerializer() {
-            return new GsonSerializer(this.registry, this.rootFieldName, this.idFieldName, this.typeIdentification, (JsonSerializableType)this.field_28444, this.customSerializer, null);
         }
     }
 }

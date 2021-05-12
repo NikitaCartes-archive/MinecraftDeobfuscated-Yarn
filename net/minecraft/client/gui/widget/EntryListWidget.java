@@ -50,8 +50,8 @@ implements Drawable {
     protected int headerHeight;
     private boolean scrolling;
     private E selected;
-    private boolean field_26846 = true;
-    private boolean field_26847 = true;
+    private boolean renderBackground = true;
+    private boolean renderHorizontalShadows = true;
 
     public EntryListWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight) {
         this.client = client;
@@ -89,12 +89,12 @@ implements Drawable {
         this.selected = entry;
     }
 
-    public void method_31322(boolean bl) {
-        this.field_26846 = bl;
+    public void setRenderBackground(boolean renderBackground) {
+        this.renderBackground = renderBackground;
     }
 
-    public void method_31323(boolean bl) {
-        this.field_26847 = bl;
+    public void setRenderHorizontalShadows(boolean renderHorizontalShadows) {
+        this.renderHorizontalShadows = renderHorizontalShadows;
     }
 
     @Nullable
@@ -187,7 +187,7 @@ implements Drawable {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        if (this.field_26846) {
+        if (this.renderBackground) {
             RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             float f = 32.0f;
@@ -204,7 +204,7 @@ implements Drawable {
             this.renderHeader(matrices, k, l, tessellator);
         }
         this.renderList(matrices, k, l, mouseX, mouseY, delta);
-        if (this.field_26847) {
+        if (this.renderHorizontalShadows) {
             RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
             RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
             RenderSystem.enableDepthTest();
@@ -500,8 +500,8 @@ implements Drawable {
         return bl;
     }
 
-    private void setEntryParentList(Entry<E> entry) {
-        ((Entry)entry).parentList = this;
+    void setEntryParentList(Entry<E> entry) {
+        entry.parentList = this;
     }
 
     @Override
@@ -515,7 +515,7 @@ implements Drawable {
     extends AbstractList<E> {
         private final List<E> entries = Lists.newArrayList();
 
-        private Entries() {
+        Entries() {
         }
 
         @Override
@@ -571,7 +571,7 @@ implements Drawable {
     public static abstract class Entry<E extends Entry<E>>
     implements Element {
         @Deprecated
-        private EntryListWidget<E> parentList;
+        EntryListWidget<E> parentList;
 
         public abstract void render(MatrixStack var1, int var2, int var3, int var4, int var5, int var6, int var7, int var8, boolean var9, float var10);
 
@@ -582,7 +582,7 @@ implements Drawable {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static enum MoveDirection {
+    protected static enum MoveDirection {
         UP,
         DOWN;
 

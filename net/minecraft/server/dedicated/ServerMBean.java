@@ -41,11 +41,11 @@ implements DynamicMBean {
     private static final Logger LOGGER = LogManager.getLogger();
     private final MinecraftServer server;
     private final MBeanInfo beanInfo;
-    private final Map<String, Entry> entries = Stream.of(new Entry("tickTimes", this::getTickTimes, "Historical tick times (ms)", long[].class), new Entry("averageTickTime", this::getAverageTickTime, "Current average tick time (ms)", Long.TYPE)).collect(Collectors.toMap(entry -> Entry.method_27186(entry), Function.identity()));
+    private final Map<String, Entry> entries = Stream.of(new Entry("tickTimes", this::getTickTimes, "Historical tick times (ms)", long[].class), new Entry("averageTickTime", this::getAverageTickTime, "Current average tick time (ms)", Long.TYPE)).collect(Collectors.toMap(entry -> entry.name, Function.identity()));
 
     private ServerMBean(MinecraftServer server) {
         this.server = server;
-        MBeanAttributeInfo[] mBeanAttributeInfos = (MBeanAttributeInfo[])this.entries.values().stream().map(object -> ((Entry)object).createInfo()).toArray(MBeanAttributeInfo[]::new);
+        MBeanAttributeInfo[] mBeanAttributeInfos = (MBeanAttributeInfo[])this.entries.values().stream().map(Entry::createInfo).toArray(MBeanAttributeInfo[]::new);
         this.beanInfo = new MBeanInfo(ServerMBean.class.getSimpleName(), "metrics for dedicated server", mBeanAttributeInfos, null, null, new MBeanNotificationInfo[0]);
     }
 
@@ -89,7 +89,7 @@ implements DynamicMBean {
 
     @Override
     public AttributeList getAttributes(String[] attributes) {
-        List<Attribute> list = Arrays.stream(attributes).map(this.entries::get).filter(Objects::nonNull).map(entry -> new Attribute(((Entry)entry).name, ((Entry)entry).getter.get())).collect(Collectors.toList());
+        List<Attribute> list = Arrays.stream(attributes).map(this.entries::get).filter(Objects::nonNull).map(entry -> new Attribute(entry.name, entry.getter.get())).collect(Collectors.toList());
         return new AttributeList(list);
     }
 
@@ -110,16 +110,16 @@ implements DynamicMBean {
     }
 
     static final class Entry {
-        private final String name;
-        private final Supplier<Object> getter;
+        final String name;
+        final Supplier<Object> getter;
         private final String description;
         private final Class<?> type;
 
-        private Entry(String name, Supplier<Object> getter, String description, Class<?> type) {
-            this.name = name;
-            this.getter = getter;
-            this.description = description;
-            this.type = type;
+        Entry(String string, Supplier<Object> supplier, String string2, Class<?> class_) {
+            this.name = string;
+            this.getter = supplier;
+            this.description = string2;
+            this.type = class_;
         }
 
         private MBeanAttributeInfo createInfo() {

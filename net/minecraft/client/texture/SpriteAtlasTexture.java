@@ -190,25 +190,37 @@ implements TextureTickListener {
         return Lists.newArrayList(queue);
     }
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     */
     @Nullable
     private Sprite loadSprite(ResourceManager container, Sprite.Info info, int atlasWidth, int atlasHeight, int maxLevel, int x, int y) {
-        Identifier identifier = this.getTexturePath(info.getId());
-        try (Resource resource = container.getResource(identifier);){
-            NativeImage nativeImage = NativeImage.read(resource.getInputStream());
-            Sprite sprite = new Sprite(this, info, maxLevel, atlasWidth, atlasHeight, x, y, nativeImage);
-            return sprite;
-        } catch (RuntimeException runtimeException) {
-            LOGGER.error("Unable to parse metadata from {}", (Object)identifier, (Object)runtimeException);
-            return null;
-        } catch (IOException iOException) {
-            LOGGER.error("Using missing texture, unable to load {}", (Object)identifier, (Object)iOException);
-            return null;
+        Sprite sprite;
+        block9: {
+            Identifier identifier = this.getTexturePath(info.getId());
+            Resource resource = container.getResource(identifier);
+            try {
+                NativeImage nativeImage = NativeImage.read(resource.getInputStream());
+                sprite = new Sprite(this, info, maxLevel, atlasWidth, atlasHeight, x, y, nativeImage);
+                if (resource == null) break block9;
+            } catch (Throwable throwable) {
+                try {
+                    if (resource != null) {
+                        try {
+                            resource.close();
+                        } catch (Throwable throwable2) {
+                            throwable.addSuppressed(throwable2);
+                        }
+                    }
+                    throw throwable;
+                } catch (RuntimeException runtimeException) {
+                    LOGGER.error("Unable to parse metadata from {}", (Object)identifier, (Object)runtimeException);
+                    return null;
+                } catch (IOException iOException) {
+                    LOGGER.error("Using missing texture, unable to load {}", (Object)identifier, (Object)iOException);
+                    return null;
+                }
+            }
+            resource.close();
         }
+        return sprite;
     }
 
     private Identifier getTexturePath(Identifier id) {

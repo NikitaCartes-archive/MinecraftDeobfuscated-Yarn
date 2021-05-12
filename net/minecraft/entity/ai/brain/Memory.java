@@ -52,7 +52,7 @@ public class Memory<T> {
     }
 
     public String toString() {
-        return this.value + (this.isTimed() ? " (ttl: " + this.expiry + ")" : "");
+        return this.value + (String)(this.isTimed() ? " (ttl: " + this.expiry + ")" : "");
     }
 
     @Debug

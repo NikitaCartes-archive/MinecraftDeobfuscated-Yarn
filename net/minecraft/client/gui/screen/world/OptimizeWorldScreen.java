@@ -42,23 +42,33 @@ extends Screen {
     private final BooleanConsumer callback;
     private final WorldUpdater updater;
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     */
     @Nullable
     public static OptimizeWorldScreen create(MinecraftClient client, BooleanConsumer callback, DataFixer dataFixer, LevelStorage.Session storageSession, boolean eraseCache) {
         DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
-        try (MinecraftClient.IntegratedResourceManager integratedResourceManager = client.createIntegratedResourceManager(impl, MinecraftClient::loadDataPackSettings, MinecraftClient::createSaveProperties, false, storageSession);){
+        MinecraftClient.IntegratedResourceManager integratedResourceManager = client.createIntegratedResourceManager(impl, MinecraftClient::loadDataPackSettings, MinecraftClient::createSaveProperties, false, storageSession);
+        try {
             SaveProperties saveProperties = integratedResourceManager.getSaveProperties();
             storageSession.backupLevelDataFile(impl, saveProperties);
             ImmutableSet<RegistryKey<World>> immutableSet = saveProperties.getGeneratorOptions().getWorlds();
             OptimizeWorldScreen optimizeWorldScreen = new OptimizeWorldScreen(callback, dataFixer, storageSession, saveProperties.getLevelInfo(), eraseCache, immutableSet);
+            if (integratedResourceManager != null) {
+                integratedResourceManager.close();
+            }
             return optimizeWorldScreen;
-        } catch (Exception exception) {
-            LOGGER.warn("Failed to load datapacks, can't optimize world", (Throwable)exception);
-            return null;
+        } catch (Throwable throwable) {
+            try {
+                if (integratedResourceManager != null) {
+                    try {
+                        integratedResourceManager.close();
+                    } catch (Throwable throwable2) {
+                        throwable.addSuppressed(throwable2);
+                    }
+                }
+                throw throwable;
+            } catch (Exception exception) {
+                LOGGER.warn("Failed to load datapacks, can't optimize world", (Throwable)exception);
+                return null;
+            }
         }
     }
 
@@ -115,8 +125,8 @@ extends Screen {
                 m += n;
             }
             int o = this.updater.getUpgradedChunkCount() + this.updater.getSkippedChunkCount();
-            OptimizeWorldScreen.drawCenteredString(matrices, this.textRenderer, o + " / " + this.updater.getTotalChunkCount(), this.width / 2, k + 2 * this.textRenderer.fontHeight + 2, 0xA0A0A0);
-            OptimizeWorldScreen.drawCenteredString(matrices, this.textRenderer, MathHelper.floor(this.updater.getProgress() * 100.0f) + "%", this.width / 2, k + (l - k) / 2 - this.textRenderer.fontHeight / 2, 0xA0A0A0);
+            OptimizeWorldScreen.drawCenteredText(matrices, this.textRenderer, o + " / " + this.updater.getTotalChunkCount(), this.width / 2, k + 2 * this.textRenderer.fontHeight + 2, 0xA0A0A0);
+            OptimizeWorldScreen.drawCenteredText(matrices, this.textRenderer, MathHelper.floor(this.updater.getProgress() * 100.0f) + "%", this.width / 2, k + (l - k) / 2 - this.textRenderer.fontHeight / 2, 0xA0A0A0);
         }
         super.render(matrices, mouseX, mouseY, delta);
     }

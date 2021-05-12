@@ -87,7 +87,7 @@ public class VillagerGossips {
         collection.forEach(gossipEntry -> {
             int i = gossipEntry.value - gossipEntry.type.shareDecrement;
             if (i >= 2) {
-                this.getReputationFor(gossipEntry.target).associatedGossip.mergeInt(gossipEntry.type, i, VillagerGossips::max);
+                this.getReputationFor((UUID)gossipEntry.target).associatedGossip.mergeInt(gossipEntry.type, i, VillagerGossips::max);
             }
         });
     }
@@ -98,7 +98,7 @@ public class VillagerGossips {
     }
 
     public long method_35122(VillageGossipType villageGossipType, DoublePredicate doublePredicate) {
-        return this.entityReputation.values().stream().filter(reputation -> doublePredicate.test(((Reputation)reputation).associatedGossip.getOrDefault((Object)villageGossipType, 0) * villageGossipType.multiplier)).count();
+        return this.entityReputation.values().stream().filter(reputation -> doublePredicate.test(reputation.associatedGossip.getOrDefault((Object)villageGossipType, 0) * villageGossipType.multiplier)).count();
     }
 
     public void startGossip(UUID target, VillageGossipType type, int value) {
@@ -139,7 +139,7 @@ public class VillagerGossips {
     }
 
     public void deserialize(Dynamic<?> dynamic) {
-        dynamic.asStream().map(GossipEntry::deserialize).flatMap(dataResult -> Util.stream(dataResult.result())).forEach(gossipEntry -> this.getReputationFor(gossipEntry.target).associatedGossip.put(gossipEntry.type, gossipEntry.value));
+        dynamic.asStream().map(GossipEntry::deserialize).flatMap(dataResult -> Util.stream(dataResult.result())).forEach(gossipEntry -> this.getReputationFor((UUID)gossipEntry.target).associatedGossip.put(gossipEntry.type, gossipEntry.value));
     }
 
     private static int max(int left, int right) {
@@ -152,13 +152,13 @@ public class VillagerGossips {
     }
 
     static class Reputation {
-        private final Object2IntMap<VillageGossipType> associatedGossip = new Object2IntOpenHashMap<VillageGossipType>();
+        final Object2IntMap<VillageGossipType> associatedGossip = new Object2IntOpenHashMap<VillageGossipType>();
 
-        private Reputation() {
+        Reputation() {
         }
 
         public int getValueFor(Predicate<VillageGossipType> gossipTypeFilter) {
-            return this.associatedGossip.object2IntEntrySet().stream().filter(entry -> gossipTypeFilter.test((VillageGossipType)((Object)entry.getKey()))).mapToInt(entry -> entry.getIntValue() * ((VillageGossipType)((Object)((Object)entry.getKey()))).multiplier).sum();
+            return this.associatedGossip.object2IntEntrySet().stream().filter(entry -> gossipTypeFilter.test((VillageGossipType)((Object)((Object)entry.getKey())))).mapToInt(entry -> entry.getIntValue() * ((VillageGossipType)((Object)((Object)entry.getKey()))).multiplier).sum();
         }
 
         public Stream<GossipEntry> entriesFor(UUID target) {
@@ -198,9 +198,9 @@ public class VillagerGossips {
     }
 
     static class GossipEntry {
-        public static final String field_30237 = "Target";
-        public static final String field_30238 = "Type";
-        public static final String field_30239 = "Value";
+        public static final String TARGET_KEY = "Target";
+        public static final String TYPE_KEY = "Type";
+        public static final String VALUE_KEY = "Value";
         public final UUID target;
         public final VillageGossipType type;
         public final int value;
@@ -216,15 +216,15 @@ public class VillagerGossips {
         }
 
         public String toString() {
-            return "GossipEntry{target=" + this.target + ", type=" + (Object)((Object)this.type) + ", value=" + this.value + '}';
+            return "GossipEntry{target=" + this.target + ", type=" + this.type + ", value=" + this.value + "}";
         }
 
         public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-            return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString(field_30237), DynamicSerializableUuid.CODEC.encodeStart(dynamicOps, this.target).result().orElseThrow(RuntimeException::new), dynamicOps.createString(field_30238), dynamicOps.createString(this.type.key), dynamicOps.createString(field_30239), dynamicOps.createInt(this.value))));
+            return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString(TARGET_KEY), DynamicSerializableUuid.CODEC.encodeStart(dynamicOps, this.target).result().orElseThrow(RuntimeException::new), dynamicOps.createString(TYPE_KEY), dynamicOps.createString(this.type.key), dynamicOps.createString(VALUE_KEY), dynamicOps.createInt(this.value))));
         }
 
         public static DataResult<GossipEntry> deserialize(Dynamic<?> dynamic) {
-            return DataResult.unbox(DataResult.instance().group(dynamic.get(field_30237).read(DynamicSerializableUuid.CODEC), dynamic.get(field_30238).asString().map(VillageGossipType::byKey), dynamic.get(field_30239).asNumber().map(Number::intValue)).apply(DataResult.instance(), GossipEntry::new));
+            return DataResult.unbox(DataResult.instance().group(dynamic.get(TARGET_KEY).read(DynamicSerializableUuid.CODEC), dynamic.get(TYPE_KEY).asString().map(VillageGossipType::byKey), dynamic.get(VALUE_KEY).asNumber().map(Number::intValue)).apply(DataResult.instance(), GossipEntry::new));
         }
     }
 }

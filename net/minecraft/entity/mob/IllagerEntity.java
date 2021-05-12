@@ -28,18 +28,6 @@ extends RaiderEntity {
         return State.CROSSED;
     }
 
-    public class LongDoorInteractGoal
-    extends net.minecraft.entity.ai.goal.LongDoorInteractGoal {
-        public LongDoorInteractGoal(RaiderEntity raider) {
-            super(raider, false);
-        }
-
-        @Override
-        public boolean canStart() {
-            return super.canStart() && IllagerEntity.this.hasActiveRaid();
-        }
-    }
-
     public static enum State {
         CROSSED,
         ATTACKING,
@@ -50,6 +38,18 @@ extends RaiderEntity {
         CELEBRATING,
         NEUTRAL;
 
+    }
+
+    protected class LongDoorInteractGoal
+    extends net.minecraft.entity.ai.goal.LongDoorInteractGoal {
+        public LongDoorInteractGoal(RaiderEntity raider) {
+            super(raider, false);
+        }
+
+        @Override
+        public boolean canStart() {
+            return super.canStart() && IllagerEntity.this.hasActiveRaid();
+        }
     }
 }
 

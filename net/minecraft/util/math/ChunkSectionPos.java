@@ -36,8 +36,8 @@ extends Vec3i {
     private static final int field_33111 = 0;
     private static final int field_33112 = 4;
 
-    private ChunkSectionPos(int x, int y, int z) {
-        super(x, y, z);
+    ChunkSectionPos(int i, int j, int k) {
+        super(i, j, k);
     }
 
     /**

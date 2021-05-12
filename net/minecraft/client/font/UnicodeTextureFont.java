@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class UnicodeTextureFont
 implements Font {
-    private static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogManager.getLogger();
     private static final int field_32232 = 256;
     private static final int field_32233 = 256;
     private static final int field_32234 = 256;
@@ -96,20 +96,32 @@ implements Font {
         return intSet;
     }
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     */
     @Nullable
     private NativeImage getGlyphImage(Identifier glyphId) {
-        try (Resource resource = this.resourceManager.getResource(glyphId);){
-            NativeImage nativeImage = NativeImage.read(NativeImage.Format.ABGR, resource.getInputStream());
-            return nativeImage;
-        } catch (IOException iOException) {
-            LOGGER.error("Couldn't load texture {}", (Object)glyphId, (Object)iOException);
-            return null;
+        NativeImage nativeImage;
+        block8: {
+            Resource resource = this.resourceManager.getResource(glyphId);
+            try {
+                nativeImage = NativeImage.read(NativeImage.Format.ABGR, resource.getInputStream());
+                if (resource == null) break block8;
+            } catch (Throwable throwable) {
+                try {
+                    if (resource != null) {
+                        try {
+                            resource.close();
+                        } catch (Throwable throwable2) {
+                            throwable.addSuppressed(throwable2);
+                        }
+                    }
+                    throw throwable;
+                } catch (IOException iOException) {
+                    LOGGER.error("Couldn't load texture {}", (Object)glyphId, (Object)iOException);
+                    return null;
+                }
+            }
+            resource.close();
         }
+        return nativeImage;
     }
 
     private static int getStart(byte size) {
@@ -129,12 +141,12 @@ implements Font {
         private final int unpackSkipRows;
         private final NativeImage image;
 
-        private UnicodeTextureGlyph(int x, int y, int width, int height, NativeImage image) {
-            this.width = width;
-            this.height = height;
-            this.unpackSkipPixels = x;
-            this.unpackSkipRows = y;
-            this.image = image;
+        UnicodeTextureGlyph(int i, int j, int k, int l, NativeImage nativeImage) {
+            this.width = k;
+            this.height = l;
+            this.unpackSkipPixels = i;
+            this.unpackSkipRows = j;
+            this.image = nativeImage;
         }
 
         @Override
@@ -193,23 +205,35 @@ implements Font {
             return new Loader(new Identifier(JsonHelper.getString(json, "sizes")), JsonHelper.getString(json, "template"));
         }
 
-        /*
-         * Enabled aggressive block sorting
-         * Enabled unnecessary exception pruning
-         * Enabled aggressive exception aggregation
-         */
         @Override
         @Nullable
         public Font load(ResourceManager manager) {
-            try (Resource resource = MinecraftClient.getInstance().getResourceManager().getResource(this.sizes);){
-                byte[] bs = new byte[65536];
-                resource.getInputStream().read(bs);
-                UnicodeTextureFont unicodeTextureFont = new UnicodeTextureFont(manager, bs, this.template);
-                return unicodeTextureFont;
-            } catch (IOException iOException) {
-                LOGGER.error("Cannot load {}, unicode glyphs will not render correctly", (Object)this.sizes);
-                return null;
+            UnicodeTextureFont unicodeTextureFont;
+            block8: {
+                Resource resource = MinecraftClient.getInstance().getResourceManager().getResource(this.sizes);
+                try {
+                    byte[] bs = new byte[65536];
+                    resource.getInputStream().read(bs);
+                    unicodeTextureFont = new UnicodeTextureFont(manager, bs, this.template);
+                    if (resource == null) break block8;
+                } catch (Throwable throwable) {
+                    try {
+                        if (resource != null) {
+                            try {
+                                resource.close();
+                            } catch (Throwable throwable2) {
+                                throwable.addSuppressed(throwable2);
+                            }
+                        }
+                        throw throwable;
+                    } catch (IOException iOException) {
+                        LOGGER.error("Cannot load {}, unicode glyphs will not render correctly", (Object)this.sizes);
+                        return null;
+                    }
+                }
+                resource.close();
             }
+            return unicodeTextureFont;
         }
     }
 }

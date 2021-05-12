@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.render;
 
+import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.WorldRenderer;
@@ -36,7 +37,7 @@ public class BuiltChunkStorage {
                 for (int l = 0; l < this.sizeZ; ++l) {
                     int m = this.getChunkIndex(j, k, l);
                     ChunkBuilder chunkBuilder2 = chunkBuilder;
-                    chunkBuilder2.getClass();
+                    Objects.requireNonNull(chunkBuilder2);
                     this.chunks[m] = new ChunkBuilder.BuiltChunk(chunkBuilder2, m);
                     this.chunks[m].setOrigin(j * 16, k * 16, l * 16);
                 }

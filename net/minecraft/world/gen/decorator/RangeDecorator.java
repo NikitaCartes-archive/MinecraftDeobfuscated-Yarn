@@ -17,7 +17,7 @@ extends AbstractRangeDecorator<RangeDecoratorConfig> {
 
     @Override
     protected int getY(DecoratorContext decoratorContext, Random random, RangeDecoratorConfig rangeDecoratorConfig, int i) {
-        return rangeDecoratorConfig.field_33519.get(random, decoratorContext);
+        return rangeDecoratorConfig.heightProvider.get(random, decoratorContext);
     }
 }
 

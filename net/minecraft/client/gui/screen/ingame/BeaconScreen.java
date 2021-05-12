@@ -10,8 +10,8 @@ import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.client.gui.widget.AbstractPressableButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
@@ -32,13 +32,13 @@ import net.minecraft.util.Identifier;
 @Environment(value=EnvType.CLIENT)
 public class BeaconScreen
 extends HandledScreen<BeaconScreenHandler> {
-    private static final Identifier TEXTURE = new Identifier("textures/gui/container/beacon.png");
+    static final Identifier TEXTURE = new Identifier("textures/gui/container/beacon.png");
     private static final Text PRIMARY_POWER_TEXT = new TranslatableText("block.minecraft.beacon.primary");
     private static final Text SECONDARY_POWER_TEXT = new TranslatableText("block.minecraft.beacon.secondary");
     private DoneButtonWidget doneButton;
-    private boolean consumeGem;
-    private StatusEffect primaryEffect;
-    private StatusEffect secondaryEffect;
+    boolean consumeGem;
+    StatusEffect primaryEffect;
+    StatusEffect secondaryEffect;
 
     public BeaconScreen(final BeaconScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
@@ -62,8 +62,8 @@ extends HandledScreen<BeaconScreenHandler> {
     @Override
     protected void init() {
         super.init();
-        this.doneButton = this.addButton(new DoneButtonWidget(this.field_2776 + 164, this.field_2800 + 107));
-        this.addButton(new CancelButtonWidget(this.field_2776 + 190, this.field_2800 + 107));
+        this.doneButton = this.addButton(new DoneButtonWidget(this.x + 164, this.y + 107));
+        this.addButton(new CancelButtonWidget(this.x + 190, this.y + 107));
         this.consumeGem = true;
         this.doneButton.active = false;
     }
@@ -85,7 +85,7 @@ extends HandledScreen<BeaconScreenHandler> {
                 l = k * 22 + (k - 1) * 2;
                 for (m = 0; m < k; ++m) {
                     statusEffect = BeaconBlockEntity.EFFECTS_BY_LEVEL[j][m];
-                    effectButtonWidget = new EffectButtonWidget(this.field_2776 + 76 + m * 24 - l / 2, this.field_2800 + 22 + j * 25, statusEffect, true);
+                    effectButtonWidget = new EffectButtonWidget(this.x + 76 + m * 24 - l / 2, this.y + 22 + j * 25, statusEffect, true);
                     this.addButton(effectButtonWidget);
                     if (j >= i) {
                         effectButtonWidget.active = false;
@@ -100,7 +100,7 @@ extends HandledScreen<BeaconScreenHandler> {
             l = k * 22 + (k - 1) * 2;
             for (m = 0; m < k - 1; ++m) {
                 statusEffect = BeaconBlockEntity.EFFECTS_BY_LEVEL[3][m];
-                effectButtonWidget = new EffectButtonWidget(this.field_2776 + 167 + m * 24 - l / 2, this.field_2800 + 47, statusEffect, false);
+                effectButtonWidget = new EffectButtonWidget(this.x + 167 + m * 24 - l / 2, this.y + 47, statusEffect, false);
                 this.addButton(effectButtonWidget);
                 if (3 >= i) {
                     effectButtonWidget.active = false;
@@ -110,7 +110,7 @@ extends HandledScreen<BeaconScreenHandler> {
                 effectButtonWidget.setDisabled(true);
             }
             if (this.primaryEffect != null) {
-                EffectButtonWidget effectButtonWidget2 = new EffectButtonWidget(this.field_2776 + 167 + (k - 1) * 24 - l / 2, this.field_2800 + 47, this.primaryEffect, false);
+                EffectButtonWidget effectButtonWidget2 = new EffectButtonWidget(this.x + 167 + (k - 1) * 24 - l / 2, this.y + 47, this.primaryEffect, false);
                 this.addButton(effectButtonWidget2);
                 if (3 >= i) {
                     effectButtonWidget2.active = false;
@@ -126,9 +126,9 @@ extends HandledScreen<BeaconScreenHandler> {
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
         BeaconScreen.drawCenteredText(matrices, this.textRenderer, PRIMARY_POWER_TEXT, 62, 10, 0xE0E0E0);
         BeaconScreen.drawCenteredText(matrices, this.textRenderer, SECONDARY_POWER_TEXT, 169, 10, 0xE0E0E0);
-        for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
-            if (!abstractButtonWidget.isHovered()) continue;
-            abstractButtonWidget.renderToolTip(matrices, mouseX - this.field_2776, mouseY - this.field_2800);
+        for (ClickableWidget clickableWidget : this.buttons) {
+            if (!clickableWidget.isHovered()) continue;
+            clickableWidget.renderToolTip(matrices, mouseX - this.x, mouseY - this.y);
             break;
         }
     }
@@ -158,24 +158,6 @@ extends HandledScreen<BeaconScreenHandler> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    class CancelButtonWidget
-    extends IconButtonWidget {
-        public CancelButtonWidget(int x, int y) {
-            super(x, y, 112, 220);
-        }
-
-        @Override
-        public void onPress() {
-            ((BeaconScreen)BeaconScreen.this).client.player.closeHandledScreen();
-        }
-
-        @Override
-        public void renderToolTip(MatrixStack matrices, int mouseX, int mouseY) {
-            BeaconScreen.this.renderTooltip(matrices, ScreenTexts.CANCEL, mouseX, mouseY);
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
     class DoneButtonWidget
     extends IconButtonWidget {
         public DoneButtonWidget(int x, int y) {
@@ -195,20 +177,20 @@ extends HandledScreen<BeaconScreenHandler> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    static abstract class IconButtonWidget
-    extends BaseButtonWidget {
-        private final int u;
-        private final int v;
-
-        protected IconButtonWidget(int x, int y, int u, int v) {
-            super(x, y);
-            this.u = u;
-            this.v = v;
+    class CancelButtonWidget
+    extends IconButtonWidget {
+        public CancelButtonWidget(int x, int y) {
+            super(x, y, 112, 220);
         }
 
         @Override
-        protected void renderExtra(MatrixStack matrices) {
-            this.drawTexture(matrices, this.x + 2, this.y + 2, this.u, this.v, 18, 18);
+        public void onPress() {
+            ((BeaconScreen)BeaconScreen.this).client.player.closeHandledScreen();
+        }
+
+        @Override
+        public void renderToolTip(MatrixStack matrices, int mouseX, int mouseY) {
+            BeaconScreen.this.renderTooltip(matrices, ScreenTexts.CANCEL, mouseX, mouseY);
         }
     }
 
@@ -265,8 +247,26 @@ extends HandledScreen<BeaconScreenHandler> {
     }
 
     @Environment(value=EnvType.CLIENT)
+    static abstract class IconButtonWidget
+    extends BaseButtonWidget {
+        private final int u;
+        private final int v;
+
+        protected IconButtonWidget(int x, int y, int u, int v) {
+            super(x, y);
+            this.u = u;
+            this.v = v;
+        }
+
+        @Override
+        protected void renderExtra(MatrixStack matrices) {
+            this.drawTexture(matrices, this.x + 2, this.y + 2, this.u, this.v, 18, 18);
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
     static abstract class BaseButtonWidget
-    extends AbstractPressableButtonWidget {
+    extends PressableWidget {
         private boolean disabled;
 
         protected BaseButtonWidget(int x, int y) {

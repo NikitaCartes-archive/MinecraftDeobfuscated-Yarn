@@ -7,43 +7,43 @@ import net.minecraft.block.MapColor;
 import net.minecraft.block.piston.PistonBehavior;
 
 public final class Material {
-    public static final Material AIR = Builder.method_15808(new Builder(MapColor.CLEAR).allowsMovement()).notSolid().replaceable().build();
+    public static final Material AIR = new Builder(MapColor.CLEAR).allowsMovement().lightPassesThrough().notSolid().replaceable().build();
     /**
      * Material for structure void block.
      */
-    public static final Material STRUCTURE_VOID = Builder.method_15808(new Builder(MapColor.CLEAR).allowsMovement()).notSolid().replaceable().build();
+    public static final Material STRUCTURE_VOID = new Builder(MapColor.CLEAR).allowsMovement().lightPassesThrough().notSolid().replaceable().build();
     /**
      * Material for the various portal blocks.
      */
-    public static final Material PORTAL = Builder.method_15808(new Builder(MapColor.CLEAR).allowsMovement()).notSolid().blocksPistons().build();
-    public static final Material CARPET = Builder.method_15808(new Builder(MapColor.WHITE_GRAY).allowsMovement()).notSolid().burnable().build();
+    public static final Material PORTAL = new Builder(MapColor.CLEAR).allowsMovement().lightPassesThrough().notSolid().blocksPistons().build();
+    public static final Material CARPET = new Builder(MapColor.WHITE_GRAY).allowsMovement().lightPassesThrough().notSolid().burnable().build();
     /**
      * Material for plants such as flowers and crops
      */
-    public static final Material PLANT = Builder.method_15808(new Builder(MapColor.DARK_GREEN).allowsMovement()).notSolid().destroyedByPiston().build();
+    public static final Material PLANT = new Builder(MapColor.DARK_GREEN).allowsMovement().lightPassesThrough().notSolid().destroyedByPiston().build();
     /**
      * Material for underwater plants without the replaceable property.
      */
-    public static final Material UNDERWATER_PLANT = Builder.method_15808(new Builder(MapColor.WATER_BLUE).allowsMovement()).notSolid().destroyedByPiston().build();
-    public static final Material REPLACEABLE_PLANT = Builder.method_15808(new Builder(MapColor.DARK_GREEN).allowsMovement()).notSolid().destroyedByPiston().replaceable().burnable().build();
+    public static final Material UNDERWATER_PLANT = new Builder(MapColor.WATER_BLUE).allowsMovement().lightPassesThrough().notSolid().destroyedByPiston().build();
+    public static final Material REPLACEABLE_PLANT = new Builder(MapColor.DARK_GREEN).allowsMovement().lightPassesThrough().notSolid().destroyedByPiston().replaceable().burnable().build();
     /**
      * Material for crimson and warped roots, as well as Nether sprouts.
      */
-    public static final Material NETHER_SHOOTS = Builder.method_15808(new Builder(MapColor.DARK_GREEN).allowsMovement()).notSolid().destroyedByPiston().replaceable().build();
-    public static final Material REPLACEABLE_UNDERWATER_PLANT = Builder.method_15808(new Builder(MapColor.WATER_BLUE).allowsMovement()).notSolid().destroyedByPiston().replaceable().build();
-    public static final Material WATER = Builder.method_15808(new Builder(MapColor.WATER_BLUE).allowsMovement()).notSolid().destroyedByPiston().replaceable().liquid().build();
-    public static final Material BUBBLE_COLUMN = Builder.method_15808(new Builder(MapColor.WATER_BLUE).allowsMovement()).notSolid().destroyedByPiston().replaceable().liquid().build();
-    public static final Material LAVA = Builder.method_15808(new Builder(MapColor.BRIGHT_RED).allowsMovement()).notSolid().destroyedByPiston().replaceable().liquid().build();
+    public static final Material NETHER_SHOOTS = new Builder(MapColor.DARK_GREEN).allowsMovement().lightPassesThrough().notSolid().destroyedByPiston().replaceable().build();
+    public static final Material REPLACEABLE_UNDERWATER_PLANT = new Builder(MapColor.WATER_BLUE).allowsMovement().lightPassesThrough().notSolid().destroyedByPiston().replaceable().build();
+    public static final Material WATER = new Builder(MapColor.WATER_BLUE).allowsMovement().lightPassesThrough().notSolid().destroyedByPiston().replaceable().liquid().build();
+    public static final Material BUBBLE_COLUMN = new Builder(MapColor.WATER_BLUE).allowsMovement().lightPassesThrough().notSolid().destroyedByPiston().replaceable().liquid().build();
+    public static final Material LAVA = new Builder(MapColor.BRIGHT_RED).allowsMovement().lightPassesThrough().notSolid().destroyedByPiston().replaceable().liquid().build();
     /**
      * Material for non-full blocks of snow. Has the replaceable property.
      */
-    public static final Material SNOW_LAYER = Builder.method_15808(new Builder(MapColor.WHITE).allowsMovement()).notSolid().destroyedByPiston().replaceable().build();
-    public static final Material FIRE = Builder.method_15808(new Builder(MapColor.CLEAR).allowsMovement()).notSolid().destroyedByPiston().replaceable().build();
+    public static final Material SNOW_LAYER = new Builder(MapColor.WHITE).allowsMovement().lightPassesThrough().notSolid().destroyedByPiston().replaceable().build();
+    public static final Material FIRE = new Builder(MapColor.CLEAR).allowsMovement().lightPassesThrough().notSolid().destroyedByPiston().replaceable().build();
     /**
      * Material for decoration blocks such as redstone components, torches, flower pots, rails, buttons, and skulls.
      */
-    public static final Material DECORATION = Builder.method_15808(new Builder(MapColor.CLEAR).allowsMovement()).notSolid().destroyedByPiston().build();
-    public static final Material COBWEB = Builder.method_15808(new Builder(MapColor.WHITE_GRAY).allowsMovement()).destroyedByPiston().build();
+    public static final Material DECORATION = new Builder(MapColor.CLEAR).allowsMovement().lightPassesThrough().notSolid().destroyedByPiston().build();
+    public static final Material COBWEB = new Builder(MapColor.WHITE_GRAY).allowsMovement().lightPassesThrough().destroyedByPiston().build();
     public static final Material SCULK = new Builder(MapColor.BLACK).build();
     public static final Material REDSTONE_LAMP = new Builder(MapColor.CLEAR).build();
     /**
@@ -82,17 +82,17 @@ public final class Material {
      * Material for wool and bed blocks.
      */
     public static final Material WOOL = new Builder(MapColor.WHITE_GRAY).burnable().build();
-    public static final Material TNT = Builder.method_15808(new Builder(MapColor.BRIGHT_RED).burnable()).build();
-    public static final Material LEAVES = Builder.method_15808(new Builder(MapColor.DARK_GREEN).burnable()).destroyedByPiston().build();
+    public static final Material TNT = new Builder(MapColor.BRIGHT_RED).burnable().lightPassesThrough().build();
+    public static final Material LEAVES = new Builder(MapColor.DARK_GREEN).burnable().lightPassesThrough().destroyedByPiston().build();
     /**
      * Material for glass and glass-like blocks (includes sea lanterns and conduits).
      */
-    public static final Material GLASS = Builder.method_15808(new Builder(MapColor.CLEAR)).build();
+    public static final Material GLASS = new Builder(MapColor.CLEAR).lightPassesThrough().build();
     /**
      * Material for ice that can melt. See {@link #DENSE_ICE} for unmeltable ice.
      */
-    public static final Material ICE = Builder.method_15808(new Builder(MapColor.PALE_PURPLE)).build();
-    public static final Material CACTUS = Builder.method_15808(new Builder(MapColor.DARK_GREEN)).destroyedByPiston().build();
+    public static final Material ICE = new Builder(MapColor.PALE_PURPLE).lightPassesThrough().build();
+    public static final Material CACTUS = new Builder(MapColor.DARK_GREEN).lightPassesThrough().destroyedByPiston().build();
     /**
      * Material for blocks that are stone or made from it, and generally prefer to be broken by a pickaxe.
      */
@@ -124,7 +124,7 @@ public final class Material {
      */
     public static final Material EGG = new Builder(MapColor.DARK_GREEN).destroyedByPiston().build();
     public static final Material CAKE = new Builder(MapColor.CLEAR).destroyedByPiston().build();
-    public static final Material AMETHYST = Builder.method_15808(new Builder(MapColor.PURPLE)).build();
+    public static final Material AMETHYST = new Builder(MapColor.PURPLE).lightPassesThrough().build();
     public static final Material POWDER_SNOW = new Builder(MapColor.WHITE).notSolid().allowsMovement().build();
     private final MapColor color;
     private final PistonBehavior pistonBehavior;
@@ -207,7 +207,7 @@ public final class Material {
             return this;
         }
 
-        private Builder lightPassesThrough() {
+        Builder lightPassesThrough() {
             this.blocksLight = false;
             return this;
         }
@@ -234,10 +234,6 @@ public final class Material {
 
         public Material build() {
             return new Material(this.color, this.liquid, this.solid, this.blocksMovement, this.blocksLight, this.burnable, this.replaceable, this.pistonBehavior);
-        }
-
-        static /* synthetic */ Builder method_15808(Builder builder) {
-            return builder.lightPassesThrough();
         }
     }
 }

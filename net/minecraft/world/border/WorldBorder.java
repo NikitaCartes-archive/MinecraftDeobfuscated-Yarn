@@ -28,7 +28,7 @@ public class WorldBorder {
     private int warningBlocks = 5;
     private double centerX;
     private double centerZ;
-    private int maxRadius = 29999984;
+    int maxRadius = 29999984;
     private Area area = new StaticArea(5.9999968E7);
     public static final Properties DEFAULT_BORDER = new Properties(0.0, 0.0, 0.2, 5.0, 5, 15, 5.9999968E7, 0L, 0.0);
 
@@ -275,103 +275,6 @@ public class WorldBorder {
         }
     }
 
-    public static class Properties {
-        private final double centerX;
-        private final double centerZ;
-        private final double damagePerBlock;
-        private final double safeZone;
-        private final int warningBlocks;
-        private final int warningTime;
-        private final double size;
-        private final long sizeLerpTime;
-        private final double sizeLerpTarget;
-
-        private Properties(double centerX, double centerZ, double damagePerBlock, double safeZone, int warningBlocks, int warningTime, double size, long sizeLerpTime, double sizeLerpTarget) {
-            this.centerX = centerX;
-            this.centerZ = centerZ;
-            this.damagePerBlock = damagePerBlock;
-            this.safeZone = safeZone;
-            this.warningBlocks = warningBlocks;
-            this.warningTime = warningTime;
-            this.size = size;
-            this.sizeLerpTime = sizeLerpTime;
-            this.sizeLerpTarget = sizeLerpTarget;
-        }
-
-        private Properties(WorldBorder worldBorder) {
-            this.centerX = worldBorder.getCenterX();
-            this.centerZ = worldBorder.getCenterZ();
-            this.damagePerBlock = worldBorder.getDamagePerBlock();
-            this.safeZone = worldBorder.getSafeZone();
-            this.warningBlocks = worldBorder.getWarningBlocks();
-            this.warningTime = worldBorder.getWarningTime();
-            this.size = worldBorder.getSize();
-            this.sizeLerpTime = worldBorder.getSizeLerpTime();
-            this.sizeLerpTarget = worldBorder.getSizeLerpTarget();
-        }
-
-        public double getCenterX() {
-            return this.centerX;
-        }
-
-        public double getCenterZ() {
-            return this.centerZ;
-        }
-
-        public double getDamagePerBlock() {
-            return this.damagePerBlock;
-        }
-
-        public double getSafeZone() {
-            return this.safeZone;
-        }
-
-        public int getWarningBlocks() {
-            return this.warningBlocks;
-        }
-
-        public int getWarningTime() {
-            return this.warningTime;
-        }
-
-        public double getSize() {
-            return this.size;
-        }
-
-        public long getSizeLerpTime() {
-            return this.sizeLerpTime;
-        }
-
-        public double getSizeLerpTarget() {
-            return this.sizeLerpTarget;
-        }
-
-        public static Properties fromDynamic(DynamicLike<?> dynamicLike, Properties properties) {
-            double d = dynamicLike.get("BorderCenterX").asDouble(properties.centerX);
-            double e = dynamicLike.get("BorderCenterZ").asDouble(properties.centerZ);
-            double f = dynamicLike.get("BorderSize").asDouble(properties.size);
-            long l = dynamicLike.get("BorderSizeLerpTime").asLong(properties.sizeLerpTime);
-            double g = dynamicLike.get("BorderSizeLerpTarget").asDouble(properties.sizeLerpTarget);
-            double h = dynamicLike.get("BorderSafeZone").asDouble(properties.safeZone);
-            double i = dynamicLike.get("BorderDamagePerBlock").asDouble(properties.damagePerBlock);
-            int j = dynamicLike.get("BorderWarningBlocks").asInt(properties.warningBlocks);
-            int k = dynamicLike.get("BorderWarningTime").asInt(properties.warningTime);
-            return new Properties(d, e, i, h, j, k, f, l, g);
-        }
-
-        public void writeNbt(NbtCompound nbt) {
-            nbt.putDouble("BorderCenterX", this.centerX);
-            nbt.putDouble("BorderCenterZ", this.centerZ);
-            nbt.putDouble("BorderSize", this.size);
-            nbt.putLong("BorderSizeLerpTime", this.sizeLerpTime);
-            nbt.putDouble("BorderSafeZone", this.safeZone);
-            nbt.putDouble("BorderDamagePerBlock", this.damagePerBlock);
-            nbt.putDouble("BorderSizeLerpTarget", this.sizeLerpTarget);
-            nbt.putDouble("BorderWarningBlocks", this.warningBlocks);
-            nbt.putDouble("BorderWarningTime", this.warningTime);
-        }
-    }
-
     class StaticArea
     implements Area {
         private final double size;
@@ -460,6 +363,34 @@ public class WorldBorder {
         }
     }
 
+    static interface Area {
+        public double getBoundWest();
+
+        public double getBoundEast();
+
+        public double getBoundNorth();
+
+        public double getBoundSouth();
+
+        public double getSize();
+
+        public double getShrinkingSpeed();
+
+        public long getSizeLerpTime();
+
+        public double getSizeLerpTarget();
+
+        public WorldBorderStage getStage();
+
+        public void onMaxRadiusChanged();
+
+        public void onCenterChanged();
+
+        public Area getAreaInstance();
+
+        public VoxelShape asVoxelShape();
+    }
+
     class MovingArea
     implements Area {
         private final double oldSize;
@@ -468,12 +399,12 @@ public class WorldBorder {
         private final long timeStart;
         private final double timeDuration;
 
-        private MovingArea(double oldSize, double newSize, long duration) {
-            this.oldSize = oldSize;
-            this.newSize = newSize;
-            this.timeDuration = duration;
+        MovingArea(double d, double e, long l) {
+            this.oldSize = d;
+            this.newSize = e;
+            this.timeDuration = l;
             this.timeStart = Util.getMeasuringTimeMs();
-            this.timeEnd = this.timeStart + duration;
+            this.timeEnd = this.timeStart + l;
         }
 
         @Override
@@ -544,32 +475,101 @@ public class WorldBorder {
         }
     }
 
-    static interface Area {
-        public double getBoundWest();
+    public static class Properties {
+        private final double centerX;
+        private final double centerZ;
+        private final double damagePerBlock;
+        private final double safeZone;
+        private final int warningBlocks;
+        private final int warningTime;
+        private final double size;
+        private final long sizeLerpTime;
+        private final double sizeLerpTarget;
 
-        public double getBoundEast();
+        Properties(double centerX, double centerZ, double damagePerBlock, double safeZone, int warningBlocks, int warningTime, double size, long sizeLerpTime, double sizeLerpTarget) {
+            this.centerX = centerX;
+            this.centerZ = centerZ;
+            this.damagePerBlock = damagePerBlock;
+            this.safeZone = safeZone;
+            this.warningBlocks = warningBlocks;
+            this.warningTime = warningTime;
+            this.size = size;
+            this.sizeLerpTime = sizeLerpTime;
+            this.sizeLerpTarget = sizeLerpTarget;
+        }
 
-        public double getBoundNorth();
+        Properties(WorldBorder worldBorder) {
+            this.centerX = worldBorder.getCenterX();
+            this.centerZ = worldBorder.getCenterZ();
+            this.damagePerBlock = worldBorder.getDamagePerBlock();
+            this.safeZone = worldBorder.getSafeZone();
+            this.warningBlocks = worldBorder.getWarningBlocks();
+            this.warningTime = worldBorder.getWarningTime();
+            this.size = worldBorder.getSize();
+            this.sizeLerpTime = worldBorder.getSizeLerpTime();
+            this.sizeLerpTarget = worldBorder.getSizeLerpTarget();
+        }
 
-        public double getBoundSouth();
+        public double getCenterX() {
+            return this.centerX;
+        }
 
-        public double getSize();
+        public double getCenterZ() {
+            return this.centerZ;
+        }
 
-        public double getShrinkingSpeed();
+        public double getDamagePerBlock() {
+            return this.damagePerBlock;
+        }
 
-        public long getSizeLerpTime();
+        public double getSafeZone() {
+            return this.safeZone;
+        }
 
-        public double getSizeLerpTarget();
+        public int getWarningBlocks() {
+            return this.warningBlocks;
+        }
 
-        public WorldBorderStage getStage();
+        public int getWarningTime() {
+            return this.warningTime;
+        }
 
-        public void onMaxRadiusChanged();
+        public double getSize() {
+            return this.size;
+        }
 
-        public void onCenterChanged();
+        public long getSizeLerpTime() {
+            return this.sizeLerpTime;
+        }
 
-        public Area getAreaInstance();
+        public double getSizeLerpTarget() {
+            return this.sizeLerpTarget;
+        }
 
-        public VoxelShape asVoxelShape();
+        public static Properties fromDynamic(DynamicLike<?> dynamicLike, Properties properties) {
+            double d = dynamicLike.get("BorderCenterX").asDouble(properties.centerX);
+            double e = dynamicLike.get("BorderCenterZ").asDouble(properties.centerZ);
+            double f = dynamicLike.get("BorderSize").asDouble(properties.size);
+            long l = dynamicLike.get("BorderSizeLerpTime").asLong(properties.sizeLerpTime);
+            double g = dynamicLike.get("BorderSizeLerpTarget").asDouble(properties.sizeLerpTarget);
+            double h = dynamicLike.get("BorderSafeZone").asDouble(properties.safeZone);
+            double i = dynamicLike.get("BorderDamagePerBlock").asDouble(properties.damagePerBlock);
+            int j = dynamicLike.get("BorderWarningBlocks").asInt(properties.warningBlocks);
+            int k = dynamicLike.get("BorderWarningTime").asInt(properties.warningTime);
+            return new Properties(d, e, i, h, j, k, f, l, g);
+        }
+
+        public void writeNbt(NbtCompound nbt) {
+            nbt.putDouble("BorderCenterX", this.centerX);
+            nbt.putDouble("BorderCenterZ", this.centerZ);
+            nbt.putDouble("BorderSize", this.size);
+            nbt.putLong("BorderSizeLerpTime", this.sizeLerpTime);
+            nbt.putDouble("BorderSafeZone", this.safeZone);
+            nbt.putDouble("BorderDamagePerBlock", this.damagePerBlock);
+            nbt.putDouble("BorderSizeLerpTarget", this.sizeLerpTarget);
+            nbt.putDouble("BorderWarningBlocks", this.warningBlocks);
+            nbt.putDouble("BorderWarningTime", this.warningTime);
+        }
     }
 }
 

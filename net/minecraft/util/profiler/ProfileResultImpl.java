@@ -53,7 +53,7 @@ implements ProfileResult {
         }
     };
     private static final Splitter SPLITTER = Splitter.on('\u001e');
-    private static final Comparator<Map.Entry<String, CounterInfo>> COMPARATOR = Map.Entry.comparingByValue(Comparator.comparingLong(counterInfo -> CounterInfo.method_24265(counterInfo))).reversed();
+    private static final Comparator<Map.Entry<String, CounterInfo>> COMPARATOR = Map.Entry.comparingByValue(Comparator.comparingLong(counterInfo -> counterInfo.totalTime)).reversed();
     private final Map<String, ? extends ProfileLocationInfo> locationInfos;
     private final long startTime;
     private final int startTick;
@@ -80,16 +80,16 @@ implements ProfileResult {
         String string = parentPath;
         ProfileLocationInfo profileLocationInfo = this.getInfo("root");
         long l = profileLocationInfo.getTotalTime();
-        ProfileLocationInfo profileLocationInfo2 = this.getInfo(parentPath);
+        ProfileLocationInfo profileLocationInfo2 = this.getInfo((String)parentPath);
         long m = profileLocationInfo2.getTotalTime();
         long n = profileLocationInfo2.getVisitCount();
         ArrayList<ProfilerTiming> list = Lists.newArrayList();
-        if (!parentPath.isEmpty()) {
-            parentPath = parentPath + '\u001e';
+        if (!((String)parentPath).isEmpty()) {
+            parentPath = (String)parentPath + "\u001e";
         }
         long o = 0L;
         for (String string2 : this.locationInfos.keySet()) {
-            if (!ProfileResultImpl.isSubpath(parentPath, string2)) continue;
+            if (!ProfileResultImpl.isSubpath((String)parentPath, string2)) continue;
             o += this.getInfo(string2).getTotalTime();
         }
         float f = o;
@@ -100,12 +100,12 @@ implements ProfileResult {
             l = o;
         }
         for (String string3 : this.locationInfos.keySet()) {
-            if (!ProfileResultImpl.isSubpath(parentPath, string3)) continue;
+            if (!ProfileResultImpl.isSubpath((String)parentPath, string3)) continue;
             ProfileLocationInfo profileLocationInfo3 = this.getInfo(string3);
             long p = profileLocationInfo3.getTotalTime();
             double d = (double)p * 100.0 / (double)o;
             double e = (double)p * 100.0 / (double)l;
-            String string4 = string3.substring(parentPath.length());
+            String string4 = string3.substring(((String)parentPath).length());
             list.add(new ProfilerTiming(string4, d, e, profileLocationInfo3.getVisitCount()));
         }
         if ((float)o > f) {
@@ -229,7 +229,7 @@ implements ProfileResult {
             ProfileResultImpl.indent(sb, level).append(profilerTiming.name).append('(').append(profilerTiming.visitCount).append('/').append(String.format(Locale.ROOT, "%.0f", Float.valueOf((float)profilerTiming.visitCount / (float)this.tickDuration))).append(')').append(" - ").append(String.format(Locale.ROOT, "%.2f", profilerTiming.parentSectionUsagePercentage)).append("%/").append(String.format(Locale.ROOT, "%.2f", profilerTiming.totalUsagePercentage)).append("%\n");
             if ("unspecified".equals(profilerTiming.name)) continue;
             try {
-                this.appendTiming(level + 1, name + '\u001e' + profilerTiming.name, sb);
+                this.appendTiming(level + 1, name + "\u001e" + profilerTiming.name, sb);
                 continue;
             } catch (Exception exception) {
                 sb.append("[[ EXCEPTION ").append(exception).append(" ]]");
@@ -245,7 +245,7 @@ implements ProfileResult {
     private void appendCounterDump(Map<String, CounterInfo> counters, StringBuilder sb, int tickSpan) {
         counters.forEach((string, counterInfo) -> {
             sb.append("-- Counter: ").append((String)string).append(" --\n");
-            this.appendCounter(0, "root", (CounterInfo)((CounterInfo)counterInfo).subCounters.get("root"), tickSpan, sb);
+            this.appendCounter(0, "root", counterInfo.subCounters.get("root"), tickSpan, sb);
             sb.append("\n\n");
         });
     }
@@ -265,11 +265,11 @@ implements ProfileResult {
     }
 
     static class CounterInfo {
-        private long selfTime;
-        private long totalTime;
-        private final Map<String, CounterInfo> subCounters = Maps.newHashMap();
+        long selfTime;
+        long totalTime;
+        final Map<String, CounterInfo> subCounters = Maps.newHashMap();
 
-        private CounterInfo() {
+        CounterInfo() {
         }
 
         public void add(Iterator<String> pathIterator, long time) {

@@ -123,8 +123,7 @@ public class GlDebug {
                 field_33670.add(lv);
                 field_33671 = lv;
             } else {
-                class_6359 class_63592 = lv;
-                class_63592.field_33678 = class_63592.field_33678 + 1;
+                ++lv.field_33678;
             }
         }
         LOGGER.info("OpenGL debug message: {}", (Object)lv);
@@ -190,9 +189,9 @@ public class GlDebug {
         private final int field_33675;
         private final int field_33676;
         private final String field_33677;
-        private int field_33678 = 1;
+        int field_33678 = 1;
 
-        private class_6359(int i, int j, int k, int l, String string) {
+        class_6359(int i, int j, int k, int l, String string) {
             this.field_33673 = k;
             this.field_33674 = i;
             this.field_33675 = j;
@@ -200,7 +199,7 @@ public class GlDebug {
             this.field_33677 = string;
         }
 
-        private boolean method_36480(int i, int j, int k, int l, String string) {
+        boolean method_36480(int i, int j, int k, int l, String string) {
             return j == this.field_33675 && i == this.field_33674 && k == this.field_33673 && l == this.field_33676 && string.equals(this.field_33677);
         }
 

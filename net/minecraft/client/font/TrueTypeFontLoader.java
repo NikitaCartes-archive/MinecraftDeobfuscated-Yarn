@@ -73,35 +73,47 @@ implements FontLoader {
         return new TrueTypeFontLoader(new Identifier(JsonHelper.getString(json, "file")), JsonHelper.getFloat(json, "size", 11.0f), JsonHelper.getFloat(json, "oversample", 1.0f), f, g, stringBuilder.toString());
     }
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     */
     @Override
     @Nullable
     public Font load(ResourceManager manager) {
-        Struct sTBTTFontinfo = null;
-        ByteBuffer byteBuffer = null;
-        try (Resource resource = manager.getResource(new Identifier(this.filename.getNamespace(), "font/" + this.filename.getPath()));){
-            LOGGER.debug("Loading font {}", (Object)this.filename);
-            sTBTTFontinfo = STBTTFontinfo.malloc();
-            byteBuffer = TextureUtil.readResource(resource.getInputStream());
-            byteBuffer.flip();
-            LOGGER.debug("Reading font {}", (Object)this.filename);
-            if (!STBTruetype.stbtt_InitFont((STBTTFontinfo)sTBTTFontinfo, byteBuffer)) {
-                throw new IOException("Invalid ttf");
+        TrueTypeFont trueTypeFont;
+        block10: {
+            Struct sTBTTFontinfo = null;
+            ByteBuffer byteBuffer = null;
+            Resource resource = manager.getResource(new Identifier(this.filename.getNamespace(), "font/" + this.filename.getPath()));
+            try {
+                LOGGER.debug("Loading font {}", (Object)this.filename);
+                sTBTTFontinfo = STBTTFontinfo.malloc();
+                byteBuffer = TextureUtil.readResource(resource.getInputStream());
+                byteBuffer.flip();
+                LOGGER.debug("Reading font {}", (Object)this.filename);
+                if (!STBTruetype.stbtt_InitFont((STBTTFontinfo)sTBTTFontinfo, byteBuffer)) {
+                    throw new IOException("Invalid ttf");
+                }
+                trueTypeFont = new TrueTypeFont(byteBuffer, (STBTTFontinfo)sTBTTFontinfo, this.size, this.oversample, this.shiftX, this.shiftY, this.excludedCharacters);
+                if (resource == null) break block10;
+            } catch (Throwable throwable) {
+                try {
+                    if (resource != null) {
+                        try {
+                            resource.close();
+                        } catch (Throwable throwable2) {
+                            throwable.addSuppressed(throwable2);
+                        }
+                    }
+                    throw throwable;
+                } catch (Exception exception) {
+                    LOGGER.error("Couldn't load truetype font {}", (Object)this.filename, (Object)exception);
+                    if (sTBTTFontinfo != null) {
+                        sTBTTFontinfo.free();
+                    }
+                    MemoryUtil.memFree(byteBuffer);
+                    return null;
+                }
             }
-            TrueTypeFont trueTypeFont = new TrueTypeFont(byteBuffer, (STBTTFontinfo)sTBTTFontinfo, this.size, this.oversample, this.shiftX, this.shiftY, this.excludedCharacters);
-            return trueTypeFont;
-        } catch (Exception exception) {
-            LOGGER.error("Couldn't load truetype font {}", (Object)this.filename, (Object)exception);
-            if (sTBTTFontinfo != null) {
-                sTBTTFontinfo.free();
-            }
-            MemoryUtil.memFree(byteBuffer);
-            return null;
+            resource.close();
         }
+        return trueTypeFont;
     }
 }
 

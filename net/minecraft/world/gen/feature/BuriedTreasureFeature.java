@@ -20,7 +20,7 @@ import net.minecraft.world.gen.feature.StructureFeature;
 
 public class BuriedTreasureFeature
 extends StructureFeature<ProbabilityConfig> {
-    private static final int field_31500 = 10387320;
+    private static final int SALT = 10387320;
 
     public BuriedTreasureFeature(Codec<ProbabilityConfig> codec) {
         super(codec);

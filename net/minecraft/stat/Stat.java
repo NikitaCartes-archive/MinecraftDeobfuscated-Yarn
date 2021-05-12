@@ -53,7 +53,7 @@ extends ScoreboardCriterion {
     }
 
     public String toString() {
-        return "Stat{name=" + this.getName() + ", formatter=" + this.formatter + '}';
+        return "Stat{name=" + this.getName() + ", formatter=" + this.formatter + "}";
     }
 }
 

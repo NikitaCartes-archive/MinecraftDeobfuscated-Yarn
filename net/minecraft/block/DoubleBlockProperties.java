@@ -80,19 +80,19 @@ public class DoubleBlockProperties {
         }
     }
 
+    public static enum Type {
+        SINGLE,
+        FIRST,
+        SECOND;
+
+    }
+
     public static interface PropertyRetriever<S, T> {
         public T getFromBoth(S var1, S var2);
 
         public T getFrom(S var1);
 
         public T getFallback();
-    }
-
-    public static enum Type {
-        SINGLE,
-        FIRST,
-        SECOND;
-
     }
 }
 

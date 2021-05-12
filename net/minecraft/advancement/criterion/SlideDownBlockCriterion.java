@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class SlideDownBlockCriterion
 extends AbstractCriterion<Conditions> {
-    private static final Identifier ID = new Identifier("slide_down_block");
+    static final Identifier ID = new Identifier("slide_down_block");
 
     @Override
     public Identifier getId() {

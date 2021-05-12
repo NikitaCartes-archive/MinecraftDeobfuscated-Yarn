@@ -22,7 +22,7 @@ import net.minecraft.client.MinecraftClient;
 @Environment(value=EnvType.CLIENT)
 public class RealmsUtil {
     private static final YggdrasilAuthenticationService authenticationService = new YggdrasilAuthenticationService(MinecraftClient.getInstance().getNetworkProxy());
-    private static final MinecraftSessionService sessionService = authenticationService.createMinecraftSessionService();
+    static final MinecraftSessionService sessionService = authenticationService.createMinecraftSessionService();
     public static LoadingCache<String, GameProfile> gameProfileCache = CacheBuilder.newBuilder().expireAfterWrite(60L, TimeUnit.MINUTES).build(new CacheLoader<String, GameProfile>(){
 
         @Override
@@ -63,18 +63,18 @@ public class RealmsUtil {
         }
         long l = milliseconds / 1000L;
         if (l < 60L) {
-            return (l == 1L ? "1 second" : l + " seconds") + " ago";
+            return (String)(l == 1L ? "1 second" : l + " seconds") + " ago";
         }
         if (l < 3600L) {
             long m = l / 60L;
-            return (m == 1L ? "1 minute" : m + " minutes") + " ago";
+            return (String)(m == 1L ? "1 minute" : m + " minutes") + " ago";
         }
         if (l < 86400L) {
             long m = l / 3600L;
-            return (m == 1L ? "1 hour" : m + " hours") + " ago";
+            return (String)(m == 1L ? "1 hour" : m + " hours") + " ago";
         }
         long m = l / 86400L;
-        return (m == 1L ? "1 day" : m + " days") + " ago";
+        return (String)(m == 1L ? "1 day" : m + " days") + " ago";
     }
 
     public static String convertToAgePresentation(Date date) {

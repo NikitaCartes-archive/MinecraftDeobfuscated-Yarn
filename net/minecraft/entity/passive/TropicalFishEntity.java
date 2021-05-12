@@ -209,22 +209,6 @@ extends SchoolingFishEntity {
         return entityData;
     }
 
-    static class TropicalFishData
-    extends SchoolingFishEntity.FishData {
-        private final int shape;
-        private final int pattern;
-        private final int baseColor;
-        private final int patternColor;
-
-        private TropicalFishData(TropicalFishEntity leader, int shape, int pattern, int baseColor, int patternColor) {
-            super(leader);
-            this.shape = shape;
-            this.pattern = pattern;
-            this.baseColor = baseColor;
-            this.patternColor = patternColor;
-        }
-    }
-
     static enum Variety {
         KOB(0, 0),
         SUNSTREAK(0, 1),
@@ -266,6 +250,22 @@ extends SchoolingFishEntity {
 
         static {
             VALUES = Variety.values();
+        }
+    }
+
+    static class TropicalFishData
+    extends SchoolingFishEntity.FishData {
+        final int shape;
+        final int pattern;
+        final int baseColor;
+        final int patternColor;
+
+        TropicalFishData(TropicalFishEntity tropicalFishEntity, int i, int j, int k, int l) {
+            super(tropicalFishEntity);
+            this.shape = i;
+            this.pattern = j;
+            this.baseColor = k;
+            this.patternColor = l;
         }
     }
 }

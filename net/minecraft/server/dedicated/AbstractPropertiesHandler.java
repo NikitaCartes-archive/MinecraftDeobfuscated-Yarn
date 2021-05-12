@@ -100,7 +100,7 @@ public abstract class AbstractPropertiesHandler<T extends AbstractPropertiesHand
         String string = this.getStringValue(key);
         Object object = MoreObjects.firstNonNull(string != null ? (Object)parser.apply(string) : null, fallback);
         this.properties.put(key, stringifier.apply(object));
-        return new PropertyAccessor(key, object, stringifier);
+        return new PropertyAccessor<Object>(key, object, (Function<Object, String>)stringifier);
     }
 
     protected <V> V get(String key, Function<String, V> parser, UnaryOperator<V> parsedTransformer, Function<V, String> stringifier, V fallback) {
@@ -174,10 +174,10 @@ public abstract class AbstractPropertiesHandler<T extends AbstractPropertiesHand
         private final V value;
         private final Function<V, String> stringifier;
 
-        private PropertyAccessor(String key, V value, Function<V, String> stringifier) {
-            this.key = key;
-            this.value = value;
-            this.stringifier = stringifier;
+        PropertyAccessor(String string, V object, Function<V, String> function) {
+            this.key = string;
+            this.value = object;
+            this.stringifier = function;
         }
 
         @Override

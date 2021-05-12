@@ -4,10 +4,8 @@
 package net.minecraft.item;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import java.util.Map;
-import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -18,6 +16,7 @@ import net.minecraft.item.MiningToolItem;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -25,11 +24,10 @@ import net.minecraft.world.World;
 
 public class HoeItem
 extends MiningToolItem {
-    private static final Set<Block> EFFECTIVE_BLOCKS = ImmutableSet.of(Blocks.NETHER_WART_BLOCK, Blocks.WARPED_WART_BLOCK, Blocks.HAY_BLOCK, Blocks.DRIED_KELP_BLOCK, Blocks.TARGET, Blocks.SHROOMLIGHT, new Block[]{Blocks.SPONGE, Blocks.WET_SPONGE, Blocks.JUNGLE_LEAVES, Blocks.OAK_LEAVES, Blocks.SPRUCE_LEAVES, Blocks.DARK_OAK_LEAVES, Blocks.ACACIA_LEAVES, Blocks.BIRCH_LEAVES, Blocks.AZALEA_LEAVES, Blocks.AZALEA_LEAVES_FLOWERS, Blocks.SCULK_SENSOR, Blocks.MOSS_BLOCK, Blocks.MOSS_CARPET});
     protected static final Map<Block, BlockState> TILLED_BLOCKS = Maps.newHashMap(ImmutableMap.of(Blocks.GRASS_BLOCK, Blocks.FARMLAND.getDefaultState(), Blocks.DIRT_PATH, Blocks.FARMLAND.getDefaultState(), Blocks.DIRT, Blocks.FARMLAND.getDefaultState(), Blocks.COARSE_DIRT, Blocks.DIRT.getDefaultState()));
 
     protected HoeItem(ToolMaterial material, int attackDamage, float attackSpeed, Item.Settings settings) {
-        super(attackDamage, attackSpeed, material, EFFECTIVE_BLOCKS, settings);
+        super(attackDamage, attackSpeed, material, BlockTags.HOE_MINEABLE, settings);
     }
 
     @Override

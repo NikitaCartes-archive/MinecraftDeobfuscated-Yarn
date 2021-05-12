@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.Option;
@@ -70,7 +70,7 @@ extends Option {
     }
 
     @Override
-    public AbstractButtonWidget createButton(GameOptions options, int x, int y, int width) {
+    public ClickableWidget createButton(GameOptions options, int x, int y, int width) {
         CyclingButtonWidget.TooltipFactory<T> tooltipFactory = this.tooltips.apply(MinecraftClient.getInstance());
         return this.buttonBuilderFactory.get().tooltip(tooltipFactory).initially(this.getter.apply(options)).build(x, y, width, 20, this.getDisplayPrefix(), (button, value) -> {
             this.setter.accept(options, this, value);

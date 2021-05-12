@@ -30,11 +30,11 @@ public class PlayerListEntry {
     private String model;
     @Nullable
     private Text displayName;
-    private int field_3738;
+    private int health;
     private int field_3736;
     private long field_3737;
     private long field_3747;
-    private long field_3746;
+    private long showTime;
 
     public PlayerListEntry(PlayerListS2CPacket.Entry playerListPacketEntry) {
         this.profile = playerListPacketEntry.getProfile();
@@ -114,10 +114,10 @@ public class PlayerListEntry {
         synchronized (playerListEntry) {
             if (!this.texturesLoaded) {
                 this.texturesLoaded = true;
-                MinecraftClient.getInstance().getSkinProvider().loadSkin(this.profile, (type, identifier, minecraftProfileTexture) -> {
-                    this.textures.put(type, identifier);
+                MinecraftClient.getInstance().getSkinProvider().loadSkin(this.profile, (type, id, texture) -> {
+                    this.textures.put(type, id);
                     if (type == MinecraftProfileTexture.Type.SKIN) {
-                        this.model = minecraftProfileTexture.getMetadata("model");
+                        this.model = texture.getMetadata("model");
                         if (this.model == null) {
                             this.model = "default";
                         }
@@ -136,12 +136,12 @@ public class PlayerListEntry {
         return this.displayName;
     }
 
-    public int method_2973() {
-        return this.field_3738;
+    public int getHealth() {
+        return this.health;
     }
 
-    public void method_2972(int i) {
-        this.field_3738 = i;
+    public void setHealth(int health) {
+        this.health = health;
     }
 
     public int method_2960() {
@@ -168,12 +168,12 @@ public class PlayerListEntry {
         this.field_3747 = l;
     }
 
-    public long method_2976() {
-        return this.field_3746;
+    public long getShowTime() {
+        return this.showTime;
     }
 
-    public void method_2964(long l) {
-        this.field_3746 = l;
+    public void setShowTime(long showTime) {
+        this.showTime = showTime;
     }
 }
 

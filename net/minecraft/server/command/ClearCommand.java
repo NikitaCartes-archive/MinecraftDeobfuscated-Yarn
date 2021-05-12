@@ -31,7 +31,7 @@ public class ClearCommand {
     private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Predicate<ItemStack> item, int maxCount) throws CommandSyntaxException {
         int i = 0;
         for (ServerPlayerEntity serverPlayerEntity : targets) {
-            i += serverPlayerEntity.getInventory().remove(item, maxCount, serverPlayerEntity.playerScreenHandler.method_29281());
+            i += serverPlayerEntity.getInventory().remove(item, maxCount, serverPlayerEntity.playerScreenHandler.getCraftingInput());
             serverPlayerEntity.currentScreenHandler.sendContentUpdates();
             serverPlayerEntity.playerScreenHandler.onContentChanged(serverPlayerEntity.getInventory());
         }

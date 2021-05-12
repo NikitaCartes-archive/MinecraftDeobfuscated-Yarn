@@ -82,7 +82,7 @@ implements Errable {
         RealmsLongRunningMcoTaskScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, RealmsLongRunningMcoTaskScreen.row(3), 0xFFFFFF);
         Text text = this.errorMessage;
         if (text == null) {
-            RealmsLongRunningMcoTaskScreen.drawCenteredString(matrices, this.textRenderer, symbols[this.animTicks % symbols.length], this.width / 2, RealmsLongRunningMcoTaskScreen.row(8), 0x808080);
+            RealmsLongRunningMcoTaskScreen.drawCenteredText(matrices, this.textRenderer, symbols[this.animTicks % symbols.length], this.width / 2, RealmsLongRunningMcoTaskScreen.row(8), 0x808080);
         } else {
             RealmsLongRunningMcoTaskScreen.drawCenteredText(matrices, this.textRenderer, text, this.width / 2, RealmsLongRunningMcoTaskScreen.row(8), 0xFF0000);
         }

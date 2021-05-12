@@ -247,21 +247,6 @@ implements Angerable {
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
-    class PolarBearEscapeDangerGoal
-    extends EscapeDangerGoal {
-        public PolarBearEscapeDangerGoal() {
-            super(PolarBearEntity.this, 2.0);
-        }
-
-        @Override
-        public boolean canStart() {
-            if (!PolarBearEntity.this.isBaby() && !PolarBearEntity.this.isOnFire()) {
-                return false;
-            }
-            return super.canStart();
-        }
-    }
-
     class AttackGoal
     extends MeleeAttackGoal {
         public AttackGoal() {
@@ -302,6 +287,44 @@ implements Angerable {
         }
     }
 
+    class PolarBearEscapeDangerGoal
+    extends EscapeDangerGoal {
+        public PolarBearEscapeDangerGoal() {
+            super(PolarBearEntity.this, 2.0);
+        }
+
+        @Override
+        public boolean canStart() {
+            if (!PolarBearEntity.this.isBaby() && !PolarBearEntity.this.isOnFire()) {
+                return false;
+            }
+            return super.canStart();
+        }
+    }
+
+    class PolarBearRevengeGoal
+    extends RevengeGoal {
+        public PolarBearRevengeGoal() {
+            super(PolarBearEntity.this, new Class[0]);
+        }
+
+        @Override
+        public void start() {
+            super.start();
+            if (PolarBearEntity.this.isBaby()) {
+                this.callSameTypeForRevenge();
+                this.stop();
+            }
+        }
+
+        @Override
+        protected void setMobEntityTarget(MobEntity mob, LivingEntity target) {
+            if (mob instanceof PolarBearEntity && !mob.isBaby()) {
+                super.setMobEntityTarget(mob, target);
+            }
+        }
+    }
+
     class FollowPlayersGoal
     extends FollowTargetGoal<PlayerEntity> {
         public FollowPlayersGoal() {
@@ -326,29 +349,6 @@ implements Angerable {
         @Override
         protected double getFollowRange() {
             return super.getFollowRange() * 0.5;
-        }
-    }
-
-    class PolarBearRevengeGoal
-    extends RevengeGoal {
-        public PolarBearRevengeGoal() {
-            super(PolarBearEntity.this, new Class[0]);
-        }
-
-        @Override
-        public void start() {
-            super.start();
-            if (PolarBearEntity.this.isBaby()) {
-                this.callSameTypeForRevenge();
-                this.stop();
-            }
-        }
-
-        @Override
-        protected void setMobEntityTarget(MobEntity mob, LivingEntity target) {
-            if (mob instanceof PolarBearEntity && !mob.isBaby()) {
-                super.setMobEntityTarget(mob, target);
-            }
         }
     }
 }

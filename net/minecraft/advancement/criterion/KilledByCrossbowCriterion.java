@@ -24,7 +24,7 @@ import net.minecraft.util.Identifier;
 
 public class KilledByCrossbowCriterion
 extends AbstractCriterion<Conditions> {
-    private static final Identifier ID = new Identifier("killed_by_crossbow");
+    static final Identifier ID = new Identifier("killed_by_crossbow");
 
     @Override
     public Identifier getId() {

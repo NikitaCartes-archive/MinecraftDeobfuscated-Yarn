@@ -123,27 +123,7 @@ implements SidedInventory {
         for (int i = 0; i < list.size(); ++i) {
             Entity entity = list.get(i);
             if (entity.getPistonBehavior() == PistonBehavior.IGNORE) continue;
-            double d = 0.0;
-            double e = 0.0;
-            double f = 0.0;
-            Box box2 = entity.getBoundingBox();
-            switch (direction.getAxis()) {
-                case X: {
-                    d = direction.getDirection() == Direction.AxisDirection.POSITIVE ? box.maxX - box2.minX : box2.maxX - box.minX;
-                    d += 0.01;
-                    break;
-                }
-                case Y: {
-                    e = direction.getDirection() == Direction.AxisDirection.POSITIVE ? box.maxY - box2.minY : box2.maxY - box.minY;
-                    e += 0.01;
-                    break;
-                }
-                case Z: {
-                    f = direction.getDirection() == Direction.AxisDirection.POSITIVE ? box.maxZ - box2.minZ : box2.maxZ - box.minZ;
-                    f += 0.01;
-                }
-            }
-            entity.move(MovementType.SHULKER_BOX, new Vec3d(d * (double)direction.getOffsetX(), e * (double)direction.getOffsetY(), f * (double)direction.getOffsetZ()));
+            entity.move(MovementType.SHULKER_BOX, new Vec3d((box.getXLength() + 0.01) * (double)direction.getOffsetX(), (box.getYLength() + 0.01) * (double)direction.getOffsetY(), (box.getZLength() + 0.01) * (double)direction.getOffsetZ()));
         }
     }
 

@@ -49,7 +49,7 @@ import org.jetbrains.annotations.Nullable;
 public class SoundManager
 extends SinglePreparationResourceReloader<SoundList> {
     public static final Sound MISSING_SOUND = new Sound("meta:missing_sound", 1.0f, 1.0f, 1, Sound.RegistrationType.FILE, false, false, 16);
-    private static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogManager.getLogger();
     private static final String SOUNDS_JSON = "sounds.json";
     private static final Gson GSON = new GsonBuilder().registerTypeHierarchyAdapter(Text.class, new Text.Serializer()).registerTypeAdapter((Type)((Object)SoundEntry.class), new SoundEntryDeserializer()).create();
     private static final TypeToken<Map<String, SoundEntry>> TYPE = new TypeToken<Map<String, SoundEntry>>(){};
@@ -113,7 +113,7 @@ extends SinglePreparationResourceReloader<SoundList> {
         this.soundSystem.reloadSounds();
     }
 
-    private static boolean isSoundResourcePresent(Sound sound, Identifier id, ResourceManager resourceManager) {
+    static boolean isSoundResourcePresent(Sound sound, Identifier id, ResourceManager resourceManager) {
         Identifier identifier = sound.getLocation();
         if (!resourceManager.containsResource(identifier)) {
             LOGGER.warn("File {} does not exist, cannot add it to event {}", (Object)identifier, (Object)id);
@@ -204,13 +204,13 @@ extends SinglePreparationResourceReloader<SoundList> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static class SoundList {
-        private final Map<Identifier, WeightedSoundSet> loadedSounds = Maps.newHashMap();
+    protected static class SoundList {
+        final Map<Identifier, WeightedSoundSet> loadedSounds = Maps.newHashMap();
 
         protected SoundList() {
         }
 
-        private void register(Identifier id, SoundEntry entry, ResourceManager resourceManager) {
+        void register(Identifier id, SoundEntry entry, ResourceManager resourceManager) {
             boolean bl;
             WeightedSoundSet weightedSoundSet = this.loadedSounds.get(id);
             boolean bl2 = bl = weightedSoundSet == null;
@@ -222,54 +222,46 @@ extends SinglePreparationResourceReloader<SoundList> {
                 this.loadedSounds.put(id, weightedSoundSet);
             }
             block4: for (final Sound sound : entry.getSounds()) {
-                SoundContainer<Sound> soundContainer;
                 final Identifier identifier = sound.getIdentifier();
-                switch (sound.getRegistrationType()) {
-                    case FILE: {
+                weightedSoundSet.add(switch (sound.getRegistrationType()) {
+                    case Sound.RegistrationType.FILE -> {
                         if (!SoundManager.isSoundResourcePresent(sound, id, resourceManager)) continue block4;
-                        soundContainer = sound;
-                        break;
+                        yield sound;
                     }
-                    case SOUND_EVENT: {
-                        soundContainer = new SoundContainer<Sound>(){
+                    case Sound.RegistrationType.SOUND_EVENT -> new SoundContainer<Sound>(){
 
-                            @Override
-                            public int getWeight() {
-                                WeightedSoundSet weightedSoundSet = (WeightedSoundSet)loadedSounds.get(identifier);
-                                return weightedSoundSet == null ? 0 : weightedSoundSet.getWeight();
-                            }
+                        @Override
+                        public int getWeight() {
+                            WeightedSoundSet weightedSoundSet = loadedSounds.get(identifier);
+                            return weightedSoundSet == null ? 0 : weightedSoundSet.getWeight();
+                        }
 
-                            @Override
-                            public Sound getSound() {
-                                WeightedSoundSet weightedSoundSet = (WeightedSoundSet)loadedSounds.get(identifier);
-                                if (weightedSoundSet == null) {
-                                    return MISSING_SOUND;
-                                }
-                                Sound sound2 = weightedSoundSet.getSound();
-                                return new Sound(sound2.getIdentifier().toString(), sound2.getVolume() * sound.getVolume(), sound2.getPitch() * sound.getPitch(), sound.getWeight(), Sound.RegistrationType.FILE, sound2.isStreamed() || sound.isStreamed(), sound2.isPreloaded(), sound2.getAttenuation());
+                        @Override
+                        public Sound getSound() {
+                            WeightedSoundSet weightedSoundSet = loadedSounds.get(identifier);
+                            if (weightedSoundSet == null) {
+                                return MISSING_SOUND;
                             }
+                            Sound sound2 = weightedSoundSet.getSound();
+                            return new Sound(sound2.getIdentifier().toString(), sound2.getVolume() * sound.getVolume(), sound2.getPitch() * sound.getPitch(), sound.getWeight(), Sound.RegistrationType.FILE, sound2.isStreamed() || sound.isStreamed(), sound2.isPreloaded(), sound2.getAttenuation());
+                        }
 
-                            @Override
-                            public void preload(SoundSystem soundSystem) {
-                                WeightedSoundSet weightedSoundSet = (WeightedSoundSet)loadedSounds.get(identifier);
-                                if (weightedSoundSet == null) {
-                                    return;
-                                }
-                                weightedSoundSet.preload(soundSystem);
+                        @Override
+                        public void preload(SoundSystem soundSystem) {
+                            WeightedSoundSet weightedSoundSet = loadedSounds.get(identifier);
+                            if (weightedSoundSet == null) {
+                                return;
                             }
+                            weightedSoundSet.preload(soundSystem);
+                        }
 
-                            @Override
-                            public /* synthetic */ Object getSound() {
-                                return this.getSound();
-                            }
-                        };
-                        break;
-                    }
-                    default: {
-                        throw new IllegalStateException("Unknown SoundEventRegistration type: " + (Object)((Object)sound.getRegistrationType()));
-                    }
-                }
-                weightedSoundSet.add(soundContainer);
+                        @Override
+                        public /* synthetic */ Object getSound() {
+                            return this.getSound();
+                        }
+                    };
+                    default -> throw new IllegalStateException("Unknown SoundEventRegistration type: " + sound.getRegistrationType());
+                });
             }
         }
 

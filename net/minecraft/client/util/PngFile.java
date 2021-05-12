@@ -56,6 +56,74 @@ public class PngFile {
     }
 
     @Environment(value=EnvType.CLIENT)
+    static abstract class Reader
+    implements AutoCloseable {
+        protected boolean errored;
+
+        Reader() {
+        }
+
+        int read(long user, long data, int size) {
+            try {
+                return this.read(data, size);
+            } catch (IOException iOException) {
+                this.errored = true;
+                return 0;
+            }
+        }
+
+        void skip(long user, int n) {
+            try {
+                this.skip(n);
+            } catch (IOException iOException) {
+                this.errored = true;
+            }
+        }
+
+        int eof(long user) {
+            return this.errored ? 1 : 0;
+        }
+
+        protected abstract int read(long var1, int var3) throws IOException;
+
+        protected abstract void skip(int var1) throws IOException;
+
+        @Override
+        public abstract void close() throws IOException;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static class SeekableChannelReader
+    extends Reader {
+        private final SeekableByteChannel channel;
+
+        SeekableChannelReader(SeekableByteChannel seekableByteChannel) {
+            this.channel = seekableByteChannel;
+        }
+
+        @Override
+        public int read(long data, int size) throws IOException {
+            ByteBuffer byteBuffer = MemoryUtil.memByteBuffer(data, size);
+            return this.channel.read(byteBuffer);
+        }
+
+        @Override
+        public void skip(int n) throws IOException {
+            this.channel.position(this.channel.position() + (long)n);
+        }
+
+        @Override
+        public int eof(long user) {
+            return super.eof(user) != 0 && this.channel.isOpen() ? 1 : 0;
+        }
+
+        @Override
+        public void close() throws IOException {
+            this.channel.close();
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
     static class ChannelReader
     extends Reader {
         private static final int field_32035 = 128;
@@ -65,7 +133,7 @@ public class PngFile {
         private int bufferPosition;
         private int readPosition;
 
-        private ChannelReader(ReadableByteChannel readableByteChannel) {
+        ChannelReader(ReadableByteChannel readableByteChannel) {
             this.channel = readableByteChannel;
         }
 
@@ -121,74 +189,6 @@ public class PngFile {
             MemoryUtil.nmemFree(this.buffer);
             this.channel.close();
         }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static class SeekableChannelReader
-    extends Reader {
-        private final SeekableByteChannel channel;
-
-        private SeekableChannelReader(SeekableByteChannel channel) {
-            this.channel = channel;
-        }
-
-        @Override
-        public int read(long data, int size) throws IOException {
-            ByteBuffer byteBuffer = MemoryUtil.memByteBuffer(data, size);
-            return this.channel.read(byteBuffer);
-        }
-
-        @Override
-        public void skip(int n) throws IOException {
-            this.channel.position(this.channel.position() + (long)n);
-        }
-
-        @Override
-        public int eof(long user) {
-            return super.eof(user) != 0 && this.channel.isOpen() ? 1 : 0;
-        }
-
-        @Override
-        public void close() throws IOException {
-            this.channel.close();
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static abstract class Reader
-    implements AutoCloseable {
-        protected boolean errored;
-
-        private Reader() {
-        }
-
-        int read(long user, long data, int size) {
-            try {
-                return this.read(data, size);
-            } catch (IOException iOException) {
-                this.errored = true;
-                return 0;
-            }
-        }
-
-        void skip(long user, int n) {
-            try {
-                this.skip(n);
-            } catch (IOException iOException) {
-                this.errored = true;
-            }
-        }
-
-        int eof(long user) {
-            return this.errored ? 1 : 0;
-        }
-
-        protected abstract int read(long var1, int var3) throws IOException;
-
-        protected abstract void skip(int var1) throws IOException;
-
-        @Override
-        public abstract void close() throws IOException;
     }
 }
 

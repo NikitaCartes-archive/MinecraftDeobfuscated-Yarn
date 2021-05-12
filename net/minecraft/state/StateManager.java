@@ -30,7 +30,7 @@ import net.minecraft.state.property.Property;
 import org.jetbrains.annotations.Nullable;
 
 public class StateManager<O, S extends State<O, S>> {
-    private static final Pattern VALID_NAME_PATTERN = Pattern.compile("^[a-z0-9_]+$");
+    static final Pattern VALID_NAME_PATTERN = Pattern.compile("^[a-z0-9_]+$");
     private final O owner;
     private final ImmutableSortedMap<String, Property<?>> properties;
     private final ImmutableList<S> states;
@@ -95,6 +95,10 @@ public class StateManager<O, S extends State<O, S>> {
         return this.properties.get(name);
     }
 
+    public static interface Factory<O, S> {
+        public S create(O var1, ImmutableMap<Property<?>, Comparable<?>> var2, MapCodec<S> var3);
+    }
+
     public static class Builder<O, S extends State<O, S>> {
         private final O owner;
         private final Map<String, Property<?>> namedProperties = Maps.newHashMap();
@@ -133,10 +137,6 @@ public class StateManager<O, S extends State<O, S>> {
         public StateManager<O, S> build(Function<O, S> ownerToStateFunction, Factory<O, S> factory) {
             return new StateManager<O, S>(ownerToStateFunction, this.owner, factory, this.namedProperties);
         }
-    }
-
-    public static interface Factory<O, S> {
-        public S create(O var1, ImmutableMap<Property<?>, Comparable<?>> var2, MapCodec<S> var3);
     }
 }
 

@@ -140,8 +140,12 @@ extends Item {
     }
 
     private static int getItemOccupancy(ItemStack stack) {
+        NbtCompound nbtCompound;
         if (stack.isOf(Items.BUNDLE)) {
             return 4 + BundleItem.getBundleOccupancy(stack);
+        }
+        if ((stack.isOf(Items.BEEHIVE) || stack.isOf(Items.BEE_NEST)) && stack.hasTag() && (nbtCompound = stack.getSubTag("BlockEntityTag")) != null && !nbtCompound.getList("Bees", 10).isEmpty()) {
+            return 64;
         }
         return 64 / stack.getMaxCount();
     }

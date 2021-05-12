@@ -353,6 +353,13 @@ implements AutoCloseable {
         this.fullscreen = !this.fullscreen;
     }
 
+    public void method_36813(int i, int j) {
+        this.windowedWidth = i;
+        this.windowedHeight = j;
+        this.fullscreen = false;
+        this.updateWindowRegion();
+    }
+
     private void updateFullscreen(boolean vsync) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         try {
@@ -451,7 +458,7 @@ implements AutoCloseable {
     @Environment(value=EnvType.CLIENT)
     public static class GlErroredException
     extends GlException {
-        private GlErroredException(String string) {
+        GlErroredException(String string) {
             super(string);
         }
     }

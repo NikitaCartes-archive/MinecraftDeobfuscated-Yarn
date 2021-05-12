@@ -32,7 +32,7 @@ extends Goal {
         this.range = range;
         this.chance = chance;
         this.setControls(EnumSet.of(Goal.Control.LOOK));
-        this.targetPredicate = targetType == PlayerEntity.class ? new TargetPredicate().setBaseMaxDistance(range).includeTeammates().includeInvulnerable().ignoreEntityTargetRules().setPredicate(livingEntity -> EntityPredicates.rides(mob).test((Entity)livingEntity)) : new TargetPredicate().setBaseMaxDistance(range).includeTeammates().includeInvulnerable().ignoreEntityTargetRules();
+        this.targetPredicate = targetType == PlayerEntity.class ? TargetPredicate.createNonAttackable().setBaseMaxDistance(range).setPredicate(livingEntity -> EntityPredicates.rides(mob).test((Entity)livingEntity)) : TargetPredicate.createNonAttackable().setBaseMaxDistance(range);
     }
 
     @Override

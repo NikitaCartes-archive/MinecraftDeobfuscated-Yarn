@@ -32,9 +32,9 @@ extends Screen {
     private static final Text BUFFET_BIOME_TEXT = new TranslatableText("createWorld.customize.buffet.biome");
     private final Screen parent;
     private final Consumer<Biome> onDone;
-    private final Registry<Biome> biomeRegistry;
+    final Registry<Biome> biomeRegistry;
     private BuffetBiomesListWidget biomeSelectionList;
-    private Biome biome;
+    Biome biome;
     private ButtonWidget confirmButton;
 
     public CustomizeBuffetLevelScreen(Screen parent, DynamicRegistryManager registryManager, Consumer<Biome> onDone, Biome biome) {
@@ -60,10 +60,10 @@ extends Screen {
             this.client.openScreen(this.parent);
         }));
         this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));
-        this.biomeSelectionList.setSelected((BuffetBiomesListWidget.BuffetBiomeItem)this.biomeSelectionList.children().stream().filter(buffetBiomeItem -> Objects.equals(((BuffetBiomesListWidget.BuffetBiomeItem)buffetBiomeItem).biome, this.biome)).findFirst().orElse(null));
+        this.biomeSelectionList.setSelected((BuffetBiomesListWidget.BuffetBiomeItem)this.biomeSelectionList.children().stream().filter(buffetBiomeItem -> Objects.equals(buffetBiomeItem.biome, this.biome)).findFirst().orElse(null));
     }
 
-    private void refreshConfirmButton() {
+    void refreshConfirmButton() {
         this.confirmButton.active = this.biomeSelectionList.getSelected() != null;
     }
 
@@ -79,7 +79,7 @@ extends Screen {
     @Environment(value=EnvType.CLIENT)
     class BuffetBiomesListWidget
     extends AlwaysSelectedEntryListWidget<BuffetBiomeItem> {
-        private BuffetBiomesListWidget() {
+        BuffetBiomesListWidget() {
             super(CustomizeBuffetLevelScreen.this.client, CustomizeBuffetLevelScreen.this.width, CustomizeBuffetLevelScreen.this.height, 40, CustomizeBuffetLevelScreen.this.height - 37, 16);
             CustomizeBuffetLevelScreen.this.biomeRegistry.getEntries().stream().sorted(Comparator.comparing(entry -> ((RegistryKey)entry.getKey()).getValue().toString())).forEach(entry -> this.addEntry(new BuffetBiomeItem((Biome)entry.getValue())));
         }
@@ -102,7 +102,7 @@ extends Screen {
         @Environment(value=EnvType.CLIENT)
         class BuffetBiomeItem
         extends AlwaysSelectedEntryListWidget.Entry<BuffetBiomeItem> {
-            private final Biome biome;
+            final Biome biome;
             private final Text text;
 
             public BuffetBiomeItem(Biome biome) {

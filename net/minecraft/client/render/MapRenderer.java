@@ -5,6 +5,7 @@ package net.minecraft.client.render;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.MapColor;
@@ -28,10 +29,10 @@ import net.minecraft.util.math.Vec3f;
 public class MapRenderer
 implements AutoCloseable {
     private static final Identifier MAP_ICONS_TEXTURE = new Identifier("textures/map/map_icons.png");
-    private static final RenderLayer MAP_ICONS_RENDER_LAYER = RenderLayer.getText(MAP_ICONS_TEXTURE);
+    static final RenderLayer MAP_ICONS_RENDER_LAYER = RenderLayer.getText(MAP_ICONS_TEXTURE);
     private static final int field_32173 = 128;
     private static final int field_32174 = 128;
-    private final TextureManager textureManager;
+    final TextureManager textureManager;
     private final Int2ObjectMap<MapTexture> mapTextures = new Int2ObjectOpenHashMap<MapTexture>();
 
     public MapRenderer(TextureManager textureManager) {
@@ -69,14 +70,14 @@ implements AutoCloseable {
         private final NativeImageBackedTexture texture;
         private final RenderLayer renderLayer;
 
-        private MapTexture(int id, MapState state) {
-            this.state = state;
+        MapTexture(int i, MapState mapState) {
+            this.state = mapState;
             this.texture = new NativeImageBackedTexture(128, 128, true);
-            Identifier identifier = MapRenderer.this.textureManager.registerDynamicTexture("map/" + id, this.texture);
+            Identifier identifier = MapRenderer.this.textureManager.registerDynamicTexture("map/" + i, this.texture);
             this.renderLayer = RenderLayer.getText(identifier);
         }
 
-        private void updateTexture() {
+        void updateTexture() {
             for (int i = 0; i < 128; ++i) {
                 for (int j = 0; j < 128; ++j) {
                     int k = j + i * 128;
@@ -91,7 +92,7 @@ implements AutoCloseable {
             this.texture.upload();
         }
 
-        private void draw(MatrixStack matrices, VertexConsumerProvider vertexConsumers, boolean hidePlayerIcons, int light) {
+        void draw(MatrixStack matrices, VertexConsumerProvider vertexConsumers, boolean hidePlayerIcons, int light) {
             boolean i = false;
             boolean j = false;
             float f = 0.0f;
@@ -127,7 +128,7 @@ implements AutoCloseable {
                     Text text = mapIcon.getText();
                     float o = textRenderer.getWidth(text);
                     float f2 = 25.0f / o;
-                    textRenderer.getClass();
+                    Objects.requireNonNull(textRenderer);
                     float p = MathHelper.clamp(f2, 0.0f, 6.0f / 9.0f);
                     matrices.push();
                     matrices.translate(0.0f + (float)mapIcon.getX() / 2.0f + 64.0f - o * p / 2.0f, 0.0f + (float)mapIcon.getZ() / 2.0f + 64.0f + 4.0f, -0.025f);

@@ -56,29 +56,16 @@ public class ResourceReloadLogger {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static enum ReloadReason {
-        INITIAL("initial"),
-        MANUAL("manual"),
-        UNKNOWN("unknown");
-
-        private final String name;
-
-        private ReloadReason(String name) {
-            this.name = name;
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
     static class ReloadState {
         private final ReloadReason reason;
         private final List<String> packs;
         @Nullable
-        private RecoveryEntry recovery;
-        private boolean finished;
+        RecoveryEntry recovery;
+        boolean finished;
 
-        private ReloadState(ReloadReason reason, List<String> packs) {
-            this.reason = reason;
-            this.packs = packs;
+        ReloadState(ReloadReason reloadReason, List<String> list) {
+            this.reason = reloadReason;
+            this.packs = list;
         }
 
         public void addReloadSection(CrashReportSection section) {
@@ -92,10 +79,23 @@ public class ResourceReloadLogger {
     }
 
     @Environment(value=EnvType.CLIENT)
+    public static enum ReloadReason {
+        INITIAL("initial"),
+        MANUAL("manual"),
+        UNKNOWN("unknown");
+
+        final String name;
+
+        private ReloadReason(String name) {
+            this.name = name;
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
     static class RecoveryEntry {
         private final Throwable throwable;
 
-        private RecoveryEntry(Throwable throwable) {
+        RecoveryEntry(Throwable throwable) {
             this.throwable = throwable;
         }
 

@@ -106,7 +106,7 @@ extends IllagerEntity {
 
     protected abstract SoundEvent getCastSpellSound();
 
-    public static enum Spell {
+    protected static enum Spell {
         NONE(0, 0.0, 0.0, 0.0),
         SUMMON_VEX(1, 0.7, 0.7, 0.8),
         FANGS(2, 0.4, 0.3, 0.35),
@@ -114,8 +114,8 @@ extends IllagerEntity {
         DISAPPEAR(4, 0.3, 0.3, 0.8),
         BLINDNESS(5, 0.1, 0.1, 0.2);
 
-        private final int id;
-        private final double[] particleVelocity;
+        final int id;
+        final double[] particleVelocity;
 
         private Spell(int id, double particleVelocityX, double particleVelocityY, double particleVelocityZ) {
             this.id = id;
@@ -131,7 +131,7 @@ extends IllagerEntity {
         }
     }
 
-    public abstract class CastSpellGoal
+    protected abstract class CastSpellGoal
     extends Goal {
         protected int spellCooldown;
         protected int startTime;
@@ -194,7 +194,7 @@ extends IllagerEntity {
         protected abstract Spell getSpell();
     }
 
-    public class LookAtTargetGoal
+    protected class LookAtTargetGoal
     extends Goal {
         public LookAtTargetGoal() {
             this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));

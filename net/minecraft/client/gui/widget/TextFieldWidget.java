@@ -18,7 +18,7 @@ import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
@@ -36,7 +36,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class TextFieldWidget
-extends AbstractButtonWidget
+extends ClickableWidget
 implements Drawable,
 Element {
     public static final int field_32194 = -1;
@@ -504,8 +504,8 @@ Element {
     }
 
     @Override
-    protected void onFocusedChanged(boolean bl) {
-        if (bl) {
+    protected void onFocusedChanged(boolean newFocused) {
+        if (newFocused) {
             this.focusedTicks = 0;
         }
     }

@@ -696,6 +696,163 @@ public class GlStateManager {
     }
 
     @Environment(value=EnvType.CLIENT)
+    static class ScissorTestState {
+        public final CapabilityTracker capState = new CapabilityTracker(3089);
+
+        ScissorTestState() {
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static class CapabilityTracker {
+        private final int cap;
+        private boolean state;
+
+        public CapabilityTracker(int cap) {
+            this.cap = cap;
+        }
+
+        public void disable() {
+            this.setState(false);
+        }
+
+        public void enable() {
+            this.setState(true);
+        }
+
+        public void setState(boolean state) {
+            RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+            if (state != this.state) {
+                this.state = state;
+                if (state) {
+                    GL11.glEnable(this.cap);
+                } else {
+                    GL11.glDisable(this.cap);
+                }
+            }
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static class DepthTestState {
+        public final CapabilityTracker capState = new CapabilityTracker(2929);
+        public boolean mask = true;
+        public int func = 513;
+
+        DepthTestState() {
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static class BlendFuncState {
+        public final CapabilityTracker capState = new CapabilityTracker(3042);
+        public int srcFactorRGB = 1;
+        public int dstFactorRGB = 0;
+        public int srcFactorAlpha = 1;
+        public int dstFactorAlpha = 0;
+
+        BlendFuncState() {
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static class CullFaceState {
+        public final CapabilityTracker capState = new CapabilityTracker(2884);
+        public int mode = 1029;
+
+        CullFaceState() {
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static class PolygonOffsetState {
+        public final CapabilityTracker capFill = new CapabilityTracker(32823);
+        public final CapabilityTracker capLine = new CapabilityTracker(10754);
+        public float factor;
+        public float units;
+
+        PolygonOffsetState() {
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static class LogicOpState {
+        public final CapabilityTracker capState = new CapabilityTracker(3058);
+        public int op = 5379;
+
+        LogicOpState() {
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static class Texture2DState {
+        public boolean capState;
+        public int boundTexture;
+
+        Texture2DState() {
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static enum Viewport {
+        INSTANCE;
+
+        protected int x;
+        protected int y;
+        protected int width;
+        protected int height;
+
+        public static int getX() {
+            return Viewport.INSTANCE.x;
+        }
+
+        public static int getY() {
+            return Viewport.INSTANCE.y;
+        }
+
+        public static int getWidth() {
+            return Viewport.INSTANCE.width;
+        }
+
+        public static int getHeight() {
+            return Viewport.INSTANCE.height;
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static class ColorMask {
+        public boolean red = true;
+        public boolean green = true;
+        public boolean blue = true;
+        public boolean alpha = true;
+
+        ColorMask() {
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static class StencilState {
+        public final StencilSubState subState = new StencilSubState();
+        public int mask = -1;
+        public int sfail = 7680;
+        public int dpfail = 7680;
+        public int dppass = 7680;
+
+        StencilState() {
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static class StencilSubState {
+        public int func = 519;
+        public int ref;
+        public int mask = -1;
+
+        StencilSubState() {
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
     @DeobfuscateClass
     public static enum DstFactor {
         CONSTANT_ALPHA(32771),
@@ -743,163 +900,6 @@ public class GlStateManager {
 
         private SrcFactor(int j) {
             this.value = j;
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static class CapabilityTracker {
-        private final int cap;
-        private boolean state;
-
-        public CapabilityTracker(int cap) {
-            this.cap = cap;
-        }
-
-        public void disable() {
-            this.setState(false);
-        }
-
-        public void enable() {
-            this.setState(true);
-        }
-
-        public void setState(boolean state) {
-            RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-            if (state != this.state) {
-                this.state = state;
-                if (state) {
-                    GL11.glEnable(this.cap);
-                } else {
-                    GL11.glDisable(this.cap);
-                }
-            }
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static class ColorMask {
-        public boolean red = true;
-        public boolean green = true;
-        public boolean blue = true;
-        public boolean alpha = true;
-
-        private ColorMask() {
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static class ScissorTestState {
-        public final CapabilityTracker capState = new CapabilityTracker(3089);
-
-        private ScissorTestState() {
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static class StencilState {
-        public final StencilSubState subState = new StencilSubState();
-        public int mask = -1;
-        public int sfail = 7680;
-        public int dpfail = 7680;
-        public int dppass = 7680;
-
-        private StencilState() {
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static class StencilSubState {
-        public int func = 519;
-        public int ref;
-        public int mask = -1;
-
-        private StencilSubState() {
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static class LogicOpState {
-        public final CapabilityTracker capState = new CapabilityTracker(3058);
-        public int op = 5379;
-
-        private LogicOpState() {
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static class PolygonOffsetState {
-        public final CapabilityTracker capFill = new CapabilityTracker(32823);
-        public final CapabilityTracker capLine = new CapabilityTracker(10754);
-        public float factor;
-        public float units;
-
-        private PolygonOffsetState() {
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static class CullFaceState {
-        public final CapabilityTracker capState = new CapabilityTracker(2884);
-        public int mode = 1029;
-
-        private CullFaceState() {
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static class DepthTestState {
-        public final CapabilityTracker capState = new CapabilityTracker(2929);
-        public boolean mask = true;
-        public int func = 513;
-
-        private DepthTestState() {
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static class BlendFuncState {
-        public final CapabilityTracker capState = new CapabilityTracker(3042);
-        public int srcFactorRGB = 1;
-        public int dstFactorRGB = 0;
-        public int srcFactorAlpha = 1;
-        public int dstFactorAlpha = 0;
-
-        private BlendFuncState() {
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static class Texture2DState {
-        public boolean capState;
-        public int boundTexture;
-
-        private Texture2DState() {
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public static enum Viewport {
-        INSTANCE;
-
-        protected int x;
-        protected int y;
-        protected int width;
-        protected int height;
-
-        public static int getX() {
-            return Viewport.INSTANCE.x;
-        }
-
-        public static int getY() {
-            return Viewport.INSTANCE.y;
-        }
-
-        public static int getWidth() {
-            return Viewport.INSTANCE.width;
-        }
-
-        public static int getHeight() {
-            return Viewport.INSTANCE.height;
         }
     }
 

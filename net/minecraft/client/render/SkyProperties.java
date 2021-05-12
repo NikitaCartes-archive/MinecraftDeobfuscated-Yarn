@@ -95,27 +95,11 @@ public abstract class SkyProperties {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static class End
-    extends SkyProperties {
-        public End() {
-            super(Float.NaN, false, SkyType.END, true, false);
-        }
+    public static enum SkyType {
+        NONE,
+        NORMAL,
+        END;
 
-        @Override
-        public Vec3d adjustFogColor(Vec3d color, float sunHeight) {
-            return color.multiply(0.15f);
-        }
-
-        @Override
-        public boolean useThickFog(int camX, int camY) {
-            return false;
-        }
-
-        @Override
-        @Nullable
-        public float[] getFogColorOverride(float skyAngle, float tickDelta) {
-            return null;
-        }
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -157,11 +141,27 @@ public abstract class SkyProperties {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static enum SkyType {
-        NONE,
-        NORMAL,
-        END;
+    public static class End
+    extends SkyProperties {
+        public End() {
+            super(Float.NaN, false, SkyType.END, true, false);
+        }
 
+        @Override
+        public Vec3d adjustFogColor(Vec3d color, float sunHeight) {
+            return color.multiply(0.15f);
+        }
+
+        @Override
+        public boolean useThickFog(int camX, int camY) {
+            return false;
+        }
+
+        @Override
+        @Nullable
+        public float[] getFogColorOverride(float skyAngle, float tickDelta) {
+            return null;
+        }
     }
 }
 

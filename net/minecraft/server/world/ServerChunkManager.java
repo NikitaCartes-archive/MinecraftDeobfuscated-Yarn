@@ -62,9 +62,9 @@ extends ChunkManager {
     private static final List<ChunkStatus> CHUNK_STATUSES = ChunkStatus.createOrderedList();
     private final ChunkTicketManager ticketManager;
     private final ChunkGenerator chunkGenerator;
-    private final ServerWorld world;
-    private final Thread serverThread;
-    private final ServerLightingProvider lightProvider;
+    final ServerWorld world;
+    final Thread serverThread;
+    final ServerLightingProvider lightProvider;
     private final MainThreadExecutor mainThreadExecutor;
     public final ThreadedAnvilChunkStorage threadedAnvilChunkStorage;
     private final PersistentStateManager persistentStateManager;
@@ -260,7 +260,7 @@ extends ChunkManager {
         return this.mainThreadExecutor.runTask();
     }
 
-    private boolean tick() {
+    boolean tick() {
         boolean bl = this.ticketManager.tick(this.threadedAnvilChunkStorage);
         boolean bl2 = this.threadedAnvilChunkStorage.updateHolderMap();
         if (bl || bl2) {
@@ -501,7 +501,7 @@ extends ChunkManager {
 
     final class MainThreadExecutor
     extends ThreadExecutor<Runnable> {
-        private MainThreadExecutor(World world) {
+        MainThreadExecutor(World world) {
             super("Chunk source main thread executor for " + world.getRegistryKey().getValue());
         }
 

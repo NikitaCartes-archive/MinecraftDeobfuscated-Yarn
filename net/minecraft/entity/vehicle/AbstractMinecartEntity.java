@@ -37,7 +37,6 @@ import net.minecraft.entity.vehicle.HopperMinecartEntity;
 import net.minecraft.entity.vehicle.MinecartEntity;
 import net.minecraft.entity.vehicle.SpawnerMinecartEntity;
 import net.minecraft.entity.vehicle.TntMinecartEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -813,33 +812,14 @@ extends Entity {
 
     @Override
     public ItemStack getPickBlockStack() {
-        Item item;
-        switch (this.getMinecartType()) {
-            case FURNACE: {
-                item = Items.FURNACE_MINECART;
-                break;
-            }
-            case CHEST: {
-                item = Items.CHEST_MINECART;
-                break;
-            }
-            case TNT: {
-                item = Items.TNT_MINECART;
-                break;
-            }
-            case HOPPER: {
-                item = Items.HOPPER_MINECART;
-                break;
-            }
-            case COMMAND_BLOCK: {
-                item = Items.COMMAND_BLOCK_MINECART;
-                break;
-            }
-            default: {
-                item = Items.MINECART;
-            }
-        }
-        return new ItemStack(item);
+        return new ItemStack(switch (this.getMinecartType()) {
+            case Type.FURNACE -> Items.FURNACE_MINECART;
+            case Type.CHEST -> Items.CHEST_MINECART;
+            case Type.TNT -> Items.TNT_MINECART;
+            case Type.HOPPER -> Items.HOPPER_MINECART;
+            case Type.COMMAND_BLOCK -> Items.COMMAND_BLOCK_MINECART;
+            default -> Items.MINECART;
+        });
     }
 
     public static enum Type {

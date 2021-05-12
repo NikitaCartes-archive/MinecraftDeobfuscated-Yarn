@@ -109,12 +109,12 @@ public class TutorialManager {
      * @param toast the tutorial toast
      */
     public void remove(TutorialToast toast) {
-        this.entries.removeIf(entry -> ((Entry)entry).toast == toast);
+        this.entries.removeIf(entry -> entry.toast == toast);
         toast.hide();
     }
 
     public void tick() {
-        this.entries.removeIf(entry -> ((Entry)entry).tick());
+        this.entries.removeIf(Entry::tick);
         if (this.currentHandler != null) {
             if (this.client.world != null) {
                 this.currentHandler.tick();
@@ -165,13 +165,13 @@ public class TutorialManager {
 
     @Environment(value=EnvType.CLIENT)
     static final class Entry {
-        private final TutorialToast toast;
+        final TutorialToast toast;
         private final int expiry;
         private int age;
 
-        private Entry(TutorialToast toast, int expiry) {
-            this.toast = toast;
-            this.expiry = expiry;
+        Entry(TutorialToast tutorialToast, int i) {
+            this.toast = tutorialToast;
+            this.expiry = i;
         }
 
         private boolean tick() {

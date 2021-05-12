@@ -15,7 +15,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class UsedEnderEyeCriterion
 extends AbstractCriterion<Conditions> {
-    private static final Identifier ID = new Identifier("used_ender_eye");
+    static final Identifier ID = new Identifier("used_ender_eye");
 
     @Override
     public Identifier getId() {

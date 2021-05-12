@@ -13,6 +13,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Locale;
 import java.util.Set;
 import net.minecraft.command.argument.DefaultPosArgument;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
@@ -90,11 +91,15 @@ public class TeleportCommand {
             TeleportCommand.teleport(source, entity, world, vec3d.x, vec3d.y, vec3d.z, set, vec2f.y, vec2f.x, facingLocation);
         }
         if (targets.size() == 1) {
-            source.sendFeedback(new TranslatableText("commands.teleport.success.location.single", targets.iterator().next().getDisplayName(), vec3d.x, vec3d.y, vec3d.z), true);
+            source.sendFeedback(new TranslatableText("commands.teleport.success.location.single", targets.iterator().next().getDisplayName(), TeleportCommand.formatFloat(vec3d.x), TeleportCommand.formatFloat(vec3d.y), TeleportCommand.formatFloat(vec3d.z)), true);
         } else {
-            source.sendFeedback(new TranslatableText("commands.teleport.success.location.multiple", targets.size(), vec3d.x, vec3d.y, vec3d.z), true);
+            source.sendFeedback(new TranslatableText("commands.teleport.success.location.multiple", targets.size(), TeleportCommand.formatFloat(vec3d.x), TeleportCommand.formatFloat(vec3d.y), TeleportCommand.formatFloat(vec3d.z)), true);
         }
         return targets.size();
+    }
+
+    private static String formatFloat(double d) {
+        return String.format(Locale.ROOT, "%f", d);
     }
 
     private static void teleport(ServerCommandSource source, Entity target, ServerWorld world, double x, double y, double z, Set<PlayerPositionLookS2CPacket.Flag> movementFlags, float yaw, float pitch, @Nullable LookTarget facingLocation) throws CommandSyntaxException {

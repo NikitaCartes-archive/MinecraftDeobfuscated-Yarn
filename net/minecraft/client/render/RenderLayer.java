@@ -243,7 +243,7 @@ extends RenderPhase {
     }
 
     public static RenderLayer getOutline(Identifier texture) {
-        return (RenderLayer)MultiPhase.CULLING_LAYERS.apply(texture, DISABLE_CULLING);
+        return MultiPhase.CULLING_LAYERS.apply(texture, DISABLE_CULLING);
     }
 
     public static RenderLayer getArmorGlint() {
@@ -332,7 +332,7 @@ extends RenderPhase {
         this.optionalThis = Optional.of(this);
     }
 
-    private static MultiPhase of(String name, VertexFormat vertexFormat, VertexFormat.DrawMode drawMode, int expectedBufferSize, MultiPhaseParameters phaseData) {
+    static MultiPhase of(String name, VertexFormat vertexFormat, VertexFormat.DrawMode drawMode, int expectedBufferSize, MultiPhaseParameters phaseData) {
         return RenderLayer.of(name, vertexFormat, drawMode, expectedBufferSize, false, false, phaseData);
     }
 
@@ -391,47 +391,12 @@ extends RenderPhase {
     }
 
     @Environment(value=EnvType.CLIENT)
-    static final class MultiPhase
-    extends RenderLayer {
-        private static final BiFunction<Identifier, RenderPhase.Cull, RenderLayer> CULLING_LAYERS = Util.memoize((texture, culling) -> RenderLayer.method_34828("outline", VertexFormats.POSITION_COLOR_TEXTURE, VertexFormat.DrawMode.QUADS, 256, MultiPhaseParameters.builder().shader(MultiPhase.OUTLINE_SHADER).texture(new RenderPhase.Texture((Identifier)texture, false, false)).cull((RenderPhase.Cull)culling).depthTest(MultiPhase.ALWAYS_DEPTH_TEST).target(MultiPhase.OUTLINE_TARGET).build(OutlineMode.IS_OUTLINE)));
-        private final MultiPhaseParameters phases;
-        private final Optional<RenderLayer> affectedOutline;
-        private final boolean outline;
-
-        private MultiPhase(String name, VertexFormat vertexFormat, VertexFormat.DrawMode drawMode, int expectedBufferSize, boolean hasCrumbling, boolean translucent, MultiPhaseParameters phases) {
-            super(name, vertexFormat, drawMode, expectedBufferSize, hasCrumbling, translucent, () -> phases.phases.forEach(RenderPhase::startDrawing), () -> phases.phases.forEach(RenderPhase::endDrawing));
-            this.phases = phases;
-            this.affectedOutline = phases.outlineMode == OutlineMode.AFFECTS_OUTLINE ? phases.texture.getId().map(texture -> CULLING_LAYERS.apply((Identifier)texture, phases.cull)) : Optional.empty();
-            this.outline = phases.outlineMode == OutlineMode.IS_OUTLINE;
-        }
-
-        @Override
-        public Optional<RenderLayer> getAffectedOutline() {
-            return this.affectedOutline;
-        }
-
-        @Override
-        public boolean isOutline() {
-            return this.outline;
-        }
-
-        protected final MultiPhaseParameters getPhases() {
-            return this.phases;
-        }
-
-        @Override
-        public String toString() {
-            return "RenderType[" + this.name + ":" + this.phases + ']';
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public static final class MultiPhaseParameters {
-        private final RenderPhase.TextureBase texture;
+    protected static final class MultiPhaseParameters {
+        final RenderPhase.TextureBase texture;
         private final RenderPhase.Shader shader;
         private final RenderPhase.Transparency transparency;
         private final RenderPhase.DepthTest depthTest;
-        private final RenderPhase.Cull cull;
+        final RenderPhase.Cull cull;
         private final RenderPhase.Lightmap lightmap;
         private final RenderPhase.Overlay overlay;
         private final RenderPhase.Layering layering;
@@ -439,11 +404,11 @@ extends RenderPhase {
         private final RenderPhase.Texturing texturing;
         private final RenderPhase.WriteMaskState writeMaskState;
         private final RenderPhase.LineWidth lineWidth;
-        private final OutlineMode outlineMode;
-        private final ImmutableList<RenderPhase> phases;
+        final OutlineMode outlineMode;
+        final ImmutableList<RenderPhase> phases;
 
-        private MultiPhaseParameters(RenderPhase.TextureBase texture, RenderPhase.Shader shader, RenderPhase.Transparency transparency, RenderPhase.DepthTest depthTest, RenderPhase.Cull cull, RenderPhase.Lightmap lightmap, RenderPhase.Overlay overlay, RenderPhase.Layering layering, RenderPhase.Target target, RenderPhase.Texturing texturing, RenderPhase.WriteMaskState writeMaskState, RenderPhase.LineWidth lineWidth, OutlineMode outlineMode) {
-            this.texture = texture;
+        MultiPhaseParameters(RenderPhase.TextureBase textureBase, RenderPhase.Shader shader, RenderPhase.Transparency transparency, RenderPhase.DepthTest depthTest, RenderPhase.Cull cull, RenderPhase.Lightmap lightmap, RenderPhase.Overlay overlay, RenderPhase.Layering layering, RenderPhase.Target target, RenderPhase.Texturing texturing, RenderPhase.WriteMaskState writeMaskState, RenderPhase.LineWidth lineWidth, OutlineMode outlineMode) {
+            this.texture = textureBase;
             this.shader = shader;
             this.transparency = transparency;
             this.depthTest = depthTest;
@@ -460,7 +425,7 @@ extends RenderPhase {
         }
 
         public String toString() {
-            return "CompositeState[" + this.phases + ", outlineProperty=" + (Object)((Object)this.outlineMode) + ']';
+            return "CompositeState[" + this.phases + ", outlineProperty=" + this.outlineMode + "]";
         }
 
         public static Builder builder() {
@@ -482,7 +447,7 @@ extends RenderPhase {
             private RenderPhase.WriteMaskState writeMaskState = RenderPhase.ALL_MASK;
             private RenderPhase.LineWidth lineWidth = RenderPhase.FULL_LINE_WIDTH;
 
-            private Builder() {
+            Builder() {
             }
 
             public Builder texture(RenderPhase.TextureBase texture) {
@@ -552,6 +517,41 @@ extends RenderPhase {
             public MultiPhaseParameters build(OutlineMode outlineMode) {
                 return new MultiPhaseParameters(this.texture, this.shader, this.transparency, this.depthTest, this.cull, this.lightmap, this.overlay, this.layering, this.target, this.texturing, this.writeMaskState, this.lineWidth, outlineMode);
             }
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static final class MultiPhase
+    extends RenderLayer {
+        static final BiFunction<Identifier, RenderPhase.Cull, RenderLayer> CULLING_LAYERS = Util.memoize((texture, culling) -> RenderLayer.of("outline", VertexFormats.POSITION_COLOR_TEXTURE, VertexFormat.DrawMode.QUADS, 256, MultiPhaseParameters.builder().shader(OUTLINE_SHADER).texture(new RenderPhase.Texture((Identifier)texture, false, false)).cull((RenderPhase.Cull)culling).depthTest(ALWAYS_DEPTH_TEST).target(OUTLINE_TARGET).build(OutlineMode.IS_OUTLINE)));
+        private final MultiPhaseParameters phases;
+        private final Optional<RenderLayer> affectedOutline;
+        private final boolean outline;
+
+        MultiPhase(String string, VertexFormat vertexFormat, VertexFormat.DrawMode drawMode, int i, boolean bl, boolean bl2, MultiPhaseParameters multiPhaseParameters) {
+            super(string, vertexFormat, drawMode, i, bl, bl2, () -> multiPhaseParameters.phases.forEach(RenderPhase::startDrawing), () -> multiPhaseParameters.phases.forEach(RenderPhase::endDrawing));
+            this.phases = multiPhaseParameters;
+            this.affectedOutline = multiPhaseParameters.outlineMode == OutlineMode.AFFECTS_OUTLINE ? multiPhaseParameters.texture.getId().map(texture -> CULLING_LAYERS.apply((Identifier)texture, multiPhaseParameters.cull)) : Optional.empty();
+            this.outline = multiPhaseParameters.outlineMode == OutlineMode.IS_OUTLINE;
+        }
+
+        @Override
+        public Optional<RenderLayer> getAffectedOutline() {
+            return this.affectedOutline;
+        }
+
+        @Override
+        public boolean isOutline() {
+            return this.outline;
+        }
+
+        protected final MultiPhaseParameters getPhases() {
+            return this.phases;
+        }
+
+        @Override
+        public String toString() {
+            return "RenderType[" + this.name + ":" + this.phases + "]";
         }
     }
 

@@ -77,28 +77,6 @@ implements ArgumentType<ItemPredicateArgument> {
         return this.parse(stringReader);
     }
 
-    static class TagPredicate
-    implements Predicate<ItemStack> {
-        private final Tag<Item> tag;
-        @Nullable
-        private final NbtCompound compound;
-
-        public TagPredicate(Tag<Item> tag, @Nullable NbtCompound nbt) {
-            this.tag = tag;
-            this.compound = nbt;
-        }
-
-        @Override
-        public boolean test(ItemStack itemStack) {
-            return itemStack.isIn(this.tag) && NbtHelper.matches(this.compound, itemStack.getTag(), true);
-        }
-
-        @Override
-        public /* synthetic */ boolean test(Object context) {
-            return this.test((ItemStack)context);
-        }
-    }
-
     static class ItemPredicate
     implements Predicate<ItemStack> {
         private final Item item;
@@ -123,6 +101,28 @@ implements ArgumentType<ItemPredicateArgument> {
 
     public static interface ItemPredicateArgument {
         public Predicate<ItemStack> create(CommandContext<ServerCommandSource> var1) throws CommandSyntaxException;
+    }
+
+    static class TagPredicate
+    implements Predicate<ItemStack> {
+        private final Tag<Item> tag;
+        @Nullable
+        private final NbtCompound compound;
+
+        public TagPredicate(Tag<Item> tag, @Nullable NbtCompound nbt) {
+            this.tag = tag;
+            this.compound = nbt;
+        }
+
+        @Override
+        public boolean test(ItemStack itemStack) {
+            return itemStack.isIn(this.tag) && NbtHelper.matches(this.compound, itemStack.getTag(), true);
+        }
+
+        @Override
+        public /* synthetic */ boolean test(Object context) {
+            return this.test((ItemStack)context);
+        }
     }
 }
 

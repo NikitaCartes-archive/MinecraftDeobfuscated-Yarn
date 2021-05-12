@@ -90,7 +90,7 @@ extends Block {
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (!AbstractLichenBlock.hasAnyDirection(state)) {
-            return state.contains(Properties.WATERLOGGED) && state.get(Properties.WATERLOGGED) != false ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState();
+            return Blocks.AIR.getDefaultState();
         }
         if (!AbstractLichenBlock.hasDirection(state, direction) || AbstractLichenBlock.canGrowOn(world, direction, neighborPos, neighborState)) {
             return state;
@@ -264,7 +264,7 @@ extends Block {
         if (AbstractLichenBlock.hasAnyDirection(blockState)) {
             return blockState;
         }
-        return state.contains(Properties.WATERLOGGED) && state.get(Properties.WATERLOGGED) != false ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState();
+        return Blocks.AIR.getDefaultState();
     }
 
     public static BooleanProperty getProperty(Direction direction) {

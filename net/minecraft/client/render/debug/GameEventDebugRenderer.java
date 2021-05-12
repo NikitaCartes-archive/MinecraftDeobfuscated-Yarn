@@ -136,23 +136,6 @@ implements DebugRenderer.Renderer {
     }
 
     @Environment(value=EnvType.CLIENT)
-    static class Entry {
-        public final long startingMs;
-        public final GameEvent event;
-        public final Vec3d pos;
-
-        public Entry(long startingMs, GameEvent event, Vec3d pos) {
-            this.startingMs = startingMs;
-            this.event = event;
-            this.pos = pos;
-        }
-
-        public boolean hasExpired() {
-            return Util.getMeasuringTimeMs() - this.startingMs > 3000L;
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
     static class Listener
     implements GameEventListener {
         public final PositionSource positionSource;
@@ -185,6 +168,23 @@ implements DebugRenderer.Renderer {
         @Override
         public boolean listen(World world, GameEvent event, @Nullable Entity entity, BlockPos pos) {
             return false;
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static class Entry {
+        public final long startingMs;
+        public final GameEvent event;
+        public final Vec3d pos;
+
+        public Entry(long startingMs, GameEvent event, Vec3d pos) {
+            this.startingMs = startingMs;
+            this.event = event;
+            this.pos = pos;
+        }
+
+        public boolean hasExpired() {
+            return Util.getMeasuringTimeMs() - this.startingMs > 3000L;
         }
     }
 }

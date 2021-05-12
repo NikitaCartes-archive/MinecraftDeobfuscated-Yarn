@@ -32,7 +32,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class HoverEvent {
-    private static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogManager.getLogger();
     private final Action<?> action;
     private final Object contents;
 
@@ -48,7 +48,7 @@ public class HoverEvent {
     @Nullable
     public <T> T getValue(Action<T> action) {
         if (this.action == action) {
-            return (T)((Action)action).cast(this.contents);
+            return action.cast(this.contents);
         }
         return null;
     }
@@ -65,7 +65,7 @@ public class HoverEvent {
     }
 
     public String toString() {
-        return "HoverEvent{action=" + this.action + ", value='" + this.contents + '\'' + '}';
+        return "HoverEvent{action=" + this.action + ", value='" + this.contents + "'}";
     }
 
     public int hashCode() {
@@ -104,7 +104,7 @@ public class HoverEvent {
 
     public static class Action<T> {
         public static final Action<Text> SHOW_TEXT = new Action<Text>("show_text", true, Text.Serializer::fromJson, Text.Serializer::toJsonTree, Function.identity());
-        public static final Action<ItemStackContent> SHOW_ITEM = new Action<ItemStackContent>("show_item", true, json -> ItemStackContent.method_27684(json), object -> ItemStackContent.method_27686((ItemStackContent)object), text -> ItemStackContent.method_27685(text));
+        public static final Action<ItemStackContent> SHOW_ITEM = new Action<ItemStackContent>("show_item", true, ItemStackContent::parse, ItemStackContent::toJson, ItemStackContent::parse);
         public static final Action<EntityContent> SHOW_ENTITY = new Action<EntityContent>("show_entity", true, EntityContent::parse, EntityContent::toJson, EntityContent::parse);
         private static final Map<String, Action<?>> BY_NAME = Stream.of(SHOW_TEXT, SHOW_ITEM, SHOW_ENTITY).collect(ImmutableMap.toImmutableMap(Action::getName, action -> action));
         private final String name;
@@ -134,7 +134,7 @@ public class HoverEvent {
             return BY_NAME.get(name);
         }
 
-        private T cast(Object o) {
+        T cast(Object o) {
             return (T)o;
         }
 

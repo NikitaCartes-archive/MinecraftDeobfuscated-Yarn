@@ -21,7 +21,7 @@ extends AlwaysSelectedEntryListWidget<E> {
         if (index == -1) {
             this.setSelected(null);
         } else if (super.getEntryCount() != 0) {
-            this.setSelected(this.getEntry(index));
+            this.setSelected((AlwaysSelectedEntryListWidget.Entry)this.getEntry(index));
         }
     }
 

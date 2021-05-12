@@ -66,7 +66,7 @@ implements RangedAttackMob {
     private static final TrackedData<Integer> STRENGTH = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> CARPET_COLOR = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> VARIANT = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private boolean spit;
+    boolean spit;
     @Nullable
     private LlamaEntity following;
     @Nullable
@@ -399,7 +399,7 @@ implements RangedAttackMob {
         this.spit = true;
     }
 
-    private void setSpit(boolean spit) {
+    void setSpit(boolean spit) {
         this.spit = spit;
     }
 
@@ -478,6 +478,25 @@ implements RangedAttackMob {
         return this.createChild(world, entity);
     }
 
+    static class SpitRevengeGoal
+    extends RevengeGoal {
+        public SpitRevengeGoal(LlamaEntity llama) {
+            super(llama, new Class[0]);
+        }
+
+        @Override
+        public boolean shouldContinue() {
+            if (this.mob instanceof LlamaEntity) {
+                LlamaEntity llamaEntity = (LlamaEntity)this.mob;
+                if (llamaEntity.spit) {
+                    llamaEntity.setSpit(false);
+                    return false;
+                }
+            }
+            return super.shouldContinue();
+        }
+    }
+
     static class ChaseWolvesGoal
     extends FollowTargetGoal<WolfEntity> {
         public ChaseWolvesGoal(LlamaEntity llama) {
@@ -490,30 +509,13 @@ implements RangedAttackMob {
         }
     }
 
-    static class SpitRevengeGoal
-    extends RevengeGoal {
-        public SpitRevengeGoal(LlamaEntity llama) {
-            super(llama, new Class[0]);
-        }
-
-        @Override
-        public boolean shouldContinue() {
-            LlamaEntity llamaEntity;
-            if (this.mob instanceof LlamaEntity && (llamaEntity = (LlamaEntity)this.mob).spit) {
-                llamaEntity.setSpit(false);
-                return false;
-            }
-            return super.shouldContinue();
-        }
-    }
-
     static class LlamaData
     extends PassiveEntity.PassiveData {
         public final int variant;
 
-        private LlamaData(int variant) {
+        LlamaData(int i) {
             super(true);
-            this.variant = variant;
+            this.variant = i;
         }
     }
 }

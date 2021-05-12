@@ -15,7 +15,7 @@ import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
@@ -32,18 +32,19 @@ public class RecipeAlternativesWidget
 extends DrawableHelper
 implements Drawable,
 Element {
-    private static final Identifier BACKGROUND_TEXTURE = new Identifier("textures/gui/recipe_book.png");
+    static final Identifier BACKGROUND_TEXTURE = new Identifier("textures/gui/recipe_book.png");
     private static final int field_32406 = 4;
     private static final int field_32407 = 5;
+    private static final float field_33739 = 0.375f;
     private final List<AlternativeButtonWidget> alternativeButtons = Lists.newArrayList();
     private boolean visible;
     private int buttonX;
     private int buttonY;
-    private MinecraftClient client;
+    MinecraftClient client;
     private RecipeResultCollection resultCollection;
     private Recipe<?> lastClickedRecipe;
-    private float time;
-    private boolean furnace;
+    float time;
+    boolean furnace;
 
     public void showAlternativesForResult(MinecraftClient client, RecipeResultCollection results, int buttonX, int buttonY, int areaCenterX, int areaCenterY, float delta) {
         float p;
@@ -184,10 +185,24 @@ Element {
     }
 
     @Environment(value=EnvType.CLIENT)
+    class FurnaceAlternativeButtonWidget
+    extends AlternativeButtonWidget {
+        public FurnaceAlternativeButtonWidget(int i, int j, Recipe<?> recipe, boolean bl) {
+            super(i, j, recipe, bl);
+        }
+
+        @Override
+        protected void alignRecipe(Recipe<?> recipe) {
+            ItemStack[] itemStacks = recipe.getIngredients().get(0).getMatchingStacksClient();
+            this.slots.add(new AlternativeButtonWidget.InputSlot(10, 10, itemStacks));
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
     class AlternativeButtonWidget
-    extends AbstractButtonWidget
+    extends ClickableWidget
     implements RecipeGridAligner<Ingredient> {
-        private final Recipe<?> recipe;
+        final Recipe<?> recipe;
         private final boolean craftable;
         protected final List<InputSlot> slots;
 
@@ -226,23 +241,24 @@ Element {
                 j += 26;
             }
             this.drawTexture(matrices, this.x, this.y, i, j, this.width, this.height);
-            float f = 0.42f;
             MatrixStack matrixStack = RenderSystem.getModelViewStack();
             matrixStack.push();
-            matrixStack.translate(0.0, 0.0, 125.0);
-            matrixStack.scale(0.42f, 0.42f, 1.0f);
-            RenderSystem.applyModelViewMatrix();
+            matrixStack.translate(this.x + 2, this.y + 2, 125.0);
             for (InputSlot inputSlot : this.slots) {
-                int k = (int)((float)(this.x + inputSlot.y) / 0.42f - 3.0f);
-                int l = (int)((float)(this.y + inputSlot.x) / 0.42f - 3.0f);
-                RecipeAlternativesWidget.this.client.getItemRenderer().renderInGuiWithOverrides(inputSlot.stacks[MathHelper.floor(RecipeAlternativesWidget.this.time / 30.0f) % inputSlot.stacks.length], k, l);
+                matrixStack.push();
+                matrixStack.translate(inputSlot.y, inputSlot.x, 0.0);
+                matrixStack.scale(0.375f, 0.375f, 1.0f);
+                matrixStack.translate(-8.0, -8.0, 0.0);
+                RenderSystem.applyModelViewMatrix();
+                RecipeAlternativesWidget.this.client.getItemRenderer().renderInGuiWithOverrides(inputSlot.stacks[MathHelper.floor(RecipeAlternativesWidget.this.time / 30.0f) % inputSlot.stacks.length], 0, 0);
+                matrixStack.pop();
             }
             matrixStack.pop();
             RenderSystem.applyModelViewMatrix();
         }
 
         @Environment(value=EnvType.CLIENT)
-        public class InputSlot {
+        protected class InputSlot {
             public final ItemStack[] stacks;
             public final int y;
             public final int x;
@@ -252,20 +268,6 @@ Element {
                 this.x = x;
                 this.stacks = stacks;
             }
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    class FurnaceAlternativeButtonWidget
-    extends AlternativeButtonWidget {
-        public FurnaceAlternativeButtonWidget(int i, int j, Recipe<?> recipe, boolean bl) {
-            super(i, j, recipe, bl);
-        }
-
-        @Override
-        protected void alignRecipe(Recipe<?> recipe) {
-            ItemStack[] itemStacks = recipe.getIngredients().get(0).getMatchingStacksClient();
-            this.slots.add(new AlternativeButtonWidget.InputSlot(10, 10, itemStacks));
         }
     }
 }

@@ -22,7 +22,7 @@ public class EulerAngle {
         this(serialized.getFloat(0), serialized.getFloat(1), serialized.getFloat(2));
     }
 
-    public NbtList serialize() {
+    public NbtList toNbt() {
         NbtList nbtList = new NbtList();
         nbtList.add(NbtFloat.of(this.pitch));
         nbtList.add(NbtFloat.of(this.yaw));

@@ -54,14 +54,14 @@ implements NamedScreenHandlerFactory {
     public static final int field_31302 = 2;
     public static final int field_31303 = 3;
     private static final int field_31305 = 10;
-    private List<BeamSegment> beamSegments = Lists.newArrayList();
+    List<BeamSegment> beamSegments = Lists.newArrayList();
     private List<BeamSegment> field_19178 = Lists.newArrayList();
-    private int level;
+    int level;
     private int minY;
     @Nullable
-    private StatusEffect primary;
+    StatusEffect primary;
     @Nullable
-    private StatusEffect secondary;
+    StatusEffect secondary;
     @Nullable
     private Text customName;
     private ContainerLock lock = ContainerLock.EMPTY;
@@ -259,7 +259,7 @@ implements NamedScreenHandlerFactory {
     }
 
     @Nullable
-    private static StatusEffect getPotionEffectById(int id) {
+    static StatusEffect getPotionEffectById(int id) {
         StatusEffect statusEffect = StatusEffect.byRawId(id);
         return EFFECTS.contains(statusEffect) ? statusEffect : null;
     }
@@ -313,7 +313,7 @@ implements NamedScreenHandlerFactory {
     }
 
     public static class BeamSegment {
-        private final float[] color;
+        final float[] color;
         private int height;
 
         public BeamSegment(float[] color) {

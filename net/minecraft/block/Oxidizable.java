@@ -19,7 +19,7 @@ extends Degradable<OxidizationLevel> {
     public static final Supplier<BiMap<Block, Block>> OXIDATION_LEVEL_DECREASES = Suppliers.memoize(() -> OXIDATION_LEVEL_INCREASES.get().inverse());
 
     public static Optional<Block> getDecreasedOxidationBlock(Block block) {
-        return Optional.ofNullable(OXIDATION_LEVEL_DECREASES.get().get(block));
+        return Optional.ofNullable((Block)OXIDATION_LEVEL_DECREASES.get().get(block));
     }
 
     public static Block getUnaffectedOxidationBlock(Block block) {
@@ -37,7 +37,7 @@ extends Degradable<OxidizationLevel> {
     }
 
     public static Optional<Block> getIncreasedOxidationBlock(Block block) {
-        return Optional.ofNullable(OXIDATION_LEVEL_INCREASES.get().get(block));
+        return Optional.ofNullable((Block)OXIDATION_LEVEL_INCREASES.get().get(block));
     }
 
     public static BlockState getUnaffectedOxidationState(BlockState state) {

@@ -50,7 +50,7 @@ implements BlockEntityRenderer<BeaconBlockEntity> {
         int i = yOffset + maxY;
         matrices.push();
         matrices.translate(0.5, 0.0, 0.5);
-        float f = (float)Math.floorMod(worldTime, 40L) + tickDelta;
+        float f = (float)Math.floorMod(worldTime, 40) + tickDelta;
         float g = maxY < 0 ? f : -f;
         float h = MathHelper.fractionalPart(g * 0.2f - (float)MathHelper.floor(g * 0.1f));
         float j = color[0];

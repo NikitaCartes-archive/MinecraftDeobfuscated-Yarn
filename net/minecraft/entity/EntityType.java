@@ -428,7 +428,7 @@ implements TypeFilter<Entity, T> {
         return this.getTranslationKey();
     }
 
-    public String method_35050() {
+    public String getUntranslatedName() {
         int i = this.getTranslationKey().lastIndexOf(46);
         return i == -1 ? this.getTranslationKey() : this.getTranslationKey().substring(i + 1);
     }
@@ -584,10 +584,6 @@ implements TypeFilter<Entity, T> {
         return Entity.class;
     }
 
-    public static interface EntityFactory<T extends Entity> {
-        public T create(EntityType<T> var1, World var2);
-    }
-
     public static class Builder<T extends Entity> {
         private final EntityFactory<T> factory;
         private final SpawnGroup spawnGroup;
@@ -660,6 +656,10 @@ implements TypeFilter<Entity, T> {
             }
             return new EntityType<T>(this.factory, this.spawnGroup, this.saveable, this.summonable, this.fireImmune, this.spawnableFarFromPlayer, this.canSpawnInside, this.dimensions, this.maxTrackingRange, this.trackingTickInterval);
         }
+    }
+
+    public static interface EntityFactory<T extends Entity> {
+        public T create(EntityType<T> var1, World var2);
     }
 }
 

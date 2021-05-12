@@ -22,8 +22,8 @@ public class FurnaceSmeltLootFunction
 extends ConditionalLootFunction {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private FurnaceSmeltLootFunction(LootCondition[] conditions) {
-        super(conditions);
+    FurnaceSmeltLootFunction(LootCondition[] lootConditions) {
+        super(lootConditions);
     }
 
     @Override

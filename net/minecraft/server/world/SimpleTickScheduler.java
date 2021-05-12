@@ -37,7 +37,7 @@ implements TickScheduler<T> {
 
     @Override
     public void schedule(BlockPos pos, T object, int delay, TickPriority priority) {
-        this.scheduledTicks.add(new Tick(object, pos, delay, priority));
+        this.scheduledTicks.add(new Tick<T>(object, pos, delay, priority));
     }
 
     @Override
@@ -49,7 +49,7 @@ implements TickScheduler<T> {
         NbtList nbtList = new NbtList();
         for (Tick<T> tick : this.scheduledTicks) {
             NbtCompound nbtCompound = new NbtCompound();
-            nbtCompound.putString("i", this.identifierProvider.apply(((Tick)tick).object).toString());
+            nbtCompound.putString("i", this.identifierProvider.apply(tick.object).toString());
             nbtCompound.putInt("x", tick.pos.getX());
             nbtCompound.putInt("y", tick.pos.getY());
             nbtCompound.putInt("z", tick.pos.getZ());
@@ -67,13 +67,13 @@ implements TickScheduler<T> {
             T object = function2.apply(new Identifier(nbtCompound.getString("i")));
             if (object == null) continue;
             BlockPos blockPos = new BlockPos(nbtCompound.getInt("x"), nbtCompound.getInt("y"), nbtCompound.getInt("z"));
-            list.add(new Tick(object, blockPos, nbtCompound.getInt("t"), TickPriority.byIndex(nbtCompound.getInt("p"))));
+            list.add(new Tick<T>(object, blockPos, nbtCompound.getInt("t"), TickPriority.byIndex(nbtCompound.getInt("p"))));
         }
         return new SimpleTickScheduler<T>(function, list);
     }
 
     public void scheduleTo(TickScheduler<T> scheduler) {
-        this.scheduledTicks.forEach(tick -> scheduler.schedule(tick.pos, ((Tick)tick).object, tick.delay, tick.priority));
+        this.scheduledTicks.forEach(tick -> scheduler.schedule(tick.pos, tick.object, tick.delay, tick.priority));
     }
 
     @Override
@@ -82,20 +82,20 @@ implements TickScheduler<T> {
     }
 
     static class Tick<T> {
-        private final T object;
+        final T object;
         public final BlockPos pos;
         public final int delay;
         public final TickPriority priority;
 
-        private Tick(T object, BlockPos pos, int delay, TickPriority priority) {
+        Tick(T object, BlockPos blockPos, int i, TickPriority tickPriority) {
             this.object = object;
-            this.pos = pos;
-            this.delay = delay;
-            this.priority = priority;
+            this.pos = blockPos;
+            this.delay = i;
+            this.priority = tickPriority;
         }
 
         public String toString() {
-            return this.object + ": " + this.pos + ", " + this.delay + ", " + (Object)((Object)this.priority);
+            return this.object + ": " + this.pos + ", " + this.delay + ", " + this.priority;
         }
     }
 }

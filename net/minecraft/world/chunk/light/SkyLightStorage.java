@@ -66,14 +66,14 @@ extends LightStorage<Data> {
 
     @Override
     protected void onLoadSection(long sectionPos) {
+        long l;
+        int j;
         int i = ChunkSectionPos.unpackY(sectionPos);
         if (((Data)this.storage).minSectionY > i) {
             ((Data)this.storage).minSectionY = i;
             ((Data)this.storage).columnToTopSection.defaultReturnValue(((Data)this.storage).minSectionY);
         }
-        long l = ChunkSectionPos.withZeroY(sectionPos);
-        int j = ((Data)this.storage).columnToTopSection.get(l);
-        if (j < i + 1) {
+        if ((j = ((Data)this.storage).columnToTopSection.get(l = ChunkSectionPos.withZeroY(sectionPos))) < i + 1) {
             ((Data)this.storage).columnToTopSection.put(l, i + 1);
             if (this.enabledColumns.contains(l)) {
                 this.enqueueAddSection(sectionPos);
@@ -198,29 +198,25 @@ extends LightStorage<Data> {
                         if (!this.sectionsToRemove.contains(n) && (this.field_15820.contains(n) || this.sectionsToUpdate.contains(n)) || !this.hasSection(n)) continue;
                         for (int o = 0; o < 16; ++o) {
                             for (int p = 0; p < 16; ++p) {
-                                long r;
                                 long q;
-                                switch (direction) {
-                                    case NORTH: {
+                                long r = switch (direction) {
+                                    case Direction.NORTH -> {
                                         q = BlockPos.asLong(j + o, k + p, m);
-                                        r = BlockPos.asLong(j + o, k + p, m - 1);
-                                        break;
+                                        yield BlockPos.asLong(j + o, k + p, m - 1);
                                     }
-                                    case SOUTH: {
+                                    case Direction.SOUTH -> {
                                         q = BlockPos.asLong(j + o, k + p, m + 16 - 1);
-                                        r = BlockPos.asLong(j + o, k + p, m + 16);
-                                        break;
+                                        yield BlockPos.asLong(j + o, k + p, m + 16);
                                     }
-                                    case WEST: {
+                                    case Direction.WEST -> {
                                         q = BlockPos.asLong(j, k + o, m + p);
-                                        r = BlockPos.asLong(j - 1, k + o, m + p);
-                                        break;
+                                        yield BlockPos.asLong(j - 1, k + o, m + p);
                                     }
-                                    default: {
+                                    default -> {
                                         q = BlockPos.asLong(j + 16 - 1, k + o, m + p);
-                                        r = BlockPos.asLong(j + 16, k + o, m + p);
+                                        yield BlockPos.asLong(j + 16, k + o, m + p);
                                     }
-                                }
+                                };
                                 lightProvider.updateLevel(q, r, lightProvider.getPropagatedLevel(q, r, 0), true);
                             }
                         }
@@ -275,10 +271,10 @@ extends LightStorage<Data> {
         return this.enabledColumns.contains(l);
     }
 
-    public static final class Data
+    protected static final class Data
     extends ChunkToNibbleArrayMap<Data> {
-        private int minSectionY;
-        private final Long2IntOpenHashMap columnToTopSection;
+        int minSectionY;
+        final Long2IntOpenHashMap columnToTopSection;
 
         public Data(Long2ObjectOpenHashMap<ChunkNibbleArray> arrays, Long2IntOpenHashMap columnToTopSection, int minSectionY) {
             super(arrays);

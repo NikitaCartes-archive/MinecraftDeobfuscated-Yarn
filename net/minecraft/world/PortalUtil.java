@@ -139,18 +139,6 @@ public class PortalUtil {
         return Optional.empty();
     }
 
-    public static class Rectangle {
-        public final BlockPos lowerLeft;
-        public final int width;
-        public final int height;
-
-        public Rectangle(BlockPos lowerLeft, int width, int height) {
-            this.lowerLeft = lowerLeft;
-            this.width = width;
-            this.height = height;
-        }
-    }
-
     public static class IntBounds {
         public final int min;
         public final int max;
@@ -161,7 +149,19 @@ public class PortalUtil {
         }
 
         public String toString() {
-            return "IntBounds{min=" + this.min + ", max=" + this.max + '}';
+            return "IntBounds{min=" + this.min + ", max=" + this.max + "}";
+        }
+    }
+
+    public static class Rectangle {
+        public final BlockPos lowerLeft;
+        public final int width;
+        public final int height;
+
+        public Rectangle(BlockPos lowerLeft, int width, int height) {
+            this.lowerLeft = lowerLeft;
+            this.width = width;
+            this.height = height;
         }
     }
 }

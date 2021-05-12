@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 
 public class PlayerHurtEntityCriterion
 extends AbstractCriterion<Conditions> {
-    private static final Identifier ID = new Identifier("player_hurt_entity");
+    static final Identifier ID = new Identifier("player_hurt_entity");
 
     @Override
     public Identifier getId() {

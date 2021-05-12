@@ -17,8 +17,8 @@ extends AbstractSittingPhase {
     private static final int field_30437 = 10;
     private static final int field_30438 = 20;
     private static final int field_30439 = 150;
-    private static final TargetPredicate PLAYER_WITHIN_RANGE_PREDICATE = new TargetPredicate().setBaseMaxDistance(150.0);
-    private final TargetPredicate CLOSE_PLAYER_PREDICATE = new TargetPredicate().setBaseMaxDistance(20.0).setPredicate(livingEntity -> Math.abs(livingEntity.getY() - enderDragonEntity.getY()) <= 10.0);
+    private static final TargetPredicate PLAYER_WITHIN_RANGE_PREDICATE = TargetPredicate.createAttackable().setBaseMaxDistance(150.0);
+    private final TargetPredicate CLOSE_PLAYER_PREDICATE = TargetPredicate.createAttackable().setBaseMaxDistance(20.0).setPredicate(livingEntity -> Math.abs(livingEntity.getY() - enderDragonEntity.getY()) <= 10.0);
     private int ticks;
 
     public SittingScanningPhase(EnderDragonEntity enderDragonEntity) {

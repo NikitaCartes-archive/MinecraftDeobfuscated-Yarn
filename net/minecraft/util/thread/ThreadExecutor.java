@@ -112,7 +112,7 @@ Executor {
         }
     }
 
-    protected boolean runTask() {
+    public boolean runTask() {
         Runnable runnable = (Runnable)this.tasks.peek();
         if (runnable == null) {
             return false;

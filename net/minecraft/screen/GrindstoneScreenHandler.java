@@ -39,7 +39,7 @@ extends ScreenHandler {
     private static final int field_30799 = 30;
     private static final int field_30800 = 39;
     private final Inventory result = new CraftingResultInventory();
-    private final Inventory input = new SimpleInventory(2){
+    final Inventory input = new SimpleInventory(2){
 
         @Override
         public void markDirty() {

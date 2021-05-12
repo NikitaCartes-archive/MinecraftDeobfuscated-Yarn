@@ -58,7 +58,7 @@ extends Property<T> {
 
     @Override
     public Optional<T> parse(String name) {
-        return Optional.ofNullable(this.byName.get(name));
+        return Optional.ofNullable((Enum)this.byName.get(name));
     }
 
     @Override
@@ -117,7 +117,7 @@ extends Property<T> {
      * or more values
      */
     public static <T extends Enum<T>> EnumProperty<T> of(String name, Class<T> type, Predicate<T> filter) {
-        return EnumProperty.of(name, type, Arrays.stream(type.getEnumConstants()).filter(filter).collect(Collectors.toList()));
+        return EnumProperty.of(name, type, Arrays.stream((Enum[])type.getEnumConstants()).filter(filter).collect(Collectors.toList()));
     }
 
     /**

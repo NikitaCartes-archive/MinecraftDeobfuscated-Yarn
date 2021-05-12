@@ -7,7 +7,6 @@ import com.mojang.serialization.Codec;
 import java.util.BitSet;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.class_6350;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -17,6 +16,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.carver.Carver;
 import net.minecraft.world.gen.carver.CarverContext;
 import net.minecraft.world.gen.carver.CaveCarverConfig;
+import net.minecraft.world.gen.chunk.AquiferSampler;
 
 public class CaveCarver
 extends Carver<CaveCarverConfig> {
@@ -30,7 +30,7 @@ extends Carver<CaveCarverConfig> {
     }
 
     @Override
-    public boolean carve(CarverContext carverContext, CaveCarverConfig caveCarverConfig, Chunk chunk, Function<BlockPos, Biome> function, Random random, class_6350 arg, ChunkPos chunkPos, BitSet bitSet) {
+    public boolean carve(CarverContext carverContext, CaveCarverConfig caveCarverConfig, Chunk chunk, Function<BlockPos, Biome> function, Random random, AquiferSampler aquiferSampler, ChunkPos chunkPos, BitSet bitSet) {
         int i = ChunkSectionPos.getBlockCoord(this.getBranchFactor() * 2 - 1);
         int j = random.nextInt(random.nextInt(random.nextInt(this.getMaxCaveCount()) + 1) + 1);
         for (int k = 0; k < j; ++k) {
@@ -46,7 +46,7 @@ extends Carver<CaveCarverConfig> {
             if (random.nextInt(4) == 0) {
                 double n = caveCarverConfig.yScale.get(random);
                 o = 1.0f + random.nextFloat() * 6.0f;
-                this.carveCave(carverContext, caveCarverConfig, chunk, function, random.nextLong(), arg, d, e, f, o, n, bitSet, skipPredicate);
+                this.carveCave(carverContext, caveCarverConfig, chunk, function, random.nextLong(), aquiferSampler, d, e, f, o, n, bitSet, skipPredicate);
                 m += random.nextInt(4);
             }
             for (int p = 0; p < m; ++p) {
@@ -55,7 +55,7 @@ extends Carver<CaveCarverConfig> {
                 float r = this.getTunnelSystemWidth(random);
                 int s = i - random.nextInt(i / 4);
                 boolean t = false;
-                this.carveTunnels(carverContext, caveCarverConfig, chunk, function, random.nextLong(), arg, d, e, f, g, h, r, q, o, 0, s, this.getTunnelSystemHeightWidthRatio(), bitSet, skipPredicate);
+                this.carveTunnels(carverContext, caveCarverConfig, chunk, function, random.nextLong(), aquiferSampler, d, e, f, g, h, r, q, o, 0, s, this.getTunnelSystemHeightWidthRatio(), bitSet, skipPredicate);
             }
         }
         return true;
@@ -77,13 +77,13 @@ extends Carver<CaveCarverConfig> {
         return 1.0;
     }
 
-    protected void carveCave(CarverContext context, CaveCarverConfig config, Chunk chunk, Function<BlockPos, Biome> posToBiome, long seed, class_6350 arg, double x, double y, double z, float yaw, double yawPitchRatio, BitSet carvingMask, Carver.SkipPredicate skipPredicate) {
+    protected void carveCave(CarverContext context, CaveCarverConfig config, Chunk chunk, Function<BlockPos, Biome> posToBiome, long seed, AquiferSampler aquiferSampler, double x, double y, double z, float yaw, double yawPitchRatio, BitSet carvingMask, Carver.SkipPredicate skipPredicate) {
         double d = 1.5 + (double)(MathHelper.sin(1.5707964f) * yaw);
         double e = d * yawPitchRatio;
-        this.carveRegion(context, config, chunk, posToBiome, seed, arg, x + 1.0, y, z, d, e, carvingMask, skipPredicate);
+        this.carveRegion(context, config, chunk, posToBiome, seed, aquiferSampler, x + 1.0, y, z, d, e, carvingMask, skipPredicate);
     }
 
-    protected void carveTunnels(CarverContext context, CaveCarverConfig config, Chunk chunk, Function<BlockPos, Biome> posToBiome, long seed, class_6350 arg, double x, double y, double z, double horizontalScale, double verticalScale, float width, float yaw, float pitch, int branchStartIndex, int branchCount, double yawPitchRatio, BitSet carvingMask, Carver.SkipPredicate skipPredicate) {
+    protected void carveTunnels(CarverContext context, CaveCarverConfig config, Chunk chunk, Function<BlockPos, Biome> posToBiome, long seed, AquiferSampler aquiferSampler, double x, double y, double z, double horizontalScale, double verticalScale, float width, float yaw, float pitch, int branchStartIndex, int branchCount, double yawPitchRatio, BitSet carvingMask, Carver.SkipPredicate skipPredicate) {
         Random random = new Random(seed);
         int i = random.nextInt(branchCount / 2) + branchCount / 4;
         boolean bl = random.nextInt(6) == 0;
@@ -104,15 +104,15 @@ extends Carver<CaveCarverConfig> {
             g += (random.nextFloat() - random.nextFloat()) * random.nextFloat() * 2.0f;
             f += (random.nextFloat() - random.nextFloat()) * random.nextFloat() * 4.0f;
             if (j == i && width > 1.0f) {
-                this.carveTunnels(context, config, chunk, posToBiome, random.nextLong(), arg, x, y, z, horizontalScale, verticalScale, random.nextFloat() * 0.5f + 0.5f, yaw - 1.5707964f, pitch / 3.0f, j, branchCount, 1.0, carvingMask, skipPredicate);
-                this.carveTunnels(context, config, chunk, posToBiome, random.nextLong(), arg, x, y, z, horizontalScale, verticalScale, random.nextFloat() * 0.5f + 0.5f, yaw + 1.5707964f, pitch / 3.0f, j, branchCount, 1.0, carvingMask, skipPredicate);
+                this.carveTunnels(context, config, chunk, posToBiome, random.nextLong(), aquiferSampler, x, y, z, horizontalScale, verticalScale, random.nextFloat() * 0.5f + 0.5f, yaw - 1.5707964f, pitch / 3.0f, j, branchCount, 1.0, carvingMask, skipPredicate);
+                this.carveTunnels(context, config, chunk, posToBiome, random.nextLong(), aquiferSampler, x, y, z, horizontalScale, verticalScale, random.nextFloat() * 0.5f + 0.5f, yaw + 1.5707964f, pitch / 3.0f, j, branchCount, 1.0, carvingMask, skipPredicate);
                 return;
             }
             if (random.nextInt(4) == 0) continue;
             if (!CaveCarver.canCarveBranch(chunk.getPos(), x, z, j, branchCount, width)) {
                 return;
             }
-            this.carveRegion(context, config, chunk, posToBiome, seed, arg, x, y, z, d * horizontalScale, e * verticalScale, carvingMask, skipPredicate);
+            this.carveRegion(context, config, chunk, posToBiome, seed, aquiferSampler, x, y, z, d * horizontalScale, e * verticalScale, carvingMask, skipPredicate);
         }
     }
 

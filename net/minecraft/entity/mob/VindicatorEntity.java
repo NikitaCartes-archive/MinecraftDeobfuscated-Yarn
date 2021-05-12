@@ -54,8 +54,8 @@ import org.jetbrains.annotations.Nullable;
 public class VindicatorEntity
 extends IllagerEntity {
     private static final String JOHNNY_KEY = "Johnny";
-    private static final Predicate<Difficulty> DIFFICULTY_ALLOWS_DOOR_BREAKING_PREDICATE = difficulty -> difficulty == Difficulty.NORMAL || difficulty == Difficulty.HARD;
-    private boolean johnny;
+    static final Predicate<Difficulty> DIFFICULTY_ALLOWS_DOOR_BREAKING_PREDICATE = difficulty -> difficulty == Difficulty.NORMAL || difficulty == Difficulty.HARD;
+    boolean johnny;
 
     public VindicatorEntity(EntityType<? extends VindicatorEntity> entityType, World world) {
         super((EntityType<? extends IllagerEntity>)entityType, world);
@@ -193,24 +193,6 @@ extends IllagerEntity {
         this.equipStack(EquipmentSlot.MAINHAND, itemStack);
     }
 
-    static class FollowEntityGoal
-    extends FollowTargetGoal<LivingEntity> {
-        public FollowEntityGoal(VindicatorEntity vindicator) {
-            super(vindicator, LivingEntity.class, 0, true, true, LivingEntity::isMobOrPlayer);
-        }
-
-        @Override
-        public boolean canStart() {
-            return ((VindicatorEntity)this.mob).johnny && super.canStart();
-        }
-
-        @Override
-        public void start() {
-            super.start();
-            this.mob.setDespawnCounter(0);
-        }
-    }
-
     static class BreakDoorGoal
     extends net.minecraft.entity.ai.goal.BreakDoorGoal {
         public BreakDoorGoal(MobEntity mobEntity) {
@@ -250,6 +232,24 @@ extends IllagerEntity {
                 return f * 2.0f * (f * 2.0f) + entity.getWidth();
             }
             return super.getSquaredMaxAttackDistance(entity);
+        }
+    }
+
+    static class FollowEntityGoal
+    extends FollowTargetGoal<LivingEntity> {
+        public FollowEntityGoal(VindicatorEntity vindicator) {
+            super(vindicator, LivingEntity.class, 0, true, true, LivingEntity::isMobOrPlayer);
+        }
+
+        @Override
+        public boolean canStart() {
+            return ((VindicatorEntity)this.mob).johnny && super.canStart();
+        }
+
+        @Override
+        public void start() {
+            super.start();
+            this.mob.setDespawnCounter(0);
         }
     }
 }

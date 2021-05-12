@@ -320,12 +320,29 @@ public class ModelLoader {
                 List list2;
                 try {
                     list2 = this.resourceManager.getAllResources(identifier2).stream().map(resource -> {
-                        try (InputStream inputStream = resource.getInputStream();){
-                            Pair<String, ModelVariantMap> pair = Pair.of(resource.getResourcePackName(), ModelVariantMap.fromJson(this.variantMapDeserializationContext, new InputStreamReader(inputStream, StandardCharsets.UTF_8)));
-                            return pair;
-                        } catch (Exception exception) {
-                            throw new ModelLoaderException(String.format("Exception loading blockstate definition: '%s' in resourcepack: '%s': %s", resource.getId(), resource.getResourcePackName(), exception.getMessage()));
+                        Pair<String, ModelVariantMap> pair;
+                        block8: {
+                            InputStream inputStream = resource.getInputStream();
+                            try {
+                                pair = Pair.of(resource.getResourcePackName(), ModelVariantMap.fromJson(this.variantMapDeserializationContext, new InputStreamReader(inputStream, StandardCharsets.UTF_8)));
+                                if (inputStream == null) break block8;
+                            } catch (Throwable throwable) {
+                                try {
+                                    if (inputStream != null) {
+                                        try {
+                                            inputStream.close();
+                                        } catch (Throwable throwable2) {
+                                            throwable.addSuppressed(throwable2);
+                                        }
+                                    }
+                                    throw throwable;
+                                } catch (Exception exception) {
+                                    throw new ModelLoaderException(String.format("Exception loading blockstate definition: '%s' in resourcepack: '%s': %s", resource.getId(), resource.getResourcePackName(), exception.getMessage()));
+                                }
+                            }
+                            inputStream.close();
                         }
+                        return pair;
                     }).collect(Collectors.toList());
                 } catch (IOException iOException) {
                     LOGGER.warn("Exception loading blockstate definition: {}: {}", (Object)identifier2, (Object)iOException);
@@ -513,6 +530,14 @@ public class ModelLoader {
     }
 
     @Environment(value=EnvType.CLIENT)
+    static class ModelLoaderException
+    extends RuntimeException {
+        public ModelLoaderException(String message) {
+            super(message);
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
     static class ModelDefinition {
         private final List<UnbakedModel> components;
         private final List<Object> values;
@@ -551,14 +576,6 @@ public class ModelLoader {
 
         private static List<Object> getStateValues(BlockState state, Collection<Property<?>> properties) {
             return properties.stream().map(state::get).collect(ImmutableList.toImmutableList());
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static class ModelLoaderException
-    extends RuntimeException {
-        public ModelLoaderException(String message) {
-            super(message);
         }
     }
 }

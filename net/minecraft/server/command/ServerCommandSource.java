@@ -124,7 +124,7 @@ implements CommandSource {
     }
 
     public ServerCommandSource withSilent() {
-        if (this.silent || this.output.method_36320()) {
+        if (this.silent || this.output.cannotBeSilenced()) {
             return this;
         }
         return new ServerCommandSource(this.output, this.position, this.rotation, this.world, this.level, this.simpleName, this.name, this.server, this.entity, true, this.resultConsumer, this.entityAnchor);

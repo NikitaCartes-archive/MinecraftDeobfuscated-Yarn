@@ -125,11 +125,11 @@ extends LootableContainerBlockEntity {
         }
     }
 
-    private void setOpen(BlockState state, boolean open) {
+    void setOpen(BlockState state, boolean open) {
         this.world.setBlockState(this.getPos(), (BlockState)state.with(BarrelBlock.OPEN, open), Block.NOTIFY_ALL);
     }
 
-    private void playSound(BlockState state, SoundEvent soundEvent) {
+    void playSound(BlockState state, SoundEvent soundEvent) {
         Vec3i vec3i = state.get(BarrelBlock.FACING).getVector();
         double d = (double)this.pos.getX() + 0.5 + (double)vec3i.getX() / 2.0;
         double e = (double)this.pos.getY() + 0.5 + (double)vec3i.getY() / 2.0;

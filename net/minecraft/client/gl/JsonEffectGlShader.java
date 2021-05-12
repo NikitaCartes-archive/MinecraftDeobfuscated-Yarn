@@ -132,9 +132,9 @@ AutoCloseable {
                 }
             }
         } catch (Exception exception4) {
-            String string2 = resource2 != null ? " (" + resource2.getResourcePackName() + ")" : "";
+            Object string2 = resource2 != null ? " (" + resource2.getResourcePackName() + ")" : "";
             ShaderParseException shaderParseException4 = ShaderParseException.wrap(exception4);
-            shaderParseException4.addFaultyFile(identifier.getPath() + string2);
+            shaderParseException4.addFaultyFile(identifier.getPath() + (String)string2);
             throw shaderParseException4;
         } finally {
             IOUtils.closeQuietly((Closeable)resource2);

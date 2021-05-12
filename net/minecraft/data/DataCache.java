@@ -58,7 +58,7 @@ public class DataCache {
             LOGGER.warn("Unable write cachefile {}: {}", (Object)this.recordFile, (Object)iOException.toString());
             return;
         }
-        IOUtils.writeLines((Collection)this.newSha1.entrySet().stream().map(entry -> (String)entry.getValue() + ' ' + this.root.relativize((Path)entry.getKey())).collect(Collectors.toList()), System.lineSeparator(), writer);
+        IOUtils.writeLines((Collection)this.newSha1.entrySet().stream().map(entry -> (String)entry.getValue() + " " + this.root.relativize((Path)entry.getKey())).collect(Collectors.toList()), System.lineSeparator(), writer);
         ((Writer)writer).close();
         LOGGER.debug("Caching: cache hits: {}, created: {} removed: {}", (Object)this.unchanged, (Object)(this.newSha1.size() - this.unchanged), (Object)this.oldSha1.size());
     }

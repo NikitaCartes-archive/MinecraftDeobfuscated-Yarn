@@ -180,7 +180,7 @@ implements Bucketable {
         this.dataTracker.set(VARIANT, variant.getId());
     }
 
-    private static boolean shouldBabyBeDifferent(Random random) {
+    static boolean shouldBabyBeDifferent(Random random) {
         return random.nextInt(1200) == 0;
     }
 
@@ -448,60 +448,6 @@ implements Bucketable {
         return !this.isFromBucket() && !this.hasCustomName();
     }
 
-    static class AxolotlSwimNavigation
-    extends SwimNavigation {
-        AxolotlSwimNavigation(AxolotlEntity axolotl, World world) {
-            super(axolotl, world);
-        }
-
-        @Override
-        protected boolean isAtValidPosition() {
-            return true;
-        }
-
-        @Override
-        protected PathNodeNavigator createPathNodeNavigator(int range) {
-            this.nodeMaker = new AmphibiousPathNodeMaker(false);
-            return new PathNodeNavigator(this.nodeMaker, range);
-        }
-
-        @Override
-        public boolean isValidPosition(BlockPos pos) {
-            return !this.world.getBlockState(pos.down()).isAir();
-        }
-    }
-
-    public static class AxolotlData
-    extends PassiveEntity.PassiveData {
-        public final Variant[] variants;
-
-        public AxolotlData(Variant ... variants) {
-            super(false);
-            this.variants = variants;
-        }
-
-        public Variant getRandomVariant(Random random) {
-            if (AxolotlEntity.shouldBabyBeDifferent(random)) {
-                return Variant.getRandomNatural(random);
-            }
-            return this.variants[random.nextInt(this.variants.length)];
-        }
-    }
-
-    class AxolotlLookControl
-    extends AquaticLookControl {
-        public AxolotlLookControl(AxolotlEntity axolotl, int maxYawDifference) {
-            super(axolotl, maxYawDifference);
-        }
-
-        @Override
-        public void tick() {
-            if (!AxolotlEntity.this.isPlayingDead()) {
-                super.tick();
-            }
-        }
-    }
-
     static class AxolotlMoveControl
     extends AquaticMoveControl {
         private final AxolotlEntity axolotl;
@@ -514,6 +460,20 @@ implements Bucketable {
         @Override
         public void tick() {
             if (!this.axolotl.isPlayingDead()) {
+                super.tick();
+            }
+        }
+    }
+
+    class AxolotlLookControl
+    extends AquaticLookControl {
+        public AxolotlLookControl(AxolotlEntity axolotl, int maxYawDifference) {
+            super(axolotl, maxYawDifference);
+        }
+
+        @Override
+        public void tick() {
+            if (!AxolotlEntity.this.isPlayingDead()) {
                 super.tick();
             }
         }
@@ -560,6 +520,46 @@ implements Bucketable {
 
         static {
             VARIANTS = (Variant[])Arrays.stream(Variant.values()).sorted(Comparator.comparingInt(Variant::getId)).toArray(Variant[]::new);
+        }
+    }
+
+    public static class AxolotlData
+    extends PassiveEntity.PassiveData {
+        public final Variant[] variants;
+
+        public AxolotlData(Variant ... variants) {
+            super(false);
+            this.variants = variants;
+        }
+
+        public Variant getRandomVariant(Random random) {
+            if (AxolotlEntity.shouldBabyBeDifferent(random)) {
+                return Variant.getRandomNatural(random);
+            }
+            return this.variants[random.nextInt(this.variants.length)];
+        }
+    }
+
+    static class AxolotlSwimNavigation
+    extends SwimNavigation {
+        AxolotlSwimNavigation(AxolotlEntity axolotl, World world) {
+            super(axolotl, world);
+        }
+
+        @Override
+        protected boolean isAtValidPosition() {
+            return true;
+        }
+
+        @Override
+        protected PathNodeNavigator createPathNodeNavigator(int range) {
+            this.nodeMaker = new AmphibiousPathNodeMaker(false);
+            return new PathNodeNavigator(this.nodeMaker, range);
+        }
+
+        @Override
+        public boolean isValidPosition(BlockPos pos) {
+            return !this.world.getBlockState(pos.down()).isAir();
         }
     }
 }

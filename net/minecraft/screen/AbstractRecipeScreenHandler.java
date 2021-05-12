@@ -38,6 +38,6 @@ extends ScreenHandler {
 
     public abstract RecipeBookCategory getCategory();
 
-    public abstract boolean method_32339(int var1);
+    public abstract boolean canInsertIntoSlot(int var1);
 }
 

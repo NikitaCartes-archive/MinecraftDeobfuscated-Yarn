@@ -44,7 +44,12 @@ extends MessageToByteEncoder<Packet<?>> {
         PacketByteBuf packetByteBuf = new PacketByteBuf(byteBuf);
         packetByteBuf.writeVarInt(integer);
         try {
+            int i = packetByteBuf.writerIndex();
             packet.write(packetByteBuf);
+            int j = packetByteBuf.writerIndex() - i;
+            if (j > 0x200000) {
+                throw new IllegalArgumentException("Packet too big (is " + j + ", should be less than 2097152): " + packet);
+            }
         } catch (Throwable throwable) {
             LOGGER.error(throwable);
             if (packet.isWritingErrorSkippable()) {

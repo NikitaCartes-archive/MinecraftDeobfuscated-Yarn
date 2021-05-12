@@ -14,7 +14,7 @@ extends ThreadExecutor<R> {
     }
 
     @Override
-    protected boolean shouldExecuteAsync() {
+    public boolean shouldExecuteAsync() {
         return this.hasRunningTasks() || super.shouldExecuteAsync();
     }
 
@@ -23,7 +23,7 @@ extends ThreadExecutor<R> {
     }
 
     @Override
-    protected void executeTask(R task) {
+    public void executeTask(R task) {
         ++this.runningTasks;
         try {
             super.executeTask(task);

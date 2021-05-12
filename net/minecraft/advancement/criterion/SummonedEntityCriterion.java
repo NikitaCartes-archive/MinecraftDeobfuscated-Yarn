@@ -16,7 +16,7 @@ import net.minecraft.util.Identifier;
 
 public class SummonedEntityCriterion
 extends AbstractCriterion<Conditions> {
-    private static final Identifier ID = new Identifier("summoned_entity");
+    static final Identifier ID = new Identifier("summoned_entity");
 
     @Override
     public Identifier getId() {

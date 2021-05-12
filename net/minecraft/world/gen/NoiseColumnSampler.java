@@ -3,7 +3,6 @@
  */
 package net.minecraft.world.gen;
 
-import net.minecraft.class_6357;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.InterpolatedNoiseSampler;
@@ -13,6 +12,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.TheEndBiomeSource;
 import net.minecraft.world.gen.chunk.GenerationShapeConfig;
+import net.minecraft.world.gen.chunk.WeightSampler;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -48,9 +48,9 @@ public class NoiseColumnSampler {
     private final double bottomSlideOffset;
     private final double densityFactor;
     private final double densityOffset;
-    private final class_6357 field_33653;
+    private final WeightSampler field_33653;
 
-    public NoiseColumnSampler(BiomeSource biomeSource, int horizontalNoiseResolution, int verticalNoiseResolution, int noiseSizeY, GenerationShapeConfig config, InterpolatedNoiseSampler noise, @Nullable SimplexNoiseSampler islandNoise, OctavePerlinNoiseSampler densityNoise, class_6357 arg) {
+    public NoiseColumnSampler(BiomeSource biomeSource, int horizontalNoiseResolution, int verticalNoiseResolution, int noiseSizeY, GenerationShapeConfig config, InterpolatedNoiseSampler noise, @Nullable SimplexNoiseSampler islandNoise, OctavePerlinNoiseSampler densityNoise, WeightSampler weightSampler) {
         this.horizontalNoiseResolution = horizontalNoiseResolution;
         this.verticalNoiseResolution = verticalNoiseResolution;
         this.biomeSource = biomeSource;
@@ -67,7 +67,7 @@ public class NoiseColumnSampler {
         this.bottomSlideOffset = config.getBottomSlide().getOffset();
         this.densityFactor = config.getDensityFactor();
         this.densityOffset = config.getDensityOffset();
-        this.field_33653 = arg;
+        this.field_33653 = weightSampler;
     }
 
     /**

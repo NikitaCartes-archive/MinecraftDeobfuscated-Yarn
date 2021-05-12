@@ -144,7 +144,7 @@ implements Comparable<LevelSummary> {
     }
 
     private Text createDetails() {
-        MutableText mutableText;
+        TranslatableText mutableText;
         if (this.isLocked()) {
             return new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
         }

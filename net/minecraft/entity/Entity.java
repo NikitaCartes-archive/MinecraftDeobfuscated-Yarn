@@ -199,13 +199,13 @@ CommandOutput {
     protected boolean firstUpdate = true;
     protected final DataTracker dataTracker;
     protected static final TrackedData<Byte> FLAGS = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BYTE);
-    protected static final int field_29979 = 0;
-    private static final int field_29975 = 1;
-    private static final int field_29976 = 3;
-    private static final int field_29977 = 4;
-    private static final int field_29978 = 5;
-    protected static final int field_29980 = 6;
-    protected static final int field_29981 = 7;
+    protected static final int ON_FIRE_FLAG_INDEX = 0;
+    private static final int SNEAKING_FLAG_INDEX = 1;
+    private static final int SPRINTING_FLAG_INDEX = 3;
+    private static final int SWIMMING_FLAG_INDEX = 4;
+    private static final int INVISIBLE_FLAG_INDEX = 5;
+    protected static final int GLOWING_FLAG_INDEX = 6;
+    protected static final int FALL_FLYING_FLAG_INDEX = 7;
     private static final TrackedData<Integer> AIR = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Optional<Text>> CUSTOM_NAME = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.OPTIONAL_TEXT_COMPONENT);
     private static final TrackedData<Boolean> NAME_VISIBLE = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -473,7 +473,7 @@ CommandOutput {
     }
 
     public void setOnFire(boolean onFire) {
-        this.setFlag(0, onFire);
+        this.setFlag(ON_FIRE_FLAG_INDEX, onFire);
     }
 
     /**
@@ -1875,7 +1875,7 @@ CommandOutput {
 
     public boolean isOnFire() {
         boolean bl = this.world != null && this.world.isClient;
-        return !this.isFireImmune() && (this.fireTicks > 0 || bl && this.getFlag(0));
+        return !this.isFireImmune() && (this.fireTicks > 0 || bl && this.getFlag(ON_FIRE_FLAG_INDEX));
     }
 
     public boolean hasVehicle() {
@@ -1891,11 +1891,11 @@ CommandOutput {
     }
 
     public void setSneaking(boolean sneaking) {
-        this.setFlag(1, sneaking);
+        this.setFlag(SNEAKING_FLAG_INDEX, sneaking);
     }
 
     public boolean isSneaking() {
-        return this.getFlag(1);
+        return this.getFlag(SNEAKING_FLAG_INDEX);
     }
 
     public boolean bypassesSteppingEffects() {
@@ -1929,15 +1929,15 @@ CommandOutput {
     }
 
     public boolean isSprinting() {
-        return this.getFlag(3);
+        return this.getFlag(SPRINTING_FLAG_INDEX);
     }
 
     public void setSprinting(boolean sprinting) {
-        this.setFlag(3, sprinting);
+        this.setFlag(SPRINTING_FLAG_INDEX, sprinting);
     }
 
     public boolean isSwimming() {
-        return this.getFlag(4);
+        return this.getFlag(SWIMMING_FLAG_INDEX);
     }
 
     public boolean isInSwimmingPose() {
@@ -1949,7 +1949,7 @@ CommandOutput {
     }
 
     public void setSwimming(boolean swimming) {
-        this.setFlag(4, swimming);
+        this.setFlag(SWIMMING_FLAG_INDEX, swimming);
     }
 
     public final boolean method_36361() {
@@ -1958,18 +1958,18 @@ CommandOutput {
 
     public final void setGlowing(boolean glowing) {
         this.glowing = glowing;
-        this.setFlag(6, this.isGlowing());
+        this.setFlag(GLOWING_FLAG_INDEX, this.isGlowing());
     }
 
     public boolean isGlowing() {
         if (this.world.isClient()) {
-            return this.getFlag(6);
+            return this.getFlag(GLOWING_FLAG_INDEX);
         }
         return this.glowing;
     }
 
     public boolean isInvisible() {
-        return this.getFlag(5);
+        return this.getFlag(INVISIBLE_FLAG_INDEX);
     }
 
     public boolean isInvisibleTo(PlayerEntity player) {
@@ -2014,7 +2014,7 @@ CommandOutput {
     }
 
     public void setInvisible(boolean invisible) {
-        this.setFlag(5, invisible);
+        this.setFlag(INVISIBLE_FLAG_INDEX, invisible);
     }
 
     protected boolean getFlag(int index) {
@@ -2414,13 +2414,15 @@ CommandOutput {
     }
 
     public void calculateDimensions() {
+        boolean bl;
         EntityDimensions entityDimensions2;
         EntityDimensions entityDimensions = this.dimensions;
         EntityPose entityPose = this.getPose();
         this.dimensions = entityDimensions2 = this.getDimensions(entityPose);
         this.standingEyeHeight = this.getEyeHeight(entityPose, entityDimensions2);
         this.refreshPosition();
-        if (!(this.world.isClient || this.firstUpdate || !(entityDimensions2.width > entityDimensions.width) && !(entityDimensions2.height > entityDimensions.height) || this instanceof PlayerEntity)) {
+        boolean bl2 = bl = (double)entityDimensions2.width <= 4.0 && (double)entityDimensions2.height <= 4.0;
+        if (!(this.world.isClient || this.firstUpdate || this.noClip || !bl || !(entityDimensions2.width > entityDimensions.width) && !(entityDimensions2.height > entityDimensions.height) || this instanceof PlayerEntity)) {
             Vec3d vec3d2 = this.getPos().add(0.0, (double)entityDimensions.height / 2.0, 0.0);
             double d = (double)Math.max(0.0f, entityDimensions2.width - entityDimensions.width) + 1.0E-6;
             double e = (double)Math.max(0.0f, entityDimensions2.height - entityDimensions.height) + 1.0E-6;
@@ -2826,6 +2828,10 @@ CommandOutput {
     @Override
     public BlockPos getBlockPos() {
         return this.blockPos;
+    }
+
+    public BlockState method_36601() {
+        return this.world.getBlockState(this.getBlockPos());
     }
 
     public BlockPos getCameraBlockPos() {

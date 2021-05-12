@@ -16,8 +16,8 @@ import net.minecraft.loot.function.LootFunctionTypes;
 
 public class ExplosionDecayLootFunction
 extends ConditionalLootFunction {
-    private ExplosionDecayLootFunction(LootCondition[] conditions) {
-        super(conditions);
+    ExplosionDecayLootFunction(LootCondition[] lootConditions) {
+        super(lootConditions);
     }
 
     @Override

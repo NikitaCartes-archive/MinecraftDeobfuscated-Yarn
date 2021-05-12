@@ -46,8 +46,8 @@ public class StatePredicate {
         return json.getAsString();
     }
 
-    private StatePredicate(List<Condition> testers) {
-        this.conditions = ImmutableList.copyOf(testers);
+    StatePredicate(List<Condition> conditions) {
+        this.conditions = ImmutableList.copyOf(conditions);
     }
 
     public <S extends State<?, S>> boolean test(StateManager<?, S> stateManager, S container) {
@@ -93,35 +93,25 @@ public class StatePredicate {
         return jsonObject;
     }
 
-    public static class Builder {
-        private final List<Condition> conditions = Lists.newArrayList();
+    static class ExactValueCondition
+    extends Condition {
+        private final String value;
 
-        private Builder() {
+        public ExactValueCondition(String key, String value) {
+            super(key);
+            this.value = value;
         }
 
-        public static Builder create() {
-            return new Builder();
+        @Override
+        protected <T extends Comparable<T>> boolean test(State<?, ?> state, Property<T> property) {
+            Comparable comparable = state.get(property);
+            Optional<T> optional = property.parse(this.value);
+            return optional.isPresent() && comparable.compareTo((Comparable)((Comparable)optional.get())) == 0;
         }
 
-        public Builder exactMatch(Property<?> property, String valueName) {
-            this.conditions.add(new ExactValueCondition(property.getName(), valueName));
-            return this;
-        }
-
-        public Builder exactMatch(Property<Integer> property, int value) {
-            return this.exactMatch((Property)property, (Comparable<T> & StringIdentifiable)Integer.toString(value));
-        }
-
-        public Builder exactMatch(Property<Boolean> property, boolean value) {
-            return this.exactMatch((Property)property, (Comparable<T> & StringIdentifiable)Boolean.toString(value));
-        }
-
-        public <T extends Comparable<T> & StringIdentifiable> Builder exactMatch(Property<T> property, T value) {
-            return this.exactMatch(property, (T)((StringIdentifiable)value).asString());
-        }
-
-        public StatePredicate build() {
-            return new StatePredicate(this.conditions);
+        @Override
+        public JsonElement toJson() {
+            return new JsonPrimitive(this.value);
         }
     }
 
@@ -141,11 +131,11 @@ public class StatePredicate {
         @Override
         protected <T extends Comparable<T>> boolean test(State<?, ?> state, Property<T> property) {
             Optional<T> optional;
-            T comparable = state.get(property);
-            if (!(this.min == null || (optional = property.parse(this.min)).isPresent() && comparable.compareTo(optional.get()) >= 0)) {
+            Comparable comparable = state.get(property);
+            if (!(this.min == null || (optional = property.parse(this.min)).isPresent() && comparable.compareTo((Comparable)((Comparable)optional.get())) >= 0)) {
                 return false;
             }
-            return this.max == null || (optional = property.parse(this.max)).isPresent() && comparable.compareTo(optional.get()) <= 0;
+            return this.max == null || (optional = property.parse(this.max)).isPresent() && comparable.compareTo((Comparable)((Comparable)optional.get())) <= 0;
         }
 
         @Override
@@ -158,28 +148,6 @@ public class StatePredicate {
                 jsonObject.addProperty("max", this.max);
             }
             return jsonObject;
-        }
-    }
-
-    static class ExactValueCondition
-    extends Condition {
-        private final String value;
-
-        public ExactValueCondition(String key, String value) {
-            super(key);
-            this.value = value;
-        }
-
-        @Override
-        protected <T extends Comparable<T>> boolean test(State<?, ?> state, Property<T> property) {
-            T comparable = state.get(property);
-            Optional<T> optional = property.parse(this.value);
-            return optional.isPresent() && comparable.compareTo(optional.get()) == 0;
-        }
-
-        @Override
-        public JsonElement toJson() {
-            return new JsonPrimitive(this.value);
         }
     }
 
@@ -211,6 +179,38 @@ public class StatePredicate {
             if (property == null) {
                 reporter.accept(this.key);
             }
+        }
+    }
+
+    public static class Builder {
+        private final List<Condition> conditions = Lists.newArrayList();
+
+        private Builder() {
+        }
+
+        public static Builder create() {
+            return new Builder();
+        }
+
+        public Builder exactMatch(Property<?> property, String valueName) {
+            this.conditions.add(new ExactValueCondition(property.getName(), valueName));
+            return this;
+        }
+
+        public Builder exactMatch(Property<Integer> property, int value) {
+            return this.exactMatch((Property)property, (Comparable<T> & StringIdentifiable)Integer.toString(value));
+        }
+
+        public Builder exactMatch(Property<Boolean> property, boolean value) {
+            return this.exactMatch((Property)property, (Comparable<T> & StringIdentifiable)Boolean.toString(value));
+        }
+
+        public <T extends Comparable<T> & StringIdentifiable> Builder exactMatch(Property<T> property, T value) {
+            return this.exactMatch(property, (T)((StringIdentifiable)value).asString());
+        }
+
+        public StatePredicate build() {
+            return new StatePredicate(this.conditions);
         }
     }
 }

@@ -16,7 +16,7 @@ import net.minecraft.util.Identifier;
 
 public class FilledBucketCriterion
 extends AbstractCriterion<Conditions> {
-    private static final Identifier ID = new Identifier("filled_bucket");
+    static final Identifier ID = new Identifier("filled_bucket");
 
     @Override
     public Identifier getId() {

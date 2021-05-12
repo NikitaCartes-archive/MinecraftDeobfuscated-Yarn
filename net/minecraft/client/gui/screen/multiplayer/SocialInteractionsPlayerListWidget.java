@@ -31,8 +31,8 @@ extends ElementListWidget<SocialInteractionsPlayerListEntry> {
     public SocialInteractionsPlayerListWidget(SocialInteractionsScreen parent, MinecraftClient client, int width, int height, int top, int bottom, int itemHeight) {
         super(client, width, height, top, bottom, itemHeight);
         this.parent = parent;
-        this.method_31322(false);
-        this.method_31323(false);
+        this.setRenderBackground(false);
+        this.setRenderHorizontalShadows(false);
     }
 
     @Override
@@ -51,14 +51,14 @@ extends ElementListWidget<SocialInteractionsPlayerListEntry> {
             this.players.add(new SocialInteractionsPlayerListEntry(this.client, this.parent, playerListEntry.getProfile().getId(), playerListEntry.getProfile().getName(), playerListEntry::getSkinTexture));
         }
         this.filterPlayers();
-        this.players.sort((socialInteractionsPlayerListEntry, socialInteractionsPlayerListEntry2) -> socialInteractionsPlayerListEntry.getName().compareToIgnoreCase(socialInteractionsPlayerListEntry2.getName()));
+        this.players.sort((player1, player2) -> player1.getName().compareToIgnoreCase(player2.getName()));
         this.replaceEntries(this.players);
         this.setScrollAmount(scrollAmount);
     }
 
     private void filterPlayers() {
         if (this.currentSearch != null) {
-            this.players.removeIf(socialInteractionsPlayerListEntry -> !socialInteractionsPlayerListEntry.getName().toLowerCase(Locale.ROOT).contains(this.currentSearch));
+            this.players.removeIf(player -> !player.getName().toLowerCase(Locale.ROOT).contains(this.currentSearch));
             this.replaceEntries(this.players);
         }
     }

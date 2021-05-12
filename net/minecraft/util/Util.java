@@ -79,7 +79,7 @@ public class Util {
     private static final ExecutorService IO_WORKER_EXECUTOR = Util.createIoWorker();
     public static LongSupplier nanoTimeSupplier = System::nanoTime;
     public static final UUID NIL_UUID = new UUID(0L, 0L);
-    private static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogManager.getLogger();
 
     public static <K, V> Collector<Map.Entry<? extends K, ? extends V>, ?, Map<K, V>> toMap() {
         return Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue);
@@ -93,7 +93,7 @@ public class Util {
         if (id == null) {
             return type + ".unregistered_sadface";
         }
-        return type + '.' + id.getNamespace() + '.' + id.getPath().replace('/', '.');
+        return type + "." + id.getNamespace() + "." + id.getPath().replace('/', '.');
     }
 
     public static long getMeasuringTimeMs() {
@@ -648,22 +648,6 @@ public class Util {
         };
     }
 
-    static enum IdentityHashStrategy implements Hash.Strategy<Object>
-    {
-        INSTANCE;
-
-
-        @Override
-        public int hashCode(Object object) {
-            return System.identityHashCode(object);
-        }
-
-        @Override
-        public boolean equals(Object object, Object object2) {
-            return object == object2;
-        }
-    }
-
     public static enum OperatingSystem {
         LINUX,
         SOLARIS,
@@ -730,6 +714,22 @@ public class Util {
             } catch (IllegalArgumentException | MalformedURLException | URISyntaxException exception) {
                 LOGGER.error("Couldn't open uri '{}'", (Object)uri, (Object)exception);
             }
+        }
+    }
+
+    static enum IdentityHashStrategy implements Hash.Strategy<Object>
+    {
+        INSTANCE;
+
+
+        @Override
+        public int hashCode(Object object) {
+            return System.identityHashCode(object);
+        }
+
+        @Override
+        public boolean equals(Object object, Object object2) {
+            return object == object2;
         }
     }
 }

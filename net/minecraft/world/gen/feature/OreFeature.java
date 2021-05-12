@@ -92,41 +92,41 @@ extends Feature<OreFeatureConfig> {
             }
         }
         try (ChunkSectionCache chunkSectionCache = new ChunkSectionCache(world);){
-            for (int n = 0; n < j; ++n) {
-                double o = ds[n * 4 + 3];
-                if (o < 0.0) continue;
-                double p = ds[n * 4 + 0];
-                double q = ds[n * 4 + 1];
-                double r = ds[n * 4 + 2];
-                int s = Math.max(MathHelper.floor(p - o), x);
-                int t = Math.max(MathHelper.floor(q - o), y);
-                int u = Math.max(MathHelper.floor(r - o), z);
-                int v = Math.max(MathHelper.floor(p + o), s);
-                int w = Math.max(MathHelper.floor(q + o), t);
-                int aa = Math.max(MathHelper.floor(r + o), u);
-                for (int ab = s; ab <= v; ++ab) {
-                    double ac = ((double)ab + 0.5 - p) / o;
-                    if (!(ac * ac < 1.0)) continue;
-                    for (int ad = t; ad <= w; ++ad) {
-                        double ae = ((double)ad + 0.5 - q) / o;
-                        if (!(ac * ac + ae * ae < 1.0)) continue;
-                        block15: for (int af = u; af <= aa; ++af) {
-                            int ah;
-                            double ag = ((double)af + 0.5 - r) / o;
-                            if (!(ac * ac + ae * ae + ag * ag < 1.0) || world.isOutOfHeightLimit(ad) || bitSet.get(ah = ab - x + (ad - y) * horizontalSize + (af - z) * horizontalSize * verticalSize)) continue;
-                            bitSet.set(ah);
-                            mutable.set(ab, ad, af);
+            for (int m = 0; m < j; ++m) {
+                d = ds[m * 4 + 3];
+                if (d < 0.0) continue;
+                e = ds[m * 4 + 0];
+                g = ds[m * 4 + 1];
+                h = ds[m * 4 + 2];
+                int n = Math.max(MathHelper.floor(e - d), x);
+                int o = Math.max(MathHelper.floor(g - d), y);
+                int p = Math.max(MathHelper.floor(h - d), z);
+                int q = Math.max(MathHelper.floor(e + d), n);
+                int r = Math.max(MathHelper.floor(g + d), o);
+                int s = Math.max(MathHelper.floor(h + d), p);
+                for (int t = n; t <= q; ++t) {
+                    double u = ((double)t + 0.5 - e) / d;
+                    if (!(u * u < 1.0)) continue;
+                    for (int v = o; v <= r; ++v) {
+                        double w = ((double)v + 0.5 - g) / d;
+                        if (!(u * u + w * w < 1.0)) continue;
+                        block11: for (int aa = p; aa <= s; ++aa) {
+                            int ac;
+                            double ab = ((double)aa + 0.5 - h) / d;
+                            if (!(u * u + w * w + ab * ab < 1.0) || world.isOutOfHeightLimit(v) || bitSet.get(ac = t - x + (v - y) * horizontalSize + (aa - z) * horizontalSize * verticalSize)) continue;
+                            bitSet.set(ac);
+                            mutable.set(t, v, aa);
                             ChunkSection chunkSection = chunkSectionCache.getSection(mutable);
                             if (chunkSection == WorldChunk.EMPTY_SECTION) continue;
-                            int ai = ChunkSectionPos.getLocalCoord(ab);
-                            int aj = ChunkSectionPos.getLocalCoord(ad);
-                            int ak = ChunkSectionPos.getLocalCoord(af);
-                            BlockState blockState = chunkSection.getBlockState(ai, aj, ak);
+                            int ad = ChunkSectionPos.getLocalCoord(t);
+                            int ae = ChunkSectionPos.getLocalCoord(v);
+                            int af = ChunkSectionPos.getLocalCoord(aa);
+                            BlockState blockState = chunkSection.getBlockState(ad, ae, af);
                             for (OreFeatureConfig.Target target : config.targets) {
                                 if (!OreFeature.shouldPlace(blockState, chunkSectionCache::getBlockState, random, config, target, mutable)) continue;
-                                chunkSection.setBlockState(ai, aj, ak, target.state, false);
+                                chunkSection.setBlockState(ad, ae, af, target.state, false);
                                 ++i;
-                                continue block15;
+                                continue block11;
                             }
                         }
                     }

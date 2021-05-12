@@ -36,8 +36,7 @@ extends Task<E> {
         }
         Optional<? extends LivingEntity> optional = this.targetGetter.apply(mobEntity);
         if (optional.isPresent()) {
-            LivingEntity livingEntity = optional.get();
-            return livingEntity.isAlive() && livingEntity.canTakeDamage();
+            return optional.get().canTakeDamage();
         }
         return false;
     }

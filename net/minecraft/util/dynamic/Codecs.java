@@ -110,7 +110,7 @@ public class Codecs {
         }
 
         public String toString() {
-            return "XorCodec[" + this.first + ", " + this.second + ']';
+            return "XorCodec[" + this.first + ", " + this.second + "]";
         }
 
         @Override

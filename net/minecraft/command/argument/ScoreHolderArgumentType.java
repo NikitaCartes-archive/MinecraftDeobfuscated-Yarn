@@ -45,7 +45,7 @@ implements ArgumentType<ScoreHolder> {
     private static final Collection<String> EXAMPLES = Arrays.asList("Player", "0123", "*", "@e");
     private static final SimpleCommandExceptionType EMPTY_SCORE_HOLDER_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.scoreHolder.empty"));
     private static final byte field_32470 = 1;
-    private final boolean multiple;
+    final boolean multiple;
 
     public ScoreHolderArgumentType(boolean multiple) {
         this.multiple = multiple;
@@ -117,6 +117,33 @@ implements ArgumentType<ScoreHolder> {
         return this.parse(stringReader);
     }
 
+    @FunctionalInterface
+    public static interface ScoreHolder {
+        public Collection<String> getNames(ServerCommandSource var1, Supplier<Collection<String>> var2) throws CommandSyntaxException;
+    }
+
+    public static class SelectorScoreHolder
+    implements ScoreHolder {
+        private final EntitySelector selector;
+
+        public SelectorScoreHolder(EntitySelector entitySelector) {
+            this.selector = entitySelector;
+        }
+
+        @Override
+        public Collection<String> getNames(ServerCommandSource serverCommandSource, Supplier<Collection<String>> supplier) throws CommandSyntaxException {
+            List<? extends Entity> list = this.selector.getEntities(serverCommandSource);
+            if (list.isEmpty()) {
+                throw EntityArgumentType.ENTITY_NOT_FOUND_EXCEPTION.create();
+            }
+            ArrayList<String> list2 = Lists.newArrayList();
+            for (Entity entity : list) {
+                list2.add(entity.getEntityName());
+            }
+            return list2;
+        }
+    }
+
     public static class Serializer
     implements ArgumentSerializer<ScoreHolderArgumentType> {
         @Override
@@ -144,33 +171,6 @@ implements ArgumentType<ScoreHolder> {
         public /* synthetic */ ArgumentType fromPacket(PacketByteBuf packetByteBuf) {
             return this.fromPacket(packetByteBuf);
         }
-    }
-
-    public static class SelectorScoreHolder
-    implements ScoreHolder {
-        private final EntitySelector selector;
-
-        public SelectorScoreHolder(EntitySelector entitySelector) {
-            this.selector = entitySelector;
-        }
-
-        @Override
-        public Collection<String> getNames(ServerCommandSource serverCommandSource, Supplier<Collection<String>> supplier) throws CommandSyntaxException {
-            List<? extends Entity> list = this.selector.getEntities(serverCommandSource);
-            if (list.isEmpty()) {
-                throw EntityArgumentType.ENTITY_NOT_FOUND_EXCEPTION.create();
-            }
-            ArrayList<String> list2 = Lists.newArrayList();
-            for (Entity entity : list) {
-                list2.add(entity.getEntityName());
-            }
-            return list2;
-        }
-    }
-
-    @FunctionalInterface
-    public static interface ScoreHolder {
-        public Collection<String> getNames(ServerCommandSource var1, Supplier<Collection<String>> var2) throws CommandSyntaxException;
     }
 }
 

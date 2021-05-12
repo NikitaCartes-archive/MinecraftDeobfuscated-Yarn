@@ -22,8 +22,8 @@ import net.minecraft.world.chunk.Chunk;
 import org.jetbrains.annotations.Nullable;
 
 public class Heightmap {
-    private static final Predicate<BlockState> NOT_AIR = state -> !state.isAir();
-    private static final Predicate<BlockState> SUFFOCATES = state -> state.getMaterial().blocksMovement();
+    static final Predicate<BlockState> NOT_AIR = state -> !state.isAir();
+    static final Predicate<BlockState> SUFFOCATES = state -> state.getMaterial().blocksMovement();
     private final PackedIntegerArray storage;
     private final Predicate<BlockState> blockPredicate;
     private final Chunk chunk;
@@ -115,20 +115,12 @@ public class Heightmap {
         return x + z * 16;
     }
 
-    static /* synthetic */ Predicate getNotAirPredicate() {
-        return NOT_AIR;
-    }
-
-    static /* synthetic */ Predicate getSuffocatesPredicate() {
-        return SUFFOCATES;
-    }
-
     public static enum Type implements StringIdentifiable
     {
-        WORLD_SURFACE_WG("WORLD_SURFACE_WG", Purpose.WORLDGEN, Heightmap.getNotAirPredicate()),
-        WORLD_SURFACE("WORLD_SURFACE", Purpose.CLIENT, Heightmap.getNotAirPredicate()),
-        OCEAN_FLOOR_WG("OCEAN_FLOOR_WG", Purpose.WORLDGEN, Heightmap.getSuffocatesPredicate()),
-        OCEAN_FLOOR("OCEAN_FLOOR", Purpose.LIVE_WORLD, Heightmap.getSuffocatesPredicate()),
+        WORLD_SURFACE_WG("WORLD_SURFACE_WG", Purpose.WORLDGEN, NOT_AIR),
+        WORLD_SURFACE("WORLD_SURFACE", Purpose.CLIENT, NOT_AIR),
+        OCEAN_FLOOR_WG("OCEAN_FLOOR_WG", Purpose.WORLDGEN, SUFFOCATES),
+        OCEAN_FLOOR("OCEAN_FLOOR", Purpose.LIVE_WORLD, SUFFOCATES),
         MOTION_BLOCKING("MOTION_BLOCKING", Purpose.CLIENT, blockState -> blockState.getMaterial().blocksMovement() || !blockState.getFluidState().isEmpty()),
         MOTION_BLOCKING_NO_LEAVES("MOTION_BLOCKING_NO_LEAVES", Purpose.LIVE_WORLD, blockState -> (blockState.getMaterial().blocksMovement() || !blockState.getFluidState().isEmpty()) && !(blockState.getBlock() instanceof LeavesBlock));
 

@@ -39,7 +39,7 @@ implements FeatureConfig {
         this(stateProvider, blockPlacer, whitelist.stream().map(AbstractBlock.AbstractBlockState::getBlock).collect(Collectors.toSet()), ImmutableSet.copyOf(blacklist), tries, spreadX, spreadY, spreadZ, canReplace, project, needsWater);
     }
 
-    private RandomPatchFeatureConfig(BlockStateProvider stateProvider, BlockPlacer blockPlacer, Set<Block> whitelist, Set<BlockState> blacklist, int tries, int spreadX, int spreadY, int spreadZ, boolean canReplace, boolean project, boolean needsWater) {
+    RandomPatchFeatureConfig(BlockStateProvider stateProvider, BlockPlacer blockPlacer, Set<Block> whitelist, Set<BlockState> blacklist, int tries, int spreadX, int spreadY, int spreadZ, boolean canReplace, boolean project, boolean needsWater) {
         this.stateProvider = stateProvider;
         this.blockPlacer = blockPlacer;
         this.whitelist = whitelist;

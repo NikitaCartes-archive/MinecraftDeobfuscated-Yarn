@@ -19,7 +19,7 @@ import net.minecraft.util.Identifier;
 
 public class OnKilledCriterion
 extends AbstractCriterion<Conditions> {
-    private final Identifier id;
+    final Identifier id;
 
     public OnKilledCriterion(Identifier id) {
         this.id = id;

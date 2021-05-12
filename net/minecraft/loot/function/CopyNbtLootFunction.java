@@ -35,13 +35,13 @@ import net.minecraft.util.JsonHelper;
 
 public class CopyNbtLootFunction
 extends ConditionalLootFunction {
-    private final LootNbtProvider source;
-    private final List<Operation> operations;
+    final LootNbtProvider source;
+    final List<Operation> operations;
 
-    private CopyNbtLootFunction(LootCondition[] conditions, LootNbtProvider source, List<Operation> operations) {
-        super(conditions);
-        this.source = source;
-        this.operations = ImmutableList.copyOf(operations);
+    CopyNbtLootFunction(LootCondition[] lootConditions, LootNbtProvider lootNbtProvider, List<Operation> list) {
+        super(lootConditions);
+        this.source = lootNbtProvider;
+        this.operations = ImmutableList.copyOf(list);
     }
 
     @Override
@@ -49,7 +49,7 @@ extends ConditionalLootFunction {
         return LootFunctionTypes.COPY_NBT;
     }
 
-    private static NbtPathArgumentType.NbtPath parseNbtPath(String nbtPath) {
+    static NbtPathArgumentType.NbtPath parseNbtPath(String nbtPath) {
         try {
             return new NbtPathArgumentType().parse(new StringReader(nbtPath));
         } catch (CommandSyntaxException commandSyntaxException) {
@@ -77,6 +77,82 @@ extends ConditionalLootFunction {
 
     public static Builder builder(LootContext.EntityTarget target) {
         return new Builder(ContextLootNbtProvider.fromTarget(target));
+    }
+
+    public static class Builder
+    extends ConditionalLootFunction.Builder<Builder> {
+        private final LootNbtProvider source;
+        private final List<Operation> operations = Lists.newArrayList();
+
+        Builder(LootNbtProvider lootNbtProvider) {
+            this.source = lootNbtProvider;
+        }
+
+        public Builder withOperation(String source, String target, Operator operator) {
+            this.operations.add(new Operation(source, target, operator));
+            return this;
+        }
+
+        public Builder withOperation(String source, String target) {
+            return this.withOperation(source, target, Operator.REPLACE);
+        }
+
+        @Override
+        protected Builder getThisBuilder() {
+            return this;
+        }
+
+        @Override
+        public LootFunction build() {
+            return new CopyNbtLootFunction(this.getConditions(), this.source, this.operations);
+        }
+
+        @Override
+        protected /* synthetic */ ConditionalLootFunction.Builder getThisBuilder() {
+            return this.getThisBuilder();
+        }
+    }
+
+    static class Operation {
+        private final String sourcePath;
+        private final NbtPathArgumentType.NbtPath parsedSourcePath;
+        private final String targetPath;
+        private final NbtPathArgumentType.NbtPath parsedTargetPath;
+        private final Operator operator;
+
+        Operation(String string, String string2, Operator operator) {
+            this.sourcePath = string;
+            this.parsedSourcePath = CopyNbtLootFunction.parseNbtPath(string);
+            this.targetPath = string2;
+            this.parsedTargetPath = CopyNbtLootFunction.parseNbtPath(string2);
+            this.operator = operator;
+        }
+
+        public void execute(Supplier<NbtElement> itemTagTagGetter, NbtElement sourceEntityTag) {
+            try {
+                List<NbtElement> list = this.parsedSourcePath.get(sourceEntityTag);
+                if (!list.isEmpty()) {
+                    this.operator.merge(itemTagTagGetter.get(), this.parsedTargetPath, list);
+                }
+            } catch (CommandSyntaxException commandSyntaxException) {
+                // empty catch block
+            }
+        }
+
+        public JsonObject toJson() {
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("source", this.sourcePath);
+            jsonObject.addProperty("target", this.targetPath);
+            jsonObject.addProperty("op", this.operator.name);
+            return jsonObject;
+        }
+
+        public static Operation fromJson(JsonObject json) {
+            String string = JsonHelper.getString(json, "source");
+            String string2 = JsonHelper.getString(json, "target");
+            Operator operator = Operator.get(JsonHelper.getString(json, "op"));
+            return new Operation(string, string2, operator);
+        }
     }
 
     public static class Serializer
@@ -147,12 +223,12 @@ extends ConditionalLootFunction {
             }
         };
 
-        private final String name;
+        final String name;
 
         public abstract void merge(NbtElement var1, NbtPathArgumentType.NbtPath var2, List<NbtElement> var3) throws CommandSyntaxException;
 
-        private Operator(String name) {
-            this.name = name;
+        Operator(String string2) {
+            this.name = string2;
         }
 
         public static Operator get(String name) {
@@ -161,82 +237,6 @@ extends ConditionalLootFunction {
                 return operator;
             }
             throw new IllegalArgumentException("Invalid merge strategy" + name);
-        }
-    }
-
-    public static class Builder
-    extends ConditionalLootFunction.Builder<Builder> {
-        private final LootNbtProvider source;
-        private final List<Operation> operations = Lists.newArrayList();
-
-        private Builder(LootNbtProvider source) {
-            this.source = source;
-        }
-
-        public Builder withOperation(String source, String target, Operator operator) {
-            this.operations.add(new Operation(source, target, operator));
-            return this;
-        }
-
-        public Builder withOperation(String source, String target) {
-            return this.withOperation(source, target, Operator.REPLACE);
-        }
-
-        @Override
-        protected Builder getThisBuilder() {
-            return this;
-        }
-
-        @Override
-        public LootFunction build() {
-            return new CopyNbtLootFunction(this.getConditions(), this.source, this.operations);
-        }
-
-        @Override
-        protected /* synthetic */ ConditionalLootFunction.Builder getThisBuilder() {
-            return this.getThisBuilder();
-        }
-    }
-
-    static class Operation {
-        private final String sourcePath;
-        private final NbtPathArgumentType.NbtPath parsedSourcePath;
-        private final String targetPath;
-        private final NbtPathArgumentType.NbtPath parsedTargetPath;
-        private final Operator operator;
-
-        private Operation(String source, String target, Operator operator) {
-            this.sourcePath = source;
-            this.parsedSourcePath = CopyNbtLootFunction.parseNbtPath(source);
-            this.targetPath = target;
-            this.parsedTargetPath = CopyNbtLootFunction.parseNbtPath(target);
-            this.operator = operator;
-        }
-
-        public void execute(Supplier<NbtElement> itemTagTagGetter, NbtElement sourceEntityTag) {
-            try {
-                List<NbtElement> list = this.parsedSourcePath.get(sourceEntityTag);
-                if (!list.isEmpty()) {
-                    this.operator.merge(itemTagTagGetter.get(), this.parsedTargetPath, list);
-                }
-            } catch (CommandSyntaxException commandSyntaxException) {
-                // empty catch block
-            }
-        }
-
-        public JsonObject toJson() {
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("source", this.sourcePath);
-            jsonObject.addProperty("target", this.targetPath);
-            jsonObject.addProperty("op", this.operator.name);
-            return jsonObject;
-        }
-
-        public static Operation fromJson(JsonObject json) {
-            String string = JsonHelper.getString(json, "source");
-            String string2 = JsonHelper.getString(json, "target");
-            Operator operator = Operator.get(JsonHelper.getString(json, "op"));
-            return new Operation(string, string2, operator);
         }
     }
 }

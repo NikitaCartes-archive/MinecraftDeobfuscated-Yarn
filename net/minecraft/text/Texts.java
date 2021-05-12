@@ -87,7 +87,7 @@ public class Texts {
             return LiteralText.EMPTY;
         }
         if (elements.size() == 1) {
-            return transformer.apply(elements.iterator().next());
+            return transformer.apply((Comparable)elements.iterator().next());
         }
         ArrayList<T> list = Lists.newArrayList(elements);
         list.sort(Comparable::compareTo);

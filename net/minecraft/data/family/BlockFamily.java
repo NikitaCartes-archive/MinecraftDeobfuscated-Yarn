@@ -12,15 +12,15 @@ import org.jetbrains.annotations.Nullable;
 
 public class BlockFamily {
     private final Block baseBlock;
-    private final Map<Variant, Block> variants = Maps.newHashMap();
-    private boolean generateModels = true;
-    private boolean generateRecipes = true;
+    final Map<Variant, Block> variants = Maps.newHashMap();
+    boolean generateModels = true;
+    boolean generateRecipes = true;
     @Nullable
-    private String group;
+    String group;
     @Nullable
-    private String unlockCriterionName;
+    String unlockCriterionName;
 
-    private BlockFamily(Block baseBlock) {
+    BlockFamily(Block baseBlock) {
         this.baseBlock = baseBlock;
     }
 
@@ -84,7 +84,7 @@ public class BlockFamily {
             return this;
         }
 
-        public Builder method_36544(Block block) {
+        public Builder cut(Block block) {
             this.family.variants.put(Variant.CUT, block);
             return this;
         }

@@ -120,7 +120,6 @@ public class FluidRenderer {
             float ad;
             float ac;
             float v;
-            Sprite sprite;
             bl8 = true;
             n -= 0.001f;
             o -= 0.001f;

@@ -23,10 +23,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class ContextLootScoreProvider
 implements LootScoreProvider {
-    private final LootContext.EntityTarget target;
+    final LootContext.EntityTarget target;
 
-    private ContextLootScoreProvider(LootContext.EntityTarget target) {
-        this.target = target;
+    ContextLootScoreProvider(LootContext.EntityTarget entityTarget) {
+        this.target = entityTarget;
     }
 
     public static LootScoreProvider create(LootContext.EntityTarget target) {

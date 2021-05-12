@@ -11,7 +11,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
 
 public class WeatherCommand {
-    private static final int field_33398 = 6000;
+    private static final int DEFAULT_DURATION = 6000;
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("weather").requires(source -> source.hasPermissionLevel(2))).then(((LiteralArgumentBuilder)CommandManager.literal("clear").executes(context -> WeatherCommand.executeClear((ServerCommandSource)context.getSource(), 6000))).then(CommandManager.argument("duration", IntegerArgumentType.integer(0, 1000000)).executes(context -> WeatherCommand.executeClear((ServerCommandSource)context.getSource(), IntegerArgumentType.getInteger(context, "duration") * 20))))).then(((LiteralArgumentBuilder)CommandManager.literal("rain").executes(context -> WeatherCommand.executeRain((ServerCommandSource)context.getSource(), 6000))).then(CommandManager.argument("duration", IntegerArgumentType.integer(0, 1000000)).executes(context -> WeatherCommand.executeRain((ServerCommandSource)context.getSource(), IntegerArgumentType.getInteger(context, "duration") * 20))))).then(((LiteralArgumentBuilder)CommandManager.literal("thunder").executes(context -> WeatherCommand.executeThunder((ServerCommandSource)context.getSource(), 6000))).then(CommandManager.argument("duration", IntegerArgumentType.integer(0, 1000000)).executes(context -> WeatherCommand.executeThunder((ServerCommandSource)context.getSource(), IntegerArgumentType.getInteger(context, "duration") * 20)))));

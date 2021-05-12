@@ -31,13 +31,13 @@ public class WeightedList<U> {
     }
 
     public WeightedList<U> add(U data, int weight) {
-        this.entries.add(new Entry(data, weight));
+        this.entries.add(new Entry<U>(data, weight));
         return this;
     }
 
     public WeightedList<U> shuffle() {
-        this.entries.forEach(entry -> ((Entry)entry).setShuffledOrder(this.random.nextFloat()));
-        this.entries.sort(Comparator.comparingDouble(entry -> ((Entry)entry).getShuffledOrder()));
+        this.entries.forEach(entry -> entry.setShuffledOrder(this.random.nextFloat()));
+        this.entries.sort(Comparator.comparingDouble(Entry::getShuffledOrder));
         return this;
     }
 
@@ -50,11 +50,11 @@ public class WeightedList<U> {
     }
 
     public static class Entry<T> {
-        private final T data;
-        private final int weight;
+        final T data;
+        final int weight;
         private double shuffledOrder;
 
-        private Entry(T data, int weight) {
+        Entry(T data, int weight) {
             this.weight = weight;
             this.data = data;
         }
@@ -63,7 +63,7 @@ public class WeightedList<U> {
             return this.shuffledOrder;
         }
 
-        private void setShuffledOrder(float random) {
+        void setShuffledOrder(float random) {
             this.shuffledOrder = -Math.pow(random, 1.0f / (float)this.weight);
         }
 
@@ -85,7 +85,7 @@ public class WeightedList<U> {
                 @Override
                 public <T> DataResult<Pair<Entry<E>, T>> decode(DynamicOps<T> ops, T data2) {
                     Dynamic dynamic = new Dynamic(ops, data2);
-                    return dynamic.get("data").flatMap(codec::parse).map((? super R data) -> new Entry(data, dynamic.get("weight").asInt(1))).map((? super R entry) -> Pair.of(entry, ops.empty()));
+                    return dynamic.get("data").flatMap(codec::parse).map((? super R data) -> new Entry<Object>(data, dynamic.get("weight").asInt(1))).map((? super R entry) -> Pair.of(entry, ops.empty()));
                 }
 
                 @Override

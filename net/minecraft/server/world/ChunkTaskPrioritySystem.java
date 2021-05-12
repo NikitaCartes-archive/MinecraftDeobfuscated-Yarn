@@ -43,7 +43,7 @@ AutoCloseable {
     }
 
     public static <T> Task<T> method_34871(Function<MessageListener<Unit>, T> function, long l, IntSupplier intSupplier) {
-        return new Task(function, l, intSupplier);
+        return new Task<T>(function, l, intSupplier);
     }
 
     public static Task<Runnable> createMessage(Runnable task, long pos, IntSupplier lastLevelUpdatedToProvider) {
@@ -68,12 +68,12 @@ AutoCloseable {
     public <T> MessageListener<Task<T>> createExecutor(MessageListener<T> executor, boolean addBlocker) {
         return (MessageListener)this.controlActor.ask(yield -> new TaskQueue.PrioritizedTask(0, () -> {
             this.getQueue(executor);
-            yield.send(MessageListener.create("chunk priority sorter around " + executor.getName(), task -> this.enqueueChunk(executor, ((Task)task).taskFunction, ((Task)task).pos, ((Task)task).lastLevelUpdatedToProvider, addBlocker)));
+            yield.send(MessageListener.create("chunk priority sorter around " + executor.getName(), task -> this.enqueueChunk(executor, task.taskFunction, task.pos, task.lastLevelUpdatedToProvider, addBlocker)));
         })).join();
     }
 
     public MessageListener<UnblockingMessage> createUnblockingExecutor(MessageListener<Runnable> executor) {
-        return (MessageListener)this.controlActor.ask(yield -> new TaskQueue.PrioritizedTask(0, () -> yield.send(MessageListener.create("chunk priority sorter around " + executor.getName(), unblockingMessage -> this.removeChunk(executor, ((UnblockingMessage)unblockingMessage).pos, ((UnblockingMessage)unblockingMessage).callback, ((UnblockingMessage)unblockingMessage).removeTask))))).join();
+        return (MessageListener)this.controlActor.ask(yield -> new TaskQueue.PrioritizedTask(0, () -> yield.send(MessageListener.create("chunk priority sorter around " + executor.getName(), unblockingMessage -> this.removeChunk(executor, unblockingMessage.pos, unblockingMessage.callback, unblockingMessage.removeTask))))).join();
     }
 
     @Override
@@ -142,27 +142,27 @@ AutoCloseable {
         this.queues.keySet().forEach(MessageListener::close);
     }
 
-    public static final class UnblockingMessage {
-        private final Runnable callback;
-        private final long pos;
-        private final boolean removeTask;
+    public static final class Task<T> {
+        final Function<MessageListener<Unit>, T> taskFunction;
+        final long pos;
+        final IntSupplier lastLevelUpdatedToProvider;
 
-        private UnblockingMessage(Runnable callback, long pos, boolean removeTask) {
-            this.callback = callback;
-            this.pos = pos;
-            this.removeTask = removeTask;
+        Task(Function<MessageListener<Unit>, T> function, long l, IntSupplier intSupplier) {
+            this.taskFunction = function;
+            this.pos = l;
+            this.lastLevelUpdatedToProvider = intSupplier;
         }
     }
 
-    public static final class Task<T> {
-        private final Function<MessageListener<Unit>, T> taskFunction;
-        private final long pos;
-        private final IntSupplier lastLevelUpdatedToProvider;
+    public static final class UnblockingMessage {
+        final Runnable callback;
+        final long pos;
+        final boolean removeTask;
 
-        private Task(Function<MessageListener<Unit>, T> function, long pos, IntSupplier lastLevelUpdatedToProvider) {
-            this.taskFunction = function;
-            this.pos = pos;
-            this.lastLevelUpdatedToProvider = lastLevelUpdatedToProvider;
+        UnblockingMessage(Runnable runnable, long l, boolean bl) {
+            this.callback = runnable;
+            this.pos = l;
+            this.removeTask = bl;
         }
     }
 }

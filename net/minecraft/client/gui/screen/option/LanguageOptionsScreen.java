@@ -28,7 +28,7 @@ public class LanguageOptionsScreen
 extends GameOptionsScreen {
     private static final Text LANGUAGE_WARNING_TEXT = new LiteralText("(").append(new TranslatableText("options.languageWarning")).append(")").formatted(Formatting.GRAY);
     private LanguageSelectionListWidget languageSelectionList;
-    private final LanguageManager languageManager;
+    final LanguageManager languageManager;
 
     public LanguageOptionsScreen(Screen parent, GameOptions options, LanguageManager languageManager) {
         super(parent, options, new TranslatableText("options.language"));
@@ -73,7 +73,7 @@ extends GameOptionsScreen {
                 this.setSelected(languageEntry);
             }
             if (this.getSelected() != null) {
-                this.centerScrollOn(this.getSelected());
+                this.centerScrollOn((LanguageEntry)this.getSelected());
             }
         }
 
@@ -108,7 +108,7 @@ extends GameOptionsScreen {
         @Environment(value=EnvType.CLIENT)
         public class LanguageEntry
         extends AlwaysSelectedEntryListWidget.Entry<LanguageEntry> {
-            private final LanguageDefinition languageDefinition;
+            final LanguageDefinition languageDefinition;
 
             public LanguageEntry(LanguageDefinition languageDefinition) {
                 this.languageDefinition = languageDefinition;

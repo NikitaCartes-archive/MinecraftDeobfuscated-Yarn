@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public abstract class AbstractClientPlayerEntity
 extends PlayerEntity {
-    private static final String field_32666 = "http://skins.minecraft.net/MinecraftSkins/%s.png";
+    private static final String SKIN_URL = "http://skins.minecraft.net/MinecraftSkins/%s.png";
     public static final int field_32659 = 8;
     public static final int field_32660 = 8;
     public static final int field_32661 = 8;
@@ -104,7 +104,7 @@ extends PlayerEntity {
         TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
         AbstractTexture abstractTexture = textureManager.getOrDefault(id, MissingSprite.getMissingSpriteTexture());
         if (abstractTexture == MissingSprite.getMissingSpriteTexture()) {
-            abstractTexture = new PlayerSkinTexture(null, String.format(field_32666, ChatUtil.stripTextFormat(playerName)), DefaultSkinHelper.getTexture(AbstractClientPlayerEntity.getOfflinePlayerUuid(playerName)), true, null);
+            abstractTexture = new PlayerSkinTexture(null, String.format(SKIN_URL, ChatUtil.stripTextFormat(playerName)), DefaultSkinHelper.getTexture(AbstractClientPlayerEntity.getOfflinePlayerUuid(playerName)), true, null);
             textureManager.registerTexture(id, abstractTexture);
         }
     }

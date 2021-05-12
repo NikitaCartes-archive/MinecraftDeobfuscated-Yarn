@@ -17,7 +17,7 @@ import net.minecraft.util.Identifier;
 
 public class ShotCrossbowCriterion
 extends AbstractCriterion<Conditions> {
-    private static final Identifier ID = new Identifier("shot_crossbow");
+    static final Identifier ID = new Identifier("shot_crossbow");
 
     @Override
     public Identifier getId() {

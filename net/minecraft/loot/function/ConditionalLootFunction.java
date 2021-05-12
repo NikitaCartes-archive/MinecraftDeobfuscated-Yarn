@@ -55,29 +55,6 @@ implements LootFunction {
         return this.apply((ItemStack)itemStack, (LootContext)context);
     }
 
-    public static abstract class Serializer<T extends ConditionalLootFunction>
-    implements JsonSerializer<T> {
-        @Override
-        public void toJson(JsonObject jsonObject, T conditionalLootFunction, JsonSerializationContext jsonSerializationContext) {
-            if (!ArrayUtils.isEmpty(((ConditionalLootFunction)conditionalLootFunction).conditions)) {
-                jsonObject.add("conditions", jsonSerializationContext.serialize(((ConditionalLootFunction)conditionalLootFunction).conditions));
-            }
-        }
-
-        @Override
-        public final T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            LootCondition[] lootConditions = JsonHelper.deserialize(jsonObject, "conditions", new LootCondition[0], jsonDeserializationContext, LootCondition[].class);
-            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
-        }
-
-        public abstract T fromJson(JsonObject var1, JsonDeserializationContext var2, LootCondition[] var3);
-
-        @Override
-        public /* synthetic */ Object fromJson(JsonObject json, JsonDeserializationContext context) {
-            return this.fromJson(json, context);
-        }
-    }
-
     static final class Joiner
     extends Builder<Joiner> {
         private final Function<LootCondition[], LootFunction> joiner;
@@ -99,6 +76,29 @@ implements LootFunction {
         @Override
         protected /* synthetic */ Builder getThisBuilder() {
             return this.getThisBuilder();
+        }
+    }
+
+    public static abstract class Serializer<T extends ConditionalLootFunction>
+    implements JsonSerializer<T> {
+        @Override
+        public void toJson(JsonObject jsonObject, T conditionalLootFunction, JsonSerializationContext jsonSerializationContext) {
+            if (!ArrayUtils.isEmpty(((ConditionalLootFunction)conditionalLootFunction).conditions)) {
+                jsonObject.add("conditions", jsonSerializationContext.serialize(((ConditionalLootFunction)conditionalLootFunction).conditions));
+            }
+        }
+
+        @Override
+        public final T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+            LootCondition[] lootConditions = JsonHelper.deserialize(jsonObject, "conditions", new LootCondition[0], jsonDeserializationContext, LootCondition[].class);
+            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
+        }
+
+        public abstract T fromJson(JsonObject var1, JsonDeserializationContext var2, LootCondition[] var3);
+
+        @Override
+        public /* synthetic */ Object fromJson(JsonObject json, JsonDeserializationContext context) {
+            return this.fromJson(json, context);
         }
     }
 

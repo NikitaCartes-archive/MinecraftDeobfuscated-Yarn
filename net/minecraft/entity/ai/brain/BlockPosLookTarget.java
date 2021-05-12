@@ -34,7 +34,7 @@ implements LookTarget {
     }
 
     public String toString() {
-        return "BlockPosTracker{blockPos=" + this.blockPos + ", centerPosition=" + this.pos + '}';
+        return "BlockPosTracker{blockPos=" + this.blockPos + ", centerPosition=" + this.pos + "}";
     }
 }
 

@@ -39,7 +39,7 @@ extends Screen {
     private TextFieldWidget targetField;
     private TextFieldWidget poolField;
     private TextFieldWidget finalStateField;
-    private int generationDepth;
+    int generationDepth;
     private boolean keepJigsaws = true;
     private CyclingButtonWidget<JigsawBlockEntity.Joint> jointRotationButton;
     private ButtonWidget doneButton;

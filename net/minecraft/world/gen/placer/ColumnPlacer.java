@@ -19,11 +19,11 @@ import net.minecraft.world.gen.placer.BlockPlacerType;
 
 public class ColumnPlacer
 extends BlockPlacer {
-    public static final Codec<ColumnPlacer> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)IntProvider.field_33450.fieldOf("size")).forGetter(columnPlacer -> columnPlacer.field_33515)).apply((Applicative<ColumnPlacer, ?>)instance, ColumnPlacer::new));
-    private final IntProvider field_33515;
+    public static final Codec<ColumnPlacer> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)IntProvider.field_33450.fieldOf("size")).forGetter(columnPlacer -> columnPlacer.size)).apply((Applicative<ColumnPlacer, ?>)instance, ColumnPlacer::new));
+    private final IntProvider size;
 
-    public ColumnPlacer(IntProvider intProvider) {
-        this.field_33515 = intProvider;
+    public ColumnPlacer(IntProvider size) {
+        this.size = size;
     }
 
     @Override
@@ -34,7 +34,7 @@ extends BlockPlacer {
     @Override
     public void generate(WorldAccess world, BlockPos pos, BlockState state, Random random) {
         BlockPos.Mutable mutable = pos.mutableCopy();
-        int i = this.field_33515.get(random);
+        int i = this.size.get(random);
         for (int j = 0; j < i; ++j) {
             world.setBlockState(mutable, state, Block.NOTIFY_LISTENERS);
             mutable.move(Direction.UP);

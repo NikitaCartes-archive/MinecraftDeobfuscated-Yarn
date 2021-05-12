@@ -54,7 +54,6 @@ implements BlockEntityRenderer<SignBlockEntity> {
 
     @Override
     public void render(SignBlockEntity signBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
-        float h;
         BlockState blockState = signBlockEntity.getCachedState();
         matrixStack.push();
         float g = 0.6666667f;

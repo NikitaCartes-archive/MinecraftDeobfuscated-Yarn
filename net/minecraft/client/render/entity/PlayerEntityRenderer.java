@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.render.entity;
 
+import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
@@ -153,7 +154,7 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
         if (d < 100.0 && (scoreboardObjective = (scoreboard = abstractClientPlayerEntity.getScoreboard()).getObjectiveForSlot(2)) != null) {
             ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(abstractClientPlayerEntity.getEntityName(), scoreboardObjective);
             super.renderLabelIfPresent(abstractClientPlayerEntity, new LiteralText(Integer.toString(scoreboardPlayerScore.getScore())).append(" ").append(scoreboardObjective.getDisplayName()), matrixStack, vertexConsumerProvider, i);
-            this.getFontRenderer().getClass();
+            Objects.requireNonNull(this.getFontRenderer());
             matrixStack.translate(0.0, 9.0f * 1.15f * 0.025f, 0.0);
         }
         super.renderLabelIfPresent(abstractClientPlayerEntity, text, matrixStack, vertexConsumerProvider, i);

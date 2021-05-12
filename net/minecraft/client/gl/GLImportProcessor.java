@@ -62,14 +62,14 @@ public abstract class GLImportProcessor {
             if (string2 == null) continue;
             String string3 = source.substring(j, matcher.start(1));
             String string4 = path + string2;
-            String string5 = this.loadImport(bl, string4);
-            if (!Strings.isEmpty(string5)) {
-                if (!ChatUtil.endsWithLineBreak(string5)) {
-                    string5 = string5 + System.lineSeparator();
+            Object string5 = this.loadImport(bl, string4);
+            if (!Strings.isEmpty((CharSequence)string5)) {
+                if (!ChatUtil.endsWithLineBreak((String)string5)) {
+                    string5 = (String)string5 + System.lineSeparator();
                 }
-                context.line = context.line + 1;
+                ++context.line;
                 k = context.line;
-                List<String> list2 = this.parseImports(string5, context, bl ? FileNameUtil.getPosixFullPath(string4) : "");
+                List<String> list2 = this.parseImports((String)string5, context, bl ? FileNameUtil.getPosixFullPath(string4) : "");
                 list2.set(0, String.format("#line %d %d\n%s", 0, k, this.extractVersion(list2.get(0), context)));
                 if (!StringUtils.isBlank(string3)) {
                     list.add(string3);
@@ -136,10 +136,10 @@ public abstract class GLImportProcessor {
 
     @Environment(value=EnvType.CLIENT)
     static final class Context {
-        private int column;
-        private int line;
+        int column;
+        int line;
 
-        private Context() {
+        Context() {
         }
     }
 }

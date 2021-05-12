@@ -84,7 +84,7 @@ extends Screen {
     private ButtonWidget cancelButton;
     private final Hand hand;
     @Nullable
-    private PageContent pageContent = PageContent.method_27599();
+    private PageContent pageContent = PageContent.EMPTY;
     private Text pageIndicatorText = LiteralText.EMPTY;
     private final Text signedByText;
 
@@ -588,7 +588,7 @@ extends Screen {
         return new PageContent(string, position, bl, is, list.toArray(new Line[0]), list2.toArray(new Rect2i[0]));
     }
 
-    private static int getLineFromOffset(int[] lineStarts, int position) {
+    static int getLineFromOffset(int[] lineStarts, int position) {
         int i = Arrays.binarySearch(lineStarts, position);
         if (i < 0) {
             return -(i + 2);
@@ -616,13 +616,13 @@ extends Screen {
 
     @Environment(value=EnvType.CLIENT)
     static class PageContent {
-        private static final PageContent EMPTY = new PageContent("", new Position(0, 0), true, new int[]{0}, new Line[]{new Line(Style.EMPTY, "", 0, 0)}, new Rect2i[0]);
+        static final PageContent EMPTY = new PageContent("", new Position(0, 0), true, new int[]{0}, new Line[]{new Line(Style.EMPTY, "", 0, 0)}, new Rect2i[0]);
         private final String pageContent;
-        private final Position position;
-        private final boolean atEnd;
+        final Position position;
+        final boolean atEnd;
         private final int[] lineStarts;
-        private final Line[] lines;
-        private final Rect2i[] selectionRectangles;
+        final Line[] lines;
+        final Rect2i[] selectionRectangles;
 
         public PageContent(String pageContent, Position position, boolean atEnd, int[] lineStarts, Line[] lines, Rect2i[] selectionRectangles) {
             this.pageContent = pageContent;
@@ -672,11 +672,11 @@ extends Screen {
 
     @Environment(value=EnvType.CLIENT)
     static class Line {
-        private final Style style;
-        private final String content;
-        private final Text text;
-        private final int x;
-        private final int y;
+        final Style style;
+        final String content;
+        final Text text;
+        final int x;
+        final int y;
 
         public Line(Style style, String content, int x, int y) {
             this.style = style;

@@ -19,12 +19,12 @@ import net.minecraft.util.JsonSerializer;
 
 public class AlternativeLootCondition
 implements LootCondition {
-    private final LootCondition[] terms;
+    final LootCondition[] terms;
     private final Predicate<LootContext> predicate;
 
-    private AlternativeLootCondition(LootCondition[] terms) {
-        this.terms = terms;
-        this.predicate = LootConditionTypes.joinOr(terms);
+    AlternativeLootCondition(LootCondition[] lootConditions) {
+        this.terms = lootConditions;
+        this.predicate = LootConditionTypes.joinOr(lootConditions);
     }
 
     @Override
@@ -54,25 +54,6 @@ implements LootCondition {
         return this.test((LootContext)context);
     }
 
-    public static class Serializer
-    implements JsonSerializer<AlternativeLootCondition> {
-        @Override
-        public void toJson(JsonObject jsonObject, AlternativeLootCondition alternativeLootCondition, JsonSerializationContext jsonSerializationContext) {
-            jsonObject.add("terms", jsonSerializationContext.serialize(alternativeLootCondition.terms));
-        }
-
-        @Override
-        public AlternativeLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            LootCondition[] lootConditions = JsonHelper.deserialize(jsonObject, "terms", jsonDeserializationContext, LootCondition[].class);
-            return new AlternativeLootCondition(lootConditions);
-        }
-
-        @Override
-        public /* synthetic */ Object fromJson(JsonObject json, JsonDeserializationContext context) {
-            return this.fromJson(json, context);
-        }
-    }
-
     public static class Builder
     implements LootCondition.Builder {
         private final List<LootCondition> terms = Lists.newArrayList();
@@ -92,6 +73,25 @@ implements LootCondition {
         @Override
         public LootCondition build() {
             return new AlternativeLootCondition(this.terms.toArray(new LootCondition[0]));
+        }
+    }
+
+    public static class Serializer
+    implements JsonSerializer<AlternativeLootCondition> {
+        @Override
+        public void toJson(JsonObject jsonObject, AlternativeLootCondition alternativeLootCondition, JsonSerializationContext jsonSerializationContext) {
+            jsonObject.add("terms", jsonSerializationContext.serialize(alternativeLootCondition.terms));
+        }
+
+        @Override
+        public AlternativeLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+            LootCondition[] lootConditions = JsonHelper.deserialize(jsonObject, "terms", jsonDeserializationContext, LootCondition[].class);
+            return new AlternativeLootCondition(lootConditions);
+        }
+
+        @Override
+        public /* synthetic */ Object fromJson(JsonObject json, JsonDeserializationContext context) {
+            return this.fromJson(json, context);
         }
     }
 }

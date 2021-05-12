@@ -88,32 +88,6 @@ public abstract class BossBar {
         return this.thickenFog;
     }
 
-    public static enum Style {
-        PROGRESS("progress"),
-        NOTCHED_6("notched_6"),
-        NOTCHED_10("notched_10"),
-        NOTCHED_12("notched_12"),
-        NOTCHED_20("notched_20");
-
-        private final String name;
-
-        private Style(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return this.name;
-        }
-
-        public static Style byName(String name) {
-            for (Style style : Style.values()) {
-                if (!style.name.equals(name)) continue;
-                return style;
-            }
-            return PROGRESS;
-        }
-    }
-
     public static enum Color {
         PINK("pink", Formatting.RED),
         BLUE("blue", Formatting.BLUE),
@@ -145,6 +119,32 @@ public abstract class BossBar {
                 return color;
             }
             return WHITE;
+        }
+    }
+
+    public static enum Style {
+        PROGRESS("progress"),
+        NOTCHED_6("notched_6"),
+        NOTCHED_10("notched_10"),
+        NOTCHED_12("notched_12"),
+        NOTCHED_20("notched_20");
+
+        private final String name;
+
+        private Style(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        public static Style byName(String name) {
+            for (Style style : Style.values()) {
+                if (!style.name.equals(name)) continue;
+                return style;
+            }
+            return PROGRESS;
         }
     }
 }

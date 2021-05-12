@@ -36,15 +36,15 @@ public interface TagGroup<T> {
     public Tag<T> getTagOrEmpty(Identifier var1);
 
     @Nullable
-    default public Identifier method_34894(Tag.Identified<T> identified) {
-        return identified.getId();
+    default public Identifier getId(Tag.Identified<T> tag) {
+        return tag.getId();
     }
 
     @Nullable
     public Identifier getUncheckedTagId(Tag<T> var1);
 
-    default public boolean method_34895(Identifier identifier) {
-        return this.getTags().containsKey(identifier);
+    default public boolean contains(Identifier id) {
+        return this.getTags().containsKey(id);
     }
 
     default public Collection<Identifier> getTagIds() {
@@ -68,14 +68,14 @@ public interface TagGroup<T> {
      */
     default public Serialized serialize(Registry<T> registry) {
         Map<Identifier, Tag<T>> map = this.getTags();
-        HashMap map2 = Maps.newHashMapWithExpectedSize(map.size());
+        HashMap<Identifier, IntList> map2 = Maps.newHashMapWithExpectedSize(map.size());
         map.forEach((id, tag) -> {
             List list = tag.values();
             IntArrayList intList = new IntArrayList(list.size());
             for (Object object : list) {
                 intList.add(registry.getRawId(object));
             }
-            map2.put(id, intList);
+            map2.put((Identifier)id, intList);
         });
         return new Serialized(map2);
     }
@@ -128,9 +128,9 @@ public interface TagGroup<T> {
     }
 
     public static class Serialized {
-        private final Map<Identifier, IntList> contents;
+        final Map<Identifier, IntList> contents;
 
-        private Serialized(Map<Identifier, IntList> contents) {
+        Serialized(Map<Identifier, IntList> contents) {
             this.contents = contents;
         }
 

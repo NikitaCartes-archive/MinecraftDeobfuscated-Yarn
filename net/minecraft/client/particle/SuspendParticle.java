@@ -16,12 +16,12 @@ import net.minecraft.particle.DefaultParticleType;
 @Environment(value=EnvType.CLIENT)
 public class SuspendParticle
 extends SpriteBillboardParticle {
-    private SuspendParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-        super(world, x, y, z, velocityX, velocityY, velocityZ);
-        float f;
-        this.colorRed = f = this.random.nextFloat() * 0.1f + 0.2f;
-        this.colorGreen = f;
-        this.colorBlue = f;
+    SuspendParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+        super(clientWorld, d, e, f, g, h, i);
+        float j;
+        this.colorRed = j = this.random.nextFloat() * 0.1f + 0.2f;
+        this.colorGreen = j;
+        this.colorBlue = j;
         this.setBoundingBoxSpacing(0.02f, 0.02f);
         this.scale *= this.random.nextFloat() * 0.6f + 0.5f;
         this.velocityX *= (double)0.02f;

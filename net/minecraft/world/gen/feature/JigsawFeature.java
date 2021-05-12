@@ -20,9 +20,9 @@ import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
 
 public class JigsawFeature
 extends StructureFeature<StructurePoolFeatureConfig> {
-    private final int structureStartY;
-    private final boolean field_25836;
-    private final boolean surface;
+    final int structureStartY;
+    final boolean field_25836;
+    final boolean surface;
 
     public JigsawFeature(Codec<StructurePoolFeatureConfig> codec, int structureStartY, boolean bl, boolean surface) {
         super(codec);

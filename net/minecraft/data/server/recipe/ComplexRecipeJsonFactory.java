@@ -12,7 +12,7 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 public class ComplexRecipeJsonFactory {
-    private final SpecialRecipeSerializer<?> serializer;
+    final SpecialRecipeSerializer<?> serializer;
 
     public ComplexRecipeJsonFactory(SpecialRecipeSerializer<?> serializer) {
         this.serializer = serializer;

@@ -166,8 +166,12 @@ extends LivingEntity {
         this.pathfindingPenalties.put(nodeType, Float.valueOf(penalty));
     }
 
-    public boolean method_29244(PathNodeType pathNodeType) {
-        return pathNodeType != PathNodeType.DANGER_FIRE && pathNodeType != PathNodeType.DANGER_CACTUS && pathNodeType != PathNodeType.DANGER_OTHER && pathNodeType != PathNodeType.WALKABLE_DOOR;
+    /**
+     * {@return if this entity can jump to the next node in path given the type of
+     * the node}
+     */
+    public boolean canJumpToNextPathNode(PathNodeType type) {
+        return type != PathNodeType.DANGER_FIRE && type != PathNodeType.DANGER_CACTUS && type != PathNodeType.DANGER_OTHER && type != PathNodeType.WALKABLE_DOOR;
     }
 
     protected BodyControl createBodyControl() {
@@ -807,21 +811,11 @@ extends LivingEntity {
     }
 
     protected float getDropChance(EquipmentSlot slot) {
-        float f;
-        switch (slot.getType()) {
-            case HAND: {
-                f = this.handDropChances[slot.getEntitySlotId()];
-                break;
-            }
-            case ARMOR: {
-                f = this.armorDropChances[slot.getEntitySlotId()];
-                break;
-            }
-            default: {
-                f = 0.0f;
-            }
-        }
-        return f;
+        return switch (slot.getType()) {
+            case EquipmentSlot.Type.HAND -> this.handDropChances[slot.getEntitySlotId()];
+            case EquipmentSlot.Type.ARMOR -> this.armorDropChances[slot.getEntitySlotId()];
+            default -> 0.0f;
+        };
     }
 
     protected void initEquipment(LocalDifficulty difficulty) {

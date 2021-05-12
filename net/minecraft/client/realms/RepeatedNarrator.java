@@ -24,7 +24,7 @@ public class RepeatedNarrator {
 
     public void narrate(String message) {
         Parameters parameters2 = this.params.updateAndGet(parameters -> {
-            if (parameters == null || !message.equals(((Parameters)parameters).message)) {
+            if (parameters == null || !message.equals(parameters.message)) {
                 return new Parameters(message, RateLimiter.create(this.permitsPerSecond));
             }
             return parameters;
@@ -36,8 +36,8 @@ public class RepeatedNarrator {
 
     @Environment(value=EnvType.CLIENT)
     static class Parameters {
-        private final String message;
-        private final RateLimiter rateLimiter;
+        final String message;
+        final RateLimiter rateLimiter;
 
         Parameters(String message, RateLimiter rateLimiter) {
             this.message = message;

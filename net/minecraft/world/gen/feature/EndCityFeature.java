@@ -47,7 +47,7 @@ extends StructureFeature<DefaultFeatureConfig> {
         return Start::new;
     }
 
-    private static int getGenerationHeight(ChunkPos chunkPos, ChunkGenerator chunkGenerator, HeightLimitView heightLimitView) {
+    static int getGenerationHeight(ChunkPos chunkPos, ChunkGenerator chunkGenerator, HeightLimitView heightLimitView) {
         Random random = new Random(chunkPos.x + chunkPos.z * 10387313);
         BlockRotation blockRotation = BlockRotation.random(random);
         int i = 5;

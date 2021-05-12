@@ -57,10 +57,10 @@ public class ServerNetworkIo {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final Lazy<NioEventLoopGroup> DEFAULT_CHANNEL = new Lazy<NioEventLoopGroup>(() -> new NioEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Server IO #%d").setDaemon(true).build()));
     public static final Lazy<EpollEventLoopGroup> EPOLL_CHANNEL = new Lazy<EpollEventLoopGroup>(() -> new EpollEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Epoll Server IO #%d").setDaemon(true).build()));
-    private final MinecraftServer server;
+    final MinecraftServer server;
     public volatile boolean active;
     private final List<ChannelFuture> channels = Collections.synchronizedList(Lists.newArrayList());
-    private final List<ClientConnection> connections = Collections.synchronizedList(Lists.newArrayList());
+    final List<ClientConnection> connections = Collections.synchronizedList(Lists.newArrayList());
 
     public ServerNetworkIo(MinecraftServer server) {
         this.server = server;

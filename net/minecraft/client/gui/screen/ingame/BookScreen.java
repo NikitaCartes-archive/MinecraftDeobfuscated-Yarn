@@ -250,7 +250,7 @@ extends Screen {
         return null;
     }
 
-    private static List<String> readPages(NbtCompound nbt) {
+    static List<String> readPages(NbtCompound nbt) {
         ImmutableList.Builder builder = ImmutableList.builder();
         BookScreen.method_33888(nbt, builder::add);
         return builder.build();
@@ -270,6 +270,30 @@ extends Screen {
         }
         for (int i2 = 0; i2 < nbtList.size(); ++i2) {
             consumer.accept(intFunction.apply(i2));
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static interface Contents {
+        public int getPageCount();
+
+        public StringVisitable getPageUnchecked(int var1);
+
+        default public StringVisitable getPage(int index) {
+            if (index >= 0 && index < this.getPageCount()) {
+                return this.getPageUnchecked(index);
+            }
+            return StringVisitable.EMPTY;
+        }
+
+        public static Contents create(ItemStack stack) {
+            if (stack.isOf(Items.WRITTEN_BOOK)) {
+                return new WrittenBookContents(stack);
+            }
+            if (stack.isOf(Items.WRITABLE_BOOK)) {
+                return new WritableBookContents(stack);
+            }
+            return EMPTY_PROVIDER;
         }
     }
 
@@ -332,30 +356,6 @@ extends Screen {
                 // empty catch block
             }
             return StringVisitable.plain(string);
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public static interface Contents {
-        public int getPageCount();
-
-        public StringVisitable getPageUnchecked(int var1);
-
-        default public StringVisitable getPage(int index) {
-            if (index >= 0 && index < this.getPageCount()) {
-                return this.getPageUnchecked(index);
-            }
-            return StringVisitable.EMPTY;
-        }
-
-        public static Contents create(ItemStack stack) {
-            if (stack.isOf(Items.WRITTEN_BOOK)) {
-                return new WrittenBookContents(stack);
-            }
-            if (stack.isOf(Items.WRITABLE_BOOK)) {
-                return new WritableBookContents(stack);
-            }
-            return EMPTY_PROVIDER;
         }
     }
 }

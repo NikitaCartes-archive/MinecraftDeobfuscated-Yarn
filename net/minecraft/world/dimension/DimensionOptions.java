@@ -62,7 +62,7 @@ public final class DimensionOptions {
         for (Map.Entry entry : simpleRegistry.getEntries()) {
             RegistryKey registryKey2 = (RegistryKey)entry.getKey();
             if (BASE_DIMENSIONS.contains(registryKey2)) continue;
-            simpleRegistry2.add(registryKey2, entry.getValue(), simpleRegistry.getEntryLifecycle((DimensionOptions)entry.getValue()));
+            simpleRegistry2.add(registryKey2, (DimensionOptions)entry.getValue(), simpleRegistry.getEntryLifecycle((DimensionOptions)entry.getValue()));
         }
         return simpleRegistry2;
     }

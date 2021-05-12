@@ -40,7 +40,7 @@ public interface CommandOutput {
 
     public boolean shouldBroadcastConsoleToOps();
 
-    default public boolean method_36320() {
+    default public boolean cannotBeSilenced() {
         return false;
     }
 }

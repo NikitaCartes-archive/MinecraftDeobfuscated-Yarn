@@ -35,8 +35,8 @@ import net.minecraft.world.gen.feature.StructureFeature;
 
 public class RuinedPortalFeature
 extends StructureFeature<RuinedPortalFeatureConfig> {
-    private static final String[] COMMON_PORTAL_STRUCTURE_IDS = new String[]{"ruined_portal/portal_1", "ruined_portal/portal_2", "ruined_portal/portal_3", "ruined_portal/portal_4", "ruined_portal/portal_5", "ruined_portal/portal_6", "ruined_portal/portal_7", "ruined_portal/portal_8", "ruined_portal/portal_9", "ruined_portal/portal_10"};
-    private static final String[] RARE_PORTAL_STRUCTURE_IDS = new String[]{"ruined_portal/giant_portal_1", "ruined_portal/giant_portal_2", "ruined_portal/giant_portal_3"};
+    static final String[] COMMON_PORTAL_STRUCTURE_IDS = new String[]{"ruined_portal/portal_1", "ruined_portal/portal_2", "ruined_portal/portal_3", "ruined_portal/portal_4", "ruined_portal/portal_5", "ruined_portal/portal_6", "ruined_portal/portal_7", "ruined_portal/portal_8", "ruined_portal/portal_9", "ruined_portal/portal_10"};
+    static final String[] RARE_PORTAL_STRUCTURE_IDS = new String[]{"ruined_portal/giant_portal_1", "ruined_portal/giant_portal_2", "ruined_portal/giant_portal_3"};
     private static final float field_31512 = 0.05f;
     private static final float field_31513 = 0.5f;
     private static final float field_31514 = 0.5f;
@@ -54,14 +54,12 @@ extends StructureFeature<RuinedPortalFeatureConfig> {
         return Start::new;
     }
 
-    private static boolean isColdAt(BlockPos pos, Biome biome) {
+    static boolean isColdAt(BlockPos pos, Biome biome) {
         return biome.getTemperature(pos) < 0.15f;
     }
 
-    private static int getFloorHeight(Random random, ChunkGenerator chunkGenerator, RuinedPortalStructurePiece.VerticalPlacement verticalPlacement, boolean airPocket, int height, int blockCountY, BlockBox box, HeightLimitView world) {
+    static int getFloorHeight(Random random, ChunkGenerator chunkGenerator, RuinedPortalStructurePiece.VerticalPlacement verticalPlacement, boolean airPocket, int height, int blockCountY, BlockBox box, HeightLimitView world) {
         int k;
-        int j;
-        int i;
         if (verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.IN_NETHER) {
             i = airPocket ? MathHelper.nextBetween(random, 32, 100) : (random.nextFloat() < 0.5f ? MathHelper.nextBetween(random, 27, 29) : MathHelper.nextBetween(random, 29, 100));
         } else if (verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.IN_MOUNTAIN) {
@@ -141,7 +139,6 @@ extends StructureFeature<RuinedPortalFeatureConfig> {
 
         @Override
         public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, ChunkPos chunkPos, Biome biome, RuinedPortalFeatureConfig ruinedPortalFeatureConfig, HeightLimitView heightLimitView) {
-            boolean bl;
             RuinedPortalStructurePiece.VerticalPlacement verticalPlacement;
             RuinedPortalStructurePiece.Properties properties = new RuinedPortalStructurePiece.Properties();
             if (ruinedPortalFeatureConfig.portalType == Type.DESERT) {

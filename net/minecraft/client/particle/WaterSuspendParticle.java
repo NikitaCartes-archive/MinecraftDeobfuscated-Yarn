@@ -20,7 +20,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class WaterSuspendParticle
 extends SpriteBillboardParticle {
-    private WaterSuspendParticle(ClientWorld world, SpriteProvider spriteProvider, double x, double y, double z) {
+    WaterSuspendParticle(ClientWorld world, SpriteProvider spriteProvider, double x, double y, double z) {
         super(world, x, y - 0.125, z);
         this.setBoundingBoxSpacing(0.01f, 0.01f);
         this.setSprite(spriteProvider);
@@ -31,7 +31,7 @@ extends SpriteBillboardParticle {
         this.gravityStrength = 0.0f;
     }
 
-    private WaterSuspendParticle(ClientWorld world, SpriteProvider spriteProvider, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+    WaterSuspendParticle(ClientWorld world, SpriteProvider spriteProvider, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
         super(world, x, y - 0.125, z, velocityX, velocityY, velocityZ);
         this.setBoundingBoxSpacing(0.01f, 0.01f);
         this.setSprite(spriteProvider);
@@ -98,7 +98,7 @@ extends SpriteBillboardParticle {
 
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-            WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, this.spriteProvider, d, e, f, 0.0, (double)-0.8f, 0.0){
+            WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, this.spriteProvider, d, e, f, 0.0, -0.8f, 0.0){
 
                 @Override
                 public Optional<ParticleGroup> getGroup() {

@@ -85,7 +85,7 @@ extends AnimalEntity {
     private int jumpDuration;
     private boolean lastOnGround;
     private int ticksUntilJump;
-    private int moreCarrotTicks;
+    int moreCarrotTicks;
 
     public RabbitEntity(EntityType<? extends RabbitEntity> entityType, World world) {
         super((EntityType<? extends AnimalEntity>)entityType, world);
@@ -369,7 +369,7 @@ extends AnimalEntity {
         return (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isOf(Blocks.SNOW) || blockState.isOf(Blocks.SAND)) && world.getBaseLightLevel(pos, 0) > 8;
     }
 
-    private boolean wantsCarrots() {
+    boolean wantsCarrots() {
         return this.moreCarrotTicks == 0;
     }
 
@@ -394,15 +394,66 @@ extends AnimalEntity {
         return this.createChild(world, entity);
     }
 
-    static class RabbitAttackGoal
-    extends MeleeAttackGoal {
-        public RabbitAttackGoal(RabbitEntity rabbit) {
-            super(rabbit, 1.4, true);
+    public class RabbitJumpControl
+    extends JumpControl {
+        private final RabbitEntity rabbit;
+        private boolean field_24091;
+
+        public RabbitJumpControl(RabbitEntity rabbit) {
+            super(rabbit);
+            this.rabbit = rabbit;
+        }
+
+        public boolean isActive() {
+            return this.active;
+        }
+
+        public boolean method_27313() {
+            return this.field_24091;
+        }
+
+        public void method_27311(boolean bl) {
+            this.field_24091 = bl;
         }
 
         @Override
-        protected double getSquaredMaxAttackDistance(LivingEntity entity) {
-            return 4.0f + entity.getWidth();
+        public void tick() {
+            if (this.active) {
+                this.rabbit.startJump();
+                this.active = false;
+            }
+        }
+    }
+
+    static class RabbitMoveControl
+    extends MoveControl {
+        private final RabbitEntity rabbit;
+        private double rabbitSpeed;
+
+        public RabbitMoveControl(RabbitEntity owner) {
+            super(owner);
+            this.rabbit = owner;
+        }
+
+        @Override
+        public void tick() {
+            if (this.rabbit.onGround && !this.rabbit.jumping && !((RabbitJumpControl)this.rabbit.jumpControl).isActive()) {
+                this.rabbit.setSpeed(0.0);
+            } else if (this.isMoving()) {
+                this.rabbit.setSpeed(this.rabbitSpeed);
+            }
+            super.tick();
+        }
+
+        @Override
+        public void moveTo(double x, double y, double z, double speed) {
+            if (this.rabbit.isTouchingWater()) {
+                speed = 1.5;
+            }
+            super.moveTo(x, y, z, speed);
+            if (speed > 0.0) {
+                this.rabbitSpeed = speed;
+            }
         }
     }
 
@@ -419,6 +470,21 @@ extends AnimalEntity {
         public void tick() {
             super.tick();
             this.rabbit.setSpeed(this.speed);
+        }
+    }
+
+    static class FleeGoal<T extends LivingEntity>
+    extends FleeEntityGoal<T> {
+        private final RabbitEntity rabbit;
+
+        public FleeGoal(RabbitEntity rabbit, Class<T> fleeFromType, float distance, double slowSpeed, double fastSpeed) {
+            super(rabbit, fleeFromType, distance, slowSpeed, fastSpeed);
+            this.rabbit = rabbit;
+        }
+
+        @Override
+        public boolean canStart() {
+            return this.rabbit.getRabbitType() != KILLER_BUNNY_TYPE && super.canStart();
         }
     }
 
@@ -487,81 +553,15 @@ extends AnimalEntity {
         }
     }
 
-    static class FleeGoal<T extends LivingEntity>
-    extends FleeEntityGoal<T> {
-        private final RabbitEntity rabbit;
-
-        public FleeGoal(RabbitEntity rabbit, Class<T> fleeFromType, float distance, double slowSpeed, double fastSpeed) {
-            super(rabbit, fleeFromType, distance, slowSpeed, fastSpeed);
-            this.rabbit = rabbit;
+    static class RabbitAttackGoal
+    extends MeleeAttackGoal {
+        public RabbitAttackGoal(RabbitEntity rabbit) {
+            super(rabbit, 1.4, true);
         }
 
         @Override
-        public boolean canStart() {
-            return this.rabbit.getRabbitType() != KILLER_BUNNY_TYPE && super.canStart();
-        }
-    }
-
-    static class RabbitMoveControl
-    extends MoveControl {
-        private final RabbitEntity rabbit;
-        private double rabbitSpeed;
-
-        public RabbitMoveControl(RabbitEntity owner) {
-            super(owner);
-            this.rabbit = owner;
-        }
-
-        @Override
-        public void tick() {
-            if (this.rabbit.onGround && !this.rabbit.jumping && !((RabbitJumpControl)this.rabbit.jumpControl).isActive()) {
-                this.rabbit.setSpeed(0.0);
-            } else if (this.isMoving()) {
-                this.rabbit.setSpeed(this.rabbitSpeed);
-            }
-            super.tick();
-        }
-
-        @Override
-        public void moveTo(double x, double y, double z, double speed) {
-            if (this.rabbit.isTouchingWater()) {
-                speed = 1.5;
-            }
-            super.moveTo(x, y, z, speed);
-            if (speed > 0.0) {
-                this.rabbitSpeed = speed;
-            }
-        }
-    }
-
-    public class RabbitJumpControl
-    extends JumpControl {
-        private final RabbitEntity rabbit;
-        private boolean field_24091;
-
-        public RabbitJumpControl(RabbitEntity rabbit) {
-            super(rabbit);
-            this.rabbit = rabbit;
-        }
-
-        public boolean isActive() {
-            return this.active;
-        }
-
-        public boolean method_27313() {
-            return this.field_24091;
-        }
-
-        public void method_27311(boolean bl) {
-            this.field_24091 = bl;
-        }
-
-        @Override
-        public void tick() {
-            if (this.active) {
-                this.rabbit.startJump();
-                this.active = false;
-            }
+        protected double getSquaredMaxAttackDistance(LivingEntity entity) {
+            return 4.0f + entity.getWidth();
         }
     }
 

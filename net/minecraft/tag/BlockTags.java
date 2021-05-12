@@ -120,6 +120,13 @@ public final class BlockTags {
     public static final Tag.Identified<Block> LUSH_GROUND_REPLACEABLE = BlockTags.register("lush_ground_replaceable");
     public static final Tag.Identified<Block> SMALL_DRIPLEAF_PLACEABLE = BlockTags.register("small_dripleaf_placeable");
     public static final Tag.Identified<Block> SNOW = BlockTags.register("snow");
+    public static final Tag.Identified<Block> AXE_MINEABLE = BlockTags.register("mineable/axe");
+    public static final Tag.Identified<Block> HOE_MINEABLE = BlockTags.register("mineable/hoe");
+    public static final Tag.Identified<Block> PICKAXE_MINEABLE = BlockTags.register("mineable/pickaxe");
+    public static final Tag.Identified<Block> SHOVEL_MINEABLE = BlockTags.register("mineable/shovel");
+    public static final Tag.Identified<Block> NEEDS_DIAMOND_TOOL = BlockTags.register("needs_diamond_tool");
+    public static final Tag.Identified<Block> NEEDS_IRON_TOOL = BlockTags.register("needs_iron_tool");
+    public static final Tag.Identified<Block> NEEDS_STONE_TOOL = BlockTags.register("needs_stone_tool");
 
     private BlockTags() {
     }

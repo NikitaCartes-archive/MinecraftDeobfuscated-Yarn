@@ -158,7 +158,6 @@ extends DrawableHelper {
     protected List<String> getLeftText() {
         ShaderEffect shaderEffect;
         World world;
-        String string2;
         IntegratedServer integratedServer = this.client.getServer();
         ClientConnection clientConnection = this.client.getNetworkHandler().getConnection();
         float f = clientConnection.getAveragePacketsSent();
@@ -170,34 +169,20 @@ extends DrawableHelper {
         }
         Entity entity = this.client.getCameraEntity();
         Direction direction = entity.getHorizontalFacing();
-        switch (direction) {
-            case NORTH: {
-                string2 = "Towards negative Z";
-                break;
-            }
-            case SOUTH: {
-                string2 = "Towards positive Z";
-                break;
-            }
-            case WEST: {
-                string2 = "Towards negative X";
-                break;
-            }
-            case EAST: {
-                string2 = "Towards positive X";
-                break;
-            }
-            default: {
-                string2 = "Invalid";
-            }
-        }
+        String string2 = switch (direction) {
+            case Direction.NORTH -> "Towards negative Z";
+            case Direction.SOUTH -> "Towards positive Z";
+            case Direction.WEST -> "Towards negative X";
+            case Direction.EAST -> "Towards positive X";
+            default -> "Invalid";
+        };
         ChunkPos chunkPos = new ChunkPos(blockPos);
         if (!Objects.equals(this.pos, chunkPos)) {
             this.pos = chunkPos;
             this.resetChunk();
         }
         LongSets.EmptySet longSet = (world = this.getWorld()) instanceof ServerWorld ? ((ServerWorld)world).getForcedChunks() : LongSets.EMPTY_SET;
-        ArrayList<String> list = Lists.newArrayList("Minecraft " + SharedConstants.getGameVersion().getName() + " (" + this.client.getGameVersion() + "/" + ClientBrandRetriever.getClientModName() + ("release".equalsIgnoreCase(this.client.getVersionType()) ? "" : "/" + this.client.getVersionType()) + ")", this.client.fpsDebugString, string, this.client.worldRenderer.getChunksDebugString(), this.client.worldRenderer.getEntitiesDebugString(), "P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getRegularEntityCount(), this.client.world.asString());
+        ArrayList<String> list = Lists.newArrayList("Minecraft " + SharedConstants.getGameVersion().getName() + " (" + this.client.getGameVersion() + "/" + ClientBrandRetriever.getClientModName() + (String)("release".equalsIgnoreCase(this.client.getVersionType()) ? "" : "/" + this.client.getVersionType()) + ")", this.client.fpsDebugString, string, this.client.worldRenderer.getChunksDebugString(), this.client.worldRenderer.getEntitiesDebugString(), "P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getRegularEntityCount(), this.client.world.asString());
         String string3 = this.getServerWorldDebugString();
         if (string3 != null) {
             list.add(string3);
@@ -323,7 +308,7 @@ extends DrawableHelper {
             blockPos = ((BlockHitResult)this.blockHit).getBlockPos();
             BlockState blockState = this.client.world.getBlockState(blockPos);
             list.add("");
-            list.add((Object)((Object)Formatting.UNDERLINE) + "Targeted Block: " + blockPos.getX() + ", " + blockPos.getY() + ", " + blockPos.getZ());
+            list.add(Formatting.UNDERLINE + "Targeted Block: " + blockPos.getX() + ", " + blockPos.getY() + ", " + blockPos.getZ());
             list.add(String.valueOf(Registry.BLOCK.getId(blockState.getBlock())));
             for (Map.Entry entry : blockState.getEntries().entrySet()) {
                 list.add(this.propertyToString(entry));
@@ -336,7 +321,7 @@ extends DrawableHelper {
             blockPos = ((BlockHitResult)this.fluidHit).getBlockPos();
             FluidState fluidState = this.client.world.getFluidState(blockPos);
             list.add("");
-            list.add((Object)((Object)Formatting.UNDERLINE) + "Targeted Fluid: " + blockPos.getX() + ", " + blockPos.getY() + ", " + blockPos.getZ());
+            list.add(Formatting.UNDERLINE + "Targeted Fluid: " + blockPos.getX() + ", " + blockPos.getY() + ", " + blockPos.getZ());
             list.add(String.valueOf(Registry.FLUID.getId(fluidState.getFluid())));
             for (Map.Entry entry : fluidState.getEntries().entrySet()) {
                 list.add(this.propertyToString(entry));
@@ -347,7 +332,7 @@ extends DrawableHelper {
         }
         if ((entity = this.client.targetedEntity) != null) {
             list.add("");
-            list.add((Object)((Object)Formatting.UNDERLINE) + "Targeted Entity");
+            list.add(Formatting.UNDERLINE + "Targeted Entity");
             list.add(String.valueOf(Registry.ENTITY_TYPE.getId(entity.getType())));
         }
         return list;
@@ -356,13 +341,13 @@ extends DrawableHelper {
     private String propertyToString(Map.Entry<Property<?>, Comparable<?>> propEntry) {
         Property<?> property = propEntry.getKey();
         Comparable<?> comparable = propEntry.getValue();
-        String string = Util.getValueAsString(property, comparable);
+        Object string = Util.getValueAsString(property, comparable);
         if (Boolean.TRUE.equals(comparable)) {
-            string = (Object)((Object)Formatting.GREEN) + string;
+            string = Formatting.GREEN + (String)string;
         } else if (Boolean.FALSE.equals(comparable)) {
-            string = (Object)((Object)Formatting.RED) + string;
+            string = Formatting.RED + (String)string;
         }
-        return property.getName() + ": " + string;
+        return property.getName() + ": " + (String)string;
     }
 
     private void drawMetricsData(MatrixStack matrices, MetricsData metricsData, int x, int width, boolean showFps) {

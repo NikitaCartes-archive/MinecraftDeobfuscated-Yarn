@@ -9,8 +9,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
@@ -65,8 +65,8 @@ extends Screen {
 
     public void disableButtons(int ticks) {
         this.buttonEnableTimer = ticks;
-        for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
-            abstractButtonWidget.active = false;
+        for (ClickableWidget clickableWidget : this.buttons) {
+            clickableWidget.active = false;
         }
     }
 
@@ -74,8 +74,8 @@ extends Screen {
     public void tick() {
         super.tick();
         if (--this.buttonEnableTimer == 0) {
-            for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
-                abstractButtonWidget.active = true;
+            for (ClickableWidget clickableWidget : this.buttons) {
+                clickableWidget.active = true;
             }
         }
     }

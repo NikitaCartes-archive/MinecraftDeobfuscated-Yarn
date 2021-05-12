@@ -61,7 +61,7 @@ public class ScheduleCommand {
             timer.setEvent(string, l, new FunctionTagTimerCallback(identifier));
             source.sendFeedback(new TranslatableText("commands.schedule.created.tag", identifier, time, l), true);
         });
-        return (int)Math.floorMod(l, Integer.MAX_VALUE);
+        return Math.floorMod(l, Integer.MAX_VALUE);
     }
 
     private static int clearEvent(ServerCommandSource source, String eventName) throws CommandSyntaxException {

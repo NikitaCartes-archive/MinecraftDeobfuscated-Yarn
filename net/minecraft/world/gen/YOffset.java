@@ -58,21 +58,21 @@ public abstract class YOffset {
 
     public abstract int getY(HeightContext var1);
 
-    static final class BelowTop
+    static final class Fixed
     extends YOffset {
-        public static final Codec<BelowTop> CODEC = ((MapCodec)Codec.intRange(DimensionType.MIN_HEIGHT, DimensionType.MAX_COLUMN_HEIGHT).fieldOf("below_top")).xmap(BelowTop::new, YOffset::getOffset).codec();
+        public static final Codec<Fixed> CODEC = ((MapCodec)Codec.intRange(DimensionType.MIN_HEIGHT, DimensionType.MAX_COLUMN_HEIGHT).fieldOf("absolute")).xmap(Fixed::new, YOffset::getOffset).codec();
 
-        protected BelowTop(int i) {
+        protected Fixed(int i) {
             super(i);
         }
 
         @Override
         public int getY(HeightContext context) {
-            return context.getMaxY() - 1 + context.getMinY() - this.getOffset();
+            return this.getOffset();
         }
 
         public String toString() {
-            return this.getOffset() + " below top";
+            return this.getOffset() + " absolute";
         }
     }
 
@@ -94,21 +94,21 @@ public abstract class YOffset {
         }
     }
 
-    static final class Fixed
+    static final class BelowTop
     extends YOffset {
-        public static final Codec<Fixed> CODEC = ((MapCodec)Codec.intRange(DimensionType.MIN_HEIGHT, DimensionType.MAX_COLUMN_HEIGHT).fieldOf("absolute")).xmap(Fixed::new, YOffset::getOffset).codec();
+        public static final Codec<BelowTop> CODEC = ((MapCodec)Codec.intRange(DimensionType.MIN_HEIGHT, DimensionType.MAX_COLUMN_HEIGHT).fieldOf("below_top")).xmap(BelowTop::new, YOffset::getOffset).codec();
 
-        protected Fixed(int i) {
+        protected BelowTop(int i) {
             super(i);
         }
 
         @Override
         public int getY(HeightContext context) {
-            return this.getOffset();
+            return context.getMaxY() - 1 + context.getMinY() - this.getOffset();
         }
 
         public String toString() {
-            return this.getOffset() + " absolute";
+            return this.getOffset() + " below top";
         }
     }
 }

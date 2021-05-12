@@ -6,7 +6,6 @@ package net.minecraft.entity.passive;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.class_6336;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
@@ -20,7 +19,8 @@ import net.minecraft.entity.ai.brain.task.GoTowardsLookTarget;
 import net.minecraft.entity.ai.brain.task.LeapingChargeTask;
 import net.minecraft.entity.ai.brain.task.LongJumpTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
-import net.minecraft.entity.ai.brain.task.RamTask;
+import net.minecraft.entity.ai.brain.task.PrepareRamTask;
+import net.minecraft.entity.ai.brain.task.RamImpactTask;
 import net.minecraft.entity.ai.brain.task.RandomTask;
 import net.minecraft.entity.ai.brain.task.StayAboveWaterTask;
 import net.minecraft.entity.ai.brain.task.StrollTask;
@@ -53,8 +53,8 @@ public class GoatBrain {
     public static final int field_33493 = 5;
     public static final float field_33494 = 1.5f;
     private static final UniformIntProvider RAM_COOLDOWN_RANGE = UniformIntProvider.create(600, 6000);
-    private static final UniformIntProvider field_33693 = UniformIntProvider.create(100, 300);
-    private static final TargetPredicate IS_GOAT_PREDICATE = new TargetPredicate().setPredicate(livingEntity -> !livingEntity.getType().equals(EntityType.GOAT) && (livingEntity.world.getDifficulty() != Difficulty.PEACEFUL || !livingEntity.getType().equals(EntityType.PLAYER)));
+    private static final UniformIntProvider SCREAMING_RAM_COOLDOWN_RANGE = UniformIntProvider.create(100, 300);
+    private static final TargetPredicate RAM_TARGET_PREDICATE = TargetPredicate.createAttackable().setPredicate(livingEntity -> !livingEntity.getType().equals(EntityType.GOAT) && (livingEntity.world.getDifficulty() != Difficulty.PEACEFUL || !livingEntity.getType().equals(EntityType.PLAYER)));
     private static final float field_33501 = 3.0f;
     public static final int field_33495 = 4;
     private static final int field_33502 = 2;
@@ -91,7 +91,7 @@ public class GoatBrain {
     }
 
     private static void addRamActivities(Brain<GoatEntity> brain) {
-        brain.setTaskList(Activity.RAM, ImmutableList.of(Pair.of(0, new RamTask<GoatEntity>(goatEntity -> goatEntity.isScreaming() ? field_33693 : RAM_COOLDOWN_RANGE, IS_GOAT_PREDICATE, goatEntity -> goatEntity.isBaby() ? 1 : 2, 3.0f, goatEntity -> goatEntity.isBaby() ? 1.0 : 2.5, goatEntity -> goatEntity.isScreaming() ? SoundEvents.ENTITY_GOAT_SCREAMING_RAM_IMPACT : SoundEvents.ENTITY_GOAT_RAM_IMPACT)), Pair.of(1, new class_6336<GoatEntity>(goatEntity -> goatEntity.isScreaming() ? field_33693.getMin() : RAM_COOLDOWN_RANGE.getMin(), 4, 7, 1.25f, IS_GOAT_PREDICATE, 20, goatEntity -> goatEntity.isScreaming() ? SoundEvents.ENTITY_GOAT_SCREAMING_PREPARE_RAM : SoundEvents.ENTITY_GOAT_PREPARE_RAM))), ImmutableSet.of(Pair.of(MemoryModuleType.TEMPTING_PLAYER, MemoryModuleState.VALUE_ABSENT), Pair.of(MemoryModuleType.BREED_TARGET, MemoryModuleState.VALUE_ABSENT), Pair.of(MemoryModuleType.RAM_COOLDOWN_TICKS, MemoryModuleState.VALUE_ABSENT)));
+        brain.setTaskList(Activity.RAM, ImmutableList.of(Pair.of(0, new RamImpactTask<GoatEntity>(goat -> goat.isScreaming() ? SCREAMING_RAM_COOLDOWN_RANGE : RAM_COOLDOWN_RANGE, RAM_TARGET_PREDICATE, goat -> goat.isBaby() ? 1 : 2, 3.0f, goatEntity -> goatEntity.isBaby() ? 1.0 : 2.5, goatEntity -> goatEntity.isScreaming() ? SoundEvents.ENTITY_GOAT_SCREAMING_RAM_IMPACT : SoundEvents.ENTITY_GOAT_RAM_IMPACT)), Pair.of(1, new PrepareRamTask<GoatEntity>(goatEntity -> goatEntity.isScreaming() ? SCREAMING_RAM_COOLDOWN_RANGE.getMin() : RAM_COOLDOWN_RANGE.getMin(), 4, 7, 1.25f, RAM_TARGET_PREDICATE, 20, goatEntity -> goatEntity.isScreaming() ? SoundEvents.ENTITY_GOAT_SCREAMING_PREPARE_RAM : SoundEvents.ENTITY_GOAT_PREPARE_RAM))), ImmutableSet.of(Pair.of(MemoryModuleType.TEMPTING_PLAYER, MemoryModuleState.VALUE_ABSENT), Pair.of(MemoryModuleType.BREED_TARGET, MemoryModuleState.VALUE_ABSENT), Pair.of(MemoryModuleType.RAM_COOLDOWN_TICKS, MemoryModuleState.VALUE_ABSENT)));
     }
 
     public static void updateActivities(GoatEntity goat) {

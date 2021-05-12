@@ -20,25 +20,25 @@ extends SpriteBillboardParticle {
     private final double startY;
     private final double startZ;
 
-    private EnchantGlyphParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-        super(world, x, y, z);
-        this.velocityX = velocityX;
-        this.velocityY = velocityY;
-        this.velocityZ = velocityZ;
-        this.startX = x;
-        this.startY = y;
-        this.startZ = z;
-        this.prevPosX = x + velocityX;
-        this.prevPosY = y + velocityY;
-        this.prevPosZ = z + velocityZ;
+    EnchantGlyphParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+        super(clientWorld, d, e, f);
+        this.velocityX = g;
+        this.velocityY = h;
+        this.velocityZ = i;
+        this.startX = d;
+        this.startY = e;
+        this.startZ = f;
+        this.prevPosX = d + g;
+        this.prevPosY = e + h;
+        this.prevPosZ = f + i;
         this.x = this.prevPosX;
         this.y = this.prevPosY;
         this.z = this.prevPosZ;
         this.scale = 0.1f * (this.random.nextFloat() * 0.5f + 0.2f);
-        float f = this.random.nextFloat() * 0.6f + 0.4f;
-        this.colorRed = 0.9f * f;
-        this.colorGreen = 0.9f * f;
-        this.colorBlue = f;
+        float j = this.random.nextFloat() * 0.6f + 0.4f;
+        this.colorRed = 0.9f * j;
+        this.colorGreen = 0.9f * j;
+        this.colorBlue = j;
         this.collidesWithWorld = false;
         this.maxAge = (int)(Math.random() * 10.0) + 30;
     }

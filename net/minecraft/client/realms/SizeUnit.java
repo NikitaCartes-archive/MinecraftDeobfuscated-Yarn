@@ -45,7 +45,7 @@ public enum SizeUnit {
             return bytes + " B";
         }
         int j = (int)(Math.log(bytes) / Math.log(1024.0));
-        String string = "KMGTPE".charAt(j - 1) + "";
+        String string = "" + "KMGTPE".charAt(j - 1);
         return String.format(Locale.ROOT, "%.1f %sB", (double)bytes / Math.pow(1024.0, j), string);
     }
 

@@ -501,17 +501,17 @@ extends ProjectileEntity {
         }
     }
 
-    static enum PositionType {
-        ABOVE_WATER,
-        INSIDE_WATER,
-        INVALID;
-
-    }
-
     static enum State {
         FLYING,
         HOOKED_IN_ENTITY,
         BOBBING;
+
+    }
+
+    static enum PositionType {
+        ABOVE_WATER,
+        INSIDE_WATER,
+        INVALID;
 
     }
 }

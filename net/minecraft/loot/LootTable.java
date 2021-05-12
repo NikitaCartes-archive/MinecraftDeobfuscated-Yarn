@@ -37,15 +37,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class LootTable {
-    private static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogManager.getLogger();
     public static final LootTable EMPTY = new LootTable(LootContextTypes.EMPTY, new LootPool[0], new LootFunction[0]);
     public static final LootContextType GENERIC = LootContextTypes.GENERIC;
-    private final LootContextType type;
-    private final LootPool[] pools;
-    private final LootFunction[] functions;
+    final LootContextType type;
+    final LootPool[] pools;
+    final LootFunction[] functions;
     private final BiFunction<ItemStack, LootContext, ItemStack> combinedFunction;
 
-    private LootTable(LootContextType type, LootPool[] pools, LootFunction[] functions) {
+    LootTable(LootContextType type, LootPool[] pools, LootFunction[] functions) {
         this.type = type;
         this.pools = pools;
         this.functions = functions;
@@ -167,6 +167,48 @@ public class LootTable {
         return new Builder();
     }
 
+    public static class Builder
+    implements LootFunctionConsumingBuilder<Builder> {
+        private final List<LootPool> pools = Lists.newArrayList();
+        private final List<LootFunction> functions = Lists.newArrayList();
+        private LootContextType type = GENERIC;
+
+        public Builder pool(LootPool.Builder poolBuilder) {
+            this.pools.add(poolBuilder.build());
+            return this;
+        }
+
+        public Builder type(LootContextType context) {
+            this.type = context;
+            return this;
+        }
+
+        @Override
+        public Builder apply(LootFunction.Builder builder) {
+            this.functions.add(builder.build());
+            return this;
+        }
+
+        @Override
+        public Builder getThis() {
+            return this;
+        }
+
+        public LootTable build() {
+            return new LootTable(this.type, this.pools.toArray(new LootPool[0]), this.functions.toArray(new LootFunction[0]));
+        }
+
+        @Override
+        public /* synthetic */ Object getThis() {
+            return this.getThis();
+        }
+
+        @Override
+        public /* synthetic */ Object apply(LootFunction.Builder function) {
+            return this.apply(function);
+        }
+    }
+
     public static class Serializer
     implements JsonDeserializer<LootTable>,
     JsonSerializer<LootTable> {
@@ -211,48 +253,6 @@ public class LootTable {
         @Override
         public /* synthetic */ Object deserialize(JsonElement json, Type unused, JsonDeserializationContext context) throws JsonParseException {
             return this.deserialize(json, unused, context);
-        }
-    }
-
-    public static class Builder
-    implements LootFunctionConsumingBuilder<Builder> {
-        private final List<LootPool> pools = Lists.newArrayList();
-        private final List<LootFunction> functions = Lists.newArrayList();
-        private LootContextType type = GENERIC;
-
-        public Builder pool(LootPool.Builder poolBuilder) {
-            this.pools.add(poolBuilder.build());
-            return this;
-        }
-
-        public Builder type(LootContextType context) {
-            this.type = context;
-            return this;
-        }
-
-        @Override
-        public Builder apply(LootFunction.Builder builder) {
-            this.functions.add(builder.build());
-            return this;
-        }
-
-        @Override
-        public Builder getThis() {
-            return this;
-        }
-
-        public LootTable build() {
-            return new LootTable(this.type, this.pools.toArray(new LootPool[0]), this.functions.toArray(new LootFunction[0]));
-        }
-
-        @Override
-        public /* synthetic */ Object getThis() {
-            return this.getThis();
-        }
-
-        @Override
-        public /* synthetic */ Object apply(LootFunction.Builder function) {
-            return this.apply(function);
         }
     }
 }

@@ -143,15 +143,15 @@ extends SinglePreparationResourceReloader<WarningPatternLoader> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static final class WarningPatternLoader {
+    protected static final class WarningPatternLoader {
         private final List<Pattern> rendererPatterns;
         private final List<Pattern> versionPatterns;
         private final List<Pattern> vendorPatterns;
 
-        private WarningPatternLoader(List<Pattern> rendererPatterns, List<Pattern> versionPatterns, List<Pattern> vendorPatterns) {
-            this.rendererPatterns = rendererPatterns;
-            this.versionPatterns = versionPatterns;
-            this.vendorPatterns = vendorPatterns;
+        WarningPatternLoader(List<Pattern> list, List<Pattern> list2, List<Pattern> list3) {
+            this.rendererPatterns = list;
+            this.versionPatterns = list2;
+            this.vendorPatterns = list3;
         }
 
         private static String buildWarning(List<Pattern> warningPattern, String info) {
@@ -165,7 +165,7 @@ extends SinglePreparationResourceReloader<WarningPatternLoader> {
             return String.join((CharSequence)", ", list);
         }
 
-        private ImmutableMap<String, String> buildWarnings() {
+        ImmutableMap<String, String> buildWarnings() {
             String string3;
             String string2;
             ImmutableMap.Builder<String, String> builder = new ImmutableMap.Builder<String, String>();

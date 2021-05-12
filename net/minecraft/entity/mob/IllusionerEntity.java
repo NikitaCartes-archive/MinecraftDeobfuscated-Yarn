@@ -211,11 +211,52 @@ implements RangedAttackMob {
         return IllagerEntity.State.CROSSED;
     }
 
+    class GiveInvisibilityGoal
+    extends SpellcastingIllagerEntity.CastSpellGoal {
+        GiveInvisibilityGoal() {
+            super(IllusionerEntity.this);
+        }
+
+        @Override
+        public boolean canStart() {
+            if (!super.canStart()) {
+                return false;
+            }
+            return !IllusionerEntity.this.hasStatusEffect(StatusEffects.INVISIBILITY);
+        }
+
+        @Override
+        protected int getSpellTicks() {
+            return 20;
+        }
+
+        @Override
+        protected int startTimeDelay() {
+            return 340;
+        }
+
+        @Override
+        protected void castSpell() {
+            IllusionerEntity.this.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, 1200));
+        }
+
+        @Override
+        @Nullable
+        protected SoundEvent getSoundPrepare() {
+            return SoundEvents.ENTITY_ILLUSIONER_PREPARE_MIRROR;
+        }
+
+        @Override
+        protected SpellcastingIllagerEntity.Spell getSpell() {
+            return SpellcastingIllagerEntity.Spell.DISAPPEAR;
+        }
+    }
+
     class BlindTargetGoal
     extends SpellcastingIllagerEntity.CastSpellGoal {
         private int targetId;
 
-        private BlindTargetGoal() {
+        BlindTargetGoal() {
             super(IllusionerEntity.this);
         }
 
@@ -262,47 +303,6 @@ implements RangedAttackMob {
         @Override
         protected SpellcastingIllagerEntity.Spell getSpell() {
             return SpellcastingIllagerEntity.Spell.BLINDNESS;
-        }
-    }
-
-    class GiveInvisibilityGoal
-    extends SpellcastingIllagerEntity.CastSpellGoal {
-        private GiveInvisibilityGoal() {
-            super(IllusionerEntity.this);
-        }
-
-        @Override
-        public boolean canStart() {
-            if (!super.canStart()) {
-                return false;
-            }
-            return !IllusionerEntity.this.hasStatusEffect(StatusEffects.INVISIBILITY);
-        }
-
-        @Override
-        protected int getSpellTicks() {
-            return 20;
-        }
-
-        @Override
-        protected int startTimeDelay() {
-            return 340;
-        }
-
-        @Override
-        protected void castSpell() {
-            IllusionerEntity.this.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, 1200));
-        }
-
-        @Override
-        @Nullable
-        protected SoundEvent getSoundPrepare() {
-            return SoundEvents.ENTITY_ILLUSIONER_PREPARE_MIRROR;
-        }
-
-        @Override
-        protected SpellcastingIllagerEntity.Spell getSpell() {
-            return SpellcastingIllagerEntity.Spell.DISAPPEAR;
         }
     }
 }

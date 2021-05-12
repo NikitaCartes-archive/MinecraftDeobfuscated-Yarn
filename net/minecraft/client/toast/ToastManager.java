@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 public class ToastManager
 extends DrawableHelper {
     private static final int field_32220 = 5;
-    private final MinecraftClient client;
+    final MinecraftClient client;
     private final Entry<?>[] visibleEntries = new Entry[5];
     private final Deque<Toast> toastQueue = Queues.newArrayDeque();
 
@@ -78,8 +78,8 @@ extends DrawableHelper {
         private Toast.Visibility visibility = Toast.Visibility.SHOW;
         final /* synthetic */ ToastManager field_2245;
 
-        private Entry(T toast) {
-            this.field_2245 = instance;
+        Entry(T toast) {
+            this.field_2245 = toastManager;
             this.instance = toast;
         }
 

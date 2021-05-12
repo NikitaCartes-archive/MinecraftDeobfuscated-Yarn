@@ -131,7 +131,21 @@ public class ModelVariantMap {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public class VariantAbsentException
+    public static final class DeserializationContext {
+        protected final Gson gson = new GsonBuilder().registerTypeAdapter((Type)((Object)ModelVariantMap.class), new Deserializer()).registerTypeAdapter((Type)((Object)ModelVariant.class), new ModelVariant.Deserializer()).registerTypeAdapter((Type)((Object)WeightedUnbakedModel.class), new WeightedUnbakedModel.Deserializer()).registerTypeAdapter((Type)((Object)MultipartUnbakedModel.class), new MultipartUnbakedModel.Deserializer(this)).registerTypeAdapter((Type)((Object)MultipartModelComponent.class), new MultipartModelComponent.Deserializer()).create();
+        private StateManager<Block, BlockState> stateFactory;
+
+        public StateManager<Block, BlockState> getStateFactory() {
+            return this.stateFactory;
+        }
+
+        public void setStateFactory(StateManager<Block, BlockState> stateFactory) {
+            this.stateFactory = stateFactory;
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    protected class VariantAbsentException
     extends RuntimeException {
         protected VariantAbsentException() {
         }
@@ -174,20 +188,6 @@ public class ModelVariantMap {
         @Override
         public /* synthetic */ Object deserialize(JsonElement functionJson, Type unused, JsonDeserializationContext context) throws JsonParseException {
             return this.deserialize(functionJson, unused, context);
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public static final class DeserializationContext {
-        protected final Gson gson = new GsonBuilder().registerTypeAdapter((Type)((Object)ModelVariantMap.class), new Deserializer()).registerTypeAdapter((Type)((Object)ModelVariant.class), new ModelVariant.Deserializer()).registerTypeAdapter((Type)((Object)WeightedUnbakedModel.class), new WeightedUnbakedModel.Deserializer()).registerTypeAdapter((Type)((Object)MultipartUnbakedModel.class), new MultipartUnbakedModel.Deserializer(this)).registerTypeAdapter((Type)((Object)MultipartModelComponent.class), new MultipartModelComponent.Deserializer()).create();
-        private StateManager<Block, BlockState> stateFactory;
-
-        public StateManager<Block, BlockState> getStateFactory() {
-            return this.stateFactory;
-        }
-
-        public void setStateFactory(StateManager<Block, BlockState> stateFactory) {
-            this.stateFactory = stateFactory;
         }
     }
 }

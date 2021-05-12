@@ -37,11 +37,11 @@ public class SpawnSettings {
     private final Map<EntityType<?>, SpawnDensity> spawnCosts;
     private final boolean playerSpawnFriendly;
 
-    private SpawnSettings(float creatureSpawnProbability, Map<SpawnGroup, Pool<SpawnEntry>> spawners, Map<EntityType<?>, SpawnDensity> spawnCosts, boolean playerSpawnFriendly) {
-        this.creatureSpawnProbability = creatureSpawnProbability;
-        this.spawners = ImmutableMap.copyOf(spawners);
-        this.spawnCosts = ImmutableMap.copyOf(spawnCosts);
-        this.playerSpawnFriendly = playerSpawnFriendly;
+    SpawnSettings(float f, Map<SpawnGroup, Pool<SpawnEntry>> map, Map<EntityType<?>, SpawnDensity> map2, boolean bl) {
+        this.creatureSpawnProbability = f;
+        this.spawners = ImmutableMap.copyOf(map);
+        this.spawnCosts = ImmutableMap.copyOf(map2);
+        this.playerSpawnFriendly = bl;
     }
 
     public Pool<SpawnEntry> getSpawnEntries(SpawnGroup spawnGroup) {
@@ -61,45 +61,14 @@ public class SpawnSettings {
         return this.playerSpawnFriendly;
     }
 
-    public static class Builder {
-        private final Map<SpawnGroup, List<SpawnEntry>> spawners = Stream.of(SpawnGroup.values()).collect(ImmutableMap.toImmutableMap(spawnGroup -> spawnGroup, spawnGroup -> Lists.newArrayList()));
-        private final Map<EntityType<?>, SpawnDensity> spawnCosts = Maps.newLinkedHashMap();
-        private float creatureSpawnProbability = 0.1f;
-        private boolean playerSpawnFriendly;
-
-        public Builder spawn(SpawnGroup spawnGroup, SpawnEntry spawnEntry) {
-            this.spawners.get(spawnGroup).add(spawnEntry);
-            return this;
-        }
-
-        public Builder spawnCost(EntityType<?> entityType, double mass, double gravityLimit) {
-            this.spawnCosts.put(entityType, new SpawnDensity(gravityLimit, mass));
-            return this;
-        }
-
-        public Builder creatureSpawnProbability(float probability) {
-            this.creatureSpawnProbability = probability;
-            return this;
-        }
-
-        public Builder playerSpawnFriendly() {
-            this.playerSpawnFriendly = true;
-            return this;
-        }
-
-        public SpawnSettings build() {
-            return new SpawnSettings(this.creatureSpawnProbability, this.spawners.entrySet().stream().collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, entry -> Pool.of((List)entry.getValue()))), ImmutableMap.copyOf(this.spawnCosts), this.playerSpawnFriendly);
-        }
-    }
-
     public static class SpawnDensity {
         public static final Codec<SpawnDensity> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.DOUBLE.fieldOf("energy_budget")).forGetter(spawnDensity -> spawnDensity.gravityLimit), ((MapCodec)Codec.DOUBLE.fieldOf("charge")).forGetter(spawnDensity -> spawnDensity.mass)).apply((Applicative<SpawnDensity, ?>)instance, SpawnDensity::new));
         private final double gravityLimit;
         private final double mass;
 
-        private SpawnDensity(double gravityLimit, double mass) {
-            this.gravityLimit = gravityLimit;
-            this.mass = mass;
+        SpawnDensity(double d, double e) {
+            this.gravityLimit = d;
+            this.mass = e;
         }
 
         public double getGravityLimit() {
@@ -131,6 +100,37 @@ public class SpawnSettings {
 
         public String toString() {
             return EntityType.getId(this.type) + "*(" + this.minGroupSize + "-" + this.maxGroupSize + "):" + this.getWeight();
+        }
+    }
+
+    public static class Builder {
+        private final Map<SpawnGroup, List<SpawnEntry>> spawners = Stream.of(SpawnGroup.values()).collect(ImmutableMap.toImmutableMap(spawnGroup -> spawnGroup, spawnGroup -> Lists.newArrayList()));
+        private final Map<EntityType<?>, SpawnDensity> spawnCosts = Maps.newLinkedHashMap();
+        private float creatureSpawnProbability = 0.1f;
+        private boolean playerSpawnFriendly;
+
+        public Builder spawn(SpawnGroup spawnGroup, SpawnEntry spawnEntry) {
+            this.spawners.get(spawnGroup).add(spawnEntry);
+            return this;
+        }
+
+        public Builder spawnCost(EntityType<?> entityType, double mass, double gravityLimit) {
+            this.spawnCosts.put(entityType, new SpawnDensity(gravityLimit, mass));
+            return this;
+        }
+
+        public Builder creatureSpawnProbability(float probability) {
+            this.creatureSpawnProbability = probability;
+            return this;
+        }
+
+        public Builder playerSpawnFriendly() {
+            this.playerSpawnFriendly = true;
+            return this;
+        }
+
+        public SpawnSettings build() {
+            return new SpawnSettings(this.creatureSpawnProbability, (Map<SpawnGroup, Pool<SpawnEntry>>)this.spawners.entrySet().stream().collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, entry -> Pool.of((List)entry.getValue()))), ImmutableMap.copyOf(this.spawnCosts), this.playerSpawnFriendly);
         }
     }
 }

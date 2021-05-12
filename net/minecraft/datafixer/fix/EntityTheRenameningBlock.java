@@ -21,10 +21,10 @@ extends EntityRenameFix {
 
     @Override
     protected String rename(String oldName) {
-        if (oldName.startsWith(field_29882)) {
-            oldName = "minecraft:" + oldName.substring(field_29882.length());
+        if (((String)oldName).startsWith(field_29882)) {
+            oldName = "minecraft:" + ((String)oldName).substring(field_29882.length());
         }
-        return ENTITIES.getOrDefault(oldName, oldName);
+        return ENTITIES.getOrDefault(oldName, (String)oldName);
     }
 }
 

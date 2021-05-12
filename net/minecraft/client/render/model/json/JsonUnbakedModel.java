@@ -268,7 +268,7 @@ implements UnbakedModel {
         return Either.left(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, MissingSprite.getMissingSpriteId()));
     }
 
-    private static boolean isTextureReference(String reference) {
+    static boolean isTextureReference(String reference) {
         return reference.charAt(0) == '#';
     }
 
@@ -320,14 +320,6 @@ implements UnbakedModel {
 
         public boolean isSide() {
             return this == BLOCK;
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public static class UncheckedModelException
-    extends RuntimeException {
-        public UncheckedModelException(String message) {
-            super(message);
         }
     }
 
@@ -412,6 +404,14 @@ implements UnbakedModel {
         @Override
         public /* synthetic */ Object deserialize(JsonElement element, Type unused, JsonDeserializationContext ctx) throws JsonParseException {
             return this.deserialize(element, unused, ctx);
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static class UncheckedModelException
+    extends RuntimeException {
+        public UncheckedModelException(String message) {
+            super(message);
         }
     }
 }

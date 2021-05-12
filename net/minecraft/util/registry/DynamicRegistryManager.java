@@ -48,7 +48,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public abstract class DynamicRegistryManager {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final Map<RegistryKey<? extends Registry<?>>, Info<?>> INFOS = Util.make(() -> {
+    static final Map<RegistryKey<? extends Registry<?>>, Info<?>> INFOS = Util.make(() -> {
         ImmutableMap.Builder<RegistryKey<Registry<?>>, Info<?>> builder = ImmutableMap.builder();
         DynamicRegistryManager.register(builder, Registry.DIMENSION_TYPE_KEY, DimensionType.CODEC, DimensionType.CODEC);
         DynamicRegistryManager.register(builder, Registry.BIOME_KEY, Biome.CODEC, Biome.field_26633);
@@ -175,44 +175,6 @@ public abstract class DynamicRegistryManager {
         dataResult.error().ifPresent(partialResult -> LOGGER.error("Error loading registry data: {}", (Object)partialResult.message()));
     }
 
-    public static final class Impl
-    extends DynamicRegistryManager {
-        public static final Codec<Impl> CODEC = Impl.setupCodec();
-        private final Map<? extends RegistryKey<? extends Registry<?>>, ? extends SimpleRegistry<?>> registries;
-
-        private static <E> Codec<Impl> setupCodec() {
-            Codec<RegistryKey> codec = Identifier.CODEC.xmap(RegistryKey::ofRegistry, RegistryKey::getValue);
-            Codec<SimpleRegistry> codec2 = codec.partialDispatch("type", simpleRegistry -> DataResult.success(simpleRegistry.getKey()), registryKey -> Impl.getDataResultForCodec(registryKey).map(codec -> SimpleRegistry.createRegistryManagerCodec(registryKey, Lifecycle.experimental(), codec)));
-            UnboundedMapCodec<RegistryKey, SimpleRegistry> unboundedMapCodec = Codec.unboundedMap(codec, codec2);
-            return Impl.fromRegistryCodecs(unboundedMapCodec);
-        }
-
-        private static <K extends RegistryKey<? extends Registry<?>>, V extends SimpleRegistry<?>> Codec<Impl> fromRegistryCodecs(UnboundedMapCodec<K, V> unboundedMapCodec) {
-            return unboundedMapCodec.xmap(Impl::new, impl -> impl.registries.entrySet().stream().filter(entry -> ((Info)INFOS.get(entry.getKey())).isSynced()).collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue)));
-        }
-
-        private static <E> DataResult<? extends Codec<E>> getDataResultForCodec(RegistryKey<? extends Registry<E>> registryRef) {
-            return Optional.ofNullable(INFOS.get(registryRef)).map(info -> info.getNetworkEntryCodec()).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown or not serializable registry: " + registryRef));
-        }
-
-        public Impl() {
-            this(INFOS.keySet().stream().collect(Collectors.toMap(Function.identity(), Impl::createRegistry)));
-        }
-
-        private Impl(Map<? extends RegistryKey<? extends Registry<?>>, ? extends SimpleRegistry<?>> registries) {
-            this.registries = registries;
-        }
-
-        private static <E> SimpleRegistry<?> createRegistry(RegistryKey<? extends Registry<?>> registryRef) {
-            return new SimpleRegistry(registryRef, Lifecycle.stable());
-        }
-
-        @Override
-        public <E> Optional<MutableRegistry<E>> getOptionalMutable(RegistryKey<? extends Registry<? extends E>> key) {
-            return Optional.ofNullable(this.registries.get(key)).map(simpleRegistry -> simpleRegistry);
-        }
-    }
-
     static final class Info<E> {
         private final RegistryKey<? extends Registry<E>> registry;
         private final Codec<E> entryCodec;
@@ -240,6 +202,44 @@ public abstract class DynamicRegistryManager {
 
         public boolean isSynced() {
             return this.networkEntryCodec != null;
+        }
+    }
+
+    public static final class Impl
+    extends DynamicRegistryManager {
+        public static final Codec<Impl> CODEC = Impl.setupCodec();
+        private final Map<? extends RegistryKey<? extends Registry<?>>, ? extends SimpleRegistry<?>> registries;
+
+        private static <E> Codec<Impl> setupCodec() {
+            Codec<RegistryKey> codec = Identifier.CODEC.xmap(RegistryKey::ofRegistry, RegistryKey::getValue);
+            Codec<SimpleRegistry> codec2 = codec.partialDispatch("type", simpleRegistry -> DataResult.success(simpleRegistry.getKey()), registryKey -> Impl.getDataResultForCodec(registryKey).map(codec -> SimpleRegistry.createRegistryManagerCodec(registryKey, Lifecycle.experimental(), codec)));
+            UnboundedMapCodec<RegistryKey, SimpleRegistry> unboundedMapCodec = Codec.unboundedMap(codec, codec2);
+            return Impl.fromRegistryCodecs(unboundedMapCodec);
+        }
+
+        private static <K extends RegistryKey<? extends Registry<?>>, V extends SimpleRegistry<?>> Codec<Impl> fromRegistryCodecs(UnboundedMapCodec<K, V> unboundedMapCodec) {
+            return unboundedMapCodec.xmap(Impl::new, impl -> impl.registries.entrySet().stream().filter(entry -> INFOS.get(entry.getKey()).isSynced()).collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue)));
+        }
+
+        private static <E> DataResult<? extends Codec<E>> getDataResultForCodec(RegistryKey<? extends Registry<E>> registryRef) {
+            return Optional.ofNullable(INFOS.get(registryRef)).map(info -> info.getNetworkEntryCodec()).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown or not serializable registry: " + registryRef));
+        }
+
+        public Impl() {
+            this(INFOS.keySet().stream().collect(Collectors.toMap(Function.identity(), Impl::createRegistry)));
+        }
+
+        private Impl(Map<? extends RegistryKey<? extends Registry<?>>, ? extends SimpleRegistry<?>> registries) {
+            this.registries = registries;
+        }
+
+        private static <E> SimpleRegistry<?> createRegistry(RegistryKey<? extends Registry<?>> registryRef) {
+            return new SimpleRegistry(registryRef, Lifecycle.stable());
+        }
+
+        @Override
+        public <E> Optional<MutableRegistry<E>> getOptionalMutable(RegistryKey<? extends Registry<? extends E>> key) {
+            return Optional.ofNullable(this.registries.get(key)).map(simpleRegistry -> simpleRegistry);
         }
     }
 }

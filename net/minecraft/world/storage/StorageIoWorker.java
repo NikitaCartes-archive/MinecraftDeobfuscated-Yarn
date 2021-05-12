@@ -78,7 +78,7 @@ implements AutoCloseable {
     }
 
     public CompletableFuture<Void> completeAll() {
-        CompletionStage completableFuture = this.run(() -> Either.left(CompletableFuture.allOf((CompletableFuture[])this.results.values().stream().map(result -> ((Result)result).future).toArray(CompletableFuture[]::new)))).thenCompose(Function.identity());
+        CompletionStage completableFuture = this.run(() -> Either.left(CompletableFuture.allOf((CompletableFuture[])this.results.values().stream().map(result -> result.future).toArray(CompletableFuture[]::new)))).thenCompose(Function.identity());
         return ((CompletableFuture)completableFuture).thenCompose(void_ -> this.run(() -> {
             try {
                 this.storage.sync();
@@ -135,19 +135,9 @@ implements AutoCloseable {
 
     private /* synthetic */ void method_27939(MessageListener messageListener, Supplier supplier) {
         if (!this.closed.get()) {
-            messageListener.send(supplier.get());
+            messageListener.send((Either)supplier.get());
         }
         this.writeRemainingResults();
-    }
-
-    static class Result {
-        @Nullable
-        private NbtCompound nbt;
-        private final CompletableFuture<Void> future = new CompletableFuture();
-
-        public Result(@Nullable NbtCompound nbt) {
-            this.nbt = nbt;
-        }
     }
 
     static enum Priority {
@@ -155,6 +145,16 @@ implements AutoCloseable {
         BACKGROUND,
         SHUTDOWN;
 
+    }
+
+    static class Result {
+        @Nullable
+        NbtCompound nbt;
+        final CompletableFuture<Void> future = new CompletableFuture();
+
+        public Result(@Nullable NbtCompound nbt) {
+            this.nbt = nbt;
+        }
     }
 }
 

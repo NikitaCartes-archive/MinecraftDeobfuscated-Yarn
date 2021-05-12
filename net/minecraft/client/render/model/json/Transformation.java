@@ -66,7 +66,7 @@ public class Transformation {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static class Deserializer
+    protected static class Deserializer
     implements JsonDeserializer<Transformation> {
         private static final Vec3f DEFAULT_ROTATION = new Vec3f(0.0f, 0.0f, 0.0f);
         private static final Vec3f DEFAULT_TRANSLATION = new Vec3f(0.0f, 0.0f, 0.0f);

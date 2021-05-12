@@ -43,7 +43,7 @@ public class ScheduledTick<T> {
     }
 
     public String toString() {
-        return this.object + ": " + this.pos + ", " + this.time + ", " + (Object)((Object)this.priority) + ", " + this.id;
+        return this.object + ": " + this.pos + ", " + this.time + ", " + this.priority + ", " + this.id;
     }
 
     public T getObject() {

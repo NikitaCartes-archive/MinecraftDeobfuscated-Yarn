@@ -18,7 +18,7 @@ implements Packet<ServerPlayPacketListener> {
     private final int entityId;
     private final InteractTypeHandler type;
     private final boolean playerSneaking;
-    private static final InteractTypeHandler ATTACK = new InteractTypeHandler(){
+    static final InteractTypeHandler ATTACK = new InteractTypeHandler(){
 
         @Override
         public InteractType getType() {
@@ -56,7 +56,7 @@ implements Packet<ServerPlayPacketListener> {
     public PlayerInteractEntityC2SPacket(PacketByteBuf buf) {
         this.entityId = buf.readVarInt();
         InteractType interactType = buf.readEnumConstant(InteractType.class);
-        this.type = (InteractTypeHandler)interactType.handlerGetter.apply(buf);
+        this.type = interactType.handlerGetter.apply(buf);
         this.playerSneaking = buf.readBoolean();
     }
 
@@ -86,12 +86,48 @@ implements Packet<ServerPlayPacketListener> {
         this.type.handle(handler);
     }
 
+    static interface InteractTypeHandler {
+        public InteractType getType();
+
+        public void handle(Handler var1);
+
+        public void write(PacketByteBuf var1);
+    }
+
+    static class InteractHandler
+    implements InteractTypeHandler {
+        private final Hand hand;
+
+        InteractHandler(Hand hand) {
+            this.hand = hand;
+        }
+
+        private InteractHandler(PacketByteBuf buf) {
+            this.hand = buf.readEnumConstant(Hand.class);
+        }
+
+        @Override
+        public InteractType getType() {
+            return InteractType.INTERACT;
+        }
+
+        @Override
+        public void handle(Handler handler) {
+            handler.interact(this.hand);
+        }
+
+        @Override
+        public void write(PacketByteBuf buf) {
+            buf.writeEnumConstant(this.hand);
+        }
+    }
+
     static class InteractAtHandler
     implements InteractTypeHandler {
         private final Hand hand;
         private final Vec3d pos;
 
-        private InteractAtHandler(Hand hand, Vec3d pos) {
+        InteractAtHandler(Hand hand, Vec3d pos) {
             this.hand = hand;
             this.pos = pos;
         }
@@ -120,40 +156,16 @@ implements Packet<ServerPlayPacketListener> {
         }
     }
 
-    static class InteractHandler
-    implements InteractTypeHandler {
-        private final Hand hand;
+    static enum InteractType {
+        INTERACT(InteractHandler::new),
+        ATTACK(packetByteBuf -> ATTACK),
+        INTERACT_AT(InteractAtHandler::new);
 
-        private InteractHandler(Hand hand) {
-            this.hand = hand;
+        final Function<PacketByteBuf, InteractTypeHandler> handlerGetter;
+
+        private InteractType(Function<PacketByteBuf, InteractTypeHandler> handlerGetter) {
+            this.handlerGetter = handlerGetter;
         }
-
-        private InteractHandler(PacketByteBuf buf) {
-            this.hand = buf.readEnumConstant(Hand.class);
-        }
-
-        @Override
-        public InteractType getType() {
-            return InteractType.INTERACT;
-        }
-
-        @Override
-        public void handle(Handler handler) {
-            handler.interact(this.hand);
-        }
-
-        @Override
-        public void write(PacketByteBuf buf) {
-            buf.writeEnumConstant(this.hand);
-        }
-    }
-
-    static interface InteractTypeHandler {
-        public InteractType getType();
-
-        public void handle(Handler var1);
-
-        public void write(PacketByteBuf var1);
     }
 
     public static interface Handler {
@@ -162,18 +174,6 @@ implements Packet<ServerPlayPacketListener> {
         public void interactAt(Hand var1, Vec3d var2);
 
         public void attack();
-    }
-
-    static enum InteractType {
-        INTERACT(packetByteBuf -> new InteractHandler((PacketByteBuf)packetByteBuf)),
-        ATTACK(packetByteBuf -> PlayerInteractEntityC2SPacket.method_34210()),
-        INTERACT_AT(packetByteBuf -> new InteractAtHandler((PacketByteBuf)packetByteBuf));
-
-        private final Function<PacketByteBuf, InteractTypeHandler> handlerGetter;
-
-        private InteractType(Function<PacketByteBuf, InteractTypeHandler> handlerGetter) {
-            this.handlerGetter = handlerGetter;
-        }
     }
 }
 

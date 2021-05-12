@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class CommandFunction {
     private final Element[] elements;
-    private final Identifier id;
+    final Identifier id;
 
     public CommandFunction(Identifier id, Element[] elements) {
         this.id = id;
@@ -72,6 +72,40 @@ public class CommandFunction {
         return new CommandFunction(id, list.toArray(new Element[0]));
     }
 
+    @FunctionalInterface
+    public static interface Element {
+        public void execute(CommandFunctionManager var1, ServerCommandSource var2, Deque<CommandFunctionManager.Entry> var3, int var4, int var5, @Nullable CommandFunctionManager.Tracer var6) throws CommandSyntaxException;
+    }
+
+    public static class CommandElement
+    implements Element {
+        private final ParseResults<ServerCommandSource> parsed;
+
+        public CommandElement(ParseResults<ServerCommandSource> parsed) {
+            this.parsed = parsed;
+        }
+
+        @Override
+        public void execute(CommandFunctionManager manager, ServerCommandSource source, Deque<CommandFunctionManager.Entry> entries, int maxChainLength, int depth, @Nullable CommandFunctionManager.Tracer tracer) throws CommandSyntaxException {
+            if (tracer != null) {
+                String string = this.parsed.getReader().getString();
+                tracer.traceCommandStart(depth, string);
+                int i = this.execute(manager, source);
+                tracer.traceCommandEnd(depth, string, i);
+            } else {
+                this.execute(manager, source);
+            }
+        }
+
+        private int execute(CommandFunctionManager manager, ServerCommandSource source) throws CommandSyntaxException {
+            return manager.getDispatcher().execute(new ParseResults<ServerCommandSource>(this.parsed.getContext().withSource(source), this.parsed.getReader(), this.parsed.getExceptions()));
+        }
+
+        public String toString() {
+            return this.parsed.getReader().getString();
+        }
+    }
+
     public static class LazyContainer {
         public static final LazyContainer EMPTY = new LazyContainer((Identifier)null);
         @Nullable
@@ -101,7 +135,7 @@ public class CommandFunction {
 
         @Nullable
         public Identifier getId() {
-            return this.function.map(function -> ((CommandFunction)function).id).orElse(this.id);
+            return this.function.map(function -> function.id).orElse(this.id);
         }
     }
 
@@ -135,40 +169,6 @@ public class CommandFunction {
         public String toString() {
             return "function " + this.function.getId();
         }
-    }
-
-    public static class CommandElement
-    implements Element {
-        private final ParseResults<ServerCommandSource> parsed;
-
-        public CommandElement(ParseResults<ServerCommandSource> parsed) {
-            this.parsed = parsed;
-        }
-
-        @Override
-        public void execute(CommandFunctionManager manager, ServerCommandSource source, Deque<CommandFunctionManager.Entry> entries, int maxChainLength, int depth, @Nullable CommandFunctionManager.Tracer tracer) throws CommandSyntaxException {
-            if (tracer != null) {
-                String string = this.parsed.getReader().getString();
-                tracer.traceCommandStart(depth, string);
-                int i = this.execute(manager, source);
-                tracer.traceCommandEnd(depth, string, i);
-            } else {
-                this.execute(manager, source);
-            }
-        }
-
-        private int execute(CommandFunctionManager manager, ServerCommandSource source) throws CommandSyntaxException {
-            return manager.getDispatcher().execute(new ParseResults<ServerCommandSource>(this.parsed.getContext().withSource(source), this.parsed.getReader(), this.parsed.getExceptions()));
-        }
-
-        public String toString() {
-            return this.parsed.getReader().getString();
-        }
-    }
-
-    @FunctionalInterface
-    public static interface Element {
-        public void execute(CommandFunctionManager var1, ServerCommandSource var2, Deque<CommandFunctionManager.Entry> var3, int var4, int var5, @Nullable CommandFunctionManager.Tracer var6) throws CommandSyntaxException;
     }
 }
 

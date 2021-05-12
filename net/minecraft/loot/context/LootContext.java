@@ -39,14 +39,14 @@ public class LootContext {
     private final Map<LootContextParameter<?>, Object> parameters;
     private final Map<Identifier, Dropper> drops;
 
-    private LootContext(Random random, float luck, ServerWorld world, Function<Identifier, LootTable> tableGetter, Function<Identifier, LootCondition> conditionSetter, Map<LootContextParameter<?>, Object> parameters, Map<Identifier, Dropper> drops) {
+    LootContext(Random random, float f, ServerWorld serverWorld, Function<Identifier, LootTable> function, Function<Identifier, LootCondition> function2, Map<LootContextParameter<?>, Object> map, Map<Identifier, Dropper> map2) {
         this.random = random;
-        this.luck = luck;
-        this.world = world;
-        this.tableGetter = tableGetter;
-        this.conditionGetter = conditionSetter;
-        this.parameters = ImmutableMap.copyOf(parameters);
-        this.drops = ImmutableMap.copyOf(drops);
+        this.luck = f;
+        this.world = serverWorld;
+        this.tableGetter = function;
+        this.conditionGetter = function2;
+        this.parameters = ImmutableMap.copyOf(map);
+        this.drops = ImmutableMap.copyOf(map2);
     }
 
     public boolean hasParameter(LootContextParameter<?> parameter) {
@@ -109,13 +109,18 @@ public class LootContext {
         return this.world;
     }
 
+    @FunctionalInterface
+    public static interface Dropper {
+        public void add(LootContext var1, Consumer<ItemStack> var2);
+    }
+
     public static enum EntityTarget {
         THIS("this", LootContextParameters.THIS_ENTITY),
         KILLER("killer", LootContextParameters.KILLER_ENTITY),
         DIRECT_KILLER("direct_killer", LootContextParameters.DIRECT_KILLER_ENTITY),
         KILLER_PLAYER("killer_player", LootContextParameters.LAST_DAMAGE_PLAYER);
 
-        private final String type;
+        final String type;
         private final LootContextParameter<? extends Entity> parameter;
 
         private EntityTarget(String type, LootContextParameter<? extends Entity> parameter) {
@@ -247,11 +252,6 @@ public class LootContext {
             MinecraftServer minecraftServer = this.world.getServer();
             return new LootContext(random, this.luck, this.world, minecraftServer.getLootManager()::getTable, minecraftServer.getPredicateManager()::get, this.parameters, this.drops);
         }
-    }
-
-    @FunctionalInterface
-    public static interface Dropper {
-        public void add(LootContext var1, Consumer<ItemStack> var2);
     }
 }
 

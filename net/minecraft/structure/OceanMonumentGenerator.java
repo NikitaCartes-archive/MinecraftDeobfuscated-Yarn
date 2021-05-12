@@ -34,7 +34,7 @@ public class OceanMonumentGenerator {
 
     static class DoubleYZRoomFactory
     implements PieceFactory {
-        private DoubleYZRoomFactory() {
+        DoubleYZRoomFactory() {
         }
 
         @Override
@@ -58,7 +58,7 @@ public class OceanMonumentGenerator {
 
     static class DoubleXYRoomFactory
     implements PieceFactory {
-        private DoubleXYRoomFactory() {
+        DoubleXYRoomFactory() {
         }
 
         @Override
@@ -82,7 +82,7 @@ public class OceanMonumentGenerator {
 
     static class DoubleZRoomFactory
     implements PieceFactory {
-        private DoubleZRoomFactory() {
+        DoubleZRoomFactory() {
         }
 
         @Override
@@ -104,7 +104,7 @@ public class OceanMonumentGenerator {
 
     static class DoubleXRoomFactory
     implements PieceFactory {
-        private DoubleXRoomFactory() {
+        DoubleXRoomFactory() {
         }
 
         @Override
@@ -122,7 +122,7 @@ public class OceanMonumentGenerator {
 
     static class DoubleYRoomFactory
     implements PieceFactory {
-        private DoubleYRoomFactory() {
+        DoubleYRoomFactory() {
         }
 
         @Override
@@ -140,7 +140,7 @@ public class OceanMonumentGenerator {
 
     static class SimpleRoomTopFactory
     implements PieceFactory {
-        private SimpleRoomTopFactory() {
+        SimpleRoomTopFactory() {
         }
 
         @Override
@@ -157,7 +157,7 @@ public class OceanMonumentGenerator {
 
     static class SimpleRoomFactory
     implements PieceFactory {
-        private SimpleRoomFactory() {
+        SimpleRoomFactory() {
         }
 
         @Override
@@ -179,11 +179,11 @@ public class OceanMonumentGenerator {
     }
 
     static class PieceSetting {
-        private final int roomIndex;
-        private final PieceSetting[] neighbors = new PieceSetting[6];
-        private final boolean[] neighborPresences = new boolean[6];
-        private boolean used;
-        private boolean field_14484;
+        final int roomIndex;
+        final PieceSetting[] neighbors = new PieceSetting[6];
+        final boolean[] neighborPresences = new boolean[6];
+        boolean used;
+        boolean field_14484;
         private int field_14483;
 
         public PieceSetting(int index) {
@@ -806,11 +806,11 @@ public class OceanMonumentGenerator {
 
         @Override
         public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
-            PieceSetting pieceSetting;
             if (this.setting.roomIndex / 25 > 0) {
                 this.method_14774(world, boundingBox, 0, 0, this.setting.neighborPresences[Direction.DOWN.getId()]);
             }
-            if ((pieceSetting = this.setting.neighbors[Direction.UP.getId()]).neighbors[Direction.UP.getId()] == null) {
+            PieceSetting pieceSetting = this.setting.neighbors[Direction.UP.getId()];
+            if (pieceSetting.neighbors[Direction.UP.getId()] == null) {
                 this.method_14771(world, boundingBox, 1, 8, 1, 6, 8, 6, PRISMARINE);
             }
             this.fillWithOutline(world, boundingBox, 0, 4, 0, 0, 4, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
@@ -1244,14 +1244,14 @@ public class OceanMonumentGenerator {
                     n = random.nextInt(6);
                     if (!pieceSetting5.neighborPresences[n]) continue;
                     o = Direction.byId(n).getOpposite().getId();
-                    ((PieceSetting)pieceSetting5).neighborPresences[n] = false;
-                    ((PieceSetting)((PieceSetting)pieceSetting5).neighbors[n]).neighborPresences[o] = false;
+                    pieceSetting5.neighborPresences[n] = false;
+                    pieceSetting5.neighbors[n].neighborPresences[o] = false;
                     if (pieceSetting5.method_14783(q++) && pieceSetting5.neighbors[n].method_14783(q++)) {
                         ++r;
                         continue;
                     }
-                    ((PieceSetting)pieceSetting5).neighborPresences[n] = true;
-                    ((PieceSetting)((PieceSetting)pieceSetting5).neighbors[n]).neighborPresences[o] = true;
+                    pieceSetting5.neighborPresences[n] = true;
+                    pieceSetting5.neighbors[n].neighborPresences[o] = true;
                 }
             }
             list.add(pieceSetting);
@@ -1587,7 +1587,7 @@ public class OceanMonumentGenerator {
         }
     }
 
-    public static abstract class Piece
+    protected static abstract class Piece
     extends StructurePiece {
         protected static final BlockState PRISMARINE = Blocks.PRISMARINE.getDefaultState();
         protected static final BlockState PRISMARINE_BRICKS = Blocks.PRISMARINE_BRICKS.getDefaultState();

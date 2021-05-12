@@ -86,7 +86,25 @@ public class ModelTransformation {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static class Deserializer
+    public static enum Mode {
+        NONE,
+        THIRD_PERSON_LEFT_HAND,
+        THIRD_PERSON_RIGHT_HAND,
+        FIRST_PERSON_LEFT_HAND,
+        FIRST_PERSON_RIGHT_HAND,
+        HEAD,
+        GUI,
+        GROUND,
+        FIXED;
+
+
+        public boolean isFirstPerson() {
+            return this == FIRST_PERSON_LEFT_HAND || this == FIRST_PERSON_RIGHT_HAND;
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    protected static class Deserializer
     implements JsonDeserializer<ModelTransformation> {
         protected Deserializer() {
         }
@@ -121,24 +139,6 @@ public class ModelTransformation {
         @Override
         public /* synthetic */ Object deserialize(JsonElement functionJson, Type unused, JsonDeserializationContext context) throws JsonParseException {
             return this.deserialize(functionJson, unused, context);
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public static enum Mode {
-        NONE,
-        THIRD_PERSON_LEFT_HAND,
-        THIRD_PERSON_RIGHT_HAND,
-        FIRST_PERSON_LEFT_HAND,
-        FIRST_PERSON_RIGHT_HAND,
-        HEAD,
-        GUI,
-        GROUND,
-        FIXED;
-
-
-        public boolean isFirstPerson() {
-            return this == FIRST_PERSON_LEFT_HAND || this == FIRST_PERSON_RIGHT_HAND;
         }
     }
 }

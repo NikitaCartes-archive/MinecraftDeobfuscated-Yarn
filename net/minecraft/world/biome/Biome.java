@@ -71,7 +71,7 @@ public final class Biome {
     public static final Codec<List<Supplier<Biome>>> field_26750 = RegistryElementCodec.method_31194(Registry.BIOME_KEY, CODEC);
     private final Map<Integer, List<StructureFeature<?>>> structures = Registry.STRUCTURE_FEATURE.stream().collect(Collectors.groupingBy(structureFeature -> structureFeature.getGenerationStep().ordinal()));
     private static final OctaveSimplexNoiseSampler TEMPERATURE_NOISE = new OctaveSimplexNoiseSampler((WorldGenRandom)new ChunkRandom(1234L), ImmutableList.of(Integer.valueOf(0)));
-    private static final OctaveSimplexNoiseSampler FROZEN_OCEAN_NOISE = new OctaveSimplexNoiseSampler((WorldGenRandom)new ChunkRandom(3456L), ImmutableList.of(Integer.valueOf(-2), Integer.valueOf(-1), Integer.valueOf(0)));
+    static final OctaveSimplexNoiseSampler FROZEN_OCEAN_NOISE = new OctaveSimplexNoiseSampler((WorldGenRandom)new ChunkRandom(3456L), ImmutableList.of(Integer.valueOf(-2), Integer.valueOf(-1), Integer.valueOf(0)));
     public static final OctaveSimplexNoiseSampler FOLIAGE_NOISE = new OctaveSimplexNoiseSampler((WorldGenRandom)new ChunkRandom(2345L), ImmutableList.of(Integer.valueOf(0)));
     private static final int field_30978 = 1024;
     private final Weather weather;
@@ -92,14 +92,14 @@ public final class Biome {
         return long2FloatLinkedOpenHashMap;
     }));
 
-    private Biome(Weather weather, Category category, float depth, float scale, BiomeEffects effects, GenerationSettings generationSettings, SpawnSettings spawnSettings) {
+    Biome(Weather weather, Category category, float f, float g, BiomeEffects biomeEffects, GenerationSettings generationSettings, SpawnSettings spawnSettings) {
         this.weather = weather;
         this.generationSettings = generationSettings;
         this.spawnSettings = spawnSettings;
         this.category = category;
-        this.depth = depth;
-        this.scale = scale;
-        this.effects = effects;
+        this.depth = f;
+        this.scale = g;
+        this.effects = biomeEffects;
     }
 
     public int getSkyColor() {
@@ -314,16 +314,151 @@ public final class Biome {
 
     static class Weather {
         public static final MapCodec<Weather> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)Precipitation.CODEC.fieldOf("precipitation")).forGetter(weather -> weather.precipitation), ((MapCodec)Codec.FLOAT.fieldOf("temperature")).forGetter(weather -> Float.valueOf(weather.temperature)), TemperatureModifier.CODEC.optionalFieldOf("temperature_modifier", TemperatureModifier.NONE).forGetter(weather -> weather.temperatureModifier), ((MapCodec)Codec.FLOAT.fieldOf("downfall")).forGetter(weather -> Float.valueOf(weather.downfall))).apply((Applicative<Weather, ?>)instance, Weather::new));
-        private final Precipitation precipitation;
-        private final float temperature;
-        private final TemperatureModifier temperatureModifier;
-        private final float downfall;
+        final Precipitation precipitation;
+        final float temperature;
+        final TemperatureModifier temperatureModifier;
+        final float downfall;
 
-        private Weather(Precipitation precipitation, float temperature, TemperatureModifier temperatureModifier, float downfall) {
+        Weather(Precipitation precipitation, float f, TemperatureModifier temperatureModifier, float g) {
             this.precipitation = precipitation;
-            this.temperature = temperature;
+            this.temperature = f;
             this.temperatureModifier = temperatureModifier;
-            this.downfall = downfall;
+            this.downfall = g;
+        }
+    }
+
+    public static enum Category implements StringIdentifiable
+    {
+        NONE("none"),
+        TAIGA("taiga"),
+        EXTREME_HILLS("extreme_hills"),
+        JUNGLE("jungle"),
+        MESA("mesa"),
+        PLAINS("plains"),
+        SAVANNA("savanna"),
+        ICY("icy"),
+        THEEND("the_end"),
+        BEACH("beach"),
+        FOREST("forest"),
+        OCEAN("ocean"),
+        DESERT("desert"),
+        RIVER("river"),
+        SWAMP("swamp"),
+        MUSHROOM("mushroom"),
+        NETHER("nether"),
+        UNDERGROUND("underground");
+
+        public static final Codec<Category> CODEC;
+        private static final Map<String, Category> BY_NAME;
+        private final String name;
+
+        private Category(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        public static Category byName(String name) {
+            return BY_NAME.get(name);
+        }
+
+        @Override
+        public String asString() {
+            return this.name;
+        }
+
+        static {
+            CODEC = StringIdentifiable.createCodec(Category::values, Category::byName);
+            BY_NAME = Arrays.stream(Category.values()).collect(Collectors.toMap(Category::getName, category -> category));
+        }
+    }
+
+    public static enum Precipitation implements StringIdentifiable
+    {
+        NONE("none"),
+        RAIN("rain"),
+        SNOW("snow");
+
+        public static final Codec<Precipitation> CODEC;
+        private static final Map<String, Precipitation> BY_NAME;
+        private final String name;
+
+        private Precipitation(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        public static Precipitation byName(String name) {
+            return BY_NAME.get(name);
+        }
+
+        @Override
+        public String asString() {
+            return this.name;
+        }
+
+        static {
+            CODEC = StringIdentifiable.createCodec(Precipitation::values, Precipitation::byName);
+            BY_NAME = Arrays.stream(Precipitation.values()).collect(Collectors.toMap(Precipitation::getName, precipitation -> precipitation));
+        }
+    }
+
+    public static enum TemperatureModifier implements StringIdentifiable
+    {
+        NONE("none"){
+
+            @Override
+            public float getModifiedTemperature(BlockPos pos, float temperature) {
+                return temperature;
+            }
+        }
+        ,
+        FROZEN("frozen"){
+
+            @Override
+            public float getModifiedTemperature(BlockPos pos, float temperature) {
+                double g;
+                double e;
+                double d = FROZEN_OCEAN_NOISE.sample((double)pos.getX() * 0.05, (double)pos.getZ() * 0.05, false) * 7.0;
+                double f = d + (e = FOLIAGE_NOISE.sample((double)pos.getX() * 0.2, (double)pos.getZ() * 0.2, false));
+                if (f < 0.3 && (g = FOLIAGE_NOISE.sample((double)pos.getX() * 0.09, (double)pos.getZ() * 0.09, false)) < 0.8) {
+                    return 0.2f;
+                }
+                return temperature;
+            }
+        };
+
+        private final String name;
+        public static final Codec<TemperatureModifier> CODEC;
+        private static final Map<String, TemperatureModifier> BY_NAME;
+
+        public abstract float getModifiedTemperature(BlockPos var1, float var2);
+
+        TemperatureModifier(String string2) {
+            this.name = string2;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        @Override
+        public String asString() {
+            return this.name;
+        }
+
+        public static TemperatureModifier byName(String name) {
+            return BY_NAME.get(name);
+        }
+
+        static {
+            CODEC = StringIdentifiable.createCodec(TemperatureModifier::values, TemperatureModifier::byName);
+            BY_NAME = Arrays.stream(TemperatureModifier.values()).collect(Collectors.toMap(TemperatureModifier::getName, temperatureModifier -> temperatureModifier));
         }
     }
 
@@ -459,142 +594,7 @@ public final class Biome {
         }
 
         public String toString() {
-            return "BiomeBuilder{\nprecipitation=" + this.precipitation + ",\nbiomeCategory=" + this.category + ",\ndepth=" + this.depth + ",\nscale=" + this.scale + ",\ntemperature=" + this.temperature + ",\ntemperatureModifier=" + this.temperatureModifier + ",\ndownfall=" + this.downfall + ",\nspecialEffects=" + this.specialEffects + ",\nmobSpawnSettings=" + this.spawnSettings + ",\ngenerationSettings=" + this.generationSettings + ",\n" + '}';
-        }
-    }
-
-    public static enum TemperatureModifier implements StringIdentifiable
-    {
-        NONE("none"){
-
-            @Override
-            public float getModifiedTemperature(BlockPos pos, float temperature) {
-                return temperature;
-            }
-        }
-        ,
-        FROZEN("frozen"){
-
-            @Override
-            public float getModifiedTemperature(BlockPos pos, float temperature) {
-                double g;
-                double e;
-                double d = FROZEN_OCEAN_NOISE.sample((double)pos.getX() * 0.05, (double)pos.getZ() * 0.05, false) * 7.0;
-                double f = d + (e = FOLIAGE_NOISE.sample((double)pos.getX() * 0.2, (double)pos.getZ() * 0.2, false));
-                if (f < 0.3 && (g = FOLIAGE_NOISE.sample((double)pos.getX() * 0.09, (double)pos.getZ() * 0.09, false)) < 0.8) {
-                    return 0.2f;
-                }
-                return temperature;
-            }
-        };
-
-        private final String name;
-        public static final Codec<TemperatureModifier> CODEC;
-        private static final Map<String, TemperatureModifier> BY_NAME;
-
-        public abstract float getModifiedTemperature(BlockPos var1, float var2);
-
-        private TemperatureModifier(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return this.name;
-        }
-
-        @Override
-        public String asString() {
-            return this.name;
-        }
-
-        public static TemperatureModifier byName(String name) {
-            return BY_NAME.get(name);
-        }
-
-        static {
-            CODEC = StringIdentifiable.createCodec(TemperatureModifier::values, TemperatureModifier::byName);
-            BY_NAME = Arrays.stream(TemperatureModifier.values()).collect(Collectors.toMap(TemperatureModifier::getName, temperatureModifier -> temperatureModifier));
-        }
-    }
-
-    public static enum Precipitation implements StringIdentifiable
-    {
-        NONE("none"),
-        RAIN("rain"),
-        SNOW("snow");
-
-        public static final Codec<Precipitation> CODEC;
-        private static final Map<String, Precipitation> BY_NAME;
-        private final String name;
-
-        private Precipitation(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return this.name;
-        }
-
-        public static Precipitation byName(String name) {
-            return BY_NAME.get(name);
-        }
-
-        @Override
-        public String asString() {
-            return this.name;
-        }
-
-        static {
-            CODEC = StringIdentifiable.createCodec(Precipitation::values, Precipitation::byName);
-            BY_NAME = Arrays.stream(Precipitation.values()).collect(Collectors.toMap(Precipitation::getName, precipitation -> precipitation));
-        }
-    }
-
-    public static enum Category implements StringIdentifiable
-    {
-        NONE("none"),
-        TAIGA("taiga"),
-        EXTREME_HILLS("extreme_hills"),
-        JUNGLE("jungle"),
-        MESA("mesa"),
-        PLAINS("plains"),
-        SAVANNA("savanna"),
-        ICY("icy"),
-        THEEND("the_end"),
-        BEACH("beach"),
-        FOREST("forest"),
-        OCEAN("ocean"),
-        DESERT("desert"),
-        RIVER("river"),
-        SWAMP("swamp"),
-        MUSHROOM("mushroom"),
-        NETHER("nether"),
-        UNDERGROUND("underground");
-
-        public static final Codec<Category> CODEC;
-        private static final Map<String, Category> BY_NAME;
-        private final String name;
-
-        private Category(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return this.name;
-        }
-
-        public static Category byName(String name) {
-            return BY_NAME.get(name);
-        }
-
-        @Override
-        public String asString() {
-            return this.name;
-        }
-
-        static {
-            CODEC = StringIdentifiable.createCodec(Category::values, Category::byName);
-            BY_NAME = Arrays.stream(Category.values()).collect(Collectors.toMap(Category::getName, category -> category));
+            return "BiomeBuilder{\nprecipitation=" + this.precipitation + ",\nbiomeCategory=" + this.category + ",\ndepth=" + this.depth + ",\nscale=" + this.scale + ",\ntemperature=" + this.temperature + ",\ntemperatureModifier=" + this.temperatureModifier + ",\ndownfall=" + this.downfall + ",\nspecialEffects=" + this.specialEffects + ",\nmobSpawnSettings=" + this.spawnSettings + ",\ngenerationSettings=" + this.generationSettings + ",\n}";
         }
     }
 }

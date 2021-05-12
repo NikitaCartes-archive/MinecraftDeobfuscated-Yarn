@@ -106,7 +106,7 @@ implements ChestAnimationProgress {
         blockEntity.lidAnimator.step();
     }
 
-    private static void playSound(World world, BlockPos pos, BlockState state, SoundEvent soundEvent) {
+    static void playSound(World world, BlockPos pos, BlockState state, SoundEvent soundEvent) {
         ChestType chestType = state.get(ChestBlock.CHEST_TYPE);
         if (chestType == ChestType.LEFT) {
             return;

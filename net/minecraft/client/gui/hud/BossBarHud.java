@@ -26,7 +26,7 @@ extends DrawableHelper {
     private static final int field_32178 = 5;
     private static final int field_32179 = 80;
     private final MinecraftClient client;
-    private final Map<UUID, ClientBossBar> bossBars = Maps.newLinkedHashMap();
+    final Map<UUID, ClientBossBar> bossBars = Maps.newLinkedHashMap();
 
     public BossBarHud(MinecraftClient client) {
         this.client = client;
@@ -83,24 +83,24 @@ extends DrawableHelper {
 
             @Override
             public void updateProgress(UUID uuid, float percent) {
-                ((ClientBossBar)BossBarHud.this.bossBars.get(uuid)).setPercent(percent);
+                BossBarHud.this.bossBars.get(uuid).setPercent(percent);
             }
 
             @Override
             public void updateName(UUID uuid, Text name) {
-                ((ClientBossBar)BossBarHud.this.bossBars.get(uuid)).setName(name);
+                BossBarHud.this.bossBars.get(uuid).setName(name);
             }
 
             @Override
             public void updateStyle(UUID id, BossBar.Color color, BossBar.Style style) {
-                ClientBossBar clientBossBar = (ClientBossBar)BossBarHud.this.bossBars.get(id);
+                ClientBossBar clientBossBar = BossBarHud.this.bossBars.get(id);
                 clientBossBar.setColor(color);
                 clientBossBar.setStyle(style);
             }
 
             @Override
             public void updateProperties(UUID uuid, boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
-                ClientBossBar clientBossBar = (ClientBossBar)BossBarHud.this.bossBars.get(uuid);
+                ClientBossBar clientBossBar = BossBarHud.this.bossBars.get(uuid);
                 clientBossBar.setDarkenSky(darkenSky);
                 clientBossBar.setDragonMusic(dragonMusic);
                 clientBossBar.setThickenFog(thickenFog);

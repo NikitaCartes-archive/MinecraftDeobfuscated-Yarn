@@ -89,7 +89,7 @@ implements Waterloggable {
         VoxelShape voxelShape7 = Block.createCuboidShape(n, i, n, o, k, 16.0);
         VoxelShape voxelShape8 = Block.createCuboidShape(0.0, i, n, o, k, o);
         VoxelShape voxelShape9 = Block.createCuboidShape(n, i, n, 16.0, k, o);
-        ImmutableMap.Builder builder = ImmutableMap.builder();
+        ImmutableMap.Builder<BlockState, VoxelShape> builder = ImmutableMap.builder();
         for (Boolean boolean_ : UP.getValues()) {
             for (WallShape wallShape : EAST_SHAPE.getValues()) {
                 for (WallShape wallShape2 : NORTH_SHAPE.getValues()) {
@@ -104,8 +104,8 @@ implements Waterloggable {
                                 voxelShape10 = VoxelShapes.union(voxelShape10, voxelShape);
                             }
                             BlockState blockState = (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.getDefaultState().with(UP, boolean_)).with(EAST_SHAPE, wallShape)).with(WEST_SHAPE, wallShape3)).with(NORTH_SHAPE, wallShape2)).with(SOUTH_SHAPE, wallShape4);
-                            builder.put(blockState.with(WATERLOGGED, false), voxelShape10);
-                            builder.put(blockState.with(WATERLOGGED, true), voxelShape10);
+                            builder.put((BlockState)blockState.with(WATERLOGGED, false), voxelShape10);
+                            builder.put((BlockState)blockState.with(WATERLOGGED, true), voxelShape10);
                         }
                     }
                 }

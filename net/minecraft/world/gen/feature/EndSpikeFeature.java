@@ -106,34 +106,6 @@ extends Feature<EndSpikeFeatureConfig> {
         this.setBlockState(world, new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ()), Blocks.BEDROCK.getDefaultState());
     }
 
-    static class SpikeCache
-    extends CacheLoader<Long, List<Spike>> {
-        private SpikeCache() {
-        }
-
-        @Override
-        public List<Spike> load(Long long_) {
-            List list = IntStream.range(0, 10).boxed().collect(Collectors.toList());
-            Collections.shuffle(list, new Random(long_));
-            ArrayList<Spike> list2 = Lists.newArrayList();
-            for (int i = 0; i < 10; ++i) {
-                int j = MathHelper.floor(42.0 * Math.cos(2.0 * (-Math.PI + 0.3141592653589793 * (double)i)));
-                int k = MathHelper.floor(42.0 * Math.sin(2.0 * (-Math.PI + 0.3141592653589793 * (double)i)));
-                int l = (Integer)list.get(i);
-                int m = 2 + l / 3;
-                int n = 76 + l * 3;
-                boolean bl = l == 1 || l == 2;
-                list2.add(new Spike(j, k, m, n, bl));
-            }
-            return list2;
-        }
-
-        @Override
-        public /* synthetic */ Object load(Object seed) throws Exception {
-            return this.load((Long)seed);
-        }
-    }
-
     public static class Spike {
         public static final Codec<Spike> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.INT.fieldOf("centerX")).orElse(0).forGetter(spike -> spike.centerX), ((MapCodec)Codec.INT.fieldOf("centerZ")).orElse(0).forGetter(spike -> spike.centerZ), ((MapCodec)Codec.INT.fieldOf("radius")).orElse(0).forGetter(spike -> spike.radius), ((MapCodec)Codec.INT.fieldOf("height")).orElse(0).forGetter(spike -> spike.height), ((MapCodec)Codec.BOOL.fieldOf("guarded")).orElse(false).forGetter(spike -> spike.guarded)).apply((Applicative<Spike, ?>)instance, Spike::new));
         private final int centerX;
@@ -178,6 +150,34 @@ extends Feature<EndSpikeFeatureConfig> {
 
         public Box getBoundingBox() {
             return this.boundingBox;
+        }
+    }
+
+    static class SpikeCache
+    extends CacheLoader<Long, List<Spike>> {
+        SpikeCache() {
+        }
+
+        @Override
+        public List<Spike> load(Long long_) {
+            List list = IntStream.range(0, 10).boxed().collect(Collectors.toList());
+            Collections.shuffle(list, new Random(long_));
+            ArrayList<Spike> list2 = Lists.newArrayList();
+            for (int i = 0; i < 10; ++i) {
+                int j = MathHelper.floor(42.0 * Math.cos(2.0 * (-Math.PI + 0.3141592653589793 * (double)i)));
+                int k = MathHelper.floor(42.0 * Math.sin(2.0 * (-Math.PI + 0.3141592653589793 * (double)i)));
+                int l = (Integer)list.get(i);
+                int m = 2 + l / 3;
+                int n = 76 + l * 3;
+                boolean bl = l == 1 || l == 2;
+                list2.add(new Spike(j, k, m, n, bl));
+            }
+            return list2;
+        }
+
+        @Override
+        public /* synthetic */ Object load(Object seed) throws Exception {
+            return this.load((Long)seed);
         }
     }
 }

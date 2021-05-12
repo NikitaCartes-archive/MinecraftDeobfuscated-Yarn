@@ -37,7 +37,7 @@ import net.minecraft.util.math.Vec2f;
 import net.minecraft.world.BlockView;
 
 public class SpreadPlayersCommand {
-    private static final int field_33397 = 10000;
+    private static final int MAX_ATTEMPTS = 10000;
     private static final Dynamic4CommandExceptionType FAILED_TEAMS_EXCEPTION = new Dynamic4CommandExceptionType((pilesCount, x, z, maxSpreadDistance) -> new TranslatableText("commands.spreadplayers.failed.teams", pilesCount, x, z, maxSpreadDistance));
     private static final Dynamic4CommandExceptionType FAILED_ENTITIES_EXCEPTION = new Dynamic4CommandExceptionType((pilesCount, x, z, maxSpreadDistance) -> new TranslatableText("commands.spreadplayers.failed.entities", pilesCount, x, z, maxSpreadDistance));
 
@@ -88,12 +88,12 @@ public class SpreadPlayersCommand {
                     d = Math.min(e, d);
                     if (!(e < spreadDistance)) continue;
                     ++k;
-                    pile2.x = pile2.x + (pile3.x - pile.x);
-                    pile2.z = pile2.z + (pile3.z - pile.z);
+                    pile2.x += pile3.x - pile.x;
+                    pile2.z += pile3.z - pile.z;
                 }
                 if (k > 0) {
-                    pile2.x = pile2.x / (double)k;
-                    pile2.z = pile2.z / (double)k;
+                    pile2.x /= (double)k;
+                    pile2.z /= (double)k;
                     double f = pile2.absolute();
                     if (f > 0.0) {
                         pile2.normalize();
@@ -166,10 +166,10 @@ public class SpreadPlayersCommand {
     }
 
     static class Pile {
-        private double x;
-        private double z;
+        double x;
+        double z;
 
-        private Pile() {
+        Pile() {
         }
 
         double getDistance(Pile other) {

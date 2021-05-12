@@ -103,7 +103,7 @@ public abstract class State<O, S> {
         if (comparable == null) {
             return Optional.empty();
         }
-        return Optional.of(property.getType().cast(comparable));
+        return Optional.of((Comparable)property.getType().cast(comparable));
     }
 
     public <T extends Comparable<T>, V extends T> S with(Property<T> property, V value) {

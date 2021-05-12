@@ -23,6 +23,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -212,6 +213,7 @@ implements InventoryProvider {
             if (i < 7 && !world.isClient) {
                 BlockState blockState = ComposterBlock.addToComposter(state, world, pos, itemStack);
                 world.syncWorldEvent(WorldEvents.COMPOSTER_USED, pos, state != blockState ? 1 : 0);
+                player.incrementStat(Stats.USED.getOrCreateStat(itemStack.getItem()));
                 if (!player.getAbilities().creativeMode) {
                     itemStack.decrement(1);
                 }
@@ -250,13 +252,13 @@ implements InventoryProvider {
         return blockState;
     }
 
-    private static BlockState emptyComposter(BlockState state, WorldAccess world, BlockPos pos) {
+    static BlockState emptyComposter(BlockState state, WorldAccess world, BlockPos pos) {
         BlockState blockState = (BlockState)state.with(LEVEL, 0);
         world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
         return blockState;
     }
 
-    private static BlockState addToComposter(BlockState state, WorldAccess world, BlockPos pos, ItemStack item) {
+    static BlockState addToComposter(BlockState state, WorldAccess world, BlockPos pos, ItemStack item) {
         int i = state.get(LEVEL);
         float f = ITEM_TO_LEVEL_INCREASE_CHANCE.getFloat(item.getItem());
         if (i == 0 && f > 0.0f || world.getRandom().nextDouble() < (double)f) {
@@ -311,6 +313,56 @@ implements InventoryProvider {
         return new DummyInventory();
     }
 
+    static class FullComposterInventory
+    extends SimpleInventory
+    implements SidedInventory {
+        private final BlockState state;
+        private final WorldAccess world;
+        private final BlockPos pos;
+        private boolean dirty;
+
+        public FullComposterInventory(BlockState state, WorldAccess world, BlockPos pos, ItemStack outputItem) {
+            super(outputItem);
+            this.state = state;
+            this.world = world;
+            this.pos = pos;
+        }
+
+        @Override
+        public int getMaxCountPerStack() {
+            return 1;
+        }
+
+        @Override
+        public int[] getAvailableSlots(Direction side) {
+            int[] nArray;
+            if (side == Direction.DOWN) {
+                int[] nArray2 = new int[1];
+                nArray = nArray2;
+                nArray2[0] = 0;
+            } else {
+                nArray = new int[]{};
+            }
+            return nArray;
+        }
+
+        @Override
+        public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
+            return false;
+        }
+
+        @Override
+        public boolean canExtract(int slot, ItemStack stack, Direction dir) {
+            return !this.dirty && dir == Direction.DOWN && stack.isOf(Items.BONE_MEAL);
+        }
+
+        @Override
+        public void markDirty() {
+            ComposterBlock.emptyComposter(this.state, this.world, this.pos);
+            this.dirty = true;
+        }
+    }
+
     static class ComposterInventory
     extends SimpleInventory
     implements SidedInventory {
@@ -363,56 +415,6 @@ implements InventoryProvider {
                 this.world.syncWorldEvent(WorldEvents.COMPOSTER_USED, this.pos, blockState != this.state ? 1 : 0);
                 this.removeStack(0);
             }
-        }
-    }
-
-    static class FullComposterInventory
-    extends SimpleInventory
-    implements SidedInventory {
-        private final BlockState state;
-        private final WorldAccess world;
-        private final BlockPos pos;
-        private boolean dirty;
-
-        public FullComposterInventory(BlockState state, WorldAccess world, BlockPos pos, ItemStack outputItem) {
-            super(outputItem);
-            this.state = state;
-            this.world = world;
-            this.pos = pos;
-        }
-
-        @Override
-        public int getMaxCountPerStack() {
-            return 1;
-        }
-
-        @Override
-        public int[] getAvailableSlots(Direction side) {
-            int[] nArray;
-            if (side == Direction.DOWN) {
-                int[] nArray2 = new int[1];
-                nArray = nArray2;
-                nArray2[0] = 0;
-            } else {
-                nArray = new int[]{};
-            }
-            return nArray;
-        }
-
-        @Override
-        public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
-            return false;
-        }
-
-        @Override
-        public boolean canExtract(int slot, ItemStack stack, Direction dir) {
-            return !this.dirty && dir == Direction.DOWN && stack.isOf(Items.BONE_MEAL);
-        }
-
-        @Override
-        public void markDirty() {
-            ComposterBlock.emptyComposter(this.state, this.world, this.pos);
-            this.dirty = true;
         }
     }
 

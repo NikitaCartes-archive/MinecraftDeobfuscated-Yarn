@@ -71,7 +71,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class WorldChunk
 implements Chunk {
-    private static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogManager.getLogger();
     private static final BlockEntityTickInvoker EMPTY_BLOCK_ENTITY_TICKER = new BlockEntityTickInvoker(){
 
         @Override
@@ -100,7 +100,7 @@ implements Chunk {
     private final Map<BlockPos, NbtCompound> pendingBlockEntityNbts = Maps.newHashMap();
     private final Map<BlockPos, WrappedBlockEntityTickInvoker> blockEntityTickers = Maps.newHashMap();
     private boolean loadedToWorld;
-    private final World world;
+    final World world;
     private final Map<Heightmap.Type, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Type.class);
     private final UpgradeData upgradeData;
     private final Map<BlockPos, BlockEntity> blockEntities = Maps.newHashMap();
@@ -374,7 +374,7 @@ implements Chunk {
         return this.loadedToWorld || this.world.isClient();
     }
 
-    private boolean canTickBlockEntity(BlockPos pos) {
+    boolean canTickBlockEntity(BlockPos pos) {
         return (this.world.isClient() || this.getLevelType().isAfter(ChunkHolder.LevelType.TICKING)) && this.world.getWorldBorder().contains(pos);
     }
 
@@ -443,7 +443,7 @@ implements Chunk {
     private void removeBlockEntityTicker(BlockPos blockPos) {
         WrappedBlockEntityTickInvoker wrappedBlockEntityTickInvoker = this.blockEntityTickers.remove(blockPos);
         if (wrappedBlockEntityTickInvoker != null) {
-            wrappedBlockEntityTickInvoker.setWrapped(WorldChunk.EMPTY_BLOCK_ENTITY_TICKER);
+            wrappedBlockEntityTickInvoker.setWrapped(EMPTY_BLOCK_ENTITY_TICKER);
         }
     }
 
@@ -765,7 +765,7 @@ implements Chunk {
             this.blockEntityTickers.compute(blockEntity.getPos(), (pos, wrappedBlockEntityTickInvoker) -> {
                 BlockEntityTickInvoker blockEntityTickInvoker = this.wrapTicker(blockEntity, blockEntityTicker);
                 if (wrappedBlockEntityTickInvoker != null) {
-                    ((WrappedBlockEntityTickInvoker)wrappedBlockEntityTickInvoker).setWrapped(blockEntityTickInvoker);
+                    wrappedBlockEntityTickInvoker.setWrapped(blockEntityTickInvoker);
                     return wrappedBlockEntityTickInvoker;
                 }
                 if (this.canTickBlockEntities()) {
@@ -782,15 +782,22 @@ implements Chunk {
         return new DirectBlockEntityTickInvoker(this, blockEntity, blockEntityTicker);
     }
 
+    public static enum CreationType {
+        IMMEDIATE,
+        QUEUED,
+        CHECK;
+
+    }
+
     class WrappedBlockEntityTickInvoker
     implements BlockEntityTickInvoker {
         private BlockEntityTickInvoker wrapped;
 
-        private WrappedBlockEntityTickInvoker(BlockEntityTickInvoker wrapped) {
-            this.wrapped = wrapped;
+        WrappedBlockEntityTickInvoker(BlockEntityTickInvoker blockEntityTickInvoker) {
+            this.wrapped = blockEntityTickInvoker;
         }
 
-        private void setWrapped(BlockEntityTickInvoker wrapped) {
+        void setWrapped(BlockEntityTickInvoker wrapped) {
             this.wrapped = wrapped;
         }
 
@@ -826,10 +833,10 @@ implements Chunk {
         private boolean hasWarned;
         final /* synthetic */ WorldChunk worldChunk;
 
-        private DirectBlockEntityTickInvoker(T blockEntity, BlockEntityTicker<T> ticker) {
+        DirectBlockEntityTickInvoker(T blockEntity, BlockEntityTicker<T> blockEntityTicker) {
             this.worldChunk = worldChunk;
             this.blockEntity = blockEntity;
-            this.ticker = ticker;
+            this.ticker = blockEntityTicker;
         }
 
         @Override
@@ -875,13 +882,6 @@ implements Chunk {
         public String toString() {
             return "Level ticker for " + this.getName() + "@" + this.getPos();
         }
-    }
-
-    public static enum CreationType {
-        IMMEDIATE,
-        QUEUED,
-        CHECK;
-
     }
 }
 

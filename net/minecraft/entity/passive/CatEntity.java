@@ -482,6 +482,41 @@ extends TameableEntity {
         return this.createChild(world, entity);
     }
 
+    static class TemptGoal
+    extends net.minecraft.entity.ai.goal.TemptGoal {
+        @Nullable
+        private PlayerEntity player;
+        private final CatEntity cat;
+
+        public TemptGoal(CatEntity cat, double speed, Ingredient food, boolean canBeScared) {
+            super(cat, speed, food, canBeScared);
+            this.cat = cat;
+        }
+
+        @Override
+        public void tick() {
+            super.tick();
+            if (this.player == null && this.mob.getRandom().nextInt(600) == 0) {
+                this.player = this.closestPlayer;
+            } else if (this.mob.getRandom().nextInt(500) == 0) {
+                this.player = null;
+            }
+        }
+
+        @Override
+        protected boolean canBeScared() {
+            if (this.player != null && this.player.equals(this.closestPlayer)) {
+                return false;
+            }
+            return super.canBeScared();
+        }
+
+        @Override
+        public boolean canStart() {
+            return super.canStart() && !this.cat.isTamed();
+        }
+    }
+
     static class SleepWithOwnerGoal
     extends Goal {
         private final CatEntity cat;
@@ -586,41 +621,6 @@ extends TameableEntity {
                     this.cat.setSleepingWithOwner(false);
                 }
             }
-        }
-    }
-
-    static class TemptGoal
-    extends net.minecraft.entity.ai.goal.TemptGoal {
-        @Nullable
-        private PlayerEntity player;
-        private final CatEntity cat;
-
-        public TemptGoal(CatEntity cat, double speed, Ingredient food, boolean canBeScared) {
-            super(cat, speed, food, canBeScared);
-            this.cat = cat;
-        }
-
-        @Override
-        public void tick() {
-            super.tick();
-            if (this.player == null && this.mob.getRandom().nextInt(600) == 0) {
-                this.player = this.closestPlayer;
-            } else if (this.mob.getRandom().nextInt(500) == 0) {
-                this.player = null;
-            }
-        }
-
-        @Override
-        protected boolean canBeScared() {
-            if (this.player != null && this.player.equals(this.closestPlayer)) {
-                return false;
-            }
-            return super.canBeScared();
-        }
-
-        @Override
-        public boolean canStart() {
-            return super.canStart() && !this.cat.isTamed();
         }
     }
 

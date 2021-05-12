@@ -48,7 +48,7 @@ implements GlShader,
 AutoCloseable {
     private static final String field_32778 = "shaders/core/";
     private static final String field_32779 = "shaders/include/";
-    private static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogManager.getLogger();
     private static final Uniform DEFAULT_UNIFORM = new Uniform();
     private static final boolean field_32780 = true;
     private static Shader activeShader;
@@ -204,25 +204,37 @@ AutoCloseable {
                 program2 = Program.createFromResource(type, name, resource.getInputStream(), resource.getResourcePackName(), new GLImportProcessor(){
                     private final Set<String> visitedImports = Sets.newHashSet();
 
-                    /*
-                     * Enabled aggressive block sorting
-                     * Enabled unnecessary exception pruning
-                     * Enabled aggressive exception aggregation
-                     */
                     @Override
                     public String loadImport(boolean inline, String name) {
-                        name = FileNameUtil.normalizeToPosix((inline ? string2 : Shader.field_32779) + name);
-                        if (!this.visitedImports.add(name)) {
-                            return null;
+                        String string;
+                        block9: {
+                            name = FileNameUtil.normalizeToPosix((inline ? string2 : Shader.field_32779) + name);
+                            if (!this.visitedImports.add(name)) {
+                                return null;
+                            }
+                            Identifier identifier = new Identifier(name);
+                            Resource resource = factory.getResource(identifier);
+                            try {
+                                string = IOUtils.toString(resource.getInputStream(), StandardCharsets.UTF_8);
+                                if (resource == null) break block9;
+                            } catch (Throwable throwable) {
+                                try {
+                                    if (resource != null) {
+                                        try {
+                                            resource.close();
+                                        } catch (Throwable throwable2) {
+                                            throwable.addSuppressed(throwable2);
+                                        }
+                                    }
+                                    throw throwable;
+                                } catch (IOException iOException) {
+                                    LOGGER.error("Could not open GLSL import {}: {}", (Object)name, (Object)iOException.getMessage());
+                                    return "#error " + iOException.getMessage();
+                                }
+                            }
+                            resource.close();
                         }
-                        Identifier identifier = new Identifier(name);
-                        try (Resource resource = factory.getResource(identifier);){
-                            String string = IOUtils.toString(resource.getInputStream(), StandardCharsets.UTF_8);
-                            return string;
-                        } catch (IOException iOException) {
-                            LOGGER.error("Could not open GLSL import {}: {}", (Object)name, (Object)iOException.getMessage());
-                            return "#error " + iOException.getMessage();
-                        }
+                        return string;
                     }
                 });
             } finally {

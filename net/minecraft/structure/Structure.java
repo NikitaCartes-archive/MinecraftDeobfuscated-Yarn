@@ -489,7 +489,6 @@ public class Structure {
             nbt.put(BLOCKS_KEY, new NbtList());
             nbt.put(PALETTE_KEY, new NbtList());
         } else {
-            NbtList nbtList2;
             ArrayList<Palette> list = Lists.newArrayList();
             Palette palette = new Palette();
             list.add(palette);
@@ -614,12 +613,28 @@ public class Structure {
         return nbtList;
     }
 
+    public static class StructureBlockInfo {
+        public final BlockPos pos;
+        public final BlockState state;
+        public final NbtCompound nbt;
+
+        public StructureBlockInfo(BlockPos pos, BlockState state, @Nullable NbtCompound nbt) {
+            this.pos = pos;
+            this.state = state;
+            this.nbt = nbt;
+        }
+
+        public String toString() {
+            return String.format("<StructureBlockInfo | %s | %s | %s>", this.pos, this.state, this.nbt);
+        }
+    }
+
     public static final class PalettedBlockInfoList {
         private final List<StructureBlockInfo> infos;
         private final Map<Block, List<StructureBlockInfo>> blockToInfos = Maps.newHashMap();
 
-        private PalettedBlockInfoList(List<StructureBlockInfo> infos) {
-            this.infos = infos;
+        PalettedBlockInfoList(List<StructureBlockInfo> list) {
+            this.infos = list;
         }
 
         public List<StructureBlockInfo> getAll() {
@@ -643,29 +658,13 @@ public class Structure {
         }
     }
 
-    public static class StructureBlockInfo {
-        public final BlockPos pos;
-        public final BlockState state;
-        public final NbtCompound nbt;
-
-        public StructureBlockInfo(BlockPos pos, BlockState state, @Nullable NbtCompound nbt) {
-            this.pos = pos;
-            this.state = state;
-            this.nbt = nbt;
-        }
-
-        public String toString() {
-            return String.format("<StructureBlockInfo | %s | %s | %s>", this.pos, this.state, this.nbt);
-        }
-    }
-
     static class Palette
     implements Iterable<BlockState> {
         public static final BlockState AIR = Blocks.AIR.getDefaultState();
         private final IdList<BlockState> ids = new IdList(16);
         private int currentIndex;
 
-        private Palette() {
+        Palette() {
         }
 
         public int getId(BlockState state) {

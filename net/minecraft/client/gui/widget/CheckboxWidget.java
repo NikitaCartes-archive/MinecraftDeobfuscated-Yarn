@@ -9,7 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.widget.AbstractPressableButtonWidget;
+import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -17,7 +17,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class CheckboxWidget
-extends AbstractPressableButtonWidget {
+extends PressableWidget {
     private static final Identifier TEXTURE = new Identifier("textures/gui/checkbox.png");
     private static final int field_32181 = 0xE0E0E0;
     private boolean checked;
@@ -53,7 +53,7 @@ extends AbstractPressableButtonWidget {
         RenderSystem.defaultBlendFunc();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
         CheckboxWidget.drawTexture(matrices, this.x, this.y, this.isFocused() ? 20.0f : 0.0f, this.checked ? 20.0f : 0.0f, 20, this.height, 64, 64);
-        this.renderBg(matrices, minecraftClient, mouseX, mouseY);
+        this.renderBackground(matrices, minecraftClient, mouseX, mouseY);
         if (this.showMessage) {
             CheckboxWidget.drawTextWithShadow(matrices, textRenderer, this.getMessage(), this.x + 24, this.y + (this.height - 8) / 2, 0xE0E0E0 | MathHelper.ceil(this.alpha * 255.0f) << 24);
         }

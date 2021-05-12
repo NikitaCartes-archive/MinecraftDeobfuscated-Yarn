@@ -30,8 +30,8 @@ extends Particle {
     private final Model model;
     private final RenderLayer LAYER = RenderLayer.getEntityTranslucent(ElderGuardianEntityRenderer.TEXTURE);
 
-    private ElderGuardianAppearanceParticle(ClientWorld world, double x, double y, double z) {
-        super(world, x, y, z);
+    ElderGuardianAppearanceParticle(ClientWorld clientWorld, double d, double e, double f) {
+        super(clientWorld, d, e, f);
         this.model = new GuardianEntityModel(MinecraftClient.getInstance().getEntityModelLoader().getModelPart(EntityModelLayers.ELDER_GUARDIAN));
         this.gravityStrength = 0.0f;
         this.maxAge = 30;

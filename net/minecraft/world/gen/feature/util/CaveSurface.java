@@ -63,8 +63,8 @@ public abstract class CaveSurface {
         return CaveSurface.create(floor, this.getCeilingHeight());
     }
 
-    public CaveSurface method_35328(OptionalInt optionalInt) {
-        return CaveSurface.create(this.getFloorHeight(), optionalInt);
+    public CaveSurface withCeiling(OptionalInt ceiling) {
+        return CaveSurface.create(this.getFloorHeight(), ceiling);
     }
 
     public static Optional<CaveSurface> create(TestableWorld world, BlockPos pos, int height, Predicate<BlockState> canGenerate, Predicate<BlockState> canReplace) {
@@ -84,63 +84,6 @@ public abstract class CaveSurface {
             mutablePos.move(direction);
         }
         return world.testBlockState(mutablePos, canReplace) ? OptionalInt.of(mutablePos.getY()) : OptionalInt.empty();
-    }
-
-    public static final class Half
-    extends CaveSurface {
-        private final int height;
-        private final boolean floor;
-
-        public Half(int height, boolean floor) {
-            this.height = height;
-            this.floor = floor;
-        }
-
-        @Override
-        public OptionalInt getCeilingHeight() {
-            return this.floor ? OptionalInt.empty() : OptionalInt.of(this.height);
-        }
-
-        @Override
-        public OptionalInt getFloorHeight() {
-            return this.floor ? OptionalInt.of(this.height) : OptionalInt.empty();
-        }
-
-        @Override
-        public OptionalInt getOptionalHeight() {
-            return OptionalInt.empty();
-        }
-
-        public String toString() {
-            return this.floor ? "C(" + this.height + "-)" : "C(-" + this.height + ")";
-        }
-    }
-
-    public static final class Empty
-    extends CaveSurface {
-        private static final Empty INSTANCE = new Empty();
-
-        private Empty() {
-        }
-
-        @Override
-        public OptionalInt getCeilingHeight() {
-            return OptionalInt.empty();
-        }
-
-        @Override
-        public OptionalInt getFloorHeight() {
-            return OptionalInt.empty();
-        }
-
-        @Override
-        public OptionalInt getOptionalHeight() {
-            return OptionalInt.empty();
-        }
-
-        public String toString() {
-            return "C(-)";
-        }
     }
 
     public static final class Bounded
@@ -184,7 +127,64 @@ public abstract class CaveSurface {
         }
 
         public String toString() {
-            return "C(" + this.ceiling + "-" + this.floor + ')';
+            return "C(" + this.ceiling + "-" + this.floor + ")";
+        }
+    }
+
+    public static final class Half
+    extends CaveSurface {
+        private final int height;
+        private final boolean floor;
+
+        public Half(int height, boolean floor) {
+            this.height = height;
+            this.floor = floor;
+        }
+
+        @Override
+        public OptionalInt getCeilingHeight() {
+            return this.floor ? OptionalInt.empty() : OptionalInt.of(this.height);
+        }
+
+        @Override
+        public OptionalInt getFloorHeight() {
+            return this.floor ? OptionalInt.of(this.height) : OptionalInt.empty();
+        }
+
+        @Override
+        public OptionalInt getOptionalHeight() {
+            return OptionalInt.empty();
+        }
+
+        public String toString() {
+            return this.floor ? "C(" + this.height + "-)" : "C(-" + this.height + ")";
+        }
+    }
+
+    public static final class Empty
+    extends CaveSurface {
+        static final Empty INSTANCE = new Empty();
+
+        private Empty() {
+        }
+
+        @Override
+        public OptionalInt getCeilingHeight() {
+            return OptionalInt.empty();
+        }
+
+        @Override
+        public OptionalInt getFloorHeight() {
+            return OptionalInt.empty();
+        }
+
+        @Override
+        public OptionalInt getOptionalHeight() {
+            return OptionalInt.empty();
+        }
+
+        public String toString() {
+            return "C(-)";
         }
     }
 }

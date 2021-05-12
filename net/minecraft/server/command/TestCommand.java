@@ -163,16 +163,16 @@ public class TestCommand {
         TestUtil.startTest(gameTestState, blockPos, TestManager.INSTANCE);
     }
 
-    private static void onCompletion(ServerWorld world, TestSet tests) {
+    static void onCompletion(ServerWorld world, TestSet tests) {
         if (tests.isDone()) {
             TestCommand.sendMessage(world, "GameTest done! " + tests.getTestCount() + " tests were run", Formatting.WHITE);
             if (tests.failed()) {
-                TestCommand.sendMessage(world, "" + tests.getFailedRequiredTestCount() + " required tests failed :(", Formatting.RED);
+                TestCommand.sendMessage(world, tests.getFailedRequiredTestCount() + " required tests failed :(", Formatting.RED);
             } else {
                 TestCommand.sendMessage(world, "All required tests passed :)", Formatting.GREEN);
             }
             if (tests.hasFailedOptionalTests()) {
-                TestCommand.sendMessage(world, "" + tests.getFailedOptionalTestCount() + " optional tests failed", Formatting.GRAY);
+                TestCommand.sendMessage(world, tests.getFailedOptionalTestCount() + " optional tests failed", Formatting.GRAY);
             }
         }
     }
@@ -304,7 +304,7 @@ public class TestCommand {
     }
 
     private static void sendMessage(ServerWorld world, String message, Formatting formatting) {
-        world.getPlayers(player -> true).forEach(player -> player.sendSystemMessage(new LiteralText((Object)((Object)formatting) + message), Util.NIL_UUID));
+        world.getPlayers(player -> true).forEach(player -> player.sendSystemMessage(new LiteralText(formatting + message), Util.NIL_UUID));
     }
 
     static class Listener

@@ -18,7 +18,7 @@ implements Packet<ClientPlayPacketListener> {
     private static final int THICKEN_FOG_MASK = 4;
     private final UUID uuid;
     private final Action action;
-    private static final Action REMOVE_ACTION = new Action(){
+    static final Action REMOVE_ACTION = new Action(){
 
         @Override
         public Type getType() {
@@ -43,7 +43,7 @@ implements Packet<ClientPlayPacketListener> {
     public BossBarS2CPacket(PacketByteBuf buf) {
         this.uuid = buf.readUuid();
         Type type = buf.readEnumConstant(Type.class);
-        this.action = (Action)type.parser.apply(buf);
+        this.action = type.parser.apply(buf);
     }
 
     public static BossBarS2CPacket add(BossBar bar) {
@@ -77,7 +77,7 @@ implements Packet<ClientPlayPacketListener> {
         this.action.toPacket(buf);
     }
 
-    private static int maskProperties(boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
+    static int maskProperties(boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
         int i = 0;
         if (darkenSky) {
             i |= 1;
@@ -100,126 +100,26 @@ implements Packet<ClientPlayPacketListener> {
         this.action.accept(this.uuid, consumer);
     }
 
-    static class UpdatePropertiesAction
-    implements Action {
-        private final boolean darkenSky;
-        private final boolean dragonMusic;
-        private final boolean thickenFog;
+    static interface Action {
+        public Type getType();
 
-        private UpdatePropertiesAction(boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
-            this.darkenSky = darkenSky;
-            this.dragonMusic = dragonMusic;
-            this.thickenFog = thickenFog;
-        }
+        public void accept(UUID var1, Consumer var2);
 
-        private UpdatePropertiesAction(PacketByteBuf buf) {
-            short i = buf.readUnsignedByte();
-            this.darkenSky = (i & 1) > 0;
-            this.dragonMusic = (i & 2) > 0;
-            this.thickenFog = (i & 4) > 0;
-        }
-
-        @Override
-        public Type getType() {
-            return Type.UPDATE_PROPERTIES;
-        }
-
-        @Override
-        public void accept(UUID uuid, Consumer consumer) {
-            consumer.updateProperties(uuid, this.darkenSky, this.dragonMusic, this.thickenFog);
-        }
-
-        @Override
-        public void toPacket(PacketByteBuf buf) {
-            buf.writeByte(BossBarS2CPacket.maskProperties(this.darkenSky, this.dragonMusic, this.thickenFog));
-        }
+        public void toPacket(PacketByteBuf var1);
     }
 
-    static class UpdateStyleAction
-    implements Action {
-        private final BossBar.Color color;
-        private final BossBar.Style style;
+    static enum Type {
+        ADD(AddAction::new),
+        REMOVE(buf -> REMOVE_ACTION),
+        UPDATE_PROGRESS(UpdateProgressAction::new),
+        UPDATE_NAME(UpdateNameAction::new),
+        UPDATE_STYLE(UpdateStyleAction::new),
+        UPDATE_PROPERTIES(UpdatePropertiesAction::new);
 
-        private UpdateStyleAction(BossBar.Color color, BossBar.Style style) {
-            this.color = color;
-            this.style = style;
-        }
+        final Function<PacketByteBuf, Action> parser;
 
-        private UpdateStyleAction(PacketByteBuf buf) {
-            this.color = buf.readEnumConstant(BossBar.Color.class);
-            this.style = buf.readEnumConstant(BossBar.Style.class);
-        }
-
-        @Override
-        public Type getType() {
-            return Type.UPDATE_STYLE;
-        }
-
-        @Override
-        public void accept(UUID uuid, Consumer consumer) {
-            consumer.updateStyle(uuid, this.color, this.style);
-        }
-
-        @Override
-        public void toPacket(PacketByteBuf buf) {
-            buf.writeEnumConstant(this.color);
-            buf.writeEnumConstant(this.style);
-        }
-    }
-
-    static class UpdateNameAction
-    implements Action {
-        private final Text name;
-
-        private UpdateNameAction(Text name) {
-            this.name = name;
-        }
-
-        private UpdateNameAction(PacketByteBuf buf) {
-            this.name = buf.readText();
-        }
-
-        @Override
-        public Type getType() {
-            return Type.UPDATE_NAME;
-        }
-
-        @Override
-        public void accept(UUID uuid, Consumer consumer) {
-            consumer.updateName(uuid, this.name);
-        }
-
-        @Override
-        public void toPacket(PacketByteBuf buf) {
-            buf.writeText(this.name);
-        }
-    }
-
-    static class UpdateProgressAction
-    implements Action {
-        private final float percent;
-
-        private UpdateProgressAction(float percent) {
-            this.percent = percent;
-        }
-
-        private UpdateProgressAction(PacketByteBuf buf) {
-            this.percent = buf.readFloat();
-        }
-
-        @Override
-        public Type getType() {
-            return Type.UPDATE_PROGRESS;
-        }
-
-        @Override
-        public void accept(UUID uuid, Consumer consumer) {
-            consumer.updateProgress(uuid, this.percent);
-        }
-
-        @Override
-        public void toPacket(PacketByteBuf buf) {
-            buf.writeFloat(this.percent);
+        private Type(Function<PacketByteBuf, Action> parser) {
+            this.parser = parser;
         }
     }
 
@@ -233,7 +133,7 @@ implements Packet<ClientPlayPacketListener> {
         private final boolean dragonMusic;
         private final boolean thickenFog;
 
-        private AddAction(BossBar bar) {
+        AddAction(BossBar bar) {
             this.name = bar.getName();
             this.percent = bar.getPercent();
             this.color = bar.getColor();
@@ -274,12 +174,127 @@ implements Packet<ClientPlayPacketListener> {
         }
     }
 
-    static interface Action {
-        public Type getType();
+    static class UpdateProgressAction
+    implements Action {
+        private final float percent;
 
-        public void accept(UUID var1, Consumer var2);
+        UpdateProgressAction(float percent) {
+            this.percent = percent;
+        }
 
-        public void toPacket(PacketByteBuf var1);
+        private UpdateProgressAction(PacketByteBuf buf) {
+            this.percent = buf.readFloat();
+        }
+
+        @Override
+        public Type getType() {
+            return Type.UPDATE_PROGRESS;
+        }
+
+        @Override
+        public void accept(UUID uuid, Consumer consumer) {
+            consumer.updateProgress(uuid, this.percent);
+        }
+
+        @Override
+        public void toPacket(PacketByteBuf buf) {
+            buf.writeFloat(this.percent);
+        }
+    }
+
+    static class UpdateNameAction
+    implements Action {
+        private final Text name;
+
+        UpdateNameAction(Text name) {
+            this.name = name;
+        }
+
+        private UpdateNameAction(PacketByteBuf buf) {
+            this.name = buf.readText();
+        }
+
+        @Override
+        public Type getType() {
+            return Type.UPDATE_NAME;
+        }
+
+        @Override
+        public void accept(UUID uuid, Consumer consumer) {
+            consumer.updateName(uuid, this.name);
+        }
+
+        @Override
+        public void toPacket(PacketByteBuf buf) {
+            buf.writeText(this.name);
+        }
+    }
+
+    static class UpdateStyleAction
+    implements Action {
+        private final BossBar.Color color;
+        private final BossBar.Style style;
+
+        UpdateStyleAction(BossBar.Color color, BossBar.Style style) {
+            this.color = color;
+            this.style = style;
+        }
+
+        private UpdateStyleAction(PacketByteBuf buf) {
+            this.color = buf.readEnumConstant(BossBar.Color.class);
+            this.style = buf.readEnumConstant(BossBar.Style.class);
+        }
+
+        @Override
+        public Type getType() {
+            return Type.UPDATE_STYLE;
+        }
+
+        @Override
+        public void accept(UUID uuid, Consumer consumer) {
+            consumer.updateStyle(uuid, this.color, this.style);
+        }
+
+        @Override
+        public void toPacket(PacketByteBuf buf) {
+            buf.writeEnumConstant(this.color);
+            buf.writeEnumConstant(this.style);
+        }
+    }
+
+    static class UpdatePropertiesAction
+    implements Action {
+        private final boolean darkenSky;
+        private final boolean dragonMusic;
+        private final boolean thickenFog;
+
+        UpdatePropertiesAction(boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
+            this.darkenSky = darkenSky;
+            this.dragonMusic = dragonMusic;
+            this.thickenFog = thickenFog;
+        }
+
+        private UpdatePropertiesAction(PacketByteBuf buf) {
+            short i = buf.readUnsignedByte();
+            this.darkenSky = (i & 1) > 0;
+            this.dragonMusic = (i & 2) > 0;
+            this.thickenFog = (i & 4) > 0;
+        }
+
+        @Override
+        public Type getType() {
+            return Type.UPDATE_PROPERTIES;
+        }
+
+        @Override
+        public void accept(UUID uuid, Consumer consumer) {
+            consumer.updateProperties(uuid, this.darkenSky, this.dragonMusic, this.thickenFog);
+        }
+
+        @Override
+        public void toPacket(PacketByteBuf buf) {
+            buf.writeByte(BossBarS2CPacket.maskProperties(this.darkenSky, this.dragonMusic, this.thickenFog));
+        }
     }
 
     public static interface Consumer {
@@ -299,21 +314,6 @@ implements Packet<ClientPlayPacketListener> {
         }
 
         default public void updateProperties(UUID uuid, boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
-        }
-    }
-
-    static enum Type {
-        ADD(buf -> new AddAction((PacketByteBuf)buf)),
-        REMOVE(buf -> BossBarS2CPacket.getRemoveAction()),
-        UPDATE_PROGRESS(buf -> new UpdateProgressAction((PacketByteBuf)buf)),
-        UPDATE_NAME(buf -> new UpdateNameAction((PacketByteBuf)buf)),
-        UPDATE_STYLE(buf -> new UpdateStyleAction((PacketByteBuf)buf)),
-        UPDATE_PROPERTIES(buf -> new UpdatePropertiesAction((PacketByteBuf)buf));
-
-        private final Function<PacketByteBuf, Action> parser;
-
-        private Type(Function<PacketByteBuf, Action> parser) {
-            this.parser = parser;
         }
     }
 }

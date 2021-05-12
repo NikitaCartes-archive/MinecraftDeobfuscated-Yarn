@@ -13,7 +13,7 @@ import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSource;
 
 public class BiomeAccess {
-    private static final int CHUNK_CENTER_OFFSET = BiomeCoords.fromBlock(8);
+    static final int CHUNK_CENTER_OFFSET = BiomeCoords.fromBlock(8);
     private final Storage storage;
     private final long seed;
     private final BiomeAccessType type;

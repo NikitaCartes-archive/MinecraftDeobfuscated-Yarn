@@ -251,7 +251,7 @@ extends RealmsScreen {
             RenderSystem.setShaderColor(0.56f, 0.56f, 0.56f, 1.0f);
         }
         DrawableHelper.drawTexture(matrices, y, xm, 0.0f, 0.0f, 80, 80, 80, 80);
-        RealmsBrokenWorldScreen.drawCenteredString(matrices, this.textRenderer, string, y + 40, xm + 66, 0xFFFFFF);
+        RealmsBrokenWorldScreen.drawCenteredText(matrices, this.textRenderer, string, y + 40, xm + 66, 0xFFFFFF);
     }
 }
 

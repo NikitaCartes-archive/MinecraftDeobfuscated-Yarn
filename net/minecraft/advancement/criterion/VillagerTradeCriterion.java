@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 
 public class VillagerTradeCriterion
 extends AbstractCriterion<Conditions> {
-    private static final Identifier ID = new Identifier("villager_trade");
+    static final Identifier ID = new Identifier("villager_trade");
 
     @Override
     public Identifier getId() {

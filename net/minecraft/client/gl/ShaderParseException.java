@@ -31,7 +31,7 @@ extends IOException {
     }
 
     public void addFaultyFile(String path) {
-        this.traces.get(0).fileName = path;
+        this.traces.get((int)0).fileName = path;
         this.traces.add(0, new JsonStackTrace());
     }
 
@@ -53,13 +53,13 @@ extends IOException {
 
     public static class JsonStackTrace {
         @Nullable
-        private String fileName;
+        String fileName;
         private final List<String> faultyElements = Lists.newArrayList();
 
-        private JsonStackTrace() {
+        JsonStackTrace() {
         }
 
-        private void add(String element) {
+        void add(String element) {
             this.faultyElements.add(0, element);
         }
 

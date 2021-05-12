@@ -50,9 +50,9 @@ extends AbstractNbtList<NbtElement> {
             }
             nbtTagSizeTracker.add(32L * (long)j);
             NbtType<?> nbtType = NbtTypes.byId(b);
-            ArrayList<?> list = Lists.newArrayListWithCapacity(j);
+            ArrayList<NbtElement> list = Lists.newArrayListWithCapacity(j);
             for (int k = 0; k < j; ++k) {
-                list.add(nbtType.read(dataInput, i + 1, nbtTagSizeTracker));
+                list.add((NbtElement)nbtType.read(dataInput, i + 1, nbtTagSizeTracker));
             }
             return new NbtList(list, b);
         }
@@ -75,7 +75,7 @@ extends AbstractNbtList<NbtElement> {
     private final List<NbtElement> value;
     private byte type;
 
-    private NbtList(List<NbtElement> list, byte type) {
+    NbtList(List<NbtElement> list, byte type) {
         this.value = list;
         this.type = type;
     }

@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
 
 public class NamespaceResourceManager
 implements ResourceManager {
-    private static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogManager.getLogger();
     protected final List<ResourcePack> packList = Lists.newArrayList();
     private final ResourceType type;
     private final String namespace;

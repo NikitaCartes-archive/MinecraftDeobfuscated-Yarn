@@ -28,12 +28,12 @@ import net.minecraft.util.JsonSerializer;
 
 public class EntityScoresLootCondition
 implements LootCondition {
-    private final Map<String, BoundedIntUnaryOperator> scores;
-    private final LootContext.EntityTarget target;
+    final Map<String, BoundedIntUnaryOperator> scores;
+    final LootContext.EntityTarget target;
 
-    private EntityScoresLootCondition(Map<String, BoundedIntUnaryOperator> scores, LootContext.EntityTarget target) {
-        this.scores = ImmutableMap.copyOf(scores);
-        this.target = target;
+    EntityScoresLootCondition(Map<String, BoundedIntUnaryOperator> map, LootContext.EntityTarget entityTarget) {
+        this.scores = ImmutableMap.copyOf(map);
+        this.target = entityTarget;
     }
 
     @Override
@@ -81,13 +81,33 @@ implements LootCondition {
         return this.test((LootContext)context);
     }
 
+    public static class Builder
+    implements LootCondition.Builder {
+        private final Map<String, BoundedIntUnaryOperator> scores = Maps.newHashMap();
+        private final LootContext.EntityTarget target;
+
+        public Builder(LootContext.EntityTarget target) {
+            this.target = target;
+        }
+
+        public Builder score(String name, BoundedIntUnaryOperator value) {
+            this.scores.put(name, value);
+            return this;
+        }
+
+        @Override
+        public LootCondition build() {
+            return new EntityScoresLootCondition(this.scores, this.target);
+        }
+    }
+
     public static class Serializer
     implements JsonSerializer<EntityScoresLootCondition> {
         @Override
         public void toJson(JsonObject jsonObject, EntityScoresLootCondition entityScoresLootCondition, JsonSerializationContext jsonSerializationContext) {
             JsonObject jsonObject2 = new JsonObject();
-            for (Map.Entry entry : entityScoresLootCondition.scores.entrySet()) {
-                jsonObject2.add((String)entry.getKey(), jsonSerializationContext.serialize(entry.getValue()));
+            for (Map.Entry<String, BoundedIntUnaryOperator> entry : entityScoresLootCondition.scores.entrySet()) {
+                jsonObject2.add(entry.getKey(), jsonSerializationContext.serialize(entry.getValue()));
             }
             jsonObject.add("scores", jsonObject2);
             jsonObject.add("entity", jsonSerializationContext.serialize((Object)entityScoresLootCondition.target));
@@ -106,26 +126,6 @@ implements LootCondition {
         @Override
         public /* synthetic */ Object fromJson(JsonObject json, JsonDeserializationContext context) {
             return this.fromJson(json, context);
-        }
-    }
-
-    public static class Builder
-    implements LootCondition.Builder {
-        private final Map<String, BoundedIntUnaryOperator> scores = Maps.newHashMap();
-        private final LootContext.EntityTarget target;
-
-        public Builder(LootContext.EntityTarget target) {
-            this.target = target;
-        }
-
-        public Builder score(String name, BoundedIntUnaryOperator value) {
-            this.scores.put(name, value);
-            return this;
-        }
-
-        @Override
-        public LootCondition build() {
-            return new EntityScoresLootCondition(this.scores, this.target);
         }
     }
 }

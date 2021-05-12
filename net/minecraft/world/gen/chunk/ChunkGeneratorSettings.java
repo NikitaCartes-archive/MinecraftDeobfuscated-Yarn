@@ -27,7 +27,7 @@ import net.minecraft.world.gen.chunk.StructuresConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public final class ChunkGeneratorSettings {
-    public static final Codec<ChunkGeneratorSettings> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)StructuresConfig.CODEC.fieldOf("structures")).forGetter(ChunkGeneratorSettings::getStructuresConfig), ((MapCodec)GenerationShapeConfig.CODEC.fieldOf("noise")).forGetter(ChunkGeneratorSettings::getGenerationShapeConfig), ((MapCodec)BlockState.CODEC.fieldOf("default_block")).forGetter(ChunkGeneratorSettings::getDefaultBlock), ((MapCodec)BlockState.CODEC.fieldOf("default_fluid")).forGetter(ChunkGeneratorSettings::getDefaultFluid), ((MapCodec)Codec.INT.fieldOf("bedrock_roof_position")).forGetter(ChunkGeneratorSettings::getBedrockCeilingY), ((MapCodec)Codec.INT.fieldOf("bedrock_floor_position")).forGetter(ChunkGeneratorSettings::getBedrockFloorY), ((MapCodec)Codec.INT.fieldOf("sea_level")).forGetter(ChunkGeneratorSettings::getSeaLevel), ((MapCodec)Codec.INT.fieldOf("min_surface_level")).forGetter(ChunkGeneratorSettings::getMinSurfaceLevel), ((MapCodec)Codec.BOOL.fieldOf("disable_mob_generation")).forGetter(ChunkGeneratorSettings::isMobGenerationDisabled), ((MapCodec)Codec.BOOL.fieldOf("aquifers_enabled")).forGetter(ChunkGeneratorSettings::hasAquifers), ((MapCodec)Codec.BOOL.fieldOf("noise_caves_enabled")).forGetter(ChunkGeneratorSettings::hasNoiseCaves), ((MapCodec)Codec.BOOL.fieldOf("deepslate_enabled")).forGetter(ChunkGeneratorSettings::hasDeepslate), ((MapCodec)Codec.BOOL.fieldOf("ore_veins_enabled")).forGetter(ChunkGeneratorSettings::method_36396), ((MapCodec)Codec.BOOL.fieldOf("noodle_caves_enabled")).forGetter(ChunkGeneratorSettings::method_36396)).apply((Applicative<ChunkGeneratorSettings, ?>)instance, ChunkGeneratorSettings::new));
+    public static final Codec<ChunkGeneratorSettings> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)StructuresConfig.CODEC.fieldOf("structures")).forGetter(ChunkGeneratorSettings::getStructuresConfig), ((MapCodec)GenerationShapeConfig.CODEC.fieldOf("noise")).forGetter(ChunkGeneratorSettings::getGenerationShapeConfig), ((MapCodec)BlockState.CODEC.fieldOf("default_block")).forGetter(ChunkGeneratorSettings::getDefaultBlock), ((MapCodec)BlockState.CODEC.fieldOf("default_fluid")).forGetter(ChunkGeneratorSettings::getDefaultFluid), ((MapCodec)Codec.INT.fieldOf("bedrock_roof_position")).forGetter(ChunkGeneratorSettings::getBedrockCeilingY), ((MapCodec)Codec.INT.fieldOf("bedrock_floor_position")).forGetter(ChunkGeneratorSettings::getBedrockFloorY), ((MapCodec)Codec.INT.fieldOf("sea_level")).forGetter(ChunkGeneratorSettings::getSeaLevel), ((MapCodec)Codec.INT.fieldOf("min_surface_level")).forGetter(ChunkGeneratorSettings::getMinSurfaceLevel), ((MapCodec)Codec.BOOL.fieldOf("disable_mob_generation")).forGetter(ChunkGeneratorSettings::isMobGenerationDisabled), ((MapCodec)Codec.BOOL.fieldOf("aquifers_enabled")).forGetter(ChunkGeneratorSettings::hasAquifers), ((MapCodec)Codec.BOOL.fieldOf("noise_caves_enabled")).forGetter(ChunkGeneratorSettings::hasNoiseCaves), ((MapCodec)Codec.BOOL.fieldOf("deepslate_enabled")).forGetter(ChunkGeneratorSettings::hasDeepslate), ((MapCodec)Codec.BOOL.fieldOf("ore_veins_enabled")).forGetter(ChunkGeneratorSettings::hasOreVeins), ((MapCodec)Codec.BOOL.fieldOf("noodle_caves_enabled")).forGetter(ChunkGeneratorSettings::hasOreVeins)).apply((Applicative<ChunkGeneratorSettings, ?>)instance, ChunkGeneratorSettings::new));
     public static final Codec<Supplier<ChunkGeneratorSettings>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, CODEC);
     private final StructuresConfig structuresConfig;
     private final GenerationShapeConfig generationShapeConfig;
@@ -41,8 +41,8 @@ public final class ChunkGeneratorSettings {
     private final boolean aquifers;
     private final boolean noiseCaves;
     private final boolean deepslate;
-    private final boolean field_33587;
-    private final boolean field_33651;
+    private final boolean oreVeins;
+    private final boolean noodleCaves;
     public static final RegistryKey<ChunkGeneratorSettings> OVERWORLD = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("overworld"));
     public static final RegistryKey<ChunkGeneratorSettings> AMPLIFIED = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("amplified"));
     public static final RegistryKey<ChunkGeneratorSettings> NETHER = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("nether"));
@@ -51,7 +51,7 @@ public final class ChunkGeneratorSettings {
     public static final RegistryKey<ChunkGeneratorSettings> FLOATING_ISLANDS = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("floating_islands"));
     private static final ChunkGeneratorSettings INSTANCE = ChunkGeneratorSettings.register(OVERWORLD, ChunkGeneratorSettings.createSurfaceSettings(new StructuresConfig(true), false));
 
-    private ChunkGeneratorSettings(StructuresConfig structuresConfig, GenerationShapeConfig generationShapeConfig, BlockState defaultBlock, BlockState defaultFluid, int bedrockCeilingY, int bedrockFloorY, int seaLevel, int minSurfaceLevel, boolean mobGenerationDisabled, boolean aquifers, boolean noiseCaves, boolean deepslate, boolean bl, boolean bl2) {
+    private ChunkGeneratorSettings(StructuresConfig structuresConfig, GenerationShapeConfig generationShapeConfig, BlockState defaultBlock, BlockState defaultFluid, int bedrockCeilingY, int bedrockFloorY, int seaLevel, int minSurfaceLevel, boolean mobGenerationDisabled, boolean aquifers, boolean noiseCaves, boolean deepslate, boolean oreVeins, boolean noodleCaves) {
         this.structuresConfig = structuresConfig;
         this.generationShapeConfig = generationShapeConfig;
         this.defaultBlock = defaultBlock;
@@ -64,8 +64,8 @@ public final class ChunkGeneratorSettings {
         this.aquifers = aquifers;
         this.noiseCaves = noiseCaves;
         this.deepslate = deepslate;
-        this.field_33587 = bl;
-        this.field_33651 = bl2;
+        this.oreVeins = oreVeins;
+        this.noodleCaves = noodleCaves;
     }
 
     public StructuresConfig getStructuresConfig() {
@@ -132,12 +132,12 @@ public final class ChunkGeneratorSettings {
         return this.deepslate;
     }
 
-    protected boolean method_36396() {
-        return this.field_33587;
+    protected boolean hasOreVeins() {
+        return this.oreVeins;
     }
 
-    protected boolean method_36468() {
-        return this.field_33651;
+    protected boolean hasNoodleCaves() {
+        return this.noodleCaves;
     }
 
     public boolean equals(RegistryKey<ChunkGeneratorSettings> registryKey) {

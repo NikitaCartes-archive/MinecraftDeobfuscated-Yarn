@@ -25,12 +25,12 @@ import net.minecraft.util.registry.Registry;
 
 public class BlockStatePropertyLootCondition
 implements LootCondition {
-    private final Block block;
-    private final StatePredicate properties;
+    final Block block;
+    final StatePredicate properties;
 
-    private BlockStatePropertyLootCondition(Block block, StatePredicate properties) {
+    BlockStatePropertyLootCondition(Block block, StatePredicate statePredicate) {
         this.block = block;
-        this.properties = properties;
+        this.properties = statePredicate;
     }
 
     @Override
@@ -58,6 +58,26 @@ implements LootCondition {
         return this.test((LootContext)context);
     }
 
+    public static class Builder
+    implements LootCondition.Builder {
+        private final Block block;
+        private StatePredicate propertyValues = StatePredicate.ANY;
+
+        public Builder(Block block) {
+            this.block = block;
+        }
+
+        public Builder properties(StatePredicate.Builder builder) {
+            this.propertyValues = builder.build();
+            return this;
+        }
+
+        @Override
+        public LootCondition build() {
+            return new BlockStatePropertyLootCondition(this.block, this.propertyValues);
+        }
+    }
+
     public static class Serializer
     implements JsonSerializer<BlockStatePropertyLootCondition> {
         @Override
@@ -80,26 +100,6 @@ implements LootCondition {
         @Override
         public /* synthetic */ Object fromJson(JsonObject json, JsonDeserializationContext context) {
             return this.fromJson(json, context);
-        }
-    }
-
-    public static class Builder
-    implements LootCondition.Builder {
-        private final Block block;
-        private StatePredicate propertyValues = StatePredicate.ANY;
-
-        public Builder(Block block) {
-            this.block = block;
-        }
-
-        public Builder properties(StatePredicate.Builder builder) {
-            this.propertyValues = builder.build();
-            return this;
-        }
-
-        @Override
-        public LootCondition build() {
-            return new BlockStatePropertyLootCondition(this.block, this.propertyValues);
         }
     }
 }

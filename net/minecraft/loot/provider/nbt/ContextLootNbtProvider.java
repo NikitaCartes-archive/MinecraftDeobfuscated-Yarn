@@ -48,7 +48,7 @@ implements LootNbtProvider {
         }
     };
     public static final ContextLootNbtProvider BLOCK_ENTITY = new ContextLootNbtProvider(BLOCK_ENTITY_TARGET);
-    private final Target target;
+    final Target target;
 
     private static Target getTarget(final LootContext.EntityTarget entityTarget) {
         return new Target(){
@@ -96,12 +96,21 @@ implements LootNbtProvider {
         return new ContextLootNbtProvider(ContextLootNbtProvider.getTarget(target));
     }
 
-    private static ContextLootNbtProvider setTarget(String target) {
+    static ContextLootNbtProvider setTarget(String target) {
         if (target.equals(BLOCK_ENTITY_TARGET_NAME)) {
             return new ContextLootNbtProvider(BLOCK_ENTITY_TARGET);
         }
         LootContext.EntityTarget entityTarget = LootContext.EntityTarget.fromString(target);
         return new ContextLootNbtProvider(ContextLootNbtProvider.getTarget(entityTarget));
+    }
+
+    static interface Target {
+        @Nullable
+        public NbtElement getNbt(LootContext var1);
+
+        public String getName();
+
+        public Set<LootContextParameter<?>> getRequiredParameters();
     }
 
     public static class CustomSerializer
@@ -140,15 +149,6 @@ implements LootNbtProvider {
         public /* synthetic */ Object fromJson(JsonObject json, JsonDeserializationContext context) {
             return this.fromJson(json, context);
         }
-    }
-
-    static interface Target {
-        @Nullable
-        public NbtElement getNbt(LootContext var1);
-
-        public String getName();
-
-        public Set<LootContextParameter<?>> getRequiredParameters();
     }
 }
 

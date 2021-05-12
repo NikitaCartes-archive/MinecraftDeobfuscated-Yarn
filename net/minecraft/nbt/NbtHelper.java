@@ -565,7 +565,7 @@ public final class NbtHelper {
         StringBuilder stringBuilder = new StringBuilder(compound.getString("Name"));
         if (compound.contains("Properties", 10)) {
             NbtCompound nbtCompound = compound.getCompound("Properties");
-            String string2 = nbtCompound.getKeys().stream().sorted().map(string -> string + ':' + nbtCompound.get((String)string).asString()).collect(Collectors.joining(field_33227));
+            String string2 = nbtCompound.getKeys().stream().sorted().map(string -> string + ":" + nbtCompound.get((String)string).asString()).collect(Collectors.joining(field_33227));
             stringBuilder.append('{').append(string2).append('}');
         }
         return stringBuilder.toString();

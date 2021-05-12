@@ -87,222 +87,31 @@ public class TradeOffers {
         return new Int2ObjectOpenHashMap<Factory[]>(map);
     }
 
-    static class ProcessItemFactory
+    public static interface Factory {
+        @Nullable
+        public TradeOffer create(Entity var1, Random var2);
+    }
+
+    static class BuyForOneEmeraldFactory
     implements Factory {
-        private final ItemStack secondBuy;
-        private final int secondCount;
+        private final Item buy;
         private final int price;
-        private final ItemStack sell;
-        private final int sellCount;
         private final int maxUses;
         private final int experience;
         private final float multiplier;
 
-        public ProcessItemFactory(ItemConvertible item, int secondCount, Item sellItem, int sellCount, int maxUses, int experience) {
-            this(item, secondCount, 1, sellItem, sellCount, maxUses, experience);
-        }
-
-        public ProcessItemFactory(ItemConvertible item, int secondCount, int price, Item sellItem, int sellCount, int maxUses, int experience) {
-            this.secondBuy = new ItemStack(item);
-            this.secondCount = secondCount;
+        public BuyForOneEmeraldFactory(ItemConvertible item, int price, int maxUses, int experience) {
+            this.buy = item.asItem();
             this.price = price;
-            this.sell = new ItemStack(sellItem);
-            this.sellCount = sellCount;
             this.maxUses = maxUses;
             this.experience = experience;
             this.multiplier = 0.05f;
         }
 
         @Override
-        @Nullable
         public TradeOffer create(Entity entity, Random random) {
-            return new TradeOffer(new ItemStack(Items.EMERALD, this.price), new ItemStack(this.secondBuy.getItem(), this.secondCount), new ItemStack(this.sell.getItem(), this.sellCount), this.maxUses, this.experience, this.multiplier);
-        }
-    }
-
-    static class SellMapFactory
-    implements Factory {
-        private final int price;
-        private final StructureFeature<?> structure;
-        private final MapIcon.Type iconType;
-        private final int maxUses;
-        private final int experience;
-
-        public SellMapFactory(int price, StructureFeature<?> feature, MapIcon.Type iconType, int maxUses, int experience) {
-            this.price = price;
-            this.structure = feature;
-            this.iconType = iconType;
-            this.maxUses = maxUses;
-            this.experience = experience;
-        }
-
-        @Override
-        @Nullable
-        public TradeOffer create(Entity entity, Random random) {
-            if (!(entity.world instanceof ServerWorld)) {
-                return null;
-            }
-            ServerWorld serverWorld = (ServerWorld)entity.world;
-            BlockPos blockPos = serverWorld.locateStructure(this.structure, entity.getBlockPos(), 100, true);
-            if (blockPos != null) {
-                ItemStack itemStack = FilledMapItem.createMap(serverWorld, blockPos.getX(), blockPos.getZ(), (byte)2, true, true);
-                FilledMapItem.fillExplorationMap(serverWorld, itemStack);
-                MapState.addDecorationsNbt(itemStack, blockPos, "+", this.iconType);
-                itemStack.setCustomName(new TranslatableText("filled_map." + this.structure.getName().toLowerCase(Locale.ROOT)));
-                return new TradeOffer(new ItemStack(Items.EMERALD, this.price), new ItemStack(Items.COMPASS), itemStack, this.maxUses, this.experience, 0.2f);
-            }
-            return null;
-        }
-    }
-
-    static class EnchantBookFactory
-    implements Factory {
-        private final int experience;
-
-        public EnchantBookFactory(int experience) {
-            this.experience = experience;
-        }
-
-        @Override
-        public TradeOffer create(Entity entity, Random random) {
-            List list = Registry.ENCHANTMENT.stream().filter(Enchantment::isAvailableForEnchantedBookOffer).collect(Collectors.toList());
-            Enchantment enchantment = (Enchantment)list.get(random.nextInt(list.size()));
-            int i = MathHelper.nextInt(random, enchantment.getMinLevel(), enchantment.getMaxLevel());
-            ItemStack itemStack = EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantment, i));
-            int j = 2 + random.nextInt(5 + i * 10) + 3 * i;
-            if (enchantment.isTreasure()) {
-                j *= 2;
-            }
-            if (j > 64) {
-                j = 64;
-            }
-            return new TradeOffer(new ItemStack(Items.EMERALD, j), new ItemStack(Items.BOOK), itemStack, 12, this.experience, 0.2f);
-        }
-    }
-
-    static class SellDyedArmorFactory
-    implements Factory {
-        private final Item sell;
-        private final int price;
-        private final int maxUses;
-        private final int experience;
-
-        public SellDyedArmorFactory(Item item, int price) {
-            this(item, price, 12, 1);
-        }
-
-        public SellDyedArmorFactory(Item item, int price, int maxUses, int experience) {
-            this.sell = item;
-            this.price = price;
-            this.maxUses = maxUses;
-            this.experience = experience;
-        }
-
-        @Override
-        public TradeOffer create(Entity entity, Random random) {
-            ItemStack itemStack = new ItemStack(Items.EMERALD, this.price);
-            ItemStack itemStack2 = new ItemStack(this.sell);
-            if (this.sell instanceof DyeableArmorItem) {
-                ArrayList<DyeItem> list = Lists.newArrayList();
-                list.add(SellDyedArmorFactory.getDye(random));
-                if (random.nextFloat() > 0.7f) {
-                    list.add(SellDyedArmorFactory.getDye(random));
-                }
-                if (random.nextFloat() > 0.8f) {
-                    list.add(SellDyedArmorFactory.getDye(random));
-                }
-                itemStack2 = DyeableItem.blendAndSetColor(itemStack2, list);
-            }
-            return new TradeOffer(itemStack, itemStack2, this.maxUses, this.experience, 0.2f);
-        }
-
-        private static DyeItem getDye(Random random) {
-            return DyeItem.byColor(DyeColor.byId(random.nextInt(16)));
-        }
-    }
-
-    static class SellPotionHoldingItemFactory
-    implements Factory {
-        private final ItemStack sell;
-        private final int sellCount;
-        private final int price;
-        private final int maxUses;
-        private final int experience;
-        private final Item secondBuy;
-        private final int secondCount;
-        private final float priceMultiplier;
-
-        public SellPotionHoldingItemFactory(Item arrow, int secondCount, Item tippedArrow, int sellCount, int price, int maxUses, int experience) {
-            this.sell = new ItemStack(tippedArrow);
-            this.price = price;
-            this.maxUses = maxUses;
-            this.experience = experience;
-            this.secondBuy = arrow;
-            this.secondCount = secondCount;
-            this.sellCount = sellCount;
-            this.priceMultiplier = 0.05f;
-        }
-
-        @Override
-        public TradeOffer create(Entity entity, Random random) {
-            ItemStack itemStack = new ItemStack(Items.EMERALD, this.price);
-            List list = Registry.POTION.stream().filter(potion -> !potion.getEffects().isEmpty() && BrewingRecipeRegistry.isBrewable(potion)).collect(Collectors.toList());
-            Potion potion2 = (Potion)list.get(random.nextInt(list.size()));
-            ItemStack itemStack2 = PotionUtil.setPotion(new ItemStack(this.sell.getItem(), this.sellCount), potion2);
-            return new TradeOffer(itemStack, new ItemStack(this.secondBuy, this.secondCount), itemStack2, this.maxUses, this.experience, this.priceMultiplier);
-        }
-    }
-
-    static class SellEnchantedToolFactory
-    implements Factory {
-        private final ItemStack tool;
-        private final int basePrice;
-        private final int maxUses;
-        private final int experience;
-        private final float multiplier;
-
-        public SellEnchantedToolFactory(Item item, int basePrice, int maxUses, int experience) {
-            this(item, basePrice, maxUses, experience, 0.05f);
-        }
-
-        public SellEnchantedToolFactory(Item item, int basePrice, int maxUses, int experience, float multiplier) {
-            this.tool = new ItemStack(item);
-            this.basePrice = basePrice;
-            this.maxUses = maxUses;
-            this.experience = experience;
-            this.multiplier = multiplier;
-        }
-
-        @Override
-        public TradeOffer create(Entity entity, Random random) {
-            int i = 5 + random.nextInt(15);
-            ItemStack itemStack = EnchantmentHelper.enchant(random, new ItemStack(this.tool.getItem()), i, false);
-            int j = Math.min(this.basePrice + i, 64);
-            ItemStack itemStack2 = new ItemStack(Items.EMERALD, j);
-            return new TradeOffer(itemStack2, itemStack, this.maxUses, this.experience, this.multiplier);
-        }
-    }
-
-    static class SellSuspiciousStewFactory
-    implements Factory {
-        final StatusEffect effect;
-        final int duration;
-        final int experience;
-        private final float multiplier;
-
-        public SellSuspiciousStewFactory(StatusEffect effect, int duration, int experience) {
-            this.effect = effect;
-            this.duration = duration;
-            this.experience = experience;
-            this.multiplier = 0.05f;
-        }
-
-        @Override
-        @Nullable
-        public TradeOffer create(Entity entity, Random random) {
-            ItemStack itemStack = new ItemStack(Items.SUSPICIOUS_STEW, 1);
-            SuspiciousStewItem.addEffectToStew(itemStack, this.effect, this.duration);
-            return new TradeOffer(new ItemStack(Items.EMERALD, 1), itemStack, 12, this.experience, this.multiplier);
+            ItemStack itemStack = new ItemStack(this.buy, this.price);
+            return new TradeOffer(itemStack, new ItemStack(Items.EMERALD), this.maxUses, this.experience, this.multiplier);
         }
     }
 
@@ -346,6 +155,92 @@ public class TradeOffers {
         }
     }
 
+    static class SellSuspiciousStewFactory
+    implements Factory {
+        final StatusEffect effect;
+        final int duration;
+        final int experience;
+        private final float multiplier;
+
+        public SellSuspiciousStewFactory(StatusEffect effect, int duration, int experience) {
+            this.effect = effect;
+            this.duration = duration;
+            this.experience = experience;
+            this.multiplier = 0.05f;
+        }
+
+        @Override
+        @Nullable
+        public TradeOffer create(Entity entity, Random random) {
+            ItemStack itemStack = new ItemStack(Items.SUSPICIOUS_STEW, 1);
+            SuspiciousStewItem.addEffectToStew(itemStack, this.effect, this.duration);
+            return new TradeOffer(new ItemStack(Items.EMERALD, 1), itemStack, 12, this.experience, this.multiplier);
+        }
+    }
+
+    static class ProcessItemFactory
+    implements Factory {
+        private final ItemStack secondBuy;
+        private final int secondCount;
+        private final int price;
+        private final ItemStack sell;
+        private final int sellCount;
+        private final int maxUses;
+        private final int experience;
+        private final float multiplier;
+
+        public ProcessItemFactory(ItemConvertible item, int secondCount, Item sellItem, int sellCount, int maxUses, int experience) {
+            this(item, secondCount, 1, sellItem, sellCount, maxUses, experience);
+        }
+
+        public ProcessItemFactory(ItemConvertible item, int secondCount, int price, Item sellItem, int sellCount, int maxUses, int experience) {
+            this.secondBuy = new ItemStack(item);
+            this.secondCount = secondCount;
+            this.price = price;
+            this.sell = new ItemStack(sellItem);
+            this.sellCount = sellCount;
+            this.maxUses = maxUses;
+            this.experience = experience;
+            this.multiplier = 0.05f;
+        }
+
+        @Override
+        @Nullable
+        public TradeOffer create(Entity entity, Random random) {
+            return new TradeOffer(new ItemStack(Items.EMERALD, this.price), new ItemStack(this.secondBuy.getItem(), this.secondCount), new ItemStack(this.sell.getItem(), this.sellCount), this.maxUses, this.experience, this.multiplier);
+        }
+    }
+
+    static class SellEnchantedToolFactory
+    implements Factory {
+        private final ItemStack tool;
+        private final int basePrice;
+        private final int maxUses;
+        private final int experience;
+        private final float multiplier;
+
+        public SellEnchantedToolFactory(Item item, int basePrice, int maxUses, int experience) {
+            this(item, basePrice, maxUses, experience, 0.05f);
+        }
+
+        public SellEnchantedToolFactory(Item item, int basePrice, int maxUses, int experience, float multiplier) {
+            this.tool = new ItemStack(item);
+            this.basePrice = basePrice;
+            this.maxUses = maxUses;
+            this.experience = experience;
+            this.multiplier = multiplier;
+        }
+
+        @Override
+        public TradeOffer create(Entity entity, Random random) {
+            int i = 5 + random.nextInt(15);
+            ItemStack itemStack = EnchantmentHelper.enchant(random, new ItemStack(this.tool.getItem()), i, false);
+            int j = Math.min(this.basePrice + i, 64);
+            ItemStack itemStack2 = new ItemStack(Items.EMERALD, j);
+            return new TradeOffer(itemStack2, itemStack, this.maxUses, this.experience, this.multiplier);
+        }
+    }
+
     static class TypeAwareBuyForOneEmeraldFactory
     implements Factory {
         private final Map<VillagerType, Item> map;
@@ -374,32 +269,137 @@ public class TradeOffers {
         }
     }
 
-    static class BuyForOneEmeraldFactory
+    static class SellPotionHoldingItemFactory
     implements Factory {
-        private final Item buy;
+        private final ItemStack sell;
+        private final int sellCount;
         private final int price;
         private final int maxUses;
         private final int experience;
-        private final float multiplier;
+        private final Item secondBuy;
+        private final int secondCount;
+        private final float priceMultiplier;
 
-        public BuyForOneEmeraldFactory(ItemConvertible item, int price, int maxUses, int experience) {
-            this.buy = item.asItem();
+        public SellPotionHoldingItemFactory(Item arrow, int secondCount, Item tippedArrow, int sellCount, int price, int maxUses, int experience) {
+            this.sell = new ItemStack(tippedArrow);
             this.price = price;
             this.maxUses = maxUses;
             this.experience = experience;
-            this.multiplier = 0.05f;
+            this.secondBuy = arrow;
+            this.secondCount = secondCount;
+            this.sellCount = sellCount;
+            this.priceMultiplier = 0.05f;
         }
 
         @Override
         public TradeOffer create(Entity entity, Random random) {
-            ItemStack itemStack = new ItemStack(this.buy, this.price);
-            return new TradeOffer(itemStack, new ItemStack(Items.EMERALD), this.maxUses, this.experience, this.multiplier);
+            ItemStack itemStack = new ItemStack(Items.EMERALD, this.price);
+            List list = Registry.POTION.stream().filter(potion -> !potion.getEffects().isEmpty() && BrewingRecipeRegistry.isBrewable(potion)).collect(Collectors.toList());
+            Potion potion2 = (Potion)list.get(random.nextInt(list.size()));
+            ItemStack itemStack2 = PotionUtil.setPotion(new ItemStack(this.sell.getItem(), this.sellCount), potion2);
+            return new TradeOffer(itemStack, new ItemStack(this.secondBuy, this.secondCount), itemStack2, this.maxUses, this.experience, this.priceMultiplier);
         }
     }
 
-    public static interface Factory {
+    static class EnchantBookFactory
+    implements Factory {
+        private final int experience;
+
+        public EnchantBookFactory(int experience) {
+            this.experience = experience;
+        }
+
+        @Override
+        public TradeOffer create(Entity entity, Random random) {
+            List list = Registry.ENCHANTMENT.stream().filter(Enchantment::isAvailableForEnchantedBookOffer).collect(Collectors.toList());
+            Enchantment enchantment = (Enchantment)list.get(random.nextInt(list.size()));
+            int i = MathHelper.nextInt(random, enchantment.getMinLevel(), enchantment.getMaxLevel());
+            ItemStack itemStack = EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantment, i));
+            int j = 2 + random.nextInt(5 + i * 10) + 3 * i;
+            if (enchantment.isTreasure()) {
+                j *= 2;
+            }
+            if (j > 64) {
+                j = 64;
+            }
+            return new TradeOffer(new ItemStack(Items.EMERALD, j), new ItemStack(Items.BOOK), itemStack, 12, this.experience, 0.2f);
+        }
+    }
+
+    static class SellMapFactory
+    implements Factory {
+        private final int price;
+        private final StructureFeature<?> structure;
+        private final MapIcon.Type iconType;
+        private final int maxUses;
+        private final int experience;
+
+        public SellMapFactory(int price, StructureFeature<?> feature, MapIcon.Type iconType, int maxUses, int experience) {
+            this.price = price;
+            this.structure = feature;
+            this.iconType = iconType;
+            this.maxUses = maxUses;
+            this.experience = experience;
+        }
+
+        @Override
         @Nullable
-        public TradeOffer create(Entity var1, Random var2);
+        public TradeOffer create(Entity entity, Random random) {
+            if (!(entity.world instanceof ServerWorld)) {
+                return null;
+            }
+            ServerWorld serverWorld = (ServerWorld)entity.world;
+            BlockPos blockPos = serverWorld.locateStructure(this.structure, entity.getBlockPos(), 100, true);
+            if (blockPos != null) {
+                ItemStack itemStack = FilledMapItem.createMap(serverWorld, blockPos.getX(), blockPos.getZ(), (byte)2, true, true);
+                FilledMapItem.fillExplorationMap(serverWorld, itemStack);
+                MapState.addDecorationsNbt(itemStack, blockPos, "+", this.iconType);
+                itemStack.setCustomName(new TranslatableText("filled_map." + this.structure.getName().toLowerCase(Locale.ROOT)));
+                return new TradeOffer(new ItemStack(Items.EMERALD, this.price), new ItemStack(Items.COMPASS), itemStack, this.maxUses, this.experience, 0.2f);
+            }
+            return null;
+        }
+    }
+
+    static class SellDyedArmorFactory
+    implements Factory {
+        private final Item sell;
+        private final int price;
+        private final int maxUses;
+        private final int experience;
+
+        public SellDyedArmorFactory(Item item, int price) {
+            this(item, price, 12, 1);
+        }
+
+        public SellDyedArmorFactory(Item item, int price, int maxUses, int experience) {
+            this.sell = item;
+            this.price = price;
+            this.maxUses = maxUses;
+            this.experience = experience;
+        }
+
+        @Override
+        public TradeOffer create(Entity entity, Random random) {
+            ItemStack itemStack = new ItemStack(Items.EMERALD, this.price);
+            ItemStack itemStack2 = new ItemStack(this.sell);
+            if (this.sell instanceof DyeableArmorItem) {
+                ArrayList<DyeItem> list = Lists.newArrayList();
+                list.add(SellDyedArmorFactory.getDye(random));
+                if (random.nextFloat() > 0.7f) {
+                    list.add(SellDyedArmorFactory.getDye(random));
+                }
+                if (random.nextFloat() > 0.8f) {
+                    list.add(SellDyedArmorFactory.getDye(random));
+                }
+                itemStack2 = DyeableItem.blendAndSetColor(itemStack2, list);
+            }
+            return new TradeOffer(itemStack, itemStack2, this.maxUses, this.experience, 0.2f);
+        }
+
+        private static DyeItem getDye(Random random) {
+            return DyeItem.byColor(DyeColor.byId(random.nextInt(16)));
+        }
     }
 }
 

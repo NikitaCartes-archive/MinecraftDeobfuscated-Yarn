@@ -99,9 +99,9 @@ extends Supplier<JsonElement> {
         private final LogicalOperator operator;
         private final List<When> components;
 
-        private LogicalCondition(LogicalOperator operator, List<When> components) {
-            this.operator = operator;
-            this.components = components;
+        LogicalCondition(LogicalOperator logicalOperator, List<When> list) {
+            this.operator = logicalOperator;
+            this.components = list;
         }
 
         @Override
@@ -128,7 +128,7 @@ extends Supplier<JsonElement> {
         AND("AND"),
         OR("OR");
 
-        private final String name;
+        final String name;
 
         private LogicalOperator(String name) {
             this.name = name;

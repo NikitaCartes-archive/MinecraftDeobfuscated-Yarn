@@ -23,32 +23,32 @@ public class FileNameUtil {
 
     public static String getNextUniqueName(Path path, String name, String extension) throws IOException {
         for (char c : SharedConstants.INVALID_CHARS_LEVEL_NAME) {
-            name = name.replace(c, '_');
+            name = ((String)name).replace(c, '_');
         }
-        if (RESERVED_WINDOWS_NAMES.matcher(name = name.replaceAll("[./\"]", "_")).matches()) {
-            name = "_" + name + "_";
+        if (RESERVED_WINDOWS_NAMES.matcher((CharSequence)(name = ((String)name).replaceAll("[./\"]", "_"))).matches()) {
+            name = "_" + (String)name + "_";
         }
-        Matcher matcher = FILE_NAME_WITH_COUNT.matcher(name);
+        Matcher matcher = FILE_NAME_WITH_COUNT.matcher((CharSequence)name);
         int i = 0;
         if (matcher.matches()) {
             name = matcher.group("name");
             i = Integer.parseInt(matcher.group("count"));
         }
-        if (name.length() > 255 - extension.length()) {
-            name = name.substring(0, 255 - extension.length());
+        if (((String)name).length() > 255 - extension.length()) {
+            name = ((String)name).substring(0, 255 - extension.length());
         }
         while (true) {
-            String string = name;
+            Object string = name;
             if (i != 0) {
                 String string2 = " (" + i + ")";
                 int j = 255 - string2.length();
-                if (string.length() > j) {
-                    string = string.substring(0, j);
+                if (((String)string).length() > j) {
+                    string = ((String)string).substring(0, j);
                 }
-                string = string + string2;
+                string = (String)string + string2;
             }
-            string = string + extension;
-            Path path2 = path.resolve(string);
+            string = (String)string + extension;
+            Path path2 = path.resolve((String)string);
             try {
                 Path path3 = Files.createDirectory(path2, new FileAttribute[0]);
                 Files.deleteIfExists(path3);

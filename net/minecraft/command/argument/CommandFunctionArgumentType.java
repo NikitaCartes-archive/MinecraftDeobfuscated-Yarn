@@ -38,7 +38,7 @@ implements ArgumentType<FunctionArgument> {
 
                 @Override
                 public Collection<CommandFunction> getFunctions(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
-                    Tag tag = CommandFunctionArgumentType.getFunctionTag(commandContext, identifier);
+                    Tag<CommandFunction> tag = CommandFunctionArgumentType.getFunctionTag(commandContext, identifier);
                     return tag.values();
                 }
 
@@ -63,11 +63,11 @@ implements ArgumentType<FunctionArgument> {
         };
     }
 
-    private static CommandFunction getFunction(CommandContext<ServerCommandSource> context, Identifier id) throws CommandSyntaxException {
+    static CommandFunction getFunction(CommandContext<ServerCommandSource> context, Identifier id) throws CommandSyntaxException {
         return context.getSource().getMinecraftServer().getCommandFunctionManager().getFunction(id).orElseThrow(() -> UNKNOWN_FUNCTION_EXCEPTION.create(id.toString()));
     }
 
-    private static Tag<CommandFunction> getFunctionTag(CommandContext<ServerCommandSource> context, Identifier id) throws CommandSyntaxException {
+    static Tag<CommandFunction> getFunctionTag(CommandContext<ServerCommandSource> context, Identifier id) throws CommandSyntaxException {
         Tag<CommandFunction> tag = context.getSource().getMinecraftServer().getCommandFunctionManager().getTaggedFunctions(id);
         if (tag == null) {
             throw UNKNOWN_FUNCTION_TAG_EXCEPTION.create(id.toString());

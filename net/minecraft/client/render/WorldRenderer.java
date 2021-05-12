@@ -77,6 +77,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.entity.feature.SheepWoolFeatureRenderer;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
@@ -354,7 +355,7 @@ AutoCloseable {
                 mutable.set(p, w, o);
                 int ak = WorldRenderer.getLightmapCoordinates(world, mutable);
                 int al = ak >> 16 & 0xFFFF;
-                int am = (ak & 0xFFFF) * 3;
+                int am = ak & 0xFFFF;
                 int an = (al * 3 + 240) / 4;
                 int ao = (am * 3 + 240) / 4;
                 bufferBuilder.vertex((double)p - d - r + 0.5, (double)v - e, (double)o - g - s + 0.5).texture(0.0f + z, (float)u * 0.25f + af + ag).color(1.0f, 1.0f, 1.0f, aj).light(ao, an).next();
@@ -633,7 +634,7 @@ AutoCloseable {
         }
     }
 
-    public void method_35774() {
+    public void reloadTransparencyShader() {
         if (MinecraftClient.isFabulousGraphicsOrBetter()) {
             this.loadTransparencyShader();
         } else {
@@ -649,7 +650,7 @@ AutoCloseable {
         if (this.world == null) {
             return;
         }
-        this.method_35774();
+        this.reloadTransparencyShader();
         this.world.reloadColor();
         if (this.chunkBuilder == null) {
             this.chunkBuilder = new ChunkBuilder(this.world, this, Util.getMainWorkerExecutor(), this.client.is64Bit(), this.bufferBuilders.getBlockBufferBuilders());
@@ -807,7 +808,7 @@ AutoCloseable {
                     list.add(new ChunkInfo(builtChunk2, null, 0));
                 }
             }
-            list.sort(Comparator.comparingDouble(chunkInfo -> blockPos.getSquaredDistance(((ChunkInfo)chunkInfo).chunk.getOrigin().add(8, 8, 8))));
+            list.sort(Comparator.comparingDouble(chunkInfo -> blockPos.getSquaredDistance(chunkInfo.chunk.getOrigin().add(8, 8, 8))));
             queue.addAll(list);
         } else {
             if (bl && this.world.getBlockState(blockPos).isOpaqueFullCube(this.world, blockPos)) {
@@ -1012,6 +1013,7 @@ AutoCloseable {
         immediate.draw(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE));
         immediate.draw(RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE));
         immediate.draw(RenderLayer.getEntityCutoutNoCull(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE));
+        immediate.draw(RenderLayer.getEntityCutoutNoCull(SheepWoolFeatureRenderer.SKIN));
         immediate.draw(RenderLayer.getEntitySmoothCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE));
         profiler.swap("blockentities");
         for (ChunkInfo chunkInfo : this.visibleChunks) {
@@ -2679,12 +2681,12 @@ AutoCloseable {
         private final ChunkInfo[] current;
         private final ChunkInfo[] pending;
 
-        private ChunkInfoList(int size) {
-            this.current = new ChunkInfo[size];
-            this.pending = new ChunkInfo[size];
+        ChunkInfoList(int i) {
+            this.current = new ChunkInfo[i];
+            this.pending = new ChunkInfo[i];
         }
 
-        private void update() {
+        void update() {
             System.arraycopy(this.pending, 0, this.current, 0, this.current.length);
         }
 
@@ -2699,17 +2701,17 @@ AutoCloseable {
 
     @Environment(value=EnvType.CLIENT)
     static class ChunkInfo {
-        private final ChunkBuilder.BuiltChunk chunk;
+        final ChunkBuilder.BuiltChunk chunk;
         private byte direction;
-        private byte cullingState;
-        private final int propagationLevel;
+        byte cullingState;
+        final int propagationLevel;
 
-        private ChunkInfo(ChunkBuilder.BuiltChunk chunk, @Nullable Direction cull, int propagationLevel) {
-            this.chunk = chunk;
-            if (cull != null) {
-                this.addDirection(cull);
+        ChunkInfo(ChunkBuilder.BuiltChunk builtChunk, @Nullable Direction direction, int i) {
+            this.chunk = builtChunk;
+            if (direction != null) {
+                this.addDirection(direction);
             }
-            this.propagationLevel = propagationLevel;
+            this.propagationLevel = i;
         }
 
         public void updateCullingState(byte parentCullingState, Direction from) {

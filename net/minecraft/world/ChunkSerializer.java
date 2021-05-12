@@ -341,7 +341,7 @@ public class ChunkSerializer {
         HashMap<StructureFeature<?>, LongSet> map = Maps.newHashMap();
         NbtCompound nbtCompound = nbt.getCompound("References");
         for (String string : nbtCompound.getKeys()) {
-            map.put((StructureFeature<?>)StructureFeature.STRUCTURES.get(string.toLowerCase(Locale.ROOT)), new LongOpenHashSet(Arrays.stream(nbtCompound.getLongArray(string)).filter(packedPos -> {
+            map.put((StructureFeature)StructureFeature.STRUCTURES.get(string.toLowerCase(Locale.ROOT)), new LongOpenHashSet(Arrays.stream(nbtCompound.getLongArray(string)).filter(packedPos -> {
                 ChunkPos chunkPos2 = new ChunkPos(packedPos);
                 if (chunkPos2.getChebyshevDistance(pos) > 8) {
                     LOGGER.warn("Found invalid structure reference [ {} @ {} ] for chunk {}.", (Object)string, (Object)chunkPos2, (Object)pos);

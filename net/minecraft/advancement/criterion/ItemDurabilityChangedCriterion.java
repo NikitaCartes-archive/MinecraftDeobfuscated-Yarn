@@ -17,7 +17,7 @@ import net.minecraft.util.Identifier;
 
 public class ItemDurabilityChangedCriterion
 extends AbstractCriterion<Conditions> {
-    private static final Identifier ID = new Identifier("item_durability_changed");
+    static final Identifier ID = new Identifier("item_durability_changed");
 
     @Override
     public Identifier getId() {

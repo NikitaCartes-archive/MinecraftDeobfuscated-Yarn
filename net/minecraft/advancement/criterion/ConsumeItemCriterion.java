@@ -20,7 +20,7 @@ import net.minecraft.util.Identifier;
 
 public class ConsumeItemCriterion
 extends AbstractCriterion<Conditions> {
-    private static final Identifier ID = new Identifier("consume_item");
+    static final Identifier ID = new Identifier("consume_item");
 
     @Override
     public Identifier getId() {

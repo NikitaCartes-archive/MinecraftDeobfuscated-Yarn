@@ -102,12 +102,12 @@ implements ScreenHandlerProvider<LecternScreenHandler> {
         return false;
     }
 
-    private void updatePageProvider() {
+    void updatePageProvider() {
         ItemStack itemStack = this.handler.getBookItem();
         this.setPageProvider(BookScreen.Contents.create(itemStack));
     }
 
-    private void updatePage() {
+    void updatePage() {
         this.setPage(this.handler.getPage());
     }
 

@@ -48,7 +48,7 @@ extends HostileEntity {
     public static final int field_28645 = MathHelper.ceil(3.9269907f);
     protected static final TrackedData<Byte> VEX_FLAGS = DataTracker.registerData(VexEntity.class, TrackedDataHandlerRegistry.BYTE);
     private static final int CHARGING_FLAG = 1;
-    private MobEntity owner;
+    MobEntity owner;
     @Nullable
     private BlockPos bounds;
     private boolean alive;
@@ -205,56 +205,34 @@ extends HostileEntity {
         this.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0.0f);
     }
 
-    class TrackOwnerTargetGoal
-    extends TrackTargetGoal {
-        private final TargetPredicate TRACK_OWNER_PREDICATE;
-
-        public TrackOwnerTargetGoal(PathAwareEntity mob) {
-            super(mob, false);
-            this.TRACK_OWNER_PREDICATE = new TargetPredicate().includeHidden().ignoreDistanceScalingFactor();
-        }
-
-        @Override
-        public boolean canStart() {
-            return VexEntity.this.owner != null && VexEntity.this.owner.getTarget() != null && this.canTrack(VexEntity.this.owner.getTarget(), this.TRACK_OWNER_PREDICATE);
-        }
-
-        @Override
-        public void start() {
-            VexEntity.this.setTarget(VexEntity.this.owner.getTarget());
-            super.start();
-        }
-    }
-
-    class LookAtTargetGoal
-    extends Goal {
-        public LookAtTargetGoal() {
-            this.setControls(EnumSet.of(Goal.Control.MOVE));
-        }
-
-        @Override
-        public boolean canStart() {
-            return !VexEntity.this.getMoveControl().isMoving() && VexEntity.this.random.nextInt(7) == 0;
-        }
-
-        @Override
-        public boolean shouldContinue() {
-            return false;
+    class VexMoveControl
+    extends MoveControl {
+        public VexMoveControl(VexEntity owner) {
+            super(owner);
         }
 
         @Override
         public void tick() {
-            BlockPos blockPos = VexEntity.this.getBounds();
-            if (blockPos == null) {
-                blockPos = VexEntity.this.getBlockPos();
+            if (this.state != MoveControl.State.MOVE_TO) {
+                return;
             }
-            for (int i = 0; i < 3; ++i) {
-                BlockPos blockPos2 = blockPos.add(VexEntity.this.random.nextInt(15) - 7, VexEntity.this.random.nextInt(11) - 5, VexEntity.this.random.nextInt(15) - 7);
-                if (!VexEntity.this.world.isAir(blockPos2)) continue;
-                VexEntity.this.moveControl.moveTo((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.5, (double)blockPos2.getZ() + 0.5, 0.25);
-                if (VexEntity.this.getTarget() != null) break;
-                VexEntity.this.getLookControl().lookAt((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.5, (double)blockPos2.getZ() + 0.5, 180.0f, 20.0f);
-                break;
+            Vec3d vec3d = new Vec3d(this.targetX - VexEntity.this.getX(), this.targetY - VexEntity.this.getY(), this.targetZ - VexEntity.this.getZ());
+            double d = vec3d.length();
+            if (d < VexEntity.this.getBoundingBox().getAverageSideLength()) {
+                this.state = MoveControl.State.WAIT;
+                VexEntity.this.setVelocity(VexEntity.this.getVelocity().multiply(0.5));
+            } else {
+                VexEntity.this.setVelocity(VexEntity.this.getVelocity().add(vec3d.multiply(this.speed * 0.05 / d)));
+                if (VexEntity.this.getTarget() == null) {
+                    Vec3d vec3d2 = VexEntity.this.getVelocity();
+                    VexEntity.this.setYaw(-((float)MathHelper.atan2(vec3d2.x, vec3d2.z)) * 57.295776f);
+                    VexEntity.this.bodyYaw = VexEntity.this.getYaw();
+                } else {
+                    double e = VexEntity.this.getTarget().getX() - VexEntity.this.getX();
+                    double f = VexEntity.this.getTarget().getZ() - VexEntity.this.getZ();
+                    VexEntity.this.setYaw(-((float)MathHelper.atan2(e, f)) * 57.295776f);
+                    VexEntity.this.bodyYaw = VexEntity.this.getYaw();
+                }
             }
         }
     }
@@ -308,35 +286,57 @@ extends HostileEntity {
         }
     }
 
-    class VexMoveControl
-    extends MoveControl {
-        public VexMoveControl(VexEntity owner) {
-            super(owner);
+    class LookAtTargetGoal
+    extends Goal {
+        public LookAtTargetGoal() {
+            this.setControls(EnumSet.of(Goal.Control.MOVE));
+        }
+
+        @Override
+        public boolean canStart() {
+            return !VexEntity.this.getMoveControl().isMoving() && VexEntity.this.random.nextInt(7) == 0;
+        }
+
+        @Override
+        public boolean shouldContinue() {
+            return false;
         }
 
         @Override
         public void tick() {
-            if (this.state != MoveControl.State.MOVE_TO) {
-                return;
+            BlockPos blockPos = VexEntity.this.getBounds();
+            if (blockPos == null) {
+                blockPos = VexEntity.this.getBlockPos();
             }
-            Vec3d vec3d = new Vec3d(this.targetX - VexEntity.this.getX(), this.targetY - VexEntity.this.getY(), this.targetZ - VexEntity.this.getZ());
-            double d = vec3d.length();
-            if (d < VexEntity.this.getBoundingBox().getAverageSideLength()) {
-                this.state = MoveControl.State.WAIT;
-                VexEntity.this.setVelocity(VexEntity.this.getVelocity().multiply(0.5));
-            } else {
-                VexEntity.this.setVelocity(VexEntity.this.getVelocity().add(vec3d.multiply(this.speed * 0.05 / d)));
-                if (VexEntity.this.getTarget() == null) {
-                    Vec3d vec3d2 = VexEntity.this.getVelocity();
-                    VexEntity.this.setYaw(-((float)MathHelper.atan2(vec3d2.x, vec3d2.z)) * 57.295776f);
-                    VexEntity.this.bodyYaw = VexEntity.this.getYaw();
-                } else {
-                    double e = VexEntity.this.getTarget().getX() - VexEntity.this.getX();
-                    double f = VexEntity.this.getTarget().getZ() - VexEntity.this.getZ();
-                    VexEntity.this.setYaw(-((float)MathHelper.atan2(e, f)) * 57.295776f);
-                    VexEntity.this.bodyYaw = VexEntity.this.getYaw();
-                }
+            for (int i = 0; i < 3; ++i) {
+                BlockPos blockPos2 = blockPos.add(VexEntity.this.random.nextInt(15) - 7, VexEntity.this.random.nextInt(11) - 5, VexEntity.this.random.nextInt(15) - 7);
+                if (!VexEntity.this.world.isAir(blockPos2)) continue;
+                VexEntity.this.moveControl.moveTo((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.5, (double)blockPos2.getZ() + 0.5, 0.25);
+                if (VexEntity.this.getTarget() != null) break;
+                VexEntity.this.getLookControl().lookAt((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.5, (double)blockPos2.getZ() + 0.5, 180.0f, 20.0f);
+                break;
             }
+        }
+    }
+
+    class TrackOwnerTargetGoal
+    extends TrackTargetGoal {
+        private final TargetPredicate TRACK_OWNER_PREDICATE;
+
+        public TrackOwnerTargetGoal(PathAwareEntity mob) {
+            super(mob, false);
+            this.TRACK_OWNER_PREDICATE = TargetPredicate.createNonAttackable().visibleOnly().ignoreDistanceScalingFactor();
+        }
+
+        @Override
+        public boolean canStart() {
+            return VexEntity.this.owner != null && VexEntity.this.owner.getTarget() != null && this.canTrack(VexEntity.this.owner.getTarget(), this.TRACK_OWNER_PREDICATE);
+        }
+
+        @Override
+        public void start() {
+            VexEntity.this.setTarget(VexEntity.this.owner.getTarget());
+            super.start();
         }
     }
 }

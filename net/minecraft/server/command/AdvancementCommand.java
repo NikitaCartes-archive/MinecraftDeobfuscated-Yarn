@@ -109,22 +109,6 @@ public class AdvancementCommand {
         }
     }
 
-    static enum Selection {
-        ONLY(false, false),
-        THROUGH(true, true),
-        FROM(false, true),
-        UNTIL(true, false),
-        EVERYTHING(true, true);
-
-        private final boolean before;
-        private final boolean after;
-
-        private Selection(boolean before, boolean after) {
-            this.before = before;
-            this.after = after;
-        }
-    }
-
     static enum Operation {
         GRANT("grant"){
 
@@ -168,8 +152,8 @@ public class AdvancementCommand {
 
         private final String commandPrefix;
 
-        private Operation(String name) {
-            this.commandPrefix = "commands.advancement." + name;
+        Operation(String string2) {
+            this.commandPrefix = "commands.advancement." + string2;
         }
 
         public int processAll(ServerPlayerEntity player, Iterable<Advancement> advancements) {
@@ -187,6 +171,22 @@ public class AdvancementCommand {
 
         protected String getCommandPrefix() {
             return this.commandPrefix;
+        }
+    }
+
+    static enum Selection {
+        ONLY(false, false),
+        THROUGH(true, true),
+        FROM(false, true),
+        UNTIL(true, false),
+        EVERYTHING(true, true);
+
+        final boolean before;
+        final boolean after;
+
+        private Selection(boolean before, boolean after) {
+            this.before = before;
+            this.after = after;
         }
     }
 }

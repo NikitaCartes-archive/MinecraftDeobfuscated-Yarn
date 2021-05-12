@@ -23,8 +23,8 @@ extends MessageToByteEncoder<ByteBuf> {
     }
 
     @Override
-    protected /* synthetic */ void encode(ChannelHandlerContext channelHandlerContext, Object object, ByteBuf byteBuf) throws Exception {
-        this.encode(channelHandlerContext, (ByteBuf)object, byteBuf);
+    protected /* synthetic */ void encode(ChannelHandlerContext context, Object buf, ByteBuf result) throws Exception {
+        this.encode(context, (ByteBuf)buf, result);
     }
 }
 

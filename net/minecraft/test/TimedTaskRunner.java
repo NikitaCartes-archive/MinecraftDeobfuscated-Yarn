@@ -12,7 +12,7 @@ import net.minecraft.test.GameTestState;
 import net.minecraft.test.TimedTask;
 
 public class TimedTaskRunner {
-    private final GameTestState test;
+    final GameTestState test;
     private final List<TimedTask> tasks = Lists.newArrayList();
     private long tick;
 

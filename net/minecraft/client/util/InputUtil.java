@@ -170,7 +170,7 @@ public class InputUtil {
 
     public static Key fromTranslationKey(String translationKey) {
         if (Key.KEYS.containsKey(translationKey)) {
-            return (Key)Key.KEYS.get(translationKey);
+            return Key.KEYS.get(translationKey);
         }
         for (Type type : Type.values()) {
             if (!translationKey.startsWith(type.name)) continue;
@@ -234,68 +234,6 @@ public class InputUtil {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static final class Key {
-        private final String translationKey;
-        private final Type type;
-        private final int code;
-        private final Lazy<Text> localizedText;
-        private static final Map<String, Key> KEYS = Maps.newHashMap();
-
-        private Key(String translationKey, Type type, int code) {
-            this.translationKey = translationKey;
-            this.type = type;
-            this.code = code;
-            this.localizedText = new Lazy<Text>(() -> (Text)type.textTranslator.apply(code, translationKey));
-            KEYS.put(translationKey, this);
-        }
-
-        public Type getCategory() {
-            return this.type;
-        }
-
-        public int getCode() {
-            return this.code;
-        }
-
-        public String getTranslationKey() {
-            return this.translationKey;
-        }
-
-        public Text getLocalizedText() {
-            return this.localizedText.get();
-        }
-
-        public OptionalInt toInt() {
-            if (this.code >= 48 && this.code <= 57) {
-                return OptionalInt.of(this.code - 48);
-            }
-            if (this.code >= 320 && this.code <= 329) {
-                return OptionalInt.of(this.code - 320);
-            }
-            return OptionalInt.empty();
-        }
-
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || this.getClass() != o.getClass()) {
-                return false;
-            }
-            Key key = (Key)o;
-            return this.code == key.code && this.type == key.type;
-        }
-
-        public int hashCode() {
-            return Objects.hash(new Object[]{this.type, this.code});
-        }
-
-        public String toString() {
-            return this.translationKey;
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
     public static enum Type {
         KEYSYM("key.keyboard", (integer, string) -> {
             String string2 = GLFW.glfwGetKeyName(integer, -1);
@@ -308,8 +246,8 @@ public class InputUtil {
         MOUSE("key.mouse", (integer, string) -> Language.getInstance().hasTranslation((String)string) ? new TranslatableText((String)string) : new TranslatableText("key.mouse", integer + 1));
 
         private final Int2ObjectMap<Key> map = new Int2ObjectOpenHashMap<Key>();
-        private final String name;
-        private final BiFunction<Integer, String, Text> textTranslator;
+        final String name;
+        final BiFunction<Integer, String, Text> textTranslator;
 
         private static void mapKey(Type type, String translationKey, int keyCode) {
             Key key = new Key(translationKey, type, keyCode);
@@ -462,6 +400,68 @@ public class InputUtil {
             Type.mapKey(KEYSYM, "key.keyboard.print.screen", GLFW.GLFW_KEY_PRINT_SCREEN);
             Type.mapKey(KEYSYM, "key.keyboard.world.1", GLFW.GLFW_KEY_WORLD_1);
             Type.mapKey(KEYSYM, "key.keyboard.world.2", GLFW.GLFW_KEY_WORLD_2);
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static final class Key {
+        private final String translationKey;
+        private final Type type;
+        private final int code;
+        private final Lazy<Text> localizedText;
+        static final Map<String, Key> KEYS = Maps.newHashMap();
+
+        Key(String string, Type type, int i) {
+            this.translationKey = string;
+            this.type = type;
+            this.code = i;
+            this.localizedText = new Lazy<Text>(() -> type.textTranslator.apply(i, string));
+            KEYS.put(string, this);
+        }
+
+        public Type getCategory() {
+            return this.type;
+        }
+
+        public int getCode() {
+            return this.code;
+        }
+
+        public String getTranslationKey() {
+            return this.translationKey;
+        }
+
+        public Text getLocalizedText() {
+            return this.localizedText.get();
+        }
+
+        public OptionalInt toInt() {
+            if (this.code >= 48 && this.code <= 57) {
+                return OptionalInt.of(this.code - 48);
+            }
+            if (this.code >= 320 && this.code <= 329) {
+                return OptionalInt.of(this.code - 320);
+            }
+            return OptionalInt.empty();
+        }
+
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || this.getClass() != o.getClass()) {
+                return false;
+            }
+            Key key = (Key)o;
+            return this.code == key.code && this.type == key.type;
+        }
+
+        public int hashCode() {
+            return Objects.hash(new Object[]{this.type, this.code});
+        }
+
+        public String toString() {
+            return this.translationKey;
         }
     }
 }

@@ -161,20 +161,20 @@ implements TickableElement {
             RenderSystem.setShaderColor(0.56f, 0.56f, 0.56f, 1.0f);
         }
         RealmsWorldSlotButton.drawTexture(matrices, x, y, 0.0f, 0.0f, 80, 80, 80, 80);
-        RealmsWorldSlotButton.drawCenteredString(matrices, minecraftClient.textRenderer, slotName, x + 40, y + 66, 0xFFFFFF);
+        RealmsWorldSlotButton.drawCenteredText(matrices, minecraftClient.textRenderer, slotName, x + 40, y + 66, 0xFFFFFF);
     }
 
     @Environment(value=EnvType.CLIENT)
     public static class State {
-        private final boolean isCurrentlyActiveSlot;
-        private final String slotName;
-        private final long imageId;
-        private final String image;
+        final boolean isCurrentlyActiveSlot;
+        final String slotName;
+        final long imageId;
+        final String image;
         public final boolean empty;
         public final boolean minigame;
         public final Action action;
         @Nullable
-        private final Text actionPrompt;
+        final Text actionPrompt;
 
         State(boolean isCurrentlyActiveSlot, String slotName, long imageId, @Nullable String image, boolean empty, boolean minigame, Action action, @Nullable Text actionPrompt) {
             this.isCurrentlyActiveSlot = isCurrentlyActiveSlot;

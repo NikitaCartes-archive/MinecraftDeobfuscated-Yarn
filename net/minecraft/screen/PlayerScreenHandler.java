@@ -41,7 +41,7 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
     public static final Identifier EMPTY_LEGGINGS_SLOT_TEXTURE = new Identifier("item/empty_armor_slot_leggings");
     public static final Identifier EMPTY_BOOTS_SLOT_TEXTURE = new Identifier("item/empty_armor_slot_boots");
     public static final Identifier EMPTY_OFFHAND_ARMOR_SLOT = new Identifier("item/empty_armor_slot_shield");
-    private static final Identifier[] EMPTY_ARMOR_SLOT_TEXTURES = new Identifier[]{EMPTY_BOOTS_SLOT_TEXTURE, EMPTY_LEGGINGS_SLOT_TEXTURE, EMPTY_CHESTPLATE_SLOT_TEXTURE, EMPTY_HELMET_SLOT_TEXTURE};
+    static final Identifier[] EMPTY_ARMOR_SLOT_TEXTURES = new Identifier[]{EMPTY_BOOTS_SLOT_TEXTURE, EMPTY_LEGGINGS_SLOT_TEXTURE, EMPTY_CHESTPLATE_SLOT_TEXTURE, EMPTY_HELMET_SLOT_TEXTURE};
     private static final EquipmentSlot[] EQUIPMENT_SLOT_ORDER = new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
     private final CraftingInventory craftingInput = new CraftingInventory(this, 2, 2);
     private final CraftingResultInventory craftingResult = new CraftingResultInventory();
@@ -203,7 +203,7 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
         return 5;
     }
 
-    public CraftingInventory method_29281() {
+    public CraftingInventory getCraftingInput() {
         return this.craftingInput;
     }
 
@@ -213,8 +213,8 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
     }
 
     @Override
-    public boolean method_32339(int i) {
-        return i != this.getCraftingResultSlotIndex();
+    public boolean canInsertIntoSlot(int index) {
+        return index != this.getCraftingResultSlotIndex();
     }
 }
 

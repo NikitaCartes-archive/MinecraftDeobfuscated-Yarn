@@ -22,7 +22,7 @@ import net.minecraft.util.Identifier;
 
 public class FishingRodHookedCriterion
 extends AbstractCriterion<Conditions> {
-    private static final Identifier ID = new Identifier("fishing_rod_hooked");
+    static final Identifier ID = new Identifier("fishing_rod_hooked");
 
     @Override
     public Identifier getId() {

@@ -270,39 +270,33 @@ extends SectionDistanceLevelPropagator {
             if (this.queuedSections.containsKey(l) || !this.hasSection(l)) continue;
             for (int m = 0; m < 16; ++m) {
                 for (int n = 0; n < 16; ++n) {
-                    long p;
                     long o;
-                    switch (direction) {
-                        case DOWN: {
+                    long p = switch (direction) {
+                        case Direction.DOWN -> {
                             o = BlockPos.asLong(i + n, j, k + m);
-                            p = BlockPos.asLong(i + n, j - 1, k + m);
-                            break;
+                            yield BlockPos.asLong(i + n, j - 1, k + m);
                         }
-                        case UP: {
+                        case Direction.UP -> {
                             o = BlockPos.asLong(i + n, j + 16 - 1, k + m);
-                            p = BlockPos.asLong(i + n, j + 16, k + m);
-                            break;
+                            yield BlockPos.asLong(i + n, j + 16, k + m);
                         }
-                        case NORTH: {
+                        case Direction.NORTH -> {
                             o = BlockPos.asLong(i + m, j + n, k);
-                            p = BlockPos.asLong(i + m, j + n, k - 1);
-                            break;
+                            yield BlockPos.asLong(i + m, j + n, k - 1);
                         }
-                        case SOUTH: {
+                        case Direction.SOUTH -> {
                             o = BlockPos.asLong(i + m, j + n, k + 16 - 1);
-                            p = BlockPos.asLong(i + m, j + n, k + 16);
-                            break;
+                            yield BlockPos.asLong(i + m, j + n, k + 16);
                         }
-                        case WEST: {
+                        case Direction.WEST -> {
                             o = BlockPos.asLong(i, j + m, k + n);
-                            p = BlockPos.asLong(i - 1, j + m, k + n);
-                            break;
+                            yield BlockPos.asLong(i - 1, j + m, k + n);
                         }
-                        default: {
+                        default -> {
                             o = BlockPos.asLong(i + 16 - 1, j + m, k + n);
-                            p = BlockPos.asLong(i + 16, j + m, k + n);
+                            yield BlockPos.asLong(i + 16, j + m, k + n);
                         }
-                    }
+                    };
                     lightProvider.updateLevel(o, p, lightProvider.getPropagatedLevel(o, p, lightProvider.getLevel(o)), false);
                     lightProvider.updateLevel(p, o, lightProvider.getPropagatedLevel(p, o, lightProvider.getLevel(p)), false);
                 }

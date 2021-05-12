@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import net.minecraft.class_6350;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -19,6 +18,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.carver.Carver;
 import net.minecraft.world.gen.carver.CarverConfig;
 import net.minecraft.world.gen.carver.CarverContext;
+import net.minecraft.world.gen.chunk.AquiferSampler;
 
 public class ConfiguredCarver<WC extends CarverConfig> {
     public static final Codec<ConfiguredCarver<?>> CODEC = Registry.CARVER.dispatch(configuredCarver -> configuredCarver.carver, Carver::getCodec);
@@ -40,8 +40,8 @@ public class ConfiguredCarver<WC extends CarverConfig> {
         return this.carver.shouldCarve(this.config, random);
     }
 
-    public boolean carve(CarverContext context, Chunk chunk, Function<BlockPos, Biome> posToBiome, Random random, class_6350 arg, ChunkPos pos, BitSet carvingMask) {
-        return this.carver.carve(context, this.config, chunk, posToBiome, random, arg, pos, carvingMask);
+    public boolean carve(CarverContext context, Chunk chunk, Function<BlockPos, Biome> posToBiome, Random random, AquiferSampler aquiferSampler, ChunkPos pos, BitSet carvingMask) {
+        return this.carver.carve(context, this.config, chunk, posToBiome, random, aquiferSampler, pos, carvingMask);
     }
 }
 

@@ -20,24 +20,24 @@ public class CloudParticle
 extends SpriteBillboardParticle {
     private final SpriteProvider spriteProvider;
 
-    private CloudParticle(ClientWorld world, double x, double y, double z, double d, double e, double f, SpriteProvider spriteProvider) {
-        super(world, x, y, z, 0.0, 0.0, 0.0);
-        float h;
+    CloudParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
+        super(clientWorld, d, e, f, 0.0, 0.0, 0.0);
+        float k;
         this.field_28786 = 0.96f;
         this.spriteProvider = spriteProvider;
-        float g = 2.5f;
+        float j = 2.5f;
         this.velocityX *= (double)0.1f;
         this.velocityY *= (double)0.1f;
         this.velocityZ *= (double)0.1f;
-        this.velocityX += d;
-        this.velocityY += e;
-        this.velocityZ += f;
-        this.colorRed = h = 1.0f - (float)(Math.random() * (double)0.3f);
-        this.colorGreen = h;
-        this.colorBlue = h;
+        this.velocityX += g;
+        this.velocityY += h;
+        this.velocityZ += i;
+        this.colorRed = k = 1.0f - (float)(Math.random() * (double)0.3f);
+        this.colorGreen = k;
+        this.colorBlue = k;
         this.scale *= 1.875f;
-        int i = (int)(8.0 / (Math.random() * 0.8 + 0.3));
-        this.maxAge = (int)Math.max((float)i * 2.5f, 1.0f);
+        int l = (int)(8.0 / (Math.random() * 0.8 + 0.3));
+        this.maxAge = (int)Math.max((float)l * 2.5f, 1.0f);
         this.collidesWithWorld = false;
         this.setSpriteForAge(spriteProvider);
     }

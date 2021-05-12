@@ -456,9 +456,9 @@ Saddleable {
     extends MoveToTargetPosGoal {
         private final StriderEntity strider;
 
-        private GoBackToLavaGoal(StriderEntity strider, double speed) {
-            super(strider, speed, 8, 2);
-            this.strider = strider;
+        GoBackToLavaGoal(StriderEntity striderEntity, double d) {
+            super(striderEntity, d, 8, 2);
+            this.strider = striderEntity;
         }
 
         @Override

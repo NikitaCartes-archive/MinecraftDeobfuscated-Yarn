@@ -35,10 +35,10 @@ import org.jetbrains.annotations.Nullable;
 public class BlockModelRenderer {
     private static final int field_32782 = 0;
     private static final int field_32783 = 1;
-    private static final Direction[] DIRECTIONS = Direction.values();
+    static final Direction[] DIRECTIONS = Direction.values();
     private final BlockColors colorMap;
     private static final int field_32784 = 100;
-    private static final ThreadLocal<BrightnessCache> brightnessCache = ThreadLocal.withInitial(() -> new BrightnessCache());
+    static final ThreadLocal<BrightnessCache> brightnessCache = ThreadLocal.withInitial(BrightnessCache::new);
 
     public BlockModelRenderer(BlockColors colorMap) {
         this.colorMap = colorMap;
@@ -254,78 +254,11 @@ public class BlockModelRenderer {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static enum NeighborData {
-        DOWN(new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH}, 0.5f, true, new NeighborOrientation[]{NeighborOrientation.FLIP_WEST, NeighborOrientation.SOUTH, NeighborOrientation.FLIP_WEST, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.WEST, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.WEST, NeighborOrientation.SOUTH}, new NeighborOrientation[]{NeighborOrientation.FLIP_WEST, NeighborOrientation.NORTH, NeighborOrientation.FLIP_WEST, NeighborOrientation.FLIP_NORTH, NeighborOrientation.WEST, NeighborOrientation.FLIP_NORTH, NeighborOrientation.WEST, NeighborOrientation.NORTH}, new NeighborOrientation[]{NeighborOrientation.FLIP_EAST, NeighborOrientation.NORTH, NeighborOrientation.FLIP_EAST, NeighborOrientation.FLIP_NORTH, NeighborOrientation.EAST, NeighborOrientation.FLIP_NORTH, NeighborOrientation.EAST, NeighborOrientation.NORTH}, new NeighborOrientation[]{NeighborOrientation.FLIP_EAST, NeighborOrientation.SOUTH, NeighborOrientation.FLIP_EAST, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.EAST, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.EAST, NeighborOrientation.SOUTH}),
-        UP(new Direction[]{Direction.EAST, Direction.WEST, Direction.NORTH, Direction.SOUTH}, 1.0f, true, new NeighborOrientation[]{NeighborOrientation.EAST, NeighborOrientation.SOUTH, NeighborOrientation.EAST, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.FLIP_EAST, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.FLIP_EAST, NeighborOrientation.SOUTH}, new NeighborOrientation[]{NeighborOrientation.EAST, NeighborOrientation.NORTH, NeighborOrientation.EAST, NeighborOrientation.FLIP_NORTH, NeighborOrientation.FLIP_EAST, NeighborOrientation.FLIP_NORTH, NeighborOrientation.FLIP_EAST, NeighborOrientation.NORTH}, new NeighborOrientation[]{NeighborOrientation.WEST, NeighborOrientation.NORTH, NeighborOrientation.WEST, NeighborOrientation.FLIP_NORTH, NeighborOrientation.FLIP_WEST, NeighborOrientation.FLIP_NORTH, NeighborOrientation.FLIP_WEST, NeighborOrientation.NORTH}, new NeighborOrientation[]{NeighborOrientation.WEST, NeighborOrientation.SOUTH, NeighborOrientation.WEST, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.FLIP_WEST, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.FLIP_WEST, NeighborOrientation.SOUTH}),
-        NORTH(new Direction[]{Direction.UP, Direction.DOWN, Direction.EAST, Direction.WEST}, 0.8f, true, new NeighborOrientation[]{NeighborOrientation.UP, NeighborOrientation.FLIP_WEST, NeighborOrientation.UP, NeighborOrientation.WEST, NeighborOrientation.FLIP_UP, NeighborOrientation.WEST, NeighborOrientation.FLIP_UP, NeighborOrientation.FLIP_WEST}, new NeighborOrientation[]{NeighborOrientation.UP, NeighborOrientation.FLIP_EAST, NeighborOrientation.UP, NeighborOrientation.EAST, NeighborOrientation.FLIP_UP, NeighborOrientation.EAST, NeighborOrientation.FLIP_UP, NeighborOrientation.FLIP_EAST}, new NeighborOrientation[]{NeighborOrientation.DOWN, NeighborOrientation.FLIP_EAST, NeighborOrientation.DOWN, NeighborOrientation.EAST, NeighborOrientation.FLIP_DOWN, NeighborOrientation.EAST, NeighborOrientation.FLIP_DOWN, NeighborOrientation.FLIP_EAST}, new NeighborOrientation[]{NeighborOrientation.DOWN, NeighborOrientation.FLIP_WEST, NeighborOrientation.DOWN, NeighborOrientation.WEST, NeighborOrientation.FLIP_DOWN, NeighborOrientation.WEST, NeighborOrientation.FLIP_DOWN, NeighborOrientation.FLIP_WEST}),
-        SOUTH(new Direction[]{Direction.WEST, Direction.EAST, Direction.DOWN, Direction.UP}, 0.8f, true, new NeighborOrientation[]{NeighborOrientation.UP, NeighborOrientation.FLIP_WEST, NeighborOrientation.FLIP_UP, NeighborOrientation.FLIP_WEST, NeighborOrientation.FLIP_UP, NeighborOrientation.WEST, NeighborOrientation.UP, NeighborOrientation.WEST}, new NeighborOrientation[]{NeighborOrientation.DOWN, NeighborOrientation.FLIP_WEST, NeighborOrientation.FLIP_DOWN, NeighborOrientation.FLIP_WEST, NeighborOrientation.FLIP_DOWN, NeighborOrientation.WEST, NeighborOrientation.DOWN, NeighborOrientation.WEST}, new NeighborOrientation[]{NeighborOrientation.DOWN, NeighborOrientation.FLIP_EAST, NeighborOrientation.FLIP_DOWN, NeighborOrientation.FLIP_EAST, NeighborOrientation.FLIP_DOWN, NeighborOrientation.EAST, NeighborOrientation.DOWN, NeighborOrientation.EAST}, new NeighborOrientation[]{NeighborOrientation.UP, NeighborOrientation.FLIP_EAST, NeighborOrientation.FLIP_UP, NeighborOrientation.FLIP_EAST, NeighborOrientation.FLIP_UP, NeighborOrientation.EAST, NeighborOrientation.UP, NeighborOrientation.EAST}),
-        WEST(new Direction[]{Direction.UP, Direction.DOWN, Direction.NORTH, Direction.SOUTH}, 0.6f, true, new NeighborOrientation[]{NeighborOrientation.UP, NeighborOrientation.SOUTH, NeighborOrientation.UP, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.FLIP_UP, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.FLIP_UP, NeighborOrientation.SOUTH}, new NeighborOrientation[]{NeighborOrientation.UP, NeighborOrientation.NORTH, NeighborOrientation.UP, NeighborOrientation.FLIP_NORTH, NeighborOrientation.FLIP_UP, NeighborOrientation.FLIP_NORTH, NeighborOrientation.FLIP_UP, NeighborOrientation.NORTH}, new NeighborOrientation[]{NeighborOrientation.DOWN, NeighborOrientation.NORTH, NeighborOrientation.DOWN, NeighborOrientation.FLIP_NORTH, NeighborOrientation.FLIP_DOWN, NeighborOrientation.FLIP_NORTH, NeighborOrientation.FLIP_DOWN, NeighborOrientation.NORTH}, new NeighborOrientation[]{NeighborOrientation.DOWN, NeighborOrientation.SOUTH, NeighborOrientation.DOWN, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.FLIP_DOWN, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.FLIP_DOWN, NeighborOrientation.SOUTH}),
-        EAST(new Direction[]{Direction.DOWN, Direction.UP, Direction.NORTH, Direction.SOUTH}, 0.6f, true, new NeighborOrientation[]{NeighborOrientation.FLIP_DOWN, NeighborOrientation.SOUTH, NeighborOrientation.FLIP_DOWN, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.DOWN, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.DOWN, NeighborOrientation.SOUTH}, new NeighborOrientation[]{NeighborOrientation.FLIP_DOWN, NeighborOrientation.NORTH, NeighborOrientation.FLIP_DOWN, NeighborOrientation.FLIP_NORTH, NeighborOrientation.DOWN, NeighborOrientation.FLIP_NORTH, NeighborOrientation.DOWN, NeighborOrientation.NORTH}, new NeighborOrientation[]{NeighborOrientation.FLIP_UP, NeighborOrientation.NORTH, NeighborOrientation.FLIP_UP, NeighborOrientation.FLIP_NORTH, NeighborOrientation.UP, NeighborOrientation.FLIP_NORTH, NeighborOrientation.UP, NeighborOrientation.NORTH}, new NeighborOrientation[]{NeighborOrientation.FLIP_UP, NeighborOrientation.SOUTH, NeighborOrientation.FLIP_UP, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.UP, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.UP, NeighborOrientation.SOUTH});
-
-        private final Direction[] faces;
-        private final boolean nonCubicWeight;
-        private final NeighborOrientation[] field_4192;
-        private final NeighborOrientation[] field_4185;
-        private final NeighborOrientation[] field_4180;
-        private final NeighborOrientation[] field_4188;
-        private static final NeighborData[] field_4190;
-
-        private NeighborData(Direction[] faces, float f, boolean nonCubicWeight, NeighborOrientation[] neighborOrientations, NeighborOrientation[] neighborOrientations2, NeighborOrientation[] neighborOrientations3, NeighborOrientation[] neighborOrientations4) {
-            this.faces = faces;
-            this.nonCubicWeight = nonCubicWeight;
-            this.field_4192 = neighborOrientations;
-            this.field_4185 = neighborOrientations2;
-            this.field_4180 = neighborOrientations3;
-            this.field_4188 = neighborOrientations4;
-        }
-
-        public static NeighborData getData(Direction direction) {
-            return field_4190[direction.getId()];
-        }
-
-        static {
-            field_4190 = Util.make(new NeighborData[6], neighborDatas -> {
-                neighborDatas[Direction.DOWN.getId()] = DOWN;
-                neighborDatas[Direction.UP.getId()] = UP;
-                neighborDatas[Direction.NORTH.getId()] = NORTH;
-                neighborDatas[Direction.SOUTH.getId()] = SOUTH;
-                neighborDatas[Direction.WEST.getId()] = WEST;
-                neighborDatas[Direction.EAST.getId()] = EAST;
-            });
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public static enum NeighborOrientation {
-        DOWN(Direction.DOWN, false),
-        UP(Direction.UP, false),
-        NORTH(Direction.NORTH, false),
-        SOUTH(Direction.SOUTH, false),
-        WEST(Direction.WEST, false),
-        EAST(Direction.EAST, false),
-        FLIP_DOWN(Direction.DOWN, true),
-        FLIP_UP(Direction.UP, true),
-        FLIP_NORTH(Direction.NORTH, true),
-        FLIP_SOUTH(Direction.SOUTH, true),
-        FLIP_WEST(Direction.WEST, true),
-        FLIP_EAST(Direction.EAST, true);
-
-        private final int shape;
-
-        private NeighborOrientation(Direction direction, boolean bl) {
-            this.shape = direction.getId() + (bl ? DIRECTIONS.length : 0);
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
     class AmbientOcclusionCalculator {
-        private final float[] brightness = new float[4];
-        private final int[] light = new int[4];
+        final float[] brightness = new float[4];
+        final int[] light = new int[4];
 
         public void apply(BlockRenderView world, BlockState state, BlockPos pos, Direction direction, float[] box, BitSet flags, boolean bl) {
-            float aa;
-            float z;
-            float y;
             float x;
             int u;
             float t;
@@ -340,7 +273,7 @@ public class BlockModelRenderer {
             BlockPos blockPos = flags.get(0) ? pos.offset(direction) : pos;
             NeighborData neighborData = NeighborData.getData(direction);
             BlockPos.Mutable mutable = new BlockPos.Mutable();
-            BrightnessCache brightnessCache = (BrightnessCache)brightnessCache.get();
+            BrightnessCache brightnessCache = BlockModelRenderer.brightnessCache.get();
             mutable.set((Vec3i)blockPos, neighborData.faces[0]);
             BlockState blockState = world.getBlockState(mutable);
             int i = brightnessCache.getInt(blockState, world, mutable);
@@ -414,14 +347,14 @@ public class BlockModelRenderer {
                 y = (h + f + n + w) * 0.25f;
                 z = (h + g + r + w) * 0.25f;
                 aa = (m + g + t + w) * 0.25f;
-                this.light[((Translation)translation).firstCorner] = this.getAmbientOcclusionBrightness(l, i, q, v);
-                this.light[((Translation)translation).secondCorner] = this.getAmbientOcclusionBrightness(k, i, o, v);
-                this.light[((Translation)translation).thirdCorner] = this.getAmbientOcclusionBrightness(k, j, s, v);
-                this.light[((Translation)translation).fourthCorner] = this.getAmbientOcclusionBrightness(l, j, u, v);
-                this.brightness[((Translation)translation).firstCorner] = x;
-                this.brightness[((Translation)translation).secondCorner] = y;
-                this.brightness[((Translation)translation).thirdCorner] = z;
-                this.brightness[((Translation)translation).fourthCorner] = aa;
+                this.light[translation.firstCorner] = this.getAmbientOcclusionBrightness(l, i, q, v);
+                this.light[translation.secondCorner] = this.getAmbientOcclusionBrightness(k, i, o, v);
+                this.light[translation.thirdCorner] = this.getAmbientOcclusionBrightness(k, j, s, v);
+                this.light[translation.fourthCorner] = this.getAmbientOcclusionBrightness(l, j, u, v);
+                this.brightness[translation.firstCorner] = x;
+                this.brightness[translation.secondCorner] = y;
+                this.brightness[translation.thirdCorner] = z;
+                this.brightness[translation.fourthCorner] = aa;
             } else {
                 x = (m + f + p + w) * 0.25f;
                 y = (h + f + n + w) * 0.25f;
@@ -443,18 +376,18 @@ public class BlockModelRenderer {
                 float ao = box[neighborData.field_4188[2].shape] * box[neighborData.field_4188[3].shape];
                 float ap = box[neighborData.field_4188[4].shape] * box[neighborData.field_4188[5].shape];
                 float aq = box[neighborData.field_4188[6].shape] * box[neighborData.field_4188[7].shape];
-                this.brightness[((Translation)translation).firstCorner] = x * ab + y * ac + z * ad + aa * ae;
-                this.brightness[((Translation)translation).secondCorner] = x * af + y * ag + z * ah + aa * ai;
-                this.brightness[((Translation)translation).thirdCorner] = x * aj + y * ak + z * al + aa * am;
-                this.brightness[((Translation)translation).fourthCorner] = x * an + y * ao + z * ap + aa * aq;
+                this.brightness[translation.firstCorner] = x * ab + y * ac + z * ad + aa * ae;
+                this.brightness[translation.secondCorner] = x * af + y * ag + z * ah + aa * ai;
+                this.brightness[translation.thirdCorner] = x * aj + y * ak + z * al + aa * am;
+                this.brightness[translation.fourthCorner] = x * an + y * ao + z * ap + aa * aq;
                 int ar = this.getAmbientOcclusionBrightness(l, i, q, v);
                 int as = this.getAmbientOcclusionBrightness(k, i, o, v);
                 int at = this.getAmbientOcclusionBrightness(k, j, s, v);
                 int au = this.getAmbientOcclusionBrightness(l, j, u, v);
-                this.light[((Translation)translation).firstCorner] = this.getBrightness(ar, as, at, au, ab, ac, ad, ae);
-                this.light[((Translation)translation).secondCorner] = this.getBrightness(ar, as, at, au, af, ag, ah, ai);
-                this.light[((Translation)translation).thirdCorner] = this.getBrightness(ar, as, at, au, aj, ak, al, am);
-                this.light[((Translation)translation).fourthCorner] = this.getBrightness(ar, as, at, au, an, ao, ap, aq);
+                this.light[translation.firstCorner] = this.getBrightness(ar, as, at, au, ab, ac, ad, ae);
+                this.light[translation.secondCorner] = this.getBrightness(ar, as, at, au, af, ag, ah, ai);
+                this.light[translation.thirdCorner] = this.getBrightness(ar, as, at, au, aj, ak, al, am);
+                this.light[translation.fourthCorner] = this.getBrightness(ar, as, at, au, an, ao, ap, aq);
             }
             x = world.getBrightness(direction, bl);
             int av = 0;
@@ -555,6 +488,70 @@ public class BlockModelRenderer {
     }
 
     @Environment(value=EnvType.CLIENT)
+    protected static enum NeighborData {
+        DOWN(new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH}, 0.5f, true, new NeighborOrientation[]{NeighborOrientation.FLIP_WEST, NeighborOrientation.SOUTH, NeighborOrientation.FLIP_WEST, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.WEST, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.WEST, NeighborOrientation.SOUTH}, new NeighborOrientation[]{NeighborOrientation.FLIP_WEST, NeighborOrientation.NORTH, NeighborOrientation.FLIP_WEST, NeighborOrientation.FLIP_NORTH, NeighborOrientation.WEST, NeighborOrientation.FLIP_NORTH, NeighborOrientation.WEST, NeighborOrientation.NORTH}, new NeighborOrientation[]{NeighborOrientation.FLIP_EAST, NeighborOrientation.NORTH, NeighborOrientation.FLIP_EAST, NeighborOrientation.FLIP_NORTH, NeighborOrientation.EAST, NeighborOrientation.FLIP_NORTH, NeighborOrientation.EAST, NeighborOrientation.NORTH}, new NeighborOrientation[]{NeighborOrientation.FLIP_EAST, NeighborOrientation.SOUTH, NeighborOrientation.FLIP_EAST, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.EAST, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.EAST, NeighborOrientation.SOUTH}),
+        UP(new Direction[]{Direction.EAST, Direction.WEST, Direction.NORTH, Direction.SOUTH}, 1.0f, true, new NeighborOrientation[]{NeighborOrientation.EAST, NeighborOrientation.SOUTH, NeighborOrientation.EAST, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.FLIP_EAST, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.FLIP_EAST, NeighborOrientation.SOUTH}, new NeighborOrientation[]{NeighborOrientation.EAST, NeighborOrientation.NORTH, NeighborOrientation.EAST, NeighborOrientation.FLIP_NORTH, NeighborOrientation.FLIP_EAST, NeighborOrientation.FLIP_NORTH, NeighborOrientation.FLIP_EAST, NeighborOrientation.NORTH}, new NeighborOrientation[]{NeighborOrientation.WEST, NeighborOrientation.NORTH, NeighborOrientation.WEST, NeighborOrientation.FLIP_NORTH, NeighborOrientation.FLIP_WEST, NeighborOrientation.FLIP_NORTH, NeighborOrientation.FLIP_WEST, NeighborOrientation.NORTH}, new NeighborOrientation[]{NeighborOrientation.WEST, NeighborOrientation.SOUTH, NeighborOrientation.WEST, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.FLIP_WEST, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.FLIP_WEST, NeighborOrientation.SOUTH}),
+        NORTH(new Direction[]{Direction.UP, Direction.DOWN, Direction.EAST, Direction.WEST}, 0.8f, true, new NeighborOrientation[]{NeighborOrientation.UP, NeighborOrientation.FLIP_WEST, NeighborOrientation.UP, NeighborOrientation.WEST, NeighborOrientation.FLIP_UP, NeighborOrientation.WEST, NeighborOrientation.FLIP_UP, NeighborOrientation.FLIP_WEST}, new NeighborOrientation[]{NeighborOrientation.UP, NeighborOrientation.FLIP_EAST, NeighborOrientation.UP, NeighborOrientation.EAST, NeighborOrientation.FLIP_UP, NeighborOrientation.EAST, NeighborOrientation.FLIP_UP, NeighborOrientation.FLIP_EAST}, new NeighborOrientation[]{NeighborOrientation.DOWN, NeighborOrientation.FLIP_EAST, NeighborOrientation.DOWN, NeighborOrientation.EAST, NeighborOrientation.FLIP_DOWN, NeighborOrientation.EAST, NeighborOrientation.FLIP_DOWN, NeighborOrientation.FLIP_EAST}, new NeighborOrientation[]{NeighborOrientation.DOWN, NeighborOrientation.FLIP_WEST, NeighborOrientation.DOWN, NeighborOrientation.WEST, NeighborOrientation.FLIP_DOWN, NeighborOrientation.WEST, NeighborOrientation.FLIP_DOWN, NeighborOrientation.FLIP_WEST}),
+        SOUTH(new Direction[]{Direction.WEST, Direction.EAST, Direction.DOWN, Direction.UP}, 0.8f, true, new NeighborOrientation[]{NeighborOrientation.UP, NeighborOrientation.FLIP_WEST, NeighborOrientation.FLIP_UP, NeighborOrientation.FLIP_WEST, NeighborOrientation.FLIP_UP, NeighborOrientation.WEST, NeighborOrientation.UP, NeighborOrientation.WEST}, new NeighborOrientation[]{NeighborOrientation.DOWN, NeighborOrientation.FLIP_WEST, NeighborOrientation.FLIP_DOWN, NeighborOrientation.FLIP_WEST, NeighborOrientation.FLIP_DOWN, NeighborOrientation.WEST, NeighborOrientation.DOWN, NeighborOrientation.WEST}, new NeighborOrientation[]{NeighborOrientation.DOWN, NeighborOrientation.FLIP_EAST, NeighborOrientation.FLIP_DOWN, NeighborOrientation.FLIP_EAST, NeighborOrientation.FLIP_DOWN, NeighborOrientation.EAST, NeighborOrientation.DOWN, NeighborOrientation.EAST}, new NeighborOrientation[]{NeighborOrientation.UP, NeighborOrientation.FLIP_EAST, NeighborOrientation.FLIP_UP, NeighborOrientation.FLIP_EAST, NeighborOrientation.FLIP_UP, NeighborOrientation.EAST, NeighborOrientation.UP, NeighborOrientation.EAST}),
+        WEST(new Direction[]{Direction.UP, Direction.DOWN, Direction.NORTH, Direction.SOUTH}, 0.6f, true, new NeighborOrientation[]{NeighborOrientation.UP, NeighborOrientation.SOUTH, NeighborOrientation.UP, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.FLIP_UP, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.FLIP_UP, NeighborOrientation.SOUTH}, new NeighborOrientation[]{NeighborOrientation.UP, NeighborOrientation.NORTH, NeighborOrientation.UP, NeighborOrientation.FLIP_NORTH, NeighborOrientation.FLIP_UP, NeighborOrientation.FLIP_NORTH, NeighborOrientation.FLIP_UP, NeighborOrientation.NORTH}, new NeighborOrientation[]{NeighborOrientation.DOWN, NeighborOrientation.NORTH, NeighborOrientation.DOWN, NeighborOrientation.FLIP_NORTH, NeighborOrientation.FLIP_DOWN, NeighborOrientation.FLIP_NORTH, NeighborOrientation.FLIP_DOWN, NeighborOrientation.NORTH}, new NeighborOrientation[]{NeighborOrientation.DOWN, NeighborOrientation.SOUTH, NeighborOrientation.DOWN, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.FLIP_DOWN, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.FLIP_DOWN, NeighborOrientation.SOUTH}),
+        EAST(new Direction[]{Direction.DOWN, Direction.UP, Direction.NORTH, Direction.SOUTH}, 0.6f, true, new NeighborOrientation[]{NeighborOrientation.FLIP_DOWN, NeighborOrientation.SOUTH, NeighborOrientation.FLIP_DOWN, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.DOWN, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.DOWN, NeighborOrientation.SOUTH}, new NeighborOrientation[]{NeighborOrientation.FLIP_DOWN, NeighborOrientation.NORTH, NeighborOrientation.FLIP_DOWN, NeighborOrientation.FLIP_NORTH, NeighborOrientation.DOWN, NeighborOrientation.FLIP_NORTH, NeighborOrientation.DOWN, NeighborOrientation.NORTH}, new NeighborOrientation[]{NeighborOrientation.FLIP_UP, NeighborOrientation.NORTH, NeighborOrientation.FLIP_UP, NeighborOrientation.FLIP_NORTH, NeighborOrientation.UP, NeighborOrientation.FLIP_NORTH, NeighborOrientation.UP, NeighborOrientation.NORTH}, new NeighborOrientation[]{NeighborOrientation.FLIP_UP, NeighborOrientation.SOUTH, NeighborOrientation.FLIP_UP, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.UP, NeighborOrientation.FLIP_SOUTH, NeighborOrientation.UP, NeighborOrientation.SOUTH});
+
+        final Direction[] faces;
+        final boolean nonCubicWeight;
+        final NeighborOrientation[] field_4192;
+        final NeighborOrientation[] field_4185;
+        final NeighborOrientation[] field_4180;
+        final NeighborOrientation[] field_4188;
+        private static final NeighborData[] field_4190;
+
+        private NeighborData(Direction[] faces, float f, boolean nonCubicWeight, NeighborOrientation[] neighborOrientations, NeighborOrientation[] neighborOrientations2, NeighborOrientation[] neighborOrientations3, NeighborOrientation[] neighborOrientations4) {
+            this.faces = faces;
+            this.nonCubicWeight = nonCubicWeight;
+            this.field_4192 = neighborOrientations;
+            this.field_4185 = neighborOrientations2;
+            this.field_4180 = neighborOrientations3;
+            this.field_4188 = neighborOrientations4;
+        }
+
+        public static NeighborData getData(Direction direction) {
+            return field_4190[direction.getId()];
+        }
+
+        static {
+            field_4190 = Util.make(new NeighborData[6], neighborDatas -> {
+                neighborDatas[Direction.DOWN.getId()] = DOWN;
+                neighborDatas[Direction.UP.getId()] = UP;
+                neighborDatas[Direction.NORTH.getId()] = NORTH;
+                neighborDatas[Direction.SOUTH.getId()] = SOUTH;
+                neighborDatas[Direction.WEST.getId()] = WEST;
+                neighborDatas[Direction.EAST.getId()] = EAST;
+            });
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    protected static enum NeighborOrientation {
+        DOWN(Direction.DOWN, false),
+        UP(Direction.UP, false),
+        NORTH(Direction.NORTH, false),
+        SOUTH(Direction.SOUTH, false),
+        WEST(Direction.WEST, false),
+        EAST(Direction.EAST, false),
+        FLIP_DOWN(Direction.DOWN, true),
+        FLIP_UP(Direction.UP, true),
+        FLIP_NORTH(Direction.NORTH, true),
+        FLIP_SOUTH(Direction.SOUTH, true),
+        FLIP_WEST(Direction.WEST, true),
+        FLIP_EAST(Direction.EAST, true);
+
+        final int shape;
+
+        private NeighborOrientation(Direction direction, boolean bl) {
+            this.shape = direction.getId() + (bl ? DIRECTIONS.length : 0);
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
     static enum Translation {
         DOWN(0, 1, 2, 3),
         UP(2, 3, 0, 1),
@@ -563,10 +560,10 @@ public class BlockModelRenderer {
         WEST(3, 0, 1, 2),
         EAST(1, 2, 3, 0);
 
-        private final int firstCorner;
-        private final int secondCorner;
-        private final int thirdCorner;
-        private final int fourthCorner;
+        final int firstCorner;
+        final int secondCorner;
+        final int thirdCorner;
+        final int fourthCorner;
         private static final Translation[] VALUES;
 
         private Translation(int firstCorner, int secondCorner, int thirdCorner, int fourthCorner) {

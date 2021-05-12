@@ -27,7 +27,7 @@ extends Screen {
     private int messageHistorySize = -1;
     protected TextFieldWidget chatField;
     private String originalChatText = "";
-    private CommandSuggestor commandSuggestor;
+    CommandSuggestor commandSuggestor;
 
     public ChatScreen(String originalChatText) {
         super(NarratorManager.EMPTY);

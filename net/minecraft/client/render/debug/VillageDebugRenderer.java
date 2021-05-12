@@ -178,14 +178,14 @@ implements DebugRenderer.Renderer {
         if (set.size() < 4) {
             VillageDebugRenderer.drawString("Owners: " + set, pointOfInterest, i, -256);
         } else {
-            VillageDebugRenderer.drawString("" + set.size() + " ticket holders", pointOfInterest, i, -256);
+            VillageDebugRenderer.drawString(set.size() + " ticket holders", pointOfInterest, i, -256);
         }
         ++i;
         Set<String> set2 = this.method_29385(pointOfInterest);
         if (set2.size() < 4) {
             VillageDebugRenderer.drawString("Candidates: " + set2, pointOfInterest, i, -23296);
         } else {
-            VillageDebugRenderer.drawString("" + set2.size() + " potential owners", pointOfInterest, i, -23296);
+            VillageDebugRenderer.drawString(set2.size() + " potential owners", pointOfInterest, i, -23296);
         }
         VillageDebugRenderer.drawString("Free tickets: " + pointOfInterest.freeTicketCount, pointOfInterest, ++i, -256);
         VillageDebugRenderer.drawString(pointOfInterest.field_18932, pointOfInterest, ++i, -1);
@@ -297,11 +297,11 @@ implements DebugRenderer.Renderer {
     }
 
     private Collection<UUID> getBrains(BlockPos pointOfInterest) {
-        return this.brains.values().stream().filter(brain -> ((Brain)brain).isPointOfInterest(pointOfInterest)).map(Brain::getUuid).collect(Collectors.toSet());
+        return this.brains.values().stream().filter(brain -> brain.isPointOfInterest(pointOfInterest)).map(Brain::getUuid).collect(Collectors.toSet());
     }
 
     private Collection<UUID> method_29386(BlockPos blockPos) {
-        return this.brains.values().stream().filter(brain -> ((Brain)brain).method_29388(blockPos)).map(Brain::getUuid).collect(Collectors.toSet());
+        return this.brains.values().stream().filter(brain -> brain.method_29388(blockPos)).map(Brain::getUuid).collect(Collectors.toSet());
     }
 
     private Map<BlockPos, List<String>> getGhostPointsOfInterest() {
@@ -319,6 +319,19 @@ implements DebugRenderer.Renderer {
         DebugRenderer.getTargetedEntity(this.client.getCameraEntity(), 8).ifPresent(entity -> {
             this.targetedEntity = entity.getUuid();
         });
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static class PointOfInterest {
+        public final BlockPos pos;
+        public String field_18932;
+        public int freeTicketCount;
+
+        public PointOfInterest(BlockPos pos, String string, int freeTicketCount) {
+            this.pos = pos;
+            this.field_18932 = string;
+            this.freeTicketCount = freeTicketCount;
+        }
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -355,29 +368,16 @@ implements DebugRenderer.Renderer {
             this.wantsGolem = wantsGolem;
         }
 
-        private boolean isPointOfInterest(BlockPos pos) {
+        boolean isPointOfInterest(BlockPos pos) {
             return this.pointsOfInterest.stream().anyMatch(pos::equals);
         }
 
-        private boolean method_29388(BlockPos blockPos) {
+        boolean method_29388(BlockPos blockPos) {
             return this.field_25287.contains(blockPos);
         }
 
         public UUID getUuid() {
             return this.uuid;
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public static class PointOfInterest {
-        public final BlockPos pos;
-        public String field_18932;
-        public int freeTicketCount;
-
-        public PointOfInterest(BlockPos pos, String string, int freeTicketCount) {
-            this.pos = pos;
-            this.field_18932 = string;
-            this.freeTicketCount = freeTicketCount;
         }
     }
 }

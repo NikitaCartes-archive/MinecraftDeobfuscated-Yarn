@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class EnterBlockCriterion
 extends AbstractCriterion<Conditions> {
-    private static final Identifier ID = new Identifier("enter_block");
+    static final Identifier ID = new Identifier("enter_block");
 
     @Override
     public Identifier getId() {

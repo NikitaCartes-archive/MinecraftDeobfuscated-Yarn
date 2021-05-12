@@ -41,7 +41,7 @@ extends Screen {
     private static final int field_32245 = 2;
     protected final CreateWorldScreen parent;
     private final Consumer<FlatChunkGeneratorConfig> configConsumer;
-    private FlatChunkGeneratorConfig config;
+    FlatChunkGeneratorConfig config;
     private Text tileText;
     private Text heightText;
     private SuperflatLayersListWidget layers;
@@ -99,7 +99,7 @@ extends Screen {
         this.updateRemoveLayerButton();
     }
 
-    private void updateRemoveLayerButton() {
+    void updateRemoveLayerButton() {
         this.widgetButtonRemoveLayer.active = this.hasLayerSelected();
     }
 
@@ -169,7 +169,7 @@ extends Screen {
         @Environment(value=EnvType.CLIENT)
         class SuperflatLayerEntry
         extends AlwaysSelectedEntryListWidget.Entry<SuperflatLayerEntry> {
-            private SuperflatLayerEntry() {
+            SuperflatLayerEntry() {
             }
 
             @Override

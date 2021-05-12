@@ -71,11 +71,11 @@ public class ChunkBuilder {
     private final Queue<Runnable> uploadQueue = Queues.newConcurrentLinkedQueue();
     private volatile int queuedTaskCount;
     private volatile int bufferCount;
-    private final BlockBufferBuilderStorage buffers;
+    final BlockBufferBuilderStorage buffers;
     private final TaskExecutor<Runnable> mailbox;
     private final Executor executor;
-    private World world;
-    private final WorldRenderer worldRenderer;
+    World world;
+    final WorldRenderer worldRenderer;
     private Vec3d cameraPosition = Vec3d.ZERO;
 
     public ChunkBuilder(World world, WorldRenderer worldRenderer, Executor executor, boolean is64Bits, BlockBufferBuilderStorage buffers) {
@@ -218,47 +218,6 @@ public class ChunkBuilder {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static class ChunkData {
-        public static final ChunkData EMPTY = new ChunkData(){
-
-            @Override
-            public boolean isVisibleThrough(Direction direction, Direction direction2) {
-                return false;
-            }
-        };
-        private final Set<RenderLayer> nonEmptyLayers = new ObjectArraySet<RenderLayer>();
-        private final Set<RenderLayer> initializedLayers = new ObjectArraySet<RenderLayer>();
-        private boolean empty = true;
-        private final List<BlockEntity> blockEntities = Lists.newArrayList();
-        private ChunkOcclusionData occlusionGraph = new ChunkOcclusionData();
-        @Nullable
-        private BufferBuilder.State bufferState;
-
-        public boolean isEmpty() {
-            return this.empty;
-        }
-
-        public boolean isEmpty(RenderLayer layer) {
-            return !this.nonEmptyLayers.contains(layer);
-        }
-
-        public List<BlockEntity> getBlockEntities() {
-            return this.blockEntities;
-        }
-
-        public boolean isVisibleThrough(Direction direction, Direction direction2) {
-            return this.occlusionGraph.isVisibleThrough(direction, direction2);
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static enum Result {
-        SUCCESSFUL,
-        CANCELLED;
-
-    }
-
-    @Environment(value=EnvType.CLIENT)
     public class BuiltChunk {
         public static final int field_32832 = 16;
         public final int index;
@@ -272,7 +231,7 @@ public class ChunkBuilder {
         public Box boundingBox;
         private int rebuildFrame = -1;
         private boolean needsRebuild = true;
-        private final BlockPos.Mutable origin = new BlockPos.Mutable(-1, -1, -1);
+        final BlockPos.Mutable origin = new BlockPos.Mutable(-1, -1, -1);
         private final BlockPos.Mutable[] neighborPositions = Util.make(new BlockPos.Mutable[6], mutables -> {
             for (int i = 0; i < ((BlockPos.Mutable[])mutables).length; ++i) {
                 mutables[i] = new BlockPos.Mutable();
@@ -328,7 +287,7 @@ public class ChunkBuilder {
             return d * d + e * e + f * f;
         }
 
-        private void beginBufferBuilding(BufferBuilder buffer) {
+        void beginBufferBuilding(BufferBuilder buffer) {
             buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
         }
 
@@ -412,7 +371,7 @@ public class ChunkBuilder {
             chunkRenderer.send(task);
         }
 
-        private void setNoCullingBlockEntities(Set<BlockEntity> noCullingBlockEntities) {
+        void setNoCullingBlockEntities(Set<BlockEntity> noCullingBlockEntities) {
             HashSet<BlockEntity> set = Sets.newHashSet(noCullingBlockEntities);
             HashSet<BlockEntity> set2 = Sets.newHashSet(this.blockEntities);
             set.removeAll(this.blockEntities);
@@ -425,31 +384,6 @@ public class ChunkBuilder {
         public void rebuild() {
             Task task = this.createRebuildTask();
             task.run(ChunkBuilder.this.buffers);
-        }
-
-        @Environment(value=EnvType.CLIENT)
-        abstract class Task
-        implements Comparable<Task> {
-            protected final double distance;
-            protected final AtomicBoolean cancelled = new AtomicBoolean(false);
-
-            public Task(double d) {
-                this.distance = d;
-            }
-
-            public abstract CompletableFuture<Result> run(BlockBufferBuilderStorage var1);
-
-            public abstract void cancel();
-
-            @Override
-            public int compareTo(Task task) {
-                return Doubles.compare(this.distance, task.distance);
-            }
-
-            @Override
-            public /* synthetic */ int compareTo(Object object) {
-                return this.compareTo((Task)object);
-            }
         }
 
         @Environment(value=EnvType.CLIENT)
@@ -503,6 +437,31 @@ public class ChunkBuilder {
             @Override
             public void cancel() {
                 this.cancelled.set(true);
+            }
+        }
+
+        @Environment(value=EnvType.CLIENT)
+        abstract class Task
+        implements Comparable<Task> {
+            protected final double distance;
+            protected final AtomicBoolean cancelled = new AtomicBoolean(false);
+
+            public Task(double d) {
+                this.distance = d;
+            }
+
+            public abstract CompletableFuture<Result> run(BlockBufferBuilderStorage var1);
+
+            public abstract void cancel();
+
+            @Override
+            public int compareTo(Task task) {
+                return Doubles.compare(this.distance, task.distance);
+            }
+
+            @Override
+            public /* synthetic */ int compareTo(Object object) {
+                return this.compareTo((Task)object);
             }
         }
 
@@ -634,6 +593,47 @@ public class ChunkBuilder {
                     BuiltChunk.this.scheduleRebuild(false);
                 }
             }
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static enum Result {
+        SUCCESSFUL,
+        CANCELLED;
+
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static class ChunkData {
+        public static final ChunkData EMPTY = new ChunkData(){
+
+            @Override
+            public boolean isVisibleThrough(Direction direction, Direction direction2) {
+                return false;
+            }
+        };
+        final Set<RenderLayer> nonEmptyLayers = new ObjectArraySet<RenderLayer>();
+        final Set<RenderLayer> initializedLayers = new ObjectArraySet<RenderLayer>();
+        boolean empty = true;
+        final List<BlockEntity> blockEntities = Lists.newArrayList();
+        ChunkOcclusionData occlusionGraph = new ChunkOcclusionData();
+        @Nullable
+        BufferBuilder.State bufferState;
+
+        public boolean isEmpty() {
+            return this.empty;
+        }
+
+        public boolean isEmpty(RenderLayer layer) {
+            return !this.nonEmptyLayers.contains(layer);
+        }
+
+        public List<BlockEntity> getBlockEntities() {
+            return this.blockEntities;
+        }
+
+        public boolean isVisibleThrough(Direction direction, Direction direction2) {
+            return this.occlusionGraph.isVisibleThrough(direction, direction2);
         }
     }
 }

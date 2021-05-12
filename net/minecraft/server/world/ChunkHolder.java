@@ -61,7 +61,7 @@ public class ChunkHolder {
     private int lastTickLevel;
     private int level;
     private int completedLevel;
-    private final ChunkPos pos;
+    final ChunkPos pos;
     /**
      * Indicates that {@link #blockUpdatesBySection} contains at least one entry.
      */
@@ -404,34 +404,25 @@ public class ChunkHolder {
         this.combineSavingFuture(CompletableFuture.completedFuture(Either.left(chunk.getWrappedChunk())), "replaceProto");
     }
 
-    static final class MultithreadAction {
-        private final Thread thread;
-        private final CompletableFuture<? extends Either<? extends Chunk, Unloaded>> action;
-        private final String actionDesc;
-
-        private MultithreadAction(Thread thread, CompletableFuture<? extends Either<? extends Chunk, Unloaded>> action, String actionDesc) {
-            this.thread = thread;
-            this.action = action;
-            this.actionDesc = actionDesc;
-        }
+    @FunctionalInterface
+    public static interface LevelUpdateListener {
+        public void updateLevel(ChunkPos var1, IntSupplier var2, int var3, IntConsumer var4);
     }
 
     public static interface PlayersWatchingChunkProvider {
         public Stream<ServerPlayerEntity> getPlayersWatchingChunk(ChunkPos var1, boolean var2);
     }
 
-    @FunctionalInterface
-    public static interface LevelUpdateListener {
-        public void updateLevel(ChunkPos var1, IntSupplier var2, int var3, IntConsumer var4);
-    }
+    static final class MultithreadAction {
+        private final Thread thread;
+        private final CompletableFuture<? extends Either<? extends Chunk, Unloaded>> action;
+        private final String actionDesc;
 
-    public static interface Unloaded {
-        public static final Unloaded INSTANCE = new Unloaded(){
-
-            public String toString() {
-                return "UNLOADED";
-            }
-        };
+        MultithreadAction(Thread thread, CompletableFuture<? extends Either<? extends Chunk, Unloaded>> completableFuture, String string) {
+            this.thread = thread;
+            this.action = completableFuture;
+            this.actionDesc = string;
+        }
     }
 
     public static enum LevelType {
@@ -444,6 +435,15 @@ public class ChunkHolder {
         public boolean isAfter(LevelType levelType) {
             return this.ordinal() >= levelType.ordinal();
         }
+    }
+
+    public static interface Unloaded {
+        public static final Unloaded INSTANCE = new Unloaded(){
+
+            public String toString() {
+                return "UNLOADED";
+            }
+        };
     }
 }
 

@@ -120,7 +120,7 @@ implements Predicate<ItemStack> {
     }
 
     public static Ingredient ofStacks(Stream<ItemStack> stacks) {
-        return Ingredient.ofEntries(stacks.filter(stack -> !stack.isEmpty()).map(stack -> new StackEntry((ItemStack)stack)));
+        return Ingredient.ofEntries(stacks.filter(stack -> !stack.isEmpty()).map(StackEntry::new));
     }
 
     public static Ingredient fromTag(Tag<Item> tag) {
@@ -128,7 +128,7 @@ implements Predicate<ItemStack> {
     }
 
     public static Ingredient fromPacket(PacketByteBuf buf) {
-        return Ingredient.ofEntries(buf.readList(PacketByteBuf::readItemStack).stream().map(itemStack -> new StackEntry((ItemStack)itemStack)));
+        return Ingredient.ofEntries(buf.readList(PacketByteBuf::readItemStack).stream().map(StackEntry::new));
     }
 
     public static Ingredient fromJson(@Nullable JsonElement json) {
@@ -169,11 +169,17 @@ implements Predicate<ItemStack> {
         return this.test((ItemStack)stack);
     }
 
+    static interface Entry {
+        public Collection<ItemStack> getStacks();
+
+        public JsonObject toJson();
+    }
+
     static class TagEntry
     implements Entry {
         private final Tag<Item> tag;
 
-        private TagEntry(Tag<Item> tag) {
+        TagEntry(Tag<Item> tag) {
             this.tag = tag;
         }
 
@@ -198,8 +204,8 @@ implements Predicate<ItemStack> {
     implements Entry {
         private final ItemStack stack;
 
-        private StackEntry(ItemStack stack) {
-            this.stack = stack;
+        StackEntry(ItemStack itemStack) {
+            this.stack = itemStack;
         }
 
         @Override
@@ -213,12 +219,6 @@ implements Predicate<ItemStack> {
             jsonObject.addProperty("item", Registry.ITEM.getId(this.stack.getItem()).toString());
             return jsonObject;
         }
-    }
-
-    static interface Entry {
-        public Collection<ItemStack> getStacks();
-
-        public JsonObject toJson();
     }
 }
 

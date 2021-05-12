@@ -43,7 +43,7 @@ extends Screen {
     private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
     private static final Identifier VIGNETTE_TEXTURE = new Identifier("textures/misc/vignette.png");
     private static final String field_32273 = "[C]";
-    private static final String OBFUSCATION_PLACEHOLDER = "" + (Object)((Object)Formatting.WHITE) + (Object)((Object)Formatting.OBFUSCATED) + (Object)((Object)Formatting.GREEN) + (Object)((Object)Formatting.AQUA);
+    private static final String OBFUSCATION_PLACEHOLDER = "" + Formatting.WHITE + Formatting.OBFUSCATED + Formatting.GREEN + Formatting.AQUA;
     private final boolean endCredits;
     private final Runnable finishAction;
     private float time;
@@ -99,19 +99,19 @@ extends Screen {
             int i = 274;
             if (this.endCredits) {
                 int j;
-                String string;
+                Object string;
                 resource = this.client.getResourceManager().getResource(new Identifier("texts/end.txt"));
                 inputStream = resource.getInputStream();
                 bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
                 Random random = new Random(8124371L);
                 while ((string = bufferedReader.readLine()) != null) {
-                    string = string.replaceAll("PLAYERNAME", this.client.getSession().getUsername());
-                    while ((j = string.indexOf(OBFUSCATION_PLACEHOLDER)) != -1) {
-                        String string2 = string.substring(0, j);
-                        String string3 = string.substring(j + OBFUSCATION_PLACEHOLDER.length());
-                        string = string2 + (Object)((Object)Formatting.WHITE) + (Object)((Object)Formatting.OBFUSCATED) + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string3;
+                    string = ((String)string).replaceAll("PLAYERNAME", this.client.getSession().getUsername());
+                    while ((j = ((String)string).indexOf(OBFUSCATION_PLACEHOLDER)) != -1) {
+                        String string2 = ((String)string).substring(0, j);
+                        String string3 = ((String)string).substring(j + OBFUSCATION_PLACEHOLDER.length());
+                        string = string2 + Formatting.WHITE + Formatting.OBFUSCATED + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string3;
                     }
-                    this.credits.addAll(this.client.textRenderer.wrapLines(new LiteralText(string), 274));
+                    this.credits.addAll(this.client.textRenderer.wrapLines(new LiteralText((String)string), 274));
                     this.credits.add(OrderedText.EMPTY);
                 }
                 inputStream.close();

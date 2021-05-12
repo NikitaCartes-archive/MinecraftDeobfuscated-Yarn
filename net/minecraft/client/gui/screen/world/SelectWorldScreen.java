@@ -67,7 +67,7 @@ extends Screen {
         this.selectButton = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 52, 150, 20, new TranslatableText("selectWorld.select"), buttonWidget -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::play)));
         this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 52, 150, 20, new TranslatableText("selectWorld.create"), buttonWidget -> this.client.openScreen(CreateWorldScreen.create(this))));
         this.editButton = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 28, 72, 20, new TranslatableText("selectWorld.edit"), buttonWidget -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::edit)));
-        this.deleteButton = this.addButton(new ButtonWidget(this.width / 2 - 76, this.height - 28, 72, 20, new TranslatableText("selectWorld.delete"), buttonWidget -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::delete)));
+        this.deleteButton = this.addButton(new ButtonWidget(this.width / 2 - 76, this.height - 28, 72, 20, new TranslatableText("selectWorld.delete"), buttonWidget -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::deleteIfConfirmed)));
         this.recreateButton = this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 28, 72, 20, new TranslatableText("selectWorld.recreate"), buttonWidget -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::recreate)));
         this.addButton(new ButtonWidget(this.width / 2 + 82, this.height - 28, 72, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));
         this.worldSelected(false);
@@ -127,7 +127,7 @@ extends Screen {
             WorldListWidget.Entry entry;
             String string = "DEBUG world";
             if (!this.levelList.children().isEmpty() && (entry = (WorldListWidget.Entry)this.levelList.children().get(0)).getLevelDisplayName().equals("DEBUG world")) {
-                entry.method_33685();
+                entry.delete();
             }
             DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
             long l = "test1".hashCode();

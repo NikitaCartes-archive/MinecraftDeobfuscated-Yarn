@@ -50,7 +50,7 @@ extends AbstractNbtNumber {
     public static final NbtByte ONE = NbtByte.of((byte)1);
     private final byte value;
 
-    private NbtByte(byte value) {
+    NbtByte(byte value) {
         this.value = value;
     }
 
@@ -138,7 +138,7 @@ extends AbstractNbtNumber {
     }
 
     static class Cache {
-        private static final NbtByte[] VALUES = new NbtByte[256];
+        static final NbtByte[] VALUES = new NbtByte[256];
 
         private Cache() {
         }

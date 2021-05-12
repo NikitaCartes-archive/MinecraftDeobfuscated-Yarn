@@ -170,7 +170,7 @@ public class Texture {
         return new Texture().put(TextureKey.WALL, identifier).put(TextureKey.SIDE, identifier).put(TextureKey.END, Texture.getSubId(block, "_top"));
     }
 
-    public static Texture method_35910(Identifier top, Identifier bottom) {
+    public static Texture topBottom(Identifier top, Identifier bottom) {
         return new Texture().put(TextureKey.TOP, top).put(TextureKey.BOTTOM, bottom);
     }
 
@@ -242,12 +242,12 @@ public class Texture {
         return new Texture().put(TextureKey.LIT_LOG, Texture.getSubId(block, "_log_lit")).put(TextureKey.FIRE, Texture.getSubId(block, "_fire"));
     }
 
-    public static Texture method_32231(Block block) {
+    public static Texture candleCake(Block block) {
         return new Texture().put(TextureKey.PARTICLE, Texture.getSubId(Blocks.CAKE, "_side")).put(TextureKey.BOTTOM, Texture.getSubId(Blocks.CAKE, "_bottom")).put(TextureKey.TOP, Texture.getSubId(Blocks.CAKE, "_top")).put(TextureKey.SIDE, Texture.getSubId(Blocks.CAKE, "_side")).put(TextureKey.CANDLE, Texture.getId(block));
     }
 
-    public static Texture method_32232(Identifier identifier) {
-        return new Texture().put(TextureKey.PARTICLE, Texture.getSubId(Blocks.CAULDRON, "_side")).put(TextureKey.SIDE, Texture.getSubId(Blocks.CAULDRON, "_side")).put(TextureKey.TOP, Texture.getSubId(Blocks.CAULDRON, "_top")).put(TextureKey.BOTTOM, Texture.getSubId(Blocks.CAULDRON, "_bottom")).put(TextureKey.INSIDE, Texture.getSubId(Blocks.CAULDRON, "_inner")).put(TextureKey.CONTENT, identifier);
+    public static Texture cauldron(Identifier content) {
+        return new Texture().put(TextureKey.PARTICLE, Texture.getSubId(Blocks.CAULDRON, "_side")).put(TextureKey.SIDE, Texture.getSubId(Blocks.CAULDRON, "_side")).put(TextureKey.TOP, Texture.getSubId(Blocks.CAULDRON, "_top")).put(TextureKey.BOTTOM, Texture.getSubId(Blocks.CAULDRON, "_bottom")).put(TextureKey.INSIDE, Texture.getSubId(Blocks.CAULDRON, "_inner")).put(TextureKey.CONTENT, content);
     }
 
     public static Texture layer0(Item item) {

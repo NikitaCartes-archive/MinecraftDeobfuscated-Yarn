@@ -152,6 +152,12 @@ implements AutoCloseable {
     public void close() {
     }
 
+    @FunctionalInterface
+    public static interface Factory {
+        @Nullable
+        public ResourcePackProfile create(String var1, Text var2, boolean var3, Supplier<ResourcePack> var4, PackResourceMetadata var5, InsertionPosition var6, ResourcePackSource var7);
+    }
+
     public static enum InsertionPosition {
         TOP,
         BOTTOM;
@@ -179,12 +185,6 @@ implements AutoCloseable {
         public InsertionPosition inverse() {
             return this == TOP ? BOTTOM : TOP;
         }
-    }
-
-    @FunctionalInterface
-    public static interface Factory {
-        @Nullable
-        public ResourcePackProfile create(String var1, Text var2, boolean var3, Supplier<ResourcePack> var4, PackResourceMetadata var5, InsertionPosition var6, ResourcePackSource var7);
     }
 }
 

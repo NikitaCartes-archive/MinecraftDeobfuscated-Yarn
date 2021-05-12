@@ -73,32 +73,12 @@ implements BlockStateSupplier {
         return this.get();
     }
 
-    static class ConditionalMultipart
-    extends Multipart {
-        private final When when;
-
-        private ConditionalMultipart(When when, List<BlockStateVariant> variants) {
-            super(variants);
-            this.when = when;
-        }
-
-        @Override
-        public void validate(StateManager<?, ?> stateManager) {
-            this.when.validate(stateManager);
-        }
-
-        @Override
-        public void extraToJson(JsonObject json) {
-            json.add("when", (JsonElement)this.when.get());
-        }
-    }
-
     static class Multipart
     implements Supplier<JsonElement> {
         private final List<BlockStateVariant> variants;
 
-        private Multipart(List<BlockStateVariant> variants) {
-            this.variants = variants;
+        Multipart(List<BlockStateVariant> list) {
+            this.variants = list;
         }
 
         public void validate(StateManager<?, ?> stateManager) {
@@ -118,6 +98,26 @@ implements BlockStateSupplier {
         @Override
         public /* synthetic */ Object get() {
             return this.get();
+        }
+    }
+
+    static class ConditionalMultipart
+    extends Multipart {
+        private final When when;
+
+        ConditionalMultipart(When when, List<BlockStateVariant> list) {
+            super(list);
+            this.when = when;
+        }
+
+        @Override
+        public void validate(StateManager<?, ?> stateManager) {
+            this.when.validate(stateManager);
+        }
+
+        @Override
+        public void extraToJson(JsonObject json) {
+            json.add("when", (JsonElement)this.when.get());
         }
     }
 }

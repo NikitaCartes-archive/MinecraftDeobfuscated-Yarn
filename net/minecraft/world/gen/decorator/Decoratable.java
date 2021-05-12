@@ -58,12 +58,12 @@ public interface Decoratable<R> {
         return this.repeat(UniformIntProvider.create(0, maxCount));
     }
 
-    default public R method_36296(YOffset yOffset, YOffset yOffset2) {
-        return this.range(new RangeDecoratorConfig(UniformHeightProvider.create(yOffset, yOffset2)));
+    default public R uniformRange(YOffset min, YOffset max) {
+        return this.range(new RangeDecoratorConfig(UniformHeightProvider.create(min, max)));
     }
 
-    default public R method_36297(YOffset yOffset, YOffset yOffset2) {
-        return this.range(new RangeDecoratorConfig(TrapezoidHeightProvider.create(yOffset, yOffset2)));
+    default public R triangleRange(YOffset min, YOffset max) {
+        return this.range(new RangeDecoratorConfig(TrapezoidHeightProvider.create(min, max)));
     }
 
     default public R range(RangeDecoratorConfig config) {
