@@ -13,7 +13,7 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
 public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensionCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("changed_dimension");
+	static final Identifier ID = new Identifier("changed_dimension");
 
 	@Override
 	public Identifier getId() {

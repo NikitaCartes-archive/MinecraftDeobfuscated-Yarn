@@ -96,11 +96,8 @@ public class PaintingEntity extends AbstractDecorationEntity {
 	public void onBreak(@Nullable Entity entity) {
 		if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
 			this.playSound(SoundEvents.ENTITY_PAINTING_BREAK, 1.0F, 1.0F);
-			if (entity instanceof PlayerEntity) {
-				PlayerEntity playerEntity = (PlayerEntity)entity;
-				if (playerEntity.getAbilities().creativeMode) {
-					return;
-				}
+			if (entity instanceof PlayerEntity playerEntity && playerEntity.getAbilities().creativeMode) {
+				return;
 			}
 
 			this.dropItem(Items.PAINTING);

@@ -37,6 +37,7 @@ import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -67,7 +68,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 	private int blockBreakingCooldown;
 	private final ServerBossBar bossBar = (ServerBossBar)new ServerBossBar(this.getDisplayName(), BossBar.Color.PURPLE, BossBar.Style.PROGRESS).setDarkenSky(true);
 	private static final Predicate<LivingEntity> CAN_ATTACK_PREDICATE = entity -> entity.getGroup() != EntityGroup.UNDEAD && entity.isMobOrPlayer();
-	private static final TargetPredicate HEAD_TARGET_PREDICATE = new TargetPredicate().setBaseMaxDistance(20.0).setPredicate(CAN_ATTACK_PREDICATE);
+	private static final TargetPredicate HEAD_TARGET_PREDICATE = TargetPredicate.createAttackable().setBaseMaxDistance(20.0).setPredicate(CAN_ATTACK_PREDICATE);
 
 	public WitherEntity(EntityType<? extends WitherEntity> entityType, World world) {
 		super(entityType, world);
@@ -269,7 +270,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 						Entity entity = this.world.getEntityById(j);
 						if (entity == null || !entity.isAlive() || this.squaredDistanceTo(entity) > 900.0 || !this.canSee(entity)) {
 							this.setTrackedEntityId(ix, 0);
-						} else if (entity instanceof PlayerEntity && ((PlayerEntity)entity).getAbilities().invulnerable) {
+						} else if (!EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(entity)) {
 							this.setTrackedEntityId(ix, 0);
 						} else {
 							this.shootSkullAt(ix + 1, (LivingEntity)entity);

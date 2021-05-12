@@ -92,6 +92,15 @@ public class KeyBinding implements Comparable<KeyBinding> {
 		keyCategories.add(category);
 	}
 
+	/**
+	 * {@return if the key is being held down}
+	 * 
+	 * <p>Note that if you are continuously calling this method (like every
+	 * tick), it doesn't always catch all key presses. This is because the key
+	 * can be pressed and released before the next check.
+	 * 
+	 * @see #wasPressed()
+	 */
 	public boolean isPressed() {
 		return this.pressed;
 	}
@@ -100,6 +109,25 @@ public class KeyBinding implements Comparable<KeyBinding> {
 		return this.category;
 	}
 
+	/**
+	 * {@return if the key was pressed}
+	 * 
+	 * <p>A key binding counts the number of times the key is pressed. This
+	 * method "consumes" it and returns {@code true} as many times as the key
+	 * is pressed.
+	 * 
+	 * <p>To consume all remaining key presses, while-loop idiom can be used:
+	 * <pre>
+	 * {@code
+	 * while(keyBinding.wasPressed()) {
+	 *   // do your action
+	 * }
+	 * }
+	 * </pre>
+	 * 
+	 * @see #isPressed()
+	 * @see <a href="https://bugs.mojang.com/browse/MC-118107">MC-118107</a>
+	 */
 	public boolean wasPressed() {
 		if (this.timesPressed == 0) {
 			return false;

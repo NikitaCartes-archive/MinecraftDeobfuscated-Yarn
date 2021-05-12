@@ -38,7 +38,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class TestServer extends MinecraftServer {
-	private static final Logger field_33156 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int field_33157 = 20;
 	private final List<GameTestBatch> batches;
 	private final BlockPos pos;
@@ -140,27 +140,27 @@ public class TestServer extends MinecraftServer {
 		}
 
 		if (serverWorld.getTime() % 20L == 0L) {
-			field_33156.info(this.testSet.getResultString());
+			LOGGER.info(this.testSet.getResultString());
 		}
 
 		if (this.testSet.isDone()) {
 			this.stop(false);
-			field_33156.info(this.testSet.getResultString());
+			LOGGER.info(this.testSet.getResultString());
 			TestFailureLogger.stop();
-			field_33156.info("========= {} GAME TESTS COMPLETE ======================", this.testSet.getTestCount());
+			LOGGER.info("========= {} GAME TESTS COMPLETE ======================", this.testSet.getTestCount());
 			if (this.testSet.failed()) {
-				field_33156.info("{} required tests failed :(", this.testSet.getFailedRequiredTestCount());
-				this.testSet.getRequiredTests().forEach(test -> field_33156.info("   - {}", test.getStructurePath()));
+				LOGGER.info("{} required tests failed :(", this.testSet.getFailedRequiredTestCount());
+				this.testSet.getRequiredTests().forEach(test -> LOGGER.info("   - {}", test.getStructurePath()));
 			} else {
-				field_33156.info("All {} required tests passed :)", this.testSet.getTestCount());
+				LOGGER.info("All {} required tests passed :)", this.testSet.getTestCount());
 			}
 
 			if (this.testSet.hasFailedOptionalTests()) {
-				field_33156.info("{} optional tests failed", this.testSet.getFailedOptionalTestCount());
-				this.testSet.getOptionalTests().forEach(test -> field_33156.info("   - {}", test.getStructurePath()));
+				LOGGER.info("{} optional tests failed", this.testSet.getFailedOptionalTestCount());
+				this.testSet.getOptionalTests().forEach(test -> LOGGER.info("   - {}", test.getStructurePath()));
 			}
 
-			field_33156.info("====================================================");
+			LOGGER.info("====================================================");
 		}
 	}
 
@@ -178,7 +178,7 @@ public class TestServer extends MinecraftServer {
 	private void runTestBatches(ServerWorld world) {
 		Collection<GameTestState> collection = TestUtil.runTestBatches(this.batches, new BlockPos(0, 4, 0), BlockRotation.NONE, world, TestManager.INSTANCE, 8);
 		this.testSet = new TestSet(collection);
-		field_33156.info("{} tests are now running!", this.testSet.getTestCount());
+		LOGGER.info("{} tests are now running!", this.testSet.getTestCount());
 	}
 
 	private boolean isTesting() {

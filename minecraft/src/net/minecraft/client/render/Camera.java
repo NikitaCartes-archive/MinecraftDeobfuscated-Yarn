@@ -208,7 +208,7 @@ public class Camera {
 		return this.verticalPlane;
 	}
 
-	public final Vec3f method_35689() {
+	public final Vec3f getDiagonalPlane() {
 		return this.diagonalPlane;
 	}
 
@@ -220,11 +220,11 @@ public class Camera {
 
 	@Environment(EnvType.CLIENT)
 	public static class class_6355 {
-		private final Vec3d field_33622;
+		final Vec3d field_33622;
 		private final Vec3d field_33623;
 		private final Vec3d field_33624;
 
-		private class_6355(Vec3d vec3d, Vec3d vec3d2, Vec3d vec3d3) {
+		class_6355(Vec3d vec3d, Vec3d vec3d2, Vec3d vec3d3) {
 			this.field_33622 = vec3d;
 			this.field_33623 = vec3d2;
 			this.field_33624 = vec3d3;

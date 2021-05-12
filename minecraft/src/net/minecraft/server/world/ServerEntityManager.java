@@ -43,12 +43,12 @@ import org.apache.logging.log4j.Logger;
  * An entity manager for a server environment.
  */
 public class ServerEntityManager<T extends EntityLike> implements AutoCloseable {
-	private static final Logger LOGGER = LogManager.getLogger();
-	private final Set<UUID> entityUuids = Sets.<UUID>newHashSet();
-	private final EntityHandler<T> handler;
+	static final Logger LOGGER = LogManager.getLogger();
+	final Set<UUID> entityUuids = Sets.<UUID>newHashSet();
+	final EntityHandler<T> handler;
 	private final ChunkDataAccess<T> dataAccess;
 	private final EntityIndex<T> index;
-	private final SectionedEntityCache<T> cache;
+	final SectionedEntityCache<T> cache;
 	private final EntityLookup<T> lookup;
 	private final Long2ObjectMap<EntityTrackingStatus> trackingStatuses = new Long2ObjectOpenHashMap<>();
 	private final Long2ObjectMap<ServerEntityManager.Status> managedStatuses = new Long2ObjectOpenHashMap<>();
@@ -65,7 +65,7 @@ public class ServerEntityManager<T extends EntityLike> implements AutoCloseable 
 		this.lookup = new SimpleEntityLookup<>(this.index, this.cache);
 	}
 
-	private void entityLeftSection(long sectionPos, EntityTrackingSection<T> section) {
+	void entityLeftSection(long sectionPos, EntityTrackingSection<T> section) {
 		if (section.isEmpty()) {
 			this.cache.removeSection(sectionPos);
 		}
@@ -124,7 +124,7 @@ public class ServerEntityManager<T extends EntityLike> implements AutoCloseable 
 		}
 	}
 
-	private static <T extends EntityLike> EntityTrackingStatus getNeededLoadStatus(T entity, EntityTrackingStatus current) {
+	static <T extends EntityLike> EntityTrackingStatus getNeededLoadStatus(T entity, EntityTrackingStatus current) {
 		return entity.isPlayer() ? EntityTrackingStatus.TICKING : current;
 	}
 
@@ -142,20 +142,20 @@ public class ServerEntityManager<T extends EntityLike> implements AutoCloseable 
 		entities.forEach(entity -> this.addEntity((T)entity, false));
 	}
 
-	private void startTicking(T entity) {
+	void startTicking(T entity) {
 		this.handler.startTicking(entity);
 	}
 
-	private void stopTicking(T entity) {
+	void stopTicking(T entity) {
 		this.handler.stopTicking(entity);
 	}
 
-	private void startTracking(T entity) {
+	void startTracking(T entity) {
 		this.index.add(entity);
 		this.handler.startTracking(entity);
 	}
 
-	private void stopTracking(T entity) {
+	void stopTracking(T entity) {
 		this.handler.stopTracking(entity);
 		this.index.remove(entity);
 	}
@@ -411,10 +411,10 @@ public class ServerEntityManager<T extends EntityLike> implements AutoCloseable 
 		private long sectionPos;
 		private EntityTrackingSection<T> section;
 
-		private Listener(T entity, long sectionPos, EntityTrackingSection<T> section) {
-			this.entity = entity;
-			this.sectionPos = sectionPos;
-			this.section = section;
+		Listener(T entityLike, long l, EntityTrackingSection<T> entityTrackingSection) {
+			this.entity = entityLike;
+			this.sectionPos = l;
+			this.section = entityTrackingSection;
 		}
 
 		@Override

@@ -77,7 +77,7 @@ public abstract class TrunkPlacer {
 		Function<BlockState, BlockState> stateProvider
 	) {
 		if (TreeFeature.canReplace(world, pos)) {
-			replacer.accept(pos, stateProvider.apply(config.trunkProvider.getBlockState(random, pos)));
+			replacer.accept(pos, (BlockState)stateProvider.apply(config.trunkProvider.getBlockState(random, pos)));
 			return true;
 		} else {
 			return false;

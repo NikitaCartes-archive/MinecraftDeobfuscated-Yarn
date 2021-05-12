@@ -121,7 +121,7 @@ public class TestContext {
 	}
 
 	public TimedTaskRunner method_35967(MobEntity entity, BlockPos pos, float f) {
-		return this.method_36041().method_36077(2, () -> {
+		return this.createTimedTaskRunner().method_36077(2, () -> {
 			Path path = entity.getNavigation().findPathTo(this.getAbsolutePos(pos), 0);
 			entity.getNavigation().startMovingAlong(path, (double)f);
 		});
@@ -263,7 +263,7 @@ public class TestContext {
 	public void expectEntity(EntityType<?> type) {
 		List<? extends Entity> list = this.getWorld().getEntitiesByType(type, this.getTestBox(), Entity::isAlive);
 		if (list.isEmpty()) {
-			throw new GameTestException("Expected " + type.method_35050() + " to exist");
+			throw new GameTestException("Expected " + type.getUntranslatedName() + " to exist");
 		}
 	}
 
@@ -275,7 +275,7 @@ public class TestContext {
 		BlockPos blockPos = this.getAbsolutePos(pos);
 		List<? extends Entity> list = this.getWorld().getEntitiesByType(type, new Box(blockPos), Entity::isAlive);
 		if (list.isEmpty()) {
-			throw new PositionedException("Expected " + type.method_35050(), blockPos, pos, this.test.getTick());
+			throw new PositionedException("Expected " + type.getUntranslatedName(), blockPos, pos, this.test.getTick());
 		}
 	}
 
@@ -283,7 +283,7 @@ public class TestContext {
 		BlockPos blockPos = this.getAbsolutePos(pos);
 		List<? extends Entity> list = this.getWorld().getEntitiesByType(type, new Box(blockPos).expand(radius), Entity::isAlive);
 		if (list.isEmpty()) {
-			throw new PositionedException("Expected " + type.method_35050(), blockPos, pos, this.test.getTick());
+			throw new PositionedException("Expected " + type.getUntranslatedName(), blockPos, pos, this.test.getTick());
 		}
 	}
 
@@ -297,7 +297,7 @@ public class TestContext {
 		list.stream()
 			.filter(entity2 -> entity2 == entity)
 			.findFirst()
-			.orElseThrow(() -> new PositionedException("Expected " + entity.getType().method_35050(), blockPos, pos, this.test.getTick()));
+			.orElseThrow(() -> new PositionedException("Expected " + entity.getType().getUntranslatedName(), blockPos, pos, this.test.getTick()));
 	}
 
 	public void expectItemsAt(Item item, BlockPos pos, double radius, int amount) {
@@ -335,7 +335,7 @@ public class TestContext {
 	public void dontExpectEntity(EntityType<?> type) {
 		List<? extends Entity> list = this.getWorld().getEntitiesByType(type, this.getTestBox(), Entity::isAlive);
 		if (!list.isEmpty()) {
-			throw new GameTestException("Did not expect " + type.method_35050() + " to exist");
+			throw new GameTestException("Did not expect " + type.getUntranslatedName() + " to exist");
 		}
 	}
 
@@ -347,7 +347,7 @@ public class TestContext {
 		BlockPos blockPos = this.getAbsolutePos(pos);
 		List<? extends Entity> list = this.getWorld().getEntitiesByType(type, new Box(blockPos), Entity::isAlive);
 		if (!list.isEmpty()) {
-			throw new PositionedException("Did not expect " + type.method_35050(), blockPos, pos, this.test.getTick());
+			throw new PositionedException("Did not expect " + type.getUntranslatedName(), blockPos, pos, this.test.getTick());
 		}
 	}
 
@@ -357,7 +357,7 @@ public class TestContext {
 		Predicate<? super Entity> predicate = entity -> entity.getBoundingBox().intersects(vec3d2, vec3d2);
 		List<? extends Entity> list = this.getWorld().getEntitiesByType(type, this.getTestBox(), predicate);
 		if (list.isEmpty()) {
-			throw new GameTestException("Expected " + type.method_35050() + " to touch " + vec3d2 + " (relative " + vec3d + ")");
+			throw new GameTestException("Expected " + type.getUntranslatedName() + " to touch " + vec3d2 + " (relative " + vec3d + ")");
 		}
 	}
 
@@ -367,7 +367,7 @@ public class TestContext {
 		Predicate<? super Entity> predicate = entity -> !entity.getBoundingBox().intersects(vec3d2, vec3d2);
 		List<? extends Entity> list = this.getWorld().getEntitiesByType(type, this.getTestBox(), predicate);
 		if (list.isEmpty()) {
-			throw new GameTestException("Did not expect " + type.method_35050() + " to touch " + vec3d2 + " (relative " + vec3d + ")");
+			throw new GameTestException("Did not expect " + type.getUntranslatedName() + " to touch " + vec3d2 + " (relative " + vec3d + ")");
 		}
 	}
 
@@ -375,7 +375,7 @@ public class TestContext {
 		BlockPos blockPos = this.getAbsolutePos(pos);
 		List<E> list = this.getWorld().getEntitiesByType(type, new Box(blockPos), Entity::isAlive);
 		if (list.isEmpty()) {
-			throw new PositionedException("Expected " + type.method_35050(), blockPos, pos, this.test.getTick());
+			throw new PositionedException("Expected " + type.getUntranslatedName(), blockPos, pos, this.test.getTick());
 		} else {
 			for (E entity : list) {
 				T object = (T)entityDataGetter.apply(entity);
@@ -422,7 +422,7 @@ public class TestContext {
 		BlockState blockState = this.getBlockState(checkedPos);
 		BlockState blockState2 = this.getBlockState(correctStatePos);
 		if (blockState != blockState2) {
-			this.method_35997("Incorrect state. Expected " + blockState2 + ", got " + blockState, checkedPos);
+			this.throwPositionedException("Incorrect state. Expected " + blockState2 + ", got " + blockState, checkedPos);
 		}
 	}
 
@@ -451,20 +451,20 @@ public class TestContext {
 		}
 	}
 
-	public void method_36037(EntityType<?> entityType, int x, int y, int z) {
-		this.method_36038(entityType, new BlockPos(x, y, z));
+	public void method_36037(EntityType<?> type, int x, int y, int z) {
+		this.method_36038(type, new BlockPos(x, y, z));
 	}
 
 	public void method_36038(EntityType<?> type, BlockPos pos) {
 		this.addInstantFinalTask(() -> this.expectEntityAt(type, pos));
 	}
 
-	public void method_36042(EntityType<?> entityType, int x, int y, int z) {
-		this.method_36043(entityType, new BlockPos(x, y, z));
+	public void method_36042(EntityType<?> type, int x, int y, int z) {
+		this.method_36043(type, new BlockPos(x, y, z));
 	}
 
-	public void method_36043(EntityType<?> entityType, BlockPos pos) {
-		this.addInstantFinalTask(() -> this.dontExpectEntityAt(entityType, pos));
+	public void method_36043(EntityType<?> type, BlockPos pos) {
+		this.addInstantFinalTask(() -> this.dontExpectEntityAt(type, pos));
 	}
 
 	public void complete() {
@@ -508,16 +508,16 @@ public class TestContext {
 		serverWorld.getBlockState(blockPos).randomTick(serverWorld, blockPos, serverWorld.random);
 	}
 
-	public void method_35997(String string, BlockPos blockPos) {
-		throw new PositionedException(string, this.getAbsolutePos(blockPos), blockPos, this.getTick());
+	public void throwPositionedException(String message, BlockPos pos) {
+		throw new PositionedException(message, this.getAbsolutePos(pos), pos, this.getTick());
 	}
 
-	public void method_35996(String string, Entity entity) {
-		throw new PositionedException(string, entity.getBlockPos(), this.method_36054(entity.getBlockPos()), this.getTick());
+	public void throwPositionedException(String message, Entity entity) {
+		throw new PositionedException(message, entity.getBlockPos(), this.getRelativePos(entity.getBlockPos()), this.getTick());
 	}
 
-	public void method_35995(String string) {
-		throw new GameTestException(string);
+	public void throwGameTestException(String message) {
+		throw new GameTestException(message);
 	}
 
 	public void method_36028(Runnable runnable) {
@@ -528,7 +528,7 @@ public class TestContext {
 		LongStream.range(this.test.getTick(), (long)this.test.getTicksLeft()).forEach(l -> this.test.runAtTick(l, runnable::run));
 	}
 
-	public TimedTaskRunner method_36041() {
+	public TimedTaskRunner createTimedTaskRunner() {
 		return this.test.createTimedTaskRunner();
 	}
 
@@ -538,7 +538,7 @@ public class TestContext {
 		return Structure.transformAround(blockPos2, BlockMirror.NONE, this.test.getRotation(), blockPos);
 	}
 
-	public BlockPos method_36054(BlockPos pos) {
+	public BlockPos getRelativePos(BlockPos pos) {
 		BlockPos blockPos = this.test.getPos();
 		BlockRotation blockRotation = this.test.getRotation().rotate(BlockRotation.CLOCKWISE_180);
 		BlockPos blockPos2 = Structure.transformAround(pos, BlockMirror.NONE, blockRotation, blockPos);

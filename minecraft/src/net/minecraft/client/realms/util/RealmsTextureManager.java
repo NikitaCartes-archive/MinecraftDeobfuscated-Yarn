@@ -34,9 +34,9 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class RealmsTextureManager {
 	private static final Map<String, RealmsTextureManager.RealmsTexture> textures = Maps.<String, RealmsTextureManager.RealmsTexture>newHashMap();
-	private static final Map<String, Boolean> skinFetchStatus = Maps.<String, Boolean>newHashMap();
-	private static final Map<String, String> fetchedSkins = Maps.<String, String>newHashMap();
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final Map<String, Boolean> skinFetchStatus = Maps.<String, Boolean>newHashMap();
+	static final Map<String, String> fetchedSkins = Maps.<String, String>newHashMap();
+	static final Logger LOGGER = LogManager.getLogger();
 	private static final Identifier ISLES = new Identifier("textures/gui/presets/isles.png");
 
 	public static void bindWorldTemplate(String id, @Nullable String image) {
@@ -175,8 +175,8 @@ public class RealmsTextureManager {
 
 	@Environment(EnvType.CLIENT)
 	public static class RealmsTexture {
-		private final String image;
-		private final int textureId;
+		final String image;
+		final int textureId;
 
 		public RealmsTexture(String image, int textureId) {
 			this.image = image;

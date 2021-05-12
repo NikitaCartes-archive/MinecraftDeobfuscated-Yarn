@@ -140,7 +140,7 @@ public class RedstoneWireBlock extends Block {
 
 	private BlockState getPlacementState(BlockView world, BlockState state, BlockPos pos) {
 		boolean bl = isNotConnected(state);
-		state = this.method_27843(world, this.getDefaultState().with(POWER, state.get(POWER)), pos);
+		state = this.method_27843(world, this.getDefaultState().with(POWER, (Integer)state.get(POWER)), pos);
 		if (bl && isNotConnected(state)) {
 			return state;
 		} else {
@@ -197,7 +197,7 @@ public class RedstoneWireBlock extends Block {
 					&& !isFullyConnected(state)
 				? state.with((Property)DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction), wireConnection)
 				: this.getPlacementState(
-					world, this.dotState.with(POWER, state.get(POWER)).with((Property)DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction), wireConnection), pos
+					world, this.dotState.with(POWER, (Integer)state.get(POWER)).with((Property)DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction), wireConnection), pos
 				);
 		}
 	}
@@ -471,20 +471,20 @@ public class RedstoneWireBlock extends Block {
 	public BlockState rotate(BlockState state, BlockRotation rotation) {
 		switch (rotation) {
 			case CLOCKWISE_180:
-				return state.with(WIRE_CONNECTION_NORTH, state.get(WIRE_CONNECTION_SOUTH))
-					.with(WIRE_CONNECTION_EAST, state.get(WIRE_CONNECTION_WEST))
-					.with(WIRE_CONNECTION_SOUTH, state.get(WIRE_CONNECTION_NORTH))
-					.with(WIRE_CONNECTION_WEST, state.get(WIRE_CONNECTION_EAST));
+				return state.with(WIRE_CONNECTION_NORTH, (WireConnection)state.get(WIRE_CONNECTION_SOUTH))
+					.with(WIRE_CONNECTION_EAST, (WireConnection)state.get(WIRE_CONNECTION_WEST))
+					.with(WIRE_CONNECTION_SOUTH, (WireConnection)state.get(WIRE_CONNECTION_NORTH))
+					.with(WIRE_CONNECTION_WEST, (WireConnection)state.get(WIRE_CONNECTION_EAST));
 			case COUNTERCLOCKWISE_90:
-				return state.with(WIRE_CONNECTION_NORTH, state.get(WIRE_CONNECTION_EAST))
-					.with(WIRE_CONNECTION_EAST, state.get(WIRE_CONNECTION_SOUTH))
-					.with(WIRE_CONNECTION_SOUTH, state.get(WIRE_CONNECTION_WEST))
-					.with(WIRE_CONNECTION_WEST, state.get(WIRE_CONNECTION_NORTH));
+				return state.with(WIRE_CONNECTION_NORTH, (WireConnection)state.get(WIRE_CONNECTION_EAST))
+					.with(WIRE_CONNECTION_EAST, (WireConnection)state.get(WIRE_CONNECTION_SOUTH))
+					.with(WIRE_CONNECTION_SOUTH, (WireConnection)state.get(WIRE_CONNECTION_WEST))
+					.with(WIRE_CONNECTION_WEST, (WireConnection)state.get(WIRE_CONNECTION_NORTH));
 			case CLOCKWISE_90:
-				return state.with(WIRE_CONNECTION_NORTH, state.get(WIRE_CONNECTION_WEST))
-					.with(WIRE_CONNECTION_EAST, state.get(WIRE_CONNECTION_NORTH))
-					.with(WIRE_CONNECTION_SOUTH, state.get(WIRE_CONNECTION_EAST))
-					.with(WIRE_CONNECTION_WEST, state.get(WIRE_CONNECTION_SOUTH));
+				return state.with(WIRE_CONNECTION_NORTH, (WireConnection)state.get(WIRE_CONNECTION_WEST))
+					.with(WIRE_CONNECTION_EAST, (WireConnection)state.get(WIRE_CONNECTION_NORTH))
+					.with(WIRE_CONNECTION_SOUTH, (WireConnection)state.get(WIRE_CONNECTION_EAST))
+					.with(WIRE_CONNECTION_WEST, (WireConnection)state.get(WIRE_CONNECTION_SOUTH));
 			default:
 				return state;
 		}
@@ -494,9 +494,11 @@ public class RedstoneWireBlock extends Block {
 	public BlockState mirror(BlockState state, BlockMirror mirror) {
 		switch (mirror) {
 			case LEFT_RIGHT:
-				return state.with(WIRE_CONNECTION_NORTH, state.get(WIRE_CONNECTION_SOUTH)).with(WIRE_CONNECTION_SOUTH, state.get(WIRE_CONNECTION_NORTH));
+				return state.with(WIRE_CONNECTION_NORTH, (WireConnection)state.get(WIRE_CONNECTION_SOUTH))
+					.with(WIRE_CONNECTION_SOUTH, (WireConnection)state.get(WIRE_CONNECTION_NORTH));
 			case FRONT_BACK:
-				return state.with(WIRE_CONNECTION_EAST, state.get(WIRE_CONNECTION_WEST)).with(WIRE_CONNECTION_WEST, state.get(WIRE_CONNECTION_EAST));
+				return state.with(WIRE_CONNECTION_EAST, (WireConnection)state.get(WIRE_CONNECTION_WEST))
+					.with(WIRE_CONNECTION_WEST, (WireConnection)state.get(WIRE_CONNECTION_EAST));
 			default:
 				return super.mirror(state, mirror);
 		}
@@ -514,7 +516,7 @@ public class RedstoneWireBlock extends Block {
 		} else {
 			if (isFullyConnected(state) || isNotConnected(state)) {
 				BlockState blockState = isFullyConnected(state) ? this.getDefaultState() : this.dotState;
-				blockState = blockState.with(POWER, state.get(POWER));
+				blockState = blockState.with(POWER, (Integer)state.get(POWER));
 				blockState = this.getPlacementState(world, blockState, pos);
 				if (blockState != state) {
 					world.setBlockState(pos, blockState, Block.NOTIFY_ALL);

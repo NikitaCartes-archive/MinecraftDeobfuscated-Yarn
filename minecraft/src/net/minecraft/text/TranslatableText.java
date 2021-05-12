@@ -165,11 +165,10 @@ public class TranslatableText extends BaseText implements ParsableText {
 	public boolean equals(Object object) {
 		if (this == object) {
 			return true;
-		} else if (!(object instanceof TranslatableText)) {
-			return false;
 		} else {
-			TranslatableText translatableText = (TranslatableText)object;
-			return Arrays.equals(this.args, translatableText.args) && this.key.equals(translatableText.key) && super.equals(object);
+			return !(object instanceof TranslatableText translatableText)
+				? false
+				: Arrays.equals(this.args, translatableText.args) && this.key.equals(translatableText.key) && super.equals(object);
 		}
 	}
 
@@ -184,14 +183,13 @@ public class TranslatableText extends BaseText implements ParsableText {
 	public String toString() {
 		return "TranslatableComponent{key='"
 			+ this.key
-			+ '\''
-			+ ", args="
+			+ "', args="
 			+ Arrays.toString(this.args)
 			+ ", siblings="
 			+ this.siblings
 			+ ", style="
 			+ this.getStyle()
-			+ '}';
+			+ "}";
 	}
 
 	public String getKey() {

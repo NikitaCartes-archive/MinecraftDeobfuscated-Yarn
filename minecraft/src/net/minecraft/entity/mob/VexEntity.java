@@ -41,7 +41,7 @@ public class VexEntity extends HostileEntity {
 	public static final int field_28645 = MathHelper.ceil((float) (Math.PI * 5.0 / 4.0));
 	protected static final TrackedData<Byte> VEX_FLAGS = DataTracker.registerData(VexEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final int CHARGING_FLAG = 1;
-	private MobEntity owner;
+	MobEntity owner;
 	@Nullable
 	private BlockPos bounds;
 	private boolean alive;
@@ -293,7 +293,7 @@ public class VexEntity extends HostileEntity {
 	}
 
 	class TrackOwnerTargetGoal extends TrackTargetGoal {
-		private final TargetPredicate TRACK_OWNER_PREDICATE = new TargetPredicate().includeHidden().ignoreDistanceScalingFactor();
+		private final TargetPredicate TRACK_OWNER_PREDICATE = TargetPredicate.createNonAttackable().visibleOnly().ignoreDistanceScalingFactor();
 
 		public TrackOwnerTargetGoal(PathAwareEntity mob) {
 			super(mob, false);

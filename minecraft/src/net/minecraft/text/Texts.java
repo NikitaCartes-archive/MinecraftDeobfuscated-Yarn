@@ -79,7 +79,7 @@ public class Texts {
 		if (elements.isEmpty()) {
 			return LiteralText.EMPTY;
 		} else if (elements.size() == 1) {
-			return (Text)transformer.apply(elements.iterator().next());
+			return (Text)transformer.apply((Comparable)elements.iterator().next());
 		} else {
 			List<T> list = Lists.<T>newArrayList(elements);
 			list.sort(Comparable::compareTo);

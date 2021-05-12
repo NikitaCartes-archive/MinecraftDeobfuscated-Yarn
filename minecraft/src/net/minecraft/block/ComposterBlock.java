@@ -16,6 +16,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -226,6 +227,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 			if (i < 7 && !world.isClient) {
 				BlockState blockState = addToComposter(state, world, pos, itemStack);
 				world.syncWorldEvent(WorldEvents.COMPOSTER_USED, pos, state != blockState ? 1 : 0);
+				player.incrementStat(Stats.USED.getOrCreateStat(itemStack.getItem()));
 				if (!player.getAbilities().creativeMode) {
 					itemStack.decrement(1);
 				}
@@ -267,13 +269,13 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		return blockState;
 	}
 
-	private static BlockState emptyComposter(BlockState state, WorldAccess world, BlockPos pos) {
+	static BlockState emptyComposter(BlockState state, WorldAccess world, BlockPos pos) {
 		BlockState blockState = state.with(LEVEL, Integer.valueOf(0));
 		world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
 		return blockState;
 	}
 
-	private static BlockState addToComposter(BlockState state, WorldAccess world, BlockPos pos, ItemStack item) {
+	static BlockState addToComposter(BlockState state, WorldAccess world, BlockPos pos, ItemStack item) {
 		int i = (Integer)state.get(LEVEL);
 		float f = ITEM_TO_LEVEL_INCREASE_CHANCE.getFloat(item.getItem());
 		if ((i != 0 || !(f > 0.0F)) && !(world.getRandom().nextDouble() < (double)f)) {

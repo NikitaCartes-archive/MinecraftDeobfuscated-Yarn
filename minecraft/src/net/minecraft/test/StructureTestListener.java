@@ -99,8 +99,7 @@ class StructureTestListener implements TestListener {
 		String string2 = (test.isRequired() ? "" : "(optional) ") + test.getStructurePath() + " failed! " + string;
 		sendMessageToAllPlayers(test.getWorld(), test.isRequired() ? Formatting.RED : Formatting.YELLOW, string2);
 		Throwable throwable = MoreObjects.firstNonNull(ExceptionUtils.getRootCause(output), output);
-		if (throwable instanceof PositionedException) {
-			PositionedException positionedException = (PositionedException)throwable;
+		if (throwable instanceof PositionedException positionedException) {
 			addGameTestMarker(test.getWorld(), positionedException.getPos(), positionedException.getDebugMessage());
 		}
 

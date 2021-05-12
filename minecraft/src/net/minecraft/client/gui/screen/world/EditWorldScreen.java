@@ -136,33 +136,31 @@ public class EditWorldScreen extends Screen {
 
 							try {
 								JsonWriter jsonWriter = GSON.newJsonWriter(Files.newBufferedWriter(path, StandardCharsets.UTF_8));
-								Throwable var4x = null;
 
 								try {
 									GSON.toJson(jsonElement, jsonWriter);
-								} catch (Throwable var14) {
-									var4x = var14;
-									throw var14;
-								} finally {
+								} catch (Throwable var7) {
 									if (jsonWriter != null) {
-										if (var4x != null) {
-											try {
-												jsonWriter.close();
-											} catch (Throwable var13) {
-												var4x.addSuppressed(var13);
-											}
-										} else {
+										try {
 											jsonWriter.close();
+										} catch (Throwable var6x) {
+											var7.addSuppressed(var6x);
 										}
 									}
+
+									throw var7;
 								}
-							} catch (JsonIOException | IOException var16) {
-								return DataResult.error("Error writing file: " + var16.getMessage());
+
+								if (jsonWriter != null) {
+									jsonWriter.close();
+								}
+							} catch (JsonIOException | IOException var8) {
+								return DataResult.error("Error writing file: " + var8.getMessage());
 							}
 
 							return DataResult.success(path.toString());
 						});
-					} catch (ExecutionException | InterruptedException var18) {
+					} catch (ExecutionException | InterruptedException var9) {
 						dataResult2 = DataResult.error("Could not parse level data!");
 					}
 
@@ -223,12 +221,12 @@ public class EditWorldScreen extends Screen {
 		try (LevelStorage.Session session = storage.createSession(levelName)) {
 			bl = true;
 			backupLevel(session);
-		} catch (IOException var16) {
+		} catch (IOException var8) {
 			if (!bl) {
 				SystemToast.addWorldAccessFailureToast(MinecraftClient.getInstance(), levelName);
 			}
 
-			LOGGER.warn("Failed to create backup of level {}", levelName, var16);
+			LOGGER.warn("Failed to create backup of level {}", levelName, var8);
 		}
 	}
 

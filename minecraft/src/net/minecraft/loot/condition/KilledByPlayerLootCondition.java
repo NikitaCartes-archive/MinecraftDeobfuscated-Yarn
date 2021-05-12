@@ -11,7 +11,7 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.util.JsonSerializer;
 
 public class KilledByPlayerLootCondition implements LootCondition {
-	private static final KilledByPlayerLootCondition INSTANCE = new KilledByPlayerLootCondition();
+	static final KilledByPlayerLootCondition INSTANCE = new KilledByPlayerLootCondition();
 
 	private KilledByPlayerLootCondition() {
 	}

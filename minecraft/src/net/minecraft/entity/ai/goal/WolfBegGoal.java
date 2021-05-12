@@ -21,7 +21,7 @@ public class WolfBegGoal extends Goal {
 		this.wolf = wolf;
 		this.world = wolf.world;
 		this.begDistance = begDistance;
-		this.validPlayerPredicate = new TargetPredicate().setBaseMaxDistance((double)begDistance).includeInvulnerable().includeTeammates().ignoreEntityTargetRules();
+		this.validPlayerPredicate = TargetPredicate.createNonAttackable().setBaseMaxDistance((double)begDistance);
 		this.setControls(EnumSet.of(Goal.Control.LOOK));
 	}
 

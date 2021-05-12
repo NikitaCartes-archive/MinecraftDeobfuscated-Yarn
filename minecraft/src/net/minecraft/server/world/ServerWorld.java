@@ -149,11 +149,11 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	 * all players have left and the world does not contain any forced chunks.
 	 */
 	private static final int SERVER_IDLE_COOLDOWN = 300;
-	private final List<ServerPlayerEntity> players = Lists.<ServerPlayerEntity>newArrayList();
+	final List<ServerPlayerEntity> players = Lists.<ServerPlayerEntity>newArrayList();
 	private final ServerChunkManager serverChunkManager;
 	private final MinecraftServer server;
 	private final ServerWorldProperties worldProperties;
-	private final EntityList entityList = new EntityList();
+	final EntityList entityList = new EntityList();
 	private final ServerEntityManager<Entity> entityManager;
 	public boolean savingDisabled;
 	private final SleepManager sleepManager;
@@ -165,14 +165,14 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	private final ServerTickScheduler<Fluid> fluidTickScheduler = new ServerTickScheduler<>(
 		this, fluid -> fluid == null || fluid == Fluids.EMPTY, Registry.FLUID::getId, this::tickFluid
 	);
-	private final Set<MobEntity> loadedMobs = new ObjectOpenHashSet<>();
+	final Set<MobEntity> loadedMobs = new ObjectOpenHashSet<>();
 	protected final RaidManager raidManager;
 	private final ObjectLinkedOpenHashSet<BlockEvent> syncedBlockEventQueue = new ObjectLinkedOpenHashSet<>();
 	private boolean inBlockTick;
 	private final List<Spawner> spawners;
 	@Nullable
 	private final EnderDragonFight enderDragonFight;
-	private final Int2ObjectMap<EnderDragonPart> dragonParts = new Int2ObjectOpenHashMap<>();
+	final Int2ObjectMap<EnderDragonPart> dragonParts = new Int2ObjectOpenHashMap<>();
 	private final StructureAccessor structureAccessor;
 	private final boolean shouldTickTime;
 
@@ -1193,7 +1193,6 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	public void dump(Path path) throws IOException {
 		ThreadedAnvilChunkStorage threadedAnvilChunkStorage = this.getChunkManager().threadedAnvilChunkStorage;
 		Writer writer = Files.newBufferedWriter(path.resolve("stats.txt"));
-		Throwable path2 = null;
 
 		try {
 			writer.write(String.format("spawning_chunks: %d\n", threadedAnvilChunkStorage.getTicketManager().getSpawningChunkCount()));
@@ -1210,137 +1209,126 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			writer.write(String.format("fluid_ticks: %d\n", this.getFluidTickScheduler().getTicks()));
 			writer.write("distance_manager: " + threadedAnvilChunkStorage.getTicketManager().toDumpString() + "\n");
 			writer.write(String.format("pending_tasks: %d\n", this.getChunkManager().getPendingTasks()));
-		} catch (Throwable var165) {
-			path2 = var165;
-			throw var165;
-		} finally {
+		} catch (Throwable var22) {
 			if (writer != null) {
-				if (path2 != null) {
-					try {
-						writer.close();
-					} catch (Throwable var154) {
-						path2.addSuppressed(var154);
-					}
-				} else {
+				try {
 					writer.close();
+				} catch (Throwable var16) {
+					var22.addSuppressed(var16);
 				}
 			}
+
+			throw var22;
+		}
+
+		if (writer != null) {
+			writer.close();
 		}
 
 		CrashReport crashReport = new CrashReport("Level dump", new Exception("dummy"));
 		this.addDetailsToCrashReport(crashReport);
 		Writer writer2 = Files.newBufferedWriter(path.resolve("example_crash.txt"));
-		Throwable var170 = null;
 
 		try {
 			writer2.write(crashReport.asString());
-		} catch (Throwable var159) {
-			var170 = var159;
-			throw var159;
-		} finally {
+		} catch (Throwable var21) {
 			if (writer2 != null) {
-				if (var170 != null) {
-					try {
-						writer2.close();
-					} catch (Throwable var153) {
-						var170.addSuppressed(var153);
-					}
-				} else {
+				try {
 					writer2.close();
+				} catch (Throwable var15) {
+					var21.addSuppressed(var15);
 				}
 			}
+
+			throw var21;
 		}
 
-		Path path2x = path.resolve("chunks.csv");
-		Writer writer3 = Files.newBufferedWriter(path2x);
-		Throwable var173 = null;
+		if (writer2 != null) {
+			writer2.close();
+		}
+
+		Path path2 = path.resolve("chunks.csv");
+		Writer writer3 = Files.newBufferedWriter(path2);
 
 		try {
 			threadedAnvilChunkStorage.dump(writer3);
-		} catch (Throwable var158) {
-			var173 = var158;
-			throw var158;
-		} finally {
+		} catch (Throwable var20) {
 			if (writer3 != null) {
-				if (var173 != null) {
-					try {
-						writer3.close();
-					} catch (Throwable var152) {
-						var173.addSuppressed(var152);
-					}
-				} else {
+				try {
 					writer3.close();
+				} catch (Throwable var14) {
+					var20.addSuppressed(var14);
 				}
 			}
+
+			throw var20;
+		}
+
+		if (writer3 != null) {
+			writer3.close();
 		}
 
 		Path path3 = path.resolve("entity_chunks.csv");
 		Writer writer4 = Files.newBufferedWriter(path3);
-		Throwable var176 = null;
 
 		try {
 			this.entityManager.dump(writer4);
-		} catch (Throwable var157) {
-			var176 = var157;
-			throw var157;
-		} finally {
+		} catch (Throwable var19) {
 			if (writer4 != null) {
-				if (var176 != null) {
-					try {
-						writer4.close();
-					} catch (Throwable var151) {
-						var176.addSuppressed(var151);
-					}
-				} else {
+				try {
 					writer4.close();
+				} catch (Throwable var13) {
+					var19.addSuppressed(var13);
 				}
 			}
+
+			throw var19;
+		}
+
+		if (writer4 != null) {
+			writer4.close();
 		}
 
 		Path path4 = path.resolve("entities.csv");
 		Writer writer5 = Files.newBufferedWriter(path4);
-		Throwable writer6 = null;
 
 		try {
 			dumpEntities(writer5, this.getEntityLookup().iterate());
-		} catch (Throwable var156) {
-			writer6 = var156;
-			throw var156;
-		} finally {
+		} catch (Throwable var18) {
 			if (writer5 != null) {
-				if (writer6 != null) {
-					try {
-						writer5.close();
-					} catch (Throwable var150) {
-						writer6.addSuppressed(var150);
-					}
-				} else {
+				try {
 					writer5.close();
+				} catch (Throwable var12) {
+					var18.addSuppressed(var12);
 				}
 			}
+
+			throw var18;
+		}
+
+		if (writer5 != null) {
+			writer5.close();
 		}
 
 		Path path5 = path.resolve("block_entities.csv");
-		Writer writer6x = Files.newBufferedWriter(path5);
-		Throwable var9 = null;
+		Writer writer6 = Files.newBufferedWriter(path5);
 
 		try {
-			this.dumpBlockEntities(writer6x);
-		} catch (Throwable var155) {
-			var9 = var155;
-			throw var155;
-		} finally {
-			if (writer6x != null) {
-				if (var9 != null) {
-					try {
-						writer6x.close();
-					} catch (Throwable var149) {
-						var9.addSuppressed(var149);
-					}
-				} else {
-					writer6x.close();
+			this.dumpBlockEntities(writer6);
+		} catch (Throwable var17) {
+			if (writer6 != null) {
+				try {
+					writer6.close();
+				} catch (Throwable var11) {
+					var17.addSuppressed(var11);
 				}
 			}
+
+			throw var17;
+		}
+
+		if (writer6 != null) {
+			writer6.close();
 		}
 	}
 
@@ -1506,9 +1494,6 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	final class ServerEntityHandler implements EntityHandler<Entity> {
-		private ServerEntityHandler() {
-		}
-
 		public void create(Entity entity) {
 		}
 
@@ -1544,8 +1529,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 		public void stopTracking(Entity entity) {
 			ServerWorld.this.getChunkManager().unloadEntity(entity);
-			if (entity instanceof ServerPlayerEntity) {
-				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
+			if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
 				ServerWorld.this.players.remove(serverPlayerEntity);
 				ServerWorld.this.updateSleepingPlayers();
 			}

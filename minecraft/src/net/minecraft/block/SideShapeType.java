@@ -35,8 +35,5 @@ public enum SideShapeType {
 		}
 	};
 
-	private SideShapeType() {
-	}
-
 	public abstract boolean matches(BlockState state, BlockView world, BlockPos pos, Direction direction);
 }

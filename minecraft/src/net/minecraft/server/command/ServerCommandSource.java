@@ -194,7 +194,7 @@ public class ServerCommandSource implements CommandSource {
 	}
 
 	public ServerCommandSource withSilent() {
-		return !this.silent && !this.output.method_36320()
+		return !this.silent && !this.output.cannotBeSilenced()
 			? new ServerCommandSource(
 				this.output,
 				this.position,

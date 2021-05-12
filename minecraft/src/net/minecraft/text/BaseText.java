@@ -64,11 +64,8 @@ public abstract class BaseText implements MutableText {
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
-		} else if (!(o instanceof BaseText)) {
-			return false;
 		} else {
-			BaseText baseText = (BaseText)o;
-			return this.siblings.equals(baseText.siblings) && Objects.equals(this.getStyle(), baseText.getStyle());
+			return !(o instanceof BaseText baseText) ? false : this.siblings.equals(baseText.siblings) && Objects.equals(this.getStyle(), baseText.getStyle());
 		}
 	}
 
@@ -77,6 +74,6 @@ public abstract class BaseText implements MutableText {
 	}
 
 	public String toString() {
-		return "BaseComponent{style=" + this.style + ", siblings=" + this.siblings + '}';
+		return "BaseComponent{style=" + this.style + ", siblings=" + this.siblings + "}";
 	}
 }

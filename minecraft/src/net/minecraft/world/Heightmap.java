@@ -20,8 +20,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.chunk.Chunk;
 
 public class Heightmap {
-	private static final Predicate<BlockState> NOT_AIR = state -> !state.isAir();
-	private static final Predicate<BlockState> SUFFOCATES = state -> state.getMaterial().blocksMovement();
+	static final Predicate<BlockState> NOT_AIR = state -> !state.isAir();
+	static final Predicate<BlockState> SUFFOCATES = state -> state.getMaterial().blocksMovement();
 	private final PackedIntegerArray storage;
 	private final Predicate<BlockState> blockPredicate;
 	private final Chunk chunk;

@@ -333,7 +333,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
-	private float getJumpSoundPitch() {
+	float getJumpSoundPitch() {
 		float f = this.isSmall() ? 1.4F : 0.8F;
 		return ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) * f;
 	}

@@ -260,7 +260,7 @@ public abstract class RenderPhase {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Cull extends RenderPhase.Toggleable {
+	protected static class Cull extends RenderPhase.Toggleable {
 		public Cull(boolean culling) {
 			super("cull", () -> {
 				if (!culling) {
@@ -275,7 +275,7 @@ public abstract class RenderPhase {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class DepthTest extends RenderPhase {
+	protected static class DepthTest extends RenderPhase {
 		/**
 		 * A string representation of the comparison function used by this {@code DepthTest} phase.
 		 * @see org.lwjgl.opengl.GL11#glDepthFunc(int)
@@ -299,19 +299,19 @@ public abstract class RenderPhase {
 
 		@Override
 		public String toString() {
-			return this.name + '[' + this.depthFunctionName + ']';
+			return this.name + "[" + this.depthFunctionName + "]";
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Layering extends RenderPhase {
+	protected static class Layering extends RenderPhase {
 		public Layering(String string, Runnable runnable, Runnable runnable2) {
 			super(string, runnable, runnable2);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Lightmap extends RenderPhase.Toggleable {
+	protected static class Lightmap extends RenderPhase.Toggleable {
 		public Lightmap(boolean lightmap) {
 			super("lightmap", () -> {
 				if (lightmap) {
@@ -326,7 +326,7 @@ public abstract class RenderPhase {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class LineWidth extends RenderPhase {
+	protected static class LineWidth extends RenderPhase {
 		private final OptionalDouble width;
 
 		public LineWidth(OptionalDouble width) {
@@ -348,19 +348,19 @@ public abstract class RenderPhase {
 
 		@Override
 		public String toString() {
-			return this.name + '[' + (this.width.isPresent() ? this.width.getAsDouble() : "window_scale") + ']';
+			return this.name + "[" + (this.width.isPresent() ? this.width.getAsDouble() : "window_scale") + "]";
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static final class OffsetTexturing extends RenderPhase.Texturing {
+	protected static final class OffsetTexturing extends RenderPhase.Texturing {
 		public OffsetTexturing(float x, float y) {
 			super("offset_texturing", () -> RenderSystem.setTextureMatrix(Matrix4f.translate(x, y, 0.0F)), () -> RenderSystem.resetTextureMatrix());
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Overlay extends RenderPhase.Toggleable {
+	protected static class Overlay extends RenderPhase.Toggleable {
 		public Overlay(boolean overlayColor) {
 			super("overlay", () -> {
 				if (overlayColor) {
@@ -375,7 +375,7 @@ public abstract class RenderPhase {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Shader extends RenderPhase {
+	protected static class Shader extends RenderPhase {
 		private final Optional<Supplier<net.minecraft.client.render.Shader>> supplier;
 
 		public Shader(Supplier<net.minecraft.client.render.Shader> supplier) {
@@ -392,19 +392,19 @@ public abstract class RenderPhase {
 
 		@Override
 		public String toString() {
-			return this.name + '[' + this.supplier + "]";
+			return this.name + "[" + this.supplier + "]";
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Target extends RenderPhase {
+	protected static class Target extends RenderPhase {
 		public Target(String string, Runnable runnable, Runnable runnable2) {
 			super(string, runnable, runnable2);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Texture extends RenderPhase.TextureBase {
+	protected static class Texture extends RenderPhase.TextureBase {
 		private final Optional<Identifier> id;
 		private final boolean blur;
 		private final boolean mipmap;
@@ -424,7 +424,7 @@ public abstract class RenderPhase {
 
 		@Override
 		public String toString() {
-			return this.name + '[' + this.id + "(blur=" + this.blur + ", mipmap=" + this.mipmap + ")]";
+			return this.name + "[" + this.id + "(blur=" + this.blur + ", mipmap=" + this.mipmap + ")]";
 		}
 
 		@Override
@@ -434,12 +434,12 @@ public abstract class RenderPhase {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class TextureBase extends RenderPhase {
+	protected static class TextureBase extends RenderPhase {
 		public TextureBase(Runnable apply, Runnable unapply) {
 			super("texture", apply, unapply);
 		}
 
-		private TextureBase() {
+		TextureBase() {
 			super("texture", () -> {
 			}, () -> {
 			});
@@ -451,21 +451,21 @@ public abstract class RenderPhase {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Textures extends RenderPhase.TextureBase {
+	protected static class Textures extends RenderPhase.TextureBase {
 		private final Optional<Identifier> id;
 
-		private Textures(ImmutableList<Triple<Identifier, Boolean, Boolean>> textures) {
+		Textures(ImmutableList<Triple<Identifier, Boolean, Boolean>> immutableList) {
 			super(() -> {
 				int i = 0;
 
-				for (Triple<Identifier, Boolean, Boolean> triple : textures) {
+				for (Triple<Identifier, Boolean, Boolean> triple : immutableList) {
 					TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
 					textureManager.getTexture(triple.getLeft()).setFilter(triple.getMiddle(), triple.getRight());
 					RenderSystem.setShaderTexture(i++, triple.getLeft());
 				}
 			}, () -> {
 			});
-			this.id = textures.stream().findFirst().map(Triple::getLeft);
+			this.id = immutableList.stream().findFirst().map(Triple::getLeft);
 		}
 
 		@Override
@@ -493,7 +493,7 @@ public abstract class RenderPhase {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Texturing extends RenderPhase {
+	protected static class Texturing extends RenderPhase {
 		public Texturing(String string, Runnable runnable, Runnable runnable2) {
 			super(string, runnable, runnable2);
 		}
@@ -510,19 +510,19 @@ public abstract class RenderPhase {
 
 		@Override
 		public String toString() {
-			return this.name + '[' + this.enabled + ']';
+			return this.name + "[" + this.enabled + "]";
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Transparency extends RenderPhase {
+	protected static class Transparency extends RenderPhase {
 		public Transparency(String string, Runnable runnable, Runnable runnable2) {
 			super(string, runnable, runnable2);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class WriteMaskState extends RenderPhase {
+	protected static class WriteMaskState extends RenderPhase {
 		private final boolean color;
 		private final boolean depth;
 
@@ -550,7 +550,7 @@ public abstract class RenderPhase {
 
 		@Override
 		public String toString() {
-			return this.name + "[writeColor=" + this.color + ", writeDepth=" + this.depth + ']';
+			return this.name + "[writeColor=" + this.color + ", writeDepth=" + this.depth + "]";
 		}
 	}
 }

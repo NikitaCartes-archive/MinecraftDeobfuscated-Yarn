@@ -4,8 +4,8 @@ import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.MultilineText;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
@@ -59,8 +59,8 @@ public class ConfirmScreen extends Screen {
 	public void disableButtons(int ticks) {
 		this.buttonEnableTimer = ticks;
 
-		for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
-			abstractButtonWidget.active = false;
+		for (ClickableWidget clickableWidget : this.buttons) {
+			clickableWidget.active = false;
 		}
 	}
 
@@ -68,8 +68,8 @@ public class ConfirmScreen extends Screen {
 	public void tick() {
 		super.tick();
 		if (--this.buttonEnableTimer == 0) {
-			for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
-				abstractButtonWidget.active = true;
+			for (ClickableWidget clickableWidget : this.buttons) {
+				clickableWidget.active = true;
 			}
 		}
 	}

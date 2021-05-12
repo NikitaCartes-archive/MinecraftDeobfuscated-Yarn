@@ -44,18 +44,18 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<MultiplayerServerListWidget.Entry> {
-	private static final Logger LOGGER = LogManager.getLogger();
-	private static final ThreadPoolExecutor SERVER_PINGER_THREAD_POOL = new ScheduledThreadPoolExecutor(
+	static final Logger LOGGER = LogManager.getLogger();
+	static final ThreadPoolExecutor SERVER_PINGER_THREAD_POOL = new ScheduledThreadPoolExecutor(
 		5, new ThreadFactoryBuilder().setNameFormat("Server Pinger #%d").setDaemon(true).setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER)).build()
 	);
-	private static final Identifier UNKNOWN_SERVER_TEXTURE = new Identifier("textures/misc/unknown_server.png");
-	private static final Identifier SERVER_SELECTION_TEXTURE = new Identifier("textures/gui/server_selection.png");
-	private static final Text LAN_SCANNING_TEXT = new TranslatableText("lanServer.scanning");
-	private static final Text CANNOT_RESOLVE_TEXT = new TranslatableText("multiplayer.status.cannot_resolve").formatted(Formatting.DARK_RED);
-	private static final Text CANNOT_CONNECT_TEXT = new TranslatableText("multiplayer.status.cannot_connect").formatted(Formatting.DARK_RED);
-	private static final Text INCOMPATIBLE_TEXT = new TranslatableText("multiplayer.status.incompatible");
-	private static final Text NO_CONNECTION_TEXT = new TranslatableText("multiplayer.status.no_connection");
-	private static final Text PINGING_TEXT = new TranslatableText("multiplayer.status.pinging");
+	static final Identifier UNKNOWN_SERVER_TEXTURE = new Identifier("textures/misc/unknown_server.png");
+	static final Identifier SERVER_SELECTION_TEXTURE = new Identifier("textures/gui/server_selection.png");
+	static final Text LAN_SCANNING_TEXT = new TranslatableText("lanServer.scanning");
+	static final Text CANNOT_RESOLVE_TEXT = new TranslatableText("multiplayer.status.cannot_resolve").formatted(Formatting.DARK_RED);
+	static final Text CANNOT_CONNECT_TEXT = new TranslatableText("multiplayer.status.cannot_connect").formatted(Formatting.DARK_RED);
+	static final Text INCOMPATIBLE_TEXT = new TranslatableText("multiplayer.status.incompatible");
+	static final Text NO_CONNECTION_TEXT = new TranslatableText("multiplayer.status.no_connection");
+	static final Text PINGING_TEXT = new TranslatableText("multiplayer.status.pinging");
 	private final MultiplayerScreen screen;
 	private final List<MultiplayerServerListWidget.ServerEntry> servers = Lists.<MultiplayerServerListWidget.ServerEntry>newArrayList();
 	private final MultiplayerServerListWidget.Entry scanningEntry = new MultiplayerServerListWidget.ScanningEntry();
@@ -68,9 +68,9 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 
 	private void updateEntries() {
 		this.clearEntries();
-		this.servers.forEach(this::addEntry);
+		this.servers.forEach(server -> this.addEntry(server));
 		this.addEntry(this.scanningEntry);
-		this.lanServers.forEach(this::addEntry);
+		this.lanServers.forEach(lanServer -> this.addEntry(lanServer));
 	}
 
 	public void setSelected(@Nullable MultiplayerServerListWidget.Entry entry) {
@@ -192,20 +192,12 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 					(float)i,
 					16777215
 				);
-			String string;
-			switch ((int)(Util.getMeasuringTimeMs() / 300L % 4L)) {
-				case 0:
-				default:
-					string = "O o o";
-					break;
-				case 1:
-				case 3:
-					string = "o O o";
-					break;
-				case 2:
-					string = "o o O";
-			}
 
+			String string = switch ((int)(Util.getMeasuringTimeMs() / 300L % 4L)) {
+				default -> "O o o";
+				case 1, 3 -> "o O o";
+				case 2 -> "o o O";
+			};
 			this.client
 				.textRenderer
 				.draw(matrices, string, (float)(this.client.currentScreen.width / 2 - this.client.textRenderer.getWidth(string) / 2), (float)(i + 9), 8421504);
@@ -224,7 +216,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		private static final int field_32394 = 32;
 		private final MultiplayerScreen screen;
 		private final MinecraftClient client;
-		private final ServerInfo server;
+		final ServerInfo server;
 		private final Identifier iconTextureId;
 		private String iconUri;
 		@Nullable
@@ -349,7 +341,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 				int o = mouseX - x;
 				int p = mouseY - y;
-				if (this.method_20136()) {
+				if (this.canConnect()) {
 					if (o < 32 && o > 16) {
 						DrawableHelper.drawTexture(matrices, x, y, 0.0F, 32.0F, 32, 32, 256, 256);
 					} else {
@@ -386,7 +378,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			RenderSystem.disableBlend();
 		}
 
-		private boolean method_20136() {
+		private boolean canConnect() {
 			return true;
 		}
 
@@ -447,7 +439,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			double d = mouseX - (double)MultiplayerServerListWidget.this.getRowLeft();
 			double e = mouseY - (double)MultiplayerServerListWidget.this.getRowTop(MultiplayerServerListWidget.this.children().indexOf(this));
 			if (d <= 32.0) {
-				if (d < 32.0 && d > 16.0 && this.method_20136()) {
+				if (d < 32.0 && d > 16.0 && this.canConnect()) {
 					this.screen.select(this);
 					this.screen.connect();
 					return true;

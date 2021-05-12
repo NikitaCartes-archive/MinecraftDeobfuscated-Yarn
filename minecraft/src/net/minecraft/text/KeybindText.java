@@ -43,17 +43,14 @@ public class KeybindText extends BaseText {
 	public boolean equals(Object object) {
 		if (this == object) {
 			return true;
-		} else if (!(object instanceof KeybindText)) {
-			return false;
 		} else {
-			KeybindText keybindText = (KeybindText)object;
-			return this.key.equals(keybindText.key) && super.equals(object);
+			return !(object instanceof KeybindText keybindText) ? false : this.key.equals(keybindText.key) && super.equals(object);
 		}
 	}
 
 	@Override
 	public String toString() {
-		return "KeybindComponent{keybind='" + this.key + '\'' + ", siblings=" + this.siblings + ", style=" + this.getStyle() + '}';
+		return "KeybindComponent{keybind='" + this.key + "', siblings=" + this.siblings + ", style=" + this.getStyle() + "}";
 	}
 
 	public String getKey() {

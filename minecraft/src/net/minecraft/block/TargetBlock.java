@@ -33,9 +33,7 @@ public class TargetBlock extends Block {
 	@Override
 	public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
 		int i = trigger(world, state, hit, projectile);
-		Entity entity = projectile.getOwner();
-		if (entity instanceof ServerPlayerEntity) {
-			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
+		if (projectile.getOwner() instanceof ServerPlayerEntity serverPlayerEntity) {
 			serverPlayerEntity.incrementStat(Stats.TARGET_HIT);
 			Criteria.TARGET_HIT.trigger(serverPlayerEntity, projectile, hit.getPos(), i);
 		}

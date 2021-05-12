@@ -13,7 +13,7 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 
 public class BrewedPotionCriterion extends AbstractCriterion<BrewedPotionCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("brewed_potion");
+	static final Identifier ID = new Identifier("brewed_potion");
 
 	@Override
 	public Identifier getId() {

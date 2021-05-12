@@ -98,7 +98,7 @@ public class Advancement {
 			+ this.criteria
 			+ ", requirements="
 			+ Arrays.deepToString(this.requirements)
-			+ '}';
+			+ "}";
 	}
 
 	public Iterable<Advancement> getChildren() {
@@ -124,11 +124,8 @@ public class Advancement {
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
-		} else if (!(o instanceof Advancement)) {
-			return false;
 		} else {
-			Advancement advancement = (Advancement)o;
-			return this.id.equals(advancement.id);
+			return !(o instanceof Advancement advancement) ? false : this.id.equals(advancement.id);
 		}
 	}
 
@@ -153,7 +150,7 @@ public class Advancement {
 		private String[][] requirements;
 		private CriterionMerger merger = CriterionMerger.AND;
 
-		private Task(
+		Task(
 			@Nullable Identifier parentId,
 			@Nullable AdvancementDisplay display,
 			AdvancementRewards rewards,
@@ -355,7 +352,7 @@ public class Advancement {
 				+ this.criteria
 				+ ", requirements="
 				+ Arrays.deepToString(this.requirements)
-				+ '}';
+				+ "}";
 		}
 
 		public static Advancement.Task fromJson(JsonObject obj, AdvancementEntityPredicateDeserializer predicateDeserializer) {

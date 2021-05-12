@@ -89,9 +89,8 @@ public class SnbtProvider implements DataProvider {
 	private SnbtProvider.CompressedData toCompressedNbt(Path path, String name) {
 		try {
 			BufferedReader bufferedReader = Files.newBufferedReader(path);
-			Throwable var4 = null;
 
-			SnbtProvider.CompressedData var11;
+			SnbtProvider.CompressedData var10;
 			try {
 				String string = IOUtils.toString(bufferedReader);
 				NbtCompound nbtCompound = this.write(name, NbtHelper.method_32260(string));
@@ -106,27 +105,26 @@ public class SnbtProvider implements DataProvider {
 					string3 = null;
 				}
 
-				var11 = new SnbtProvider.CompressedData(name, bs, string3, string2);
-			} catch (Throwable var21) {
-				var4 = var21;
-				throw var21;
-			} finally {
+				var10 = new SnbtProvider.CompressedData(name, bs, string3, string2);
+			} catch (Throwable var12) {
 				if (bufferedReader != null) {
-					if (var4 != null) {
-						try {
-							bufferedReader.close();
-						} catch (Throwable var20) {
-							var4.addSuppressed(var20);
-						}
-					} else {
+					try {
 						bufferedReader.close();
+					} catch (Throwable var11) {
+						var12.addSuppressed(var11);
 					}
 				}
+
+				throw var12;
 			}
 
-			return var11;
-		} catch (Throwable var23) {
-			throw new SnbtProvider.CompressionException(path, var23);
+			if (bufferedReader != null) {
+				bufferedReader.close();
+			}
+
+			return var10;
+		} catch (Throwable var13) {
+			throw new SnbtProvider.CompressionException(path, var13);
 		}
 	}
 
@@ -136,8 +134,8 @@ public class SnbtProvider implements DataProvider {
 
 			try {
 				NbtProvider.writeTo(path, data.snbtContent);
-			} catch (IOException var18) {
-				LOGGER.error("Couldn't write structure SNBT {} at {}", data.name, path, var18);
+			} catch (IOException var9) {
+				LOGGER.error("Couldn't write structure SNBT {} at {}", data.name, path, var9);
 			}
 		}
 
@@ -147,40 +145,38 @@ public class SnbtProvider implements DataProvider {
 			if (!Objects.equals(cache.getOldSha1(path), data.sha1) || !Files.exists(path, new LinkOption[0])) {
 				Files.createDirectories(path.getParent());
 				OutputStream outputStream = Files.newOutputStream(path);
-				Throwable var6 = null;
 
 				try {
 					outputStream.write(data.bytes);
-				} catch (Throwable var17) {
-					var6 = var17;
-					throw var17;
-				} finally {
+				} catch (Throwable var10) {
 					if (outputStream != null) {
-						if (var6 != null) {
-							try {
-								outputStream.close();
-							} catch (Throwable var16) {
-								var6.addSuppressed(var16);
-							}
-						} else {
+						try {
 							outputStream.close();
+						} catch (Throwable var8) {
+							var10.addSuppressed(var8);
 						}
 					}
+
+					throw var10;
+				}
+
+				if (outputStream != null) {
+					outputStream.close();
 				}
 			}
 
 			cache.updateSha1(path, data.sha1);
-		} catch (IOException var20) {
-			LOGGER.error("Couldn't write structure {} at {}", data.name, path, var20);
+		} catch (IOException var11) {
+			LOGGER.error("Couldn't write structure {} at {}", data.name, path, var11);
 		}
 	}
 
 	static class CompressedData {
-		private final String name;
-		private final byte[] bytes;
+		final String name;
+		final byte[] bytes;
 		@Nullable
-		private final String snbtContent;
-		private final String sha1;
+		final String snbtContent;
+		final String sha1;
 
 		public CompressedData(String name, byte[] bytes, @Nullable String snbtContent, String sha1) {
 			this.name = name;

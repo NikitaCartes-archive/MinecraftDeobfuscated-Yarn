@@ -48,7 +48,7 @@ public final class ServerMBean implements DynamicMBean {
 		MBeanAttributeInfo[] mBeanAttributeInfos = (MBeanAttributeInfo[])this.entries
 			.values()
 			.stream()
-			.map(object -> ((ServerMBean.Entry)object).createInfo())
+			.map(ServerMBean.Entry::createInfo)
 			.toArray(MBeanAttributeInfo[]::new);
 		this.beanInfo = new MBeanInfo(
 			ServerMBean.class.getSimpleName(), "metrics for dedicated server", mBeanAttributeInfos, null, null, new MBeanNotificationInfo[0]
@@ -117,16 +117,16 @@ public final class ServerMBean implements DynamicMBean {
 	 * Represents a read-only attribute of the server MBean.
 	 */
 	static final class Entry {
-		private final String name;
-		private final Supplier<Object> getter;
+		final String name;
+		final Supplier<Object> getter;
 		private final String description;
 		private final Class<?> type;
 
-		private Entry(String name, Supplier<Object> getter, String description, Class<?> type) {
-			this.name = name;
-			this.getter = getter;
-			this.description = description;
-			this.type = type;
+		Entry(String string, Supplier<Object> supplier, String string2, Class<?> class_) {
+			this.name = string;
+			this.getter = supplier;
+			this.description = string2;
+			this.type = class_;
 		}
 
 		private MBeanAttributeInfo createInfo() {

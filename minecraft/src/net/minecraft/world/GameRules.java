@@ -28,7 +28,7 @@ import org.apache.logging.log4j.Logger;
 
 public class GameRules {
 	public static final int DEFAULT_RANDOM_TICK_SPEED = 3;
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogManager.getLogger();
 	private static final Map<GameRules.Key<?>, GameRules.Type<?>> RULE_TYPES = Maps.newTreeMap(Comparator.comparing(key -> key.name));
 	public static final GameRules.Key<GameRules.BooleanRule> DO_FIRE_TICK = register("doFireTick", GameRules.Category.UPDATES, GameRules.BooleanRule.create(true));
 	/**
@@ -261,11 +261,11 @@ public class GameRules {
 	public static class BooleanRule extends GameRules.Rule<GameRules.BooleanRule> {
 		private boolean value;
 
-		private static GameRules.Type<GameRules.BooleanRule> create(boolean initialValue, BiConsumer<MinecraftServer, GameRules.BooleanRule> changeCallback) {
+		static GameRules.Type<GameRules.BooleanRule> create(boolean initialValue, BiConsumer<MinecraftServer, GameRules.BooleanRule> changeCallback) {
 			return new GameRules.Type<>(BoolArgumentType::bool, type -> new GameRules.BooleanRule(type, initialValue), changeCallback, GameRules.Visitor::visitBoolean);
 		}
 
-		private static GameRules.Type<GameRules.BooleanRule> create(boolean initialValue) {
+		static GameRules.Type<GameRules.BooleanRule> create(boolean initialValue) {
 			return create(initialValue, (server, rule) -> {
 			});
 		}
@@ -345,7 +345,7 @@ public class GameRules {
 			return new GameRules.Type<>(IntegerArgumentType::integer, type -> new GameRules.IntRule(type, initialValue), changeCallback, GameRules.Visitor::visitInt);
 		}
 
-		private static GameRules.Type<GameRules.IntRule> create(int initialValue) {
+		static GameRules.Type<GameRules.IntRule> create(int initialValue) {
 			return create(initialValue, (server, rule) -> {
 			});
 		}
@@ -423,7 +423,7 @@ public class GameRules {
 	}
 
 	public static final class Key<T extends GameRules.Rule<T>> {
-		private final String name;
+		final String name;
 		private final GameRules.Category category;
 
 		public Key(String name, GameRules.Category category) {
@@ -496,19 +496,14 @@ public class GameRules {
 	public static class Type<T extends GameRules.Rule<T>> {
 		private final Supplier<ArgumentType<?>> argumentType;
 		private final Function<GameRules.Type<T>, T> ruleFactory;
-		private final BiConsumer<MinecraftServer, T> changeCallback;
+		final BiConsumer<MinecraftServer, T> changeCallback;
 		private final GameRules.Acceptor<T> ruleAcceptor;
 
-		private Type(
-			Supplier<ArgumentType<?>> argumentType,
-			Function<GameRules.Type<T>, T> ruleFactory,
-			BiConsumer<MinecraftServer, T> changeCallback,
-			GameRules.Acceptor<T> ruleAcceptor
-		) {
-			this.argumentType = argumentType;
-			this.ruleFactory = ruleFactory;
-			this.changeCallback = changeCallback;
-			this.ruleAcceptor = ruleAcceptor;
+		Type(Supplier<ArgumentType<?>> supplier, Function<GameRules.Type<T>, T> function, BiConsumer<MinecraftServer, T> biConsumer, GameRules.Acceptor<T> acceptor) {
+			this.argumentType = supplier;
+			this.ruleFactory = function;
+			this.changeCallback = biConsumer;
+			this.ruleAcceptor = acceptor;
 		}
 
 		public RequiredArgumentBuilder<ServerCommandSource, ?> argument(String name) {

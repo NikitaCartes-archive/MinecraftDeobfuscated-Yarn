@@ -145,7 +145,18 @@ public class BundleItem extends Item {
 	}
 
 	private static int getItemOccupancy(ItemStack stack) {
-		return stack.isOf(Items.BUNDLE) ? 4 + getBundleOccupancy(stack) : 64 / stack.getMaxCount();
+		if (stack.isOf(Items.BUNDLE)) {
+			return 4 + getBundleOccupancy(stack);
+		} else {
+			if ((stack.isOf(Items.BEEHIVE) || stack.isOf(Items.BEE_NEST)) && stack.hasTag()) {
+				NbtCompound nbtCompound = stack.getSubTag("BlockEntityTag");
+				if (nbtCompound != null && !nbtCompound.getList("Bees", NbtElement.COMPOUND_TYPE).isEmpty()) {
+					return 64;
+				}
+			}
+
+			return 64 / stack.getMaxCount();
+		}
 	}
 
 	private static int getBundleOccupancy(ItemStack stack) {

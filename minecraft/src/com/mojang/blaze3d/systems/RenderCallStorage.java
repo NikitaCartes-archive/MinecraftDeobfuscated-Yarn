@@ -6,94 +6,106 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
+/**
+ * A storage of render calls with recording and processing states. It exposes
+ * three queues: a recording queue, a processing queue, and a last processed
+ * queue. The recording queue is equal to the processing queue during processing
+ * and different during recording.
+ * 
+ * <p>This storage appears to be a work in progress, as its processing currently
+ * performs no operation.
+ */
 @Environment(EnvType.CLIENT)
 public class RenderCallStorage {
 	private final List<ConcurrentLinkedQueue<RenderCall>> recordingQueues = ImmutableList.of(
 		new ConcurrentLinkedQueue(), new ConcurrentLinkedQueue(), new ConcurrentLinkedQueue(), new ConcurrentLinkedQueue()
 	);
-	private volatile boolean field_31899;
-	private volatile int field_20454;
-	private volatile boolean field_31900;
-	private volatile int field_20455;
-	private volatile int field_20456;
+	private volatile boolean recording;
+	private volatile int recordingIndex;
+	private volatile boolean processing;
+	private volatile int processingIndex;
+	private volatile int lastProcessedIndex;
 
 	public RenderCallStorage() {
-		this.field_20454 = this.field_20455 = this.field_20456 + 1;
+		this.recordingIndex = this.processingIndex = this.lastProcessedIndex + 1;
 	}
 
-	public boolean method_35599() {
-		return !this.field_31899 && this.field_20454 == this.field_20455;
+	public boolean canRecord() {
+		return !this.recording && this.recordingIndex == this.processingIndex;
 	}
 
-	public boolean method_35601() {
-		if (this.field_31899) {
+	public boolean startRecording() {
+		if (this.recording) {
 			throw new RuntimeException("ALREADY RECORDING !!!");
-		} else if (this.method_35599()) {
-			this.field_20454 = (this.field_20455 + 1) % this.recordingQueues.size();
-			this.field_31899 = true;
+		} else if (this.canRecord()) {
+			this.recordingIndex = (this.processingIndex + 1) % this.recordingQueues.size();
+			this.recording = true;
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	public void method_35600(RenderCall renderCall) {
-		if (!this.field_31899) {
+	public void record(RenderCall call) {
+		if (!this.recording) {
 			throw new RuntimeException("NOT RECORDING !!!");
 		} else {
-			ConcurrentLinkedQueue<RenderCall> concurrentLinkedQueue = this.method_35608();
-			concurrentLinkedQueue.add(renderCall);
+			ConcurrentLinkedQueue<RenderCall> concurrentLinkedQueue = this.getRecordingQueue();
+			concurrentLinkedQueue.add(call);
 		}
 	}
 
-	public void method_35602() {
-		if (this.field_31899) {
-			this.field_31899 = false;
+	public void stopRecording() {
+		if (this.recording) {
+			this.recording = false;
 		} else {
 			throw new RuntimeException("NOT RECORDING !!!");
 		}
 	}
 
-	public boolean method_35603() {
-		return !this.field_31900 && this.field_20454 != this.field_20455;
+	public boolean canProcess() {
+		return !this.processing && this.recordingIndex != this.processingIndex;
 	}
 
-	public boolean method_35604() {
-		if (this.field_31900) {
+	public boolean startProcessing() {
+		if (this.processing) {
 			throw new RuntimeException("ALREADY PROCESSING !!!");
-		} else if (this.method_35603()) {
-			this.field_31900 = true;
+		} else if (this.canProcess()) {
+			this.processing = true;
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	public void method_35605() {
-		if (!this.field_31900) {
+	/**
+	 * No-op, but it seems like processing by method order and the check in method body.
+	 */
+	public void process() {
+		if (!this.processing) {
 			throw new RuntimeException("NOT PROCESSING !!!");
 		}
 	}
 
-	public void method_35606() {
-		if (this.field_31900) {
-			this.field_31900 = false;
-			this.field_20456 = this.field_20455;
-			this.field_20455 = this.field_20454;
+	public void stopProcessing() {
+		if (this.processing) {
+			this.processing = false;
+			this.lastProcessedIndex = this.processingIndex;
+			this.processingIndex = this.recordingIndex;
 		} else {
 			throw new RuntimeException("NOT PROCESSING !!!");
 		}
 	}
 
-	public ConcurrentLinkedQueue<RenderCall> method_35607() {
-		return (ConcurrentLinkedQueue<RenderCall>)this.recordingQueues.get(this.field_20456);
+	public ConcurrentLinkedQueue<RenderCall> getLastProcessedQueue() {
+		return (ConcurrentLinkedQueue<RenderCall>)this.recordingQueues.get(this.lastProcessedIndex);
 	}
 
-	public ConcurrentLinkedQueue<RenderCall> method_35608() {
-		return (ConcurrentLinkedQueue<RenderCall>)this.recordingQueues.get(this.field_20454);
+	public ConcurrentLinkedQueue<RenderCall> getRecordingQueue() {
+		return (ConcurrentLinkedQueue<RenderCall>)this.recordingQueues.get(this.recordingIndex);
 	}
 
-	public ConcurrentLinkedQueue<RenderCall> method_35609() {
-		return (ConcurrentLinkedQueue<RenderCall>)this.recordingQueues.get(this.field_20455);
+	public ConcurrentLinkedQueue<RenderCall> getProcessingQueue() {
+		return (ConcurrentLinkedQueue<RenderCall>)this.recordingQueues.get(this.processingIndex);
 	}
 }

@@ -67,7 +67,7 @@ public abstract class GLImportProcessor {
 							string5 = string5 + System.lineSeparator();
 						}
 
-						context.line = context.line + 1;
+						context.line++;
 						int k = context.line;
 						List<String> list2 = this.parseImports(string5, context, bl ? FileNameUtil.getPosixFullPath(string4) : "");
 						list2.set(0, String.format("#line %d %d\n%s", 0, k, this.extractVersion((String)list2.get(0), context)));
@@ -147,10 +147,7 @@ public abstract class GLImportProcessor {
 	 */
 	@Environment(EnvType.CLIENT)
 	static final class Context {
-		private int column;
-		private int line;
-
-		private Context() {
-		}
+		int column;
+		int line;
 	}
 }

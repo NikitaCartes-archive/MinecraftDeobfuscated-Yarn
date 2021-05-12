@@ -28,8 +28,8 @@ public class Sprite implements AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final SpriteAtlasTexture atlas;
 	private final Identifier id;
-	private final int width;
-	private final int height;
+	final int width;
+	final int height;
 	protected final NativeImage[] images;
 	@Nullable
 	private final Sprite.Animation animation;
@@ -135,7 +135,7 @@ public class Sprite implements AutoCloseable {
 		}
 	}
 
-	private void upload(int frameX, int frameY, NativeImage[] output) {
+	void upload(int frameX, int frameY, NativeImage[] output) {
 		for (int i = 0; i < this.images.length; i++) {
 			output[i].upload(i, this.x >> i, this.y >> i, frameX >> i, frameY >> i, this.width >> i, this.height >> i, this.images.length > 1, false);
 		}
@@ -220,8 +220,7 @@ public class Sprite implements AutoCloseable {
 	public String toString() {
 		return "TextureAtlasSprite{name='"
 			+ this.id
-			+ '\''
-			+ ", frameCount="
+			+ "', frameCount="
 			+ this.getFrameCount()
 			+ ", x="
 			+ this.x
@@ -239,7 +238,7 @@ public class Sprite implements AutoCloseable {
 			+ this.vMin
 			+ ", v1="
 			+ this.vMax
-			+ '}';
+			+ "}";
 	}
 
 	public boolean isPixelTransparent(int frame, int x, int y) {
@@ -282,24 +281,24 @@ public class Sprite implements AutoCloseable {
 
 	@Environment(EnvType.CLIENT)
 	class Animation implements TextureTickListener, AutoCloseable {
-		private int frameIndex;
-		private int frameTicks;
-		private final List<Sprite.AnimationFrame> frames;
+		int frameIndex;
+		int frameTicks;
+		final List<Sprite.AnimationFrame> frames;
 		private final int frameCount;
 		@Nullable
 		private final Sprite.Interpolation interpolation;
 
-		private Animation(List<Sprite.AnimationFrame> frames, int frameCount, @Nullable Sprite.Interpolation interpolation) {
-			this.frames = frames;
-			this.frameCount = frameCount;
+		Animation(List<Sprite.AnimationFrame> list, int i, @Nullable Sprite.Interpolation interpolation) {
+			this.frames = list;
+			this.frameCount = i;
 			this.interpolation = interpolation;
 		}
 
-		private int getFrameX(int frame) {
+		int getFrameX(int frame) {
 			return frame % this.frameCount;
 		}
 
-		private int getFrameY(int frame) {
+		int getFrameY(int frame) {
 			return frame / this.frameCount;
 		}
 
@@ -347,21 +346,21 @@ public class Sprite implements AutoCloseable {
 
 	@Environment(EnvType.CLIENT)
 	static class AnimationFrame {
-		private final int index;
-		private final int time;
+		final int index;
+		final int time;
 
-		private AnimationFrame(int index, int time) {
-			this.index = index;
-			this.time = time;
+		AnimationFrame(int i, int j) {
+			this.index = i;
+			this.time = j;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static final class Info {
-		private final Identifier id;
-		private final int width;
-		private final int height;
-		private final AnimationResourceMetadata animationData;
+		final Identifier id;
+		final int width;
+		final int height;
+		final AnimationResourceMetadata animationData;
 
 		public Info(Identifier id, int width, int height, AnimationResourceMetadata animationData) {
 			this.id = id;
@@ -387,14 +386,14 @@ public class Sprite implements AutoCloseable {
 	final class Interpolation implements AutoCloseable {
 		private final NativeImage[] images;
 
-		private Interpolation(Sprite.Info info, int mipmap) {
-			this.images = new NativeImage[mipmap + 1];
+		Interpolation(Sprite.Info info, int i) {
+			this.images = new NativeImage[i + 1];
 
-			for (int i = 0; i < this.images.length; i++) {
-				int j = info.width >> i;
-				int k = info.height >> i;
-				if (this.images[i] == null) {
-					this.images[i] = new NativeImage(j, k, false);
+			for (int j = 0; j < this.images.length; j++) {
+				int k = info.width >> j;
+				int l = info.height >> j;
+				if (this.images[j] == null) {
+					this.images[j] = new NativeImage(k, l, false);
 				}
 			}
 		}
@@ -404,7 +403,7 @@ public class Sprite implements AutoCloseable {
 		 * based on the tick position within the current frame,
 		 * and upload the results to the currently bound texture to the frame slot at position (0,0).
 		 */
-		private void apply(Sprite.Animation animation) {
+		void apply(Sprite.Animation animation) {
 			Sprite.AnimationFrame animationFrame = (Sprite.AnimationFrame)animation.frames.get(animation.frameIndex);
 			double d = 1.0 - (double)animation.frameTicks / (double)animationFrame.time;
 			int i = animationFrame.index;

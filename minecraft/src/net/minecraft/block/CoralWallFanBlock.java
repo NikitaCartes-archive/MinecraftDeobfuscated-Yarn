@@ -25,7 +25,7 @@ public class CoralWallFanBlock extends DeadCoralWallFanBlock {
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (!isInWater(state, world, pos)) {
 			world.setBlockState(
-				pos, this.deadCoralBlock.getDefaultState().with(WATERLOGGED, Boolean.valueOf(false)).with(FACING, state.get(FACING)), Block.NOTIFY_LISTENERS
+				pos, this.deadCoralBlock.getDefaultState().with(WATERLOGGED, Boolean.valueOf(false)).with(FACING, (Direction)state.get(FACING)), Block.NOTIFY_LISTENERS
 			);
 		}
 	}

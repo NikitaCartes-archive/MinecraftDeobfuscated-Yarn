@@ -5,12 +5,14 @@ import com.mojang.serialization.Codec;
 import java.util.BitSet;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.class_6350;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.gen.chunk.AquiferSampler;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class UnderwaterCaveCarver extends CaveCarver {
@@ -71,34 +73,51 @@ public class UnderwaterCaveCarver extends CaveCarver {
 		Random random,
 		BlockPos.Mutable mutable,
 		BlockPos.Mutable mutable2,
-		class_6350 arg,
+		AquiferSampler aquiferSampler,
 		MutableBoolean mutableBoolean
 	) {
-		return method_36215(this, chunk, random, mutable, mutable2, arg);
+		return carve(this, chunk, random, mutable, mutable2, aquiferSampler);
 	}
 
-	protected static boolean method_36215(Carver<?> carver, Chunk chunk, Random random, BlockPos.Mutable mutable, BlockPos.Mutable mutable2, class_6350 arg) {
-		if (arg.apply(Carver.field_33614, mutable.getX(), mutable.getY(), mutable.getZ(), Double.NEGATIVE_INFINITY).isAir()) {
+	protected static boolean carve(Carver<?> carver, Chunk chunk, Random random, BlockPos.Mutable pos, BlockPos.Mutable downPos, AquiferSampler sampler) {
+		if (sampler.apply(Carver.STONE_SOURCE, pos.getX(), pos.getY(), pos.getZ(), Double.NEGATIVE_INFINITY).isAir()) {
 			return false;
 		} else {
-			BlockState blockState = chunk.getBlockState(mutable);
+			BlockState blockState = chunk.getBlockState(pos);
 			if (!carver.canAlwaysCarveBlock(blockState)) {
 				return false;
-			} else if (mutable.getY() == 10) {
+			} else if (pos.getY() == 10) {
 				float f = random.nextFloat();
 				if ((double)f < 0.25) {
-					chunk.setBlockState(mutable, Blocks.MAGMA_BLOCK.getDefaultState(), false);
-					chunk.getBlockTickScheduler().schedule(mutable, Blocks.MAGMA_BLOCK, 0);
+					chunk.setBlockState(pos, Blocks.MAGMA_BLOCK.getDefaultState(), false);
+					chunk.getBlockTickScheduler().schedule(pos, Blocks.MAGMA_BLOCK, 0);
 				} else {
-					chunk.setBlockState(mutable, Blocks.OBSIDIAN.getDefaultState(), false);
+					chunk.setBlockState(pos, Blocks.OBSIDIAN.getDefaultState(), false);
 				}
 
 				return true;
-			} else if (mutable.getY() < 10) {
-				chunk.setBlockState(mutable, Blocks.LAVA.getDefaultState(), false);
+			} else if (pos.getY() < 10) {
+				chunk.setBlockState(pos, Blocks.LAVA.getDefaultState(), false);
 				return false;
 			} else {
-				chunk.setBlockState(mutable, WATER.getBlockState(), false);
+				int i = chunk.getPos().x;
+				int j = chunk.getPos().z;
+				boolean bl = false;
+
+				for (Direction direction : Direction.Type.HORIZONTAL) {
+					downPos.set(pos, direction);
+					if (ChunkSectionPos.getSectionCoord(downPos.getX()) != i || ChunkSectionPos.getSectionCoord(downPos.getZ()) != j || chunk.getBlockState(downPos).isAir()) {
+						chunk.setBlockState(downPos, WATER.getBlockState(), false);
+						chunk.getFluidTickScheduler().schedule(downPos, WATER.getFluid(), 0);
+						bl = true;
+						break;
+					}
+				}
+
+				if (!bl) {
+					chunk.setBlockState(pos, WATER.getBlockState(), false);
+				}
+
 				return true;
 			}
 		}

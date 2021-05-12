@@ -160,7 +160,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	) {
 		if (direction == getDirectionTowardsOtherPart(state.get(PART), state.get(FACING))) {
 			return neighborState.isOf(this) && neighborState.get(PART) != state.get(PART)
-				? state.with(OCCUPIED, neighborState.get(OCCUPIED))
+				? state.with(OCCUPIED, (Boolean)neighborState.get(OCCUPIED))
 				: Blocks.AIR.getDefaultState();
 		} else {
 			return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);

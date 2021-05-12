@@ -56,8 +56,8 @@ public class GameStateChangeS2CPacket implements Packet<ClientPlayPacketListener
 	}
 
 	public static class Reason {
-		private static final Int2ObjectMap<GameStateChangeS2CPacket.Reason> REASONS = new Int2ObjectOpenHashMap<>();
-		private final int id;
+		static final Int2ObjectMap<GameStateChangeS2CPacket.Reason> REASONS = new Int2ObjectOpenHashMap<>();
+		final int id;
 
 		public Reason(int id) {
 			this.id = id;

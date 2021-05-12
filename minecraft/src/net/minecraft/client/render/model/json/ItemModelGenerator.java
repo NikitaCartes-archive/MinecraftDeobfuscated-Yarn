@@ -260,7 +260,7 @@ public class ItemModelGenerator {
 			return this.offsetY;
 		}
 
-		private boolean isVertical() {
+		boolean isVertical() {
 			return this == DOWN || this == UP;
 		}
 	}

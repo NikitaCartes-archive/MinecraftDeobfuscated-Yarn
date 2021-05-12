@@ -262,7 +262,7 @@ public class BookScreen extends Screen {
 		}
 	}
 
-	private static List<String> readPages(NbtCompound nbt) {
+	static List<String> readPages(NbtCompound nbt) {
 		Builder<String> builder = ImmutableList.builder();
 		method_33888(nbt, builder::add);
 		return builder.build();
@@ -282,7 +282,7 @@ public class BookScreen extends Screen {
 		}
 
 		for (int i = 0; i < nbtList.size(); i++) {
-			consumer.accept(intFunction.apply(i));
+			consumer.accept((String)intFunction.apply(i));
 		}
 	}
 

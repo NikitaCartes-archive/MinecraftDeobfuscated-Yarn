@@ -25,16 +25,16 @@ public class CaveCarverConfig extends CarverConfig {
 		HeightProvider y,
 		FloatProvider yScale,
 		YOffset lavaLevel,
-		boolean bl,
-		CarverDebugConfig carverDebugConfig,
-		FloatProvider floatProvider,
-		FloatProvider floatProvider2,
-		FloatProvider floatProvider3
+		boolean aquifers,
+		CarverDebugConfig debugConfig,
+		FloatProvider horizontalRadiusMultiplier,
+		FloatProvider verticalRadiusMultiplier,
+		FloatProvider floorLevel
 	) {
-		super(probability, y, yScale, lavaLevel, bl, carverDebugConfig);
-		this.horizontalRadiusMultiplier = floatProvider;
-		this.verticalRadiusMultiplier = floatProvider2;
-		this.floorLevel = floatProvider3;
+		super(probability, y, yScale, lavaLevel, aquifers, debugConfig);
+		this.horizontalRadiusMultiplier = horizontalRadiusMultiplier;
+		this.verticalRadiusMultiplier = verticalRadiusMultiplier;
+		this.floorLevel = floorLevel;
 	}
 
 	public CaveCarverConfig(
@@ -42,22 +42,22 @@ public class CaveCarverConfig extends CarverConfig {
 		HeightProvider y,
 		FloatProvider yScale,
 		YOffset lavaLevel,
-		boolean bl,
-		FloatProvider floatProvider,
-		FloatProvider floatProvider2,
-		FloatProvider floatProvider3
+		boolean aquifers,
+		FloatProvider horizontalRadiusMultiplier,
+		FloatProvider verticalRadiusMultiplier,
+		FloatProvider floorLevel
 	) {
-		this(probability, y, yScale, lavaLevel, bl, CarverDebugConfig.DEFAULT, floatProvider, floatProvider2, floatProvider3);
+		this(probability, y, yScale, lavaLevel, aquifers, CarverDebugConfig.DEFAULT, horizontalRadiusMultiplier, verticalRadiusMultiplier, floorLevel);
 	}
 
-	public CaveCarverConfig(CarverConfig carverConfig, FloatProvider horizontalRadiusMultiplier, FloatProvider verticalRadiusMultiplier, FloatProvider floorLevel) {
+	public CaveCarverConfig(CarverConfig config, FloatProvider horizontalRadiusMultiplier, FloatProvider verticalRadiusMultiplier, FloatProvider floorLevel) {
 		this(
-			carverConfig.probability,
-			carverConfig.y,
-			carverConfig.yScale,
-			carverConfig.lavaLevel,
-			carverConfig.field_33610,
-			carverConfig.debugConfig,
+			config.probability,
+			config.y,
+			config.yScale,
+			config.lavaLevel,
+			config.aquifers,
+			config.debugConfig,
 			horizontalRadiusMultiplier,
 			verticalRadiusMultiplier,
 			floorLevel

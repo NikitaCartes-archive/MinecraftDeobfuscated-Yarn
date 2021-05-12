@@ -61,11 +61,11 @@ public class ChunkBuilder {
 	private final Queue<Runnable> uploadQueue = Queues.<Runnable>newConcurrentLinkedQueue();
 	private volatile int queuedTaskCount;
 	private volatile int bufferCount;
-	private final BlockBufferBuilderStorage buffers;
+	final BlockBufferBuilderStorage buffers;
 	private final TaskExecutor<Runnable> mailbox;
 	private final Executor executor;
-	private World world;
-	private final WorldRenderer worldRenderer;
+	World world;
+	final WorldRenderer worldRenderer;
 	private Vec3d cameraPosition = Vec3d.ZERO;
 
 	public ChunkBuilder(World world, WorldRenderer worldRenderer, Executor executor, boolean is64Bits, BlockBufferBuilderStorage buffers) {
@@ -233,7 +233,7 @@ public class ChunkBuilder {
 		public Box boundingBox;
 		private int rebuildFrame = -1;
 		private boolean needsRebuild = true;
-		private final BlockPos.Mutable origin = new BlockPos.Mutable(-1, -1, -1);
+		final BlockPos.Mutable origin = new BlockPos.Mutable(-1, -1, -1);
 		private final BlockPos.Mutable[] neighborPositions = Util.make(new BlockPos.Mutable[6], mutables -> {
 			for (int ix = 0; ix < mutables.length; ix++) {
 				mutables[ix] = new BlockPos.Mutable();
@@ -293,7 +293,7 @@ public class ChunkBuilder {
 			return d * d + e * e + f * f;
 		}
 
-		private void beginBufferBuilding(BufferBuilder buffer) {
+		void beginBufferBuilding(BufferBuilder buffer) {
 			buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
 		}
 
@@ -380,7 +380,7 @@ public class ChunkBuilder {
 			chunkRenderer.send(task);
 		}
 
-		private void setNoCullingBlockEntities(Set<BlockEntity> noCullingBlockEntities) {
+		void setNoCullingBlockEntities(Set<BlockEntity> noCullingBlockEntities) {
 			Set<BlockEntity> set = Sets.<BlockEntity>newHashSet(noCullingBlockEntities);
 			Set<BlockEntity> set2 = Sets.<BlockEntity>newHashSet(this.blockEntities);
 			set.removeAll(this.blockEntities);
@@ -625,13 +625,13 @@ public class ChunkBuilder {
 				return false;
 			}
 		};
-		private final Set<RenderLayer> nonEmptyLayers = new ObjectArraySet<>();
-		private final Set<RenderLayer> initializedLayers = new ObjectArraySet<>();
-		private boolean empty = true;
-		private final List<BlockEntity> blockEntities = Lists.<BlockEntity>newArrayList();
-		private ChunkOcclusionData occlusionGraph = new ChunkOcclusionData();
+		final Set<RenderLayer> nonEmptyLayers = new ObjectArraySet<>();
+		final Set<RenderLayer> initializedLayers = new ObjectArraySet<>();
+		boolean empty = true;
+		final List<BlockEntity> blockEntities = Lists.<BlockEntity>newArrayList();
+		ChunkOcclusionData occlusionGraph = new ChunkOcclusionData();
 		@Nullable
-		private BufferBuilder.State bufferState;
+		BufferBuilder.State bufferState;
 
 		public boolean isEmpty() {
 			return this.empty;

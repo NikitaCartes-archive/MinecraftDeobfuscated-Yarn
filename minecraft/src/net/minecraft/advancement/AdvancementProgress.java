@@ -22,7 +22,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.JsonHelper;
 
 public class AdvancementProgress implements Comparable<AdvancementProgress> {
-	private final Map<String, CriterionProgress> criteriaProgresses;
+	final Map<String, CriterionProgress> criteriaProgresses;
 	private String[][] requirements = new String[0][];
 
 	private AdvancementProgress(Map<String, CriterionProgress> map) {
@@ -101,7 +101,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 	}
 
 	public String toString() {
-		return "AdvancementProgress{criteria=" + this.criteriaProgresses + ", requirements=" + Arrays.deepToString(this.requirements) + '}';
+		return "AdvancementProgress{criteria=" + this.criteriaProgresses + ", requirements=" + Arrays.deepToString(this.requirements) + "}";
 	}
 
 	public void toPacket(PacketByteBuf buf) {
@@ -170,7 +170,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 
 		for (Entry<String, CriterionProgress> entry : this.criteriaProgresses.entrySet()) {
 			if (!((CriterionProgress)entry.getValue()).isObtained()) {
-				list.add(entry.getKey());
+				list.add((String)entry.getKey());
 			}
 		}
 
@@ -182,7 +182,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 
 		for (Entry<String, CriterionProgress> entry : this.criteriaProgresses.entrySet()) {
 			if (((CriterionProgress)entry.getValue()).isObtained()) {
-				list.add(entry.getKey());
+				list.add((String)entry.getKey());
 			}
 		}
 

@@ -189,7 +189,7 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 	}
 
 	@Override
-	public boolean method_32339(int i) {
-		return i != this.getCraftingResultSlotIndex();
+	public boolean canInsertIntoSlot(int index) {
+		return index != this.getCraftingResultSlotIndex();
 	}
 }

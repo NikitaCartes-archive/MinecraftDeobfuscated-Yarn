@@ -12,7 +12,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class ThrownItemPickedUpByEntityCriterion extends AbstractCriterion<ThrownItemPickedUpByEntityCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("thrown_item_picked_up_by_entity");
+	static final Identifier ID = new Identifier("thrown_item_picked_up_by_entity");
 
 	@Override
 	public Identifier getId() {

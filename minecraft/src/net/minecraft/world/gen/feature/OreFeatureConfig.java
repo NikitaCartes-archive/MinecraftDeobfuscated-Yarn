@@ -42,7 +42,7 @@ public class OreFeatureConfig implements FeatureConfig {
 		this(ImmutableList.of(new OreFeatureConfig.Target(test, state)), size, 0.0F);
 	}
 
-	public static OreFeatureConfig.Target create(RuleTest test, BlockState state) {
+	public static OreFeatureConfig.Target createTarget(RuleTest test, BlockState state) {
 		return new OreFeatureConfig.Target(test, state);
 	}
 
@@ -64,9 +64,9 @@ public class OreFeatureConfig implements FeatureConfig {
 		public final RuleTest target;
 		public final BlockState state;
 
-		private Target(RuleTest target, BlockState state) {
-			this.target = target;
-			this.state = state;
+		Target(RuleTest ruleTest, BlockState blockState) {
+			this.target = ruleTest;
+			this.state = blockState;
 		}
 	}
 }

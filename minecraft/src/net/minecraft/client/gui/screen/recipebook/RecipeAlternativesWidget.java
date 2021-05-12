@@ -11,7 +11,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
@@ -25,18 +25,19 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class RecipeAlternativesWidget extends DrawableHelper implements Drawable, Element {
-	private static final Identifier BACKGROUND_TEXTURE = new Identifier("textures/gui/recipe_book.png");
+	static final Identifier BACKGROUND_TEXTURE = new Identifier("textures/gui/recipe_book.png");
 	private static final int field_32406 = 4;
 	private static final int field_32407 = 5;
+	private static final float field_33739 = 0.375F;
 	private final List<RecipeAlternativesWidget.AlternativeButtonWidget> alternativeButtons = Lists.<RecipeAlternativesWidget.AlternativeButtonWidget>newArrayList();
 	private boolean visible;
 	private int buttonX;
 	private int buttonY;
-	private MinecraftClient client;
+	MinecraftClient client;
 	private RecipeResultCollection resultCollection;
 	private Recipe<?> lastClickedRecipe;
-	private float time;
-	private boolean furnace;
+	float time;
+	boolean furnace;
 
 	public void showAlternativesForResult(
 		MinecraftClient client, RecipeResultCollection results, int buttonX, int buttonY, int areaCenterX, int areaCenterY, float delta
@@ -194,8 +195,8 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 	}
 
 	@Environment(EnvType.CLIENT)
-	class AlternativeButtonWidget extends AbstractButtonWidget implements RecipeGridAligner<Ingredient> {
-		private final Recipe<?> recipe;
+	class AlternativeButtonWidget extends ClickableWidget implements RecipeGridAligner<Ingredient> {
+		final Recipe<?> recipe;
 		private final boolean craftable;
 		protected final List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> slots = Lists.<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot>newArrayList();
 
@@ -234,19 +235,20 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 			}
 
 			this.drawTexture(matrices, this.x, this.y, i, j, this.width, this.height);
-			float f = 0.42F;
 			MatrixStack matrixStack = RenderSystem.getModelViewStack();
 			matrixStack.push();
-			matrixStack.translate(0.0, 0.0, 125.0);
-			matrixStack.scale(0.42F, 0.42F, 1.0F);
-			RenderSystem.applyModelViewMatrix();
+			matrixStack.translate((double)(this.x + 2), (double)(this.y + 2), 125.0);
 
 			for (RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot inputSlot : this.slots) {
-				int k = (int)((float)(this.x + inputSlot.y) / 0.42F - 3.0F);
-				int l = (int)((float)(this.y + inputSlot.x) / 0.42F - 3.0F);
+				matrixStack.push();
+				matrixStack.translate((double)inputSlot.y, (double)inputSlot.x, 0.0);
+				matrixStack.scale(0.375F, 0.375F, 1.0F);
+				matrixStack.translate(-8.0, -8.0, 0.0);
+				RenderSystem.applyModelViewMatrix();
 				RecipeAlternativesWidget.this.client
 					.getItemRenderer()
-					.renderInGuiWithOverrides(inputSlot.stacks[MathHelper.floor(RecipeAlternativesWidget.this.time / 30.0F) % inputSlot.stacks.length], k, l);
+					.renderInGuiWithOverrides(inputSlot.stacks[MathHelper.floor(RecipeAlternativesWidget.this.time / 30.0F) % inputSlot.stacks.length], 0, 0);
+				matrixStack.pop();
 			}
 
 			matrixStack.pop();
@@ -254,7 +256,7 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 		}
 
 		@Environment(EnvType.CLIENT)
-		public class InputSlot {
+		protected class InputSlot {
 			public final ItemStack[] stacks;
 			public final int y;
 			public final int x;

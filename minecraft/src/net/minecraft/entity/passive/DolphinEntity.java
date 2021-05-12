@@ -74,11 +74,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 	private static final TrackedData<BlockPos> TREASURE_POS = DataTracker.registerData(DolphinEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
 	private static final TrackedData<Boolean> HAS_FISH = DataTracker.registerData(DolphinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> MOISTNESS = DataTracker.registerData(DolphinEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final TargetPredicate CLOSE_PLAYER_PREDICATE = new TargetPredicate()
-		.setBaseMaxDistance(10.0)
-		.includeTeammates()
-		.includeInvulnerable()
-		.includeHidden();
+	static final TargetPredicate CLOSE_PLAYER_PREDICATE = TargetPredicate.createNonAttackable().setBaseMaxDistance(10.0).visibleOnly();
 	public static final int MAX_AIR = 4800;
 	private static final int MAX_MOISTNESS = 2400;
 	public static final Predicate<ItemEntity> CAN_TAKE = item -> !item.cannotPickup() && item.isAlive() && item.isTouchingWater();
@@ -435,8 +431,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 
 		@Override
 		public void start() {
-			if (this.dolphin.world instanceof ServerWorld) {
-				ServerWorld serverWorld = (ServerWorld)this.dolphin.world;
+			if (this.dolphin.world instanceof ServerWorld serverWorld) {
 				this.noPathToStructure = false;
 				this.dolphin.getNavigation().stop();
 				BlockPos blockPos = this.dolphin.getBlockPos();
@@ -501,9 +496,6 @@ public class DolphinEntity extends WaterCreatureEntity {
 
 	class PlayWithItemsGoal extends Goal {
 		private int nextPlayingTime;
-
-		private PlayWithItemsGoal() {
-		}
 
 		@Override
 		public boolean canStart() {

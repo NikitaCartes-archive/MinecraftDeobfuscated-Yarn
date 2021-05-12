@@ -529,11 +529,8 @@ public abstract class StructurePiece {
 		return this.type;
 	}
 
-	public abstract static class BlockRandomizer {
+	protected abstract static class BlockRandomizer {
 		protected BlockState block = Blocks.AIR.getDefaultState();
-
-		protected BlockRandomizer() {
-		}
 
 		public abstract void setBlock(Random random, int x, int y, int z, boolean placeBlock);
 

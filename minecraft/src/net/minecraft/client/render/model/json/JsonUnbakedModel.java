@@ -292,7 +292,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 		return Either.left(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, MissingSprite.getMissingSpriteId()));
 	}
 
-	private static boolean isTextureReference(String reference) {
+	static boolean isTextureReference(String reference) {
 		return reference.charAt(0) == '#';
 	}
 
@@ -357,7 +357,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 			List<ModelOverride> list = Lists.<ModelOverride>newArrayList();
 			if (object.has("overrides")) {
 				for (JsonElement jsonElement : JsonHelper.getArray(object, "overrides")) {
-					list.add(context.deserialize(jsonElement, ModelOverride.class));
+					list.add((ModelOverride)context.deserialize(jsonElement, ModelOverride.class));
 				}
 			}
 
@@ -371,7 +371,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 				JsonObject jsonObject = JsonHelper.getObject(object, "textures");
 
 				for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-					map.put(entry.getKey(), resolveReference(identifier, ((JsonElement)entry.getValue()).getAsString()));
+					map.put((String)entry.getKey(), resolveReference(identifier, ((JsonElement)entry.getValue()).getAsString()));
 				}
 			}
 
@@ -403,7 +403,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 			List<ModelElement> list = Lists.<ModelElement>newArrayList();
 			if (json.has("elements")) {
 				for (JsonElement jsonElement : JsonHelper.getArray(json, "elements")) {
-					list.add(context.deserialize(jsonElement, ModelElement.class));
+					list.add((ModelElement)context.deserialize(jsonElement, ModelElement.class));
 				}
 			}
 

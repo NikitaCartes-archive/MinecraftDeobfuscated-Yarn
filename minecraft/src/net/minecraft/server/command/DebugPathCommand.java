@@ -4,7 +4,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.command.argument.BlockPosArgumentType;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.Path;
@@ -30,11 +29,9 @@ public class DebugPathCommand {
 	}
 
 	private static int execute(ServerCommandSource source, BlockPos pos) throws CommandSyntaxException {
-		Entity entity = source.getEntity();
-		if (!(entity instanceof MobEntity)) {
+		if (!(source.getEntity() instanceof MobEntity mobEntity)) {
 			throw SOURCE_NOT_MOB_EXCEPTION.create();
 		} else {
-			MobEntity mobEntity = (MobEntity)entity;
 			EntityNavigation entityNavigation = new MobNavigation(mobEntity, source.getWorld());
 			Path path = entityNavigation.findPathTo(pos, 0);
 			DebugInfoSender.sendPathfindingData(source.getWorld(), mobEntity, path, entityNavigation.getNodeReachProximity());

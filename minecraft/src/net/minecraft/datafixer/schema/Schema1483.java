@@ -13,7 +13,7 @@ public class Schema1483 extends IdentifierNormalizingSchema {
 	@Override
 	public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
 		Map<String, Supplier<TypeTemplate>> map = super.registerEntities(schema);
-		map.put("minecraft:pufferfish", map.remove("minecraft:puffer_fish"));
+		map.put("minecraft:pufferfish", (Supplier)map.remove("minecraft:puffer_fish"));
 		return map;
 	}
 }

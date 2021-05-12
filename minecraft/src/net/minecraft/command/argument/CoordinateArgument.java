@@ -76,10 +76,9 @@ public class CoordinateArgument {
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
-		} else if (!(o instanceof CoordinateArgument)) {
+		} else if (!(o instanceof CoordinateArgument coordinateArgument)) {
 			return false;
 		} else {
-			CoordinateArgument coordinateArgument = (CoordinateArgument)o;
 			return this.relative != coordinateArgument.relative ? false : Double.compare(coordinateArgument.value, this.value) == 0;
 		}
 	}

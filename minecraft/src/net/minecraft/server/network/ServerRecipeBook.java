@@ -103,7 +103,7 @@ public class ServerRecipeBook extends RecipeBook {
 				if (!optional.isPresent()) {
 					LOGGER.error("Tried to load unrecognized recipe: {} removed now.", identifier);
 				} else {
-					handler.accept(optional.get());
+					handler.accept((Recipe)optional.get());
 				}
 			} catch (InvalidIdentifierException var8) {
 				LOGGER.error("Tried to load improperly formatted recipe: {} removed now.", string);

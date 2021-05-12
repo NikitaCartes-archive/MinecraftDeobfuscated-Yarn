@@ -45,9 +45,7 @@ public class BlockModels {
 		this.models.clear();
 
 		for (Block block : Registry.BLOCK) {
-			block.getStateManager().getStates().forEach(blockState -> {
-				BakedModel var10000 = (BakedModel)this.models.put(blockState, this.modelManager.getModel(getModelId(blockState)));
-			});
+			block.getStateManager().getStates().forEach(blockState -> this.models.put(blockState, this.modelManager.getModel(getModelId(blockState))));
 		}
 	}
 

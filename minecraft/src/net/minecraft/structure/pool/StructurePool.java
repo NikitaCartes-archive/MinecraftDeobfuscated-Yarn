@@ -110,7 +110,7 @@ public class StructurePool {
 	}
 
 	public List<StructurePoolElement> getElementIndicesInRandomOrder(Random random) {
-		return ImmutableList.copyOf(ObjectArrays.shuffle(this.elements.toArray(new StructurePoolElement[0]), random));
+		return ImmutableList.copyOf(ObjectArrays.shuffle((StructurePoolElement[])this.elements.toArray(new StructurePoolElement[0]), random));
 	}
 
 	public Identifier getId() {

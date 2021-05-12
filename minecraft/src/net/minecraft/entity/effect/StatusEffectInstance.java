@@ -198,14 +198,13 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
-		} else if (!(o instanceof StatusEffectInstance)) {
-			return false;
 		} else {
-			StatusEffectInstance statusEffectInstance = (StatusEffectInstance)o;
-			return this.duration == statusEffectInstance.duration
-				&& this.amplifier == statusEffectInstance.amplifier
-				&& this.ambient == statusEffectInstance.ambient
-				&& this.type.equals(statusEffectInstance.type);
+			return !(o instanceof StatusEffectInstance statusEffectInstance)
+				? false
+				: this.duration == statusEffectInstance.duration
+					&& this.amplifier == statusEffectInstance.amplifier
+					&& this.ambient == statusEffectInstance.ambient
+					&& this.type.equals(statusEffectInstance.type);
 		}
 	}
 

@@ -144,7 +144,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 		return c != ' ' && c != '"' && c != '[' && c != ']' && c != '.' && c != '{' && c != '}';
 	}
 
-	private static Predicate<NbtElement> getPredicate(NbtCompound filter) {
+	static Predicate<NbtElement> getPredicate(NbtCompound filter) {
 		return nbtElement -> NbtHelper.matches(filter, nbtElement, true);
 	}
 
@@ -163,8 +163,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 
 		@Override
 		public void getOrInit(NbtElement current, Supplier<NbtElement> source, List<NbtElement> results) {
-			if (current instanceof AbstractNbtList) {
-				AbstractNbtList<?> abstractNbtList = (AbstractNbtList<?>)current;
+			if (current instanceof AbstractNbtList<?> abstractNbtList) {
 				if (abstractNbtList.isEmpty()) {
 					NbtElement nbtElement = (NbtElement)source.get();
 					if (abstractNbtList.addElement(0, nbtElement)) {
@@ -183,10 +182,9 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 
 		@Override
 		public int set(NbtElement current, Supplier<NbtElement> source) {
-			if (!(current instanceof AbstractNbtList)) {
+			if (!(current instanceof AbstractNbtList<?> abstractNbtList)) {
 				return 0;
 			} else {
-				AbstractNbtList<?> abstractNbtList = (AbstractNbtList<?>)current;
 				int i = abstractNbtList.size();
 				if (i == 0) {
 					abstractNbtList.addElement(0, (NbtElement)source.get());
@@ -214,8 +212,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 
 		@Override
 		public int clear(NbtElement current) {
-			if (current instanceof AbstractNbtList) {
-				AbstractNbtList<?> abstractNbtList = (AbstractNbtList<?>)current;
+			if (current instanceof AbstractNbtList<?> abstractNbtList) {
 				int i = abstractNbtList.size();
 				if (i > 0) {
 					abstractNbtList.clear();
@@ -238,8 +235,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 
 		@Override
 		public void get(NbtElement current, List<NbtElement> results) {
-			if (current instanceof NbtList) {
-				NbtList nbtList = (NbtList)current;
+			if (current instanceof NbtList nbtList) {
 				nbtList.stream().filter(this.predicate).forEach(results::add);
 			}
 		}
@@ -247,8 +243,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 		@Override
 		public void getOrInit(NbtElement current, Supplier<NbtElement> source, List<NbtElement> results) {
 			MutableBoolean mutableBoolean = new MutableBoolean();
-			if (current instanceof NbtList) {
-				NbtList nbtList = (NbtList)current;
+			if (current instanceof NbtList nbtList) {
 				nbtList.stream().filter(this.predicate).forEach(nbtElement -> {
 					results.add(nbtElement);
 					mutableBoolean.setTrue();
@@ -269,11 +264,10 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 		@Override
 		public int set(NbtElement current, Supplier<NbtElement> source) {
 			int i = 0;
-			if (current instanceof NbtList) {
-				NbtList nbtList = (NbtList)current;
+			if (current instanceof NbtList nbtList) {
 				int j = nbtList.size();
 				if (j == 0) {
-					nbtList.add(source.get());
+					nbtList.add((NbtElement)source.get());
 					i++;
 				} else {
 					for (int k = 0; k < j; k++) {
@@ -294,9 +288,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 		@Override
 		public int clear(NbtElement current) {
 			int i = 0;
-			if (current instanceof NbtList) {
-				NbtList nbtList = (NbtList)current;
-
+			if (current instanceof NbtList nbtList) {
 				for (int j = nbtList.size() - 1; j >= 0; j--) {
 					if (this.predicate.test(nbtList.get(j))) {
 						nbtList.remove(j);
@@ -332,8 +324,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 
 		@Override
 		public void getOrInit(NbtElement current, Supplier<NbtElement> source, List<NbtElement> results) {
-			if (current instanceof NbtCompound) {
-				NbtCompound nbtCompound = (NbtCompound)current;
+			if (current instanceof NbtCompound nbtCompound) {
 				NbtElement nbtElement = nbtCompound.get(this.name);
 				if (nbtElement == null) {
 					NbtElement var6 = this.filter.copy();
@@ -352,8 +343,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 
 		@Override
 		public int set(NbtElement current, Supplier<NbtElement> source) {
-			if (current instanceof NbtCompound) {
-				NbtCompound nbtCompound = (NbtCompound)current;
+			if (current instanceof NbtCompound nbtCompound) {
 				NbtElement nbtElement = nbtCompound.get(this.name);
 				if (this.predicate.test(nbtElement)) {
 					NbtElement nbtElement2 = (NbtElement)source.get();
@@ -369,8 +359,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 
 		@Override
 		public int clear(NbtElement current) {
-			if (current instanceof NbtCompound) {
-				NbtCompound nbtCompound = (NbtCompound)current;
+			if (current instanceof NbtCompound nbtCompound) {
 				NbtElement nbtElement = nbtCompound.get(this.name);
 				if (this.predicate.test(nbtElement)) {
 					nbtCompound.remove(this.name);
@@ -426,12 +415,11 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 
 		@Override
 		public void get(NbtElement current, List<NbtElement> results) {
-			if (current instanceof AbstractNbtList) {
-				AbstractNbtList<?> abstractNbtList = (AbstractNbtList<?>)current;
+			if (current instanceof AbstractNbtList<?> abstractNbtList) {
 				int i = abstractNbtList.size();
 				int j = this.index < 0 ? i + this.index : this.index;
 				if (0 <= j && j < i) {
-					results.add(abstractNbtList.get(j));
+					results.add((NbtElement)abstractNbtList.get(j));
 				}
 			}
 		}
@@ -448,8 +436,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 
 		@Override
 		public int set(NbtElement current, Supplier<NbtElement> source) {
-			if (current instanceof AbstractNbtList) {
-				AbstractNbtList<?> abstractNbtList = (AbstractNbtList<?>)current;
+			if (current instanceof AbstractNbtList<?> abstractNbtList) {
 				int i = abstractNbtList.size();
 				int j = this.index < 0 ? i + this.index : this.index;
 				if (0 <= j && j < i) {
@@ -466,8 +453,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 
 		@Override
 		public int clear(NbtElement current) {
-			if (current instanceof AbstractNbtList) {
-				AbstractNbtList<?> abstractNbtList = (AbstractNbtList<?>)current;
+			if (current instanceof AbstractNbtList<?> abstractNbtList) {
 				int i = abstractNbtList.size();
 				int j = this.index < 0 ? i + this.index : this.index;
 				if (0 <= j && j < i) {
@@ -499,8 +485,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 
 		@Override
 		public void getOrInit(NbtElement current, Supplier<NbtElement> source, List<NbtElement> results) {
-			if (current instanceof NbtCompound) {
-				NbtCompound nbtCompound = (NbtCompound)current;
+			if (current instanceof NbtCompound nbtCompound) {
 				NbtElement nbtElement;
 				if (nbtCompound.contains(this.name)) {
 					nbtElement = nbtCompound.get(this.name);
@@ -520,8 +505,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 
 		@Override
 		public int set(NbtElement current, Supplier<NbtElement> source) {
-			if (current instanceof NbtCompound) {
-				NbtCompound nbtCompound = (NbtCompound)current;
+			if (current instanceof NbtCompound nbtCompound) {
 				NbtElement nbtElement = (NbtElement)source.get();
 				NbtElement nbtElement2 = nbtCompound.put(this.name, nbtElement);
 				if (!nbtElement.equals(nbtElement2)) {
@@ -534,12 +518,9 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 
 		@Override
 		public int clear(NbtElement current) {
-			if (current instanceof NbtCompound) {
-				NbtCompound nbtCompound = (NbtCompound)current;
-				if (nbtCompound.contains(this.name)) {
-					nbtCompound.remove(this.name);
-					return 1;
-				}
+			if (current instanceof NbtCompound nbtCompound && nbtCompound.contains(this.name)) {
+				nbtCompound.remove(this.name);
+				return 1;
 			}
 
 			return 0;

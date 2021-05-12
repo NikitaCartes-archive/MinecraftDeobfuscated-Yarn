@@ -62,17 +62,17 @@ public class GenerationSettings {
 	private final List<Supplier<ConfiguredStructureFeature<?, ?>>> structureFeatures;
 	private final List<ConfiguredFeature<?, ?>> flowerFeatures;
 
-	private GenerationSettings(
-		Supplier<ConfiguredSurfaceBuilder<?>> surfaceBuilder,
-		Map<GenerationStep.Carver, List<Supplier<ConfiguredCarver<?>>>> carvers,
-		List<List<Supplier<ConfiguredFeature<?, ?>>>> features,
-		List<Supplier<ConfiguredStructureFeature<?, ?>>> structureFeatures
+	GenerationSettings(
+		Supplier<ConfiguredSurfaceBuilder<?>> supplier,
+		Map<GenerationStep.Carver, List<Supplier<ConfiguredCarver<?>>>> map,
+		List<List<Supplier<ConfiguredFeature<?, ?>>>> list,
+		List<Supplier<ConfiguredStructureFeature<?, ?>>> list2
 	) {
-		this.surfaceBuilder = surfaceBuilder;
-		this.carvers = carvers;
-		this.features = features;
-		this.structureFeatures = structureFeatures;
-		this.flowerFeatures = (List<ConfiguredFeature<?, ?>>)features.stream()
+		this.surfaceBuilder = supplier;
+		this.carvers = map;
+		this.features = list;
+		this.structureFeatures = list2;
+		this.flowerFeatures = (List<ConfiguredFeature<?, ?>>)list.stream()
 			.flatMap(Collection::stream)
 			.map(Supplier::get)
 			.flatMap(ConfiguredFeature::getDecoratedFeatures)
@@ -166,9 +166,12 @@ public class GenerationSettings {
 
 		public GenerationSettings build() {
 			return new GenerationSettings(
-				(Supplier)this.surfaceBuilder.orElseThrow(() -> new IllegalStateException("Missing surface builder")),
-				(Map)this.carvers.entrySet().stream().collect(ImmutableMap.toImmutableMap(Entry::getKey, entry -> ImmutableList.copyOf((Collection)entry.getValue()))),
-				(List)this.features.stream().map(ImmutableList::copyOf).collect(ImmutableList.toImmutableList()),
+				(Supplier<ConfiguredSurfaceBuilder<?>>)this.surfaceBuilder.orElseThrow(() -> new IllegalStateException("Missing surface builder")),
+				(Map<GenerationStep.Carver, List<Supplier<ConfiguredCarver<?>>>>)this.carvers
+					.entrySet()
+					.stream()
+					.collect(ImmutableMap.toImmutableMap(Entry::getKey, entry -> ImmutableList.copyOf((Collection)entry.getValue()))),
+				(List<List<Supplier<ConfiguredFeature<?, ?>>>>)this.features.stream().map(ImmutableList::copyOf).collect(ImmutableList.toImmutableList()),
 				ImmutableList.copyOf(this.structureFeatures)
 			);
 		}

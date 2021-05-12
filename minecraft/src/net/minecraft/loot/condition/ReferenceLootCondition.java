@@ -13,10 +13,10 @@ import org.apache.logging.log4j.Logger;
 
 public class ReferenceLootCondition implements LootCondition {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final Identifier id;
+	final Identifier id;
 
-	private ReferenceLootCondition(Identifier id) {
-		this.id = id;
+	ReferenceLootCondition(Identifier identifier) {
+		this.id = identifier;
 	}
 
 	@Override

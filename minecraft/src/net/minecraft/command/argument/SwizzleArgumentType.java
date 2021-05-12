@@ -29,21 +29,13 @@ public class SwizzleArgumentType implements ArgumentType<EnumSet<Direction.Axis>
 
 		while (stringReader.canRead() && stringReader.peek() != ' ') {
 			char c = stringReader.read();
-			Direction.Axis axis;
-			switch (c) {
-				case 'x':
-					axis = Direction.Axis.X;
-					break;
-				case 'y':
-					axis = Direction.Axis.Y;
-					break;
-				case 'z':
-					axis = Direction.Axis.Z;
-					break;
-				default:
-					throw INVALID_SWIZZLE_EXCEPTION.create();
-			}
 
+			Direction.Axis axis = switch (c) {
+				case 'x' -> Direction.Axis.X;
+				case 'y' -> Direction.Axis.Y;
+				case 'z' -> Direction.Axis.Z;
+				default -> throw INVALID_SWIZZLE_EXCEPTION.create();
+			};
 			if (enumSet.contains(axis)) {
 				throw INVALID_SWIZZLE_EXCEPTION.create();
 			}

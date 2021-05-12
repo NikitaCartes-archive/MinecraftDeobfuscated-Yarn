@@ -220,9 +220,6 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 	class BlindTargetGoal extends SpellcastingIllagerEntity.CastSpellGoal {
 		private int targetId;
 
-		private BlindTargetGoal() {
-		}
-
 		@Override
 		public boolean canStart() {
 			if (!super.canStart()) {
@@ -269,9 +266,6 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 	}
 
 	class GiveInvisibilityGoal extends SpellcastingIllagerEntity.CastSpellGoal {
-		private GiveInvisibilityGoal() {
-		}
-
 		@Override
 		public boolean canStart() {
 			return !super.canStart() ? false : !IllusionerEntity.this.hasStatusEffect(StatusEffects.INVISIBILITY);

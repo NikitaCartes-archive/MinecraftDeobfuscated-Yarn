@@ -28,18 +28,12 @@ import net.minecraft.world.World;
 
 public class PufferfishEntity extends FishEntity {
 	private static final TrackedData<Integer> PUFF_STATE = DataTracker.registerData(PufferfishEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private int inflateTicks;
-	private int deflateTicks;
+	int inflateTicks;
+	int deflateTicks;
 	private static final Predicate<LivingEntity> BLOW_UP_FILTER = entity -> entity instanceof PlayerEntity && ((PlayerEntity)entity).isCreative()
 			? false
-			: entity.getGroup() != EntityGroup.AQUATIC;
-	private static final TargetPredicate field_33692 = new TargetPredicate()
-		.includeInvulnerable()
-		.ignoreDistanceScalingFactor()
-		.ignoreEntityTargetRules()
-		.includeTeammates()
-		.includeHidden()
-		.setPredicate(BLOW_UP_FILTER);
+			: entity.getType() == EntityType.AXOLOTL || entity.getGroup() != EntityGroup.AQUATIC;
+	static final TargetPredicate field_33692 = TargetPredicate.createNonAttackable().ignoreDistanceScalingFactor().visibleOnly().setPredicate(BLOW_UP_FILTER);
 	public static final int NOT_PUFFED = 0;
 	public static final int SEMI_PUFFED = 1;
 	public static final int FULLY_PUFFED = 2;

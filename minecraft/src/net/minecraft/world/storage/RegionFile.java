@@ -38,7 +38,7 @@ public class RegionFile implements AutoCloseable {
 	private static final int field_31424 = 0;
 	private final FileChannel channel;
 	private final Path directory;
-	private final ChunkStreamVersion outputChunkStreamVersion;
+	final ChunkStreamVersion outputChunkStreamVersion;
 	private final ByteBuffer header = ByteBuffer.allocateDirect(8192);
 	private final IntBuffer sectorData;
 	private final IntBuffer saveTimes;
@@ -311,26 +311,24 @@ public class RegionFile implements AutoCloseable {
 	private RegionFile.OutputAction writeSafely(Path path, ByteBuffer byteBuffer) throws IOException {
 		Path path2 = Files.createTempFile(this.directory, "tmp", null);
 		FileChannel fileChannel = FileChannel.open(path2, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-		Throwable var5 = null;
 
 		try {
 			byteBuffer.position(5);
 			fileChannel.write(byteBuffer);
-		} catch (Throwable var14) {
-			var5 = var14;
-			throw var14;
-		} finally {
+		} catch (Throwable var8) {
 			if (fileChannel != null) {
-				if (var5 != null) {
-					try {
-						fileChannel.close();
-					} catch (Throwable var13) {
-						var5.addSuppressed(var13);
-					}
-				} else {
+				try {
 					fileChannel.close();
+				} catch (Throwable var7) {
+					var8.addSuppressed(var7);
 				}
 			}
+
+			throw var8;
+		}
+
+		if (fileChannel != null) {
+			fileChannel.close();
 		}
 
 		return () -> Files.move(path2, path, StandardCopyOption.REPLACE_EXISTING);

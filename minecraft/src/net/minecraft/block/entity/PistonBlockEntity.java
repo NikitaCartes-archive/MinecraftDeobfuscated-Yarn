@@ -102,7 +102,7 @@ public class PistonBlockEntity extends BlockEntity {
 				.getDefaultState()
 				.with(PistonHeadBlock.SHORT, Boolean.valueOf(this.progress > 0.25F))
 				.with(PistonHeadBlock.TYPE, this.pushedBlock.isOf(Blocks.STICKY_PISTON) ? PistonType.STICKY : PistonType.DEFAULT)
-				.with(PistonHeadBlock.FACING, this.pushedBlock.get(PistonBlock.FACING))
+				.with(PistonHeadBlock.FACING, (Direction)this.pushedBlock.get(PistonBlock.FACING))
 			: this.pushedBlock;
 	}
 

@@ -7,7 +7,6 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.MessageArgumentType;
-import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -34,10 +33,8 @@ public class MessageCommand {
 
 	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Text message) {
 		UUID uUID = source.getEntity() == null ? Util.NIL_UUID : source.getEntity().getUuid();
-		Entity entity = source.getEntity();
 		Consumer<Text> consumer;
-		if (entity instanceof ServerPlayerEntity) {
-			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
+		if (source.getEntity() instanceof ServerPlayerEntity serverPlayerEntity) {
 			consumer = playerName -> serverPlayerEntity.sendSystemMessage(
 					new TranslatableText("commands.message.display.outgoing", playerName, message).formatted(new Formatting[]{Formatting.GRAY, Formatting.ITALIC}),
 					serverPlayerEntity.getUuid()

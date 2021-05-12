@@ -17,7 +17,7 @@ public class SizePrepender extends MessageToByteEncoder<ByteBuf> {
 		int i = byteBuf.readableBytes();
 		int j = PacketByteBuf.getVarIntLength(i);
 		if (j > 3) {
-			throw new IllegalArgumentException("unable to fit " + i + " into " + 3);
+			throw new IllegalArgumentException("unable to fit " + i + " into 3");
 		} else {
 			PacketByteBuf packetByteBuf = new PacketByteBuf(byteBuf2);
 			packetByteBuf.ensureWritable(j + i);

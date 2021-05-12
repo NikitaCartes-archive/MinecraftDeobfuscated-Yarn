@@ -34,7 +34,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class StructurePoolBasedGenerator {
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogManager.getLogger();
 
 	public static void method_30419(
 		DynamicRegistryManager dynamicRegistryManager,
@@ -150,16 +150,16 @@ public class StructurePoolBasedGenerator {
 	}
 
 	static final class ShapedPoolStructurePiece {
-		private final PoolStructurePiece piece;
-		private final MutableObject<VoxelShape> pieceShape;
-		private final int minY;
-		private final int currentSize;
+		final PoolStructurePiece piece;
+		final MutableObject<VoxelShape> pieceShape;
+		final int minY;
+		final int currentSize;
 
-		private ShapedPoolStructurePiece(PoolStructurePiece piece, MutableObject<VoxelShape> pieceShape, int minY, int currentSize) {
-			this.piece = piece;
-			this.pieceShape = pieceShape;
-			this.minY = minY;
-			this.currentSize = currentSize;
+		ShapedPoolStructurePiece(PoolStructurePiece poolStructurePiece, MutableObject<VoxelShape> mutableObject, int i, int j) {
+			this.piece = poolStructurePiece;
+			this.pieceShape = mutableObject;
+			this.minY = i;
+			this.currentSize = j;
 		}
 	}
 
@@ -171,29 +171,27 @@ public class StructurePoolBasedGenerator {
 		private final StructureManager structureManager;
 		private final List<? super PoolStructurePiece> children;
 		private final Random random;
-		private final Deque<StructurePoolBasedGenerator.ShapedPoolStructurePiece> structurePieces = Queues.<StructurePoolBasedGenerator.ShapedPoolStructurePiece>newArrayDeque();
+		final Deque<StructurePoolBasedGenerator.ShapedPoolStructurePiece> structurePieces = Queues.<StructurePoolBasedGenerator.ShapedPoolStructurePiece>newArrayDeque();
 
-		private StructurePoolGenerator(
+		StructurePoolGenerator(
 			Registry<StructurePool> registry,
-			int maxSize,
+			int i,
 			StructurePoolBasedGenerator.PieceFactory pieceFactory,
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
-			List<? super PoolStructurePiece> children,
+			List<? super PoolStructurePiece> list,
 			Random random
 		) {
 			this.registry = registry;
-			this.maxSize = maxSize;
+			this.maxSize = i;
 			this.pieceFactory = pieceFactory;
 			this.chunkGenerator = chunkGenerator;
 			this.structureManager = structureManager;
-			this.children = children;
+			this.children = list;
 			this.random = random;
 		}
 
-		private void generatePiece(
-			PoolStructurePiece piece, MutableObject<VoxelShape> mutableObject, int minY, int currentSize, boolean bl, HeightLimitView heightLimitView
-		) {
+		void generatePiece(PoolStructurePiece piece, MutableObject<VoxelShape> mutableObject, int minY, int currentSize, boolean bl, HeightLimitView heightLimitView) {
 			StructurePoolElement structurePoolElement = piece.getPoolElement();
 			BlockPos blockPos = piece.getPos();
 			BlockRotation blockRotation = piece.getRotation();

@@ -37,10 +37,10 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	public static final int field_31326 = 1;
 	public static final int field_31327 = 2;
 	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(5, ItemStack.EMPTY);
-	private int brewTime;
+	int brewTime;
 	private boolean[] slotsEmptyLastTick;
 	private Item itemBrewing;
-	private int fuel;
+	int fuel;
 	protected final PropertyDelegate propertyDelegate = new PropertyDelegate() {
 		@Override
 		public int get(int index) {

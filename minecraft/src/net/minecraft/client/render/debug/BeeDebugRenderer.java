@@ -162,7 +162,7 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 		if (bees.isEmpty()) {
 			return "-";
 		} else {
-			return bees.size() > 3 ? "" + bees.size() + " bees" : ((Set)bees.stream().map(NameGenerator::name).collect(Collectors.toSet())).toString();
+			return bees.size() > 3 ? bees.size() + " bees" : ((Set)bees.stream().map(NameGenerator::name).collect(Collectors.toSet())).toString();
 		}
 	}
 
@@ -174,7 +174,7 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 	private void drawHiveBees(BlockPos pos, List<String> bees) {
 		float f = 0.05F;
 		drawBox(pos, 0.05F, 0.2F, 0.2F, 1.0F, 0.3F);
-		drawString("" + bees, pos, 0, -256);
+		drawString(bees + "", pos, 0, -256);
 		drawString("Ghost Hive", pos, 1, -65536);
 	}
 

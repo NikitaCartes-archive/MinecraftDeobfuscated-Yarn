@@ -58,7 +58,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	private static final TrackedData<Integer> STRENGTH = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> CARPET_COLOR = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> VARIANT = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private boolean spit;
+	boolean spit;
 	@Nullable
 	private LlamaEntity following;
 	@Nullable
@@ -418,7 +418,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		this.spit = true;
 	}
 
-	private void setSpit(boolean spit) {
+	void setSpit(boolean spit) {
 		this.spit = spit;
 	}
 
@@ -509,9 +509,9 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	static class LlamaData extends PassiveEntity.PassiveData {
 		public final int variant;
 
-		private LlamaData(int variant) {
+		LlamaData(int i) {
 			super(true);
-			this.variant = variant;
+			this.variant = i;
 		}
 	}
 
@@ -522,12 +522,9 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 
 		@Override
 		public boolean shouldContinue() {
-			if (this.mob instanceof LlamaEntity) {
-				LlamaEntity llamaEntity = (LlamaEntity)this.mob;
-				if (llamaEntity.spit) {
-					llamaEntity.setSpit(false);
-					return false;
-				}
+			if (this.mob instanceof LlamaEntity llamaEntity && llamaEntity.spit) {
+				llamaEntity.setSpit(false);
+				return false;
 			}
 
 			return super.shouldContinue();

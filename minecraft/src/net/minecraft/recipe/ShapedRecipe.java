@@ -23,12 +23,12 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class ShapedRecipe implements CraftingRecipe {
-	private final int width;
-	private final int height;
-	private final DefaultedList<Ingredient> input;
-	private final ItemStack output;
+	final int width;
+	final int height;
+	final DefaultedList<Ingredient> input;
+	final ItemStack output;
 	private final Identifier id;
-	private final String group;
+	final String group;
 
 	public ShapedRecipe(Identifier id, String group, int width, int height, DefaultedList<Ingredient> input, ItemStack output) {
 		this.id = id;
@@ -124,7 +124,7 @@ public class ShapedRecipe implements CraftingRecipe {
 	 * Compiles a pattern and series of symbols into a list of ingredients (the matrix) suitable for matching
 	 * against a crafting grid.
 	 */
-	private static DefaultedList<Ingredient> createPatternMatrix(String[] pattern, Map<String, Ingredient> symbols, int width, int height) {
+	static DefaultedList<Ingredient> createPatternMatrix(String[] pattern, Map<String, Ingredient> symbols, int width, int height) {
 		DefaultedList<Ingredient> defaultedList = DefaultedList.ofSize(width * height, Ingredient.EMPTY);
 		Set<String> set = Sets.<String>newHashSet(symbols.keySet());
 		set.remove(" ");
@@ -233,7 +233,7 @@ public class ShapedRecipe implements CraftingRecipe {
 		return i;
 	}
 
-	private static String[] getPattern(JsonArray json) {
+	static String[] getPattern(JsonArray json) {
 		String[] strings = new String[json.size()];
 		if (strings.length > 3) {
 			throw new JsonSyntaxException("Invalid pattern: too many rows, 3 is maximum");
@@ -262,7 +262,7 @@ public class ShapedRecipe implements CraftingRecipe {
 	 * 
 	 * @return a mapping from a symbol to the ingredient it represents
 	 */
-	private static Map<String, Ingredient> readSymbols(JsonObject json) {
+	static Map<String, Ingredient> readSymbols(JsonObject json) {
 		Map<String, Ingredient> map = Maps.<String, Ingredient>newHashMap();
 
 		for (Entry<String, JsonElement> entry : json.entrySet()) {
@@ -274,7 +274,7 @@ public class ShapedRecipe implements CraftingRecipe {
 				throw new JsonSyntaxException("Invalid key entry: ' ' is a reserved symbol.");
 			}
 
-			map.put(entry.getKey(), Ingredient.fromJson((JsonElement)entry.getValue()));
+			map.put((String)entry.getKey(), Ingredient.fromJson((JsonElement)entry.getValue()));
 		}
 
 		map.put(" ", Ingredient.EMPTY);

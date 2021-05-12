@@ -8,7 +8,7 @@ public abstract class ReentrantThreadExecutor<R extends Runnable> extends Thread
 	}
 
 	@Override
-	protected boolean shouldExecuteAsync() {
+	public boolean shouldExecuteAsync() {
 		return this.hasRunningTasks() || super.shouldExecuteAsync();
 	}
 
@@ -17,7 +17,7 @@ public abstract class ReentrantThreadExecutor<R extends Runnable> extends Thread
 	}
 
 	@Override
-	protected void executeTask(R task) {
+	public void executeTask(R task) {
 		this.runningTasks++;
 
 		try {

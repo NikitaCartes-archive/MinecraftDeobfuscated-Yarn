@@ -63,7 +63,7 @@ public class PngFile {
 		private int bufferPosition;
 		private int readPosition;
 
-		private ChannelReader(ReadableByteChannel readableByteChannel) {
+		ChannelReader(ReadableByteChannel readableByteChannel) {
 			this.channel = readableByteChannel;
 		}
 
@@ -128,9 +128,6 @@ public class PngFile {
 	abstract static class Reader implements AutoCloseable {
 		protected boolean errored;
 
-		private Reader() {
-		}
-
 		int read(long user, long data, int size) {
 			try {
 				return this.read(data, size);
@@ -163,8 +160,8 @@ public class PngFile {
 	static class SeekableChannelReader extends PngFile.Reader {
 		private final SeekableByteChannel channel;
 
-		private SeekableChannelReader(SeekableByteChannel channel) {
-			this.channel = channel;
+		SeekableChannelReader(SeekableByteChannel seekableByteChannel) {
+			this.channel = seekableByteChannel;
 		}
 
 		@Override

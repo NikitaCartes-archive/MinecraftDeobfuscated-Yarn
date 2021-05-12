@@ -550,11 +550,10 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		public boolean equals(Object o) {
 			if (this == o) {
 				return true;
-			} else if (!(o instanceof Block.NeighborGroup)) {
-				return false;
 			} else {
-				Block.NeighborGroup neighborGroup = (Block.NeighborGroup)o;
-				return this.self == neighborGroup.self && this.other == neighborGroup.other && this.facing == neighborGroup.facing;
+				return !(o instanceof Block.NeighborGroup neighborGroup)
+					? false
+					: this.self == neighborGroup.self && this.other == neighborGroup.other && this.facing == neighborGroup.facing;
 			}
 		}
 

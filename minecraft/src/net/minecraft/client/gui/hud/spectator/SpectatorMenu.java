@@ -20,9 +20,9 @@ public class SpectatorMenu {
 	private static final SpectatorMenuCommand NEXT_PAGE_COMMAND = new SpectatorMenu.ChangePageSpectatorMenuCommand(1, true);
 	private static final SpectatorMenuCommand DISABLED_NEXT_PAGE_COMMAND = new SpectatorMenu.ChangePageSpectatorMenuCommand(1, false);
 	private static final int field_32443 = 8;
-	private static final Text CLOSE_TEXT = new TranslatableText("spectatorMenu.close");
-	private static final Text PREVIOUS_PAGE_TEXT = new TranslatableText("spectatorMenu.previous_page");
-	private static final Text NEXT_PAGE_TEXT = new TranslatableText("spectatorMenu.next_page");
+	static final Text CLOSE_TEXT = new TranslatableText("spectatorMenu.close");
+	static final Text PREVIOUS_PAGE_TEXT = new TranslatableText("spectatorMenu.previous_page");
+	static final Text NEXT_PAGE_TEXT = new TranslatableText("spectatorMenu.next_page");
 	public static final SpectatorMenuCommand BLANK_COMMAND = new SpectatorMenuCommand() {
 		@Override
 		public void use(SpectatorMenu menu) {
@@ -45,7 +45,7 @@ public class SpectatorMenu {
 	private final SpectatorMenuCloseCallback closeCallback;
 	private SpectatorMenuCommandGroup currentGroup;
 	private int selectedSlot = -1;
-	private int page;
+	int page;
 
 	public SpectatorMenu(SpectatorMenuCloseCallback closeCallback) {
 		this.currentGroup = new RootSpectatorCommandGroup();
@@ -152,9 +152,6 @@ public class SpectatorMenu {
 
 	@Environment(EnvType.CLIENT)
 	static class CloseSpectatorMenuCommand implements SpectatorMenuCommand {
-		private CloseSpectatorMenuCommand() {
-		}
-
 		@Override
 		public void use(SpectatorMenu menu) {
 			menu.close();

@@ -185,10 +185,10 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 							);
 							client.runTasks(completableFuture::isDone);
 							serverResourceManager = (ServerResourceManager)completableFuture.get();
-						} catch (ExecutionException | InterruptedException var24) {
-							LOGGER.error("Error loading data packs when importing world settings", (Throwable)var24);
+						} catch (ExecutionException | InterruptedException var15) {
+							LOGGER.error("Error loading data packs when importing world settings", (Throwable)var15);
 							Text text = new TranslatableText("selectWorld.import_worldgen_settings.failure");
-							Text text2 = new LiteralText(var24.getMessage());
+							Text text2 = new LiteralText(var15.getMessage());
 							client.getToastManager().add(SystemToast.create(client, SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER, text, text2));
 							resourcePackManager.close();
 							return;
@@ -200,29 +200,27 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 						DataResult<GeneratorOptions> dataResult;
 						try {
 							BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(string));
-							Throwable string2 = null;
 
 							try {
 								JsonElement jsonElement = jsonParser.parse(bufferedReader);
 								dataResult = GeneratorOptions.CODEC.parse(registryOps, jsonElement);
-							} catch (Throwable var23) {
-								string2 = var23;
-								throw var23;
-							} finally {
+							} catch (Throwable var16) {
 								if (bufferedReader != null) {
-									if (string2 != null) {
-										try {
-											bufferedReader.close();
-										} catch (Throwable var22) {
-											string2.addSuppressed(var22);
-										}
-									} else {
+									try {
 										bufferedReader.close();
+									} catch (Throwable var14) {
+										var16.addSuppressed(var14);
 									}
 								}
+
+								throw var16;
 							}
-						} catch (JsonIOException | JsonSyntaxException | IOException var26) {
-							dataResult = DataResult.error("Failed to parse file: " + var26.getMessage());
+
+							if (bufferedReader != null) {
+								bufferedReader.close();
+							}
+						} catch (JsonIOException | JsonSyntaxException | IOException var17) {
+							dataResult = DataResult.error("Failed to parse file: " + var17.getMessage());
 						}
 
 						if (dataResult.error().isPresent()) {

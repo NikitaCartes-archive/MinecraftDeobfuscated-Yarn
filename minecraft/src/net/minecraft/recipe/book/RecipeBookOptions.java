@@ -121,8 +121,8 @@ public final class RecipeBookOptions {
 	}
 
 	static final class CategoryOption {
-		private boolean guiOpen;
-		private boolean filteringCraftable;
+		boolean guiOpen;
+		boolean filteringCraftable;
 
 		public CategoryOption(boolean guiOpen, boolean filteringCraftable) {
 			this.guiOpen = guiOpen;
@@ -136,11 +136,10 @@ public final class RecipeBookOptions {
 		public boolean equals(Object o) {
 			if (this == o) {
 				return true;
-			} else if (!(o instanceof RecipeBookOptions.CategoryOption)) {
-				return false;
 			} else {
-				RecipeBookOptions.CategoryOption categoryOption = (RecipeBookOptions.CategoryOption)o;
-				return this.guiOpen == categoryOption.guiOpen && this.filteringCraftable == categoryOption.filteringCraftable;
+				return !(o instanceof RecipeBookOptions.CategoryOption categoryOption)
+					? false
+					: this.guiOpen == categoryOption.guiOpen && this.filteringCraftable == categoryOption.filteringCraftable;
 			}
 		}
 
@@ -150,7 +149,7 @@ public final class RecipeBookOptions {
 		}
 
 		public String toString() {
-			return "[open=" + this.guiOpen + ", filtering=" + this.filteringCraftable + ']';
+			return "[open=" + this.guiOpen + ", filtering=" + this.filteringCraftable + "]";
 		}
 	}
 }

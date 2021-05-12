@@ -9,10 +9,13 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.StairsBlock;
+import net.minecraft.block.enums.BlockHalf;
+import net.minecraft.block.enums.SlabType;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldView;
 
 public class BlackstoneReplacementStructureProcessor extends StructureProcessor {
@@ -65,15 +68,15 @@ public class BlackstoneReplacementStructureProcessor extends StructureProcessor 
 			BlockState blockState = structureBlockInfo2.state;
 			BlockState blockState2 = block.getDefaultState();
 			if (blockState.contains(StairsBlock.FACING)) {
-				blockState2 = blockState2.with(StairsBlock.FACING, blockState.get(StairsBlock.FACING));
+				blockState2 = blockState2.with(StairsBlock.FACING, (Direction)blockState.get(StairsBlock.FACING));
 			}
 
 			if (blockState.contains(StairsBlock.HALF)) {
-				blockState2 = blockState2.with(StairsBlock.HALF, blockState.get(StairsBlock.HALF));
+				blockState2 = blockState2.with(StairsBlock.HALF, (BlockHalf)blockState.get(StairsBlock.HALF));
 			}
 
 			if (blockState.contains(SlabBlock.TYPE)) {
-				blockState2 = blockState2.with(SlabBlock.TYPE, blockState.get(SlabBlock.TYPE));
+				blockState2 = blockState2.with(SlabBlock.TYPE, (SlabType)blockState.get(SlabBlock.TYPE));
 			}
 
 			return new Structure.StructureBlockInfo(structureBlockInfo2.pos, blockState2, structureBlockInfo2.nbt);

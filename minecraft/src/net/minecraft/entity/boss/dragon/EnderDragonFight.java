@@ -90,6 +90,10 @@ public class EnderDragonFight {
 
 	public EnderDragonFight(ServerWorld world, long gatewaysSeed, NbtCompound nbt) {
 		this.world = world;
+		if (nbt.contains("NeedsStateScanning")) {
+			this.doLegacyCheck = nbt.getBoolean("NeedsStateScanning");
+		}
+
 		if (nbt.contains("DragonKilled", NbtElement.NUMBER_TYPE)) {
 			if (nbt.containsUuid("Dragon")) {
 				this.dragonUuid = nbt.getUuid("Dragon");
@@ -132,6 +136,7 @@ public class EnderDragonFight {
 
 	public NbtCompound toNbt() {
 		NbtCompound nbtCompound = new NbtCompound();
+		nbtCompound.putBoolean("NeedsStateScanning", this.doLegacyCheck);
 		if (this.dragonUuid != null) {
 			nbtCompound.putUuid("Dragon", this.dragonUuid);
 		}

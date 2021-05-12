@@ -19,6 +19,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
@@ -62,7 +63,7 @@ public class LightningEntity extends Entity {
 	}
 
 	private void powerLightningRod() {
-		BlockPos blockPos = this.getBlockPos().down();
+		BlockPos blockPos = this.method_36607();
 		BlockState blockState = this.world.getBlockState(blockPos);
 		if (blockState.isOf(Blocks.LIGHTNING_ROD)) {
 			((LightningRodBlock)blockState.getBlock()).setPowered(blockState, this.world, blockPos);
@@ -103,7 +104,7 @@ public class LightningEntity extends Entity {
 				}
 
 				this.powerLightningRod();
-				cleanOxidization(this.world, this.getBlockPos().down());
+				cleanOxidization(this.world, this.method_36607());
 				this.emitGameEvent(GameEvent.LIGHTNING_STRIKE);
 			}
 		}
@@ -139,6 +140,11 @@ public class LightningEntity extends Entity {
 				}
 			}
 		}
+	}
+
+	private BlockPos method_36607() {
+		Vec3d vec3d = this.getPos();
+		return new BlockPos(vec3d.x, vec3d.y - 1.0E-6, vec3d.z);
 	}
 
 	private void spawnFire(int spreadAttempts) {

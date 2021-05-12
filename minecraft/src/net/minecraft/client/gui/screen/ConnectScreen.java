@@ -1,12 +1,15 @@
 package net.minecraft.client.gui.screen;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.InetSocketAddress;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.network.Address;
+import net.minecraft.client.network.AllowedAddressResolver;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.ServerInfo;
@@ -30,84 +33,76 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class ConnectScreen extends Screen {
 	private static final AtomicInteger CONNECTOR_THREADS_COUNT = new AtomicInteger(0);
-	private static final Logger LOGGER = LogManager.getLogger();
-	private static final long field_32238 = 2000L;
+	static final Logger LOGGER = LogManager.getLogger();
+	private static final long NARRATOR_INTERVAL = 2000L;
+	public static final Text BLOCKED_HOST_TEXT = new TranslatableText("disconnect.genericReason", new TranslatableText("disconnect.unknownHost"));
 	/**
 	 * The client connection to the remote server.
 	 * This is not used when connecting to the client's own integrated server.
 	 * 
 	 * @see net.minecraft.client.MinecraftClient#integratedServerConnection
 	 */
-	private ClientConnection connection;
-	private boolean connectingCancelled;
-	private final Screen parent;
+	@Nullable
+	volatile ClientConnection connection;
+	volatile boolean connectingCancelled;
+	final Screen parent;
 	private Text status = new TranslatableText("connect.connecting");
 	private long narratorTimer = -1L;
 
-	public ConnectScreen(Screen parent, MinecraftClient client, ServerInfo entry) {
+	private ConnectScreen(Screen parent) {
 		super(NarratorManager.EMPTY);
-		this.client = client;
 		this.parent = parent;
-		ServerAddress serverAddress = ServerAddress.parse(entry.address);
-		client.disconnect();
-		client.setCurrentServerEntry(entry);
-		this.connect(serverAddress.getAddress(), serverAddress.getPort());
 	}
 
-	public ConnectScreen(Screen parent, MinecraftClient client, String address, int port) {
-		super(NarratorManager.EMPTY);
-		this.client = client;
-		this.parent = parent;
+	public static void connect(Screen screen, MinecraftClient client, ServerAddress address, @Nullable ServerInfo info) {
+		ConnectScreen connectScreen = new ConnectScreen(screen);
 		client.disconnect();
-		this.connect(address, port);
+		client.setCurrentServerEntry(info);
+		client.openScreen(connectScreen);
+		connectScreen.connect(client, address);
 	}
 
-	private void connect(String address, int port) {
-		LOGGER.info("Connecting to {}, {}", address, port);
+	private void connect(MinecraftClient client, ServerAddress address) {
+		LOGGER.info("Connecting to {}, {}", address.getAddress(), address.getPort());
 		Thread thread = new Thread("Server Connector #" + CONNECTOR_THREADS_COUNT.incrementAndGet()) {
 			public void run() {
-				InetAddress inetAddress = null;
+				InetSocketAddress inetSocketAddress = null;
 
 				try {
 					if (ConnectScreen.this.connectingCancelled) {
 						return;
 					}
 
-					inetAddress = InetAddress.getByName(address);
-					ConnectScreen.this.connection = ClientConnection.connect(inetAddress, port, ConnectScreen.this.client.options.shouldUseNativeTransport());
+					Optional<InetSocketAddress> optional = AllowedAddressResolver.DEFAULT.resolve(address).map(Address::getInetSocketAddress);
+					if (ConnectScreen.this.connectingCancelled) {
+						return;
+					}
+
+					if (!optional.isPresent()) {
+						client.execute(() -> client.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.CONNECT_FAILED, ConnectScreen.BLOCKED_HOST_TEXT)));
+						return;
+					}
+
+					inetSocketAddress = (InetSocketAddress)optional.get();
+					ConnectScreen.this.connection = ClientConnection.connect(inetSocketAddress, client.options.shouldUseNativeTransport());
 					ConnectScreen.this.connection
-						.setPacketListener(
-							new ClientLoginNetworkHandler(
-								ConnectScreen.this.connection, ConnectScreen.this.client, ConnectScreen.this.parent, text -> ConnectScreen.this.setStatus(text)
-							)
-						);
-					ConnectScreen.this.connection.send(new HandshakeC2SPacket(address, port, NetworkState.LOGIN));
-					ConnectScreen.this.connection.send(new LoginHelloC2SPacket(ConnectScreen.this.client.getSession().getProfile()));
-				} catch (UnknownHostException var4) {
+						.setPacketListener(new ClientLoginNetworkHandler(ConnectScreen.this.connection, client, ConnectScreen.this.parent, ConnectScreen.this::setStatus));
+					ConnectScreen.this.connection.send(new HandshakeC2SPacket(address.getAddress(), address.getPort(), NetworkState.LOGIN));
+					ConnectScreen.this.connection.send(new LoginHelloC2SPacket(client.getSession().getProfile()));
+				} catch (Exception var4) {
 					if (ConnectScreen.this.connectingCancelled) {
 						return;
 					}
 
 					ConnectScreen.LOGGER.error("Couldn't connect to server", (Throwable)var4);
-					ConnectScreen.this.client
-						.execute(
-							() -> ConnectScreen.this.client
-									.openScreen(
-										new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.CONNECT_FAILED, new TranslatableText("disconnect.genericReason", "Unknown host"))
-									)
-						);
-				} catch (Exception var5) {
-					if (ConnectScreen.this.connectingCancelled) {
-						return;
-					}
-
-					ConnectScreen.LOGGER.error("Couldn't connect to server", (Throwable)var5);
-					String string = inetAddress == null ? var5.toString() : var5.toString().replaceAll(inetAddress + ":" + port, "");
-					ConnectScreen.this.client
-						.execute(
-							() -> ConnectScreen.this.client
-									.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.CONNECT_FAILED, new TranslatableText("disconnect.genericReason", string)))
-						);
+					String string = inetSocketAddress == null
+						? var4.toString()
+						: var4.toString().replaceAll(inetSocketAddress.getHostName() + ":" + inetSocketAddress.getPort(), "");
+					client.execute(
+						() -> client.openScreen(
+								new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.CONNECT_FAILED, new TranslatableText("disconnect.genericReason", string))
+							)
+					);
 				}
 			}
 		};
@@ -137,7 +132,7 @@ public class ConnectScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, ScreenTexts.CANCEL, buttonWidget -> {
+		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, ScreenTexts.CANCEL, button -> {
 			this.connectingCancelled = true;
 			if (this.connection != null) {
 				this.connection.disconnect(new TranslatableText("connect.aborted"));

@@ -258,11 +258,11 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			);
 	}
 
-	private static LootTable.Builder method_36545(Block block) {
+	private static LootTable.Builder copperOreDrops(Block ore) {
 		return dropsWithSilkTouch(
-			block,
+			ore,
 			(LootPoolEntry.Builder<?>)applyExplosionDecay(
-				block,
+				ore,
 				ItemEntry.builder(Items.RAW_COPPER)
 					.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 3.0F)))
 					.apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE))
@@ -270,11 +270,11 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 	}
 
-	private static LootTable.Builder method_34057(Block block) {
+	private static LootTable.Builder lapisOreDrops(Block ore) {
 		return dropsWithSilkTouch(
-			block,
+			ore,
 			(LootPoolEntry.Builder<?>)applyExplosionDecay(
-				block,
+				ore,
 				ItemEntry.builder(Items.LAPIS_LAZULI)
 					.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(4.0F, 9.0F)))
 					.apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE))
@@ -282,11 +282,11 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 	}
 
-	private static LootTable.Builder method_34058(Block block) {
+	private static LootTable.Builder redstoneOreDrops(Block ore) {
 		return dropsWithSilkTouch(
-			block,
+			ore,
 			(LootPoolEntry.Builder<?>)applyExplosionDecay(
-				block,
+				ore,
 				ItemEntry.builder(Items.REDSTONE)
 					.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(4.0F, 5.0F)))
 					.apply(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE))
@@ -1408,8 +1408,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.NETHER_QUARTZ_ORE, blockx -> oreDrops(blockx, Items.QUARTZ));
 		this.addDrop(Blocks.DIAMOND_ORE, blockx -> oreDrops(blockx, Items.DIAMOND));
 		this.addDrop(Blocks.DEEPSLATE_DIAMOND_ORE, blockx -> oreDrops(blockx, Items.DIAMOND));
-		this.addDrop(Blocks.COPPER_ORE, BlockLootTableGenerator::method_36545);
-		this.addDrop(Blocks.DEEPSLATE_COPPER_ORE, BlockLootTableGenerator::method_36545);
+		this.addDrop(Blocks.COPPER_ORE, BlockLootTableGenerator::copperOreDrops);
+		this.addDrop(Blocks.DEEPSLATE_COPPER_ORE, BlockLootTableGenerator::copperOreDrops);
 		this.addDrop(Blocks.IRON_ORE, blockx -> oreDrops(blockx, Items.RAW_IRON));
 		this.addDrop(Blocks.DEEPSLATE_IRON_ORE, blockx -> oreDrops(blockx, Items.RAW_IRON));
 		this.addDrop(Blocks.GOLD_ORE, blockx -> oreDrops(blockx, Items.RAW_GOLD));
@@ -1426,8 +1426,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					)
 				)
 		);
-		this.addDrop(Blocks.LAPIS_ORE, BlockLootTableGenerator::method_34057);
-		this.addDrop(Blocks.DEEPSLATE_LAPIS_ORE, BlockLootTableGenerator::method_34057);
+		this.addDrop(Blocks.LAPIS_ORE, BlockLootTableGenerator::lapisOreDrops);
+		this.addDrop(Blocks.DEEPSLATE_LAPIS_ORE, BlockLootTableGenerator::lapisOreDrops);
 		this.addDrop(
 			Blocks.COBWEB,
 			blockx -> dropsWithSilkTouchOrShears(blockx, (LootPoolEntry.Builder<?>)addSurvivesExplosionCondition(blockx, ItemEntry.builder(Items.STRING)))
@@ -1494,8 +1494,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					)
 				)
 		);
-		this.addDrop(Blocks.REDSTONE_ORE, BlockLootTableGenerator::method_34058);
-		this.addDrop(Blocks.DEEPSLATE_REDSTONE_ORE, BlockLootTableGenerator::method_34058);
+		this.addDrop(Blocks.REDSTONE_ORE, BlockLootTableGenerator::redstoneOreDrops);
+		this.addDrop(Blocks.DEEPSLATE_REDSTONE_ORE, BlockLootTableGenerator::redstoneOreDrops);
 		this.addDrop(
 			Blocks.SEA_LANTERN,
 			blockx -> dropsWithSilkTouch(

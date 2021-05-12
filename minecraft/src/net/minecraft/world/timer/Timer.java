@@ -113,11 +113,11 @@ public class Timer<T> {
 		public final String name;
 		public final TimerCallback<T> callback;
 
-		private Event(long triggerTime, UnsignedLong id, String name, TimerCallback<T> callback) {
-			this.triggerTime = triggerTime;
-			this.id = id;
-			this.name = name;
-			this.callback = callback;
+		Event(long l, UnsignedLong unsignedLong, String string, TimerCallback<T> timerCallback) {
+			this.triggerTime = l;
+			this.id = unsignedLong;
+			this.name = string;
+			this.callback = timerCallback;
 		}
 	}
 }

@@ -85,7 +85,7 @@ public class SelectWorldScreen extends Screen {
 				72,
 				20,
 				new TranslatableText("selectWorld.delete"),
-				buttonWidget -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::delete)
+				buttonWidget -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::deleteIfConfirmed)
 			)
 		);
 		this.recreateButton = this.addButton(

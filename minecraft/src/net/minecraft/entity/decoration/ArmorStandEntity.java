@@ -61,10 +61,10 @@ public class ArmorStandEntity extends LivingEntity {
 	private static final double field_30450 = 1.6;
 	public static final int field_30446 = 8;
 	public static final int field_30451 = 16;
-	public static final int field_30452 = 1;
-	public static final int field_30453 = 4;
-	public static final int field_30442 = 8;
-	public static final int field_30444 = 16;
+	public static final int SMALL_FLAG = 1;
+	public static final int SHOW_ARMS_FLAG = 4;
+	public static final int HIDE_BASE_PLATE_FLAG = 8;
+	public static final int MARKER_FLAG = 16;
 	public static final TrackedData<Byte> ARMOR_STAND_FLAGS = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.BYTE);
 	public static final TrackedData<EulerAngle> TRACKER_HEAD_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
 	public static final TrackedData<EulerAngle> TRACKER_BODY_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
@@ -203,7 +203,7 @@ public class ArmorStandEntity extends LivingEntity {
 			nbt.putBoolean("Marker", this.isMarker());
 		}
 
-		nbt.put("Pose", this.serializePose());
+		nbt.put("Pose", this.poseToNbt());
 	}
 
 	@Override
@@ -251,30 +251,30 @@ public class ArmorStandEntity extends LivingEntity {
 		this.setRightLegRotation(nbtList6.isEmpty() ? DEFAULT_RIGHT_LEG_ROTATION : new EulerAngle(nbtList6));
 	}
 
-	private NbtCompound serializePose() {
+	private NbtCompound poseToNbt() {
 		NbtCompound nbtCompound = new NbtCompound();
 		if (!DEFAULT_HEAD_ROTATION.equals(this.headRotation)) {
-			nbtCompound.put("Head", this.headRotation.serialize());
+			nbtCompound.put("Head", this.headRotation.toNbt());
 		}
 
 		if (!DEFAULT_BODY_ROTATION.equals(this.bodyRotation)) {
-			nbtCompound.put("Body", this.bodyRotation.serialize());
+			nbtCompound.put("Body", this.bodyRotation.toNbt());
 		}
 
 		if (!DEFAULT_LEFT_ARM_ROTATION.equals(this.leftArmRotation)) {
-			nbtCompound.put("LeftArm", this.leftArmRotation.serialize());
+			nbtCompound.put("LeftArm", this.leftArmRotation.toNbt());
 		}
 
 		if (!DEFAULT_RIGHT_ARM_ROTATION.equals(this.rightArmRotation)) {
-			nbtCompound.put("RightArm", this.rightArmRotation.serialize());
+			nbtCompound.put("RightArm", this.rightArmRotation.toNbt());
 		}
 
 		if (!DEFAULT_LEFT_LEG_ROTATION.equals(this.leftLegRotation)) {
-			nbtCompound.put("LeftLeg", this.leftLegRotation.serialize());
+			nbtCompound.put("LeftLeg", this.leftLegRotation.toNbt());
 		}
 
 		if (!DEFAULT_RIGHT_LEG_ROTATION.equals(this.rightLegRotation)) {
-			nbtCompound.put("RightLeg", this.rightLegRotation.serialize());
+			nbtCompound.put("RightLeg", this.rightLegRotation.toNbt());
 		}
 
 		return nbtCompound;
@@ -336,10 +336,10 @@ public class ArmorStandEntity extends LivingEntity {
 		}
 	}
 
-	private EquipmentSlot slotFromPosition(Vec3d vec3d) {
+	private EquipmentSlot slotFromPosition(Vec3d hitPos) {
 		EquipmentSlot equipmentSlot = EquipmentSlot.MAINHAND;
 		boolean bl = this.isSmall();
-		double d = bl ? vec3d.y * 2.0 : vec3d.y;
+		double d = bl ? hitPos.y * 2.0 : hitPos.y;
 		EquipmentSlot equipmentSlot2 = EquipmentSlot.FEET;
 		if (d >= 0.1 && d < 0.1 + (bl ? 0.8 : 0.45) && this.hasStackEquipped(equipmentSlot2)) {
 			equipmentSlot = EquipmentSlot.FEET;
@@ -624,7 +624,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	private void setSmall(boolean small) {
-		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), 1, small));
+		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), SMALL_FLAG, small));
 	}
 
 	public boolean isSmall() {
@@ -632,7 +632,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	private void setShowArms(boolean showArms) {
-		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), 4, showArms));
+		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), SHOW_ARMS_FLAG, showArms));
 	}
 
 	public boolean shouldShowArms() {
@@ -640,7 +640,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	private void setHideBasePlate(boolean hideBasePlate) {
-		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), 8, hideBasePlate));
+		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), HIDE_BASE_PLATE_FLAG, hideBasePlate));
 	}
 
 	public boolean shouldHideBasePlate() {
@@ -648,7 +648,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	private void setMarker(boolean marker) {
-		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), 16, marker));
+		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), MARKER_FLAG, marker));
 	}
 
 	public boolean isMarker() {
@@ -816,5 +816,10 @@ public class ArmorStandEntity extends LivingEntity {
 	@Override
 	public ItemStack getPickBlockStack() {
 		return new ItemStack(Items.ARMOR_STAND);
+	}
+
+	@Override
+	public boolean isPartOfGame() {
+		return !this.isInvisible() && !this.isMarker();
 	}
 }

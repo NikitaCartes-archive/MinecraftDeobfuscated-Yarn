@@ -24,16 +24,20 @@ import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * A screenshooter takes screenshots and saves them into tga file format. It also
+ * holds a few utility methods for other types of screenshots.
+ */
 @Environment(EnvType.CLIENT)
-public class ScreenshotUtils {
+public class Screenshooter {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
-	private int field_32157;
-	private final DataOutputStream field_32158;
-	private final byte[] field_32159;
-	private final int field_32160;
-	private final int field_32161;
-	private File field_32162;
+	private int unitHeight;
+	private final DataOutputStream stream;
+	private final byte[] buffer;
+	private final int width;
+	private final int height;
+	private File file;
 
 	public static void saveScreenshot(File gameDirectory, int framebufferWidth, int framebufferHeight, Framebuffer framebuffer, Consumer<Text> messageReceiver) {
 		saveScreenshot(gameDirectory, null, framebufferWidth, framebufferHeight, framebuffer, messageReceiver);
@@ -105,57 +109,73 @@ public class ScreenshotUtils {
 		}
 	}
 
-	public ScreenshotUtils(File file, int i, int j, int k) throws IOException {
-		this.field_32160 = i;
-		this.field_32161 = j;
-		this.field_32157 = k;
-		File file2 = new File(file, "screenshots");
-		file2.mkdir();
+	/**
+	 * Creates a screenshooter for huge screenshots.
+	 * 
+	 * @see net.minecraft.client.MinecraftClient#takeHugeScreenshot
+	 */
+	public Screenshooter(File gameDirectory, int width, int height, int unitHeight) throws IOException {
+		this.width = width;
+		this.height = height;
+		this.unitHeight = unitHeight;
+		File file = new File(gameDirectory, "screenshots");
+		file.mkdir();
 		String string = "huge_" + DATE_FORMAT.format(new Date());
-		int l = 1;
+		int i = 1;
 
-		while ((this.field_32162 = new File(file2, string + (l == 1 ? "" : "_" + l) + ".tga")).exists()) {
-			l++;
+		while ((this.file = new File(file, string + (i == 1 ? "" : "_" + i) + ".tga")).exists()) {
+			i++;
 		}
 
 		byte[] bs = new byte[18];
 		bs[2] = 2;
-		bs[12] = (byte)(i % 256);
-		bs[13] = (byte)(i / 256);
-		bs[14] = (byte)(j % 256);
-		bs[15] = (byte)(j / 256);
+		bs[12] = (byte)(width % 256);
+		bs[13] = (byte)(width / 256);
+		bs[14] = (byte)(height % 256);
+		bs[15] = (byte)(height / 256);
 		bs[16] = 24;
-		this.field_32159 = new byte[i * k * 3];
-		this.field_32158 = new DataOutputStream(new FileOutputStream(this.field_32162));
-		this.field_32158.write(bs);
+		this.buffer = new byte[width * unitHeight * 3];
+		this.stream = new DataOutputStream(new FileOutputStream(this.file));
+		this.stream.write(bs);
 	}
 
-	public void method_35711(ByteBuffer byteBuffer, int i, int j, int k, int l) {
-		int m = k;
-		int n = l;
-		if (k > this.field_32160 - i) {
-			m = this.field_32160 - i;
+	/**
+	 * Transports image data from {@code data} into {@link #buffer}.
+	 */
+	public void getIntoBuffer(ByteBuffer data, int startWidth, int startHeight, int unitWidth, int unitHeight) {
+		int i = unitWidth;
+		int j = unitHeight;
+		if (unitWidth > this.width - startWidth) {
+			i = this.width - startWidth;
 		}
 
-		if (l > this.field_32161 - j) {
-			n = this.field_32161 - j;
+		if (unitHeight > this.height - startHeight) {
+			j = this.height - startHeight;
 		}
 
-		this.field_32157 = n;
+		this.unitHeight = j;
 
-		for (int o = 0; o < n; o++) {
-			byteBuffer.position((l - n) * k * 3 + o * k * 3);
-			int p = (i + o * this.field_32160) * 3;
-			byteBuffer.get(this.field_32159, p, m * 3);
+		for (int k = 0; k < j; k++) {
+			data.position((unitHeight - j) * unitWidth * 3 + k * unitWidth * 3);
+			int l = (startWidth + k * this.width) * 3;
+			data.get(this.buffer, l, i * 3);
 		}
 	}
 
-	public void method_35710() throws IOException {
-		this.field_32158.write(this.field_32159, 0, this.field_32160 * 3 * this.field_32157);
+	/**
+	 * Writes the contents in the {@link #buffer} into the {@link #stream}.
+	 */
+	public void writeToStream() throws IOException {
+		this.stream.write(this.buffer, 0, this.width * 3 * this.unitHeight);
 	}
 
-	public File method_35712() throws IOException {
-		this.field_32158.close();
-		return this.field_32162;
+	/**
+	 * Finish taking the screenshot and return the complete tga file.
+	 * 
+	 * @return the tga file
+	 */
+	public File finish() throws IOException {
+		this.stream.close();
+		return this.file;
 	}
 }

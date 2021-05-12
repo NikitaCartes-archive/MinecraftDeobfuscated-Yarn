@@ -66,7 +66,7 @@ public class PandaEntity extends AnimalEntity {
 	private static final TrackedData<Byte> MAIN_GENE = DataTracker.registerData(PandaEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Byte> HIDDEN_GENE = DataTracker.registerData(PandaEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Byte> PANDA_FLAGS = DataTracker.registerData(PandaEntity.class, TrackedDataHandlerRegistry.BYTE);
-	private static final TargetPredicate ASK_FOR_BAMBOO_TARGET = new TargetPredicate().setBaseMaxDistance(8.0).includeTeammates().includeInvulnerable();
+	static final TargetPredicate ASK_FOR_BAMBOO_TARGET = TargetPredicate.createNonAttackable().setBaseMaxDistance(8.0);
 	private static final int SNEEZING_FLAG = 2;
 	private static final int PLAYING_FLAG = 4;
 	private static final int SCARED_FLAG = 8;
@@ -74,8 +74,8 @@ public class PandaEntity extends AnimalEntity {
 	private static final int field_30348 = 5;
 	public static final int field_30343 = 32;
 	private static final int field_30349 = 32;
-	private boolean shouldGetRevenge;
-	private boolean shouldAttack;
+	boolean shouldGetRevenge;
+	boolean shouldAttack;
 	public int playingTicks;
 	private Vec3d playingJump;
 	private float scaredAnimationProgress;
@@ -84,8 +84,8 @@ public class PandaEntity extends AnimalEntity {
 	private float lastLieOnBackAnimationProgress;
 	private float rollOverAnimationProgress;
 	private float lastRollOverAnimationProgress;
-	private PandaEntity.LookAtEntityGoal lookAtPlayerGoal;
-	private static final Predicate<ItemEntity> IS_FOOD = item -> {
+	PandaEntity.LookAtEntityGoal lookAtPlayerGoal;
+	static final Predicate<ItemEntity> IS_FOOD = item -> {
 		ItemStack itemStack = item.getStack();
 		return (itemStack.isOf(Blocks.BAMBOO.asItem()) || itemStack.isOf(Blocks.CAKE.asItem())) && item.isAlive() && !item.cannotPickup();
 	};
@@ -588,7 +588,7 @@ public class PandaEntity extends AnimalEntity {
 		}
 	}
 
-	private void stop() {
+	void stop() {
 		if (!this.isTouchingWater()) {
 			this.setForwardSpeed(0.0F);
 			this.getNavigation().stop();
@@ -764,7 +764,7 @@ public class PandaEntity extends AnimalEntity {
 			return this.recessive;
 		}
 
-		private static PandaEntity.Gene getProductGene(PandaEntity.Gene mainGene, PandaEntity.Gene hiddenGene) {
+		static PandaEntity.Gene getProductGene(PandaEntity.Gene mainGene, PandaEntity.Gene hiddenGene) {
 			if (mainGene.isRecessive()) {
 				return mainGene == hiddenGene ? mainGene : NORMAL;
 			} else {

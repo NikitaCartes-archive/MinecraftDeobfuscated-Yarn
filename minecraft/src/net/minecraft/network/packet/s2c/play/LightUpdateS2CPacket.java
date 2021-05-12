@@ -58,7 +58,7 @@ public class LightUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 				bitSet2.set(i);
 			} else {
 				bitSet.set(i);
-				list.add(chunkNibbleArray.asByteArray().clone());
+				list.add((byte[])chunkNibbleArray.asByteArray().clone());
 			}
 		}
 	}

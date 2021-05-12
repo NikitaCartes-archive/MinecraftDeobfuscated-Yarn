@@ -41,9 +41,9 @@ public class StatsScreen extends Screen implements StatsListener {
 	private static final Text DOWNLOADING_STATS_TEXT = new TranslatableText("multiplayer.downloadingStats");
 	protected final Screen parent;
 	private StatsScreen.GeneralStatsListWidget generalStats;
-	private StatsScreen.ItemStatsListWidget itemStats;
+	StatsScreen.ItemStatsListWidget itemStats;
 	private StatsScreen.EntityStatsListWidget mobStats;
-	private final StatHandler statHandler;
+	final StatHandler statHandler;
 	@Nullable
 	private AlwaysSelectedEntryListWidget<?> selectedList;
 	private boolean downloadingStats = true;
@@ -107,7 +107,7 @@ public class StatsScreen extends Screen implements StatsListener {
 		if (this.downloadingStats) {
 			this.renderBackground(matrices);
 			drawCenteredText(matrices, this.textRenderer, DOWNLOADING_STATS_TEXT, this.width / 2, this.height / 2, 16777215);
-			drawCenteredString(
+			drawCenteredText(
 				matrices,
 				this.textRenderer,
 				PROGRESS_BAR_STAGES[(int)(Util.getMeasuringTimeMs() / 150L % (long)PROGRESS_BAR_STAGES.length)],
@@ -152,20 +152,20 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 	}
 
-	private static String getStatTranslationKey(Stat<Identifier> stat) {
+	static String getStatTranslationKey(Stat<Identifier> stat) {
 		return "stat." + stat.getValue().toString().replace(':', '.');
 	}
 
-	private int getColumnX(int index) {
+	int getColumnX(int index) {
 		return 115 + 40 * index;
 	}
 
-	private void renderStatItem(MatrixStack matrices, int x, int y, Item item) {
+	void renderStatItem(MatrixStack matrices, int x, int y, Item item) {
 		this.renderIcon(matrices, x + 1, y + 1, 0, 0);
 		this.itemRenderer.renderGuiItemIcon(item.getDefaultStack(), x + 2, y + 2);
 	}
 
-	private void renderIcon(MatrixStack matrices, int x, int y, int u, int v) {
+	void renderIcon(MatrixStack matrices, int x, int y, int u, int v) {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderTexture(0, STATS_ICON_TEXTURE);
@@ -254,7 +254,7 @@ public class StatsScreen extends Screen implements StatsListener {
 			private final Stat<Identifier> stat;
 			private final Text displayName;
 
-			private Entry(Stat<Identifier> stat) {
+			Entry(Stat<Identifier> stat) {
 				this.stat = stat;
 				this.displayName = new TranslatableText(StatsScreen.getStatTranslationKey(stat));
 			}
@@ -459,9 +459,6 @@ public class StatsScreen extends Screen implements StatsListener {
 
 		@Environment(EnvType.CLIENT)
 		class Entry extends AlwaysSelectedEntryListWidget.Entry<StatsScreen.ItemStatsListWidget.Entry> {
-			private Entry() {
-			}
-
 			@Override
 			public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 				Item item = (Item)StatsScreen.this.itemStats.items.get(index);
@@ -499,9 +496,6 @@ public class StatsScreen extends Screen implements StatsListener {
 
 		@Environment(EnvType.CLIENT)
 		class ItemComparator implements Comparator<Item> {
-			private ItemComparator() {
-			}
-
 			public int compare(Item item, Item item2) {
 				int i;
 				int j;

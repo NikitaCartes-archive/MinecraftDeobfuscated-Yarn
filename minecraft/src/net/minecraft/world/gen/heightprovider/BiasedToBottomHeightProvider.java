@@ -51,6 +51,6 @@ public class BiasedToBottomHeightProvider extends HeightProvider {
 	}
 
 	public String toString() {
-		return "biased[" + this.minOffset + '-' + this.maxOffset + " inner: " + this.inner + "]";
+		return "biased[" + this.minOffset + "-" + this.maxOffset + " inner: " + this.inner + "]";
 	}
 }

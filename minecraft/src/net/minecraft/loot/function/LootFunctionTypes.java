@@ -52,7 +52,7 @@ public class LootFunctionTypes {
 			case 2:
 				BiFunction<ItemStack, LootContext, ItemStack> biFunction = lootFunctions[0];
 				BiFunction<ItemStack, LootContext, ItemStack> biFunction2 = lootFunctions[1];
-				return (stack, context) -> (ItemStack)biFunction2.apply(biFunction.apply(stack, context), context);
+				return (stack, context) -> (ItemStack)biFunction2.apply((ItemStack)biFunction.apply(stack, context), context);
 			default:
 				return (stack, context) -> {
 					for (BiFunction<ItemStack, LootContext, ItemStack> biFunctionx : lootFunctions) {

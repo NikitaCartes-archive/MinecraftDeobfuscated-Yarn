@@ -47,15 +47,12 @@ public class DefaultPosArgument implements PosArgument {
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
-		} else if (!(o instanceof DefaultPosArgument)) {
+		} else if (!(o instanceof DefaultPosArgument defaultPosArgument)) {
+			return false;
+		} else if (!this.x.equals(defaultPosArgument.x)) {
 			return false;
 		} else {
-			DefaultPosArgument defaultPosArgument = (DefaultPosArgument)o;
-			if (!this.x.equals(defaultPosArgument.x)) {
-				return false;
-			} else {
-				return !this.y.equals(defaultPosArgument.y) ? false : this.z.equals(defaultPosArgument.z);
-			}
+			return !this.y.equals(defaultPosArgument.y) ? false : this.z.equals(defaultPosArgument.z);
 		}
 	}
 

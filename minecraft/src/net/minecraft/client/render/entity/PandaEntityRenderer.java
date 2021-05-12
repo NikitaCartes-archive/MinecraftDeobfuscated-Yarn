@@ -32,7 +32,7 @@ public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEnt
 	}
 
 	public Identifier getTexture(PandaEntity pandaEntity) {
-		return (Identifier)TEXTURES.getOrDefault(pandaEntity.getProductGene(), TEXTURES.get(PandaEntity.Gene.NORMAL));
+		return (Identifier)TEXTURES.getOrDefault(pandaEntity.getProductGene(), (Identifier)TEXTURES.get(PandaEntity.Gene.NORMAL));
 	}
 
 	protected void setupTransforms(PandaEntity pandaEntity, MatrixStack matrixStack, float f, float g, float h) {

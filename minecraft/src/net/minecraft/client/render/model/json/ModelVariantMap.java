@@ -93,11 +93,8 @@ public class ModelVariantMap {
 		if (this == o) {
 			return true;
 		} else {
-			if (o instanceof ModelVariantMap) {
-				ModelVariantMap modelVariantMap = (ModelVariantMap)o;
-				if (this.variantMap.equals(modelVariantMap.variantMap)) {
-					return this.hasMultipartModel() ? this.multipartModel.equals(modelVariantMap.multipartModel) : !modelVariantMap.hasMultipartModel();
-				}
+			if (o instanceof ModelVariantMap modelVariantMap && this.variantMap.equals(modelVariantMap.variantMap)) {
+				return this.hasMultipartModel() ? this.multipartModel.equals(modelVariantMap.multipartModel) : !modelVariantMap.hasMultipartModel();
 			}
 
 			return false;
@@ -169,7 +166,7 @@ public class ModelVariantMap {
 				JsonObject jsonObject = JsonHelper.getObject(object, "variants");
 
 				for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-					map.put(entry.getKey(), context.deserialize((JsonElement)entry.getValue(), WeightedUnbakedModel.class));
+					map.put((String)entry.getKey(), (WeightedUnbakedModel)context.deserialize((JsonElement)entry.getValue(), WeightedUnbakedModel.class));
 				}
 			}
 
@@ -191,8 +188,6 @@ public class ModelVariantMap {
 	 * An unchecked exception indicating a variant is not found with a string key.
 	 */
 	@Environment(EnvType.CLIENT)
-	public class VariantAbsentException extends RuntimeException {
-		protected VariantAbsentException() {
-		}
+	protected class VariantAbsentException extends RuntimeException {
 	}
 }

@@ -11,7 +11,6 @@ import java.util.concurrent.Executor;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import net.minecraft.class_6350;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.server.network.DebugInfoSender;
@@ -147,7 +146,7 @@ public abstract class ChunkGenerator {
 		int i = 8;
 		ChunkPos chunkPos = chunk.getPos();
 		CarverContext carverContext = new CarverContext(this);
-		class_6350 lv = this.method_36380(chunk);
+		AquiferSampler aquiferSampler = this.createAquiferSampler(chunk);
 		BitSet bitSet = ((ProtoChunk)chunk).getOrCreateCarvingMask(carver);
 
 		for (int j = -8; j <= 8; j++) {
@@ -164,15 +163,15 @@ public abstract class ChunkGenerator {
 					ConfiguredCarver<?> configuredCarver = (ConfiguredCarver<?>)((Supplier)listIterator.next()).get();
 					chunkRandom.setCarverSeed(seed + (long)l, chunkPos2.x, chunkPos2.z);
 					if (configuredCarver.shouldCarve(chunkRandom)) {
-						configuredCarver.carve(carverContext, chunk, biomeAccess::getBiome, chunkRandom, lv, chunkPos2, bitSet);
+						configuredCarver.carve(carverContext, chunk, biomeAccess::getBiome, chunkRandom, aquiferSampler, chunkPos2, bitSet);
 					}
 				}
 			}
 		}
 	}
 
-	protected class_6350 method_36380(Chunk chunk) {
-		return class_6350.method_36381(this.getSeaLevel(), Blocks.WATER.getDefaultState());
+	protected AquiferSampler createAquiferSampler(Chunk chunk) {
+		return AquiferSampler.seaLevel(this.getSeaLevel(), Blocks.WATER.getDefaultState());
 	}
 
 	/**

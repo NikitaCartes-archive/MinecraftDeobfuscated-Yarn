@@ -33,12 +33,12 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class FontManager implements AutoCloseable {
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogManager.getLogger();
 	private static final String FONTS_JSON = "fonts.json";
 	public static final Identifier MISSING_STORAGE_ID = new Identifier("minecraft", "missing");
 	private final FontStorage missingStorage;
-	private final Map<Identifier, FontStorage> fontStorages = Maps.<Identifier, FontStorage>newHashMap();
-	private final TextureManager textureManager;
+	final Map<Identifier, FontStorage> fontStorages = Maps.<Identifier, FontStorage>newHashMap();
+	final TextureManager textureManager;
 	private Map<Identifier, Identifier> idOverrides = ImmutableMap.of();
 	private final ResourceReloader resourceReloadListener = new SinglePreparationResourceReloader<Map<Identifier, List<Font>>>() {
 		protected Map<Identifier, List<Font>> prepare(ResourceManager resourceManager, Profiler profiler) {
@@ -58,11 +58,9 @@ public class FontManager implements AutoCloseable {
 
 						try {
 							InputStream inputStream = resource.getInputStream();
-							Throwable var13 = null;
 
 							try {
 								Reader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-								Throwable var15 = null;
 
 								try {
 									profiler.push("reading");
@@ -82,56 +80,50 @@ public class FontManager implements AutoCloseable {
 											}
 
 											profiler.pop();
-										} catch (RuntimeException var49) {
+										} catch (RuntimeException var22) {
 											FontManager.LOGGER
 												.warn(
-													"Unable to read definition '{}' in {} in resourcepack: '{}': {}", identifier2, "fonts.json", resource.getResourcePackName(), var49.getMessage()
+													"Unable to read definition '{}' in {} in resourcepack: '{}': {}", identifier2, "fonts.json", resource.getResourcePackName(), var22.getMessage()
 												);
 										}
 									}
 
 									profiler.pop();
-								} catch (Throwable var50) {
-									var15 = var50;
-									throw var50;
-								} finally {
-									if (reader != null) {
-										if (var15 != null) {
-											try {
-												reader.close();
-											} catch (Throwable var48) {
-												var15.addSuppressed(var48);
-											}
-										} else {
-											reader.close();
-										}
+								} catch (Throwable var23) {
+									try {
+										reader.close();
+									} catch (Throwable var21) {
+										var23.addSuppressed(var21);
 									}
+
+									throw var23;
 								}
-							} catch (Throwable var52) {
-								var13 = var52;
-								throw var52;
-							} finally {
+
+								reader.close();
+							} catch (Throwable var24) {
 								if (inputStream != null) {
-									if (var13 != null) {
-										try {
-											inputStream.close();
-										} catch (Throwable var47) {
-											var13.addSuppressed(var47);
-										}
-									} else {
+									try {
 										inputStream.close();
+									} catch (Throwable var20) {
+										var24.addSuppressed(var20);
 									}
 								}
+
+								throw var24;
 							}
-						} catch (RuntimeException var54) {
+
+							if (inputStream != null) {
+								inputStream.close();
+							}
+						} catch (RuntimeException var25) {
 							FontManager.LOGGER
-								.warn("Unable to load font '{}' in {} in resourcepack: '{}': {}", identifier2, "fonts.json", resource.getResourcePackName(), var54.getMessage());
+								.warn("Unable to load font '{}' in {} in resourcepack: '{}': {}", identifier2, "fonts.json", resource.getResourcePackName(), var25.getMessage());
 						}
 
 						profiler.pop();
 					}
-				} catch (IOException var55) {
-					FontManager.LOGGER.warn("Unable to load font '{}' in {}: {}", identifier2, "fonts.json", var55.getMessage());
+				} catch (IOException var26) {
+					FontManager.LOGGER.warn("Unable to load font '{}' in {}: {}", identifier2, "fonts.json", var26.getMessage());
 				}
 
 				profiler.push("caching");

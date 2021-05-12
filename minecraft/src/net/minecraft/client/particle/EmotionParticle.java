@@ -8,8 +8,8 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class EmotionParticle extends SpriteBillboardParticle {
-	private EmotionParticle(ClientWorld world, double x, double y, double z) {
-		super(world, x, y, z, 0.0, 0.0, 0.0);
+	EmotionParticle(ClientWorld clientWorld, double d, double e, double f) {
+		super(clientWorld, d, e, f, 0.0, 0.0, 0.0);
 		this.field_28787 = true;
 		this.field_28786 = 0.86F;
 		this.velocityX *= 0.01F;

@@ -9,14 +9,14 @@ import net.minecraft.particle.DefaultParticleType;
 public class BubblePopParticle extends SpriteBillboardParticle {
 	private final SpriteProvider spriteProvider;
 
-	private BubblePopParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
-		super(world, x, y, z);
+	BubblePopParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
+		super(clientWorld, d, e, f);
 		this.spriteProvider = spriteProvider;
 		this.maxAge = 4;
 		this.gravityStrength = 0.008F;
-		this.velocityX = velocityX;
-		this.velocityY = velocityY;
-		this.velocityZ = velocityZ;
+		this.velocityX = g;
+		this.velocityY = h;
+		this.velocityZ = i;
 		this.setSpriteForAge(spriteProvider);
 	}
 

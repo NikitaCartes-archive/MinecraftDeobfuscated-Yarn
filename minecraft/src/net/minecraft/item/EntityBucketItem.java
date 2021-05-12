@@ -4,7 +4,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Bucketable;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.passive.TropicalFishEntity;
@@ -48,9 +47,7 @@ public class EntityBucketItem extends BucketItem {
 	}
 
 	private void spawnEntity(ServerWorld world, ItemStack stack, BlockPos pos) {
-		Entity entity = this.entityType.spawnFromItemStack(world, stack, null, pos, SpawnReason.BUCKET, true, false);
-		if (entity instanceof Bucketable) {
-			Bucketable bucketable = (Bucketable)entity;
+		if (this.entityType.spawnFromItemStack(world, stack, null, pos, SpawnReason.BUCKET, true, false) instanceof Bucketable bucketable) {
 			bucketable.copyDataFromNbt(stack.getOrCreateTag());
 			bucketable.setFromBucket(true);
 		}

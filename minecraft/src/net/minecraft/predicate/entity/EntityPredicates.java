@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -53,8 +54,10 @@ public final class EntityPredicates {
 	public static final Predicate<Entity> VALID_INVENTORIES = entity -> entity instanceof Inventory && entity.isAlive();
 	public static final Predicate<Entity> EXCEPT_CREATIVE_OR_SPECTATOR = entity -> !(entity instanceof PlayerEntity)
 			|| !entity.isSpectator() && !((PlayerEntity)entity).isCreative();
-	public static final Predicate<Entity> EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL = entity -> !(entity instanceof PlayerEntity)
-			|| !entity.isSpectator() && !((PlayerEntity)entity).isCreative() && entity.world.getDifficulty() != Difficulty.PEACEFUL;
+	public static final Predicate<Entity> EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL = entity -> (
+				!(entity instanceof PlayerEntity) || !entity.isSpectator() && !((PlayerEntity)entity).isCreative() && entity.world.getDifficulty() != Difficulty.PEACEFUL
+			)
+			&& (!(entity instanceof AxolotlEntity) || !((AxolotlEntity)entity).isPlayingDead());
 	public static final Predicate<Entity> EXCEPT_SPECTATOR = entity -> !entity.isSpectator();
 
 	private EntityPredicates() {
@@ -115,11 +118,8 @@ public final class EntityPredicates {
 		public boolean test(@Nullable Entity entity) {
 			if (!entity.isAlive()) {
 				return false;
-			} else if (!(entity instanceof LivingEntity)) {
-				return false;
 			} else {
-				LivingEntity livingEntity = (LivingEntity)entity;
-				return livingEntity.canEquip(this.stack);
+				return !(entity instanceof LivingEntity livingEntity) ? false : livingEntity.canEquip(this.stack);
 			}
 		}
 	}

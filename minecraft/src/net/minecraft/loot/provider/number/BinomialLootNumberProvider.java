@@ -12,12 +12,12 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.JsonSerializer;
 
 public final class BinomialLootNumberProvider implements LootNumberProvider {
-	private final LootNumberProvider n;
-	private final LootNumberProvider p;
+	final LootNumberProvider n;
+	final LootNumberProvider p;
 
-	private BinomialLootNumberProvider(LootNumberProvider n, LootNumberProvider p) {
-		this.n = n;
-		this.p = p;
+	BinomialLootNumberProvider(LootNumberProvider lootNumberProvider, LootNumberProvider lootNumberProvider2) {
+		this.n = lootNumberProvider;
+		this.p = lootNumberProvider2;
 	}
 
 	@Override

@@ -79,7 +79,7 @@ public class RabbitEntity extends AnimalEntity {
 	private int jumpDuration;
 	private boolean lastOnGround;
 	private int ticksUntilJump;
-	private int moreCarrotTicks;
+	int moreCarrotTicks;
 
 	public RabbitEntity(EntityType<? extends RabbitEntity> entityType, World world) {
 		super(entityType, world);
@@ -383,7 +383,7 @@ public class RabbitEntity extends AnimalEntity {
 		return (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isOf(Blocks.SNOW) || blockState.isOf(Blocks.SAND)) && world.getBaseLightLevel(pos, 0) > 8;
 	}
 
-	private boolean wantsCarrots() {
+	boolean wantsCarrots() {
 		return this.moreCarrotTicks == 0;
 	}
 

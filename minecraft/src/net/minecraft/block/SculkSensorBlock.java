@@ -269,9 +269,7 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 
 	@Override
 	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-		BlockEntity blockEntity = world.getBlockEntity(pos);
-		if (blockEntity instanceof SculkSensorBlockEntity) {
-			SculkSensorBlockEntity sculkSensorBlockEntity = (SculkSensorBlockEntity)blockEntity;
+		if (world.getBlockEntity(pos) instanceof SculkSensorBlockEntity sculkSensorBlockEntity) {
 			return getPhase(state) == SculkSensorPhase.ACTIVE ? sculkSensorBlockEntity.getLastVibrationFrequency() : 0;
 		} else {
 			return 0;

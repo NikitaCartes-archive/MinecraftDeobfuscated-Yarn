@@ -42,9 +42,6 @@ public class WoodlandMansionGenerator {
 	}
 
 	static class FirstFloorRoomPool extends WoodlandMansionGenerator.RoomPool {
-		private FirstFloorRoomPool() {
-		}
-
 		@Override
 		public String getSmallRoom(Random random) {
 			return "1x1_a" + (random.nextInt(5) + 1);
@@ -83,8 +80,8 @@ public class WoodlandMansionGenerator {
 
 	static class FlagMatrix {
 		private final int[][] array;
-		private final int n;
-		private final int m;
+		final int n;
+		final int m;
 		private final int fallback;
 
 		public FlagMatrix(int n, int m, int fallback) {
@@ -127,9 +124,6 @@ public class WoodlandMansionGenerator {
 		public BlockRotation rotation;
 		public BlockPos position;
 		public String template;
-
-		private GenerationPiece() {
-		}
 	}
 
 	static class LayoutGenerator {
@@ -736,11 +730,11 @@ public class WoodlandMansionGenerator {
 		private static final int field_31679 = 983040;
 		private static final int field_31680 = 65535;
 		private final Random random;
-		private final WoodlandMansionGenerator.FlagMatrix field_15440;
-		private final WoodlandMansionGenerator.FlagMatrix field_15439;
-		private final WoodlandMansionGenerator.FlagMatrix[] field_15443;
-		private final int field_15442;
-		private final int field_15441;
+		final WoodlandMansionGenerator.FlagMatrix field_15440;
+		final WoodlandMansionGenerator.FlagMatrix field_15439;
+		final WoodlandMansionGenerator.FlagMatrix[] field_15443;
+		final int field_15442;
+		final int field_15441;
 
 		public MansionParameters(Random random) {
 			this.random = random;
@@ -1130,9 +1124,6 @@ public class WoodlandMansionGenerator {
 	}
 
 	abstract static class RoomPool {
-		private RoomPool() {
-		}
-
 		public abstract String getSmallRoom(Random random);
 
 		public abstract String getSmallSecretRoom(Random random);
@@ -1149,9 +1140,6 @@ public class WoodlandMansionGenerator {
 	}
 
 	static class SecondFloorRoomPool extends WoodlandMansionGenerator.RoomPool {
-		private SecondFloorRoomPool() {
-		}
-
 		@Override
 		public String getSmallRoom(Random random) {
 			return "1x1_b" + (random.nextInt(4) + 1);
@@ -1189,7 +1177,5 @@ public class WoodlandMansionGenerator {
 	}
 
 	static class ThirdFloorRoomPool extends WoodlandMansionGenerator.SecondFloorRoomPool {
-		private ThirdFloorRoomPool() {
-		}
 	}
 }

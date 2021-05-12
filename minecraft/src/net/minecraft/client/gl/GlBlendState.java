@@ -62,23 +62,20 @@ public class GlBlendState {
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
-		} else if (!(o instanceof GlBlendState)) {
+		} else if (!(o instanceof GlBlendState glBlendState)) {
+			return false;
+		} else if (this.func != glBlendState.func) {
+			return false;
+		} else if (this.dstAlpha != glBlendState.dstAlpha) {
+			return false;
+		} else if (this.dstRgb != glBlendState.dstRgb) {
+			return false;
+		} else if (this.blendDisabled != glBlendState.blendDisabled) {
+			return false;
+		} else if (this.separateBlend != glBlendState.separateBlend) {
 			return false;
 		} else {
-			GlBlendState glBlendState = (GlBlendState)o;
-			if (this.func != glBlendState.func) {
-				return false;
-			} else if (this.dstAlpha != glBlendState.dstAlpha) {
-				return false;
-			} else if (this.dstRgb != glBlendState.dstRgb) {
-				return false;
-			} else if (this.blendDisabled != glBlendState.blendDisabled) {
-				return false;
-			} else if (this.separateBlend != glBlendState.separateBlend) {
-				return false;
-			} else {
-				return this.srcAlpha != glBlendState.srcAlpha ? false : this.srcRgb == glBlendState.srcRgb;
-			}
+			return this.srcAlpha != glBlendState.srcAlpha ? false : this.srcRgb == glBlendState.srcRgb;
 		}
 	}
 

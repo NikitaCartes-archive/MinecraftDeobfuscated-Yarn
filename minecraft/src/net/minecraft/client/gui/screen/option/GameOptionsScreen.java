@@ -6,8 +6,8 @@ import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonListWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.util.OrderableTooltip;
 import net.minecraft.text.OrderedText;
@@ -35,7 +35,7 @@ public class GameOptionsScreen extends Screen {
 	}
 
 	public static List<OrderedText> getHoveredButtonTooltip(ButtonListWidget buttonList, int mouseX, int mouseY) {
-		Optional<AbstractButtonWidget> optional = buttonList.getHoveredButton((double)mouseX, (double)mouseY);
+		Optional<ClickableWidget> optional = buttonList.getHoveredButton((double)mouseX, (double)mouseY);
 		return (List<OrderedText>)(optional.isPresent() && optional.get() instanceof OrderableTooltip
 			? ((OrderableTooltip)optional.get()).getOrderedTooltip()
 			: ImmutableList.of());

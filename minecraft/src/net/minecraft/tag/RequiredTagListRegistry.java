@@ -63,7 +63,7 @@ public class RequiredTagListRegistry {
 	public static TagManager method_33152() {
 		TagManager.Builder builder = new TagManager.Builder();
 		method_33154();
-		REQUIRED_TAG_LISTS.forEach(requiredTagList -> requiredTagList.method_33147(builder));
+		REQUIRED_TAG_LISTS.forEach(requiredTagList -> requiredTagList.addToManager(builder));
 		return builder.build();
 	}
 }

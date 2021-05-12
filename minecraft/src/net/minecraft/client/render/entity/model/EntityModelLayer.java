@@ -25,11 +25,8 @@ public final class EntityModelLayer {
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
-		} else if (!(o instanceof EntityModelLayer)) {
-			return false;
 		} else {
-			EntityModelLayer entityModelLayer = (EntityModelLayer)o;
-			return this.id.equals(entityModelLayer.id) && this.name.equals(entityModelLayer.name);
+			return !(o instanceof EntityModelLayer entityModelLayer) ? false : this.id.equals(entityModelLayer.id) && this.name.equals(entityModelLayer.name);
 		}
 	}
 

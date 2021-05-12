@@ -15,10 +15,10 @@ public class CsvWriter {
 	private final Writer writer;
 	private final int column;
 
-	private CsvWriter(Writer writer, List<String> headers) throws IOException {
+	CsvWriter(Writer writer, List<String> list) throws IOException {
 		this.writer = writer;
-		this.column = headers.size();
-		this.printRow(headers.stream());
+		this.column = list.size();
+		this.printRow(list.stream());
 	}
 
 	public static CsvWriter.Header makeHeader() {

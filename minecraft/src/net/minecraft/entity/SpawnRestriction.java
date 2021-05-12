@@ -138,9 +138,9 @@ public class SpawnRestriction {
 	}
 
 	static class Entry {
-		private final Heightmap.Type heightmapType;
-		private final SpawnRestriction.Location location;
-		private final SpawnRestriction.SpawnPredicate<?> predicate;
+		final Heightmap.Type heightmapType;
+		final SpawnRestriction.Location location;
+		final SpawnRestriction.SpawnPredicate<?> predicate;
 
 		public Entry(Heightmap.Type heightmapType, SpawnRestriction.Location location, SpawnRestriction.SpawnPredicate<?> predicate) {
 			this.heightmapType = heightmapType;

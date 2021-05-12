@@ -96,16 +96,11 @@ public class FoxEntity extends AnimalEntity {
 	private static final int AGGRESSIVE_FLAG = 128;
 	private static final TrackedData<Optional<UUID>> OWNER = DataTracker.registerData(FoxEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 	private static final TrackedData<Optional<UUID>> OTHER_TRUSTED = DataTracker.registerData(FoxEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
-	private static final Predicate<ItemEntity> PICKABLE_DROP_FILTER = item -> !item.cannotPickup() && item.isAlive();
-	private static final Predicate<Entity> JUST_ATTACKED_SOMETHING_FILTER = entity -> {
-		if (!(entity instanceof LivingEntity)) {
-			return false;
-		} else {
-			LivingEntity livingEntity = (LivingEntity)entity;
-			return livingEntity.getAttacking() != null && livingEntity.getLastAttackTime() < livingEntity.age + 600;
-		}
-	};
-	private static final Predicate<Entity> CHICKEN_AND_RABBIT_FILTER = entity -> entity instanceof ChickenEntity || entity instanceof RabbitEntity;
+	static final Predicate<ItemEntity> PICKABLE_DROP_FILTER = item -> !item.cannotPickup() && item.isAlive();
+	private static final Predicate<Entity> JUST_ATTACKED_SOMETHING_FILTER = entity -> !(entity instanceof LivingEntity livingEntity)
+			? false
+			: livingEntity.getAttacking() != null && livingEntity.getLastAttackTime() < livingEntity.age + 600;
+	static final Predicate<Entity> CHICKEN_AND_RABBIT_FILTER = entity -> entity instanceof ChickenEntity || entity instanceof RabbitEntity;
 	private static final Predicate<Entity> NOTICEABLE_PLAYER_FILTER = entity -> !entity.isSneaky() && EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(entity);
 	private static final int field_30335 = 600;
 	private Goal followChickenAndRabbitGoal;
@@ -113,8 +108,8 @@ public class FoxEntity extends AnimalEntity {
 	private Goal followFishGoal;
 	private float headRollProgress;
 	private float lastHeadRollProgress;
-	private float extraRollingHeight;
-	private float lastExtraRollingHeight;
+	float extraRollingHeight;
+	float lastExtraRollingHeight;
 	private int eatingTime;
 
 	public FoxEntity(EntityType<? extends FoxEntity> entityType, World world) {
@@ -354,14 +349,14 @@ public class FoxEntity extends AnimalEntity {
 		this.dataTracker.set(TYPE, type.getId());
 	}
 
-	private List<UUID> getTrustedUuids() {
+	List<UUID> getTrustedUuids() {
 		List<UUID> list = Lists.<UUID>newArrayList();
-		list.add(this.dataTracker.get(OWNER).orElse(null));
-		list.add(this.dataTracker.get(OTHER_TRUSTED).orElse(null));
+		list.add((UUID)this.dataTracker.get(OWNER).orElse(null));
+		list.add((UUID)this.dataTracker.get(OTHER_TRUSTED).orElse(null));
 		return list;
 	}
 
-	private void addTrustedUuid(@Nullable UUID uuid) {
+	void addTrustedUuid(@Nullable UUID uuid) {
 		if (this.dataTracker.get(OWNER).isPresent()) {
 			this.dataTracker.set(OTHER_TRUSTED, Optional.ofNullable(uuid));
 		} else {
@@ -418,15 +413,15 @@ public class FoxEntity extends AnimalEntity {
 		return this.getFoxFlag(WALKING_FLAG);
 	}
 
-	private void setWalking(boolean walking) {
+	void setWalking(boolean walking) {
 		this.setFoxFlag(WALKING_FLAG, walking);
 	}
 
-	private boolean isAggressive() {
+	boolean isAggressive() {
 		return this.getFoxFlag(AGGRESSIVE_FLAG);
 	}
 
-	private void setAggressive(boolean aggressive) {
+	void setAggressive(boolean aggressive) {
 		this.setFoxFlag(AGGRESSIVE_FLAG, aggressive);
 	}
 
@@ -435,7 +430,7 @@ public class FoxEntity extends AnimalEntity {
 		return this.getFoxFlag(SLEEPING_FLAG);
 	}
 
-	private void setSleeping(boolean sleeping) {
+	void setSleeping(boolean sleeping) {
 		this.setFoxFlag(SLEEPING_FLAG, sleeping);
 	}
 
@@ -603,11 +598,11 @@ public class FoxEntity extends AnimalEntity {
 		return MathHelper.ceil((fallDistance - 5.0F) * damageMultiplier);
 	}
 
-	private void stopSleeping() {
+	void stopSleeping() {
 		this.setSleeping(false);
 	}
 
-	private void stopActions() {
+	void stopActions() {
 		this.setRollingHead(false);
 		this.setCrouching(false);
 		this.setSitting(false);
@@ -616,7 +611,7 @@ public class FoxEntity extends AnimalEntity {
 		this.setWalking(false);
 	}
 
-	private boolean wantsToPickupItem() {
+	boolean wantsToPickupItem() {
 		return !this.isSleeping() && !this.isSitting() && !this.isWalking();
 	}
 
@@ -660,7 +655,7 @@ public class FoxEntity extends AnimalEntity {
 		return SoundEvents.ENTITY_FOX_DEATH;
 	}
 
-	private boolean canTrust(UUID uuid) {
+	boolean canTrust(UUID uuid) {
 		return this.getTrustedUuids().contains(uuid);
 	}
 
@@ -761,13 +756,10 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	abstract class CalmDownGoal extends Goal {
-		private final TargetPredicate WORRIABLE_ENTITY_PREDICATE = new TargetPredicate()
+		private final TargetPredicate WORRIABLE_ENTITY_PREDICATE = TargetPredicate.createAttackable()
 			.setBaseMaxDistance(12.0)
-			.includeHidden()
+			.visibleOnly()
 			.setPredicate(FoxEntity.this.new WorriableEntityFilter());
-
-		private CalmDownGoal() {
-		}
 
 		protected boolean isAtFavoredLocation() {
 			BlockPos blockPos = new BlockPos(FoxEntity.this.getX(), FoxEntity.this.getBoundingBox().maxY, FoxEntity.this.getZ());
@@ -799,15 +791,13 @@ public class FoxEntity extends AnimalEntity {
 				return false;
 			} else {
 				for (UUID uUID : FoxEntity.this.getTrustedUuids()) {
-					if (uUID != null && FoxEntity.this.world instanceof ServerWorld) {
-						Entity entity = ((ServerWorld)FoxEntity.this.world).getEntity(uUID);
-						if (entity instanceof LivingEntity) {
-							LivingEntity livingEntity = (LivingEntity)entity;
-							this.friend = livingEntity;
-							this.offender = livingEntity.getAttacker();
-							int i = livingEntity.getLastAttackedTime();
-							return i != this.lastAttackedTime && this.canTrack(this.offender, this.targetPredicate);
-						}
+					if (uUID != null
+						&& FoxEntity.this.world instanceof ServerWorld
+						&& ((ServerWorld)FoxEntity.this.world).getEntity(uUID) instanceof LivingEntity livingEntity) {
+						this.friend = livingEntity;
+						this.offender = livingEntity.getAttacker();
+						int i = livingEntity.getLastAttackedTime();
+						return i != this.lastAttackedTime && this.canTrack(this.offender, this.targetPredicate);
 					}
 				}
 

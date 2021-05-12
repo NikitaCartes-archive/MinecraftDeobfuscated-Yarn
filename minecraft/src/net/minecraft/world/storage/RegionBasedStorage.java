@@ -48,33 +48,40 @@ public final class RegionBasedStorage implements AutoCloseable {
 	public NbtCompound getTagAt(ChunkPos pos) throws IOException {
 		RegionFile regionFile = this.getRegionFile(pos);
 		DataInputStream dataInputStream = regionFile.getChunkInputStream(pos);
-		Throwable var4 = null;
 
-		Object var5;
-		try {
-			if (dataInputStream != null) {
-				return NbtIo.read(dataInputStream);
-			}
+		NbtCompound var8;
+		label43: {
+			try {
+				if (dataInputStream == null) {
+					var8 = null;
+					break label43;
+				}
 
-			var5 = null;
-		} catch (Throwable var15) {
-			var4 = var15;
-			throw var15;
-		} finally {
-			if (dataInputStream != null) {
-				if (var4 != null) {
+				var8 = NbtIo.read(dataInputStream);
+			} catch (Throwable var7) {
+				if (dataInputStream != null) {
 					try {
 						dataInputStream.close();
-					} catch (Throwable var14) {
-						var4.addSuppressed(var14);
+					} catch (Throwable var6) {
+						var7.addSuppressed(var6);
 					}
-				} else {
-					dataInputStream.close();
 				}
+
+				throw var7;
 			}
+
+			if (dataInputStream != null) {
+				dataInputStream.close();
+			}
+
+			return var8;
 		}
 
-		return (NbtCompound)var5;
+		if (dataInputStream != null) {
+			dataInputStream.close();
+		}
+
+		return var8;
 	}
 
 	protected void write(ChunkPos pos, @Nullable NbtCompound nbt) throws IOException {
@@ -83,25 +90,23 @@ public final class RegionBasedStorage implements AutoCloseable {
 			regionFile.method_31740(pos);
 		} else {
 			DataOutputStream dataOutputStream = regionFile.getChunkOutputStream(pos);
-			Throwable var5 = null;
 
 			try {
 				NbtIo.write(nbt, dataOutputStream);
-			} catch (Throwable var14) {
-				var5 = var14;
-				throw var14;
-			} finally {
+			} catch (Throwable var8) {
 				if (dataOutputStream != null) {
-					if (var5 != null) {
-						try {
-							dataOutputStream.close();
-						} catch (Throwable var13) {
-							var5.addSuppressed(var13);
-						}
-					} else {
+					try {
 						dataOutputStream.close();
+					} catch (Throwable var7) {
+						var8.addSuppressed(var7);
 					}
 				}
+
+				throw var8;
+			}
+
+			if (dataOutputStream != null) {
+				dataOutputStream.close();
 			}
 		}
 	}

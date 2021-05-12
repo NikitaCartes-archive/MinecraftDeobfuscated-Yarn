@@ -132,8 +132,7 @@ public abstract class MobSpawnerLogic {
 						}
 
 						entity.refreshPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), world.random.nextFloat() * 360.0F, 0.0F);
-						if (entity instanceof MobEntity) {
-							MobEntity mobEntity = (MobEntity)entity;
+						if (entity instanceof MobEntity mobEntity) {
 							if (!mobEntity.canSpawn(world, SpawnReason.SPAWNER) || !mobEntity.canSpawn(world)) {
 								continue;
 							}

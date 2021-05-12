@@ -33,27 +33,25 @@ public abstract class AbstractPropertiesHandler<T extends AbstractPropertiesHand
 
 		try {
 			InputStream inputStream = Files.newInputStream(path);
-			Throwable var3 = null;
 
 			try {
 				properties.load(inputStream);
-			} catch (Throwable var13) {
-				var3 = var13;
-				throw var13;
-			} finally {
+			} catch (Throwable var6) {
 				if (inputStream != null) {
-					if (var3 != null) {
-						try {
-							inputStream.close();
-						} catch (Throwable var12) {
-							var3.addSuppressed(var12);
-						}
-					} else {
+					try {
 						inputStream.close();
+					} catch (Throwable var5) {
+						var6.addSuppressed(var5);
 					}
 				}
+
+				throw var6;
 			}
-		} catch (IOException var15) {
+
+			if (inputStream != null) {
+				inputStream.close();
+			}
+		} catch (IOException var7) {
 			LOGGER.error("Failed to load properties from file: {}", path);
 		}
 
@@ -66,27 +64,25 @@ public abstract class AbstractPropertiesHandler<T extends AbstractPropertiesHand
 	public void saveProperties(Path path) {
 		try {
 			OutputStream outputStream = Files.newOutputStream(path);
-			Throwable var3 = null;
 
 			try {
 				this.properties.store(outputStream, "Minecraft server properties");
-			} catch (Throwable var13) {
-				var3 = var13;
-				throw var13;
-			} finally {
+			} catch (Throwable var6) {
 				if (outputStream != null) {
-					if (var3 != null) {
-						try {
-							outputStream.close();
-						} catch (Throwable var12) {
-							var3.addSuppressed(var12);
-						}
-					} else {
+					try {
 						outputStream.close();
+					} catch (Throwable var5) {
+						var6.addSuppressed(var5);
 					}
 				}
+
+				throw var6;
 			}
-		} catch (IOException var15) {
+
+			if (outputStream != null) {
+				outputStream.close();
+			}
+		} catch (IOException var7) {
 			LOGGER.error("Failed to store properties to file: {}", path);
 		}
 	}
@@ -211,10 +207,10 @@ public abstract class AbstractPropertiesHandler<T extends AbstractPropertiesHand
 		private final V value;
 		private final Function<V, String> stringifier;
 
-		private PropertyAccessor(String key, V value, Function<V, String> stringifier) {
-			this.key = key;
-			this.value = value;
-			this.stringifier = stringifier;
+		PropertyAccessor(String string, V object, Function<V, String> function) {
+			this.key = string;
+			this.value = object;
+			this.stringifier = function;
 		}
 
 		public V get() {

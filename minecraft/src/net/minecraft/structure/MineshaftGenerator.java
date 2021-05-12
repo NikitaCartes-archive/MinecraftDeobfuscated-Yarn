@@ -36,7 +36,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class MineshaftGenerator {
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogManager.getLogger();
 	private static final int field_31551 = 3;
 	private static final int field_31552 = 3;
 	private static final int field_31553 = 5;
@@ -68,7 +68,7 @@ public class MineshaftGenerator {
 		return null;
 	}
 
-	private static MineshaftGenerator.MineshaftPart pieceGenerator(
+	static MineshaftGenerator.MineshaftPart pieceGenerator(
 		StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength
 	) {
 		if (chainLength > 8) {
@@ -126,22 +126,13 @@ public class MineshaftGenerator {
 		public static BlockBox getBoundingBox(StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation) {
 			for (int i = random.nextInt(3) + 2; i > 0; i--) {
 				int j = i * 5;
-				BlockBox blockBox;
-				switch (orientation) {
-					case NORTH:
-					default:
-						blockBox = new BlockBox(0, 0, -(j - 1), 2, 2, 0);
-						break;
-					case SOUTH:
-						blockBox = new BlockBox(0, 0, 0, 2, 2, j - 1);
-						break;
-					case WEST:
-						blockBox = new BlockBox(-(j - 1), 0, 0, 0, 2, 2);
-						break;
-					case EAST:
-						blockBox = new BlockBox(0, 0, 0, j - 1, 2, 2);
-				}
 
+				BlockBox blockBox = switch (orientation) {
+					default -> new BlockBox(0, 0, -(j - 1), 2, 2, 0);
+					case SOUTH -> new BlockBox(0, 0, 0, 2, 2, j - 1);
+					case WEST -> new BlockBox(-(j - 1), 0, 0, 0, 2, 2);
+					case EAST -> new BlockBox(0, 0, 0, j - 1, 2, 2);
+				};
 				blockBox.move(x, y, z);
 				if (structurePiecesHolder.getIntersecting(blockBox) == null) {
 					return blockBox;
@@ -601,23 +592,12 @@ public class MineshaftGenerator {
 			} else {
 				i = 2;
 			}
-
-			BlockBox blockBox;
-			switch (orientation) {
-				case NORTH:
-				default:
-					blockBox = new BlockBox(-1, 0, -4, 3, i, 0);
-					break;
-				case SOUTH:
-					blockBox = new BlockBox(-1, 0, 0, 3, i, 4);
-					break;
-				case WEST:
-					blockBox = new BlockBox(-4, 0, -1, 0, i, 3);
-					break;
-				case EAST:
-					blockBox = new BlockBox(0, 0, -1, 4, i, 3);
-			}
-
+			BlockBox blockBox = switch (orientation) {
+				default -> new BlockBox(-1, 0, -4, 3, i, 0);
+				case SOUTH -> new BlockBox(-1, 0, 0, 3, i, 4);
+				case WEST -> new BlockBox(-4, 0, -1, 0, i, 3);
+				case EAST -> new BlockBox(0, 0, -1, 4, i, 3);
+			};
 			blockBox.move(x, y, z);
 			return structurePiecesHolder.getIntersecting(blockBox) != null ? null : blockBox;
 		}
@@ -1211,22 +1191,12 @@ public class MineshaftGenerator {
 
 		@Nullable
 		public static BlockBox getBoundingBox(StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation) {
-			BlockBox blockBox;
-			switch (orientation) {
-				case NORTH:
-				default:
-					blockBox = new BlockBox(0, -5, -8, 2, 2, 0);
-					break;
-				case SOUTH:
-					blockBox = new BlockBox(0, -5, 0, 2, 2, 8);
-					break;
-				case WEST:
-					blockBox = new BlockBox(-8, -5, 0, 0, 2, 2);
-					break;
-				case EAST:
-					blockBox = new BlockBox(0, -5, 0, 8, 2, 2);
-			}
-
+			BlockBox blockBox = switch (orientation) {
+				default -> new BlockBox(0, -5, -8, 2, 2, 0);
+				case SOUTH -> new BlockBox(0, -5, 0, 2, 2, 8);
+				case WEST -> new BlockBox(-8, -5, 0, 0, 2, 2);
+				case EAST -> new BlockBox(0, -5, 0, 8, 2, 2);
+			};
 			blockBox.move(x, y, z);
 			return structurePiecesHolder.getIntersecting(blockBox) != null ? null : blockBox;
 		}

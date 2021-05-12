@@ -278,10 +278,9 @@ public class ZombieEntity extends HostileEntity {
 	public boolean damage(DamageSource source, float amount) {
 		if (!super.damage(source, amount)) {
 			return false;
-		} else if (!(this.world instanceof ServerWorld)) {
+		} else if (!(this.world instanceof ServerWorld serverWorld)) {
 			return false;
 		} else {
-			ServerWorld serverWorld = (ServerWorld)this.world;
 			LivingEntity livingEntity = this.getTarget();
 			if (livingEntity == null && source.getAttacker() instanceof LivingEntity) {
 				livingEntity = (LivingEntity)source.getAttacker();
@@ -447,8 +446,7 @@ public class ZombieEntity extends HostileEntity {
 			entityData = new ZombieEntity.ZombieData(shouldBeBaby(world.getRandom()), true);
 		}
 
-		if (entityData instanceof ZombieEntity.ZombieData) {
-			ZombieEntity.ZombieData zombieData = (ZombieEntity.ZombieData)entityData;
+		if (entityData instanceof ZombieEntity.ZombieData zombieData) {
 			if (zombieData.baby) {
 				this.setBaby(true);
 				if (zombieData.tryChickenJockey) {
@@ -528,15 +526,11 @@ public class ZombieEntity extends HostileEntity {
 	@Override
 	protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
 		super.dropEquipment(source, lootingMultiplier, allowDrops);
-		Entity entity = source.getAttacker();
-		if (entity instanceof CreeperEntity) {
-			CreeperEntity creeperEntity = (CreeperEntity)entity;
-			if (creeperEntity.shouldDropHead()) {
-				ItemStack itemStack = this.getSkull();
-				if (!itemStack.isEmpty()) {
-					creeperEntity.onHeadDropped();
-					this.dropStack(itemStack);
-				}
+		if (source.getAttacker() instanceof CreeperEntity creeperEntity && creeperEntity.shouldDropHead()) {
+			ItemStack itemStack = this.getSkull();
+			if (!itemStack.isEmpty()) {
+				creeperEntity.onHeadDropped();
+				this.dropStack(itemStack);
 			}
 		}
 	}

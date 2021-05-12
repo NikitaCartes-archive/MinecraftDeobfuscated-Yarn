@@ -2,7 +2,6 @@ package net.minecraft.entity.vehicle;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
@@ -62,12 +61,8 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 
 	@Override
 	public boolean damage(DamageSource source, float amount) {
-		Entity entity = source.getSource();
-		if (entity instanceof PersistentProjectileEntity) {
-			PersistentProjectileEntity persistentProjectileEntity = (PersistentProjectileEntity)entity;
-			if (persistentProjectileEntity.isOnFire()) {
-				this.explode(persistentProjectileEntity.getVelocity().lengthSquared());
-			}
+		if (source.getSource() instanceof PersistentProjectileEntity persistentProjectileEntity && persistentProjectileEntity.isOnFire()) {
+			this.explode(persistentProjectileEntity.getVelocity().lengthSquared());
 		}
 
 		return super.damage(source, amount);

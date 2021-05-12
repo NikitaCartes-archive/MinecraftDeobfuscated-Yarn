@@ -34,15 +34,12 @@ public class Vec3i implements Comparable<Vec3i> {
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
-		} else if (!(o instanceof Vec3i)) {
+		} else if (!(o instanceof Vec3i vec3i)) {
+			return false;
+		} else if (this.getX() != vec3i.getX()) {
 			return false;
 		} else {
-			Vec3i vec3i = (Vec3i)o;
-			if (this.getX() != vec3i.getX()) {
-				return false;
-			} else {
-				return this.getY() != vec3i.getY() ? false : this.getZ() == vec3i.getZ();
-			}
+			return this.getY() != vec3i.getY() ? false : this.getZ() == vec3i.getZ();
 		}
 	}
 
@@ -238,6 +235,6 @@ public class Vec3i implements Comparable<Vec3i> {
 	}
 
 	public String toShortString() {
-		return "" + this.getX() + ", " + this.getY() + ", " + this.getZ();
+		return this.getX() + ", " + this.getY() + ", " + this.getZ();
 	}
 }

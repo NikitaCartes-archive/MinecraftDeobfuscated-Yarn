@@ -79,6 +79,6 @@ public final class VillagerType {
 	}
 
 	public static VillagerType forBiome(Optional<RegistryKey<Biome>> biomeKey) {
-		return (VillagerType)biomeKey.flatMap(registryKey -> Optional.ofNullable(BIOME_TO_TYPE.get(registryKey))).orElse(PLAINS);
+		return (VillagerType)biomeKey.flatMap(registryKey -> Optional.ofNullable((VillagerType)BIOME_TO_TYPE.get(registryKey))).orElse(PLAINS);
 	}
 }

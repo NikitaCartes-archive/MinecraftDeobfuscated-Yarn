@@ -12,7 +12,7 @@ public class ChunkRandom extends Random implements WorldGenRandom {
 		super(seed);
 	}
 
-	public int method_35335() {
+	public int getSampleCount() {
 		return this.sampleCount;
 	}
 

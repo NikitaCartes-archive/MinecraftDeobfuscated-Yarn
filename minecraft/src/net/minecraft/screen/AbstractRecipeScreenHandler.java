@@ -32,5 +32,5 @@ public abstract class AbstractRecipeScreenHandler<C extends Inventory> extends S
 
 	public abstract RecipeBookCategory getCategory();
 
-	public abstract boolean method_32339(int i);
+	public abstract boolean canInsertIntoSlot(int index);
 }

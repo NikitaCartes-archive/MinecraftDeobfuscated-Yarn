@@ -142,8 +142,7 @@ public class DebugInfoSender {
 			packetByteBuf.writeBoolean(false);
 		}
 
-		if (livingEntity instanceof VillagerEntity) {
-			VillagerEntity villagerEntity = (VillagerEntity)livingEntity;
+		if (livingEntity instanceof VillagerEntity villagerEntity) {
 			boolean bl = villagerEntity.canSummonGolem(l);
 			packetByteBuf.writeBoolean(bl);
 		} else {
@@ -205,7 +204,7 @@ public class DebugInfoSender {
 				Object object = memory.getValue();
 				if (memoryModuleType == MemoryModuleType.HEARD_BELL_TIME) {
 					long m = l - (Long)object;
-					string = "" + m + " ticks ago";
+					string = m + " ticks ago";
 				} else if (memory.isTimed()) {
 					string = method_36156((ServerWorld)livingEntity.world, object) + " (ttl: " + memory.getExpiry() + ")";
 				} else {

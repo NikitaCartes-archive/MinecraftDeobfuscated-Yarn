@@ -108,7 +108,7 @@ public class TutorialManager {
 	}
 
 	public void tick() {
-		this.entries.removeIf(entry -> ((TutorialManager.Entry)entry).tick());
+		this.entries.removeIf(TutorialManager.Entry::tick);
 		if (this.currentHandler != null) {
 			if (this.client.world != null) {
 				this.currentHandler.tick();
@@ -156,13 +156,13 @@ public class TutorialManager {
 
 	@Environment(EnvType.CLIENT)
 	static final class Entry {
-		private final TutorialToast toast;
+		final TutorialToast toast;
 		private final int expiry;
 		private int age;
 
-		private Entry(TutorialToast toast, int expiry) {
-			this.toast = toast;
-			this.expiry = expiry;
+		Entry(TutorialToast tutorialToast, int i) {
+			this.toast = tutorialToast;
+			this.expiry = i;
 		}
 
 		/**

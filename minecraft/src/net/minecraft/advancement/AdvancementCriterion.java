@@ -49,7 +49,7 @@ public class AdvancementCriterion {
 		Map<String, AdvancementCriterion> map = Maps.<String, AdvancementCriterion>newHashMap();
 
 		for (Entry<String, JsonElement> entry : obj.entrySet()) {
-			map.put(entry.getKey(), fromJson(JsonHelper.asObject((JsonElement)entry.getValue(), "criterion"), predicateDeserializer));
+			map.put((String)entry.getKey(), fromJson(JsonHelper.asObject((JsonElement)entry.getValue(), "criterion"), predicateDeserializer));
 		}
 
 		return map;

@@ -9,8 +9,8 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.LootFunction;
 
 public class EmptyEntry extends LeafEntry {
-	private EmptyEntry(int weight, int quality, LootCondition[] conditions, LootFunction[] functions) {
-		super(weight, quality, conditions, functions);
+	EmptyEntry(int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
+		super(i, j, lootConditions, lootFunctions);
 	}
 
 	@Override

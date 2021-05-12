@@ -21,10 +21,10 @@ import net.minecraft.util.math.Vec3f;
 @Environment(EnvType.CLIENT)
 public class MapRenderer implements AutoCloseable {
 	private static final Identifier MAP_ICONS_TEXTURE = new Identifier("textures/map/map_icons.png");
-	private static final RenderLayer MAP_ICONS_RENDER_LAYER = RenderLayer.getText(MAP_ICONS_TEXTURE);
+	static final RenderLayer MAP_ICONS_RENDER_LAYER = RenderLayer.getText(MAP_ICONS_TEXTURE);
 	private static final int field_32173 = 128;
 	private static final int field_32174 = 128;
-	private final TextureManager textureManager;
+	final TextureManager textureManager;
 	private final Int2ObjectMap<MapRenderer.MapTexture> mapTextures = new Int2ObjectOpenHashMap<>();
 
 	public MapRenderer(TextureManager textureManager) {
@@ -61,14 +61,14 @@ public class MapRenderer implements AutoCloseable {
 		private final NativeImageBackedTexture texture;
 		private final RenderLayer renderLayer;
 
-		private MapTexture(int id, MapState state) {
-			this.state = state;
+		MapTexture(int i, MapState mapState) {
+			this.state = mapState;
 			this.texture = new NativeImageBackedTexture(128, 128, true);
-			Identifier identifier = MapRenderer.this.textureManager.registerDynamicTexture("map/" + id, this.texture);
+			Identifier identifier = MapRenderer.this.textureManager.registerDynamicTexture("map/" + i, this.texture);
 			this.renderLayer = RenderLayer.getText(identifier);
 		}
 
-		private void updateTexture() {
+		void updateTexture() {
 			for (int i = 0; i < 128; i++) {
 				for (int j = 0; j < 128; j++) {
 					int k = j + i * 128;
@@ -84,7 +84,7 @@ public class MapRenderer implements AutoCloseable {
 			this.texture.upload();
 		}
 
-		private void draw(MatrixStack matrices, VertexConsumerProvider vertexConsumers, boolean hidePlayerIcons, int light) {
+		void draw(MatrixStack matrices, VertexConsumerProvider vertexConsumers, boolean hidePlayerIcons, int light) {
 			int i = 0;
 			int j = 0;
 			float f = 0.0F;

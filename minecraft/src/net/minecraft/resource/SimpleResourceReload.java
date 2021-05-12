@@ -34,7 +34,7 @@ public class SimpleResourceReload<S> implements ResourceReload {
 	protected final ResourceManager manager;
 	protected final CompletableFuture<Unit> prepareStageFuture = new CompletableFuture();
 	protected final CompletableFuture<List<S>> applyStageFuture;
-	private final Set<ResourceReloader> waitingReloaders;
+	final Set<ResourceReloader> waitingReloaders;
 	private final int reloaderCount;
 	private int toApplyCount;
 	private int appliedCount;
@@ -137,7 +137,7 @@ public class SimpleResourceReload<S> implements ResourceReload {
 	 * A factory that creates a completable future for each reloader in the
 	 * resource reload.
 	 */
-	public interface Factory<S> {
+	protected interface Factory<S> {
 		CompletableFuture<S> create(
 			ResourceReloader.Synchronizer synchronizer, ResourceManager manager, ResourceReloader reloader, Executor prepareExecutor, Executor applyExecutor
 		);

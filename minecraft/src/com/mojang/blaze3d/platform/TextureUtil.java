@@ -81,8 +81,7 @@ public class TextureUtil {
 
 	public static ByteBuffer readResource(InputStream inputStream) throws IOException {
 		ByteBuffer byteBuffer;
-		if (inputStream instanceof FileInputStream) {
-			FileInputStream fileInputStream = (FileInputStream)inputStream;
+		if (inputStream instanceof FileInputStream fileInputStream) {
 			FileChannel fileChannel = fileInputStream.getChannel();
 			byteBuffer = MemoryUtil.memAlloc((int)fileChannel.size() + 1);
 
@@ -135,8 +134,8 @@ public class TextureUtil {
 				nativeImage.loadFromTextureImage(m, false);
 				nativeImage.method_35622(string2);
 				LOGGER.debug("Exported png to: {}", new File(string2).getAbsolutePath());
-			} catch (IOException var22) {
-				LOGGER.debug("Unable to write: ", (Throwable)var22);
+			} catch (IOException var14) {
+				LOGGER.debug("Unable to write: ", (Throwable)var14);
 			}
 		}
 	}

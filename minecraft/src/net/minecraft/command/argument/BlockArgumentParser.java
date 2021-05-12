@@ -140,7 +140,7 @@ public class BlockArgumentParser {
 
 		for (Property<?> property : this.blockState.getProperties()) {
 			if (!this.blockProperties.containsKey(property) && property.getName().startsWith(string)) {
-				suggestionsBuilder.suggest(property.getName() + '=');
+				suggestionsBuilder.suggest(property.getName() + "=");
 			}
 		}
 
@@ -155,7 +155,7 @@ public class BlockArgumentParser {
 				for (Block block : tag.values()) {
 					for (Property<?> property : block.getStateManager().getProperties()) {
 						if (!this.tagProperties.containsKey(property.getName()) && property.getName().startsWith(string)) {
-							suggestionsBuilder.suggest(property.getName() + '=');
+							suggestionsBuilder.suggest(property.getName() + "=");
 						}
 					}
 				}
@@ -446,7 +446,7 @@ public class BlockArgumentParser {
 		Optional<T> optional = property.parse(string);
 		if (optional.isPresent()) {
 			this.blockState = this.blockState.with(property, (Comparable)optional.get());
-			this.blockProperties.put(property, optional.get());
+			this.blockProperties.put(property, (Comparable)optional.get());
 		} else {
 			this.reader.setCursor(i);
 			throw INVALID_PROPERTY_EXCEPTION.createWithContext(this.reader, this.blockId.toString(), property.getName(), string);

@@ -23,7 +23,7 @@ public class WorldBorder {
 	private int warningBlocks = 5;
 	private double centerX;
 	private double centerZ;
-	private int maxRadius = 29999984;
+	int maxRadius = 29999984;
 	private WorldBorder.Area area = new WorldBorder.StaticArea(5.999997E7F);
 	public static final WorldBorder.Properties DEFAULT_BORDER = new WorldBorder.Properties(0.0, 0.0, 0.2, 5.0, 5, 15, 5.999997E7F, 0L, 0.0);
 
@@ -318,12 +318,12 @@ public class WorldBorder {
 		private final long timeStart;
 		private final double timeDuration;
 
-		private MovingArea(double oldSize, double newSize, long duration) {
-			this.oldSize = oldSize;
-			this.newSize = newSize;
-			this.timeDuration = (double)duration;
+		MovingArea(double d, double e, long l) {
+			this.oldSize = d;
+			this.newSize = e;
+			this.timeDuration = (double)l;
 			this.timeStart = Util.getMeasuringTimeMs();
-			this.timeEnd = this.timeStart + duration;
+			this.timeEnd = this.timeStart + l;
 		}
 
 		@Override
@@ -413,7 +413,7 @@ public class WorldBorder {
 		private final long sizeLerpTime;
 		private final double sizeLerpTarget;
 
-		private Properties(
+		Properties(
 			double centerX,
 			double centerZ,
 			double damagePerBlock,
@@ -435,7 +435,7 @@ public class WorldBorder {
 			this.sizeLerpTarget = sizeLerpTarget;
 		}
 
-		private Properties(WorldBorder worldBorder) {
+		Properties(WorldBorder worldBorder) {
 			this.centerX = worldBorder.getCenterX();
 			this.centerZ = worldBorder.getCenterZ();
 			this.damagePerBlock = worldBorder.getDamagePerBlock();

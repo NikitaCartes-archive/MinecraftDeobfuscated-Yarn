@@ -42,7 +42,7 @@ import org.apache.logging.log4j.Logger;
  */
 public abstract class DynamicRegistryManager {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Map<RegistryKey<? extends Registry<?>>, DynamicRegistryManager.Info<?>> INFOS = Util.make(() -> {
+	static final Map<RegistryKey<? extends Registry<?>>, DynamicRegistryManager.Info<?>> INFOS = Util.make(() -> {
 		Builder<RegistryKey<? extends Registry<?>>, DynamicRegistryManager.Info<?>> builder = ImmutableMap.builder();
 		register(builder, Registry.DIMENSION_TYPE_KEY, DimensionType.CODEC, DimensionType.CODEC);
 		register(builder, Registry.BIOME_KEY, Biome.CODEC, Biome.field_26633);
@@ -204,7 +204,7 @@ public abstract class DynamicRegistryManager {
 		) {
 			return unboundedMapCodec.xmap(
 				DynamicRegistryManager.Impl::new,
-				impl -> (ImmutableMap)impl.registries
+				impl -> (Map)impl.registries
 						.entrySet()
 						.stream()
 						.filter(entry -> ((DynamicRegistryManager.Info)DynamicRegistryManager.INFOS.get(entry.getKey())).isSynced())
@@ -213,7 +213,7 @@ public abstract class DynamicRegistryManager {
 		}
 
 		private static <E> DataResult<? extends Codec<E>> getDataResultForCodec(RegistryKey<? extends Registry<E>> registryRef) {
-			return (DataResult<? extends Codec<E>>)Optional.ofNullable(DynamicRegistryManager.INFOS.get(registryRef))
+			return (DataResult<? extends Codec<E>>)Optional.ofNullable((DynamicRegistryManager.Info)DynamicRegistryManager.INFOS.get(registryRef))
 				.map(info -> info.getNetworkEntryCodec())
 				.map(DataResult::success)
 				.orElseGet(() -> DataResult.error("Unknown or not serializable registry: " + registryRef));
@@ -238,7 +238,7 @@ public abstract class DynamicRegistryManager {
 
 		@Override
 		public <E> Optional<MutableRegistry<E>> getOptionalMutable(RegistryKey<? extends Registry<? extends E>> key) {
-			return Optional.ofNullable(this.registries.get(key)).map(simpleRegistry -> simpleRegistry);
+			return Optional.ofNullable((SimpleRegistry)this.registries.get(key)).map(simpleRegistry -> simpleRegistry);
 		}
 	}
 

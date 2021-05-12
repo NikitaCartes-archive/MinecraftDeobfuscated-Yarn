@@ -20,7 +20,7 @@ import net.minecraft.util.math.MathHelper;
 public class RecipeBookGhostSlots {
 	private Recipe<?> recipe;
 	private final List<RecipeBookGhostSlots.GhostInputSlot> slots = Lists.<RecipeBookGhostSlots.GhostInputSlot>newArrayList();
-	private float time;
+	float time;
 
 	public void reset() {
 		this.recipe = null;

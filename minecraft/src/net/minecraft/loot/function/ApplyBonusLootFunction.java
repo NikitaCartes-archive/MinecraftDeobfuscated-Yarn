@@ -21,12 +21,12 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 
 public class ApplyBonusLootFunction extends ConditionalLootFunction {
-	private static final Map<Identifier, ApplyBonusLootFunction.FormulaFactory> FACTORIES = Maps.<Identifier, ApplyBonusLootFunction.FormulaFactory>newHashMap();
-	private final Enchantment enchantment;
-	private final ApplyBonusLootFunction.Formula formula;
+	static final Map<Identifier, ApplyBonusLootFunction.FormulaFactory> FACTORIES = Maps.<Identifier, ApplyBonusLootFunction.FormulaFactory>newHashMap();
+	final Enchantment enchantment;
+	final ApplyBonusLootFunction.Formula formula;
 
-	private ApplyBonusLootFunction(LootCondition[] conditions, Enchantment enchantment, ApplyBonusLootFunction.Formula formula) {
-		super(conditions);
+	ApplyBonusLootFunction(LootCondition[] lootConditions, Enchantment enchantment, ApplyBonusLootFunction.Formula formula) {
+		super(lootConditions);
 		this.enchantment = enchantment;
 		this.formula = formula;
 	}
@@ -128,9 +128,6 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 
 	static final class OreDrops implements ApplyBonusLootFunction.Formula {
 		public static final Identifier ID = new Identifier("ore_drops");
-
-		private OreDrops() {
-		}
 
 		@Override
 		public int getValue(Random random, int initialCount, int enchantmentLevel) {

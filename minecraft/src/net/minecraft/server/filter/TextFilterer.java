@@ -41,13 +41,13 @@ public class TextFilterer implements AutoCloseable {
 		return thread;
 	};
 	private final URL chatEndpoint;
-	private final URL joinEndpoint;
-	private final URL leaveEndpoint;
+	final URL joinEndpoint;
+	final URL leaveEndpoint;
 	private final String apiKey;
 	private final int ruleId;
 	private final String serverId;
-	private final TextFilterer.HashIgnorer ignorer;
-	private final ExecutorService executor;
+	final TextFilterer.HashIgnorer ignorer;
+	final ExecutorService executor;
 
 	private TextFilterer(URI apiUrl, String apiKey, int ruleId, String serverId, TextFilterer.HashIgnorer ignorer, int i) throws MalformedURLException {
 		this.apiKey = apiKey;
@@ -86,7 +86,7 @@ public class TextFilterer implements AutoCloseable {
 		}
 	}
 
-	private void sendJoinOrLeaveRequest(GameProfile gameProfile, URL endpoint, Executor executor) {
+	void sendJoinOrLeaveRequest(GameProfile gameProfile, URL endpoint, Executor executor) {
 		JsonObject jsonObject = new JsonObject();
 		jsonObject.addProperty("server", this.serverId);
 		jsonObject.addProperty("room", "Chat");
@@ -101,7 +101,7 @@ public class TextFilterer implements AutoCloseable {
 		});
 	}
 
-	private CompletableFuture<TextStream.Message> filterMessage(GameProfile gameProfile, String message, TextFilterer.HashIgnorer ignorer, Executor executor) {
+	CompletableFuture<TextStream.Message> filterMessage(GameProfile gameProfile, String message, TextFilterer.HashIgnorer ignorer, Executor executor) {
 		if (message.isEmpty()) {
 			return CompletableFuture.completedFuture(TextStream.Message.EMPTY);
 		} else {
@@ -149,61 +149,66 @@ public class TextFilterer implements AutoCloseable {
 	private JsonObject sendJsonRequest(JsonObject payload, URL endpoint) throws IOException {
 		HttpURLConnection httpURLConnection = this.createConnection(payload, endpoint);
 		InputStream inputStream = httpURLConnection.getInputStream();
-		Throwable var5 = null;
 
-		JsonObject var6;
-		try {
-			if (httpURLConnection.getResponseCode() != 204) {
+		JsonObject var13;
+		label74: {
+			try {
+				if (httpURLConnection.getResponseCode() == 204) {
+					var13 = new JsonObject();
+					break label74;
+				}
+
 				try {
-					return Streams.parse(new JsonReader(new InputStreamReader(inputStream))).getAsJsonObject();
+					var13 = Streams.parse(new JsonReader(new InputStreamReader(inputStream))).getAsJsonObject();
 				} finally {
 					this.consumeFully(inputStream);
 				}
-			}
-
-			var6 = new JsonObject();
-		} catch (Throwable var23) {
-			var5 = var23;
-			throw var23;
-		} finally {
-			if (inputStream != null) {
-				if (var5 != null) {
+			} catch (Throwable var12) {
+				if (inputStream != null) {
 					try {
 						inputStream.close();
-					} catch (Throwable var21) {
-						var5.addSuppressed(var21);
+					} catch (Throwable var10) {
+						var12.addSuppressed(var10);
 					}
-				} else {
-					inputStream.close();
 				}
+
+				throw var12;
 			}
+
+			if (inputStream != null) {
+				inputStream.close();
+			}
+
+			return var13;
 		}
 
-		return var6;
+		if (inputStream != null) {
+			inputStream.close();
+		}
+
+		return var13;
 	}
 
 	private void sendRequest(JsonObject payload, URL endpoint) throws IOException {
 		HttpURLConnection httpURLConnection = this.createConnection(payload, endpoint);
 		InputStream inputStream = httpURLConnection.getInputStream();
-		Throwable var5 = null;
 
 		try {
 			this.consumeFully(inputStream);
-		} catch (Throwable var14) {
-			var5 = var14;
-			throw var14;
-		} finally {
+		} catch (Throwable var8) {
 			if (inputStream != null) {
-				if (var5 != null) {
-					try {
-						inputStream.close();
-					} catch (Throwable var13) {
-						var5.addSuppressed(var13);
-					}
-				} else {
+				try {
 					inputStream.close();
+				} catch (Throwable var7) {
+					var8.addSuppressed(var7);
 				}
 			}
+
+			throw var8;
+		}
+
+		if (inputStream != null) {
+			inputStream.close();
 		}
 	}
 
@@ -220,47 +225,34 @@ public class TextFilterer implements AutoCloseable {
 		httpURLConnection.setRequestProperty("Authorization", "Basic " + this.apiKey);
 		httpURLConnection.setRequestProperty("User-Agent", "Minecraft server" + SharedConstants.getGameVersion().getName());
 		OutputStreamWriter outputStreamWriter = new OutputStreamWriter(httpURLConnection.getOutputStream(), StandardCharsets.UTF_8);
-		Throwable var5 = null;
 
 		try {
 			JsonWriter jsonWriter = new JsonWriter(outputStreamWriter);
-			Throwable var7 = null;
 
 			try {
 				Streams.write(payload, jsonWriter);
-			} catch (Throwable var30) {
-				var7 = var30;
-				throw var30;
-			} finally {
-				if (jsonWriter != null) {
-					if (var7 != null) {
-						try {
-							jsonWriter.close();
-						} catch (Throwable var29) {
-							var7.addSuppressed(var29);
-						}
-					} else {
-						jsonWriter.close();
-					}
+			} catch (Throwable var10) {
+				try {
+					jsonWriter.close();
+				} catch (Throwable var9) {
+					var10.addSuppressed(var9);
 				}
+
+				throw var10;
 			}
-		} catch (Throwable var32) {
-			var5 = var32;
-			throw var32;
-		} finally {
-			if (outputStreamWriter != null) {
-				if (var5 != null) {
-					try {
-						outputStreamWriter.close();
-					} catch (Throwable var28) {
-						var5.addSuppressed(var28);
-					}
-				} else {
-					outputStreamWriter.close();
-				}
+
+			jsonWriter.close();
+		} catch (Throwable var11) {
+			try {
+				outputStreamWriter.close();
+			} catch (Throwable var8) {
+				var11.addSuppressed(var8);
 			}
+
+			throw var11;
 		}
 
+		outputStreamWriter.close();
 		int i = httpURLConnection.getResponseCode();
 		if (i >= 200 && i < 300) {
 			return httpURLConnection;
@@ -274,8 +266,8 @@ public class TextFilterer implements AutoCloseable {
 	}
 
 	public static class FailedHttpRequestException extends RuntimeException {
-		private FailedHttpRequestException(String message) {
-			super(message);
+		FailedHttpRequestException(String string) {
+			super(string);
 		}
 	}
 
@@ -306,7 +298,7 @@ public class TextFilterer implements AutoCloseable {
 		private final GameProfile gameProfile;
 		private final Executor executor;
 
-		private Impl(GameProfile gameProfile) {
+		Impl(GameProfile gameProfile) {
 			this.gameProfile = gameProfile;
 			TaskExecutor<Runnable> taskExecutor = TaskExecutor.create(TextFilterer.this.executor, "chat stream for " + gameProfile.getName());
 			this.executor = taskExecutor::send;

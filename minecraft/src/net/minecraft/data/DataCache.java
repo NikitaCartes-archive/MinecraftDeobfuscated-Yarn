@@ -33,9 +33,7 @@ public class DataCache {
 		Path path = root.resolve(".cache");
 		Files.createDirectories(path);
 		this.recordFile = path.resolve(name);
-		this.files().forEach(pathx -> {
-			String var10000 = (String)this.oldSha1.put(pathx, "");
-		});
+		this.files().forEach(pathx -> this.oldSha1.put(pathx, ""));
 		if (Files.isReadable(this.recordFile)) {
 			IOUtils.readLines(Files.newInputStream(this.recordFile), Charsets.UTF_8).forEach(string -> {
 				int i = string.indexOf(32);
@@ -59,7 +57,7 @@ public class DataCache {
 			(Collection<?>)this.newSha1
 				.entrySet()
 				.stream()
-				.map(entry -> (String)entry.getValue() + ' ' + this.root.relativize((Path)entry.getKey()))
+				.map(entry -> (String)entry.getValue() + " " + this.root.relativize((Path)entry.getKey()))
 				.collect(Collectors.toList()),
 			System.lineSeparator(),
 			writer

@@ -31,15 +31,15 @@ public interface TagGroup<T> {
 	Tag<T> getTagOrEmpty(Identifier id);
 
 	@Nullable
-	default Identifier method_34894(Tag.Identified<T> identified) {
-		return identified.getId();
+	default Identifier getId(Tag.Identified<T> tag) {
+		return tag.getId();
 	}
 
 	@Nullable
 	Identifier getUncheckedTagId(Tag<T> tag);
 
-	default boolean method_34895(Identifier identifier) {
-		return this.getTags().containsKey(identifier);
+	default boolean contains(Identifier id) {
+		return this.getTags().containsKey(id);
 	}
 
 	default Collection<Identifier> getTagIds() {
@@ -54,7 +54,7 @@ public interface TagGroup<T> {
 
 		for (Entry<Identifier, Tag<T>> entry : this.getTags().entrySet()) {
 			if (((Tag)entry.getValue()).contains(object)) {
-				list.add(entry.getKey());
+				list.add((Identifier)entry.getKey());
 			}
 		}
 
@@ -135,9 +135,9 @@ public interface TagGroup<T> {
 	 * deserialize} tag groups.
 	 */
 	public static class Serialized {
-		private final Map<Identifier, IntList> contents;
+		final Map<Identifier, IntList> contents;
 
-		private Serialized(Map<Identifier, IntList> contents) {
+		Serialized(Map<Identifier, IntList> contents) {
 			this.contents = contents;
 		}
 

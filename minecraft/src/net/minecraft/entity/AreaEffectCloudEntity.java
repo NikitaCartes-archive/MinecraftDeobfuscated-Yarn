@@ -153,70 +153,46 @@ public class AreaEffectCloudEntity extends Entity {
 		boolean bl = this.isWaiting();
 		float f = this.getRadius();
 		if (this.world.isClient) {
-			ParticleEffect particleEffect = this.getParticleType();
-			if (bl) {
-				if (this.random.nextBoolean()) {
-					for (int i = 0; i < 2; i++) {
-						float g = this.random.nextFloat() * (float) (Math.PI * 2);
-						float h = MathHelper.sqrt(this.random.nextFloat()) * 0.2F;
-						float j = MathHelper.cos(g) * h;
-						float k = MathHelper.sin(g) * h;
-						if (particleEffect.getType() == ParticleTypes.ENTITY_EFFECT) {
-							int l = this.random.nextBoolean() ? 16777215 : this.getColor();
-							int m = l >> 16 & 0xFF;
-							int n = l >> 8 & 0xFF;
-							int o = l & 0xFF;
-							this.world
-								.addImportantParticle(
-									particleEffect,
-									this.getX() + (double)j,
-									this.getY(),
-									this.getZ() + (double)k,
-									(double)((float)m / 255.0F),
-									(double)((float)n / 255.0F),
-									(double)((float)o / 255.0F)
-								);
-						} else {
-							this.world.addImportantParticle(particleEffect, this.getX() + (double)j, this.getY(), this.getZ() + (double)k, 0.0, 0.0, 0.0);
-						}
-					}
-				}
-			} else {
-				float p = (float) Math.PI * f * f;
+			if (bl && this.random.nextBoolean()) {
+				return;
+			}
 
-				for (int q = 0; (float)q < p; q++) {
-					float h = this.random.nextFloat() * (float) (Math.PI * 2);
-					float j = MathHelper.sqrt(this.random.nextFloat()) * f;
-					float k = MathHelper.cos(h) * j;
-					float r = MathHelper.sin(h) * j;
-					if (particleEffect.getType() == ParticleTypes.ENTITY_EFFECT) {
-						int m = this.getColor();
-						int n = m >> 16 & 0xFF;
-						int o = m >> 8 & 0xFF;
-						int s = m & 0xFF;
-						this.world
-							.addImportantParticle(
-								particleEffect,
-								this.getX() + (double)k,
-								this.getY(),
-								this.getZ() + (double)r,
-								(double)((float)n / 255.0F),
-								(double)((float)o / 255.0F),
-								(double)((float)s / 255.0F)
-							);
-					} else {
-						this.world
-							.addImportantParticle(
-								particleEffect,
-								this.getX() + (double)k,
-								this.getY(),
-								this.getZ() + (double)r,
-								(0.5 - this.random.nextDouble()) * 0.15,
-								0.01F,
-								(0.5 - this.random.nextDouble()) * 0.15
-							);
-					}
+			ParticleEffect particleEffect = this.getParticleType();
+			int i;
+			float g;
+			if (bl) {
+				i = 2;
+				g = 0.2F;
+			} else {
+				i = MathHelper.ceil((float) Math.PI * f * f);
+				g = f;
+			}
+
+			for (int j = 0; j < i; j++) {
+				float h = this.random.nextFloat() * (float) (Math.PI * 2);
+				float k = MathHelper.sqrt(this.random.nextFloat()) * g;
+				double d = this.getX() + (double)(MathHelper.cos(h) * k);
+				double e = this.getY();
+				double l = this.getZ() + (double)(MathHelper.sin(h) * k);
+				double n;
+				double o;
+				double p;
+				if (particleEffect.getType() == ParticleTypes.ENTITY_EFFECT) {
+					int m = bl && this.random.nextBoolean() ? 16777215 : this.getColor();
+					n = (double)((float)(m >> 16 & 0xFF) / 255.0F);
+					o = (double)((float)(m >> 8 & 0xFF) / 255.0F);
+					p = (double)((float)(m & 0xFF) / 255.0F);
+				} else if (bl) {
+					n = 0.0;
+					o = 0.0;
+					p = 0.0;
+				} else {
+					n = (0.5 - this.random.nextDouble()) * 0.15;
+					o = 0.01F;
+					p = (0.5 - this.random.nextDouble()) * 0.15;
 				}
+
+				this.world.addImportantParticle(particleEffect, d, e, l, n, o, p);
 			}
 		} else {
 			if (this.age >= this.waitTime + this.duration) {
@@ -267,10 +243,10 @@ public class AreaEffectCloudEntity extends Entity {
 					if (!list2.isEmpty()) {
 						for (LivingEntity livingEntity : list2) {
 							if (!this.affectedEntities.containsKey(livingEntity) && livingEntity.isAffectedBySplashPotions()) {
-								double d = livingEntity.getX() - this.getX();
-								double e = livingEntity.getZ() - this.getZ();
-								double t = d * d + e * e;
-								if (t <= (double)(f * f)) {
+								double q = livingEntity.getX() - this.getX();
+								double r = livingEntity.getZ() - this.getZ();
+								double s = q * q + r * r;
+								if (s <= (double)(f * f)) {
 									this.affectedEntities.put(livingEntity, this.age + this.reapplicationDelay);
 
 									for (StatusEffectInstance statusEffectInstance2 : list) {

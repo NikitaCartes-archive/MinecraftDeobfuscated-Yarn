@@ -27,7 +27,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 public class NetherFortressGenerator {
 	private static final int field_31557 = 30;
 	private static final int field_31558 = 10;
-	private static final NetherFortressGenerator.PieceData[] ALL_BRIDGE_PIECES = new NetherFortressGenerator.PieceData[]{
+	static final NetherFortressGenerator.PieceData[] ALL_BRIDGE_PIECES = new NetherFortressGenerator.PieceData[]{
 		new NetherFortressGenerator.PieceData(NetherFortressGenerator.Bridge.class, 30, 0, true),
 		new NetherFortressGenerator.PieceData(NetherFortressGenerator.BridgeCrossing.class, 10, 4),
 		new NetherFortressGenerator.PieceData(NetherFortressGenerator.BridgeSmallCrossing.class, 10, 4),
@@ -35,7 +35,7 @@ public class NetherFortressGenerator {
 		new NetherFortressGenerator.PieceData(NetherFortressGenerator.BridgePlatform.class, 5, 2),
 		new NetherFortressGenerator.PieceData(NetherFortressGenerator.CorridorExit.class, 5, 1)
 	};
-	private static final NetherFortressGenerator.PieceData[] ALL_CORRIDOR_PIECES = new NetherFortressGenerator.PieceData[]{
+	static final NetherFortressGenerator.PieceData[] ALL_CORRIDOR_PIECES = new NetherFortressGenerator.PieceData[]{
 		new NetherFortressGenerator.PieceData(NetherFortressGenerator.SmallCorridor.class, 25, 0, true),
 		new NetherFortressGenerator.PieceData(NetherFortressGenerator.CorridorCrossing.class, 15, 5),
 		new NetherFortressGenerator.PieceData(NetherFortressGenerator.CorridorRightTurn.class, 5, 10),
@@ -45,7 +45,7 @@ public class NetherFortressGenerator {
 		new NetherFortressGenerator.PieceData(NetherFortressGenerator.CorridorNetherWartsRoom.class, 5, 2)
 	};
 
-	private static NetherFortressGenerator.Piece createPiece(
+	static NetherFortressGenerator.Piece createPiece(
 		NetherFortressGenerator.PieceData pieceData,
 		StructurePiecesHolder structurePiecesHolder,
 		Random random,

@@ -11,7 +11,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class ShotCrossbowCriterion extends AbstractCriterion<ShotCrossbowCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("shot_crossbow");
+	static final Identifier ID = new Identifier("shot_crossbow");
 
 	@Override
 	public Identifier getId() {

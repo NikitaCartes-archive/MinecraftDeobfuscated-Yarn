@@ -73,40 +73,36 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 		boolean bl4 = (bl2 || bl || bl3) && player.getAbilities().allowModifyWorld;
 		if (world.isClient) {
 			return bl4 ? ActionResult.SUCCESS : ActionResult.CONSUME;
+		} else if (!(world.getBlockEntity(pos) instanceof SignBlockEntity signBlockEntity)) {
+			return ActionResult.PASS;
 		} else {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
-			if (!(blockEntity instanceof SignBlockEntity)) {
-				return ActionResult.PASS;
-			} else {
-				SignBlockEntity signBlockEntity = (SignBlockEntity)blockEntity;
-				boolean bl5 = signBlockEntity.isGlowingText();
-				if ((!bl2 || !bl5) && (!bl3 || bl5)) {
-					if (bl4) {
-						boolean bl6;
-						if (bl2) {
-							world.playSound(null, pos, SoundEvents.ITEM_GLOW_INK_SAC_USE, SoundCategory.BLOCKS, 1.0F, 1.0F);
-							bl6 = signBlockEntity.setGlowingText(true);
-						} else if (bl3) {
-							world.playSound(null, pos, SoundEvents.ITEM_INK_SAC_USE, SoundCategory.BLOCKS, 1.0F, 1.0F);
-							bl6 = signBlockEntity.setGlowingText(false);
-						} else {
-							world.playSound(null, pos, SoundEvents.ITEM_DYE_USE, SoundCategory.BLOCKS, 1.0F, 1.0F);
-							bl6 = signBlockEntity.setTextColor(((DyeItem)item).getColor());
-						}
-
-						if (bl6) {
-							if (!player.isCreative()) {
-								itemStack.decrement(1);
-							}
-
-							player.incrementStat(Stats.USED.getOrCreateStat(item));
-						}
+			boolean bl5 = signBlockEntity.isGlowingText();
+			if ((!bl2 || !bl5) && (!bl3 || bl5)) {
+				if (bl4) {
+					boolean bl6;
+					if (bl2) {
+						world.playSound(null, pos, SoundEvents.ITEM_GLOW_INK_SAC_USE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+						bl6 = signBlockEntity.setGlowingText(true);
+					} else if (bl3) {
+						world.playSound(null, pos, SoundEvents.ITEM_INK_SAC_USE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+						bl6 = signBlockEntity.setGlowingText(false);
+					} else {
+						world.playSound(null, pos, SoundEvents.ITEM_DYE_USE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+						bl6 = signBlockEntity.setTextColor(((DyeItem)item).getColor());
 					}
 
-					return signBlockEntity.onActivate((ServerPlayerEntity)player) ? ActionResult.SUCCESS : ActionResult.PASS;
-				} else {
-					return ActionResult.PASS;
+					if (bl6) {
+						if (!player.isCreative()) {
+							itemStack.decrement(1);
+						}
+
+						player.incrementStat(Stats.USED.getOrCreateStat(item));
+					}
 				}
+
+				return signBlockEntity.onActivate((ServerPlayerEntity)player) ? ActionResult.SUCCESS : ActionResult.PASS;
+			} else {
+				return ActionResult.PASS;
 			}
 		}
 	}

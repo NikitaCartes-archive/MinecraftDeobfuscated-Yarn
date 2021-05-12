@@ -63,16 +63,16 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidget.Entry> {
-	private static final Logger LOGGER = LogManager.getLogger();
-	private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
-	private static final Identifier UNKNOWN_SERVER_LOCATION = new Identifier("textures/misc/unknown_server.png");
-	private static final Identifier WORLD_SELECTION_LOCATION = new Identifier("textures/gui/world_selection.png");
-	private static final Text FROM_NEWER_VERSION_FIRST_LINE = new TranslatableText("selectWorld.tooltip.fromNewerVersion1").formatted(Formatting.RED);
-	private static final Text FROM_NEWER_VERSION_SECOND_LINE = new TranslatableText("selectWorld.tooltip.fromNewerVersion2").formatted(Formatting.RED);
-	private static final Text SNAPSHOT_FIRST_LINE = new TranslatableText("selectWorld.tooltip.snapshot1").formatted(Formatting.GOLD);
-	private static final Text SNAPSHOT_SECOND_LINE = new TranslatableText("selectWorld.tooltip.snapshot2").formatted(Formatting.GOLD);
-	private static final Text LOCKED_TEXT = new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
-	private static final Text PRE_WORLDHEIGHT_TEXT = new TranslatableText("selectWorld.pre_worldheight").formatted(Formatting.RED);
+	static final Logger LOGGER = LogManager.getLogger();
+	static final DateFormat DATE_FORMAT = new SimpleDateFormat();
+	static final Identifier UNKNOWN_SERVER_LOCATION = new Identifier("textures/misc/unknown_server.png");
+	static final Identifier WORLD_SELECTION_LOCATION = new Identifier("textures/gui/world_selection.png");
+	static final Text FROM_NEWER_VERSION_FIRST_LINE = new TranslatableText("selectWorld.tooltip.fromNewerVersion1").formatted(Formatting.RED);
+	static final Text FROM_NEWER_VERSION_SECOND_LINE = new TranslatableText("selectWorld.tooltip.fromNewerVersion2").formatted(Formatting.RED);
+	static final Text SNAPSHOT_FIRST_LINE = new TranslatableText("selectWorld.tooltip.snapshot1").formatted(Formatting.GOLD);
+	static final Text SNAPSHOT_SECOND_LINE = new TranslatableText("selectWorld.tooltip.snapshot2").formatted(Formatting.GOLD);
+	static final Text LOCKED_TEXT = new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
+	static final Text PRE_WORLDHEIGHT_TEXT = new TranslatableText("selectWorld.pre_worldheight").formatted(Formatting.RED);
 	private final SelectWorldScreen parent;
 	@Nullable
 	private List<LevelSummary> levels;
@@ -189,7 +189,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		private static final int field_32442 = 32;
 		private final MinecraftClient client;
 		private final SelectWorldScreen screen;
-		private final LevelSummary level;
+		final LevelSummary level;
 		private final Identifier iconLocation;
 		private File iconFile;
 		@Nullable
@@ -308,9 +308,9 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 
 							try (LevelStorage.Session session = this.client.getLevelStorage().createSession(stringx)) {
 								EditWorldScreen.backupLevel(session);
-							} catch (IOException var17) {
+							} catch (IOException var9) {
 								SystemToast.addWorldAccessFailureToast(this.client, stringx);
-								WorldListWidget.LOGGER.error("Failed to backup level {}", stringx, var17);
+								WorldListWidget.LOGGER.error("Failed to backup level {}", stringx, var9);
 							}
 						}
 
@@ -351,14 +351,14 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			}
 		}
 
-		public void delete() {
+		public void deleteIfConfirmed() {
 			this.client
 				.openScreen(
 					new ConfirmScreen(
-						bl -> {
-							if (bl) {
+						confirmed -> {
+							if (confirmed) {
 								this.client.openScreen(new ProgressScreen(true));
-								this.method_33685();
+								this.delete();
 							}
 
 							this.client.openScreen(this.screen);
@@ -371,15 +371,15 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 				);
 		}
 
-		public void method_33685() {
+		public void delete() {
 			LevelStorage levelStorage = this.client.getLevelStorage();
 			String string = this.level.getName();
 
 			try (LevelStorage.Session session = levelStorage.createSession(string)) {
 				session.deleteSessionLock();
-			} catch (IOException var16) {
+			} catch (IOException var8) {
 				SystemToast.addWorldDeleteFailureToast(this.client, string);
-				WorldListWidget.LOGGER.error("Failed to delete world {}", string, var16);
+				WorldListWidget.LOGGER.error("Failed to delete world {}", string, var8);
 			}
 
 			WorldListWidget.this.filter(() -> this.screen.searchBox.getText(), true);
@@ -438,8 +438,8 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 				} else {
 					this.client.openScreen(new CreateWorldScreen(this.screen, levelInfo, generatorOptions, path, dataPackSettings, impl));
 				}
-			} catch (Exception var37) {
-				WorldListWidget.LOGGER.error("Unable to recreate world", (Throwable)var37);
+			} catch (Exception var12) {
+				WorldListWidget.LOGGER.error("Unable to recreate world", (Throwable)var12);
 				this.client
 					.openScreen(
 						new NoticeScreen(
@@ -469,36 +469,29 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			if (bl) {
 				try {
 					InputStream inputStream = new FileInputStream(this.iconFile);
-					Throwable var3 = null;
 
-					NativeImageBackedTexture var6;
+					NativeImageBackedTexture var5;
 					try {
 						NativeImage nativeImage = NativeImage.read(inputStream);
 						Validate.validState(nativeImage.getWidth() == 64, "Must be 64 pixels wide");
 						Validate.validState(nativeImage.getHeight() == 64, "Must be 64 pixels high");
 						NativeImageBackedTexture nativeImageBackedTexture = new NativeImageBackedTexture(nativeImage);
 						this.client.getTextureManager().registerTexture(this.iconLocation, nativeImageBackedTexture);
-						var6 = nativeImageBackedTexture;
-					} catch (Throwable var16) {
-						var3 = var16;
-						throw var16;
-					} finally {
-						if (inputStream != null) {
-							if (var3 != null) {
-								try {
-									inputStream.close();
-								} catch (Throwable var15) {
-									var3.addSuppressed(var15);
-								}
-							} else {
-								inputStream.close();
-							}
+						var5 = nativeImageBackedTexture;
+					} catch (Throwable var7) {
+						try {
+							inputStream.close();
+						} catch (Throwable var6) {
+							var7.addSuppressed(var6);
 						}
+
+						throw var7;
 					}
 
-					return var6;
-				} catch (Throwable var18) {
-					WorldListWidget.LOGGER.error("Invalid icon for world {}", this.level.getName(), var18);
+					inputStream.close();
+					return var5;
+				} catch (Throwable var8) {
+					WorldListWidget.LOGGER.error("Invalid icon for world {}", this.level.getName(), var8);
 					this.iconFile = null;
 					return null;
 				}

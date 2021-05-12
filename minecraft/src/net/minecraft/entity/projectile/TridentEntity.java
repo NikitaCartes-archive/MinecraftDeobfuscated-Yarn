@@ -109,8 +109,7 @@ public class TridentEntity extends PersistentProjectileEntity {
 	protected void onEntityHit(EntityHitResult entityHitResult) {
 		Entity entity = entityHitResult.getEntity();
 		float f = 8.0F;
-		if (entity instanceof LivingEntity) {
-			LivingEntity livingEntity = (LivingEntity)entity;
+		if (entity instanceof LivingEntity livingEntity) {
 			f += EnchantmentHelper.getAttackDamage(this.tridentStack, livingEntity.getGroup());
 		}
 
@@ -123,8 +122,7 @@ public class TridentEntity extends PersistentProjectileEntity {
 				return;
 			}
 
-			if (entity instanceof LivingEntity) {
-				LivingEntity livingEntity2 = (LivingEntity)entity;
+			if (entity instanceof LivingEntity livingEntity2) {
 				if (entity2 instanceof LivingEntity) {
 					EnchantmentHelper.onUserDamaged(livingEntity2, entity2);
 					EnchantmentHelper.onTargetDamaged((LivingEntity)entity2, livingEntity2);

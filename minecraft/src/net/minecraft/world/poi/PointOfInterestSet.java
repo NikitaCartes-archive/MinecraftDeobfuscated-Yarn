@@ -55,7 +55,7 @@ public class PointOfInterestSet {
 		return this.pointsOfInterestByType
 			.entrySet()
 			.stream()
-			.filter(entry -> predicate.test(entry.getKey()))
+			.filter(entry -> predicate.test((PointOfInterestType)entry.getKey()))
 			.flatMap(entry -> ((Set)entry.getValue()).stream())
 			.filter(occupationStatus.getPredicate());
 	}

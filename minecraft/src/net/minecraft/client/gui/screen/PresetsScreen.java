@@ -54,15 +54,15 @@ public class PresetsScreen extends Screen {
 	private static final int field_32267 = 1;
 	private static final int field_32268 = 2;
 	private static final int field_32269 = 2;
-	private static final List<PresetsScreen.SuperflatPreset> PRESETS = Lists.<PresetsScreen.SuperflatPreset>newArrayList();
+	static final List<PresetsScreen.SuperflatPreset> PRESETS = Lists.<PresetsScreen.SuperflatPreset>newArrayList();
 	private static final RegistryKey<Biome> BIOME_KEY = BiomeKeys.PLAINS;
-	private final CustomizeFlatLevelScreen parent;
+	final CustomizeFlatLevelScreen parent;
 	private Text shareText;
 	private Text listText;
 	private PresetsScreen.SuperflatPresetsListWidget listWidget;
 	private ButtonWidget selectPresetButton;
-	private TextFieldWidget customPresetField;
-	private FlatChunkGeneratorConfig config;
+	TextFieldWidget customPresetField;
+	FlatChunkGeneratorConfig config;
 
 	public PresetsScreen(CustomizeFlatLevelScreen parent) {
 		super(new TranslatableText("createWorld.customize.presets.title"));
@@ -158,7 +158,7 @@ public class PresetsScreen extends Screen {
 		}
 	}
 
-	private static String getGeneratorConfigString(Registry<Biome> biomeRegistry, FlatChunkGeneratorConfig generatorConfig) {
+	static String getGeneratorConfigString(Registry<Biome> biomeRegistry, FlatChunkGeneratorConfig generatorConfig) {
 		StringBuilder stringBuilder = new StringBuilder();
 
 		for (int i = 0; i < generatorConfig.getLayers().size(); i++) {
@@ -475,7 +475,7 @@ public class PresetsScreen extends Screen {
 				return false;
 			}
 
-			private void setPreset() {
+			void setPreset() {
 				SuperflatPresetsListWidget.this.setSelected(this);
 				PresetsScreen.SuperflatPreset superflatPreset = (PresetsScreen.SuperflatPreset)PresetsScreen.PRESETS
 					.get(SuperflatPresetsListWidget.this.children().indexOf(this));

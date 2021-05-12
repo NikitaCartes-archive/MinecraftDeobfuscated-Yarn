@@ -25,7 +25,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SplashScreen extends Overlay {
-	private static final Identifier LOGO = new Identifier("textures/gui/title/mojangstudios.png");
+	static final Identifier LOGO = new Identifier("textures/gui/title/mojangstudios.png");
 	private static final int MOJANG_RED = BackgroundHelper.ColorMixer.getArgb(255, 239, 50, 61);
 	private static final int MONOCHROME_BLACK = BackgroundHelper.ColorMixer.getArgb(255, 0, 0, 0);
 	private static final IntSupplier BRAND_ARGB = () -> MinecraftClient.getInstance().options.monochromeLogo ? MONOCHROME_BLACK : MOJANG_RED;
@@ -56,8 +56,8 @@ public class SplashScreen extends Overlay {
 		client.getTextureManager().registerTexture(LOGO, new SplashScreen.LogoTexture());
 	}
 
-	private static int method_35732(int i, int j) {
-		return i & 16777215 | j << 24;
+	private static int withAlpha(int color, int alpha) {
+		return color & 16777215 | alpha << 24;
 	}
 
 	@Override
@@ -78,7 +78,7 @@ public class SplashScreen extends Overlay {
 			}
 
 			int k = MathHelper.ceil((1.0F - MathHelper.clamp(f - 1.0F, 0.0F, 1.0F)) * 255.0F);
-			fill(matrices, 0, 0, i, j, method_35732(BRAND_ARGB.getAsInt(), k));
+			fill(matrices, 0, 0, i, j, withAlpha(BRAND_ARGB.getAsInt(), k));
 			h = 1.0F - MathHelper.clamp(f - 1.0F, 0.0F, 1.0F);
 		} else if (this.reloading) {
 			if (this.client.currentScreen != null && g < 1.0F) {
@@ -86,7 +86,7 @@ public class SplashScreen extends Overlay {
 			}
 
 			int k = MathHelper.ceil(MathHelper.clamp((double)g, 0.15, 1.0) * 255.0);
-			fill(matrices, 0, 0, i, j, method_35732(BRAND_ARGB.getAsInt(), k));
+			fill(matrices, 0, 0, i, j, withAlpha(BRAND_ARGB.getAsInt(), k));
 			h = MathHelper.clamp(g, 0.0F, 1.0F);
 		} else {
 			fill(matrices, 0, 0, i, j, BRAND_ARGB.getAsInt());
@@ -164,31 +164,29 @@ public class SplashScreen extends Overlay {
 
 			try {
 				InputStream inputStream = defaultResourcePack.open(ResourceType.CLIENT_RESOURCES, SplashScreen.LOGO);
-				Throwable var5 = null;
 
-				ResourceTexture.TextureData var6;
+				ResourceTexture.TextureData var5;
 				try {
-					var6 = new ResourceTexture.TextureData(new TextureResourceMetadata(true, true), NativeImage.read(inputStream));
-				} catch (Throwable var16) {
-					var5 = var16;
-					throw var16;
-				} finally {
+					var5 = new ResourceTexture.TextureData(new TextureResourceMetadata(true, true), NativeImage.read(inputStream));
+				} catch (Throwable var8) {
 					if (inputStream != null) {
-						if (var5 != null) {
-							try {
-								inputStream.close();
-							} catch (Throwable var15) {
-								var5.addSuppressed(var15);
-							}
-						} else {
+						try {
 							inputStream.close();
+						} catch (Throwable var7) {
+							var8.addSuppressed(var7);
 						}
 					}
+
+					throw var8;
 				}
 
-				return var6;
-			} catch (IOException var18) {
-				return new ResourceTexture.TextureData(var18);
+				if (inputStream != null) {
+					inputStream.close();
+				}
+
+				return var5;
+			} catch (IOException var9) {
+				return new ResourceTexture.TextureData(var9);
 			}
 		}
 	}

@@ -74,33 +74,31 @@ public class StructureManager {
 
 		try {
 			Resource resource = this.resourceManager.getResource(identifier);
-			Throwable var4 = null;
 
-			Structure var5;
+			Structure var4;
 			try {
-				var5 = this.readStructure(resource.getInputStream());
-			} catch (Throwable var16) {
-				var4 = var16;
-				throw var16;
-			} finally {
+				var4 = this.readStructure(resource.getInputStream());
+			} catch (Throwable var7) {
 				if (resource != null) {
-					if (var4 != null) {
-						try {
-							resource.close();
-						} catch (Throwable var15) {
-							var4.addSuppressed(var15);
-						}
-					} else {
+					try {
 						resource.close();
+					} catch (Throwable var6) {
+						var7.addSuppressed(var6);
 					}
 				}
+
+				throw var7;
 			}
 
-			return var5;
-		} catch (FileNotFoundException var18) {
+			if (resource != null) {
+				resource.close();
+			}
+
+			return var4;
+		} catch (FileNotFoundException var8) {
 			return null;
-		} catch (Throwable var19) {
-			LOGGER.error("Couldn't load structure {}: {}", id, var19.toString());
+		} catch (Throwable var9) {
+			LOGGER.error("Couldn't load structure {}: {}", id, var9.toString());
 			return null;
 		}
 	}
@@ -114,33 +112,26 @@ public class StructureManager {
 
 			try {
 				InputStream inputStream = new FileInputStream(path.toFile());
-				Throwable var4 = null;
 
-				Structure var5;
+				Structure var4;
 				try {
-					var5 = this.readStructure(inputStream);
-				} catch (Throwable var16) {
-					var4 = var16;
-					throw var16;
-				} finally {
-					if (inputStream != null) {
-						if (var4 != null) {
-							try {
-								inputStream.close();
-							} catch (Throwable var15) {
-								var4.addSuppressed(var15);
-							}
-						} else {
-							inputStream.close();
-						}
+					var4 = this.readStructure(inputStream);
+				} catch (Throwable var7) {
+					try {
+						inputStream.close();
+					} catch (Throwable var6) {
+						var7.addSuppressed(var6);
 					}
+
+					throw var7;
 				}
 
-				return var5;
-			} catch (FileNotFoundException var18) {
+				inputStream.close();
+				return var4;
+			} catch (FileNotFoundException var8) {
 				return null;
-			} catch (IOException var19) {
-				LOGGER.error("Couldn't load structure from {}", path, var19);
+			} catch (IOException var9) {
+				LOGGER.error("Couldn't load structure from {}", path, var9);
 				return null;
 			}
 		}
@@ -173,7 +164,7 @@ public class StructureManager {
 			} else {
 				try {
 					Files.createDirectories(Files.exists(path2, new LinkOption[0]) ? path2.toRealPath() : path2);
-				} catch (IOException var19) {
+				} catch (IOException var12) {
 					LOGGER.error("Failed to create parent directory: {}", path2);
 					return false;
 				}
@@ -182,29 +173,22 @@ public class StructureManager {
 
 				try {
 					OutputStream outputStream = new FileOutputStream(path.toFile());
-					Throwable var7 = null;
 
 					try {
 						NbtIo.writeCompressed(nbtCompound, outputStream);
-					} catch (Throwable var18) {
-						var7 = var18;
-						throw var18;
-					} finally {
-						if (outputStream != null) {
-							if (var7 != null) {
-								try {
-									outputStream.close();
-								} catch (Throwable var17) {
-									var7.addSuppressed(var17);
-								}
-							} else {
-								outputStream.close();
-							}
+					} catch (Throwable var10) {
+						try {
+							outputStream.close();
+						} catch (Throwable var9) {
+							var10.addSuppressed(var9);
 						}
+
+						throw var10;
 					}
 
+					outputStream.close();
 					return true;
-				} catch (Throwable var21) {
+				} catch (Throwable var11) {
 					return false;
 				}
 			}

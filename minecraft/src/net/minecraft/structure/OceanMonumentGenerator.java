@@ -742,9 +742,6 @@ public class OceanMonumentGenerator {
 	}
 
 	static class DoubleXRoomFactory implements OceanMonumentGenerator.PieceFactory {
-		private DoubleXRoomFactory() {
-		}
-
 		@Override
 		public boolean canGenerate(OceanMonumentGenerator.PieceSetting setting) {
 			return setting.neighborPresences[Direction.EAST.getId()] && !setting.neighbors[Direction.EAST.getId()].used;
@@ -882,9 +879,6 @@ public class OceanMonumentGenerator {
 	}
 
 	static class DoubleXYRoomFactory implements OceanMonumentGenerator.PieceFactory {
-		private DoubleXYRoomFactory() {
-		}
-
 		@Override
 		public boolean canGenerate(OceanMonumentGenerator.PieceSetting setting) {
 			if (setting.neighborPresences[Direction.EAST.getId()]
@@ -999,9 +993,6 @@ public class OceanMonumentGenerator {
 	}
 
 	static class DoubleYRoomFactory implements OceanMonumentGenerator.PieceFactory {
-		private DoubleYRoomFactory() {
-		}
-
 		@Override
 		public boolean canGenerate(OceanMonumentGenerator.PieceSetting setting) {
 			return setting.neighborPresences[Direction.UP.getId()] && !setting.neighbors[Direction.UP.getId()].used;
@@ -1137,9 +1128,6 @@ public class OceanMonumentGenerator {
 	}
 
 	static class DoubleYZRoomFactory implements OceanMonumentGenerator.PieceFactory {
-		private DoubleYZRoomFactory() {
-		}
-
 		@Override
 		public boolean canGenerate(OceanMonumentGenerator.PieceSetting setting) {
 			if (setting.neighborPresences[Direction.NORTH.getId()]
@@ -1262,9 +1250,6 @@ public class OceanMonumentGenerator {
 	}
 
 	static class DoubleZRoomFactory implements OceanMonumentGenerator.PieceFactory {
-		private DoubleZRoomFactory() {
-		}
-
 		@Override
 		public boolean canGenerate(OceanMonumentGenerator.PieceSetting setting) {
 			return setting.neighborPresences[Direction.NORTH.getId()] && !setting.neighbors[Direction.NORTH.getId()].used;
@@ -1391,7 +1376,7 @@ public class OceanMonumentGenerator {
 		}
 	}
 
-	public abstract static class Piece extends StructurePiece {
+	protected abstract static class Piece extends StructurePiece {
 		protected static final BlockState PRISMARINE = Blocks.PRISMARINE.getDefaultState();
 		protected static final BlockState PRISMARINE_BRICKS = Blocks.PRISMARINE_BRICKS.getDefaultState();
 		protected static final BlockState DARK_PRISMARINE = Blocks.DARK_PRISMARINE.getDefaultState();
@@ -1543,11 +1528,11 @@ public class OceanMonumentGenerator {
 	}
 
 	static class PieceSetting {
-		private final int roomIndex;
-		private final OceanMonumentGenerator.PieceSetting[] neighbors = new OceanMonumentGenerator.PieceSetting[6];
-		private final boolean[] neighborPresences = new boolean[6];
-		private boolean used;
-		private boolean field_14484;
+		final int roomIndex;
+		final OceanMonumentGenerator.PieceSetting[] neighbors = new OceanMonumentGenerator.PieceSetting[6];
+		final boolean[] neighborPresences = new boolean[6];
+		boolean used;
+		boolean field_14484;
 		private int field_14483;
 
 		public PieceSetting(int index) {
@@ -1778,9 +1763,6 @@ public class OceanMonumentGenerator {
 	}
 
 	static class SimpleRoomFactory implements OceanMonumentGenerator.PieceFactory {
-		private SimpleRoomFactory() {
-		}
-
 		@Override
 		public boolean canGenerate(OceanMonumentGenerator.PieceSetting setting) {
 			return true;
@@ -1855,9 +1837,6 @@ public class OceanMonumentGenerator {
 	}
 
 	static class SimpleRoomTopFactory implements OceanMonumentGenerator.PieceFactory {
-		private SimpleRoomTopFactory() {
-		}
-
 		@Override
 		public boolean canGenerate(OceanMonumentGenerator.PieceSetting setting) {
 			return !setting.neighborPresences[Direction.WEST.getId()]

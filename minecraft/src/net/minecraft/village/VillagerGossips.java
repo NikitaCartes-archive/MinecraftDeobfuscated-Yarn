@@ -76,7 +76,7 @@ public class VillagerGossips {
 			for (int k = 0; k < count; k++) {
 				int l = random.nextInt(i);
 				int m = Arrays.binarySearch(is, l);
-				set.add(list.get(m < 0 ? -m - 1 : m));
+				set.add((VillagerGossips.GossipEntry)list.get(m < 0 ? -m - 1 : m));
 			}
 
 			return set;
@@ -166,9 +166,9 @@ public class VillagerGossips {
 	}
 
 	static class GossipEntry {
-		public static final String field_30237 = "Target";
-		public static final String field_30238 = "Type";
-		public static final String field_30239 = "Value";
+		public static final String TARGET_KEY = "Target";
+		public static final String TYPE_KEY = "Type";
+		public static final String VALUE_KEY = "Value";
 		public final UUID target;
 		public final VillageGossipType type;
 		public final int value;
@@ -184,7 +184,7 @@ public class VillagerGossips {
 		}
 
 		public String toString() {
-			return "GossipEntry{target=" + this.target + ", type=" + this.type + ", value=" + this.value + '}';
+			return "GossipEntry{target=" + this.target + ", type=" + this.type + ", value=" + this.value + "}";
 		}
 
 		public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
@@ -217,16 +217,13 @@ public class VillagerGossips {
 	}
 
 	static class Reputation {
-		private final Object2IntMap<VillageGossipType> associatedGossip = new Object2IntOpenHashMap<>();
-
-		private Reputation() {
-		}
+		final Object2IntMap<VillageGossipType> associatedGossip = new Object2IntOpenHashMap<>();
 
 		public int getValueFor(Predicate<VillageGossipType> gossipTypeFilter) {
 			return this.associatedGossip
 				.object2IntEntrySet()
 				.stream()
-				.filter(entry -> gossipTypeFilter.test(entry.getKey()))
+				.filter(entry -> gossipTypeFilter.test((VillageGossipType)entry.getKey()))
 				.mapToInt(entry -> entry.getIntValue() * ((VillageGossipType)entry.getKey()).multiplier)
 				.sum();
 		}

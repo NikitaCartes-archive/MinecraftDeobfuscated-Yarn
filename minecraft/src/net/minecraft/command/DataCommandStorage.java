@@ -50,10 +50,7 @@ public class DataCommandStorage {
 		private static final String CONTENTS_KEY = "contents";
 		private final Map<String, NbtCompound> map = Maps.<String, NbtCompound>newHashMap();
 
-		private PersistentState() {
-		}
-
-		private DataCommandStorage.PersistentState readNbt(NbtCompound nbt) {
+		DataCommandStorage.PersistentState readNbt(NbtCompound nbt) {
 			NbtCompound nbtCompound = nbt.getCompound("contents");
 
 			for (String string : nbtCompound.getKeys()) {

@@ -93,7 +93,7 @@ public class BambooBlock extends Block implements Fertilizable {
 					return this.getDefaultState().with(AGE, Integer.valueOf(i));
 				} else {
 					BlockState blockState2 = ctx.getWorld().getBlockState(ctx.getBlockPos().up());
-					return blockState2.isOf(Blocks.BAMBOO) ? this.getDefaultState().with(AGE, blockState2.get(AGE)) : Blocks.BAMBOO_SAPLING.getDefaultState();
+					return blockState2.isOf(Blocks.BAMBOO) ? this.getDefaultState().with(AGE, (Integer)blockState2.get(AGE)) : Blocks.BAMBOO_SAPLING.getDefaultState();
 				}
 			} else {
 				return null;

@@ -94,11 +94,10 @@ public class LookingPosArgument implements PosArgument {
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
-		} else if (!(o instanceof LookingPosArgument)) {
-			return false;
 		} else {
-			LookingPosArgument lookingPosArgument = (LookingPosArgument)o;
-			return this.x == lookingPosArgument.x && this.y == lookingPosArgument.y && this.z == lookingPosArgument.z;
+			return !(o instanceof LookingPosArgument lookingPosArgument)
+				? false
+				: this.x == lookingPosArgument.x && this.y == lookingPosArgument.y && this.z == lookingPosArgument.z;
 		}
 	}
 

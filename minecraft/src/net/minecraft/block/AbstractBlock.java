@@ -377,7 +377,7 @@ public abstract class AbstractBlock {
 		return (MapColor)this.settings.mapColorProvider.apply(this.asBlock().getDefaultState());
 	}
 
-	public float method_36555() {
+	public float getHardness() {
 		return this.settings.hardness;
 	}
 
@@ -778,43 +778,43 @@ public abstract class AbstractBlock {
 			private static final Direction[] DIRECTIONS = Direction.values();
 			private static final int SHAPE_TYPE_LENGTH = SideShapeType.values().length;
 			protected final boolean fullOpaque;
-			private final boolean translucent;
-			private final int lightSubtracted;
+			final boolean translucent;
+			final int lightSubtracted;
 			@Nullable
-			private final VoxelShape[] extrudedFaces;
+			final VoxelShape[] extrudedFaces;
 			protected final VoxelShape collisionShape;
 			protected final boolean exceedsCube;
 			private final boolean[] solidSides;
 			protected final boolean isFullCube;
 
-			private ShapeCache(BlockState state) {
-				Block block = state.getBlock();
-				this.fullOpaque = state.isOpaqueFullCube(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
-				this.translucent = block.isTranslucent(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
-				this.lightSubtracted = block.getOpacity(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
-				if (!state.isOpaque()) {
+			ShapeCache(BlockState blockState) {
+				Block block = blockState.getBlock();
+				this.fullOpaque = blockState.isOpaqueFullCube(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+				this.translucent = block.isTranslucent(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+				this.lightSubtracted = block.getOpacity(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+				if (!blockState.isOpaque()) {
 					this.extrudedFaces = null;
 				} else {
 					this.extrudedFaces = new VoxelShape[DIRECTIONS.length];
-					VoxelShape voxelShape = block.getCullingShape(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+					VoxelShape voxelShape = block.getCullingShape(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
 
 					for (Direction direction : DIRECTIONS) {
 						this.extrudedFaces[direction.ordinal()] = VoxelShapes.extrudeFace(voxelShape, direction);
 					}
 				}
 
-				this.collisionShape = block.getCollisionShape(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, ShapeContext.absent());
+				this.collisionShape = block.getCollisionShape(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, ShapeContext.absent());
 				this.exceedsCube = Arrays.stream(Direction.Axis.values())
 					.anyMatch(axis -> this.collisionShape.getMin(axis) < 0.0 || this.collisionShape.getMax(axis) > 1.0);
 				this.solidSides = new boolean[DIRECTIONS.length * SHAPE_TYPE_LENGTH];
 
 				for (Direction direction2 : DIRECTIONS) {
 					for (SideShapeType sideShapeType : SideShapeType.values()) {
-						this.solidSides[indexSolidSide(direction2, sideShapeType)] = sideShapeType.matches(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, direction2);
+						this.solidSides[indexSolidSide(direction2, sideShapeType)] = sideShapeType.matches(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, direction2);
 					}
 				}
 
-				this.isFullCube = Block.isShapeFullCube(state.getCollisionShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN));
+				this.isFullCube = Block.isShapeFullCube(blockState.getCollisionShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN));
 			}
 
 			public boolean isSideSolid(Direction direction, SideShapeType shapeType) {
@@ -838,31 +838,31 @@ public abstract class AbstractBlock {
 	}
 
 	public static class Settings {
-		private Material material;
-		private Function<BlockState, MapColor> mapColorProvider;
-		private boolean collidable = true;
-		private BlockSoundGroup soundGroup = BlockSoundGroup.STONE;
-		private ToIntFunction<BlockState> luminance = state -> 0;
-		private float resistance;
-		private float hardness;
-		private boolean toolRequired;
-		private boolean randomTicks;
-		private float slipperiness = 0.6F;
-		private float velocityMultiplier = 1.0F;
-		private float jumpVelocityMultiplier = 1.0F;
-		private Identifier lootTableId;
-		private boolean opaque = true;
-		private boolean isAir;
-		private AbstractBlock.TypedContextPredicate<EntityType<?>> allowsSpawningPredicate = (state, world, pos, type) -> state.isSideSolidFullSquare(
+		Material material;
+		Function<BlockState, MapColor> mapColorProvider;
+		boolean collidable = true;
+		BlockSoundGroup soundGroup = BlockSoundGroup.STONE;
+		ToIntFunction<BlockState> luminance = state -> 0;
+		float resistance;
+		float hardness;
+		boolean toolRequired;
+		boolean randomTicks;
+		float slipperiness = 0.6F;
+		float velocityMultiplier = 1.0F;
+		float jumpVelocityMultiplier = 1.0F;
+		Identifier lootTableId;
+		boolean opaque = true;
+		boolean isAir;
+		AbstractBlock.TypedContextPredicate<EntityType<?>> allowsSpawningPredicate = (state, world, pos, type) -> state.isSideSolidFullSquare(
 					world, pos, Direction.UP
 				)
 				&& state.getLuminance() < 14;
-		private AbstractBlock.ContextPredicate solidBlockPredicate = (state, world, pos) -> state.getMaterial().blocksLight() && state.isFullCube(world, pos);
-		private AbstractBlock.ContextPredicate suffocationPredicate = (state, world, pos) -> this.material.blocksMovement() && state.isFullCube(world, pos);
-		private AbstractBlock.ContextPredicate blockVisionPredicate = this.suffocationPredicate;
-		private AbstractBlock.ContextPredicate postProcessPredicate = (state, world, pos) -> false;
-		private AbstractBlock.ContextPredicate emissiveLightingPredicate = (state, world, pos) -> false;
-		private boolean dynamicBounds;
+		AbstractBlock.ContextPredicate solidBlockPredicate = (state, world, pos) -> state.getMaterial().blocksLight() && state.isFullCube(world, pos);
+		AbstractBlock.ContextPredicate suffocationPredicate = (state, world, pos) -> this.material.blocksMovement() && state.isFullCube(world, pos);
+		AbstractBlock.ContextPredicate blockVisionPredicate = this.suffocationPredicate;
+		AbstractBlock.ContextPredicate postProcessPredicate = (state, world, pos) -> false;
+		AbstractBlock.ContextPredicate emissiveLightingPredicate = (state, world, pos) -> false;
+		boolean dynamicBounds;
 
 		private Settings(Material material, MapColor mapColorProvider) {
 			this(material, state -> mapColorProvider);

@@ -28,7 +28,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	protected ButtonWidget doneButton;
 	protected ButtonWidget cancelButton;
 	protected CyclingButtonWidget<Boolean> toggleTrackingOutputButton;
-	private CommandSuggestor commandSuggestor;
+	CommandSuggestor commandSuggestor;
 
 	public AbstractCommandBlockScreen() {
 		super(NarratorManager.EMPTY);

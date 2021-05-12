@@ -67,9 +67,9 @@ public class SuggestionProviders {
 		return provider instanceof SuggestionProviders.LocalProvider ? provider : ASK_SERVER;
 	}
 
-	public static class LocalProvider implements SuggestionProvider<CommandSource> {
+	protected static class LocalProvider implements SuggestionProvider<CommandSource> {
 		private final SuggestionProvider<CommandSource> provider;
-		private final Identifier name;
+		final Identifier name;
 
 		public LocalProvider(Identifier name, SuggestionProvider<CommandSource> suggestionProvider) {
 			this.provider = suggestionProvider;

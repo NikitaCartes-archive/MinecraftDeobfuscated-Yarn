@@ -597,7 +597,7 @@ public class BookEditScreen extends Screen {
 		}
 	}
 
-	private static int getLineFromOffset(int[] lineStarts, int position) {
+	static int getLineFromOffset(int[] lineStarts, int position) {
 		int i = Arrays.binarySearch(lineStarts, position);
 		return i < 0 ? -(i + 2) : i;
 	}
@@ -622,11 +622,11 @@ public class BookEditScreen extends Screen {
 
 	@Environment(EnvType.CLIENT)
 	static class Line {
-		private final Style style;
-		private final String content;
-		private final Text text;
-		private final int x;
-		private final int y;
+		final Style style;
+		final String content;
+		final Text text;
+		final int x;
+		final int y;
 
 		public Line(Style style, String content, int x, int y) {
 			this.style = style;
@@ -639,15 +639,15 @@ public class BookEditScreen extends Screen {
 
 	@Environment(EnvType.CLIENT)
 	static class PageContent {
-		private static final BookEditScreen.PageContent EMPTY = new BookEditScreen.PageContent(
+		static final BookEditScreen.PageContent EMPTY = new BookEditScreen.PageContent(
 			"", new BookEditScreen.Position(0, 0), true, new int[]{0}, new BookEditScreen.Line[]{new BookEditScreen.Line(Style.EMPTY, "", 0, 0)}, new Rect2i[0]
 		);
 		private final String pageContent;
-		private final BookEditScreen.Position position;
-		private final boolean atEnd;
+		final BookEditScreen.Position position;
+		final boolean atEnd;
 		private final int[] lineStarts;
-		private final BookEditScreen.Line[] lines;
-		private final Rect2i[] selectionRectangles;
+		final BookEditScreen.Line[] lines;
+		final Rect2i[] selectionRectangles;
 
 		public PageContent(
 			String pageContent, BookEditScreen.Position position, boolean atEnd, int[] lineStarts, BookEditScreen.Line[] lines, Rect2i[] selectionRectangles

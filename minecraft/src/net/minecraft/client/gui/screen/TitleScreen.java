@@ -19,8 +19,8 @@ import net.minecraft.client.gui.screen.option.AccessibilityOptionsScreen;
 import net.minecraft.client.gui.screen.option.LanguageOptionsScreen;
 import net.minecraft.client.gui.screen.option.OptionsScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.realms.gui.screen.RealmsBridgeScreen;
 import net.minecraft.client.render.GameRenderer;
@@ -128,7 +128,7 @@ public class TitleScreen extends Screen {
 				0,
 				106,
 				20,
-				ButtonWidget.WIDGETS_LOCATION,
+				ButtonWidget.WIDGETS_TEXTURE,
 				256,
 				256,
 				buttonWidget -> this.client.openScreen(new LanguageOptionsScreen(this, this.client.options, this.client.getLanguageManager())),
@@ -236,9 +236,9 @@ public class TitleScreen extends Screen {
 									)
 								);
 						}
-					} catch (IOException var16) {
+					} catch (IOException var8) {
 						SystemToast.addWorldAccessFailureToast(this.client, "Demo_World");
-						LOGGER.warn("Failed to access demo world", (Throwable)var16);
+						LOGGER.warn("Failed to access demo world", (Throwable)var8);
 					}
 				}
 			)
@@ -247,11 +247,16 @@ public class TitleScreen extends Screen {
 	}
 
 	private boolean canReadDemoWorldData() {
-		try (LevelStorage.Session session = this.client.getLevelStorage().createSession("Demo_World")) {
-			return session.getLevelSummary() != null;
-		} catch (IOException var15) {
+		try {
+			boolean var2;
+			try (LevelStorage.Session session = this.client.getLevelStorage().createSession("Demo_World")) {
+				var2 = session.getLevelSummary() != null;
+			}
+
+			return var2;
+		} catch (IOException var6) {
 			SystemToast.addWorldAccessFailureToast(this.client, "Demo_World");
-			LOGGER.warn("Failed to read demo world data", (Throwable)var15);
+			LOGGER.warn("Failed to read demo world data", (Throwable)var6);
 			return false;
 		}
 	}
@@ -308,7 +313,7 @@ public class TitleScreen extends Screen {
 				float h = 1.8F - MathHelper.abs(MathHelper.sin((float)(Util.getMeasuringTimeMs() % 1000L) / 1000.0F * (float) (Math.PI * 2)) * 0.1F);
 				h = h * 100.0F / (float)(this.textRenderer.getWidth(this.splashText) + 32);
 				matrices.scale(h, h, h);
-				drawCenteredString(matrices, this.textRenderer, this.splashText, 0, -8, 16776960 | l);
+				drawCenteredText(matrices, this.textRenderer, this.splashText, 0, -8, 16776960 | l);
 				matrices.pop();
 			}
 
@@ -329,8 +334,8 @@ public class TitleScreen extends Screen {
 				fill(matrices, this.copyrightTextX, this.height - 1, this.copyrightTextX + this.copyrightTextWidth, this.height, 16777215 | l);
 			}
 
-			for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
-				abstractButtonWidget.setAlpha(g);
+			for (ClickableWidget clickableWidget : this.buttons) {
+				clickableWidget.setAlpha(g);
 			}
 
 			super.render(matrices, mouseX, mouseY, delta);
@@ -369,9 +374,9 @@ public class TitleScreen extends Screen {
 		if (delete) {
 			try (LevelStorage.Session session = this.client.getLevelStorage().createSession("Demo_World")) {
 				session.deleteSessionLock();
-			} catch (IOException var15) {
+			} catch (IOException var7) {
 				SystemToast.addWorldDeleteFailureToast(this.client, "Demo_World");
-				LOGGER.warn("Failed to delete demo world", (Throwable)var15);
+				LOGGER.warn("Failed to delete demo world", (Throwable)var7);
 			}
 		}
 

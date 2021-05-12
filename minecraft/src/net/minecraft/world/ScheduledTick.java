@@ -24,12 +24,7 @@ public class ScheduledTick<T> {
 	}
 
 	public boolean equals(Object o) {
-		if (!(o instanceof ScheduledTick)) {
-			return false;
-		} else {
-			ScheduledTick<?> scheduledTick = (ScheduledTick<?>)o;
-			return this.pos.equals(scheduledTick.pos) && this.object == scheduledTick.object;
-		}
+		return !(o instanceof ScheduledTick<?> scheduledTick) ? false : this.pos.equals(scheduledTick.pos) && this.object == scheduledTick.object;
 	}
 
 	public int hashCode() {

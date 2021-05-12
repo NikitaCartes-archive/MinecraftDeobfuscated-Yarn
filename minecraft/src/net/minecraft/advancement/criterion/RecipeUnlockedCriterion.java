@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class RecipeUnlockedCriterion extends AbstractCriterion<RecipeUnlockedCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("recipe_unlocked");
+	static final Identifier ID = new Identifier("recipe_unlocked");
 
 	@Override
 	public Identifier getId() {

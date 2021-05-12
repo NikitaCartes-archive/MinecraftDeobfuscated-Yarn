@@ -81,20 +81,16 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 			return ActionResult.SUCCESS;
 		} else if (player.isSpectator()) {
 			return ActionResult.CONSUME;
-		} else {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
-			if (blockEntity instanceof ShulkerBoxBlockEntity) {
-				ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
-				if (canOpen(state, world, pos, shulkerBoxBlockEntity)) {
-					player.openHandledScreen(shulkerBoxBlockEntity);
-					player.incrementStat(Stats.OPEN_SHULKER_BOX);
-					PiglinBrain.onGuardedBlockInteracted(player, true);
-				}
-
-				return ActionResult.CONSUME;
-			} else {
-				return ActionResult.PASS;
+		} else if (world.getBlockEntity(pos) instanceof ShulkerBoxBlockEntity shulkerBoxBlockEntity) {
+			if (canOpen(state, world, pos, shulkerBoxBlockEntity)) {
+				player.openHandledScreen(shulkerBoxBlockEntity);
+				player.incrementStat(Stats.OPEN_SHULKER_BOX);
+				PiglinBrain.onGuardedBlockInteracted(player, true);
 			}
+
+			return ActionResult.CONSUME;
+		} else {
+			return ActionResult.PASS;
 		}
 	}
 
@@ -119,9 +115,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		BlockEntity blockEntity = world.getBlockEntity(pos);
-		if (blockEntity instanceof ShulkerBoxBlockEntity) {
-			ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
+		if (world.getBlockEntity(pos) instanceof ShulkerBoxBlockEntity shulkerBoxBlockEntity) {
 			if (!world.isClient && player.isCreative() && !shulkerBoxBlockEntity.isEmpty()) {
 				ItemStack itemStack = getItemStack(this.getColor());
 				NbtCompound nbtCompound = shulkerBoxBlockEntity.writeInventoryNbt(new NbtCompound());
@@ -147,8 +141,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	@Override
 	public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder builder) {
 		BlockEntity blockEntity = builder.getNullable(LootContextParameters.BLOCK_ENTITY);
-		if (blockEntity instanceof ShulkerBoxBlockEntity) {
-			ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
+		if (blockEntity instanceof ShulkerBoxBlockEntity shulkerBoxBlockEntity) {
 			builder = builder.putDrop(CONTENTS, (lootContext, consumer) -> {
 				for (int i = 0; i < shulkerBoxBlockEntity.size(); i++) {
 					consumer.accept(shulkerBoxBlockEntity.getStack(i));

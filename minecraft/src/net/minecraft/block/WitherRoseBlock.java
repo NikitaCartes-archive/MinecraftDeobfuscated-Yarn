@@ -44,11 +44,8 @@ public class WitherRoseBlock extends FlowerBlock {
 	@Override
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		if (!world.isClient && world.getDifficulty() != Difficulty.PEACEFUL) {
-			if (entity instanceof LivingEntity) {
-				LivingEntity livingEntity = (LivingEntity)entity;
-				if (!livingEntity.isInvulnerableTo(DamageSource.WITHER)) {
-					livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 40));
-				}
+			if (entity instanceof LivingEntity livingEntity && !livingEntity.isInvulnerableTo(DamageSource.WITHER)) {
+				livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 40));
 			}
 		}
 	}

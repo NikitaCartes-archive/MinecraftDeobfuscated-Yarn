@@ -8,7 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -26,7 +26,7 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class GameModeSelectionScreen extends Screen {
-	private static final Identifier TEXTURE = new Identifier("textures/gui/container/gamemode_switcher.png");
+	static final Identifier TEXTURE = new Identifier("textures/gui/container/gamemode_switcher.png");
 	private static final int field_32310 = 128;
 	private static final int field_32311 = 128;
 	private static final int field_32312 = 26;
@@ -147,8 +147,8 @@ public class GameModeSelectionScreen extends Screen {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public class ButtonWidget extends AbstractButtonWidget {
-		private final GameModeSelectionScreen.GameMode gameMode;
+	public class ButtonWidget extends ClickableWidget {
+		final GameModeSelectionScreen.GameMode gameMode;
 		private boolean selected;
 
 		public ButtonWidget(GameModeSelectionScreen.GameMode gameMode, int x, int y) {
@@ -215,19 +215,19 @@ public class GameModeSelectionScreen extends Screen {
 			this.icon = icon;
 		}
 
-		private void renderIcon(ItemRenderer itemRenderer, int x, int y) {
+		void renderIcon(ItemRenderer itemRenderer, int x, int y) {
 			itemRenderer.renderInGuiWithOverrides(this.icon, x, y);
 		}
 
-		private Text getText() {
+		Text getText() {
 			return this.text;
 		}
 
-		private String getCommand() {
+		String getCommand() {
 			return this.command;
 		}
 
-		private Optional<GameModeSelectionScreen.GameMode> next() {
+		Optional<GameModeSelectionScreen.GameMode> next() {
 			switch (this) {
 				case CREATIVE:
 					return Optional.of(SURVIVAL);
@@ -240,7 +240,7 @@ public class GameModeSelectionScreen extends Screen {
 			}
 		}
 
-		private static Optional<GameModeSelectionScreen.GameMode> of(net.minecraft.world.GameMode gameMode) {
+		static Optional<GameModeSelectionScreen.GameMode> of(net.minecraft.world.GameMode gameMode) {
 			switch (gameMode) {
 				case SPECTATOR:
 					return Optional.of(SPECTATOR);

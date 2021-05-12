@@ -21,8 +21,8 @@ import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.pack.PackScreen;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
@@ -60,7 +60,7 @@ import org.lwjgl.glfw.GLFW;
 @Environment(EnvType.CLIENT)
 public class CreateWorldScreen extends Screen {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final String field_32434 = "mcworld-";
+	private static final String TEMP_DIR_PREFIX = "mcworld-";
 	private static final Text GAME_MODE_TEXT = new TranslatableText("selectWorld.gameMode");
 	private static final Text ENTER_SEED_TEXT = new TranslatableText("selectWorld.enterSeed");
 	private static final Text SEED_INFO_TEXT = new TranslatableText("selectWorld.seedInfo");
@@ -69,7 +69,7 @@ public class CreateWorldScreen extends Screen {
 	private static final Text ALLOW_COMMANDS_INFO_TEXT = new TranslatableText("selectWorld.allowCommands.info");
 	private final Screen parent;
 	private TextFieldWidget levelNameField;
-	private String saveDirectoryName;
+	String saveDirectoryName;
 	private CreateWorldScreen.Mode currentMode = CreateWorldScreen.Mode.SURVIVAL;
 	@Nullable
 	private CreateWorldScreen.Mode lastMode;
@@ -180,7 +180,7 @@ public class CreateWorldScreen extends Screen {
 				.values(CreateWorldScreen.Mode.SURVIVAL, CreateWorldScreen.Mode.HARDCORE, CreateWorldScreen.Mode.CREATIVE)
 				.initially(this.currentMode)
 				.narration(
-					cyclingButtonWidget -> AbstractButtonWidget.getNarrationMessage(cyclingButtonWidget.getMessage())
+					cyclingButtonWidget -> ClickableWidget.getNarrationMessage(cyclingButtonWidget.getMessage())
 							.append(". ")
 							.append(this.firstGameModeDescriptionLine)
 							.append(" ")
@@ -204,7 +204,7 @@ public class CreateWorldScreen extends Screen {
 					this.cheatsEnabled = boolean_;
 				})
 		);
-		this.dataPacksButton = this.addButton(new ButtonWidget(j, 151, 150, 20, new TranslatableText("selectWorld.dataPacks"), button -> this.method_29694()));
+		this.dataPacksButton = this.addButton(new ButtonWidget(j, 151, 150, 20, new TranslatableText("selectWorld.dataPacks"), button -> this.openPackScreen()));
 		this.gameRulesButton = this.addButton(
 			new ButtonWidget(
 				i,
@@ -424,7 +424,7 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	@Override
-	protected <T extends AbstractButtonWidget> T addButton(T button) {
+	protected <T extends ClickableWidget> T addButton(T button) {
 		return super.addButton(button);
 	}
 
@@ -443,14 +443,14 @@ public class CreateWorldScreen extends Screen {
 		return this.dataPackTempDir;
 	}
 
-	private void method_29694() {
+	private void openPackScreen() {
 		Pair<File, ResourcePackManager> pair = this.method_30296();
 		if (pair != null) {
-			this.client.openScreen(new PackScreen(this, pair.getSecond(), this::method_29682, pair.getFirst(), new TranslatableText("dataPack.title")));
+			this.client.openScreen(new PackScreen(this, pair.getSecond(), this::applyDataPacks, pair.getFirst(), new TranslatableText("dataPack.title")));
 		}
 	}
 
-	private void method_29682(ResourcePackManager resourcePackManager) {
+	private void applyDataPacks(ResourcePackManager resourcePackManager) {
 		List<String> list = ImmutableList.copyOf(resourcePackManager.getEnabledNames());
 		List<String> list2 = (List<String>)resourcePackManager.getNames().stream().filter(string -> !list.contains(string)).collect(ImmutableList.toImmutableList());
 		DataPackSettings dataPackSettings = new DataPackSettings(list, list2);
@@ -477,7 +477,7 @@ public class CreateWorldScreen extends Screen {
 												new ConfirmScreen(
 													bl -> {
 														if (bl) {
-															this.method_29694();
+															this.openPackScreen();
 														} else {
 															this.dataPackSettings = DataPackSettings.SAFE_MODE;
 															this.client.openScreen(this);
@@ -509,33 +509,31 @@ public class CreateWorldScreen extends Screen {
 		if (this.dataPackTempDir != null) {
 			try {
 				Stream<Path> stream = Files.walk(this.dataPackTempDir);
-				Throwable var2 = null;
 
 				try {
 					stream.sorted(Comparator.reverseOrder()).forEach(path -> {
 						try {
 							Files.delete(path);
-						} catch (IOException var2x) {
-							LOGGER.warn("Failed to remove temporary file {}", path, var2x);
+						} catch (IOException var2) {
+							LOGGER.warn("Failed to remove temporary file {}", path, var2);
 						}
 					});
-				} catch (Throwable var12) {
-					var2 = var12;
-					throw var12;
-				} finally {
+				} catch (Throwable var5) {
 					if (stream != null) {
-						if (var2 != null) {
-							try {
-								stream.close();
-							} catch (Throwable var11) {
-								var2.addSuppressed(var11);
-							}
-						} else {
+						try {
 							stream.close();
+						} catch (Throwable var4) {
+							var5.addSuppressed(var4);
 						}
 					}
+
+					throw var5;
 				}
-			} catch (IOException var14) {
+
+				if (stream != null) {
+					stream.close();
+				}
+			} catch (IOException var6) {
 				LOGGER.warn("Failed to list temporary dir {}", this.dataPackTempDir);
 			}
 
@@ -556,30 +554,28 @@ public class CreateWorldScreen extends Screen {
 		if (this.dataPackTempDir != null) {
 			try (LevelStorage.Session session = this.client.getLevelStorage().createSession(this.saveDirectoryName)) {
 				Stream<Path> stream = Files.walk(this.dataPackTempDir);
-				Throwable var4 = null;
 
 				try {
 					Path path = session.getDirectory(WorldSavePath.DATAPACKS);
 					Files.createDirectories(path);
 					stream.filter(pathx -> !pathx.equals(this.dataPackTempDir)).forEach(path2 -> copyDataPack(this.dataPackTempDir, path, path2));
-				} catch (Throwable var29) {
-					var4 = var29;
-					throw var29;
-				} finally {
+				} catch (Throwable var7) {
 					if (stream != null) {
-						if (var4 != null) {
-							try {
-								stream.close();
-							} catch (Throwable var28) {
-								var4.addSuppressed(var28);
-							}
-						} else {
+						try {
 							stream.close();
+						} catch (Throwable var6) {
+							var7.addSuppressed(var6);
 						}
 					}
+
+					throw var7;
 				}
-			} catch (CreateWorldScreen.WorldCreationException | IOException var33) {
-				LOGGER.warn("Failed to copy datapacks to world {}", this.saveDirectoryName, var33);
+
+				if (stream != null) {
+					stream.close();
+				}
+			} catch (CreateWorldScreen.WorldCreationException | IOException var9) {
+				LOGGER.warn("Failed to copy datapacks to world {}", this.saveDirectoryName, var9);
 				SystemToast.addPackCopyFailure(this.client, this.saveDirectoryName);
 				this.onCloseScreen();
 				return false;
@@ -595,7 +591,6 @@ public class CreateWorldScreen extends Screen {
 
 		try {
 			Stream<Path> stream = Files.walk(path);
-			Throwable var4 = null;
 
 			try {
 				stream.filter(path2 -> !path2.equals(path)).forEach(path2 -> {
@@ -613,24 +608,23 @@ public class CreateWorldScreen extends Screen {
 
 					copyDataPack(path, path3, path2);
 				});
-			} catch (Throwable var14) {
-				var4 = var14;
-				throw var14;
-			} finally {
+			} catch (Throwable var7) {
 				if (stream != null) {
-					if (var4 != null) {
-						try {
-							stream.close();
-						} catch (Throwable var13) {
-							var4.addSuppressed(var13);
-						}
-					} else {
+					try {
 						stream.close();
+					} catch (Throwable var6) {
+						var7.addSuppressed(var6);
 					}
 				}
+
+				throw var7;
 			}
-		} catch (CreateWorldScreen.WorldCreationException | IOException var16) {
-			LOGGER.warn("Failed to copy datapacks from world {}", path, var16);
+
+			if (stream != null) {
+				stream.close();
+			}
+		} catch (CreateWorldScreen.WorldCreationException | IOException var8) {
+			LOGGER.warn("Failed to copy datapacks from world {}", path, var8);
 			SystemToast.addPackCopyFailure(minecraftClient, path.toString());
 			return null;
 		}
@@ -664,8 +658,8 @@ public class CreateWorldScreen extends Screen {
 		CREATIVE("creative", GameMode.CREATIVE),
 		DEBUG("spectator", GameMode.SPECTATOR);
 
-		private final String translationSuffix;
-		private final GameMode defaultGameMode;
+		final String translationSuffix;
+		final GameMode defaultGameMode;
 		private final Text text;
 
 		private Mode(String translationSuffix, GameMode defaultGameMode) {

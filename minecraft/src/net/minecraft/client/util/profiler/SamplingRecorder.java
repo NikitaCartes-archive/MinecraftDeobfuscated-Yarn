@@ -22,11 +22,11 @@ public class SamplingRecorder {
 	@Nullable
 	private final SamplingRecorder.ValueConsumer writeAction;
 
-	private <T> SamplingRecorder(Metric metric, DoubleSupplier timeGetter, @Nullable Runnable startAction, @Nullable SamplingRecorder.ValueConsumer writeAction) {
+	<T> SamplingRecorder(Metric metric, DoubleSupplier doubleSupplier, @Nullable Runnable runnable, @Nullable SamplingRecorder.ValueConsumer valueConsumer) {
 		this.metric = metric;
-		this.startAction = startAction;
-		this.timeGetter = timeGetter;
-		this.writeAction = writeAction;
+		this.startAction = runnable;
+		this.timeGetter = doubleSupplier;
+		this.writeAction = valueConsumer;
 		this.buffer = new PacketByteBuf(Unpooled.directBuffer());
 		this.active = true;
 	}

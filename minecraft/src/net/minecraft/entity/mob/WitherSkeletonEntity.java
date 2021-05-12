@@ -60,13 +60,9 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	@Override
 	protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
 		super.dropEquipment(source, lootingMultiplier, allowDrops);
-		Entity entity = source.getAttacker();
-		if (entity instanceof CreeperEntity) {
-			CreeperEntity creeperEntity = (CreeperEntity)entity;
-			if (creeperEntity.shouldDropHead()) {
-				creeperEntity.onHeadDropped();
-				this.dropItem(Items.WITHER_SKELETON_SKULL);
-			}
+		if (source.getAttacker() instanceof CreeperEntity creeperEntity && creeperEntity.shouldDropHead()) {
+			creeperEntity.onHeadDropped();
+			this.dropItem(Items.WITHER_SKELETON_SKULL);
 		}
 	}
 

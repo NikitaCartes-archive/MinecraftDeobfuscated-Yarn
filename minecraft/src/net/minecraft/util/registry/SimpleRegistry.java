@@ -134,7 +134,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 
 	@Override
 	public Optional<RegistryKey<T>> getKey(T entry) {
-		return Optional.ofNullable(this.keyToEntry.inverse().get(entry));
+		return Optional.ofNullable((RegistryKey)this.keyToEntry.inverse().get(entry));
 	}
 
 	@Override
@@ -185,7 +185,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	}
 
 	@Override
-	public boolean method_35863() {
+	public boolean isEmpty() {
 		return this.idToEntry.isEmpty();
 	}
 

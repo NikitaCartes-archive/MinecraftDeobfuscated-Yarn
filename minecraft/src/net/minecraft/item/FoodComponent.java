@@ -16,15 +16,13 @@ public class FoodComponent {
 	private final boolean snack;
 	private final List<Pair<StatusEffectInstance, Float>> statusEffects;
 
-	private FoodComponent(
-		int hunger, float saturationModifier, boolean meat, boolean alwaysEdible, boolean snack, List<Pair<StatusEffectInstance, Float>> statusEffects
-	) {
-		this.hunger = hunger;
-		this.saturationModifier = saturationModifier;
-		this.meat = meat;
-		this.alwaysEdible = alwaysEdible;
-		this.snack = snack;
-		this.statusEffects = statusEffects;
+	FoodComponent(int i, float f, boolean bl, boolean bl2, boolean bl3, List<Pair<StatusEffectInstance, Float>> list) {
+		this.hunger = i;
+		this.saturationModifier = f;
+		this.meat = bl;
+		this.alwaysEdible = bl2;
+		this.snack = bl3;
+		this.statusEffects = list;
 	}
 
 	/**

@@ -111,41 +111,13 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 				for (int i = 0; i < list.size(); i++) {
 					Entity entity = (Entity)list.get(i);
 					if (entity.getPistonBehavior() != PistonBehavior.IGNORE) {
-						double d = 0.0;
-						double e = 0.0;
-						double f = 0.0;
-						Box box2 = entity.getBoundingBox();
-						switch (direction.getAxis()) {
-							case X:
-								if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-									d = box.maxX - box2.minX;
-								} else {
-									d = box2.maxX - box.minX;
-								}
-
-								d += 0.01;
-								break;
-							case Y:
-								if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-									e = box.maxY - box2.minY;
-								} else {
-									e = box2.maxY - box.minY;
-								}
-
-								e += 0.01;
-								break;
-							case Z:
-								if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-									f = box.maxZ - box2.minZ;
-								} else {
-									f = box2.maxZ - box.minZ;
-								}
-
-								f += 0.01;
-						}
-
 						entity.move(
-							MovementType.SHULKER_BOX, new Vec3d(d * (double)direction.getOffsetX(), e * (double)direction.getOffsetY(), f * (double)direction.getOffsetZ())
+							MovementType.SHULKER_BOX,
+							new Vec3d(
+								(box.getXLength() + 0.01) * (double)direction.getOffsetX(),
+								(box.getYLength() + 0.01) * (double)direction.getOffsetY(),
+								(box.getZLength() + 0.01) * (double)direction.getOffsetZ()
+							)
 						);
 					}
 				}

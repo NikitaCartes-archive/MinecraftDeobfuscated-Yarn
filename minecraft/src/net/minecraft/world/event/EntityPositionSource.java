@@ -13,7 +13,7 @@ public class EntityPositionSource implements PositionSource {
 		instance -> instance.group(Codec.INT.fieldOf("source_entity_id").forGetter(entityPositionSource -> entityPositionSource.entityId))
 				.apply(instance, EntityPositionSource::new)
 	);
-	private final int entityId;
+	final int entityId;
 	private Optional<Entity> entity = Optional.empty();
 
 	public EntityPositionSource(int entityId) {

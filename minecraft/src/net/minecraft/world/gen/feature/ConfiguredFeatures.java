@@ -108,7 +108,7 @@ public class ConfiguredFeatures {
 	public static final ConfiguredFeature<?, ?> END_ISLAND = register("end_island", Feature.END_ISLAND.configure(FeatureConfig.DEFAULT));
 	public static final ConfiguredFeature<?, ?> END_ISLAND_DECORATED = register(
 		"end_island_decorated",
-		END_ISLAND.method_36296(YOffset.fixed(55), YOffset.fixed(70))
+		END_ISLAND.uniformRange(YOffset.fixed(55), YOffset.fixed(70))
 			.spreadHorizontally()
 			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(1, 0.25F, 1)))
 			.applyChance(14)
@@ -291,7 +291,7 @@ public class ConfiguredFeatures {
 			.decorate(Decorator.COUNT_NOISE_BIASED.configure(new CountNoiseBiasedDecoratorConfig(80, 80.0, 0.0)))
 	);
 	public static final ConfiguredFeature<?, ?> BLUE_ICE = register(
-		"blue_ice", Feature.BLUE_ICE.configure(FeatureConfig.DEFAULT).method_36296(YOffset.fixed(30), YOffset.fixed(61)).spreadHorizontally().repeatRandomly(19)
+		"blue_ice", Feature.BLUE_ICE.configure(FeatureConfig.DEFAULT).uniformRange(YOffset.fixed(30), YOffset.fixed(61)).spreadHorizontally().repeatRandomly(19)
 	);
 	public static final ConfiguredFeature<?, ?> BAMBOO_LIGHT = register(
 		"bamboo_light", Feature.BAMBOO.configure(new ProbabilityConfig(0.0F)).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).repeat(16)
@@ -306,7 +306,7 @@ public class ConfiguredFeatures {
 	);
 	public static final ConfiguredFeature<?, ?> VINES = register("vines", Feature.VINES.configure(FeatureConfig.DEFAULT).spreadHorizontally().repeat(50));
 	public static final ConfiguredFeature<?, ?> PROTOTYPE_VINES = register(
-		"prototype_vines", Feature.VINES.configure(FeatureConfig.DEFAULT).method_36296(YOffset.fixed(64), YOffset.fixed(100)).spreadHorizontally().repeat(127)
+		"prototype_vines", Feature.VINES.configure(FeatureConfig.DEFAULT).uniformRange(YOffset.fixed(64), YOffset.fixed(100)).spreadHorizontally().repeat(127)
 	);
 	public static final ConfiguredFeature<?, ?> LAKE_WATER = register(
 		"lake_water",
@@ -401,7 +401,7 @@ public class ConfiguredFeatures {
 		"prototype_fossil_upper",
 		Feature.FOSSIL
 			.configure(new FossilFeatureConfig(FOSSIL_STRUCTURES, FOSSIL_OVERLAY_STRUCTURES, StructureProcessorLists.FOSSIL_ROT, StructureProcessorLists.FOSSIL_COAL, 4))
-			.method_36296(YOffset.fixed(0), YOffset.getTop())
+			.uniformRange(YOffset.fixed(0), YOffset.getTop())
 			.applyChance(64)
 	);
 	public static final ConfiguredFeature<?, ?> PROTOTYPE_FOSSIL_LOWER = register(
@@ -410,7 +410,7 @@ public class ConfiguredFeatures {
 			.configure(
 				new FossilFeatureConfig(FOSSIL_STRUCTURES, FOSSIL_OVERLAY_STRUCTURES, StructureProcessorLists.FOSSIL_ROT, StructureProcessorLists.FOSSIL_DIAMONDS, 4)
 			)
-			.method_36296(YOffset.getBottom(), YOffset.fixed(-8))
+			.uniformRange(YOffset.getBottom(), YOffset.fixed(-8))
 			.applyChance(64)
 	);
 	public static final ConfiguredFeature<?, ?> SPRING_LAVA_DOUBLE = register(
@@ -491,7 +491,7 @@ public class ConfiguredFeatures {
 					ImmutableSet.of(Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE, Blocks.DEEPSLATE, Blocks.TUFF)
 				)
 			)
-			.method_36296(YOffset.getBottom(), YOffset.getTop())
+			.uniformRange(YOffset.getBottom(), YOffset.getTop())
 			.spreadHorizontally()
 			.repeat(50)
 	);
@@ -789,40 +789,40 @@ public class ConfiguredFeatures {
 	public static final ConfiguredFeature<?, ?> BROWN_MUSHROOM_SWAMP = register("brown_mushroom_swamp", BROWN_MUSHROOM_TAIGA.repeat(8));
 	public static final ConfiguredFeature<?, ?> RED_MUSHROOM_SWAMP = register("red_mushroom_swamp", RED_MUSHROOM_TAIGA.repeat(8));
 	public static final ImmutableList<OreFeatureConfig.Target> IRON_ORE_TARGETS = ImmutableList.of(
-		OreFeatureConfig.create(OreFeatureConfig.Rules.STONE_ORE_REPLACEABLES, ConfiguredFeatures.States.IRON_ORE),
-		OreFeatureConfig.create(OreFeatureConfig.Rules.DEEPSLATE_ORE_REPLACEABLES, ConfiguredFeatures.States.DEEPSLATE_IRON_ORE)
+		OreFeatureConfig.createTarget(OreFeatureConfig.Rules.STONE_ORE_REPLACEABLES, ConfiguredFeatures.States.IRON_ORE),
+		OreFeatureConfig.createTarget(OreFeatureConfig.Rules.DEEPSLATE_ORE_REPLACEABLES, ConfiguredFeatures.States.DEEPSLATE_IRON_ORE)
 	);
 	public static final ImmutableList<OreFeatureConfig.Target> REDSTONE_ORE_TARGETS = ImmutableList.of(
-		OreFeatureConfig.create(OreFeatureConfig.Rules.STONE_ORE_REPLACEABLES, ConfiguredFeatures.States.REDSTONE_ORE),
-		OreFeatureConfig.create(OreFeatureConfig.Rules.DEEPSLATE_ORE_REPLACEABLES, ConfiguredFeatures.States.DEEPSLATE_REDSTONE_ORE)
+		OreFeatureConfig.createTarget(OreFeatureConfig.Rules.STONE_ORE_REPLACEABLES, ConfiguredFeatures.States.REDSTONE_ORE),
+		OreFeatureConfig.createTarget(OreFeatureConfig.Rules.DEEPSLATE_ORE_REPLACEABLES, ConfiguredFeatures.States.DEEPSLATE_REDSTONE_ORE)
 	);
 	public static final ImmutableList<OreFeatureConfig.Target> GOLD_ORE_TARGETS = ImmutableList.of(
-		OreFeatureConfig.create(OreFeatureConfig.Rules.STONE_ORE_REPLACEABLES, ConfiguredFeatures.States.GOLD_ORE),
-		OreFeatureConfig.create(OreFeatureConfig.Rules.DEEPSLATE_ORE_REPLACEABLES, ConfiguredFeatures.States.DEEPSLATE_GOLD_ORE)
+		OreFeatureConfig.createTarget(OreFeatureConfig.Rules.STONE_ORE_REPLACEABLES, ConfiguredFeatures.States.GOLD_ORE),
+		OreFeatureConfig.createTarget(OreFeatureConfig.Rules.DEEPSLATE_ORE_REPLACEABLES, ConfiguredFeatures.States.DEEPSLATE_GOLD_ORE)
 	);
 	public static final ImmutableList<OreFeatureConfig.Target> DIAMOND_ORE_TARGETS = ImmutableList.of(
-		OreFeatureConfig.create(OreFeatureConfig.Rules.STONE_ORE_REPLACEABLES, ConfiguredFeatures.States.DIAMOND_ORE),
-		OreFeatureConfig.create(OreFeatureConfig.Rules.DEEPSLATE_ORE_REPLACEABLES, ConfiguredFeatures.States.DEEPSLATE_DIAMOND_ORE)
+		OreFeatureConfig.createTarget(OreFeatureConfig.Rules.STONE_ORE_REPLACEABLES, ConfiguredFeatures.States.DIAMOND_ORE),
+		OreFeatureConfig.createTarget(OreFeatureConfig.Rules.DEEPSLATE_ORE_REPLACEABLES, ConfiguredFeatures.States.DEEPSLATE_DIAMOND_ORE)
 	);
 	public static final ImmutableList<OreFeatureConfig.Target> LAPIS_ORE_TARGETS = ImmutableList.of(
-		OreFeatureConfig.create(OreFeatureConfig.Rules.STONE_ORE_REPLACEABLES, ConfiguredFeatures.States.LAPIS_ORE),
-		OreFeatureConfig.create(OreFeatureConfig.Rules.DEEPSLATE_ORE_REPLACEABLES, ConfiguredFeatures.States.DEEPSLATE_LAPIS_ORE)
+		OreFeatureConfig.createTarget(OreFeatureConfig.Rules.STONE_ORE_REPLACEABLES, ConfiguredFeatures.States.LAPIS_ORE),
+		OreFeatureConfig.createTarget(OreFeatureConfig.Rules.DEEPSLATE_ORE_REPLACEABLES, ConfiguredFeatures.States.DEEPSLATE_LAPIS_ORE)
 	);
-	public static final ImmutableList<OreFeatureConfig.Target> field_33634 = ImmutableList.of(
-		OreFeatureConfig.create(OreFeatureConfig.Rules.STONE_ORE_REPLACEABLES, ConfiguredFeatures.States.EMERALD_ORE),
-		OreFeatureConfig.create(OreFeatureConfig.Rules.DEEPSLATE_ORE_REPLACEABLES, ConfiguredFeatures.States.field_33639)
+	public static final ImmutableList<OreFeatureConfig.Target> EMERALD_ORE_TARGETS = ImmutableList.of(
+		OreFeatureConfig.createTarget(OreFeatureConfig.Rules.STONE_ORE_REPLACEABLES, ConfiguredFeatures.States.EMERALD_ORE),
+		OreFeatureConfig.createTarget(OreFeatureConfig.Rules.DEEPSLATE_ORE_REPLACEABLES, ConfiguredFeatures.States.DEEPSLATE_EMERALD_ORE)
 	);
-	public static final ImmutableList<OreFeatureConfig.Target> field_33635 = ImmutableList.of(
-		OreFeatureConfig.create(OreFeatureConfig.Rules.STONE_ORE_REPLACEABLES, ConfiguredFeatures.States.COPPER_ORE),
-		OreFeatureConfig.create(OreFeatureConfig.Rules.DEEPSLATE_ORE_REPLACEABLES, ConfiguredFeatures.States.field_33638)
+	public static final ImmutableList<OreFeatureConfig.Target> COPPER_ORE_TARGETS = ImmutableList.of(
+		OreFeatureConfig.createTarget(OreFeatureConfig.Rules.STONE_ORE_REPLACEABLES, ConfiguredFeatures.States.COPPER_ORE),
+		OreFeatureConfig.createTarget(OreFeatureConfig.Rules.DEEPSLATE_ORE_REPLACEABLES, ConfiguredFeatures.States.DEEPSLATE_COPPER_ORE)
 	);
-	public static final ImmutableList<OreFeatureConfig.Target> field_33636 = ImmutableList.of(
-		OreFeatureConfig.create(OreFeatureConfig.Rules.STONE_ORE_REPLACEABLES, ConfiguredFeatures.States.COAL_ORE),
-		OreFeatureConfig.create(OreFeatureConfig.Rules.DEEPSLATE_ORE_REPLACEABLES, ConfiguredFeatures.States.field_33637)
+	public static final ImmutableList<OreFeatureConfig.Target> COAL_ORE_TARGETS = ImmutableList.of(
+		OreFeatureConfig.createTarget(OreFeatureConfig.Rules.STONE_ORE_REPLACEABLES, ConfiguredFeatures.States.COAL_ORE),
+		OreFeatureConfig.createTarget(OreFeatureConfig.Rules.DEEPSLATE_ORE_REPLACEABLES, ConfiguredFeatures.States.DEEPSLATE_COAL_ORE)
 	);
 	public static final ImmutableList<OreFeatureConfig.Target> INFESTED_TARGETS = ImmutableList.of(
-		OreFeatureConfig.create(OreFeatureConfig.Rules.STONE_ORE_REPLACEABLES, ConfiguredFeatures.States.INFESTED_STONE),
-		OreFeatureConfig.create(OreFeatureConfig.Rules.DEEPSLATE_ORE_REPLACEABLES, ConfiguredFeatures.States.INFESTED_DEEPSLATE)
+		OreFeatureConfig.createTarget(OreFeatureConfig.Rules.STONE_ORE_REPLACEABLES, ConfiguredFeatures.States.INFESTED_STONE),
+		OreFeatureConfig.createTarget(OreFeatureConfig.Rules.DEEPSLATE_ORE_REPLACEABLES, ConfiguredFeatures.States.INFESTED_DEEPSLATE)
 	);
 	public static final OreFeatureConfig IRON_CONFIG = new OreFeatureConfig(IRON_ORE_TARGETS, 9);
 	public static final OreFeatureConfig REDSTONE_CONFIG = new OreFeatureConfig(REDSTONE_ORE_TARGETS, 8);
@@ -830,7 +830,7 @@ public class ConfiguredFeatures {
 		"ore_magma",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.NETHERRACK, ConfiguredFeatures.States.MAGMA_BLOCK, 33))
-			.method_36296(YOffset.fixed(27), YOffset.fixed(36))
+			.uniformRange(YOffset.fixed(27), YOffset.fixed(36))
 			.spreadHorizontally()
 			.repeat(4)
 	);
@@ -838,7 +838,7 @@ public class ConfiguredFeatures {
 		"ore_soul_sand",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.NETHERRACK, ConfiguredFeatures.States.SOUL_SAND, 12))
-			.method_36296(YOffset.getBottom(), YOffset.fixed(31))
+			.uniformRange(YOffset.getBottom(), YOffset.fixed(31))
 			.spreadHorizontally()
 			.repeat(12)
 	);
@@ -878,7 +878,7 @@ public class ConfiguredFeatures {
 		"ore_gravel_nether",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.NETHERRACK, ConfiguredFeatures.States.GRAVEL, 33))
-			.method_36296(YOffset.fixed(5), YOffset.fixed(41))
+			.uniformRange(YOffset.fixed(5), YOffset.fixed(41))
 			.spreadHorizontally()
 			.repeat(2)
 	);
@@ -886,7 +886,7 @@ public class ConfiguredFeatures {
 		"ore_blackstone",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.NETHERRACK, ConfiguredFeatures.States.BLACKSTONE, 33))
-			.method_36296(YOffset.fixed(5), YOffset.fixed(31))
+			.uniformRange(YOffset.fixed(5), YOffset.fixed(31))
 			.spreadHorizontally()
 			.repeat(2)
 	);
@@ -894,7 +894,7 @@ public class ConfiguredFeatures {
 		"ore_dirt",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.DIRT, 33))
-			.method_36296(YOffset.fixed(0), YOffset.getTop())
+			.uniformRange(YOffset.fixed(0), YOffset.getTop())
 			.spreadHorizontally()
 			.repeat(10)
 	);
@@ -902,7 +902,7 @@ public class ConfiguredFeatures {
 		"prototype_ore_dirt",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.DIRT, 33))
-			.method_36296(YOffset.fixed(0), YOffset.getTop())
+			.uniformRange(YOffset.fixed(0), YOffset.getTop())
 			.spreadHorizontally()
 			.repeat(15)
 	);
@@ -910,7 +910,7 @@ public class ConfiguredFeatures {
 		"ore_gravel",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.GRAVEL, 33))
-			.method_36296(YOffset.fixed(0), YOffset.getTop())
+			.uniformRange(YOffset.fixed(0), YOffset.getTop())
 			.spreadHorizontally()
 			.repeat(8)
 	);
@@ -918,7 +918,7 @@ public class ConfiguredFeatures {
 		"prototype_ore_gravel",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.GRAVEL, 33))
-			.method_36296(YOffset.fixed(0), YOffset.getTop())
+			.uniformRange(YOffset.fixed(0), YOffset.getTop())
 			.spreadHorizontally()
 			.repeat(12)
 	);
@@ -926,7 +926,7 @@ public class ConfiguredFeatures {
 		"ore_granite",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.GRANITE, 33))
-			.method_36296(YOffset.fixed(0), YOffset.fixed(79))
+			.uniformRange(YOffset.fixed(0), YOffset.fixed(79))
 			.spreadHorizontally()
 			.repeat(10)
 	);
@@ -934,7 +934,7 @@ public class ConfiguredFeatures {
 		"prototype_ore_granite",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.GRANITE, 64))
-			.method_36296(YOffset.fixed(0), YOffset.fixed(79))
+			.uniformRange(YOffset.fixed(0), YOffset.fixed(79))
 			.spreadHorizontally()
 			.repeat(2)
 	);
@@ -942,7 +942,7 @@ public class ConfiguredFeatures {
 		"ore_diorite",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.DIORITE, 33))
-			.method_36296(YOffset.fixed(0), YOffset.fixed(79))
+			.uniformRange(YOffset.fixed(0), YOffset.fixed(79))
 			.spreadHorizontally()
 			.repeat(10)
 	);
@@ -950,7 +950,7 @@ public class ConfiguredFeatures {
 		"prototype_ore_diorite",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.DIORITE, 64))
-			.method_36296(YOffset.fixed(0), YOffset.fixed(79))
+			.uniformRange(YOffset.fixed(0), YOffset.fixed(79))
 			.spreadHorizontally()
 			.repeat(2)
 	);
@@ -958,7 +958,7 @@ public class ConfiguredFeatures {
 		"ore_andesite",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.ANDESITE, 33))
-			.method_36296(YOffset.fixed(0), YOffset.fixed(79))
+			.uniformRange(YOffset.fixed(0), YOffset.fixed(79))
 			.spreadHorizontally()
 			.repeat(10)
 	);
@@ -966,7 +966,7 @@ public class ConfiguredFeatures {
 		"prototype_ore_andesite",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.ANDESITE, 64))
-			.method_36296(YOffset.fixed(0), YOffset.fixed(79))
+			.uniformRange(YOffset.fixed(0), YOffset.fixed(79))
 			.spreadHorizontally()
 			.repeat(2)
 	);
@@ -974,7 +974,7 @@ public class ConfiguredFeatures {
 		"ore_tuff",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.TUFF, 33))
-			.method_36296(YOffset.fixed(0), YOffset.fixed(16))
+			.uniformRange(YOffset.fixed(0), YOffset.fixed(16))
 			.spreadHorizontally()
 			.repeat(1)
 	);
@@ -982,74 +982,74 @@ public class ConfiguredFeatures {
 		"prototype_ore_tuff",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.TUFF, 64))
-			.method_36296(YOffset.getBottom(), YOffset.fixed(0))
+			.uniformRange(YOffset.getBottom(), YOffset.fixed(0))
 			.spreadHorizontally()
 			.repeat(2)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_DEEPSLATE = register(
 		"ore_deepslate",
 		Feature.ORE
-			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.field_33144, 64))
-			.method_36296(YOffset.fixed(0), YOffset.fixed(16))
+			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.DEEPSLATE, 64))
+			.uniformRange(YOffset.fixed(0), YOffset.fixed(16))
 			.spreadHorizontally()
 			.repeat(2)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_COAL = register(
 		"ore_coal",
-		Feature.ORE.configure(new OreFeatureConfig(field_33636, 17)).method_36296(YOffset.getBottom(), YOffset.fixed(127)).spreadHorizontally().repeat(20)
+		Feature.ORE.configure(new OreFeatureConfig(COAL_ORE_TARGETS, 17)).uniformRange(YOffset.getBottom(), YOffset.fixed(127)).spreadHorizontally().repeat(20)
 	);
 	public static final ConfiguredFeature<?, ?> PROTOTYPE_ORE_COAL_UPPER = register(
 		"prototype_ore_coal_upper",
-		Feature.ORE.configure(new OreFeatureConfig(field_33636, 17)).method_36296(YOffset.fixed(136), YOffset.getTop()).spreadHorizontally().repeat(30)
+		Feature.ORE.configure(new OreFeatureConfig(COAL_ORE_TARGETS, 17)).uniformRange(YOffset.fixed(136), YOffset.getTop()).spreadHorizontally().repeat(30)
 	);
 	public static final ConfiguredFeature<?, ?> PROTOTYPE_ORE_COAL_LOWER = register(
 		"prototype_ore_coal_lower",
-		Feature.ORE.configure(new OreFeatureConfig(field_33636, 17, 0.5F)).method_36297(YOffset.fixed(0), YOffset.fixed(192)).spreadHorizontally().repeat(20)
+		Feature.ORE.configure(new OreFeatureConfig(COAL_ORE_TARGETS, 17, 0.5F)).triangleRange(YOffset.fixed(0), YOffset.fixed(192)).spreadHorizontally().repeat(20)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_IRON = register(
 		"ore_iron",
-		Feature.ORE.configure(new OreFeatureConfig(IRON_ORE_TARGETS, 9)).method_36296(YOffset.getBottom(), YOffset.fixed(63)).spreadHorizontally().repeat(20)
+		Feature.ORE.configure(new OreFeatureConfig(IRON_ORE_TARGETS, 9)).uniformRange(YOffset.getBottom(), YOffset.fixed(63)).spreadHorizontally().repeat(20)
 	);
 	public static final ConfiguredFeature<?, ?> PROTOTYPE_ORE_IRON_UPPER = register(
-		"prototype_ore_iron_upper", Feature.ORE.configure(IRON_CONFIG).method_36297(YOffset.fixed(128), YOffset.fixed(384)).spreadHorizontally().repeat(40)
+		"prototype_ore_iron_upper", Feature.ORE.configure(IRON_CONFIG).triangleRange(YOffset.fixed(128), YOffset.fixed(384)).spreadHorizontally().repeat(40)
 	);
 	public static final ConfiguredFeature<?, ?> PROTOTYPE_ORE_IRON_MIDDLE = register(
-		"prototype_ore_iron_middle", Feature.ORE.configure(IRON_CONFIG).method_36297(YOffset.fixed(-24), YOffset.fixed(56)).spreadHorizontally().repeat(5)
+		"prototype_ore_iron_middle", Feature.ORE.configure(IRON_CONFIG).triangleRange(YOffset.fixed(-24), YOffset.fixed(56)).spreadHorizontally().repeat(5)
 	);
 	public static final ConfiguredFeature<?, ?> PROTOTYPE_ORE_IRON_SMALL = register(
 		"prototype_ore_iron_small",
-		Feature.ORE.configure(new OreFeatureConfig(IRON_ORE_TARGETS, 4)).method_36296(YOffset.getBottom(), YOffset.fixed(64)).spreadHorizontally().repeat(10)
+		Feature.ORE.configure(new OreFeatureConfig(IRON_ORE_TARGETS, 4)).uniformRange(YOffset.getBottom(), YOffset.fixed(64)).spreadHorizontally().repeat(10)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_GOLD_EXTRA = register(
 		"ore_gold_extra",
-		Feature.ORE.configure(new OreFeatureConfig(GOLD_ORE_TARGETS, 9)).method_36296(YOffset.fixed(32), YOffset.fixed(79)).spreadHorizontally().repeat(20)
+		Feature.ORE.configure(new OreFeatureConfig(GOLD_ORE_TARGETS, 9)).uniformRange(YOffset.fixed(32), YOffset.fixed(79)).spreadHorizontally().repeat(20)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_GOLD = register(
 		"ore_gold",
-		Feature.ORE.configure(new OreFeatureConfig(GOLD_ORE_TARGETS, 9)).method_36296(YOffset.getBottom(), YOffset.fixed(31)).spreadHorizontally().repeat(2)
+		Feature.ORE.configure(new OreFeatureConfig(GOLD_ORE_TARGETS, 9)).uniformRange(YOffset.getBottom(), YOffset.fixed(31)).spreadHorizontally().repeat(2)
 	);
 	public static final ConfiguredFeature<?, ?> PROTOTYPE_ORE_GOLD = register(
 		"prototype_ore_gold",
-		Feature.ORE.configure(new OreFeatureConfig(GOLD_ORE_TARGETS, 9, 0.5F)).method_36297(YOffset.fixed(-64), YOffset.fixed(32)).spreadHorizontally().repeat(4)
+		Feature.ORE.configure(new OreFeatureConfig(GOLD_ORE_TARGETS, 9, 0.5F)).triangleRange(YOffset.fixed(-64), YOffset.fixed(32)).spreadHorizontally().repeat(4)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_REDSTONE = register(
-		"ore_redstone", Feature.ORE.configure(REDSTONE_CONFIG).method_36296(YOffset.getBottom(), YOffset.fixed(15)).spreadHorizontally().repeat(8)
+		"ore_redstone", Feature.ORE.configure(REDSTONE_CONFIG).uniformRange(YOffset.getBottom(), YOffset.fixed(15)).spreadHorizontally().repeat(8)
 	);
 	public static final ConfiguredFeature<?, ?> PROTOTYPE_ORE_REDSTONE = register(
-		"prototype_ore_redstone", Feature.ORE.configure(REDSTONE_CONFIG).method_36296(YOffset.getBottom(), YOffset.fixed(15)).spreadHorizontally().repeat(4)
+		"prototype_ore_redstone", Feature.ORE.configure(REDSTONE_CONFIG).uniformRange(YOffset.getBottom(), YOffset.fixed(15)).spreadHorizontally().repeat(4)
 	);
 	public static final ConfiguredFeature<?, ?> PROTOTYPE_ORE_REDSTONE_LOWER = register(
 		"prototype_ore_redstone_lower",
-		Feature.ORE.configure(REDSTONE_CONFIG).method_36297(YOffset.aboveBottom(-32), YOffset.aboveBottom(32)).spreadHorizontally().repeat(8)
+		Feature.ORE.configure(REDSTONE_CONFIG).triangleRange(YOffset.aboveBottom(-32), YOffset.aboveBottom(32)).spreadHorizontally().repeat(8)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_DIAMOND = register(
-		"ore_diamond", Feature.ORE.configure(new OreFeatureConfig(DIAMOND_ORE_TARGETS, 8)).method_36296(YOffset.getBottom(), YOffset.fixed(16)).spreadHorizontally()
+		"ore_diamond", Feature.ORE.configure(new OreFeatureConfig(DIAMOND_ORE_TARGETS, 8)).uniformRange(YOffset.getBottom(), YOffset.fixed(16)).spreadHorizontally()
 	);
 	public static final ConfiguredFeature<?, ?> PROTOTYPE_ORE_DIAMOND = register(
 		"prototype_ore_diamond",
 		Feature.ORE
 			.configure(new OreFeatureConfig(DIAMOND_ORE_TARGETS, 4, 0.5F))
-			.method_36297(YOffset.aboveBottom(-80), YOffset.aboveBottom(80))
+			.triangleRange(YOffset.aboveBottom(-80), YOffset.aboveBottom(80))
 			.spreadHorizontally()
 			.repeat(6)
 	);
@@ -1057,50 +1057,50 @@ public class ConfiguredFeatures {
 		"prototype_ore_diamond_large",
 		Feature.ORE
 			.configure(new OreFeatureConfig(DIAMOND_ORE_TARGETS, 12, 0.7F))
-			.method_36297(YOffset.aboveBottom(-80), YOffset.aboveBottom(80))
+			.triangleRange(YOffset.aboveBottom(-80), YOffset.aboveBottom(80))
 			.spreadHorizontally()
 			.applyChance(9)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_LAPIS = register(
-		"ore_lapis", Feature.ORE.configure(new OreFeatureConfig(LAPIS_ORE_TARGETS, 7)).method_36297(YOffset.fixed(0), YOffset.fixed(30)).spreadHorizontally()
+		"ore_lapis", Feature.ORE.configure(new OreFeatureConfig(LAPIS_ORE_TARGETS, 7)).triangleRange(YOffset.fixed(0), YOffset.fixed(30)).spreadHorizontally()
 	);
 	public static final ConfiguredFeature<?, ?> PROTOTYPE_ORE_LAPIS = register(
 		"prototype_ore_lapis",
-		Feature.ORE.configure(new OreFeatureConfig(LAPIS_ORE_TARGETS, 7)).method_36297(YOffset.fixed(-32), YOffset.fixed(32)).spreadHorizontally().repeat(2)
+		Feature.ORE.configure(new OreFeatureConfig(LAPIS_ORE_TARGETS, 7)).triangleRange(YOffset.fixed(-32), YOffset.fixed(32)).spreadHorizontally().repeat(2)
 	);
 	public static final ConfiguredFeature<?, ?> PROTOTYPE_ORE_LAPIS_BURIED = register(
 		"prototype_ore_lapis_buried",
 		Feature.SCATTERED_ORE
 			.configure(new OreFeatureConfig(LAPIS_ORE_TARGETS, 7, 1.0F))
-			.method_36296(YOffset.getBottom(), YOffset.fixed(64))
+			.uniformRange(YOffset.getBottom(), YOffset.fixed(64))
 			.spreadHorizontally()
 			.repeat(4)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_INFESTED = register(
 		"ore_infested",
-		Feature.ORE.configure(new OreFeatureConfig(INFESTED_TARGETS, 9)).method_36296(YOffset.getBottom(), YOffset.fixed(63)).spreadHorizontally().repeat(7)
+		Feature.ORE.configure(new OreFeatureConfig(INFESTED_TARGETS, 9)).uniformRange(YOffset.getBottom(), YOffset.fixed(63)).spreadHorizontally().repeat(7)
 	);
 	public static final ConfiguredFeature<?, ?> PROTOTYPE_ORE_INFESTED = register(
 		"prototype_ore_infested",
-		Feature.ORE.configure(new OreFeatureConfig(INFESTED_TARGETS, 9)).method_36296(YOffset.getBottom(), YOffset.fixed(63)).spreadHorizontally().repeat(14)
+		Feature.ORE.configure(new OreFeatureConfig(INFESTED_TARGETS, 9)).uniformRange(YOffset.getBottom(), YOffset.fixed(63)).spreadHorizontally().repeat(14)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_EMERALD = register(
 		"ore_emerald",
 		Feature.REPLACE_SINGLE_BLOCK
-			.configure(new EmeraldOreFeatureConfig(field_33634))
-			.method_36296(YOffset.fixed(4), YOffset.fixed(31))
+			.configure(new EmeraldOreFeatureConfig(EMERALD_ORE_TARGETS))
+			.uniformRange(YOffset.fixed(4), YOffset.fixed(31))
 			.spreadHorizontally()
 			.repeat(UniformIntProvider.create(6, 24))
 	);
 	public static final ConfiguredFeature<?, ?> PROTOTYPE_ORE_EMERALD = register(
 		"prototype_ore_emerald",
-		Feature.ORE.configure(new OreFeatureConfig(field_33634, 3)).method_36297(YOffset.fixed(32), YOffset.fixed(480)).spreadHorizontally().repeat(50)
+		Feature.ORE.configure(new OreFeatureConfig(EMERALD_ORE_TARGETS, 3)).triangleRange(YOffset.fixed(32), YOffset.fixed(480)).spreadHorizontally().repeat(50)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_DEBRIS_LARGE = register(
 		"ore_debris_large",
 		Feature.SCATTERED_ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_NETHER, ConfiguredFeatures.States.ANCIENT_DEBRIS, 3, 1.0F))
-			.method_36297(YOffset.fixed(8), YOffset.fixed(24))
+			.triangleRange(YOffset.fixed(8), YOffset.fixed(24))
 			.spreadHorizontally()
 	);
 	public static final ConfiguredFeature<?, ?> ORE_DEBRIS_SMALL = register(
@@ -1111,11 +1111,12 @@ public class ConfiguredFeatures {
 			.spreadHorizontally()
 	);
 	public static final ConfiguredFeature<?, ?> ORE_COPPER = register(
-		"ore_copper", Feature.ORE.configure(new OreFeatureConfig(field_33635, 10)).method_36297(YOffset.fixed(0), YOffset.fixed(96)).spreadHorizontally().repeat(6)
+		"ore_copper",
+		Feature.ORE.configure(new OreFeatureConfig(COPPER_ORE_TARGETS, 10)).triangleRange(YOffset.fixed(0), YOffset.fixed(96)).spreadHorizontally().repeat(6)
 	);
 	public static final ConfiguredFeature<?, ?> PROTOTYPE_ORE_COPPER = register(
 		"prototype_ore_copper",
-		Feature.ORE.configure(new OreFeatureConfig(field_33635, 10)).method_36296(YOffset.fixed(0), YOffset.fixed(63)).spreadHorizontally().repeat(8)
+		Feature.ORE.configure(new OreFeatureConfig(COPPER_ORE_TARGETS, 10)).uniformRange(YOffset.fixed(0), YOffset.fixed(63)).spreadHorizontally().repeat(8)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_CLAY = register(
 		"ore_clay",
@@ -1143,7 +1144,7 @@ public class ConfiguredFeatures {
 					8
 				)
 			)
-			.method_36296(YOffset.getBottom(), YOffset.fixed(59))
+			.uniformRange(YOffset.getBottom(), YOffset.fixed(59))
 			.spreadHorizontally()
 			.repeat(UniformIntProvider.create(10, 20))
 	);
@@ -1163,7 +1164,7 @@ public class ConfiguredFeatures {
 					0.6F
 				)
 			)
-			.method_36296(YOffset.getBottom(), YOffset.fixed(59))
+			.uniformRange(YOffset.getBottom(), YOffset.fixed(59))
 			.spreadHorizontally()
 			.repeat(UniformIntProvider.create(2, 10))
 	);
@@ -1171,7 +1172,7 @@ public class ConfiguredFeatures {
 		"small_dripstone",
 		Feature.SMALL_DRIPSTONE
 			.configure(new SmallDripstoneFeatureConfig(5, 10, 2, 0.2F))
-			.method_36296(YOffset.getBottom(), YOffset.fixed(59))
+			.uniformRange(YOffset.getBottom(), YOffset.fixed(59))
 			.spreadHorizontally()
 			.repeat(UniformIntProvider.create(40, 120))
 	);
@@ -1193,7 +1194,7 @@ public class ConfiguredFeatures {
 					8
 				)
 			)
-			.method_36296(YOffset.getBottom(), YOffset.fixed(59))
+			.uniformRange(YOffset.getBottom(), YOffset.fixed(59))
 			.spreadHorizontally()
 			.repeat(UniformIntProvider.create(10, 10))
 			.applyChance(25)
@@ -1202,7 +1203,7 @@ public class ConfiguredFeatures {
 		"rare_small_dripstone",
 		Feature.SMALL_DRIPSTONE
 			.configure(new SmallDripstoneFeatureConfig(5, 10, 2, 0.2F))
-			.method_36296(YOffset.getBottom(), YOffset.fixed(59))
+			.uniformRange(YOffset.getBottom(), YOffset.fixed(59))
 			.spreadHorizontally()
 			.repeat(UniformIntProvider.create(40, 80))
 			.applyChance(30)
@@ -1212,7 +1213,7 @@ public class ConfiguredFeatures {
 		Feature.UNDERWATER_MAGMA
 			.configure(new UnderwaterMagmaFeatureConfig(5, 1, 0.5F))
 			.spreadHorizontally()
-			.method_36296(YOffset.getBottom(), YOffset.fixed(39))
+			.uniformRange(YOffset.getBottom(), YOffset.fixed(39))
 			.repeat(UniformIntProvider.create(4, 10))
 	);
 	public static final ConfiguredFeature<?, ?> GLOW_LICHEN = register(
@@ -1238,7 +1239,7 @@ public class ConfiguredFeatures {
 				)
 			)
 			.spreadHorizontally()
-			.method_36296(YOffset.getBottom(), YOffset.fixed(54))
+			.uniformRange(YOffset.getBottom(), YOffset.fixed(54))
 			.repeat(UniformIntProvider.create(20, 30))
 	);
 	public static final ConfiguredFeature<?, ?> PROTOTYPE_GLOW_LICHEN = register(
@@ -1264,7 +1265,7 @@ public class ConfiguredFeatures {
 				)
 			)
 			.spreadHorizontally()
-			.method_36296(YOffset.getBottom(), YOffset.fixed(54))
+			.uniformRange(YOffset.getBottom(), YOffset.fixed(54))
 			.repeat(UniformIntProvider.create(40, 60))
 	);
 	public static final ConfiguredFeature<?, ?> CRIMSON_FUNGI = register(
@@ -2114,12 +2115,12 @@ public class ConfiguredFeatures {
 					1
 				)
 			)
-			.method_36296(YOffset.aboveBottom(6), YOffset.fixed(46))
+			.uniformRange(YOffset.aboveBottom(6), YOffset.fixed(46))
 			.spreadHorizontally()
 			.applyChance(30)
 	);
 
-	private static DataPool.Builder<BlockState> method_35926() {
+	static DataPool.Builder<BlockState> method_35926() {
 		return DataPool.builder();
 	}
 
@@ -2240,7 +2241,7 @@ public class ConfiguredFeatures {
 		);
 	}
 
-	public static final class Decorators {
+	protected static final class Decorators {
 		public static final BeehiveTreeDecorator VERY_RARE_BEEHIVES_TREES = new BeehiveTreeDecorator(0.002F);
 		public static final BeehiveTreeDecorator REGULAR_BEEHIVES_TREES = new BeehiveTreeDecorator(0.02F);
 		public static final BeehiveTreeDecorator MORE_BEEHIVES_TREES = new BeehiveTreeDecorator(0.05F);
@@ -2277,9 +2278,6 @@ public class ConfiguredFeatures {
 		public static final ConfiguredDecorator<?> DARK_OAK_TREE_HEIGHTMAP = HEIGHTMAP_OCEAN_FLOOR_NO_WATER.decorate(
 			Decorator.DARK_OAK_TREE.configure(DecoratorConfig.DEFAULT)
 		);
-
-		protected Decorators() {
-		}
 	}
 
 	public static final class States {
@@ -2350,9 +2348,9 @@ public class ConfiguredFeatures {
 		protected static final BlockState DIORITE = Blocks.DIORITE.getDefaultState();
 		protected static final BlockState ANDESITE = Blocks.ANDESITE.getDefaultState();
 		protected static final BlockState COAL_ORE = Blocks.COAL_ORE.getDefaultState();
-		protected static final BlockState field_33637 = Blocks.DEEPSLATE_COAL_ORE.getDefaultState();
+		protected static final BlockState DEEPSLATE_COAL_ORE = Blocks.DEEPSLATE_COAL_ORE.getDefaultState();
 		protected static final BlockState COPPER_ORE = Blocks.COPPER_ORE.getDefaultState();
-		protected static final BlockState field_33638 = Blocks.DEEPSLATE_COPPER_ORE.getDefaultState();
+		protected static final BlockState DEEPSLATE_COPPER_ORE = Blocks.DEEPSLATE_COPPER_ORE.getDefaultState();
 		protected static final BlockState IRON_ORE = Blocks.IRON_ORE.getDefaultState();
 		protected static final BlockState DEEPSLATE_IRON_ORE = Blocks.DEEPSLATE_IRON_ORE.getDefaultState();
 		protected static final BlockState GOLD_ORE = Blocks.GOLD_ORE.getDefaultState();
@@ -2365,7 +2363,7 @@ public class ConfiguredFeatures {
 		protected static final BlockState DEEPSLATE_LAPIS_ORE = Blocks.DEEPSLATE_LAPIS_ORE.getDefaultState();
 		protected static final BlockState STONE = Blocks.STONE.getDefaultState();
 		protected static final BlockState EMERALD_ORE = Blocks.EMERALD_ORE.getDefaultState();
-		protected static final BlockState field_33639 = Blocks.DEEPSLATE_EMERALD_ORE.getDefaultState();
+		protected static final BlockState DEEPSLATE_EMERALD_ORE = Blocks.DEEPSLATE_EMERALD_ORE.getDefaultState();
 		protected static final BlockState INFESTED_STONE = Blocks.INFESTED_STONE.getDefaultState();
 		protected static final BlockState INFESTED_DEEPSLATE = Blocks.INFESTED_DEEPSLATE.getDefaultState();
 		protected static final BlockState SAND = Blocks.SAND.getDefaultState();
@@ -2398,6 +2396,6 @@ public class ConfiguredFeatures {
 		protected static final BlockState BIG_DRIPLEAF_WEST = Blocks.BIG_DRIPLEAF.getDefaultState().with(BigDripleafBlock.FACING, Direction.WEST);
 		protected static final BlockState BIG_DRIPLEAF_NORTH = Blocks.BIG_DRIPLEAF.getDefaultState().with(BigDripleafBlock.FACING, Direction.NORTH);
 		protected static final BlockState BIG_DIRPLEAF_SOUTH = Blocks.BIG_DRIPLEAF.getDefaultState().with(BigDripleafBlock.FACING, Direction.SOUTH);
-		protected static final BlockState field_33144 = Blocks.DEEPSLATE.getDefaultState();
+		protected static final BlockState DEEPSLATE = Blocks.DEEPSLATE.getDefaultState();
 	}
 }

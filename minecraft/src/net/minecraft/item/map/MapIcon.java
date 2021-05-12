@@ -53,15 +53,10 @@ public class MapIcon {
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
-		} else if (!(o instanceof MapIcon)) {
-			return false;
 		} else {
-			MapIcon mapIcon = (MapIcon)o;
-			return this.type == mapIcon.type
-				&& this.rotation == mapIcon.rotation
-				&& this.x == mapIcon.x
-				&& this.z == mapIcon.z
-				&& Objects.equals(this.text, mapIcon.text);
+			return !(o instanceof MapIcon mapIcon)
+				? false
+				: this.type == mapIcon.type && this.rotation == mapIcon.rotation && this.x == mapIcon.x && this.z == mapIcon.z && Objects.equals(this.text, mapIcon.text);
 		}
 	}
 

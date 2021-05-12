@@ -52,11 +52,9 @@ public class TagGroupLoader<T> {
 				for (Resource resource : manager.getAllResources(identifier)) {
 					try {
 						InputStream inputStream = resource.getInputStream();
-						Throwable var10 = null;
 
 						try {
 							Reader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-							Throwable var12 = null;
 
 							try {
 								JsonObject jsonObject = JsonHelper.deserialize(GSON, reader, JsonObject.class);
@@ -65,46 +63,40 @@ public class TagGroupLoader<T> {
 								} else {
 									((Tag.Builder)map.computeIfAbsent(identifier2, identifierx -> Tag.Builder.create())).read(jsonObject, resource.getResourcePackName());
 								}
-							} catch (Throwable var53) {
-								var12 = var53;
-								throw var53;
-							} finally {
-								if (reader != null) {
-									if (var12 != null) {
-										try {
-											reader.close();
-										} catch (Throwable var52) {
-											var12.addSuppressed(var52);
-										}
-									} else {
-										reader.close();
-									}
+							} catch (Throwable var23) {
+								try {
+									reader.close();
+								} catch (Throwable var22) {
+									var23.addSuppressed(var22);
 								}
+
+								throw var23;
 							}
-						} catch (Throwable var55) {
-							var10 = var55;
-							throw var55;
-						} finally {
+
+							reader.close();
+						} catch (Throwable var24) {
 							if (inputStream != null) {
-								if (var10 != null) {
-									try {
-										inputStream.close();
-									} catch (Throwable var51) {
-										var10.addSuppressed(var51);
-									}
-								} else {
+								try {
 									inputStream.close();
+								} catch (Throwable var21) {
+									var24.addSuppressed(var21);
 								}
 							}
+
+							throw var24;
 						}
-					} catch (RuntimeException | IOException var57) {
-						LOGGER.error("Couldn't read tag list {} from {} in data pack {}", identifier2, identifier, resource.getResourcePackName(), var57);
+
+						if (inputStream != null) {
+							inputStream.close();
+						}
+					} catch (RuntimeException | IOException var25) {
+						LOGGER.error("Couldn't read tag list {} from {} in data pack {}", identifier2, identifier, resource.getResourcePackName(), var25);
 					} finally {
 						IOUtils.closeQuietly(resource);
 					}
 				}
-			} catch (IOException var59) {
-				LOGGER.error("Couldn't read tag list {} from {}", identifier2, identifier, var59);
+			} catch (IOException var27) {
+				LOGGER.error("Couldn't read tag list {} from {}", identifier2, identifier, var27);
 			}
 		}
 
@@ -161,9 +153,7 @@ public class TagGroupLoader<T> {
 											collection.stream().map(Objects::toString).collect(Collectors.joining(","))
 										)
 								)
-								.ifRight(tag -> {
-									Tag var10000 = (Tag)map.put(identifierx, tag);
-								})
+								.ifRight(tag -> map.put(identifierx, tag))
 					)
 			);
 		return TagGroup.create(map);

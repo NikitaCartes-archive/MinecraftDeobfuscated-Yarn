@@ -77,15 +77,12 @@ public class ResourceImpl implements Resource {
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
-		} else if (!(o instanceof ResourceImpl)) {
+		} else if (!(o instanceof ResourceImpl resourceImpl)) {
 			return false;
+		} else if (this.id != null ? this.id.equals(resourceImpl.id) : resourceImpl.id == null) {
+			return this.packName != null ? this.packName.equals(resourceImpl.packName) : resourceImpl.packName == null;
 		} else {
-			ResourceImpl resourceImpl = (ResourceImpl)o;
-			if (this.id != null ? this.id.equals(resourceImpl.id) : resourceImpl.id == null) {
-				return this.packName != null ? this.packName.equals(resourceImpl.packName) : resourceImpl.packName == null;
-			} else {
-				return false;
-			}
+			return false;
 		}
 	}
 

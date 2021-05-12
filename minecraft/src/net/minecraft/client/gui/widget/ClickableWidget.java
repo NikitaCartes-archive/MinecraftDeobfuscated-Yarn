@@ -22,11 +22,16 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
+/**
+ * A clickable widget is a GUI element that has many methods to handle different
+ * mouse actions. In addition, it allows a message to be rendered on the widget
+ * and narrated when the widget is selected.
+ */
 @Environment(EnvType.CLIENT)
-public abstract class AbstractButtonWidget extends DrawableHelper implements Drawable, Element {
-	public static final Identifier WIDGETS_LOCATION = new Identifier("textures/gui/widgets.png");
-	private static final int field_32175 = 750;
-	private static final int field_32176 = 200;
+public abstract class ClickableWidget extends DrawableHelper implements Drawable, Element {
+	public static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
+	private static final int UNFOCUSED_NARRATION_DELAY = 750;
+	private static final int FOCUSED_NARRATION_DELAY = 200;
 	protected int width;
 	protected int height;
 	public int x;
@@ -40,7 +45,7 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 	protected long nextNarration = Long.MAX_VALUE;
 	private boolean focused;
 
-	public AbstractButtonWidget(int x, int y, int width, int height, Text message) {
+	public ClickableWidget(int x, int y, int width, int height, Text message) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
@@ -70,9 +75,9 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 			if (this.wasHovered != this.isHovered()) {
 				if (this.isHovered()) {
 					if (this.focused) {
-						this.queueNarration(200);
+						this.queueNarration(FOCUSED_NARRATION_DELAY);
 					} else {
-						this.queueNarration(750);
+						this.queueNarration(UNFOCUSED_NARRATION_DELAY);
 					}
 				} else {
 					this.nextNarration = Long.MAX_VALUE;
@@ -110,7 +115,7 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		TextRenderer textRenderer = minecraftClient.textRenderer;
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
-		RenderSystem.setShaderTexture(0, WIDGETS_LOCATION);
+		RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
 		int i = this.getYImage(this.isHovered());
 		RenderSystem.enableBlend();
@@ -118,14 +123,14 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 		RenderSystem.enableDepthTest();
 		this.drawTexture(matrices, this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
 		this.drawTexture(matrices, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
-		this.renderBg(matrices, minecraftClient, mouseX, mouseY);
+		this.renderBackground(matrices, minecraftClient, mouseX, mouseY);
 		int j = this.active ? 16777215 : 10526880;
 		drawCenteredText(
 			matrices, textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24
 		);
 	}
 
-	protected void renderBg(MatrixStack matrices, MinecraftClient client, int mouseX, int mouseY) {
+	protected void renderBackground(MatrixStack matrices, MinecraftClient client, int mouseX, int mouseY) {
 	}
 
 	public void onClick(double mouseX, double mouseY) {
@@ -203,7 +208,7 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 		}
 	}
 
-	protected void onFocusedChanged(boolean bl) {
+	protected void onFocusedChanged(boolean newFocused) {
 	}
 
 	@Override

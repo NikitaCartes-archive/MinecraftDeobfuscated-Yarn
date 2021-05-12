@@ -45,8 +45,8 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	protected int headerHeight;
 	private boolean scrolling;
 	private E selected;
-	private boolean field_26846 = true;
-	private boolean field_26847 = true;
+	private boolean renderBackground = true;
+	private boolean renderHorizontalShadows = true;
 
 	public EntryListWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight) {
 		this.client = client;
@@ -84,12 +84,12 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		this.selected = entry;
 	}
 
-	public void method_31322(boolean bl) {
-		this.field_26846 = bl;
+	public void setRenderBackground(boolean renderBackground) {
+		this.renderBackground = renderBackground;
 	}
 
-	public void method_31323(boolean bl) {
-		this.field_26847 = bl;
+	public void setRenderHorizontalShadows(boolean renderHorizontalShadows) {
+		this.renderHorizontalShadows = renderHorizontalShadows;
 	}
 
 	@Nullable
@@ -179,7 +179,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-		if (this.field_26846) {
+		if (this.renderBackground) {
 			RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			float f = 32.0F;
@@ -210,7 +210,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		}
 
 		this.renderList(matrices, k, l, mouseX, mouseY, delta);
-		if (this.field_26847) {
+		if (this.renderHorizontalShadows) {
 			RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 			RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
 			RenderSystem.enableDepthTest();
@@ -543,16 +543,13 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		return bl;
 	}
 
-	private void setEntryParentList(EntryListWidget.Entry<E> entry) {
+	void setEntryParentList(EntryListWidget.Entry<E> entry) {
 		entry.parentList = this;
 	}
 
 	@Environment(EnvType.CLIENT)
 	class Entries extends AbstractList<E> {
 		private final List<E> entries = Lists.<E>newArrayList();
-
-		private Entries() {
-		}
 
 		public E get(int i) {
 			return (E)this.entries.get(i);
@@ -581,7 +578,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	@Environment(EnvType.CLIENT)
 	public abstract static class Entry<E extends EntryListWidget.Entry<E>> implements Element {
 		@Deprecated
-		private EntryListWidget<E> parentList;
+		EntryListWidget<E> parentList;
 
 		/**
 		 * Renders an entry in a list.
@@ -610,7 +607,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	 * Represents the direction in which the selection is moved.
 	 */
 	@Environment(EnvType.CLIENT)
-	public static enum MoveDirection {
+	protected static enum MoveDirection {
 		UP,
 		DOWN;
 	}

@@ -302,6 +302,6 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 		}
 
 		DrawableHelper.drawTexture(matrices, y, xm, 0.0F, 0.0F, 80, 80, 80, 80);
-		drawCenteredString(matrices, this.textRenderer, string, y + 40, xm + 66, 16777215);
+		drawCenteredText(matrices, this.textRenderer, string, y + 40, xm + 66, 16777215);
 	}
 }

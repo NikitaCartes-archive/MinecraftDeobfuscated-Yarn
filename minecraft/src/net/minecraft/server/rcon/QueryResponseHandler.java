@@ -157,11 +157,11 @@ public class QueryResponseHandler extends RconBase {
 			this.data.writeBytes("map");
 			this.data.writeBytes(this.levelName);
 			this.data.writeBytes("numplayers");
-			this.data.writeBytes("" + this.server.getCurrentPlayerCount());
+			this.data.writeBytes(this.server.getCurrentPlayerCount() + "");
 			this.data.writeBytes("maxplayers");
-			this.data.writeBytes("" + this.maxPlayerCount);
+			this.data.writeBytes(this.maxPlayerCount + "");
 			this.data.writeBytes("hostport");
-			this.data.writeBytes("" + this.port);
+			this.data.writeBytes(this.port + "");
 			this.data.writeBytes("hostip");
 			this.data.writeBytes(this.ip);
 			this.data.write(0);

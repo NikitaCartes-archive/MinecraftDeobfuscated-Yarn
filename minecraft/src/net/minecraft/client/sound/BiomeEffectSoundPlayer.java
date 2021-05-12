@@ -52,8 +52,7 @@ public class BiomeEffectSoundPlayer implements ClientPlayerTickable {
 			this.moodSound = biome.getMoodSound();
 			this.additionsSound = biome.getAdditionsSound();
 			this.soundLoops.values().forEach(BiomeEffectSoundPlayer.MusicLoop::fadeOut);
-			biome.getLoopSound().ifPresent(soundEvent -> {
-				BiomeEffectSoundPlayer.MusicLoop var10000 = (BiomeEffectSoundPlayer.MusicLoop)this.soundLoops.compute(biome, (biomexx, musicLoop) -> {
+			biome.getLoopSound().ifPresent(soundEvent -> this.soundLoops.compute(biome, (biomexx, musicLoop) -> {
 					if (musicLoop == null) {
 						musicLoop = new BiomeEffectSoundPlayer.MusicLoop(soundEvent);
 						this.soundManager.play(musicLoop);
@@ -61,8 +60,7 @@ public class BiomeEffectSoundPlayer implements ClientPlayerTickable {
 
 					musicLoop.fadeIn();
 					return musicLoop;
-				});
-			});
+				}));
 		}
 
 		this.additionsSound.ifPresent(biomeAdditionsSound -> {

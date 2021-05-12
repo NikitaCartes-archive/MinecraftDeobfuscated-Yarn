@@ -8,9 +8,9 @@ public class UploadResult {
 	public final int statusCode;
 	public final String errorMessage;
 
-	private UploadResult(int statusCode, String errorMessage) {
-		this.statusCode = statusCode;
-		this.errorMessage = errorMessage;
+	UploadResult(int i, String string) {
+		this.statusCode = i;
+		this.errorMessage = string;
 	}
 
 	@Environment(EnvType.CLIENT)

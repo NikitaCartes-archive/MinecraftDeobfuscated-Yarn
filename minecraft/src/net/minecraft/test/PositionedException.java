@@ -16,8 +16,7 @@ public class PositionedException extends GameTestException {
 	}
 
 	public String getMessage() {
-		String string = ""
-			+ this.pos.getX()
+		String string = this.pos.getX()
 			+ ","
 			+ this.pos.getY()
 			+ ","

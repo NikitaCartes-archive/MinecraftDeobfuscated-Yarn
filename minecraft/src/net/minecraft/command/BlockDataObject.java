@@ -22,12 +22,12 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 
 public class BlockDataObject implements DataCommandObject {
-	private static final SimpleCommandExceptionType INVALID_BLOCK_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.data.block.invalid"));
+	static final SimpleCommandExceptionType INVALID_BLOCK_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.data.block.invalid"));
 	public static final Function<String, DataCommand.ObjectType> TYPE_FACTORY = string -> new DataCommand.ObjectType() {
 			@Override
 			public DataCommandObject getObject(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
 				BlockPos blockPos = BlockPosArgumentType.getLoadedBlockPos(context, string + "Pos");
-				BlockEntity blockEntity = ((ServerCommandSource)context.getSource()).getWorld().getBlockEntity(blockPos);
+				BlockEntity blockEntity = context.getSource().getWorld().getBlockEntity(blockPos);
 				if (blockEntity == null) {
 					throw BlockDataObject.INVALID_BLOCK_EXCEPTION.create();
 				} else {

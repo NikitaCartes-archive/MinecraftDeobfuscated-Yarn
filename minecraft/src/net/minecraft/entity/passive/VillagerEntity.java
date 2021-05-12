@@ -655,7 +655,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 					PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
 					Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(pos.getPos());
 					BiPredicate<VillagerEntity, PointOfInterestType> biPredicate = (BiPredicate<VillagerEntity, PointOfInterestType>)POINTS_OF_INTEREST.get(memoryModuleType);
-					if (optional.isPresent() && biPredicate.test(this, optional.get())) {
+					if (optional.isPresent() && biPredicate.test(this, (PointOfInterestType)optional.get())) {
 						pointOfInterestStorage.releaseTicket(pos.getPos());
 						DebugInfoSender.sendPointOfInterest(serverWorld, pos.getPos());
 					}
@@ -724,7 +724,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 
 	@Override
 	protected Text getDefaultName() {
-		return new TranslatableText(this.getType().getTranslationKey() + '.' + Registry.VILLAGER_PROFESSION.getId(this.getVillagerData().getProfession()).getPath());
+		return new TranslatableText(this.getType().getTranslationKey() + "." + Registry.VILLAGER_PROFESSION.getId(this.getVillagerData().getProfession()).getPath());
 	}
 
 	@Override

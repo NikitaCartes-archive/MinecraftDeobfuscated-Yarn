@@ -45,7 +45,7 @@ public class CachingLayerContext implements LayerSampleContext<CachingLayerSampl
 
 	@Override
 	public int nextInt(int bound) {
-		int i = (int)Math.floorMod(this.localSeed >> 24, (long)bound);
+		int i = Math.floorMod(this.localSeed >> 24, bound);
 		this.localSeed = SeedMixer.mixSeed(this.localSeed, this.worldSeed);
 		return i;
 	}

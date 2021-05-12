@@ -23,7 +23,7 @@ import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public abstract class AbstractClientPlayerEntity extends PlayerEntity {
-	private static final String field_32666 = "http://skins.minecraft.net/MinecraftSkins/%s.png";
+	private static final String SKIN_URL = "http://skins.minecraft.net/MinecraftSkins/%s.png";
 	public static final int field_32659 = 8;
 	public static final int field_32660 = 8;
 	public static final int field_32661 = 8;

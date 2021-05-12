@@ -63,9 +63,9 @@ public class StrongholdGenerator {
 		}
 	};
 	private static List<StrongholdGenerator.PieceData> possiblePieces;
-	private static Class<? extends StrongholdGenerator.Piece> activePieceType;
+	static Class<? extends StrongholdGenerator.Piece> activePieceType;
 	private static int totalWeight;
-	private static final StrongholdGenerator.StoneBrickRandomizer STONE_BRICK_RANDOMIZER = new StrongholdGenerator.StoneBrickRandomizer();
+	static final StrongholdGenerator.StoneBrickRandomizer STONE_BRICK_RANDOMIZER = new StrongholdGenerator.StoneBrickRandomizer();
 
 	public static void init() {
 		possiblePieces = Lists.<StrongholdGenerator.PieceData>newArrayList();
@@ -177,7 +177,7 @@ public class StrongholdGenerator {
 		}
 	}
 
-	private static StructurePiece pieceGenerator(
+	static StructurePiece pieceGenerator(
 		StrongholdGenerator.Start start,
 		StructurePiecesHolder structurePiecesHolder,
 		Random random,
@@ -1001,7 +1001,7 @@ public class StrongholdGenerator {
 			return boundingBox != null && boundingBox.getMinY() > 10;
 		}
 
-		public static enum EntranceType {
+		protected static enum EntranceType {
 			OPENING,
 			WOOD_DOOR,
 			GRATES,
@@ -1693,9 +1693,6 @@ public class StrongholdGenerator {
 	}
 
 	static class StoneBrickRandomizer extends StructurePiece.BlockRandomizer {
-		private StoneBrickRandomizer() {
-		}
-
 		@Override
 		public void setBlock(Random random, int x, int y, int z, boolean placeBlock) {
 			if (placeBlock) {

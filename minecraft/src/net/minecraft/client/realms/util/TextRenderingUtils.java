@@ -36,7 +36,7 @@ public class TextRenderingUtils {
 
 			for (String string2 : split(string, "%link")) {
 				if ("%link".equals(string2)) {
-					list2.add(links.get(i++));
+					list2.add((TextRenderingUtils.LineSegment)links.get(i++));
 				} else {
 					list2.add(TextRenderingUtils.LineSegment.text(string2));
 				}
@@ -86,7 +86,7 @@ public class TextRenderingUtils {
 		}
 
 		public String toString() {
-			return "Line{segments=" + this.segments + '}';
+			return "Line{segments=" + this.segments + "}";
 		}
 
 		public boolean equals(Object o) {
@@ -141,7 +141,7 @@ public class TextRenderingUtils {
 		}
 
 		public String toString() {
-			return "Segment{fullText='" + this.fullText + '\'' + ", linkTitle='" + this.linkTitle + '\'' + ", linkUrl='" + this.linkUrl + '\'' + '}';
+			return "Segment{fullText='" + this.fullText + "', linkTitle='" + this.linkTitle + "', linkUrl='" + this.linkUrl + "'}";
 		}
 
 		public String renderedText() {

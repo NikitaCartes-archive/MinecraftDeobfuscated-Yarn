@@ -336,8 +336,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 				return;
 			}
 
-			if (entity instanceof LivingEntity) {
-				LivingEntity livingEntity = (LivingEntity)entity;
+			if (entity instanceof LivingEntity livingEntity) {
 				if (!this.world.isClient && this.getPierceLevel() <= 0) {
 					livingEntity.setStuckArrowCount(livingEntity.getStuckArrowCount() + 1);
 				}
@@ -365,8 +364,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 					this.piercingKilledEntities.add(livingEntity);
 				}
 
-				if (!this.world.isClient && entity2 instanceof ServerPlayerEntity) {
-					ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity2;
+				if (!this.world.isClient && entity2 instanceof ServerPlayerEntity serverPlayerEntity) {
 					if (this.piercingKilledEntities != null && this.isShotFromCrossbow()) {
 						Criteria.KILLED_BY_CROSSBOW.trigger(serverPlayerEntity, this.piercingKilledEntities);
 					} else if (!entity.isAlive() && this.isShotFromCrossbow()) {

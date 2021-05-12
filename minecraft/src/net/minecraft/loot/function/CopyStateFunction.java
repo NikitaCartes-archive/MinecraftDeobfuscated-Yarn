@@ -23,13 +23,13 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 
 public class CopyStateFunction extends ConditionalLootFunction {
-	private final Block block;
-	private final Set<Property<?>> properties;
+	final Block block;
+	final Set<Property<?>> properties;
 
-	private CopyStateFunction(LootCondition[] conditions, Block block, Set<Property<?>> properties) {
-		super(conditions);
+	CopyStateFunction(LootCondition[] lootConditions, Block block, Set<Property<?>> set) {
+		super(lootConditions);
 		this.block = block;
-		this.properties = properties;
+		this.properties = set;
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class CopyStateFunction extends ConditionalLootFunction {
 		private final Block block;
 		private final Set<Property<?>> properties = Sets.<Property<?>>newHashSet();
 
-		private Builder(Block block) {
+		Builder(Block block) {
 			this.block = block;
 		}
 

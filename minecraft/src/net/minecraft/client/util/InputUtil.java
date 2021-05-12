@@ -245,14 +245,14 @@ public class InputUtil {
 		private final InputUtil.Type type;
 		private final int code;
 		private final Lazy<Text> localizedText;
-		private static final Map<String, InputUtil.Key> KEYS = Maps.<String, InputUtil.Key>newHashMap();
+		static final Map<String, InputUtil.Key> KEYS = Maps.<String, InputUtil.Key>newHashMap();
 
-		private Key(String translationKey, InputUtil.Type type, int code) {
-			this.translationKey = translationKey;
+		Key(String string, InputUtil.Type type, int i) {
+			this.translationKey = string;
 			this.type = type;
-			this.code = code;
-			this.localizedText = new Lazy<>(() -> (Text)type.textTranslator.apply(code, translationKey));
-			KEYS.put(translationKey, this);
+			this.code = i;
+			this.localizedText = new Lazy<>(() -> (Text)type.textTranslator.apply(i, string));
+			KEYS.put(string, this);
 		}
 
 		public InputUtil.Type getCategory() {
@@ -315,8 +315,8 @@ public class InputUtil {
 		);
 
 		private final Int2ObjectMap<InputUtil.Key> map = new Int2ObjectOpenHashMap<>();
-		private final String name;
-		private final BiFunction<Integer, String, Text> textTranslator;
+		final String name;
+		final BiFunction<Integer, String, Text> textTranslator;
 
 		private static void mapKey(InputUtil.Type type, String translationKey, int keyCode) {
 			InputUtil.Key key = new InputUtil.Key(translationKey, type, keyCode);

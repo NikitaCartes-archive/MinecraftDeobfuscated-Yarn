@@ -39,20 +39,20 @@ public class ChunkPalettedStorageFix extends DataFix {
 	private static final int field_29876 = 4;
 	private static final int field_29877 = 2;
 	private static final int field_29878 = 1;
-	private static final Logger LOGGER = LogManager.getLogger();
-	private static final BitSet BLOCKS_NEEDING_SIDE_UPDATE = new BitSet(256);
-	private static final BitSet BLOCKS_NEEDING_IN_PLACE_UPDATE = new BitSet(256);
-	private static final Dynamic<?> PUMPKIN = BlockStateFlattening.parseState("{Name:'minecraft:pumpkin'}");
-	private static final Dynamic<?> PODZOL = BlockStateFlattening.parseState("{Name:'minecraft:podzol',Properties:{snowy:'true'}}");
-	private static final Dynamic<?> SNOWY_GRASS = BlockStateFlattening.parseState("{Name:'minecraft:grass_block',Properties:{snowy:'true'}}");
-	private static final Dynamic<?> SNOWY_MYCELIUM = BlockStateFlattening.parseState("{Name:'minecraft:mycelium',Properties:{snowy:'true'}}");
-	private static final Dynamic<?> SUNFLOWER_UPPER = BlockStateFlattening.parseState("{Name:'minecraft:sunflower',Properties:{half:'upper'}}");
-	private static final Dynamic<?> LILAC_UPPER = BlockStateFlattening.parseState("{Name:'minecraft:lilac',Properties:{half:'upper'}}");
-	private static final Dynamic<?> GRASS_UPPER = BlockStateFlattening.parseState("{Name:'minecraft:tall_grass',Properties:{half:'upper'}}");
-	private static final Dynamic<?> FERN_UPPER = BlockStateFlattening.parseState("{Name:'minecraft:large_fern',Properties:{half:'upper'}}");
-	private static final Dynamic<?> ROSE_UPPER = BlockStateFlattening.parseState("{Name:'minecraft:rose_bush',Properties:{half:'upper'}}");
-	private static final Dynamic<?> PEONY_UPPER = BlockStateFlattening.parseState("{Name:'minecraft:peony',Properties:{half:'upper'}}");
-	private static final Map<String, Dynamic<?>> FLOWER_POT = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), hashMap -> {
+	static final Logger LOGGER = LogManager.getLogger();
+	static final BitSet BLOCKS_NEEDING_SIDE_UPDATE = new BitSet(256);
+	static final BitSet BLOCKS_NEEDING_IN_PLACE_UPDATE = new BitSet(256);
+	static final Dynamic<?> PUMPKIN = BlockStateFlattening.parseState("{Name:'minecraft:pumpkin'}");
+	static final Dynamic<?> PODZOL = BlockStateFlattening.parseState("{Name:'minecraft:podzol',Properties:{snowy:'true'}}");
+	static final Dynamic<?> SNOWY_GRASS = BlockStateFlattening.parseState("{Name:'minecraft:grass_block',Properties:{snowy:'true'}}");
+	static final Dynamic<?> SNOWY_MYCELIUM = BlockStateFlattening.parseState("{Name:'minecraft:mycelium',Properties:{snowy:'true'}}");
+	static final Dynamic<?> SUNFLOWER_UPPER = BlockStateFlattening.parseState("{Name:'minecraft:sunflower',Properties:{half:'upper'}}");
+	static final Dynamic<?> LILAC_UPPER = BlockStateFlattening.parseState("{Name:'minecraft:lilac',Properties:{half:'upper'}}");
+	static final Dynamic<?> GRASS_UPPER = BlockStateFlattening.parseState("{Name:'minecraft:tall_grass',Properties:{half:'upper'}}");
+	static final Dynamic<?> FERN_UPPER = BlockStateFlattening.parseState("{Name:'minecraft:large_fern',Properties:{half:'upper'}}");
+	static final Dynamic<?> ROSE_UPPER = BlockStateFlattening.parseState("{Name:'minecraft:rose_bush',Properties:{half:'upper'}}");
+	static final Dynamic<?> PEONY_UPPER = BlockStateFlattening.parseState("{Name:'minecraft:peony',Properties:{half:'upper'}}");
+	static final Map<String, Dynamic<?>> FLOWER_POT = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), hashMap -> {
 		hashMap.put("minecraft:air0", BlockStateFlattening.parseState("{Name:'minecraft:flower_pot'}"));
 		hashMap.put("minecraft:red_flower0", BlockStateFlattening.parseState("{Name:'minecraft:potted_poppy'}"));
 		hashMap.put("minecraft:red_flower1", BlockStateFlattening.parseState("{Name:'minecraft:potted_blue_orchid'}"));
@@ -76,7 +76,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 		hashMap.put("minecraft:tallgrass2", BlockStateFlattening.parseState("{Name:'minecraft:potted_fern'}"));
 		hashMap.put("minecraft:cactus0", BlockStateFlattening.lookupState(2240));
 	});
-	private static final Map<String, Dynamic<?>> SKULL = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), hashMap -> {
+	static final Map<String, Dynamic<?>> SKULL = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), hashMap -> {
 		buildSkull(hashMap, 0, "skeleton", "skull");
 		buildSkull(hashMap, 1, "wither_skeleton", "skull");
 		buildSkull(hashMap, 2, "zombie", "head");
@@ -84,7 +84,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 		buildSkull(hashMap, 4, "creeper", "head");
 		buildSkull(hashMap, 5, "dragon", "head");
 	});
-	private static final Map<String, Dynamic<?>> DOOR = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), hashMap -> {
+	static final Map<String, Dynamic<?>> DOOR = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), hashMap -> {
 		buildDoor(hashMap, "oak_door", 1024);
 		buildDoor(hashMap, "iron_door", 1136);
 		buildDoor(hashMap, "spruce_door", 3088);
@@ -93,7 +93,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 		buildDoor(hashMap, "acacia_door", 3136);
 		buildDoor(hashMap, "dark_oak_door", 3152);
 	});
-	private static final Map<String, Dynamic<?>> NOTE_BLOCK = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), hashMap -> {
+	static final Map<String, Dynamic<?>> NOTE_BLOCK = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), hashMap -> {
 		for (int i = 0; i < 26; i++) {
 			hashMap.put("true" + i, BlockStateFlattening.parseState("{Name:'minecraft:note_block',Properties:{powered:'true',note:'" + i + "'}}"));
 			hashMap.put("false" + i, BlockStateFlattening.parseState("{Name:'minecraft:note_block',Properties:{powered:'false',note:'" + i + "'}}"));
@@ -117,21 +117,21 @@ public class ChunkPalettedStorageFix extends DataFix {
 		int2ObjectOpenHashMap.put(14, "red");
 		int2ObjectOpenHashMap.put(15, "black");
 	});
-	private static final Map<String, Dynamic<?>> BED = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), hashMap -> {
+	static final Map<String, Dynamic<?>> BED = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), hashMap -> {
 		for (Entry<String> entry : COLORS.int2ObjectEntrySet()) {
 			if (!Objects.equals(entry.getValue(), "red")) {
 				buildBed(hashMap, entry.getIntKey(), (String)entry.getValue());
 			}
 		}
 	});
-	private static final Map<String, Dynamic<?>> BANNER = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), hashMap -> {
+	static final Map<String, Dynamic<?>> BANNER = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), hashMap -> {
 		for (Entry<String> entry : COLORS.int2ObjectEntrySet()) {
 			if (!Objects.equals(entry.getValue(), "white")) {
 				buildBanner(hashMap, 15 - entry.getIntKey(), (String)entry.getValue());
 			}
 		}
 	});
-	private static final Dynamic<?> AIR = BlockStateFlattening.lookupState(0);
+	static final Dynamic<?> AIR = BlockStateFlattening.lookupState(0);
 	private static final int field_29870 = 4096;
 
 	public ChunkPalettedStorageFix(Schema outputSchema, boolean changesType) {
@@ -145,7 +145,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 		out.put(i + "west", BlockStateFlattening.parseState("{Name:'minecraft:" + mob + "_wall_" + block + "',Properties:{facing:'west'}}"));
 
 		for (int j = 0; j < 16; j++) {
-			out.put(i + "" + j, BlockStateFlattening.parseState("{Name:'minecraft:" + mob + "_" + block + "',Properties:{rotation:'" + j + "'}}"));
+			out.put("" + i + j, BlockStateFlattening.parseState("{Name:'minecraft:" + mob + "_" + block + "',Properties:{rotation:'" + j + "'}}"));
 		}
 	}
 
@@ -397,7 +397,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 
 	private static void buildBanner(Map<String, Dynamic<?>> out, int i, String string) {
 		for (int j = 0; j < 16; j++) {
-			out.put("" + j + "_" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + string + "_banner',Properties:{rotation:'" + j + "'}}"));
+			out.put(j + "_" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + string + "_banner',Properties:{rotation:'" + j + "'}}"));
 		}
 
 		out.put("north_" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + string + "_wall_banner',Properties:{facing:'north'}}"));
@@ -666,7 +666,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 									Dynamic<?> dynamic2 = this.removeBlockEntity(jxxxxx);
 									if (dynamic2 != null) {
 										String string = Boolean.toString(dynamic2.get("powered").asBoolean(false)) + (byte)Math.min(Math.max(dynamic2.get("note").asInt(0), 0), 24);
-										this.setBlock(jxxxxx, (Dynamic<?>)ChunkPalettedStorageFix.NOTE_BLOCK.getOrDefault(string, ChunkPalettedStorageFix.NOTE_BLOCK.get("false0")));
+										this.setBlock(jxxxxx, (Dynamic<?>)ChunkPalettedStorageFix.NOTE_BLOCK.getOrDefault(string, (Dynamic)ChunkPalettedStorageFix.NOTE_BLOCK.get("false0")));
 									}
 								}
 								break;
@@ -747,7 +747,9 @@ public class ChunkPalettedStorageFix extends DataFix {
 									Dynamic<?> dynamic2 = this.removeBlockEntity(jxx);
 									if (dynamic2 != null) {
 										String string = dynamic2.get("Item").asString("") + dynamic2.get("Data").asInt(0);
-										this.setBlock(jxx, (Dynamic<?>)ChunkPalettedStorageFix.FLOWER_POT.getOrDefault(string, ChunkPalettedStorageFix.FLOWER_POT.get("minecraft:air0")));
+										this.setBlock(
+											jxx, (Dynamic<?>)ChunkPalettedStorageFix.FLOWER_POT.getOrDefault(string, (Dynamic)ChunkPalettedStorageFix.FLOWER_POT.get("minecraft:air0"))
+										);
 									}
 								}
 								break;
@@ -762,13 +764,13 @@ public class ChunkPalettedStorageFix extends DataFix {
 										if (!"up".equals(string3) && !"down".equals(string3)) {
 											string2 = string + string3;
 										} else {
-											string2 = string + String.valueOf(dynamic2.get("Rot").asInt(0));
+											string2 = string + dynamic2.get("Rot").asInt(0);
 										}
 
 										dynamic2.remove("SkullType");
 										dynamic2.remove("facing");
 										dynamic2.remove("Rot");
-										this.setBlock(jxxxxxx, (Dynamic<?>)ChunkPalettedStorageFix.SKULL.getOrDefault(string2, ChunkPalettedStorageFix.SKULL.get("0north")));
+										this.setBlock(jxxxxxx, (Dynamic<?>)ChunkPalettedStorageFix.SKULL.getOrDefault(string2, (Dynamic)ChunkPalettedStorageFix.SKULL.get("0north")));
 									}
 								}
 								break;
@@ -897,8 +899,8 @@ public class ChunkPalettedStorageFix extends DataFix {
 		private final List<Dynamic<?>> paletteData;
 		private final Dynamic<?> section;
 		private final boolean hasBlocks;
-		private final Int2ObjectMap<IntList> inPlaceUpdates = new Int2ObjectLinkedOpenHashMap<>();
-		private final IntList innerPositions = new IntArrayList();
+		final Int2ObjectMap<IntList> inPlaceUpdates = new Int2ObjectLinkedOpenHashMap<>();
+		final IntList innerPositions = new IntArrayList();
 		public final int y;
 		private final Set<Dynamic<?>> seenStates = Sets.newIdentityHashSet();
 		private final int[] states = new int[4096];

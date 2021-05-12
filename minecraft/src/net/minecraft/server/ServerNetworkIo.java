@@ -58,10 +58,10 @@ public class ServerNetworkIo {
 	public static final Lazy<EpollEventLoopGroup> EPOLL_CHANNEL = new Lazy<>(
 		() -> new EpollEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Epoll Server IO #%d").setDaemon(true).build())
 	);
-	private final MinecraftServer server;
+	final MinecraftServer server;
 	public volatile boolean active;
 	private final List<ChannelFuture> channels = Collections.synchronizedList(Lists.newArrayList());
-	private final List<ClientConnection> connections = Collections.synchronizedList(Lists.newArrayList());
+	final List<ClientConnection> connections = Collections.synchronizedList(Lists.newArrayList());
 
 	public ServerNetworkIo(MinecraftServer server) {
 		this.server = server;

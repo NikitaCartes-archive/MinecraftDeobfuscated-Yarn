@@ -26,7 +26,7 @@ import net.minecraft.client.util.Clipboard;
 import net.minecraft.client.util.GlfwUtil;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.client.util.ScreenshotUtils;
+import net.minecraft.client.util.Screenshooter;
 import net.minecraft.command.argument.BlockArgumentParser;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
@@ -367,7 +367,7 @@ public class Keyboard {
 					if (Screen.hasControlDown()) {
 					}
 
-					ScreenshotUtils.saveScreenshot(
+					Screenshooter.saveScreenshot(
 						this.client.runDirectory,
 						this.client.getWindow().getFramebufferWidth(),
 						this.client.getWindow().getFramebufferHeight(),

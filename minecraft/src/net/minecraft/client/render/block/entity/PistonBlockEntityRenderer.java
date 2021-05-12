@@ -17,6 +17,7 @@ import net.minecraft.client.render.block.BlockModelRenderer;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
@@ -46,7 +47,7 @@ public class PistonBlockEntityRenderer implements BlockEntityRenderer<PistonBloc
 					BlockState blockState2 = Blocks.PISTON_HEAD
 						.getDefaultState()
 						.with(PistonHeadBlock.TYPE, pistonType)
-						.with(PistonHeadBlock.FACING, blockState.get(PistonBlock.FACING));
+						.with(PistonHeadBlock.FACING, (Direction)blockState.get(PistonBlock.FACING));
 					blockState2 = blockState2.with(PistonHeadBlock.SHORT, Boolean.valueOf(pistonBlockEntity.getProgress(f) >= 0.5F));
 					this.renderModel(blockPos, blockState2, matrixStack, vertexConsumerProvider, world, false, j);
 					BlockPos blockPos2 = blockPos.offset(pistonBlockEntity.getMovementDirection());

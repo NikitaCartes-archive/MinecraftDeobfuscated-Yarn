@@ -19,8 +19,8 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class LanServerQueryManager {
-	private static final AtomicInteger THREAD_ID = new AtomicInteger(0);
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final AtomicInteger THREAD_ID = new AtomicInteger(0);
+	static final Logger LOGGER = LogManager.getLogger();
 
 	@Environment(EnvType.CLIENT)
 	public static class LanServerDetector extends Thread {
@@ -85,15 +85,15 @@ public class LanServerQueryManager {
 			return Collections.unmodifiableList(this.serverEntries);
 		}
 
-		public synchronized void addServer(String string, InetAddress inetAddress) {
-			String string2 = LanServerPinger.parseAnnouncementMotd(string);
-			String string3 = LanServerPinger.parseAnnouncementAddressPort(string);
-			if (string3 != null) {
-				string3 = inetAddress.getHostAddress() + ":" + string3;
+		public synchronized void addServer(String announcement, InetAddress address) {
+			String string = LanServerPinger.parseAnnouncementMotd(announcement);
+			String string2 = LanServerPinger.parseAnnouncementAddressPort(announcement);
+			if (string2 != null) {
+				string2 = address.getHostAddress() + ":" + string2;
 				boolean bl = false;
 
 				for (LanServerInfo lanServerInfo : this.serverEntries) {
-					if (lanServerInfo.getAddressPort().equals(string3)) {
+					if (lanServerInfo.getAddressPort().equals(string2)) {
 						lanServerInfo.updateLastTime();
 						bl = true;
 						break;
@@ -101,7 +101,7 @@ public class LanServerQueryManager {
 				}
 
 				if (!bl) {
-					this.serverEntries.add(new LanServerInfo(string2, string3));
+					this.serverEntries.add(new LanServerInfo(string, string2));
 					this.dirty = true;
 				}
 			}

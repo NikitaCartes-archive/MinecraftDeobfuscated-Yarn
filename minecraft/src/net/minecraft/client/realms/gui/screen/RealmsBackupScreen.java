@@ -34,26 +34,26 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class RealmsBackupScreen extends RealmsScreen {
-	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Identifier PLUS_ICON = new Identifier("realms", "textures/gui/realms/plus_icon.png");
-	private static final Identifier RESTORE_ICON = new Identifier("realms", "textures/gui/realms/restore_icon.png");
-	private static final Text RESTORE_TEXT = new TranslatableText("mco.backup.button.restore");
-	private static final Text CHANGES_TOOLTIP = new TranslatableText("mco.backup.changes.tooltip");
+	static final Logger LOGGER = LogManager.getLogger();
+	static final Identifier PLUS_ICON = new Identifier("realms", "textures/gui/realms/plus_icon.png");
+	static final Identifier RESTORE_ICON = new Identifier("realms", "textures/gui/realms/restore_icon.png");
+	static final Text RESTORE_TEXT = new TranslatableText("mco.backup.button.restore");
+	static final Text CHANGES_TOOLTIP = new TranslatableText("mco.backup.changes.tooltip");
 	private static final Text BACKUPS_TEXT = new TranslatableText("mco.configure.world.backup");
 	private static final Text NO_BACKUPS_TEXT = new TranslatableText("mco.backup.nobackups");
-	private static int lastScrollPosition = -1;
+	static int lastScrollPosition = -1;
 	private final RealmsConfigureWorldScreen parent;
-	private List<Backup> backups = Collections.emptyList();
+	List<Backup> backups = Collections.emptyList();
 	@Nullable
-	private Text toolTip;
-	private RealmsBackupScreen.BackupObjectSelectionList backupObjectSelectionList;
-	private int selectedBackup = -1;
+	Text toolTip;
+	RealmsBackupScreen.BackupObjectSelectionList backupObjectSelectionList;
+	int selectedBackup = -1;
 	private final int slotId;
 	private ButtonWidget downloadButton;
 	private ButtonWidget restoreButton;
 	private ButtonWidget changesButton;
-	private Boolean noBackups = false;
-	private final RealmsServer serverData;
+	Boolean noBackups = false;
+	final RealmsServer serverData;
 	private static final String field_32119 = "Uploaded";
 	private RealmsLabel titleLabel;
 
@@ -113,7 +113,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 		this.narrateLabels();
 	}
 
-	private void generateChangeList() {
+	void generateChangeList() {
 		if (this.backups.size() > 1) {
 			for (int i = 0; i < this.backups.size() - 1; i++) {
 				Backup backup = (Backup)this.backups.get(i);
@@ -139,11 +139,11 @@ public class RealmsBackupScreen extends RealmsScreen {
 			backup.changeList.put(key, string);
 			backup.setUploadedVersion(true);
 		} else {
-			backup.changeList.put(key, backup.metadata.get(key));
+			backup.changeList.put(key, (String)backup.metadata.get(key));
 		}
 	}
 
-	private void updateButtonStates() {
+	void updateButtonStates() {
 		this.restoreButton.visible = this.shouldRestoreButtonBeVisible();
 		this.changesButton.visible = this.shouldChangesButtonBeVisible();
 	}
@@ -166,7 +166,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 		}
 	}
 
-	private void restoreClicked(int selectedBackup) {
+	void restoreClicked(int selectedBackup) {
 		if (selectedBackup >= 0 && selectedBackup < this.backups.size() && !this.serverData.expired) {
 			this.selectedBackup = selectedBackup;
 			Date date = ((Backup)this.backups.get(selectedBackup)).lastModifiedDate;

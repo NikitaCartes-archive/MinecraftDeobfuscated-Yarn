@@ -63,9 +63,7 @@ public class JukeboxBlock extends BlockWithEntity {
 
 	private void removeRecord(World world, BlockPos pos) {
 		if (!world.isClient) {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
-			if (blockEntity instanceof JukeboxBlockEntity) {
-				JukeboxBlockEntity jukeboxBlockEntity = (JukeboxBlockEntity)blockEntity;
+			if (world.getBlockEntity(pos) instanceof JukeboxBlockEntity jukeboxBlockEntity) {
 				ItemStack itemStack = jukeboxBlockEntity.getRecord();
 				if (!itemStack.isEmpty()) {
 					world.syncWorldEvent(WorldEvents.MUSIC_DISC_PLAYED, pos, 0);

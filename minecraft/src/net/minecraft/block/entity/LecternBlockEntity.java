@@ -129,8 +129,8 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 			return 1;
 		}
 	};
-	private ItemStack book = ItemStack.EMPTY;
-	private int currentPage;
+	ItemStack book = ItemStack.EMPTY;
+	int currentPage;
 	private int pageCount;
 
 	public LecternBlockEntity(BlockPos pos, BlockState state) {
@@ -149,7 +149,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 		this.setBook(book, null);
 	}
 
-	private void onBookRemoved() {
+	void onBookRemoved() {
 		this.currentPage = 0;
 		this.pageCount = 0;
 		LecternBlock.setHasBook(this.getWorld(), this.getPos(), this.getCachedState(), false);
@@ -162,7 +162,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 		this.markDirty();
 	}
 
-	private void setCurrentPage(int currentPage) {
+	void setCurrentPage(int currentPage) {
 		int i = MathHelper.clamp(currentPage, 0, this.pageCount - 1);
 		if (i != this.currentPage) {
 			this.currentPage = i;

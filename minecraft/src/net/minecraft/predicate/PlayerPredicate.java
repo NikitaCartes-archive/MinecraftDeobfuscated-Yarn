@@ -33,7 +33,7 @@ public class PlayerPredicate {
 	public static final PlayerPredicate ANY = new PlayerPredicate.Builder().build();
 	private final NumberRange.IntRange experienceLevel;
 	@Nullable
-	private final GameMode gamemode;
+	private final GameMode gameMode;
 	private final Map<Stat<?>, NumberRange.IntRange> stats;
 	private final Object2BooleanMap<Identifier> recipes;
 	private final Map<Identifier, PlayerPredicate.AdvancementPredicate> advancements;
@@ -53,15 +53,15 @@ public class PlayerPredicate {
 		}
 	}
 
-	private PlayerPredicate(
+	PlayerPredicate(
 		NumberRange.IntRange experienceLevel,
-		@Nullable GameMode gamemode,
+		@Nullable GameMode gameMode,
 		Map<Stat<?>, NumberRange.IntRange> stats,
 		Object2BooleanMap<Identifier> recipes,
 		Map<Identifier, PlayerPredicate.AdvancementPredicate> advancements
 	) {
 		this.experienceLevel = experienceLevel;
-		this.gamemode = gamemode;
+		this.gameMode = gameMode;
 		this.stats = stats;
 		this.recipes = recipes;
 		this.advancements = advancements;
@@ -70,46 +70,43 @@ public class PlayerPredicate {
 	public boolean test(Entity entity) {
 		if (this == ANY) {
 			return true;
-		} else if (!(entity instanceof ServerPlayerEntity)) {
+		} else if (!(entity instanceof ServerPlayerEntity serverPlayerEntity)) {
+			return false;
+		} else if (!this.experienceLevel.test(serverPlayerEntity.experienceLevel)) {
+			return false;
+		} else if (this.gameMode != null && this.gameMode != serverPlayerEntity.interactionManager.getGameMode()) {
 			return false;
 		} else {
-			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
-			if (!this.experienceLevel.test(serverPlayerEntity.experienceLevel)) {
-				return false;
-			} else if (this.gamemode != null && this.gamemode != serverPlayerEntity.interactionManager.getGameMode()) {
-				return false;
-			} else {
-				StatHandler statHandler = serverPlayerEntity.getStatHandler();
+			StatHandler statHandler = serverPlayerEntity.getStatHandler();
 
-				for (Entry<Stat<?>, NumberRange.IntRange> entry : this.stats.entrySet()) {
-					int i = statHandler.getStat((Stat<?>)entry.getKey());
-					if (!((NumberRange.IntRange)entry.getValue()).test(i)) {
-						return false;
-					}
+			for (Entry<Stat<?>, NumberRange.IntRange> entry : this.stats.entrySet()) {
+				int i = statHandler.getStat((Stat<?>)entry.getKey());
+				if (!((NumberRange.IntRange)entry.getValue()).test(i)) {
+					return false;
 				}
-
-				RecipeBook recipeBook = serverPlayerEntity.getRecipeBook();
-
-				for (it.unimi.dsi.fastutil.objects.Object2BooleanMap.Entry<Identifier> entry2 : this.recipes.object2BooleanEntrySet()) {
-					if (recipeBook.contains((Identifier)entry2.getKey()) != entry2.getBooleanValue()) {
-						return false;
-					}
-				}
-
-				if (!this.advancements.isEmpty()) {
-					PlayerAdvancementTracker playerAdvancementTracker = serverPlayerEntity.getAdvancementTracker();
-					ServerAdvancementLoader serverAdvancementLoader = serverPlayerEntity.getServer().getAdvancementLoader();
-
-					for (Entry<Identifier, PlayerPredicate.AdvancementPredicate> entry3 : this.advancements.entrySet()) {
-						Advancement advancement = serverAdvancementLoader.get((Identifier)entry3.getKey());
-						if (advancement == null || !((PlayerPredicate.AdvancementPredicate)entry3.getValue()).test(playerAdvancementTracker.getProgress(advancement))) {
-							return false;
-						}
-					}
-				}
-
-				return true;
 			}
+
+			RecipeBook recipeBook = serverPlayerEntity.getRecipeBook();
+
+			for (it.unimi.dsi.fastutil.objects.Object2BooleanMap.Entry<Identifier> entry2 : this.recipes.object2BooleanEntrySet()) {
+				if (recipeBook.contains((Identifier)entry2.getKey()) != entry2.getBooleanValue()) {
+					return false;
+				}
+			}
+
+			if (!this.advancements.isEmpty()) {
+				PlayerAdvancementTracker playerAdvancementTracker = serverPlayerEntity.getAdvancementTracker();
+				ServerAdvancementLoader serverAdvancementLoader = serverPlayerEntity.getServer().getAdvancementLoader();
+
+				for (Entry<Identifier, PlayerPredicate.AdvancementPredicate> entry3 : this.advancements.entrySet()) {
+					Advancement advancement = serverAdvancementLoader.get((Identifier)entry3.getKey());
+					if (advancement == null || !((PlayerPredicate.AdvancementPredicate)entry3.getValue()).test(playerAdvancementTracker.getProgress(advancement))) {
+						return false;
+					}
+				}
+			}
+
+			return true;
 		}
 	}
 
@@ -181,8 +178,8 @@ public class PlayerPredicate {
 		} else {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("level", this.experienceLevel.toJson());
-			if (this.gamemode != null) {
-				jsonObject.addProperty("gamemode", this.gamemode.getName());
+			if (this.gameMode != null) {
+				jsonObject.addProperty("gamemode", this.gameMode.getName());
 			}
 
 			if (!this.stats.isEmpty()) {
@@ -270,7 +267,7 @@ public class PlayerPredicate {
 			return this;
 		}
 
-		public PlayerPredicate.Builder gamemode(GameMode gamemode) {
+		public PlayerPredicate.Builder gameMode(GameMode gamemode) {
 			this.gamemode = gamemode;
 			return this;
 		}

@@ -65,11 +65,8 @@ public class ModelElement {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Deserializer implements JsonDeserializer<ModelElement> {
+	protected static class Deserializer implements JsonDeserializer<ModelElement> {
 		private static final boolean field_32788 = true;
-
-		protected Deserializer() {
-		}
 
 		public ModelElement deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
@@ -135,7 +132,7 @@ public class ModelElement {
 
 			for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
 				Direction direction = this.getDirection((String)entry.getKey());
-				map.put(direction, context.deserialize((JsonElement)entry.getValue(), ModelElementFace.class));
+				map.put(direction, (ModelElementFace)context.deserialize((JsonElement)entry.getValue(), ModelElementFace.class));
 			}
 
 			return map;

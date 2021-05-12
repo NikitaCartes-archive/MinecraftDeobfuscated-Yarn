@@ -284,9 +284,6 @@ public class GoatEntity extends AnimalEntity {
 	static class GoatPathNodeMaker extends LandPathNodeMaker {
 		private final BlockPos.Mutable pos = new BlockPos.Mutable();
 
-		private GoatPathNodeMaker() {
-		}
-
 		@Override
 		public PathNodeType getDefaultNodeType(BlockView world, int x, int y, int z) {
 			this.pos.set(x, y - 1, z);

@@ -65,9 +65,7 @@ public class StructureBlock extends BlockWithEntity implements OperatorBlock {
 	@Override
 	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
 		if (world instanceof ServerWorld) {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
-			if (blockEntity instanceof StructureBlockBlockEntity) {
-				StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)blockEntity;
+			if (world.getBlockEntity(pos) instanceof StructureBlockBlockEntity structureBlockBlockEntity) {
 				boolean bl = world.isReceivingRedstonePower(pos);
 				boolean bl2 = structureBlockBlockEntity.isPowered();
 				if (bl && !bl2) {

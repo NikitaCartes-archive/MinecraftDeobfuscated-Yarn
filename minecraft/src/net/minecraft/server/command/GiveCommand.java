@@ -15,7 +15,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.TranslatableText;
 
 public class GiveCommand {
-	public static final int field_33394 = 100;
+	public static final int MAX_STACKS = 100;
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(

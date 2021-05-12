@@ -130,31 +130,29 @@ public class RecipesProvider implements DataProvider {
 			if (!Objects.equals(cache.getOldSha1(path), string2) || !Files.exists(path, new LinkOption[0])) {
 				Files.createDirectories(path.getParent());
 				BufferedWriter bufferedWriter = Files.newBufferedWriter(path);
-				Throwable var6 = null;
 
 				try {
 					bufferedWriter.write(string);
-				} catch (Throwable var16) {
-					var6 = var16;
-					throw var16;
-				} finally {
+				} catch (Throwable var9) {
 					if (bufferedWriter != null) {
-						if (var6 != null) {
-							try {
-								bufferedWriter.close();
-							} catch (Throwable var15) {
-								var6.addSuppressed(var15);
-							}
-						} else {
+						try {
 							bufferedWriter.close();
+						} catch (Throwable var8) {
+							var9.addSuppressed(var8);
 						}
 					}
+
+					throw var9;
+				}
+
+				if (bufferedWriter != null) {
+					bufferedWriter.close();
 				}
 			}
 
 			cache.updateSha1(path, string2);
-		} catch (IOException var18) {
-			LOGGER.error("Couldn't save recipe {}", path, var18);
+		} catch (IOException var10) {
+			LOGGER.error("Couldn't save recipe {}", path, var10);
 		}
 	}
 
@@ -165,31 +163,29 @@ public class RecipesProvider implements DataProvider {
 			if (!Objects.equals(cache.getOldSha1(path), string2) || !Files.exists(path, new LinkOption[0])) {
 				Files.createDirectories(path.getParent());
 				BufferedWriter bufferedWriter = Files.newBufferedWriter(path);
-				Throwable var6 = null;
 
 				try {
 					bufferedWriter.write(string);
-				} catch (Throwable var16) {
-					var6 = var16;
-					throw var16;
-				} finally {
+				} catch (Throwable var9) {
 					if (bufferedWriter != null) {
-						if (var6 != null) {
-							try {
-								bufferedWriter.close();
-							} catch (Throwable var15) {
-								var6.addSuppressed(var15);
-							}
-						} else {
+						try {
 							bufferedWriter.close();
+						} catch (Throwable var8) {
+							var9.addSuppressed(var8);
 						}
 					}
+
+					throw var9;
+				}
+
+				if (bufferedWriter != null) {
+					bufferedWriter.close();
 				}
 			}
 
 			cache.updateSha1(path, string2);
-		} catch (IOException var18) {
-			LOGGER.error("Couldn't save recipe advancement {}", path, var18);
+		} catch (IOException var10) {
+			LOGGER.error("Couldn't save recipe advancement {}", path, var10);
 		}
 	}
 
@@ -399,22 +395,6 @@ public class RecipesProvider implements DataProvider {
 		offerConcretePowderDyeingRecipe(exporter, Blocks.RED_CONCRETE_POWDER, Items.RED_DYE);
 		offerConcretePowderDyeingRecipe(exporter, Blocks.WHITE_CONCRETE_POWDER, Items.WHITE_DYE);
 		offerConcretePowderDyeingRecipe(exporter, Blocks.YELLOW_CONCRETE_POWDER, Items.YELLOW_DYE);
-		offerCandleDyeingRecipe(exporter, Blocks.BLACK_CANDLE, Items.BLACK_DYE);
-		offerCandleDyeingRecipe(exporter, Blocks.BLUE_CANDLE, Items.BLUE_DYE);
-		offerCandleDyeingRecipe(exporter, Blocks.BROWN_CANDLE, Items.BROWN_DYE);
-		offerCandleDyeingRecipe(exporter, Blocks.CYAN_CANDLE, Items.CYAN_DYE);
-		offerCandleDyeingRecipe(exporter, Blocks.GRAY_CANDLE, Items.GRAY_DYE);
-		offerCandleDyeingRecipe(exporter, Blocks.GREEN_CANDLE, Items.GREEN_DYE);
-		offerCandleDyeingRecipe(exporter, Blocks.LIGHT_BLUE_CANDLE, Items.LIGHT_BLUE_DYE);
-		offerCandleDyeingRecipe(exporter, Blocks.LIGHT_GRAY_CANDLE, Items.LIGHT_GRAY_DYE);
-		offerCandleDyeingRecipe(exporter, Blocks.LIME_CANDLE, Items.LIME_DYE);
-		offerCandleDyeingRecipe(exporter, Blocks.MAGENTA_CANDLE, Items.MAGENTA_DYE);
-		offerCandleDyeingRecipe(exporter, Blocks.ORANGE_CANDLE, Items.ORANGE_DYE);
-		offerCandleDyeingRecipe(exporter, Blocks.PINK_CANDLE, Items.PINK_DYE);
-		offerCandleDyeingRecipe(exporter, Blocks.PURPLE_CANDLE, Items.PURPLE_DYE);
-		offerCandleDyeingRecipe(exporter, Blocks.RED_CANDLE, Items.RED_DYE);
-		offerCandleDyeingRecipe(exporter, Blocks.WHITE_CANDLE, Items.WHITE_DYE);
-		offerCandleDyeingRecipe(exporter, Blocks.YELLOW_CANDLE, Items.YELLOW_DYE);
 		ShapedRecipeJsonFactory.create(Blocks.ACTIVATOR_RAIL, 6)
 			.input('#', Blocks.REDSTONE_TORCH)
 			.input('S', Items.STICK)
@@ -721,7 +701,9 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_cut_red_sandstone", conditionsFromItem(Blocks.CUT_RED_SANDSTONE))
 			.offerTo(exporter);
 		offerChiseledBlockRecipe(exporter, Blocks.CHISELED_SANDSTONE, Blocks.SANDSTONE_SLAB);
-		offerReversibleCompactingRecipes(exporter, Items.COPPER_INGOT, Items.COPPER_BLOCK);
+		offerReversibleCompactingRecipesWithInputItemGroup(
+			exporter, Items.COPPER_INGOT, Items.COPPER_BLOCK, method_36450(Items.COPPER_INGOT), getItemPath(Items.COPPER_INGOT)
+		);
 		ShapelessRecipeJsonFactory.create(Items.COPPER_INGOT, 9)
 			.input(Blocks.WAXED_COPPER_BLOCK)
 			.group(getItemPath(Items.COPPER_INGOT))
@@ -2114,14 +2096,6 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_iron_nugget", conditionsFromItem(Items.IRON_NUGGET))
 			.criterion("has_iron_ingot", conditionsFromItem(Items.IRON_INGOT))
 			.offerTo(exporter);
-		ShapedRecipeJsonFactory.create(Items.CANDLE)
-			.input('S', Items.STRING)
-			.input('H', Items.HONEYCOMB)
-			.pattern("S")
-			.pattern("H")
-			.criterion("has_string", conditionsFromItem(Items.STRING))
-			.criterion("has_honeycomb", conditionsFromItem(Items.HONEYCOMB))
-			.offerTo(exporter);
 		ShapedRecipeJsonFactory.create(Blocks.TINTED_GLASS, 2)
 			.input('G', Blocks.GLASS)
 			.input('S', Items.AMETHYST_SHARD)
@@ -2139,14 +2113,6 @@ public class RecipesProvider implements DataProvider {
 		ComplexRecipeJsonFactory.create(RecipeSerializer.ARMOR_DYE).offerTo(exporter, "armor_dye");
 		ComplexRecipeJsonFactory.create(RecipeSerializer.BANNER_DUPLICATE).offerTo(exporter, "banner_duplicate");
 		ComplexRecipeJsonFactory.create(RecipeSerializer.BOOK_CLONING).offerTo(exporter, "book_cloning");
-		ShapedRecipeJsonFactory.create(Items.BUNDLE)
-			.input('#', Items.RABBIT_HIDE)
-			.input('-', Items.STRING)
-			.pattern("-#-")
-			.pattern("# #")
-			.pattern("###")
-			.criterion("has_string", conditionsFromItem(Items.STRING))
-			.offerTo(exporter);
 		ComplexRecipeJsonFactory.create(RecipeSerializer.FIREWORK_ROCKET).offerTo(exporter, "firework_rocket");
 		ComplexRecipeJsonFactory.create(RecipeSerializer.FIREWORK_STAR).offerTo(exporter, "firework_star");
 		ComplexRecipeJsonFactory.create(RecipeSerializer.FIREWORK_STAR_FADE).offerTo(exporter, "firework_star_fade");

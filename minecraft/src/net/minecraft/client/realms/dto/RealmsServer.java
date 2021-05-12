@@ -276,7 +276,7 @@ public class RealmsServer extends ValueObject {
 		Map<Integer, RealmsWorldOptions> map = Maps.<Integer, RealmsWorldOptions>newHashMap();
 
 		for (Entry<Integer, RealmsWorldOptions> entry : slots.entrySet()) {
-			map.put(entry.getKey(), ((RealmsWorldOptions)entry.getValue()).clone());
+			map.put((Integer)entry.getKey(), ((RealmsWorldOptions)entry.getValue()).clone());
 		}
 
 		return map;

@@ -42,8 +42,8 @@ public class StatePredicate {
 		return json.isJsonNull() ? null : json.getAsString();
 	}
 
-	private StatePredicate(List<StatePredicate.Condition> testers) {
-		this.conditions = ImmutableList.copyOf(testers);
+	StatePredicate(List<StatePredicate.Condition> conditions) {
+		this.conditions = ImmutableList.copyOf(conditions);
 	}
 
 	public <S extends State<?, S>> boolean test(StateManager<?, S> stateManager, S container) {
@@ -168,7 +168,7 @@ public class StatePredicate {
 		protected <T extends Comparable<T>> boolean test(State<?, ?> state, Property<T> property) {
 			T comparable = state.get(property);
 			Optional<T> optional = property.parse(this.value);
-			return optional.isPresent() && comparable.compareTo(optional.get()) == 0;
+			return optional.isPresent() && comparable.compareTo((Comparable)optional.get()) == 0;
 		}
 
 		@Override
@@ -194,14 +194,14 @@ public class StatePredicate {
 			T comparable = state.get(property);
 			if (this.min != null) {
 				Optional<T> optional = property.parse(this.min);
-				if (!optional.isPresent() || comparable.compareTo(optional.get()) < 0) {
+				if (!optional.isPresent() || comparable.compareTo((Comparable)optional.get()) < 0) {
 					return false;
 				}
 			}
 
 			if (this.max != null) {
 				Optional<T> optional = property.parse(this.max);
-				if (!optional.isPresent() || comparable.compareTo(optional.get()) > 0) {
+				if (!optional.isPresent() || comparable.compareTo((Comparable)optional.get()) > 0) {
 					return false;
 				}
 			}

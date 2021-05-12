@@ -41,8 +41,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class RegistryOps<T> extends ForwardingDynamicOps<T> {
-	private static final Logger LOGGER = LogManager.getLogger();
-	private static final String field_33379 = ".json";
+	static final Logger LOGGER = LogManager.getLogger();
+	private static final String JSON_FILE_EXTENSION = ".json";
 	private final RegistryOps.EntryLoader entryLoader;
 	private final DynamicRegistryManager registryManager;
 	private final Map<RegistryKey<? extends Registry<?>>, RegistryOps.ValueHolder<?>> valueHolders;
@@ -69,14 +69,14 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 	private RegistryOps(
 		DynamicOps<T> delegate,
 		RegistryOps.EntryLoader entryLoader,
-		DynamicRegistryManager dynamicRegistryManager,
+		DynamicRegistryManager registryManager,
 		IdentityHashMap<RegistryKey<? extends Registry<?>>, RegistryOps.ValueHolder<?>> valueHolders
 	) {
 		super(delegate);
 		this.entryLoader = entryLoader;
-		this.registryManager = dynamicRegistryManager;
+		this.registryManager = registryManager;
 		this.valueHolders = valueHolders;
-		this.entryOps = delegate == JsonOps.INSTANCE ? this : new RegistryOps<>(JsonOps.INSTANCE, entryLoader, dynamicRegistryManager, valueHolders);
+		this.entryOps = delegate == JsonOps.INSTANCE ? this : new RegistryOps<>(JsonOps.INSTANCE, entryLoader, registryManager, valueHolders);
 	}
 
 	/**
@@ -208,53 +208,45 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 
 					try {
 						Resource resource = resourceManager.getResource(identifier2);
-						Throwable var8 = null;
 
-						DataResult var13;
+						DataResult var11;
 						try {
 							Reader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8);
-							Throwable var10 = null;
 
 							try {
 								JsonParser jsonParser = new JsonParser();
 								JsonElement jsonElement = jsonParser.parse(reader);
-								var13 = decoder.parse(dynamicOps, jsonElement).map(object -> Pair.of(object, OptionalInt.empty()));
-							} catch (Throwable var38) {
-								var10 = var38;
-								throw var38;
-							} finally {
-								if (reader != null) {
-									if (var10 != null) {
-										try {
-											reader.close();
-										} catch (Throwable var37) {
-											var10.addSuppressed(var37);
-										}
-									} else {
-										reader.close();
-									}
+								var11 = decoder.parse(dynamicOps, jsonElement).map(object -> Pair.of(object, OptionalInt.empty()));
+							} catch (Throwable var14) {
+								try {
+									reader.close();
+								} catch (Throwable var13) {
+									var14.addSuppressed(var13);
 								}
+
+								throw var14;
 							}
-						} catch (Throwable var40) {
-							var8 = var40;
-							throw var40;
-						} finally {
+
+							reader.close();
+						} catch (Throwable var15) {
 							if (resource != null) {
-								if (var8 != null) {
-									try {
-										resource.close();
-									} catch (Throwable var36) {
-										var8.addSuppressed(var36);
-									}
-								} else {
+								try {
 									resource.close();
+								} catch (Throwable var12) {
+									var15.addSuppressed(var12);
 								}
 							}
+
+							throw var15;
 						}
 
-						return var13;
-					} catch (JsonIOException | JsonSyntaxException | IOException var42) {
-						return DataResult.error("Failed to parse " + identifier2 + " file: " + var42.getMessage());
+						if (resource != null) {
+							resource.close();
+						}
+
+						return var11;
+					} catch (JsonIOException | JsonSyntaxException | IOException var16) {
+						return DataResult.error("Failed to parse " + identifier2 + " file: " + var16.getMessage());
 					}
 				}
 
@@ -275,7 +267,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 				if (optional.isPresent()) {
 					RegistryOps.LOGGER.error("Error adding element: {}", ((PartialResult)optional.get()).message());
 				} else {
-					this.values.put(key, dataResult.result().get());
+					this.values.put(key, (JsonElement)dataResult.result().get());
 					this.entryToRawId.put(key, rawId);
 					this.entryToLifecycle.put(key, lifecycle);
 				}
@@ -306,9 +298,6 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 	}
 
 	static final class ValueHolder<E> {
-		private final Map<RegistryKey<E>, DataResult<Supplier<E>>> values = Maps.<RegistryKey<E>, DataResult<Supplier<E>>>newIdentityHashMap();
-
-		private ValueHolder() {
-		}
+		final Map<RegistryKey<E>, DataResult<Supplier<E>>> values = Maps.<RegistryKey<E>, DataResult<Supplier<E>>>newIdentityHashMap();
 	}
 }

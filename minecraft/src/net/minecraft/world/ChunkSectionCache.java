@@ -23,13 +23,13 @@ public class ChunkSectionCache implements AutoCloseable {
 	}
 
 	@Nullable
-	public ChunkSection getSection(BlockPos blockPos) {
-		int i = this.world.getSectionIndex(blockPos.getY());
+	public ChunkSection getSection(BlockPos pos) {
+		int i = this.world.getSectionIndex(pos.getY());
 		if (i >= 0 && i < this.world.countVerticalSections()) {
-			long l = ChunkSectionPos.toLong(blockPos);
+			long l = ChunkSectionPos.toLong(pos);
 			if (this.cachedSection == null || this.sectionPos != l) {
 				this.cachedSection = this.cache.computeIfAbsent(l, lx -> {
-					Chunk chunk = this.world.getChunk(ChunkSectionPos.getSectionCoord(blockPos.getX()), ChunkSectionPos.getSectionCoord(blockPos.getZ()));
+					Chunk chunk = this.world.getChunk(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()));
 					ChunkSection chunkSection = chunk.getSection(i);
 					chunkSection.lock();
 					return chunkSection;

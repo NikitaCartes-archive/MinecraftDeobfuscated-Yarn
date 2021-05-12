@@ -7,8 +7,8 @@ import net.minecraft.particle.DefaultParticleType;
 
 @Environment(EnvType.CLIENT)
 public class SpitParticle extends ExplosionSmokeParticle {
-	private SpitParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
-		super(world, x, y, z, velocityX, velocityY, velocityZ, spriteProvider);
+	SpitParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
+		super(clientWorld, d, e, f, g, h, i, spriteProvider);
 		this.gravityStrength = 0.5F;
 	}
 

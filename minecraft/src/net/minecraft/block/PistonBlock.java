@@ -113,15 +113,12 @@ public class PistonBlock extends FacingBlock {
 			BlockPos blockPos = pos.offset(direction, 2);
 			BlockState blockState = world.getBlockState(blockPos);
 			int i = 1;
-			if (blockState.isOf(Blocks.MOVING_PISTON) && blockState.get(FACING) == direction) {
-				BlockEntity blockEntity = world.getBlockEntity(blockPos);
-				if (blockEntity instanceof PistonBlockEntity) {
-					PistonBlockEntity pistonBlockEntity = (PistonBlockEntity)blockEntity;
-					if (pistonBlockEntity.isExtending()
-						&& (pistonBlockEntity.getProgress(0.0F) < 0.5F || world.getTime() == pistonBlockEntity.getSavedWorldTime() || ((ServerWorld)world).isInBlockTick())) {
-						i = 2;
-					}
-				}
+			if (blockState.isOf(Blocks.MOVING_PISTON)
+				&& blockState.get(FACING) == direction
+				&& world.getBlockEntity(blockPos) instanceof PistonBlockEntity pistonBlockEntity
+				&& pistonBlockEntity.isExtending()
+				&& (pistonBlockEntity.getProgress(0.0F) < 0.5F || world.getTime() == pistonBlockEntity.getSavedWorldTime() || ((ServerWorld)world).isInBlockTick())) {
+				i = 2;
 			}
 
 			world.addSyncedBlockEvent(pos, this, i, direction.getId());
@@ -193,15 +190,12 @@ public class PistonBlock extends FacingBlock {
 				BlockPos blockPos = pos.add(direction.getOffsetX() * 2, direction.getOffsetY() * 2, direction.getOffsetZ() * 2);
 				BlockState blockState2 = world.getBlockState(blockPos);
 				boolean bl2 = false;
-				if (blockState2.isOf(Blocks.MOVING_PISTON)) {
-					BlockEntity blockEntity2 = world.getBlockEntity(blockPos);
-					if (blockEntity2 instanceof PistonBlockEntity) {
-						PistonBlockEntity pistonBlockEntity = (PistonBlockEntity)blockEntity2;
-						if (pistonBlockEntity.getFacing() == direction && pistonBlockEntity.isExtending()) {
-							pistonBlockEntity.finish();
-							bl2 = true;
-						}
-					}
+				if (blockState2.isOf(Blocks.MOVING_PISTON)
+					&& world.getBlockEntity(blockPos) instanceof PistonBlockEntity pistonBlockEntity
+					&& pistonBlockEntity.getFacing() == direction
+					&& pistonBlockEntity.isExtending()) {
+					pistonBlockEntity.finish();
+					bl2 = true;
 				}
 
 				if (!bl2) {

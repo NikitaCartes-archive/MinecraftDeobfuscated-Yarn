@@ -56,7 +56,7 @@ import net.minecraft.world.biome.BiomeKeys;
 
 public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 	public static final float field_30460 = 0.03F;
-	private boolean targetingUnderwater;
+	boolean targetingUnderwater;
 	protected final SwimNavigation waterNavigation;
 	protected final MobNavigation landNavigation;
 
@@ -189,7 +189,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		return !this.isSwimming();
 	}
 
-	private boolean isTargetingUnderwater() {
+	boolean isTargetingUnderwater() {
 		if (this.targetingUnderwater) {
 			return true;
 		} else {

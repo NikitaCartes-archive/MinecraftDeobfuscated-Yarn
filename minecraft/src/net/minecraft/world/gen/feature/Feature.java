@@ -156,7 +156,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 
 		for (Direction direction : Direction.values()) {
 			mutable.set(pos, direction);
-			if (predicate.test(posToState.apply(mutable))) {
+			if (predicate.test((BlockState)posToState.apply(mutable))) {
 				return true;
 			}
 		}

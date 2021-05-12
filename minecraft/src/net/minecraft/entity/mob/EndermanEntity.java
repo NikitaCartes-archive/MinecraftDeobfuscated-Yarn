@@ -201,7 +201,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 		this.readAngerFromNbt(this.world, nbt);
 	}
 
-	private boolean isPlayerStaring(PlayerEntity player) {
+	boolean isPlayerStaring(PlayerEntity player) {
 		ItemStack itemStack = player.getInventory().armor.get(3);
 		if (itemStack.isOf(Blocks.CARVED_PUMPKIN.asItem())) {
 			return false;
@@ -274,7 +274,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 		}
 	}
 
-	private boolean teleportTo(Entity entity) {
+	boolean teleportTo(Entity entity) {
 		Vec3d vec3d = new Vec3d(this.getX() - entity.getX(), this.getBodyY(0.5) - entity.getEyeY(), this.getZ() - entity.getZ());
 		vec3d = vec3d.normalize();
 		double d = 16.0;
@@ -503,12 +503,12 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 		private int lookAtPlayerWarmup;
 		private int ticksSinceUnseenTeleport;
 		private final TargetPredicate staringPlayerPredicate;
-		private final TargetPredicate validTargetPredicate = new TargetPredicate().includeHidden();
+		private final TargetPredicate validTargetPredicate = TargetPredicate.createAttackable().visibleOnly();
 
 		public TeleportTowardsPlayerGoal(EndermanEntity enderman, @Nullable Predicate<LivingEntity> predicate) {
 			super(enderman, PlayerEntity.class, 10, false, false, predicate);
 			this.enderman = enderman;
-			this.staringPlayerPredicate = new TargetPredicate()
+			this.staringPlayerPredicate = TargetPredicate.createAttackable()
 				.setBaseMaxDistance(this.getFollowRange())
 				.setPredicate(playerEntity -> enderman.isPlayerStaring((PlayerEntity)playerEntity));
 		}

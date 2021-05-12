@@ -167,44 +167,50 @@ public class UserCache {
 
 		try {
 			Reader reader = Files.newReader(this.cacheFile, StandardCharsets.UTF_8);
-			Throwable var3 = null;
 
-			Object dateFormat;
-			try {
-				JsonArray jsonArray = this.gson.fromJson(reader, JsonArray.class);
-				if (jsonArray != null) {
-					DateFormat dateFormatx = getDateFormat();
+			Object var9;
+			label60: {
+				try {
+					JsonArray jsonArray = this.gson.fromJson(reader, JsonArray.class);
+					if (jsonArray == null) {
+						var9 = list;
+						break label60;
+					}
+
+					DateFormat dateFormat = getDateFormat();
 					jsonArray.forEach(json -> {
 						UserCache.Entry entry = entryFromJson(json, dateFormat);
 						if (entry != null) {
 							list.add(entry);
 						}
 					});
-					return list;
-				}
-
-				dateFormat = list;
-			} catch (Throwable var17) {
-				var3 = var17;
-				throw var17;
-			} finally {
-				if (reader != null) {
-					if (var3 != null) {
+				} catch (Throwable var6) {
+					if (reader != null) {
 						try {
 							reader.close();
-						} catch (Throwable var16) {
-							var3.addSuppressed(var16);
+						} catch (Throwable var5) {
+							var6.addSuppressed(var5);
 						}
-					} else {
-						reader.close();
 					}
+
+					throw var6;
 				}
+
+				if (reader != null) {
+					reader.close();
+				}
+
+				return list;
 			}
 
-			return (List<UserCache.Entry>)dateFormat;
-		} catch (FileNotFoundException var19) {
-		} catch (JsonParseException | IOException var20) {
-			LOGGER.warn("Failed to load profile cache {}", this.cacheFile, var20);
+			if (reader != null) {
+				reader.close();
+			}
+
+			return (List<UserCache.Entry>)var9;
+		} catch (FileNotFoundException var7) {
+		} catch (JsonParseException | IOException var8) {
+			LOGGER.warn("Failed to load profile cache {}", this.cacheFile, var8);
 		}
 
 		return list;
@@ -218,27 +224,25 @@ public class UserCache {
 
 		try {
 			Writer writer = Files.newWriter(this.cacheFile, StandardCharsets.UTF_8);
-			Throwable var5 = null;
 
 			try {
 				writer.write(string);
-			} catch (Throwable var15) {
-				var5 = var15;
-				throw var15;
-			} finally {
+			} catch (Throwable var8) {
 				if (writer != null) {
-					if (var5 != null) {
-						try {
-							writer.close();
-						} catch (Throwable var14) {
-							var5.addSuppressed(var14);
-						}
-					} else {
+					try {
 						writer.close();
+					} catch (Throwable var7) {
+						var8.addSuppressed(var7);
 					}
 				}
+
+				throw var8;
 			}
-		} catch (IOException var17) {
+
+			if (writer != null) {
+				writer.close();
+			}
+		} catch (IOException var9) {
 		}
 	}
 
@@ -295,10 +299,10 @@ public class UserCache {
 
 	static class Entry {
 		private final GameProfile profile;
-		private final Date expirationDate;
+		final Date expirationDate;
 		private volatile long lastAccessed;
 
-		private Entry(GameProfile profile, Date expirationDate) {
+		Entry(GameProfile profile, Date expirationDate) {
 			this.profile = profile;
 			this.expirationDate = expirationDate;
 		}

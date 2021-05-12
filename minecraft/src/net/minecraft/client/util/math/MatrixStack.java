@@ -78,12 +78,12 @@ public class MatrixStack {
 
 	@Environment(EnvType.CLIENT)
 	public static final class Entry {
-		private final Matrix4f modelMatrix;
-		private final Matrix3f normalMatrix;
+		final Matrix4f modelMatrix;
+		final Matrix3f normalMatrix;
 
-		private Entry(Matrix4f modelMatrix, Matrix3f normalMatrix) {
-			this.modelMatrix = modelMatrix;
-			this.normalMatrix = normalMatrix;
+		Entry(Matrix4f matrix4f, Matrix3f matrix3f) {
+			this.modelMatrix = matrix4f;
+			this.normalMatrix = matrix3f;
 		}
 
 		public Matrix4f getModel() {

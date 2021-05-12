@@ -68,7 +68,7 @@ public class TurtleEntity extends AnimalEntity {
 	private static final TrackedData<Boolean> LAND_BOUND = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> ACTIVELY_TRAVELLING = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	public static final Ingredient BREEDING_ITEM = Ingredient.ofItems(Blocks.SEAGRASS.asItem());
-	private int sandDiggingCounter;
+	int sandDiggingCounter;
 	public static final Predicate<LivingEntity> BABY_TURTLE_ON_LAND_FILTER = entity -> entity.isBaby() && !entity.isTouchingWater();
 
 	public TurtleEntity(EntityType<? extends TurtleEntity> entityType, World world) {
@@ -82,15 +82,15 @@ public class TurtleEntity extends AnimalEntity {
 		this.dataTracker.set(HOME_POS, pos);
 	}
 
-	private BlockPos getHomePos() {
+	BlockPos getHomePos() {
 		return this.dataTracker.get(HOME_POS);
 	}
 
-	private void setTravelPos(BlockPos pos) {
+	void setTravelPos(BlockPos pos) {
 		this.dataTracker.set(TRAVEL_POS, pos);
 	}
 
-	private BlockPos getTravelPos() {
+	BlockPos getTravelPos() {
 		return this.dataTracker.get(TRAVEL_POS);
 	}
 
@@ -98,7 +98,7 @@ public class TurtleEntity extends AnimalEntity {
 		return this.dataTracker.get(HAS_EGG);
 	}
 
-	private void setHasEgg(boolean hasEgg) {
+	void setHasEgg(boolean hasEgg) {
 		this.dataTracker.set(HAS_EGG, hasEgg);
 	}
 
@@ -106,24 +106,24 @@ public class TurtleEntity extends AnimalEntity {
 		return this.dataTracker.get(DIGGING_SAND);
 	}
 
-	private void setDiggingSand(boolean diggingSand) {
+	void setDiggingSand(boolean diggingSand) {
 		this.sandDiggingCounter = diggingSand ? 1 : 0;
 		this.dataTracker.set(DIGGING_SAND, diggingSand);
 	}
 
-	private boolean isLandBound() {
+	boolean isLandBound() {
 		return this.dataTracker.get(LAND_BOUND);
 	}
 
-	private void setLandBound(boolean landBound) {
+	void setLandBound(boolean landBound) {
 		this.dataTracker.set(LAND_BOUND, landBound);
 	}
 
-	private boolean isActivelyTravelling() {
+	boolean isActivelyTravelling() {
 		return this.dataTracker.get(ACTIVELY_TRAVELLING);
 	}
 
-	private void setActivelyTravelling(boolean travelling) {
+	void setActivelyTravelling(boolean travelling) {
 		this.dataTracker.set(ACTIVELY_TRAVELLING, travelling);
 	}
 
@@ -641,11 +641,8 @@ public class TurtleEntity extends AnimalEntity {
 
 		@Override
 		public boolean isValidPosition(BlockPos pos) {
-			if (this.entity instanceof TurtleEntity) {
-				TurtleEntity turtleEntity = (TurtleEntity)this.entity;
-				if (turtleEntity.isActivelyTravelling()) {
-					return this.world.getBlockState(pos).isOf(Blocks.WATER);
-				}
+			if (this.entity instanceof TurtleEntity turtleEntity && turtleEntity.isActivelyTravelling()) {
+				return this.world.getBlockState(pos).isOf(Blocks.WATER);
 			}
 
 			return !this.world.getBlockState(pos.down()).isAir();
@@ -656,9 +653,9 @@ public class TurtleEntity extends AnimalEntity {
 		private static final int field_30385 = 1200;
 		private final TurtleEntity turtle;
 
-		private WanderInWaterGoal(TurtleEntity turtle, double speed) {
-			super(turtle, turtle.isBaby() ? 2.0 : speed, 24);
-			this.turtle = turtle;
+		WanderInWaterGoal(TurtleEntity turtleEntity, double d) {
+			super(turtleEntity, turtleEntity.isBaby() ? 2.0 : d, 24);
+			this.turtle = turtleEntity;
 			this.lowestY = -1;
 		}
 
@@ -690,9 +687,9 @@ public class TurtleEntity extends AnimalEntity {
 	static class WanderOnLandGoal extends WanderAroundGoal {
 		private final TurtleEntity turtle;
 
-		private WanderOnLandGoal(TurtleEntity turtle, double speed, int chance) {
-			super(turtle, speed, chance);
-			this.turtle = turtle;
+		WanderOnLandGoal(TurtleEntity turtleEntity, double d, int i) {
+			super(turtleEntity, d, i);
+			this.turtle = turtleEntity;
 		}
 
 		@Override

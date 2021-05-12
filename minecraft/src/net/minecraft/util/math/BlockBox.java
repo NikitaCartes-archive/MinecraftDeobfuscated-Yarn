@@ -260,16 +260,15 @@ public class BlockBox {
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
-		} else if (!(o instanceof BlockBox)) {
-			return false;
 		} else {
-			BlockBox blockBox = (BlockBox)o;
-			return this.minX == blockBox.minX
-				&& this.minY == blockBox.minY
-				&& this.minZ == blockBox.minZ
-				&& this.maxX == blockBox.maxX
-				&& this.maxY == blockBox.maxY
-				&& this.maxZ == blockBox.maxZ;
+			return !(o instanceof BlockBox blockBox)
+				? false
+				: this.minX == blockBox.minX
+					&& this.minY == blockBox.minY
+					&& this.minZ == blockBox.minZ
+					&& this.maxX == blockBox.maxX
+					&& this.maxY == blockBox.maxY
+					&& this.maxZ == blockBox.maxZ;
 		}
 	}
 

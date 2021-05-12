@@ -17,7 +17,7 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 
 public class BeeNestDestroyedCriterion extends AbstractCriterion<BeeNestDestroyedCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("bee_nest_destroyed");
+	static final Identifier ID = new Identifier("bee_nest_destroyed");
 
 	@Override
 	public Identifier getId() {

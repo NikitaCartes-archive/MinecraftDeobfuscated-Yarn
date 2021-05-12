@@ -33,8 +33,8 @@ public class NbtInt extends AbstractNbtNumber {
 	};
 	private final int value;
 
-	private NbtInt(int value) {
-		this.value = value;
+	NbtInt(int i) {
+		this.value = i;
 	}
 
 	public static NbtInt of(int value) {

@@ -457,8 +457,8 @@ public enum Direction implements StringIdentifiable {
 			.collect(Collectors.toMap(Direction.Axis::getName, axis -> axis));
 		private final String name;
 
-		private Axis(String name) {
-			this.name = name;
+		Axis(String string2) {
+			this.name = string2;
 		}
 
 		@Nullable

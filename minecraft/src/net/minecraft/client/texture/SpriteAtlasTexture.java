@@ -155,7 +155,6 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 					Sprite.Info info;
 					try {
 						Resource resource = resourceManager.getResource(identifier2);
-						Throwable var7 = null;
 
 						try {
 							PngFile pngFile = new PngFile(resource.toString(), resource.getInputStream());
@@ -166,27 +165,26 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 
 							Pair<Integer, Integer> pair = animationResourceMetadata.ensureImageSize(pngFile.width, pngFile.height);
 							info = new Sprite.Info(identifier, pair.getFirst(), pair.getSecond(), animationResourceMetadata);
-						} catch (Throwable var20) {
-							var7 = var20;
-							throw var20;
-						} finally {
+						} catch (Throwable var11) {
 							if (resource != null) {
-								if (var7 != null) {
-									try {
-										resource.close();
-									} catch (Throwable var19) {
-										var7.addSuppressed(var19);
-									}
-								} else {
+								try {
 									resource.close();
+								} catch (Throwable var10) {
+									var11.addSuppressed(var10);
 								}
 							}
+
+							throw var11;
 						}
-					} catch (RuntimeException var22) {
-						LOGGER.error("Unable to parse metadata from {} : {}", identifier2, var22);
+
+						if (resource != null) {
+							resource.close();
+						}
+					} catch (RuntimeException var12) {
+						LOGGER.error("Unable to parse metadata from {} : {}", identifier2, var12);
 						return;
-					} catch (IOException var23) {
-						LOGGER.error("Using missing texture, unable to load {} : {}", identifier2, var23);
+					} catch (IOException var13) {
+						LOGGER.error("Using missing texture, unable to load {} : {}", identifier2, var13);
 						return;
 					}
 
@@ -225,35 +223,33 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 
 		try {
 			Resource resource = container.getResource(identifier);
-			Throwable var10 = null;
 
-			Sprite var12;
+			Sprite var11;
 			try {
 				NativeImage nativeImage = NativeImage.read(resource.getInputStream());
-				var12 = new Sprite(this, info, maxLevel, atlasWidth, atlasHeight, x, y, nativeImage);
-			} catch (Throwable var23) {
-				var10 = var23;
-				throw var23;
-			} finally {
+				var11 = new Sprite(this, info, maxLevel, atlasWidth, atlasHeight, x, y, nativeImage);
+			} catch (Throwable var13) {
 				if (resource != null) {
-					if (var10 != null) {
-						try {
-							resource.close();
-						} catch (Throwable var22) {
-							var10.addSuppressed(var22);
-						}
-					} else {
+					try {
 						resource.close();
+					} catch (Throwable var12) {
+						var13.addSuppressed(var12);
 					}
 				}
+
+				throw var13;
 			}
 
-			return var12;
-		} catch (RuntimeException var25) {
-			LOGGER.error("Unable to parse metadata from {}", identifier, var25);
+			if (resource != null) {
+				resource.close();
+			}
+
+			return var11;
+		} catch (RuntimeException var14) {
+			LOGGER.error("Unable to parse metadata from {}", identifier, var14);
 			return null;
-		} catch (IOException var26) {
-			LOGGER.error("Using missing texture, unable to load {}", identifier, var26);
+		} catch (IOException var15) {
+			LOGGER.error("Using missing texture, unable to load {}", identifier, var15);
 			return null;
 		}
 	}

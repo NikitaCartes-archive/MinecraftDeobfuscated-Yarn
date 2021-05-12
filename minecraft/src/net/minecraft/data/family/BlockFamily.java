@@ -9,15 +9,15 @@ import org.apache.commons.lang3.StringUtils;
 
 public class BlockFamily {
 	private final Block baseBlock;
-	private final Map<BlockFamily.Variant, Block> variants = Maps.<BlockFamily.Variant, Block>newHashMap();
-	private boolean generateModels = true;
-	private boolean generateRecipes = true;
+	final Map<BlockFamily.Variant, Block> variants = Maps.<BlockFamily.Variant, Block>newHashMap();
+	boolean generateModels = true;
+	boolean generateRecipes = true;
 	@Nullable
-	private String group;
+	String group;
 	@Nullable
-	private String unlockCriterionName;
+	String unlockCriterionName;
 
-	private BlockFamily(Block baseBlock) {
+	BlockFamily(Block baseBlock) {
 		this.baseBlock = baseBlock;
 	}
 
@@ -75,7 +75,7 @@ public class BlockFamily {
 			return this;
 		}
 
-		public BlockFamily.Builder method_36544(Block block) {
+		public BlockFamily.Builder cut(Block block) {
 			this.family.variants.put(BlockFamily.Variant.CUT, block);
 			return this;
 		}

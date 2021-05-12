@@ -36,8 +36,7 @@ public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel
 		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.CHEST);
 		if (itemStack.isOf(Items.ELYTRA)) {
 			Identifier identifier;
-			if (livingEntity instanceof AbstractClientPlayerEntity) {
-				AbstractClientPlayerEntity abstractClientPlayerEntity = (AbstractClientPlayerEntity)livingEntity;
+			if (livingEntity instanceof AbstractClientPlayerEntity abstractClientPlayerEntity) {
 				if (abstractClientPlayerEntity.canRenderElytraTexture() && abstractClientPlayerEntity.getElytraTexture() != null) {
 					identifier = abstractClientPlayerEntity.getElytraTexture();
 				} else if (abstractClientPlayerEntity.canRenderCapeTexture()

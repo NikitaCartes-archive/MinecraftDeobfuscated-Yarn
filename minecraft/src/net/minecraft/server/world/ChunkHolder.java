@@ -59,7 +59,7 @@ public class ChunkHolder {
 	private int lastTickLevel;
 	private int level;
 	private int completedLevel;
-	private final ChunkPos pos;
+	final ChunkPos pos;
 	/**
 	 * Indicates that {@link #blockUpdatesBySection} contains at least one entry.
 	 */
@@ -459,10 +459,10 @@ public class ChunkHolder {
 		private final CompletableFuture<? extends Either<? extends Chunk, ChunkHolder.Unloaded>> action;
 		private final String actionDesc;
 
-		private MultithreadAction(Thread thread, CompletableFuture<? extends Either<? extends Chunk, ChunkHolder.Unloaded>> action, String actionDesc) {
+		MultithreadAction(Thread thread, CompletableFuture<? extends Either<? extends Chunk, ChunkHolder.Unloaded>> completableFuture, String string) {
 			this.thread = thread;
-			this.action = action;
-			this.actionDesc = actionDesc;
+			this.action = completableFuture;
+			this.actionDesc = string;
 		}
 	}
 

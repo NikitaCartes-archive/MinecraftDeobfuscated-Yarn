@@ -26,7 +26,7 @@ import io.netty.handler.timeout.TimeoutException;
 import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
-import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.Queue;
 import javax.annotation.Nullable;
@@ -206,30 +206,25 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		}
 
 		if (this.channel.eventLoop().inEventLoop()) {
-			if (networkState != networkState2) {
-				this.setState(networkState);
-			}
-
-			ChannelFuture channelFuture = this.channel.writeAndFlush(packet);
-			if (callback != null) {
-				channelFuture.addListener(callback);
-			}
-
-			channelFuture.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
+			this.sendInternal(packet, callback, networkState, networkState2);
 		} else {
-			this.channel.eventLoop().execute(() -> {
-				if (networkState != networkState2) {
-					this.setState(networkState);
-				}
-
-				ChannelFuture channelFuturex = this.channel.writeAndFlush(packet);
-				if (callback != null) {
-					channelFuturex.addListener(callback);
-				}
-
-				channelFuturex.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
-			});
+			this.channel.eventLoop().execute(() -> this.sendInternal(packet, callback, networkState, networkState2));
 		}
+	}
+
+	private void sendInternal(
+		Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> callback, NetworkState networkState, NetworkState networkState2
+	) {
+		if (networkState != networkState2) {
+			this.setState(networkState);
+		}
+
+		ChannelFuture channelFuture = this.channel.writeAndFlush(packet);
+		if (callback != null) {
+			channelFuture.addListener(callback);
+		}
+
+		channelFuture.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
 	}
 
 	/**
@@ -311,11 +306,11 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		return this.side.getOpposite();
 	}
 
-	public static ClientConnection connect(InetAddress address, int port, boolean shouldUseNativeTransport) {
+	public static ClientConnection connect(InetSocketAddress address, boolean useEpoll) {
 		final ClientConnection clientConnection = new ClientConnection(NetworkSide.CLIENTBOUND);
 		Class<? extends SocketChannel> class_;
 		Lazy<? extends EventLoopGroup> lazy;
-		if (Epoll.isAvailable() && shouldUseNativeTransport) {
+		if (Epoll.isAvailable() && useEpoll) {
 			class_ = EpollSocketChannel.class;
 			lazy = EPOLL_CLIENT_IO_GROUP;
 		} else {
@@ -345,7 +340,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 				}
 			)
 			.channel(class_)
-			.connect(address, port)
+			.connect(address.getAddress(), address.getPort())
 			.syncUninterruptibly();
 		return clientConnection;
 	}
@@ -361,10 +356,10 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		return clientConnection;
 	}
 
-	public void setupEncryption(Cipher cipher, Cipher cipher2) {
+	public void setupEncryption(Cipher decryptionCipher, Cipher encryptionCipher) {
 		this.encrypted = true;
-		this.channel.pipeline().addBefore("splitter", "decrypt", new PacketDecryptor(cipher));
-		this.channel.pipeline().addBefore("prepender", "encrypt", new PacketEncryptor(cipher2));
+		this.channel.pipeline().addBefore("splitter", "decrypt", new PacketDecryptor(decryptionCipher));
+		this.channel.pipeline().addBefore("prepender", "encrypt", new PacketEncryptor(encryptionCipher));
 	}
 
 	public boolean isEncrypted() {
@@ -440,9 +435,9 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	}
 
 	static class QueuedPacket {
-		private final Packet<?> packet;
+		final Packet<?> packet;
 		@Nullable
-		private final GenericFutureListener<? extends Future<? super Void>> callback;
+		final GenericFutureListener<? extends Future<? super Void>> callback;
 
 		public QueuedPacket(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> callback) {
 			this.packet = packet;

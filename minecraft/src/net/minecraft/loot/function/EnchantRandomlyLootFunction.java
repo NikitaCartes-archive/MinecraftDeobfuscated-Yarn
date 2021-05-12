@@ -31,11 +31,11 @@ import org.apache.logging.log4j.Logger;
 
 public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final List<Enchantment> enchantments;
+	final List<Enchantment> enchantments;
 
-	private EnchantRandomlyLootFunction(LootCondition[] conditions, Collection<Enchantment> enchantments) {
-		super(conditions);
-		this.enchantments = ImmutableList.copyOf(enchantments);
+	EnchantRandomlyLootFunction(LootCondition[] lootConditions, Collection<Enchantment> collection) {
+		super(lootConditions);
+		this.enchantments = ImmutableList.copyOf(collection);
 	}
 
 	@Override

@@ -51,16 +51,16 @@ import org.apache.logging.log4j.Logger;
  */
 public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	private static final AtomicInteger NEXT_AUTHENTICATOR_THREAD_ID = new AtomicInteger(0);
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogManager.getLogger();
 	private static final int field_29779 = 600;
 	private static final Random RANDOM = new Random();
 	private final byte[] nonce = new byte[4];
-	private final MinecraftServer server;
+	final MinecraftServer server;
 	public final ClientConnection connection;
-	private ServerLoginNetworkHandler.State state = ServerLoginNetworkHandler.State.HELLO;
+	ServerLoginNetworkHandler.State state = ServerLoginNetworkHandler.State.HELLO;
 	private int loginTicks;
 	@Nullable
-	private GameProfile profile;
+	GameProfile profile;
 	private final String serverId = "";
 	/**
 	 * The delayed player, waiting to join the server once the existing player

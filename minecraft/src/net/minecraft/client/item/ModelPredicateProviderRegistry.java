@@ -107,26 +107,26 @@ public class ModelPredicateProviderRegistry {
 			private long lastTick;
 
 			@Override
-			public float call(ItemStack itemStack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity livingEntity, int i) {
+			public float call(ItemStack itemStack, @Nullable ClientWorld clientWorldx, @Nullable LivingEntity livingEntity, int i) {
 				Entity entity = (Entity)(livingEntity != null ? livingEntity : itemStack.getHolder());
 				if (entity == null) {
 					return 0.0F;
 				} else {
-					if (clientWorld == null && entity.world instanceof ClientWorld) {
-						clientWorld = (ClientWorld)entity.world;
+					if (clientWorldx == null && entity.world instanceof ClientWorld clientWorldx) {
+						;
 					}
 
-					if (clientWorld == null) {
+					if (clientWorldx == null) {
 						return 0.0F;
 					} else {
 						double d;
-						if (clientWorld.getDimension().isNatural()) {
-							d = (double)clientWorld.getSkyAngle(1.0F);
+						if (clientWorldx.getDimension().isNatural()) {
+							d = (double)clientWorldx.getSkyAngle(1.0F);
 						} else {
 							d = Math.random();
 						}
 
-						d = this.getTime(clientWorld, d);
+						d = this.getTime(clientWorldx, d);
 						return (float)d;
 					}
 				}
@@ -153,17 +153,17 @@ public class ModelPredicateProviderRegistry {
 				private final ModelPredicateProviderRegistry.AngleInterpolator speed = new ModelPredicateProviderRegistry.AngleInterpolator();
 
 				@Override
-				public float call(ItemStack itemStack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity livingEntity, int i) {
+				public float call(ItemStack itemStack, @Nullable ClientWorld clientWorldx, @Nullable LivingEntity livingEntity, int i) {
 					Entity entity = (Entity)(livingEntity != null ? livingEntity : itemStack.getHolder());
 					if (entity == null) {
 						return 0.0F;
 					} else {
-						if (clientWorld == null && entity.world instanceof ClientWorld) {
-							clientWorld = (ClientWorld)entity.world;
+						if (clientWorldx == null && entity.world instanceof ClientWorld clientWorldx) {
+							;
 						}
 
-						BlockPos blockPos = CompassItem.hasLodestone(itemStack) ? this.getLodestonePos(clientWorld, itemStack.getOrCreateTag()) : this.getSpawnPos(clientWorld);
-						long l = clientWorld.getTime();
+						BlockPos blockPos = CompassItem.hasLodestone(itemStack) ? this.getLodestonePos(clientWorldx, itemStack.getOrCreateTag()) : this.getSpawnPos(clientWorldx);
+						long l = clientWorldx.getTime();
 						if (blockPos != null
 							&& !(entity.getPos().squaredDistanceTo((double)blockPos.getX() + 0.5, entity.getPos().getY(), (double)blockPos.getZ() + 0.5) < 1.0E-5F)) {
 							boolean bl = livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).isMainPlayer();
@@ -314,18 +314,15 @@ public class ModelPredicateProviderRegistry {
 
 	@Environment(EnvType.CLIENT)
 	static class AngleInterpolator {
-		private double value;
+		double value;
 		private double speed;
 		private long lastUpdateTime;
 
-		private AngleInterpolator() {
-		}
-
-		private boolean shouldUpdate(long time) {
+		boolean shouldUpdate(long time) {
 			return this.lastUpdateTime != time;
 		}
 
-		private void update(long time, double d) {
+		void update(long time, double d) {
 			this.lastUpdateTime = time;
 			double e = d - this.value;
 			e = MathHelper.floorMod(e + 0.5, 1.0) - 0.5;

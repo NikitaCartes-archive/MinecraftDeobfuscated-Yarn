@@ -99,9 +99,6 @@ public class CompositeTask<E extends LivingEntity> extends Task<E> {
 			}
 		};
 
-		private RunMode() {
-		}
-
 		public abstract <E extends LivingEntity> void run(Stream<Task<? super E>> tasks, ServerWorld world, E entity, long time);
 	}
 }

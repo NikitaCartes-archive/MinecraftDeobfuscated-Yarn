@@ -12,12 +12,12 @@ import net.minecraft.util.JsonSerializer;
 import net.minecraft.util.math.MathHelper;
 
 public class UniformLootNumberProvider implements LootNumberProvider {
-	private final LootNumberProvider min;
-	private final LootNumberProvider max;
+	final LootNumberProvider min;
+	final LootNumberProvider max;
 
-	private UniformLootNumberProvider(LootNumberProvider min, LootNumberProvider max) {
-		this.min = min;
-		this.max = max;
+	UniformLootNumberProvider(LootNumberProvider lootNumberProvider, LootNumberProvider lootNumberProvider2) {
+		this.min = lootNumberProvider;
+		this.max = lootNumberProvider2;
 	}
 
 	@Override

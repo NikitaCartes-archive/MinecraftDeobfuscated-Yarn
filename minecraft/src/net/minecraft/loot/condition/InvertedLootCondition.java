@@ -11,10 +11,10 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.JsonSerializer;
 
 public class InvertedLootCondition implements LootCondition {
-	private final LootCondition term;
+	final LootCondition term;
 
-	private InvertedLootCondition(LootCondition term) {
-		this.term = term;
+	InvertedLootCondition(LootCondition lootCondition) {
+		this.term = lootCondition;
 	}
 
 	@Override

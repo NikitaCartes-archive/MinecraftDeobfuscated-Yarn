@@ -10,7 +10,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class SummonedEntityCriterion extends AbstractCriterion<SummonedEntityCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("summoned_entity");
+	static final Identifier ID = new Identifier("summoned_entity");
 
 	@Override
 	public Identifier getId() {

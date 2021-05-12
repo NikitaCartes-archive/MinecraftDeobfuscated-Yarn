@@ -11,11 +11,9 @@ public abstract class Sensor<E extends LivingEntity> {
 	private static final Random RANDOM = new Random();
 	private static final int DEFAULT_RUN_TIME = 20;
 	protected static final int BASE_MAX_DISTANCE = 16;
-	private static final TargetPredicate TARGET_PREDICATE = new TargetPredicate().setBaseMaxDistance(16.0).includeTeammates().ignoreEntityTargetRules();
-	private static final TargetPredicate TARGET_PREDICATE_IGNORE_DISTANCE_SCALING = new TargetPredicate()
+	private static final TargetPredicate TARGET_PREDICATE = TargetPredicate.createNonAttackable().setBaseMaxDistance(16.0);
+	private static final TargetPredicate TARGET_PREDICATE_IGNORE_DISTANCE_SCALING = TargetPredicate.createNonAttackable()
 		.setBaseMaxDistance(16.0)
-		.includeTeammates()
-		.ignoreEntityTargetRules()
 		.ignoreDistanceScalingFactor();
 	private final int senseInterval;
 	private long lastSenseTime;

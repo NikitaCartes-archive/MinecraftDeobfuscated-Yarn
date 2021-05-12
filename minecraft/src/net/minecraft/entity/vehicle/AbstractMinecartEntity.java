@@ -26,7 +26,6 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -834,28 +833,14 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	@Override
 	public ItemStack getPickBlockStack() {
-		Item item;
-		switch (this.getMinecartType()) {
-			case FURNACE:
-				item = Items.FURNACE_MINECART;
-				break;
-			case CHEST:
-				item = Items.CHEST_MINECART;
-				break;
-			case TNT:
-				item = Items.TNT_MINECART;
-				break;
-			case HOPPER:
-				item = Items.HOPPER_MINECART;
-				break;
-			case COMMAND_BLOCK:
-				item = Items.COMMAND_BLOCK_MINECART;
-				break;
-			default:
-				item = Items.MINECART;
-		}
-
-		return new ItemStack(item);
+		return new ItemStack(switch (this.getMinecartType()) {
+			case FURNACE -> Items.FURNACE_MINECART;
+			case CHEST -> Items.CHEST_MINECART;
+			case TNT -> Items.TNT_MINECART;
+			case HOPPER -> Items.HOPPER_MINECART;
+			case COMMAND_BLOCK -> Items.COMMAND_BLOCK_MINECART;
+			default -> Items.MINECART;
+		});
 	}
 
 	public static enum Type {

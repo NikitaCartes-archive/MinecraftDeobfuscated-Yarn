@@ -47,7 +47,7 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 
 	protected void returnInputs(boolean bl) {
 		for (int i = 0; i < this.handler.getCraftingSlotCount(); i++) {
-			if (this.handler.method_32339(i)) {
+			if (this.handler.canInsertIntoSlot(i)) {
 				ItemStack itemStack = this.handler.getSlot(i).getStack().copy();
 				this.inventory.offer(itemStack, false);
 				this.handler.getSlot(i).setStack(itemStack);

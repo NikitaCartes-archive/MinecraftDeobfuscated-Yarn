@@ -15,7 +15,7 @@ public class EmeraldOreFeatureConfig implements FeatureConfig {
 	public final List<OreFeatureConfig.Target> target;
 
 	public EmeraldOreFeatureConfig(BlockState target, BlockState state) {
-		this(ImmutableList.of(OreFeatureConfig.create(new BlockStateMatchRuleTest(target), state)));
+		this(ImmutableList.of(OreFeatureConfig.createTarget(new BlockStateMatchRuleTest(target), state)));
 	}
 
 	public EmeraldOreFeatureConfig(List<OreFeatureConfig.Target> list) {

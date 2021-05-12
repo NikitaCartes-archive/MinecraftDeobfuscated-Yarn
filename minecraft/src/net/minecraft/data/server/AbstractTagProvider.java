@@ -64,31 +64,29 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 							if (!Objects.equals(cache.getOldSha1(path), string2) || !Files.exists(path, new LinkOption[0])) {
 								Files.createDirectories(path.getParent());
 								BufferedWriter bufferedWriter = Files.newBufferedWriter(path);
-								Throwable var10 = null;
 
 								try {
 									bufferedWriter.write(string);
-								} catch (Throwable var20) {
-									var10 = var20;
-									throw var20;
-								} finally {
+								} catch (Throwable var13) {
 									if (bufferedWriter != null) {
-										if (var10 != null) {
-											try {
-												bufferedWriter.close();
-											} catch (Throwable var19) {
-												var10.addSuppressed(var19);
-											}
-										} else {
+										try {
 											bufferedWriter.close();
+										} catch (Throwable var12) {
+											var13.addSuppressed(var12);
 										}
 									}
+
+									throw var13;
+								}
+
+								if (bufferedWriter != null) {
+									bufferedWriter.close();
 								}
 							}
 
 							cache.updateSha1(path, string2);
-						} catch (IOException var22) {
-							LOGGER.error("Couldn't save tags to {}", path, var22);
+						} catch (IOException var14) {
+							LOGGER.error("Couldn't save tags to {}", path, var14);
 						}
 					}
 				}
@@ -106,12 +104,12 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 		return (Tag.Builder)this.tagBuilders.computeIfAbsent(tag.getId(), id -> new Tag.Builder());
 	}
 
-	public static class ObjectBuilder<T> {
+	protected static class ObjectBuilder<T> {
 		private final Tag.Builder builder;
 		private final Registry<T> registry;
 		private final String source;
 
-		private ObjectBuilder(Tag.Builder builder, Registry<T> registry, String source) {
+		ObjectBuilder(Tag.Builder builder, Registry<T> registry, String source) {
 			this.builder = builder;
 			this.registry = registry;
 			this.source = source;

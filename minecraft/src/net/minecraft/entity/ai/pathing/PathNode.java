@@ -96,12 +96,7 @@ public class PathNode {
 	}
 
 	public boolean equals(Object o) {
-		if (!(o instanceof PathNode)) {
-			return false;
-		} else {
-			PathNode pathNode = (PathNode)o;
-			return this.hashCode == pathNode.hashCode && this.x == pathNode.x && this.y == pathNode.y && this.z == pathNode.z;
-		}
+		return !(o instanceof PathNode pathNode) ? false : this.hashCode == pathNode.hashCode && this.x == pathNode.x && this.y == pathNode.y && this.z == pathNode.z;
 	}
 
 	public int hashCode() {
@@ -113,7 +108,7 @@ public class PathNode {
 	}
 
 	public String toString() {
-		return "Node{x=" + this.x + ", y=" + this.y + ", z=" + this.z + '}';
+		return "Node{x=" + this.x + ", y=" + this.y + ", z=" + this.z + "}";
 	}
 
 	public void toBuffer(PacketByteBuf buffer) {

@@ -46,15 +46,20 @@ public class OptimizeWorldScreen extends Screen {
 	) {
 		DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
 
-		try (MinecraftClient.IntegratedResourceManager integratedResourceManager = client.createIntegratedResourceManager(
-				impl, MinecraftClient::loadDataPackSettings, MinecraftClient::createSaveProperties, false, storageSession
-			)) {
-			SaveProperties saveProperties = integratedResourceManager.getSaveProperties();
-			storageSession.backupLevelDataFile(impl, saveProperties);
-			ImmutableSet<RegistryKey<World>> immutableSet = saveProperties.getGeneratorOptions().getWorlds();
-			return new OptimizeWorldScreen(callback, dataFixer, storageSession, saveProperties.getLevelInfo(), eraseCache, immutableSet);
-		} catch (Exception var22) {
-			LOGGER.warn("Failed to load datapacks, can't optimize world", (Throwable)var22);
+		try {
+			OptimizeWorldScreen var9;
+			try (MinecraftClient.IntegratedResourceManager integratedResourceManager = client.createIntegratedResourceManager(
+					impl, MinecraftClient::loadDataPackSettings, MinecraftClient::createSaveProperties, false, storageSession
+				)) {
+				SaveProperties saveProperties = integratedResourceManager.getSaveProperties();
+				storageSession.backupLevelDataFile(impl, saveProperties);
+				ImmutableSet<RegistryKey<World>> immutableSet = saveProperties.getGeneratorOptions().getWorlds();
+				var9 = new OptimizeWorldScreen(callback, dataFixer, storageSession, saveProperties.getLevelInfo(), eraseCache, immutableSet);
+			}
+
+			return var9;
+		} catch (Exception var12) {
+			LOGGER.warn("Failed to load datapacks, can't optimize world", (Throwable)var12);
 			return null;
 		}
 	}
@@ -125,10 +130,8 @@ public class OptimizeWorldScreen extends Screen {
 			}
 
 			int o = this.updater.getUpgradedChunkCount() + this.updater.getSkippedChunkCount();
-			drawCenteredString(matrices, this.textRenderer, o + " / " + this.updater.getTotalChunkCount(), this.width / 2, k + 2 * 9 + 2, 10526880);
-			drawCenteredString(
-				matrices, this.textRenderer, MathHelper.floor(this.updater.getProgress() * 100.0F) + "%", this.width / 2, k + (l - k) / 2 - 9 / 2, 10526880
-			);
+			drawCenteredText(matrices, this.textRenderer, o + " / " + this.updater.getTotalChunkCount(), this.width / 2, k + 2 * 9 + 2, 10526880);
+			drawCenteredText(matrices, this.textRenderer, MathHelper.floor(this.updater.getProgress() * 100.0F) + "%", this.width / 2, k + (l - k) / 2 - 9 / 2, 10526880);
 		}
 
 		super.render(matrices, mouseX, mouseY, delta);

@@ -72,10 +72,10 @@ public enum CubeFace {
 		public final int ySide;
 		public final int zSide;
 
-		private Corner(int x, int y, int z) {
-			this.xSide = x;
-			this.ySide = y;
-			this.zSide = z;
+		Corner(int i, int j, int k) {
+			this.xSide = i;
+			this.ySide = j;
+			this.zSide = k;
 		}
 	}
 

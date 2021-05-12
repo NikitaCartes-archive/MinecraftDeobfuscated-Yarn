@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Logger;
 public class AnvilScreenHandler extends ForgingScreenHandler {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final boolean field_30752 = false;
-	public static final int field_30751 = 35;
+	public static final int field_30751 = 50;
 	private int repairItemUsage;
 	private String newItemName;
 	private final Property levelCost = Property.create();
@@ -260,11 +260,11 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 		return cost * 2 + 1;
 	}
 
-	public void setNewItemName(String string) {
-		this.newItemName = string;
+	public void setNewItemName(String newItemName) {
+		this.newItemName = newItemName;
 		if (this.getSlot(2).hasStack()) {
 			ItemStack itemStack = this.getSlot(2).getStack();
-			if (StringUtils.isBlank(string)) {
+			if (StringUtils.isBlank(newItemName)) {
 				itemStack.removeCustomName();
 			} else {
 				itemStack.setCustomName(new LiteralText(this.newItemName));

@@ -28,13 +28,13 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 
 public class SetEnchantmentsLootFunction extends ConditionalLootFunction {
-	private final Map<Enchantment, LootNumberProvider> enchantments;
-	private final boolean add;
+	final Map<Enchantment, LootNumberProvider> enchantments;
+	final boolean add;
 
-	private SetEnchantmentsLootFunction(LootCondition[] conditions, Map<Enchantment, LootNumberProvider> enchantments, boolean add) {
-		super(conditions);
-		this.enchantments = ImmutableMap.copyOf(enchantments);
-		this.add = add;
+	SetEnchantmentsLootFunction(LootCondition[] lootConditions, Map<Enchantment, LootNumberProvider> map, boolean bl) {
+		super(lootConditions);
+		this.enchantments = ImmutableMap.copyOf(map);
+		this.add = bl;
 	}
 
 	@Override

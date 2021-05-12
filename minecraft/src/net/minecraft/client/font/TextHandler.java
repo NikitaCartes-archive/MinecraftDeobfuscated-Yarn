@@ -20,7 +20,7 @@ import org.apache.commons.lang3.mutable.MutableObject;
 
 @Environment(EnvType.CLIENT)
 public class TextHandler {
-	private final TextHandler.WidthRetriever widthRetriever;
+	final TextHandler.WidthRetriever widthRetriever;
 
 	public TextHandler(TextHandler.WidthRetriever widthRetriever) {
 		this.widthRetriever = widthRetriever;
@@ -389,7 +389,7 @@ public class TextHandler {
 
 	@Environment(EnvType.CLIENT)
 	static class LineWrappingCollector {
-		private final List<TextHandler.StyledString> parts;
+		final List<TextHandler.StyledString> parts;
 		private String joined;
 
 		public LineWrappingCollector(List<TextHandler.StyledString> parts) {
@@ -474,8 +474,8 @@ public class TextHandler {
 
 	@Environment(EnvType.CLIENT)
 	static class StyledString implements StringVisitable {
-		private final String literal;
-		private final Style style;
+		final String literal;
+		final Style style;
 
 		public StyledString(String literal, Style style) {
 			this.literal = literal;

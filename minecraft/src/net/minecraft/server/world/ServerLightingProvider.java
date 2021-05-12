@@ -83,7 +83,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
 				super.setSectionStatus(ChunkSectionPos.from(pos, i), true);
 			}
-		}), (Supplier<String>)(() -> "updateChunkStatus " + pos + " " + true)));
+		}), (Supplier<String>)(() -> "updateChunkStatus " + pos + " true")));
 	}
 
 	@Override

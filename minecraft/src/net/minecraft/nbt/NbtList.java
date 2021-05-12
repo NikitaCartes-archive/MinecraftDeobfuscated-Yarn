@@ -55,7 +55,7 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 	private final List<NbtElement> value;
 	private byte type;
 
-	private NbtList(List<NbtElement> list, byte type) {
+	NbtList(List<NbtElement> list, byte type) {
 		this.value = list;
 		this.type = type;
 	}

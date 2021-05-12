@@ -420,15 +420,15 @@ public class NbtCompound implements NbtElement {
 		}
 	}
 
-	private static byte readByte(DataInput input, NbtTagSizeTracker tracker) throws IOException {
+	static byte readByte(DataInput input, NbtTagSizeTracker tracker) throws IOException {
 		return input.readByte();
 	}
 
-	private static String readString(DataInput input, NbtTagSizeTracker tracker) throws IOException {
+	static String readString(DataInput input, NbtTagSizeTracker tracker) throws IOException {
 		return input.readUTF();
 	}
 
-	private static NbtElement read(NbtType<?> reader, String key, DataInput input, int depth, NbtTagSizeTracker tracker) {
+	static NbtElement read(NbtType<?> reader, String key, DataInput input, int depth, NbtTagSizeTracker tracker) {
 		try {
 			return reader.read(input, depth, tracker);
 		} catch (IOException var8) {

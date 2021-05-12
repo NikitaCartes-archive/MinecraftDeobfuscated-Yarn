@@ -77,7 +77,7 @@ public class ProfileResultImpl implements ProfileResult {
 		long n = profileLocationInfo2.getVisitCount();
 		List<ProfilerTiming> list = Lists.<ProfilerTiming>newArrayList();
 		if (!parentPath.isEmpty()) {
-			parentPath = parentPath + '\u001e';
+			parentPath = parentPath + "\u001e";
 		}
 
 		long o = 0L;
@@ -246,7 +246,7 @@ public class ProfileResultImpl implements ProfileResult {
 					.append("%\n");
 				if (!"unspecified".equals(profilerTiming.name)) {
 					try {
-						this.appendTiming(level + 1, name + '\u001e' + profilerTiming.name, sb);
+						this.appendTiming(level + 1, name + "\u001e" + profilerTiming.name, sb);
 					} catch (Exception var9) {
 						sb.append("[[ EXCEPTION ").append(var9).append(" ]]");
 					}
@@ -313,19 +313,16 @@ public class ProfileResultImpl implements ProfileResult {
 	}
 
 	static class CounterInfo {
-		private long selfTime;
-		private long totalTime;
-		private final Map<String, ProfileResultImpl.CounterInfo> subCounters = Maps.<String, ProfileResultImpl.CounterInfo>newHashMap();
-
-		private CounterInfo() {
-		}
+		long selfTime;
+		long totalTime;
+		final Map<String, ProfileResultImpl.CounterInfo> subCounters = Maps.<String, ProfileResultImpl.CounterInfo>newHashMap();
 
 		public void add(Iterator<String> pathIterator, long time) {
 			this.totalTime += time;
 			if (!pathIterator.hasNext()) {
 				this.selfTime += time;
 			} else {
-				((ProfileResultImpl.CounterInfo)this.subCounters.computeIfAbsent(pathIterator.next(), string -> new ProfileResultImpl.CounterInfo()))
+				((ProfileResultImpl.CounterInfo)this.subCounters.computeIfAbsent((String)pathIterator.next(), string -> new ProfileResultImpl.CounterInfo()))
 					.add(pathIterator, time);
 			}
 		}

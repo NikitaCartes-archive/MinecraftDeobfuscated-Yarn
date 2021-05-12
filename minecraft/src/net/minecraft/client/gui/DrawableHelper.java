@@ -96,10 +96,10 @@ public abstract class DrawableHelper {
 	}
 
 	protected void fillGradient(MatrixStack matrices, int startX, int startY, int endX, int endY, int colorStart, int colorEnd) {
-		method_33284(matrices, startX, startY, endX, endY, colorStart, colorEnd, this.zOffset);
+		fillGradient(matrices, startX, startY, endX, endY, colorStart, colorEnd, this.zOffset);
 	}
 
-	protected static void method_33284(MatrixStack matrixStack, int i, int j, int k, int l, int m, int n, int o) {
+	protected static void fillGradient(MatrixStack matrices, int startX, int startY, int endX, int endY, int colorStart, int colorEnd, int z) {
 		RenderSystem.disableTexture();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
@@ -107,7 +107,7 @@ public abstract class DrawableHelper {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-		fillGradient(matrixStack.peek().getModel(), bufferBuilder, i, j, k, l, o, m, n);
+		fillGradient(matrices.peek().getModel(), bufferBuilder, startX, startY, endX, endY, z, colorStart, colorEnd);
 		tessellator.draw();
 		RenderSystem.disableBlend();
 		RenderSystem.enableTexture();
@@ -130,7 +130,7 @@ public abstract class DrawableHelper {
 		bufferBuilder.vertex(matrix, (float)endX, (float)endY, (float)z).color(k, l, m, j).next();
 	}
 
-	public static void drawCenteredString(MatrixStack matrices, TextRenderer textRenderer, String text, int centerX, int y, int color) {
+	public static void drawCenteredText(MatrixStack matrices, TextRenderer textRenderer, String text, int centerX, int y, int color) {
 		textRenderer.drawWithShadow(matrices, text, (float)(centerX - textRenderer.getWidth(text) / 2), (float)y, color);
 	}
 
@@ -139,16 +139,16 @@ public abstract class DrawableHelper {
 		textRenderer.drawWithShadow(matrices, orderedText, (float)(centerX - textRenderer.getWidth(orderedText) / 2), (float)y, color);
 	}
 
-	public static void method_35719(MatrixStack matrixStack, TextRenderer textRenderer, OrderedText orderedText, int i, int j, int k) {
-		textRenderer.drawWithShadow(matrixStack, orderedText, (float)(i - textRenderer.getWidth(orderedText) / 2), (float)j, k);
+	public static void drawCenteredTextWithShadow(MatrixStack matrices, TextRenderer textRenderer, OrderedText text, int centerX, int y, int color) {
+		textRenderer.drawWithShadow(matrices, text, (float)(centerX - textRenderer.getWidth(text) / 2), (float)y, color);
 	}
 
 	public static void drawStringWithShadow(MatrixStack matrices, TextRenderer textRenderer, String text, int x, int y, int color) {
 		textRenderer.drawWithShadow(matrices, text, (float)x, (float)y, color);
 	}
 
-	public static void method_35720(MatrixStack matrixStack, TextRenderer textRenderer, OrderedText orderedText, int i, int j, int k) {
-		textRenderer.drawWithShadow(matrixStack, orderedText, (float)i, (float)j, k);
+	public static void drawWithShadow(MatrixStack matrices, TextRenderer textHandler, OrderedText text, int x, int y, int color) {
+		textHandler.drawWithShadow(matrices, text, (float)x, (float)y, color);
 	}
 
 	public static void drawTextWithShadow(MatrixStack matrices, TextRenderer textRenderer, Text text, int x, int y, int color) {

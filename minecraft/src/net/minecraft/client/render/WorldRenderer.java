@@ -50,6 +50,7 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.entity.feature.SheepWoolFeatureRenderer;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
@@ -346,7 +347,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 								mutable.set(p, w, o);
 								int ak = getLightmapCoordinates(world, mutable);
 								int al = ak >> 16 & 65535;
-								int am = (ak & 65535) * 3;
+								int am = ak & 65535;
 								int an = (al * 3 + 240) / 4;
 								int ao = (am * 3 + 240) / 4;
 								bufferBuilder.vertex((double)p - d - r + 0.5, (double)v - e, (double)o - g - s + 0.5)
@@ -683,7 +684,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		}
 	}
 
-	public void method_35774() {
+	public void reloadTransparencyShader() {
 		if (MinecraftClient.isFabulousGraphicsOrBetter()) {
 			this.loadTransparencyShader();
 		} else {
@@ -693,7 +694,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 	public void reload() {
 		if (this.world != null) {
-			this.method_35774();
+			this.reloadTransparencyShader();
 			this.world.reloadColor();
 			if (this.chunkBuilder == null) {
 				this.chunkBuilder = new ChunkBuilder(this.world, this, Util.getMainWorkerExecutor(), this.client.is64Bit(), this.bufferBuilders.getBlockBufferBuilders());
@@ -1127,6 +1128,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		immediate.draw(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE));
 		immediate.draw(RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE));
 		immediate.draw(RenderLayer.getEntityCutoutNoCull(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE));
+		immediate.draw(RenderLayer.getEntityCutoutNoCull(SheepWoolFeatureRenderer.SKIN));
 		immediate.draw(RenderLayer.getEntitySmoothCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE));
 		profiler.swap("blockentities");
 
@@ -3076,18 +3078,18 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 	@Environment(EnvType.CLIENT)
 	static class ChunkInfo {
-		private final ChunkBuilder.BuiltChunk chunk;
+		final ChunkBuilder.BuiltChunk chunk;
 		private byte direction;
-		private byte cullingState;
-		private final int propagationLevel;
+		byte cullingState;
+		final int propagationLevel;
 
-		private ChunkInfo(ChunkBuilder.BuiltChunk chunk, @Nullable Direction cull, int propagationLevel) {
-			this.chunk = chunk;
-			if (cull != null) {
-				this.addDirection(cull);
+		ChunkInfo(ChunkBuilder.BuiltChunk builtChunk, @Nullable Direction direction, int i) {
+			this.chunk = builtChunk;
+			if (direction != null) {
+				this.addDirection(direction);
 			}
 
-			this.propagationLevel = propagationLevel;
+			this.propagationLevel = i;
 		}
 
 		public void updateCullingState(byte parentCullingState, Direction from) {
@@ -3116,12 +3118,12 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		private final WorldRenderer.ChunkInfo[] current;
 		private final WorldRenderer.ChunkInfo[] pending;
 
-		private ChunkInfoList(int size) {
-			this.current = new WorldRenderer.ChunkInfo[size];
-			this.pending = new WorldRenderer.ChunkInfo[size];
+		ChunkInfoList(int i) {
+			this.current = new WorldRenderer.ChunkInfo[i];
+			this.pending = new WorldRenderer.ChunkInfo[i];
 		}
 
-		private void update() {
+		void update() {
 			System.arraycopy(this.pending, 0, this.current, 0, this.current.length);
 		}
 

@@ -2,6 +2,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.MushroomBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldAccess;
@@ -30,16 +31,18 @@ public class HugeBrownMushroomFeature extends HugeMushroomFeature {
 						boolean bl8 = bl2 || bl6 && j == i - 1;
 						boolean bl9 = bl3 || bl5 && k == 1 - i;
 						boolean bl10 = bl4 || bl5 && k == i - 1;
-						this.setBlockState(
-							world,
-							mutable,
-							config.capProvider
-								.getBlockState(random, start)
-								.with(MushroomBlock.WEST, Boolean.valueOf(bl7))
+						BlockState blockState = config.capProvider.getBlockState(random, start);
+						if (blockState.contains(MushroomBlock.WEST)
+							&& blockState.contains(MushroomBlock.EAST)
+							&& blockState.contains(MushroomBlock.NORTH)
+							&& blockState.contains(MushroomBlock.SOUTH)) {
+							blockState = blockState.with(MushroomBlock.WEST, Boolean.valueOf(bl7))
 								.with(MushroomBlock.EAST, Boolean.valueOf(bl8))
 								.with(MushroomBlock.NORTH, Boolean.valueOf(bl9))
-								.with(MushroomBlock.SOUTH, Boolean.valueOf(bl10))
-						);
+								.with(MushroomBlock.SOUTH, Boolean.valueOf(bl10));
+						}
+
+						this.setBlockState(world, mutable, blockState);
 					}
 				}
 			}

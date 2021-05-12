@@ -3,7 +3,6 @@ package net.minecraft.item.map;
 import java.util.Objects;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BannerBlockEntity;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.text.Text;
@@ -37,9 +36,7 @@ public class MapBannerMarker {
 
 	@Nullable
 	public static MapBannerMarker fromWorldBlock(BlockView blockView, BlockPos blockPos) {
-		BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
-		if (blockEntity instanceof BannerBlockEntity) {
-			BannerBlockEntity bannerBlockEntity = (BannerBlockEntity)blockEntity;
+		if (blockView.getBlockEntity(blockPos) instanceof BannerBlockEntity bannerBlockEntity) {
 			DyeColor dyeColor = bannerBlockEntity.getColorForState();
 			Text text = bannerBlockEntity.hasCustomName() ? bannerBlockEntity.getCustomName() : null;
 			return new MapBannerMarker(blockPos, dyeColor, text);

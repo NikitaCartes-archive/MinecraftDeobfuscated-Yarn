@@ -399,9 +399,9 @@ public class StructureSeparationDataFix extends DataFix {
 					)
 					.apply(instance, StructureSeparationDataFix.Information::new)
 		);
-		private final int spacing;
-		private final int separation;
-		private final int salt;
+		final int spacing;
+		final int separation;
+		final int salt;
 
 		public Information(int spacing, int separation, int salt) {
 			this.spacing = spacing;

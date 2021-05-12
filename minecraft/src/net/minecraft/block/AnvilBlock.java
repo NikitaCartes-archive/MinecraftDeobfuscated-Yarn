@@ -104,9 +104,9 @@ public class AnvilBlock extends FallingBlock {
 	@Nullable
 	public static BlockState getLandingState(BlockState fallingState) {
 		if (fallingState.isOf(Blocks.ANVIL)) {
-			return Blocks.CHIPPED_ANVIL.getDefaultState().with(FACING, fallingState.get(FACING));
+			return Blocks.CHIPPED_ANVIL.getDefaultState().with(FACING, (Direction)fallingState.get(FACING));
 		} else {
-			return fallingState.isOf(Blocks.CHIPPED_ANVIL) ? Blocks.DAMAGED_ANVIL.getDefaultState().with(FACING, fallingState.get(FACING)) : null;
+			return fallingState.isOf(Blocks.CHIPPED_ANVIL) ? Blocks.DAMAGED_ANVIL.getDefaultState().with(FACING, (Direction)fallingState.get(FACING)) : null;
 		}
 	}
 

@@ -218,8 +218,7 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 			int j;
 			int k;
 			int l;
-			if (entityData instanceof TropicalFishEntity.TropicalFishData) {
-				TropicalFishEntity.TropicalFishData tropicalFishData = (TropicalFishEntity.TropicalFishData)entityData;
+			if (entityData instanceof TropicalFishEntity.TropicalFishData tropicalFishData) {
 				i = tropicalFishData.shape;
 				j = tropicalFishData.pattern;
 				k = tropicalFishData.baseColor;
@@ -245,17 +244,17 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 	}
 
 	static class TropicalFishData extends SchoolingFishEntity.FishData {
-		private final int shape;
-		private final int pattern;
-		private final int baseColor;
-		private final int patternColor;
+		final int shape;
+		final int pattern;
+		final int baseColor;
+		final int patternColor;
 
-		private TropicalFishData(TropicalFishEntity leader, int shape, int pattern, int baseColor, int patternColor) {
-			super(leader);
-			this.shape = shape;
-			this.pattern = pattern;
-			this.baseColor = baseColor;
-			this.patternColor = patternColor;
+		TropicalFishData(TropicalFishEntity tropicalFishEntity, int i, int j, int k, int l) {
+			super(tropicalFishEntity);
+			this.shape = i;
+			this.pattern = j;
+			this.baseColor = k;
+			this.patternColor = l;
 		}
 	}
 

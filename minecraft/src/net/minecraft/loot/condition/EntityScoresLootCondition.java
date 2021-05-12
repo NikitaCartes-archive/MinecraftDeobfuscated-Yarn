@@ -21,12 +21,12 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.JsonSerializer;
 
 public class EntityScoresLootCondition implements LootCondition {
-	private final Map<String, BoundedIntUnaryOperator> scores;
-	private final LootContext.EntityTarget target;
+	final Map<String, BoundedIntUnaryOperator> scores;
+	final LootContext.EntityTarget target;
 
-	private EntityScoresLootCondition(Map<String, BoundedIntUnaryOperator> scores, LootContext.EntityTarget target) {
-		this.scores = ImmutableMap.copyOf(scores);
-		this.target = target;
+	EntityScoresLootCondition(Map<String, BoundedIntUnaryOperator> map, LootContext.EntityTarget entityTarget) {
+		this.scores = ImmutableMap.copyOf(map);
+		this.target = entityTarget;
 	}
 
 	@Override
@@ -112,7 +112,10 @@ public class EntityScoresLootCondition implements LootCondition {
 			Map<String, BoundedIntUnaryOperator> map = Maps.<String, BoundedIntUnaryOperator>newLinkedHashMap();
 
 			for (Entry<String, JsonElement> entry : set) {
-				map.put(entry.getKey(), JsonHelper.deserialize((JsonElement)entry.getValue(), "score", jsonDeserializationContext, BoundedIntUnaryOperator.class));
+				map.put(
+					(String)entry.getKey(),
+					(BoundedIntUnaryOperator)JsonHelper.deserialize((JsonElement)entry.getValue(), "score", jsonDeserializationContext, BoundedIntUnaryOperator.class)
+				);
 			}
 
 			return new EntityScoresLootCondition(map, JsonHelper.deserialize(jsonObject, "entity", jsonDeserializationContext, LootContext.EntityTarget.class));

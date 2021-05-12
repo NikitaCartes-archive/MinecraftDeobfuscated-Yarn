@@ -29,8 +29,7 @@ public class EndGatewayFeature extends Feature<EndGatewayFeatureConfig> {
 				this.setBlockState(structureWorldAccess, blockPos3, Blocks.END_GATEWAY.getDefaultState());
 				endGatewayFeatureConfig.getExitPos().ifPresent(blockPos2x -> {
 					BlockEntity blockEntity = structureWorldAccess.getBlockEntity(blockPos3);
-					if (blockEntity instanceof EndGatewayBlockEntity) {
-						EndGatewayBlockEntity endGatewayBlockEntity = (EndGatewayBlockEntity)blockEntity;
+					if (blockEntity instanceof EndGatewayBlockEntity endGatewayBlockEntity) {
 						endGatewayBlockEntity.setExitPortalPos(blockPos2x, endGatewayFeatureConfig.isExact());
 						blockEntity.markDirty();
 					}

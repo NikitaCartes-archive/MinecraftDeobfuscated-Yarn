@@ -70,7 +70,7 @@ public class TextureStitcher {
 		}
 	}
 
-	private static int applyMipLevel(int size, int mipLevel) {
+	static int applyMipLevel(int size, int mipLevel) {
 		return (size >> mipLevel) + ((size & (1 << mipLevel) - 1) == 0 ? 0 : 1) << mipLevel;
 	}
 
@@ -135,7 +135,7 @@ public class TextureStitcher {
 		}
 
 		public String toString() {
-			return "Holder{width=" + this.width + ", height=" + this.height + '}';
+			return "Holder{width=" + this.width + ", height=" + this.height + "}";
 		}
 	}
 
@@ -237,7 +237,7 @@ public class TextureStitcher {
 				+ this.texture
 				+ ", subSlots="
 				+ this.subSlots
-				+ '}';
+				+ "}";
 		}
 	}
 

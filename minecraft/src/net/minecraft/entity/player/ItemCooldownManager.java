@@ -57,12 +57,12 @@ public class ItemCooldownManager {
 	}
 
 	class Entry {
-		private final int startTick;
-		private final int endTick;
+		final int startTick;
+		final int endTick;
 
-		private Entry(int startTick, int endTick) {
-			this.startTick = startTick;
-			this.endTick = endTick;
+		Entry(int i, int j) {
+			this.startTick = i;
+			this.endTick = j;
 		}
 	}
 }

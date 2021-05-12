@@ -94,9 +94,10 @@ public class PlayWithVillagerBabiesTask extends Task<PathAwareEntity> {
 
 	private Map<LivingEntity, Integer> getBabyInteractionTargetCounts(PathAwareEntity entity) {
 		Map<LivingEntity, Integer> map = Maps.<LivingEntity, Integer>newHashMap();
-		this.getVisibleVillagerBabies(entity).stream().filter(this::hasInteractionTarget).forEach(livingEntity -> {
-			Integer var10000 = (Integer)map.compute(this.getInteractionTarget(livingEntity), (livingEntityx, integer) -> integer == null ? 1 : integer + 1);
-		});
+		this.getVisibleVillagerBabies(entity)
+			.stream()
+			.filter(this::hasInteractionTarget)
+			.forEach(livingEntity -> map.compute(this.getInteractionTarget(livingEntity), (livingEntityx, integer) -> integer == null ? 1 : integer + 1));
 		return map;
 	}
 

@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class UnicodeTextureFont implements Font {
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogManager.getLogger();
 	private static final int field_32232 = 256;
 	private static final int field_32233 = 256;
 	private static final int field_32234 = 256;
@@ -41,35 +41,49 @@ public class UnicodeTextureFont implements Font {
 
 			try {
 				Resource resource = this.resourceManager.getResource(identifier);
-				Throwable var8 = null;
 
-				try (NativeImage nativeImage = NativeImage.read(NativeImage.Format.ABGR, resource.getInputStream())) {
-					if (nativeImage.getWidth() == 256 && nativeImage.getHeight() == 256) {
-						for (int k = 0; k < 256; k++) {
-							byte b = sizes[j + k];
-							if (b != 0 && getStart(b) > getEnd(b)) {
-								sizes[j + k] = 0;
+				label90: {
+					label89:
+					try (NativeImage nativeImage = NativeImage.read(NativeImage.Format.ABGR, resource.getInputStream())) {
+						if (nativeImage.getWidth() == 256 && nativeImage.getHeight() == 256) {
+							int k = 0;
+
+							while (true) {
+								if (k >= 256) {
+									break label89;
+								}
+
+								byte b = sizes[j + k];
+								if (b != 0 && getStart(b) > getEnd(b)) {
+									sizes[j + k] = 0;
+								}
+
+								k++;
 							}
 						}
-						continue;
-					}
-				} catch (Throwable var41) {
-					var8 = var41;
-					throw var41;
-				} finally {
-					if (resource != null) {
-						if (var8 != null) {
+						break label90;
+					} catch (Throwable var14) {
+						if (resource != null) {
 							try {
 								resource.close();
-							} catch (Throwable var37) {
-								var8.addSuppressed(var37);
+							} catch (Throwable var11) {
+								var14.addSuppressed(var11);
 							}
-						} else {
-							resource.close();
 						}
+
+						throw var14;
 					}
+
+					if (resource != null) {
+						resource.close();
+					}
+					continue;
 				}
-			} catch (IOException var43) {
+
+				if (resource != null) {
+					resource.close();
+				}
+			} catch (IOException var15) {
 			}
 
 			Arrays.fill(sizes, j, j + 256, (byte)0);
@@ -122,31 +136,29 @@ public class UnicodeTextureFont implements Font {
 	private NativeImage getGlyphImage(Identifier glyphId) {
 		try {
 			Resource resource = this.resourceManager.getResource(glyphId);
-			Throwable var3 = null;
 
-			NativeImage var4;
+			NativeImage var3;
 			try {
-				var4 = NativeImage.read(NativeImage.Format.ABGR, resource.getInputStream());
-			} catch (Throwable var14) {
-				var3 = var14;
-				throw var14;
-			} finally {
+				var3 = NativeImage.read(NativeImage.Format.ABGR, resource.getInputStream());
+			} catch (Throwable var6) {
 				if (resource != null) {
-					if (var3 != null) {
-						try {
-							resource.close();
-						} catch (Throwable var13) {
-							var3.addSuppressed(var13);
-						}
-					} else {
+					try {
 						resource.close();
+					} catch (Throwable var5) {
+						var6.addSuppressed(var5);
 					}
 				}
+
+				throw var6;
 			}
 
-			return var4;
-		} catch (IOException var16) {
-			LOGGER.error("Couldn't load texture {}", glyphId, var16);
+			if (resource != null) {
+				resource.close();
+			}
+
+			return var3;
+		} catch (IOException var7) {
+			LOGGER.error("Couldn't load texture {}", glyphId, var7);
 			return null;
 		}
 	}
@@ -178,32 +190,30 @@ public class UnicodeTextureFont implements Font {
 		public Font load(ResourceManager manager) {
 			try {
 				Resource resource = MinecraftClient.getInstance().getResourceManager().getResource(this.sizes);
-				Throwable var3 = null;
 
-				UnicodeTextureFont var5;
+				UnicodeTextureFont var4;
 				try {
 					byte[] bs = new byte[65536];
 					resource.getInputStream().read(bs);
-					var5 = new UnicodeTextureFont(manager, bs, this.template);
-				} catch (Throwable var15) {
-					var3 = var15;
-					throw var15;
-				} finally {
+					var4 = new UnicodeTextureFont(manager, bs, this.template);
+				} catch (Throwable var6) {
 					if (resource != null) {
-						if (var3 != null) {
-							try {
-								resource.close();
-							} catch (Throwable var14) {
-								var3.addSuppressed(var14);
-							}
-						} else {
+						try {
 							resource.close();
+						} catch (Throwable var5) {
+							var6.addSuppressed(var5);
 						}
 					}
+
+					throw var6;
 				}
 
-				return var5;
-			} catch (IOException var17) {
+				if (resource != null) {
+					resource.close();
+				}
+
+				return var4;
+			} catch (IOException var7) {
 				UnicodeTextureFont.LOGGER.error("Cannot load {}, unicode glyphs will not render correctly", this.sizes);
 				return null;
 			}
@@ -218,12 +228,12 @@ public class UnicodeTextureFont implements Font {
 		private final int unpackSkipRows;
 		private final NativeImage image;
 
-		private UnicodeTextureGlyph(int x, int y, int width, int height, NativeImage image) {
-			this.width = width;
-			this.height = height;
-			this.unpackSkipPixels = x;
-			this.unpackSkipRows = y;
-			this.image = image;
+		UnicodeTextureGlyph(int i, int j, int k, int l, NativeImage nativeImage) {
+			this.width = k;
+			this.height = l;
+			this.unpackSkipPixels = i;
+			this.unpackSkipRows = j;
+			this.image = nativeImage;
 		}
 
 		@Override

@@ -55,16 +55,11 @@ public class SpawnSettings {
 	private final Map<EntityType<?>, SpawnSettings.SpawnDensity> spawnCosts;
 	private final boolean playerSpawnFriendly;
 
-	private SpawnSettings(
-		float creatureSpawnProbability,
-		Map<SpawnGroup, Pool<SpawnSettings.SpawnEntry>> spawners,
-		Map<EntityType<?>, SpawnSettings.SpawnDensity> spawnCosts,
-		boolean playerSpawnFriendly
-	) {
-		this.creatureSpawnProbability = creatureSpawnProbability;
-		this.spawners = ImmutableMap.copyOf(spawners);
-		this.spawnCosts = ImmutableMap.copyOf(spawnCosts);
-		this.playerSpawnFriendly = playerSpawnFriendly;
+	SpawnSettings(float f, Map<SpawnGroup, Pool<SpawnSettings.SpawnEntry>> map, Map<EntityType<?>, SpawnSettings.SpawnDensity> map2, boolean bl) {
+		this.creatureSpawnProbability = f;
+		this.spawners = ImmutableMap.copyOf(map);
+		this.spawnCosts = ImmutableMap.copyOf(map2);
+		this.playerSpawnFriendly = bl;
 	}
 
 	public Pool<SpawnSettings.SpawnEntry> getSpawnEntries(SpawnGroup spawnGroup) {
@@ -114,7 +109,10 @@ public class SpawnSettings {
 		public SpawnSettings build() {
 			return new SpawnSettings(
 				this.creatureSpawnProbability,
-				(Map)this.spawners.entrySet().stream().collect(ImmutableMap.toImmutableMap(Entry::getKey, entry -> Pool.of((List)entry.getValue()))),
+				(Map<SpawnGroup, Pool<SpawnSettings.SpawnEntry>>)this.spawners
+					.entrySet()
+					.stream()
+					.collect(ImmutableMap.toImmutableMap(Entry::getKey, entry -> Pool.of((List)entry.getValue()))),
 				ImmutableMap.copyOf(this.spawnCosts),
 				this.playerSpawnFriendly
 			);
@@ -137,9 +135,9 @@ public class SpawnSettings {
 		private final double gravityLimit;
 		private final double mass;
 
-		private SpawnDensity(double gravityLimit, double mass) {
-			this.gravityLimit = gravityLimit;
-			this.mass = mass;
+		SpawnDensity(double d, double e) {
+			this.gravityLimit = d;
+			this.mass = e;
 		}
 
 		/**

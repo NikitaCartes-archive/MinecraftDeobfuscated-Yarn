@@ -10,7 +10,6 @@ import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.SocialInteractionsScreen;
 import net.minecraft.util.Util;
 
@@ -60,17 +59,13 @@ public class SocialInteractionsManager {
 			this.playerNameByUuid.put(gameProfile.getName(), gameProfile.getId());
 		}
 
-		Screen screen = this.client.currentScreen;
-		if (screen instanceof SocialInteractionsScreen) {
-			SocialInteractionsScreen socialInteractionsScreen = (SocialInteractionsScreen)screen;
+		if (this.client.currentScreen instanceof SocialInteractionsScreen socialInteractionsScreen) {
 			socialInteractionsScreen.setPlayerOnline(player);
 		}
 	}
 
 	public void setPlayerOffline(UUID uuid) {
-		Screen screen = this.client.currentScreen;
-		if (screen instanceof SocialInteractionsScreen) {
-			SocialInteractionsScreen socialInteractionsScreen = (SocialInteractionsScreen)screen;
+		if (this.client.currentScreen instanceof SocialInteractionsScreen socialInteractionsScreen) {
 			socialInteractionsScreen.setPlayerOffline(uuid);
 		}
 	}

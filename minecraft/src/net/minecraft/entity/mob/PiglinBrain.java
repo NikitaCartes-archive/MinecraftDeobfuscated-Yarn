@@ -461,16 +461,13 @@ public class PiglinBrain {
 	}
 
 	private static boolean canRide(PiglinEntity piglin, Entity ridden) {
-		if (!(ridden instanceof MobEntity)) {
-			return false;
-		} else {
-			MobEntity mobEntity = (MobEntity)ridden;
-			return !mobEntity.isBaby()
+		return !(ridden instanceof MobEntity mobEntity)
+			? false
+			: !mobEntity.isBaby()
 				|| !mobEntity.isAlive()
 				|| hasBeenHurt(piglin)
 				|| hasBeenHurt(mobEntity)
 				|| mobEntity instanceof PiglinEntity && mobEntity.getVehicle() == null;
-		}
 	}
 
 	private static boolean isPreferredAttackTarget(PiglinEntity piglin, LivingEntity target) {

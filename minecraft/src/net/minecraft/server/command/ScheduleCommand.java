@@ -100,7 +100,7 @@ public class ScheduleCommand {
 				timer.setEvent(string, l, new FunctionTagTimerCallback(identifier));
 				source.sendFeedback(new TranslatableText("commands.schedule.created.tag", identifier, time, l), true);
 			});
-			return (int)Math.floorMod(l, 2147483647L);
+			return Math.floorMod(l, Integer.MAX_VALUE);
 		}
 	}
 

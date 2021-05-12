@@ -50,9 +50,7 @@ public class ResourcePackManager implements AutoCloseable {
 		Map<String, ResourcePackProfile> map = Maps.newTreeMap();
 
 		for (ResourcePackProvider resourcePackProvider : this.providers) {
-			resourcePackProvider.register(resourcePackProfile -> {
-				ResourcePackProfile var10000 = (ResourcePackProfile)map.put(resourcePackProfile.getName(), resourcePackProfile);
-			}, this.profileFactory);
+			resourcePackProvider.register(resourcePackProfile -> map.put(resourcePackProfile.getName(), resourcePackProfile), this.profileFactory);
 		}
 
 		return ImmutableMap.copyOf(map);

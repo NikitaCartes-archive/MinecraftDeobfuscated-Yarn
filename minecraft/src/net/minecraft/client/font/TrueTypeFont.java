@@ -19,13 +19,13 @@ import org.lwjgl.system.MemoryUtil;
 @Environment(EnvType.CLIENT)
 public class TrueTypeFont implements Font {
 	private final ByteBuffer field_21839;
-	private final STBTTFontinfo info;
-	private final float oversample;
+	final STBTTFontinfo info;
+	final float oversample;
 	private final IntSet excludedCharacters = new IntArraySet();
-	private final float shiftX;
-	private final float shiftY;
-	private final float scaleFactor;
-	private final float ascent;
+	final float shiftX;
+	final float shiftY;
+	final float scaleFactor;
+	final float ascent;
 
 	public TrueTypeFont(ByteBuffer byteBuffer, STBTTFontinfo info, float f, float oversample, float g, float h, String string) {
 		this.field_21839 = byteBuffer;
@@ -50,7 +50,7 @@ public class TrueTypeFont implements Font {
 		if (this.excludedCharacters.contains(i)) {
 			return null;
 		} else {
-			TrueTypeFont.TtfGlyph var13;
+			Object intBuffer5;
 			try (MemoryStack memoryStack = MemoryStack.stackPush()) {
 				IntBuffer intBuffer = memoryStack.mallocInt(1);
 				IntBuffer intBuffer2 = memoryStack.mallocInt(1);
@@ -66,25 +66,25 @@ public class TrueTypeFont implements Font {
 				);
 				int k = intBuffer3.get(0) - intBuffer.get(0);
 				int l = intBuffer4.get(0) - intBuffer2.get(0);
-				if (k <= 0 || l <= 0) {
-					return null;
+				if (k > 0 && l > 0) {
+					IntBuffer intBuffer5x = memoryStack.mallocInt(1);
+					IntBuffer intBuffer6 = memoryStack.mallocInt(1);
+					STBTruetype.stbtt_GetGlyphHMetrics(this.info, j, intBuffer5x, intBuffer6);
+					return new TrueTypeFont.TtfGlyph(
+						intBuffer.get(0),
+						intBuffer3.get(0),
+						-intBuffer2.get(0),
+						-intBuffer4.get(0),
+						(float)intBuffer5x.get(0) * this.scaleFactor,
+						(float)intBuffer6.get(0) * this.scaleFactor,
+						j
+					);
 				}
 
-				IntBuffer intBuffer5 = memoryStack.mallocInt(1);
-				IntBuffer intBuffer6 = memoryStack.mallocInt(1);
-				STBTruetype.stbtt_GetGlyphHMetrics(this.info, j, intBuffer5, intBuffer6);
-				var13 = new TrueTypeFont.TtfGlyph(
-					intBuffer.get(0),
-					intBuffer3.get(0),
-					-intBuffer2.get(0),
-					-intBuffer4.get(0),
-					(float)intBuffer5.get(0) * this.scaleFactor,
-					(float)intBuffer6.get(0) * this.scaleFactor,
-					j
-				);
+				intBuffer5 = null;
 			}
 
-			return var13;
+			return (TrueTypeFont.TtfGlyph)intBuffer5;
 		}
 	}
 
@@ -110,13 +110,13 @@ public class TrueTypeFont implements Font {
 		private final float advance;
 		private final int glyphIndex;
 
-		private TtfGlyph(int minX, int maxX, int maxY, int minY, float advance, float bearing, int index) {
-			this.width = maxX - minX;
-			this.height = maxY - minY;
-			this.advance = advance / TrueTypeFont.this.oversample;
-			this.bearingX = (bearing + (float)minX + TrueTypeFont.this.shiftX) / TrueTypeFont.this.oversample;
-			this.ascent = (TrueTypeFont.this.ascent - (float)maxY + TrueTypeFont.this.shiftY) / TrueTypeFont.this.oversample;
-			this.glyphIndex = index;
+		TtfGlyph(int i, int j, int k, int l, float f, float g, int m) {
+			this.width = j - i;
+			this.height = k - l;
+			this.advance = f / TrueTypeFont.this.oversample;
+			this.bearingX = (g + (float)i + TrueTypeFont.this.shiftX) / TrueTypeFont.this.oversample;
+			this.ascent = (TrueTypeFont.this.ascent - (float)k + TrueTypeFont.this.shiftY) / TrueTypeFont.this.oversample;
+			this.glyphIndex = m;
 		}
 
 		@Override

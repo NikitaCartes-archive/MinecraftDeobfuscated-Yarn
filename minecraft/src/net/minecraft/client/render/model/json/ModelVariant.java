@@ -48,20 +48,19 @@ public class ModelVariant implements ModelBakeSettings {
 	}
 
 	public String toString() {
-		return "Variant{modelLocation=" + this.location + ", rotation=" + this.rotation + ", uvLock=" + this.uvLock + ", weight=" + this.weight + '}';
+		return "Variant{modelLocation=" + this.location + ", rotation=" + this.rotation + ", uvLock=" + this.uvLock + ", weight=" + this.weight + "}";
 	}
 
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
-		} else if (!(o instanceof ModelVariant)) {
-			return false;
 		} else {
-			ModelVariant modelVariant = (ModelVariant)o;
-			return this.location.equals(modelVariant.location)
-				&& Objects.equals(this.rotation, modelVariant.rotation)
-				&& this.uvLock == modelVariant.uvLock
-				&& this.weight == modelVariant.weight;
+			return !(o instanceof ModelVariant modelVariant)
+				? false
+				: this.location.equals(modelVariant.location)
+					&& Objects.equals(this.rotation, modelVariant.rotation)
+					&& this.uvLock == modelVariant.uvLock
+					&& this.weight == modelVariant.weight;
 		}
 	}
 

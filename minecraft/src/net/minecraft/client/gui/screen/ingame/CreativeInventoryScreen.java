@@ -61,7 +61,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	private static final int field_32340 = 32;
 	private static final int field_32341 = 12;
 	private static final int field_32342 = 15;
-	private static final SimpleInventory INVENTORY = new SimpleInventory(45);
+	static final SimpleInventory INVENTORY = new SimpleInventory(45);
 	private static final Text DELETE_ITEM_SLOT_TEXT = new TranslatableText("inventory.binSlot");
 	private static final int field_32343 = 16777215;
 	private static int selectedTab = ItemGroup.BUILDING_BLOCKS.getIndex();
@@ -234,10 +234,10 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 	@Override
 	protected void applyStatusEffectOffset() {
-		int i = this.field_2776;
+		int i = this.x;
 		super.applyStatusEffectOffset();
-		if (this.searchBox != null && this.field_2776 != i) {
-			this.searchBox.setX(this.field_2776 + 82);
+		if (this.searchBox != null && this.x != i) {
+			this.searchBox.setX(this.x + 82);
 		}
 	}
 
@@ -246,7 +246,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		if (this.client.interactionManager.hasCreativeInventory()) {
 			super.init();
 			this.client.keyboard.setRepeatEvents(true);
-			this.searchBox = new TextFieldWidget(this.textRenderer, this.field_2776 + 82, this.field_2800 + 6, 80, 9, new TranslatableText("itemGroup.search"));
+			this.searchBox = new TextFieldWidget(this.textRenderer, this.x + 82, this.y + 6, 80, 9, new TranslatableText("itemGroup.search"));
 			this.searchBox.setMaxLength(50);
 			this.searchBox.setDrawsBackground(false);
 			this.searchBox.setVisible(false);
@@ -378,9 +378,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		}
 
 		TagGroup<Item> tagGroup = ItemTags.getTagGroup();
-		tagGroup.getTagIds().stream().filter(predicate).forEach(identifier -> {
-			Tag var10000 = (Tag)this.searchResultTags.put(identifier, tagGroup.getTag(identifier));
-		});
+		tagGroup.getTagIds().stream().filter(predicate).forEach(identifier -> this.searchResultTags.put(identifier, tagGroup.getTag(identifier)));
 	}
 
 	@Override
@@ -395,8 +393,8 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (button == 0) {
-			double d = mouseX - (double)this.field_2776;
-			double e = mouseY - (double)this.field_2800;
+			double d = mouseX - (double)this.x;
+			double e = mouseY - (double)this.y;
 
 			for (ItemGroup itemGroup : ItemGroup.GROUPS) {
 				if (this.isClickInTab(itemGroup, d, e)) {
@@ -416,8 +414,8 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	@Override
 	public boolean mouseReleased(double mouseX, double mouseY, int button) {
 		if (button == 0) {
-			double d = mouseX - (double)this.field_2776;
-			double e = mouseY - (double)this.field_2800;
+			double d = mouseX - (double)this.x;
+			double e = mouseY - (double)this.y;
 			this.scrolling = false;
 
 			for (ItemGroup itemGroup : ItemGroup.GROUPS) {
@@ -559,8 +557,8 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	}
 
 	protected boolean isClickInScrollbar(double mouseX, double mouseY) {
-		int i = this.field_2776;
-		int j = this.field_2800;
+		int i = this.x;
+		int j = this.y;
 		int k = i + 175;
 		int l = j + 18;
 		int m = k + 14;
@@ -571,7 +569,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	@Override
 	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
 		if (this.scrolling) {
-			int i = this.field_2800 + 18;
+			int i = this.y + 18;
 			int j = i + 112;
 			this.scrollPosition = ((float)mouseY - (float)i - 7.5F) / ((float)(j - i) - 15.0F);
 			this.scrollPosition = MathHelper.clamp(this.scrollPosition, 0.0F, 1.0F);
@@ -656,11 +654,11 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderTexture(0, new Identifier("textures/gui/container/creative_inventory/tab_" + itemGroup.getTexture()));
-		this.drawTexture(matrices, this.field_2776, this.field_2800, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		this.drawTexture(matrices, this.x, this.y, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		this.searchBox.render(matrices, mouseX, mouseY, delta);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		int i = this.field_2776 + 175;
-		int j = this.field_2800 + 18;
+		int i = this.x + 175;
+		int j = this.y + 18;
 		int k = j + 112;
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderTexture(0, TEXTURE);
@@ -670,9 +668,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 		this.renderTabIcon(matrices, itemGroup);
 		if (itemGroup == ItemGroup.INVENTORY) {
-			InventoryScreen.drawEntity(
-				this.field_2776 + 88, this.field_2800 + 45, 20, (float)(this.field_2776 + 88 - mouseX), (float)(this.field_2800 + 45 - 30 - mouseY), this.client.player
-			);
+			InventoryScreen.drawEntity(this.x + 88, this.y + 45, 20, (float)(this.x + 88 - mouseX), (float)(this.y + 45 - 30 - mouseY), this.client.player);
 		}
 	}
 
@@ -725,15 +721,15 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		int i = group.getColumn();
 		int j = i * 28;
 		int k = 0;
-		int l = this.field_2776 + 28 * i;
-		int m = this.field_2800;
+		int l = this.x + 28 * i;
+		int m = this.y;
 		int n = 32;
 		if (bl) {
 			k += 32;
 		}
 
 		if (group.isSpecial()) {
-			l = this.field_2776 + this.backgroundWidth - 28 * (6 - i);
+			l = this.x + this.backgroundWidth - 28 * (6 - i);
 		} else if (i > 0) {
 			l += i;
 		}
@@ -869,7 +865,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 	@Environment(EnvType.CLIENT)
 	static class CreativeSlot extends Slot {
-		private final Slot slot;
+		final Slot slot;
 
 		public CreativeSlot(Slot slot, int invSlot, int x, int y) {
 			super(slot.inventory, invSlot, x, y);

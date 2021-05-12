@@ -230,25 +230,25 @@ public abstract class EntityNavigation {
 		double e = Math.abs(this.entity.getY() - (double)vec3i.getY());
 		double f = Math.abs(this.entity.getZ() - ((double)vec3i.getZ() + 0.5));
 		boolean bl = d < (double)this.nodeReachProximity && f < (double)this.nodeReachProximity && e < 1.0;
-		if (bl || this.entity.method_29244(this.currentPath.getCurrentNode().type) && this.method_27799(vec3d)) {
+		if (bl || this.entity.canJumpToNextPathNode(this.currentPath.getCurrentNode().type) && this.shouldJumpToNextNode(vec3d)) {
 			this.currentPath.next();
 		}
 
 		this.checkTimeouts(vec3d);
 	}
 
-	private boolean method_27799(Vec3d vec3d) {
+	private boolean shouldJumpToNextNode(Vec3d currentPos) {
 		if (this.currentPath.getCurrentNodeIndex() + 1 >= this.currentPath.getLength()) {
 			return false;
 		} else {
-			Vec3d vec3d2 = Vec3d.ofBottomCenter(this.currentPath.getCurrentNodePos());
-			if (!vec3d.isInRange(vec3d2, 2.0)) {
+			Vec3d vec3d = Vec3d.ofBottomCenter(this.currentPath.getCurrentNodePos());
+			if (!currentPos.isInRange(vec3d, 2.0)) {
 				return false;
 			} else {
-				Vec3d vec3d3 = Vec3d.ofBottomCenter(this.currentPath.getNodePos(this.currentPath.getCurrentNodeIndex() + 1));
-				Vec3d vec3d4 = vec3d3.subtract(vec3d2);
-				Vec3d vec3d5 = vec3d.subtract(vec3d2);
-				return vec3d4.dotProduct(vec3d5) > 0.0;
+				Vec3d vec3d2 = Vec3d.ofBottomCenter(this.currentPath.getNodePos(this.currentPath.getCurrentNodeIndex() + 1));
+				Vec3d vec3d3 = vec3d2.subtract(vec3d);
+				Vec3d vec3d4 = currentPos.subtract(vec3d);
+				return vec3d3.dotProduct(vec3d4) > 0.0;
 			}
 		}
 	}

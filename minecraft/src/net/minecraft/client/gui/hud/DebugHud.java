@@ -191,24 +191,14 @@ public class DebugHud extends DrawableHelper {
 		} else {
 			Entity entity = this.client.getCameraEntity();
 			Direction direction = entity.getHorizontalFacing();
-			String string2;
-			switch (direction) {
-				case NORTH:
-					string2 = "Towards negative Z";
-					break;
-				case SOUTH:
-					string2 = "Towards positive Z";
-					break;
-				case WEST:
-					string2 = "Towards negative X";
-					break;
-				case EAST:
-					string2 = "Towards positive X";
-					break;
-				default:
-					string2 = "Invalid";
-			}
 
+			String string2 = switch (direction) {
+				case NORTH -> "Towards negative Z";
+				case SOUTH -> "Towards positive Z";
+				case WEST -> "Towards negative X";
+				case EAST -> "Towards positive X";
+				default -> "Invalid";
+			};
 			ChunkPos chunkPos = new ChunkPos(blockPos);
 			if (!Objects.equals(this.pos, chunkPos)) {
 				this.pos = chunkPos;

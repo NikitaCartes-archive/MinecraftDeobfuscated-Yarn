@@ -12,12 +12,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class LocationCheckLootCondition implements LootCondition {
-	private final LocationPredicate predicate;
-	private final BlockPos offset;
+	final LocationPredicate predicate;
+	final BlockPos offset;
 
-	private LocationCheckLootCondition(LocationPredicate predicate, BlockPos offset) {
-		this.predicate = predicate;
-		this.offset = offset;
+	LocationCheckLootCondition(LocationPredicate locationPredicate, BlockPos blockPos) {
+		this.predicate = locationPredicate;
+		this.offset = blockPos;
 	}
 
 	@Override

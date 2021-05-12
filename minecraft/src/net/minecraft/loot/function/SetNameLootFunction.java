@@ -22,14 +22,14 @@ import org.apache.logging.log4j.Logger;
 
 public class SetNameLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final Text name;
+	final Text name;
 	@Nullable
-	private final LootContext.EntityTarget entity;
+	final LootContext.EntityTarget entity;
 
-	private SetNameLootFunction(LootCondition[] conditions, @Nullable Text name, @Nullable LootContext.EntityTarget entity) {
-		super(conditions);
-		this.name = name;
-		this.entity = entity;
+	SetNameLootFunction(LootCondition[] lootConditions, @Nullable Text text, @Nullable LootContext.EntityTarget entityTarget) {
+		super(lootConditions);
+		this.name = text;
+		this.entity = entityTarget;
 	}
 
 	@Override

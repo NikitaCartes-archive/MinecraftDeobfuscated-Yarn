@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import com.mojang.authlib.GameProfile;
 import javax.annotation.Nullable;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -21,9 +20,7 @@ public class PlayerSkullBlock extends SkullBlock {
 	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
 		super.onPlaced(world, pos, state, placer, itemStack);
-		BlockEntity blockEntity = world.getBlockEntity(pos);
-		if (blockEntity instanceof SkullBlockEntity) {
-			SkullBlockEntity skullBlockEntity = (SkullBlockEntity)blockEntity;
+		if (world.getBlockEntity(pos) instanceof SkullBlockEntity skullBlockEntity) {
 			GameProfile gameProfile = null;
 			if (itemStack.hasTag()) {
 				NbtCompound nbtCompound = itemStack.getTag();

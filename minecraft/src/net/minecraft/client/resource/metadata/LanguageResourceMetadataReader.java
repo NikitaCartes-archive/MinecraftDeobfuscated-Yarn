@@ -22,7 +22,7 @@ public class LanguageResourceMetadataReader implements ResourceMetadataReader<La
 		for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
 			String string = (String)entry.getKey();
 			if (string.length() > 16) {
-				throw new JsonParseException("Invalid language->'" + string + "': language code must not be more than " + 16 + " characters long");
+				throw new JsonParseException("Invalid language->'" + string + "': language code must not be more than 16 characters long");
 			}
 
 			JsonObject jsonObject2 = JsonHelper.asObject((JsonElement)entry.getValue(), "language");

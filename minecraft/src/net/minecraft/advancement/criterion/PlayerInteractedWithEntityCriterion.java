@@ -12,7 +12,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class PlayerInteractedWithEntityCriterion extends AbstractCriterion<PlayerInteractedWithEntityCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("player_interacted_with_entity");
+	static final Identifier ID = new Identifier("player_interacted_with_entity");
 
 	@Override
 	public Identifier getId() {

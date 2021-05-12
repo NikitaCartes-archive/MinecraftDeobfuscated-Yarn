@@ -9,8 +9,8 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 
 public class ExplosionDecayLootFunction extends ConditionalLootFunction {
-	private ExplosionDecayLootFunction(LootCondition[] conditions) {
-		super(conditions);
+	ExplosionDecayLootFunction(LootCondition[] lootConditions) {
+		super(lootConditions);
 	}
 
 	@Override

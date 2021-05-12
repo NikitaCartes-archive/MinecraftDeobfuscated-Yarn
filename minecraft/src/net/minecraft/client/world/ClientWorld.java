@@ -84,14 +84,14 @@ public class ClientWorld extends World {
 	 * A minor offset applied when spawning particles.
 	 */
 	private static final double PARTICLE_Y_OFFSET = 0.05;
-	private final EntityList entityList = new EntityList();
+	final EntityList entityList = new EntityList();
 	private final ClientEntityManager<Entity> entityManager = new ClientEntityManager<>(Entity.class, new ClientWorld.ClientEntityHandler());
 	private final ClientPlayNetworkHandler netHandler;
 	private final WorldRenderer worldRenderer;
 	private final ClientWorld.Properties clientWorldProperties;
 	private final SkyProperties skyProperties;
 	private final MinecraftClient client = MinecraftClient.getInstance();
-	private final List<AbstractClientPlayerEntity> players = Lists.<AbstractClientPlayerEntity>newArrayList();
+	final List<AbstractClientPlayerEntity> players = Lists.<AbstractClientPlayerEntity>newArrayList();
 	private Scoreboard scoreboard = new Scoreboard();
 	private final Map<String, MapState> mapStates = Maps.<String, MapState>newHashMap();
 	private static final long field_32640 = 16777215L;
@@ -761,8 +761,8 @@ public class ClientWorld extends World {
 		BARRIER(Blocks.BARRIER, ParticleTypes.BARRIER),
 		LIGHT(Blocks.LIGHT, ParticleTypes.LIGHT);
 
-		private final Block block;
-		private final ParticleEffect particle;
+		final Block block;
+		final ParticleEffect particle;
 
 		private BlockParticle(Block block, ParticleEffect particle) {
 			this.block = block;
@@ -772,9 +772,6 @@ public class ClientWorld extends World {
 
 	@Environment(EnvType.CLIENT)
 	final class ClientEntityHandler implements EntityHandler<Entity> {
-		private ClientEntityHandler() {
-		}
-
 		public void create(Entity entity) {
 		}
 

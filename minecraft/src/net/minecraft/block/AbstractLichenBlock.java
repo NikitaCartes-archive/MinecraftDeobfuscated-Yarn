@@ -81,10 +81,10 @@ public class AbstractLichenBlock extends Block {
 	public BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
-		if (hasAnyDirection(state)) {
-			return hasDirection(state, direction) && !canGrowOn(world, direction, neighborPos, neighborState) ? disableDirection(state, getProperty(direction)) : state;
+		if (!hasAnyDirection(state)) {
+			return Blocks.AIR.getDefaultState();
 		} else {
-			return state.contains(Properties.WATERLOGGED) && state.get(Properties.WATERLOGGED) ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState();
+			return hasDirection(state, direction) && !canGrowOn(world, direction, neighborPos, neighborState) ? disableDirection(state, getProperty(direction)) : state;
 		}
 	}
 
@@ -171,7 +171,7 @@ public class AbstractLichenBlock extends Block {
 
 		for (Direction direction : DIRECTIONS) {
 			if (this.canHaveDirection(direction)) {
-				blockState = blockState.with(getProperty((Direction)mirror.apply(direction)), state.get(getProperty(direction)));
+				blockState = blockState.with(getProperty((Direction)mirror.apply(direction)), (Boolean)state.get(getProperty(direction)));
 			}
 		}
 
@@ -256,11 +256,7 @@ public class AbstractLichenBlock extends Block {
 
 	private static BlockState disableDirection(BlockState state, BooleanProperty direction) {
 		BlockState blockState = state.with(direction, Boolean.valueOf(false));
-		if (hasAnyDirection(blockState)) {
-			return blockState;
-		} else {
-			return state.contains(Properties.WATERLOGGED) && state.get(Properties.WATERLOGGED) ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState();
-		}
+		return hasAnyDirection(blockState) ? blockState : Blocks.AIR.getDefaultState();
 	}
 
 	public static BooleanProperty getProperty(Direction direction) {

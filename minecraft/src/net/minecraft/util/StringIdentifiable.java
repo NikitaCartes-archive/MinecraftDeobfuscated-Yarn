@@ -23,7 +23,7 @@ public interface StringIdentifiable {
 	 */
 	static <E extends Enum<E> & StringIdentifiable> Codec<E> createCodec(Supplier<E[]> enumValues, Function<? super String, ? extends E> fromString) {
 		E[] enums = (E[])enumValues.get();
-		return createCodec(Enum::ordinal, ordinal -> enums[ordinal], fromString);
+		return createCodec(object -> ((Enum)object).ordinal(), ordinal -> enums[ordinal], fromString);
 	}
 
 	/**
@@ -46,14 +46,16 @@ public interface StringIdentifiable {
 				return dynamicOps.compressMaps()
 					? dynamicOps.getNumberValue(object)
 						.flatMap(
-							id -> (DataResult)Optional.ofNullable(compressedDecoder.apply(id.intValue()))
+							id -> (DataResult)Optional.ofNullable((StringIdentifiable)compressedDecoder.apply(id.intValue()))
 									.map(DataResult::success)
 									.orElseGet(() -> DataResult.error("Unknown element id: " + id))
 						)
 						.map(stringIdentifiable -> com.mojang.datafixers.util.Pair.of(stringIdentifiable, dynamicOps.empty()))
 					: dynamicOps.getStringValue(object)
 						.flatMap(
-							name -> (DataResult)Optional.ofNullable(decoder.apply(name)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown element name: " + name))
+							name -> (DataResult)Optional.ofNullable((StringIdentifiable)decoder.apply(name))
+									.map(DataResult::success)
+									.orElseGet(() -> DataResult.error("Unknown element name: " + name))
 						)
 						.map(stringIdentifiable -> com.mojang.datafixers.util.Pair.of(stringIdentifiable, dynamicOps.empty()));
 			}

@@ -8,8 +8,8 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class FlameParticle extends AbstractSlowingParticle {
-	private FlameParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-		super(world, x, y, z, velocityX, velocityY, velocityZ);
+	FlameParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		super(clientWorld, d, e, f, g, h, i);
 	}
 
 	@Override

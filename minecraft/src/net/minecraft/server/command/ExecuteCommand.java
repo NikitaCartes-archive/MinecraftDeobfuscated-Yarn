@@ -66,7 +66,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 
 public class ExecuteCommand {
-	private static final int field_33390 = 32768;
+	private static final int MAX_BLOCKS = 32768;
 	private static final Dynamic2CommandExceptionType BLOCKS_TOOBIG_EXCEPTION = new Dynamic2CommandExceptionType(
 		(maxCount, count) -> new TranslatableText("commands.execute.blocks.toobig", maxCount, count)
 	);

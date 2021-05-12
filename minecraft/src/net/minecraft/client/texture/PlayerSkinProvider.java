@@ -109,13 +109,13 @@ public class PlayerSkinProvider {
 		Util.getMainWorkerExecutor().execute(runnable);
 	}
 
-	public Map<Type, MinecraftProfileTexture> getTextures(GameProfile gameProfile) {
-		Property property = Iterables.getFirst(gameProfile.getProperties().get("textures"), null);
+	public Map<Type, MinecraftProfileTexture> getTextures(GameProfile profile) {
+		Property property = Iterables.getFirst(profile.getProperties().get("textures"), null);
 		return (Map<Type, MinecraftProfileTexture>)(property == null ? ImmutableMap.of() : this.skinCache.getUnchecked(property.getValue()));
 	}
 
 	@Environment(EnvType.CLIENT)
 	public interface SkinTextureAvailableCallback {
-		void onSkinTextureAvailable(Type type, Identifier identifier, MinecraftProfileTexture texture);
+		void onSkinTextureAvailable(Type type, Identifier id, MinecraftProfileTexture texture);
 	}
 }

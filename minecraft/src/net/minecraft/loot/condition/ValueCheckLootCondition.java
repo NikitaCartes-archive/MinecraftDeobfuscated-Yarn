@@ -13,12 +13,12 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.JsonSerializer;
 
 public class ValueCheckLootCondition implements LootCondition {
-	private final LootNumberProvider value;
-	private final BoundedIntUnaryOperator range;
+	final LootNumberProvider value;
+	final BoundedIntUnaryOperator range;
 
-	private ValueCheckLootCondition(LootNumberProvider value, BoundedIntUnaryOperator range) {
-		this.value = value;
-		this.range = range;
+	ValueCheckLootCondition(LootNumberProvider lootNumberProvider, BoundedIntUnaryOperator boundedIntUnaryOperator) {
+		this.value = lootNumberProvider;
+		this.range = boundedIntUnaryOperator;
 	}
 
 	@Override

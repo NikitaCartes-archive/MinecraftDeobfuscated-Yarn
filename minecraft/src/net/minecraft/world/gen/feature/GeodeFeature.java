@@ -35,11 +35,11 @@ public class GeodeFeature extends Feature<GeodeFeatureConfig> {
 		int i = geodeFeatureConfig.minGenOffset;
 		int j = geodeFeatureConfig.maxGenOffset;
 		List<Pair<BlockPos, Integer>> list = Lists.<Pair<BlockPos, Integer>>newLinkedList();
-		int k = geodeFeatureConfig.field_33517.get(random);
+		int k = geodeFeatureConfig.distributionPoints.get(random);
 		ChunkRandom chunkRandom = new ChunkRandom(structureWorldAccess.getSeed());
 		DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.create(chunkRandom, -4, 1.0);
 		List<BlockPos> list2 = Lists.<BlockPos>newLinkedList();
-		double d = (double)k / (double)geodeFeatureConfig.field_33516.getMax();
+		double d = (double)k / (double)geodeFeatureConfig.outerWallDistance.getMax();
 		GeodeLayerThicknessConfig geodeLayerThicknessConfig = geodeFeatureConfig.layerThicknessConfig;
 		GeodeLayerConfig geodeLayerConfig = geodeFeatureConfig.layerConfig;
 		GeodeCrackConfig geodeCrackConfig = geodeFeatureConfig.crackConfig;
@@ -52,9 +52,9 @@ public class GeodeFeature extends Feature<GeodeFeatureConfig> {
 		int m = 0;
 
 		for (int n = 0; n < k; n++) {
-			int o = geodeFeatureConfig.field_33516.get(random);
-			int p = geodeFeatureConfig.field_33516.get(random);
-			int q = geodeFeatureConfig.field_33516.get(random);
+			int o = geodeFeatureConfig.outerWallDistance.get(random);
+			int p = geodeFeatureConfig.outerWallDistance.get(random);
+			int q = geodeFeatureConfig.outerWallDistance.get(random);
 			BlockPos blockPos2 = blockPos.add(o, p, q);
 			BlockState blockState = structureWorldAccess.getBlockState(blockPos2);
 			if (blockState.isAir() || blockState.isOf(Blocks.WATER) || blockState.isOf(Blocks.LAVA)) {
@@ -63,7 +63,7 @@ public class GeodeFeature extends Feature<GeodeFeatureConfig> {
 				}
 			}
 
-			list.add(Pair.of(blockPos2, geodeFeatureConfig.field_33518.get(random)));
+			list.add(Pair.of(blockPos2, geodeFeatureConfig.pointOffset.get(random)));
 		}
 
 		if (bl) {

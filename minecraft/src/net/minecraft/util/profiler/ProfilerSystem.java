@@ -75,7 +75,7 @@ public class ProfilerSystem implements ReadableProfiler {
 			LOGGER.error("Cannot push '{}' to profiler if profiler tick hasn't started - missing startTick()?", location);
 		} else {
 			if (!this.location.isEmpty()) {
-				this.location = this.location + '\u001e';
+				this.location = this.location + "\u001e";
 			}
 
 			this.location = this.location + location;
@@ -102,8 +102,8 @@ public class ProfilerSystem implements ReadableProfiler {
 			this.path.remove(this.path.size() - 1);
 			long n = l - m;
 			ProfilerSystem.LocatedInfo locatedInfo = this.getCurrentInfo();
-			locatedInfo.time = locatedInfo.time + n;
-			locatedInfo.visits = locatedInfo.visits + 1L;
+			locatedInfo.time += n;
+			locatedInfo.visits++;
 			if (this.checkTimeout && n > TIMEOUT_NANOSECONDS) {
 				LOGGER.warn("Something's taking too long! '{}' took aprox {} ms", () -> ProfileResult.getHumanReadableName(this.location), () -> (double)n / 1000000.0);
 			}
@@ -155,9 +155,9 @@ public class ProfilerSystem implements ReadableProfiler {
 	}
 
 	public static class LocatedInfo implements ProfileLocationInfo {
-		private long time;
-		private long visits;
-		private final Object2LongOpenHashMap<String> counts = new Object2LongOpenHashMap<>();
+		long time;
+		long visits;
+		final Object2LongOpenHashMap<String> counts = new Object2LongOpenHashMap<>();
 
 		@Override
 		public long getTotalTime() {

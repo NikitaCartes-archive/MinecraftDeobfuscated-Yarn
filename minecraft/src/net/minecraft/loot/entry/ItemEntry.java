@@ -15,10 +15,10 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 
 public class ItemEntry extends LeafEntry {
-	private final Item item;
+	final Item item;
 
-	private ItemEntry(Item item, int weight, int quality, LootCondition[] conditions, LootFunction[] functions) {
-		super(weight, quality, conditions, functions);
+	ItemEntry(Item item, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
+		super(i, j, lootConditions, lootFunctions);
 		this.item = item;
 	}
 

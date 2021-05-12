@@ -24,11 +24,11 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 
 public class FillCommand {
-	private static final int field_33391 = 32768;
+	private static final int MAX_BLOCKS = 32768;
 	private static final Dynamic2CommandExceptionType TOO_BIG_EXCEPTION = new Dynamic2CommandExceptionType(
 		(maxCount, count) -> new TranslatableText("commands.fill.toobig", maxCount, count)
 	);
-	private static final BlockStateArgument AIR_BLOCK_ARGUMENT = new BlockStateArgument(Blocks.AIR.getDefaultState(), Collections.emptySet(), null);
+	static final BlockStateArgument AIR_BLOCK_ARGUMENT = new BlockStateArgument(Blocks.AIR.getDefaultState(), Collections.emptySet(), null);
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.fill.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {

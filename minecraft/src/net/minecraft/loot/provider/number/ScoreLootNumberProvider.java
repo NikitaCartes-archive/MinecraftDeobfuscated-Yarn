@@ -14,14 +14,14 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.JsonSerializer;
 
 public class ScoreLootNumberProvider implements LootNumberProvider {
-	private final LootScoreProvider target;
-	private final String score;
-	private final float scale;
+	final LootScoreProvider target;
+	final String score;
+	final float scale;
 
-	private ScoreLootNumberProvider(LootScoreProvider target, String score, float scale) {
-		this.target = target;
-		this.score = score;
-		this.scale = scale;
+	ScoreLootNumberProvider(LootScoreProvider lootScoreProvider, String string, float f) {
+		this.target = lootScoreProvider;
+		this.score = string;
+		this.scale = f;
 	}
 
 	@Override

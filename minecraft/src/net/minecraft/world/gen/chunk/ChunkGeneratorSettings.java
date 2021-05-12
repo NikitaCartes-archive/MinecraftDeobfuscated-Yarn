@@ -31,8 +31,8 @@ public final class ChunkGeneratorSettings {
 					Codec.BOOL.fieldOf("aquifers_enabled").forGetter(ChunkGeneratorSettings::hasAquifers),
 					Codec.BOOL.fieldOf("noise_caves_enabled").forGetter(ChunkGeneratorSettings::hasNoiseCaves),
 					Codec.BOOL.fieldOf("deepslate_enabled").forGetter(ChunkGeneratorSettings::hasDeepslate),
-					Codec.BOOL.fieldOf("ore_veins_enabled").forGetter(ChunkGeneratorSettings::method_36396),
-					Codec.BOOL.fieldOf("noodle_caves_enabled").forGetter(ChunkGeneratorSettings::method_36396)
+					Codec.BOOL.fieldOf("ore_veins_enabled").forGetter(ChunkGeneratorSettings::hasOreVeins),
+					Codec.BOOL.fieldOf("noodle_caves_enabled").forGetter(ChunkGeneratorSettings::hasOreVeins)
 				)
 				.apply(instance, ChunkGeneratorSettings::new)
 	);
@@ -49,8 +49,8 @@ public final class ChunkGeneratorSettings {
 	private final boolean aquifers;
 	private final boolean noiseCaves;
 	private final boolean deepslate;
-	private final boolean field_33587;
-	private final boolean field_33651;
+	private final boolean oreVeins;
+	private final boolean noodleCaves;
 	public static final RegistryKey<ChunkGeneratorSettings> OVERWORLD = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("overworld"));
 	public static final RegistryKey<ChunkGeneratorSettings> AMPLIFIED = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("amplified"));
 	public static final RegistryKey<ChunkGeneratorSettings> NETHER = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("nether"));
@@ -74,8 +74,8 @@ public final class ChunkGeneratorSettings {
 		boolean aquifers,
 		boolean noiseCaves,
 		boolean deepslate,
-		boolean bl,
-		boolean bl2
+		boolean oreVeins,
+		boolean noodleCaves
 	) {
 		this.structuresConfig = structuresConfig;
 		this.generationShapeConfig = generationShapeConfig;
@@ -89,8 +89,8 @@ public final class ChunkGeneratorSettings {
 		this.aquifers = aquifers;
 		this.noiseCaves = noiseCaves;
 		this.deepslate = deepslate;
-		this.field_33587 = bl;
-		this.field_33651 = bl2;
+		this.oreVeins = oreVeins;
+		this.noodleCaves = noodleCaves;
 	}
 
 	public StructuresConfig getStructuresConfig() {
@@ -157,12 +157,12 @@ public final class ChunkGeneratorSettings {
 		return this.deepslate;
 	}
 
-	protected boolean method_36396() {
-		return this.field_33587;
+	protected boolean hasOreVeins() {
+		return this.oreVeins;
 	}
 
-	protected boolean method_36468() {
-		return this.field_33651;
+	protected boolean hasNoodleCaves() {
+		return this.noodleCaves;
 	}
 
 	public boolean equals(RegistryKey<ChunkGeneratorSettings> registryKey) {

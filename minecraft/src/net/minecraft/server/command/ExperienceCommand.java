@@ -189,7 +189,7 @@ public class ExperienceCommand {
 		public final BiConsumer<ServerPlayerEntity, Integer> adder;
 		public final BiPredicate<ServerPlayerEntity, Integer> setter;
 		public final String name;
-		private final ToIntFunction<ServerPlayerEntity> getter;
+		final ToIntFunction<ServerPlayerEntity> getter;
 
 		private Component(
 			String name, BiConsumer<ServerPlayerEntity, Integer> adder, BiPredicate<ServerPlayerEntity, Integer> setter, ToIntFunction<ServerPlayerEntity> getter

@@ -103,13 +103,13 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private volatile Long2ObjectLinkedOpenHashMap<ChunkHolder> chunkHolders = this.currentChunkHolders.clone();
 	private final Long2ObjectLinkedOpenHashMap<ChunkHolder> chunksToUnload = new Long2ObjectLinkedOpenHashMap<>();
 	private final LongSet loadedChunks = new LongOpenHashSet();
-	private final ServerWorld world;
+	final ServerWorld world;
 	private final ServerLightingProvider serverLightingProvider;
 	private final ThreadExecutor<Runnable> mainThreadExecutor;
 	private final ChunkGenerator chunkGenerator;
 	private final Supplier<PersistentStateManager> persistentStateManagerFactory;
 	private final PointOfInterestStorage pointOfInterestStorage;
-	private final LongSet unloadedChunks = new LongOpenHashSet();
+	final LongSet unloadedChunks = new LongOpenHashSet();
 	private boolean chunkHolderListDirty;
 	private final ChunkTaskPrioritySystem chunkTaskPrioritySystem;
 	private final MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> worldGenExecutor;
@@ -124,7 +124,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private final Int2ObjectMap<ThreadedAnvilChunkStorage.EntityTracker> entityTrackers = new Int2ObjectOpenHashMap<>();
 	private final Long2ByteMap chunkToType = new Long2ByteOpenHashMap();
 	private final Queue<Runnable> unloadTaskQueue = Queues.<Runnable>newConcurrentLinkedQueue();
-	private int watchDistance;
+	int watchDistance;
 
 	public ThreadedAnvilChunkStorage(
 		ServerWorld serverWorld,
@@ -227,16 +227,16 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			ChunkStatus chunkStatus = chunkHolder.getCurrentStatus();
 			Chunk chunk = chunkHolder.getCurrentChunk();
 			if (chunkStatus != null) {
-				string = string + "St: §" + chunkStatus.getIndex() + chunkStatus + '§' + "r\n";
+				string = string + "St: §" + chunkStatus.getIndex() + chunkStatus + "§r\n";
 			}
 
 			if (chunk != null) {
-				string = string + "Ch: §" + chunk.getStatus().getIndex() + chunk.getStatus() + '§' + "r\n";
+				string = string + "Ch: §" + chunk.getStatus().getIndex() + chunk.getStatus() + "§r\n";
 			}
 
 			ChunkHolder.LevelType levelType = chunkHolder.getLevelType();
 			string = string + "§" + levelType.ordinal() + levelType;
-			return string + '§' + "r";
+			return string + "§r";
 		}
 	}
 
@@ -281,7 +281,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 					});
 				}
 
-				list2.add(optional.get());
+				list2.add((Chunk)optional.get());
 				lx++;
 			}
 
@@ -295,7 +295,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	@Nullable
-	private ChunkHolder setLevel(long pos, int level, @Nullable ChunkHolder holder, int i) {
+	ChunkHolder setLevel(long pos, int level, @Nullable ChunkHolder holder, int i) {
 		if (i > MAX_LEVEL && level > MAX_LEVEL) {
 			return holder;
 		} else {
@@ -419,8 +419,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 					}
 
 					this.save(chunk);
-					if (this.loadedChunks.remove(pos) && chunk instanceof WorldChunk) {
-						WorldChunk worldChunk = (WorldChunk)chunk;
+					if (this.loadedChunks.remove(pos) && chunk instanceof WorldChunk worldChunk) {
 						this.world.unloadEntities(worldChunk);
 					}
 
@@ -527,7 +526,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		this.world.getProfiler().visit((Supplier<String>)(() -> "chunkGenerate " + requiredStatus.getId()));
 		Executor executor = runnable -> this.worldGenExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, runnable));
 		return completableFuture.thenComposeAsync(
-			either -> (CompletableFuture)either.map(
+			either -> either.map(
 					list -> {
 						try {
 							CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuturex = requiredStatus.runGenerationTask(
@@ -953,8 +952,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 					ThreadedAnvilChunkStorage.EntityTracker entityTracker = new ThreadedAnvilChunkStorage.EntityTracker(entity, i, j, entityType.alwaysUpdateVelocity());
 					this.entityTrackers.put(entity.getId(), entityTracker);
 					entityTracker.updateTrackedStatus(this.world.getPlayers());
-					if (entity instanceof ServerPlayerEntity) {
-						ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
+					if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
 						this.handlePlayerAddedOrRemoved(serverPlayerEntity, true);
 
 						for (ThreadedAnvilChunkStorage.EntityTracker entityTracker2 : this.entityTrackers.values()) {
@@ -969,8 +967,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	protected void unloadEntity(Entity entity) {
-		if (entity instanceof ServerPlayerEntity) {
-			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
+		if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
 			this.handlePlayerAddedOrRemoved(serverPlayerEntity, false);
 
 			for (ThreadedAnvilChunkStorage.EntityTracker entityTracker : this.entityTrackers.values()) {
@@ -1091,8 +1088,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	 * @see ThreadedAnvilChunkStorage#entityTrackers
 	 */
 	class EntityTracker {
-		private final EntityTrackerEntry entry;
-		private final Entity entity;
+		final EntityTrackerEntry entry;
+		final Entity entity;
 		private final int maxDistance;
 		/**
 		 * The chunk section position of the tracked entity, may be outdated as an entity
@@ -1100,7 +1097,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		 * tickEntityMovement()} to bypass unnecessary status updates before calling
 		 * {@link #updateTrackedStatus(ServerPlayerEntity) updateTrackedStatus()}.
 		 */
-		private ChunkSectionPos trackedSection;
+		ChunkSectionPos trackedSection;
 		private final Set<EntityTrackingListener> listeners = Sets.newIdentityHashSet();
 
 		public EntityTracker(Entity entity, int maxDistance, int tickInterval, boolean alwaysUpdateVelocity) {

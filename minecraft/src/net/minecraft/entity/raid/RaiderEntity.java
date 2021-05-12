@@ -47,7 +47,7 @@ import net.minecraft.world.poi.PointOfInterestType;
 
 public abstract class RaiderEntity extends PatrolEntity {
 	protected static final TrackedData<Boolean> CELEBRATING = DataTracker.registerData(RaiderEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final Predicate<ItemEntity> OBTAINABLE_OMINOUS_BANNER_PREDICATE = itemEntity -> !itemEntity.cannotPickup()
+	static final Predicate<ItemEntity> OBTAINABLE_OMINOUS_BANNER_PREDICATE = itemEntity -> !itemEntity.cannotPickup()
 			&& itemEntity.isAlive()
 			&& ItemStack.areEqual(itemEntity.getStack(), Raid.getOminousBanner());
 	@Nullable
@@ -136,8 +136,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 				PlayerEntity playerEntity = null;
 				if (entity instanceof PlayerEntity) {
 					playerEntity = (PlayerEntity)entity;
-				} else if (entity instanceof WolfEntity) {
-					WolfEntity wolfEntity = (WolfEntity)entity;
+				} else if (entity instanceof WolfEntity wolfEntity) {
 					LivingEntity livingEntity = wolfEntity.getOwner();
 					if (wolfEntity.isTamed() && livingEntity instanceof PlayerEntity) {
 						playerEntity = (PlayerEntity)livingEntity;
@@ -434,16 +433,10 @@ public abstract class RaiderEntity extends PatrolEntity {
 		}
 	}
 
-	public class PatrolApproachGoal extends Goal {
+	protected class PatrolApproachGoal extends Goal {
 		private final RaiderEntity raider;
 		private final float squaredDistance;
-		public final TargetPredicate closeRaiderPredicate = new TargetPredicate()
-			.setBaseMaxDistance(8.0)
-			.ignoreEntityTargetRules()
-			.includeInvulnerable()
-			.includeTeammates()
-			.includeHidden()
-			.ignoreDistanceScalingFactor();
+		public final TargetPredicate closeRaiderPredicate = TargetPredicate.createNonAttackable().setBaseMaxDistance(8.0).visibleOnly().ignoreDistanceScalingFactor();
 
 		public PatrolApproachGoal(IllagerEntity illager, float distance) {
 			this.raider = illager;

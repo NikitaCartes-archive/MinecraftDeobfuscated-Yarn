@@ -57,8 +57,8 @@ public abstract class CaveSurface {
 		return create(floor, this.getCeilingHeight());
 	}
 
-	public CaveSurface method_35328(OptionalInt optionalInt) {
-		return create(this.getFloorHeight(), optionalInt);
+	public CaveSurface withCeiling(OptionalInt ceiling) {
+		return create(this.getFloorHeight(), ceiling);
 	}
 
 	public static Optional<CaveSurface> create(TestableWorld world, BlockPos pos, int height, Predicate<BlockState> canGenerate, Predicate<BlockState> canReplace) {
@@ -125,12 +125,12 @@ public abstract class CaveSurface {
 		}
 
 		public String toString() {
-			return "C(" + this.ceiling + "-" + this.floor + ')';
+			return "C(" + this.ceiling + "-" + this.floor + ")";
 		}
 	}
 
 	public static final class Empty extends CaveSurface {
-		private static final CaveSurface.Empty INSTANCE = new CaveSurface.Empty();
+		static final CaveSurface.Empty INSTANCE = new CaveSurface.Empty();
 
 		private Empty() {
 		}

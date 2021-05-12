@@ -353,9 +353,9 @@ public class Scoreboard {
 		return nbtList;
 	}
 
-	protected void readNbt(NbtList nbtList) {
-		for (int i = 0; i < nbtList.size(); i++) {
-			NbtCompound nbtCompound = nbtList.getCompound(i);
+	protected void readNbt(NbtList list) {
+		for (int i = 0; i < list.size(); i++) {
+			NbtCompound nbtCompound = list.getCompound(i);
 			ScoreboardObjective scoreboardObjective = this.getObjective(nbtCompound.getString("Objective"));
 			String string = nbtCompound.getString("Name");
 			if (string.length() > 40) {

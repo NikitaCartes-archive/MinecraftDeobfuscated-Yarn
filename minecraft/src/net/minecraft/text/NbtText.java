@@ -156,17 +156,16 @@ public abstract class NbtText extends BaseText implements ParsableText {
 		public boolean equals(Object object) {
 			if (this == object) {
 				return true;
-			} else if (!(object instanceof NbtText.BlockNbtText)) {
-				return false;
 			} else {
-				NbtText.BlockNbtText blockNbtText = (NbtText.BlockNbtText)object;
-				return Objects.equals(this.rawPos, blockNbtText.rawPos) && Objects.equals(this.rawPath, blockNbtText.rawPath) && super.equals(object);
+				return !(object instanceof NbtText.BlockNbtText blockNbtText)
+					? false
+					: Objects.equals(this.rawPos, blockNbtText.rawPos) && Objects.equals(this.rawPath, blockNbtText.rawPath) && super.equals(object);
 			}
 		}
 
 		@Override
 		public String toString() {
-			return "BlockPosArgument{pos='" + this.rawPos + '\'' + "path='" + this.rawPath + '\'' + ", siblings=" + this.siblings + ", style=" + this.getStyle() + '}';
+			return "BlockPosArgument{pos='" + this.rawPos + "'path='" + this.rawPath + "', siblings=" + this.siblings + ", style=" + this.getStyle() + "}";
 		}
 	}
 
@@ -226,27 +225,16 @@ public abstract class NbtText extends BaseText implements ParsableText {
 		public boolean equals(Object object) {
 			if (this == object) {
 				return true;
-			} else if (!(object instanceof NbtText.EntityNbtText)) {
-				return false;
 			} else {
-				NbtText.EntityNbtText entityNbtText = (NbtText.EntityNbtText)object;
-				return Objects.equals(this.rawSelector, entityNbtText.rawSelector) && Objects.equals(this.rawPath, entityNbtText.rawPath) && super.equals(object);
+				return !(object instanceof NbtText.EntityNbtText entityNbtText)
+					? false
+					: Objects.equals(this.rawSelector, entityNbtText.rawSelector) && Objects.equals(this.rawPath, entityNbtText.rawPath) && super.equals(object);
 			}
 		}
 
 		@Override
 		public String toString() {
-			return "EntityNbtComponent{selector='"
-				+ this.rawSelector
-				+ '\''
-				+ "path='"
-				+ this.rawPath
-				+ '\''
-				+ ", siblings="
-				+ this.siblings
-				+ ", style="
-				+ this.getStyle()
-				+ '}';
+			return "EntityNbtComponent{selector='" + this.rawSelector + "'path='" + this.rawPath + "', siblings=" + this.siblings + ", style=" + this.getStyle() + "}";
 		}
 	}
 
@@ -281,17 +269,16 @@ public abstract class NbtText extends BaseText implements ParsableText {
 		public boolean equals(Object object) {
 			if (this == object) {
 				return true;
-			} else if (!(object instanceof NbtText.StorageNbtText)) {
-				return false;
 			} else {
-				NbtText.StorageNbtText storageNbtText = (NbtText.StorageNbtText)object;
-				return Objects.equals(this.id, storageNbtText.id) && Objects.equals(this.rawPath, storageNbtText.rawPath) && super.equals(object);
+				return !(object instanceof NbtText.StorageNbtText storageNbtText)
+					? false
+					: Objects.equals(this.id, storageNbtText.id) && Objects.equals(this.rawPath, storageNbtText.rawPath) && super.equals(object);
 			}
 		}
 
 		@Override
 		public String toString() {
-			return "StorageNbtComponent{id='" + this.id + '\'' + "path='" + this.rawPath + '\'' + ", siblings=" + this.siblings + ", style=" + this.getStyle() + '}';
+			return "StorageNbtComponent{id='" + this.id + "'path='" + this.rawPath + "', siblings=" + this.siblings + ", style=" + this.getStyle() + "}";
 		}
 	}
 }

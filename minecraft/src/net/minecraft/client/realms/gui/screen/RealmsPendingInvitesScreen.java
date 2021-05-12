@@ -31,19 +31,19 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class RealmsPendingInvitesScreen extends RealmsScreen {
-	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Identifier ACCEPT_ICON = new Identifier("realms", "textures/gui/realms/accept_icon.png");
-	private static final Identifier REJECT_ICON = new Identifier("realms", "textures/gui/realms/reject_icon.png");
+	static final Logger LOGGER = LogManager.getLogger();
+	static final Identifier ACCEPT_ICON = new Identifier("realms", "textures/gui/realms/accept_icon.png");
+	static final Identifier REJECT_ICON = new Identifier("realms", "textures/gui/realms/reject_icon.png");
 	private static final Text NO_PENDING_TEXT = new TranslatableText("mco.invites.nopending");
-	private static final Text ACCEPT_TEXT = new TranslatableText("mco.invites.button.accept");
-	private static final Text REJECT_TEXT = new TranslatableText("mco.invites.button.reject");
+	static final Text ACCEPT_TEXT = new TranslatableText("mco.invites.button.accept");
+	static final Text REJECT_TEXT = new TranslatableText("mco.invites.button.reject");
 	private final Screen parent;
 	@Nullable
-	private Text toolTip;
-	private boolean loaded;
-	private RealmsPendingInvitesScreen.PendingInvitationSelectionList pendingInvitationSelectionList;
+	Text toolTip;
+	boolean loaded;
+	RealmsPendingInvitesScreen.PendingInvitationSelectionList pendingInvitationSelectionList;
 	private RealmsLabel titleLabel;
-	private int selectedInvite = -1;
+	int selectedInvite = -1;
 	private ButtonWidget acceptButton;
 	private ButtonWidget rejectButton;
 
@@ -107,11 +107,11 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 		}
 	}
 
-	private void updateList(int slot) {
+	void updateList(int slot) {
 		this.pendingInvitationSelectionList.removeAtIndex(slot);
 	}
 
-	private void reject(int slot) {
+	void reject(int slot) {
 		if (slot < this.pendingInvitationSelectionList.getEntryCount()) {
 			(new Thread("Realms-reject-invitation") {
 					public void run() {
@@ -132,7 +132,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 		}
 	}
 
-	private void accept(int slot) {
+	void accept(int slot) {
 		if (slot < this.pendingInvitationSelectionList.getEntryCount()) {
 			(new Thread("Realms-accept-invitation") {
 					public void run() {
@@ -180,7 +180,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 		}
 	}
 
-	private void updateButtonStates() {
+	void updateButtonStates() {
 		this.acceptButton.visible = this.shouldAcceptAndRejectButtonBeVisible(this.selectedInvite);
 		this.rejectButton.visible = this.shouldAcceptAndRejectButtonBeVisible(this.selectedInvite);
 	}
@@ -250,7 +250,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 	@Environment(EnvType.CLIENT)
 	class PendingInvitationSelectionListEntry extends AlwaysSelectedEntryListWidget.Entry<RealmsPendingInvitesScreen.PendingInvitationSelectionListEntry> {
 		private static final int field_32123 = 38;
-		private final PendingInvite mPendingInvite;
+		final PendingInvite mPendingInvite;
 		private final List<RealmsAcceptRejectButton> buttons;
 
 		PendingInvitationSelectionListEntry(PendingInvite pendingInvite) {

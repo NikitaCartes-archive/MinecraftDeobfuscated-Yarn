@@ -22,7 +22,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ShipwreckFeatureConfig;
 
 public class ShipwreckGenerator {
-	private static final BlockPos DEFAULT_POSITION = new BlockPos(4, 0, 15);
+	static final BlockPos DEFAULT_POSITION = new BlockPos(4, 0, 15);
 	private static final Identifier[] BEACHED_TEMPLATES = new Identifier[]{
 		new Identifier("shipwreck/with_mast"),
 		new Identifier("shipwreck/sideways_full"),

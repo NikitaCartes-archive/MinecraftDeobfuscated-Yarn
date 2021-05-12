@@ -84,9 +84,8 @@ public class TrueTypeFontLoader implements FontLoader {
 
 		try {
 			Resource resource = manager.getResource(new Identifier(this.filename.getNamespace(), "font/" + this.filename.getPath()));
-			Throwable var5 = null;
 
-			TrueTypeFont var6;
+			TrueTypeFont var5;
 			try {
 				LOGGER.debug("Loading font {}", this.filename);
 				sTBTTFontinfo = STBTTFontinfo.malloc();
@@ -97,27 +96,26 @@ public class TrueTypeFontLoader implements FontLoader {
 					throw new IOException("Invalid ttf");
 				}
 
-				var6 = new TrueTypeFont(byteBuffer, sTBTTFontinfo, this.size, this.oversample, this.shiftX, this.shiftY, this.excludedCharacters);
-			} catch (Throwable var16) {
-				var5 = var16;
-				throw var16;
-			} finally {
+				var5 = new TrueTypeFont(byteBuffer, sTBTTFontinfo, this.size, this.oversample, this.shiftX, this.shiftY, this.excludedCharacters);
+			} catch (Throwable var8) {
 				if (resource != null) {
-					if (var5 != null) {
-						try {
-							resource.close();
-						} catch (Throwable var15) {
-							var5.addSuppressed(var15);
-						}
-					} else {
+					try {
 						resource.close();
+					} catch (Throwable var7) {
+						var8.addSuppressed(var7);
 					}
 				}
+
+				throw var8;
 			}
 
-			return var6;
-		} catch (Exception var18) {
-			LOGGER.error("Couldn't load truetype font {}", this.filename, var18);
+			if (resource != null) {
+				resource.close();
+			}
+
+			return var5;
+		} catch (Exception var9) {
+			LOGGER.error("Couldn't load truetype font {}", this.filename, var9);
 			if (sTBTTFontinfo != null) {
 				sTBTTFontinfo.free();
 			}

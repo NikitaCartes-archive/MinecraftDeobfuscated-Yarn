@@ -16,7 +16,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class FishingRodHookedCriterion extends AbstractCriterion<FishingRodHookedCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("fishing_rod_hooked");
+	static final Identifier ID = new Identifier("fishing_rod_hooked");
 
 	@Override
 	public Identifier getId() {
@@ -64,11 +64,8 @@ public class FishingRodHookedCriterion extends AbstractCriterion<FishingRodHooke
 				if (this.caughtItem != ItemPredicate.ANY) {
 					boolean bl = false;
 					Entity entity = hookedEntityContext.get(LootContextParameters.THIS_ENTITY);
-					if (entity instanceof ItemEntity) {
-						ItemEntity itemEntity = (ItemEntity)entity;
-						if (this.caughtItem.test(itemEntity.getStack())) {
-							bl = true;
-						}
+					if (entity instanceof ItemEntity itemEntity && this.caughtItem.test(itemEntity.getStack())) {
+						bl = true;
 					}
 
 					for (ItemStack itemStack : fishingLoots) {

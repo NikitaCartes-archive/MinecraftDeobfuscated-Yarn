@@ -21,7 +21,7 @@ public class BossBarHud extends DrawableHelper {
 	private static final int field_32178 = 5;
 	private static final int field_32179 = 80;
 	private final MinecraftClient client;
-	private final Map<UUID, ClientBossBar> bossBars = Maps.<UUID, ClientBossBar>newLinkedHashMap();
+	final Map<UUID, ClientBossBar> bossBars = Maps.<UUID, ClientBossBar>newLinkedHashMap();
 
 	public BossBarHud(MinecraftClient client) {
 		this.client = client;

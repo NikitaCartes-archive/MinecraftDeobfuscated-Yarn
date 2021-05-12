@@ -128,6 +128,7 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayPongC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.network.packet.c2s.play.ResourcePackStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.TeleportConfirmC2SPacket;
@@ -189,6 +190,7 @@ import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
 import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.PaintingSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayPingS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
@@ -726,8 +728,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			this.client
 				.particleManager
 				.addParticle(new ItemPickupParticle(this.client.getEntityRenderDispatcher(), this.client.getBufferBuilders(), this.world, entity, livingEntity));
-			if (entity instanceof ItemEntity) {
-				ItemEntity itemEntity = (ItemEntity)entity;
+			if (entity instanceof ItemEntity itemEntity) {
 				ItemStack itemStack = itemEntity.getStack();
 				itemStack.decrement(packet.getStackAmount());
 				if (itemStack.isEmpty()) {
@@ -986,8 +987,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			playerEntity.getInventory().setStack(i, itemStack);
 		} else {
 			boolean bl = false;
-			if (this.client.currentScreen instanceof CreativeInventoryScreen) {
-				CreativeInventoryScreen creativeInventoryScreen = (CreativeInventoryScreen)this.client.currentScreen;
+			if (this.client.currentScreen instanceof CreativeInventoryScreen creativeInventoryScreen) {
 				bl = creativeInventoryScreen.getSelectedTab() != ItemGroup.INVENTORY.getIndex();
 			}
 
@@ -2081,6 +2081,12 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
+	public void onPing(PlayPingS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		this.sendPacket(new PlayPongC2SPacket(packet.getParameter()));
+	}
+
+	@Override
 	public void onEntityAttributes(EntityAttributesS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		Entity entity = this.world.getEntityById(packet.getEntityId());
@@ -2141,8 +2147,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onSetTradeOffers(SetTradeOffersS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		ScreenHandler screenHandler = this.client.player.currentScreenHandler;
-		if (packet.getSyncId() == screenHandler.syncId && screenHandler instanceof MerchantScreenHandler) {
-			MerchantScreenHandler merchantScreenHandler = (MerchantScreenHandler)screenHandler;
+		if (packet.getSyncId() == screenHandler.syncId && screenHandler instanceof MerchantScreenHandler merchantScreenHandler) {
 			merchantScreenHandler.setOffers(new TradeOfferList(packet.getOffers().toNbt()));
 			merchantScreenHandler.setExperienceFromServer(packet.getExperience());
 			merchantScreenHandler.setLevelProgress(packet.getLevelProgress());

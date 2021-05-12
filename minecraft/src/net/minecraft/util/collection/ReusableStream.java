@@ -12,8 +12,8 @@ import java.util.stream.StreamSupport;
  * A wrapper that automatically flattens the original stream and provides duplicates iterating a copy of that stream's output.
  */
 public class ReusableStream<T> {
-	private final List<T> collectedElements = Lists.<T>newArrayList();
-	private final Spliterator<T> source;
+	final List<T> collectedElements = Lists.<T>newArrayList();
+	final Spliterator<T> source;
 
 	public ReusableStream(Stream<T> stream) {
 		this.source = stream.spliterator();

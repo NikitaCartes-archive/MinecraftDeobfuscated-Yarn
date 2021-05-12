@@ -294,9 +294,9 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 		return this.enabledColumns.contains(l);
 	}
 
-	public static final class Data extends ChunkToNibbleArrayMap<SkyLightStorage.Data> {
-		private int minSectionY;
-		private final Long2IntOpenHashMap columnToTopSection;
+	protected static final class Data extends ChunkToNibbleArrayMap<SkyLightStorage.Data> {
+		int minSectionY;
+		final Long2IntOpenHashMap columnToTopSection;
 
 		public Data(Long2ObjectOpenHashMap<ChunkNibbleArray> arrays, Long2IntOpenHashMap columnToTopSection, int minSectionY) {
 			super(arrays);

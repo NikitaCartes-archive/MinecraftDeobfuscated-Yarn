@@ -19,25 +19,14 @@ public class EntityHorseSplitFix extends EntityTransformFix {
 		Dynamic<?> dynamic = typed.get(DSL.remainderFinder());
 		if (Objects.equals("EntityHorse", choice)) {
 			int i = dynamic.get("Type").asInt(0);
-			String string;
-			switch (i) {
-				case 0:
-				default:
-					string = "Horse";
-					break;
-				case 1:
-					string = "Donkey";
-					break;
-				case 2:
-					string = "Mule";
-					break;
-				case 3:
-					string = "ZombieHorse";
-					break;
-				case 4:
-					string = "SkeletonHorse";
-			}
 
+			String string = switch (i) {
+				default -> "Horse";
+				case 1 -> "Donkey";
+				case 2 -> "Mule";
+				case 3 -> "ZombieHorse";
+				case 4 -> "SkeletonHorse";
+			};
 			dynamic.remove("Type");
 			Type<?> type = (Type<?>)this.getOutputSchema().findChoiceType(TypeReferences.ENTITY).types().get(string);
 			return Pair.of(

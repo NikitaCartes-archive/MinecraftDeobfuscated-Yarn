@@ -116,33 +116,38 @@ public class AnvilLevelStorage {
 						NbtCompound nbtCompound;
 						try {
 							DataInputStream dataInputStream = regionFile.getChunkInputStream(chunkPos);
-							Throwable alphaChunk = null;
 
-							try {
-								if (dataInputStream == null) {
+							label111: {
+								try {
+									if (dataInputStream != null) {
+										nbtCompound = NbtIo.read(dataInputStream);
+										break label111;
+									}
+
 									LOGGER.warn("Failed to fetch input stream for chunk {}", chunkPos);
-									continue;
-								}
-
-								nbtCompound = NbtIo.read(dataInputStream);
-							} catch (Throwable var105) {
-								alphaChunk = var105;
-								throw var105;
-							} finally {
-								if (dataInputStream != null) {
-									if (alphaChunk != null) {
+								} catch (Throwable var26) {
+									if (dataInputStream != null) {
 										try {
 											dataInputStream.close();
-										} catch (Throwable var102) {
-											alphaChunk.addSuppressed(var102);
+										} catch (Throwable var24) {
+											var26.addSuppressed(var24);
 										}
-									} else {
-										dataInputStream.close();
 									}
+
+									throw var26;
 								}
+
+								if (dataInputStream != null) {
+									dataInputStream.close();
+								}
+								continue;
 							}
-						} catch (IOException var107) {
-							LOGGER.warn("Failed to read data for chunk {}", chunkPos, var107);
+
+							if (dataInputStream != null) {
+								dataInputStream.close();
+							}
+						} catch (IOException var27) {
+							LOGGER.warn("Failed to read data for chunk {}", chunkPos, var27);
 							continue;
 						}
 
@@ -153,25 +158,23 @@ public class AnvilLevelStorage {
 						nbtCompound3.put("Level", nbtCompound4);
 						AlphaChunkIo.convertAlphaChunk(registryManager, alphaChunk, nbtCompound4, biomeSource);
 						DataOutputStream dataOutputStream = regionFile2.getChunkOutputStream(chunkPos);
-						Throwable var21 = null;
 
 						try {
 							NbtIo.write(nbtCompound3, dataOutputStream);
-						} catch (Throwable var103) {
-							var21 = var103;
-							throw var103;
-						} finally {
+						} catch (Throwable var25) {
 							if (dataOutputStream != null) {
-								if (var21 != null) {
-									try {
-										dataOutputStream.close();
-									} catch (Throwable var101) {
-										var21.addSuppressed(var101);
-									}
-								} else {
+								try {
 									dataOutputStream.close();
+								} catch (Throwable var23) {
+									var25.addSuppressed(var23);
 								}
 							}
+
+							throw var25;
+						}
+
+						if (dataOutputStream != null) {
+							dataOutputStream.close();
 						}
 					}
 				}
@@ -182,8 +185,8 @@ public class AnvilLevelStorage {
 					progressListener.progressStagePercentage(m);
 				}
 			}
-		} catch (IOException var112) {
-			LOGGER.error("Failed to upgrade region file {}", file, var112);
+		} catch (IOException var30) {
+			LOGGER.error("Failed to upgrade region file {}", file, var30);
 		}
 	}
 

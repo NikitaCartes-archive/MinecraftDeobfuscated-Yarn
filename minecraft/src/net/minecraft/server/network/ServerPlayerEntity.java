@@ -638,8 +638,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 						return false;
 					}
 
-					if (entity instanceof PersistentProjectileEntity) {
-						PersistentProjectileEntity persistentProjectileEntity = (PersistentProjectileEntity)entity;
+					if (entity instanceof PersistentProjectileEntity persistentProjectileEntity) {
 						Entity entity2 = persistentProjectileEntity.getOwner();
 						if (entity2 instanceof PlayerEntity && !this.shouldDamagePlayer((PlayerEntity)entity2)) {
 							return false;

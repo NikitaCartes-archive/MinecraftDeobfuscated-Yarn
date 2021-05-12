@@ -222,12 +222,9 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 					this.removeFromFrame(itemStack);
 				}
 			} else {
-				if (entity instanceof PlayerEntity) {
-					PlayerEntity playerEntity = (PlayerEntity)entity;
-					if (playerEntity.getAbilities().creativeMode) {
-						this.removeFromFrame(itemStack);
-						return;
-					}
+				if (entity instanceof PlayerEntity playerEntity && playerEntity.getAbilities().creativeMode) {
+					this.removeFromFrame(itemStack);
+					return;
 				}
 
 				if (alwaysDrop) {

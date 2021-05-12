@@ -166,11 +166,12 @@ public abstract class MobEntity extends LivingEntity {
 		this.pathfindingPenalties.put(nodeType, penalty);
 	}
 
-	public boolean method_29244(PathNodeType pathNodeType) {
-		return pathNodeType != PathNodeType.DANGER_FIRE
-			&& pathNodeType != PathNodeType.DANGER_CACTUS
-			&& pathNodeType != PathNodeType.DANGER_OTHER
-			&& pathNodeType != PathNodeType.WALKABLE_DOOR;
+	/**
+	 * {@return if this entity can jump to the next node in path given the type of
+	 * the node}
+	 */
+	public boolean canJumpToNextPathNode(PathNodeType type) {
+		return type != PathNodeType.DANGER_FIRE && type != PathNodeType.DANGER_CACTUS && type != PathNodeType.DANGER_OTHER && type != PathNodeType.WALKABLE_DOOR;
 	}
 
 	protected BodyControl createBodyControl() {
@@ -730,8 +731,7 @@ public abstract class MobEntity extends LivingEntity {
 		double d = targetEntity.getX() - this.getX();
 		double e = targetEntity.getZ() - this.getZ();
 		double f;
-		if (targetEntity instanceof LivingEntity) {
-			LivingEntity livingEntity = (LivingEntity)targetEntity;
+		if (targetEntity instanceof LivingEntity livingEntity) {
 			f = livingEntity.getEyeY() - this.getEyeY();
 		} else {
 			f = (targetEntity.getBoundingBox().minY + targetEntity.getBoundingBox().maxY) / 2.0 - this.getEyeY();
@@ -849,19 +849,11 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	protected float getDropChance(EquipmentSlot slot) {
-		float f;
-		switch (slot.getType()) {
-			case HAND:
-				f = this.handDropChances[slot.getEntitySlotId()];
-				break;
-			case ARMOR:
-				f = this.armorDropChances[slot.getEntitySlotId()];
-				break;
-			default:
-				f = 0.0F;
-		}
-
-		return f;
+		return switch (slot.getType()) {
+			case HAND -> this.handDropChances[slot.getEntitySlotId()];
+			case ARMOR -> this.armorDropChances[slot.getEntitySlotId()];
+			default -> 0.0F;
+		};
 	}
 
 	protected void initEquipment(LocalDifficulty difficulty) {
@@ -1350,8 +1342,7 @@ public abstract class MobEntity extends LivingEntity {
 				this.setVelocity(this.getVelocity().multiply(0.6, 1.0, 0.6));
 			}
 
-			if (target instanceof PlayerEntity) {
-				PlayerEntity playerEntity = (PlayerEntity)target;
+			if (target instanceof PlayerEntity playerEntity) {
 				this.disablePlayerShield(playerEntity, this.getMainHandStack(), playerEntity.isUsingItem() ? playerEntity.getActiveItem() : ItemStack.EMPTY);
 			}
 

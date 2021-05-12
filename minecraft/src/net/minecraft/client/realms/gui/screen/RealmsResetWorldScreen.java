@@ -28,7 +28,7 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class RealmsResetWorldScreen extends RealmsScreen {
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogManager.getLogger();
 	private final Screen parent;
 	private final RealmsServer serverData;
 	private RealmsLabel titleLabel;
@@ -44,10 +44,10 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 	private static final Identifier NEW_WORLD_TEXTURE = new Identifier("realms", "textures/gui/realms/new_world.png");
 	private static final Identifier EXPERIENCE_TEXTURE = new Identifier("realms", "textures/gui/realms/experience.png");
 	private static final Identifier INSPIRATION_TEXTURE = new Identifier("realms", "textures/gui/realms/inspiration.png");
-	private WorldTemplatePaginatedList normalWorldTemplates;
-	private WorldTemplatePaginatedList adventureWorldTemplates;
-	private WorldTemplatePaginatedList experienceWorldTemplates;
-	private WorldTemplatePaginatedList inspirationWorldTemplates;
+	WorldTemplatePaginatedList normalWorldTemplates;
+	WorldTemplatePaginatedList adventureWorldTemplates;
+	WorldTemplatePaginatedList experienceWorldTemplates;
+	WorldTemplatePaginatedList inspirationWorldTemplates;
 	public int slot = -1;
 	private Text resetTitle = new TranslatableText("mco.reset.world.resetting.screen.title");
 	private final Runnable resetCallback;
@@ -216,7 +216,7 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
-	private void drawFrame(MatrixStack matrices, int x, int y, Text text, Identifier texture, boolean hovered, boolean mouseOver) {
+	void drawFrame(MatrixStack matrices, int x, int y, Text text, Identifier texture, boolean hovered, boolean mouseOver) {
 		RenderSystem.setShaderTexture(0, texture);
 		if (hovered) {
 			RenderSystem.setShaderColor(0.56F, 0.56F, 0.56F, 1.0F);

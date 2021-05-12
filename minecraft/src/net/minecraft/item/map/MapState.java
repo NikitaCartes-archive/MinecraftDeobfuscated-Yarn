@@ -61,7 +61,7 @@ public class MapState extends PersistentState {
 	 * Empty for the client.
 	 */
 	private final Map<String, MapBannerMarker> banners = Maps.<String, MapBannerMarker>newHashMap();
-	private final Map<String, MapIcon> icons = Maps.<String, MapIcon>newLinkedHashMap();
+	final Map<String, MapIcon> icons = Maps.<String, MapIcon>newLinkedHashMap();
 	private final Map<String, MapFrameMarker> frames = Maps.<String, MapFrameMarker>newHashMap();
 
 	private MapState(int centerX, int centerZ, byte scale, boolean showIcons, boolean unlimitedTracking, boolean locked, RegistryKey<World> dimension) {
@@ -380,7 +380,7 @@ public class MapState extends PersistentState {
 
 	private void markIconsDirty() {
 		this.markDirty();
-		this.updateTrackers.forEach(object -> ((MapState.PlayerUpdateTracker)object).markIconsDirty());
+		this.updateTrackers.forEach(MapState.PlayerUpdateTracker::markIconsDirty);
 	}
 
 	public MapState.PlayerUpdateTracker getPlayerSyncData(PlayerEntity player) {
@@ -494,8 +494,8 @@ public class MapState extends PersistentState {
 		private int emptyPacketsRequested;
 		public int field_131;
 
-		private PlayerUpdateTracker(PlayerEntity player) {
-			this.player = player;
+		PlayerUpdateTracker(PlayerEntity playerEntity) {
+			this.player = playerEntity;
 		}
 
 		private MapState.UpdateData getMapUpdateData() {
@@ -515,7 +515,7 @@ public class MapState extends PersistentState {
 		}
 
 		@Nullable
-		private Packet<?> getPacket(int mapId) {
+		Packet<?> getPacket(int mapId) {
 			MapState.UpdateData updateData;
 			if (this.dirty) {
 				this.dirty = false;
@@ -535,7 +535,7 @@ public class MapState extends PersistentState {
 			return collection == null && updateData == null ? null : new MapUpdateS2CPacket(mapId, MapState.this.scale, MapState.this.locked, collection, updateData);
 		}
 
-		private void markDirty(int startX, int startZ) {
+		void markDirty(int startX, int startZ) {
 			if (this.dirty) {
 				this.startX = Math.min(this.startX, startX);
 				this.startZ = Math.min(this.startZ, startZ);

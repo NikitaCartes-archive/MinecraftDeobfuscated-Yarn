@@ -90,7 +90,7 @@ public class BlockPatternBuilder {
 
 		for (Entry<Character, Predicate<CachedBlockPosition>> entry : this.charMap.entrySet()) {
 			if (entry.getValue() == null) {
-				list.add(entry.getKey());
+				list.add((Character)entry.getKey());
 			}
 		}
 

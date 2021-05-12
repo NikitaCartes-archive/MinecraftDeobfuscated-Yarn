@@ -97,6 +97,6 @@ public class JigsawJunction {
 			+ this.deltaY
 			+ ", destProjection="
 			+ this.destProjection
-			+ '}';
+			+ "}";
 	}
 }

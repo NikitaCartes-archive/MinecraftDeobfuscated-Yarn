@@ -12,7 +12,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class BredAnimalsCriterion extends AbstractCriterion<BredAnimalsCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("bred_animals");
+	static final Identifier ID = new Identifier("bred_animals");
 
 	@Override
 	public Identifier getId() {

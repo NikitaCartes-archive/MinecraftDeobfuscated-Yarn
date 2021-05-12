@@ -24,10 +24,10 @@ import net.minecraft.text.Text;
 import net.minecraft.util.JsonHelper;
 
 public class SetLoreLootFunction extends ConditionalLootFunction {
-	private final boolean replace;
-	private final List<Text> lore;
+	final boolean replace;
+	final List<Text> lore;
 	@Nullable
-	private final LootContext.EntityTarget entity;
+	final LootContext.EntityTarget entity;
 
 	public SetLoreLootFunction(LootCondition[] conditions, boolean replace, List<Text> lore, @Nullable LootContext.EntityTarget entity) {
 		super(conditions);

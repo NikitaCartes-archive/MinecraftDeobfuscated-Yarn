@@ -42,6 +42,10 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public class SpiderEntity extends HostileEntity {
+	/**
+	 * The tracked flags of spiders. Only has the {@code 1} bit for {@linkplain
+	 * #isClimbingWall() wall climbing}.
+	 */
 	private static final TrackedData<Byte> SPIDER_FLAGS = DataTracker.registerData(SpiderEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final float field_30498 = 0.1F;
 

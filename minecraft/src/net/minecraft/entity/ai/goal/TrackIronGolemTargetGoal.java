@@ -12,7 +12,7 @@ import net.minecraft.util.math.Box;
 public class TrackIronGolemTargetGoal extends TrackTargetGoal {
 	private final IronGolemEntity golem;
 	private LivingEntity target;
-	private final TargetPredicate targetPredicate = new TargetPredicate().setBaseMaxDistance(64.0);
+	private final TargetPredicate targetPredicate = TargetPredicate.createAttackable().setBaseMaxDistance(64.0);
 
 	public TrackIronGolemTargetGoal(IronGolemEntity golem) {
 		super(golem, false, true);

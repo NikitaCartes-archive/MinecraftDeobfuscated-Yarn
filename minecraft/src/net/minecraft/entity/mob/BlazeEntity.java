@@ -30,6 +30,10 @@ import net.minecraft.world.WorldEvents;
 public class BlazeEntity extends HostileEntity {
 	private float eyeOffset = 0.5F;
 	private int eyeOffsetCooldown;
+	/**
+	 * The tracked flags of blazes. Only has the {@code 1} bit for {@linkplain
+	 * #isFireActive() fire activation}.
+	 */
 	private static final TrackedData<Byte> BLAZE_FLAGS = DataTracker.registerData(BlazeEntity.class, TrackedDataHandlerRegistry.BYTE);
 
 	public BlazeEntity(EntityType<? extends BlazeEntity> entityType, World world) {
@@ -151,7 +155,7 @@ public class BlazeEntity extends HostileEntity {
 		return (this.dataTracker.get(BLAZE_FLAGS) & 1) != 0;
 	}
 
-	private void setFireActive(boolean fireActive) {
+	void setFireActive(boolean fireActive) {
 		byte b = this.dataTracker.get(BLAZE_FLAGS);
 		if (fireActive) {
 			b = (byte)(b | 1);

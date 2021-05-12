@@ -124,7 +124,7 @@ public class TaskExecutor<T> implements MetricSamplerSupplier, MessageListener<T
 		return i;
 	}
 
-	public int method_34996() {
+	public int getQueueSize() {
 		return this.queue.getSize();
 	}
 

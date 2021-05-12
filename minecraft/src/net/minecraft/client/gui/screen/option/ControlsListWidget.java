@@ -21,8 +21,8 @@ import org.apache.commons.lang3.ArrayUtils;
 
 @Environment(EnvType.CLIENT)
 public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Entry> {
-	private final ControlsOptionsScreen parent;
-	private int maxKeyNameLength;
+	final ControlsOptionsScreen parent;
+	int maxKeyNameLength;
 
 	public ControlsListWidget(ControlsOptionsScreen parent, MinecraftClient client) {
 		super(client, parent.width + 45, parent.height, 43, parent.height - 32, 20);
@@ -97,19 +97,19 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 		private final ButtonWidget editButton;
 		private final ButtonWidget resetButton;
 
-		private KeyBindingEntry(KeyBinding binding, Text text) {
-			this.binding = binding;
+		KeyBindingEntry(KeyBinding keyBinding, Text text) {
+			this.binding = keyBinding;
 			this.bindingName = text;
-			this.editButton = new ButtonWidget(0, 0, 75, 20, text, button -> ControlsListWidget.this.parent.focusedBinding = binding) {
+			this.editButton = new ButtonWidget(0, 0, 75, 20, text, button -> ControlsListWidget.this.parent.focusedBinding = keyBinding) {
 				@Override
 				protected MutableText getNarrationMessage() {
-					return binding.isUnbound()
+					return keyBinding.isUnbound()
 						? new TranslatableText("narrator.controls.unbound", text)
 						: new TranslatableText("narrator.controls.bound", text, super.getNarrationMessage());
 				}
 			};
 			this.resetButton = new ButtonWidget(0, 0, 50, 20, new TranslatableText("controls.reset"), button -> {
-				ControlsListWidget.this.client.options.setKeyCode(binding, binding.getDefaultKey());
+				ControlsListWidget.this.client.options.setKeyCode(keyBinding, keyBinding.getDefaultKey());
 				KeyBinding.updateKeysByCode();
 			}) {
 				@Override
@@ -122,9 +122,8 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 		@Override
 		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			boolean bl = ControlsListWidget.this.parent.focusedBinding == this.binding;
-			ControlsListWidget.this.client
-				.textRenderer
-				.draw(matrices, this.bindingName, (float)(x + 90 - ControlsListWidget.this.maxKeyNameLength), (float)(y + entryHeight / 2 - 9 / 2), 16777215);
+			float var10003 = (float)(x + 90 - ControlsListWidget.this.maxKeyNameLength);
+			ControlsListWidget.this.client.textRenderer.draw(matrices, this.bindingName, var10003, (float)(y + entryHeight / 2 - 9 / 2), 16777215);
 			this.resetButton.x = x + 190;
 			this.resetButton.y = y;
 			this.resetButton.active = !this.binding.isDefault();

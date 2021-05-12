@@ -228,8 +228,7 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 				}
 			}
 
-			if (shooter instanceof CrossbowUser) {
-				CrossbowUser crossbowUser = (CrossbowUser)shooter;
+			if (shooter instanceof CrossbowUser crossbowUser) {
 				crossbowUser.shoot(crossbowUser.getTarget(), crossbow, projectileEntity, simulated);
 			} else {
 				Vec3d vec3d = shooter.getOppositeRotationVector(1.0F);
@@ -295,8 +294,7 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 	}
 
 	private static void postShoot(World world, LivingEntity entity, ItemStack stack) {
-		if (entity instanceof ServerPlayerEntity) {
-			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
+		if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
 			if (!world.isClient) {
 				Criteria.SHOT_CROSSBOW.trigger(serverPlayerEntity, stack);
 			}

@@ -10,7 +10,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class TameAnimalCriterion extends AbstractCriterion<TameAnimalCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("tame_animal");
+	static final Identifier ID = new Identifier("tame_animal");
 
 	@Override
 	public Identifier getId() {

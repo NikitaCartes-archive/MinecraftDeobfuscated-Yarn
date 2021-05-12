@@ -17,7 +17,7 @@ import org.apache.logging.log4j.Logger;
 
 public class Schema99 extends Schema {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Map<String, String> field_5748 = DataFixUtils.make(Maps.<String, String>newHashMap(), hashMap -> {
+	static final Map<String, String> field_5748 = DataFixUtils.make(Maps.<String, String>newHashMap(), hashMap -> {
 		hashMap.put("minecraft:furnace", "Furnace");
 		hashMap.put("minecraft:lit_furnace", "Furnace");
 		hashMap.put("minecraft:chest", "Chest");

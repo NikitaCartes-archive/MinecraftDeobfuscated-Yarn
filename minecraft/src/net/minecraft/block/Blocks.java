@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.function.ToIntFunction;
 import net.minecraft.block.cauldron.CauldronBehavior;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.enums.BedPart;
@@ -3350,15 +3349,9 @@ public class Blocks {
 	}
 
 	private static ShulkerBoxBlock createShulkerBoxBlock(DyeColor color, AbstractBlock.Settings settings) {
-		AbstractBlock.ContextPredicate contextPredicate = (state, world, pos) -> {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
-			if (!(blockEntity instanceof ShulkerBoxBlockEntity)) {
-				return true;
-			} else {
-				ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
-				return shulkerBoxBlockEntity.suffocates();
-			}
-		};
+		AbstractBlock.ContextPredicate contextPredicate = (state, world, pos) -> !(world.getBlockEntity(pos) instanceof ShulkerBoxBlockEntity shulkerBoxBlockEntity)
+				? true
+				: shulkerBoxBlockEntity.suffocates();
 		return new ShulkerBoxBlock(color, settings.strength(2.0F).dynamicBounds().nonOpaque().suffocates(contextPredicate).blockVision(contextPredicate));
 	}
 

@@ -63,7 +63,7 @@ public class OcelotEntity extends AnimalEntity {
 		this.updateFleeing();
 	}
 
-	private boolean isTrusting() {
+	boolean isTrusting() {
 		return this.dataTracker.get(TRUSTING);
 	}
 

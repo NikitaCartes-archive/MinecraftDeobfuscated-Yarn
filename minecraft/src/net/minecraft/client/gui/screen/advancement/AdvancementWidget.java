@@ -38,7 +38,7 @@ public class AdvancementWidget extends DrawableHelper {
 	private static final int field_32295 = 32;
 	private static final int field_32296 = 9;
 	private static final int field_32297 = 163;
-	private static final int[] field_24262 = new int[]{0, 10, -10, 25, -25};
+	private static final int[] SPLIT_OFFSET_CANDIDATES = new int[]{0, 10, -10, 25, -25};
 	private final AdvancementTab tab;
 	private final Advancement advancement;
 	private final AdvancementDisplay display;
@@ -74,8 +74,8 @@ public class AdvancementWidget extends DrawableHelper {
 		this.width = l + 3 + 5;
 	}
 
-	private static float getMaxWidth(TextHandler textHandler, List<StringVisitable> list) {
-		return (float)list.stream().mapToDouble(textHandler::getWidth).max().orElse(0.0);
+	private static float getMaxWidth(TextHandler textHandler, List<StringVisitable> lines) {
+		return (float)lines.stream().mapToDouble(textHandler::getWidth).max().orElse(0.0);
 	}
 
 	private List<StringVisitable> wrapDescription(Text text, int width) {
@@ -83,7 +83,7 @@ public class AdvancementWidget extends DrawableHelper {
 		List<StringVisitable> list = null;
 		float f = Float.MAX_VALUE;
 
-		for (int i : field_24262) {
+		for (int i : SPLIT_OFFSET_CANDIDATES) {
 			List<StringVisitable> list2 = textHandler.wrapLines(text, width - i, Style.EMPTY);
 			float g = Math.abs(getMaxWidth(textHandler, list2) - (float)width);
 			if (g <= 10.0F) {

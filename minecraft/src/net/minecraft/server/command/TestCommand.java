@@ -318,17 +318,17 @@ public class TestCommand {
 		TestUtil.startTest(gameTestState, blockPos, TestManager.INSTANCE);
 	}
 
-	private static void onCompletion(ServerWorld world, TestSet tests) {
+	static void onCompletion(ServerWorld world, TestSet tests) {
 		if (tests.isDone()) {
 			sendMessage(world, "GameTest done! " + tests.getTestCount() + " tests were run", Formatting.WHITE);
 			if (tests.failed()) {
-				sendMessage(world, "" + tests.getFailedRequiredTestCount() + " required tests failed :(", Formatting.RED);
+				sendMessage(world, tests.getFailedRequiredTestCount() + " required tests failed :(", Formatting.RED);
 			} else {
 				sendMessage(world, "All required tests passed :)", Formatting.GREEN);
 			}
 
 			if (tests.hasFailedOptionalTests()) {
-				sendMessage(world, "" + tests.getFailedOptionalTestCount() + " optional tests failed", Formatting.GRAY);
+				sendMessage(world, tests.getFailedOptionalTestCount() + " optional tests failed", Formatting.GRAY);
 			}
 		}
 	}
@@ -463,32 +463,30 @@ public class TestCommand {
 			String string = IOUtils.toString(bufferedReader);
 			Files.createDirectories(path2.getParent());
 			OutputStream outputStream = Files.newOutputStream(path2);
-			Throwable var8 = null;
 
 			try {
 				NbtIo.writeCompressed(NbtHelper.method_32260(string), outputStream);
-			} catch (Throwable var18) {
-				var8 = var18;
-				throw var18;
-			} finally {
+			} catch (Throwable var11) {
 				if (outputStream != null) {
-					if (var8 != null) {
-						try {
-							outputStream.close();
-						} catch (Throwable var17) {
-							var8.addSuppressed(var17);
-						}
-					} else {
+					try {
 						outputStream.close();
+					} catch (Throwable var10) {
+						var11.addSuppressed(var10);
 					}
 				}
+
+				throw var11;
+			}
+
+			if (outputStream != null) {
+				outputStream.close();
 			}
 
 			sendMessage(source, "Imported to " + path2.toAbsolutePath());
 			return 0;
-		} catch (CommandSyntaxException | IOException var20) {
+		} catch (CommandSyntaxException | IOException var12) {
 			System.err.println("Failed to load structure " + structure);
-			var20.printStackTrace();
+			var12.printStackTrace();
 			return 1;
 		}
 	}

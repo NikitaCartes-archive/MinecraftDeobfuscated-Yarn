@@ -95,7 +95,7 @@ public class StorageIoWorker implements AutoCloseable {
 	private <T> CompletableFuture<T> run(Supplier<Either<T, Exception>> task) {
 		return this.executor.askFallible(messageListener -> new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.FOREGROUND.ordinal(), () -> {
 				if (!this.closed.get()) {
-					messageListener.send(task.get());
+					messageListener.send((Either)task.get());
 				}
 
 				this.writeRemainingResults();
@@ -149,8 +149,8 @@ public class StorageIoWorker implements AutoCloseable {
 
 	static class Result {
 		@Nullable
-		private NbtCompound nbt;
-		private final CompletableFuture<Void> future = new CompletableFuture();
+		NbtCompound nbt;
+		final CompletableFuture<Void> future = new CompletableFuture();
 
 		public Result(@Nullable NbtCompound nbt) {
 			this.nbt = nbt;

@@ -76,7 +76,7 @@ public class LinkedBlockPosHashSet extends LongLinkedOpenHashSet {
 	 * Represents a three-dimensional mapping from a block position to a bitset
 	 * of values set at that position.
 	 */
-	public static class Storage extends Long2LongLinkedOpenHashMap {
+	protected static class Storage extends Long2LongLinkedOpenHashMap {
 		private static final int STARTING_OFFSET = MathHelper.log2(60000000);
 		private static final int HORIZONTAL_COLUMN_BIT_SEPARATION = MathHelper.log2(60000000);
 		private static final int FIELD_SPACING = 64 - STARTING_OFFSET - HORIZONTAL_COLUMN_BIT_SEPARATION;

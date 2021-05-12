@@ -278,20 +278,20 @@ public class WallBlock extends Block implements Waterloggable {
 	public BlockState rotate(BlockState state, BlockRotation rotation) {
 		switch (rotation) {
 			case CLOCKWISE_180:
-				return state.with(NORTH_SHAPE, state.get(SOUTH_SHAPE))
-					.with(EAST_SHAPE, state.get(WEST_SHAPE))
-					.with(SOUTH_SHAPE, state.get(NORTH_SHAPE))
-					.with(WEST_SHAPE, state.get(EAST_SHAPE));
+				return state.with(NORTH_SHAPE, (WallShape)state.get(SOUTH_SHAPE))
+					.with(EAST_SHAPE, (WallShape)state.get(WEST_SHAPE))
+					.with(SOUTH_SHAPE, (WallShape)state.get(NORTH_SHAPE))
+					.with(WEST_SHAPE, (WallShape)state.get(EAST_SHAPE));
 			case COUNTERCLOCKWISE_90:
-				return state.with(NORTH_SHAPE, state.get(EAST_SHAPE))
-					.with(EAST_SHAPE, state.get(SOUTH_SHAPE))
-					.with(SOUTH_SHAPE, state.get(WEST_SHAPE))
-					.with(WEST_SHAPE, state.get(NORTH_SHAPE));
+				return state.with(NORTH_SHAPE, (WallShape)state.get(EAST_SHAPE))
+					.with(EAST_SHAPE, (WallShape)state.get(SOUTH_SHAPE))
+					.with(SOUTH_SHAPE, (WallShape)state.get(WEST_SHAPE))
+					.with(WEST_SHAPE, (WallShape)state.get(NORTH_SHAPE));
 			case CLOCKWISE_90:
-				return state.with(NORTH_SHAPE, state.get(WEST_SHAPE))
-					.with(EAST_SHAPE, state.get(NORTH_SHAPE))
-					.with(SOUTH_SHAPE, state.get(EAST_SHAPE))
-					.with(WEST_SHAPE, state.get(SOUTH_SHAPE));
+				return state.with(NORTH_SHAPE, (WallShape)state.get(WEST_SHAPE))
+					.with(EAST_SHAPE, (WallShape)state.get(NORTH_SHAPE))
+					.with(SOUTH_SHAPE, (WallShape)state.get(EAST_SHAPE))
+					.with(WEST_SHAPE, (WallShape)state.get(SOUTH_SHAPE));
 			default:
 				return state;
 		}
@@ -301,9 +301,9 @@ public class WallBlock extends Block implements Waterloggable {
 	public BlockState mirror(BlockState state, BlockMirror mirror) {
 		switch (mirror) {
 			case LEFT_RIGHT:
-				return state.with(NORTH_SHAPE, state.get(SOUTH_SHAPE)).with(SOUTH_SHAPE, state.get(NORTH_SHAPE));
+				return state.with(NORTH_SHAPE, (WallShape)state.get(SOUTH_SHAPE)).with(SOUTH_SHAPE, (WallShape)state.get(NORTH_SHAPE));
 			case FRONT_BACK:
-				return state.with(EAST_SHAPE, state.get(WEST_SHAPE)).with(WEST_SHAPE, state.get(EAST_SHAPE));
+				return state.with(EAST_SHAPE, (WallShape)state.get(WEST_SHAPE)).with(WEST_SHAPE, (WallShape)state.get(EAST_SHAPE));
 			default:
 				return super.mirror(state, mirror);
 		}

@@ -709,8 +709,7 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 			entity.refreshPositionAndAngles(
 				(double)pos.getX() + 0.5, (double)pos.getY() + d, (double)pos.getZ() + 0.5, MathHelper.wrapDegrees(world.random.nextFloat() * 360.0F), 0.0F
 			);
-			if (entity instanceof MobEntity) {
-				MobEntity mobEntity = (MobEntity)entity;
+			if (entity instanceof MobEntity mobEntity) {
 				mobEntity.headYaw = mobEntity.getYaw();
 				mobEntity.bodyYaw = mobEntity.getYaw();
 				mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), spawnReason, null, itemNbt);
@@ -791,7 +790,7 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 		return this.getTranslationKey();
 	}
 
-	public String method_35050() {
+	public String getUntranslatedName() {
 		int i = this.getTranslationKey().lastIndexOf(46);
 		return i == -1 ? this.getTranslationKey() : this.getTranslationKey().substring(i + 1);
 	}

@@ -13,9 +13,9 @@ import net.minecraft.world.World;
 
 public class ShapelessRecipe implements CraftingRecipe {
 	private final Identifier id;
-	private final String group;
-	private final ItemStack output;
-	private final DefaultedList<Ingredient> input;
+	final String group;
+	final ItemStack output;
+	final DefaultedList<Ingredient> input;
 
 	public ShapelessRecipe(Identifier id, String group, ItemStack output, DefaultedList<Ingredient> input) {
 		this.id = id;

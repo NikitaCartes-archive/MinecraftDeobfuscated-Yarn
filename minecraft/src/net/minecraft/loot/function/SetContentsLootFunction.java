@@ -19,11 +19,11 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
 
 public class SetContentsLootFunction extends ConditionalLootFunction {
-	private final List<LootPoolEntry> entries;
+	final List<LootPoolEntry> entries;
 
-	private SetContentsLootFunction(LootCondition[] conditions, List<LootPoolEntry> entries) {
-		super(conditions);
-		this.entries = ImmutableList.copyOf(entries);
+	SetContentsLootFunction(LootCondition[] lootConditions, List<LootPoolEntry> list) {
+		super(lootConditions);
+		this.entries = ImmutableList.copyOf(list);
 	}
 
 	@Override

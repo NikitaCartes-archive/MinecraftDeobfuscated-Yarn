@@ -22,7 +22,7 @@ import net.minecraft.client.gui.AbstractParentElement;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.item.TooltipData;
 import net.minecraft.client.render.BufferBuilder;
@@ -63,7 +63,7 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 	protected ItemRenderer itemRenderer;
 	public int width;
 	public int height;
-	protected final List<AbstractButtonWidget> buttons = Lists.<AbstractButtonWidget>newArrayList();
+	protected final List<ClickableWidget> buttons = Lists.<ClickableWidget>newArrayList();
 	public boolean passEvents;
 	public TextRenderer textRenderer;
 	private URI clickedLink;
@@ -83,7 +83,7 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		for (int i = 0; i < this.buttons.size(); i++) {
-			((AbstractButtonWidget)this.buttons.get(i)).render(matrices, mouseX, mouseY, delta);
+			((ClickableWidget)this.buttons.get(i)).render(matrices, mouseX, mouseY, delta);
 		}
 	}
 
@@ -119,7 +119,7 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 	 * Adds a button to this screen.
 	 * This method should be preferred over {@link Screen#addChild(Element)} since buttons are automatically rendered when added to a screen.
 	 */
-	protected <T extends AbstractButtonWidget> T addButton(T button) {
+	protected <T extends ClickableWidget> T addButton(T button) {
 		this.buttons.add(button);
 		return this.addChild(button);
 	}

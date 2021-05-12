@@ -4,7 +4,6 @@ import java.util.Calendar;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractChestBlock;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
@@ -100,9 +99,7 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 		boolean bl = world != null;
 		BlockState blockState = bl ? entity.getCachedState() : Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
 		ChestType chestType = blockState.contains((Property<T>)ChestBlock.CHEST_TYPE) ? blockState.get(ChestBlock.CHEST_TYPE) : ChestType.SINGLE;
-		Block block = blockState.getBlock();
-		if (block instanceof AbstractChestBlock) {
-			AbstractChestBlock<?> abstractChestBlock = (AbstractChestBlock<?>)block;
+		if (blockState.getBlock() instanceof AbstractChestBlock<?> abstractChestBlock) {
 			boolean bl2 = chestType != ChestType.SINGLE;
 			matrices.push();
 			float f = ((Direction)blockState.get(ChestBlock.FACING)).asRotation();

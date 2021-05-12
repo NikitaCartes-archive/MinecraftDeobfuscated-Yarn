@@ -10,7 +10,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class ToggleButtonWidget extends AbstractButtonWidget {
+public class ToggleButtonWidget extends ClickableWidget {
 	protected Identifier texture;
 	protected boolean toggled;
 	protected int u;

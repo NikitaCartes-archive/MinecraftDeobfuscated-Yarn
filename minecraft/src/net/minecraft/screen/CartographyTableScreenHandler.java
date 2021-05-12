@@ -23,7 +23,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 	private static final int field_30778 = 30;
 	private static final int field_30779 = 39;
 	private final ScreenHandlerContext context;
-	private long lastTakeResultTime;
+	long lastTakeResultTime;
 	public final Inventory inventory = new SimpleInventory(2) {
 		@Override
 		public void markDirty() {

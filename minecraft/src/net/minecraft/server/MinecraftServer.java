@@ -172,7 +172,7 @@ import org.apache.logging.log4j.Logger;
  * @see net.minecraft.server.integrated.IntegratedServer
  */
 public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask> implements SnooperListener, CommandOutput, AutoCloseable {
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogManager.getLogger();
 	private static final float field_33212 = 0.8F;
 	private static final int field_33213 = 100;
 	public static final int field_33206 = 50;
@@ -572,7 +572,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			String string = this.session.getDirectoryName();
 
 			try {
-				this.setResourcePack("level://" + URLEncoder.encode(string, StandardCharsets.UTF_8.toString()) + "/" + "resources.zip", "");
+				this.setResourcePack("level://" + URLEncoder.encode(string, StandardCharsets.UTF_8.toString()) + "/resources.zip", "");
 			} catch (UnsupportedEncodingException var4) {
 				LOGGER.warn("Something went wrong url encoding {}", string);
 			}
@@ -628,7 +628,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.shutdown();
 	}
 
-	protected void shutdown() {
+	public void shutdown() {
 		LOGGER.info("Stopping server");
 		if (this.getNetworkIo() != null) {
 			this.getNetworkIo().stop();
@@ -848,10 +848,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	protected void setCrashReport(CrashReport report) {
 	}
 
-	protected void exit() {
+	public void exit() {
 	}
 
-	protected void tick(BooleanSupplier shouldKeepTicking) {
+	public void tick(BooleanSupplier shouldKeepTicking) {
 		long l = Util.getMeasuringTimeNano();
 		this.ticks++;
 		this.tickWorlds(shouldKeepTicking);
@@ -896,7 +896,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.profiler.pop();
 	}
 
-	protected void tickWorlds(BooleanSupplier shouldKeepTicking) {
+	public void tickWorlds(BooleanSupplier shouldKeepTicking) {
 		this.profiler.push("commandFunctions");
 		this.getCommandFunctionManager().tick();
 		this.profiler.swap("levels");
@@ -1107,7 +1107,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		player.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
 	}
 
-	protected boolean isMonsterSpawningEnabled() {
+	public boolean isMonsterSpawningEnabled() {
 		return this.saveProperties.getDifficulty() != Difficulty.PEACEFUL;
 	}
 
@@ -1618,28 +1618,26 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	private void dumpStats(Path path) throws IOException {
 		Writer writer = Files.newBufferedWriter(path);
-		Throwable var3 = null;
 
 		try {
 			writer.write(String.format("pending_tasks: %d\n", this.getTaskCount()));
 			writer.write(String.format("average_tick_time: %f\n", this.getTickTime()));
 			writer.write(String.format("tick_times: %s\n", Arrays.toString(this.lastTickLengths)));
 			writer.write(String.format("queue: %s\n", Util.getMainWorkerExecutor()));
-		} catch (Throwable var12) {
-			var3 = var12;
-			throw var12;
-		} finally {
+		} catch (Throwable var6) {
 			if (writer != null) {
-				if (var3 != null) {
-					try {
-						writer.close();
-					} catch (Throwable var11) {
-						var3.addSuppressed(var11);
-					}
-				} else {
+				try {
 					writer.close();
+				} catch (Throwable var5) {
+					var6.addSuppressed(var5);
 				}
 			}
+
+			throw var6;
+		}
+
+		if (writer != null) {
+			writer.close();
 		}
 	}
 
@@ -1647,31 +1645,28 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		CrashReport crashReport = new CrashReport("Server dump", new Exception("dummy"));
 		this.populateCrashReport(crashReport.getSystemDetailsSection());
 		Writer writer = Files.newBufferedWriter(path);
-		Throwable var4 = null;
 
 		try {
 			writer.write(crashReport.asString());
-		} catch (Throwable var13) {
-			var4 = var13;
-			throw var13;
-		} finally {
+		} catch (Throwable var7) {
 			if (writer != null) {
-				if (var4 != null) {
-					try {
-						writer.close();
-					} catch (Throwable var12) {
-						var4.addSuppressed(var12);
-					}
-				} else {
+				try {
 					writer.close();
+				} catch (Throwable var6) {
+					var7.addSuppressed(var6);
 				}
 			}
+
+			throw var7;
+		}
+
+		if (writer != null) {
+			writer.close();
 		}
 	}
 
 	private void dumpGamerules(Path path) throws IOException {
 		Writer writer = Files.newBufferedWriter(path);
-		Throwable var3 = null;
 
 		try {
 			final List<String> list = Lists.<String>newArrayList();
@@ -1686,27 +1681,25 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			for (String string : list) {
 				writer.write(string);
 			}
-		} catch (Throwable var15) {
-			var3 = var15;
-			throw var15;
-		} finally {
+		} catch (Throwable var8) {
 			if (writer != null) {
-				if (var3 != null) {
-					try {
-						writer.close();
-					} catch (Throwable var14) {
-						var3.addSuppressed(var14);
-					}
-				} else {
+				try {
 					writer.close();
+				} catch (Throwable var7) {
+					var8.addSuppressed(var7);
 				}
 			}
+
+			throw var8;
+		}
+
+		if (writer != null) {
+			writer.close();
 		}
 	}
 
 	private void dumpClasspath(Path path) throws IOException {
 		Writer writer = Files.newBufferedWriter(path);
-		Throwable var3 = null;
 
 		try {
 			String string = System.getProperty("java.class.path");
@@ -1716,21 +1709,20 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				writer.write(string3);
 				writer.write("\n");
 			}
-		} catch (Throwable var15) {
-			var3 = var15;
-			throw var15;
-		} finally {
+		} catch (Throwable var8) {
 			if (writer != null) {
-				if (var3 != null) {
-					try {
-						writer.close();
-					} catch (Throwable var14) {
-						var3.addSuppressed(var14);
-					}
-				} else {
+				try {
 					writer.close();
+				} catch (Throwable var7) {
+					var8.addSuppressed(var7);
 				}
 			}
+
+			throw var8;
+		}
+
+		if (writer != null) {
+			writer.close();
 		}
 	}
 
@@ -1739,28 +1731,26 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		ThreadInfo[] threadInfos = threadMXBean.dumpAllThreads(true, true);
 		Arrays.sort(threadInfos, Comparator.comparing(ThreadInfo::getThreadName));
 		Writer writer = Files.newBufferedWriter(path);
-		Throwable var5 = null;
 
 		try {
 			for (ThreadInfo threadInfo : threadInfos) {
 				writer.write(threadInfo.toString());
 				writer.write(10);
 			}
-		} catch (Throwable var17) {
-			var5 = var17;
-			throw var17;
-		} finally {
+		} catch (Throwable var10) {
 			if (writer != null) {
-				if (var5 != null) {
-					try {
-						writer.close();
-					} catch (Throwable var16) {
-						var5.addSuppressed(var16);
-					}
-				} else {
+				try {
 					writer.close();
+				} catch (Throwable var9) {
+					var10.addSuppressed(var9);
 				}
 			}
+
+			throw var10;
+		}
+
+		if (writer != null) {
+			writer.close();
 		}
 	}
 

@@ -50,7 +50,7 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class GameOptions {
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogManager.getLogger();
 	private static final Gson GSON = new Gson();
 	private static final TypeToken<List<String>> STRING_LIST_TYPE = new TypeToken<List<String>>() {
 	};
@@ -347,32 +347,30 @@ public class GameOptions {
 			this.soundVolumeLevels.clear();
 			NbtCompound nbtCompound = new NbtCompound();
 			BufferedReader bufferedReader = Files.newReader(this.optionsFile, Charsets.UTF_8);
-			Throwable var3 = null;
 
 			try {
 				bufferedReader.lines().forEach(line -> {
 					try {
 						Iterator<String> iterator = COLON_SPLITTER.split(line).iterator();
 						nbtCompound.putString((String)iterator.next(), (String)iterator.next());
-					} catch (Exception var3x) {
+					} catch (Exception var3) {
 						LOGGER.warn("Skipping bad option: {}", line);
 					}
 				});
-			} catch (Throwable var13) {
-				var3 = var13;
-				throw var13;
-			} finally {
+			} catch (Throwable var6) {
 				if (bufferedReader != null) {
-					if (var3 != null) {
-						try {
-							bufferedReader.close();
-						} catch (Throwable var12) {
-							var3.addSuppressed(var12);
-						}
-					} else {
+					try {
 						bufferedReader.close();
+					} catch (Throwable var5) {
+						var6.addSuppressed(var5);
 					}
 				}
+
+				throw var6;
+			}
+
+			if (bufferedReader != null) {
+				bufferedReader.close();
 			}
 
 			final NbtCompound nbtCompound2 = this.update(nbtCompound);
@@ -482,16 +480,16 @@ public class GameOptions {
 			}
 
 			KeyBinding.updateKeysByCode();
-		} catch (Exception var15) {
-			LOGGER.error("Failed to load options", (Throwable)var15);
+		} catch (Exception var7) {
+			LOGGER.error("Failed to load options", (Throwable)var7);
 		}
 	}
 
-	private static boolean isTrue(String value) {
+	static boolean isTrue(String value) {
 		return "true".equals(value);
 	}
 
-	private static boolean isFalse(String value) {
+	static boolean isFalse(String value) {
 		return "false".equals(value);
 	}
 
@@ -509,7 +507,6 @@ public class GameOptions {
 	public void write() {
 		try {
 			final PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(new FileOutputStream(this.optionsFile), StandardCharsets.UTF_8));
-			Throwable var2 = null;
 
 			try {
 				printWriter.println("version:" + SharedConstants.getGameVersion().getWorldVersion());
@@ -571,24 +568,19 @@ public class GameOptions {
 				if (this.client.getWindow().getVideoMode().isPresent()) {
 					printWriter.println("fullscreenResolution:" + ((VideoMode)this.client.getWindow().getVideoMode().get()).asString());
 				}
-			} catch (Throwable var12) {
-				var2 = var12;
-				throw var12;
-			} finally {
-				if (printWriter != null) {
-					if (var2 != null) {
-						try {
-							printWriter.close();
-						} catch (Throwable var11) {
-							var2.addSuppressed(var11);
-						}
-					} else {
-						printWriter.close();
-					}
+			} catch (Throwable var5) {
+				try {
+					printWriter.close();
+				} catch (Throwable var4) {
+					var5.addSuppressed(var4);
 				}
+
+				throw var5;
 			}
-		} catch (Exception var14) {
-			LOGGER.error("Failed to save options", (Throwable)var14);
+
+			printWriter.close();
+		} catch (Exception var6) {
+			LOGGER.error("Failed to save options", (Throwable)var6);
 		}
 
 		this.sendClientSettings();

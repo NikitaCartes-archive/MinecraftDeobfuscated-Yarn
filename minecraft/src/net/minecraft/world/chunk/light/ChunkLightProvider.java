@@ -200,7 +200,7 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 	}
 
 	public String displaySectionLevel(long sectionPos) {
-		return "" + this.lightStorage.getLevel(sectionPos);
+		return this.lightStorage.getLevel(sectionPos) + "";
 	}
 
 	@Override

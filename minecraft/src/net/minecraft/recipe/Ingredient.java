@@ -123,7 +123,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 	}
 
 	public static Ingredient ofStacks(Stream<ItemStack> stacks) {
-		return ofEntries(stacks.filter(stack -> !stack.isEmpty()).map(stack -> new Ingredient.StackEntry(stack)));
+		return ofEntries(stacks.filter(stack -> !stack.isEmpty()).map(Ingredient.StackEntry::new));
 	}
 
 	public static Ingredient fromTag(Tag<Item> tag) {
@@ -131,7 +131,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 	}
 
 	public static Ingredient fromPacket(PacketByteBuf buf) {
-		return ofEntries(buf.readList(PacketByteBuf::readItemStack).stream().map(itemStack -> new Ingredient.StackEntry(itemStack)));
+		return ofEntries(buf.readList(PacketByteBuf::readItemStack).stream().map(Ingredient.StackEntry::new));
 	}
 
 	public static Ingredient fromJson(@Nullable JsonElement json) {
@@ -176,8 +176,8 @@ public final class Ingredient implements Predicate<ItemStack> {
 	static class StackEntry implements Ingredient.Entry {
 		private final ItemStack stack;
 
-		private StackEntry(ItemStack stack) {
-			this.stack = stack;
+		StackEntry(ItemStack itemStack) {
+			this.stack = itemStack;
 		}
 
 		@Override
@@ -196,7 +196,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 	static class TagEntry implements Ingredient.Entry {
 		private final Tag<Item> tag;
 
-		private TagEntry(Tag<Item> tag) {
+		TagEntry(Tag<Item> tag) {
 			this.tag = tag;
 		}
 

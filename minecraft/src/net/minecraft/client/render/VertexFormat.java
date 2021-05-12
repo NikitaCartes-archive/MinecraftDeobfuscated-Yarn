@@ -152,25 +152,11 @@ public class VertexFormat {
 		}
 
 		public int getSize(int vertexCount) {
-			int i;
-			switch (this) {
-				case LINE_STRIP:
-				case DEBUG_LINES:
-				case DEBUG_LINE_STRIP:
-				case TRIANGLES:
-				case TRIANGLE_STRIP:
-				case TRIANGLE_FAN:
-					i = vertexCount;
-					break;
-				case LINES:
-				case QUADS:
-					i = vertexCount / 4 * 6;
-					break;
-				default:
-					i = 0;
-			}
-
-			return i;
+			return switch (this) {
+				case LINE_STRIP, DEBUG_LINES, DEBUG_LINE_STRIP, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN -> vertexCount;
+				case LINES, QUADS -> vertexCount / 4 * 6;
+				default -> 0;
+			};
 		}
 	}
 

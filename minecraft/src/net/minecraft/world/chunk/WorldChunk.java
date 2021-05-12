@@ -61,7 +61,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class WorldChunk implements Chunk {
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogManager.getLogger();
 	private static final BlockEntityTickInvoker EMPTY_BLOCK_ENTITY_TICKER = new BlockEntityTickInvoker() {
 		@Override
 		public void tick() {
@@ -89,7 +89,7 @@ public class WorldChunk implements Chunk {
 	private final Map<BlockPos, NbtCompound> pendingBlockEntityNbts = Maps.<BlockPos, NbtCompound>newHashMap();
 	private final Map<BlockPos, WorldChunk.WrappedBlockEntityTickInvoker> blockEntityTickers = Maps.<BlockPos, WorldChunk.WrappedBlockEntityTickInvoker>newHashMap();
 	private boolean loadedToWorld;
-	private final World world;
+	final World world;
 	private final Map<Heightmap.Type, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Type.class);
 	private final UpgradeData upgradeData;
 	private final Map<BlockPos, BlockEntity> blockEntities = Maps.<BlockPos, BlockEntity>newHashMap();
@@ -421,7 +421,7 @@ public class WorldChunk implements Chunk {
 		return this.loadedToWorld || this.world.isClient();
 	}
 
-	private boolean canTickBlockEntity(BlockPos pos) {
+	boolean canTickBlockEntity(BlockPos pos) {
 		return (this.world.isClient() || this.getLevelType().isAfter(ChunkHolder.LevelType.TICKING)) && this.world.getWorldBorder().contains(pos);
 	}
 
@@ -854,7 +854,7 @@ public class WorldChunk implements Chunk {
 	}
 
 	private <T extends BlockEntity> BlockEntityTickInvoker wrapTicker(T blockEntity, BlockEntityTicker<T> blockEntityTicker) {
-		return new WorldChunk.DirectBlockEntityTickInvoker(blockEntity, blockEntityTicker);
+		return new WorldChunk.DirectBlockEntityTickInvoker<>(blockEntity, blockEntityTicker);
 	}
 
 	public static enum CreationType {
@@ -868,9 +868,9 @@ public class WorldChunk implements Chunk {
 		private final BlockEntityTicker<T> ticker;
 		private boolean hasWarned;
 
-		private DirectBlockEntityTickInvoker(T blockEntity, BlockEntityTicker<T> ticker) {
+		DirectBlockEntityTickInvoker(T blockEntity, BlockEntityTicker<T> blockEntityTicker) {
 			this.blockEntity = blockEntity;
-			this.ticker = ticker;
+			this.ticker = blockEntityTicker;
 		}
 
 		@Override
@@ -924,11 +924,11 @@ public class WorldChunk implements Chunk {
 	class WrappedBlockEntityTickInvoker implements BlockEntityTickInvoker {
 		private BlockEntityTickInvoker wrapped;
 
-		private WrappedBlockEntityTickInvoker(BlockEntityTickInvoker wrapped) {
-			this.wrapped = wrapped;
+		WrappedBlockEntityTickInvoker(BlockEntityTickInvoker blockEntityTickInvoker) {
+			this.wrapped = blockEntityTickInvoker;
 		}
 
-		private void setWrapped(BlockEntityTickInvoker wrapped) {
+		void setWrapped(BlockEntityTickInvoker wrapped) {
 			this.wrapped = wrapped;
 		}
 

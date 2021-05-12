@@ -23,8 +23,7 @@ public class MeCommand {
 								Entity entity = context.getSource().getEntity();
 								MinecraftServer minecraftServer = context.getSource().getMinecraftServer();
 								if (entity != null) {
-									if (entity instanceof ServerPlayerEntity) {
-										ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
+									if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
 										serverPlayerEntity.getTextStream()
 											.filterText(string)
 											.thenAcceptAsync(

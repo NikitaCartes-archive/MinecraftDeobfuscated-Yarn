@@ -14,12 +14,12 @@ import net.minecraft.util.JsonSerializer;
 
 public class TimeCheckLootCondition implements LootCondition {
 	@Nullable
-	private final Long period;
-	private final BoundedIntUnaryOperator value;
+	final Long period;
+	final BoundedIntUnaryOperator value;
 
-	private TimeCheckLootCondition(@Nullable Long period, BoundedIntUnaryOperator value) {
-		this.period = period;
-		this.value = value;
+	TimeCheckLootCondition(@Nullable Long long_, BoundedIntUnaryOperator boundedIntUnaryOperator) {
+		this.period = long_;
+		this.value = boundedIntUnaryOperator;
 	}
 
 	@Override

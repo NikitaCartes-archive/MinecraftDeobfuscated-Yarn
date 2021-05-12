@@ -32,9 +32,9 @@ public class Identifier implements Comparable<Identifier> {
 		this.namespace = StringUtils.isEmpty(id[0]) ? "minecraft" : id[0];
 		this.path = id[1];
 		if (!isNamespaceValid(this.namespace)) {
-			throw new InvalidIdentifierException("Non [a-z0-9_.-] character in namespace of location: " + this.namespace + ':' + this.path);
+			throw new InvalidIdentifierException("Non [a-z0-9_.-] character in namespace of location: " + this.namespace + ":" + this.path);
 		} else if (!isPathValid(this.path)) {
-			throw new InvalidIdentifierException("Non [a-z0-9/._-] character in path of location: " + this.namespace + ':' + this.path);
+			throw new InvalidIdentifierException("Non [a-z0-9/._-] character in path of location: " + this.namespace + ":" + this.path);
 		}
 	}
 
@@ -100,17 +100,14 @@ public class Identifier implements Comparable<Identifier> {
 	}
 
 	public String toString() {
-		return this.namespace + ':' + this.path;
+		return this.namespace + ":" + this.path;
 	}
 
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
-		} else if (!(o instanceof Identifier)) {
-			return false;
 		} else {
-			Identifier identifier = (Identifier)o;
-			return this.namespace.equals(identifier.namespace) && this.path.equals(identifier.path);
+			return !(o instanceof Identifier identifier) ? false : this.namespace.equals(identifier.namespace) && this.path.equals(identifier.path);
 		}
 	}
 

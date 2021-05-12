@@ -57,18 +57,23 @@ public class ResourcePackProfile implements AutoCloseable {
 		ResourcePackProfile.InsertionPosition insertionPosition,
 		ResourcePackSource packSource
 	) {
-		try (ResourcePack resourcePack = (ResourcePack)packFactory.get()) {
-			PackResourceMetadata packResourceMetadata = resourcePack.parseMetadata(PackResourceMetadata.READER);
-			if (packResourceMetadata != null) {
-				return profileFactory.create(name, new LiteralText(resourcePack.getName()), alwaysEnabled, packFactory, packResourceMetadata, insertionPosition, packSource);
+		try {
+			ResourcePackProfile var8;
+			try (ResourcePack resourcePack = (ResourcePack)packFactory.get()) {
+				PackResourceMetadata packResourceMetadata = resourcePack.parseMetadata(PackResourceMetadata.READER);
+				if (packResourceMetadata == null) {
+					LOGGER.warn("Couldn't find pack meta for pack {}", name);
+					return null;
+				}
+
+				var8 = profileFactory.create(name, new LiteralText(resourcePack.getName()), alwaysEnabled, packFactory, packResourceMetadata, insertionPosition, packSource);
 			}
 
-			LOGGER.warn("Couldn't find pack meta for pack {}", name);
-		} catch (IOException var22) {
-			LOGGER.warn("Couldn't get pack info for: {}", var22.toString());
+			return var8;
+		} catch (IOException var11) {
+			LOGGER.warn("Couldn't get pack info for: {}", var11.toString());
+			return null;
 		}
-
-		return null;
 	}
 
 	public ResourcePackProfile(
@@ -154,11 +159,8 @@ public class ResourcePackProfile implements AutoCloseable {
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
-		} else if (!(o instanceof ResourcePackProfile)) {
-			return false;
 		} else {
-			ResourcePackProfile resourcePackProfile = (ResourcePackProfile)o;
-			return this.name.equals(resourcePackProfile.name);
+			return !(o instanceof ResourcePackProfile resourcePackProfile) ? false : this.name.equals(resourcePackProfile.name);
 		}
 	}
 

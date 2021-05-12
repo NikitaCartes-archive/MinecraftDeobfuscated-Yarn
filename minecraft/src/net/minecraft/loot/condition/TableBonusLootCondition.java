@@ -18,12 +18,12 @@ import net.minecraft.util.JsonSerializer;
 import net.minecraft.util.registry.Registry;
 
 public class TableBonusLootCondition implements LootCondition {
-	private final Enchantment enchantment;
-	private final float[] chances;
+	final Enchantment enchantment;
+	final float[] chances;
 
-	private TableBonusLootCondition(Enchantment enchantment, float[] chances) {
+	TableBonusLootCondition(Enchantment enchantment, float[] fs) {
 		this.enchantment = enchantment;
-		this.chances = chances;
+		this.chances = fs;
 	}
 
 	@Override

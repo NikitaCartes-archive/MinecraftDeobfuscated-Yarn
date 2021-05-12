@@ -135,8 +135,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 		int i = this.calculateOutputSignal(world, pos, state);
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		int j = 0;
-		if (blockEntity instanceof ComparatorBlockEntity) {
-			ComparatorBlockEntity comparatorBlockEntity = (ComparatorBlockEntity)blockEntity;
+		if (blockEntity instanceof ComparatorBlockEntity comparatorBlockEntity) {
 			j = comparatorBlockEntity.getOutputSignal();
 			comparatorBlockEntity.setOutputSignal(i);
 		}

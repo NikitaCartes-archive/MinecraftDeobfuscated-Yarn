@@ -60,6 +60,8 @@ import net.minecraft.client.font.FontManager;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.GlDebug;
+import net.minecraft.client.gl.SimpleFramebuffer;
+import net.minecraft.client.gl.WindowFramebuffer;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.screen.BackupPromptScreen;
@@ -92,6 +94,7 @@ import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
+import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.network.SocialInteractionsManager;
 import net.minecraft.client.option.AoMode;
@@ -154,7 +157,7 @@ import net.minecraft.client.toast.ToastManager;
 import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.client.tutorial.TutorialManager;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.client.util.ScreenshotUtils;
+import net.minecraft.client.util.Screenshooter;
 import net.minecraft.client.util.Session;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.WindowProvider;
@@ -250,6 +253,7 @@ import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.commons.io.Charsets;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
 /**
  * Represents a logical Minecraft client.
@@ -304,6 +308,12 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public static final Identifier ALT_TEXT_RENDERER_ID = new Identifier("alt");
 	private static final CompletableFuture<Unit> COMPLETED_UNIT_FUTURE = CompletableFuture.completedFuture(Unit.INSTANCE);
 	private static final Text SOCIAL_INTERACTIONS_NOT_AVAILABLE = new TranslatableText("multiplayer.socialInteractions.not_available");
+	/**
+	 * A message, in English, displayed in a dialog when a GLFW error is encountered.
+	 * 
+	 * @see net.minecraft.client.util.Window#throwGlError(int, long)
+	 */
+	public static final String GL_ERROR_DIALOGUE = "Please make sure you have up-to-date drivers (see aka.ms/mcdriver for instructions).";
 	private final File resourcePackDir;
 	private final PropertyMap sessionPropertyMap;
 	private final TextureManager textureManager;
@@ -526,8 +536,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.keyboard = new Keyboard(this);
 		this.keyboard.setup(this.window.getHandle());
 		RenderSystem.initRenderer(this.options.glDebugVerbosity, false);
-		this.framebuffer = new Framebuffer(this.window.getFramebufferWidth(), this.window.getFramebufferHeight(), true, IS_SYSTEM_MAC);
+		this.framebuffer = new WindowFramebuffer(this.window.getFramebufferWidth(), this.window.getFramebufferHeight());
 		this.framebuffer.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
+		this.framebuffer.clear(IS_SYSTEM_MAC);
 		this.resourceManager = new ReloadableResourceManagerImpl(ResourceType.CLIENT_RESOURCES);
 		this.resourcePackManager.scanPacks();
 		this.options.addResourcePackProfilesToManager(this.resourcePackManager);
@@ -587,7 +598,21 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.inGameHud = new InGameHud(this);
 		this.debugRenderer = new DebugRenderer(this);
 		RenderSystem.setErrorCallback(this::handleGlErrorByDisableVsync);
-		if (this.options.fullscreen && !this.window.isFullscreen()) {
+		if (this.framebuffer.textureWidth != this.window.getFramebufferWidth() || this.framebuffer.textureHeight != this.window.getFramebufferHeight()) {
+			StringBuilder stringBuilder = new StringBuilder(
+				"Recovering from unsupported resolution ("
+					+ this.window.getFramebufferWidth()
+					+ "x"
+					+ this.window.getFramebufferHeight()
+					+ ").\nPlease make sure you have up-to-date drivers (see aka.ms/mcdriver for instructions)."
+			);
+			if (GlDebug.method_36479()) {
+				stringBuilder.append("\n\nReported GL debug messages:\n").append(String.join("\n", GlDebug.method_36478()));
+			}
+
+			this.window.method_36813(this.framebuffer.textureWidth, this.framebuffer.textureHeight);
+			TinyFileDialogs.tinyfd_messageBox("Minecraft", stringBuilder.toString(), "ok", "error", false);
+		} else if (this.options.fullscreen && !this.window.isFullscreen()) {
 			this.window.toggleFullscreen();
 			this.options.fullscreen = this.window.isFullscreen();
 		}
@@ -597,7 +622,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.window.logOnGlError();
 		this.onResolutionChanged();
 		if (string != null) {
-			this.openScreen(new ConnectScreen(new TitleScreen(), this, string, i));
+			ConnectScreen.connect(new TitleScreen(), this, new ServerAddress(string, i), null);
 		} else {
 			this.openScreen(new TitleScreen(true));
 		}
@@ -1266,7 +1291,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					digit--;
 					if (digit < list.size() && !"unspecified".equals(((ProfilerTiming)list.get(digit)).name)) {
 						if (!this.openProfilerSection.isEmpty()) {
-							this.openProfilerSection = this.openProfilerSection + '\u001e';
+							this.openProfilerSection = this.openProfilerSection + "\u001e";
 						}
 
 						this.openProfilerSection = this.openProfilerSection + ((ProfilerTiming)list.get(digit)).name;
@@ -1281,7 +1306,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		ProfilerTiming profilerTiming = (ProfilerTiming)list.remove(0);
 		RenderSystem.clear(256, IS_SYSTEM_MAC);
 		RenderSystem.setShader(GameRenderer::getPositionColorShader);
-		Matrix4f matrix4f = Matrix4f.method_34239(0.0F, (float)this.window.getFramebufferWidth(), 0.0F, (float)this.window.getFramebufferHeight(), 1000.0F, 3000.0F);
+		Matrix4f matrix4f = Matrix4f.projectionMatrix(
+			0.0F, (float)this.window.getFramebufferWidth(), 0.0F, (float)this.window.getFramebufferHeight(), 1000.0F, 3000.0F
+		);
 		RenderSystem.setProjectionMatrix(matrix4f);
 		MatrixStack matrixStack = RenderSystem.getModelViewStack();
 		matrixStack.loadIdentity();
@@ -1349,7 +1376,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		if (string.isEmpty()) {
 			string2 = string2 + "ROOT ";
 		} else {
-			string2 = string2 + string + ' ';
+			string2 = string2 + string + " ";
 		}
 
 		int m = 16777215;
@@ -1977,9 +2004,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 							try (LevelStorage.Session session = this.levelStorage.createSession(levelName)) {
 								session.deleteSessionLock();
-							} catch (IOException var17) {
+							} catch (IOException var9) {
 								SystemToast.addWorldDeleteFailureToast(this, levelName);
-								LOGGER.error("Failed to delete world {}", levelName, var17);
+								LOGGER.error("Failed to delete world {}", levelName, var9);
 							}
 						}
 					},
@@ -2363,7 +2390,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public void addInitialSnooperInfo(Snooper snooper) {
 		snooper.addInitialInfo("client_brand", ClientBrandRetriever.getClientModName());
 		snooper.addInitialInfo("launched_version", this.gameVersion);
-		method_35705(snooper);
+		addGlInfo(snooper);
 		snooper.addInitialInfo("gl_max_texture_size", RenderSystem.maxSupportedTextureSize());
 		GameProfile gameProfile = this.session.getProfile();
 		if (gameProfile.getId() != null) {
@@ -2371,8 +2398,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 	}
 
-	private static void method_35705(Snooper snooper) {
-		GlDebugInfo.method_35612(snooper::addInitialInfo);
+	private static void addGlInfo(Snooper snooper) {
+		GlDebugInfo.feedTo(snooper::addInitialInfo);
 	}
 
 	@Override
@@ -2628,25 +2655,31 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.windowFocused = focused;
 	}
 
-	public Text method_35698(File file, int i, int j) {
-		int k = this.window.getFramebufferWidth();
-		int l = this.window.getFramebufferHeight();
-		Framebuffer framebuffer = new Framebuffer(i, j, true, IS_SYSTEM_MAC);
+	/**
+	 * Takes a panorama. The panorama is stored in the given {@code directory}, in
+	 * where 6 screenshots of size {@code width} and {@code height} will be taken.
+	 * 
+	 * @return a user-oriented piece of text for screenshot result
+	 */
+	public Text takePanorama(File directory, int width, int height) {
+		int i = this.window.getFramebufferWidth();
+		int j = this.window.getFramebufferHeight();
+		Framebuffer framebuffer = new SimpleFramebuffer(width, height, true, IS_SYSTEM_MAC);
 		float f = this.player.getPitch();
 		float g = this.player.getYaw();
 		float h = this.player.prevPitch;
-		float m = this.player.prevYaw;
+		float k = this.player.prevYaw;
 		this.gameRenderer.setBlockOutlineEnabled(false);
 
 		TranslatableText var12;
 		try {
 			this.gameRenderer.setRenderingPanorama(true);
-			this.worldRenderer.method_35774();
-			this.window.setFramebufferWidth(i);
-			this.window.setFramebufferHeight(j);
+			this.worldRenderer.reloadTransparencyShader();
+			this.window.setFramebufferWidth(width);
+			this.window.setFramebufferHeight(height);
 
-			for (int n = 0; n < 6; n++) {
-				switch (n) {
+			for (int l = 0; l < 6; l++) {
+				switch (l) {
 					case 0:
 						this.player.setYaw(g);
 						this.player.setPitch(0.0F);
@@ -2683,13 +2716,13 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				} catch (InterruptedException var17) {
 				}
 
-				ScreenshotUtils.saveScreenshot(file, "panorama_" + n + ".png", i, j, framebuffer, text -> {
+				Screenshooter.saveScreenshot(directory, "panorama_" + l + ".png", width, height, framebuffer, text -> {
 				});
 			}
 
-			Text text = new LiteralText(file.getName())
+			Text text = new LiteralText(directory.getName())
 				.formatted(Formatting.UNDERLINE)
-				.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file.getAbsolutePath())));
+				.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, directory.getAbsolutePath())));
 			return new TranslatableText("screenshot.success", text);
 		} catch (Exception var18) {
 			LOGGER.error("Couldn't save image", (Throwable)var18);
@@ -2698,50 +2731,59 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.player.setPitch(f);
 			this.player.setYaw(g);
 			this.player.prevPitch = h;
-			this.player.prevYaw = m;
+			this.player.prevYaw = k;
 			this.gameRenderer.setBlockOutlineEnabled(true);
-			this.window.setFramebufferWidth(k);
-			this.window.setFramebufferHeight(l);
+			this.window.setFramebufferWidth(i);
+			this.window.setFramebufferHeight(j);
 			framebuffer.delete();
 			this.gameRenderer.setRenderingPanorama(false);
-			this.worldRenderer.method_35774();
+			this.worldRenderer.reloadTransparencyShader();
 			this.getFramebuffer().beginWrite(true);
 		}
 
 		return var12;
 	}
 
-	private Text method_35699(File file, int i, int j, int k, int l) {
+	/**
+	 * Takes a huge screenshot in the tga file format.
+	 * 
+	 * <p>The {@code unitWidth} and {@code unitHeight} controls the size of the
+	 * partial image rendered; it does not affect the screenshot outcome, but may
+	 * affect the screenshot performance.
+	 * 
+	 * @return a user-oriented piece of text for screenshot result
+	 */
+	private Text takeHugeScreenshot(File gameDirectory, int unitWidth, int unitHeight, int width, int height) {
 		try {
-			ByteBuffer byteBuffer = GlDebugInfo.allocateMemory(i * j * 3);
-			ScreenshotUtils screenshotUtils = new ScreenshotUtils(file, k, l, j);
-			float f = (float)k / (float)i;
-			float g = (float)l / (float)j;
+			ByteBuffer byteBuffer = GlDebugInfo.allocateMemory(unitWidth * unitHeight * 3);
+			Screenshooter screenshooter = new Screenshooter(gameDirectory, width, height, unitHeight);
+			float f = (float)width / (float)unitWidth;
+			float g = (float)height / (float)unitHeight;
 			float h = f > g ? f : g;
 
-			for (int m = (l - 1) / j * j; m >= 0; m -= j) {
-				for (int n = 0; n < k; n += i) {
+			for (int i = (height - 1) / unitHeight * unitHeight; i >= 0; i -= unitHeight) {
+				for (int j = 0; j < width; j += unitWidth) {
 					RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
-					float o = (float)(k - i) / 2.0F * 2.0F - (float)(n * 2);
-					float p = (float)(l - j) / 2.0F * 2.0F - (float)(m * 2);
-					o /= (float)i;
-					p /= (float)j;
-					this.gameRenderer.method_35766(h, o, p);
+					float k = (float)(width - unitWidth) / 2.0F * 2.0F - (float)(j * 2);
+					float l = (float)(height - unitHeight) / 2.0F * 2.0F - (float)(i * 2);
+					k /= (float)unitWidth;
+					l /= (float)unitHeight;
+					this.gameRenderer.renderWithZoom(h, k, l);
 					byteBuffer.clear();
 					RenderSystem.pixelStore(3333, 1);
 					RenderSystem.pixelStore(3317, 1);
-					RenderSystem.readPixels(0, 0, i, j, 32992, 5121, byteBuffer);
-					screenshotUtils.method_35711(byteBuffer, n, m, i, j);
+					RenderSystem.readPixels(0, 0, unitWidth, unitHeight, 32992, 5121, byteBuffer);
+					screenshooter.getIntoBuffer(byteBuffer, j, i, unitWidth, unitHeight);
 				}
 
-				screenshotUtils.method_35710();
+				screenshooter.writeToStream();
 			}
 
-			File file2 = screenshotUtils.method_35712();
+			File file = screenshooter.finish();
 			GlDebugInfo.freeMemory(byteBuffer);
-			Text text = new LiteralText(file2.getName())
+			Text text = new LiteralText(file.getName())
 				.formatted(Formatting.UNDERLINE)
-				.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file2.getAbsolutePath())));
+				.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file.getAbsolutePath())));
 			return new TranslatableText("screenshot.success", text);
 		} catch (Exception var15) {
 			LOGGER.warn("Couldn't save screenshot", (Throwable)var15);
@@ -2791,22 +2833,22 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		String name,
 		Text displayName,
 		boolean alwaysEnabled,
-		Supplier<ResourcePack> supplier,
+		Supplier<ResourcePack> packFactory,
 		PackResourceMetadata metadata,
 		ResourcePackProfile.InsertionPosition insertionPosition,
 		ResourcePackSource source
 	) {
 		int i = metadata.getPackFormat();
-		Supplier<ResourcePack> supplier2 = supplier;
+		Supplier<ResourcePack> supplier = packFactory;
 		if (i <= 3) {
-			supplier2 = createV3ResourcePackFactory(supplier);
+			supplier = createV3ResourcePackFactory(packFactory);
 		}
 
 		if (i <= 4) {
-			supplier2 = createV4ResourcePackFactory(supplier2);
+			supplier = createV4ResourcePackFactory(supplier);
 		}
 
-		return new ResourcePackProfile(name, displayName, alwaysEnabled, supplier2, metadata, ResourceType.CLIENT_RESOURCES, insertionPosition, source);
+		return new ResourcePackProfile(name, displayName, alwaysEnabled, supplier, metadata, ResourceType.CLIENT_RESOURCES, insertionPosition, source);
 	}
 
 	private static Supplier<ResourcePack> createV3ResourcePackFactory(Supplier<ResourcePack> packFactory) {
@@ -2863,8 +2905,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		private final Text description;
 
-		private ChatRestriction(Text description) {
-			this.description = description;
+		ChatRestriction(Text text) {
+			this.description = text;
 		}
 
 		public Text getDescription() {
@@ -2880,7 +2922,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		private final ServerResourceManager serverResourceManager;
 		private final SaveProperties saveProperties;
 
-		private IntegratedResourceManager(ResourcePackManager resourcePackManager, ServerResourceManager serverResourceManager, SaveProperties saveProperties) {
+		IntegratedResourceManager(ResourcePackManager resourcePackManager, ServerResourceManager serverResourceManager, SaveProperties saveProperties) {
 			this.resourcePackManager = resourcePackManager;
 			this.serverResourceManager = serverResourceManager;
 			this.saveProperties = saveProperties;

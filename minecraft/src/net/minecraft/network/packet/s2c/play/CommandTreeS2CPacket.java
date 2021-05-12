@@ -162,8 +162,7 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 			buf.writeVarInt((Integer)nodeToIndex.get(node.getRedirect()));
 		}
 
-		if (node instanceof ArgumentCommandNode) {
-			ArgumentCommandNode<CommandSource, ?> argumentCommandNode = (ArgumentCommandNode<CommandSource, ?>)node;
+		if (node instanceof ArgumentCommandNode<CommandSource, ?> argumentCommandNode) {
 			buf.writeString(argumentCommandNode.getName());
 			ArgumentTypes.toPacket(buf, argumentCommandNode.getType());
 			if (argumentCommandNode.getCustomSuggestions() != null) {
@@ -189,13 +188,13 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 		private final int redirectNodeIndex;
 		private final int[] childNodeIndices;
 		@Nullable
-		private CommandNode<CommandSource> node;
+		CommandNode<CommandSource> node;
 
-		private CommandNodeData(@Nullable ArgumentBuilder<CommandSource, ?> argumentBuilder, byte flags, int redirectNodeIndex, int[] childNodeIndices) {
+		CommandNodeData(@Nullable ArgumentBuilder<CommandSource, ?> argumentBuilder, byte b, int i, int[] is) {
 			this.argumentBuilder = argumentBuilder;
-			this.flags = flags;
-			this.redirectNodeIndex = redirectNodeIndex;
-			this.childNodeIndices = childNodeIndices;
+			this.flags = b;
+			this.redirectNodeIndex = i;
+			this.childNodeIndices = is;
 		}
 
 		public boolean build(List<CommandTreeS2CPacket.CommandNodeData> list) {

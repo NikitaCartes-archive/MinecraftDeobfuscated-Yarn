@@ -7,7 +7,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.Biome;
 
 public class BiomeAccess {
-	private static final int CHUNK_CENTER_OFFSET = BiomeCoords.fromBlock(8);
+	static final int CHUNK_CENTER_OFFSET = BiomeCoords.fromBlock(8);
 	private final BiomeAccess.Storage storage;
 	private final long seed;
 	private final BiomeAccessType type;

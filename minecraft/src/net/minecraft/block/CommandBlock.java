@@ -48,9 +48,7 @@ public class CommandBlock extends BlockWithEntity implements OperatorBlock {
 	@Override
 	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
 		if (!world.isClient) {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
-			if (blockEntity instanceof CommandBlockBlockEntity) {
-				CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
+			if (world.getBlockEntity(pos) instanceof CommandBlockBlockEntity commandBlockBlockEntity) {
 				boolean bl = world.isReceivingRedstonePower(pos);
 				boolean bl2 = commandBlockBlockEntity.isPowered();
 				commandBlockBlockEntity.setPowered(bl);
@@ -66,9 +64,7 @@ public class CommandBlock extends BlockWithEntity implements OperatorBlock {
 
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		BlockEntity blockEntity = world.getBlockEntity(pos);
-		if (blockEntity instanceof CommandBlockBlockEntity) {
-			CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
+		if (world.getBlockEntity(pos) instanceof CommandBlockBlockEntity commandBlockBlockEntity) {
 			CommandBlockExecutor commandBlockExecutor = commandBlockBlockEntity.getCommandExecutor();
 			boolean bl = !ChatUtil.isEmpty(commandBlockExecutor.getCommand());
 			CommandBlockBlockEntity.Type type = commandBlockBlockEntity.getCommandBlockType();
@@ -130,9 +126,7 @@ public class CommandBlock extends BlockWithEntity implements OperatorBlock {
 
 	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-		BlockEntity blockEntity = world.getBlockEntity(pos);
-		if (blockEntity instanceof CommandBlockBlockEntity) {
-			CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
+		if (world.getBlockEntity(pos) instanceof CommandBlockBlockEntity commandBlockBlockEntity) {
 			CommandBlockExecutor commandBlockExecutor = commandBlockBlockEntity.getCommandExecutor();
 			if (itemStack.hasCustomName()) {
 				commandBlockExecutor.setCustomName(itemStack.getName());
@@ -186,17 +180,9 @@ public class CommandBlock extends BlockWithEntity implements OperatorBlock {
 			mutable.move(facing);
 			BlockState blockState = world.getBlockState(mutable);
 			Block block = blockState.getBlock();
-			if (!blockState.isOf(Blocks.CHAIN_COMMAND_BLOCK)) {
-				break;
-			}
-
-			BlockEntity blockEntity = world.getBlockEntity(mutable);
-			if (!(blockEntity instanceof CommandBlockBlockEntity)) {
-				break;
-			}
-
-			CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
-			if (commandBlockBlockEntity.getCommandBlockType() != CommandBlockBlockEntity.Type.SEQUENCE) {
+			if (!blockState.isOf(Blocks.CHAIN_COMMAND_BLOCK)
+				|| !(world.getBlockEntity(mutable) instanceof CommandBlockBlockEntity commandBlockBlockEntity)
+				|| commandBlockBlockEntity.getCommandBlockType() != CommandBlockBlockEntity.Type.SEQUENCE) {
 				break;
 			}
 

@@ -44,13 +44,13 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class FileDownload {
-	private static final Logger LOGGER = LogManager.getLogger();
-	private volatile boolean cancelled;
-	private volatile boolean finished;
-	private volatile boolean error;
-	private volatile boolean extracting;
+	static final Logger LOGGER = LogManager.getLogger();
+	volatile boolean cancelled;
+	volatile boolean finished;
+	volatile boolean error;
+	volatile boolean extracting;
 	private volatile File backupFile;
-	private volatile File resourcePackPath;
+	volatile File resourcePackPath;
 	private volatile HttpGet httpRequest;
 	private Thread currentThread;
 	private final RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(120000).setConnectTimeout(120000).build();
@@ -229,7 +229,7 @@ public class FileDownload {
 		return folder;
 	}
 
-	private void untarGzipArchive(String name, File archive, LevelStorage storage) throws IOException {
+	void untarGzipArchive(String name, File archive, LevelStorage storage) throws IOException {
 		Pattern pattern = Pattern.compile(".*-([0-9]+)$");
 		int i = 1;
 
@@ -256,8 +256,8 @@ public class FileDownload {
 					}
 				}
 			}
-		} catch (Exception var128) {
-			LOGGER.error("Error getting level list", (Throwable)var128);
+		} catch (Exception var39) {
+			LOGGER.error("Error getting level list", (Throwable)var39);
 			this.error = true;
 			return;
 		}
@@ -297,30 +297,24 @@ public class FileDownload {
 				} else {
 					file2.createNewFile();
 					FileOutputStream fileOutputStream = new FileOutputStream(file2);
-					Throwable var12 = null;
 
 					try {
 						IOUtils.copy(tarArchiveInputStream, fileOutputStream);
-					} catch (Throwable var122) {
-						var12 = var122;
-						throw var122;
-					} finally {
-						if (fileOutputStream != null) {
-							if (var12 != null) {
-								try {
-									fileOutputStream.close();
-								} catch (Throwable var121) {
-									var12.addSuppressed(var121);
-								}
-							} else {
-								fileOutputStream.close();
-							}
+					} catch (Throwable var34) {
+						try {
+							fileOutputStream.close();
+						} catch (Throwable var33) {
+							var34.addSuppressed(var33);
 						}
+
+						throw var34;
 					}
+
+					fileOutputStream.close();
 				}
 			}
-		} catch (Exception var126) {
-			LOGGER.error("Error extracting world", (Throwable)var126);
+		} catch (Exception var37) {
+			LOGGER.error("Error extracting world", (Throwable)var37);
 			this.error = true;
 		} finally {
 			if (tarArchiveInputStream != null) {
@@ -335,8 +329,8 @@ public class FileDownload {
 				session2.save(string.trim());
 				Path path2 = session2.getDirectory(WorldSavePath.LEVEL_DAT);
 				readNbtFile(path2.toFile());
-			} catch (IOException var124) {
-				LOGGER.error("Failed to rename unpacked realms level {}", string, var124);
+			} catch (IOException var36) {
+				LOGGER.error("Failed to rename unpacked realms level {}", string, var36);
 			}
 
 			this.resourcePackPath = new File(file, string + File.separator + "resources.zip");
@@ -384,10 +378,10 @@ public class FileDownload {
 		private final LevelStorage levelStorageSource;
 		private final RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus;
 
-		private ProgressListener(String worldName, File tempFile, LevelStorage storage, RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus) {
-			this.worldName = worldName;
-			this.tempFile = tempFile;
-			this.levelStorageSource = storage;
+		ProgressListener(String string, File file, LevelStorage levelStorage, RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus) {
+			this.worldName = string;
+			this.tempFile = file;
+			this.levelStorageSource = levelStorage;
 			this.downloadStatus = downloadStatus;
 		}
 
@@ -411,8 +405,8 @@ public class FileDownload {
 		private final RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus;
 		private final WorldDownload worldDownload;
 
-		private ResourcePackProgressListener(File tempFile, RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus, WorldDownload worldDownload) {
-			this.tempFile = tempFile;
+		ResourcePackProgressListener(File file, RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus, WorldDownload worldDownload) {
+			this.tempFile = file;
 			this.downloadStatus = downloadStatus;
 			this.worldDownload = worldDownload;
 		}

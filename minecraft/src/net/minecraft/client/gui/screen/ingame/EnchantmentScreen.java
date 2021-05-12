@@ -151,7 +151,7 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 			if (r == 0) {
 				this.drawTexture(matrices, p, j + 14 + 19 * o, 0, 185, 108, 19);
 			} else {
-				String string = "" + r;
+				String string = r + "";
 				int s = 86 - this.textRenderer.getWidth(string);
 				StringVisitable stringVisitable = EnchantingPhrases.getInstance().generatePhrase(this.textRenderer, s);
 				int t = 6839882;

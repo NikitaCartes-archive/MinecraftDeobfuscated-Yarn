@@ -18,7 +18,7 @@ public class EulerAngle {
 		this(serialized.getFloat(0), serialized.getFloat(1), serialized.getFloat(2));
 	}
 
-	public NbtList serialize() {
+	public NbtList toNbt() {
 		NbtList nbtList = new NbtList();
 		nbtList.add(NbtFloat.of(this.pitch));
 		nbtList.add(NbtFloat.of(this.yaw));
@@ -27,12 +27,7 @@ public class EulerAngle {
 	}
 
 	public boolean equals(Object o) {
-		if (!(o instanceof EulerAngle)) {
-			return false;
-		} else {
-			EulerAngle eulerAngle = (EulerAngle)o;
-			return this.pitch == eulerAngle.pitch && this.yaw == eulerAngle.yaw && this.roll == eulerAngle.roll;
-		}
+		return !(o instanceof EulerAngle eulerAngle) ? false : this.pitch == eulerAngle.pitch && this.yaw == eulerAngle.yaw && this.roll == eulerAngle.roll;
 	}
 
 	public float getPitch() {

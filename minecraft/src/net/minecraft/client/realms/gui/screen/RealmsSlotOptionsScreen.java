@@ -28,7 +28,7 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 	private static final int field_32126 = 0;
 	public static final List<GameMode> GAME_MODES = ImmutableList.of(GameMode.SURVIVAL, GameMode.CREATIVE, GameMode.ADVENTURE);
 	private static final Text EDIT_SLOT_NAME = new TranslatableText("mco.configure.world.edit.slot.name");
-	private static final Text SPAWN_PROTECTION = new TranslatableText("mco.configure.world.spawnProtection");
+	static final Text SPAWN_PROTECTION = new TranslatableText("mco.configure.world.spawnProtection");
 	private TextFieldWidget nameEdit;
 	protected final RealmsConfigureWorldScreen parent;
 	private int column1_x;
@@ -42,10 +42,10 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 	private boolean spawnNPCs;
 	private boolean spawnAnimals;
 	private boolean spawnMonsters;
-	private int difficultyIndex;
+	int difficultyIndex;
 	private boolean commandBlocks;
 	private boolean forceGameMode;
-	private RealmsSlotOptionsScreen.SettingsSlider spawnProtectionButton;
+	RealmsSlotOptionsScreen.SettingsSlider spawnProtectionButton;
 	private RealmsLabel titleLabel;
 	private RealmsLabel toastMessage;
 

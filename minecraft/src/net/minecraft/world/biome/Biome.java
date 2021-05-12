@@ -89,7 +89,7 @@ public final class Biome {
 		.stream()
 		.collect(Collectors.groupingBy(structureFeature -> structureFeature.getGenerationStep().ordinal()));
 	private static final OctaveSimplexNoiseSampler TEMPERATURE_NOISE = new OctaveSimplexNoiseSampler(new ChunkRandom(1234L), ImmutableList.of(0));
-	private static final OctaveSimplexNoiseSampler FROZEN_OCEAN_NOISE = new OctaveSimplexNoiseSampler(new ChunkRandom(3456L), ImmutableList.of(-2, -1, 0));
+	static final OctaveSimplexNoiseSampler FROZEN_OCEAN_NOISE = new OctaveSimplexNoiseSampler(new ChunkRandom(3456L), ImmutableList.of(-2, -1, 0));
 	public static final OctaveSimplexNoiseSampler FOLIAGE_NOISE = new OctaveSimplexNoiseSampler(new ChunkRandom(2345L), ImmutableList.of(0));
 	private static final int field_30978 = 1024;
 	private final Biome.Weather weather;
@@ -109,12 +109,12 @@ public final class Biome {
 			return long2FloatLinkedOpenHashMap;
 		}));
 
-	private Biome(
+	Biome(
 		Biome.Weather weather,
 		Biome.Category category,
-		float depth,
-		float scale,
-		BiomeEffects effects,
+		float f,
+		float g,
+		BiomeEffects biomeEffects,
 		GenerationSettings generationSettings,
 		SpawnSettings spawnSettings
 	) {
@@ -122,9 +122,9 @@ public final class Biome {
 		this.generationSettings = generationSettings;
 		this.spawnSettings = spawnSettings;
 		this.category = category;
-		this.depth = depth;
-		this.scale = scale;
-		this.effects = effects;
+		this.depth = f;
+		this.scale = g;
+		this.effects = biomeEffects;
 	}
 
 	public int getSkyColor() {
@@ -485,8 +485,7 @@ public final class Biome {
 				+ this.spawnSettings
 				+ ",\ngenerationSettings="
 				+ this.generationSettings
-				+ ",\n"
-				+ '}';
+				+ ",\n}";
 		}
 	}
 
@@ -686,8 +685,8 @@ public final class Biome {
 
 		public abstract float getModifiedTemperature(BlockPos pos, float temperature);
 
-		private TemperatureModifier(String name) {
-			this.name = name;
+		TemperatureModifier(String string2) {
+			this.name = string2;
 		}
 
 		public String getName() {
@@ -714,16 +713,16 @@ public final class Biome {
 					)
 					.apply(instance, Biome.Weather::new)
 		);
-		private final Biome.Precipitation precipitation;
-		private final float temperature;
-		private final Biome.TemperatureModifier temperatureModifier;
-		private final float downfall;
+		final Biome.Precipitation precipitation;
+		final float temperature;
+		final Biome.TemperatureModifier temperatureModifier;
+		final float downfall;
 
-		private Weather(Biome.Precipitation precipitation, float temperature, Biome.TemperatureModifier temperatureModifier, float downfall) {
+		Weather(Biome.Precipitation precipitation, float f, Biome.TemperatureModifier temperatureModifier, float g) {
 			this.precipitation = precipitation;
-			this.temperature = temperature;
+			this.temperature = f;
 			this.temperatureModifier = temperatureModifier;
-			this.downfall = downfall;
+			this.downfall = g;
 		}
 	}
 }

@@ -581,7 +581,7 @@ public class InGameHud extends DrawableHelper {
 		this.client.getProfiler().pop();
 		if (this.client.player.experienceLevel > 0) {
 			this.client.getProfiler().push("expLevel");
-			String string = "" + this.client.player.experienceLevel;
+			String string = this.client.player.experienceLevel + "";
 			int k = (this.scaledWidth - this.getFontRenderer().getWidth(string)) / 2;
 			int l = this.scaledHeight - 31 - 4;
 			this.getFontRenderer().draw(matrices, string, (float)(k + 1), (float)l, 0);
@@ -676,7 +676,7 @@ public class InGameHud extends DrawableHelper {
 			p++;
 			ScoreboardPlayerScore scoreboardPlayerScore2 = pair.getFirst();
 			Text text3 = pair.getSecond();
-			String string = Formatting.RED + "" + scoreboardPlayerScore2.getScore();
+			String string = "" + Formatting.RED + scoreboardPlayerScore2.getScore();
 			int t = m - p * 9;
 			int u = this.scaledWidth - 3 + 2;
 			fill(matrices, o - 2, t, u, t + 9, q);

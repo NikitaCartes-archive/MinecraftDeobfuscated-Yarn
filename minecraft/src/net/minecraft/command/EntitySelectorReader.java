@@ -222,7 +222,7 @@ public class EntitySelectorReader {
 			} else {
 				if (c != 'e') {
 					this.reader.setCursor(i);
-					throw UNKNOWN_SELECTOR_EXCEPTION.createWithContext(this.reader, '@' + String.valueOf(c));
+					throw UNKNOWN_SELECTOR_EXCEPTION.createWithContext(this.reader, "@" + c);
 				}
 
 				this.limit = Integer.MAX_VALUE;

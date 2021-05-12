@@ -25,7 +25,7 @@ public class GameRuleCommand {
 		dispatcher.register(literalArgumentBuilder);
 	}
 
-	private static <T extends GameRules.Rule<T>> int executeSet(CommandContext<ServerCommandSource> context, GameRules.Key<T> key) {
+	static <T extends GameRules.Rule<T>> int executeSet(CommandContext<ServerCommandSource> context, GameRules.Key<T> key) {
 		ServerCommandSource serverCommandSource = context.getSource();
 		T rule = serverCommandSource.getMinecraftServer().getGameRules().get(key);
 		rule.set(context, "value");
@@ -33,7 +33,7 @@ public class GameRuleCommand {
 		return rule.getCommandResult();
 	}
 
-	private static <T extends GameRules.Rule<T>> int executeQuery(ServerCommandSource source, GameRules.Key<T> key) {
+	static <T extends GameRules.Rule<T>> int executeQuery(ServerCommandSource source, GameRules.Key<T> key) {
 		T rule = source.getMinecraftServer().getGameRules().get(key);
 		source.sendFeedback(new TranslatableText("commands.gamerule.query", key.getName(), rule.toString()), false);
 		return rule.getCommandResult();

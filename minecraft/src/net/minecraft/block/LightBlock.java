@@ -23,6 +23,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class LightBlock extends Block implements Waterloggable {
+	public static final int field_33722 = 15;
 	public static final IntProperty LEVEL_15 = Properties.LEVEL_15;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final ToIntFunction<BlockState> STATE_TO_LUMINANCE = state -> (Integer)state.get(LEVEL_15);
@@ -86,9 +87,12 @@ public class LightBlock extends Block implements Waterloggable {
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
 		ItemStack itemStack = super.getPickStack(world, pos, state);
-		NbtCompound nbtCompound = new NbtCompound();
-		nbtCompound.putString(LEVEL_15.getName(), String.valueOf(state.get(LEVEL_15)));
-		itemStack.putSubTag("BlockStateTag", nbtCompound);
+		if ((Integer)state.get(LEVEL_15) != 15) {
+			NbtCompound nbtCompound = new NbtCompound();
+			nbtCompound.putString(LEVEL_15.getName(), String.valueOf(state.get(LEVEL_15)));
+			itemStack.putSubTag("BlockStateTag", nbtCompound);
+		}
+
 		return itemStack;
 	}
 }

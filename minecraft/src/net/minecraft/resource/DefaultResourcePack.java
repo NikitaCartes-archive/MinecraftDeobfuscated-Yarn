@@ -154,27 +154,25 @@ public class DefaultResourcePack implements ResourcePack, ResourceFactory {
 	private static void getIdentifiers(Collection<Identifier> results, int maxDepth, String namespace, Path root, String prefix, Predicate<String> pathFilter) throws IOException {
 		Path path = root.resolve(namespace);
 		Stream<Path> stream = Files.walk(path.resolve(prefix), maxDepth, new FileVisitOption[0]);
-		Throwable var8 = null;
 
 		try {
 			stream.filter(pathx -> !pathx.endsWith(".mcmeta") && Files.isRegularFile(pathx, new LinkOption[0]) && pathFilter.test(pathx.getFileName().toString()))
 				.map(pathx -> new Identifier(namespace, path.relativize(pathx).toString().replaceAll("\\\\", "/")))
 				.forEach(results::add);
-		} catch (Throwable var17) {
-			var8 = var17;
-			throw var17;
-		} finally {
+		} catch (Throwable var11) {
 			if (stream != null) {
-				if (var8 != null) {
-					try {
-						stream.close();
-					} catch (Throwable var16) {
-						var8.addSuppressed(var16);
-					}
-				} else {
+				try {
 					stream.close();
+				} catch (Throwable var10) {
+					var11.addSuppressed(var10);
 				}
 			}
+
+			throw var11;
+		}
+
+		if (stream != null) {
+			stream.close();
 		}
 	}
 
@@ -240,39 +238,42 @@ public class DefaultResourcePack implements ResourcePack, ResourceFactory {
 	public <T> T parseMetadata(ResourceMetadataReader<T> metaReader) throws IOException {
 		try {
 			InputStream inputStream = this.openRoot("pack.mcmeta");
-			Throwable var3 = null;
 
-			Object var5;
-			try {
-				if (inputStream == null) {
-					return (T)(metaReader == PackResourceMetadata.READER ? this.metadata : null);
-				}
-
-				T object = AbstractFileResourcePack.parseMetadata(metaReader, inputStream);
-				if (object == null) {
-					return (T)(metaReader == PackResourceMetadata.READER ? this.metadata : null);
-				}
-
-				var5 = object;
-			} catch (Throwable var16) {
-				var3 = var16;
-				throw var16;
-			} finally {
-				if (inputStream != null) {
-					if (var3 != null) {
+			Object var4;
+			label57: {
+				try {
+					if (inputStream != null) {
+						T object = AbstractFileResourcePack.parseMetadata(metaReader, inputStream);
+						if (object != null) {
+							var4 = object;
+							break label57;
+						}
+					}
+				} catch (Throwable var6) {
+					if (inputStream != null) {
 						try {
 							inputStream.close();
-						} catch (Throwable var15) {
-							var3.addSuppressed(var15);
+						} catch (Throwable var5) {
+							var6.addSuppressed(var5);
 						}
-					} else {
-						inputStream.close();
 					}
+
+					throw var6;
 				}
+
+				if (inputStream != null) {
+					inputStream.close();
+				}
+
+				return (T)(metaReader == PackResourceMetadata.READER ? this.metadata : null);
 			}
 
-			return (T)var5;
-		} catch (FileNotFoundException | RuntimeException var18) {
+			if (inputStream != null) {
+				inputStream.close();
+			}
+
+			return (T)var4;
+		} catch (FileNotFoundException | RuntimeException var7) {
 			return (T)(metaReader == PackResourceMetadata.READER ? this.metadata : null);
 		}
 	}

@@ -7,18 +7,15 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Map.Entry;
-import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.CriterionProgress;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -42,7 +39,6 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameMode;
 
@@ -178,26 +174,17 @@ public class EntitySelectorOptions {
 					entitySelectorReader.setSuggestionProvider(
 						(suggestionsBuilder, consumer) -> CommandSource.suggestMatching(Arrays.asList("nearest", "furthest", "random", "arbitrary"), suggestionsBuilder)
 					);
-					BiConsumer<Vec3d, List<? extends Entity>> biConsumer;
-					switch (string) {
-						case "nearest":
-							biConsumer = EntitySelectorReader.NEAREST;
-							break;
-						case "furthest":
-							biConsumer = EntitySelectorReader.FURTHEST;
-							break;
-						case "random":
-							biConsumer = EntitySelectorReader.RANDOM;
-							break;
-						case "arbitrary":
-							biConsumer = EntitySelectorReader.ARBITRARY;
-							break;
-						default:
+
+					entitySelectorReader.setSorter(switch (string) {
+						case "nearest" -> EntitySelectorReader.NEAREST;
+						case "furthest" -> EntitySelectorReader.FURTHEST;
+						case "random" -> EntitySelectorReader.RANDOM;
+						case "arbitrary" -> EntitySelectorReader.ARBITRARY;
+						default -> {
 							entitySelectorReader.getReader().setCursor(i);
 							throw IRREVERSIBLE_SORT_EXCEPTION.createWithContext(entitySelectorReader.getReader(), string);
-					}
-
-					entitySelectorReader.setSorter(biConsumer);
+						}
+					});
 					entitySelectorReader.setHasSorter(true);
 				},
 				entitySelectorReader -> !entitySelectorReader.isSenderOnly() && !entitySelectorReader.hasSorter(),
@@ -220,7 +207,7 @@ public class EntitySelectorOptions {
 					for (GameMode gameModex : GameMode.values()) {
 						if (gameModex.getName().toLowerCase(Locale.ROOT).startsWith(stringx)) {
 							if (bl2) {
-								suggestionsBuilder.suggest('!' + gameModex.getName());
+								suggestionsBuilder.suggest("!" + gameModex.getName());
 							}
 
 							if (blx) {
@@ -461,10 +448,9 @@ public class EntitySelectorOptions {
 				stringReader.expect('}');
 				if (!map.isEmpty()) {
 					entitySelectorReader.setPredicate(entity -> {
-						if (!(entity instanceof ServerPlayerEntity)) {
+						if (!(entity instanceof ServerPlayerEntity serverPlayerEntity)) {
 							return false;
 						} else {
-							ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
 							PlayerAdvancementTracker playerAdvancementTracker = serverPlayerEntity.getAdvancementTracker();
 							ServerAdvancementLoader serverAdvancementLoader = serverPlayerEntity.getServer().getAdvancementLoader();
 
@@ -490,10 +476,9 @@ public class EntitySelectorOptions {
 					Identifier identifier = Identifier.fromCommandInput(entitySelectorReader.getReader());
 					entitySelectorReader.setPredicate(
 						entity -> {
-							if (!(entity.world instanceof ServerWorld)) {
+							if (!(entity.world instanceof ServerWorld serverWorld)) {
 								return false;
 							} else {
-								ServerWorld serverWorld = (ServerWorld)entity.world;
 								LootCondition lootCondition = serverWorld.getServer().getPredicateManager().get(identifier);
 								if (lootCondition == null) {
 									return false;
@@ -533,7 +518,7 @@ public class EntitySelectorOptions {
 
 		for (Entry<String, EntitySelectorOptions.SelectorOption> entry : options.entrySet()) {
 			if (((EntitySelectorOptions.SelectorOption)entry.getValue()).condition.test(reader) && ((String)entry.getKey()).toLowerCase(Locale.ROOT).startsWith(string)) {
-				suggestionBuilder.suggest((String)entry.getKey() + '=', ((EntitySelectorOptions.SelectorOption)entry.getValue()).description);
+				suggestionBuilder.suggest((String)entry.getKey() + "=", ((EntitySelectorOptions.SelectorOption)entry.getValue()).description);
 			}
 		}
 	}
@@ -547,10 +532,10 @@ public class EntitySelectorOptions {
 		public final Predicate<EntitySelectorReader> condition;
 		public final Text description;
 
-		private SelectorOption(EntitySelectorOptions.SelectorHandler handler, Predicate<EntitySelectorReader> condition, Text description) {
-			this.handler = handler;
-			this.condition = condition;
-			this.description = description;
+		SelectorOption(EntitySelectorOptions.SelectorHandler selectorHandler, Predicate<EntitySelectorReader> predicate, Text text) {
+			this.handler = selectorHandler;
+			this.condition = predicate;
+			this.description = text;
 		}
 	}
 }

@@ -17,7 +17,7 @@ import org.apache.logging.log4j.Logger;
 public class TestRunner {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final BlockPos pos;
-	private final ServerWorld world;
+	final ServerWorld world;
 	private final TestManager testManager;
 	private final int sizeZ;
 	private final List<GameTestState> tests;
@@ -52,7 +52,7 @@ public class TestRunner {
 		this.runBatch(0);
 	}
 
-	private void runBatch(int index) {
+	void runBatch(int index) {
 		if (index < this.batches.size()) {
 			Pair<GameTestBatch, Collection<GameTestState>> pair = (Pair<GameTestBatch, Collection<GameTestState>>)this.batches.get(index);
 			final GameTestBatch gameTestBatch = pair.getFirst();

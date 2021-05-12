@@ -17,6 +17,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -95,6 +96,11 @@ public class SquidEntity extends WaterCreatureEntity {
 
 	protected SoundEvent getSquirtSound() {
 		return SoundEvents.ENTITY_SQUID_SQUIRT;
+	}
+
+	@Override
+	public boolean canBeLeashedBy(PlayerEntity player) {
+		return !this.isLeashed();
 	}
 
 	@Override
@@ -239,9 +245,6 @@ public class SquidEntity extends WaterCreatureEntity {
 		private static final float field_30376 = 5.0F;
 		private static final float field_30377 = 10.0F;
 		private int timer;
-
-		private EscapeAttackerGoal() {
-		}
 
 		@Override
 		public boolean canStart() {

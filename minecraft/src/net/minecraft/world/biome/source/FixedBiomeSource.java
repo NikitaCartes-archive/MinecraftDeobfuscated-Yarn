@@ -46,7 +46,7 @@ public class FixedBiomeSource extends BiomeSource {
 	@Nullable
 	@Override
 	public BlockPos locateBiome(int x, int y, int z, int radius, int i, Predicate<Biome> predicate, Random random, boolean bl) {
-		if (predicate.test(this.biome.get())) {
+		if (predicate.test((Biome)this.biome.get())) {
 			return bl ? new BlockPos(x, y, z) : new BlockPos(x - radius + random.nextInt(radius * 2 + 1), y, z - radius + random.nextInt(radius * 2 + 1));
 		} else {
 			return null;

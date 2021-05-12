@@ -170,7 +170,7 @@ public class VertexFormatElement {
 			this.finisher = finisher;
 		}
 
-		private void startDrawing(int size, int type, int stride, long pointer, int textureIndex, int elementIndex) {
+		void startDrawing(int size, int type, int stride, long pointer, int textureIndex, int elementIndex) {
 			this.starter.setupBufferState(size, type, stride, pointer, textureIndex, elementIndex);
 		}
 

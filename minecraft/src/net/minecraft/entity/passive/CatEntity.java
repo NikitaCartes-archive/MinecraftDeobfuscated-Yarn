@@ -118,7 +118,7 @@ public class CatEntity extends TameableEntity {
 	}
 
 	public Identifier getTexture() {
-		return (Identifier)TEXTURES.getOrDefault(this.getCatType(), TEXTURES.get(0));
+		return (Identifier)TEXTURES.getOrDefault(this.getCatType(), (Identifier)TEXTURES.get(0));
 	}
 
 	@Override
@@ -363,11 +363,8 @@ public class CatEntity extends TameableEntity {
 	public boolean canBreedWith(AnimalEntity other) {
 		if (!this.isTamed()) {
 			return false;
-		} else if (!(other instanceof CatEntity)) {
-			return false;
 		} else {
-			CatEntity catEntity = (CatEntity)other;
-			return catEntity.isTamed() && super.canBreedWith(other);
+			return !(other instanceof CatEntity catEntity) ? false : catEntity.isTamed() && super.canBreedWith(other);
 		}
 	}
 

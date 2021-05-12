@@ -209,28 +209,29 @@ public interface DispenserBehavior {
 				return stack;
 			}
 		});
-		DispenserBlock.registerBehavior(Items.SADDLE, new FallibleItemDispenserBehavior() {
-			@Override
-			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-				BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
-				List<LivingEntity> list = pointer.getWorld().getEntitiesByClass(LivingEntity.class, new Box(blockPos), entity -> {
-					if (!(entity instanceof Saddleable)) {
-						return false;
+		DispenserBlock.registerBehavior(
+			Items.SADDLE,
+			new FallibleItemDispenserBehavior() {
+				@Override
+				public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
+					BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
+					List<LivingEntity> list = pointer.getWorld()
+						.getEntitiesByClass(
+							LivingEntity.class,
+							new Box(blockPos),
+							entity -> !(entity instanceof Saddleable saddleable) ? false : !saddleable.isSaddled() && saddleable.canBeSaddled()
+						);
+					if (!list.isEmpty()) {
+						((Saddleable)list.get(0)).saddle(SoundCategory.BLOCKS);
+						stack.decrement(1);
+						this.setSuccess(true);
+						return stack;
 					} else {
-						Saddleable saddleable = (Saddleable)entity;
-						return !saddleable.isSaddled() && saddleable.canBeSaddled();
+						return super.dispenseSilently(pointer, stack);
 					}
-				});
-				if (!list.isEmpty()) {
-					((Saddleable)list.get(0)).saddle(SoundCategory.BLOCKS);
-					stack.decrement(1);
-					this.setSuccess(true);
-					return stack;
-				} else {
-					return super.dispenseSilently(pointer, stack);
 				}
 			}
-		});
+		);
 		ItemDispenserBehavior itemDispenserBehavior2 = new FallibleItemDispenserBehavior() {
 			@Override
 			protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {

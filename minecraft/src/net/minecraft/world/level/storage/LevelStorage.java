@@ -62,8 +62,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class LevelStorage {
-	private static final Logger LOGGER = LogManager.getLogger();
-	private static final DateTimeFormatter TIME_FORMATTER = new DateTimeFormatterBuilder()
+	static final Logger LOGGER = LogManager.getLogger();
+	static final DateTimeFormatter TIME_FORMATTER = new DateTimeFormatterBuilder()
 		.appendValue(ChronoField.YEAR, 4, 10, SignStyle.EXCEEDS_PAD)
 		.appendLiteral('-')
 		.appendValue(ChronoField.MONTH_OF_YEAR, 2)
@@ -80,9 +80,9 @@ public class LevelStorage {
 	private static final ImmutableList<String> GENERATOR_OPTION_KEYS = ImmutableList.of(
 		"RandomSeed", "generatorName", "generatorOptions", "generatorVersion", "legacy_custom_options", "MapFeatures", "BonusChest"
 	);
-	private final Path savesDirectory;
+	final Path savesDirectory;
 	private final Path backupsDirectory;
-	private final DataFixer dataFixer;
+	final DataFixer dataFixer;
 
 	public LevelStorage(Path savesDirectory, Path backupsDirectory, DataFixer dataFixer) {
 		this.dataFixer = dataFixer;
@@ -175,12 +175,12 @@ public class LevelStorage {
 		}
 	}
 
-	private int getCurrentVersion() {
+	int getCurrentVersion() {
 		return 19133;
 	}
 
 	@Nullable
-	private <T> T readLevelProperties(File file, BiFunction<File, DataFixer, T> levelDataParser) {
+	<T> T readLevelProperties(File file, BiFunction<File, DataFixer, T> levelDataParser) {
 		if (!file.exists()) {
 			return null;
 		} else {
@@ -214,7 +214,7 @@ public class LevelStorage {
 		}
 	}
 
-	private static BiFunction<File, DataFixer, LevelProperties> createLevelDataParser(DynamicOps<NbtElement> dynamicOps, DataPackSettings dataPackSettings) {
+	static BiFunction<File, DataFixer, LevelProperties> createLevelDataParser(DynamicOps<NbtElement> dynamicOps, DataPackSettings dataPackSettings) {
 		return (file, dataFixer) -> {
 			try {
 				NbtCompound nbtCompound = NbtIo.readCompressed(file);
@@ -236,7 +236,7 @@ public class LevelStorage {
 		};
 	}
 
-	private BiFunction<File, DataFixer, LevelSummary> createLevelDataParser(File file, boolean locked) {
+	BiFunction<File, DataFixer, LevelSummary> createLevelDataParser(File file, boolean locked) {
 		return (file2, dataFixer) -> {
 			try {
 				NbtCompound nbtCompound = NbtIo.readCompressed(file2);
@@ -295,8 +295,8 @@ public class LevelStorage {
 	}
 
 	public class Session implements AutoCloseable {
-		private final SessionLock lock;
-		private final Path directory;
+		final SessionLock lock;
+		final Path directory;
 		private final String directoryName;
 		private final Map<WorldSavePath, Path> paths = Maps.<WorldSavePath, Path>newHashMap();
 
@@ -354,7 +354,7 @@ public class LevelStorage {
 		@Nullable
 		public DataPackSettings getDataPackSettings() {
 			this.checkValid();
-			return LevelStorage.this.readLevelProperties(this.directory.toFile(), (file, dataFixer) -> LevelStorage.readDataPackSettings(file, dataFixer));
+			return LevelStorage.this.readLevelProperties(this.directory.toFile(), LevelStorage::readDataPackSettings);
 		}
 
 		public void backupLevelDataFile(DynamicRegistryManager dynamicRegistryManager, SaveProperties saveProperties) {
@@ -452,13 +452,12 @@ public class LevelStorage {
 
 			try {
 				Files.createDirectories(Files.exists(path, new LinkOption[0]) ? path.toRealPath() : path);
-			} catch (IOException var16) {
-				throw new RuntimeException(var16);
+			} catch (IOException var9) {
+				throw new RuntimeException(var9);
 			}
 
 			Path path2 = path.resolve(FileNameUtil.getNextUniqueName(path, string, ".zip"));
 			final ZipOutputStream zipOutputStream = new ZipOutputStream(new BufferedOutputStream(Files.newOutputStream(path2)));
-			Throwable var5 = null;
 
 			try {
 				final Path path3 = Paths.get(this.directoryName);
@@ -476,23 +475,17 @@ public class LevelStorage {
 						}
 					}
 				});
-			} catch (Throwable var15) {
-				var5 = var15;
-				throw var15;
-			} finally {
-				if (zipOutputStream != null) {
-					if (var5 != null) {
-						try {
-							zipOutputStream.close();
-						} catch (Throwable var14) {
-							var5.addSuppressed(var14);
-						}
-					} else {
-						zipOutputStream.close();
-					}
+			} catch (Throwable var8) {
+				try {
+					zipOutputStream.close();
+				} catch (Throwable var7) {
+					var8.addSuppressed(var7);
 				}
+
+				throw var8;
 			}
 
+			zipOutputStream.close();
 			return Files.size(path2);
 		}
 

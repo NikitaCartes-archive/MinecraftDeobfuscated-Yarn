@@ -236,24 +236,24 @@ public class PlayerListHud extends DrawableHelper {
 		if (objective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
 			RenderSystem.setShaderTexture(0, GUI_ICONS_TEXTURE);
 			long m = Util.getMeasuringTimeMs();
-			if (this.showTime == entry.method_2976()) {
-				if (l < entry.method_2973()) {
+			if (this.showTime == entry.getShowTime()) {
+				if (l < entry.getHealth()) {
 					entry.method_2978(m);
 					entry.method_2975((long)(this.inGameHud.getTicks() + 20));
-				} else if (l > entry.method_2973()) {
+				} else if (l > entry.getHealth()) {
 					entry.method_2978(m);
 					entry.method_2975((long)(this.inGameHud.getTicks() + 10));
 				}
 			}
 
-			if (m - entry.method_2974() > 1000L || this.showTime != entry.method_2976()) {
-				entry.method_2972(l);
+			if (m - entry.method_2974() > 1000L || this.showTime != entry.getShowTime()) {
+				entry.setHealth(l);
 				entry.method_2965(l);
 				entry.method_2978(m);
 			}
 
-			entry.method_2964(this.showTime);
-			entry.method_2972(l);
+			entry.setShowTime(this.showTime);
+			entry.setHealth(l);
 			int n = MathHelper.ceil((float)Math.max(l, entry.method_2960()) / 2.0F);
 			int o = Math.max(MathHelper.ceil((float)(l / 2)), Math.max(MathHelper.ceil((float)(entry.method_2960() / 2)), 10));
 			boolean bl = entry.method_2961() > (long)this.inGameHud.getTicks() && (entry.method_2961() - (long)this.inGameHud.getTicks()) / 3L % 2L == 1L;
@@ -287,7 +287,7 @@ public class PlayerListHud extends DrawableHelper {
 				} else {
 					float f = MathHelper.clamp((float)l / 20.0F, 0.0F, 1.0F);
 					int r = (int)((1.0F - f) * 255.0F) << 16 | (int)(f * 255.0F) << 8;
-					String string2 = "" + (float)l / 2.0F;
+					String string2 = (float)l / 2.0F + "";
 					if (k - this.client.textRenderer.getWidth(string2 + "hp") >= j) {
 						string2 = string2 + "hp";
 					}
@@ -296,7 +296,7 @@ public class PlayerListHud extends DrawableHelper {
 				}
 			}
 		} else {
-			String string3 = Formatting.YELLOW + "" + l;
+			String string3 = "" + Formatting.YELLOW + l;
 			this.client.textRenderer.drawWithShadow(matrices, string3, (float)(k - this.client.textRenderer.getWidth(string3)), (float)i, 16777215);
 		}
 	}
@@ -316,9 +316,6 @@ public class PlayerListHud extends DrawableHelper {
 
 	@Environment(EnvType.CLIENT)
 	static class EntryOrderComparator implements Comparator<PlayerListEntry> {
-		private EntryOrderComparator() {
-		}
-
 		public int compare(PlayerListEntry playerListEntry, PlayerListEntry playerListEntry2) {
 			Team team = playerListEntry.getScoreboardTeam();
 			Team team2 = playerListEntry2.getScoreboardTeam();

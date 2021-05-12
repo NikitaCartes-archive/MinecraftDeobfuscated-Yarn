@@ -86,10 +86,10 @@ public class DoorBlock extends Block {
 				: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 		} else {
 			return neighborState.isOf(this) && neighborState.get(HALF) != doubleBlockHalf
-				? state.with(FACING, neighborState.get(FACING))
-					.with(OPEN, neighborState.get(OPEN))
-					.with(HINGE, neighborState.get(HINGE))
-					.with(POWERED, neighborState.get(POWERED))
+				? state.with(FACING, (Direction)neighborState.get(FACING))
+					.with(OPEN, (Boolean)neighborState.get(OPEN))
+					.with(HINGE, (DoorHinge)neighborState.get(HINGE))
+					.with(POWERED, (Boolean)neighborState.get(POWERED))
 				: Blocks.AIR.getDefaultState();
 		}
 	}

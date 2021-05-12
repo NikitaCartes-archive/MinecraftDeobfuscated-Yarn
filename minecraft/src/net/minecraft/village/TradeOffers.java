@@ -926,10 +926,9 @@ public class TradeOffers {
 		@Nullable
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
-			if (!(entity.world instanceof ServerWorld)) {
+			if (!(entity.world instanceof ServerWorld serverWorld)) {
 				return null;
 			} else {
-				ServerWorld serverWorld = (ServerWorld)entity.world;
 				BlockPos blockPos = serverWorld.locateStructure(this.structure, entity.getBlockPos(), 100, true);
 				if (blockPos != null) {
 					ItemStack itemStack = FilledMapItem.createMap(serverWorld, blockPos.getX(), blockPos.getZ(), (byte)2, true, true);

@@ -7,7 +7,7 @@ import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.util.Identifier;
 
 public class ImpossibleCriterion implements Criterion<ImpossibleCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("impossible");
+	static final Identifier ID = new Identifier("impossible");
 
 	@Override
 	public Identifier getId() {

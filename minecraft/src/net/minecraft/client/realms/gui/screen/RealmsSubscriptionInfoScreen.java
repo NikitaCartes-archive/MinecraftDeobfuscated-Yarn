@@ -26,7 +26,7 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class RealmsSubscriptionInfoScreen extends RealmsScreen {
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogManager.getLogger();
 	private static final Text subscriptionTitle = new TranslatableText("mco.configure.world.subscription.title");
 	private static final Text subscriptionStartLabelText = new TranslatableText("mco.configure.world.subscription.start");
 	private static final Text timeLeftLabelText = new TranslatableText("mco.configure.world.subscription.timeleft");
@@ -38,8 +38,8 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 	private static final Text DAY_TEXT = new TranslatableText("mco.configure.world.subscription.day");
 	private static final Text DAYS_TEXT = new TranslatableText("mco.configure.world.subscription.days");
 	private final Screen parent;
-	private final RealmsServer serverData;
-	private final Screen mainScreen;
+	final RealmsServer serverData;
+	final Screen mainScreen;
 	private Text daysLeft;
 	private String startDate;
 	private Subscription.SubscriptionType type;

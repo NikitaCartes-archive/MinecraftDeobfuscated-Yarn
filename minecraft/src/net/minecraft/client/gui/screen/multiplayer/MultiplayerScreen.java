@@ -13,6 +13,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.LanServerInfo;
 import net.minecraft.client.network.LanServerQueryManager;
 import net.minecraft.client.network.MultiplayerServerListPinger;
+import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.option.ServerList;
 import net.minecraft.client.resource.language.I18n;
@@ -224,7 +225,7 @@ public class MultiplayerScreen extends Screen {
 	}
 
 	private void connect(ServerInfo entry) {
-		this.client.openScreen(new ConnectScreen(this, this.client, entry));
+		ConnectScreen.connect(this, this.client, ServerAddress.parse(entry.address), entry);
 	}
 
 	public void select(MultiplayerServerListWidget.Entry entry) {

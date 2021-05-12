@@ -390,9 +390,6 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 	}
 
 	static class CobblestoneRandomizer extends StructurePiece.BlockRandomizer {
-		private CobblestoneRandomizer() {
-		}
-
 		@Override
 		public void setBlock(Random random, int x, int y, int z, boolean placeBlock) {
 			if (random.nextFloat() < 0.4F) {

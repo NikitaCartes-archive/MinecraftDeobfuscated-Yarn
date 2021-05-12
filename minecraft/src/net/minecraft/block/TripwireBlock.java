@@ -169,11 +169,20 @@ public class TripwireBlock extends Block {
 	public BlockState rotate(BlockState state, BlockRotation rotation) {
 		switch (rotation) {
 			case CLOCKWISE_180:
-				return state.with(NORTH, state.get(SOUTH)).with(EAST, state.get(WEST)).with(SOUTH, state.get(NORTH)).with(WEST, state.get(EAST));
+				return state.with(NORTH, (Boolean)state.get(SOUTH))
+					.with(EAST, (Boolean)state.get(WEST))
+					.with(SOUTH, (Boolean)state.get(NORTH))
+					.with(WEST, (Boolean)state.get(EAST));
 			case COUNTERCLOCKWISE_90:
-				return state.with(NORTH, state.get(EAST)).with(EAST, state.get(SOUTH)).with(SOUTH, state.get(WEST)).with(WEST, state.get(NORTH));
+				return state.with(NORTH, (Boolean)state.get(EAST))
+					.with(EAST, (Boolean)state.get(SOUTH))
+					.with(SOUTH, (Boolean)state.get(WEST))
+					.with(WEST, (Boolean)state.get(NORTH));
 			case CLOCKWISE_90:
-				return state.with(NORTH, state.get(WEST)).with(EAST, state.get(NORTH)).with(SOUTH, state.get(EAST)).with(WEST, state.get(SOUTH));
+				return state.with(NORTH, (Boolean)state.get(WEST))
+					.with(EAST, (Boolean)state.get(NORTH))
+					.with(SOUTH, (Boolean)state.get(EAST))
+					.with(WEST, (Boolean)state.get(SOUTH));
 			default:
 				return state;
 		}
@@ -183,9 +192,9 @@ public class TripwireBlock extends Block {
 	public BlockState mirror(BlockState state, BlockMirror mirror) {
 		switch (mirror) {
 			case LEFT_RIGHT:
-				return state.with(NORTH, state.get(SOUTH)).with(SOUTH, state.get(NORTH));
+				return state.with(NORTH, (Boolean)state.get(SOUTH)).with(SOUTH, (Boolean)state.get(NORTH));
 			case FRONT_BACK:
-				return state.with(EAST, state.get(WEST)).with(WEST, state.get(EAST));
+				return state.with(EAST, (Boolean)state.get(WEST)).with(WEST, (Boolean)state.get(EAST));
 			default:
 				return super.mirror(state, mirror);
 		}

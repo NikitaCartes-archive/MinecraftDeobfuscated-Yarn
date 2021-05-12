@@ -213,10 +213,10 @@ public class ArgumentTypes {
 		public final ArgumentSerializer<T> serializer;
 		public final Identifier id;
 
-		private Entry(Class<T> argumentClass, ArgumentSerializer<T> serializer, Identifier id) {
-			this.argClass = argumentClass;
-			this.serializer = serializer;
-			this.id = id;
+		Entry(Class<T> class_, ArgumentSerializer<T> argumentSerializer, Identifier identifier) {
+			this.argClass = class_;
+			this.serializer = argumentSerializer;
+			this.id = identifier;
 		}
 	}
 }

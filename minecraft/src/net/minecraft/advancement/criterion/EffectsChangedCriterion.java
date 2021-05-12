@@ -10,7 +10,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class EffectsChangedCriterion extends AbstractCriterion<EffectsChangedCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("effects_changed");
+	static final Identifier ID = new Identifier("effects_changed");
 
 	@Override
 	public Identifier getId() {

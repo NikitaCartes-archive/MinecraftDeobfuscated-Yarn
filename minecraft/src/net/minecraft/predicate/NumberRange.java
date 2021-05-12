@@ -150,12 +150,12 @@ public abstract class NumberRange<T extends Number> {
 	}
 
 	@FunctionalInterface
-	public interface CommandFactory<T extends Number, R extends NumberRange<T>> {
+	protected interface CommandFactory<T extends Number, R extends NumberRange<T>> {
 		R create(StringReader reader, @Nullable T min, @Nullable T max) throws CommandSyntaxException;
 	}
 
 	@FunctionalInterface
-	public interface Factory<T extends Number, R extends NumberRange<T>> {
+	protected interface Factory<T extends Number, R extends NumberRange<T>> {
 		R create(@Nullable T min, @Nullable T max);
 	}
 

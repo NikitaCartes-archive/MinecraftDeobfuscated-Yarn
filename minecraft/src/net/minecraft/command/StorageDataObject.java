@@ -18,7 +18,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
 public class StorageDataObject implements DataCommandObject {
-	private static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> CommandSource.suggestIdentifiers(
+	static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> CommandSource.suggestIdentifiers(
 			of(commandContext).getIds(), suggestionsBuilder
 		);
 	public static final Function<String, DataCommand.ObjectType> TYPE_FACTORY = string -> new DataCommand.ObjectType() {
@@ -44,13 +44,13 @@ public class StorageDataObject implements DataCommandObject {
 	private final DataCommandStorage storage;
 	private final Identifier id;
 
-	private static DataCommandStorage of(CommandContext<ServerCommandSource> commandContext) {
+	static DataCommandStorage of(CommandContext<ServerCommandSource> commandContext) {
 		return commandContext.getSource().getMinecraftServer().getDataCommandStorage();
 	}
 
-	private StorageDataObject(DataCommandStorage storage, Identifier id) {
-		this.storage = storage;
-		this.id = id;
+	StorageDataObject(DataCommandStorage dataCommandStorage, Identifier identifier) {
+		this.storage = dataCommandStorage;
+		this.id = identifier;
 	}
 
 	@Override

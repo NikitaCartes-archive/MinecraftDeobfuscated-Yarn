@@ -101,26 +101,15 @@ public class ScoreText extends BaseText implements ParsableText {
 	public boolean equals(Object object) {
 		if (this == object) {
 			return true;
-		} else if (!(object instanceof ScoreText)) {
-			return false;
 		} else {
-			ScoreText scoreText = (ScoreText)object;
-			return this.name.equals(scoreText.name) && this.objective.equals(scoreText.objective) && super.equals(object);
+			return !(object instanceof ScoreText scoreText)
+				? false
+				: this.name.equals(scoreText.name) && this.objective.equals(scoreText.objective) && super.equals(object);
 		}
 	}
 
 	@Override
 	public String toString() {
-		return "ScoreComponent{name='"
-			+ this.name
-			+ '\''
-			+ "objective='"
-			+ this.objective
-			+ '\''
-			+ ", siblings="
-			+ this.siblings
-			+ ", style="
-			+ this.getStyle()
-			+ '}';
+		return "ScoreComponent{name='" + this.name + "'objective='" + this.objective + "', siblings=" + this.siblings + ", style=" + this.getStyle() + "}";
 	}
 }

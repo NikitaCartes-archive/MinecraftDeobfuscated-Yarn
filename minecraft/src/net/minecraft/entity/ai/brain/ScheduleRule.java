@@ -29,9 +29,7 @@ public class ScheduleRule {
 
 	private void sort() {
 		Int2ObjectSortedMap<ScheduleRuleEntry> int2ObjectSortedMap = new Int2ObjectAVLTreeMap<>();
-		this.entries.forEach(scheduleRuleEntry -> {
-			ScheduleRuleEntry var10000 = int2ObjectSortedMap.put(scheduleRuleEntry.getStartTime(), scheduleRuleEntry);
-		});
+		this.entries.forEach(scheduleRuleEntry -> int2ObjectSortedMap.put(scheduleRuleEntry.getStartTime(), scheduleRuleEntry));
 		this.entries.clear();
 		this.entries.addAll(int2ObjectSortedMap.values());
 		this.prioritizedEntryIndex = 0;

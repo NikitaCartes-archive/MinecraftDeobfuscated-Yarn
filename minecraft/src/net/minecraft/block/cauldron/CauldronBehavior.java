@@ -95,22 +95,18 @@ public interface CauldronBehavior {
 		}
 	};
 	CauldronBehavior CLEAN_DYEABLE_ITEM = (state, world, pos, player, hand, stack) -> {
-		Item item = stack.getItem();
-		if (!(item instanceof DyeableItem)) {
+		if (!(stack.getItem() instanceof DyeableItem dyeableItem)) {
+			return ActionResult.PASS;
+		} else if (!dyeableItem.hasColor(stack)) {
 			return ActionResult.PASS;
 		} else {
-			DyeableItem dyeableItem = (DyeableItem)item;
-			if (!dyeableItem.hasColor(stack)) {
-				return ActionResult.PASS;
-			} else {
-				if (!world.isClient) {
-					dyeableItem.removeColor(stack);
-					player.incrementStat(Stats.CLEAN_ARMOR);
-					LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
-				}
-
-				return ActionResult.success(world.isClient);
+			if (!world.isClient) {
+				dyeableItem.removeColor(stack);
+				player.incrementStat(Stats.CLEAN_ARMOR);
+				LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
 			}
+
+			return ActionResult.success(world.isClient);
 		}
 	};
 

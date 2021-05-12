@@ -142,12 +142,12 @@ public interface MultilineText {
 
 	@Environment(EnvType.CLIENT)
 	public static class Line {
-		private final OrderedText text;
-		private final int width;
+		final OrderedText text;
+		final int width;
 
-		private Line(OrderedText text, int width) {
-			this.text = text;
-			this.width = width;
+		Line(OrderedText orderedText, int i) {
+			this.text = orderedText;
+			this.width = i;
 		}
 	}
 }

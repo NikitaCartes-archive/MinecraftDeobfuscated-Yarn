@@ -30,18 +30,18 @@ import org.lwjgl.glfw.GLFW;
 @Environment(EnvType.CLIENT)
 public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Text worldLang = new TranslatableText("selectWorld.world");
-	private static final Text conversionLang = new TranslatableText("selectWorld.conversion");
-	private static final Text HARDCORE_TEXT = new TranslatableText("mco.upload.hardcore").formatted(Formatting.DARK_RED);
-	private static final Text CHEATS_TEXT = new TranslatableText("selectWorld.cheats");
+	static final Text worldLang = new TranslatableText("selectWorld.world");
+	static final Text conversionLang = new TranslatableText("selectWorld.conversion");
+	static final Text HARDCORE_TEXT = new TranslatableText("mco.upload.hardcore").formatted(Formatting.DARK_RED);
+	static final Text CHEATS_TEXT = new TranslatableText("selectWorld.cheats");
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
 	private final RealmsResetWorldScreen parent;
 	private final long worldId;
 	private final int slotId;
-	private ButtonWidget uploadButton;
-	private List<LevelSummary> levelList = Lists.<LevelSummary>newArrayList();
-	private int selectedWorld = -1;
-	private RealmsSelectFileToUploadScreen.WorldSelectionList worldSelectionList;
+	ButtonWidget uploadButton;
+	List<LevelSummary> levelList = Lists.<LevelSummary>newArrayList();
+	int selectedWorld = -1;
+	RealmsSelectFileToUploadScreen.WorldSelectionList worldSelectionList;
 	private RealmsLabel titleLabel;
 	private RealmsLabel subtitleLabel;
 	private RealmsLabel field_20063;
@@ -133,11 +133,11 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 		}
 	}
 
-	private static Text method_21400(LevelSummary levelSummary) {
+	static Text method_21400(LevelSummary levelSummary) {
 		return levelSummary.getGameMode().getTranslatableName();
 	}
 
-	private static String method_21404(LevelSummary levelSummary) {
+	static String method_21404(LevelSummary levelSummary) {
 		return DATE_FORMAT.format(new Date(levelSummary.getLastPlayed()));
 	}
 

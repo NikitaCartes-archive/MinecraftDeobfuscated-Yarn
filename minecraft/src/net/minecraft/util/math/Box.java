@@ -129,21 +129,18 @@ public class Box {
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
-		} else if (!(o instanceof Box)) {
+		} else if (!(o instanceof Box box)) {
+			return false;
+		} else if (Double.compare(box.minX, this.minX) != 0) {
+			return false;
+		} else if (Double.compare(box.minY, this.minY) != 0) {
+			return false;
+		} else if (Double.compare(box.minZ, this.minZ) != 0) {
+			return false;
+		} else if (Double.compare(box.maxX, this.maxX) != 0) {
 			return false;
 		} else {
-			Box box = (Box)o;
-			if (Double.compare(box.minX, this.minX) != 0) {
-				return false;
-			} else if (Double.compare(box.minY, this.minY) != 0) {
-				return false;
-			} else if (Double.compare(box.minZ, this.minZ) != 0) {
-				return false;
-			} else if (Double.compare(box.maxX, this.maxX) != 0) {
-				return false;
-			} else {
-				return Double.compare(box.maxY, this.maxY) != 0 ? false : Double.compare(box.maxZ, this.maxZ) == 0;
-			}
+			return Double.compare(box.maxY, this.maxY) != 0 ? false : Double.compare(box.maxZ, this.maxZ) == 0;
 		}
 	}
 

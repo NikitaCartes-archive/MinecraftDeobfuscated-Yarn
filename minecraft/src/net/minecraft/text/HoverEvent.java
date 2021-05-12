@@ -25,7 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class HoverEvent {
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogManager.getLogger();
 	private final HoverEvent.Action<?> action;
 	private final Object contents;
 
@@ -55,7 +55,7 @@ public class HoverEvent {
 	}
 
 	public String toString() {
-		return "HoverEvent{action=" + this.action + ", value='" + this.contents + '\'' + '}';
+		return "HoverEvent{action=" + this.action + ", value='" + this.contents + "'}";
 	}
 
 	public int hashCode() {
@@ -96,11 +96,7 @@ public class HoverEvent {
 			"show_text", true, Text.Serializer::fromJson, Text.Serializer::toJsonTree, Function.identity()
 		);
 		public static final HoverEvent.Action<HoverEvent.ItemStackContent> SHOW_ITEM = new HoverEvent.Action<>(
-			"show_item",
-			true,
-			json -> HoverEvent.ItemStackContent.parse(json),
-			object -> ((HoverEvent.ItemStackContent)object).toJson(),
-			text -> HoverEvent.ItemStackContent.parse(text)
+			"show_item", true, HoverEvent.ItemStackContent::parse, HoverEvent.ItemStackContent::toJson, HoverEvent.ItemStackContent::parse
 		);
 		public static final HoverEvent.Action<HoverEvent.EntityContent> SHOW_ENTITY = new HoverEvent.Action<>(
 			"show_entity", true, HoverEvent.EntityContent::parse, HoverEvent.EntityContent::toJson, HoverEvent.EntityContent::parse
@@ -134,7 +130,7 @@ public class HoverEvent {
 			return (HoverEvent.Action<?>)BY_NAME.get(name);
 		}
 
-		private T cast(Object o) {
+		T cast(Object o) {
 			return (T)o;
 		}
 

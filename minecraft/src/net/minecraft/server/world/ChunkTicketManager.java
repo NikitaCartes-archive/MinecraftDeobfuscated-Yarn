@@ -37,21 +37,21 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public abstract class ChunkTicketManager {
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogManager.getLogger();
 	private static final int field_29764 = 2;
-	private static final int NEARBY_PLAYER_TICKET_LEVEL = 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.FULL) - 2;
+	static final int NEARBY_PLAYER_TICKET_LEVEL = 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.FULL) - 2;
 	private static final int field_29765 = 4;
-	private final Long2ObjectMap<ObjectSet<ServerPlayerEntity>> playersByChunkPos = new Long2ObjectOpenHashMap<>();
-	private final Long2ObjectOpenHashMap<SortedArraySet<ChunkTicket<?>>> ticketsByPosition = new Long2ObjectOpenHashMap<>();
+	final Long2ObjectMap<ObjectSet<ServerPlayerEntity>> playersByChunkPos = new Long2ObjectOpenHashMap<>();
+	final Long2ObjectOpenHashMap<SortedArraySet<ChunkTicket<?>>> ticketsByPosition = new Long2ObjectOpenHashMap<>();
 	private final ChunkTicketManager.TicketDistanceLevelPropagator distanceFromTicketTracker = new ChunkTicketManager.TicketDistanceLevelPropagator();
 	private final ChunkTicketManager.DistanceFromNearestPlayerTracker distanceFromNearestPlayerTracker = new ChunkTicketManager.DistanceFromNearestPlayerTracker(8);
 	private final ChunkTicketManager.NearbyChunkTicketUpdater nearbyChunkTicketUpdater = new ChunkTicketManager.NearbyChunkTicketUpdater(33);
-	private final Set<ChunkHolder> chunkHolders = Sets.<ChunkHolder>newHashSet();
-	private final ChunkTaskPrioritySystem levelUpdateListener;
-	private final MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> playerTicketThrottler;
-	private final MessageListener<ChunkTaskPrioritySystem.UnblockingMessage> playerTicketThrottlerUnblocker;
-	private final LongSet chunkPositions = new LongOpenHashSet();
-	private final Executor mainThreadExecutor;
+	final Set<ChunkHolder> chunkHolders = Sets.<ChunkHolder>newHashSet();
+	final ChunkTaskPrioritySystem levelUpdateListener;
+	final MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> playerTicketThrottler;
+	final MessageListener<ChunkTaskPrioritySystem.UnblockingMessage> playerTicketThrottlerUnblocker;
+	final LongSet chunkPositions = new LongOpenHashSet();
+	final Executor mainThreadExecutor;
 	private long age;
 
 	protected ChunkTicketManager(Executor workerExecutor, Executor mainThreadExecutor) {
@@ -130,7 +130,7 @@ public abstract class ChunkTicketManager {
 		}
 	}
 
-	private void addTicket(long position, ChunkTicket<?> ticket) {
+	void addTicket(long position, ChunkTicket<?> ticket) {
 		SortedArraySet<ChunkTicket<?>> sortedArraySet = this.getTicketSet(position);
 		int i = getLevel(sortedArraySet);
 		ChunkTicket<?> chunkTicket = sortedArraySet.addAndGet(ticket);
@@ -140,7 +140,7 @@ public abstract class ChunkTicketManager {
 		}
 	}
 
-	private void removeTicket(long pos, ChunkTicket<?> ticket) {
+	void removeTicket(long pos, ChunkTicket<?> ticket) {
 		SortedArraySet<ChunkTicket<?>> sortedArraySet = this.getTicketSet(pos);
 		if (sortedArraySet.remove(ticket)) {
 		}
@@ -234,7 +234,6 @@ public abstract class ChunkTicketManager {
 	private void method_34876(String string) {
 		try {
 			FileOutputStream fileOutputStream = new FileOutputStream(new File(string));
-			Throwable var3 = null;
 
 			try {
 				for (Entry<SortedArraySet<ChunkTicket<?>>> entry : this.ticketsByPosition.long2ObjectEntrySet()) {
@@ -242,28 +241,23 @@ public abstract class ChunkTicketManager {
 
 					for (ChunkTicket<?> chunkTicket : (SortedArraySet)entry.getValue()) {
 						fileOutputStream.write(
-							("" + chunkPos.x + "\t" + chunkPos.z + "\t" + chunkTicket.getType() + "\t" + chunkTicket.getLevel() + "\t\n").getBytes(StandardCharsets.UTF_8)
+							(chunkPos.x + "\t" + chunkPos.z + "\t" + chunkTicket.getType() + "\t" + chunkTicket.getLevel() + "\t\n").getBytes(StandardCharsets.UTF_8)
 						);
 					}
 				}
-			} catch (Throwable var17) {
-				var3 = var17;
-				throw var17;
-			} finally {
-				if (fileOutputStream != null) {
-					if (var3 != null) {
-						try {
-							fileOutputStream.close();
-						} catch (Throwable var16) {
-							var3.addSuppressed(var16);
-						}
-					} else {
-						fileOutputStream.close();
-					}
+			} catch (Throwable var9) {
+				try {
+					fileOutputStream.close();
+				} catch (Throwable var8) {
+					var9.addSuppressed(var8);
 				}
+
+				throw var9;
 			}
-		} catch (IOException var19) {
-			LOGGER.error(var19);
+
+			fileOutputStream.close();
+		} catch (IOException var10) {
+			LOGGER.error(var10);
 		}
 	}
 
@@ -314,32 +308,26 @@ public abstract class ChunkTicketManager {
 		private void method_34878(String string) {
 			try {
 				FileOutputStream fileOutputStream = new FileOutputStream(new File(string));
-				Throwable var3 = null;
 
 				try {
 					for (it.unimi.dsi.fastutil.longs.Long2ByteMap.Entry entry : this.distanceFromNearestPlayer.long2ByteEntrySet()) {
 						ChunkPos chunkPos = new ChunkPos(entry.getLongKey());
 						String string2 = Byte.toString(entry.getByteValue());
-						fileOutputStream.write(("" + chunkPos.x + "\t" + chunkPos.z + "\t" + string2 + "\n").getBytes(StandardCharsets.UTF_8));
+						fileOutputStream.write((chunkPos.x + "\t" + chunkPos.z + "\t" + string2 + "\n").getBytes(StandardCharsets.UTF_8));
 					}
-				} catch (Throwable var16) {
-					var3 = var16;
-					throw var16;
-				} finally {
-					if (fileOutputStream != null) {
-						if (var3 != null) {
-							try {
-								fileOutputStream.close();
-							} catch (Throwable var15) {
-								var3.addSuppressed(var15);
-							}
-						} else {
-							fileOutputStream.close();
-						}
+				} catch (Throwable var8) {
+					try {
+						fileOutputStream.close();
+					} catch (Throwable var7) {
+						var8.addSuppressed(var7);
 					}
+
+					throw var8;
 				}
-			} catch (IOException var18) {
-				ChunkTicketManager.LOGGER.error(var18);
+
+				fileOutputStream.close();
+			} catch (IOException var9) {
+				ChunkTicketManager.LOGGER.error(var9);
 			}
 		}
 	}

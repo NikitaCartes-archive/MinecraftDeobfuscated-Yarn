@@ -110,7 +110,7 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 
 	@Override
 	public ResourceReload reload(Executor prepareExecutor, Executor applyExecutor, CompletableFuture<Unit> initialStage, List<ResourcePack> packs) {
-		LOGGER.info("Reloading ResourceManager: {}", () -> (String)packs.stream().map(ResourcePack::getName).collect(Collectors.joining(", ")));
+		LOGGER.info("Reloading ResourceManager: {}", () -> packs.stream().map(ResourcePack::getName).collect(Collectors.joining(", ")));
 		this.clear();
 
 		for (ResourcePack resourcePack : packs) {

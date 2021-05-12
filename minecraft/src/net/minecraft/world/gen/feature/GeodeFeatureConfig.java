@@ -21,15 +21,15 @@ public class GeodeFeatureConfig implements FeatureConfig {
 					IntProvider.createValidatingCodec(1, 20)
 						.fieldOf("outer_wall_distance")
 						.orElse(UniformIntProvider.create(4, 5))
-						.forGetter(geodeFeatureConfig -> geodeFeatureConfig.field_33516),
+						.forGetter(geodeFeatureConfig -> geodeFeatureConfig.outerWallDistance),
 					IntProvider.createValidatingCodec(1, 20)
 						.fieldOf("distribution_points")
 						.orElse(UniformIntProvider.create(3, 4))
-						.forGetter(geodeFeatureConfig -> geodeFeatureConfig.field_33517),
+						.forGetter(geodeFeatureConfig -> geodeFeatureConfig.distributionPoints),
 					IntProvider.createValidatingCodec(0, 10)
 						.fieldOf("point_offset")
 						.orElse(UniformIntProvider.create(1, 2))
-						.forGetter(geodeFeatureConfig -> geodeFeatureConfig.field_33518),
+						.forGetter(geodeFeatureConfig -> geodeFeatureConfig.pointOffset),
 					Codec.INT.fieldOf("min_gen_offset").orElse(-16).forGetter(geodeFeatureConfig -> geodeFeatureConfig.minGenOffset),
 					Codec.INT.fieldOf("max_gen_offset").orElse(16).forGetter(geodeFeatureConfig -> geodeFeatureConfig.maxGenOffset),
 					RANGE.fieldOf("noise_multiplier").orElse(0.05).forGetter(geodeFeatureConfig -> geodeFeatureConfig.noiseMultiplier),
@@ -43,9 +43,9 @@ public class GeodeFeatureConfig implements FeatureConfig {
 	public final double usePotentialPlacementsChance;
 	public final double useAlternateLayer0Chance;
 	public final boolean placementsRequireLayer0Alternate;
-	public final IntProvider field_33516;
-	public final IntProvider field_33517;
-	public final IntProvider field_33518;
+	public final IntProvider outerWallDistance;
+	public final IntProvider distributionPoints;
+	public final IntProvider pointOffset;
 	public final int minGenOffset;
 	public final int maxGenOffset;
 	public final double noiseMultiplier;
@@ -58,12 +58,12 @@ public class GeodeFeatureConfig implements FeatureConfig {
 		double usePotentialPlacementsChance,
 		double useAlternateLayer0Chance,
 		boolean placementsRequireLayer0Alternate,
-		IntProvider intProvider,
-		IntProvider intProvider2,
-		IntProvider intProvider3,
+		IntProvider outerWallDistance,
+		IntProvider distributionPoints,
+		IntProvider pointOffset,
 		int maxDistributionPoints,
 		int minPointOffset,
-		double d,
+		double noiseMultiplier,
 		int maxGenOffset
 	) {
 		this.layerConfig = layerConfig;
@@ -72,12 +72,12 @@ public class GeodeFeatureConfig implements FeatureConfig {
 		this.usePotentialPlacementsChance = usePotentialPlacementsChance;
 		this.useAlternateLayer0Chance = useAlternateLayer0Chance;
 		this.placementsRequireLayer0Alternate = placementsRequireLayer0Alternate;
-		this.field_33516 = intProvider;
-		this.field_33517 = intProvider2;
-		this.field_33518 = intProvider3;
+		this.outerWallDistance = outerWallDistance;
+		this.distributionPoints = distributionPoints;
+		this.pointOffset = pointOffset;
 		this.minGenOffset = maxDistributionPoints;
 		this.maxGenOffset = minPointOffset;
-		this.noiseMultiplier = d;
+		this.noiseMultiplier = noiseMultiplier;
 		this.invalidBlocksThreshold = maxGenOffset;
 	}
 }

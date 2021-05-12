@@ -18,8 +18,8 @@ public class LocateBiomeCommand {
 	private static final DynamicCommandExceptionType NOT_FOUND_EXCEPTION = new DynamicCommandExceptionType(
 		id -> new TranslatableText("commands.locatebiome.notFound", id)
 	);
-	private static final int field_33395 = 6400;
-	private static final int field_33396 = 8;
+	private static final int RADIUS = 6400;
+	private static final int BLOCK_CHECK_INTERVAL = 8;
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(

@@ -102,12 +102,12 @@ public class LargeDripstoneFeature extends Feature<LargeDripstoneFeatureConfig> 
 		private final double bluntness;
 		private final double heightScale;
 
-		private DripstoneGenerator(BlockPos pos, boolean isStalagmite, int scale, double bluntness, double heightScale) {
-			this.pos = pos;
-			this.isStalagmite = isStalagmite;
-			this.scale = scale;
-			this.bluntness = bluntness;
-			this.heightScale = heightScale;
+		DripstoneGenerator(BlockPos blockPos, boolean bl, int i, double d, double e) {
+			this.pos = blockPos;
+			this.isStalagmite = bl;
+			this.scale = i;
+			this.bluntness = d;
+			this.heightScale = e;
 		}
 
 		private int getBaseScale() {
@@ -122,7 +122,7 @@ public class LargeDripstoneFeature extends Feature<LargeDripstoneFeatureConfig> 
 			return !this.isStalagmite ? this.pos.getY() : this.pos.getY() + this.getBaseScale();
 		}
 
-		private boolean canGenerate(StructureWorldAccess world, LargeDripstoneFeature.WindModifier wind) {
+		boolean canGenerate(StructureWorldAccess world, LargeDripstoneFeature.WindModifier wind) {
 			while (this.scale > 1) {
 				BlockPos.Mutable mutable = this.pos.mutableCopy();
 				int i = Math.min(10, this.getBaseScale());
@@ -150,7 +150,7 @@ public class LargeDripstoneFeature extends Feature<LargeDripstoneFeatureConfig> 
 			return (int)DripstoneHelper.scaleHeightFromRadius((double)height, (double)this.scale, this.heightScale, this.bluntness);
 		}
 
-		private void generate(StructureWorldAccess world, Random random, LargeDripstoneFeature.WindModifier wind) {
+		void generate(StructureWorldAccess world, Random random, LargeDripstoneFeature.WindModifier wind) {
 			for (int i = -this.scale; i <= this.scale; i++) {
 				for (int j = -this.scale; j <= this.scale; j++) {
 					float f = MathHelper.sqrt((float)(i * i + j * j));
@@ -182,7 +182,7 @@ public class LargeDripstoneFeature extends Feature<LargeDripstoneFeatureConfig> 
 			}
 		}
 
-		private boolean generateWind(LargeDripstoneFeatureConfig config) {
+		boolean generateWind(LargeDripstoneFeatureConfig config) {
 			return this.scale >= config.minRadiusForWind && this.bluntness >= (double)config.minBluntnessForWind;
 		}
 	}
@@ -192,7 +192,7 @@ public class LargeDripstoneFeature extends Feature<LargeDripstoneFeatureConfig> 
 		@Nullable
 		private final Vec3d wind;
 
-		private WindModifier(int y, Random random, FloatProvider wind) {
+		WindModifier(int y, Random random, FloatProvider wind) {
 			this.y = y;
 			float f = wind.get(random);
 			float g = MathHelper.nextBetween(random, 0.0F, (float) Math.PI);
@@ -204,11 +204,11 @@ public class LargeDripstoneFeature extends Feature<LargeDripstoneFeatureConfig> 
 			this.wind = null;
 		}
 
-		private static LargeDripstoneFeature.WindModifier create() {
+		static LargeDripstoneFeature.WindModifier create() {
 			return new LargeDripstoneFeature.WindModifier();
 		}
 
-		private BlockPos modify(BlockPos pos) {
+		BlockPos modify(BlockPos pos) {
 			if (this.wind == null) {
 				return pos;
 			} else {

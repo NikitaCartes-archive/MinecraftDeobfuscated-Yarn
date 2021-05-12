@@ -116,7 +116,7 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 			.getDefaultState()
 			.with(WATERLOGGED, Boolean.valueOf(fluidState.isEqualAndStill(Fluids.WATER)))
 			.with(FACING, direction);
-		return world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
+		return world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
 	}
 
 	@Override
@@ -213,7 +213,7 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 	}
 
 	private static boolean isEntityAbove(BlockPos pos, Entity entity) {
-		return entity.getPos().y > (double)((float)pos.getY() + 0.6875F);
+		return entity.isOnGround() && entity.getPos().y > (double)((float)pos.getY() + 0.6875F);
 	}
 
 	private void changeTilt(BlockState state, World world, BlockPos pos, Tilt tilt, @Nullable SoundEvent sound) {

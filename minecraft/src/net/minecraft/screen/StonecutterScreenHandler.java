@@ -29,10 +29,10 @@ public class StonecutterScreenHandler extends ScreenHandler {
 	private final World world;
 	private List<StonecuttingRecipe> availableRecipes = Lists.<StonecuttingRecipe>newArrayList();
 	private ItemStack inputStack = ItemStack.EMPTY;
-	private long lastTakeTime;
+	long lastTakeTime;
 	final Slot inputSlot;
 	final Slot outputSlot;
-	private Runnable contentsChangedListener = () -> {
+	Runnable contentsChangedListener = () -> {
 	};
 	public final Inventory input = new SimpleInventory(1) {
 		@Override
@@ -42,7 +42,7 @@ public class StonecutterScreenHandler extends ScreenHandler {
 			StonecutterScreenHandler.this.contentsChangedListener.run();
 		}
 	};
-	private final CraftingResultInventory output = new CraftingResultInventory();
+	final CraftingResultInventory output = new CraftingResultInventory();
 
 	public StonecutterScreenHandler(int syncId, PlayerInventory playerInventory) {
 		this(syncId, playerInventory, ScreenHandlerContext.EMPTY);
@@ -145,7 +145,7 @@ public class StonecutterScreenHandler extends ScreenHandler {
 		}
 	}
 
-	private void populateResult() {
+	void populateResult() {
 		if (!this.availableRecipes.isEmpty() && this.method_30160(this.selectedRecipe.get())) {
 			StonecuttingRecipe stonecuttingRecipe = (StonecuttingRecipe)this.availableRecipes.get(this.selectedRecipe.get());
 			this.output.setLastRecipe(stonecuttingRecipe);

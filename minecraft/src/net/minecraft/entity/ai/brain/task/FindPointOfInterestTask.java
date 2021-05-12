@@ -143,7 +143,7 @@ public class FindPointOfInterestTask extends Task<PathAwareEntity> {
 				+ this.nextScheduledAttemptAt
 				+ ", currentDelay="
 				+ this.currentDelay
-				+ '}';
+				+ "}";
 		}
 	}
 }

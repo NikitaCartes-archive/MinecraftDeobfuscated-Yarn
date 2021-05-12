@@ -68,19 +68,19 @@ public class FeatureUpdater {
 		}
 	}
 
-	public NbtCompound getUpdatedReferences(NbtCompound nbtCompound) {
-		NbtCompound nbtCompound2 = nbtCompound.getCompound("Level");
-		ChunkPos chunkPos = new ChunkPos(nbtCompound2.getInt("xPos"), nbtCompound2.getInt("zPos"));
+	public NbtCompound getUpdatedReferences(NbtCompound nbt) {
+		NbtCompound nbtCompound = nbt.getCompound("Level");
+		ChunkPos chunkPos = new ChunkPos(nbtCompound.getInt("xPos"), nbtCompound.getInt("zPos"));
 		if (this.needsUpdate(chunkPos.x, chunkPos.z)) {
-			nbtCompound = this.getUpdatedStarts(nbtCompound, chunkPos);
+			nbt = this.getUpdatedStarts(nbt, chunkPos);
 		}
 
-		NbtCompound nbtCompound3 = nbtCompound2.getCompound("Structures");
-		NbtCompound nbtCompound4 = nbtCompound3.getCompound("References");
+		NbtCompound nbtCompound2 = nbtCompound.getCompound("Structures");
+		NbtCompound nbtCompound3 = nbtCompound2.getCompound("References");
 
 		for (String string : this.field_17659) {
 			StructureFeature<?> structureFeature = (StructureFeature<?>)StructureFeature.STRUCTURES.get(string.toLowerCase(Locale.ROOT));
-			if (!nbtCompound4.contains(string, NbtElement.LONG_ARRAY_TYPE) && structureFeature != null) {
+			if (!nbtCompound3.contains(string, NbtElement.LONG_ARRAY_TYPE) && structureFeature != null) {
 				int i = 8;
 				LongList longList = new LongArrayList();
 
@@ -92,14 +92,14 @@ public class FeatureUpdater {
 					}
 				}
 
-				nbtCompound4.putLongArray(string, longList);
+				nbtCompound3.putLongArray(string, longList);
 			}
 		}
 
-		nbtCompound3.put("References", nbtCompound4);
-		nbtCompound2.put("Structures", nbtCompound3);
-		nbtCompound.put("Level", nbtCompound2);
-		return nbtCompound;
+		nbtCompound2.put("References", nbtCompound3);
+		nbtCompound.put("Structures", nbtCompound2);
+		nbt.put("Level", nbtCompound);
+		return nbt;
 	}
 
 	private boolean needsUpdate(int chunkX, int chunkZ, String id) {
@@ -195,21 +195,21 @@ public class FeatureUpdater {
 		}
 	}
 
-	public static FeatureUpdater create(RegistryKey<World> registryKey, @Nullable PersistentStateManager persistentStateManager) {
-		if (registryKey == World.OVERWORLD) {
+	public static FeatureUpdater create(RegistryKey<World> world, @Nullable PersistentStateManager persistentStateManager) {
+		if (world == World.OVERWORLD) {
 			return new FeatureUpdater(
 				persistentStateManager,
 				ImmutableList.of("Monument", "Stronghold", "Village", "Mineshaft", "Temple", "Mansion"),
 				ImmutableList.of("Village", "Mineshaft", "Mansion", "Igloo", "Desert_Pyramid", "Jungle_Pyramid", "Swamp_Hut", "Stronghold", "Monument")
 			);
-		} else if (registryKey == World.NETHER) {
+		} else if (world == World.NETHER) {
 			List<String> list = ImmutableList.of("Fortress");
 			return new FeatureUpdater(persistentStateManager, list, list);
-		} else if (registryKey == World.END) {
+		} else if (world == World.END) {
 			List<String> list = ImmutableList.of("EndCity");
 			return new FeatureUpdater(persistentStateManager, list, list);
 		} else {
-			throw new RuntimeException(String.format("Unknown dimension type : %s", registryKey));
+			throw new RuntimeException(String.format("Unknown dimension type : %s", world));
 		}
 	}
 }

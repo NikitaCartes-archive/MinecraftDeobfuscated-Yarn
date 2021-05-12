@@ -162,7 +162,7 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		DebugRenderer.drawBox(pos, 0.05F, 0.2F, 0.2F, 1.0F, 0.3F);
-		drawString("" + brains, pos, 0, -256);
+		drawString(brains + "", pos, 0, -256);
 		drawString("Ghost POI", pos, 1, -65536);
 	}
 
@@ -172,7 +172,7 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		if (set.size() < 4) {
 			drawString("Owners: " + set, pointOfInterest, i, -256);
 		} else {
-			drawString("" + set.size() + " ticket holders", pointOfInterest, i, -256);
+			drawString(set.size() + " ticket holders", pointOfInterest, i, -256);
 		}
 
 		i++;
@@ -180,7 +180,7 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		if (set2.size() < 4) {
 			drawString("Candidates: " + set2, pointOfInterest, i, -23296);
 		} else {
-			drawString("" + set2.size() + " potential owners", pointOfInterest, i, -23296);
+			drawString(set2.size() + " potential owners", pointOfInterest, i, -23296);
 		}
 
 		drawString("Free tickets: " + pointOfInterest.freeTicketCount, pointOfInterest, ++i, -256);
@@ -373,11 +373,11 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 			this.wantsGolem = wantsGolem;
 		}
 
-		private boolean isPointOfInterest(BlockPos pos) {
+		boolean isPointOfInterest(BlockPos pos) {
 			return this.pointsOfInterest.stream().anyMatch(pos::equals);
 		}
 
-		private boolean method_29388(BlockPos blockPos) {
+		boolean method_29388(BlockPos blockPos) {
 			return this.field_25287.contains(blockPos);
 		}
 

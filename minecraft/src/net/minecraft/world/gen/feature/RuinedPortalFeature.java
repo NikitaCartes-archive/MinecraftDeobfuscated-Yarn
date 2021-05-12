@@ -29,7 +29,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.VerticalBlockSample;
 
 public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureConfig> {
-	private static final String[] COMMON_PORTAL_STRUCTURE_IDS = new String[]{
+	static final String[] COMMON_PORTAL_STRUCTURE_IDS = new String[]{
 		"ruined_portal/portal_1",
 		"ruined_portal/portal_2",
 		"ruined_portal/portal_3",
@@ -41,9 +41,7 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 		"ruined_portal/portal_9",
 		"ruined_portal/portal_10"
 	};
-	private static final String[] RARE_PORTAL_STRUCTURE_IDS = new String[]{
-		"ruined_portal/giant_portal_1", "ruined_portal/giant_portal_2", "ruined_portal/giant_portal_3"
-	};
+	static final String[] RARE_PORTAL_STRUCTURE_IDS = new String[]{"ruined_portal/giant_portal_1", "ruined_portal/giant_portal_2", "ruined_portal/giant_portal_3"};
 	private static final float field_31512 = 0.05F;
 	private static final float field_31513 = 0.5F;
 	private static final float field_31514 = 0.5F;
@@ -61,11 +59,11 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 		return RuinedPortalFeature.Start::new;
 	}
 
-	private static boolean isColdAt(BlockPos pos, Biome biome) {
+	static boolean isColdAt(BlockPos pos, Biome biome) {
 		return biome.getTemperature(pos) < 0.15F;
 	}
 
-	private static int getFloorHeight(
+	static int getFloorHeight(
 		Random random,
 		ChunkGenerator chunkGenerator,
 		RuinedPortalStructurePiece.VerticalPlacement verticalPlacement,

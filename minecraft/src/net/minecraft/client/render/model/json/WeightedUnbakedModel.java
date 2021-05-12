@@ -40,11 +40,8 @@ public class WeightedUnbakedModel implements UnbakedModel {
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
-		} else if (o instanceof WeightedUnbakedModel) {
-			WeightedUnbakedModel weightedUnbakedModel = (WeightedUnbakedModel)o;
-			return this.variants.equals(weightedUnbakedModel.variants);
 		} else {
-			return false;
+			return o instanceof WeightedUnbakedModel weightedUnbakedModel ? this.variants.equals(weightedUnbakedModel.variants) : false;
 		}
 	}
 
@@ -97,10 +94,10 @@ public class WeightedUnbakedModel implements UnbakedModel {
 				}
 
 				for (JsonElement jsonElement2 : jsonArray) {
-					list.add(jsonDeserializationContext.deserialize(jsonElement2, ModelVariant.class));
+					list.add((ModelVariant)jsonDeserializationContext.deserialize(jsonElement2, ModelVariant.class));
 				}
 			} else {
-				list.add(jsonDeserializationContext.deserialize(jsonElement, ModelVariant.class));
+				list.add((ModelVariant)jsonDeserializationContext.deserialize(jsonElement, ModelVariant.class));
 			}
 
 			return new WeightedUnbakedModel(list);

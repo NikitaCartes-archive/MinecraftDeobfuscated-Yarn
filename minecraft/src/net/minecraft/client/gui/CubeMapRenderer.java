@@ -24,7 +24,7 @@ public class CubeMapRenderer {
 
 	public CubeMapRenderer(Identifier faces) {
 		for (int i = 0; i < 6; i++) {
-			this.faces[i] = new Identifier(faces.getNamespace(), faces.getPath() + '_' + i + ".png");
+			this.faces[i] = new Identifier(faces.getNamespace(), faces.getPath() + "_" + i + ".png");
 		}
 	}
 

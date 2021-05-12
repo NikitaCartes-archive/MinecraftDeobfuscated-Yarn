@@ -50,7 +50,7 @@ public final class SpawnHelper {
 	private static final int field_30974 = 24;
 	public static final int field_30972 = 8;
 	public static final int field_30973 = 128;
-	private static final int CHUNK_AREA = (int)Math.pow(17.0, 2.0);
+	static final int CHUNK_AREA = (int)Math.pow(17.0, 2.0);
 	private static final SpawnGroup[] SPAWNABLE_GROUPS = (SpawnGroup[])Stream.of(SpawnGroup.values())
 		.filter(spawnGroup -> spawnGroup != SpawnGroup.MISC)
 		.toArray(SpawnGroup[]::new);
@@ -63,11 +63,8 @@ public final class SpawnHelper {
 		Object2IntOpenHashMap<SpawnGroup> object2IntOpenHashMap = new Object2IntOpenHashMap<>();
 
 		for (Entity entity : entities) {
-			if (entity instanceof MobEntity) {
-				MobEntity mobEntity = (MobEntity)entity;
-				if (mobEntity.isPersistent() || mobEntity.cannotDespawn()) {
-					continue;
-				}
+			if (entity instanceof MobEntity mobEntity && (mobEntity.isPersistent() || mobEntity.cannotDespawn())) {
+				continue;
 			}
 
 			SpawnGroup spawnGroup = entity.getType().getSpawnGroup();
@@ -88,7 +85,7 @@ public final class SpawnHelper {
 		return new SpawnHelper.Info(spawningChunkCount, object2IntOpenHashMap, gravityField);
 	}
 
-	private static Biome getBiomeDirectly(BlockPos pos, Chunk chunk) {
+	static Biome getBiomeDirectly(BlockPos pos, Chunk chunk) {
 		return DirectBiomeAccessType.INSTANCE.getBiome(0L, pos.getX(), pos.getY(), pos.getZ(), chunk.getBiomeArray());
 	}
 
@@ -100,9 +97,7 @@ public final class SpawnHelper {
 				&& (spawnMonsters || spawnGroup.isPeaceful())
 				&& (rareSpawn || !spawnGroup.isRare())
 				&& info.isBelowCap(spawnGroup)) {
-				spawnEntitiesInChunk(
-					spawnGroup, world, chunk, (entityType, pos, chunkx) -> info.test(entityType, pos, chunkx), (entity, chunkx) -> info.run(entity, chunkx)
-				);
+				spawnEntitiesInChunk(spawnGroup, world, chunk, info::test, info::run);
 			}
 		}
 
@@ -371,13 +366,10 @@ public final class SpawnHelper {
 								}
 
 								entity.refreshPositionAndAngles(d, (double)blockPos.getY(), e, random.nextFloat() * 360.0F, 0.0F);
-								if (entity instanceof MobEntity) {
-									MobEntity mobEntity = (MobEntity)entity;
-									if (mobEntity.canSpawn(world, SpawnReason.CHUNK_GENERATION) && mobEntity.canSpawn(world)) {
-										entityData = mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), SpawnReason.CHUNK_GENERATION, entityData, null);
-										world.spawnEntityAndPassengers(mobEntity);
-										bl = true;
-									}
+								if (entity instanceof MobEntity mobEntity && mobEntity.canSpawn(world, SpawnReason.CHUNK_GENERATION) && mobEntity.canSpawn(world)) {
+									entityData = mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), SpawnReason.CHUNK_GENERATION, entityData, null);
+									world.spawnEntityAndPassengers(mobEntity);
+									bl = true;
 								}
 							}
 
@@ -437,11 +429,11 @@ public final class SpawnHelper {
 		private EntityType<?> cachedEntityType;
 		private double cachedDensityMass;
 
-		private Info(int spawningChunkCount, Object2IntOpenHashMap<SpawnGroup> groupToCount, GravityField densityField) {
-			this.spawningChunkCount = spawningChunkCount;
-			this.groupToCount = groupToCount;
-			this.densityField = densityField;
-			this.groupToCountView = Object2IntMaps.unmodifiable(groupToCount);
+		Info(int i, Object2IntOpenHashMap<SpawnGroup> object2IntOpenHashMap, GravityField gravityField) {
+			this.spawningChunkCount = i;
+			this.groupToCount = object2IntOpenHashMap;
+			this.densityField = gravityField;
+			this.groupToCountView = Object2IntMaps.unmodifiable(object2IntOpenHashMap);
 		}
 
 		/**
@@ -492,7 +484,7 @@ public final class SpawnHelper {
 			return this.groupToCountView;
 		}
 
-		private boolean isBelowCap(SpawnGroup group) {
+		boolean isBelowCap(SpawnGroup group) {
 			int i = group.getCapacity() * this.spawningChunkCount / SpawnHelper.CHUNK_AREA;
 			return this.groupToCount.getInt(group) < i;
 		}

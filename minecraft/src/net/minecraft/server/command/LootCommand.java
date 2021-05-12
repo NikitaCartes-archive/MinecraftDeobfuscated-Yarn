@@ -369,8 +369,7 @@ public class LootCommand {
 		List<ItemStack> list = Lists.<ItemStack>newArrayListWithCapacity(stacks.size());
 
 		for (Entity entity : targets) {
-			if (entity instanceof ServerPlayerEntity) {
-				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
+			if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
 				replace(entity, stacks, slot, stackCount, list);
 				serverPlayerEntity.currentScreenHandler.sendContentUpdates();
 			} else {

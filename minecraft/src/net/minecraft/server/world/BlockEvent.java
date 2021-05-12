@@ -33,12 +33,9 @@ public class BlockEvent {
 	}
 
 	public boolean equals(Object o) {
-		if (!(o instanceof BlockEvent)) {
-			return false;
-		} else {
-			BlockEvent blockEvent = (BlockEvent)o;
-			return this.pos.equals(blockEvent.pos) && this.type == blockEvent.type && this.data == blockEvent.data && this.block == blockEvent.block;
-		}
+		return !(o instanceof BlockEvent blockEvent)
+			? false
+			: this.pos.equals(blockEvent.pos) && this.type == blockEvent.type && this.data == blockEvent.data && this.block == blockEvent.block;
 	}
 
 	public int hashCode() {

@@ -3,7 +3,6 @@ package net.minecraft.entity.passive;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FlowerBlock;
@@ -219,15 +218,9 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 
 	private Optional<Pair<StatusEffect, Integer>> getStewEffectFrom(ItemStack flower) {
 		Item item = flower.getItem();
-		if (item instanceof BlockItem) {
-			Block block = ((BlockItem)item).getBlock();
-			if (block instanceof FlowerBlock) {
-				FlowerBlock flowerBlock = (FlowerBlock)block;
-				return Optional.of(Pair.of(flowerBlock.getEffectInStew(), flowerBlock.getEffectInStewDuration()));
-			}
-		}
-
-		return Optional.empty();
+		return item instanceof BlockItem && ((BlockItem)item).getBlock() instanceof FlowerBlock flowerBlock
+			? Optional.of(Pair.of(flowerBlock.getEffectInStew(), flowerBlock.getEffectInStewDuration()))
+			: Optional.empty();
 	}
 
 	private void setType(MooshroomEntity.Type type) {
@@ -261,8 +254,8 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 		RED("red", Blocks.RED_MUSHROOM.getDefaultState()),
 		BROWN("brown", Blocks.BROWN_MUSHROOM.getDefaultState());
 
-		private final String name;
-		private final BlockState mushroom;
+		final String name;
+		final BlockState mushroom;
 
 		private Type(String name, BlockState mushroom) {
 			this.name = name;
@@ -273,7 +266,7 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 			return this.mushroom;
 		}
 
-		private static MooshroomEntity.Type fromName(String name) {
+		static MooshroomEntity.Type fromName(String name) {
 			for (MooshroomEntity.Type type : values()) {
 				if (type.name.equals(name)) {
 					return type;

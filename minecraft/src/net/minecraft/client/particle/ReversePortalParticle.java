@@ -7,8 +7,8 @@ import net.minecraft.particle.DefaultParticleType;
 
 @Environment(EnvType.CLIENT)
 public class ReversePortalParticle extends PortalParticle {
-	private ReversePortalParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-		super(world, x, y, z, velocityX, velocityY, velocityZ);
+	ReversePortalParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		super(clientWorld, d, e, f, g, h, i);
 		this.scale = (float)((double)this.scale * 1.5);
 		this.maxAge = (int)(Math.random() * 2.0) + 60;
 	}

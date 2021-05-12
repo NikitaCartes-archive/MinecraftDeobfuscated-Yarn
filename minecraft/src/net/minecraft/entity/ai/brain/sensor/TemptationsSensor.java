@@ -17,12 +17,7 @@ import net.minecraft.server.world.ServerWorld;
 
 public class TemptationsSensor extends Sensor<PathAwareEntity> {
 	public static final int MAX_DISTANCE = 10;
-	private static final TargetPredicate TEMPTER_PREDICATE = new TargetPredicate()
-		.setBaseMaxDistance(10.0)
-		.includeInvulnerable()
-		.includeTeammates()
-		.ignoreEntityTargetRules()
-		.includeHidden();
+	private static final TargetPredicate TEMPTER_PREDICATE = TargetPredicate.createNonAttackable().setBaseMaxDistance(10.0).visibleOnly();
 	private final Ingredient ingredient;
 
 	public TemptationsSensor(Ingredient ingredient) {

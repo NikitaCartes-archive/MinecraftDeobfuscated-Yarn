@@ -358,6 +358,7 @@ public class Properties {
 	 * A property that specifies the honey level of a beehive.
 	 */
 	public static final IntProperty HONEY_LEVEL = IntProperty.of("honey_level", 0, 5);
+	public static final int LEVEL_15_MAX = 15;
 	public static final IntProperty LEVEL_15 = IntProperty.of("level", 0, 15);
 	/**
 	 * A property that specifies the moisture of farmland.

@@ -31,6 +31,7 @@ import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.JigsawGeneratingC2SPacket;
 import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
 import net.minecraft.network.packet.c2s.play.PickFromInventoryC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayPongC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInputC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
@@ -122,6 +123,7 @@ import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
 import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.PaintingSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayPingS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
@@ -229,6 +231,7 @@ public enum NetworkState {
 					.register(OpenWrittenBookS2CPacket.class, OpenWrittenBookS2CPacket::new)
 					.register(OpenScreenS2CPacket.class, OpenScreenS2CPacket::new)
 					.register(SignEditorOpenS2CPacket.class, SignEditorOpenS2CPacket::new)
+					.register(PlayPingS2CPacket.class, PlayPingS2CPacket::new)
 					.register(CraftFailedResponseS2CPacket.class, CraftFailedResponseS2CPacket::new)
 					.register(PlayerAbilitiesS2CPacket.class, PlayerAbilitiesS2CPacket::new)
 					.register(EndCombatS2CPacket.class, EndCombatS2CPacket::new)
@@ -316,6 +319,7 @@ public enum NetworkState {
 					.register(PlayerActionC2SPacket.class, PlayerActionC2SPacket::new)
 					.register(ClientCommandC2SPacket.class, ClientCommandC2SPacket::new)
 					.register(PlayerInputC2SPacket.class, PlayerInputC2SPacket::new)
+					.register(PlayPongC2SPacket.class, PlayPongC2SPacket::new)
 					.register(RecipeCategoryOptionsC2SPacket.class, RecipeCategoryOptionsC2SPacket::new)
 					.register(RecipeBookDataC2SPacket.class, RecipeBookDataC2SPacket::new)
 					.register(RenameItemC2SPacket.class, RenameItemC2SPacket::new)
@@ -444,9 +448,6 @@ public enum NetworkState {
 		);
 		private final List<Function<PacketByteBuf, ? extends Packet<T>>> packetFactories = Lists.<Function<PacketByteBuf, ? extends Packet<T>>>newArrayList();
 
-		private PacketHandler() {
-		}
-
 		public <P extends Packet<T>> NetworkState.PacketHandler<T> register(Class<P> type, Function<PacketByteBuf, P> function) {
 			int i = this.packetFactories.size();
 			int j = this.packetIds.put(type, i);
@@ -478,10 +479,7 @@ public enum NetworkState {
 	}
 
 	static class PacketHandlerInitializer {
-		private final Map<NetworkSide, NetworkState.PacketHandler<?>> packetHandlers = Maps.newEnumMap(NetworkSide.class);
-
-		private PacketHandlerInitializer() {
-		}
+		final Map<NetworkSide, NetworkState.PacketHandler<?>> packetHandlers = Maps.newEnumMap(NetworkSide.class);
 
 		public <T extends PacketListener> NetworkState.PacketHandlerInitializer setup(NetworkSide side, NetworkState.PacketHandler<T> handler) {
 			this.packetHandlers.put(side, handler);

@@ -33,7 +33,7 @@ public class GameModeCommand {
 		dispatcher.register(literalArgumentBuilder);
 	}
 
-	private static void setGameMode(ServerCommandSource source, ServerPlayerEntity player, GameMode gameMode) {
+	private static void sendFeedback(ServerCommandSource source, ServerPlayerEntity player, GameMode gameMode) {
 		Text text = new TranslatableText("gameMode." + gameMode.getName());
 		if (source.getEntity() == player) {
 			source.sendFeedback(new TranslatableText("commands.gamemode.success.self", text), true);
@@ -51,7 +51,7 @@ public class GameModeCommand {
 
 		for (ServerPlayerEntity serverPlayerEntity : targets) {
 			if (serverPlayerEntity.changeGameMode(gameMode)) {
-				setGameMode(context.getSource(), serverPlayerEntity, gameMode);
+				sendFeedback(context.getSource(), serverPlayerEntity, gameMode);
 				i++;
 			}
 		}

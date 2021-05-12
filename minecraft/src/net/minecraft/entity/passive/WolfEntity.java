@@ -484,15 +484,12 @@ public class WolfEntity extends TameableEntity implements Angerable {
 			return false;
 		} else if (!this.isTamed()) {
 			return false;
-		} else if (!(other instanceof WolfEntity)) {
+		} else if (!(other instanceof WolfEntity wolfEntity)) {
+			return false;
+		} else if (!wolfEntity.isTamed()) {
 			return false;
 		} else {
-			WolfEntity wolfEntity = (WolfEntity)other;
-			if (!wolfEntity.isTamed()) {
-				return false;
-			} else {
-				return wolfEntity.isInSittingPose() ? false : this.isInLove() && wolfEntity.isInLove();
-			}
+			return wolfEntity.isInSittingPose() ? false : this.isInLove() && wolfEntity.isInLove();
 		}
 	}
 
@@ -504,8 +501,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	public boolean canAttackWithOwner(LivingEntity target, LivingEntity owner) {
 		if (target instanceof CreeperEntity || target instanceof GhastEntity) {
 			return false;
-		} else if (target instanceof WolfEntity) {
-			WolfEntity wolfEntity = (WolfEntity)target;
+		} else if (target instanceof WolfEntity wolfEntity) {
 			return !wolfEntity.isTamed() || wolfEntity.getOwner() != owner;
 		} else if (target instanceof PlayerEntity && owner instanceof PlayerEntity && !((PlayerEntity)owner).shouldDamagePlayer((PlayerEntity)target)) {
 			return false;

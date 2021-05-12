@@ -15,8 +15,8 @@ public class CurrentDownParticle extends SpriteBillboardParticle {
 	 */
 	private float accelerationAngle;
 
-	private CurrentDownParticle(ClientWorld world, double x, double y, double z) {
-		super(world, x, y, z);
+	CurrentDownParticle(ClientWorld clientWorld, double d, double e, double f) {
+		super(clientWorld, d, e, f);
 		this.maxAge = (int)(Math.random() * 60.0) + 30;
 		this.collidesWithWorld = false;
 		this.velocityX = 0.0;

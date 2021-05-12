@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class LocationArrivalCriterion extends AbstractCriterion<LocationArrivalCriterion.Conditions> {
-	private final Identifier id;
+	final Identifier id;
 
 	public LocationArrivalCriterion(Identifier id) {
 		this.id = id;

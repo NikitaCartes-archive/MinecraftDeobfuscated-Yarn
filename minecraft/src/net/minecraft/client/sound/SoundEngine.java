@@ -21,7 +21,7 @@ import org.lwjgl.system.MemoryStack;
 @Environment(EnvType.CLIENT)
 public class SoundEngine {
 	private static final int field_31896 = 3;
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogManager.getLogger();
 	private static final int field_31897 = 30;
 	private long devicePointer;
 	private long contextPointer;
@@ -87,7 +87,6 @@ public class SoundEngine {
 	}
 
 	private int getMonoSourceCount() {
-		int var8;
 		try (MemoryStack memoryStack = MemoryStack.stackPush()) {
 			int i = ALC10.alcGetInteger(this.devicePointer, 4098);
 			if (AlUtil.checkAlcErrors(this.devicePointer, "Get attributes size")) {
@@ -102,25 +101,20 @@ public class SoundEngine {
 
 			int j = 0;
 
-			int k;
-			int l;
-			do {
-				if (j >= i) {
-					return 30;
-				}
-
-				k = intBuffer.get(j++);
+			while (j < i) {
+				int k = intBuffer.get(j++);
 				if (k == 0) {
-					return 30;
+					break;
 				}
 
-				l = intBuffer.get(j++);
-			} while (k != 4112);
-
-			var8 = l;
+				int l = intBuffer.get(j++);
+				if (k == 4112) {
+					return l;
+				}
+			}
 		}
 
-		return var8;
+		return 30;
 	}
 
 	private static long openDevice() {

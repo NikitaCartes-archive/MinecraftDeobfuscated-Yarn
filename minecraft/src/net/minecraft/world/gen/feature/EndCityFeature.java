@@ -50,7 +50,7 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 		return EndCityFeature.Start::new;
 	}
 
-	private static int getGenerationHeight(ChunkPos chunkPos, ChunkGenerator chunkGenerator, HeightLimitView heightLimitView) {
+	static int getGenerationHeight(ChunkPos chunkPos, ChunkGenerator chunkGenerator, HeightLimitView heightLimitView) {
 		Random random = new Random((long)(chunkPos.x + chunkPos.z * 10387313));
 		BlockRotation blockRotation = BlockRotation.random(random);
 		int i = 5;

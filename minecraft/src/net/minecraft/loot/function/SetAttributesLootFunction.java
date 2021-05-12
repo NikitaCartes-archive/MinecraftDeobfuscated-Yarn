@@ -30,11 +30,11 @@ import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 
 public class SetAttributesLootFunction extends ConditionalLootFunction {
-	private final List<SetAttributesLootFunction.Attribute> attributes;
+	final List<SetAttributesLootFunction.Attribute> attributes;
 
-	private SetAttributesLootFunction(LootCondition[] conditions, List<SetAttributesLootFunction.Attribute> attributes) {
-		super(conditions);
-		this.attributes = ImmutableList.copyOf(attributes);
+	SetAttributesLootFunction(LootCondition[] lootConditions, List<SetAttributesLootFunction.Attribute> list) {
+		super(lootConditions);
+		this.attributes = ImmutableList.copyOf(list);
 	}
 
 	@Override
@@ -80,23 +80,28 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 	}
 
 	static class Attribute {
-		private final String name;
-		private final EntityAttribute attribute;
-		private final EntityAttributeModifier.Operation operation;
-		private final LootNumberProvider amount;
+		final String name;
+		final EntityAttribute attribute;
+		final EntityAttributeModifier.Operation operation;
+		final LootNumberProvider amount;
 		@Nullable
-		private final UUID id;
-		private final EquipmentSlot[] slots;
+		final UUID id;
+		final EquipmentSlot[] slots;
 
-		private Attribute(
-			String name, EntityAttribute attribute, EntityAttributeModifier.Operation operation, LootNumberProvider amount, EquipmentSlot[] slots, @Nullable UUID id
+		Attribute(
+			String string,
+			EntityAttribute entityAttribute,
+			EntityAttributeModifier.Operation operation,
+			LootNumberProvider lootNumberProvider,
+			EquipmentSlot[] equipmentSlots,
+			@Nullable UUID uUID
 		) {
-			this.name = name;
-			this.attribute = attribute;
+			this.name = string;
+			this.attribute = entityAttribute;
 			this.operation = operation;
-			this.amount = amount;
-			this.id = id;
-			this.slots = slots;
+			this.amount = lootNumberProvider;
+			this.id = uUID;
+			this.slots = equipmentSlots;
 		}
 
 		public JsonObject serialize(JsonSerializationContext context) {

@@ -7,6 +7,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Locale;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.command.argument.DefaultPosArgument;
@@ -219,13 +220,26 @@ public class TeleportCommand {
 
 		if (targets.size() == 1) {
 			source.sendFeedback(
-				new TranslatableText("commands.teleport.success.location.single", ((Entity)targets.iterator().next()).getDisplayName(), vec3d.x, vec3d.y, vec3d.z), true
+				new TranslatableText(
+					"commands.teleport.success.location.single",
+					((Entity)targets.iterator().next()).getDisplayName(),
+					formatFloat(vec3d.x),
+					formatFloat(vec3d.y),
+					formatFloat(vec3d.z)
+				),
+				true
 			);
 		} else {
-			source.sendFeedback(new TranslatableText("commands.teleport.success.location.multiple", targets.size(), vec3d.x, vec3d.y, vec3d.z), true);
+			source.sendFeedback(
+				new TranslatableText("commands.teleport.success.location.multiple", targets.size(), formatFloat(vec3d.x), formatFloat(vec3d.y), formatFloat(vec3d.z)), true
+			);
 		}
 
 		return targets.size();
+	}
+
+	private static String formatFloat(double d) {
+		return String.format(Locale.ROOT, "%f", d);
 	}
 
 	private static void teleport(

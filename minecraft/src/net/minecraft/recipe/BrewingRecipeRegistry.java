@@ -211,9 +211,9 @@ public class BrewingRecipeRegistry {
 	}
 
 	static class Recipe<T> {
-		private final T input;
-		private final Ingredient ingredient;
-		private final T output;
+		final T input;
+		final Ingredient ingredient;
+		final T output;
 
 		public Recipe(T input, Ingredient ingredient, T output) {
 			this.input = input;

@@ -8,7 +8,7 @@ import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.DoubleOptionSliderWidget;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
@@ -57,7 +57,7 @@ public class DoubleOption extends Option {
 	}
 
 	@Override
-	public AbstractButtonWidget createButton(GameOptions options, int x, int y, int width) {
+	public ClickableWidget createButton(GameOptions options, int x, int y, int width) {
 		List<OrderedText> list = (List<OrderedText>)this.field_27958.apply(MinecraftClient.getInstance());
 		return new DoubleOptionSliderWidget(options, x, y, width, 20, this, list);
 	}

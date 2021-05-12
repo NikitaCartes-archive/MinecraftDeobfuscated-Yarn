@@ -24,14 +24,14 @@ public class LoomScreenHandler extends ScreenHandler {
 	private static final int field_30828 = 31;
 	private static final int field_30829 = 40;
 	private final ScreenHandlerContext context;
-	private final Property selectedPattern = Property.create();
-	private Runnable inventoryChangeListener = () -> {
+	final Property selectedPattern = Property.create();
+	Runnable inventoryChangeListener = () -> {
 	};
-	private final Slot bannerSlot;
-	private final Slot dyeSlot;
+	final Slot bannerSlot;
+	final Slot dyeSlot;
 	private final Slot patternSlot;
 	private final Slot outputSlot;
-	private long lastTakeResultTime;
+	long lastTakeResultTime;
 	private final Inventory input = new SimpleInventory(3) {
 		@Override
 		public void markDirty() {

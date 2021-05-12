@@ -294,15 +294,12 @@ public class Vec3d implements Position {
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
-		} else if (!(o instanceof Vec3d)) {
+		} else if (!(o instanceof Vec3d vec3d)) {
+			return false;
+		} else if (Double.compare(vec3d.x, this.x) != 0) {
 			return false;
 		} else {
-			Vec3d vec3d = (Vec3d)o;
-			if (Double.compare(vec3d.x, this.x) != 0) {
-				return false;
-			} else {
-				return Double.compare(vec3d.y, this.y) != 0 ? false : Double.compare(vec3d.z, this.z) == 0;
-			}
+			return Double.compare(vec3d.y, this.y) != 0 ? false : Double.compare(vec3d.z, this.z) == 0;
 		}
 	}
 

@@ -126,12 +126,12 @@ public class OggAudioStream implements AudioStream {
 								return true;
 							}
 
-							if (l == 2) {
-								this.readChannels(pointerBuffer2.getFloatBuffer(0, k), pointerBuffer2.getFloatBuffer(1, k), channelList);
-								return true;
+							if (l != 2) {
+								throw new IllegalStateException("Invalid number of channels: " + l);
 							}
 
-							throw new IllegalStateException("Invalid number of channels: " + l);
+							this.readChannels(pointerBuffer2.getFloatBuffer(0, k), pointerBuffer2.getFloatBuffer(1, k), channelList);
+							return true;
 						}
 					}
 				}
@@ -190,7 +190,7 @@ public class OggAudioStream implements AudioStream {
 	static class ChannelList {
 		private final List<ByteBuffer> buffers = Lists.<ByteBuffer>newArrayList();
 		private final int size;
-		private int currentBufferSize;
+		int currentBufferSize;
 		private ByteBuffer buffer;
 
 		public ChannelList(int size) {

@@ -334,8 +334,7 @@ public interface Text extends Message, StringVisitable {
 
 			if (text instanceof LiteralText) {
 				jsonObject.addProperty("text", ((LiteralText)text).getRawString());
-			} else if (text instanceof TranslatableText) {
-				TranslatableText translatableText = (TranslatableText)text;
+			} else if (text instanceof TranslatableText translatableText) {
 				jsonObject.addProperty("translate", translatableText.getKey());
 				if (translatableText.getArgs() != null && translatableText.getArgs().length > 0) {
 					JsonArray jsonArray2 = new JsonArray();
@@ -350,40 +349,33 @@ public interface Text extends Message, StringVisitable {
 
 					jsonObject.add("with", jsonArray2);
 				}
-			} else if (text instanceof ScoreText) {
-				ScoreText scoreText = (ScoreText)text;
+			} else if (text instanceof ScoreText scoreText) {
 				JsonObject jsonObject2 = new JsonObject();
 				jsonObject2.addProperty("name", scoreText.getName());
 				jsonObject2.addProperty("objective", scoreText.getObjective());
 				jsonObject.add("score", jsonObject2);
-			} else if (text instanceof SelectorText) {
-				SelectorText selectorText = (SelectorText)text;
+			} else if (text instanceof SelectorText selectorText) {
 				jsonObject.addProperty("selector", selectorText.getPattern());
 				this.addSeparator(jsonSerializationContext, jsonObject, selectorText.getSeparator());
-			} else if (text instanceof KeybindText) {
-				KeybindText keybindText = (KeybindText)text;
+			} else if (text instanceof KeybindText keybindText) {
 				jsonObject.addProperty("keybind", keybindText.getKey());
 			} else {
-				if (!(text instanceof NbtText)) {
+				if (!(text instanceof NbtText nbtText)) {
 					throw new IllegalArgumentException("Don't know how to serialize " + text + " as a Component");
 				}
 
-				NbtText nbtText = (NbtText)text;
 				jsonObject.addProperty("nbt", nbtText.getPath());
 				jsonObject.addProperty("interpret", nbtText.shouldInterpret());
 				this.addSeparator(jsonSerializationContext, jsonObject, nbtText.separator);
-				if (text instanceof NbtText.BlockNbtText) {
-					NbtText.BlockNbtText blockNbtText = (NbtText.BlockNbtText)text;
+				if (text instanceof NbtText.BlockNbtText blockNbtText) {
 					jsonObject.addProperty("block", blockNbtText.getPos());
-				} else if (text instanceof NbtText.EntityNbtText) {
-					NbtText.EntityNbtText entityNbtText = (NbtText.EntityNbtText)text;
+				} else if (text instanceof NbtText.EntityNbtText entityNbtText) {
 					jsonObject.addProperty("entity", entityNbtText.getSelector());
 				} else {
-					if (!(text instanceof NbtText.StorageNbtText)) {
+					if (!(text instanceof NbtText.StorageNbtText storageNbtText)) {
 						throw new IllegalArgumentException("Don't know how to serialize " + text + " as a Component");
 					}
 
-					NbtText.StorageNbtText storageNbtText = (NbtText.StorageNbtText)text;
 					jsonObject.addProperty("storage", storageNbtText.getId().toString());
 				}
 			}

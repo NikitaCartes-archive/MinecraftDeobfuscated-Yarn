@@ -71,7 +71,7 @@ public class Util {
 	private static final ExecutorService IO_WORKER_EXECUTOR = createIoWorker();
 	public static LongSupplier nanoTimeSupplier = System::nanoTime;
 	public static final UUID NIL_UUID = new UUID(0L, 0L);
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogManager.getLogger();
 
 	public static <K, V> Collector<Entry<? extends K, ? extends V>, ?, Map<K, V>> toMap() {
 		return Collectors.toMap(Entry::getKey, Entry::getValue);
@@ -82,7 +82,7 @@ public class Util {
 	}
 
 	public static String createTranslationKey(String type, @Nullable Identifier id) {
-		return id == null ? type + ".unregistered_sadface" : type + '.' + id.getNamespace() + '.' + id.getPath().replace('/', '.');
+		return id == null ? type + ".unregistered_sadface" : type + "." + id.getNamespace() + "." + id.getPath().replace('/', '.');
 	}
 
 	public static long getMeasuringTimeMs() {
@@ -667,9 +667,6 @@ public class Util {
 			}
 		},
 		UNKNOWN;
-
-		private OperatingSystem() {
-		}
 
 		public void open(URL url) {
 			try {

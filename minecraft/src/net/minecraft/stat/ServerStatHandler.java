@@ -14,6 +14,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -77,22 +78,31 @@ public class ServerStatHandler extends StatHandler {
 	public void parse(DataFixer dataFixer, String json) {
 		try {
 			JsonReader jsonReader = new JsonReader(new StringReader(json));
-			Throwable var4 = null;
 
-			try {
-				jsonReader.setLenient(false);
-				JsonElement jsonElement = Streams.parse(jsonReader);
-				if (!jsonElement.isJsonNull()) {
-					NbtCompound nbtCompound = jsonToCompound(jsonElement.getAsJsonObject());
-					if (!nbtCompound.contains("DataVersion", NbtElement.NUMBER_TYPE)) {
-						nbtCompound.putInt("DataVersion", 1343);
-					}
+			label51: {
+				try {
+					jsonReader.setLenient(false);
+					JsonElement jsonElement = Streams.parse(jsonReader);
+					if (!jsonElement.isJsonNull()) {
+						NbtCompound nbtCompound = jsonToCompound(jsonElement.getAsJsonObject());
+						if (!nbtCompound.contains("DataVersion", NbtElement.NUMBER_TYPE)) {
+							nbtCompound.putInt("DataVersion", 1343);
+						}
 
-					nbtCompound = NbtHelper.update(dataFixer, DataFixTypes.STATS, nbtCompound, nbtCompound.getInt("DataVersion"));
-					if (nbtCompound.contains("stats", NbtElement.COMPOUND_TYPE)) {
+						nbtCompound = NbtHelper.update(dataFixer, DataFixTypes.STATS, nbtCompound, nbtCompound.getInt("DataVersion"));
+						if (!nbtCompound.contains("stats", NbtElement.COMPOUND_TYPE)) {
+							break label51;
+						}
+
 						NbtCompound nbtCompound2 = nbtCompound.getCompound("stats");
+						Iterator var7 = nbtCompound2.getKeys().iterator();
 
-						for (String string : nbtCompound2.getKeys()) {
+						while (true) {
+							if (!var7.hasNext()) {
+								break label51;
+							}
+
+							String string = (String)var7.next();
 							if (nbtCompound2.contains(string, NbtElement.COMPOUND_TYPE)) {
 								Util.ifPresentOrElse(
 									Registry.STAT_TYPE.getOrEmpty(new Identifier(string)),
@@ -117,28 +127,24 @@ public class ServerStatHandler extends StatHandler {
 						}
 					}
 
-					return;
+					LOGGER.error("Unable to parse Stat data from {}", this.file);
+				} catch (Throwable var10) {
+					try {
+						jsonReader.close();
+					} catch (Throwable var9) {
+						var10.addSuppressed(var9);
+					}
+
+					throw var10;
 				}
 
-				LOGGER.error("Unable to parse Stat data from {}", this.file);
-			} catch (Throwable var19) {
-				var4 = var19;
-				throw var19;
-			} finally {
-				if (jsonReader != null) {
-					if (var4 != null) {
-						try {
-							jsonReader.close();
-						} catch (Throwable var18) {
-							var4.addSuppressed(var18);
-						}
-					} else {
-						jsonReader.close();
-					}
-				}
+				jsonReader.close();
+				return;
 			}
-		} catch (IOException | JsonParseException var21) {
-			LOGGER.error("Unable to parse Stat data from {}", this.file, var21);
+
+			jsonReader.close();
+		} catch (IOException | JsonParseException var11) {
+			LOGGER.error("Unable to parse Stat data from {}", this.file, var11);
 		}
 	}
 

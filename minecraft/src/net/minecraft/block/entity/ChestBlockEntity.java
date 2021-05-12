@@ -97,7 +97,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 		blockEntity.lidAnimator.step();
 	}
 
-	private static void playSound(World world, BlockPos pos, BlockState state, SoundEvent soundEvent) {
+	static void playSound(World world, BlockPos pos, BlockState state, SoundEvent soundEvent) {
 		ChestType chestType = state.get(ChestBlock.CHEST_TYPE);
 		if (chestType != ChestType.LEFT) {
 			double d = (double)pos.getX() + 0.5;

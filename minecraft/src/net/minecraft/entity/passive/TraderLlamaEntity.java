@@ -114,7 +114,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
-	public static class DefendTraderGoal extends TrackTargetGoal {
+	protected static class DefendTraderGoal extends TrackTargetGoal {
 		private final LlamaEntity llama;
 		private LivingEntity offender;
 		private int traderLastAttackedTime;
@@ -129,16 +129,12 @@ public class TraderLlamaEntity extends LlamaEntity {
 		public boolean canStart() {
 			if (!this.llama.isLeashed()) {
 				return false;
+			} else if (!(this.llama.getHoldingEntity() instanceof WanderingTraderEntity wanderingTraderEntity)) {
+				return false;
 			} else {
-				Entity entity = this.llama.getHoldingEntity();
-				if (!(entity instanceof WanderingTraderEntity)) {
-					return false;
-				} else {
-					WanderingTraderEntity wanderingTraderEntity = (WanderingTraderEntity)entity;
-					this.offender = wanderingTraderEntity.getAttacker();
-					int i = wanderingTraderEntity.getLastAttackedTime();
-					return i != this.traderLastAttackedTime && this.canTrack(this.offender, TargetPredicate.DEFAULT);
-				}
+				this.offender = wanderingTraderEntity.getAttacker();
+				int i = wanderingTraderEntity.getLastAttackedTime();
+				return i != this.traderLastAttackedTime && this.canTrack(this.offender, TargetPredicate.DEFAULT);
 			}
 		}
 

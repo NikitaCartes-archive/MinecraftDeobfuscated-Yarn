@@ -266,19 +266,13 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 			}
 
 			if (bl) {
-				if (bl2 && to instanceof HopperBlockEntity) {
-					HopperBlockEntity hopperBlockEntity = (HopperBlockEntity)to;
-					if (!hopperBlockEntity.isDisabled()) {
-						int j = 0;
-						if (from instanceof HopperBlockEntity) {
-							HopperBlockEntity hopperBlockEntity2 = (HopperBlockEntity)from;
-							if (hopperBlockEntity.lastTickTime >= hopperBlockEntity2.lastTickTime) {
-								j = 1;
-							}
-						}
-
-						hopperBlockEntity.setCooldown(8 - j);
+				if (bl2 && to instanceof HopperBlockEntity hopperBlockEntity && !hopperBlockEntity.isDisabled()) {
+					int j = 0;
+					if (from instanceof HopperBlockEntity hopperBlockEntity2 && hopperBlockEntity.lastTickTime >= hopperBlockEntity2.lastTickTime) {
+						j = 1;
 					}
+
+					hopperBlockEntity.setCooldown(8 - j);
 				}
 
 				to.markDirty();

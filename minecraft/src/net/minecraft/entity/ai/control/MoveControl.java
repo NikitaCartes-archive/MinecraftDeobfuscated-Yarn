@@ -164,7 +164,7 @@ public class MoveControl implements Control {
 		return this.targetZ;
 	}
 
-	public static enum State {
+	protected static enum State {
 		WAIT,
 		MOVE_TO,
 		STRAFE,

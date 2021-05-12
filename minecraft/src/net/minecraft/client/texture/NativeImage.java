@@ -124,7 +124,7 @@ public final class NativeImage implements AutoCloseable {
 		} else if (MemoryUtil.memAddress(byteBuffer) == 0L) {
 			throw new IllegalArgumentException("Invalid buffer");
 		} else {
-			NativeImage var8;
+			NativeImage var7;
 			try (MemoryStack memoryStack = MemoryStack.stackPush()) {
 				IntBuffer intBuffer = memoryStack.mallocInt(1);
 				IntBuffer intBuffer2 = memoryStack.mallocInt(1);
@@ -134,12 +134,12 @@ public final class NativeImage implements AutoCloseable {
 					throw new IOException("Could not load image: " + STBImage.stbi_failure_reason());
 				}
 
-				var8 = new NativeImage(
+				var7 = new NativeImage(
 					format == null ? NativeImage.Format.getFormat(intBuffer3.get(0)) : format, intBuffer.get(0), intBuffer2.get(0), true, MemoryUtil.memAddress(byteBuffer2)
 				);
 			}
 
-			return var8;
+			return var7;
 		}
 	}
 
@@ -482,80 +482,69 @@ public final class NativeImage implements AutoCloseable {
 		} else {
 			this.checkAllocated();
 			WritableByteChannel writableByteChannel = Files.newByteChannel(path, WRITE_TO_FILE_OPEN_OPTIONS);
-			Throwable var3 = null;
 
 			try {
 				if (!this.write(writableByteChannel)) {
 					throw new IOException("Could not write image to the PNG file \"" + path.toAbsolutePath() + "\": " + STBImage.stbi_failure_reason());
 				}
-			} catch (Throwable var12) {
-				var3 = var12;
-				throw var12;
-			} finally {
+			} catch (Throwable var6) {
 				if (writableByteChannel != null) {
-					if (var3 != null) {
-						try {
-							writableByteChannel.close();
-						} catch (Throwable var11) {
-							var3.addSuppressed(var11);
-						}
-					} else {
+					try {
 						writableByteChannel.close();
+					} catch (Throwable var5) {
+						var6.addSuppressed(var5);
 					}
 				}
+
+				throw var6;
+			}
+
+			if (writableByteChannel != null) {
+				writableByteChannel.close();
 			}
 		}
 	}
 
 	public byte[] getBytes() throws IOException {
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		Throwable var2 = null;
 
-		byte[] var5;
+		byte[] var3;
 		try {
 			WritableByteChannel writableByteChannel = Channels.newChannel(byteArrayOutputStream);
-			Throwable var4 = null;
 
 			try {
 				if (!this.write(writableByteChannel)) {
 					throw new IOException("Could not write image to byte array: " + STBImage.stbi_failure_reason());
 				}
 
-				var5 = byteArrayOutputStream.toByteArray();
-			} catch (Throwable var28) {
-				var4 = var28;
-				throw var28;
-			} finally {
+				var3 = byteArrayOutputStream.toByteArray();
+			} catch (Throwable var7) {
 				if (writableByteChannel != null) {
-					if (var4 != null) {
-						try {
-							writableByteChannel.close();
-						} catch (Throwable var27) {
-							var4.addSuppressed(var27);
-						}
-					} else {
-						writableByteChannel.close();
-					}
-				}
-			}
-		} catch (Throwable var30) {
-			var2 = var30;
-			throw var30;
-		} finally {
-			if (byteArrayOutputStream != null) {
-				if (var2 != null) {
 					try {
-						byteArrayOutputStream.close();
-					} catch (Throwable var26) {
-						var2.addSuppressed(var26);
+						writableByteChannel.close();
+					} catch (Throwable var6) {
+						var7.addSuppressed(var6);
 					}
-				} else {
-					byteArrayOutputStream.close();
 				}
+
+				throw var7;
 			}
+
+			if (writableByteChannel != null) {
+				writableByteChannel.close();
+			}
+		} catch (Throwable var8) {
+			try {
+				byteArrayOutputStream.close();
+			} catch (Throwable var5) {
+				var8.addSuppressed(var5);
+			}
+
+			throw var8;
 		}
 
-		return var5;
+		byteArrayOutputStream.close();
+		return var3;
 	}
 
 	private boolean write(WritableByteChannel writableByteChannel) throws IOException {
@@ -667,15 +656,15 @@ public final class NativeImage implements AutoCloseable {
 	public static NativeImage read(String dataUri) throws IOException {
 		byte[] bs = Base64.getDecoder().decode(dataUri.replaceAll("\n", "").getBytes(Charsets.UTF_8));
 
-		NativeImage var5;
+		NativeImage var4;
 		try (MemoryStack memoryStack = MemoryStack.stackPush()) {
 			ByteBuffer byteBuffer = memoryStack.malloc(bs.length);
 			byteBuffer.put(bs);
 			byteBuffer.rewind();
-			var5 = read(byteBuffer);
+			var4 = read(byteBuffer);
 		}
 
-		return var5;
+		return var4;
 	}
 
 	public static int getAlpha(int color) {
@@ -708,7 +697,7 @@ public final class NativeImage implements AutoCloseable {
 		LUMINANCE_ALPHA(2, 33319, false, false, false, true, true, 255, 255, 255, 0, 8, true),
 		LUMINANCE(1, 6403, false, false, false, true, false, 0, 0, 0, 0, 255, true);
 
-		private final int channelCount;
+		final int channelCount;
 		private final int pixelDataFormat;
 		private final boolean hasRed;
 		private final boolean hasGreen;
@@ -846,7 +835,7 @@ public final class NativeImage implements AutoCloseable {
 			return this.writeable;
 		}
 
-		private static NativeImage.Format getFormat(int glFormat) {
+		static NativeImage.Format getFormat(int glFormat) {
 			switch (glFormat) {
 				case 1:
 					return LUMINANCE;
@@ -885,8 +874,8 @@ public final class NativeImage implements AutoCloseable {
 		@Nullable
 		private IOException exception;
 
-		private WriteCallback(WritableByteChannel channel) {
-			this.channel = channel;
+		WriteCallback(WritableByteChannel writableByteChannel) {
+			this.channel = writableByteChannel;
 		}
 
 		@Override

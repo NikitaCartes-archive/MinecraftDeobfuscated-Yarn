@@ -80,7 +80,7 @@ public class ScoreboardCriterion {
 
 	public static Optional<ScoreboardCriterion> getOrCreateStatCriterion(String name) {
 		if (CRITERIA.containsKey(name)) {
-			return Optional.of(CRITERIA.get(name));
+			return Optional.of((ScoreboardCriterion)CRITERIA.get(name));
 		} else {
 			int i = name.indexOf(58);
 			return i < 0

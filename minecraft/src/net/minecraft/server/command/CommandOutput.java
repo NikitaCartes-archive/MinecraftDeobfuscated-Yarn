@@ -36,7 +36,7 @@ public interface CommandOutput {
 
 	boolean shouldBroadcastConsoleToOps();
 
-	default boolean method_36320() {
+	default boolean cannotBeSilenced() {
 		return false;
 	}
 }
