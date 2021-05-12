@@ -16,7 +16,7 @@ import net.minecraft.util.Util;
 
 public class CommandFunction {
 	private final CommandFunction.Element[] elements;
-	private final Identifier id;
+	final Identifier id;
 
 	public CommandFunction(Identifier id, CommandFunction.Element[] elements) {
 		this.id = id;

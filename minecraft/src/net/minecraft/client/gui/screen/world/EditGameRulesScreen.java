@@ -21,7 +21,6 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
-import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
@@ -83,7 +82,7 @@ public class EditGameRulesScreen extends Screen {
 		}
 	}
 
-	private void setTooltipDescription(@Nullable List<OrderedText> description) {
+	void setTooltipDescription(@Nullable List<OrderedText> description) {
 		this.tooltip = description;
 	}
 
@@ -91,12 +90,12 @@ public class EditGameRulesScreen extends Screen {
 		this.doneButton.active = this.invalidRuleWidgets.isEmpty();
 	}
 
-	private void markInvalid(EditGameRulesScreen.AbstractRuleWidget ruleWidget) {
+	void markInvalid(EditGameRulesScreen.AbstractRuleWidget ruleWidget) {
 		this.invalidRuleWidgets.add(ruleWidget);
 		this.updateDoneButton();
 	}
 
-	private void markValid(EditGameRulesScreen.AbstractRuleWidget ruleWidget) {
+	void markValid(EditGameRulesScreen.AbstractRuleWidget ruleWidget) {
 		this.invalidRuleWidgets.remove(ruleWidget);
 		this.updateDoneButton();
 	}
@@ -104,7 +103,7 @@ public class EditGameRulesScreen extends Screen {
 	@Environment(EnvType.CLIENT)
 	public abstract class AbstractRuleWidget extends ElementListWidget.Entry<EditGameRulesScreen.AbstractRuleWidget> {
 		@Nullable
-		private final List<OrderedText> description;
+		final List<OrderedText> description;
 
 		public AbstractRuleWidget(@Nullable List<OrderedText> description) {
 			this.description = description;
@@ -262,7 +261,7 @@ public class EditGameRulesScreen extends Screen {
 							.entrySet()
 							.stream()
 							.sorted(java.util.Map.Entry.comparingByKey(Comparator.comparing(GameRules.Key::getName)))
-							.forEach(entryx -> this.addEntry((EntryListWidget.Entry)entryx.getValue()));
+							.forEach(entryx -> this.addEntry((EditGameRulesScreen.AbstractRuleWidget)entryx.getValue()));
 					}
 				);
 		}

@@ -13,13 +13,13 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class SetLootTableLootFunction extends ConditionalLootFunction {
-	private final Identifier id;
-	private final long seed;
+	final Identifier id;
+	final long seed;
 
-	private SetLootTableLootFunction(LootCondition[] conditions, Identifier id, long seed) {
-		super(conditions);
-		this.id = id;
-		this.seed = seed;
+	SetLootTableLootFunction(LootCondition[] lootConditions, Identifier identifier, long l) {
+		super(lootConditions);
+		this.id = identifier;
+		this.seed = l;
 	}
 
 	@Override

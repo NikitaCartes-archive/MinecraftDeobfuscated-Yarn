@@ -23,5 +23,5 @@ public abstract class MutableRegistry<T> extends Registry<T> {
 	 */
 	public abstract <V extends T> V replace(OptionalInt rawId, RegistryKey<T> key, V newEntry, Lifecycle lifecycle);
 
-	public abstract boolean method_35863();
+	public abstract boolean isEmpty();
 }

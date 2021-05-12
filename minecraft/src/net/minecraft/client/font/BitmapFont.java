@@ -23,13 +23,13 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class BitmapFont implements Font {
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogManager.getLogger();
 	private final NativeImage image;
 	private final Int2ObjectMap<BitmapFont.BitmapFontGlyph> glyphs;
 
-	private BitmapFont(NativeImage image, Int2ObjectMap<BitmapFont.BitmapFontGlyph> glyphs) {
-		this.image = image;
-		this.glyphs = glyphs;
+	BitmapFont(NativeImage nativeImage, Int2ObjectMap<BitmapFont.BitmapFontGlyph> int2ObjectMap) {
+		this.image = nativeImage;
+		this.glyphs = int2ObjectMap;
 	}
 
 	@Override
@@ -59,15 +59,15 @@ public class BitmapFont implements Font {
 		private final int advance;
 		private final int ascent;
 
-		private BitmapFontGlyph(float scaleFactor, NativeImage image, int x, int y, int width, int height, int advance, int ascent) {
-			this.scaleFactor = scaleFactor;
-			this.image = image;
-			this.x = x;
-			this.y = y;
-			this.width = width;
-			this.height = height;
-			this.advance = advance;
-			this.ascent = ascent;
+		BitmapFontGlyph(float f, NativeImage nativeImage, int i, int j, int k, int l, int m, int n) {
+			this.scaleFactor = f;
+			this.image = nativeImage;
+			this.x = i;
+			this.y = j;
+			this.width = k;
+			this.height = l;
+			this.advance = m;
+			this.ascent = n;
 		}
 
 		@Override
@@ -155,9 +155,8 @@ public class BitmapFont implements Font {
 		public Font load(ResourceManager manager) {
 			try {
 				Resource resource = manager.getResource(this.filename);
-				Throwable var3 = null;
 
-				BitmapFont var31;
+				BitmapFont var22;
 				try {
 					NativeImage nativeImage = NativeImage.read(NativeImage.Format.ABGR, resource.getInputStream());
 					int i = nativeImage.getWidth();
@@ -184,27 +183,26 @@ public class BitmapFont implements Font {
 						}
 					}
 
-					var31 = new BitmapFont(nativeImage, int2ObjectMap);
-				} catch (Throwable var28) {
-					var3 = var28;
-					throw var28;
-				} finally {
+					var22 = new BitmapFont(nativeImage, int2ObjectMap);
+				} catch (Throwable var20) {
 					if (resource != null) {
-						if (var3 != null) {
-							try {
-								resource.close();
-							} catch (Throwable var27) {
-								var3.addSuppressed(var27);
-							}
-						} else {
+						try {
 							resource.close();
+						} catch (Throwable var19) {
+							var20.addSuppressed(var19);
 						}
 					}
+
+					throw var20;
 				}
 
-				return var31;
-			} catch (IOException var30) {
-				throw new RuntimeException(var30.getMessage());
+				if (resource != null) {
+					resource.close();
+				}
+
+				return var22;
+			} catch (IOException var21) {
+				throw new RuntimeException(var21.getMessage());
 			}
 		}
 

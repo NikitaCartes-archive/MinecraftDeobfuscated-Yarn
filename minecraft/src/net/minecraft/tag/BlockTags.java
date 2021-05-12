@@ -113,6 +113,13 @@ public final class BlockTags {
 	public static final Tag.Identified<Block> LUSH_GROUND_REPLACEABLE = register("lush_ground_replaceable");
 	public static final Tag.Identified<Block> SMALL_DRIPLEAF_PLACEABLE = register("small_dripleaf_placeable");
 	public static final Tag.Identified<Block> SNOW = register("snow");
+	public static final Tag.Identified<Block> AXE_MINEABLE = register("mineable/axe");
+	public static final Tag.Identified<Block> HOE_MINEABLE = register("mineable/hoe");
+	public static final Tag.Identified<Block> PICKAXE_MINEABLE = register("mineable/pickaxe");
+	public static final Tag.Identified<Block> SHOVEL_MINEABLE = register("mineable/shovel");
+	public static final Tag.Identified<Block> NEEDS_DIAMOND_TOOL = register("needs_diamond_tool");
+	public static final Tag.Identified<Block> NEEDS_IRON_TOOL = register("needs_iron_tool");
+	public static final Tag.Identified<Block> NEEDS_STONE_TOOL = register("needs_stone_tool");
 
 	private BlockTags() {
 	}

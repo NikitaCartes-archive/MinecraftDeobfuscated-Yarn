@@ -14,7 +14,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
 public class ItemUsedOnBlockCriterion extends AbstractCriterion<ItemUsedOnBlockCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("item_used_on_block");
+	static final Identifier ID = new Identifier("item_used_on_block");
 
 	@Override
 	public Identifier getId() {

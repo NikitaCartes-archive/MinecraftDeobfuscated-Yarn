@@ -4,12 +4,12 @@ import com.mojang.serialization.Codec;
 import java.util.BitSet;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.class_6350;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.gen.chunk.AquiferSampler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -30,7 +30,7 @@ public class RavineCarver extends Carver<RavineCarverConfig> {
 		Chunk chunk,
 		Function<BlockPos, Biome> function,
 		Random random,
-		class_6350 arg,
+		AquiferSampler aquiferSampler,
 		ChunkPos chunkPos,
 		BitSet bitSet
 	) {
@@ -44,7 +44,7 @@ public class RavineCarver extends Carver<RavineCarverConfig> {
 		float k = ravineCarverConfig.shape.thickness.get(random);
 		int l = (int)((float)i * ravineCarverConfig.shape.distanceFactor.get(random));
 		int m = 0;
-		this.carveRavine(carverContext, ravineCarverConfig, chunk, function, random.nextLong(), arg, d, (double)j, e, k, f, g, 0, l, h, bitSet);
+		this.carveRavine(carverContext, ravineCarverConfig, chunk, function, random.nextLong(), aquiferSampler, d, (double)j, e, k, f, g, 0, l, h, bitSet);
 		return true;
 	}
 
@@ -54,7 +54,7 @@ public class RavineCarver extends Carver<RavineCarverConfig> {
 		Chunk chunk,
 		Function<BlockPos, Biome> posToBiome,
 		long seed,
-		class_6350 arg,
+		AquiferSampler aquiferSampler,
 		double x,
 		double y,
 		double z,
@@ -99,7 +99,7 @@ public class RavineCarver extends Carver<RavineCarverConfig> {
 					chunk,
 					posToBiome,
 					seed,
-					arg,
+					aquiferSampler,
 					x,
 					y,
 					z,

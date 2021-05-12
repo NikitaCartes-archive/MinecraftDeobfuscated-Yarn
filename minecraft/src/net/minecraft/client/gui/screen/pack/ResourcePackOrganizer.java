@@ -20,10 +20,10 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class ResourcePackOrganizer {
 	private final ResourcePackManager resourcePackManager;
-	private final List<ResourcePackProfile> enabledPacks;
-	private final List<ResourcePackProfile> disabledPacks;
-	private final Function<ResourcePackProfile, Identifier> field_25785;
-	private final Runnable updateCallback;
+	final List<ResourcePackProfile> enabledPacks;
+	final List<ResourcePackProfile> disabledPacks;
+	final Function<ResourcePackProfile, Identifier> field_25785;
+	final Runnable updateCallback;
 	private final Consumer<ResourcePackManager> applier;
 
 	public ResourcePackOrganizer(

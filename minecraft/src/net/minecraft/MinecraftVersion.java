@@ -29,9 +29,9 @@ public class MinecraftVersion implements GameVersion {
 
 	private MinecraftVersion() {
 		this.id = UUID.randomUUID().toString().replaceAll("-", "");
-		this.name = "21w18a";
+		this.name = "21w19a";
 		this.stable = false;
-		this.worldVersion = 2713;
+		this.worldVersion = 2714;
 		this.protocolVersion = SharedConstants.getProtocolVersion();
 		this.resourcePackVersion = 7;
 		this.dataPackVersion = 7;
@@ -55,62 +55,58 @@ public class MinecraftVersion implements GameVersion {
 	public static GameVersion create() {
 		try {
 			InputStream inputStream = MinecraftVersion.class.getResourceAsStream("/version.json");
-			Throwable var1 = null;
 
-			Object var4;
-			try {
-				InputStreamReader inputStreamReader;
+			GameVersion var9;
+			label63: {
+				MinecraftVersion var2;
 				try {
 					if (inputStream == null) {
 						LOGGER.warn("Missing version information!");
-						inputStreamReader = GAME_VERSION;
-						return inputStreamReader;
+						var9 = GAME_VERSION;
+						break label63;
 					}
 
-					inputStreamReader = new InputStreamReader(inputStream);
-					Throwable var3 = null;
+					InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
 
 					try {
-						var4 = new MinecraftVersion(JsonHelper.deserialize(inputStreamReader));
-					} catch (Throwable var30) {
-						var4 = var30;
-						var3 = var30;
-						throw var30;
-					} finally {
-						if (inputStreamReader != null) {
-							if (var3 != null) {
-								try {
-									inputStreamReader.close();
-								} catch (Throwable var29) {
-									var3.addSuppressed(var29);
-								}
-							} else {
-								inputStreamReader.close();
-							}
+						var2 = new MinecraftVersion(JsonHelper.deserialize(inputStreamReader));
+					} catch (Throwable var6) {
+						try {
+							inputStreamReader.close();
+						} catch (Throwable var5) {
+							var6.addSuppressed(var5);
 						}
+
+						throw var6;
 					}
-				} catch (Throwable var32) {
-					inputStreamReader = var32;
-					var1 = var32;
-					throw var32;
-				}
-			} finally {
-				if (inputStream != null) {
-					if (var1 != null) {
+
+					inputStreamReader.close();
+				} catch (Throwable var7) {
+					if (inputStream != null) {
 						try {
 							inputStream.close();
-						} catch (Throwable var28) {
-							var1.addSuppressed(var28);
+						} catch (Throwable var4) {
+							var7.addSuppressed(var4);
 						}
-					} else {
-						inputStream.close();
 					}
+
+					throw var7;
 				}
+
+				if (inputStream != null) {
+					inputStream.close();
+				}
+
+				return var2;
 			}
 
-			return (GameVersion)var4;
-		} catch (JsonParseException | IOException var34) {
-			throw new IllegalStateException("Game version information is corrupt", var34);
+			if (inputStream != null) {
+				inputStream.close();
+			}
+
+			return var9;
+		} catch (JsonParseException | IOException var8) {
+			throw new IllegalStateException("Game version information is corrupt", var8);
 		}
 	}
 

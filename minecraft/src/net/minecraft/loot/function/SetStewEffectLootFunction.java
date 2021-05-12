@@ -28,11 +28,11 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 
 public class SetStewEffectLootFunction extends ConditionalLootFunction {
-	private final Map<StatusEffect, LootNumberProvider> effects;
+	final Map<StatusEffect, LootNumberProvider> effects;
 
-	private SetStewEffectLootFunction(LootCondition[] conditions, Map<StatusEffect, LootNumberProvider> effects) {
-		super(conditions);
-		this.effects = ImmutableMap.copyOf(effects);
+	SetStewEffectLootFunction(LootCondition[] lootConditions, Map<StatusEffect, LootNumberProvider> map) {
+		super(lootConditions);
+		this.effects = ImmutableMap.copyOf(map);
 	}
 
 	@Override

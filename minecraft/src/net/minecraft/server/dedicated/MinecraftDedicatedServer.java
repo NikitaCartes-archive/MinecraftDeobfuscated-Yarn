@@ -59,7 +59,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class MinecraftDedicatedServer extends MinecraftServer implements DedicatedServer {
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogManager.getLogger();
 	private static final int field_29662 = 5000;
 	private static final int field_29663 = 2;
 	private static final Pattern SHA1_PATTERN = Pattern.compile("^[a-fA-F0-9]{40}$");

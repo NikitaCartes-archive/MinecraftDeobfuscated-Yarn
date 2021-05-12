@@ -110,14 +110,11 @@ public class BeehiveBlockEntity extends BlockEntity {
 		List<Entity> list = this.tryReleaseBee(state, beeState);
 		if (player != null) {
 			for(Entity entity : list) {
-				if (entity instanceof BeeEntity) {
-					BeeEntity beeEntity = (BeeEntity)entity;
-					if (player.getPos().squaredDistanceTo(entity.getPos()) <= 16.0) {
-						if (!this.isSmoked()) {
-							beeEntity.setTarget(player);
-						} else {
-							beeEntity.setCannotEnterHiveTicks(400);
-						}
+				if (entity instanceof BeeEntity beeEntity && player.getPos().squaredDistanceTo(entity.getPos()) <= 16.0) {
+					if (!this.isSmoked()) {
+						beeEntity.setTarget(player);
+					} else {
+						beeEntity.setCannotEnterHiveTicks(400);
 					}
 				}
 			}
@@ -156,11 +153,8 @@ public class BeehiveBlockEntity extends BlockEntity {
 			entity.saveNbt(nbtCompound);
 			this.addBee(nbtCompound, ticksInHive, hasNectar);
 			if (this.world != null) {
-				if (entity instanceof BeeEntity) {
-					BeeEntity beeEntity = (BeeEntity)entity;
-					if (beeEntity.hasFlower() && (!this.hasFlowerPos() || this.world.random.nextBoolean())) {
-						this.flowerPos = beeEntity.getFlowerPos();
-					}
+				if (entity instanceof BeeEntity beeEntity && beeEntity.hasFlower() && (!this.hasFlowerPos() || this.world.random.nextBoolean())) {
+					this.flowerPos = beeEntity.getFlowerPos();
 				}
 
 				BlockPos blockPos = this.getPos();
@@ -205,8 +199,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 					if (!entity.getType().isIn(EntityTypeTags.BEEHIVE_INHABITORS)) {
 						return false;
 					} else {
-						if (entity instanceof BeeEntity) {
-							BeeEntity beeEntity = (BeeEntity)entity;
+						if (entity instanceof BeeEntity beeEntity) {
 							if (flowerPos != null && !beeEntity.hasFlower() && world.random.nextFloat() < 0.9F) {
 								beeEntity.setFlowerPos(flowerPos);
 							}
@@ -249,7 +242,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 		}
 	}
 
-	private static void removeIrrelevantNbtKeys(NbtCompound compound) {
+	static void removeIrrelevantNbtKeys(NbtCompound compound) {
 		for(String string : IRRELEVANT_BEE_NBT_KEYS) {
 			compound.remove(string);
 		}
@@ -272,7 +265,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 
 	private static void tickBees(World world, BlockPos pos, BlockState state, List<BeehiveBlockEntity.Bee> bees, @Nullable BlockPos flowerPos) {
 		BeehiveBlockEntity.Bee bee;
-		for(Iterator<BeehiveBlockEntity.Bee> iterator = bees.iterator(); iterator.hasNext(); bee.ticksInHive++) {
+		for(Iterator<BeehiveBlockEntity.Bee> iterator = bees.iterator(); iterator.hasNext(); ++bee.ticksInHive) {
 			bee = (BeehiveBlockEntity.Bee)iterator.next();
 			if (bee.ticksInHive > bee.minOccupationTicks) {
 				BeehiveBlockEntity.BeeState beeState = bee.entityData.getBoolean("HasNectar")
@@ -344,15 +337,15 @@ public class BeehiveBlockEntity extends BlockEntity {
 	}
 
 	static class Bee {
-		private final NbtCompound entityData;
-		private int ticksInHive;
-		private final int minOccupationTicks;
+		final NbtCompound entityData;
+		int ticksInHive;
+		final int minOccupationTicks;
 
-		private Bee(NbtCompound entityData, int ticksInHive, int minOccupationTicks) {
-			BeehiveBlockEntity.removeIrrelevantNbtKeys(entityData);
-			this.entityData = entityData;
-			this.ticksInHive = ticksInHive;
-			this.minOccupationTicks = minOccupationTicks;
+		Bee(NbtCompound nbtCompound, int i, int j) {
+			BeehiveBlockEntity.removeIrrelevantNbtKeys(nbtCompound);
+			this.entityData = nbtCompound;
+			this.ticksInHive = i;
+			this.minOccupationTicks = j;
 		}
 	}
 

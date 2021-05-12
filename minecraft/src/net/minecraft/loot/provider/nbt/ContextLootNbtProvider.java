@@ -40,7 +40,7 @@ public class ContextLootNbtProvider implements LootNbtProvider {
 		}
 	};
 	public static final ContextLootNbtProvider BLOCK_ENTITY = new ContextLootNbtProvider(BLOCK_ENTITY_TARGET);
-	private final ContextLootNbtProvider.Target target;
+	final ContextLootNbtProvider.Target target;
 
 	private static ContextLootNbtProvider.Target getTarget(LootContext.EntityTarget entityTarget) {
 		return new ContextLootNbtProvider.Target() {
@@ -87,7 +87,7 @@ public class ContextLootNbtProvider implements LootNbtProvider {
 		return new ContextLootNbtProvider(getTarget(target));
 	}
 
-	private static ContextLootNbtProvider setTarget(String target) {
+	static ContextLootNbtProvider setTarget(String target) {
 		if (target.equals("block_entity")) {
 			return new ContextLootNbtProvider(BLOCK_ENTITY_TARGET);
 		} else {

@@ -11,7 +11,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class UsedTotemCriterion extends AbstractCriterion<UsedTotemCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("used_totem");
+	static final Identifier ID = new Identifier("used_totem");
 
 	@Override
 	public Identifier getId() {

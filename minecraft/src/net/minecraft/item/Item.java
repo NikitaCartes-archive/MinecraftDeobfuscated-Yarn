@@ -454,13 +454,13 @@ public class Item implements ItemConvertible {
 	}
 
 	public static class Settings {
-		private int maxCount = 64;
-		private int maxDamage;
-		private Item recipeRemainder;
-		private ItemGroup group;
-		private Rarity rarity = Rarity.COMMON;
-		private FoodComponent foodComponent;
-		private boolean fireproof;
+		int maxCount = 64;
+		int maxDamage;
+		Item recipeRemainder;
+		ItemGroup group;
+		Rarity rarity = Rarity.COMMON;
+		FoodComponent foodComponent;
+		boolean fireproof;
 
 		public Item.Settings food(FoodComponent foodComponent) {
 			this.foodComponent = foodComponent;

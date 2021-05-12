@@ -57,6 +57,7 @@ import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
 import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.PaintingSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayPingS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
@@ -183,6 +184,8 @@ public interface ClientPlayPacketListener extends PacketListener {
 	void onPlayerPositionLook(PlayerPositionLookS2CPacket packet);
 
 	void onParticle(ParticleS2CPacket packet);
+
+	void onPing(PlayPingS2CPacket packet);
 
 	void onPlayerAbilities(PlayerAbilitiesS2CPacket packet);
 

@@ -31,12 +31,12 @@ public class Texture {
 	}
 
 	public Texture copy(TextureKey parent, TextureKey child) {
-		this.entries.put(child, this.entries.get(parent));
+		this.entries.put(child, (Identifier)this.entries.get(parent));
 		return this;
 	}
 
 	public Texture inherit(TextureKey parent, TextureKey child) {
-		this.entries.put(child, this.entries.get(parent));
+		this.entries.put(child, (Identifier)this.entries.get(parent));
 		this.inherited.add(child);
 		return this;
 	}
@@ -175,7 +175,7 @@ public class Texture {
 		return new Texture().put(TextureKey.WALL, identifier).put(TextureKey.SIDE, identifier).put(TextureKey.END, getSubId(block, "_top"));
 	}
 
-	public static Texture method_35910(Identifier top, Identifier bottom) {
+	public static Texture topBottom(Identifier top, Identifier bottom) {
 		return new Texture().put(TextureKey.TOP, top).put(TextureKey.BOTTOM, bottom);
 	}
 
@@ -274,7 +274,7 @@ public class Texture {
 		return new Texture().put(TextureKey.LIT_LOG, getSubId(block, "_log_lit")).put(TextureKey.FIRE, getSubId(block, "_fire"));
 	}
 
-	public static Texture method_32231(Block block) {
+	public static Texture candleCake(Block block) {
 		return new Texture()
 			.put(TextureKey.PARTICLE, getSubId(Blocks.CAKE, "_side"))
 			.put(TextureKey.BOTTOM, getSubId(Blocks.CAKE, "_bottom"))
@@ -283,14 +283,14 @@ public class Texture {
 			.put(TextureKey.CANDLE, getId(block));
 	}
 
-	public static Texture method_32232(Identifier identifier) {
+	public static Texture cauldron(Identifier content) {
 		return new Texture()
 			.put(TextureKey.PARTICLE, getSubId(Blocks.CAULDRON, "_side"))
 			.put(TextureKey.SIDE, getSubId(Blocks.CAULDRON, "_side"))
 			.put(TextureKey.TOP, getSubId(Blocks.CAULDRON, "_top"))
 			.put(TextureKey.BOTTOM, getSubId(Blocks.CAULDRON, "_bottom"))
 			.put(TextureKey.INSIDE, getSubId(Blocks.CAULDRON, "_inner"))
-			.put(TextureKey.CONTENT, identifier);
+			.put(TextureKey.CONTENT, content);
 	}
 
 	public static Texture layer0(Item item) {

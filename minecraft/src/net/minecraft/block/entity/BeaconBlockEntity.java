@@ -49,14 +49,14 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	public static final int field_31302 = 2;
 	public static final int field_31303 = 3;
 	private static final int field_31305 = 10;
-	private List<BeaconBlockEntity.BeamSegment> beamSegments = Lists.<BeaconBlockEntity.BeamSegment>newArrayList();
+	List<BeaconBlockEntity.BeamSegment> beamSegments = Lists.<BeaconBlockEntity.BeamSegment>newArrayList();
 	private List<BeaconBlockEntity.BeamSegment> field_19178 = Lists.<BeaconBlockEntity.BeamSegment>newArrayList();
-	private int level;
+	int level;
 	private int minY;
 	@Nullable
-	private StatusEffect primary;
+	StatusEffect primary;
 	@Nullable
-	private StatusEffect secondary;
+	StatusEffect secondary;
 	@Nullable
 	private Text customName;
 	private ContainerLock lock = ContainerLock.EMPTY;
@@ -266,7 +266,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	}
 
 	@Nullable
-	private static StatusEffect getPotionEffectById(int id) {
+	static StatusEffect getPotionEffectById(int id) {
 		StatusEffect statusEffect = StatusEffect.byRawId(id);
 		return EFFECTS.contains(statusEffect) ? statusEffect : null;
 	}
@@ -321,7 +321,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	}
 
 	public static class BeamSegment {
-		private final float[] color;
+		final float[] color;
 		private int height;
 
 		public BeamSegment(float[] color) {

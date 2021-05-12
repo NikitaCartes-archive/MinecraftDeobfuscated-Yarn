@@ -360,9 +360,6 @@ public class RavagerEntity extends RaiderEntity {
 	}
 
 	static class PathNodeMaker extends LandPathNodeMaker {
-		private PathNodeMaker() {
-		}
-
 		@Override
 		protected PathNodeType adjustNodeType(BlockView world, boolean canOpenDoors, boolean canEnterOpenDoors, BlockPos pos, PathNodeType type) {
 			return type == PathNodeType.LEAVES ? PathNodeType.OPEN : super.adjustNodeType(world, canOpenDoors, canEnterOpenDoors, pos, type);

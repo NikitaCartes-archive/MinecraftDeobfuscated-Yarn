@@ -45,8 +45,7 @@ public class BlockModels {
 		this.models.clear();
 
 		for(Block block : Registry.BLOCK) {
-			block.getStateManager().getStates().forEach(blockState -> {
-			});
+			block.getStateManager().getStates().forEach(blockState -> this.models.put(blockState, this.modelManager.getModel(getModelId(blockState))));
 		}
 	}
 

@@ -43,7 +43,7 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 		new TranslatableText("argument.scoreHolder.empty")
 	);
 	private static final byte field_32470 = 1;
-	private final boolean multiple;
+	final boolean multiple;
 
 	public ScoreHolderArgumentType(boolean multiple) {
 		this.multiple = multiple;

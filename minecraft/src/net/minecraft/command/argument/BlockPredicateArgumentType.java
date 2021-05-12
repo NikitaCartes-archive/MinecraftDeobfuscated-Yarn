@@ -123,10 +123,10 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 		private final NbtCompound nbt;
 		private final Map<String, String> properties;
 
-		private TagPredicate(Tag<Block> tag, Map<String, String> map, @Nullable NbtCompound nbt) {
+		TagPredicate(Tag<Block> tag, Map<String, String> map, @Nullable NbtCompound nbtCompound) {
 			this.tag = tag;
 			this.properties = map;
-			this.nbt = nbt;
+			this.nbt = nbtCompound;
 		}
 
 		public boolean test(CachedBlockPosition cachedBlockPosition) {

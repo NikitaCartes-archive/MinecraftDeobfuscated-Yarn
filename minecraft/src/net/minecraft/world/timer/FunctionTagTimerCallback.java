@@ -8,7 +8,7 @@ import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 
 public class FunctionTagTimerCallback implements TimerCallback<MinecraftServer> {
-	private final Identifier name;
+	final Identifier name;
 
 	public FunctionTagTimerCallback(Identifier name) {
 		this.name = name;

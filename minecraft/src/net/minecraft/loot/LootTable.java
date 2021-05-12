@@ -31,15 +31,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class LootTable {
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogManager.getLogger();
 	public static final LootTable EMPTY = new LootTable(LootContextTypes.EMPTY, new LootPool[0], new LootFunction[0]);
 	public static final LootContextType GENERIC = LootContextTypes.GENERIC;
-	private final LootContextType type;
-	private final LootPool[] pools;
-	private final LootFunction[] functions;
+	final LootContextType type;
+	final LootPool[] pools;
+	final LootFunction[] functions;
 	private final BiFunction<ItemStack, LootContext, ItemStack> combinedFunction;
 
-	private LootTable(LootContextType type, LootPool[] pools, LootFunction[] functions) {
+	LootTable(LootContextType type, LootPool[] pools, LootFunction[] functions) {
 		this.type = type;
 		this.pools = pools;
 		this.functions = functions;

@@ -38,8 +38,7 @@ public class MapBannerMarker {
 	@Nullable
 	public static MapBannerMarker fromWorldBlock(BlockView blockView, BlockPos blockPos) {
 		BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
-		if (blockEntity instanceof BannerBlockEntity) {
-			BannerBlockEntity bannerBlockEntity = (BannerBlockEntity)blockEntity;
+		if (blockEntity instanceof BannerBlockEntity bannerBlockEntity) {
 			DyeColor dyeColor = bannerBlockEntity.getColorForState();
 			Text text = bannerBlockEntity.hasCustomName() ? bannerBlockEntity.getCustomName() : null;
 			return new MapBannerMarker(blockPos, dyeColor, text);

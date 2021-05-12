@@ -6,7 +6,7 @@ import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 
 public class IronGolemLookGoal extends Goal {
-	private static final TargetPredicate CLOSE_VILLAGER_PREDICATE = new TargetPredicate().setBaseMaxDistance(6.0).includeTeammates().includeInvulnerable();
+	private static final TargetPredicate CLOSE_VILLAGER_PREDICATE = TargetPredicate.createNonAttackable().setBaseMaxDistance(6.0);
 	public static final int MAX_LOOK_COOLDOWN = 400;
 	private final IronGolemEntity golem;
 	private VillagerEntity targetVillager;

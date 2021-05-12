@@ -17,6 +17,7 @@ import net.minecraft.client.realms.dto.PlayerInfo;
 import net.minecraft.client.realms.dto.RealmsDescriptionDto;
 import net.minecraft.client.realms.dto.RealmsNews;
 import net.minecraft.client.realms.dto.RealmsServer;
+import net.minecraft.client.realms.dto.RealmsServerAddress;
 import net.minecraft.client.realms.dto.RealmsServerList;
 import net.minecraft.client.realms.dto.RealmsServerPlayerLists;
 import net.minecraft.client.realms.dto.RealmsWorldOptions;
@@ -146,10 +147,10 @@ public class RealmsClient {
 		return RealmsServerPlayerLists.parse(string2);
 	}
 
-	public net.minecraft.client.realms.dto.RealmsServerAddress join(long worldId) throws RealmsServiceException {
-		String string = this.url("worlds" + "/v1/$ID/join/pc".replace("$ID", "" + worldId));
+	public RealmsServerAddress join(long worldId) throws RealmsServiceException {
+		String string = this.url("worlds" + "/v1/$ID/join/pc".replace("$ID", worldId + ""));
 		String string2 = this.execute(Request.get(string, 5000, 30000));
-		return net.minecraft.client.realms.dto.RealmsServerAddress.parse(string2);
+		return RealmsServerAddress.parse(string2);
 	}
 
 	public void initializeWorld(long worldId, String name, String motd) throws RealmsServiceException {

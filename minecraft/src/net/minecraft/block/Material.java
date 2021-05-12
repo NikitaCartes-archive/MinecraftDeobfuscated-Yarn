@@ -269,7 +269,7 @@ public final class Material {
 			return this;
 		}
 
-		private Material.Builder lightPassesThrough() {
+		Material.Builder lightPassesThrough() {
 			this.blocksLight = false;
 			return this;
 		}

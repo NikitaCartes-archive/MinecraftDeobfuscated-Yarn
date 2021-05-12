@@ -117,7 +117,7 @@ public class GuardianEntity extends HostileEntity {
 		return this.dataTracker.get(SPIKES_RETRACTED);
 	}
 
-	private void setSpikesRetracted(boolean retracted) {
+	void setSpikesRetracted(boolean retracted) {
 		this.dataTracker.set(SPIKES_RETRACTED, retracted);
 	}
 
@@ -125,7 +125,7 @@ public class GuardianEntity extends HostileEntity {
 		return 80;
 	}
 
-	private void setBeamTarget(int entityId) {
+	void setBeamTarget(int entityId) {
 		this.dataTracker.set(BEAM_TARGET_ID, entityId);
 	}
 
@@ -323,11 +323,8 @@ public class GuardianEntity extends HostileEntity {
 
 	@Override
 	public boolean damage(DamageSource source, float amount) {
-		if (!this.areSpikesRetracted() && !source.isMagic() && source.getSource() instanceof LivingEntity) {
-			LivingEntity livingEntity = (LivingEntity)source.getSource();
-			if (!source.isExplosive()) {
-				livingEntity.damage(DamageSource.thorns(this), 2.0F);
-			}
+		if (!this.areSpikesRetracted() && !source.isMagic() && source.getSource() instanceof LivingEntity livingEntity && !source.isExplosive()) {
+			livingEntity.damage(DamageSource.thorns(this), 2.0F);
 		}
 
 		if (this.wanderGoal != null) {

@@ -48,8 +48,7 @@ public class StructureWeightSampler {
 			accessor.getStructuresWithChildren(ChunkSectionPos.from(chunk), structureFeature).forEach(start -> {
 				for(StructurePiece structurePiece : start.getChildren()) {
 					if (structurePiece.intersectsChunk(chunkPos, 12)) {
-						if (structurePiece instanceof PoolStructurePiece) {
-							PoolStructurePiece poolStructurePiece = (PoolStructurePiece)structurePiece;
+						if (structurePiece instanceof PoolStructurePiece poolStructurePiece) {
 							StructurePool.Projection projection = poolStructurePiece.getPoolElement().getProjection();
 							if (projection == StructurePool.Projection.RIGID) {
 								this.pieces.add(poolStructurePiece);

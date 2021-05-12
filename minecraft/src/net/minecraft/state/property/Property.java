@@ -118,7 +118,7 @@ public abstract class Property<T extends Comparable<T>> {
 		private final Property<T> property;
 		private final T value;
 
-		private Value(Property<T> property, T value) {
+		Value(Property<T> property, T value) {
 			if (!property.getValues().contains(value)) {
 				throw new IllegalArgumentException("Value " + value + " does not belong to property " + property);
 			} else {

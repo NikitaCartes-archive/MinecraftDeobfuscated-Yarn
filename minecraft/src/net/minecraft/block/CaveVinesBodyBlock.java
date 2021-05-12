@@ -27,7 +27,7 @@ public class CaveVinesBodyBlock extends AbstractPlantBlock implements Fertilizab
 
 	@Override
 	protected BlockState copyState(BlockState from, BlockState to) {
-		return to.with(BERRIES, from.get(BERRIES));
+		return to.with(BERRIES, (Boolean)from.get(BERRIES));
 	}
 
 	@Override

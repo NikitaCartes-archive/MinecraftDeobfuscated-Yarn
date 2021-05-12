@@ -144,8 +144,7 @@ public final class NbtHelper {
 			return false;
 		} else if (!standard.getClass().equals(subject.getClass())) {
 			return false;
-		} else if (standard instanceof NbtCompound) {
-			NbtCompound nbtCompound = (NbtCompound)standard;
+		} else if (standard instanceof NbtCompound nbtCompound) {
 			NbtCompound nbtCompound2 = (NbtCompound)subject;
 
 			for(String string : nbtCompound.getKeys()) {
@@ -156,8 +155,7 @@ public final class NbtHelper {
 			}
 
 			return true;
-		} else if (standard instanceof NbtList && equalValue) {
-			NbtList nbtList = (NbtList)standard;
+		} else if (standard instanceof NbtList nbtList && equalValue) {
 			NbtList nbtList2 = (NbtList)subject;
 			if (nbtList.isEmpty()) {
 				return nbtList2.isEmpty();
@@ -647,7 +645,7 @@ public final class NbtHelper {
 			String string = (String)nbtCompound.getKeys()
 				.stream()
 				.sorted()
-				.map(stringx -> stringx + ':' + nbtCompound.get(stringx).asString())
+				.map(stringx -> stringx + ":" + nbtCompound.get(stringx).asString())
 				.collect(Collectors.joining(","));
 			stringBuilder.append('{').append(string).append('}');
 		}

@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.world.gen.chunk;
 
 import java.util.Random;
 import net.minecraft.util.math.MathHelper;
@@ -6,7 +6,7 @@ import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.world.gen.NoiseHelper;
 import net.minecraft.world.gen.SimpleRandom;
 
-public class class_6358 {
+public class NoodleCavesGenerator {
 	private static final int field_33654 = 30;
 	private static final double field_33655 = 1.5;
 	private static final double field_33656 = 2.6666666666666665;
@@ -16,8 +16,8 @@ public class class_6358 {
 	private final DoublePerlinNoiseSampler field_33660;
 	private final DoublePerlinNoiseSampler field_33661;
 
-	public class_6358(long l) {
-		Random random = new Random(l);
+	public NoodleCavesGenerator(long seed) {
+		Random random = new Random(seed);
 		this.field_33658 = DoublePerlinNoiseSampler.create(new SimpleRandom(random.nextLong()), -8, 1.0);
 		this.field_33659 = DoublePerlinNoiseSampler.create(new SimpleRandom(random.nextLong()), -8, 1.0);
 		this.field_33660 = DoublePerlinNoiseSampler.create(new SimpleRandom(random.nextLong()), -7, 1.0);

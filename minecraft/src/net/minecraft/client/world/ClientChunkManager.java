@@ -30,11 +30,11 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class ClientChunkManager extends ChunkManager {
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogManager.getLogger();
 	private final WorldChunk emptyChunk;
 	private final LightingProvider lightingProvider;
-	private volatile ClientChunkManager.ClientChunkMap chunks;
-	private final ClientWorld world;
+	volatile ClientChunkManager.ClientChunkMap chunks;
+	final ClientWorld world;
 
 	public ClientChunkManager(ClientWorld world, int loadDistance) {
 		this.world = world;
@@ -178,20 +178,20 @@ public class ClientChunkManager extends ChunkManager {
 
 	@Environment(EnvType.CLIENT)
 	final class ClientChunkMap {
-		private final AtomicReferenceArray<WorldChunk> chunks;
-		private final int radius;
+		final AtomicReferenceArray<WorldChunk> chunks;
+		final int radius;
 		private final int diameter;
-		private volatile int centerChunkX;
-		private volatile int centerChunkZ;
-		private int loadedChunkCount;
+		volatile int centerChunkX;
+		volatile int centerChunkZ;
+		int loadedChunkCount;
 
-		private ClientChunkMap(int loadDistance) {
-			this.radius = loadDistance;
-			this.diameter = loadDistance * 2 + 1;
+		ClientChunkMap(int i) {
+			this.radius = i;
+			this.diameter = i * 2 + 1;
 			this.chunks = new AtomicReferenceArray(this.diameter * this.diameter);
 		}
 
-		private int getIndex(int chunkX, int chunkZ) {
+		int getIndex(int chunkX, int chunkZ) {
 			return Math.floorMod(chunkZ, this.diameter) * this.diameter + Math.floorMod(chunkX, this.diameter);
 		}
 
@@ -216,7 +216,7 @@ public class ClientChunkManager extends ChunkManager {
 			return expect;
 		}
 
-		private boolean isInRadius(int chunkX, int chunkZ) {
+		boolean isInRadius(int chunkX, int chunkZ) {
 			return Math.abs(chunkX - this.centerChunkX) <= this.radius && Math.abs(chunkZ - this.centerChunkZ) <= this.radius;
 		}
 
@@ -228,7 +228,6 @@ public class ClientChunkManager extends ChunkManager {
 		private void method_35751(String string) {
 			try {
 				FileOutputStream fileOutputStream = new FileOutputStream(new File(string));
-				Throwable var3 = null;
 
 				try {
 					int i = ClientChunkManager.this.chunks.radius;
@@ -242,24 +241,19 @@ public class ClientChunkManager extends ChunkManager {
 							}
 						}
 					}
-				} catch (Throwable var17) {
-					var3 = var17;
-					throw var17;
-				} finally {
-					if (fileOutputStream != null) {
-						if (var3 != null) {
-							try {
-								fileOutputStream.close();
-							} catch (Throwable var16) {
-								var3.addSuppressed(var16);
-							}
-						} else {
-							fileOutputStream.close();
-						}
+				} catch (Throwable var9) {
+					try {
+						fileOutputStream.close();
+					} catch (Throwable var8) {
+						var9.addSuppressed(var8);
 					}
+
+					throw var9;
 				}
-			} catch (IOException var19) {
-				ClientChunkManager.LOGGER.error(var19);
+
+				fileOutputStream.close();
+			} catch (IOException var10) {
+				ClientChunkManager.LOGGER.error(var10);
 			}
 		}
 	}

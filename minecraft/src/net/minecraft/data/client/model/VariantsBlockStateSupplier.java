@@ -67,7 +67,7 @@ public class VariantsBlockStateSupplier implements BlockStateSupplier {
 		}
 
 		Map<String, JsonElement> map2 = new TreeMap();
-		stream.forEach(pair -> ((PropertiesMap)pair.getFirst()).asString());
+		stream.forEach(pair -> map2.put(((PropertiesMap)pair.getFirst()).asString(), BlockStateVariant.toJson((List<BlockStateVariant>)pair.getSecond())));
 		JsonObject jsonObject = new JsonObject();
 		jsonObject.add("variants", Util.make(new JsonObject(), jsonObjectx -> map2.forEach(jsonObjectx::add)));
 		return jsonObject;

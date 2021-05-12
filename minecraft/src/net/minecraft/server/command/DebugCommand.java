@@ -104,25 +104,23 @@ public class DebugCommand {
 			if (!SharedConstants.isDevelopment && FILE_SYSTEM_PROVIDER != null) {
 				Path path2 = path.resolve(string + ".zip");
 				FileSystem fileSystem = FILE_SYSTEM_PROVIDER.newFileSystem(path2, ImmutableMap.of("create", "true"));
-				Throwable var6 = null;
 
 				try {
 					minecraftServer.dump(fileSystem.getPath("/"));
-				} catch (Throwable var16) {
-					var6 = var16;
-					throw var16;
-				} finally {
+				} catch (Throwable var9) {
 					if (fileSystem != null) {
-						if (var6 != null) {
-							try {
-								fileSystem.close();
-							} catch (Throwable var15) {
-								var6.addSuppressed(var15);
-							}
-						} else {
+						try {
 							fileSystem.close();
+						} catch (Throwable var8) {
+							var9.addSuppressed(var8);
 						}
 					}
+
+					throw var9;
+				}
+
+				if (fileSystem != null) {
+					fileSystem.close();
 				}
 			} else {
 				Path path2 = path.resolve(string);
@@ -131,8 +129,8 @@ public class DebugCommand {
 
 			source.sendFeedback(new TranslatableText("commands.debug.reportSaved", string), false);
 			return 1;
-		} catch (IOException var18) {
-			LOGGER.error("Failed to save debug dump", var18);
+		} catch (IOException var10) {
+			LOGGER.error("Failed to save debug dump", var10);
 			source.sendError(new TranslatableText("commands.debug.reportFailed"));
 			return 0;
 		}
@@ -147,7 +145,6 @@ public class DebugCommand {
 			Path path = minecraftServer.getFile("debug").toPath();
 			Files.createDirectories(path);
 			Writer writer = Files.newBufferedWriter(path.resolve(string), StandardCharsets.UTF_8);
-			Throwable var7 = null;
 
 			try {
 				PrintWriter printWriter = new PrintWriter(writer);
@@ -157,24 +154,23 @@ public class DebugCommand {
 					DebugCommand.Tracer tracer = new DebugCommand.Tracer(printWriter);
 					i += source.getMinecraftServer().getCommandFunctionManager().execute(commandFunction, source.withOutput(tracer).withMaxLevel(2), tracer);
 				}
-			} catch (Throwable var20) {
-				var7 = var20;
-				throw var20;
-			} finally {
+			} catch (Throwable var12) {
 				if (writer != null) {
-					if (var7 != null) {
-						try {
-							writer.close();
-						} catch (Throwable var19) {
-							var7.addSuppressed(var19);
-						}
-					} else {
+					try {
 						writer.close();
+					} catch (Throwable var11) {
+						var12.addSuppressed(var11);
 					}
 				}
+
+				throw var12;
 			}
-		} catch (IOException | UncheckedIOException var22) {
-			LOGGER.warn("Tracing failed", var22);
+
+			if (writer != null) {
+				writer.close();
+			}
+		} catch (IOException | UncheckedIOException var13) {
+			LOGGER.warn("Tracing failed", var13);
 			source.sendError(new TranslatableText("commands.debug.function.traceFailed"));
 		}
 
@@ -193,7 +189,7 @@ public class DebugCommand {
 		private int lastIndentWidth;
 		private boolean expectsCommandResult;
 
-		private Tracer(PrintWriter writer) {
+		Tracer(PrintWriter writer) {
 			this.writer = writer;
 		}
 
@@ -286,7 +282,7 @@ public class DebugCommand {
 		}
 
 		@Override
-		public boolean method_36320() {
+		public boolean cannotBeSilenced() {
 			return true;
 		}
 	}

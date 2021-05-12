@@ -208,8 +208,7 @@ public class FallingBlockEntity extends Entity {
 			} else {
 				Predicate<Entity> predicate;
 				DamageSource damageSource2;
-				if (this.block.getBlock() instanceof LandingBlock) {
-					LandingBlock landingBlock = (LandingBlock)this.block.getBlock();
+				if (this.block.getBlock() instanceof LandingBlock landingBlock) {
 					predicate = landingBlock.getEntityPredicate();
 					damageSource2 = landingBlock.getDamageSource();
 				} else {

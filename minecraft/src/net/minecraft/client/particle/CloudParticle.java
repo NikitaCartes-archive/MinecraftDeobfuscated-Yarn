@@ -11,24 +11,24 @@ import net.minecraft.util.math.MathHelper;
 public class CloudParticle extends SpriteBillboardParticle {
 	private final SpriteProvider spriteProvider;
 
-	private CloudParticle(ClientWorld world, double x, double y, double z, double d, double e, double f, SpriteProvider spriteProvider) {
-		super(world, x, y, z, 0.0, 0.0, 0.0);
+	CloudParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
+		super(clientWorld, d, e, f, 0.0, 0.0, 0.0);
 		this.field_28786 = 0.96F;
 		this.spriteProvider = spriteProvider;
-		float g = 2.5F;
+		float j = 2.5F;
 		this.velocityX *= 0.1F;
 		this.velocityY *= 0.1F;
 		this.velocityZ *= 0.1F;
-		this.velocityX += d;
-		this.velocityY += e;
-		this.velocityZ += f;
-		float h = 1.0F - (float)(Math.random() * 0.3F);
-		this.colorRed = h;
-		this.colorGreen = h;
-		this.colorBlue = h;
+		this.velocityX += g;
+		this.velocityY += h;
+		this.velocityZ += i;
+		float k = 1.0F - (float)(Math.random() * 0.3F);
+		this.colorRed = k;
+		this.colorGreen = k;
+		this.colorBlue = k;
 		this.scale *= 1.875F;
-		int i = (int)(8.0 / (Math.random() * 0.8 + 0.3));
-		this.maxAge = (int)Math.max((float)i * 2.5F, 1.0F);
+		int l = (int)(8.0 / (Math.random() * 0.8 + 0.3));
+		this.maxAge = (int)Math.max((float)l * 2.5F, 1.0F);
 		this.collidesWithWorld = false;
 		this.setSpriteForAge(spriteProvider);
 	}

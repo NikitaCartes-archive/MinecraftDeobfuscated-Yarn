@@ -358,11 +358,9 @@ public class Raid {
 
 						for(UUID uUID : this.heroesOfTheVillage) {
 							Entity entity = this.world.getEntity(uUID);
-							if (entity instanceof LivingEntity && !entity.isSpectator()) {
-								LivingEntity livingEntity = (LivingEntity)entity;
+							if (entity instanceof LivingEntity livingEntity && !entity.isSpectator()) {
 								livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.HERO_OF_THE_VILLAGE, 48000, this.badOmenLevel - 1, false, false, true));
-								if (livingEntity instanceof ServerPlayerEntity) {
-									ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
+								if (livingEntity instanceof ServerPlayerEntity serverPlayerEntity) {
 									serverPlayerEntity.incrementStat(Stats.RAID_WIN);
 									Criteria.HERO_OF_THE_VILLAGE.trigger(serverPlayerEntity);
 								}
@@ -802,9 +800,9 @@ public class Raid {
 		WITCH(EntityType.WITCH, new int[]{0, 0, 0, 0, 3, 0, 0, 1}),
 		RAVAGER(EntityType.RAVAGER, new int[]{0, 0, 0, 1, 0, 1, 0, 2});
 
-		private static final Raid.Member[] VALUES = values();
-		private final EntityType<? extends RaiderEntity> type;
-		private final int[] countInWave;
+		static final Raid.Member[] VALUES = values();
+		final EntityType<? extends RaiderEntity> type;
+		final int[] countInWave;
 
 		private Member(EntityType<? extends RaiderEntity> type, int[] countInWave) {
 			this.type = type;
@@ -820,7 +818,7 @@ public class Raid {
 
 		private static final Raid.Status[] VALUES = values();
 
-		private static Raid.Status fromName(String name) {
+		static Raid.Status fromName(String name) {
 			for(Raid.Status status : VALUES) {
 				if (name.equalsIgnoreCase(status.name())) {
 					return status;

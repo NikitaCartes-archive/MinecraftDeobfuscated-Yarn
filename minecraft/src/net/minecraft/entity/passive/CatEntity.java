@@ -120,7 +120,7 @@ public class CatEntity extends TameableEntity {
 	}
 
 	public Identifier getTexture() {
-		return (Identifier)TEXTURES.getOrDefault(this.getCatType(), TEXTURES.get(0));
+		return (Identifier)TEXTURES.getOrDefault(this.getCatType(), (Identifier)TEXTURES.get(0));
 	}
 
 	@Override

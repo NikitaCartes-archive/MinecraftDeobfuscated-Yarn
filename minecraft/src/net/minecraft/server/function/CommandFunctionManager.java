@@ -21,7 +21,7 @@ public class CommandFunctionManager {
 	private static final Text NO_RECURSION_TEXT = new TranslatableText("commands.debug.function.noRecursion");
 	private static final Identifier TICK_FUNCTION = new Identifier("tick");
 	private static final Identifier LOAD_FUNCTION = new Identifier("load");
-	private final MinecraftServer server;
+	final MinecraftServer server;
 	@Nullable
 	private CommandFunctionManager.class_6345 field_33543;
 	private final List<CommandFunction> tickFunctions = Lists.<CommandFunction>newArrayList();
@@ -125,7 +125,7 @@ public class CommandFunctionManager {
 
 	public static class Entry {
 		private final ServerCommandSource source;
-		private final int depth;
+		final int depth;
 		private final CommandFunction.Element element;
 
 		public Entry(ServerCommandSource source, int depth, CommandFunction.Element element) {
@@ -172,18 +172,18 @@ public class CommandFunctionManager {
 		private final Deque<CommandFunctionManager.Entry> field_33547 = Queues.<CommandFunctionManager.Entry>newArrayDeque();
 		private final List<CommandFunctionManager.Entry> field_33548 = Lists.<CommandFunctionManager.Entry>newArrayList();
 
-		private class_6345(@Nullable CommandFunctionManager.Tracer tracer) {
+		class_6345(@Nullable CommandFunctionManager.Tracer tracer) {
 			this.tracer = tracer;
 		}
 
-		private void method_36343(CommandFunction function, ServerCommandSource source) {
+		void method_36343(CommandFunction function, ServerCommandSource source) {
 			int i = CommandFunctionManager.this.getMaxCommandChainLength();
 			if (this.field_33547.size() + this.field_33548.size() < i) {
 				this.field_33548.add(new CommandFunctionManager.Entry(source, this.depth, new CommandFunction.FunctionElement(function)));
 			}
 		}
 
-		private int method_36346(CommandFunction function, ServerCommandSource source) {
+		int method_36346(CommandFunction function, ServerCommandSource source) {
 			int i = CommandFunctionManager.this.getMaxCommandChainLength();
 			int j = 0;
 			CommandFunction.Element[] elements = function.getElements();

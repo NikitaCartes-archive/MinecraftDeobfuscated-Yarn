@@ -61,8 +61,7 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
 		List<AbstractPiglinEntity> list2 = Lists.<AbstractPiglinEntity>newArrayList();
 
 		for(LivingEntity livingEntity : (List)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(ImmutableList.of())) {
-			if (livingEntity instanceof HoglinEntity) {
-				HoglinEntity hoglinEntity = (HoglinEntity)livingEntity;
+			if (livingEntity instanceof HoglinEntity hoglinEntity) {
 				if (hoglinEntity.isBaby() && !optional3.isPresent()) {
 					optional3 = Optional.of(hoglinEntity);
 				} else if (hoglinEntity.isAdult()) {
@@ -73,15 +72,13 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
 				}
 			} else if (livingEntity instanceof PiglinBruteEntity) {
 				list.add((PiglinBruteEntity)livingEntity);
-			} else if (livingEntity instanceof PiglinEntity) {
-				PiglinEntity piglinEntity = (PiglinEntity)livingEntity;
+			} else if (livingEntity instanceof PiglinEntity piglinEntity) {
 				if (piglinEntity.isBaby() && !optional4.isPresent()) {
 					optional4 = Optional.of(piglinEntity);
 				} else if (piglinEntity.isAdult()) {
 					list.add(piglinEntity);
 				}
-			} else if (livingEntity instanceof PlayerEntity) {
-				PlayerEntity playerEntity = (PlayerEntity)livingEntity;
+			} else if (livingEntity instanceof PlayerEntity playerEntity) {
 				if (!optional6.isPresent() && EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(livingEntity) && !PiglinBrain.wearsGoldArmor(playerEntity)) {
 					optional6 = Optional.of(playerEntity);
 				}

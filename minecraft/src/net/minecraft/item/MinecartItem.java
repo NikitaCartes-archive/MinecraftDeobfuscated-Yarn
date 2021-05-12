@@ -70,7 +70,7 @@ public class MinecartItem extends Item {
 			pointer.getWorld().syncWorldEvent(WorldEvents.DISPENSER_DISPENSES, pointer.getBlockPos(), 0);
 		}
 	};
-	private final AbstractMinecartEntity.Type type;
+	final AbstractMinecartEntity.Type type;
 
 	public MinecartItem(AbstractMinecartEntity.Type type, Item.Settings settings) {
 		super(settings);

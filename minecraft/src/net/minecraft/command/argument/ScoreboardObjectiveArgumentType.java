@@ -65,11 +65,8 @@ public class ScoreboardObjectiveArgumentType implements ArgumentType<String> {
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
 		if (context.getSource() instanceof ServerCommandSource) {
 			return CommandSource.suggestMatching(((ServerCommandSource)context.getSource()).getMinecraftServer().getScoreboard().getObjectiveNames(), builder);
-		} else if (context.getSource() instanceof CommandSource) {
-			CommandSource commandSource = (CommandSource)context.getSource();
-			return commandSource.getCompletions(context, builder);
 		} else {
-			return Suggestions.empty();
+			return context.getSource() instanceof CommandSource commandSource ? commandSource.getCompletions(context, builder) : Suggestions.empty();
 		}
 	}
 

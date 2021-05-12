@@ -11,13 +11,13 @@ import net.minecraft.util.JsonSerializer;
 
 public class WeatherCheckLootCondition implements LootCondition {
 	@Nullable
-	private final Boolean raining;
+	final Boolean raining;
 	@Nullable
-	private final Boolean thundering;
+	final Boolean thundering;
 
-	private WeatherCheckLootCondition(@Nullable Boolean raining, @Nullable Boolean thundering) {
-		this.raining = raining;
-		this.thundering = thundering;
+	WeatherCheckLootCondition(@Nullable Boolean boolean_, @Nullable Boolean boolean2) {
+		this.raining = boolean_;
+		this.thundering = boolean2;
 	}
 
 	@Override

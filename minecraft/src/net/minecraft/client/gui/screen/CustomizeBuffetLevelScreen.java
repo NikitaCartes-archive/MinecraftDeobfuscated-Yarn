@@ -26,9 +26,9 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	private static final Text BUFFET_BIOME_TEXT = new TranslatableText("createWorld.customize.buffet.biome");
 	private final Screen parent;
 	private final Consumer<Biome> onDone;
-	private final Registry<Biome> biomeRegistry;
+	final Registry<Biome> biomeRegistry;
 	private CustomizeBuffetLevelScreen.BuffetBiomesListWidget biomeSelectionList;
-	private Biome biome;
+	Biome biome;
 	private ButtonWidget confirmButton;
 
 	public CustomizeBuffetLevelScreen(Screen parent, DynamicRegistryManager registryManager, Consumer<Biome> onDone, Biome biome) {
@@ -65,7 +65,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 			);
 	}
 
-	private void refreshConfirmButton() {
+	void refreshConfirmButton() {
 		this.confirmButton.active = this.biomeSelectionList.getSelected() != null;
 	}
 
@@ -80,7 +80,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 
 	@Environment(EnvType.CLIENT)
 	class BuffetBiomesListWidget extends AlwaysSelectedEntryListWidget<CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem> {
-		private BuffetBiomesListWidget() {
+		BuffetBiomesListWidget() {
 			super(
 				CustomizeBuffetLevelScreen.this.client,
 				CustomizeBuffetLevelScreen.this.width,
@@ -114,7 +114,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 
 		@Environment(EnvType.CLIENT)
 		class BuffetBiomeItem extends AlwaysSelectedEntryListWidget.Entry<CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem> {
-			private final Biome biome;
+			final Biome biome;
 			private final Text text;
 
 			public BuffetBiomeItem(Biome biome) {

@@ -231,11 +231,8 @@ public class Explosion {
 						}
 
 						entity.setVelocity(entity.getVelocity().add(x * ad, y * ad, z * ad));
-						if (entity instanceof PlayerEntity) {
-							PlayerEntity playerEntity = (PlayerEntity)entity;
-							if (!playerEntity.isSpectator() && (!playerEntity.isCreative() || !playerEntity.getAbilities().flying)) {
-								this.affectedPlayers.put(playerEntity, new Vec3d(x * ac, y * ac, z * ac));
-							}
+						if (entity instanceof PlayerEntity playerEntity && !playerEntity.isSpectator() && (!playerEntity.isCreative() || !playerEntity.getAbilities().flying)) {
+							this.affectedPlayers.put(playerEntity, new Vec3d(x * ac, y * ac, z * ac));
 						}
 					}
 				}

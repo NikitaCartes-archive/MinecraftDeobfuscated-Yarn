@@ -59,6 +59,6 @@ public class UniformFloatProvider extends FloatProvider {
 	}
 
 	public String toString() {
-		return "[" + this.min + '-' + this.max + ']';
+		return "[" + this.min + "-" + this.max + "]";
 	}
 }

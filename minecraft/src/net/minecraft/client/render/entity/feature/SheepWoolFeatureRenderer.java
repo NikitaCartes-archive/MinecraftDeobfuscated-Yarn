@@ -14,7 +14,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class SheepWoolFeatureRenderer extends FeatureRenderer<SheepEntity, SheepEntityModel<SheepEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/sheep/sheep_fur.png");
+	public static final Identifier SKIN = new Identifier("textures/entity/sheep/sheep_fur.png");
 	private final SheepWoolEntityModel<SheepEntity> model;
 
 	public SheepWoolFeatureRenderer(FeatureRendererContext<SheepEntity, SheepEntityModel<SheepEntity>> context, EntityModelLoader loader) {

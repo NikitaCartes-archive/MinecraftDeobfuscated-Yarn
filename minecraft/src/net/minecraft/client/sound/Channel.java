@@ -15,8 +15,8 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 public class Channel {
 	private final Set<Channel.SourceManager> sources = Sets.newIdentityHashSet();
-	private final SoundEngine soundEngine;
-	private final Executor executor;
+	final SoundEngine soundEngine;
+	final Executor executor;
 
 	public Channel(SoundEngine soundEngine, Executor executor) {
 		this.soundEngine = soundEngine;
@@ -65,7 +65,7 @@ public class Channel {
 	@Environment(EnvType.CLIENT)
 	public class SourceManager {
 		@Nullable
-		private Source source;
+		Source source;
 		private boolean stopped;
 
 		public boolean isStopped() {

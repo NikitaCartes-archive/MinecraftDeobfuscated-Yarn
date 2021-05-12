@@ -171,7 +171,7 @@ public class PotionUtil {
 							statusEffect.adjustModifierAmount(statusEffectInstance.getAmplifier(), entityAttributeModifier),
 							entityAttributeModifier.getOperation()
 						);
-						list3.add(new Pair<>(entry.getKey(), entityAttributeModifier2));
+						list3.add(new Pair<>((EntityAttribute)entry.getKey(), entityAttributeModifier2));
 					}
 				}
 

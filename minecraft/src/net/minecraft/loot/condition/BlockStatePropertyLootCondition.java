@@ -18,12 +18,12 @@ import net.minecraft.util.JsonSerializer;
 import net.minecraft.util.registry.Registry;
 
 public class BlockStatePropertyLootCondition implements LootCondition {
-	private final Block block;
-	private final StatePredicate properties;
+	final Block block;
+	final StatePredicate properties;
 
-	private BlockStatePropertyLootCondition(Block block, StatePredicate properties) {
+	BlockStatePropertyLootCondition(Block block, StatePredicate statePredicate) {
 		this.block = block;
-		this.properties = properties;
+		this.properties = statePredicate;
 	}
 
 	@Override

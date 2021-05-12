@@ -72,8 +72,7 @@ public class PiglinEntityModel<T extends MobEntity> extends PlayerEntityModel<T>
 		float m = 0.08F + g * 0.4F;
 		this.leftEar.roll = (float) (-Math.PI / 6) - MathHelper.cos(l * 1.2F) * m;
 		this.rightEar.roll = (float) (Math.PI / 6) + MathHelper.cos(l) * m;
-		if (mobEntity instanceof AbstractPiglinEntity) {
-			AbstractPiglinEntity abstractPiglinEntity = (AbstractPiglinEntity)mobEntity;
+		if (mobEntity instanceof AbstractPiglinEntity abstractPiglinEntity) {
 			PiglinActivity piglinActivity = abstractPiglinEntity.getActivity();
 			if (piglinActivity == PiglinActivity.DANCING) {
 				float n = h / 60.0F;

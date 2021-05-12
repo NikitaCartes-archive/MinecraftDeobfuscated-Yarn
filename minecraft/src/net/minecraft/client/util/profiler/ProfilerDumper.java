@@ -42,15 +42,14 @@ public class ProfilerDumper {
 	public Path createDump(List<Category> categories, List<Sample> deviations, TickTimeTracker timeTracker) {
 		try {
 			Files.createDirectories(DEBUG_PROFILING_DIRECTORY);
-		} catch (IOException var20) {
-			throw new UncheckedIOException(var20);
+		} catch (IOException var11) {
+			throw new UncheckedIOException(var11);
 		}
 
 		Path path = DEBUG_PROFILING_DIRECTORY.resolve(new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + ".tmp");
 
 		try {
 			FileSystem fileSystem = FILE_SYSTEM_PROVIDER.newFileSystem(path, ImmutableMap.of("create", "true"));
-			Throwable var6 = null;
 
 			try {
 				Files.createDirectories(DEBUG_PROFILING_DIRECTORY);
@@ -66,24 +65,23 @@ public class ProfilerDumper {
 				}
 
 				this.save(timeTracker, path2);
-			} catch (Throwable var21) {
-				var6 = var21;
-				throw var21;
-			} finally {
+			} catch (Throwable var12) {
 				if (fileSystem != null) {
-					if (var6 != null) {
-						try {
-							fileSystem.close();
-						} catch (Throwable var19) {
-							var6.addSuppressed(var19);
-						}
-					} else {
+					try {
 						fileSystem.close();
+					} catch (Throwable var10) {
+						var12.addSuppressed(var10);
 					}
 				}
+
+				throw var12;
 			}
-		} catch (IOException var23) {
-			throw new UncheckedIOException(var23);
+
+			if (fileSystem != null) {
+				fileSystem.close();
+			}
+		} catch (IOException var13) {
+			throw new UncheckedIOException(var13);
 		}
 
 		return this.compressAndSave(path);

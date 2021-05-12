@@ -163,8 +163,8 @@ public abstract class GeneratorType {
 	);
 	private final Text translationKey;
 
-	private GeneratorType(String translationKey) {
-		this.translationKey = new TranslatableText("generator." + translationKey);
+	GeneratorType(String string) {
+		this.translationKey = new TranslatableText("generator." + string);
 	}
 
 	private static GeneratorOptions createFixedBiomeOptions(

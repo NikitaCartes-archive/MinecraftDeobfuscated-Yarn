@@ -32,9 +32,9 @@ public interface When extends Supplier<JsonElement> {
 		private final When.LogicalOperator operator;
 		private final List<When> components;
 
-		private LogicalCondition(When.LogicalOperator operator, List<When> components) {
-			this.operator = operator;
-			this.components = components;
+		LogicalCondition(When.LogicalOperator logicalOperator, List<When> list) {
+			this.operator = logicalOperator;
+			this.components = list;
 		}
 
 		@Override
@@ -55,7 +55,7 @@ public interface When extends Supplier<JsonElement> {
 		AND("AND"),
 		OR("OR");
 
-		private final String name;
+		final String name;
 
 		private LogicalOperator(String name) {
 			this.name = name;

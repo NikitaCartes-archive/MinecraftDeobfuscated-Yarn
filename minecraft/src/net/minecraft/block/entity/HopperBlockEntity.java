@@ -222,8 +222,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	public static ItemStack transfer(@Nullable Inventory from, Inventory to, ItemStack stack, @Nullable Direction side) {
-		if (to instanceof SidedInventory && side != null) {
-			SidedInventory sidedInventory = (SidedInventory)to;
+		if (to instanceof SidedInventory sidedInventory && side != null) {
 			int[] is = sidedInventory.getAvailableSlots(side);
 
 			for(int i = 0; i < is.length && !stack.isEmpty(); ++i) {
@@ -270,19 +269,13 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 			}
 
 			if (bl) {
-				if (bl2 && to instanceof HopperBlockEntity) {
-					HopperBlockEntity hopperBlockEntity = (HopperBlockEntity)to;
-					if (!hopperBlockEntity.isDisabled()) {
-						int j = 0;
-						if (from instanceof HopperBlockEntity) {
-							HopperBlockEntity hopperBlockEntity2 = (HopperBlockEntity)from;
-							if (hopperBlockEntity.lastTickTime >= hopperBlockEntity2.lastTickTime) {
-								j = 1;
-							}
-						}
-
-						hopperBlockEntity.setCooldown(8 - j);
+				if (bl2 && to instanceof HopperBlockEntity hopperBlockEntity && !hopperBlockEntity.isDisabled()) {
+					int j = 0;
+					if (from instanceof HopperBlockEntity hopperBlockEntity2 && hopperBlockEntity.lastTickTime >= hopperBlockEntity2.lastTickTime) {
+						j = 1;
 					}
+
+					hopperBlockEntity.setCooldown(8 - j);
 				}
 
 				to.markDirty();

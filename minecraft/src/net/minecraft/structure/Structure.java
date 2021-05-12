@@ -710,9 +710,6 @@ public class Structure {
 		private final IdList<BlockState> ids = new IdList<>(16);
 		private int currentIndex;
 
-		private Palette() {
-		}
-
 		public int getId(BlockState state) {
 			int i = this.ids.getRawId(state);
 			if (i == -1) {
@@ -742,8 +739,8 @@ public class Structure {
 		private final List<Structure.StructureBlockInfo> infos;
 		private final Map<Block, List<Structure.StructureBlockInfo>> blockToInfos = Maps.newHashMap();
 
-		private PalettedBlockInfoList(List<Structure.StructureBlockInfo> infos) {
-			this.infos = infos;
+		PalettedBlockInfoList(List<Structure.StructureBlockInfo> list) {
+			this.infos = list;
 		}
 
 		public List<Structure.StructureBlockInfo> getAll() {

@@ -8,7 +8,7 @@ import net.minecraft.recipe.SpecialRecipeSerializer;
 import net.minecraft.util.Identifier;
 
 public class ComplexRecipeJsonFactory {
-	private final SpecialRecipeSerializer<?> serializer;
+	final SpecialRecipeSerializer<?> serializer;
 
 	public ComplexRecipeJsonFactory(SpecialRecipeSerializer<?> serializer) {
 		this.serializer = serializer;

@@ -166,7 +166,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 
 		@Override
 		public String toString() {
-			return "BlockPosArgument{pos='" + this.rawPos + '\'' + "path='" + this.rawPath + '\'' + ", siblings=" + this.siblings + ", style=" + this.getStyle() + '}';
+			return "BlockPosArgument{pos='" + this.rawPos + "'path='" + this.rawPath + "', siblings=" + this.siblings + ", style=" + this.getStyle() + "}";
 		}
 	}
 
@@ -236,17 +236,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 
 		@Override
 		public String toString() {
-			return "EntityNbtComponent{selector='"
-				+ this.rawSelector
-				+ '\''
-				+ "path='"
-				+ this.rawPath
-				+ '\''
-				+ ", siblings="
-				+ this.siblings
-				+ ", style="
-				+ this.getStyle()
-				+ '}';
+			return "EntityNbtComponent{selector='" + this.rawSelector + "'path='" + this.rawPath + "', siblings=" + this.siblings + ", style=" + this.getStyle() + "}";
 		}
 	}
 
@@ -291,7 +281,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 
 		@Override
 		public String toString() {
-			return "StorageNbtComponent{id='" + this.id + '\'' + "path='" + this.rawPath + '\'' + ", siblings=" + this.siblings + ", style=" + this.getStyle() + '}';
+			return "StorageNbtComponent{id='" + this.id + "'path='" + this.rawPath + "', siblings=" + this.siblings + ", style=" + this.getStyle() + "}";
 		}
 	}
 }

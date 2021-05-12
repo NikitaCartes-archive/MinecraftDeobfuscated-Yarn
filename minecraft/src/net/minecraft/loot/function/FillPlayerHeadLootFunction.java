@@ -18,7 +18,7 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.JsonHelper;
 
 public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
-	private final LootContext.EntityTarget entity;
+	final LootContext.EntityTarget entity;
 
 	public FillPlayerHeadLootFunction(LootCondition[] conditions, LootContext.EntityTarget entity) {
 		super(conditions);

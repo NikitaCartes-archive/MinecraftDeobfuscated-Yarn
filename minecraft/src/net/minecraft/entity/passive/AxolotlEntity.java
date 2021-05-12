@@ -200,7 +200,7 @@ public class AxolotlEntity extends AnimalEntity implements Bucketable {
 		this.dataTracker.set(VARIANT, variant.getId());
 	}
 
-	private static boolean shouldBabyBeDifferent(Random random) {
+	static boolean shouldBabyBeDifferent(Random random) {
 		return random.nextInt(1200) == 0;
 	}
 

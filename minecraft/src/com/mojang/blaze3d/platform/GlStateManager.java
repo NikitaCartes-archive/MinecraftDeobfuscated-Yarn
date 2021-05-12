@@ -701,9 +701,6 @@ public class GlStateManager {
 		public int dstFactorRGB = 0;
 		public int srcFactorAlpha = 1;
 		public int dstFactorAlpha = 0;
-
-		private BlendFuncState() {
-		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -742,18 +739,12 @@ public class GlStateManager {
 		public boolean green = true;
 		public boolean blue = true;
 		public boolean alpha = true;
-
-		private ColorMask() {
-		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	static class CullFaceState {
 		public final GlStateManager.CapabilityTracker capState = new GlStateManager.CapabilityTracker(2884);
 		public int mode = 1029;
-
-		private CullFaceState() {
-		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -761,9 +752,6 @@ public class GlStateManager {
 		public final GlStateManager.CapabilityTracker capState = new GlStateManager.CapabilityTracker(2929);
 		public boolean mask = true;
 		public int func = 513;
-
-		private DepthTestState() {
-		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -821,9 +809,6 @@ public class GlStateManager {
 	static class LogicOpState {
 		public final GlStateManager.CapabilityTracker capState = new GlStateManager.CapabilityTracker(3058);
 		public int op = 5379;
-
-		private LogicOpState() {
-		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -832,17 +817,11 @@ public class GlStateManager {
 		public final GlStateManager.CapabilityTracker capLine = new GlStateManager.CapabilityTracker(10754);
 		public float factor;
 		public float units;
-
-		private PolygonOffsetState() {
-		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	static class ScissorTestState {
 		public final GlStateManager.CapabilityTracker capState = new GlStateManager.CapabilityTracker(3089);
-
-		private ScissorTestState() {
-		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -878,9 +857,6 @@ public class GlStateManager {
 		public int sfail = 7680;
 		public int dpfail = 7680;
 		public int dppass = 7680;
-
-		private StencilState() {
-		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -888,18 +864,12 @@ public class GlStateManager {
 		public int func = 519;
 		public int ref;
 		public int mask = -1;
-
-		private StencilSubState() {
-		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	static class Texture2DState {
 		public boolean capState;
 		public int boundTexture;
-
-		private Texture2DState() {
-		}
 	}
 
 	@Environment(EnvType.CLIENT)

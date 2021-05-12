@@ -16,7 +16,7 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class ResourceTexture extends AbstractTexture {
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogManager.getLogger();
 	protected final Identifier location;
 
 	public ResourceTexture(Identifier location) {
@@ -56,7 +56,7 @@ public class ResourceTexture extends AbstractTexture {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class TextureData implements Closeable {
+	protected static class TextureData implements Closeable {
 		@Nullable
 		private final TextureResourceMetadata metadata;
 		@Nullable
@@ -79,7 +79,6 @@ public class ResourceTexture extends AbstractTexture {
 		public static ResourceTexture.TextureData load(ResourceManager resourceManager, Identifier identifier) {
 			try {
 				Resource resource = resourceManager.getResource(identifier);
-				Throwable var3 = null;
 
 				ResourceTexture.TextureData runtimeException;
 				try {
@@ -88,31 +87,30 @@ public class ResourceTexture extends AbstractTexture {
 
 					try {
 						textureResourceMetadata = resource.getMetadata(TextureResourceMetadata.READER);
-					} catch (RuntimeException var17) {
-						ResourceTexture.LOGGER.warn("Failed reading metadata of: {}", identifier, var17);
+					} catch (RuntimeException var7) {
+						ResourceTexture.LOGGER.warn("Failed reading metadata of: {}", identifier, var7);
 					}
 
 					runtimeException = new ResourceTexture.TextureData(textureResourceMetadata, nativeImage);
-				} catch (Throwable var18) {
-					var3 = var18;
-					throw var18;
-				} finally {
+				} catch (Throwable var8) {
 					if (resource != null) {
-						if (var3 != null) {
-							try {
-								resource.close();
-							} catch (Throwable var16) {
-								var3.addSuppressed(var16);
-							}
-						} else {
+						try {
 							resource.close();
+						} catch (Throwable var6) {
+							var8.addSuppressed(var6);
 						}
 					}
+
+					throw var8;
+				}
+
+				if (resource != null) {
+					resource.close();
 				}
 
 				return runtimeException;
-			} catch (IOException var20) {
-				return new ResourceTexture.TextureData(var20);
+			} catch (IOException var9) {
+				return new ResourceTexture.TextureData(var9);
 			}
 		}
 

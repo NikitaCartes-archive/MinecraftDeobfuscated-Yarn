@@ -75,8 +75,7 @@ public class EnchantmentHelper {
 
 		for(int i = 0; i < list.size(); ++i) {
 			NbtCompound nbtCompound = list.getCompound(i);
-			Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(nbtCompound.getString("id"))).ifPresent(enchantment -> {
-			});
+			Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(nbtCompound.getString("id"))).ifPresent(enchantment -> map.put(enchantment, nbtCompound.getInt("lvl")));
 		}
 
 		return map;

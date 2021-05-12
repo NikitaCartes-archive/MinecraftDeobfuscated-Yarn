@@ -66,111 +66,200 @@ public class ItemCommand {
 			CommandManager.literal("item")
 				.requires(source -> source.hasPermissionLevel(2))
 				.then(
-					CommandManager.literal("block")
+					CommandManager.literal("replace")
 						.then(
-							CommandManager.argument("pos", BlockPosArgumentType.blockPos())
+							CommandManager.literal("block")
 								.then(
-									((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument("slot", ItemSlotArgumentType.itemSlot())
+									CommandManager.argument("pos", BlockPosArgumentType.blockPos())
+										.then(
+											((RequiredArgumentBuilder)CommandManager.argument("slot", ItemSlotArgumentType.itemSlot())
+													.then(
+														CommandManager.literal("with")
+															.then(
+																CommandManager.argument("item", ItemStackArgumentType.itemStack())
+																	.executes(
+																		context -> executeBlockReplace(
+																				context.getSource(),
+																				BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
+																				ItemSlotArgumentType.getItemSlot(context, "slot"),
+																				ItemStackArgumentType.getItemStackArgument(context, "item").createStack(1, false)
+																			)
+																	)
+																	.then(
+																		CommandManager.argument("count", IntegerArgumentType.integer(1, 64))
+																			.executes(
+																				context -> executeBlockReplace(
+																						context.getSource(),
+																						BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
+																						ItemSlotArgumentType.getItemSlot(context, "slot"),
+																						ItemStackArgumentType.getItemStackArgument(context, "item").createStack(IntegerArgumentType.getInteger(context, "count"), true)
+																					)
+																			)
+																	)
+															)
+													))
 												.then(
-													CommandManager.literal("replace")
+													CommandManager.literal("from")
 														.then(
-															CommandManager.argument("item", ItemStackArgumentType.itemStack())
-																.executes(
-																	context -> executeBlockReplace(
-																			context.getSource(),
-																			BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
-																			ItemSlotArgumentType.getItemSlot(context, "slot"),
-																			ItemStackArgumentType.getItemStackArgument(context, "item").createStack(1, false)
-																		)
-																)
+															CommandManager.literal("block")
 																.then(
-																	CommandManager.argument("count", IntegerArgumentType.integer(1, 64))
-																		.executes(
-																			context -> executeBlockReplace(
-																					context.getSource(),
-																					BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
-																					ItemSlotArgumentType.getItemSlot(context, "slot"),
-																					ItemStackArgumentType.getItemStackArgument(context, "item").createStack(IntegerArgumentType.getInteger(context, "count"), true)
+																	CommandManager.argument("source", BlockPosArgumentType.blockPos())
+																		.then(
+																			((RequiredArgumentBuilder)CommandManager.argument("sourceSlot", ItemSlotArgumentType.itemSlot())
+																					.executes(
+																						context -> executeBlockCopyBlock(
+																								(ServerCommandSource)context.getSource(),
+																								BlockPosArgumentType.getLoadedBlockPos(context, "source"),
+																								ItemSlotArgumentType.getItemSlot(context, "sourceSlot"),
+																								BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
+																								ItemSlotArgumentType.getItemSlot(context, "slot")
+																							)
+																					))
+																				.then(
+																					CommandManager.argument("modifier", IdentifierArgumentType.identifier())
+																						.suggests(MODIFIER_SUGGESTION_PROVIDER)
+																						.executes(
+																							context -> executeBlockCopyBlock(
+																									context.getSource(),
+																									BlockPosArgumentType.getLoadedBlockPos(context, "source"),
+																									ItemSlotArgumentType.getItemSlot(context, "sourceSlot"),
+																									BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
+																									ItemSlotArgumentType.getItemSlot(context, "slot"),
+																									IdentifierArgumentType.getItemModifierArgument(context, "modifier")
+																								)
+																						)
 																				)
 																		)
 																)
 														)
-												))
-											.then(
-												CommandManager.literal("modify")
-													.then(
-														CommandManager.argument("modifier", IdentifierArgumentType.identifier())
-															.suggests(MODIFIER_SUGGESTION_PROVIDER)
-															.executes(
-																context -> executeBlockModify(
-																		context.getSource(),
-																		BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
-																		ItemSlotArgumentType.getItemSlot(context, "slot"),
-																		IdentifierArgumentType.getItemModifierArgument(context, "modifier")
-																	)
-															)
-													)
-											))
-										.then(
-											CommandManager.literal("copy")
-												.then(
-													CommandManager.literal("block")
 														.then(
-															CommandManager.argument("source", BlockPosArgumentType.blockPos())
+															CommandManager.literal("entity")
 																.then(
-																	((RequiredArgumentBuilder)CommandManager.argument("sourceSlot", ItemSlotArgumentType.itemSlot())
-																			.executes(
-																				context -> executeBlockCopyBlock(
-																						(ServerCommandSource)context.getSource(),
-																						BlockPosArgumentType.getLoadedBlockPos(context, "source"),
-																						ItemSlotArgumentType.getItemSlot(context, "sourceSlot"),
-																						BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
-																						ItemSlotArgumentType.getItemSlot(context, "slot")
-																					)
-																			))
+																	CommandManager.argument("source", EntityArgumentType.entity())
 																		.then(
-																			CommandManager.argument("modifier", IdentifierArgumentType.identifier())
-																				.suggests(MODIFIER_SUGGESTION_PROVIDER)
-																				.executes(
-																					context -> executeBlockCopyBlock(
-																							context.getSource(),
-																							BlockPosArgumentType.getLoadedBlockPos(context, "source"),
-																							ItemSlotArgumentType.getItemSlot(context, "sourceSlot"),
-																							BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
-																							ItemSlotArgumentType.getItemSlot(context, "slot"),
-																							IdentifierArgumentType.getItemModifierArgument(context, "modifier")
+																			((RequiredArgumentBuilder)CommandManager.argument("sourceSlot", ItemSlotArgumentType.itemSlot())
+																					.executes(
+																						context -> executeBlockCopyEntity(
+																								(ServerCommandSource)context.getSource(),
+																								EntityArgumentType.getEntity(context, "source"),
+																								ItemSlotArgumentType.getItemSlot(context, "sourceSlot"),
+																								BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
+																								ItemSlotArgumentType.getItemSlot(context, "slot")
+																							)
+																					))
+																				.then(
+																					CommandManager.argument("modifier", IdentifierArgumentType.identifier())
+																						.suggests(MODIFIER_SUGGESTION_PROVIDER)
+																						.executes(
+																							context -> executeBlockCopyEntity(
+																									context.getSource(),
+																									EntityArgumentType.getEntity(context, "source"),
+																									ItemSlotArgumentType.getItemSlot(context, "sourceSlot"),
+																									BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
+																									ItemSlotArgumentType.getItemSlot(context, "slot"),
+																									IdentifierArgumentType.getItemModifierArgument(context, "modifier")
+																								)
 																						)
 																				)
 																		)
 																)
 														)
 												)
-												.then(
-													CommandManager.literal("entity")
-														.then(
-															CommandManager.argument("source", EntityArgumentType.entity())
-																.then(
-																	((RequiredArgumentBuilder)CommandManager.argument("sourceSlot", ItemSlotArgumentType.itemSlot())
+										)
+								)
+						)
+						.then(
+							CommandManager.literal("entity")
+								.then(
+									CommandManager.argument("targets", EntityArgumentType.entities())
+										.then(
+											((RequiredArgumentBuilder)CommandManager.argument("slot", ItemSlotArgumentType.itemSlot())
+													.then(
+														CommandManager.literal("with")
+															.then(
+																CommandManager.argument("item", ItemStackArgumentType.itemStack())
+																	.executes(
+																		context -> executeEntityReplace(
+																				context.getSource(),
+																				EntityArgumentType.getEntities(context, "targets"),
+																				ItemSlotArgumentType.getItemSlot(context, "slot"),
+																				ItemStackArgumentType.getItemStackArgument(context, "item").createStack(1, false)
+																			)
+																	)
+																	.then(
+																		CommandManager.argument("count", IntegerArgumentType.integer(1, 64))
 																			.executes(
-																				context -> executeBlockCopyEntity(
-																						(ServerCommandSource)context.getSource(),
-																						EntityArgumentType.getEntity(context, "source"),
-																						ItemSlotArgumentType.getItemSlot(context, "sourceSlot"),
-																						BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
-																						ItemSlotArgumentType.getItemSlot(context, "slot")
+																				context -> executeEntityReplace(
+																						context.getSource(),
+																						EntityArgumentType.getEntities(context, "targets"),
+																						ItemSlotArgumentType.getItemSlot(context, "slot"),
+																						ItemStackArgumentType.getItemStackArgument(context, "item").createStack(IntegerArgumentType.getInteger(context, "count"), true)
 																					)
-																			))
+																			)
+																	)
+															)
+													))
+												.then(
+													CommandManager.literal("from")
+														.then(
+															CommandManager.literal("block")
+																.then(
+																	CommandManager.argument("source", BlockPosArgumentType.blockPos())
 																		.then(
-																			CommandManager.argument("modifier", IdentifierArgumentType.identifier())
-																				.suggests(MODIFIER_SUGGESTION_PROVIDER)
-																				.executes(
-																					context -> executeBlockCopyEntity(
-																							context.getSource(),
-																							EntityArgumentType.getEntity(context, "source"),
-																							ItemSlotArgumentType.getItemSlot(context, "sourceSlot"),
-																							BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
-																							ItemSlotArgumentType.getItemSlot(context, "slot"),
-																							IdentifierArgumentType.getItemModifierArgument(context, "modifier")
+																			((RequiredArgumentBuilder)CommandManager.argument("sourceSlot", ItemSlotArgumentType.itemSlot())
+																					.executes(
+																						context -> executeEntityCopyBlock(
+																								(ServerCommandSource)context.getSource(),
+																								BlockPosArgumentType.getLoadedBlockPos(context, "source"),
+																								ItemSlotArgumentType.getItemSlot(context, "sourceSlot"),
+																								EntityArgumentType.getEntities(context, "targets"),
+																								ItemSlotArgumentType.getItemSlot(context, "slot")
+																							)
+																					))
+																				.then(
+																					CommandManager.argument("modifier", IdentifierArgumentType.identifier())
+																						.suggests(MODIFIER_SUGGESTION_PROVIDER)
+																						.executes(
+																							context -> executeEntityCopyBlock(
+																									context.getSource(),
+																									BlockPosArgumentType.getLoadedBlockPos(context, "source"),
+																									ItemSlotArgumentType.getItemSlot(context, "sourceSlot"),
+																									EntityArgumentType.getEntities(context, "targets"),
+																									ItemSlotArgumentType.getItemSlot(context, "slot"),
+																									IdentifierArgumentType.getItemModifierArgument(context, "modifier")
+																								)
+																						)
+																				)
+																		)
+																)
+														)
+														.then(
+															CommandManager.literal("entity")
+																.then(
+																	CommandManager.argument("source", EntityArgumentType.entity())
+																		.then(
+																			((RequiredArgumentBuilder)CommandManager.argument("sourceSlot", ItemSlotArgumentType.itemSlot())
+																					.executes(
+																						context -> executeEntityCopyEntity(
+																								(ServerCommandSource)context.getSource(),
+																								EntityArgumentType.getEntity(context, "source"),
+																								ItemSlotArgumentType.getItemSlot(context, "sourceSlot"),
+																								EntityArgumentType.getEntities(context, "targets"),
+																								ItemSlotArgumentType.getItemSlot(context, "slot")
+																							)
+																					))
+																				.then(
+																					CommandManager.argument("modifier", IdentifierArgumentType.identifier())
+																						.suggests(MODIFIER_SUGGESTION_PROVIDER)
+																						.executes(
+																							context -> executeEntityCopyEntity(
+																									context.getSource(),
+																									EntityArgumentType.getEntity(context, "source"),
+																									ItemSlotArgumentType.getItemSlot(context, "sourceSlot"),
+																									EntityArgumentType.getEntities(context, "targets"),
+																									ItemSlotArgumentType.getItemSlot(context, "slot"),
+																									IdentifierArgumentType.getItemModifierArgument(context, "modifier")
+																								)
 																						)
 																				)
 																		)
@@ -182,114 +271,43 @@ public class ItemCommand {
 						)
 				)
 				.then(
-					CommandManager.literal("entity")
+					CommandManager.literal("modify")
 						.then(
-							CommandManager.argument("targets", EntityArgumentType.entities())
+							CommandManager.literal("block")
 								.then(
-									((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument("slot", ItemSlotArgumentType.itemSlot())
-												.then(
-													CommandManager.literal("replace")
-														.then(
-															CommandManager.argument("item", ItemStackArgumentType.itemStack())
-																.executes(
-																	context -> executeEntityReplace(
-																			context.getSource(),
-																			EntityArgumentType.getEntities(context, "targets"),
-																			ItemSlotArgumentType.getItemSlot(context, "slot"),
-																			ItemStackArgumentType.getItemStackArgument(context, "item").createStack(1, false)
-																		)
-																)
-																.then(
-																	CommandManager.argument("count", IntegerArgumentType.integer(1, 64))
-																		.executes(
-																			context -> executeEntityReplace(
-																					context.getSource(),
-																					EntityArgumentType.getEntities(context, "targets"),
-																					ItemSlotArgumentType.getItemSlot(context, "slot"),
-																					ItemStackArgumentType.getItemStackArgument(context, "item").createStack(IntegerArgumentType.getInteger(context, "count"), true)
-																				)
-																		)
-																)
-														)
-												))
-											.then(
-												CommandManager.literal("modify")
-													.then(
-														CommandManager.argument("modifier", IdentifierArgumentType.identifier())
-															.suggests(MODIFIER_SUGGESTION_PROVIDER)
-															.executes(
-																context -> executeEntityModify(
-																		context.getSource(),
-																		EntityArgumentType.getEntities(context, "targets"),
-																		ItemSlotArgumentType.getItemSlot(context, "slot"),
-																		IdentifierArgumentType.getItemModifierArgument(context, "modifier")
-																	)
-															)
-													)
-											))
+									CommandManager.argument("pos", BlockPosArgumentType.blockPos())
 										.then(
-											CommandManager.literal("copy")
+											CommandManager.argument("slot", ItemSlotArgumentType.itemSlot())
 												.then(
-													CommandManager.literal("block")
-														.then(
-															CommandManager.argument("source", BlockPosArgumentType.blockPos())
-																.then(
-																	((RequiredArgumentBuilder)CommandManager.argument("sourceSlot", ItemSlotArgumentType.itemSlot())
-																			.executes(
-																				context -> executeEntityCopyBlock(
-																						(ServerCommandSource)context.getSource(),
-																						BlockPosArgumentType.getLoadedBlockPos(context, "source"),
-																						ItemSlotArgumentType.getItemSlot(context, "sourceSlot"),
-																						EntityArgumentType.getEntities(context, "targets"),
-																						ItemSlotArgumentType.getItemSlot(context, "slot")
-																					)
-																			))
-																		.then(
-																			CommandManager.argument("modifier", IdentifierArgumentType.identifier())
-																				.suggests(MODIFIER_SUGGESTION_PROVIDER)
-																				.executes(
-																					context -> executeEntityCopyBlock(
-																							context.getSource(),
-																							BlockPosArgumentType.getLoadedBlockPos(context, "source"),
-																							ItemSlotArgumentType.getItemSlot(context, "sourceSlot"),
-																							EntityArgumentType.getEntities(context, "targets"),
-																							ItemSlotArgumentType.getItemSlot(context, "slot"),
-																							IdentifierArgumentType.getItemModifierArgument(context, "modifier")
-																						)
-																				)
-																		)
+													CommandManager.argument("modifier", IdentifierArgumentType.identifier())
+														.suggests(MODIFIER_SUGGESTION_PROVIDER)
+														.executes(
+															context -> executeBlockModify(
+																	context.getSource(),
+																	BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
+																	ItemSlotArgumentType.getItemSlot(context, "slot"),
+																	IdentifierArgumentType.getItemModifierArgument(context, "modifier")
 																)
 														)
 												)
+										)
+								)
+						)
+						.then(
+							CommandManager.literal("entity")
+								.then(
+									CommandManager.argument("targets", EntityArgumentType.entities())
+										.then(
+											CommandManager.argument("slot", ItemSlotArgumentType.itemSlot())
 												.then(
-													CommandManager.literal("entity")
-														.then(
-															CommandManager.argument("source", EntityArgumentType.entity())
-																.then(
-																	((RequiredArgumentBuilder)CommandManager.argument("sourceSlot", ItemSlotArgumentType.itemSlot())
-																			.executes(
-																				context -> executeEntityCopyEntity(
-																						(ServerCommandSource)context.getSource(),
-																						EntityArgumentType.getEntity(context, "source"),
-																						ItemSlotArgumentType.getItemSlot(context, "sourceSlot"),
-																						EntityArgumentType.getEntities(context, "targets"),
-																						ItemSlotArgumentType.getItemSlot(context, "slot")
-																					)
-																			))
-																		.then(
-																			CommandManager.argument("modifier", IdentifierArgumentType.identifier())
-																				.suggests(MODIFIER_SUGGESTION_PROVIDER)
-																				.executes(
-																					context -> executeEntityCopyEntity(
-																							context.getSource(),
-																							EntityArgumentType.getEntity(context, "source"),
-																							ItemSlotArgumentType.getItemSlot(context, "sourceSlot"),
-																							EntityArgumentType.getEntities(context, "targets"),
-																							ItemSlotArgumentType.getItemSlot(context, "slot"),
-																							IdentifierArgumentType.getItemModifierArgument(context, "modifier")
-																						)
-																				)
-																		)
+													CommandManager.argument("modifier", IdentifierArgumentType.identifier())
+														.suggests(MODIFIER_SUGGESTION_PROVIDER)
+														.executes(
+															context -> executeEntityModify(
+																	context.getSource(),
+																	EntityArgumentType.getEntities(context, "targets"),
+																	ItemSlotArgumentType.getItemSlot(context, "slot"),
+																	IdentifierArgumentType.getItemModifierArgument(context, "modifier")
 																)
 														)
 												)

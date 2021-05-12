@@ -314,18 +314,15 @@ public class ModelPredicateProviderRegistry {
 
 	@Environment(EnvType.CLIENT)
 	static class AngleInterpolator {
-		private double value;
+		double value;
 		private double speed;
 		private long lastUpdateTime;
 
-		private AngleInterpolator() {
-		}
-
-		private boolean shouldUpdate(long time) {
+		boolean shouldUpdate(long time) {
 			return this.lastUpdateTime != time;
 		}
 
-		private void update(long time, double d) {
+		void update(long time, double d) {
 			this.lastUpdateTime = time;
 			double e = d - this.value;
 			e = MathHelper.floorMod(e + 0.5, 1.0) - 0.5;

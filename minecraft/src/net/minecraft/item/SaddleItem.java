@@ -14,16 +14,13 @@ public class SaddleItem extends Item {
 
 	@Override
 	public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-		if (entity instanceof Saddleable && entity.isAlive()) {
-			Saddleable saddleable = (Saddleable)entity;
-			if (!saddleable.isSaddled() && saddleable.canBeSaddled()) {
-				if (!user.world.isClient) {
-					saddleable.saddle(SoundCategory.NEUTRAL);
-					stack.decrement(1);
-				}
-
-				return ActionResult.success(user.world.isClient);
+		if (entity instanceof Saddleable saddleable && entity.isAlive() && !saddleable.isSaddled() && saddleable.canBeSaddled()) {
+			if (!user.world.isClient) {
+				saddleable.saddle(SoundCategory.NEUTRAL);
+				stack.decrement(1);
 			}
+
+			return ActionResult.success(user.world.isClient);
 		}
 
 		return ActionResult.PASS;

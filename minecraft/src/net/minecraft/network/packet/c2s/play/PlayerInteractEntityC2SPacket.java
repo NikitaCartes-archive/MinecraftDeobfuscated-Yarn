@@ -14,7 +14,7 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 	private final int entityId;
 	private final PlayerInteractEntityC2SPacket.InteractTypeHandler type;
 	private final boolean playerSneaking;
-	private static final PlayerInteractEntityC2SPacket.InteractTypeHandler ATTACK = new PlayerInteractEntityC2SPacket.InteractTypeHandler() {
+	static final PlayerInteractEntityC2SPacket.InteractTypeHandler ATTACK = new PlayerInteractEntityC2SPacket.InteractTypeHandler() {
 		@Override
 		public PlayerInteractEntityC2SPacket.InteractType getType() {
 			return PlayerInteractEntityC2SPacket.InteractType.ATTACK;
@@ -92,7 +92,7 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 		private final Hand hand;
 		private final Vec3d pos;
 
-		private InteractAtHandler(Hand hand, Vec3d pos) {
+		InteractAtHandler(Hand hand, Vec3d pos) {
 			this.hand = hand;
 			this.pos = pos;
 		}
@@ -124,7 +124,7 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 	static class InteractHandler implements PlayerInteractEntityC2SPacket.InteractTypeHandler {
 		private final Hand hand;
 
-		private InteractHandler(Hand hand) {
+		InteractHandler(Hand hand) {
 			this.hand = hand;
 		}
 
@@ -149,11 +149,11 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 	}
 
 	static enum InteractType {
-		INTERACT(packetByteBuf -> new PlayerInteractEntityC2SPacket.InteractHandler(packetByteBuf)),
+		INTERACT(PlayerInteractEntityC2SPacket.InteractHandler::new),
 		ATTACK(packetByteBuf -> PlayerInteractEntityC2SPacket.ATTACK),
-		INTERACT_AT(packetByteBuf -> new PlayerInteractEntityC2SPacket.InteractAtHandler(packetByteBuf));
+		INTERACT_AT(PlayerInteractEntityC2SPacket.InteractAtHandler::new);
 
-		private final Function<PacketByteBuf, PlayerInteractEntityC2SPacket.InteractTypeHandler> handlerGetter;
+		final Function<PacketByteBuf, PlayerInteractEntityC2SPacket.InteractTypeHandler> handlerGetter;
 
 		private InteractType(Function<PacketByteBuf, PlayerInteractEntityC2SPacket.InteractTypeHandler> handlerGetter) {
 			this.handlerGetter = handlerGetter;

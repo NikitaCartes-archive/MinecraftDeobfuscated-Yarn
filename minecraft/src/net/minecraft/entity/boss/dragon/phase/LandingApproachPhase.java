@@ -13,7 +13,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.feature.EndPortalFeature;
 
 public class LandingApproachPhase extends AbstractPhase {
-	private static final TargetPredicate PLAYERS_IN_RANGE_PREDICATE = new TargetPredicate().setBaseMaxDistance(128.0);
+	private static final TargetPredicate PLAYERS_IN_RANGE_PREDICATE = TargetPredicate.createAttackable().setBaseMaxDistance(128.0);
 	private Path path;
 	private Vec3d pathTarget;
 

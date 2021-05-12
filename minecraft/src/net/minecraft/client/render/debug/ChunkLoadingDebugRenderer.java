@@ -26,7 +26,7 @@ import net.minecraft.world.chunk.WorldChunk;
 
 @Environment(EnvType.CLIENT)
 public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
-	private final MinecraftClient client;
+	final MinecraftClient client;
 	private double lastUpdateTime = Double.MIN_VALUE;
 	private final int field_4511 = 12;
 	@Nullable
@@ -84,10 +84,10 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 
 	@Environment(EnvType.CLIENT)
 	final class ChunkLoadingStatus {
-		private final Map<ChunkPos, String> clientStates;
-		private final CompletableFuture<Map<ChunkPos, String>> serverStates;
+		final Map<ChunkPos, String> clientStates;
+		final CompletableFuture<Map<ChunkPos, String>> serverStates;
 
-		private ChunkLoadingStatus(IntegratedServer integratedServer, double d, double e) {
+		ChunkLoadingStatus(IntegratedServer integratedServer, double d, double e) {
 			ClientWorld clientWorld = ChunkLoadingDebugRenderer.this.client.world;
 			RegistryKey<World> registryKey = clientWorld.getRegistryKey();
 			int i = ChunkSectionPos.getSectionCoord(d);

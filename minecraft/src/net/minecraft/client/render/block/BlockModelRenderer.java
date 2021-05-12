@@ -31,10 +31,10 @@ import net.minecraft.world.BlockRenderView;
 public class BlockModelRenderer {
 	private static final int field_32782 = 0;
 	private static final int field_32783 = 1;
-	private static final Direction[] DIRECTIONS = Direction.values();
+	static final Direction[] DIRECTIONS = Direction.values();
 	private final BlockColors colorMap;
 	private static final int field_32784 = 100;
-	private static final ThreadLocal<BlockModelRenderer.BrightnessCache> brightnessCache = ThreadLocal.withInitial(() -> new BlockModelRenderer.BrightnessCache());
+	static final ThreadLocal<BlockModelRenderer.BrightnessCache> brightnessCache = ThreadLocal.withInitial(BlockModelRenderer.BrightnessCache::new);
 
 	public BlockModelRenderer(BlockColors colorMap) {
 		this.colorMap = colorMap;
@@ -352,8 +352,8 @@ public class BlockModelRenderer {
 
 	@Environment(EnvType.CLIENT)
 	class AmbientOcclusionCalculator {
-		private final float[] brightness = new float[4];
-		private final int[] light = new int[4];
+		final float[] brightness = new float[4];
+		final int[] light = new int[4];
 
 		public AmbientOcclusionCalculator() {
 		}
@@ -603,7 +603,7 @@ public class BlockModelRenderer {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static enum NeighborData {
+	protected static enum NeighborData {
 		DOWN(
 			new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH},
 			0.5F,
@@ -875,12 +875,12 @@ public class BlockModelRenderer {
 			}
 		);
 
-		private final Direction[] faces;
-		private final boolean nonCubicWeight;
-		private final BlockModelRenderer.NeighborOrientation[] field_4192;
-		private final BlockModelRenderer.NeighborOrientation[] field_4185;
-		private final BlockModelRenderer.NeighborOrientation[] field_4180;
-		private final BlockModelRenderer.NeighborOrientation[] field_4188;
+		final Direction[] faces;
+		final boolean nonCubicWeight;
+		final BlockModelRenderer.NeighborOrientation[] field_4192;
+		final BlockModelRenderer.NeighborOrientation[] field_4185;
+		final BlockModelRenderer.NeighborOrientation[] field_4180;
+		final BlockModelRenderer.NeighborOrientation[] field_4188;
 		private static final BlockModelRenderer.NeighborData[] field_4190 = Util.make(new BlockModelRenderer.NeighborData[6], neighborDatas -> {
 			neighborDatas[Direction.DOWN.getId()] = DOWN;
 			neighborDatas[Direction.UP.getId()] = UP;
@@ -913,7 +913,7 @@ public class BlockModelRenderer {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static enum NeighborOrientation {
+	protected static enum NeighborOrientation {
 		DOWN(Direction.DOWN, false),
 		UP(Direction.UP, false),
 		NORTH(Direction.NORTH, false),
@@ -927,7 +927,7 @@ public class BlockModelRenderer {
 		FLIP_WEST(Direction.WEST, true),
 		FLIP_EAST(Direction.EAST, true);
 
-		private final int shape;
+		final int shape;
 
 		private NeighborOrientation(Direction direction, boolean bl) {
 			this.shape = direction.getId() + (bl ? BlockModelRenderer.DIRECTIONS.length : 0);
@@ -943,10 +943,10 @@ public class BlockModelRenderer {
 		WEST(3, 0, 1, 2),
 		EAST(1, 2, 3, 0);
 
-		private final int firstCorner;
-		private final int secondCorner;
-		private final int thirdCorner;
-		private final int fourthCorner;
+		final int firstCorner;
+		final int secondCorner;
+		final int thirdCorner;
+		final int fourthCorner;
 		private static final BlockModelRenderer.Translation[] VALUES = Util.make(new BlockModelRenderer.Translation[6], translations -> {
 			translations[Direction.DOWN.getId()] = DOWN;
 			translations[Direction.UP.getId()] = UP;

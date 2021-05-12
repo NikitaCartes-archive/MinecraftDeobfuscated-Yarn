@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
 public class LevitationCriterion extends AbstractCriterion<LevitationCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("levitation");
+	static final Identifier ID = new Identifier("levitation");
 
 	@Override
 	public Identifier getId() {

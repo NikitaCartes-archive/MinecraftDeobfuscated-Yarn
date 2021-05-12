@@ -55,7 +55,7 @@ public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends Proper
 
 	@Override
 	public Optional<T> parse(String name) {
-		return Optional.ofNullable(this.byName.get(name));
+		return Optional.ofNullable((Enum)this.byName.get(name));
 	}
 
 	public String name(T enum_) {
@@ -66,8 +66,7 @@ public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends Proper
 	public boolean equals(Object object) {
 		if (this == object) {
 			return true;
-		} else if (object instanceof EnumProperty && super.equals(object)) {
-			EnumProperty<?> enumProperty = (EnumProperty)object;
+		} else if (object instanceof EnumProperty enumProperty && super.equals(object)) {
 			return this.values.equals(enumProperty.values) && this.byName.equals(enumProperty.byName);
 		} else {
 			return false;
@@ -112,7 +111,7 @@ public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends Proper
 	 * or more values
 	 */
 	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> of(String name, Class<T> type, Predicate<T> filter) {
-		return of(name, type, (Collection<T>)Arrays.stream(type.getEnumConstants()).filter(filter).collect(Collectors.toList()));
+		return of(name, type, (Collection<T>)Arrays.stream((Enum[])type.getEnumConstants()).filter(filter).collect(Collectors.toList()));
 	}
 
 	/**

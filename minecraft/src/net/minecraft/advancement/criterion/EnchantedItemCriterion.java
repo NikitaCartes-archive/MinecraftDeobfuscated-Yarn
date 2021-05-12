@@ -11,7 +11,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class EnchantedItemCriterion extends AbstractCriterion<EnchantedItemCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("enchanted_item");
+	static final Identifier ID = new Identifier("enchanted_item");
 
 	@Override
 	public Identifier getId() {

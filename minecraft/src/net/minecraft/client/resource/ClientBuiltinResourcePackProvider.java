@@ -209,28 +209,21 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 	private boolean verifyFile(String expectedSha1, File file) {
 		try {
 			FileInputStream fileInputStream = new FileInputStream(file);
-			Throwable var5 = null;
 
 			String string;
 			try {
 				string = DigestUtils.sha1Hex(fileInputStream);
-			} catch (Throwable var15) {
-				var5 = var15;
-				throw var15;
-			} finally {
-				if (fileInputStream != null) {
-					if (var5 != null) {
-						try {
-							fileInputStream.close();
-						} catch (Throwable var14) {
-							var5.addSuppressed(var14);
-						}
-					} else {
-						fileInputStream.close();
-					}
+			} catch (Throwable var8) {
+				try {
+					fileInputStream.close();
+				} catch (Throwable var7) {
+					var8.addSuppressed(var7);
 				}
+
+				throw var8;
 			}
 
+			fileInputStream.close();
 			if (expectedSha1.isEmpty()) {
 				LOGGER.info("Found file {} without verification hash", file);
 				return true;
@@ -242,8 +235,8 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 			}
 
 			LOGGER.warn("File {} had wrong hash (expected {}, found {}).", file, expectedSha1, string);
-		} catch (IOException var17) {
-			LOGGER.warn("File {} couldn't be hashed.", file, var17);
+		} catch (IOException var9) {
+			LOGGER.warn("File {} couldn't be hashed.", file, var9);
 		}
 
 		return false;
@@ -270,8 +263,8 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 		PackResourceMetadata packResourceMetadata;
 		try (ZipResourcePack zipResourcePack = new ZipResourcePack(packZip)) {
 			packResourceMetadata = zipResourcePack.parseMetadata(PackResourceMetadata.READER);
-		} catch (IOException var17) {
-			return Util.completeExceptionally(new IOException(String.format("Invalid resourcepack at %s", packZip), var17));
+		} catch (IOException var9) {
+			return Util.completeExceptionally(new IOException(String.format("Invalid resourcepack at %s", packZip), var9));
 		}
 
 		LOGGER.info("Applying server pack {}", packZip);

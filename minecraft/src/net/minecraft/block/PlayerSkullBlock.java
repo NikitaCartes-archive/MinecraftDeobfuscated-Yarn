@@ -22,8 +22,7 @@ public class PlayerSkullBlock extends SkullBlock {
 	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
 		super.onPlaced(world, pos, state, placer, itemStack);
 		BlockEntity blockEntity = world.getBlockEntity(pos);
-		if (blockEntity instanceof SkullBlockEntity) {
-			SkullBlockEntity skullBlockEntity = (SkullBlockEntity)blockEntity;
+		if (blockEntity instanceof SkullBlockEntity skullBlockEntity) {
 			GameProfile gameProfile = null;
 			if (itemStack.hasTag()) {
 				NbtCompound nbtCompound = itemStack.getTag();

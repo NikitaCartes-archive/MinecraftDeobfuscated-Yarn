@@ -22,7 +22,7 @@ import org.lwjgl.glfw.GLFW;
 public class RealmsBackupInfoScreen extends RealmsScreen {
 	private static final Text UNKNOWN = new LiteralText("UNKNOWN");
 	private final Screen parent;
-	private final Backup backup;
+	final Backup backup;
 	private RealmsBackupInfoScreen.BackupInfoList backupInfoList;
 
 	public RealmsBackupInfoScreen(Screen parent, Backup backup) {
@@ -63,12 +63,12 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		drawCenteredString(matrices, this.textRenderer, "Changes from last backup", this.width / 2, 10, 16777215);
+		drawCenteredText(matrices, this.textRenderer, "Changes from last backup", this.width / 2, 10, 16777215);
 		this.backupInfoList.render(matrices, mouseX, mouseY, delta);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
-	private Text checkForSpecificMetadata(String key, String value) {
+	Text checkForSpecificMetadata(String key, String value) {
 		String string = key.toLowerCase(Locale.ROOT);
 		if (string.contains("game") && string.contains("mode")) {
 			return this.gameModeMetadata(value);

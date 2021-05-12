@@ -101,7 +101,7 @@ public abstract class ThreadExecutor<R extends Runnable> implements MetricSample
 		}
 	}
 
-	protected boolean runTask() {
+	public boolean runTask() {
 		R runnable = (R)this.tasks.peek();
 		if (runnable == null) {
 			return false;

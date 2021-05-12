@@ -12,7 +12,7 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.util.JsonSerializer;
 
 public class SurvivesExplosionLootCondition implements LootCondition {
-	private static final SurvivesExplosionLootCondition INSTANCE = new SurvivesExplosionLootCondition();
+	static final SurvivesExplosionLootCondition INSTANCE = new SurvivesExplosionLootCondition();
 
 	private SurvivesExplosionLootCondition() {
 	}

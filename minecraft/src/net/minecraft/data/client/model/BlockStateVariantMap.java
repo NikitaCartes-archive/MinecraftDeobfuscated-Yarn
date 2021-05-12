@@ -79,7 +79,7 @@ public abstract class BlockStateVariantMap {
 		private final Property<T1> first;
 		private final Property<T2> second;
 
-		private DoubleProperty(Property<T1> first, Property<T2> second) {
+		DoubleProperty(Property<T1> first, Property<T2> second) {
 			this.first = first;
 			this.second = second;
 		}
@@ -134,7 +134,7 @@ public abstract class BlockStateVariantMap {
 		private final Property<T3> third;
 		private final Property<T4> fourth;
 
-		private QuadrupleProperty(Property<T1> first, Property<T2> second, Property<T3> third, Property<T4> fourth) {
+		QuadrupleProperty(Property<T1> first, Property<T2> second, Property<T3> third, Property<T4> fourth) {
 			this.first = first;
 			this.second = second;
 			this.third = third;
@@ -226,7 +226,7 @@ public abstract class BlockStateVariantMap {
 		private final Property<T4> fourth;
 		private final Property<T5> fifth;
 
-		private QuintupleProperty(Property<T1> first, Property<T2> second, Property<T3> third, Property<T4> fourth, Property<T5> fifth) {
+		QuintupleProperty(Property<T1> first, Property<T2> second, Property<T3> third, Property<T4> fourth, Property<T5> fifth) {
 			this.first = first;
 			this.second = second;
 			this.third = third;
@@ -327,7 +327,7 @@ public abstract class BlockStateVariantMap {
 	public static class SingleProperty<T1 extends Comparable<T1>> extends BlockStateVariantMap {
 		private final Property<T1> property;
 
-		private SingleProperty(Property<T1> property) {
+		SingleProperty(Property<T1> property) {
 			this.property = property;
 		}
 
@@ -367,7 +367,7 @@ public abstract class BlockStateVariantMap {
 		private final Property<T2> second;
 		private final Property<T3> third;
 
-		private TripleProperty(Property<T1> first, Property<T2> second, Property<T3> third) {
+		TripleProperty(Property<T1> first, Property<T2> second, Property<T3> third) {
 			this.first = first;
 			this.second = second;
 			this.third = third;

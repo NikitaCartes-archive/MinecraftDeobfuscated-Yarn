@@ -26,7 +26,7 @@ public class BlockLightStorage extends LightStorage<BlockLightStorage.Data> {
 			);
 	}
 
-	public static final class Data extends ChunkToNibbleArrayMap<BlockLightStorage.Data> {
+	protected static final class Data extends ChunkToNibbleArrayMap<BlockLightStorage.Data> {
 		public Data(Long2ObjectOpenHashMap<ChunkNibbleArray> long2ObjectOpenHashMap) {
 			super(long2ObjectOpenHashMap);
 		}

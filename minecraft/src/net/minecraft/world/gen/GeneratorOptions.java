@@ -158,7 +158,7 @@ public class GeneratorOptions {
 		for(Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : optionsRegistry.getEntries()) {
 			RegistryKey<DimensionOptions> registryKey = (RegistryKey)entry.getKey();
 			if (registryKey != DimensionOptions.OVERWORLD) {
-				simpleRegistry.add(registryKey, entry.getValue(), optionsRegistry.getEntryLifecycle((DimensionOptions)entry.getValue()));
+				simpleRegistry.add(registryKey, (DimensionOptions)entry.getValue(), optionsRegistry.getEntryLifecycle((DimensionOptions)entry.getValue()));
 			}
 		}
 

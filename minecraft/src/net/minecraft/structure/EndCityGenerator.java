@@ -20,10 +20,11 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.World;
 
 public class EndCityGenerator {
 	private static final int field_31549 = 8;
-	private static final EndCityGenerator.Part BUILDING = new EndCityGenerator.Part() {
+	static final EndCityGenerator.Part BUILDING = new EndCityGenerator.Part() {
 		@Override
 		public void init() {
 		}
@@ -53,13 +54,13 @@ public class EndCityGenerator {
 			}
 		}
 	};
-	private static final List<Pair<BlockRotation, BlockPos>> SMALL_TOWER_BRIDGE_ATTACHMENTS = Lists.<Pair<BlockRotation, BlockPos>>newArrayList(
+	static final List<Pair<BlockRotation, BlockPos>> SMALL_TOWER_BRIDGE_ATTACHMENTS = Lists.<Pair<BlockRotation, BlockPos>>newArrayList(
 		new Pair<>(BlockRotation.NONE, new BlockPos(1, -1, 0)),
 		new Pair<>(BlockRotation.CLOCKWISE_90, new BlockPos(6, -1, 1)),
 		new Pair<>(BlockRotation.COUNTERCLOCKWISE_90, new BlockPos(0, -1, 5)),
 		new Pair<>(BlockRotation.CLOCKWISE_180, new BlockPos(5, -1, 6))
 	);
-	private static final EndCityGenerator.Part SMALL_TOWER = new EndCityGenerator.Part() {
+	static final EndCityGenerator.Part SMALL_TOWER = new EndCityGenerator.Part() {
 		@Override
 		public void init() {
 		}
@@ -103,7 +104,7 @@ public class EndCityGenerator {
 			return true;
 		}
 	};
-	private static final EndCityGenerator.Part BRIDGE_PIECE = new EndCityGenerator.Part() {
+	static final EndCityGenerator.Part BRIDGE_PIECE = new EndCityGenerator.Part() {
 		public boolean shipGenerated;
 
 		@Override
@@ -156,13 +157,13 @@ public class EndCityGenerator {
 			return true;
 		}
 	};
-	private static final List<Pair<BlockRotation, BlockPos>> FAT_TOWER_BRIDGE_ATTACHMENTS = Lists.<Pair<BlockRotation, BlockPos>>newArrayList(
+	static final List<Pair<BlockRotation, BlockPos>> FAT_TOWER_BRIDGE_ATTACHMENTS = Lists.<Pair<BlockRotation, BlockPos>>newArrayList(
 		new Pair<>(BlockRotation.NONE, new BlockPos(4, -1, 0)),
 		new Pair<>(BlockRotation.CLOCKWISE_90, new BlockPos(12, -1, 4)),
 		new Pair<>(BlockRotation.COUNTERCLOCKWISE_90, new BlockPos(0, -1, 8)),
 		new Pair<>(BlockRotation.CLOCKWISE_180, new BlockPos(8, -1, 12))
 	);
-	private static final EndCityGenerator.Part FAT_TOWER = new EndCityGenerator.Part() {
+	static final EndCityGenerator.Part FAT_TOWER = new EndCityGenerator.Part() {
 		@Override
 		public void init() {
 		}
@@ -193,7 +194,7 @@ public class EndCityGenerator {
 		}
 	};
 
-	private static EndCityGenerator.Piece createPiece(
+	static EndCityGenerator.Piece createPiece(
 		StructureManager structureManager, EndCityGenerator.Piece lastPiece, BlockPos relativePosition, String template, BlockRotation rotation, boolean ignoreAir
 	) {
 		EndCityGenerator.Piece piece = new EndCityGenerator.Piece(structureManager, template, lastPiece.pos, rotation, ignoreAir);
@@ -214,12 +215,12 @@ public class EndCityGenerator {
 		createPart(structureManager, SMALL_TOWER, 1, piece, null, pieces, random);
 	}
 
-	private static EndCityGenerator.Piece addPiece(List<StructurePiece> pieces, EndCityGenerator.Piece piece) {
+	static EndCityGenerator.Piece addPiece(List<StructurePiece> pieces, EndCityGenerator.Piece piece) {
 		pieces.add(piece);
 		return piece;
 	}
 
-	private static boolean createPart(
+	static boolean createPart(
 		StructureManager manager, EndCityGenerator.Part piece, int depth, EndCityGenerator.Piece parent, BlockPos pos, List<StructurePiece> pieces, Random random
 	) {
 		if (depth > 8) {
@@ -299,14 +300,16 @@ public class EndCityGenerator {
 				if (boundingBox.contains(blockPos)) {
 					LootableContainerBlockEntity.setLootTable(world, random, blockPos, LootTables.END_CITY_TREASURE_CHEST);
 				}
-			} else if (metadata.startsWith("Sentry")) {
-				ShulkerEntity shulkerEntity = EntityType.SHULKER.create(world.toServerWorld());
-				shulkerEntity.setPosition((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5);
-				world.spawnEntity(shulkerEntity);
-			} else if (metadata.startsWith("Elytra")) {
-				ItemFrameEntity itemFrameEntity = new ItemFrameEntity(world.toServerWorld(), pos, this.placementData.getRotation().rotate(Direction.SOUTH));
-				itemFrameEntity.setHeldItemStack(new ItemStack(Items.ELYTRA), false);
-				world.spawnEntity(itemFrameEntity);
+			} else if (boundingBox.contains(pos) && World.isValid(pos)) {
+				if (metadata.startsWith("Sentry")) {
+					ShulkerEntity shulkerEntity = EntityType.SHULKER.create(world.toServerWorld());
+					shulkerEntity.setPosition((double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5);
+					world.spawnEntity(shulkerEntity);
+				} else if (metadata.startsWith("Elytra")) {
+					ItemFrameEntity itemFrameEntity = new ItemFrameEntity(world.toServerWorld(), pos, this.placementData.getRotation().rotate(Direction.SOUTH));
+					itemFrameEntity.setHeldItemStack(new ItemStack(Items.ELYTRA), false);
+					world.spawnEntity(itemFrameEntity);
+				}
 			}
 		}
 	}

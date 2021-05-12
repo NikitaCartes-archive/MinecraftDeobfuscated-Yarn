@@ -156,6 +156,6 @@ public class PointOfInterestType {
 	}
 
 	public static Optional<PointOfInterestType> from(BlockState state) {
-		return Optional.ofNullable(BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE.get(state));
+		return Optional.ofNullable((PointOfInterestType)BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE.get(state));
 	}
 }

@@ -20,7 +20,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 
 public class PlacedBlockCriterion extends AbstractCriterion<PlacedBlockCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("placed_block");
+	static final Identifier ID = new Identifier("placed_block");
 
 	@Override
 	public Identifier getId() {

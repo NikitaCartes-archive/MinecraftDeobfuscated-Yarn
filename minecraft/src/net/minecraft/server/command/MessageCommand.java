@@ -37,8 +37,7 @@ public class MessageCommand {
 		UUID uUID = source.getEntity() == null ? Util.NIL_UUID : source.getEntity().getUuid();
 		Entity entity = source.getEntity();
 		Consumer<Text> consumer;
-		if (entity instanceof ServerPlayerEntity) {
-			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
+		if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
 			consumer = playerName -> serverPlayerEntity.sendSystemMessage(
 					new TranslatableText("commands.message.display.outgoing", playerName, message).formatted(new Formatting[]{Formatting.GRAY, Formatting.ITALIC}),
 					serverPlayerEntity.getUuid()

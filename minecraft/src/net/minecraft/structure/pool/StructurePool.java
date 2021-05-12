@@ -79,7 +79,7 @@ public class StructurePool {
 
 		for(Pair<Function<StructurePool.Projection, ? extends StructurePoolElement>, Integer> pair : elementCounts) {
 			StructurePoolElement structurePoolElement = (StructurePoolElement)((Function)pair.getFirst()).apply(projection);
-			this.elementCounts.add(Pair.of(structurePoolElement, pair.getSecond()));
+			this.elementCounts.add(Pair.of(structurePoolElement, (Integer)pair.getSecond()));
 
 			for(int i = 0; i < pair.getSecond(); ++i) {
 				this.elements.add(structurePoolElement);
@@ -111,7 +111,7 @@ public class StructurePool {
 	}
 
 	public List<StructurePoolElement> getElementIndicesInRandomOrder(Random random) {
-		return ImmutableList.copyOf(ObjectArrays.shuffle(this.elements.toArray(new StructurePoolElement[0]), random));
+		return ImmutableList.copyOf(ObjectArrays.shuffle((StructurePoolElement[])this.elements.toArray(new StructurePoolElement[0]), random));
 	}
 
 	public Identifier getId() {

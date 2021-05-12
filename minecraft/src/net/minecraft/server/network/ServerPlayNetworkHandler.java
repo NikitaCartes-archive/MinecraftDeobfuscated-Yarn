@@ -76,6 +76,7 @@ import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.JigsawGeneratingC2SPacket;
 import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
 import net.minecraft.network.packet.c2s.play.PickFromInventoryC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayPongC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInputC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
@@ -157,7 +158,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerPlayPacketListener {
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogManager.getLogger();
 	private static final int field_29778 = 15000;
 	public final ClientConnection connection;
 	private final MinecraftServer server;
@@ -488,20 +489,12 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 				CommandBlockBlockEntity.Type type = commandBlockBlockEntity.getCommandBlockType();
 				BlockState blockState = this.player.world.getBlockState(blockPos);
 				Direction direction = blockState.get(CommandBlock.FACING);
-				BlockState blockState2;
-				switch(packet.getType()) {
-					case SEQUENCE:
-						blockState2 = Blocks.CHAIN_COMMAND_BLOCK.getDefaultState();
-						break;
-					case AUTO:
-						blockState2 = Blocks.REPEATING_COMMAND_BLOCK.getDefaultState();
-						break;
-					case REDSTONE:
-					default:
-						blockState2 = Blocks.COMMAND_BLOCK.getDefaultState();
-				}
 
-				BlockState blockState3 = blockState2.with(CommandBlock.FACING, direction).with(CommandBlock.CONDITIONAL, Boolean.valueOf(packet.isConditional()));
+				BlockState blockState3 = (switch(packet.getType()) {
+					case SEQUENCE -> Blocks.CHAIN_COMMAND_BLOCK.getDefaultState();
+					case AUTO -> Blocks.REPEATING_COMMAND_BLOCK.getDefaultState();
+					default -> Blocks.COMMAND_BLOCK.getDefaultState();
+				}).with(CommandBlock.FACING, direction).with(CommandBlock.CONDITIONAL, Boolean.valueOf(packet.isConditional()));
 				if (blockState3 != blockState) {
 					this.player.world.setBlockState(blockPos, blockState3, Block.NOTIFY_LISTENERS);
 					blockEntity.setCachedState(blockState3);
@@ -575,10 +568,9 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	@Override
 	public void onRenameItem(RenameItemC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-		if (this.player.currentScreenHandler instanceof AnvilScreenHandler) {
-			AnvilScreenHandler anvilScreenHandler = (AnvilScreenHandler)this.player.currentScreenHandler;
+		if (this.player.currentScreenHandler instanceof AnvilScreenHandler anvilScreenHandler) {
 			String string = SharedConstants.stripInvalidChars(packet.getName());
-			if (string.length() <= 35) {
+			if (string.length() <= 50) {
 				anvilScreenHandler.setNewItemName(string);
 			}
 		}
@@ -599,8 +591,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			BlockPos blockPos = packet.getPos();
 			BlockState blockState = this.player.world.getBlockState(blockPos);
 			BlockEntity blockEntity = this.player.world.getBlockEntity(blockPos);
-			if (blockEntity instanceof StructureBlockBlockEntity) {
-				StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)blockEntity;
+			if (blockEntity instanceof StructureBlockBlockEntity structureBlockBlockEntity) {
 				structureBlockBlockEntity.setMode(packet.getMode());
 				structureBlockBlockEntity.setStructureName(packet.getStructureName());
 				structureBlockBlockEntity.setOffset(packet.getOffset());
@@ -653,8 +644,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			BlockPos blockPos = packet.getPos();
 			BlockState blockState = this.player.world.getBlockState(blockPos);
 			BlockEntity blockEntity = this.player.world.getBlockEntity(blockPos);
-			if (blockEntity instanceof JigsawBlockEntity) {
-				JigsawBlockEntity jigsawBlockEntity = (JigsawBlockEntity)blockEntity;
+			if (blockEntity instanceof JigsawBlockEntity jigsawBlockEntity) {
 				jigsawBlockEntity.setAttachmentType(packet.getAttachmentType());
 				jigsawBlockEntity.setTargetPool(packet.getTargetPool());
 				jigsawBlockEntity.setPool(packet.getPool());
@@ -672,8 +662,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		if (this.player.isCreativeLevelTwoOp()) {
 			BlockPos blockPos = packet.getPos();
 			BlockEntity blockEntity = this.player.world.getBlockEntity(blockPos);
-			if (blockEntity instanceof JigsawBlockEntity) {
-				JigsawBlockEntity jigsawBlockEntity = (JigsawBlockEntity)blockEntity;
+			if (blockEntity instanceof JigsawBlockEntity jigsawBlockEntity) {
 				jigsawBlockEntity.generate(this.player.getServerWorld(), packet.getMaxDepth(), packet.shouldKeepJigsaws());
 			}
 		}
@@ -684,8 +673,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		int i = packet.getTradeId();
 		ScreenHandler screenHandler = this.player.currentScreenHandler;
-		if (screenHandler instanceof MerchantScreenHandler) {
-			MerchantScreenHandler merchantScreenHandler = (MerchantScreenHandler)screenHandler;
+		if (screenHandler instanceof MerchantScreenHandler merchantScreenHandler) {
 			merchantScreenHandler.setRecipeIndex(i);
 			merchantScreenHandler.switchTo(i);
 		}
@@ -1086,6 +1074,10 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	}
 
 	@Override
+	public void onPong(PlayPongC2SPacket packet) {
+	}
+
+	@Override
 	public void onDisconnected(Text reason) {
 		LOGGER.info("{} lost connection: {}", this.player.getName().getString(), reason.getString());
 		this.server.forcePlayerSampleUpdate();
@@ -1212,8 +1204,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 				}
 				break;
 			case START_RIDING_JUMP:
-				if (this.player.getVehicle() instanceof JumpingMount) {
-					JumpingMount jumpingMount = (JumpingMount)this.player.getVehicle();
+				if (this.player.getVehicle() instanceof JumpingMount jumpingMount) {
 					int i = packet.getMountJumpHeight();
 					if (jumpingMount.canJump() && i > 0) {
 						jumpingMount.startJumping(i);
@@ -1221,8 +1212,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 				}
 				break;
 			case STOP_RIDING_JUMP:
-				if (this.player.getVehicle() instanceof JumpingMount) {
-					JumpingMount jumpingMount = (JumpingMount)this.player.getVehicle();
+				if (this.player.getVehicle() instanceof JumpingMount jumpingMount) {
 					jumpingMount.stopJumping();
 				}
 				break;

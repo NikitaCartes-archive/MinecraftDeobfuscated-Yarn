@@ -1,41 +1,25 @@
 package net.minecraft.item;
 
 import com.google.common.collect.BiMap;
-import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableMap.Builder;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.Material;
 import net.minecraft.block.Oxidizable;
 import net.minecraft.block.PillarBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 
 public class AxeItem extends MiningToolItem {
-	private static final Set<Material> EFFECTIVE_MATERIALS = Sets.<Material>newHashSet(
-		Material.WOOD, Material.NETHER_WOOD, Material.PLANT, Material.REPLACEABLE_PLANT, Material.BAMBOO, Material.GOURD
-	);
-	private static final Set<Block> EFFECTIVE_BLOCKS = Sets.<Block>newHashSet(
-		Blocks.LADDER,
-		Blocks.SCAFFOLDING,
-		Blocks.OAK_BUTTON,
-		Blocks.SPRUCE_BUTTON,
-		Blocks.BIRCH_BUTTON,
-		Blocks.JUNGLE_BUTTON,
-		Blocks.DARK_OAK_BUTTON,
-		Blocks.ACACIA_BUTTON,
-		Blocks.CRIMSON_BUTTON,
-		Blocks.WARPED_BUTTON
-	);
 	protected static final Map<Block, Block> STRIPPED_BLOCKS = new Builder<Block, Block>()
 		.put(Blocks.OAK_WOOD, Blocks.STRIPPED_OAK_WOOD)
 		.put(Blocks.OAK_LOG, Blocks.STRIPPED_OAK_LOG)
@@ -56,13 +40,7 @@ public class AxeItem extends MiningToolItem {
 		.build();
 
 	protected AxeItem(ToolMaterial material, float attackDamage, float attackSpeed, Item.Settings settings) {
-		super(attackDamage, attackSpeed, material, EFFECTIVE_BLOCKS, settings);
-	}
-
-	@Override
-	public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
-		Material material = state.getMaterial();
-		return EFFECTIVE_MATERIALS.contains(material) ? this.miningSpeed : super.getMiningSpeedMultiplier(stack, state);
+		super(attackDamage, attackSpeed, material, BlockTags.AXE_MINEABLE, settings);
 	}
 
 	@Override
@@ -73,7 +51,7 @@ public class AxeItem extends MiningToolItem {
 		BlockState blockState = world.getBlockState(blockPos);
 		Optional<BlockState> optional = this.getStrippedState(blockState);
 		Optional<BlockState> optional2 = Oxidizable.getDecreasedOxidationState(blockState);
-		Optional<BlockState> optional3 = Optional.ofNullable(((BiMap)HoneycombItem.WAXED_TO_UNWAXED_BLOCKS.get()).get(blockState.getBlock()))
+		Optional<BlockState> optional3 = Optional.ofNullable((Block)((BiMap)HoneycombItem.WAXED_TO_UNWAXED_BLOCKS.get()).get(blockState.getBlock()))
 			.map(block -> block.getStateWithProperties(blockState));
 		Optional<BlockState> optional4 = Optional.empty();
 		if (optional.isPresent()) {
@@ -102,6 +80,7 @@ public class AxeItem extends MiningToolItem {
 	}
 
 	private Optional<BlockState> getStrippedState(BlockState state) {
-		return Optional.ofNullable(STRIPPED_BLOCKS.get(state.getBlock())).map(block -> block.getDefaultState().with(PillarBlock.AXIS, state.get(PillarBlock.AXIS)));
+		return Optional.ofNullable((Block)STRIPPED_BLOCKS.get(state.getBlock()))
+			.map(block -> block.getDefaultState().with(PillarBlock.AXIS, (Direction.Axis)state.get(PillarBlock.AXIS)));
 	}
 }

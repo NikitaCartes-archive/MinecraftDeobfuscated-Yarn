@@ -210,7 +210,7 @@ public class DataCommand {
 	
 					subArgumentAdder.accept(
 						argumentBuilder,
-						(DataCommand.ModifyArgumentCreator)modifier -> (LiteralArgumentBuilder)CommandManager.literal("value")
+						(DataCommand.ModifyArgumentCreator)modifier -> CommandManager.literal("value")
 								.then(CommandManager.argument("value", NbtElementArgumentType.nbtElement()).executes(context -> {
 									List<NbtElement> list = Collections.singletonList(NbtElementArgumentType.getNbtElement(context, "value"));
 									return executeModify(context, objectType, modifier, list);

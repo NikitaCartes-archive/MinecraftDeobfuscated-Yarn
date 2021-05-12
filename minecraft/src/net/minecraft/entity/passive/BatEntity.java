@@ -33,11 +33,12 @@ public class BatEntity extends AmbientEntity {
 	public static final float field_30268 = 74.48451F;
 	public static final int field_28637 = MathHelper.ceil(2.4166098F);
 	/**
-	 * Equals 0 when the bat is flying, and 1 when it's roosting.
+	 * The tracked flags of bats. Only has the {@code 1} bit for {@linkplain
+	 * #isRoosting() roosting}.
 	 */
 	private static final TrackedData<Byte> BAT_FLAGS = DataTracker.registerData(BatEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final int ROOSTING_FLAG = 1;
-	private static final TargetPredicate CLOSE_PLAYER_PREDICATE = new TargetPredicate().setBaseMaxDistance(4.0).includeTeammates();
+	private static final TargetPredicate CLOSE_PLAYER_PREDICATE = TargetPredicate.createNonAttackable().setBaseMaxDistance(4.0);
 	private BlockPos hangingPosition;
 
 	public BatEntity(EntityType<? extends BatEntity> entityType, World world) {

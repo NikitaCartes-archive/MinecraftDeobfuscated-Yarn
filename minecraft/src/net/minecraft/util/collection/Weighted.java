@@ -32,7 +32,7 @@ public interface Weighted {
 		private final T data;
 		private final Weight weight;
 
-		private Present(T data, Weight weight) {
+		Present(T data, Weight weight) {
 			this.data = data;
 			this.weight = weight;
 		}

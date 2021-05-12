@@ -67,8 +67,7 @@ public class CommandBlock extends BlockWithEntity implements OperatorBlock {
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
-		if (blockEntity instanceof CommandBlockBlockEntity) {
-			CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
+		if (blockEntity instanceof CommandBlockBlockEntity commandBlockBlockEntity) {
 			CommandBlockExecutor commandBlockExecutor = commandBlockBlockEntity.getCommandExecutor();
 			boolean bl = !ChatUtil.isEmpty(commandBlockExecutor.getCommand());
 			CommandBlockBlockEntity.Type type = commandBlockBlockEntity.getCommandBlockType();

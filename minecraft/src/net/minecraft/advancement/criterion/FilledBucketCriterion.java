@@ -10,7 +10,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class FilledBucketCriterion extends AbstractCriterion<FilledBucketCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("filled_bucket");
+	static final Identifier ID = new Identifier("filled_bucket");
 
 	@Override
 	public Identifier getId() {

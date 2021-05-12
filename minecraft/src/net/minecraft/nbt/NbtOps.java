@@ -147,8 +147,7 @@ public class NbtOps implements DynamicOps<NbtElement> {
 	}
 
 	private static <T extends NbtElement> void method_29151(AbstractNbtList<T> abstractNbtList, NbtElement nbtElement, NbtElement nbtElement2) {
-		if (nbtElement instanceof AbstractNbtList) {
-			AbstractNbtList<?> abstractNbtList2 = (AbstractNbtList)nbtElement;
+		if (nbtElement instanceof AbstractNbtList abstractNbtList2) {
 			abstractNbtList2.forEach(nbtElementx -> abstractNbtList.add(nbtElementx));
 		}
 
@@ -156,8 +155,7 @@ public class NbtOps implements DynamicOps<NbtElement> {
 	}
 
 	private static <T extends NbtElement> void method_29150(AbstractNbtList<T> abstractNbtList, NbtElement nbtElement, List<NbtElement> list) {
-		if (nbtElement instanceof AbstractNbtList) {
-			AbstractNbtList<?> abstractNbtList2 = (AbstractNbtList)nbtElement;
+		if (nbtElement instanceof AbstractNbtList abstractNbtList2) {
 			abstractNbtList2.forEach(nbtElementx -> abstractNbtList.add(nbtElementx));
 		}
 
@@ -196,8 +194,7 @@ public class NbtOps implements DynamicOps<NbtElement> {
 			return DataResult.error("key is not a string: " + nbtElement2, nbtElement);
 		} else {
 			NbtCompound nbtCompound = new NbtCompound();
-			if (nbtElement instanceof NbtCompound) {
-				NbtCompound nbtCompound2 = (NbtCompound)nbtElement;
+			if (nbtElement instanceof NbtCompound nbtCompound2) {
 				nbtCompound2.getKeys().forEach(string -> nbtCompound.put(string, nbtCompound2.get(string)));
 			}
 
@@ -211,8 +208,7 @@ public class NbtOps implements DynamicOps<NbtElement> {
 			return DataResult.error("mergeToMap called with not a map: " + nbtElement, nbtElement);
 		} else {
 			NbtCompound nbtCompound = new NbtCompound();
-			if (nbtElement instanceof NbtCompound) {
-				NbtCompound nbtCompound2 = (NbtCompound)nbtElement;
+			if (nbtElement instanceof NbtCompound nbtCompound2) {
 				nbtCompound2.getKeys().forEach(string -> nbtCompound.put(string, nbtCompound2.get(string)));
 			}
 
@@ -290,12 +286,7 @@ public class NbtOps implements DynamicOps<NbtElement> {
 	}
 
 	public DataResult<Consumer<Consumer<NbtElement>>> getList(NbtElement nbtElement) {
-		if (nbtElement instanceof AbstractNbtList) {
-			AbstractNbtList<?> abstractNbtList = (AbstractNbtList)nbtElement;
-			return DataResult.success(abstractNbtList::forEach);
-		} else {
-			return DataResult.error("Not a list: " + nbtElement);
-		}
+		return nbtElement instanceof AbstractNbtList abstractNbtList ? DataResult.success(abstractNbtList::forEach) : DataResult.error("Not a list: " + nbtElement);
 	}
 
 	public DataResult<ByteBuffer> getByteBuffer(NbtElement nbtElement) {
@@ -359,8 +350,7 @@ public class NbtOps implements DynamicOps<NbtElement> {
 	}
 
 	public NbtElement remove(NbtElement nbtElement, String string) {
-		if (nbtElement instanceof NbtCompound) {
-			NbtCompound nbtCompound = (NbtCompound)nbtElement;
+		if (nbtElement instanceof NbtCompound nbtCompound) {
 			NbtCompound nbtCompound2 = new NbtCompound();
 			nbtCompound.getKeys().stream().filter(k -> !Objects.equals(k, string)).forEach(k -> nbtCompound2.put(k, nbtCompound.get(k)));
 			return nbtCompound2;

@@ -10,7 +10,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class EntityHurtPlayerCriterion extends AbstractCriterion<EntityHurtPlayerCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("entity_hurt_player");
+	static final Identifier ID = new Identifier("entity_hurt_player");
 
 	@Override
 	public Identifier getId() {

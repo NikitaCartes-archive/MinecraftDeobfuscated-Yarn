@@ -77,11 +77,11 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Nullable
-	private static Text readOptionalText(PacketByteBuf buf) {
+	static Text readOptionalText(PacketByteBuf buf) {
 		return buf.readBoolean() ? buf.readText() : null;
 	}
 
-	private static void writeOptionalText(PacketByteBuf buf, @Nullable Text text) {
+	static void writeOptionalText(PacketByteBuf buf, @Nullable Text text) {
 		if (text == null) {
 			buf.writeBoolean(false);
 		} else {
@@ -189,9 +189,6 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 				buf.writeUuid(entry.getProfile().getId());
 			}
 		};
-
-		private Action() {
-		}
 
 		protected abstract PlayerListS2CPacket.Entry read(PacketByteBuf buf);
 

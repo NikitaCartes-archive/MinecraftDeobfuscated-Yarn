@@ -68,7 +68,7 @@ public final class DimensionOptions {
 		for(Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : simpleRegistry.getEntries()) {
 			RegistryKey<DimensionOptions> registryKey2 = (RegistryKey)entry.getKey();
 			if (!BASE_DIMENSIONS.contains(registryKey2)) {
-				simpleRegistry2.add(registryKey2, entry.getValue(), simpleRegistry.getEntryLifecycle((DimensionOptions)entry.getValue()));
+				simpleRegistry2.add(registryKey2, (DimensionOptions)entry.getValue(), simpleRegistry.getEntryLifecycle((DimensionOptions)entry.getValue()));
 			}
 		}
 
@@ -92,10 +92,8 @@ public final class DimensionOptions {
 				return false;
 			} else if (!((DimensionOptions)entry3.getValue()).getDimensionType().equals(DimensionType.THE_END)) {
 				return false;
-			} else if (((DimensionOptions)entry2.getValue()).getChunkGenerator() instanceof NoiseChunkGenerator
-				&& ((DimensionOptions)entry3.getValue()).getChunkGenerator() instanceof NoiseChunkGenerator) {
-				NoiseChunkGenerator noiseChunkGenerator = (NoiseChunkGenerator)((DimensionOptions)entry2.getValue()).getChunkGenerator();
-				NoiseChunkGenerator noiseChunkGenerator2 = (NoiseChunkGenerator)((DimensionOptions)entry3.getValue()).getChunkGenerator();
+			} else if (((DimensionOptions)entry2.getValue()).getChunkGenerator() instanceof NoiseChunkGenerator noiseChunkGenerator
+				&& ((DimensionOptions)entry3.getValue()).getChunkGenerator() instanceof NoiseChunkGenerator noiseChunkGenerator2) {
 				if (!noiseChunkGenerator.matchesSettings(seed, ChunkGeneratorSettings.NETHER)) {
 					return false;
 				} else if (!noiseChunkGenerator2.matchesSettings(seed, ChunkGeneratorSettings.END)) {

@@ -2,6 +2,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.MushroomBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldAccess;
@@ -28,17 +29,20 @@ public class HugeRedMushroomFeature extends HugeMushroomFeature {
 					if (i >= y || bl5 != bl6) {
 						mutable.set(start, l, i, m);
 						if (!world.getBlockState(mutable).isOpaqueFullCube(world, mutable)) {
-							this.setBlockState(
-								world,
-								mutable,
-								config.capProvider
-									.getBlockState(random, start)
-									.with(MushroomBlock.UP, Boolean.valueOf(i >= y - 1))
+							BlockState blockState = config.capProvider.getBlockState(random, start);
+							if (blockState.contains(MushroomBlock.WEST)
+								&& blockState.contains(MushroomBlock.EAST)
+								&& blockState.contains(MushroomBlock.NORTH)
+								&& blockState.contains(MushroomBlock.SOUTH)
+								&& blockState.contains(MushroomBlock.UP)) {
+								blockState = blockState.with(MushroomBlock.UP, Boolean.valueOf(i >= y - 1))
 									.with(MushroomBlock.WEST, Boolean.valueOf(l < -k))
 									.with(MushroomBlock.EAST, Boolean.valueOf(l > k))
 									.with(MushroomBlock.NORTH, Boolean.valueOf(m < -k))
-									.with(MushroomBlock.SOUTH, Boolean.valueOf(m > k))
-							);
+									.with(MushroomBlock.SOUTH, Boolean.valueOf(m > k));
+							}
+
+							this.setBlockState(world, mutable, blockState);
 						}
 					}
 				}

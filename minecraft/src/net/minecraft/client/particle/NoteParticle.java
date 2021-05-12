@@ -8,17 +8,17 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class NoteParticle extends SpriteBillboardParticle {
-	private NoteParticle(ClientWorld world, double x, double y, double z, double d) {
-		super(world, x, y, z, 0.0, 0.0, 0.0);
+	NoteParticle(ClientWorld clientWorld, double d, double e, double f, double g) {
+		super(clientWorld, d, e, f, 0.0, 0.0, 0.0);
 		this.field_28786 = 0.66F;
 		this.field_28787 = true;
 		this.velocityX *= 0.01F;
 		this.velocityY *= 0.01F;
 		this.velocityZ *= 0.01F;
 		this.velocityY += 0.2;
-		this.colorRed = Math.max(0.0F, MathHelper.sin(((float)d + 0.0F) * (float) (Math.PI * 2)) * 0.65F + 0.35F);
-		this.colorGreen = Math.max(0.0F, MathHelper.sin(((float)d + 0.33333334F) * (float) (Math.PI * 2)) * 0.65F + 0.35F);
-		this.colorBlue = Math.max(0.0F, MathHelper.sin(((float)d + 0.6666667F) * (float) (Math.PI * 2)) * 0.65F + 0.35F);
+		this.colorRed = Math.max(0.0F, MathHelper.sin(((float)g + 0.0F) * (float) (Math.PI * 2)) * 0.65F + 0.35F);
+		this.colorGreen = Math.max(0.0F, MathHelper.sin(((float)g + 0.33333334F) * (float) (Math.PI * 2)) * 0.65F + 0.35F);
+		this.colorBlue = Math.max(0.0F, MathHelper.sin(((float)g + 0.6666667F) * (float) (Math.PI * 2)) * 0.65F + 0.35F);
 		this.scale *= 1.5F;
 		this.maxAge = 6;
 	}

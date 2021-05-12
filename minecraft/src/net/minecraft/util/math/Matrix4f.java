@@ -576,17 +576,17 @@ public final class Matrix4f {
 		return matrix4f;
 	}
 
-	public static Matrix4f method_34239(float f, float g, float h, float i, float j, float k) {
+	public static Matrix4f projectionMatrix(float left, float right, float bottom, float top, float nearPlane, float farPlane) {
 		Matrix4f matrix4f = new Matrix4f();
-		float l = g - f;
-		float m = h - i;
-		float n = k - j;
-		matrix4f.a00 = 2.0F / l;
-		matrix4f.a11 = 2.0F / m;
-		matrix4f.a22 = -2.0F / n;
-		matrix4f.a03 = -(g + f) / l;
-		matrix4f.a13 = -(h + i) / m;
-		matrix4f.a23 = -(k + j) / n;
+		float f = right - left;
+		float g = bottom - top;
+		float h = farPlane - nearPlane;
+		matrix4f.a00 = 2.0F / f;
+		matrix4f.a11 = 2.0F / g;
+		matrix4f.a22 = -2.0F / h;
+		matrix4f.a03 = -(right + left) / f;
+		matrix4f.a13 = -(bottom + top) / g;
+		matrix4f.a23 = -(farPlane + nearPlane) / h;
 		matrix4f.a33 = 1.0F;
 		return matrix4f;
 	}

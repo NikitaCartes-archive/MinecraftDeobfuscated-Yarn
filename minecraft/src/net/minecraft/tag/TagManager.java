@@ -16,11 +16,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class TagManager {
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogManager.getLogger();
 	public static final TagManager EMPTY = new TagManager(ImmutableMap.of());
 	private final Map<RegistryKey<? extends Registry<?>>, TagGroup<?>> tagGroups;
 
-	private TagManager(Map<RegistryKey<? extends Registry<?>>, TagGroup<?>> tagGroups) {
+	TagManager(Map<RegistryKey<? extends Registry<?>>, TagGroup<?>> tagGroups) {
 		this.tagGroups = tagGroups;
 	}
 

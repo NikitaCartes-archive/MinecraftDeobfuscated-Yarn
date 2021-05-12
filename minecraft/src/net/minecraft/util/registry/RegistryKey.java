@@ -70,7 +70,7 @@ public class RegistryKey<T> {
 	}
 
 	public String toString() {
-		return "ResourceKey[" + this.registry + " / " + this.value + ']';
+		return "ResourceKey[" + this.registry + " / " + this.value + "]";
 	}
 
 	/**

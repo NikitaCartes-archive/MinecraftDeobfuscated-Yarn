@@ -33,11 +33,8 @@ public class HorseScreen extends HandledScreen<HorseScreenHandler> {
 		int i = (this.width - this.backgroundWidth) / 2;
 		int j = (this.height - this.backgroundHeight) / 2;
 		this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
-		if (this.entity instanceof AbstractDonkeyEntity) {
-			AbstractDonkeyEntity abstractDonkeyEntity = (AbstractDonkeyEntity)this.entity;
-			if (abstractDonkeyEntity.hasChest()) {
-				this.drawTexture(matrices, i + 79, j + 17, 0, this.backgroundHeight, abstractDonkeyEntity.getInventoryColumns() * 18, 54);
-			}
+		if (this.entity instanceof AbstractDonkeyEntity abstractDonkeyEntity && abstractDonkeyEntity.hasChest()) {
+			this.drawTexture(matrices, i + 79, j + 17, 0, this.backgroundHeight, abstractDonkeyEntity.getInventoryColumns() * 18, 54);
 		}
 
 		if (this.entity.canBeSaddled()) {

@@ -276,11 +276,8 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 		MatrixStack matrices, VertexConsumerProvider vertexConsumers, Entity entity, float opacity, float tickDelta, WorldView world, float radius
 	) {
 		float f = radius;
-		if (entity instanceof MobEntity) {
-			MobEntity mobEntity = (MobEntity)entity;
-			if (mobEntity.isBaby()) {
-				f = radius * 0.5F;
-			}
+		if (entity instanceof MobEntity mobEntity && mobEntity.isBaby()) {
+			f = radius * 0.5F;
 		}
 
 		double d = MathHelper.lerp((double)tickDelta, entity.lastRenderX, entity.getX());

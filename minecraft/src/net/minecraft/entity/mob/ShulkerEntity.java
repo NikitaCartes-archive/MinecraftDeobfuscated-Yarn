@@ -249,7 +249,8 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 	@Override
 	public double getHeightOffset() {
-		return 0.1875 - this.getVehicle().getMountedHeightOffset();
+		EntityType<?> entityType = this.getVehicle().getType();
+		return entityType != EntityType.BOAT && entityType != EntityType.MINECART ? super.getHeightOffset() : 0.1875 - this.getVehicle().getMountedHeightOffset();
 	}
 
 	@Override
@@ -339,7 +340,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		return null;
 	}
 
-	private boolean canStay(BlockPos pos, Direction direction) {
+	boolean canStay(BlockPos pos, Direction direction) {
 		if (this.method_33351(pos)) {
 			return false;
 		} else {
@@ -475,7 +476,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		return this.dataTracker.get(PEEK_AMOUNT);
 	}
 
-	private void setPeekAmount(int peekAmount) {
+	void setPeekAmount(int peekAmount) {
 		if (!this.world.isClient) {
 			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).removeModifier(COVERED_ARMOR_BONUS);
 			if (peekAmount == 0) {
@@ -551,9 +552,6 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 	class PeekGoal extends Goal {
 		private int counter;
-
-		private PeekGoal() {
-		}
 
 		@Override
 		public boolean canStart() {

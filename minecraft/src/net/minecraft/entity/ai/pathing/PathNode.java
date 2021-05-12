@@ -113,7 +113,7 @@ public class PathNode {
 	}
 
 	public String toString() {
-		return "Node{x=" + this.x + ", y=" + this.y + ", z=" + this.z + '}';
+		return "Node{x=" + this.x + ", y=" + this.y + ", z=" + this.z + "}";
 	}
 
 	public void toBuffer(PacketByteBuf buffer) {

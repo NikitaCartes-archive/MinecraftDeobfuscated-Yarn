@@ -336,10 +336,10 @@ public interface Tag<T> {
 	}
 
 	public static class TrackedEntry {
-		private final Tag.Entry entry;
+		final Tag.Entry entry;
 		private final String source;
 
-		private TrackedEntry(Tag.Entry entry, String source) {
+		TrackedEntry(Tag.Entry entry, String source) {
 			this.entry = entry;
 			this.source = source;
 		}

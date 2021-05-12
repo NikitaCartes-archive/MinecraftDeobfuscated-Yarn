@@ -202,7 +202,7 @@ public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenH
 	}
 
 	@Override
-	public boolean method_32339(int i) {
-		return i != 1;
+	public boolean canInsertIntoSlot(int index) {
+		return index != 1;
 	}
 }

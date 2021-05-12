@@ -79,8 +79,7 @@ public class EntityTrackerEntry {
 			this.receiver.accept(new EntityPassengersSetS2CPacket(this.entity));
 		}
 
-		if (this.entity instanceof ItemFrameEntity && this.trackingTick % 10 == 0) {
-			ItemFrameEntity itemFrameEntity = (ItemFrameEntity)this.entity;
+		if (this.entity instanceof ItemFrameEntity itemFrameEntity && this.trackingTick % 10 == 0) {
 			ItemStack itemStack = itemFrameEntity.getHeldItemStack();
 			if (itemStack.getItem() instanceof FilledMapItem) {
 				Integer integer = FilledMapItem.getMapId(itemStack);
@@ -241,9 +240,7 @@ public class EntityTrackerEntry {
 			}
 		}
 
-		if (this.entity instanceof LivingEntity) {
-			LivingEntity livingEntity = (LivingEntity)this.entity;
-
+		if (this.entity instanceof LivingEntity livingEntity) {
 			for(StatusEffectInstance statusEffectInstance : livingEntity.getStatusEffects()) {
 				sender.accept(new EntityStatusEffectS2CPacket(this.entity.getId(), statusEffectInstance));
 			}
@@ -257,11 +254,8 @@ public class EntityTrackerEntry {
 			sender.accept(new EntityPassengersSetS2CPacket(this.entity.getVehicle()));
 		}
 
-		if (this.entity instanceof MobEntity) {
-			MobEntity mobEntity = (MobEntity)this.entity;
-			if (mobEntity.isLeashed()) {
-				sender.accept(new EntityAttachS2CPacket(mobEntity, mobEntity.getHoldingEntity()));
-			}
+		if (this.entity instanceof MobEntity mobEntity && mobEntity.isLeashed()) {
+			sender.accept(new EntityAttachS2CPacket(mobEntity, mobEntity.getHoldingEntity()));
 		}
 	}
 

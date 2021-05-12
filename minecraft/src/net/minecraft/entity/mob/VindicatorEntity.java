@@ -47,9 +47,8 @@ import net.minecraft.world.World;
 
 public class VindicatorEntity extends IllagerEntity {
 	private static final String JOHNNY_KEY = "Johnny";
-	private static final Predicate<Difficulty> DIFFICULTY_ALLOWS_DOOR_BREAKING_PREDICATE = difficulty -> difficulty == Difficulty.NORMAL
-			|| difficulty == Difficulty.HARD;
-	private boolean johnny;
+	static final Predicate<Difficulty> DIFFICULTY_ALLOWS_DOOR_BREAKING_PREDICATE = difficulty -> difficulty == Difficulty.NORMAL || difficulty == Difficulty.HARD;
+	boolean johnny;
 
 	public VindicatorEntity(EntityType<? extends VindicatorEntity> entityType, World world) {
 		super(entityType, world);

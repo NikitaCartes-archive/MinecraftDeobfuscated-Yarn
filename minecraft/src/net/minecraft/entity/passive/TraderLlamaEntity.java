@@ -114,7 +114,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
-	public static class DefendTraderGoal extends TrackTargetGoal {
+	protected static class DefendTraderGoal extends TrackTargetGoal {
 		private final LlamaEntity llama;
 		private LivingEntity offender;
 		private int traderLastAttackedTime;

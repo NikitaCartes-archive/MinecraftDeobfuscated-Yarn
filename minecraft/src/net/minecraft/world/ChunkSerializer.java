@@ -433,7 +433,7 @@ public class ChunkSerializer {
 
 		for(String string : nbtCompound.getKeys()) {
 			map.put(
-				StructureFeature.STRUCTURES.get(string.toLowerCase(Locale.ROOT)),
+				(StructureFeature)StructureFeature.STRUCTURES.get(string.toLowerCase(Locale.ROOT)),
 				new LongOpenHashSet(Arrays.stream(nbtCompound.getLongArray(string)).filter(packedPos -> {
 					ChunkPos chunkPos2 = new ChunkPos(packedPos);
 					if (chunkPos2.getChebyshevDistance(pos) > 8) {

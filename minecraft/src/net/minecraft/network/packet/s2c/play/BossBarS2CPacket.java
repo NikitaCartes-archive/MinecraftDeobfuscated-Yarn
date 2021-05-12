@@ -14,7 +14,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 	private static final int THICKEN_FOG_MASK = 4;
 	private final UUID uuid;
 	private final BossBarS2CPacket.Action action;
-	private static final BossBarS2CPacket.Action REMOVE_ACTION = new BossBarS2CPacket.Action() {
+	static final BossBarS2CPacket.Action REMOVE_ACTION = new BossBarS2CPacket.Action() {
 		@Override
 		public BossBarS2CPacket.Type getType() {
 			return BossBarS2CPacket.Type.REMOVE;
@@ -72,7 +72,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.action.toPacket(buf);
 	}
 
-	private static int maskProperties(boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
+	static int maskProperties(boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
 		int i = 0;
 		if (darkenSky) {
 			i |= 1;
@@ -114,7 +114,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		private final boolean dragonMusic;
 		private final boolean thickenFog;
 
-		private AddAction(BossBar bar) {
+		AddAction(BossBar bar) {
 			this.name = bar.getName();
 			this.percent = bar.getPercent();
 			this.color = bar.getColor();
@@ -176,14 +176,14 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	static enum Type {
-		ADD(buf -> new BossBarS2CPacket.AddAction(buf)),
+		ADD(BossBarS2CPacket.AddAction::new),
 		REMOVE(buf -> BossBarS2CPacket.REMOVE_ACTION),
-		UPDATE_PROGRESS(buf -> new BossBarS2CPacket.UpdateProgressAction(buf)),
-		UPDATE_NAME(buf -> new BossBarS2CPacket.UpdateNameAction(buf)),
-		UPDATE_STYLE(buf -> new BossBarS2CPacket.UpdateStyleAction(buf)),
-		UPDATE_PROPERTIES(buf -> new BossBarS2CPacket.UpdatePropertiesAction(buf));
+		UPDATE_PROGRESS(BossBarS2CPacket.UpdateProgressAction::new),
+		UPDATE_NAME(BossBarS2CPacket.UpdateNameAction::new),
+		UPDATE_STYLE(BossBarS2CPacket.UpdateStyleAction::new),
+		UPDATE_PROPERTIES(BossBarS2CPacket.UpdatePropertiesAction::new);
 
-		private final Function<PacketByteBuf, BossBarS2CPacket.Action> parser;
+		final Function<PacketByteBuf, BossBarS2CPacket.Action> parser;
 
 		private Type(Function<PacketByteBuf, BossBarS2CPacket.Action> parser) {
 			this.parser = parser;
@@ -193,7 +193,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 	static class UpdateNameAction implements BossBarS2CPacket.Action {
 		private final Text name;
 
-		private UpdateNameAction(Text name) {
+		UpdateNameAction(Text name) {
 			this.name = name;
 		}
 
@@ -220,7 +220,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 	static class UpdateProgressAction implements BossBarS2CPacket.Action {
 		private final float percent;
 
-		private UpdateProgressAction(float percent) {
+		UpdateProgressAction(float percent) {
 			this.percent = percent;
 		}
 
@@ -249,7 +249,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		private final boolean dragonMusic;
 		private final boolean thickenFog;
 
-		private UpdatePropertiesAction(boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
+		UpdatePropertiesAction(boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
 			this.darkenSky = darkenSky;
 			this.dragonMusic = dragonMusic;
 			this.thickenFog = thickenFog;
@@ -282,7 +282,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		private final BossBar.Color color;
 		private final BossBar.Style style;
 
-		private UpdateStyleAction(BossBar.Color color, BossBar.Style style) {
+		UpdateStyleAction(BossBar.Color color, BossBar.Style style) {
 			this.color = color;
 			this.style = style;
 		}

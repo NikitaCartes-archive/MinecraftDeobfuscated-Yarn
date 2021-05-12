@@ -24,7 +24,7 @@ import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.util.ScreenshotUtils;
+import net.minecraft.client.util.Screenshooter;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
@@ -712,8 +712,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 
 	private void updateMovementFovMultiplier() {
 		float f = 1.0F;
-		if (this.client.getCameraEntity() instanceof AbstractClientPlayerEntity) {
-			AbstractClientPlayerEntity abstractClientPlayerEntity = (AbstractClientPlayerEntity)this.client.getCameraEntity();
+		if (this.client.getCameraEntity() instanceof AbstractClientPlayerEntity abstractClientPlayerEntity) {
 			f = abstractClientPlayerEntity.getSpeed();
 		}
 
@@ -753,8 +752,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 	}
 
 	private void bobViewWhenHurt(MatrixStack matrices, float f) {
-		if (this.client.getCameraEntity() instanceof LivingEntity) {
-			LivingEntity livingEntity = (LivingEntity)this.client.getCameraEntity();
+		if (this.client.getCameraEntity() instanceof LivingEntity livingEntity) {
 			float g = (float)livingEntity.hurtTime - f;
 			if (livingEntity.isDead()) {
 				float h = Math.min((float)livingEntity.deathTime + f, 20.0F);
@@ -786,10 +784,10 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 		}
 	}
 
-	public void method_35766(float f, float g, float h) {
-		this.zoom = f;
-		this.zoomX = g;
-		this.zoomY = h;
+	public void renderWithZoom(float zoom, float zoomX, float zoomY) {
+		this.zoom = zoom;
+		this.zoomX = zoomX;
+		this.zoomY = zoomY;
 		this.setBlockOutlineEnabled(false);
 		this.setRenderHand(false);
 		this.renderWorld(1.0F, 0L, new MatrixStack());
@@ -907,7 +905,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 
 			Window window = this.client.getWindow();
 			RenderSystem.clear(256, MinecraftClient.IS_SYSTEM_MAC);
-			Matrix4f matrix4f = Matrix4f.method_34239(
+			Matrix4f matrix4f = Matrix4f.projectionMatrix(
 				0.0F,
 				(float)((double)window.getFramebufferWidth() / window.getScaleFactor()),
 				0.0F,
@@ -984,7 +982,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 		if (this.client.worldRenderer.getCompletedChunkCount() > 10 && this.client.worldRenderer.isTerrainRenderComplete() && !this.client.getServer().hasIconFile()
 			)
 		 {
-			NativeImage nativeImage = ScreenshotUtils.takeScreenshot(
+			NativeImage nativeImage = Screenshooter.takeScreenshot(
 				this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight(), this.client.getFramebuffer()
 			);
 			Util.getIoWorkerExecutor().execute(() -> {
@@ -1003,8 +1001,8 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 				try (NativeImage nativeImage2 = new NativeImage(64, 64, false)) {
 					nativeImage.resizeSubRectTo(k, l, i, j, nativeImage2);
 					nativeImage2.writeFile(this.client.getServer().getIconFile());
-				} catch (IOException var27) {
-					LOGGER.warn("Couldn't save auto screenshot", var27);
+				} catch (IOException var16) {
+					LOGGER.warn("Couldn't save auto screenshot", var16);
 				} finally {
 					nativeImage.close();
 				}

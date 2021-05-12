@@ -156,8 +156,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 	}
 
 	public static void tryTeleportingEntity(World world, BlockPos pos, BlockState state, Entity entity, EndGatewayBlockEntity blockEntity) {
-		if (world instanceof ServerWorld && !blockEntity.needsCooldownBeforeTeleporting()) {
-			ServerWorld serverWorld = (ServerWorld)world;
+		if (world instanceof ServerWorld serverWorld && !blockEntity.needsCooldownBeforeTeleporting()) {
 			blockEntity.teleportCooldown = 100;
 			if (blockEntity.exitPortalPos == null && world.getRegistryKey() == World.END) {
 				BlockPos blockPos = setupExitPortalLocation(serverWorld, pos);

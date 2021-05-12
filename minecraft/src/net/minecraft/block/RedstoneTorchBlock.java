@@ -129,8 +129,8 @@ public class RedstoneTorchBlock extends TorchBlock {
 	}
 
 	public static class BurnoutEntry {
-		private final BlockPos pos;
-		private final long time;
+		final BlockPos pos;
+		final long time;
 
 		public BurnoutEntry(BlockPos pos, long time) {
 			this.pos = pos;

@@ -5,20 +5,20 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 
 public class DeepslateBlockSource implements BlockSource {
-	private static final int field_31468 = -8;
-	private static final int field_31469 = 0;
+	private static final int DEFAULT_MIN_Y = -8;
+	private static final int MAX_Y = 0;
 	private final ChunkRandom random;
 	private final long seed;
 	private final BlockState defaultBlock;
 	private final BlockState deepslateState;
 	private final ChunkGeneratorSettings settings;
 
-	public DeepslateBlockSource(long seed, BlockState defaultBlock, BlockState deepslateState, ChunkGeneratorSettings chunkGeneratorSettings) {
+	public DeepslateBlockSource(long seed, BlockState defaultBlock, BlockState deepslateState, ChunkGeneratorSettings settings) {
 		this.random = new ChunkRandom(seed);
 		this.seed = seed;
 		this.defaultBlock = defaultBlock;
 		this.deepslateState = deepslateState;
-		this.settings = chunkGeneratorSettings;
+		this.settings = settings;
 	}
 
 	@Override

@@ -387,22 +387,14 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		private final boolean cameraOffset;
 		private final boolean textured;
 
-		private DrawArrayParameters(
-			VertexFormat vertexFormat,
-			int count,
-			int vertexCount,
-			VertexFormat.DrawMode drawMode,
-			VertexFormat.IntType elementFormat,
-			boolean cameraOffset,
-			boolean textured
-		) {
+		DrawArrayParameters(VertexFormat vertexFormat, int i, int j, VertexFormat.DrawMode drawMode, VertexFormat.IntType intType, boolean bl, boolean bl2) {
 			this.vertexFormat = vertexFormat;
-			this.count = count;
-			this.vertexCount = vertexCount;
+			this.count = i;
+			this.vertexCount = j;
 			this.mode = drawMode;
-			this.elementFormat = elementFormat;
-			this.cameraOffset = cameraOffset;
-			this.textured = textured;
+			this.elementFormat = intType;
+			this.cameraOffset = bl;
+			this.textured = bl2;
 		}
 
 		public VertexFormat getVertexFormat() {
@@ -448,21 +440,21 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 
 	@Environment(EnvType.CLIENT)
 	public static class State {
-		private final VertexFormat.DrawMode drawMode;
-		private final int vertexCount;
+		final VertexFormat.DrawMode drawMode;
+		final int vertexCount;
 		@Nullable
-		private final Vec3f[] currentParameters;
-		private final float cameraX;
-		private final float cameraY;
-		private final float cameraZ;
+		final Vec3f[] currentParameters;
+		final float cameraX;
+		final float cameraY;
+		final float cameraZ;
 
-		private State(VertexFormat.DrawMode drawMode, int vertexCount, @Nullable Vec3f[] currentParameters, float cameraX, float cameraY, float cameraZ) {
+		State(VertexFormat.DrawMode drawMode, int i, @Nullable Vec3f[] vec3fs, float f, float g, float h) {
 			this.drawMode = drawMode;
-			this.vertexCount = vertexCount;
-			this.currentParameters = currentParameters;
-			this.cameraX = cameraX;
-			this.cameraY = cameraY;
-			this.cameraZ = cameraZ;
+			this.vertexCount = i;
+			this.currentParameters = vec3fs;
+			this.cameraX = f;
+			this.cameraY = g;
+			this.cameraZ = h;
 		}
 	}
 }

@@ -11,10 +11,10 @@ import net.minecraft.util.JsonSerializer;
 import net.minecraft.util.JsonSerializing;
 
 public final class ConstantLootNumberProvider implements LootNumberProvider {
-	private final float value;
+	final float value;
 
-	private ConstantLootNumberProvider(float value) {
-		this.value = value;
+	ConstantLootNumberProvider(float f) {
+		this.value = f;
 	}
 
 	@Override

@@ -70,7 +70,7 @@ public class BigDripleafStemBlock extends HorizontalFacingBlock implements Ferti
 			.getDefaultState()
 			.with(WATERLOGGED, Boolean.valueOf(fluidState.isEqualAndStill(Fluids.WATER)))
 			.with(FACING, direction);
-		return world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
+		return world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
 	}
 
 	@Override

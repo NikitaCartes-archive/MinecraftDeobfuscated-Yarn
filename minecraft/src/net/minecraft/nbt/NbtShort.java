@@ -33,8 +33,8 @@ public class NbtShort extends AbstractNbtNumber {
 	};
 	private final short value;
 
-	private NbtShort(short value) {
-		this.value = value;
+	NbtShort(short s) {
+		this.value = s;
 	}
 
 	public static NbtShort of(short value) {

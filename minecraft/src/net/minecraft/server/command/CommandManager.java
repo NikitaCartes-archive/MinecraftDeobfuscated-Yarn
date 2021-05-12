@@ -146,7 +146,7 @@ public class CommandManager {
 						"Ambiguity between arguments {} and {} with inputs: {}", this.dispatcher.getPath(commandNode2), this.dispatcher.getPath(commandNode3), collection
 					)
 			);
-		this.dispatcher.setConsumer((commandContext, bl, i) -> commandContext.getSource().onCommandComplete(commandContext, bl, i));
+		this.dispatcher.setConsumer((context, success, result) -> context.getSource().onCommandComplete(context, success, result));
 	}
 
 	public int execute(ServerCommandSource commandSource, String command) {
@@ -236,16 +236,13 @@ public class CommandManager {
 		for(CommandNode<ServerCommandSource> commandNode : tree.getChildren()) {
 			if (commandNode.canUse(source)) {
 				ArgumentBuilder<CommandSource, ?> argumentBuilder = commandNode.createBuilder();
-				argumentBuilder.requires(commandSource -> true);
+				argumentBuilder.requires(sourcex -> true);
 				if (argumentBuilder.getCommand() != null) {
-					argumentBuilder.executes(commandContext -> 0);
+					argumentBuilder.executes(context -> 0);
 				}
 
-				if (argumentBuilder instanceof RequiredArgumentBuilder) {
-					RequiredArgumentBuilder<CommandSource, ?> requiredArgumentBuilder = (RequiredArgumentBuilder)argumentBuilder;
-					if (requiredArgumentBuilder.getSuggestionsProvider() != null) {
-						requiredArgumentBuilder.suggests(SuggestionProviders.getLocalProvider(requiredArgumentBuilder.getSuggestionsProvider()));
-					}
+				if (argumentBuilder instanceof RequiredArgumentBuilder requiredArgumentBuilder && requiredArgumentBuilder.getSuggestionsProvider() != null) {
+					requiredArgumentBuilder.suggests(SuggestionProviders.getLocalProvider(requiredArgumentBuilder.getSuggestionsProvider()));
 				}
 
 				if (argumentBuilder.getRedirect() != null) {
@@ -301,11 +298,9 @@ public class CommandManager {
 	public static void checkMissing() {
 		RootCommandNode<ServerCommandSource> rootCommandNode = new CommandManager(CommandManager.RegistrationEnvironment.ALL).getDispatcher().getRoot();
 		Set<ArgumentType<?>> set = ArgumentTypes.getAllArgumentTypes(rootCommandNode);
-		Set<ArgumentType<?>> set2 = (Set)set.stream().filter(argumentType -> !ArgumentTypes.hasClass(argumentType)).collect(Collectors.toSet());
+		Set<ArgumentType<?>> set2 = (Set)set.stream().filter(type -> !ArgumentTypes.hasClass(type)).collect(Collectors.toSet());
 		if (!set2.isEmpty()) {
-			LOGGER.warn(
-				"Missing type registration for following arguments:\n {}", set2.stream().map(argumentType -> "\t" + argumentType).collect(Collectors.joining(",\n"))
-			);
+			LOGGER.warn("Missing type registration for following arguments:\n {}", set2.stream().map(type -> "\t" + type).collect(Collectors.joining(",\n")));
 			throw new IllegalStateException("Unregistered argument types");
 		}
 	}
@@ -323,8 +318,8 @@ public class CommandManager {
 		DEDICATED(false, true),
 		INTEGRATED(true, false);
 
-		private final boolean integrated;
-		private final boolean dedicated;
+		final boolean integrated;
+		final boolean dedicated;
 
 		private RegistrationEnvironment(boolean integrated, boolean dedicated) {
 			this.integrated = integrated;

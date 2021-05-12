@@ -116,7 +116,7 @@ public class MultipartUnbakedModel implements UnbakedModel {
 			List<MultipartModelComponent> list = Lists.<MultipartModelComponent>newArrayList();
 
 			for(JsonElement jsonElement : array) {
-				list.add(context.deserialize(jsonElement, MultipartModelComponent.class));
+				list.add((MultipartModelComponent)context.deserialize(jsonElement, MultipartModelComponent.class));
 			}
 
 			return list;

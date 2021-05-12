@@ -16,8 +16,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class CyclingButtonWidget<T> extends AbstractPressableButtonWidget implements OrderableTooltip {
-	private static final BooleanSupplier HAS_ALT_DOWN = Screen::hasAltDown;
+public class CyclingButtonWidget<T> extends PressableWidget implements OrderableTooltip {
+	static final BooleanSupplier HAS_ALT_DOWN = Screen::hasAltDown;
 	private static final List<Boolean> BOOLEAN_VALUES = ImmutableList.of(Boolean.TRUE, Boolean.FALSE);
 	private final Text optionText;
 	private int index;
@@ -29,32 +29,32 @@ public class CyclingButtonWidget<T> extends AbstractPressableButtonWidget implem
 	private final CyclingButtonWidget.TooltipFactory<T> tooltipFactory;
 	private final boolean optionTextOmitted;
 
-	private CyclingButtonWidget(
-		int x,
-		int y,
-		int width,
-		int height,
-		Text message,
-		Text optionText,
-		int index,
-		T value,
+	CyclingButtonWidget(
+		int i,
+		int j,
+		int k,
+		int l,
+		Text text,
+		Text text2,
+		int m,
+		T object,
 		CyclingButtonWidget.Values<T> values,
-		Function<T, Text> valueToText,
-		Function<CyclingButtonWidget<T>, MutableText> narrationMessageFactory,
-		CyclingButtonWidget.UpdateCallback<T> callback,
+		Function<T, Text> function,
+		Function<CyclingButtonWidget<T>, MutableText> function2,
+		CyclingButtonWidget.UpdateCallback<T> updateCallback,
 		CyclingButtonWidget.TooltipFactory<T> tooltipFactory,
-		boolean optionTextOmitted
+		boolean bl
 	) {
-		super(x, y, width, height, message);
-		this.optionText = optionText;
-		this.index = index;
-		this.value = value;
+		super(i, j, k, l, text);
+		this.optionText = text2;
+		this.index = m;
+		this.value = object;
 		this.values = values;
-		this.valueToText = valueToText;
-		this.narrationMessageFactory = narrationMessageFactory;
-		this.callback = callback;
+		this.valueToText = function;
+		this.narrationMessageFactory = function2;
+		this.callback = updateCallback;
 		this.tooltipFactory = tooltipFactory;
-		this.optionTextOmitted = optionTextOmitted;
+		this.optionTextOmitted = bl;
 	}
 
 	@Override

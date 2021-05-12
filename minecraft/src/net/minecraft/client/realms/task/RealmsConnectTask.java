@@ -4,6 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.realms.RealmsConnection;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RealmsServerAddress;
@@ -23,8 +24,7 @@ public class RealmsConnectTask extends LongRunningTask {
 
 	public void run() {
 		this.setTitle(new TranslatableText("mco.connect.connecting"));
-		net.minecraft.client.realms.RealmsServerAddress realmsServerAddress = net.minecraft.client.realms.RealmsServerAddress.parseString(this.address.address);
-		this.realmsConnect.connect(this.server, realmsServerAddress.getHost(), realmsServerAddress.getPort());
+		this.realmsConnect.connect(this.server, ServerAddress.parse(this.address.address));
 	}
 
 	@Override

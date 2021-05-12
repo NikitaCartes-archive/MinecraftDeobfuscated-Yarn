@@ -8,8 +8,8 @@ import net.minecraft.particle.ParticleTypes;
 
 @Environment(EnvType.CLIENT)
 public class LavaEmberParticle extends SpriteBillboardParticle {
-	private LavaEmberParticle(ClientWorld world, double x, double y, double z) {
-		super(world, x, y, z, 0.0, 0.0, 0.0);
+	LavaEmberParticle(ClientWorld clientWorld, double d, double e, double f) {
+		super(clientWorld, d, e, f, 0.0, 0.0, 0.0);
 		this.gravityStrength = 0.75F;
 		this.field_28786 = 0.999F;
 		this.velocityX *= 0.8F;

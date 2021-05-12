@@ -79,18 +79,18 @@ public class ProfiledResourceReload extends SimpleResourceReload<ProfiledResourc
 	 * The profiling summary for each reloader in the reload.
 	 */
 	public static class Summary {
-		private final String name;
-		private final ProfileResult prepareProfile;
-		private final ProfileResult applyProfile;
-		private final AtomicLong prepareTimeMs;
-		private final AtomicLong applyTimeMs;
+		final String name;
+		final ProfileResult prepareProfile;
+		final ProfileResult applyProfile;
+		final AtomicLong prepareTimeMs;
+		final AtomicLong applyTimeMs;
 
-		private Summary(String name, ProfileResult prepareProfile, ProfileResult applyProfile, AtomicLong prepareTimeMs, AtomicLong applyTimeMs) {
-			this.name = name;
-			this.prepareProfile = prepareProfile;
-			this.applyProfile = applyProfile;
-			this.prepareTimeMs = prepareTimeMs;
-			this.applyTimeMs = applyTimeMs;
+		Summary(String string, ProfileResult profileResult, ProfileResult profileResult2, AtomicLong atomicLong, AtomicLong atomicLong2) {
+			this.name = string;
+			this.prepareProfile = profileResult;
+			this.applyProfile = profileResult2;
+			this.prepareTimeMs = atomicLong;
+			this.applyTimeMs = atomicLong2;
 		}
 	}
 }

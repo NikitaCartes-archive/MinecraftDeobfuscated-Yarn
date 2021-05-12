@@ -21,7 +21,7 @@ public interface TextStream {
 
 		@Override
 		public CompletableFuture<List<TextStream.Message>> filterTexts(List<String> texts) {
-			return CompletableFuture.completedFuture(texts.stream().map(TextStream.Message::permitted).collect(ImmutableList.toImmutableList()));
+			return CompletableFuture.completedFuture((List)texts.stream().map(TextStream.Message::permitted).collect(ImmutableList.toImmutableList()));
 		}
 	};
 

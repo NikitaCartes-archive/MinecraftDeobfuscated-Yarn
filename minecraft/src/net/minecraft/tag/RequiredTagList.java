@@ -67,8 +67,8 @@ public class RequiredTagList<T> {
 		return this.dataType;
 	}
 
-	protected void method_33147(TagManager.Builder builder) {
-		builder.add(
+	protected void addToManager(TagManager.Builder manager) {
+		manager.add(
 			this.registryKey, TagGroup.create((Map<Identifier, Tag<T>>)this.tags.stream().collect(Collectors.toMap(Tag.Identified::getId, tagWrapper -> tagWrapper)))
 		);
 	}
@@ -78,7 +78,7 @@ public class RequiredTagList<T> {
 		private Tag<T> delegate;
 		protected final Identifier id;
 
-		private TagWrapper(Identifier id) {
+		TagWrapper(Identifier id) {
 			this.id = id;
 		}
 

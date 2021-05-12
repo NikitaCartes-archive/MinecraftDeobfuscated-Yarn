@@ -248,67 +248,56 @@ public class ParticleManager implements ResourceReloader {
 
 		try {
 			Resource resource = resourceManager.getResource(identifier);
-			Throwable var6 = null;
 
 			try {
-				Reader reader;
+				Reader reader = new InputStreamReader(resource.getInputStream(), Charsets.UTF_8);
+
 				try {
-					reader = new InputStreamReader(resource.getInputStream(), Charsets.UTF_8);
-					Throwable var8 = null;
-
-					try {
-						ParticleTextureData particleTextureData = ParticleTextureData.load(JsonHelper.deserialize(reader));
-						List<Identifier> list = particleTextureData.getTextureList();
-						boolean bl = this.spriteAwareFactories.containsKey(id);
-						if (list == null) {
-							if (bl) {
-								throw new IllegalStateException("Missing texture list for particle " + id);
-							}
-						} else {
-							if (!bl) {
-								throw new IllegalStateException("Redundant texture list for particle " + id);
-							}
-
-							result.put(
-								id, list.stream().map(identifierx -> new Identifier(identifierx.getNamespace(), "particle/" + identifierx.getPath())).collect(Collectors.toList())
-							);
-						}
-					} catch (Throwable var35) {
-						var8 = var35;
-						throw var35;
-					} finally {
-						if (reader != null) {
-							if (var8 != null) {
-								try {
-									reader.close();
-								} catch (Throwable var34) {
-									var8.addSuppressed(var34);
-								}
-							} else {
-								reader.close();
-							}
-						}
-					}
-				} catch (Throwable var37) {
-					reader = var37;
-					var6 = var37;
-					throw var37;
-				}
-			} finally {
-				if (resource != null) {
-					if (var6 != null) {
-						try {
-							resource.close();
-						} catch (Throwable var33) {
-							var6.addSuppressed(var33);
+					ParticleTextureData particleTextureData = ParticleTextureData.load(JsonHelper.deserialize(reader));
+					List<Identifier> list = particleTextureData.getTextureList();
+					boolean bl = this.spriteAwareFactories.containsKey(id);
+					if (list == null) {
+						if (bl) {
+							throw new IllegalStateException("Missing texture list for particle " + id);
 						}
 					} else {
+						if (!bl) {
+							throw new IllegalStateException("Redundant texture list for particle " + id);
+						}
+
+						result.put(
+							id,
+							(List)list.stream().map(identifierx -> new Identifier(identifierx.getNamespace(), "particle/" + identifierx.getPath())).collect(Collectors.toList())
+						);
+					}
+				} catch (Throwable var12) {
+					try {
+						reader.close();
+					} catch (Throwable var11) {
+						var12.addSuppressed(var11);
+					}
+
+					throw var12;
+				}
+
+				reader.close();
+			} catch (Throwable var13) {
+				if (resource != null) {
+					try {
 						resource.close();
+					} catch (Throwable var10) {
+						var13.addSuppressed(var10);
 					}
 				}
+
+				throw var13;
 			}
-		} catch (IOException var39) {
-			throw new IllegalStateException("Failed to load description for particle " + id, var39);
+
+			if (resource != null) {
+				resource.close();
+			}
+		} catch (IOException var14) {
+			throw new IllegalStateException("Failed to load description for particle " + id, var14);
 		}
 	}
 
@@ -548,9 +537,6 @@ public class ParticleManager implements ResourceReloader {
 	@Environment(EnvType.CLIENT)
 	class SimpleSpriteProvider implements SpriteProvider {
 		private List<Sprite> sprites;
-
-		private SimpleSpriteProvider() {
-		}
 
 		@Override
 		public Sprite getSprite(int i, int j) {

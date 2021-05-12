@@ -10,12 +10,12 @@ import org.lwjgl.system.MemoryUtil;
 
 @Environment(EnvType.CLIENT)
 public class GlfwUtil {
-	public static void method_35596(RenderCallStorage renderCallStorage, float f) {
-		ConcurrentLinkedQueue<RenderCall> concurrentLinkedQueue = renderCallStorage.method_35608();
+	public static void accessRecordingQueue(RenderCallStorage storage, float f) {
+		ConcurrentLinkedQueue<RenderCall> concurrentLinkedQueue = storage.getRecordingQueue();
 	}
 
-	public static void method_35597(RenderCallStorage renderCallStorage, float f) {
-		ConcurrentLinkedQueue<RenderCall> concurrentLinkedQueue = renderCallStorage.method_35609();
+	public static void accessProcessingQueue(RenderCallStorage storage, float f) {
+		ConcurrentLinkedQueue<RenderCall> concurrentLinkedQueue = storage.getProcessingQueue();
 	}
 
 	public static void makeJvmCrash() {

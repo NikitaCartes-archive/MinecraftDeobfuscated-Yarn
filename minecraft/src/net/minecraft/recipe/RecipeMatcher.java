@@ -61,7 +61,7 @@ public class RecipeMatcher {
 	/**
 	 * Determines whether a raw item id is present in the pool of crafting resources.
 	 */
-	private boolean contains(int itemId) {
+	boolean contains(int itemId) {
 		return this.inputs.get(itemId) > 0;
 	}
 
@@ -71,7 +71,7 @@ public class RecipeMatcher {
 	 * @param itemId the raw id of the item being consumed
 	 * @param count the number of times that item must be consumed
 	 */
-	private int consume(int itemId, int count) {
+	int consume(int itemId, int count) {
 		int i = this.inputs.get(itemId);
 		if (i >= count) {
 			this.inputs.put(itemId, i - count);
@@ -87,7 +87,7 @@ public class RecipeMatcher {
 	 * @param itemId the raw ID of the item to match
 	 * @param count the item's count
 	 */
-	private void addInput(int itemId, int count) {
+	void addInput(int itemId, int count) {
 		this.inputs.put(itemId, this.inputs.get(itemId) + count);
 	}
 

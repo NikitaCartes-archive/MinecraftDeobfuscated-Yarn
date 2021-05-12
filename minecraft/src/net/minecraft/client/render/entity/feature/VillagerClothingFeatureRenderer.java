@@ -83,35 +83,40 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 		return (VillagerResourceMetadata.HatType)hatLookUp.computeIfAbsent(key, k -> {
 			try {
 				Resource resource = this.resourceManager.getResource(this.findTexture(keyType, registry.getId(key)));
-				Throwable var6 = null;
 
-				VillagerResourceMetadata.HatType var8;
-				try {
-					VillagerResourceMetadata villagerResourceMetadata = resource.getMetadata(VillagerResourceMetadata.READER);
-					if (villagerResourceMetadata == null) {
-						return VillagerResourceMetadata.HatType.NONE;
-					}
-
-					var8 = villagerResourceMetadata.getHatType();
-				} catch (Throwable var19) {
-					var6 = var19;
-					throw var19;
-				} finally {
-					if (resource != null) {
-						if (var6 != null) {
+				VillagerResourceMetadata.HatType var7;
+				label49: {
+					try {
+						VillagerResourceMetadata villagerResourceMetadata = resource.getMetadata(VillagerResourceMetadata.READER);
+						if (villagerResourceMetadata != null) {
+							var7 = villagerResourceMetadata.getHatType();
+							break label49;
+						}
+					} catch (Throwable var9) {
+						if (resource != null) {
 							try {
 								resource.close();
-							} catch (Throwable var18) {
-								var6.addSuppressed(var18);
+							} catch (Throwable var8) {
+								var9.addSuppressed(var8);
 							}
-						} else {
-							resource.close();
 						}
+
+						throw var9;
 					}
+
+					if (resource != null) {
+						resource.close();
+					}
+
+					return VillagerResourceMetadata.HatType.NONE;
 				}
 
-				return var8;
-			} catch (IOException var21) {
+				if (resource != null) {
+					resource.close();
+				}
+
+				return var7;
+			} catch (IOException var10) {
 				return VillagerResourceMetadata.HatType.NONE;
 			}
 		});

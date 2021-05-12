@@ -183,14 +183,13 @@ public class TranslatableText extends BaseText implements ParsableText {
 	public String toString() {
 		return "TranslatableComponent{key='"
 			+ this.key
-			+ '\''
-			+ ", args="
+			+ "', args="
 			+ Arrays.toString(this.args)
 			+ ", siblings="
 			+ this.siblings
 			+ ", style="
 			+ this.getStyle()
-			+ '}';
+			+ "}";
 	}
 
 	public String getKey() {

@@ -10,7 +10,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class WaterSuspendParticle extends SpriteBillboardParticle {
-	private WaterSuspendParticle(ClientWorld world, SpriteProvider spriteProvider, double x, double y, double z) {
+	WaterSuspendParticle(ClientWorld world, SpriteProvider spriteProvider, double x, double y, double z) {
 		super(world, x, y - 0.125, z);
 		this.setBoundingBoxSpacing(0.01F, 0.01F);
 		this.setSprite(spriteProvider);
@@ -21,9 +21,7 @@ public class WaterSuspendParticle extends SpriteBillboardParticle {
 		this.gravityStrength = 0.0F;
 	}
 
-	private WaterSuspendParticle(
-		ClientWorld world, SpriteProvider spriteProvider, double x, double y, double z, double velocityX, double velocityY, double velocityZ
-	) {
+	WaterSuspendParticle(ClientWorld world, SpriteProvider spriteProvider, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
 		super(world, x, y - 0.125, z, velocityX, velocityY, velocityZ);
 		this.setBoundingBoxSpacing(0.01F, 0.01F);
 		this.setSprite(spriteProvider);

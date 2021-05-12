@@ -111,7 +111,7 @@ public class Main {
 			MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
 			GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
 			UserCache userCache = new UserCache(gameProfileRepository, new File(file, MinecraftServer.USER_CACHE_FILE.getName()));
-			String string = (String)Optional.ofNullable(optionSet.valueOf(optionSpec11)).orElse(serverPropertiesLoader.getPropertiesHandler().levelName);
+			String string = (String)Optional.ofNullable((String)optionSet.valueOf(optionSpec11)).orElse(serverPropertiesLoader.getPropertiesHandler().levelName);
 			LevelStorage levelStorage = LevelStorage.create(file.toPath());
 			LevelStorage.Session session = levelStorage.createSession(string);
 			MinecraftServer.convertLevel(session);

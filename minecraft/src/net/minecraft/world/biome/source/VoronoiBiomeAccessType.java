@@ -62,7 +62,7 @@ public enum VoronoiBiomeAccessType implements BiomeAccessType {
 	}
 
 	private static double distribute(long seed) {
-		double d = (double)((int)Math.floorMod(seed >> 24, 1024L)) / 1024.0;
+		double d = (double)Math.floorMod(seed >> 24, 1024) / 1024.0;
 		return (d - 0.5) * 0.9;
 	}
 

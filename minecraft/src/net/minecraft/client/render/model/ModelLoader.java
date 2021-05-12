@@ -222,7 +222,7 @@ public class ModelLoader {
 			SpriteAtlasTexture.Data data = spriteAtlasTexture.stitch(
 				this.resourceManager, ((List)entry.getValue()).stream().map(SpriteIdentifier::getTextureId), profiler, i
 			);
-			this.spriteAtlasData.put(entry.getKey(), Pair.of(spriteAtlasTexture, data));
+			this.spriteAtlasData.put((Identifier)entry.getKey(), Pair.of(spriteAtlasTexture, data));
 		}
 
 		profiler.pop();
@@ -347,13 +347,13 @@ public class ModelLoader {
 				this.unbakedModels.put(identifier, jsonUnbakedModel);
 			} else {
 				Identifier identifier = new Identifier(id.getNamespace(), id.getPath());
-				StateManager<Block, BlockState> stateManager = (StateManager)Optional.ofNullable(STATIC_DEFINITIONS.get(identifier))
+				StateManager<Block, BlockState> stateManager = (StateManager)Optional.ofNullable((StateManager)STATIC_DEFINITIONS.get(identifier))
 					.orElseGet(() -> Registry.BLOCK.get(identifier).getStateManager());
 				this.variantMapDeserializationContext.setStateFactory(stateManager);
 				List<Property<?>> list = ImmutableList.copyOf(this.blockColors.getProperties(stateManager.getOwner()));
 				ImmutableList<BlockState> immutableList = stateManager.getStates();
 				Map<ModelIdentifier, BlockState> map = Maps.<ModelIdentifier, BlockState>newHashMap();
-				immutableList.forEach(blockState -> BlockModels.getModelId(identifier, blockState));
+				immutableList.forEach(blockState -> map.put(BlockModels.getModelId(identifier, blockState), blockState));
 				Map<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>>> map2 = Maps.<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>>>newHashMap(
 					
 				);
@@ -372,36 +372,34 @@ public class ModelLoader {
 								resource -> {
 									try {
 										InputStream inputStream = resource.getInputStream();
-										Throwable var3xx = null;
 		
-										Pair var4x;
+										Pair var3x;
 										try {
-											var4x = Pair.of(
+											var3x = Pair.of(
 												resource.getResourcePackName(),
 												ModelVariantMap.fromJson(this.variantMapDeserializationContext, new InputStreamReader(inputStream, StandardCharsets.UTF_8))
 											);
-										} catch (Throwable var14) {
-											var3xx = var14;
-											throw var14;
-										} finally {
+										} catch (Throwable var6xx) {
 											if (inputStream != null) {
-												if (var3xx != null) {
-													try {
-														inputStream.close();
-													} catch (Throwable var13xx) {
-														var3xx.addSuppressed(var13xx);
-													}
-												} else {
+												try {
 													inputStream.close();
+												} catch (Throwable var5xx) {
+													var6xx.addSuppressed(var5xx);
 												}
 											}
+		
+											throw var6xx;
 										}
 		
-										return var4x;
-									} catch (Exception var16xx) {
+										if (inputStream != null) {
+											inputStream.close();
+										}
+		
+										return var3x;
+									} catch (Exception var7xx) {
 										throw new ModelLoader.ModelLoaderException(
 											String.format(
-												"Exception loading blockstate definition: '%s' in resourcepack: '%s': %s", resource.getId(), resource.getResourcePackName(), var16xx.getMessage()
+												"Exception loading blockstate definition: '%s' in resourcepack: '%s': %s", resource.getId(), resource.getResourcePackName(), var7xx.getMessage()
 											)
 										);
 									}
@@ -421,8 +419,11 @@ public class ModelLoader {
 						MultipartUnbakedModel multipartUnbakedModel;
 						if (modelVariantMap.hasMultipartModel()) {
 							multipartUnbakedModel = modelVariantMap.getMultipartModel();
-							immutableList.forEach(blockState -> {
-							});
+							immutableList.forEach(
+								blockState -> map4.put(
+										blockState, Pair.of(multipartUnbakedModel, (Supplier)() -> ModelLoader.ModelDefinition.create(blockState, multipartUnbakedModel, list))
+									)
+							);
 						} else {
 							multipartUnbakedModel = null;
 						}
@@ -533,12 +534,9 @@ public class ModelLoader {
 			throw new IllegalStateException("bake called too early");
 		} else {
 			UnbakedModel unbakedModel = this.getOrLoadModel(id);
-			if (unbakedModel instanceof JsonUnbakedModel) {
-				JsonUnbakedModel jsonUnbakedModel = (JsonUnbakedModel)unbakedModel;
-				if (jsonUnbakedModel.getRootModel() == GENERATION_MARKER) {
-					return ITEM_MODEL_GENERATOR.create(this.spriteAtlasManager::getSprite, jsonUnbakedModel)
-						.bake(this, jsonUnbakedModel, this.spriteAtlasManager::getSprite, settings, id, false);
-				}
+			if (unbakedModel instanceof JsonUnbakedModel jsonUnbakedModel && jsonUnbakedModel.getRootModel() == GENERATION_MARKER) {
+				return ITEM_MODEL_GENERATOR.create(this.spriteAtlasManager::getSprite, jsonUnbakedModel)
+					.bake(this, jsonUnbakedModel, this.spriteAtlasManager::getSprite, settings, id, false);
 			}
 
 			BakedModel bakedModel = unbakedModel.bake(this, this.spriteAtlasManager::getSprite, settings, id);

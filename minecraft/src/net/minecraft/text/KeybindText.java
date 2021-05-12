@@ -53,7 +53,7 @@ public class KeybindText extends BaseText {
 
 	@Override
 	public String toString() {
-		return "KeybindComponent{keybind='" + this.key + '\'' + ", siblings=" + this.siblings + ", style=" + this.getStyle() + '}';
+		return "KeybindComponent{keybind='" + this.key + "', siblings=" + this.siblings + ", style=" + this.getStyle() + "}";
 	}
 
 	public String getKey() {

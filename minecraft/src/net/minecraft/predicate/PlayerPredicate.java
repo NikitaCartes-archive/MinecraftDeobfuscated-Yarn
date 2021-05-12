@@ -33,7 +33,7 @@ public class PlayerPredicate {
 	public static final PlayerPredicate ANY = new PlayerPredicate.Builder().build();
 	private final NumberRange.IntRange experienceLevel;
 	@Nullable
-	private final GameMode gamemode;
+	private final GameMode gameMode;
 	private final Map<Stat<?>, NumberRange.IntRange> stats;
 	private final Object2BooleanMap<Identifier> recipes;
 	private final Map<Identifier, PlayerPredicate.AdvancementPredicate> advancements;
@@ -47,21 +47,21 @@ public class PlayerPredicate {
 			JsonObject jsonObject = JsonHelper.asObject(json, "criterion data");
 			jsonObject.entrySet().forEach(entry -> {
 				boolean bl = JsonHelper.asBoolean((JsonElement)entry.getValue(), "criterion test");
-				object2BooleanMap.put(entry.getKey(), bl);
+				object2BooleanMap.put((String)entry.getKey(), bl);
 			});
 			return new PlayerPredicate.AdvancementCriteriaPredicate(object2BooleanMap);
 		}
 	}
 
-	private PlayerPredicate(
+	PlayerPredicate(
 		NumberRange.IntRange experienceLevel,
-		@Nullable GameMode gamemode,
+		@Nullable GameMode gameMode,
 		Map<Stat<?>, NumberRange.IntRange> stats,
 		Object2BooleanMap<Identifier> recipes,
 		Map<Identifier, PlayerPredicate.AdvancementPredicate> advancements
 	) {
 		this.experienceLevel = experienceLevel;
-		this.gamemode = gamemode;
+		this.gameMode = gameMode;
 		this.stats = stats;
 		this.recipes = recipes;
 		this.advancements = advancements;
@@ -76,7 +76,7 @@ public class PlayerPredicate {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
 			if (!this.experienceLevel.test(serverPlayerEntity.experienceLevel)) {
 				return false;
-			} else if (this.gamemode != null && this.gamemode != serverPlayerEntity.interactionManager.getGameMode()) {
+			} else if (this.gameMode != null && this.gameMode != serverPlayerEntity.interactionManager.getGameMode()) {
 				return false;
 			} else {
 				StatHandler statHandler = serverPlayerEntity.getStatHandler();
@@ -181,8 +181,8 @@ public class PlayerPredicate {
 		} else {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("level", this.experienceLevel.toJson());
-			if (this.gamemode != null) {
-				jsonObject.addProperty("gamemode", this.gamemode.getName());
+			if (this.gameMode != null) {
+				jsonObject.addProperty("gamemode", this.gameMode.getName());
 			}
 
 			if (!this.stats.isEmpty()) {
@@ -270,7 +270,7 @@ public class PlayerPredicate {
 			return this;
 		}
 
-		public PlayerPredicate.Builder gamemode(GameMode gamemode) {
+		public PlayerPredicate.Builder gameMode(GameMode gamemode) {
 			this.gamemode = gamemode;
 			return this;
 		}

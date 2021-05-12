@@ -57,8 +57,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		float h = MathHelper.lerpAngleDegrees(g, livingEntity.prevBodyYaw, livingEntity.bodyYaw);
 		float j = MathHelper.lerpAngleDegrees(g, livingEntity.prevHeadYaw, livingEntity.headYaw);
 		float k = j - h;
-		if (livingEntity.hasVehicle() && livingEntity.getVehicle() instanceof LivingEntity) {
-			LivingEntity livingEntity2 = (LivingEntity)livingEntity.getVehicle();
+		if (livingEntity.hasVehicle() && livingEntity.getVehicle() instanceof LivingEntity livingEntity2) {
 			h = MathHelper.lerpAngleDegrees(g, livingEntity2.prevBodyYaw, livingEntity2.bodyYaw);
 			k = j - h;
 			float l = MathHelper.wrapDegrees(k);

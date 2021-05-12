@@ -14,10 +14,10 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Nameable;
 
 public class CopyNameLootFunction extends ConditionalLootFunction {
-	private final CopyNameLootFunction.Source source;
+	final CopyNameLootFunction.Source source;
 
-	private CopyNameLootFunction(LootCondition[] conditions, CopyNameLootFunction.Source source) {
-		super(conditions);
+	CopyNameLootFunction(LootCondition[] lootConditions, CopyNameLootFunction.Source source) {
+		super(lootConditions);
 		this.source = source;
 	}
 
@@ -34,11 +34,8 @@ public class CopyNameLootFunction extends ConditionalLootFunction {
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
 		Object object = context.get(this.source.parameter);
-		if (object instanceof Nameable) {
-			Nameable nameable = (Nameable)object;
-			if (nameable.hasCustomName()) {
-				stack.setCustomName(nameable.getDisplayName());
-			}
+		if (object instanceof Nameable nameable && nameable.hasCustomName()) {
+			stack.setCustomName(nameable.getDisplayName());
 		}
 
 		return stack;

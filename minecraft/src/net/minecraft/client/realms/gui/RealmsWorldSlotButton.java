@@ -208,7 +208,7 @@ public class RealmsWorldSlotButton extends ButtonWidget implements TickableEleme
 		}
 
 		drawTexture(matrices, x, y, 0.0F, 0.0F, 80, 80, 80, 80);
-		drawCenteredString(matrices, minecraftClient.textRenderer, slotName, x + 40, y + 66, 16777215);
+		drawCenteredText(matrices, minecraftClient.textRenderer, slotName, x + 40, y + 66, 16777215);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -220,15 +220,15 @@ public class RealmsWorldSlotButton extends ButtonWidget implements TickableEleme
 
 	@Environment(EnvType.CLIENT)
 	public static class State {
-		private final boolean isCurrentlyActiveSlot;
-		private final String slotName;
-		private final long imageId;
-		private final String image;
+		final boolean isCurrentlyActiveSlot;
+		final String slotName;
+		final long imageId;
+		final String image;
 		public final boolean empty;
 		public final boolean minigame;
 		public final RealmsWorldSlotButton.Action action;
 		@Nullable
-		private final Text actionPrompt;
+		final Text actionPrompt;
 
 		State(
 			boolean isCurrentlyActiveSlot,

@@ -6,9 +6,13 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
+/**
+ * A pressable widget has a press action. It is pressed when it is clicked. It is
+ * also pressed when enter or space keys are pressed when it is selected.
+ */
 @Environment(EnvType.CLIENT)
-public abstract class AbstractPressableButtonWidget extends AbstractButtonWidget {
-	public AbstractPressableButtonWidget(int i, int j, int k, int l, Text text) {
+public abstract class PressableWidget extends ClickableWidget {
+	public PressableWidget(int i, int j, int k, int l, Text text) {
 		super(i, j, k, l, text);
 	}
 

@@ -28,14 +28,11 @@ public class LookAtEntityGoal extends Goal {
 		this.chance = chance;
 		this.setControls(EnumSet.of(Goal.Control.LOOK));
 		if (targetType == PlayerEntity.class) {
-			this.targetPredicate = new TargetPredicate()
+			this.targetPredicate = TargetPredicate.createNonAttackable()
 				.setBaseMaxDistance((double)range)
-				.includeTeammates()
-				.includeInvulnerable()
-				.ignoreEntityTargetRules()
 				.setPredicate(livingEntity -> EntityPredicates.rides(mob).test(livingEntity));
 		} else {
-			this.targetPredicate = new TargetPredicate().setBaseMaxDistance((double)range).includeTeammates().includeInvulnerable().ignoreEntityTargetRules();
+			this.targetPredicate = TargetPredicate.createNonAttackable().setBaseMaxDistance((double)range);
 		}
 	}
 

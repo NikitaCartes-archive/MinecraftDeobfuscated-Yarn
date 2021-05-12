@@ -30,7 +30,7 @@ public class ModelIdentifier extends Identifier {
 	}
 
 	public ModelIdentifier(String string, String string2) {
-		this(split(string + '#' + string2));
+		this(split(string + "#" + string2));
 	}
 
 	protected static String[] split(String id) {
@@ -56,11 +56,8 @@ public class ModelIdentifier extends Identifier {
 	public boolean equals(Object object) {
 		if (this == object) {
 			return true;
-		} else if (object instanceof ModelIdentifier && super.equals(object)) {
-			ModelIdentifier modelIdentifier = (ModelIdentifier)object;
-			return this.variant.equals(modelIdentifier.variant);
 		} else {
-			return false;
+			return object instanceof ModelIdentifier modelIdentifier && super.equals(object) ? this.variant.equals(modelIdentifier.variant) : false;
 		}
 	}
 
@@ -71,6 +68,6 @@ public class ModelIdentifier extends Identifier {
 
 	@Override
 	public String toString() {
-		return super.toString() + '#' + this.variant;
+		return super.toString() + "#" + this.variant;
 	}
 }

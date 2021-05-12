@@ -84,7 +84,7 @@ public class EntityPredicate {
 		this.catType = catType;
 	}
 
-	private EntityPredicate(
+	EntityPredicate(
 		EntityTypePredicate type,
 		DistancePredicate distance,
 		LocationPredicate location,

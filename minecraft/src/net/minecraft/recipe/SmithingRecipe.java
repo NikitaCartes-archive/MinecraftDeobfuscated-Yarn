@@ -12,9 +12,9 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.world.World;
 
 public class SmithingRecipe implements Recipe<Inventory> {
-	private final Ingredient base;
-	private final Ingredient addition;
-	private final ItemStack result;
+	final Ingredient base;
+	final Ingredient addition;
+	final ItemStack result;
 	private final Identifier id;
 
 	public SmithingRecipe(Identifier id, Ingredient base, Ingredient addition, ItemStack result) {

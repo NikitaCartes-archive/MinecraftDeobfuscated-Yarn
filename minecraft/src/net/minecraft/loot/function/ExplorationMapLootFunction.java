@@ -25,28 +25,26 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ExplorationMapLootFunction extends ConditionalLootFunction {
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogManager.getLogger();
 	public static final StructureFeature<?> DEFAULT_DESTINATION = StructureFeature.BURIED_TREASURE;
 	public static final String MANSION = "mansion";
 	public static final MapIcon.Type DEFAULT_DECORATION = MapIcon.Type.MANSION;
 	public static final byte field_31851 = 2;
 	public static final int field_31852 = 50;
 	public static final boolean field_31853 = true;
-	private final StructureFeature<?> destination;
-	private final MapIcon.Type decoration;
-	private final byte zoom;
-	private final int searchRadius;
-	private final boolean skipExistingChunks;
+	final StructureFeature<?> destination;
+	final MapIcon.Type decoration;
+	final byte zoom;
+	final int searchRadius;
+	final boolean skipExistingChunks;
 
-	private ExplorationMapLootFunction(
-		LootCondition[] conditions, StructureFeature<?> destination, MapIcon.Type decoration, byte zoom, int searchRadius, boolean skipExistingChunks
-	) {
-		super(conditions);
-		this.destination = destination;
-		this.decoration = decoration;
-		this.zoom = zoom;
-		this.searchRadius = searchRadius;
-		this.skipExistingChunks = skipExistingChunks;
+	ExplorationMapLootFunction(LootCondition[] lootConditions, StructureFeature<?> structureFeature, MapIcon.Type type, byte b, int i, boolean bl) {
+		super(lootConditions);
+		this.destination = structureFeature;
+		this.decoration = type;
+		this.zoom = b;
+		this.searchRadius = i;
+		this.skipExistingChunks = bl;
 	}
 
 	@Override

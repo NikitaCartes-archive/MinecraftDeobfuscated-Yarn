@@ -13,11 +13,11 @@ import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.util.JsonHelper;
 
 public class SetNbtLootFunction extends ConditionalLootFunction {
-	private final NbtCompound nbt;
+	final NbtCompound nbt;
 
-	private SetNbtLootFunction(LootCondition[] conditions, NbtCompound nbt) {
-		super(conditions);
-		this.nbt = nbt;
+	SetNbtLootFunction(LootCondition[] lootConditions, NbtCompound nbtCompound) {
+		super(lootConditions);
+		this.nbt = nbtCompound;
 	}
 
 	@Override

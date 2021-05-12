@@ -14,7 +14,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class ChanneledLightningCriterion extends AbstractCriterion<ChanneledLightningCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("channeled_lightning");
+	static final Identifier ID = new Identifier("channeled_lightning");
 
 	@Override
 	public Identifier getId() {

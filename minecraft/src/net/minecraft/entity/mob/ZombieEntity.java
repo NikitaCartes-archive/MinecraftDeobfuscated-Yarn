@@ -447,8 +447,7 @@ public class ZombieEntity extends HostileEntity {
 			entityData = new ZombieEntity.ZombieData(shouldBeBaby(world.getRandom()), true);
 		}
 
-		if (entityData instanceof ZombieEntity.ZombieData) {
-			ZombieEntity.ZombieData zombieData = (ZombieEntity.ZombieData)entityData;
+		if (entityData instanceof ZombieEntity.ZombieData zombieData) {
 			if (zombieData.baby) {
 				this.setBaby(true);
 				if (zombieData.tryChickenJockey) {
@@ -529,14 +528,11 @@ public class ZombieEntity extends HostileEntity {
 	protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
 		super.dropEquipment(source, lootingMultiplier, allowDrops);
 		Entity entity = source.getAttacker();
-		if (entity instanceof CreeperEntity) {
-			CreeperEntity creeperEntity = (CreeperEntity)entity;
-			if (creeperEntity.shouldDropHead()) {
-				ItemStack itemStack = this.getSkull();
-				if (!itemStack.isEmpty()) {
-					creeperEntity.onHeadDropped();
-					this.dropStack(itemStack);
-				}
+		if (entity instanceof CreeperEntity creeperEntity && creeperEntity.shouldDropHead()) {
+			ItemStack itemStack = this.getSkull();
+			if (!itemStack.isEmpty()) {
+				creeperEntity.onHeadDropped();
+				this.dropStack(itemStack);
 			}
 		}
 	}

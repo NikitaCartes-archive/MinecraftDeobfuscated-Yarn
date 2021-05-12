@@ -70,6 +70,6 @@ public class SpriteIdentifier {
 	}
 
 	public String toString() {
-		return "Material{atlasLocation=" + this.atlas + ", texture=" + this.texture + '}';
+		return "Material{atlasLocation=" + this.atlas + ", texture=" + this.texture + "}";
 	}
 }

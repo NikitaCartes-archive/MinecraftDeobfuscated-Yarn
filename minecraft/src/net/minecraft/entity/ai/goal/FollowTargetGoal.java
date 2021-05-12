@@ -36,7 +36,7 @@ public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 		this.targetClass = targetClass;
 		this.reciprocalChance = reciprocalChance;
 		this.setControls(EnumSet.of(Goal.Control.TARGET));
-		this.targetPredicate = new TargetPredicate().setBaseMaxDistance(this.getFollowRange()).setPredicate(targetPredicate);
+		this.targetPredicate = TargetPredicate.createAttackable().setBaseMaxDistance(this.getFollowRange()).setPredicate(targetPredicate);
 	}
 
 	@Override

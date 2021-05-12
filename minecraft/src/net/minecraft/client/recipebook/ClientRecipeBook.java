@@ -33,9 +33,20 @@ public class ClientRecipeBook extends RecipeBook {
 		Map<RecipeBookGroup, List<List<Recipe<?>>>> map = method_30283(iterable);
 		Map<RecipeBookGroup, List<RecipeResultCollection>> map2 = Maps.newHashMap();
 		Builder<RecipeResultCollection> builder = ImmutableList.builder();
-		map.forEach((recipeBookGroup, list) -> list.stream().map(RecipeResultCollection::new).peek(builder::add));
+		map.forEach(
+			(recipeBookGroup, list) -> map2.put(
+					recipeBookGroup, (List)list.stream().map(RecipeResultCollection::new).peek(builder::add).collect(ImmutableList.toImmutableList())
+				)
+		);
 		RecipeBookGroup.SEARCH_MAP
-			.forEach((recipeBookGroup, list) -> list.stream().flatMap(recipeBookGroupx -> ((List)map2.getOrDefault(recipeBookGroupx, ImmutableList.of())).stream()));
+			.forEach(
+				(recipeBookGroup, list) -> map2.put(
+						recipeBookGroup,
+						(List)list.stream()
+							.flatMap(recipeBookGroupx -> ((List)map2.getOrDefault(recipeBookGroupx, ImmutableList.of())).stream())
+							.collect(ImmutableList.toImmutableList())
+					)
+			);
 		this.resultsByGroup = ImmutableMap.copyOf(map2);
 		this.orderedResults = builder.build();
 	}

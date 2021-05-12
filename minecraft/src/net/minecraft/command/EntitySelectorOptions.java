@@ -221,7 +221,7 @@ public class EntitySelectorOptions {
 					for(GameMode gameModexx : GameMode.values()) {
 						if (gameModexx.getName().toLowerCase(Locale.ROOT).startsWith(stringxx)) {
 							if (bl2) {
-								suggestionsBuilder.suggest('!' + gameModexx.getName());
+								suggestionsBuilder.suggest("!" + gameModexx.getName());
 							}
 
 							if (blxx) {
@@ -535,7 +535,7 @@ public class EntitySelectorOptions {
 			if (((EntitySelectorOptions.SelectorOption)entry.getValue()).condition.test(reader) && ((String)entry.getKey()).toLowerCase(Locale.ROOT).startsWith(string)
 				)
 			 {
-				suggestionBuilder.suggest((String)entry.getKey() + '=', ((EntitySelectorOptions.SelectorOption)entry.getValue()).description);
+				suggestionBuilder.suggest((String)entry.getKey() + "=", ((EntitySelectorOptions.SelectorOption)entry.getValue()).description);
 			}
 		}
 	}
@@ -549,10 +549,10 @@ public class EntitySelectorOptions {
 		public final Predicate<EntitySelectorReader> condition;
 		public final Text description;
 
-		private SelectorOption(EntitySelectorOptions.SelectorHandler handler, Predicate<EntitySelectorReader> condition, Text description) {
-			this.handler = handler;
-			this.condition = condition;
-			this.description = description;
+		SelectorOption(EntitySelectorOptions.SelectorHandler selectorHandler, Predicate<EntitySelectorReader> predicate, Text text) {
+			this.handler = selectorHandler;
+			this.condition = predicate;
+			this.description = text;
 		}
 	}
 }

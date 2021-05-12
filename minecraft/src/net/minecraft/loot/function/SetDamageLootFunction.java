@@ -16,13 +16,13 @@ import org.apache.logging.log4j.Logger;
 
 public class SetDamageLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final LootNumberProvider durabilityRange;
-	private final boolean add;
+	final LootNumberProvider durabilityRange;
+	final boolean add;
 
-	private SetDamageLootFunction(LootCondition[] contents, LootNumberProvider durabilityRange, boolean add) {
-		super(contents);
-		this.durabilityRange = durabilityRange;
-		this.add = add;
+	SetDamageLootFunction(LootCondition[] lootConditions, LootNumberProvider lootNumberProvider, boolean bl) {
+		super(lootConditions);
+		this.durabilityRange = lootNumberProvider;
+		this.add = bl;
 	}
 
 	@Override

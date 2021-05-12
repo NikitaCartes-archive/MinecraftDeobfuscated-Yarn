@@ -78,7 +78,7 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 		this(l, list, Optional.empty());
 	}
 
-	private MultiNoiseBiomeSource(
+	MultiNoiseBiomeSource(
 		long seed, List<Pair<Biome.MixedNoisePoint, Supplier<Biome>>> biomePoints, Optional<Pair<Registry<Biome>, MultiNoiseBiomeSource.Preset>> instance
 	) {
 		this(seed, biomePoints, DEFAULT_NOISE_PARAMETERS, DEFAULT_NOISE_PARAMETERS, DEFAULT_NOISE_PARAMETERS, DEFAULT_NOISE_PARAMETERS, instance);
@@ -155,7 +155,8 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 	}
 
 	private Optional<MultiNoiseBiomeSource.Instance> getInstance() {
-		return this.instance.map(pair -> new MultiNoiseBiomeSource.Instance((MultiNoiseBiomeSource.Preset)pair.getSecond(), (Registry)pair.getFirst(), this.seed));
+		return this.instance
+			.map(pair -> new MultiNoiseBiomeSource.Instance((MultiNoiseBiomeSource.Preset)pair.getSecond(), (Registry<Biome>)pair.getFirst(), this.seed));
 	}
 
 	@Override
@@ -189,7 +190,7 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 			instance -> instance.group(
 						Identifier.CODEC
 							.flatXmap(
-								id -> (DataResult)Optional.ofNullable(MultiNoiseBiomeSource.Preset.BY_IDENTIFIER.get(id))
+								id -> (DataResult)Optional.ofNullable((MultiNoiseBiomeSource.Preset)MultiNoiseBiomeSource.Preset.BY_IDENTIFIER.get(id))
 										.map(DataResult::success)
 										.orElseGet(() -> DataResult.error("Unknown preset: " + id)),
 								preset -> DataResult.success(preset.id)
@@ -206,10 +207,10 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 		private final Registry<Biome> biomeRegistry;
 		private final long seed;
 
-		private Instance(MultiNoiseBiomeSource.Preset preset, Registry<Biome> biomeRegistry, long seed) {
+		Instance(MultiNoiseBiomeSource.Preset preset, Registry<Biome> registry, long l) {
 			this.preset = preset;
-			this.biomeRegistry = biomeRegistry;
-			this.seed = seed;
+			this.biomeRegistry = registry;
+			this.seed = l;
 		}
 
 		public MultiNoiseBiomeSource.Preset getPreset() {
@@ -260,7 +261,7 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 	}
 
 	public static class Preset {
-		private static final Map<Identifier, MultiNoiseBiomeSource.Preset> BY_IDENTIFIER = Maps.<Identifier, MultiNoiseBiomeSource.Preset>newHashMap();
+		static final Map<Identifier, MultiNoiseBiomeSource.Preset> BY_IDENTIFIER = Maps.<Identifier, MultiNoiseBiomeSource.Preset>newHashMap();
 		public static final MultiNoiseBiomeSource.Preset NETHER = new MultiNoiseBiomeSource.Preset(
 			new Identifier("nether"),
 			(preset, biomeRegistry, seed) -> new MultiNoiseBiomeSource(
@@ -275,7 +276,7 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 					Optional.of(Pair.of(biomeRegistry, preset))
 				)
 		);
-		private final Identifier id;
+		final Identifier id;
 		private final Function3<MultiNoiseBiomeSource.Preset, Registry<Biome>, Long, MultiNoiseBiomeSource> biomeSourceFunction;
 
 		public Preset(Identifier id, Function3<MultiNoiseBiomeSource.Preset, Registry<Biome>, Long, MultiNoiseBiomeSource> biomeSourceFunction) {

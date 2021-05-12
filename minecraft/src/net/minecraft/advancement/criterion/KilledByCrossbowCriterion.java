@@ -18,7 +18,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class KilledByCrossbowCriterion extends AbstractCriterion<KilledByCrossbowCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("killed_by_crossbow");
+	static final Identifier ID = new Identifier("killed_by_crossbow");
 
 	@Override
 	public Identifier getId() {

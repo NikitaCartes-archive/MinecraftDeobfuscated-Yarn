@@ -47,9 +47,9 @@ public class AngleArgumentType implements ArgumentType<AngleArgumentType.Angle> 
 		private final float angle;
 		private final boolean relative;
 
-		private Angle(float angle, boolean relative) {
-			this.angle = angle;
-			this.relative = relative;
+		Angle(float f, boolean bl) {
+			this.angle = f;
+			this.relative = bl;
 		}
 
 		public float getAngle(ServerCommandSource source) {

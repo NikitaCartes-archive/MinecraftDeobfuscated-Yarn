@@ -640,8 +640,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 						return false;
 					}
 
-					if (entity instanceof PersistentProjectileEntity) {
-						PersistentProjectileEntity persistentProjectileEntity = (PersistentProjectileEntity)entity;
+					if (entity instanceof PersistentProjectileEntity persistentProjectileEntity) {
 						Entity entity2 = persistentProjectileEntity.getOwner();
 						if (entity2 instanceof PlayerEntity && !this.shouldDamagePlayer((PlayerEntity)entity2)) {
 							return false;
@@ -1150,7 +1149,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 		this.enchantmentTableSeed = oldPlayer.enchantmentTableSeed;
 		this.enderChestInventory = oldPlayer.enderChestInventory;
-		this.getDataTracker().set(PLAYER_MODEL_PARTS, oldPlayer.getDataTracker().get(PLAYER_MODEL_PARTS));
+		this.getDataTracker().set(PLAYER_MODEL_PARTS, (Byte)oldPlayer.getDataTracker().get(PLAYER_MODEL_PARTS));
 		this.syncedExperience = -1;
 		this.syncedHealth = -1.0F;
 		this.syncedFoodLevel = -1;

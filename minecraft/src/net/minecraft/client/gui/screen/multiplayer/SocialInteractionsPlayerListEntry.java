@@ -168,7 +168,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 		NarratorManager.INSTANCE.narrate(chatMessage.getString());
 	}
 
-	private MutableText getNarrationMessage(MutableText text) {
+	MutableText getNarrationMessage(MutableText text) {
 		Text text2 = this.getStatusText();
 		return text2 == LiteralText.EMPTY
 			? new LiteralText(this.name).append(", ").append(text)

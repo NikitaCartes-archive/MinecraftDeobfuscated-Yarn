@@ -12,7 +12,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
 public class NetherTravelCriterion extends AbstractCriterion<NetherTravelCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("nether_travel");
+	static final Identifier ID = new Identifier("nether_travel");
 
 	@Override
 	public Identifier getId() {

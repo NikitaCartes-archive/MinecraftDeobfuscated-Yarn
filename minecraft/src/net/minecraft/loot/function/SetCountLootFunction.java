@@ -13,13 +13,13 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.MathHelper;
 
 public class SetCountLootFunction extends ConditionalLootFunction {
-	private final LootNumberProvider countRange;
-	private final boolean add;
+	final LootNumberProvider countRange;
+	final boolean add;
 
-	private SetCountLootFunction(LootCondition[] conditions, LootNumberProvider countRange, boolean add) {
-		super(conditions);
-		this.countRange = countRange;
-		this.add = add;
+	SetCountLootFunction(LootCondition[] lootConditions, LootNumberProvider lootNumberProvider, boolean bl) {
+		super(lootConditions);
+		this.countRange = lootNumberProvider;
+		this.add = bl;
 	}
 
 	@Override

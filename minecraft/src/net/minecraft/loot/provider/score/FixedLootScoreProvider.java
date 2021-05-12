@@ -12,10 +12,10 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.JsonSerializer;
 
 public class FixedLootScoreProvider implements LootScoreProvider {
-	private final String name;
+	final String name;
 
-	private FixedLootScoreProvider(String name) {
-		this.name = name;
+	FixedLootScoreProvider(String string) {
+		this.name = string;
 	}
 
 	public static LootScoreProvider create(String name) {

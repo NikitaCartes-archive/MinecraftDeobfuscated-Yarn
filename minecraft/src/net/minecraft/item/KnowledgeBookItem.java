@@ -47,7 +47,7 @@ public class KnowledgeBookItem extends Item {
 						return TypedActionResult.fail(itemStack);
 					}
 
-					list.add(optional.get());
+					list.add((Recipe)optional.get());
 				}
 
 				user.unlockRecipes(list);

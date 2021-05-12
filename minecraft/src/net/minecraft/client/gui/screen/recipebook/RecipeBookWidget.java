@@ -64,7 +64,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	private final RecipeMatcher recipeFinder = new RecipeMatcher();
 	private int cachedInvChangeCount;
 	private boolean searching;
-	private boolean field_33679;
+	private boolean open;
 
 	public void initialize(int parentWidth, int parentHeight, MinecraftClient client, boolean narrow, AbstractRecipeScreenHandler<?> craftingScreenHandler) {
 		this.client = client;
@@ -74,8 +74,8 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		client.player.currentScreenHandler = craftingScreenHandler;
 		this.recipeBook = client.player.getRecipeBook();
 		this.cachedInvChangeCount = client.player.getInventory().getChangeCount();
-		this.field_33679 = this.method_36485();
-		if (this.field_33679) {
+		this.open = this.isGuiOpen();
+		if (this.open) {
 			this.reset(narrow);
 		}
 
@@ -154,15 +154,15 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	}
 
 	public boolean isOpen() {
-		return this.field_33679;
+		return this.open;
 	}
 
-	private boolean method_36485() {
+	private boolean isGuiOpen() {
 		return this.recipeBook.isGuiOpen(this.craftingScreenHandler.getCategory());
 	}
 
 	protected void setOpen(boolean opened) {
-		this.field_33679 = opened;
+		this.open = opened;
 		this.recipeBook.setGuiOpen(this.craftingScreenHandler.getCategory(), opened);
 		if (!opened) {
 			this.recipesArea.hideAlternates();
@@ -224,7 +224,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	}
 
 	public void update() {
-		boolean bl = this.method_36485();
+		boolean bl = this.isGuiOpen();
 		if (this.isOpen() != bl) {
 			this.setOpen(bl);
 		}

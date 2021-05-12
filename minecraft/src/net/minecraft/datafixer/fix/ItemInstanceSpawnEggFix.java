@@ -79,18 +79,24 @@ public class ItemInstanceSpawnEggFix extends DataFix {
 		OpticFinder<String> opticFinder2 = DSL.fieldFinder("id", IdentifierNormalizingSchema.getIdentifierType());
 		OpticFinder<?> opticFinder3 = type.findField("tag");
 		OpticFinder<?> opticFinder4 = opticFinder3.type().findField("EntityTag");
-		return this.fixTypeEverywhereTyped("ItemInstanceSpawnEggFix", type, typed -> {
-			Optional<Pair<String, String>> optional = typed.getOptional(opticFinder);
-			if (optional.isPresent() && Objects.equals(((Pair)optional.get()).getSecond(), "minecraft:spawn_egg")) {
-				Typed<?> typed2 = typed.getOrCreateTyped(opticFinder3);
-				Typed<?> typed3 = typed2.getOrCreateTyped(opticFinder4);
-				Optional<String> optional2 = typed3.getOptional(opticFinder2);
-				if (optional2.isPresent()) {
-					return typed.set(opticFinder, Pair.of(TypeReferences.ITEM_NAME.typeName(), ENTITY_SPAWN_EGGS.getOrDefault(optional2.get(), "minecraft:pig_spawn_egg")));
+		return this.fixTypeEverywhereTyped(
+			"ItemInstanceSpawnEggFix",
+			type,
+			typed -> {
+				Optional<Pair<String, String>> optional = typed.getOptional(opticFinder);
+				if (optional.isPresent() && Objects.equals(((Pair)optional.get()).getSecond(), "minecraft:spawn_egg")) {
+					Typed<?> typed2 = typed.getOrCreateTyped(opticFinder3);
+					Typed<?> typed3 = typed2.getOrCreateTyped(opticFinder4);
+					Optional<String> optional2 = typed3.getOptional(opticFinder2);
+					if (optional2.isPresent()) {
+						return typed.set(
+							opticFinder, Pair.of(TypeReferences.ITEM_NAME.typeName(), (String)ENTITY_SPAWN_EGGS.getOrDefault(optional2.get(), "minecraft:pig_spawn_egg"))
+						);
+					}
 				}
+	
+				return typed;
 			}
-
-			return typed;
-		});
+		);
 	}
 }

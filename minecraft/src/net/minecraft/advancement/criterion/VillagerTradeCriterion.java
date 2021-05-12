@@ -12,7 +12,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class VillagerTradeCriterion extends AbstractCriterion<VillagerTradeCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("villager_trade");
+	static final Identifier ID = new Identifier("villager_trade");
 
 	@Override
 	public Identifier getId() {

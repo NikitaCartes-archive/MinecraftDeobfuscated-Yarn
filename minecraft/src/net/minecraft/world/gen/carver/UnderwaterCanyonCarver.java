@@ -5,11 +5,11 @@ import com.mojang.serialization.Codec;
 import java.util.BitSet;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.class_6350;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.gen.chunk.AquiferSampler;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class UnderwaterCanyonCarver extends RavineCarver {
@@ -69,9 +69,9 @@ public class UnderwaterCanyonCarver extends RavineCarver {
 		Random random,
 		BlockPos.Mutable mutable,
 		BlockPos.Mutable mutable2,
-		class_6350 arg,
+		AquiferSampler aquiferSampler,
 		MutableBoolean mutableBoolean
 	) {
-		return UnderwaterCaveCarver.method_36215(this, chunk, random, mutable, mutable2, arg);
+		return UnderwaterCaveCarver.carve(this, chunk, random, mutable, mutable2, aquiferSampler);
 	}
 }

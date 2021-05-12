@@ -25,6 +25,11 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public abstract class TameableEntity extends AnimalEntity implements Tameable {
+	/**
+	 * The tracked flags of tameable entities. Has the {@code 1} flag for {@linkplain
+	 * #isInSittingPose() sitting pose} and the {@code 4} flag for {@linkplain
+	 * #isTamed() tamed}.
+	 */
 	protected static final TrackedData<Byte> TAMEABLE_FLAGS = DataTracker.registerData(TameableEntity.class, TrackedDataHandlerRegistry.BYTE);
 	protected static final TrackedData<Optional<UUID>> OWNER_UUID = DataTracker.registerData(TameableEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 	private boolean sitting;

@@ -506,8 +506,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	public boolean canAttackWithOwner(LivingEntity target, LivingEntity owner) {
 		if (target instanceof CreeperEntity || target instanceof GhastEntity) {
 			return false;
-		} else if (target instanceof WolfEntity) {
-			WolfEntity wolfEntity = (WolfEntity)target;
+		} else if (target instanceof WolfEntity wolfEntity) {
 			return !wolfEntity.isTamed() || wolfEntity.getOwner() != owner;
 		} else if (target instanceof PlayerEntity && owner instanceof PlayerEntity && !((PlayerEntity)owner).shouldDamagePlayer((PlayerEntity)target)) {
 			return false;

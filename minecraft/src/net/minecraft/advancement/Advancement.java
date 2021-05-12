@@ -98,7 +98,7 @@ public class Advancement {
 			+ this.criteria
 			+ ", requirements="
 			+ Arrays.deepToString(this.requirements)
-			+ '}';
+			+ "}";
 	}
 
 	public Iterable<Advancement> getChildren() {
@@ -153,7 +153,7 @@ public class Advancement {
 		private String[][] requirements;
 		private CriterionMerger merger = CriterionMerger.AND;
 
-		private Task(
+		Task(
 			@Nullable Identifier parentId,
 			@Nullable AdvancementDisplay display,
 			AdvancementRewards rewards,
@@ -355,7 +355,7 @@ public class Advancement {
 				+ this.criteria
 				+ ", requirements="
 				+ Arrays.deepToString(this.requirements)
-				+ '}';
+				+ "}";
 		}
 
 		public static Advancement.Task fromJson(JsonObject obj, AdvancementEntityPredicateDeserializer predicateDeserializer) {

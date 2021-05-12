@@ -110,8 +110,5 @@ public enum EnderDragonSpawnState {
 		}
 	};
 
-	private EnderDragonSpawnState() {
-	}
-
 	public abstract void run(ServerWorld world, EnderDragonFight fight, List<EndCrystalEntity> crystals, int i, BlockPos pos);
 }

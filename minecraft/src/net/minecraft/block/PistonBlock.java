@@ -115,12 +115,10 @@ public class PistonBlock extends FacingBlock {
 			int i = 1;
 			if (blockState.isOf(Blocks.MOVING_PISTON) && blockState.get(FACING) == direction) {
 				BlockEntity blockEntity = world.getBlockEntity(blockPos);
-				if (blockEntity instanceof PistonBlockEntity) {
-					PistonBlockEntity pistonBlockEntity = (PistonBlockEntity)blockEntity;
-					if (pistonBlockEntity.isExtending()
-						&& (pistonBlockEntity.getProgress(0.0F) < 0.5F || world.getTime() == pistonBlockEntity.getSavedWorldTime() || ((ServerWorld)world).isInBlockTick())) {
-						i = 2;
-					}
+				if (blockEntity instanceof PistonBlockEntity pistonBlockEntity
+					&& pistonBlockEntity.isExtending()
+					&& (pistonBlockEntity.getProgress(0.0F) < 0.5F || world.getTime() == pistonBlockEntity.getSavedWorldTime() || ((ServerWorld)world).isInBlockTick())) {
+					i = 2;
 				}
 			}
 
@@ -195,12 +193,9 @@ public class PistonBlock extends FacingBlock {
 				boolean bl2 = false;
 				if (blockState2.isOf(Blocks.MOVING_PISTON)) {
 					BlockEntity blockEntity2 = world.getBlockEntity(blockPos);
-					if (blockEntity2 instanceof PistonBlockEntity) {
-						PistonBlockEntity pistonBlockEntity = (PistonBlockEntity)blockEntity2;
-						if (pistonBlockEntity.getFacing() == direction && pistonBlockEntity.isExtending()) {
-							pistonBlockEntity.finish();
-							bl2 = true;
-						}
+					if (blockEntity2 instanceof PistonBlockEntity pistonBlockEntity && pistonBlockEntity.getFacing() == direction && pistonBlockEntity.isExtending()) {
+						pistonBlockEntity.finish();
+						bl2 = true;
 					}
 				}
 

@@ -13,7 +13,7 @@ import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
-public abstract class SliderWidget extends AbstractButtonWidget {
+public abstract class SliderWidget extends ClickableWidget {
 	protected double value;
 
 	public SliderWidget(int x, int y, int width, int height, Text text, double value) {
@@ -32,8 +32,8 @@ public abstract class SliderWidget extends AbstractButtonWidget {
 	}
 
 	@Override
-	protected void renderBg(MatrixStack matrices, MinecraftClient client, int mouseX, int mouseY) {
-		RenderSystem.setShaderTexture(0, WIDGETS_LOCATION);
+	protected void renderBackground(MatrixStack matrices, MinecraftClient client, int mouseX, int mouseY) {
+		RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		int i = (this.isHovered() ? 2 : 1) * 20;
 		this.drawTexture(matrices, this.x + (int)(this.value * (double)(this.width - 8)), this.y, 0, 46 + i, 4, 20);

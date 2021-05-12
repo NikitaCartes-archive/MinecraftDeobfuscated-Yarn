@@ -20,10 +20,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ClientEntityManager<T extends EntityLike> {
-	private static final Logger LOGGER = LogManager.getLogger();
-	private final EntityHandler<T> handler;
-	private final EntityIndex<T> index;
-	private final SectionedEntityCache<T> cache;
+	static final Logger LOGGER = LogManager.getLogger();
+	final EntityHandler<T> handler;
+	final EntityIndex<T> index;
+	final SectionedEntityCache<T> cache;
 	private final LongSet tickingChunkSections = new LongOpenHashSet();
 	private final EntityLookup<T> lookup;
 
@@ -80,7 +80,7 @@ public class ClientEntityManager<T extends EntityLike> {
 		return this.index.size();
 	}
 
-	private void removeIfEmpty(long packedChunkSection, EntityTrackingSection<T> entities) {
+	void removeIfEmpty(long packedChunkSection, EntityTrackingSection<T> entities) {
 		if (entities.isEmpty()) {
 			this.cache.removeSection(packedChunkSection);
 		}
@@ -96,10 +96,10 @@ public class ClientEntityManager<T extends EntityLike> {
 		private long lastSectionPos;
 		private EntityTrackingSection<T> section;
 
-		private Listener(T entity, long lastSectionPos, EntityTrackingSection<T> section) {
-			this.entity = entity;
-			this.lastSectionPos = lastSectionPos;
-			this.section = section;
+		Listener(T entityLike, long l, EntityTrackingSection<T> entityTrackingSection) {
+			this.entity = entityLike;
+			this.lastSectionPos = l;
+			this.section = entityTrackingSection;
 		}
 
 		@Override

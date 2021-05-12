@@ -77,8 +77,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
-		if (blockEntity instanceof CampfireBlockEntity) {
-			CampfireBlockEntity campfireBlockEntity = (CampfireBlockEntity)blockEntity;
+		if (blockEntity instanceof CampfireBlockEntity campfireBlockEntity) {
 			ItemStack itemStack = player.getStackInHand(hand);
 			Optional<CampfireCookingRecipe> optional = campfireBlockEntity.getRecipeFor(itemStack);
 			if (optional.isPresent()) {

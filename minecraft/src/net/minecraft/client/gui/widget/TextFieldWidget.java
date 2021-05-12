@@ -31,7 +31,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class TextFieldWidget extends AbstractButtonWidget implements Drawable, Element {
+public class TextFieldWidget extends ClickableWidget implements Drawable, Element {
 	public static final int field_32194 = -1;
 	public static final int field_32195 = 1;
 	private static final int field_32197 = 1;
@@ -521,8 +521,8 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 	}
 
 	@Override
-	protected void onFocusedChanged(boolean bl) {
-		if (bl) {
+	protected void onFocusedChanged(boolean newFocused) {
+		if (newFocused) {
 			this.focusedTicks = 0;
 		}
 	}

@@ -25,7 +25,7 @@ public abstract class LeafEntry extends LootPoolEntry {
 	protected final int weight;
 	protected final int quality;
 	protected final LootFunction[] functions;
-	private final BiFunction<ItemStack, LootContext, ItemStack> compiledFunctions;
+	final BiFunction<ItemStack, LootContext, ItemStack> compiledFunctions;
 	private final LootChoice choice = new LeafEntry.Choice() {
 		@Override
 		public void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context) {
@@ -108,10 +108,7 @@ public abstract class LeafEntry extends LootPoolEntry {
 		}
 	}
 
-	public abstract class Choice implements LootChoice {
-		protected Choice() {
-		}
-
+	protected abstract class Choice implements LootChoice {
 		@Override
 		public int getWeight(float luck) {
 			return Math.max(MathHelper.floor((float)LeafEntry.this.weight + (float)LeafEntry.this.quality * luck), 0);
@@ -119,7 +116,7 @@ public abstract class LeafEntry extends LootPoolEntry {
 	}
 
 	@FunctionalInterface
-	public interface Factory {
+	protected interface Factory {
 		LeafEntry build(int weight, int quality, LootCondition[] conditions, LootFunction[] functions);
 	}
 

@@ -55,10 +55,7 @@ public class ModelOverride {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Deserializer implements JsonDeserializer<ModelOverride> {
-		protected Deserializer() {
-		}
-
+	protected static class Deserializer implements JsonDeserializer<ModelOverride> {
 		public ModelOverride deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "model"));

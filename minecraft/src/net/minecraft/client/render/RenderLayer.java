@@ -835,7 +835,7 @@ public abstract class RenderLayer extends RenderPhase {
 		this.optionalThis = Optional.of(this);
 	}
 
-	private static RenderLayer.MultiPhase of(
+	static RenderLayer.MultiPhase of(
 		String name, VertexFormat vertexFormat, VertexFormat.DrawMode drawMode, int expectedBufferSize, RenderLayer.MultiPhaseParameters phaseData
 	) {
 		return of(name, vertexFormat, drawMode, expectedBufferSize, false, false, phaseData);
@@ -905,7 +905,7 @@ public abstract class RenderLayer extends RenderPhase {
 
 	@Environment(EnvType.CLIENT)
 	static final class MultiPhase extends RenderLayer {
-		private static final BiFunction<Identifier, RenderPhase.Cull, RenderLayer> CULLING_LAYERS = Util.memoize(
+		static final BiFunction<Identifier, RenderPhase.Cull, RenderLayer> CULLING_LAYERS = Util.memoize(
 			(BiFunction<Identifier, RenderPhase.Cull, RenderLayer>)((texture, culling) -> RenderLayer.of(
 					"outline",
 					VertexFormats.POSITION_COLOR_TEXTURE,
@@ -924,30 +924,30 @@ public abstract class RenderLayer extends RenderPhase {
 		private final Optional<RenderLayer> affectedOutline;
 		private final boolean outline;
 
-		private MultiPhase(
-			String name,
+		MultiPhase(
+			String string,
 			VertexFormat vertexFormat,
 			VertexFormat.DrawMode drawMode,
-			int expectedBufferSize,
-			boolean hasCrumbling,
-			boolean translucent,
-			RenderLayer.MultiPhaseParameters phases
+			int i,
+			boolean bl,
+			boolean bl2,
+			RenderLayer.MultiPhaseParameters multiPhaseParameters
 		) {
 			super(
-				name,
+				string,
 				vertexFormat,
 				drawMode,
-				expectedBufferSize,
-				hasCrumbling,
-				translucent,
-				() -> phases.phases.forEach(RenderPhase::startDrawing),
-				() -> phases.phases.forEach(RenderPhase::endDrawing)
+				i,
+				bl,
+				bl2,
+				() -> multiPhaseParameters.phases.forEach(RenderPhase::startDrawing),
+				() -> multiPhaseParameters.phases.forEach(RenderPhase::endDrawing)
 			);
-			this.phases = phases;
-			this.affectedOutline = phases.outlineMode == RenderLayer.OutlineMode.AFFECTS_OUTLINE
-				? phases.texture.getId().map(texture -> (RenderLayer)CULLING_LAYERS.apply(texture, phases.cull))
+			this.phases = multiPhaseParameters;
+			this.affectedOutline = multiPhaseParameters.outlineMode == RenderLayer.OutlineMode.AFFECTS_OUTLINE
+				? multiPhaseParameters.texture.getId().map(texture -> (RenderLayer)CULLING_LAYERS.apply(texture, multiPhaseParameters.cull))
 				: Optional.empty();
-			this.outline = phases.outlineMode == RenderLayer.OutlineMode.IS_OUTLINE;
+			this.outline = multiPhaseParameters.outlineMode == RenderLayer.OutlineMode.IS_OUTLINE;
 		}
 
 		@Override
@@ -966,17 +966,17 @@ public abstract class RenderLayer extends RenderPhase {
 
 		@Override
 		public String toString() {
-			return "RenderType[" + this.name + ":" + this.phases + ']';
+			return "RenderType[" + this.name + ":" + this.phases + "]";
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static final class MultiPhaseParameters {
-		private final RenderPhase.TextureBase texture;
+	protected static final class MultiPhaseParameters {
+		final RenderPhase.TextureBase texture;
 		private final RenderPhase.Shader shader;
 		private final RenderPhase.Transparency transparency;
 		private final RenderPhase.DepthTest depthTest;
-		private final RenderPhase.Cull cull;
+		final RenderPhase.Cull cull;
 		private final RenderPhase.Lightmap lightmap;
 		private final RenderPhase.Overlay overlay;
 		private final RenderPhase.Layering layering;
@@ -984,11 +984,11 @@ public abstract class RenderLayer extends RenderPhase {
 		private final RenderPhase.Texturing texturing;
 		private final RenderPhase.WriteMaskState writeMaskState;
 		private final RenderPhase.LineWidth lineWidth;
-		private final RenderLayer.OutlineMode outlineMode;
-		private final ImmutableList<RenderPhase> phases;
+		final RenderLayer.OutlineMode outlineMode;
+		final ImmutableList<RenderPhase> phases;
 
-		private MultiPhaseParameters(
-			RenderPhase.TextureBase texture,
+		MultiPhaseParameters(
+			RenderPhase.TextureBase textureBase,
 			RenderPhase.Shader shader,
 			RenderPhase.Transparency transparency,
 			RenderPhase.DepthTest depthTest,
@@ -1002,7 +1002,7 @@ public abstract class RenderLayer extends RenderPhase {
 			RenderPhase.LineWidth lineWidth,
 			RenderLayer.OutlineMode outlineMode
 		) {
-			this.texture = texture;
+			this.texture = textureBase;
 			this.shader = shader;
 			this.transparency = transparency;
 			this.depthTest = depthTest;
@@ -1032,7 +1032,7 @@ public abstract class RenderLayer extends RenderPhase {
 		}
 
 		public String toString() {
-			return "CompositeState[" + this.phases + ", outlineProperty=" + this.outlineMode + ']';
+			return "CompositeState[" + this.phases + ", outlineProperty=" + this.outlineMode + "]";
 		}
 
 		public static RenderLayer.MultiPhaseParameters.Builder builder() {
@@ -1054,7 +1054,7 @@ public abstract class RenderLayer extends RenderPhase {
 			private RenderPhase.WriteMaskState writeMaskState = RenderPhase.ALL_MASK;
 			private RenderPhase.LineWidth lineWidth = RenderPhase.FULL_LINE_WIDTH;
 
-			private Builder() {
+			Builder() {
 			}
 
 			public RenderLayer.MultiPhaseParameters.Builder texture(RenderPhase.TextureBase texture) {

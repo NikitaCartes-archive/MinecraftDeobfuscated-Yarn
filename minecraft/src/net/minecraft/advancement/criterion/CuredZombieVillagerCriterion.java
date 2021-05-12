@@ -11,7 +11,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class CuredZombieVillagerCriterion extends AbstractCriterion<CuredZombieVillagerCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("cured_zombie_villager");
+	static final Identifier ID = new Identifier("cured_zombie_villager");
 
 	@Override
 	public Identifier getId() {

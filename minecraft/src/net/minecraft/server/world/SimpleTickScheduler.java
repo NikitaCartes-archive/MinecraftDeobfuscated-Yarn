@@ -21,7 +21,9 @@ public class SimpleTickScheduler<T> implements TickScheduler<T> {
 			identifierProvider,
 			(List<SimpleTickScheduler.Tick<T>>)scheduledTicks.stream()
 				.map(
-					scheduledTick -> new SimpleTickScheduler.Tick(scheduledTick.getObject(), scheduledTick.pos, (int)(scheduledTick.time - startTime), scheduledTick.priority)
+					scheduledTick -> new SimpleTickScheduler.Tick<>(
+							scheduledTick.getObject(), scheduledTick.pos, (int)(scheduledTick.time - startTime), scheduledTick.priority
+						)
 				)
 				.collect(Collectors.toList())
 		);
@@ -89,16 +91,16 @@ public class SimpleTickScheduler<T> implements TickScheduler<T> {
 	}
 
 	static class Tick<T> {
-		private final T object;
+		final T object;
 		public final BlockPos pos;
 		public final int delay;
 		public final TickPriority priority;
 
-		private Tick(T object, BlockPos pos, int delay, TickPriority priority) {
+		Tick(T object, BlockPos blockPos, int i, TickPriority tickPriority) {
 			this.object = object;
-			this.pos = pos;
-			this.delay = delay;
-			this.priority = priority;
+			this.pos = blockPos;
+			this.delay = i;
+			this.priority = tickPriority;
 		}
 
 		public String toString() {

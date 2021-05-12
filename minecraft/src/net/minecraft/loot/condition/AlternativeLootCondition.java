@@ -12,12 +12,12 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.JsonSerializer;
 
 public class AlternativeLootCondition implements LootCondition {
-	private final LootCondition[] terms;
+	final LootCondition[] terms;
 	private final Predicate<LootContext> predicate;
 
-	private AlternativeLootCondition(LootCondition[] terms) {
-		this.terms = terms;
-		this.predicate = LootConditionTypes.joinOr(terms);
+	AlternativeLootCondition(LootCondition[] lootConditions) {
+		this.terms = lootConditions;
+		this.predicate = LootConditionTypes.joinOr(lootConditions);
 	}
 
 	@Override

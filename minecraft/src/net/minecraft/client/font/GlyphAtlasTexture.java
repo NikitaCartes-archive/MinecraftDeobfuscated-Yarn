@@ -73,19 +73,19 @@ public class GlyphAtlasTexture extends AbstractTexture {
 
 	@Environment(EnvType.CLIENT)
 	static class Slot {
-		private final int x;
-		private final int y;
+		final int x;
+		final int y;
 		private final int width;
 		private final int height;
 		private GlyphAtlasTexture.Slot subSlot1;
 		private GlyphAtlasTexture.Slot subSlot2;
 		private boolean occupied;
 
-		private Slot(int x, int y, int width, int height) {
-			this.x = x;
-			this.y = y;
-			this.width = width;
-			this.height = height;
+		Slot(int i, int j, int k, int l) {
+			this.x = i;
+			this.y = j;
+			this.width = k;
+			this.height = l;
 		}
 
 		@Nullable

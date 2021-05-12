@@ -15,7 +15,7 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 
 public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("enter_block");
+	static final Identifier ID = new Identifier("enter_block");
 
 	@Override
 	public Identifier getId() {

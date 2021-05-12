@@ -55,6 +55,10 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 
 public class IronGolemEntity extends GolemEntity implements Angerable {
+	/**
+	 * The tracked flags of iron golems. Only has the {@code 1} bit for whether a
+	 * golem is {@linkplain #isPlayerCreated() created by a player}.
+	 */
 	protected static final TrackedData<Byte> IRON_GOLEM_FLAGS = DataTracker.registerData(IronGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final int HEALTH_PER_INGOT = 25;
 	private int attackTicksLeft;

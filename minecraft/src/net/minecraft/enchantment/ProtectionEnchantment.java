@@ -47,8 +47,7 @@ public class ProtectionEnchantment extends Enchantment {
 
 	@Override
 	public boolean canAccept(Enchantment other) {
-		if (other instanceof ProtectionEnchantment) {
-			ProtectionEnchantment protectionEnchantment = (ProtectionEnchantment)other;
+		if (other instanceof ProtectionEnchantment protectionEnchantment) {
 			if (this.protectionType == protectionEnchantment.protectionType) {
 				return false;
 			} else {

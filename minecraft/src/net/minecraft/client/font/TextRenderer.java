@@ -52,7 +52,7 @@ public class TextRenderer {
 		this.handler = new TextHandler((i, style) -> this.getFontStorage(style.getFont()).getGlyph(i).getAdvance(style.isBold()));
 	}
 
-	private FontStorage getFontStorage(Identifier id) {
+	FontStorage getFontStorage(Identifier id) {
 		return (FontStorage)this.fontStorageAccessor.apply(id);
 	}
 
@@ -295,7 +295,7 @@ public class TextRenderer {
 		return drawer.drawLayer(underlineColor, x);
 	}
 
-	private void drawGlyph(
+	void drawGlyph(
 		GlyphRenderer glyphRenderer,
 		boolean bold,
 		boolean italic,

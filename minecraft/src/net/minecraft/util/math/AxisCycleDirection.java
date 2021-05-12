@@ -68,9 +68,6 @@ public enum AxisCycleDirection {
 	public static final Direction.Axis[] AXES = Direction.Axis.values();
 	public static final AxisCycleDirection[] VALUES = values();
 
-	private AxisCycleDirection() {
-	}
-
 	public abstract int choose(int x, int y, int z, Direction.Axis axis);
 
 	public abstract double choose(double x, double y, double z, Direction.Axis axis);

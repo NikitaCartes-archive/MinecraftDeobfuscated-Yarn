@@ -14,13 +14,13 @@ import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.util.JsonHelper;
 
 public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
-	private final LootNumberProvider range;
-	private final boolean treasureEnchantmentsAllowed;
+	final LootNumberProvider range;
+	final boolean treasureEnchantmentsAllowed;
 
-	private EnchantWithLevelsLootFunction(LootCondition[] conditions, LootNumberProvider range, boolean treasureEnchantmentsAllowed) {
-		super(conditions);
-		this.range = range;
-		this.treasureEnchantmentsAllowed = treasureEnchantmentsAllowed;
+	EnchantWithLevelsLootFunction(LootCondition[] lootConditions, LootNumberProvider lootNumberProvider, boolean bl) {
+		super(lootConditions);
+		this.range = lootNumberProvider;
+		this.treasureEnchantmentsAllowed = bl;
 	}
 
 	@Override

@@ -122,8 +122,8 @@ public final class RecipeBookOptions {
 	}
 
 	static final class CategoryOption {
-		private boolean guiOpen;
-		private boolean filteringCraftable;
+		boolean guiOpen;
+		boolean filteringCraftable;
 
 		public CategoryOption(boolean guiOpen, boolean filteringCraftable) {
 			this.guiOpen = guiOpen;
@@ -151,7 +151,7 @@ public final class RecipeBookOptions {
 		}
 
 		public String toString() {
-			return "[open=" + this.guiOpen + ", filtering=" + this.filteringCraftable + ']';
+			return "[open=" + this.guiOpen + ", filtering=" + this.filteringCraftable + "]";
 		}
 	}
 }

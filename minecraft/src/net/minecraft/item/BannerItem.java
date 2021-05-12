@@ -35,7 +35,7 @@ public class BannerItem extends WallStandingBlockItem {
 				DyeColor dyeColor = DyeColor.byId(nbtCompound2.getInt("Color"));
 				BannerPattern bannerPattern = BannerPattern.byId(nbtCompound2.getString("Pattern"));
 				if (bannerPattern != null) {
-					tooltip.add(new TranslatableText("block.minecraft.banner." + bannerPattern.getName() + '.' + dyeColor.getName()).formatted(Formatting.GRAY));
+					tooltip.add(new TranslatableText("block.minecraft.banner." + bannerPattern.getName() + "." + dyeColor.getName()).formatted(Formatting.GRAY));
 				}
 			}
 		}

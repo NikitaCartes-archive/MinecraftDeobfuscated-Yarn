@@ -63,11 +63,8 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 	@Override
 	public boolean damage(DamageSource source, float amount) {
 		Entity entity = source.getSource();
-		if (entity instanceof PersistentProjectileEntity) {
-			PersistentProjectileEntity persistentProjectileEntity = (PersistentProjectileEntity)entity;
-			if (persistentProjectileEntity.isOnFire()) {
-				this.explode(persistentProjectileEntity.getVelocity().lengthSquared());
-			}
+		if (entity instanceof PersistentProjectileEntity persistentProjectileEntity && persistentProjectileEntity.isOnFire()) {
+			this.explode(persistentProjectileEntity.getVelocity().lengthSquared());
 		}
 
 		return super.damage(source, amount);

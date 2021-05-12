@@ -99,8 +99,5 @@ public enum EnchantmentTarget {
 		}
 	};
 
-	private EnchantmentTarget() {
-	}
-
 	public abstract boolean isAcceptableItem(Item item);
 }

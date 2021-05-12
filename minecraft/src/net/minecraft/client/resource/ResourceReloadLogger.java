@@ -27,7 +27,9 @@ public class ResourceReloadLogger {
 			LOGGER.warn("Reload already ongoing, replacing");
 		}
 
-		this.reloadState = new ResourceReloadLogger.ReloadState(reason, (List)packs.stream().map(ResourcePack::getName).collect(ImmutableList.toImmutableList()));
+		this.reloadState = new ResourceReloadLogger.ReloadState(
+			reason, (List<String>)packs.stream().map(ResourcePack::getName).collect(ImmutableList.toImmutableList())
+		);
 	}
 
 	public void recover(Throwable throwable) {
@@ -59,7 +61,7 @@ public class ResourceReloadLogger {
 	static class RecoveryEntry {
 		private final Throwable throwable;
 
-		private RecoveryEntry(Throwable throwable) {
+		RecoveryEntry(Throwable throwable) {
 			this.throwable = throwable;
 		}
 
@@ -79,7 +81,7 @@ public class ResourceReloadLogger {
 		MANUAL("manual"),
 		UNKNOWN("unknown");
 
-		private final String name;
+		final String name;
 
 		private ReloadReason(String name) {
 			this.name = name;
@@ -91,12 +93,12 @@ public class ResourceReloadLogger {
 		private final ResourceReloadLogger.ReloadReason reason;
 		private final List<String> packs;
 		@Nullable
-		private ResourceReloadLogger.RecoveryEntry recovery;
-		private boolean finished;
+		ResourceReloadLogger.RecoveryEntry recovery;
+		boolean finished;
 
-		private ReloadState(ResourceReloadLogger.ReloadReason reason, List<String> packs) {
-			this.reason = reason;
-			this.packs = packs;
+		ReloadState(ResourceReloadLogger.ReloadReason reloadReason, List<String> list) {
+			this.reason = reloadReason;
+			this.packs = list;
 		}
 
 		public void addReloadSection(CrashReportSection section) {

@@ -7,8 +7,7 @@ public interface RecipeGridAligner<T> {
 	default void alignRecipeToGrid(int gridWidth, int gridHeight, int gridOutputSlot, Recipe<?> recipe, Iterator<T> inputs, int amount) {
 		int i = gridWidth;
 		int j = gridHeight;
-		if (recipe instanceof ShapedRecipe) {
-			ShapedRecipe shapedRecipe = (ShapedRecipe)recipe;
+		if (recipe instanceof ShapedRecipe shapedRecipe) {
 			i = shapedRecipe.getWidth();
 			j = shapedRecipe.getHeight();
 		}

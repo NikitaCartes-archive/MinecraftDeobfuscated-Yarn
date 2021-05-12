@@ -59,22 +59,22 @@ public class MushroomBlock extends Block {
 
 	@Override
 	public BlockState rotate(BlockState state, BlockRotation rotation) {
-		return state.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.NORTH)), state.get(NORTH))
-			.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.SOUTH)), state.get(SOUTH))
-			.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.EAST)), state.get(EAST))
-			.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.WEST)), state.get(WEST))
-			.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.UP)), state.get(UP))
-			.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.DOWN)), state.get(DOWN));
+		return state.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.NORTH)), (Boolean)state.get(NORTH))
+			.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.SOUTH)), (Boolean)state.get(SOUTH))
+			.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.EAST)), (Boolean)state.get(EAST))
+			.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.WEST)), (Boolean)state.get(WEST))
+			.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.UP)), (Boolean)state.get(UP))
+			.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.DOWN)), (Boolean)state.get(DOWN));
 	}
 
 	@Override
 	public BlockState mirror(BlockState state, BlockMirror mirror) {
-		return state.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.NORTH)), state.get(NORTH))
-			.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.SOUTH)), state.get(SOUTH))
-			.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.EAST)), state.get(EAST))
-			.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.WEST)), state.get(WEST))
-			.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.UP)), state.get(UP))
-			.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.DOWN)), state.get(DOWN));
+		return state.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.NORTH)), (Boolean)state.get(NORTH))
+			.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.SOUTH)), (Boolean)state.get(SOUTH))
+			.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.EAST)), (Boolean)state.get(EAST))
+			.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.WEST)), (Boolean)state.get(WEST))
+			.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.UP)), (Boolean)state.get(UP))
+			.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.DOWN)), (Boolean)state.get(DOWN));
 	}
 
 	@Override

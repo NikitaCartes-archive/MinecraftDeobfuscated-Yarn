@@ -866,8 +866,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	public void tickRiding() {
 		super.tickRiding();
 		this.riding = false;
-		if (this.getVehicle() instanceof BoatEntity) {
-			BoatEntity boatEntity = (BoatEntity)this.getVehicle();
+		if (this.getVehicle() instanceof BoatEntity boatEntity) {
 			boatEntity.setInputs(this.input.pressingLeft, this.input.pressingRight, this.input.pressingForward, this.input.pressingBack);
 			this.riding |= this.input.pressingLeft || this.input.pressingRight || this.input.pressingForward || this.input.pressingBack;
 		}

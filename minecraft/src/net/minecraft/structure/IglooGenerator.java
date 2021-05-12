@@ -27,13 +27,13 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class IglooGenerator {
 	public static final int field_31550 = 90;
-	private static final Identifier TOP_TEMPLATE = new Identifier("igloo/top");
+	static final Identifier TOP_TEMPLATE = new Identifier("igloo/top");
 	private static final Identifier MIDDLE_TEMPLATE = new Identifier("igloo/middle");
 	private static final Identifier BOTTOM_TEMPLATE = new Identifier("igloo/bottom");
-	private static final Map<Identifier, BlockPos> field_14408 = ImmutableMap.of(
+	static final Map<Identifier, BlockPos> field_14408 = ImmutableMap.of(
 		TOP_TEMPLATE, new BlockPos(3, 5, 5), MIDDLE_TEMPLATE, new BlockPos(1, 3, 1), BOTTOM_TEMPLATE, new BlockPos(3, 6, 7)
 	);
-	private static final Map<Identifier, BlockPos> field_14406 = ImmutableMap.of(
+	static final Map<Identifier, BlockPos> field_14406 = ImmutableMap.of(
 		TOP_TEMPLATE, BlockPos.ORIGIN, MIDDLE_TEMPLATE, new BlockPos(2, -3, 4), BOTTOM_TEMPLATE, new BlockPos(0, -3, -2)
 	);
 

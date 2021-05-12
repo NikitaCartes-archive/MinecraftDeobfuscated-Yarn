@@ -53,7 +53,7 @@ import org.apache.logging.log4j.Logger;
 public class EnderDragonEntity extends MobEntity implements Monster {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final TrackedData<Integer> PHASE_TYPE = DataTracker.registerData(EnderDragonEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final TargetPredicate CLOSE_PLAYER_PREDICATE = new TargetPredicate().setBaseMaxDistance(64.0);
+	private static final TargetPredicate CLOSE_PLAYER_PREDICATE = TargetPredicate.createAttackable().setBaseMaxDistance(64.0);
 	private static final int MAX_HEALTH = 200;
 	private static final int field_30429 = 400;
 	private static final float field_30430 = 0.25F;

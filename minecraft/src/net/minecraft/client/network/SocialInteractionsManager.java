@@ -61,16 +61,14 @@ public class SocialInteractionsManager {
 		}
 
 		Screen screen = this.client.currentScreen;
-		if (screen instanceof SocialInteractionsScreen) {
-			SocialInteractionsScreen socialInteractionsScreen = (SocialInteractionsScreen)screen;
+		if (screen instanceof SocialInteractionsScreen socialInteractionsScreen) {
 			socialInteractionsScreen.setPlayerOnline(player);
 		}
 	}
 
 	public void setPlayerOffline(UUID uuid) {
 		Screen screen = this.client.currentScreen;
-		if (screen instanceof SocialInteractionsScreen) {
-			SocialInteractionsScreen socialInteractionsScreen = (SocialInteractionsScreen)screen;
+		if (screen instanceof SocialInteractionsScreen socialInteractionsScreen) {
 			socialInteractionsScreen.setPlayerOffline(uuid);
 		}
 	}

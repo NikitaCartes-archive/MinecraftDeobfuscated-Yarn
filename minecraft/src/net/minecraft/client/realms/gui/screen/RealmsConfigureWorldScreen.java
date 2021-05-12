@@ -239,7 +239,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 			int j = this.server.state == RealmsServer.State.CLOSED ? 10526880 : 8388479;
 			int k = this.textRenderer.getWidth(CONFIGURE_REALM_TITLE);
 			drawCenteredText(matrices, this.textRenderer, CONFIGURE_REALM_TITLE, this.width / 2, 12, 16777215);
-			drawCenteredString(matrices, this.textRenderer, string, this.width / 2, 24, j);
+			drawCenteredText(matrices, this.textRenderer, string, this.width / 2, 24, j);
 			int l = Math.min(this.buttonCenter(2, 3) + 80 - 11, this.width / 2 + i / 2 + k / 2 + 10);
 			this.drawServerStatus(matrices, l, 7, mouseX, mouseY);
 			if (this.isMinigame()) {

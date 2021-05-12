@@ -6,9 +6,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.Option;
@@ -21,7 +21,7 @@ import net.minecraft.text.Text;
 public abstract class NarratorOptionsScreen extends GameOptionsScreen {
 	private final Option[] options;
 	@Nullable
-	private AbstractButtonWidget narratorButton;
+	private ClickableWidget narratorButton;
 	private ButtonListWidget buttonList;
 
 	public NarratorOptionsScreen(Screen parent, GameOptions gameOptions, Text title, Option[] options) {

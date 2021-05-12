@@ -26,7 +26,7 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 		.append(")")
 		.formatted(Formatting.GRAY);
 	private LanguageOptionsScreen.LanguageSelectionListWidget languageSelectionList;
-	private final LanguageManager languageManager;
+	final LanguageManager languageManager;
 
 	public LanguageOptionsScreen(Screen parent, GameOptions options, LanguageManager languageManager) {
 		super(parent, options, new TranslatableText("options.language"));
@@ -109,7 +109,7 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 
 		@Environment(EnvType.CLIENT)
 		public class LanguageEntry extends AlwaysSelectedEntryListWidget.Entry<LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry> {
-			private final LanguageDefinition languageDefinition;
+			final LanguageDefinition languageDefinition;
 
 			public LanguageEntry(LanguageDefinition languageDefinition) {
 				this.languageDefinition = languageDefinition;

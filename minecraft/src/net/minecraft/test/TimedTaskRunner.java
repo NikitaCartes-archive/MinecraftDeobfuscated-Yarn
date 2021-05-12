@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class TimedTaskRunner {
-	private final GameTestState test;
+	final GameTestState test;
 	private final List<TimedTask> tasks = Lists.<TimedTask>newArrayList();
 	private long tick;
 

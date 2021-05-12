@@ -35,7 +35,7 @@ public class LockHelper {
 				stringBuilder.append("Thread ")
 					.append(((Thread)pair.getFirst()).getName())
 					.append(": \n\tat ")
-					.append((String)Arrays.stream(pair.getSecond()).map(Object::toString).collect(Collectors.joining("\n\tat ")))
+					.append((String)Arrays.stream((StackTraceElement[])pair.getSecond()).map(Object::toString).collect(Collectors.joining("\n\tat ")))
 					.append("\n");
 			}
 

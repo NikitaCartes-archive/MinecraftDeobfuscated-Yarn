@@ -66,7 +66,7 @@ public class DataTracker {
 		}
 
 		if (i > 254) {
-			throw new IllegalArgumentException("Data value id is too big with " + i + "! (Max is " + 254 + ")");
+			throw new IllegalArgumentException("Data value id is too big with " + i + "! (Max is 254)");
 		} else {
 			TRACKED_ENTITIES.put(entityClass, i);
 			return dataHandler.create(i);
@@ -76,7 +76,7 @@ public class DataTracker {
 	public <T> void startTracking(TrackedData<T> key, T initialValue) {
 		int i = key.getId();
 		if (i > 254) {
-			throw new IllegalArgumentException("Data value id is too big with " + i + "! (Max is " + 254 + ")");
+			throw new IllegalArgumentException("Data value id is too big with " + i + "! (Max is 254)");
 		} else if (this.entries.containsKey(i)) {
 			throw new IllegalArgumentException("Duplicate id value for " + i + "!");
 		} else if (TrackedDataHandlerRegistry.getId(key.getType()) < 0) {
@@ -268,8 +268,8 @@ public class DataTracker {
 	}
 
 	public static class Entry<T> {
-		private final TrackedData<T> data;
-		private T value;
+		final TrackedData<T> data;
+		T value;
 		private boolean dirty;
 
 		public Entry(TrackedData<T> data, T value) {

@@ -12,7 +12,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class OnKilledCriterion extends AbstractCriterion<OnKilledCriterion.Conditions> {
-	private final Identifier id;
+	final Identifier id;
 
 	public OnKilledCriterion(Identifier id) {
 		this.id = id;

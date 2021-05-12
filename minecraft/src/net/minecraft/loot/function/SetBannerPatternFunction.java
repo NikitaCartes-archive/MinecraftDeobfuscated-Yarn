@@ -19,13 +19,13 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.JsonHelper;
 
 public class SetBannerPatternFunction extends ConditionalLootFunction {
-	private final List<Pair<BannerPattern, DyeColor>> patterns;
-	private final boolean append;
+	final List<Pair<BannerPattern, DyeColor>> patterns;
+	final boolean append;
 
-	private SetBannerPatternFunction(LootCondition[] conditions, List<Pair<BannerPattern, DyeColor>> patterns, boolean append) {
-		super(conditions);
-		this.patterns = patterns;
-		this.append = append;
+	SetBannerPatternFunction(LootCondition[] lootConditions, List<Pair<BannerPattern, DyeColor>> list, boolean bl) {
+		super(lootConditions);
+		this.patterns = list;
+		this.append = bl;
 	}
 
 	@Override
@@ -59,8 +59,8 @@ public class SetBannerPatternFunction extends ConditionalLootFunction {
 		private final ImmutableList.Builder<Pair<BannerPattern, DyeColor>> patterns = ImmutableList.builder();
 		private final boolean append;
 
-		private Builder(boolean append) {
-			this.append = append;
+		Builder(boolean bl) {
+			this.append = bl;
 		}
 
 		protected SetBannerPatternFunction.Builder getThisBuilder() {

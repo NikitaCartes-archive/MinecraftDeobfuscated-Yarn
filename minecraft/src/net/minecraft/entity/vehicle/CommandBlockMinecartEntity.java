@@ -19,8 +19,8 @@ import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.World;
 
 public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
-	private static final TrackedData<String> COMMAND = DataTracker.registerData(CommandBlockMinecartEntity.class, TrackedDataHandlerRegistry.STRING);
-	private static final TrackedData<Text> LAST_OUTPUT = DataTracker.registerData(CommandBlockMinecartEntity.class, TrackedDataHandlerRegistry.TEXT_COMPONENT);
+	static final TrackedData<String> COMMAND = DataTracker.registerData(CommandBlockMinecartEntity.class, TrackedDataHandlerRegistry.STRING);
+	static final TrackedData<Text> LAST_OUTPUT = DataTracker.registerData(CommandBlockMinecartEntity.class, TrackedDataHandlerRegistry.TEXT_COMPONENT);
 	private final CommandBlockExecutor commandExecutor = new CommandBlockMinecartEntity.CommandExecutor();
 	private static final int field_30701 = 4;
 	private int lastExecuted;

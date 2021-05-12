@@ -43,9 +43,9 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	public static final float field_30475 = 7.448451F;
 	public static final int field_28641 = MathHelper.ceil(24.166098F);
 	private static final TrackedData<Integer> SIZE = DataTracker.registerData(PhantomEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private Vec3d targetPosition = Vec3d.ZERO;
-	private BlockPos circlingCenter = BlockPos.ORIGIN;
-	private PhantomEntity.PhantomMovementType movementType = PhantomEntity.PhantomMovementType.CIRCLE;
+	Vec3d targetPosition = Vec3d.ZERO;
+	BlockPos circlingCenter = BlockPos.ORIGIN;
+	PhantomEntity.PhantomMovementType movementType = PhantomEntity.PhantomMovementType.CIRCLE;
 
 	public PhantomEntity(EntityType<? extends PhantomEntity> entityType, World world) {
 		super(entityType, world);
@@ -239,9 +239,6 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		private float yOffset;
 		private float circlingDirection;
 
-		private CircleMovementGoal() {
-		}
-
 		@Override
 		public boolean canStart() {
 			return PhantomEntity.this.getTarget() == null || PhantomEntity.this.movementType == PhantomEntity.PhantomMovementType.CIRCLE;
@@ -301,11 +298,8 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	class FindTargetGoal extends Goal {
-		private final TargetPredicate PLAYERS_IN_RANGE_PREDICATE = new TargetPredicate().setBaseMaxDistance(64.0);
+		private final TargetPredicate PLAYERS_IN_RANGE_PREDICATE = TargetPredicate.createAttackable().setBaseMaxDistance(64.0);
 		private int delay = 20;
-
-		private FindTargetGoal() {
-		}
 
 		@Override
 		public boolean canStart() {
@@ -429,9 +423,6 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	class StartAttackGoal extends Goal {
 		private int cooldown;
 
-		private StartAttackGoal() {
-		}
-
 		@Override
 		public boolean canStart() {
 			LivingEntity livingEntity = PhantomEntity.this.getTarget();
@@ -476,9 +467,6 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	class SwoopMovementGoal extends PhantomEntity.MovementGoal {
-		private SwoopMovementGoal() {
-		}
-
 		@Override
 		public boolean canStart() {
 			return PhantomEntity.this.getTarget() != null && PhantomEntity.this.movementType == PhantomEntity.PhantomMovementType.SWOOP;

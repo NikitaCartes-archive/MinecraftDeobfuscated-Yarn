@@ -34,8 +34,7 @@ public class TargetBlock extends Block {
 	public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
 		int i = trigger(world, state, hit, projectile);
 		Entity entity = projectile.getOwner();
-		if (entity instanceof ServerPlayerEntity) {
-			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
+		if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
 			serverPlayerEntity.incrementStat(Stats.TARGET_HIT);
 			Criteria.TARGET_HIT.trigger(serverPlayerEntity, projectile, hit.getPos(), i);
 		}

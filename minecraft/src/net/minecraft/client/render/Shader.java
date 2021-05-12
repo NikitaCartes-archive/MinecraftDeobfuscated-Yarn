@@ -42,7 +42,7 @@ import org.apache.logging.log4j.Logger;
 public class Shader implements GlShader, AutoCloseable {
 	private static final String field_32778 = "shaders/core/";
 	private static final String field_32779 = "shaders/include/";
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogManager.getLogger();
 	private static final Uniform DEFAULT_UNIFORM = new Uniform();
 	private static final boolean field_32780 = true;
 	private static Shader activeShader;
@@ -219,32 +219,30 @@ public class Shader implements GlShader, AutoCloseable {
 
 							try {
 								Resource resource = factory.getResource(identifier);
-								Throwable var5 = null;
 
-								String var6;
+								String var5;
 								try {
-									var6 = IOUtils.toString(resource.getInputStream(), StandardCharsets.UTF_8);
-								} catch (Throwable var16) {
-									var5 = var16;
-									throw var16;
-								} finally {
+									var5 = IOUtils.toString(resource.getInputStream(), StandardCharsets.UTF_8);
+								} catch (Throwable var8) {
 									if (resource != null) {
-										if (var5 != null) {
-											try {
-												resource.close();
-											} catch (Throwable var15) {
-												var5.addSuppressed(var15);
-											}
-										} else {
+										try {
 											resource.close();
+										} catch (Throwable var7) {
+											var8.addSuppressed(var7);
 										}
 									}
+
+									throw var8;
 								}
 
-								return var6;
-							} catch (IOException var18) {
-								Shader.LOGGER.error("Could not open GLSL import {}: {}", name, var18.getMessage());
-								return "#error " + var18.getMessage();
+								if (resource != null) {
+									resource.close();
+								}
+
+								return var5;
+							} catch (IOException var9) {
+								Shader.LOGGER.error("Could not open GLSL import {}: {}", name, var9.getMessage());
+								return "#error " + var9.getMessage();
 							}
 						}
 					}

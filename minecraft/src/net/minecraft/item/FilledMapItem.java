@@ -313,8 +313,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 		if (!world.isClient) {
 			MapState mapState = getOrCreateMapState(stack, world);
 			if (mapState != null) {
-				if (entity instanceof PlayerEntity) {
-					PlayerEntity playerEntity = (PlayerEntity)entity;
+				if (entity instanceof PlayerEntity playerEntity) {
 					mapState.update(playerEntity, stack);
 				}
 

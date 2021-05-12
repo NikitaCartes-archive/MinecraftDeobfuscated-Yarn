@@ -45,7 +45,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 	private static final Text DEPRECATED_TEXT = new TranslatableText("merchant.deprecated");
 	private int selectedIndex;
 	private final MerchantScreen.WidgetButtonPage[] offers = new MerchantScreen.WidgetButtonPage[7];
-	private int indexStartOffset;
+	int indexStartOffset;
 	private boolean scrolling;
 
 	public MerchantScreen(MerchantScreenHandler handler, PlayerInventory inventory, Text title) {
@@ -114,7 +114,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 			if (tradeOffer.isDisabled()) {
 				RenderSystem.setShaderTexture(0, TEXTURE);
 				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-				drawTexture(matrices, this.field_2776 + 83 + 99, this.field_2800 + 35, this.getZOffset(), 311.0F, 0.0F, 28, 21, 256, 512);
+				drawTexture(matrices, this.x + 83 + 99, this.y + 35, this.getZOffset(), 311.0F, 0.0F, 28, 21, 256, 512);
 			}
 		}
 	}
@@ -268,7 +268,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
 		int i = this.handler.getRecipes().size();
 		if (this.scrolling) {
-			int j = this.field_2800 + 18;
+			int j = this.y + 18;
 			int k = j + 139;
 			int l = i - 7;
 			float f = ((float)mouseY - (float)j - 13.5F) / ((float)(k - j) - 27.0F);

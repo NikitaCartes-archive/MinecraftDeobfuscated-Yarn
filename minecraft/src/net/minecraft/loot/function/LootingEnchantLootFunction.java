@@ -19,13 +19,13 @@ import net.minecraft.util.JsonHelper;
 
 public class LootingEnchantLootFunction extends ConditionalLootFunction {
 	public static final int field_31854 = 0;
-	private final LootNumberProvider countRange;
-	private final int limit;
+	final LootNumberProvider countRange;
+	final int limit;
 
-	private LootingEnchantLootFunction(LootCondition[] conditions, LootNumberProvider countRange, int limit) {
-		super(conditions);
-		this.countRange = countRange;
-		this.limit = limit;
+	LootingEnchantLootFunction(LootCondition[] lootConditions, LootNumberProvider lootNumberProvider, int i) {
+		super(lootConditions);
+		this.countRange = lootNumberProvider;
+		this.limit = i;
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 		return Sets.<LootContextParameter<?>>union(ImmutableSet.of(LootContextParameters.KILLER_ENTITY), this.countRange.getRequiredParameters());
 	}
 
-	private boolean hasLimit() {
+	boolean hasLimit() {
 		return this.limit > 0;
 	}
 

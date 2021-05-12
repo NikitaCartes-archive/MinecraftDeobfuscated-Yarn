@@ -163,14 +163,14 @@ public class BlockFamilies {
 		.stairs(Blocks.MOSSY_STONE_BRICK_STAIRS)
 		.slab(Blocks.MOSSY_STONE_BRICK_SLAB)
 		.build();
-	public static final BlockFamily field_33684 = register(Blocks.COPPER_BLOCK).method_36544(Blocks.CUT_COPPER).noGenerateModels().build();
+	public static final BlockFamily COPPER_BLOCK = register(Blocks.COPPER_BLOCK).cut(Blocks.CUT_COPPER).noGenerateModels().build();
 	public static final BlockFamily CUT_COPPER = register(Blocks.CUT_COPPER)
 		.slab(Blocks.CUT_COPPER_SLAB)
 		.stairs(Blocks.CUT_COPPER_STAIRS)
 		.noGenerateModels()
 		.build();
-	public static final BlockFamily field_33685 = register(Blocks.WAXED_COPPER_BLOCK)
-		.method_36544(Blocks.WAXED_CUT_COPPER)
+	public static final BlockFamily WAXED_COPPER_BLOCK = register(Blocks.WAXED_COPPER_BLOCK)
+		.cut(Blocks.WAXED_CUT_COPPER)
 		.group("waxed_cut_copper")
 		.noGenerateModels()
 		.build();
@@ -180,14 +180,14 @@ public class BlockFamilies {
 		.group("waxed_cut_copper")
 		.noGenerateModels()
 		.build();
-	public static final BlockFamily field_33686 = register(Blocks.EXPOSED_COPPER).method_36544(Blocks.EXPOSED_CUT_COPPER).noGenerateModels().build();
+	public static final BlockFamily EXPOSED_COPPER = register(Blocks.EXPOSED_COPPER).cut(Blocks.EXPOSED_CUT_COPPER).noGenerateModels().build();
 	public static final BlockFamily EXPOSED_CUT_COPPER = register(Blocks.EXPOSED_CUT_COPPER)
 		.slab(Blocks.EXPOSED_CUT_COPPER_SLAB)
 		.stairs(Blocks.EXPOSED_CUT_COPPER_STAIRS)
 		.noGenerateModels()
 		.build();
-	public static final BlockFamily field_33687 = register(Blocks.WAXED_EXPOSED_COPPER)
-		.method_36544(Blocks.WAXED_EXPOSED_CUT_COPPER)
+	public static final BlockFamily WAXED_EXPOSED_COPPER = register(Blocks.WAXED_EXPOSED_COPPER)
+		.cut(Blocks.WAXED_EXPOSED_CUT_COPPER)
 		.group("waxed_exposed_cut_copper")
 		.noGenerateModels()
 		.build();
@@ -197,14 +197,14 @@ public class BlockFamilies {
 		.group("waxed_exposed_cut_copper")
 		.noGenerateModels()
 		.build();
-	public static final BlockFamily field_33688 = register(Blocks.WEATHERED_COPPER).method_36544(Blocks.WEATHERED_CUT_COPPER).noGenerateModels().build();
+	public static final BlockFamily WEATHERED_COPPER = register(Blocks.WEATHERED_COPPER).cut(Blocks.WEATHERED_CUT_COPPER).noGenerateModels().build();
 	public static final BlockFamily WEATHERED_CUT_COPPER = register(Blocks.WEATHERED_CUT_COPPER)
 		.slab(Blocks.WEATHERED_CUT_COPPER_SLAB)
 		.stairs(Blocks.WEATHERED_CUT_COPPER_STAIRS)
 		.noGenerateModels()
 		.build();
-	public static final BlockFamily field_33681 = register(Blocks.WAXED_WEATHERED_COPPER)
-		.method_36544(Blocks.WAXED_WEATHERED_CUT_COPPER)
+	public static final BlockFamily WAXED_WEATHERED_COPPER = register(Blocks.WAXED_WEATHERED_COPPER)
+		.cut(Blocks.WAXED_WEATHERED_CUT_COPPER)
 		.group("waxed_weathered_cut_copper")
 		.noGenerateModels()
 		.build();
@@ -214,14 +214,14 @@ public class BlockFamilies {
 		.group("waxed_weathered_cut_copper")
 		.noGenerateModels()
 		.build();
-	public static final BlockFamily field_33682 = register(Blocks.OXIDIZED_COPPER).method_36544(Blocks.OXIDIZED_CUT_COPPER).noGenerateModels().build();
+	public static final BlockFamily OXIDIZED_COPPER = register(Blocks.OXIDIZED_COPPER).cut(Blocks.OXIDIZED_CUT_COPPER).noGenerateModels().build();
 	public static final BlockFamily OXIDIZED_CUT_COPPER = register(Blocks.OXIDIZED_CUT_COPPER)
 		.slab(Blocks.OXIDIZED_CUT_COPPER_SLAB)
 		.stairs(Blocks.OXIDIZED_CUT_COPPER_STAIRS)
 		.noGenerateModels()
 		.build();
-	public static final BlockFamily field_33683 = register(Blocks.WAXED_OXIDIZED_COPPER)
-		.method_36544(Blocks.WAXED_OXIDIZED_CUT_COPPER)
+	public static final BlockFamily WAXED_OXIDIZED_COPPER = register(Blocks.WAXED_OXIDIZED_COPPER)
+		.cut(Blocks.WAXED_OXIDIZED_CUT_COPPER)
 		.group("waxed_oxidized_cut_copper")
 		.noGenerateModels()
 		.build();
@@ -300,7 +300,7 @@ public class BlockFamilies {
 		.stairs(Blocks.SANDSTONE_STAIRS)
 		.slab(Blocks.SANDSTONE_SLAB)
 		.chiseled(Blocks.CHISELED_SANDSTONE)
-		.method_36544(Blocks.CUT_SANDSTONE)
+		.cut(Blocks.CUT_SANDSTONE)
 		.noGenerateRecipes()
 		.build();
 	public static final BlockFamily CUT_SANDSTONE = register(Blocks.CUT_SANDSTONE).slab(Blocks.CUT_SANDSTONE_SLAB).build();
@@ -313,7 +313,7 @@ public class BlockFamilies {
 		.stairs(Blocks.RED_SANDSTONE_STAIRS)
 		.slab(Blocks.RED_SANDSTONE_SLAB)
 		.chiseled(Blocks.CHISELED_RED_SANDSTONE)
-		.method_36544(Blocks.CUT_RED_SANDSTONE)
+		.cut(Blocks.CUT_RED_SANDSTONE)
 		.noGenerateRecipes()
 		.build();
 	public static final BlockFamily CUT_RED_SANDSTONE = register(Blocks.CUT_RED_SANDSTONE).slab(Blocks.CUT_RED_SANDSTONE_SLAB).build();

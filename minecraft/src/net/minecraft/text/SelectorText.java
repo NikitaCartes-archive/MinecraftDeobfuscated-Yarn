@@ -79,6 +79,6 @@ public class SelectorText extends BaseText implements ParsableText {
 
 	@Override
 	public String toString() {
-		return "SelectorComponent{pattern='" + this.pattern + '\'' + ", siblings=" + this.siblings + ", style=" + this.getStyle() + '}';
+		return "SelectorComponent{pattern='" + this.pattern + "', siblings=" + this.siblings + ", style=" + this.getStyle() + "}";
 	}
 }

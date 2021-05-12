@@ -163,8 +163,7 @@ public class LecternBlock extends BlockWithEntity {
 
 	private static void putBook(@Nullable PlayerEntity player, World world, BlockPos pos, BlockState state, ItemStack stack) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
-		if (blockEntity instanceof LecternBlockEntity) {
-			LecternBlockEntity lecternBlockEntity = (LecternBlockEntity)blockEntity;
+		if (blockEntity instanceof LecternBlockEntity lecternBlockEntity) {
 			lecternBlockEntity.setBook(stack.split(1));
 			setHasBook(world, pos, state, true);
 			world.playSound(null, pos, SoundEvents.ITEM_BOOK_PUT, SoundCategory.BLOCKS, 1.0F, 1.0F);
@@ -214,8 +213,7 @@ public class LecternBlock extends BlockWithEntity {
 
 	private void dropBook(BlockState state, World world, BlockPos pos) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
-		if (blockEntity instanceof LecternBlockEntity) {
-			LecternBlockEntity lecternBlockEntity = (LecternBlockEntity)blockEntity;
+		if (blockEntity instanceof LecternBlockEntity lecternBlockEntity) {
 			Direction direction = state.get(FACING);
 			ItemStack itemStack = lecternBlockEntity.getBook().copy();
 			float f = 0.25F * (float)direction.getOffsetX();

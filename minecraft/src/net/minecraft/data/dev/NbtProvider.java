@@ -55,26 +55,24 @@ public class NbtProvider implements DataProvider {
 	public static void writeTo(Path file, String content) throws IOException {
 		Files.createDirectories(file.getParent());
 		BufferedWriter bufferedWriter = Files.newBufferedWriter(file);
-		Throwable var3 = null;
 
 		try {
 			bufferedWriter.write(content);
 			bufferedWriter.write(10);
-		} catch (Throwable var12) {
-			var3 = var12;
-			throw var12;
-		} finally {
+		} catch (Throwable var6) {
 			if (bufferedWriter != null) {
-				if (var3 != null) {
-					try {
-						bufferedWriter.close();
-					} catch (Throwable var11) {
-						var3.addSuppressed(var11);
-					}
-				} else {
+				try {
 					bufferedWriter.close();
+				} catch (Throwable var5) {
+					var6.addSuppressed(var5);
 				}
 			}
+
+			throw var6;
+		}
+
+		if (bufferedWriter != null) {
+			bufferedWriter.close();
 		}
 	}
 }

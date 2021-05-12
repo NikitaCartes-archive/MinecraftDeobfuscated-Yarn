@@ -13,7 +13,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.ScreenTexts;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.resource.VideoWarningManager;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Window;
@@ -479,7 +479,7 @@ public abstract class Option {
 		this.key = new TranslatableText(key);
 	}
 
-	public abstract AbstractButtonWidget createButton(GameOptions options, int x, int y, int width);
+	public abstract ClickableWidget createButton(GameOptions options, int x, int y, int width);
 
 	protected Text getDisplayPrefix() {
 		return this.key;

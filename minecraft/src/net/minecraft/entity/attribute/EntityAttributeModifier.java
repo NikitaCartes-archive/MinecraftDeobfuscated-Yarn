@@ -64,16 +64,7 @@ public class EntityAttributeModifier {
 	}
 
 	public String toString() {
-		return "AttributeModifier{amount="
-			+ this.value
-			+ ", operation="
-			+ this.operation
-			+ ", name='"
-			+ (String)this.nameGetter.get()
-			+ '\''
-			+ ", id="
-			+ this.uuid
-			+ '}';
+		return "AttributeModifier{amount=" + this.value + ", operation=" + this.operation + ", name='" + (String)this.nameGetter.get() + "', id=" + this.uuid + "}";
 	}
 
 	public NbtCompound toNbt() {

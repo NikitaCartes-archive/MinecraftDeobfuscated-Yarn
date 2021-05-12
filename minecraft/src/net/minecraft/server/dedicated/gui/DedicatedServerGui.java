@@ -39,7 +39,7 @@ public class DedicatedServerGui extends JComponent {
 	private final MinecraftDedicatedServer server;
 	private Thread consoleUpdateThread;
 	private final Collection<Runnable> stopTasks = Lists.newArrayList();
-	private final AtomicBoolean stopped = new AtomicBoolean();
+	final AtomicBoolean stopped = new AtomicBoolean();
 
 	public static DedicatedServerGui create(MinecraftDedicatedServer server) {
 		try {
@@ -145,7 +145,7 @@ public class DedicatedServerGui extends JComponent {
 		}
 	}
 
-	private void runStopTasks() {
+	void runStopTasks() {
 		this.stopTasks.forEach(Runnable::run);
 	}
 

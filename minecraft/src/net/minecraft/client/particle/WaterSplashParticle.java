@@ -7,13 +7,13 @@ import net.minecraft.particle.DefaultParticleType;
 
 @Environment(EnvType.CLIENT)
 public class WaterSplashParticle extends RainSplashParticle {
-	private WaterSplashParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-		super(world, x, y, z);
+	WaterSplashParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		super(clientWorld, d, e, f);
 		this.gravityStrength = 0.04F;
-		if (velocityY == 0.0 && (velocityX != 0.0 || velocityZ != 0.0)) {
-			this.velocityX = velocityX;
+		if (h == 0.0 && (g != 0.0 || i != 0.0)) {
+			this.velocityX = g;
 			this.velocityY = 0.1;
-			this.velocityZ = velocityZ;
+			this.velocityZ = i;
 		}
 	}
 

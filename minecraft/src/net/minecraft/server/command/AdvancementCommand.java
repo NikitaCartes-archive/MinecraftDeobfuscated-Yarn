@@ -400,8 +400,8 @@ public class AdvancementCommand {
 
 		private final String commandPrefix;
 
-		private Operation(String name) {
-			this.commandPrefix = "commands.advancement." + name;
+		Operation(String string2) {
+			this.commandPrefix = "commands.advancement." + string2;
 		}
 
 		public int processAll(ServerPlayerEntity player, Iterable<Advancement> advancements) {
@@ -432,8 +432,8 @@ public class AdvancementCommand {
 		UNTIL(true, false),
 		EVERYTHING(true, true);
 
-		private final boolean before;
-		private final boolean after;
+		final boolean before;
+		final boolean after;
 
 		private Selection(boolean before, boolean after) {
 			this.before = before;

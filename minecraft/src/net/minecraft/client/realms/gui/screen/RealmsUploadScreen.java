@@ -184,7 +184,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 		bufferBuilder.vertex(e, 80.0, 0.0).color(128, 128, 128, 255).next();
 		tessellator.draw();
 		RenderSystem.enableTexture();
-		drawCenteredString(matrices, this.textRenderer, this.progress + " %", this.width / 2, 84, 16777215);
+		drawCenteredText(matrices, this.textRenderer, this.progress + " %", this.width / 2, 84, 16777215);
 	}
 
 	private void drawUploadSpeed(MatrixStack matrices) {

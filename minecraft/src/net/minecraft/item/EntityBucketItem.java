@@ -49,8 +49,7 @@ public class EntityBucketItem extends BucketItem {
 
 	private void spawnEntity(ServerWorld world, ItemStack stack, BlockPos pos) {
 		Entity entity = this.entityType.spawnFromItemStack(world, stack, null, pos, SpawnReason.BUCKET, true, false);
-		if (entity instanceof Bucketable) {
-			Bucketable bucketable = (Bucketable)entity;
+		if (entity instanceof Bucketable bucketable) {
 			bucketable.copyDataFromNbt(stack.getOrCreateTag());
 			bucketable.setFromBucket(true);
 		}

@@ -24,7 +24,7 @@ public abstract class IllagerEntity extends RaiderEntity {
 		return IllagerEntity.State.CROSSED;
 	}
 
-	public class LongDoorInteractGoal extends net.minecraft.entity.ai.goal.LongDoorInteractGoal {
+	protected class LongDoorInteractGoal extends net.minecraft.entity.ai.goal.LongDoorInteractGoal {
 		public LongDoorInteractGoal(RaiderEntity raider) {
 			super(raider, false);
 		}

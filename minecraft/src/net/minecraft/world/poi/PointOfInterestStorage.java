@@ -183,7 +183,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 		return this.pointOfInterestDistanceTracker.getLevel(pos.asLong());
 	}
 
-	private boolean isOccupied(long pos) {
+	boolean isOccupied(long pos) {
 		Optional<PointOfInterestSet> optional = this.getIfLoaded(pos);
 		return optional == null
 			? false

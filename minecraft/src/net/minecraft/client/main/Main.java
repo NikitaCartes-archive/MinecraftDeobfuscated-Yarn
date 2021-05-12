@@ -41,7 +41,7 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class Main {
-	private static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogManager.getLogger();
 
 	@DontObfuscate
 	public static void main(String[] args) {
@@ -218,8 +218,7 @@ public class Main {
 		try {
 			return optionSet.valueOf(optionSpec);
 		} catch (Throwable var5) {
-			if (optionSpec instanceof ArgumentAcceptingOptionSpec) {
-				ArgumentAcceptingOptionSpec<T> argumentAcceptingOptionSpec = (ArgumentAcceptingOptionSpec)optionSpec;
+			if (optionSpec instanceof ArgumentAcceptingOptionSpec argumentAcceptingOptionSpec) {
 				List<T> list = argumentAcceptingOptionSpec.defaultValues();
 				if (!list.isEmpty()) {
 					return (T)list.get(0);

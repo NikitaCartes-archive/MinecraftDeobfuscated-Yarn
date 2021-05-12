@@ -26,13 +26,13 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.util.JsonHelper;
 
 public class CopyNbtLootFunction extends ConditionalLootFunction {
-	private final LootNbtProvider source;
-	private final List<CopyNbtLootFunction.Operation> operations;
+	final LootNbtProvider source;
+	final List<CopyNbtLootFunction.Operation> operations;
 
-	private CopyNbtLootFunction(LootCondition[] conditions, LootNbtProvider source, List<CopyNbtLootFunction.Operation> operations) {
-		super(conditions);
-		this.source = source;
-		this.operations = ImmutableList.copyOf(operations);
+	CopyNbtLootFunction(LootCondition[] lootConditions, LootNbtProvider lootNbtProvider, List<CopyNbtLootFunction.Operation> list) {
+		super(lootConditions);
+		this.source = lootNbtProvider;
+		this.operations = ImmutableList.copyOf(list);
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 		return LootFunctionTypes.COPY_NBT;
 	}
 
-	private static NbtPathArgumentType.NbtPath parseNbtPath(String nbtPath) {
+	static NbtPathArgumentType.NbtPath parseNbtPath(String nbtPath) {
 		try {
 			return new NbtPathArgumentType().parse(new StringReader(nbtPath));
 		} catch (CommandSyntaxException var2) {
@@ -75,8 +75,8 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 		private final LootNbtProvider source;
 		private final List<CopyNbtLootFunction.Operation> operations = Lists.<CopyNbtLootFunction.Operation>newArrayList();
 
-		private Builder(LootNbtProvider source) {
-			this.source = source;
+		Builder(LootNbtProvider lootNbtProvider) {
+			this.source = lootNbtProvider;
 		}
 
 		public CopyNbtLootFunction.Builder withOperation(String source, String target, CopyNbtLootFunction.Operator operator) {
@@ -105,11 +105,11 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 		private final NbtPathArgumentType.NbtPath parsedTargetPath;
 		private final CopyNbtLootFunction.Operator operator;
 
-		private Operation(String source, String target, CopyNbtLootFunction.Operator operator) {
-			this.sourcePath = source;
-			this.parsedSourcePath = CopyNbtLootFunction.parseNbtPath(source);
-			this.targetPath = target;
-			this.parsedTargetPath = CopyNbtLootFunction.parseNbtPath(target);
+		Operation(String string, String string2, CopyNbtLootFunction.Operator operator) {
+			this.sourcePath = string;
+			this.parsedSourcePath = CopyNbtLootFunction.parseNbtPath(string);
+			this.targetPath = string2;
+			this.parsedTargetPath = CopyNbtLootFunction.parseNbtPath(string2);
 			this.operator = operator;
 		}
 
@@ -173,12 +173,12 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 			}
 		};
 
-		private final String name;
+		final String name;
 
 		public abstract void merge(NbtElement itemTag, NbtPathArgumentType.NbtPath targetPath, List<NbtElement> sourceTags) throws CommandSyntaxException;
 
-		private Operator(String name) {
-			this.name = name;
+		Operator(String string2) {
+			this.name = string2;
 		}
 
 		public static CopyNbtLootFunction.Operator get(String name) {

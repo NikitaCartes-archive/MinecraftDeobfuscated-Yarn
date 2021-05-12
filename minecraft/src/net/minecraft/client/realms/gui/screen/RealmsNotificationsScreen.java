@@ -20,9 +20,9 @@ public class RealmsNotificationsScreen extends RealmsScreen {
 	private static final Identifier NEWS_NOTIFICATION = new Identifier("realms", "textures/gui/realms/news_notification_mainscreen.png");
 	private static final RealmsDataFetcher REALMS_DATA_FETCHER = new RealmsDataFetcher(MinecraftClient.getInstance(), RealmsClient.createRealmsClient());
 	private volatile int numberOfPendingInvites;
-	private static boolean checkedMcoAvailability;
+	static boolean checkedMcoAvailability;
 	private static boolean trialAvailable;
-	private static boolean validClient;
+	static boolean validClient;
 	private static boolean hasUnreadNews;
 
 	@Override

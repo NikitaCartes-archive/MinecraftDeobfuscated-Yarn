@@ -117,11 +117,11 @@ public class OreVeinGenerator {
 		COPPER(Blocks.COPPER_ORE.getDefaultState(), Blocks.RAW_COPPER_BLOCK.getDefaultState(), Blocks.GRANITE.getDefaultState(), 0, 50),
 		IRON(Blocks.DEEPSLATE_IRON_ORE.getDefaultState(), Blocks.RAW_IRON_BLOCK.getDefaultState(), Blocks.TUFF.getDefaultState(), -60, -8);
 
-		private final BlockState ore;
-		private final BlockState rawBlock;
-		private final BlockState stone;
-		private final int minY;
-		private final int maxY;
+		final BlockState ore;
+		final BlockState rawBlock;
+		final BlockState stone;
+		final int minY;
+		final int maxY;
 
 		private VeinType(BlockState ore, BlockState rawBlock, BlockState stone, int minY, int maxY) {
 			this.ore = ore;

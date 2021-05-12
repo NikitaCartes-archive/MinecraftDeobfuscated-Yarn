@@ -54,8 +54,7 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 			Entity entity = entityHitResult.getEntity();
 			Entity entity2 = this.getOwner();
 			boolean bl;
-			if (entity2 instanceof LivingEntity) {
-				LivingEntity livingEntity = (LivingEntity)entity2;
+			if (entity2 instanceof LivingEntity livingEntity) {
 				bl = entity.damage(DamageSource.witherSkull(this, livingEntity), 8.0F);
 				if (bl) {
 					if (entity.isAlive()) {

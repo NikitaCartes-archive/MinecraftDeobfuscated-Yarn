@@ -12,11 +12,11 @@ import net.minecraft.loot.operator.BoundedIntUnaryOperator;
 import net.minecraft.util.JsonHelper;
 
 public class LimitCountLootFunction extends ConditionalLootFunction {
-	private final BoundedIntUnaryOperator limit;
+	final BoundedIntUnaryOperator limit;
 
-	private LimitCountLootFunction(LootCondition[] conditions, BoundedIntUnaryOperator limit) {
-		super(conditions);
-		this.limit = limit;
+	LimitCountLootFunction(LootCondition[] lootConditions, BoundedIntUnaryOperator boundedIntUnaryOperator) {
+		super(lootConditions);
+		this.limit = boundedIntUnaryOperator;
 	}
 
 	@Override

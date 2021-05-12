@@ -37,55 +37,42 @@ public class SplashTextResourceSupplier extends SinglePreparationResourceReloade
 	protected List<String> prepare(ResourceManager resourceManager, Profiler profiler) {
 		try {
 			Resource resource = MinecraftClient.getInstance().getResourceManager().getResource(RESOURCE_ID);
-			Throwable var4 = null;
 
-			Object var7;
+			List var5;
 			try {
-				BufferedReader bufferedReader;
-				try {
-					bufferedReader = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
-					Throwable var6 = null;
+				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
 
+				try {
+					var5 = (List)bufferedReader.lines().map(String::trim).filter(string -> string.hashCode() != 125780783).collect(Collectors.toList());
+				} catch (Throwable var9) {
 					try {
-						var7 = (List)bufferedReader.lines().map(String::trim).filter(string -> string.hashCode() != 125780783).collect(Collectors.toList());
-					} catch (Throwable var32) {
-						var7 = var32;
-						var6 = var32;
-						throw var32;
-					} finally {
-						if (bufferedReader != null) {
-							if (var6 != null) {
-								try {
-									bufferedReader.close();
-								} catch (Throwable var31) {
-									var6.addSuppressed(var31);
-								}
-							} else {
-								bufferedReader.close();
-							}
-						}
+						bufferedReader.close();
+					} catch (Throwable var8) {
+						var9.addSuppressed(var8);
 					}
-				} catch (Throwable var34) {
-					bufferedReader = var34;
-					var4 = var34;
-					throw var34;
+
+					throw var9;
 				}
-			} finally {
+
+				bufferedReader.close();
+			} catch (Throwable var10) {
 				if (resource != null) {
-					if (var4 != null) {
-						try {
-							resource.close();
-						} catch (Throwable var30) {
-							var4.addSuppressed(var30);
-						}
-					} else {
+					try {
 						resource.close();
+					} catch (Throwable var7) {
+						var10.addSuppressed(var7);
 					}
 				}
+
+				throw var10;
 			}
 
-			return (List<String>)var7;
-		} catch (IOException var36) {
+			if (resource != null) {
+				resource.close();
+			}
+
+			return var5;
+		} catch (IOException var11) {
 			return Collections.emptyList();
 		}
 	}

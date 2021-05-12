@@ -34,7 +34,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 	private static final int field_32245 = 2;
 	protected final CreateWorldScreen parent;
 	private final Consumer<FlatChunkGeneratorConfig> configConsumer;
-	private FlatChunkGeneratorConfig config;
+	FlatChunkGeneratorConfig config;
 	private Text tileText;
 	private Text heightText;
 	private CustomizeFlatLevelScreen.SuperflatLayersListWidget layers;
@@ -105,7 +105,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 		this.updateRemoveLayerButton();
 	}
 
-	private void updateRemoveLayerButton() {
+	void updateRemoveLayerButton() {
 		this.widgetButtonRemoveLayer.active = this.hasLayerSelected();
 	}
 
@@ -187,9 +187,6 @@ public class CustomizeFlatLevelScreen extends Screen {
 
 		@Environment(EnvType.CLIENT)
 		class SuperflatLayerEntry extends AlwaysSelectedEntryListWidget.Entry<CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerEntry> {
-			private SuperflatLayerEntry() {
-			}
-
 			@Override
 			public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 				FlatChunkGeneratorLayer flatChunkGeneratorLayer = (FlatChunkGeneratorLayer)CustomizeFlatLevelScreen.this.config

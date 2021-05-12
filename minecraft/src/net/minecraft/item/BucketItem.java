@@ -55,8 +55,7 @@ public class BucketItem extends Item implements FluidModificationItem {
 				return TypedActionResult.fail(itemStack);
 			} else if (this.fluid == Fluids.EMPTY) {
 				BlockState blockState = world.getBlockState(blockPos);
-				if (blockState.getBlock() instanceof FluidDrainable) {
-					FluidDrainable fluidDrainable = (FluidDrainable)blockState.getBlock();
+				if (blockState.getBlock() instanceof FluidDrainable fluidDrainable) {
 					ItemStack itemStack2 = fluidDrainable.tryDrainFluid(world, blockPos, blockState);
 					if (!itemStack2.isEmpty()) {
 						user.incrementStat(Stats.USED.getOrCreateStat(this));
