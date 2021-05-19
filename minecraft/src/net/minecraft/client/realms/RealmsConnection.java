@@ -10,7 +10,7 @@ import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.gui.screen.DisconnectedRealmsScreen;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
@@ -33,7 +33,7 @@ public class RealmsConnection {
 	public void connect(RealmsServer server, ServerAddress serverAddress) {
 		final MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		minecraftClient.setConnectedToRealms(true);
-		Realms.narrateNow(I18n.translate("mco.connect.success"));
+		NarratorManager.INSTANCE.narrate(new TranslatableText("mco.connect.success"));
 		final String string = serverAddress.getAddress();
 		final int i = serverAddress.getPort();
 		(new Thread("Realms-connect-task") {

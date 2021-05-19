@@ -23,7 +23,7 @@ public class SkinOptionsScreen extends GameOptionsScreen {
 		int i = 0;
 
 		for (PlayerModelPart playerModelPart : PlayerModelPart.values()) {
-			this.addButton(
+			this.addDrawableChild(
 				CyclingButtonWidget.onOffBuilder(this.gameOptions.isPlayerModelPartEnabled(playerModelPart))
 					.build(
 						this.width / 2 - 155 + i % 2 * 160,
@@ -31,18 +31,18 @@ public class SkinOptionsScreen extends GameOptionsScreen {
 						150,
 						20,
 						playerModelPart.getOptionName(),
-						(cyclingButtonWidget, boolean_) -> this.gameOptions.togglePlayerModelPart(playerModelPart, boolean_)
+						(button, enabled) -> this.gameOptions.togglePlayerModelPart(playerModelPart, enabled)
 					)
 			);
 			i++;
 		}
 
-		this.addButton(Option.MAIN_HAND.createButton(this.gameOptions, this.width / 2 - 155 + i % 2 * 160, this.height / 6 + 24 * (i >> 1), 150));
+		this.addDrawableChild(Option.MAIN_HAND.createButton(this.gameOptions, this.width / 2 - 155 + i % 2 * 160, this.height / 6 + 24 * (i >> 1), 150));
 		if (++i % 2 == 1) {
 			i++;
 		}
 
-		this.addButton(
+		this.addDrawableChild(
 			new ButtonWidget(this.width / 2 - 100, this.height / 6 + 24 * (i >> 1), 200, 20, ScreenTexts.DONE, button -> this.client.openScreen(this.parent))
 		);
 	}

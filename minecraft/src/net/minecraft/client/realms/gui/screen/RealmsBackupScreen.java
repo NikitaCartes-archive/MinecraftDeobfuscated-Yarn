@@ -12,9 +12,7 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.realms.Realms;
 import net.minecraft.client.realms.RealmsClient;
-import net.minecraft.client.realms.RealmsLabel;
 import net.minecraft.client.realms.RealmsObjectSelectionList;
 import net.minecraft.client.realms.dto.Backup;
 import net.minecraft.client.realms.dto.RealmsServer;
@@ -23,7 +21,6 @@ import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.task.DownloadTask;
 import net.minecraft.client.realms.task.RestoreTask;
 import net.minecraft.client.realms.util.RealmsUtil;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -55,9 +52,9 @@ public class RealmsBackupScreen extends RealmsScreen {
 	Boolean noBackups = false;
 	final RealmsServer serverData;
 	private static final String field_32119 = "Uploaded";
-	private RealmsLabel titleLabel;
 
 	public RealmsBackupScreen(RealmsConfigureWorldScreen parent, RealmsServer serverData, int slotId) {
+		super(new TranslatableText("mco.configure.world.backup"));
 		this.parent = parent;
 		this.serverData = serverData;
 		this.slotId = slotId;
@@ -93,24 +90,22 @@ public class RealmsBackupScreen extends RealmsScreen {
 				}
 			}
 		}).start();
-		this.downloadButton = this.addButton(
-			new ButtonWidget(this.width - 135, row(1), 120, 20, new TranslatableText("mco.backup.button.download"), buttonWidget -> this.downloadClicked())
+		this.downloadButton = this.addDrawableChild(
+			new ButtonWidget(this.width - 135, row(1), 120, 20, new TranslatableText("mco.backup.button.download"), button -> this.downloadClicked())
 		);
-		this.restoreButton = this.addButton(
-			new ButtonWidget(
-				this.width - 135, row(3), 120, 20, new TranslatableText("mco.backup.button.restore"), buttonWidget -> this.restoreClicked(this.selectedBackup)
-			)
+		this.restoreButton = this.addDrawableChild(
+			new ButtonWidget(this.width - 135, row(3), 120, 20, new TranslatableText("mco.backup.button.restore"), button -> this.restoreClicked(this.selectedBackup))
 		);
-		this.changesButton = this.addButton(new ButtonWidget(this.width - 135, row(5), 120, 20, new TranslatableText("mco.backup.changes.tooltip"), buttonWidget -> {
-			this.client.openScreen(new RealmsBackupInfoScreen(this, (Backup)this.backups.get(this.selectedBackup)));
-			this.selectedBackup = -1;
-		}));
-		this.addButton(new ButtonWidget(this.width - 100, this.height - 35, 85, 20, ScreenTexts.BACK, buttonWidget -> this.client.openScreen(this.parent)));
-		this.addChild(this.backupObjectSelectionList);
-		this.titleLabel = this.addChild(new RealmsLabel(new TranslatableText("mco.configure.world.backup"), this.width / 2, 12, 16777215));
+		this.changesButton = this.addDrawableChild(
+			new ButtonWidget(this.width - 135, row(5), 120, 20, new TranslatableText("mco.backup.changes.tooltip"), button -> {
+				this.client.openScreen(new RealmsBackupInfoScreen(this, (Backup)this.backups.get(this.selectedBackup)));
+				this.selectedBackup = -1;
+			})
+		);
+		this.addDrawableChild(new ButtonWidget(this.width - 100, this.height - 35, 85, 20, ScreenTexts.BACK, button -> this.client.openScreen(this.parent)));
+		this.addSelectableChild(this.backupObjectSelectionList);
 		this.focusOn(this.backupObjectSelectionList);
 		this.updateButtonStates();
-		this.narrateLabels();
 	}
 
 	void generateChangeList() {
@@ -223,7 +218,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 		this.toolTip = null;
 		this.renderBackground(matrices);
 		this.backupObjectSelectionList.render(matrices, mouseX, mouseY, delta);
-		this.titleLabel.render(this, matrices);
+		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 12, 16777215);
 		this.textRenderer.draw(matrices, BACKUPS_TEXT, (float)((this.width - 150) / 2 - 90), 20.0F, 10526880);
 		if (this.noBackups) {
 			this.textRenderer.draw(matrices, NO_BACKUPS_TEXT, 20.0F, (float)(this.height / 2 - 10), 16777215);
@@ -321,11 +316,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 
 		@Override
 		public void setSelected(int index) {
-			this.setSelectedItem(index);
-			if (index != -1) {
-				Realms.narrateNow(I18n.translate("narrator.select", ((Backup)RealmsBackupScreen.this.backups.get(index)).lastModifiedDate.toString()));
-			}
-
+			super.setSelected(index);
 			this.selectInviteListItem(index);
 		}
 
@@ -402,6 +393,11 @@ public class RealmsBackupScreen extends RealmsScreen {
 			if (bl) {
 				RealmsBackupScreen.this.toolTip = RealmsBackupScreen.CHANGES_TOOLTIP;
 			}
+		}
+
+		@Override
+		public Text method_37006() {
+			return new TranslatableText("narrator.select", this.mBackup.lastModifiedDate.toString());
 		}
 	}
 }

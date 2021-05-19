@@ -978,7 +978,7 @@ public class Blocks {
 	public static final Block LAVA_CAULDRON = register("lava_cauldron", new LavaCauldronBlock(AbstractBlock.Settings.copy(CAULDRON).luminance(state -> 15)));
 	public static final Block POWDER_SNOW_CAULDRON = register(
 		"powder_snow_cauldron",
-		new LeveledCauldronBlock(AbstractBlock.Settings.copy(CAULDRON), LeveledCauldronBlock.SNOW_PREDICATE, CauldronBehavior.POWDER_SNOW_CAULDRON_BEHAVIOR)
+		new PowderSnowCauldronBlock(AbstractBlock.Settings.copy(CAULDRON), LeveledCauldronBlock.SNOW_PREDICATE, CauldronBehavior.POWDER_SNOW_CAULDRON_BEHAVIOR)
 	);
 	public static final Block END_PORTAL = register(
 		"end_portal",

@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.brain.Brain;
@@ -91,7 +92,7 @@ public class RamImpactTask<E extends PathAwareEntity> extends Task<E> {
 	}
 
 	protected void finishRam(ServerWorld world, E entity) {
-		world.sendEntityStatus(entity, (byte)59);
+		world.sendEntityStatus(entity, EntityStatuses.FINISH_RAM);
 		entity.getBrain().remember(MemoryModuleType.RAM_COOLDOWN_TICKS, ((UniformIntProvider)this.cooldownRangeFactory.apply(entity)).get(world.random));
 		entity.getBrain().forget(MemoryModuleType.RAM_TARGET);
 	}

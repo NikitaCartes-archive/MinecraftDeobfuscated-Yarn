@@ -7,7 +7,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 public interface LightingView {
 	void checkBlock(BlockPos pos);
 
-	void addLightSource(BlockPos pos, int i);
+	void addLightSource(BlockPos pos, int level);
 
 	boolean hasUpdates();
 

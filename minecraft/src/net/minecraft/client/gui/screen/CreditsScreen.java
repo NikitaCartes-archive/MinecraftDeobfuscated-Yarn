@@ -36,7 +36,7 @@ public class CreditsScreen extends Screen {
 	private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
 	private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
 	private static final Identifier VIGNETTE_TEXTURE = new Identifier("textures/misc/vignette.png");
-	private static final String field_32273 = "[C]";
+	private static final String CENTERED_LINE_PREFIX = "[C]";
 	private static final String OBFUSCATION_PLACEHOLDER = "" + Formatting.WHITE + Formatting.OBFUSCATED + Formatting.GREEN + Formatting.AQUA;
 	private final boolean endCredits;
 	private final Runnable finishAction;
@@ -191,7 +191,7 @@ public class CreditsScreen extends Screen {
 		RenderSystem.setShaderTexture(0, MINECRAFT_TITLE_TEXTURE);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableBlend();
-		this.method_29343(j, k, (integer, integer2) -> {
+		this.drawWithOutline(j, k, (integer, integer2) -> {
 			this.drawTexture(matrices, integer + 0, integer2, 0, 0, 155, 44);
 			this.drawTexture(matrices, integer + 155, integer2, 0, 45, 155, 44);
 		});

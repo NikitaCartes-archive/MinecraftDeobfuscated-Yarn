@@ -26,7 +26,7 @@ public class PlayerStatsGui extends JComponent {
 		this.setPreferredSize(new Dimension(456, 246));
 		this.setMinimumSize(new Dimension(456, 246));
 		this.setMaximumSize(new Dimension(456, 246));
-		this.timer = new Timer(500, actionEvent -> this.update());
+		this.timer = new Timer(500, event -> this.update());
 		this.timer.start();
 		this.setBackground(Color.BLACK);
 	}
@@ -39,14 +39,14 @@ public class PlayerStatsGui extends JComponent {
 		this.repaint();
 	}
 
-	private double average(long[] ls) {
+	private double average(long[] values) {
 		long l = 0L;
 
-		for (long m : ls) {
+		for (long m : values) {
 			l += m;
 		}
 
-		return (double)l / (double)ls.length;
+		return (double)l / (double)values.length;
 	}
 
 	public void paint(Graphics graphics) {

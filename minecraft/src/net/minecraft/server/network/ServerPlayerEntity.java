@@ -182,7 +182,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private boolean spawnPointSet;
 	private float spawnAngle;
 	private final TextStream textStream;
-	private boolean filterText = true;
+	private boolean filterText;
 	private final ScreenHandlerSyncHandler screenHandlerSyncHandler = new ScreenHandlerSyncHandler() {
 		@Override
 		public void updateState(ScreenHandler handler, DefaultedList<ItemStack> stacks, ItemStack cursorStack, int[] properties) {
@@ -522,7 +522,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	private void updateScores(ScoreboardCriterion criterion, int score) {
-		this.getScoreboard().forEachScore(criterion, this.getEntityName(), scoreboardPlayerScore -> scoreboardPlayerScore.setScore(score));
+		this.getScoreboard().forEachScore(criterion, this.getEntityName(), scorex -> scorex.setScore(score));
 	}
 
 	@Override
@@ -613,12 +613,12 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 	}
 
-	private void updateScoreboardScore(String playerName, String team, ScoreboardCriterion[] scoreboardCriterions) {
+	private void updateScoreboardScore(String playerName, String team, ScoreboardCriterion[] criterions) {
 		Team team2 = this.getScoreboard().getPlayerTeam(team);
 		if (team2 != null) {
 			int i = team2.getColor().getColorIndex();
-			if (i >= 0 && i < scoreboardCriterions.length) {
-				this.getScoreboard().forEachScore(scoreboardCriterions[i], playerName, ScoreboardPlayerScore::incrementScore);
+			if (i >= 0 && i < criterions.length) {
+				this.getScoreboard().forEachScore(criterions[i], playerName, ScoreboardPlayerScore::incrementScore);
 			}
 		}
 	}
@@ -1447,10 +1447,10 @@ public class ServerPlayerEntity extends PlayerEntity {
 		return this.spawnPointSet;
 	}
 
-	public void setSpawnPoint(RegistryKey<World> dimension, @Nullable BlockPos pos, float angle, boolean spawnPointSet, boolean bl) {
+	public void setSpawnPoint(RegistryKey<World> dimension, @Nullable BlockPos pos, float angle, boolean spawnPointSet, boolean sendMessage) {
 		if (pos != null) {
-			boolean bl2 = pos.equals(this.spawnPointPosition) && dimension.equals(this.spawnPointDimension);
-			if (bl && !bl2) {
+			boolean bl = pos.equals(this.spawnPointPosition) && dimension.equals(this.spawnPointDimension);
+			if (sendMessage && !bl) {
 				this.sendSystemMessage(new TranslatableText("block.minecraft.set_spawn"), Util.NIL_UUID);
 			}
 
@@ -1583,5 +1583,10 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	public boolean shouldFilterMessagesSentTo(ServerPlayerEntity player) {
 		return player == this ? false : this.filterText || player.filterText;
+	}
+
+	@Override
+	public boolean canModifyAt(World world, BlockPos pos) {
+		return super.canModifyAt(world, pos) && world.canPlayerModifyAt(this, pos);
 	}
 }

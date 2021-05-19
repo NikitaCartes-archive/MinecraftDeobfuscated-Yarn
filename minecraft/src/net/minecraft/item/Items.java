@@ -261,7 +261,7 @@ public class Items {
 	public static final Item PURPUR_BLOCK = register(Blocks.PURPUR_BLOCK, ItemGroup.BUILDING_BLOCKS);
 	public static final Item PURPUR_PILLAR = register(Blocks.PURPUR_PILLAR, ItemGroup.BUILDING_BLOCKS);
 	public static final Item PURPUR_STAIRS = register(Blocks.PURPUR_STAIRS, ItemGroup.BUILDING_BLOCKS);
-	public static final Item SPAWNER = register(Blocks.SPAWNER);
+	public static final Item SPAWNER = register(new BlockItem(Blocks.SPAWNER, new Item.Settings().rarity(Rarity.EPIC)));
 	public static final Item OAK_STAIRS = register(Blocks.OAK_STAIRS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item CHEST = register(Blocks.CHEST, ItemGroup.DECORATIONS);
 	public static final Item CRAFTING_TABLE = register(Blocks.CRAFTING_TABLE, ItemGroup.DECORATIONS);
@@ -392,8 +392,8 @@ public class Items {
 	public static final Item GREEN_TERRACOTTA = register(Blocks.GREEN_TERRACOTTA, ItemGroup.BUILDING_BLOCKS);
 	public static final Item RED_TERRACOTTA = register(Blocks.RED_TERRACOTTA, ItemGroup.BUILDING_BLOCKS);
 	public static final Item BLACK_TERRACOTTA = register(Blocks.BLACK_TERRACOTTA, ItemGroup.BUILDING_BLOCKS);
-	public static final Item BARRIER = register(Blocks.BARRIER);
-	public static final Item LIGHT = register(Blocks.LIGHT);
+	public static final Item BARRIER = register(new BlockItem(Blocks.BARRIER, new Item.Settings().rarity(Rarity.EPIC)));
+	public static final Item LIGHT = register(new BlockItem(Blocks.LIGHT, new Item.Settings().rarity(Rarity.EPIC)));
 	public static final Item HAY_BLOCK = register(Blocks.HAY_BLOCK, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WHITE_CARPET = register(Blocks.WHITE_CARPET, ItemGroup.DECORATIONS);
 	public static final Item ORANGE_CARPET = register(Blocks.ORANGE_CARPET, ItemGroup.DECORATIONS);
@@ -472,7 +472,7 @@ public class Items {
 	public static final Item WARPED_WART_BLOCK = register(Blocks.WARPED_WART_BLOCK, ItemGroup.BUILDING_BLOCKS);
 	public static final Item RED_NETHER_BRICKS = register(Blocks.RED_NETHER_BRICKS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item BONE_BLOCK = register(Blocks.BONE_BLOCK, ItemGroup.BUILDING_BLOCKS);
-	public static final Item STRUCTURE_VOID = register(Blocks.STRUCTURE_VOID);
+	public static final Item STRUCTURE_VOID = register(new BlockItem(Blocks.STRUCTURE_VOID, new Item.Settings().rarity(Rarity.EPIC)));
 	public static final Item SHULKER_BOX = register(new BlockItem(Blocks.SHULKER_BOX, new Item.Settings().maxCount(1).group(ItemGroup.DECORATIONS)));
 	public static final Item WHITE_SHULKER_BOX = register(new BlockItem(Blocks.WHITE_SHULKER_BOX, new Item.Settings().maxCount(1).group(ItemGroup.DECORATIONS)));
 	public static final Item ORANGE_SHULKER_BOX = register(new BlockItem(Blocks.ORANGE_SHULKER_BOX, new Item.Settings().maxCount(1).group(ItemGroup.DECORATIONS)));
@@ -1310,7 +1310,7 @@ public class Items {
 	public static final Item LEAD = register("lead", new LeadItem(new Item.Settings().group(ItemGroup.TOOLS)));
 	public static final Item NAME_TAG = register("name_tag", new NameTagItem(new Item.Settings().group(ItemGroup.TOOLS)));
 	public static final Item COMMAND_BLOCK_MINECART = register(
-		"command_block_minecart", new MinecartItem(AbstractMinecartEntity.Type.COMMAND_BLOCK, new Item.Settings().maxCount(1))
+		"command_block_minecart", new MinecartItem(AbstractMinecartEntity.Type.COMMAND_BLOCK, new Item.Settings().maxCount(1).rarity(Rarity.EPIC))
 	);
 	public static final Item MUTTON = register("mutton", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.MUTTON)));
 	public static final Item COOKED_MUTTON = register("cooked_mutton", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.COOKED_MUTTON)));
@@ -1403,8 +1403,8 @@ public class Items {
 	);
 	public static final Item SHULKER_SHELL = register("shulker_shell", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item IRON_NUGGET = register("iron_nugget", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
-	public static final Item KNOWLEDGE_BOOK = register("knowledge_book", new KnowledgeBookItem(new Item.Settings().maxCount(1)));
-	public static final Item DEBUG_STICK = register("debug_stick", new DebugStickItem(new Item.Settings().maxCount(1)));
+	public static final Item KNOWLEDGE_BOOK = register("knowledge_book", new KnowledgeBookItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
+	public static final Item DEBUG_STICK = register("debug_stick", new DebugStickItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
 	public static final Item MUSIC_DISC_13 = register(
 		"music_disc_13", new MusicDiscItem(1, SoundEvents.MUSIC_DISC_13, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE))
 	);

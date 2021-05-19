@@ -3,7 +3,6 @@ package net.minecraft.client.realms.gui.screen;
 import com.google.common.collect.Lists;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,10 +12,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.realms.Realms;
 import net.minecraft.client.realms.RealmsLabel;
 import net.minecraft.client.realms.RealmsObjectSelectionList;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -42,12 +39,10 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	List<LevelSummary> levelList = Lists.<LevelSummary>newArrayList();
 	int selectedWorld = -1;
 	RealmsSelectFileToUploadScreen.WorldSelectionList worldSelectionList;
-	private RealmsLabel titleLabel;
-	private RealmsLabel subtitleLabel;
-	private RealmsLabel field_20063;
 	private final Runnable field_22717;
 
 	public RealmsSelectFileToUploadScreen(long worldId, int slotId, RealmsResetWorldScreen parent, Runnable runnable) {
+		super(new TranslatableText("mco.upload.select.world.title"));
 		this.parent = parent;
 		this.worldId = worldId;
 		this.slotId = slotId;
@@ -81,21 +76,21 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 			return;
 		}
 
-		this.addChild(this.worldSelectionList);
-		this.uploadButton = this.addButton(
-			new ButtonWidget(this.width / 2 - 154, this.height - 32, 153, 20, new TranslatableText("mco.upload.button.name"), buttonWidget -> this.upload())
+		this.addSelectableChild(this.worldSelectionList);
+		this.uploadButton = this.addDrawableChild(
+			new ButtonWidget(this.width / 2 - 154, this.height - 32, 153, 20, new TranslatableText("mco.upload.button.name"), button -> this.upload())
 		);
 		this.uploadButton.active = this.selectedWorld >= 0 && this.selectedWorld < this.levelList.size();
-		this.addButton(new ButtonWidget(this.width / 2 + 6, this.height - 32, 153, 20, ScreenTexts.BACK, buttonWidget -> this.client.openScreen(this.parent)));
-		this.titleLabel = this.addChild(new RealmsLabel(new TranslatableText("mco.upload.select.world.title"), this.width / 2, 13, 16777215));
-		this.subtitleLabel = this.addChild(new RealmsLabel(new TranslatableText("mco.upload.select.world.subtitle"), this.width / 2, row(-1), 10526880));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 + 6, this.height - 32, 153, 20, ScreenTexts.BACK, button -> this.client.openScreen(this.parent)));
+		this.method_37107(new RealmsLabel(new TranslatableText("mco.upload.select.world.subtitle"), this.width / 2, row(-1), 10526880));
 		if (this.levelList.isEmpty()) {
-			this.field_20063 = this.addChild(new RealmsLabel(new TranslatableText("mco.upload.select.world.none"), this.width / 2, this.height / 2 - 20, 16777215));
-		} else {
-			this.field_20063 = null;
+			this.method_37107(new RealmsLabel(new TranslatableText("mco.upload.select.world.none"), this.width / 2, this.height / 2 - 20, 16777215));
 		}
+	}
 
-		this.narrateLabels();
+	@Override
+	public Text getNarratedTitle() {
+		return ScreenTexts.joinSentences(this.getTitle(), this.narrateLabels());
 	}
 
 	@Override
@@ -114,12 +109,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		this.worldSelectionList.render(matrices, mouseX, mouseY, delta);
-		this.titleLabel.render(this, matrices);
-		this.subtitleLabel.render(this, matrices);
-		if (this.field_20063 != null) {
-			this.field_20063.render(this, matrices);
-		}
-
+		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 13, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
@@ -172,7 +162,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 
 		@Override
 		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			this.renderItem(matrices, this.field_22718, index, x, y);
+			this.renderItem(matrices, index, x, y);
 		}
 
 		@Override
@@ -181,7 +171,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 			return true;
 		}
 
-		protected void renderItem(MatrixStack matrices, LevelSummary levelSummary, int i, int j, int k) {
+		protected void renderItem(MatrixStack matrices, int i, int j, int k) {
 			String string;
 			if (this.field_26509.isEmpty()) {
 				string = RealmsSelectFileToUploadScreen.worldLang + " " + (i + 1);
@@ -192,6 +182,16 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 			RealmsSelectFileToUploadScreen.this.textRenderer.draw(matrices, string, (float)(j + 2), (float)(k + 1), 16777215);
 			RealmsSelectFileToUploadScreen.this.textRenderer.draw(matrices, this.field_26510, (float)(j + 2), (float)(k + 12), 8421504);
 			RealmsSelectFileToUploadScreen.this.textRenderer.draw(matrices, this.field_26511, (float)(j + 2), (float)(k + 12 + 10), 8421504);
+		}
+
+		@Override
+		public Text method_37006() {
+			Text text = ScreenTexts.joinLines(
+				new LiteralText(this.field_22718.getDisplayName()),
+				new LiteralText(RealmsSelectFileToUploadScreen.method_21404(this.field_22718)),
+				RealmsSelectFileToUploadScreen.method_21400(this.field_22718)
+			);
+			return new TranslatableText("narrator.select", text);
 		}
 	}
 
@@ -224,24 +224,6 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 		@Override
 		public void renderBackground(MatrixStack matrices) {
 			RealmsSelectFileToUploadScreen.this.renderBackground(matrices);
-		}
-
-		@Override
-		public void setSelected(int index) {
-			this.setSelectedItem(index);
-			if (index != -1) {
-				LevelSummary levelSummary = (LevelSummary)RealmsSelectFileToUploadScreen.this.levelList.get(index);
-				String string = I18n.translate("narrator.select.list.position", index + 1, RealmsSelectFileToUploadScreen.this.levelList.size());
-				String string2 = Realms.joinNarrations(
-					Arrays.asList(
-						levelSummary.getDisplayName(),
-						RealmsSelectFileToUploadScreen.method_21404(levelSummary),
-						RealmsSelectFileToUploadScreen.method_21400(levelSummary).getString(),
-						string
-					)
-				);
-				Realms.narrateNow(I18n.translate("narrator.select", string2));
-			}
 		}
 
 		public void setSelected(@Nullable RealmsSelectFileToUploadScreen.WorldListEntry worldListEntry) {

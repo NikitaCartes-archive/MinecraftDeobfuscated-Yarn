@@ -21,7 +21,6 @@ import net.minecraft.entity.mob.PiglinBruteEntity;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.entity.mob.WitherSkeletonEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -82,7 +81,7 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
 				}
 			} else if (livingEntity instanceof PlayerEntity) {
 				PlayerEntity playerEntity = (PlayerEntity)livingEntity;
-				if (!optional6.isPresent() && EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(livingEntity) && !PiglinBrain.wearsGoldArmor(playerEntity)) {
+				if (!optional6.isPresent() && livingEntity.canTakeDamage() && !PiglinBrain.wearsGoldArmor(playerEntity)) {
 					optional6 = Optional.of(playerEntity);
 				}
 

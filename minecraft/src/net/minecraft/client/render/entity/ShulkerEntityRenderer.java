@@ -1,5 +1,6 @@
 package net.minecraft.client.render.entity;
 
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.Frustum;
@@ -10,14 +11,15 @@ import net.minecraft.client.render.entity.model.ShulkerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.ShulkerEntity;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
-	public static final Identifier TEXTURE = new Identifier("textures/" + TexturedRenderLayers.SHULKER_TEXTURE_ID.getTextureId().getPath() + ".png");
-	public static final Identifier[] COLORED_TEXTURES = (Identifier[])TexturedRenderLayers.COLORED_SHULKER_BOXES_TEXTURES
+	private static final Identifier TEXTURE = new Identifier("textures/" + TexturedRenderLayers.SHULKER_TEXTURE_ID.getTextureId().getPath() + ".png");
+	private static final Identifier[] COLORED_TEXTURES = (Identifier[])TexturedRenderLayers.COLORED_SHULKER_BOXES_TEXTURES
 		.stream()
 		.map(spriteIdentifier -> new Identifier("textures/" + spriteIdentifier.getTextureId().getPath() + ".png"))
 		.toArray(Identifier[]::new);
@@ -50,7 +52,11 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 	}
 
 	public Identifier getTexture(ShulkerEntity shulkerEntity) {
-		return shulkerEntity.getColor() == null ? TEXTURE : COLORED_TEXTURES[shulkerEntity.getColor().getId()];
+		return method_37105(shulkerEntity.getColor());
+	}
+
+	public static Identifier method_37105(@Nullable DyeColor dyeColor) {
+		return dyeColor == null ? TEXTURE : COLORED_TEXTURES[dyeColor.getId()];
 	}
 
 	protected void setupTransforms(ShulkerEntity shulkerEntity, MatrixStack matrixStack, float f, float g, float h) {

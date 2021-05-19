@@ -247,12 +247,12 @@ public class InputUtil {
 		private final Lazy<Text> localizedText;
 		static final Map<String, InputUtil.Key> KEYS = Maps.<String, InputUtil.Key>newHashMap();
 
-		Key(String string, InputUtil.Type type, int i) {
-			this.translationKey = string;
+		Key(String translationKey, InputUtil.Type type, int code) {
+			this.translationKey = translationKey;
 			this.type = type;
-			this.code = i;
-			this.localizedText = new Lazy<>(() -> (Text)type.textTranslator.apply(i, string));
-			KEYS.put(string, this);
+			this.code = code;
+			this.localizedText = new Lazy<>(() -> (Text)type.textTranslator.apply(code, translationKey));
+			KEYS.put(translationKey, this);
 		}
 
 		public InputUtil.Type getCategory() {

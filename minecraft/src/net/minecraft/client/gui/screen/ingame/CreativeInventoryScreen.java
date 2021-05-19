@@ -53,8 +53,8 @@ import org.lwjgl.glfw.GLFW;
 @Environment(EnvType.CLIENT)
 public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInventoryScreen.CreativeScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/creative_inventory/tabs.png");
-	private static final String field_32335 = "textures/gui/container/creative_inventory/tab_";
-	private static final String field_32336 = "CustomCreativeLock";
+	private static final String TAB_TEXTURE_PREFIX = "textures/gui/container/creative_inventory/tab_";
+	private static final String CUSTOM_CREATIVE_LOCK_KEY = "CustomCreativeLock";
 	private static final int field_32337 = 5;
 	private static final int field_32338 = 9;
 	private static final int field_32339 = 28;
@@ -63,7 +63,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	private static final int field_32342 = 15;
 	static final SimpleInventory INVENTORY = new SimpleInventory(45);
 	private static final Text DELETE_ITEM_SLOT_TEXT = new TranslatableText("inventory.binSlot");
-	private static final int field_32343 = 16777215;
+	private static final int WHITE = 16777215;
 	private static int selectedTab = ItemGroup.BUILDING_BLOCKS.getIndex();
 	private float scrollPosition;
 	private boolean scrolling;
@@ -251,7 +251,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			this.searchBox.setDrawsBackground(false);
 			this.searchBox.setVisible(false);
 			this.searchBox.setEditableColor(16777215);
-			this.children.add(this.searchBox);
+			this.addSelectableChild(this.searchBox);
 			int i = selectedTab;
 			selectedTab = -1;
 			this.setSelectedTab(ItemGroup.GROUPS[i]);
@@ -366,19 +366,19 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		this.handler.scrollItems(0.0F);
 	}
 
-	private void searchForTags(String string) {
-		int i = string.indexOf(58);
+	private void searchForTags(String id) {
+		int i = id.indexOf(58);
 		Predicate<Identifier> predicate;
 		if (i == -1) {
-			predicate = identifier -> identifier.getPath().contains(string);
+			predicate = idx -> idx.getPath().contains(id);
 		} else {
-			String string2 = string.substring(0, i).trim();
-			String string3 = string.substring(i + 1).trim();
-			predicate = identifier -> identifier.getNamespace().contains(string2) && identifier.getPath().contains(string3);
+			String string = id.substring(0, i).trim();
+			String string2 = id.substring(i + 1).trim();
+			predicate = idx -> idx.getNamespace().contains(string) && idx.getPath().contains(string2);
 		}
 
 		TagGroup<Item> tagGroup = ItemTags.getTagGroup();
-		tagGroup.getTagIds().stream().filter(predicate).forEach(identifier -> this.searchResultTags.put(identifier, tagGroup.getTag(identifier)));
+		tagGroup.getTagIds().stream().filter(predicate).forEach(idx -> this.searchResultTags.put(idx, tagGroup.getTag(idx)));
 	}
 
 	@Override
@@ -624,9 +624,9 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 				}
 			}
 
-			this.searchResultTags.forEach((identifier, tag) -> {
+			this.searchResultTags.forEach((id, tag) -> {
 				if (stack.isIn(tag)) {
-					list2.add(1, new LiteralText("#" + identifier).formatted(Formatting.DARK_PURPLE));
+					list2.add(1, new LiteralText("#" + id).formatted(Formatting.DARK_PURPLE));
 				}
 			});
 			if (itemGroup != null) {
@@ -691,24 +691,24 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		return mouseX >= (double)j && mouseX <= (double)(j + 28) && mouseY >= (double)k && mouseY <= (double)(k + 32);
 	}
 
-	protected boolean renderTabTooltipIfHovered(MatrixStack matrices, ItemGroup group, int i, int j) {
-		int k = group.getColumn();
-		int l = 28 * k;
-		int m = 0;
+	protected boolean renderTabTooltipIfHovered(MatrixStack matrices, ItemGroup group, int mouseX, int mouseY) {
+		int i = group.getColumn();
+		int j = 28 * i;
+		int k = 0;
 		if (group.isSpecial()) {
-			l = this.backgroundWidth - 28 * (6 - k) + 2;
-		} else if (k > 0) {
-			l += k;
+			j = this.backgroundWidth - 28 * (6 - i) + 2;
+		} else if (i > 0) {
+			j += i;
 		}
 
 		if (group.isTopRow()) {
-			m -= 32;
+			k -= 32;
 		} else {
-			m += this.backgroundHeight;
+			k += this.backgroundHeight;
 		}
 
-		if (this.isPointWithinBounds(l + 3, m + 3, 23, 27, (double)i, (double)j)) {
-			this.renderTooltip(matrices, group.getTranslationKey(), i, j);
+		if (this.isPointWithinBounds(j + 3, k + 3, 23, 27, (double)mouseX, (double)mouseY)) {
+			this.renderTooltip(matrices, group.getTranslationKey(), mouseX, mouseY);
 			return true;
 		} else {
 			return false;

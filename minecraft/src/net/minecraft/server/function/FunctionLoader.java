@@ -32,7 +32,7 @@ import org.apache.logging.log4j.Logger;
 
 public class FunctionLoader implements ResourceReloader {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final String field_33385 = ".mcfunction";
+	private static final String PATH_SUFFIX = ".mcfunction";
 	private static final int PATH_PREFIX_LENGTH = "functions/".length();
 	private static final int PATH_SUFFIX_LENGTH = ".mcfunction".length();
 	private volatile Map<Identifier, CommandFunction> functions = ImmutableMap.of();
@@ -73,16 +73,16 @@ public class FunctionLoader implements ResourceReloader {
 	) {
 		CompletableFuture<Map<Identifier, Tag.Builder>> completableFuture = CompletableFuture.supplyAsync(() -> this.tagLoader.loadTags(manager), prepareExecutor);
 		CompletableFuture<Map<Identifier, CompletableFuture<CommandFunction>>> completableFuture2 = CompletableFuture.supplyAsync(
-				() -> manager.findResources("functions", string -> string.endsWith(".mcfunction")), prepareExecutor
+				() -> manager.findResources("functions", path -> path.endsWith(".mcfunction")), prepareExecutor
 			)
 			.thenCompose(
-				collection -> {
+				ids -> {
 					Map<Identifier, CompletableFuture<CommandFunction>> map = Maps.<Identifier, CompletableFuture<CommandFunction>>newHashMap();
 					ServerCommandSource serverCommandSource = new ServerCommandSource(
 						CommandOutput.DUMMY, Vec3d.ZERO, Vec2f.ZERO, null, this.level, "", LiteralText.EMPTY, null, null
 					);
 
-					for (Identifier identifier : collection) {
+					for (Identifier identifier : ids) {
 						String string = identifier.getPath();
 						Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(PATH_PREFIX_LENGTH, string.length() - PATH_SUFFIX_LENGTH));
 						map.put(identifier2, CompletableFuture.supplyAsync(() -> {

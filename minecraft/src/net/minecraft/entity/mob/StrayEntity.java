@@ -1,6 +1,7 @@
 package net.minecraft.entity.mob;
 
 import java.util.Random;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.damage.DamageSource;
@@ -21,7 +22,13 @@ public class StrayEntity extends AbstractSkeletonEntity {
 	}
 
 	public static boolean canSpawn(EntityType<StrayEntity> type, ServerWorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		return canSpawnInDark(type, world, spawnReason, pos, random) && (spawnReason == SpawnReason.SPAWNER || world.isSkyVisible(pos));
+		BlockPos blockPos = pos;
+
+		do {
+			blockPos = blockPos.up();
+		} while (world.getBlockState(blockPos).isOf(Blocks.POWDER_SNOW));
+
+		return canSpawnInDark(type, world, spawnReason, pos, random) && (spawnReason == SpawnReason.SPAWNER || world.isSkyVisible(blockPos.down()));
 	}
 
 	@Override

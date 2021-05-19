@@ -5,8 +5,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.realms.Realms;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import org.lwjgl.glfw.GLFW;
@@ -20,6 +21,7 @@ public class RealmsLongConfirmationScreen extends RealmsScreen {
 	private final boolean yesNoQuestion;
 
 	public RealmsLongConfirmationScreen(BooleanConsumer booleanConsumer, RealmsLongConfirmationScreen.Type type, Text line2, Text line3, boolean yesNoQuestion) {
+		super(NarratorManager.EMPTY);
 		this.field_22697 = booleanConsumer;
 		this.type = type;
 		this.line2 = line2;
@@ -29,13 +31,17 @@ public class RealmsLongConfirmationScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		Realms.narrateNow(this.type.text, this.line2.getString(), this.line3.getString());
 		if (this.yesNoQuestion) {
-			this.addButton(new ButtonWidget(this.width / 2 - 105, row(8), 100, 20, ScreenTexts.YES, buttonWidget -> this.field_22697.accept(true)));
-			this.addButton(new ButtonWidget(this.width / 2 + 5, row(8), 100, 20, ScreenTexts.NO, buttonWidget -> this.field_22697.accept(false)));
+			this.addDrawableChild(new ButtonWidget(this.width / 2 - 105, row(8), 100, 20, ScreenTexts.YES, button -> this.field_22697.accept(true)));
+			this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, row(8), 100, 20, ScreenTexts.NO, button -> this.field_22697.accept(false)));
 		} else {
-			this.addButton(new ButtonWidget(this.width / 2 - 50, row(8), 100, 20, new TranslatableText("mco.gui.ok"), buttonWidget -> this.field_22697.accept(true)));
+			this.addDrawableChild(new ButtonWidget(this.width / 2 - 50, row(8), 100, 20, new TranslatableText("mco.gui.ok"), button -> this.field_22697.accept(true)));
 		}
+	}
+
+	@Override
+	public Text getNarratedTitle() {
+		return ScreenTexts.joinLines(this.type.text, this.line2, this.line3);
 	}
 
 	@Override
@@ -63,10 +69,10 @@ public class RealmsLongConfirmationScreen extends RealmsScreen {
 		Info("Info!", 8226750);
 
 		public final int colorCode;
-		public final String text;
+		public final Text text;
 
 		private Type(String text, int colorCode) {
-			this.text = text;
+			this.text = new LiteralText(text);
 			this.colorCode = colorCode;
 		}
 	}

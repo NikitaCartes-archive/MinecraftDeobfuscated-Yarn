@@ -28,7 +28,7 @@ public class RconListener extends RconBase {
 	}
 
 	private void removeStoppedClients() {
-		this.clients.removeIf(rconClient -> !rconClient.isRunning());
+		this.clients.removeIf(client -> !client.isRunning());
 	}
 
 	public void run() {

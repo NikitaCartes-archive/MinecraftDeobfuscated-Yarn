@@ -885,8 +885,8 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 								bl = true;
 								intProperty = SweetBerryBushBlock.AGE;
 							}
-						} else if (blockState.isOf(Blocks.CAVE_VINES)) {
-							((Fertilizable)Blocks.CAVE_VINES).grow((ServerWorld)BeeEntity.this.world, BeeEntity.this.random, blockPos, blockState);
+						} else if (blockState.isOf(Blocks.CAVE_VINES) || blockState.isOf(Blocks.CAVE_VINES_PLANT)) {
+							((Fertilizable)blockState.getBlock()).grow((ServerWorld)BeeEntity.this.world, BeeEntity.this.random, blockPos, blockState);
 						}
 
 						if (bl) {

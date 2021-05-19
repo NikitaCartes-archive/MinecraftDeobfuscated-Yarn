@@ -40,7 +40,7 @@ public class DistancePredicate {
 		float f = (float)(x0 - x1);
 		float g = (float)(y0 - y1);
 		float h = (float)(z0 - z1);
-		if (!this.x.test(MathHelper.abs(f)) || !this.y.test(MathHelper.abs(g)) || !this.z.test(MathHelper.abs(h))) {
+		if (!this.x.test((double)MathHelper.abs(f)) || !this.y.test((double)MathHelper.abs(g)) || !this.z.test((double)MathHelper.abs(h))) {
 			return false;
 		} else {
 			return !this.horizontal.testSqrt((double)(f * f + h * h)) ? false : this.absolute.testSqrt((double)(f * f + g * g + h * h));

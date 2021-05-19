@@ -526,21 +526,21 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		profiler.pop();
 	}
 
-	private Optional<BlockPos> method_31418(BlockPos blockPos) {
+	private Optional<BlockPos> getLightningRodPos(BlockPos pos) {
 		Optional<BlockPos> optional = this.getPointOfInterestStorage()
 			.method_34712(
-				pointOfInterestType -> pointOfInterestType == PointOfInterestType.LIGHTNING_ROD,
-				blockPosx -> blockPosx.getY() == this.toServerWorld().getTopY(Heightmap.Type.WORLD_SURFACE, blockPosx.getX(), blockPosx.getZ()) - 1,
-				blockPos,
+				poiType -> poiType == PointOfInterestType.LIGHTNING_ROD,
+				posx -> posx.getY() == this.toServerWorld().getTopY(Heightmap.Type.WORLD_SURFACE, posx.getX(), posx.getZ()) - 1,
+				pos,
 				128,
 				PointOfInterestStorage.OccupationStatus.ANY
 			);
-		return optional.map(blockPosx -> blockPosx.up(1));
+		return optional.map(posx -> posx.up(1));
 	}
 
 	protected BlockPos getSurface(BlockPos pos) {
 		BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos);
-		Optional<BlockPos> optional = this.method_31418(blockPos);
+		Optional<BlockPos> optional = this.getLightningRodPos(blockPos);
 		if (optional.isPresent()) {
 			return (BlockPos)optional.get();
 		} else {

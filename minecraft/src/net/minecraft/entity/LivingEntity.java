@@ -111,6 +111,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.PortalUtil;
 import net.minecraft.world.RaycastContext;
@@ -388,6 +389,10 @@ public abstract class LivingEntity extends Entity {
 		}
 
 		if (this.isAlive() && (this.isWet() || this.inPowderSnow)) {
+			if (!this.world.isClient && this.wasOnFire) {
+				this.playExtinguishSound();
+			}
+
 			this.extinguish();
 		}
 
@@ -558,7 +563,7 @@ public abstract class LivingEntity extends Entity {
 	protected void updatePostDeath() {
 		this.deathTime++;
 		if (this.deathTime == 20 && !this.world.isClient()) {
-			this.world.sendEntityStatus(this, (byte)60);
+			this.world.sendEntityStatus(this, EntityStatuses.ADD_DEATH_PARTICLES);
 			this.remove(Entity.RemovalReason.KILLED);
 		}
 	}
@@ -871,7 +876,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	public boolean canTarget(LivingEntity target) {
-		return true;
+		return target.canTakeDamage();
 	}
 
 	public boolean isTarget(LivingEntity entity, TargetPredicate predicate) {
@@ -879,7 +884,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	public boolean canTakeDamage() {
-		return !this.isInvulnerable() && this.isPartOfGame();
+		return !this.isInvulnerable() && this.world.getDifficulty() != Difficulty.PEACEFUL && this.isPartOfGame();
 	}
 
 	public boolean isPartOfGame() {
@@ -1073,12 +1078,6 @@ public abstract class LivingEntity extends Entity {
 
 			this.despawnCounter = 0;
 			float f = amount;
-			if (source.isFallingBlock() && !this.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
-				this.getEquippedStack(EquipmentSlot.HEAD)
-					.damage((int)(amount * 4.0F + this.random.nextFloat() * amount * 2.0F), this, player -> player.sendEquipmentBreakStatus(EquipmentSlot.HEAD));
-				amount *= 0.75F;
-			}
-
 			boolean bl = false;
 			float g = 0.0F;
 			if (amount > 0.0F && this.blockedByShield(source)) {
@@ -1111,6 +1110,11 @@ public abstract class LivingEntity extends Entity {
 				this.applyDamage(source, amount);
 				this.maxHurtTime = 10;
 				this.hurtTime = this.maxHurtTime;
+			}
+
+			if (source.isFallingBlock() && !this.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
+				this.damageHelmet(source, amount);
+				amount *= 0.75F;
 			}
 
 			this.knockbackVelocity = 0.0F;
@@ -1471,7 +1475,7 @@ public abstract class LivingEntity extends Entity {
 			return false;
 		} else {
 			BlockPos blockPos = this.getBlockPos();
-			BlockState blockState = this.method_36601();
+			BlockState blockState = this.getBlockStateAtPos();
 			if (blockState.isIn(BlockTags.CLIMBABLE)) {
 				this.climbingPos = Optional.of(blockPos);
 				return true;
@@ -1545,6 +1549,9 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	protected void damageArmor(DamageSource source, float amount) {
+	}
+
+	protected void damageHelmet(DamageSource source, float amount) {
 	}
 
 	protected void damageShield(float amount) {
@@ -1818,11 +1825,11 @@ public abstract class LivingEntity extends Entity {
 				this.swapHandStacks();
 				break;
 			case 60:
-				this.method_36549();
+				this.addDeathParticles();
 		}
 	}
 
-	private void method_36549() {
+	private void addDeathParticles() {
 		for (int i = 0; i < 20; i++) {
 			double d = this.random.nextGaussian() * 0.02;
 			double e = this.random.nextGaussian() * 0.02;
@@ -2199,7 +2206,7 @@ public abstract class LivingEntity extends Entity {
 		this.move(MovementType.SELF, this.getVelocity());
 		Vec3d vec3d2 = this.getVelocity();
 		if ((this.horizontalCollision || this.jumping)
-			&& (this.isClimbing() || this.method_36601().isOf(Blocks.POWDER_SNOW) && PowderSnowBlock.canWalkOnPowderSnow(this))) {
+			&& (this.isClimbing() || this.getBlockStateAtPos().isOf(Blocks.POWDER_SNOW) && PowderSnowBlock.canWalkOnPowderSnow(this))) {
 			vec3d2 = new Vec3d(vec3d2.x, 0.2, vec3d2.z);
 		}
 
@@ -2228,7 +2235,7 @@ public abstract class LivingEntity extends Entity {
 			double d = MathHelper.clamp(motion.x, -0.15F, 0.15F);
 			double e = MathHelper.clamp(motion.z, -0.15F, 0.15F);
 			double g = Math.max(motion.y, -0.15F);
-			if (g < 0.0 && !this.method_36601().isOf(Blocks.SCAFFOLDING) && this.isHoldingOntoLadder() && this instanceof PlayerEntity) {
+			if (g < 0.0 && !this.getBlockStateAtPos().isOf(Blocks.SCAFFOLDING) && this.isHoldingOntoLadder() && this instanceof PlayerEntity) {
 				g = 0.0;
 			}
 
@@ -2375,7 +2382,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	private void method_30128() {
-		Map<EquipmentSlot, ItemStack> map = this.method_30129();
+		Map<EquipmentSlot, ItemStack> map = this.getEquipment();
 		if (map != null) {
 			this.swapHandStacks(map);
 			if (!map.isEmpty()) {
@@ -2385,7 +2392,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	@Nullable
-	private Map<EquipmentSlot, ItemStack> method_30129() {
+	private Map<EquipmentSlot, ItemStack> getEquipment() {
 		Map<EquipmentSlot, ItemStack> map = null;
 
 		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {

@@ -524,7 +524,9 @@ public class StructureProcessorLists {
 			)
 		)
 	);
-	public static final StructureProcessorList FOSSIL_ROT = register("fossil_rot", ImmutableList.of(new BlockRotStructureProcessor(0.9F)));
+	public static final StructureProcessorList FOSSIL_ROT = register(
+		"fossil_rot", ImmutableList.of(new BlockRotStructureProcessor(0.9F), new ProtectedBlocksStructureProcessor(BlockTags.FEATURES_CANNOT_REPLACE.getId()))
+	);
 	public static final StructureProcessorList FOSSIL_COAL = register("fossil_coal", ImmutableList.of(new BlockRotStructureProcessor(0.1F)));
 	public static final StructureProcessorList FOSSIL_DIAMONDS = register(
 		"fossil_diamonds",

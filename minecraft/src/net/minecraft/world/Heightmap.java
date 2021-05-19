@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -18,8 +19,11 @@ import net.minecraft.util.collection.PackedIntegerArray;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.chunk.Chunk;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class Heightmap {
+	private static final Logger LOGGER = LogManager.getLogger();
 	static final Predicate<BlockState> NOT_AIR = state -> !state.isAir();
 	static final Predicate<BlockState> SUFFOCATES = state -> state.getMaterial().blocksMovement();
 	private final PackedIntegerArray storage;
@@ -114,8 +118,14 @@ public class Heightmap {
 		this.storage.set(toIndex(x, z), height - this.chunk.getBottomY());
 	}
 
-	public void setTo(long[] heightmap) {
-		System.arraycopy(heightmap, 0, this.storage.getStorage(), 0, heightmap.length);
+	public void setTo(Chunk chunk, Heightmap.Type type, long[] ls) {
+		long[] ms = this.storage.getStorage();
+		if (ms.length == ls.length) {
+			System.arraycopy(ls, 0, ms, 0, ls.length);
+		} else {
+			LOGGER.warn("Ignoring heightmap data for chunk " + chunk.getPos() + ", size does not match; expected: " + ms.length + ", got: " + ls.length);
+			populateHeightmaps(chunk, EnumSet.of(type));
+		}
 	}
 
 	public long[] asLongArray() {

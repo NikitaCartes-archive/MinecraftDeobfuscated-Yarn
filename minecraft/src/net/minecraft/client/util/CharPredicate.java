@@ -6,17 +6,17 @@ import java.util.Objects;
 public interface CharPredicate {
 	boolean test(char c);
 
-	default CharPredicate method_36125(CharPredicate charPredicate) {
-		Objects.requireNonNull(charPredicate);
-		return c -> this.test(c) && charPredicate.test(c);
+	default CharPredicate and(CharPredicate predicate) {
+		Objects.requireNonNull(predicate);
+		return c -> this.test(c) && predicate.test(c);
 	}
 
-	default CharPredicate method_36123() {
+	default CharPredicate negate() {
 		return c -> !this.test(c);
 	}
 
-	default CharPredicate method_36127(CharPredicate charPredicate) {
-		Objects.requireNonNull(charPredicate);
-		return c -> this.test(c) || charPredicate.test(c);
+	default CharPredicate or(CharPredicate predicate) {
+		Objects.requireNonNull(predicate);
+		return c -> this.test(c) || predicate.test(c);
 	}
 }

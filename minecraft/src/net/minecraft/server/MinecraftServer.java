@@ -179,21 +179,21 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private static final int field_33214 = 6000;
 	private static final int field_33215 = 2000;
 	private static final int field_33216 = 15000;
-	public static final String field_33207 = "level";
-	public static final String field_33208 = "level://";
-	private static final long field_33217 = 5000000000L;
+	public static final String LEVEL_PROTOCOL_NAME = "level";
+	public static final String LEVEL_PROTOCOL = "level://";
+	private static final long PLAYER_SAMPLE_UPDATE_INTERVAL = 5000000000L;
 	private static final int field_33218 = 12;
-	public static final String field_33209 = "resources.zip";
+	public static final String RESOURCES_ZIP_FILE_NAME = "resources.zip";
 	public static final File USER_CACHE_FILE = new File("usercache.json");
-	public static final int field_33210 = 11;
-	private static final int field_33219 = 441;
+	public static final int START_TICKET_CHUNK_RADIUS = 11;
+	private static final int START_TICKET_CHUNKS = 441;
 	private static final int field_33220 = 6000;
 	private static final int field_33221 = 3;
-	public static final int field_33211 = 29999984;
+	public static final int MAX_WORLD_BORDER_RADIUS = 29999984;
 	public static final LevelInfo DEMO_LEVEL_INFO = new LevelInfo(
 		"Demo World", GameMode.SURVIVAL, false, Difficulty.NORMAL, false, new GameRules(), DataPackSettings.SAFE_MODE
 	);
-	private static final long field_33205 = 50L;
+	private static final long MILLISECONDS_PER_TICK = 50L;
 	protected final LevelStorage.Session session;
 	protected final WorldSaveHandler saveHandler;
 	private final Snooper snooper = new Snooper("server", this, Util.getMeasuringTimeMs());

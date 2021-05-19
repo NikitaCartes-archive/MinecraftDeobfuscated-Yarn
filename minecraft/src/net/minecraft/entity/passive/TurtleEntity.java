@@ -74,6 +74,9 @@ public class TurtleEntity extends AnimalEntity {
 	public TurtleEntity(EntityType<? extends TurtleEntity> entityType, World world) {
 		super(entityType, world);
 		this.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
+		this.setPathfindingPenalty(PathNodeType.DOOR_IRON_CLOSED, -1.0F);
+		this.setPathfindingPenalty(PathNodeType.DOOR_WOOD_CLOSED, -1.0F);
+		this.setPathfindingPenalty(PathNodeType.DOOR_OPEN, -1.0F);
 		this.moveControl = new TurtleEntity.TurtleMoveControl(this);
 		this.stepHeight = 1.0F;
 	}
@@ -609,7 +612,7 @@ public class TurtleEntity extends AnimalEntity {
 				double d = this.targetX - this.turtle.getX();
 				double e = this.targetY - this.turtle.getY();
 				double f = this.targetZ - this.turtle.getZ();
-				double g = (double)MathHelper.sqrt(d * d + e * e + f * f);
+				double g = Math.sqrt(d * d + e * e + f * f);
 				e /= g;
 				float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F;
 				this.turtle.setYaw(this.wrapDegrees(this.turtle.getYaw(), h, 90.0F));
@@ -636,6 +639,8 @@ public class TurtleEntity extends AnimalEntity {
 		@Override
 		protected PathNodeNavigator createPathNodeNavigator(int range) {
 			this.nodeMaker = new AmphibiousPathNodeMaker(true);
+			this.nodeMaker.setCanOpenDoors(false);
+			this.nodeMaker.setCanEnterOpenDoors(false);
 			return new PathNodeNavigator(this.nodeMaker, range);
 		}
 

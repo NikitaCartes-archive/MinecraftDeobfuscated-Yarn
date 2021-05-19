@@ -7,11 +7,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Stream;
 import java.util.zip.GZIPOutputStream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -19,7 +19,6 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.FileUpload;
-import net.minecraft.client.realms.Realms;
 import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.SizeUnit;
 import net.minecraft.client.realms.UploadStatus;
@@ -32,7 +31,9 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
@@ -72,6 +73,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 	private final Runnable field_22728;
 
 	public RealmsUploadScreen(long worldId, int slotId, RealmsResetWorldScreen parent, LevelSummary levelSummary, Runnable runnable) {
+		super(NarratorManager.EMPTY);
 		this.worldId = worldId;
 		this.slotId = slotId;
 		this.parent = parent;
@@ -84,9 +86,9 @@ public class RealmsUploadScreen extends RealmsScreen {
 	@Override
 	public void init() {
 		this.client.keyboard.setRepeatEvents(true);
-		this.backButton = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 42, 200, 20, ScreenTexts.BACK, buttonWidget -> this.onBack()));
+		this.backButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 42, 200, 20, ScreenTexts.BACK, button -> this.onBack()));
 		this.backButton.visible = false;
-		this.cancelButton = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 42, 200, 20, ScreenTexts.CANCEL, buttonWidget -> this.onCancel()));
+		this.cancelButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 42, 200, 20, ScreenTexts.CANCEL, button -> this.onCancel()));
 		if (!this.uploadStarted) {
 			if (this.parent.slot == -1) {
 				this.upload();
@@ -219,18 +221,23 @@ public class RealmsUploadScreen extends RealmsScreen {
 		super.tick();
 		this.animTick++;
 		if (this.status != null && this.narrationRateLimiter.tryAcquire(1)) {
-			List<String> list = Lists.<String>newArrayList();
-			list.add(this.status.getString());
-			if (this.progress != null) {
-				list.add(this.progress + "%");
-			}
-
-			if (this.field_20503 != null) {
-				Stream.of(this.field_20503).map(Text::getString).forEach(list::add);
-			}
-
-			Realms.narrateNow(String.join(System.lineSeparator(), list));
+			Text text = this.method_37014();
+			NarratorManager.INSTANCE.narrate(text);
 		}
+	}
+
+	private Text method_37014() {
+		List<Text> list = Lists.<Text>newArrayList();
+		list.add(this.status);
+		if (this.progress != null) {
+			list.add(new LiteralText(this.progress + "%"));
+		}
+
+		if (this.field_20503 != null) {
+			list.addAll(Arrays.asList(this.field_20503));
+		}
+
+		return ScreenTexts.joinLines(list);
 	}
 
 	private void upload() {

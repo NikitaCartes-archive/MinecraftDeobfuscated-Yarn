@@ -11,7 +11,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.ParentElement;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.GameModeSelectionScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -234,11 +233,11 @@ public class Keyboard {
 					chatHud.addMessage(new TranslatableText("debug.chunk_boundaries.help"));
 					chatHud.addMessage(new TranslatableText("debug.advanced_tooltips.help"));
 					chatHud.addMessage(new TranslatableText("debug.inspect.help"));
+					chatHud.addMessage(new TranslatableText("debug.profiling.help"));
 					chatHud.addMessage(new TranslatableText("debug.creative_spectator.help"));
 					chatHud.addMessage(new TranslatableText("debug.pause_focus.help"));
 					chatHud.addMessage(new TranslatableText("debug.help.help"));
 					chatHud.addMessage(new TranslatableText("debug.reload_resourcepacks.help"));
-					chatHud.addMessage(new TranslatableText("debug.profiling.help"));
 					chatHud.addMessage(new TranslatableText("debug.pause.help"));
 					chatHud.addMessage(new TranslatableText("debug.gamemodes.help"));
 					return true;
@@ -353,9 +352,8 @@ public class Keyboard {
 				this.debugCrashElapsedTime = 0L;
 			}
 
-			ParentElement parentElement = this.client.currentScreen;
-			if (i == 1
-				&& (!(this.client.currentScreen instanceof ControlsOptionsScreen) || ((ControlsOptionsScreen)parentElement).time <= Util.getMeasuringTimeMs() - 20L)) {
+			Screen screen = this.client.currentScreen;
+			if (i == 1 && (!(this.client.currentScreen instanceof ControlsOptionsScreen) || ((ControlsOptionsScreen)screen).time <= Util.getMeasuringTimeMs() - 20L)) {
 				if (this.client.options.keyFullscreen.matchesKey(key, scancode)) {
 					this.client.getWindow().toggleFullscreen();
 					this.client.options.fullscreen = this.client.getWindow().isFullscreen();
@@ -379,27 +377,33 @@ public class Keyboard {
 			}
 
 			if (NarratorManager.INSTANCE.isActive()) {
-				boolean bl = parentElement == null || !(parentElement.getFocused() instanceof TextFieldWidget) || !((TextFieldWidget)parentElement.getFocused()).isActive();
+				boolean bl = screen == null || !(screen.getFocused() instanceof TextFieldWidget) || !((TextFieldWidget)screen.getFocused()).isActive();
 				if (i != 0 && key == GLFW.GLFW_KEY_B && Screen.hasControlDown() && bl) {
+					boolean bl2 = this.client.options.narrator == NarratorMode.OFF;
 					this.client.options.narrator = NarratorMode.byId(this.client.options.narrator.getId() + 1);
 					NarratorManager.INSTANCE.addToast(this.client.options.narrator);
-					if (parentElement instanceof NarratorOptionsScreen) {
-						((NarratorOptionsScreen)parentElement).updateNarratorButtonText();
+					if (screen instanceof NarratorOptionsScreen) {
+						((NarratorOptionsScreen)screen).updateNarratorButtonText();
+					}
+
+					if (bl2 && screen != null) {
+						screen.applyNarratorModeChangeDelay();
 					}
 				}
 			}
 
-			if (parentElement != null) {
+			if (screen != null) {
 				boolean[] bls = new boolean[]{false};
 				Screen.wrapScreenError(() -> {
 					if (i != 1 && (i != 2 || !this.repeatEvents)) {
 						if (i == 0) {
-							bls[0] = parentElement.keyReleased(key, scancode, modifiers);
+							bls[0] = screen.keyReleased(key, scancode, modifiers);
 						}
 					} else {
-						bls[0] = parentElement.keyPressed(key, scancode, modifiers);
+						screen.applyKeyPressNarratorDelay();
+						bls[0] = screen.keyPressed(key, scancode, modifiers);
 					}
-				}, "keyPressed event handler", parentElement.getClass().getCanonicalName());
+				}, "keyPressed event handler", screen.getClass().getCanonicalName());
 				if (bls[0]) {
 					return;
 				}
@@ -423,21 +427,21 @@ public class Keyboard {
 						this.client.gameRenderer.toggleShadersEnabled();
 					}
 
-					boolean bl2 = false;
+					boolean bl2x = false;
 					if (this.client.currentScreen == null) {
 						if (key == GLFW.GLFW_KEY_ESCAPE) {
 							boolean bl3 = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_F3);
 							this.client.openPauseMenu(bl3);
 						}
 
-						bl2 = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_F3) && this.processF3(key);
-						this.switchF3State |= bl2;
+						bl2x = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_F3) && this.processF3(key);
+						this.switchF3State |= bl2x;
 						if (key == GLFW.GLFW_KEY_F1) {
 							this.client.options.hudHidden = !this.client.options.hudHidden;
 						}
 					}
 
-					if (bl2) {
+					if (bl2x) {
 						KeyBinding.setKeyPressed(key2, false);
 					} else {
 						KeyBinding.setKeyPressed(key2, true);

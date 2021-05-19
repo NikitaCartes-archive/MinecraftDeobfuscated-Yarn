@@ -401,8 +401,8 @@ public abstract class StructurePiece {
 		return state.isAir() || state.getMaterial().isLiquid() || state.isOf(Blocks.GLOW_LICHEN) || state.isOf(Blocks.SEAGRASS) || state.isOf(Blocks.TALL_SEAGRASS);
 	}
 
-	protected boolean addChest(StructureWorldAccess world, BlockBox boundingBox, Random random, int i, int j, int z, Identifier lootTableId) {
-		return this.addChest(world, boundingBox, random, this.offsetPos(i, j, z), lootTableId, null);
+	protected boolean addChest(StructureWorldAccess world, BlockBox boundingBox, Random random, int x, int y, int z, Identifier lootTableId) {
+		return this.addChest(world, boundingBox, random, this.offsetPos(x, y, z), lootTableId, null);
 	}
 
 	public static BlockState orientateChest(BlockView world, BlockPos pos, BlockState state) {
@@ -467,10 +467,10 @@ public abstract class StructurePiece {
 		}
 	}
 
-	protected boolean addDispenser(StructureWorldAccess world, BlockBox boundingBox, Random random, int x, int i, int j, Direction facing, Identifier lootTableId) {
-		BlockPos blockPos = this.offsetPos(x, i, j);
+	protected boolean addDispenser(StructureWorldAccess world, BlockBox boundingBox, Random random, int x, int y, int z, Direction facing, Identifier lootTableId) {
+		BlockPos blockPos = this.offsetPos(x, y, z);
 		if (boundingBox.contains(blockPos) && !world.getBlockState(blockPos).isOf(Blocks.DISPENSER)) {
-			this.addBlock(world, Blocks.DISPENSER.getDefaultState().with(DispenserBlock.FACING, facing), x, i, j, boundingBox);
+			this.addBlock(world, Blocks.DISPENSER.getDefaultState().with(DispenserBlock.FACING, facing), x, y, z, boundingBox);
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof DispenserBlockEntity) {
 				((DispenserBlockEntity)blockEntity).setLootTable(lootTableId, random.nextLong());

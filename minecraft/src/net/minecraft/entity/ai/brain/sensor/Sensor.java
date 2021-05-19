@@ -15,6 +15,8 @@ public abstract class Sensor<E extends LivingEntity> {
 	private static final TargetPredicate TARGET_PREDICATE_IGNORE_DISTANCE_SCALING = TargetPredicate.createNonAttackable()
 		.setBaseMaxDistance(16.0)
 		.ignoreDistanceScalingFactor();
+	private static final TargetPredicate field_33762 = TargetPredicate.createAttackable().setBaseMaxDistance(16.0);
+	private static final TargetPredicate field_33763 = TargetPredicate.createAttackable().setBaseMaxDistance(16.0).ignoreDistanceScalingFactor();
 	private final int senseInterval;
 	private long lastSenseTime;
 
@@ -42,5 +44,11 @@ public abstract class Sensor<E extends LivingEntity> {
 		return entity.getBrain().hasMemoryModuleWithValue(MemoryModuleType.ATTACK_TARGET, target)
 			? TARGET_PREDICATE_IGNORE_DISTANCE_SCALING.test(entity, target)
 			: TARGET_PREDICATE.test(entity, target);
+	}
+
+	public static boolean method_36982(LivingEntity livingEntity, LivingEntity livingEntity2) {
+		return livingEntity.getBrain().hasMemoryModuleWithValue(MemoryModuleType.ATTACK_TARGET, livingEntity2)
+			? field_33763.test(livingEntity, livingEntity2)
+			: field_33762.test(livingEntity, livingEntity2);
 	}
 }

@@ -106,9 +106,9 @@ public class TntBlock extends Block {
 	@Override
 	public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
 		if (!world.isClient) {
+			BlockPos blockPos = hit.getBlockPos();
 			Entity entity = projectile.getOwner();
-			if (projectile.isOnFire()) {
-				BlockPos blockPos = hit.getBlockPos();
+			if (projectile.isOnFire() && projectile.canModifyAt(world, blockPos)) {
 				primeTnt(world, blockPos, entity instanceof LivingEntity ? (LivingEntity)entity : null);
 				world.removeBlock(blockPos, false);
 			}

@@ -159,48 +159,48 @@ public abstract class NumberRange<T extends Number> {
 		R create(@Nullable T min, @Nullable T max);
 	}
 
-	public static class FloatRange extends NumberRange<Float> {
+	public static class FloatRange extends NumberRange<Double> {
 		public static final NumberRange.FloatRange ANY = new NumberRange.FloatRange(null, null);
 		private final Double squaredMin;
 		private final Double squaredMax;
 
-		private static NumberRange.FloatRange create(StringReader reader, @Nullable Float min, @Nullable Float max) throws CommandSyntaxException {
-			if (min != null && max != null && min > max) {
+		private static NumberRange.FloatRange create(StringReader reader, @Nullable Double double_, @Nullable Double double2) throws CommandSyntaxException {
+			if (double_ != null && double2 != null && double_ > double2) {
 				throw EXCEPTION_SWAPPED.createWithContext(reader);
 			} else {
-				return new NumberRange.FloatRange(min, max);
+				return new NumberRange.FloatRange(double_, double2);
 			}
 		}
 
 		@Nullable
-		private static Double square(@Nullable Float value) {
-			return value == null ? null : value.doubleValue() * value.doubleValue();
+		private static Double square(@Nullable Double double_) {
+			return double_ == null ? null : double_ * double_;
 		}
 
-		private FloatRange(@Nullable Float min, @Nullable Float max) {
-			super(min, max);
-			this.squaredMin = square(min);
-			this.squaredMax = square(max);
+		private FloatRange(@Nullable Double double_, @Nullable Double double2) {
+			super(double_, double2);
+			this.squaredMin = square(double_);
+			this.squaredMax = square(double2);
 		}
 
-		public static NumberRange.FloatRange exactly(float value) {
-			return new NumberRange.FloatRange(value, value);
+		public static NumberRange.FloatRange exactly(double d) {
+			return new NumberRange.FloatRange(d, d);
 		}
 
-		public static NumberRange.FloatRange between(float min, float max) {
-			return new NumberRange.FloatRange(min, max);
+		public static NumberRange.FloatRange between(double d, double e) {
+			return new NumberRange.FloatRange(d, e);
 		}
 
-		public static NumberRange.FloatRange atLeast(float value) {
-			return new NumberRange.FloatRange(value, null);
+		public static NumberRange.FloatRange atLeast(double d) {
+			return new NumberRange.FloatRange(d, null);
 		}
 
-		public static NumberRange.FloatRange atMost(float value) {
-			return new NumberRange.FloatRange(null, value);
+		public static NumberRange.FloatRange atMost(double d) {
+			return new NumberRange.FloatRange(null, d);
 		}
 
-		public boolean test(float value) {
-			return this.min != null && this.min > value ? false : this.max == null || !(this.max < value);
+		public boolean test(double d) {
+			return this.min != null && this.min > d ? false : this.max == null || !(this.max < d);
 		}
 
 		public boolean testSqrt(double value) {
@@ -208,15 +208,15 @@ public abstract class NumberRange<T extends Number> {
 		}
 
 		public static NumberRange.FloatRange fromJson(@Nullable JsonElement element) {
-			return fromJson(element, ANY, JsonHelper::asFloat, NumberRange.FloatRange::new);
+			return fromJson(element, ANY, JsonHelper::asDouble, NumberRange.FloatRange::new);
 		}
 
 		public static NumberRange.FloatRange parse(StringReader reader) throws CommandSyntaxException {
-			return parse(reader, float_ -> float_);
+			return parse(reader, double_ -> double_);
 		}
 
-		public static NumberRange.FloatRange parse(StringReader reader, Function<Float, Float> mapper) throws CommandSyntaxException {
-			return parse(reader, NumberRange.FloatRange::create, Float::parseFloat, CommandSyntaxException.BUILT_IN_EXCEPTIONS::readerInvalidFloat, mapper);
+		public static NumberRange.FloatRange parse(StringReader reader, Function<Double, Double> mapper) throws CommandSyntaxException {
+			return parse(reader, NumberRange.FloatRange::create, Double::parseDouble, CommandSyntaxException.BUILT_IN_EXCEPTIONS::readerInvalidDouble, mapper);
 		}
 	}
 

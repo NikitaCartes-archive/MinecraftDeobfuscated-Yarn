@@ -38,7 +38,6 @@ import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.toast.SystemToast;
-import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.sound.SoundEvents;
@@ -97,7 +96,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		this.filter(searchFilter, false);
 	}
 
-	public void filter(Supplier<String> supplier, boolean load) {
+	public void filter(Supplier<String> searchTextSupplier, boolean load) {
 		this.clearEntries();
 		LevelStorage levelStorage = this.client.getLevelStorage();
 		if (this.levels == null || load) {
@@ -115,7 +114,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		if (this.levels.isEmpty()) {
 			this.client.openScreen(CreateWorldScreen.create(null));
 		} else {
-			String string = ((String)supplier.get()).toLowerCase(Locale.ROOT);
+			String string = ((String)searchTextSupplier.get()).toLowerCase(Locale.ROOT);
 
 			for (LevelSummary levelSummary : this.levels) {
 				if (levelSummary.getDisplayName().toLowerCase(Locale.ROOT).contains(string) || levelSummary.getName().toLowerCase(Locale.ROOT).contains(string)) {
@@ -142,25 +141,6 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 
 	public void setSelected(@Nullable WorldListWidget.Entry entry) {
 		super.setSelected(entry);
-		if (entry != null) {
-			LevelSummary levelSummary = entry.level;
-			NarratorManager.INSTANCE
-				.narrate(
-					new TranslatableText(
-							"narrator.select",
-							new TranslatableText(
-								"narrator.select.world",
-								levelSummary.getDisplayName(),
-								new Date(levelSummary.getLastPlayed()),
-								levelSummary.isHardcore() ? new TranslatableText("gameMode.hardcore") : new TranslatableText("gameMode." + levelSummary.getGameMode().getName()),
-								levelSummary.hasCheats() ? new TranslatableText("selectWorld.cheats") : LiteralText.EMPTY,
-								levelSummary.getVersion()
-							)
-						)
-						.getString()
-				);
-		}
-
 		this.parent.worldSelected(entry != null && !entry.level.isUnavailable());
 	}
 
@@ -210,6 +190,28 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			}
 
 			this.icon = this.getIconTexture();
+		}
+
+		@Override
+		public Text method_37006() {
+			TranslatableText translatableText = new TranslatableText(
+				"narrator.select.world",
+				this.level.getDisplayName(),
+				new Date(this.level.getLastPlayed()),
+				this.level.isHardcore() ? new TranslatableText("gameMode.hardcore") : new TranslatableText("gameMode." + this.level.getGameMode().getName()),
+				this.level.hasCheats() ? new TranslatableText("selectWorld.cheats") : LiteralText.EMPTY,
+				this.level.getVersion()
+			);
+			Text text;
+			if (this.level.isLocked()) {
+				text = ScreenTexts.joinSentences(translatableText, WorldListWidget.LOCKED_TEXT);
+			} else if (this.level.isPreWorldHeightChangeVersion()) {
+				text = ScreenTexts.joinSentences(translatableText, WorldListWidget.PRE_WORLDHEIGHT_TEXT);
+			} else {
+				text = translatableText;
+			}
+
+			return new TranslatableText("narrator.select", text);
 		}
 
 		@Override
@@ -411,7 +413,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		}
 
 		public void recreate() {
-			this.method_29990();
+			this.openReadingWorldScreen();
 			DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
 
 			try (
@@ -422,7 +424,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 				LevelInfo levelInfo = integratedResourceManager.getSaveProperties().getLevelInfo();
 				DataPackSettings dataPackSettings = levelInfo.getDataPackSettings();
 				GeneratorOptions generatorOptions = integratedResourceManager.getSaveProperties().getGeneratorOptions();
-				Path path = CreateWorldScreen.method_29685(session.getDirectory(WorldSavePath.DATAPACKS), this.client);
+				Path path = CreateWorldScreen.copyDataPack(session.getDirectory(WorldSavePath.DATAPACKS), this.client);
 				if (generatorOptions.isLegacyCustomizedType()) {
 					this.client
 						.openScreen(
@@ -454,12 +456,12 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		private void start() {
 			this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 			if (this.client.getLevelStorage().levelExists(this.level.getName())) {
-				this.method_29990();
+				this.openReadingWorldScreen();
 				this.client.startIntegratedServer(this.level.getName());
 			}
 		}
 
-		private void method_29990() {
+		private void openReadingWorldScreen() {
 			this.client.method_29970(new SaveLevelScreen(new TranslatableText("selectWorld.data_read")));
 		}
 

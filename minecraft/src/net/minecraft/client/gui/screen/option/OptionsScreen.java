@@ -42,12 +42,12 @@ public class OptionsScreen extends Screen {
 		for (Option option : OPTIONS) {
 			int j = this.width / 2 - 155 + i % 2 * 160;
 			int k = this.height / 6 - 12 + 24 * (i >> 1);
-			this.addButton(option.createButton(this.client.options, j, k, 150));
+			this.addDrawableChild(option.createButton(this.client.options, j, k, 150));
 			i++;
 		}
 
 		if (this.client.world != null) {
-			this.difficultyButton = this.addButton(
+			this.difficultyButton = this.addDrawableChild(
 				CyclingButtonWidget.<Difficulty>builder(Difficulty::getTranslatableName)
 					.values(Difficulty.values())
 					.initially(this.client.world.getDifficulty())
@@ -57,12 +57,12 @@ public class OptionsScreen extends Screen {
 						150,
 						20,
 						new TranslatableText("options.difficulty"),
-						(cyclingButtonWidget, difficulty) -> this.client.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket(difficulty))
+						(button, difficulty) -> this.client.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket(difficulty))
 					)
 			);
 			if (this.client.isIntegratedServerRunning() && !this.client.world.getLevelProperties().isHardcore()) {
 				this.difficultyButton.setWidth(this.difficultyButton.getWidth() - 20);
-				this.lockDifficultyButton = this.addButton(
+				this.lockDifficultyButton = this.addDrawableChild(
 					new LockButtonWidget(
 						this.difficultyButton.x + this.difficultyButton.getWidth(),
 						this.difficultyButton.y,
@@ -83,10 +83,10 @@ public class OptionsScreen extends Screen {
 				this.difficultyButton.active = false;
 			}
 		} else {
-			this.addButton(Option.REALMS_NOTIFICATIONS.createButton(this.settings, this.width / 2 - 155 + i % 2 * 160, this.height / 6 - 12 + 24 * (i >> 1), 150));
+			this.addDrawableChild(Option.REALMS_NOTIFICATIONS.createButton(this.settings, this.width / 2 - 155 + i % 2 * 160, this.height / 6 - 12 + 24 * (i >> 1), 150));
 		}
 
-		this.addButton(
+		this.addDrawableChild(
 			new ButtonWidget(
 				this.width / 2 - 155,
 				this.height / 6 + 48 - 6,
@@ -96,7 +96,7 @@ public class OptionsScreen extends Screen {
 				button -> this.client.openScreen(new SkinOptionsScreen(this, this.settings))
 			)
 		);
-		this.addButton(
+		this.addDrawableChild(
 			new ButtonWidget(
 				this.width / 2 + 5,
 				this.height / 6 + 48 - 6,
@@ -106,7 +106,7 @@ public class OptionsScreen extends Screen {
 				button -> this.client.openScreen(new SoundOptionsScreen(this, this.settings))
 			)
 		);
-		this.addButton(
+		this.addDrawableChild(
 			new ButtonWidget(
 				this.width / 2 - 155,
 				this.height / 6 + 72 - 6,
@@ -116,7 +116,7 @@ public class OptionsScreen extends Screen {
 				button -> this.client.openScreen(new VideoOptionsScreen(this, this.settings))
 			)
 		);
-		this.addButton(
+		this.addDrawableChild(
 			new ButtonWidget(
 				this.width / 2 + 5,
 				this.height / 6 + 72 - 6,
@@ -126,7 +126,7 @@ public class OptionsScreen extends Screen {
 				button -> this.client.openScreen(new ControlsOptionsScreen(this, this.settings))
 			)
 		);
-		this.addButton(
+		this.addDrawableChild(
 			new ButtonWidget(
 				this.width / 2 - 155,
 				this.height / 6 + 96 - 6,
@@ -136,7 +136,7 @@ public class OptionsScreen extends Screen {
 				button -> this.client.openScreen(new LanguageOptionsScreen(this, this.settings, this.client.getLanguageManager()))
 			)
 		);
-		this.addButton(
+		this.addDrawableChild(
 			new ButtonWidget(
 				this.width / 2 + 5,
 				this.height / 6 + 96 - 6,
@@ -146,7 +146,7 @@ public class OptionsScreen extends Screen {
 				button -> this.client.openScreen(new ChatOptionsScreen(this, this.settings))
 			)
 		);
-		this.addButton(
+		this.addDrawableChild(
 			new ButtonWidget(
 				this.width / 2 - 155,
 				this.height / 6 + 120 - 6,
@@ -161,7 +161,7 @@ public class OptionsScreen extends Screen {
 						)
 			)
 		);
-		this.addButton(
+		this.addDrawableChild(
 			new ButtonWidget(
 				this.width / 2 + 5,
 				this.height / 6 + 120 - 6,
@@ -171,7 +171,7 @@ public class OptionsScreen extends Screen {
 				button -> this.client.openScreen(new AccessibilityOptionsScreen(this, this.settings))
 			)
 		);
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, ScreenTexts.DONE, button -> this.client.openScreen(this.parent)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, ScreenTexts.DONE, button -> this.client.openScreen(this.parent)));
 	}
 
 	private void refreshResourcePacks(ResourcePackManager resourcePackManager) {

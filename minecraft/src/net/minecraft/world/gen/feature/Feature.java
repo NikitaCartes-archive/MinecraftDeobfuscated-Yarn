@@ -7,10 +7,13 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.Tag;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ModifiableWorld;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.CountConfig;
 import net.minecraft.world.gen.ProbabilityConfig;
@@ -131,6 +134,17 @@ public abstract class Feature<FC extends FeatureConfig> {
 
 	protected void setBlockState(ModifiableWorld world, BlockPos pos, BlockState state) {
 		world.setBlockState(pos, state, Block.NOTIFY_ALL);
+	}
+
+	public static Predicate<BlockState> notInBlockTagPredicate(Identifier tagId) {
+		Tag<Block> tag = BlockTags.getTagGroup().getTag(tagId);
+		return tag == null ? state -> true : state -> !state.isIn(tag);
+	}
+
+	protected void setBlockStateIf(StructureWorldAccess world, BlockPos pos, BlockState state, Predicate<BlockState> predicate) {
+		if (predicate.test(world.getBlockState(pos))) {
+			world.setBlockState(pos, state, Block.NOTIFY_LISTENERS);
+		}
 	}
 
 	public abstract boolean generate(FeatureContext<FC> context);

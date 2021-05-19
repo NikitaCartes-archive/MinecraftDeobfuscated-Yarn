@@ -29,9 +29,9 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class ProfilerDumper {
 	public static final Path DEBUG_PROFILING_DIRECTORY = Paths.get("debug/profiling");
-	public static final String field_32677 = "metrics";
-	public static final String field_32678 = "deviations";
-	public static final String field_32679 = "profiling.txt";
+	public static final String METRICS_DIRECTORY = "metrics";
+	public static final String DEVIATIONS_DIRECTORY = "deviations";
+	public static final String FILE_NAME = "profiling.txt";
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final FileSystemProvider FILE_SYSTEM_PROVIDER = (FileSystemProvider)FileSystemProvider.installedProviders()
 		.stream()

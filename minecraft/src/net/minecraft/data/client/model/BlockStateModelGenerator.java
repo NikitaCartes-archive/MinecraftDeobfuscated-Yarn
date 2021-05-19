@@ -1157,6 +1157,7 @@ public class BlockStateModelGenerator {
 	}
 
 	private void registerBigDripleaf() {
+		this.excludeFromSimpleItemModelGeneration(Blocks.BIG_DRIPLEAF);
 		Identifier identifier = ModelIds.getBlockModelId(Blocks.BIG_DRIPLEAF);
 		Identifier identifier2 = ModelIds.getBlockSubModelId(Blocks.BIG_DRIPLEAF, "_partial_tilt");
 		Identifier identifier3 = ModelIds.getBlockSubModelId(Blocks.BIG_DRIPLEAF, "_full_tilt");

@@ -471,12 +471,12 @@ public class Raid {
 		for (ServerPlayerEntity serverPlayerEntity : this.world.getPlayers()) {
 			Vec3d vec3d = serverPlayerEntity.getPos();
 			Vec3d vec3d2 = Vec3d.ofCenter(pos);
-			float g = MathHelper.sqrt((vec3d2.x - vec3d.x) * (vec3d2.x - vec3d.x) + (vec3d2.z - vec3d.z) * (vec3d2.z - vec3d.z));
-			double d = vec3d.x + (double)(13.0F / g) * (vec3d2.x - vec3d.x);
-			double e = vec3d.z + (double)(13.0F / g) * (vec3d2.z - vec3d.z);
-			if (g <= 64.0F || collection.contains(serverPlayerEntity)) {
+			double d = Math.sqrt((vec3d2.x - vec3d.x) * (vec3d2.x - vec3d.x) + (vec3d2.z - vec3d.z) * (vec3d2.z - vec3d.z));
+			double e = vec3d.x + 13.0 / d * (vec3d2.x - vec3d.x);
+			double g = vec3d.z + 13.0 / d * (vec3d2.z - vec3d.z);
+			if (d <= 64.0 || collection.contains(serverPlayerEntity)) {
 				serverPlayerEntity.networkHandler
-					.sendPacket(new PlaySoundS2CPacket(SoundEvents.EVENT_RAID_HORN, SoundCategory.NEUTRAL, d, serverPlayerEntity.getY(), e, 64.0F, 1.0F));
+					.sendPacket(new PlaySoundS2CPacket(SoundEvents.EVENT_RAID_HORN, SoundCategory.NEUTRAL, e, serverPlayerEntity.getY(), g, 64.0F, 1.0F));
 			}
 		}
 	}

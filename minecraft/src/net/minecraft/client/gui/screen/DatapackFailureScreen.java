@@ -12,24 +12,22 @@ public class DatapackFailureScreen extends Screen {
 	private MultilineText wrappedText = MultilineText.EMPTY;
 	private final Runnable runServerInSafeMode;
 
-	public DatapackFailureScreen(Runnable runnable) {
+	public DatapackFailureScreen(Runnable runServerInSafeMode) {
 		super(new TranslatableText("datapackFailure.title"));
-		this.runServerInSafeMode = runnable;
+		this.runServerInSafeMode = runServerInSafeMode;
 	}
 
 	@Override
 	protected void init() {
 		super.init();
 		this.wrappedText = MultilineText.create(this.textRenderer, this.getTitle(), this.width - 50);
-		this.addButton(
+		this.addDrawableChild(
 			new ButtonWidget(
-				this.width / 2 - 155, this.height / 6 + 96, 150, 20, new TranslatableText("datapackFailure.safeMode"), buttonWidget -> this.runServerInSafeMode.run()
+				this.width / 2 - 155, this.height / 6 + 96, 150, 20, new TranslatableText("datapackFailure.safeMode"), button -> this.runServerInSafeMode.run()
 			)
 		);
-		this.addButton(
-			new ButtonWidget(
-				this.width / 2 - 155 + 160, this.height / 6 + 96, 150, 20, new TranslatableText("gui.toTitle"), buttonWidget -> this.client.openScreen(null)
-			)
+		this.addDrawableChild(
+			new ButtonWidget(this.width / 2 - 155 + 160, this.height / 6 + 96, 150, 20, new TranslatableText("gui.toTitle"), button -> this.client.openScreen(null))
 		);
 	}
 

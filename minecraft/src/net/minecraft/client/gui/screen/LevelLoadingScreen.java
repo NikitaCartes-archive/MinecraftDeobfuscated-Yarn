@@ -5,6 +5,8 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
@@ -17,6 +19,7 @@ public class LevelLoadingScreen extends Screen {
 	private static final long field_32246 = 2000L;
 	private final WorldGenerationProgressTracker progressProvider;
 	private long field_19101 = -1L;
+	private boolean field_33810;
 	private static final Object2IntMap<ChunkStatus> STATUS_TO_COLOR = Util.make(new Object2IntOpenHashMap<>(), map -> {
 		map.defaultReturnValue(0);
 		map.put(ChunkStatus.EMPTY, 5526612);
@@ -46,31 +49,45 @@ public class LevelLoadingScreen extends Screen {
 
 	@Override
 	public void removed() {
-		NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.loading.done").getString());
+		this.field_33810 = true;
+		this.narrateScreenIfNarrationEnabled(true);
+	}
+
+	@Override
+	protected void addElementNarrations(NarrationMessageBuilder builder) {
+		if (this.field_33810) {
+			builder.put(NarrationPart.TITLE, new TranslatableText("narrator.loading.done"));
+		} else {
+			String string = this.getPercentage();
+			builder.put(NarrationPart.TITLE, string);
+		}
+	}
+
+	private String getPercentage() {
+		return MathHelper.clamp(this.progressProvider.getProgressPercentage(), 0, 100) + "%";
 	}
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		String string = MathHelper.clamp(this.progressProvider.getProgressPercentage(), 0, 100) + "%";
 		long l = Util.getMeasuringTimeMs();
 		if (l - this.field_19101 > 2000L) {
 			this.field_19101 = l;
-			NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.loading", string).getString());
+			this.narrateScreenIfNarrationEnabled(true);
 		}
 
 		int i = this.width / 2;
 		int j = this.height / 2;
 		int k = 30;
 		drawChunkMap(matrices, this.progressProvider, i, j + 30, 2, 0);
-		drawCenteredText(matrices, this.textRenderer, string, i, j - 9 / 2 - 30, 16777215);
+		drawCenteredText(matrices, this.textRenderer, this.getPercentage(), i, j - 9 / 2 - 30, 16777215);
 	}
 
-	public static void drawChunkMap(MatrixStack matrices, WorldGenerationProgressTracker worldGenerationProgressTracker, int i, int j, int k, int l) {
+	public static void drawChunkMap(MatrixStack matrices, WorldGenerationProgressTracker progressProvider, int i, int j, int k, int l) {
 		int m = k + l;
-		int n = worldGenerationProgressTracker.getCenterSize();
+		int n = progressProvider.getCenterSize();
 		int o = n * m - l;
-		int p = worldGenerationProgressTracker.getSize();
+		int p = progressProvider.getSize();
 		int q = p * m - l;
 		int r = i - q / 2;
 		int s = j - q / 2;
@@ -85,7 +102,7 @@ public class LevelLoadingScreen extends Screen {
 
 		for (int v = 0; v < p; v++) {
 			for (int w = 0; w < p; w++) {
-				ChunkStatus chunkStatus = worldGenerationProgressTracker.getChunkStatus(v, w);
+				ChunkStatus chunkStatus = progressProvider.getChunkStatus(v, w);
 				int x = r + v * m;
 				int y = s + w * m;
 				fill(matrices, x, y, x + k, y + k, STATUS_TO_COLOR.getInt(chunkStatus) | 0xFF000000);

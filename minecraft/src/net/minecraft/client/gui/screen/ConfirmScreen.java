@@ -1,11 +1,12 @@
 package net.minecraft.client.gui.screen;
 
+import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
+import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
@@ -20,6 +21,7 @@ public class ConfirmScreen extends Screen {
 	protected Text noTranslated;
 	private int buttonEnableTimer;
 	protected final BooleanConsumer callback;
+	private final List<ButtonWidget> field_33808 = Lists.<ButtonWidget>newArrayList();
 
 	public ConfirmScreen(BooleanConsumer callback, Text title, Text message) {
 		this(callback, title, message, ScreenTexts.YES, ScreenTexts.NO);
@@ -34,8 +36,8 @@ public class ConfirmScreen extends Screen {
 	}
 
 	@Override
-	public String getNarrationMessage() {
-		return super.getNarrationMessage() + ". " + this.message.getString();
+	public Text getNarratedTitle() {
+		return ScreenTexts.joinSentences(super.getNarratedTitle(), this.message);
 	}
 
 	@Override
@@ -44,8 +46,17 @@ public class ConfirmScreen extends Screen {
 		this.messageSplit = MultilineText.create(this.textRenderer, this.message, this.width - 50);
 		int i = this.messageSplit.count() * 9;
 		int j = MathHelper.clamp(90 + i + 12, this.height / 6 + 96, this.height - 24);
-		this.addButton(new ButtonWidget(this.width / 2 - 155, j, 150, 20, this.yesTranslated, buttonWidget -> this.callback.accept(true)));
-		this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, j, 150, 20, this.noTranslated, buttonWidget -> this.callback.accept(false)));
+		this.field_33808.clear();
+		this.method_37051(j);
+	}
+
+	protected void method_37051(int i) {
+		this.method_37052(new ButtonWidget(this.width / 2 - 155, i, 150, 20, this.yesTranslated, button -> this.callback.accept(true)));
+		this.method_37052(new ButtonWidget(this.width / 2 - 155 + 160, i, 150, 20, this.noTranslated, button -> this.callback.accept(false)));
+	}
+
+	protected void method_37052(ButtonWidget buttonWidget) {
+		this.field_33808.add(this.addDrawableChild(buttonWidget));
 	}
 
 	@Override
@@ -59,8 +70,8 @@ public class ConfirmScreen extends Screen {
 	public void disableButtons(int ticks) {
 		this.buttonEnableTimer = ticks;
 
-		for (ClickableWidget clickableWidget : this.buttons) {
-			clickableWidget.active = false;
+		for (ButtonWidget buttonWidget : this.field_33808) {
+			buttonWidget.active = false;
 		}
 	}
 
@@ -68,8 +79,8 @@ public class ConfirmScreen extends Screen {
 	public void tick() {
 		super.tick();
 		if (--this.buttonEnableTimer == 0) {
-			for (ClickableWidget clickableWidget : this.buttons) {
-				clickableWidget.active = true;
+			for (ButtonWidget buttonWidget : this.field_33808) {
+				buttonWidget.active = true;
 			}
 		}
 	}

@@ -50,8 +50,14 @@ public class LeveledCauldronBlock extends AbstractCauldronBlock {
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		if (!world.isClient && entity.isOnFire() && this.isEntityTouchingFluid(state, pos, entity)) {
 			entity.extinguish();
-			decrementFluidLevel(state, world, pos);
+			if (entity.canModifyAt(world, pos)) {
+				this.onFireCollision(state, world, pos);
+			}
 		}
+	}
+
+	protected void onFireCollision(BlockState state, World world, BlockPos pos) {
+		decrementFluidLevel(state, world, pos);
 	}
 
 	public static void decrementFluidLevel(BlockState state, World world, BlockPos pos) {

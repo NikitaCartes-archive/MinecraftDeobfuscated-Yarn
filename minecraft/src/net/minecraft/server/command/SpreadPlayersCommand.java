@@ -169,7 +169,7 @@ public class SpreadPlayersCommand {
 				if (k > 0) {
 					pile2.x /= (double)k;
 					pile2.z /= (double)k;
-					double f = (double)pile2.absolute();
+					double f = pile2.absolute();
 					if (f > 0.0) {
 						pile2.normalize();
 						pile.subtract(pile2);
@@ -267,13 +267,13 @@ public class SpreadPlayersCommand {
 		}
 
 		void normalize() {
-			double d = (double)this.absolute();
+			double d = this.absolute();
 			this.x /= d;
 			this.z /= d;
 		}
 
-		float absolute() {
-			return MathHelper.sqrt(this.x * this.x + this.z * this.z);
+		double absolute() {
+			return Math.sqrt(this.x * this.x + this.z * this.z);
 		}
 
 		public void subtract(SpreadPlayersCommand.Pile other) {

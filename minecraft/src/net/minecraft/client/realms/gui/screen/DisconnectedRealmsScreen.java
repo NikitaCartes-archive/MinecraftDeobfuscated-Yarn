@@ -7,21 +7,20 @@ import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.realms.Realms;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class DisconnectedRealmsScreen extends RealmsScreen {
-	private final Text title;
 	private final Text reason;
 	private MultilineText lines = MultilineText.EMPTY;
 	private final Screen parent;
 	private int textHeight;
 
 	public DisconnectedRealmsScreen(Screen parent, Text title, Text reason) {
+		super(title);
 		this.parent = parent;
-		this.title = title;
 		this.reason = reason;
 	}
 
@@ -30,14 +29,18 @@ public class DisconnectedRealmsScreen extends RealmsScreen {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		minecraftClient.setConnectedToRealms(false);
 		minecraftClient.getResourcePackProvider().clear();
-		Realms.narrateNow(this.title.getString() + ": " + this.reason.getString());
 		this.lines = MultilineText.create(this.textRenderer, this.reason, this.width - 50);
 		this.textHeight = this.lines.count() * 9;
-		this.addButton(
+		this.addDrawableChild(
 			new ButtonWidget(
-				this.width / 2 - 100, this.height / 2 + this.textHeight / 2 + 9, 200, 20, ScreenTexts.BACK, buttonWidget -> minecraftClient.openScreen(this.parent)
+				this.width / 2 - 100, this.height / 2 + this.textHeight / 2 + 9, 200, 20, ScreenTexts.BACK, button -> minecraftClient.openScreen(this.parent)
 			)
 		);
+	}
+
+	@Override
+	public Text getNarratedTitle() {
+		return new LiteralText("").append(this.title).append(": ").append(this.reason);
 	}
 
 	@Override

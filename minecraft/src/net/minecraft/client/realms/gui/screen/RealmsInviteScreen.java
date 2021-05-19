@@ -7,9 +7,9 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.realms.Realms;
 import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.dto.RealmsServer;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -30,6 +30,7 @@ public class RealmsInviteScreen extends RealmsScreen {
 	private Text errorMessage;
 
 	public RealmsInviteScreen(RealmsConfigureWorldScreen configureScreen, Screen parent, RealmsServer serverData) {
+		super(NarratorManager.EMPTY);
 		this.configureScreen = configureScreen;
 		this.parent = parent;
 		this.serverData = serverData;
@@ -46,12 +47,12 @@ public class RealmsInviteScreen extends RealmsScreen {
 		this.field_22696 = new TextFieldWidget(
 			this.client.textRenderer, this.width / 2 - 100, row(2), 200, 20, null, new TranslatableText("mco.configure.world.invite.profile.name")
 		);
-		this.addChild(this.field_22696);
+		this.addSelectableChild(this.field_22696);
 		this.setInitialFocus(this.field_22696);
-		this.addButton(
-			new ButtonWidget(this.width / 2 - 100, row(10), 200, 20, new TranslatableText("mco.configure.world.buttons.invite"), buttonWidget -> this.onInvite())
+		this.addDrawableChild(
+			new ButtonWidget(this.width / 2 - 100, row(10), 200, 20, new TranslatableText("mco.configure.world.buttons.invite"), button -> this.onInvite())
 		);
-		this.addButton(new ButtonWidget(this.width / 2 - 100, row(12), 200, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, row(12), 200, 20, ScreenTexts.CANCEL, button -> this.client.openScreen(this.parent)));
 	}
 
 	@Override
@@ -81,7 +82,7 @@ public class RealmsInviteScreen extends RealmsScreen {
 
 	private void showError(Text errorMessage) {
 		this.errorMessage = errorMessage;
-		Realms.narrateNow(errorMessage.getString());
+		NarratorManager.INSTANCE.narrate(errorMessage);
 	}
 
 	@Override

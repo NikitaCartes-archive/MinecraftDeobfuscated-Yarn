@@ -22,6 +22,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
@@ -38,19 +39,23 @@ public class ModelPredicateProviderRegistry {
 	private static final String CUSTOM_MODEL_DATA_KEY = "CustomModelData";
 	private static final Identifier DAMAGED_ID = new Identifier("damaged");
 	private static final Identifier DAMAGE_ID = new Identifier("damage");
-	private static final ModelPredicateProvider DAMAGED_PROVIDER = (itemStack, clientWorld, livingEntity, i) -> itemStack.isDamaged() ? 1.0F : 0.0F;
-	private static final ModelPredicateProvider DAMAGE_PROVIDER = (itemStack, clientWorld, livingEntity, i) -> MathHelper.clamp(
-			(float)itemStack.getDamage() / (float)itemStack.getMaxDamage(), 0.0F, 1.0F
+	private static final UnclampedModelPredicateProvider DAMAGED_PROVIDER = (stack, world, entity, seed) -> stack.isDamaged() ? 1.0F : 0.0F;
+	private static final UnclampedModelPredicateProvider DAMAGE_PROVIDER = (stack, world, entity, seed) -> MathHelper.clamp(
+			(float)stack.getDamage() / (float)stack.getMaxDamage(), 0.0F, 1.0F
 		);
 	private static final Map<Item, Map<Identifier, ModelPredicateProvider>> ITEM_SPECIFIC = Maps.<Item, Map<Identifier, ModelPredicateProvider>>newHashMap();
 
-	private static ModelPredicateProvider register(Identifier id, ModelPredicateProvider provider) {
+	private static UnclampedModelPredicateProvider register(Identifier id, UnclampedModelPredicateProvider provider) {
 		GLOBAL.put(id, provider);
 		return provider;
 	}
 
-	private static void register(Item item, Identifier id, ModelPredicateProvider provider) {
-		((Map)ITEM_SPECIFIC.computeIfAbsent(item, itemx -> Maps.newHashMap())).put(id, provider);
+	private static void registerCustomModelData(ModelPredicateProvider provider) {
+		GLOBAL.put(new Identifier("custom_model_data"), provider);
+	}
+
+	private static void register(Item item, Identifier id, UnclampedModelPredicateProvider provider) {
+		((Map)ITEM_SPECIFIC.computeIfAbsent(item, key -> Maps.newHashMap())).put(id, provider);
 	}
 
 	@Nullable
@@ -75,39 +80,34 @@ public class ModelPredicateProviderRegistry {
 	}
 
 	static {
-		register(
-			new Identifier("lefthanded"), (itemStack, clientWorld, livingEntity, i) -> livingEntity != null && livingEntity.getMainArm() != Arm.RIGHT ? 1.0F : 0.0F
-		);
+		register(new Identifier("lefthanded"), (stack, world, entity, seed) -> entity != null && entity.getMainArm() != Arm.RIGHT ? 1.0F : 0.0F);
 		register(
 			new Identifier("cooldown"),
-			(itemStack, clientWorld, livingEntity, i) -> livingEntity instanceof PlayerEntity
-					? ((PlayerEntity)livingEntity).getItemCooldownManager().getCooldownProgress(itemStack.getItem(), 0.0F)
+			(stack, world, entity, seed) -> entity instanceof PlayerEntity
+					? ((PlayerEntity)entity).getItemCooldownManager().getCooldownProgress(stack.getItem(), 0.0F)
 					: 0.0F
 		);
-		register(
-			new Identifier("custom_model_data"),
-			(itemStack, clientWorld, livingEntity, i) -> itemStack.hasTag() ? (float)itemStack.getTag().getInt("CustomModelData") : 0.0F
-		);
-		register(Items.BOW, new Identifier("pull"), (itemStack, clientWorld, livingEntity, i) -> {
-			if (livingEntity == null) {
+		registerCustomModelData((stack, world, entity, seed) -> stack.hasTag() ? (float)stack.getTag().getInt("CustomModelData") : 0.0F);
+		register(Items.BOW, new Identifier("pull"), (stack, world, entity, seed) -> {
+			if (entity == null) {
 				return 0.0F;
 			} else {
-				return livingEntity.getActiveItem() != itemStack ? 0.0F : (float)(itemStack.getMaxUseTime() - livingEntity.getItemUseTimeLeft()) / 20.0F;
+				return entity.getActiveItem() != stack ? 0.0F : (float)(stack.getMaxUseTime() - entity.getItemUseTimeLeft()) / 20.0F;
 			}
 		});
 		register(
 			Items.BOW,
 			new Identifier("pulling"),
-			(itemStack, clientWorld, livingEntity, i) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
+			(stack, world, entity, seed) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0F : 0.0F
 		);
-		register(Items.BUNDLE, new Identifier("filled"), (itemStack, clientWorld, livingEntity, i) -> BundleItem.getAmountFilled(itemStack));
-		register(Items.CLOCK, new Identifier("time"), new ModelPredicateProvider() {
+		register(Items.BUNDLE, new Identifier("filled"), (stack, world, entity, seed) -> BundleItem.getAmountFilled(stack));
+		register(Items.CLOCK, new Identifier("time"), new UnclampedModelPredicateProvider() {
 			private double time;
 			private double step;
 			private long lastTick;
 
 			@Override
-			public float call(ItemStack itemStack, @Nullable ClientWorld clientWorldx, @Nullable LivingEntity livingEntity, int i) {
+			public float unclampedCall(ItemStack itemStack, @Nullable ClientWorld clientWorldx, @Nullable LivingEntity livingEntity, int i) {
 				Entity entity = (Entity)(livingEntity != null ? livingEntity : itemStack.getHolder());
 				if (entity == null) {
 					return 0.0F;
@@ -148,12 +148,12 @@ public class ModelPredicateProviderRegistry {
 		register(
 			Items.COMPASS,
 			new Identifier("angle"),
-			new ModelPredicateProvider() {
-				private final ModelPredicateProviderRegistry.AngleInterpolator value = new ModelPredicateProviderRegistry.AngleInterpolator();
-				private final ModelPredicateProviderRegistry.AngleInterpolator speed = new ModelPredicateProviderRegistry.AngleInterpolator();
+			new UnclampedModelPredicateProvider() {
+				private final ModelPredicateProviderRegistry.AngleInterpolator aimedInterpolator = new ModelPredicateProviderRegistry.AngleInterpolator();
+				private final ModelPredicateProviderRegistry.AngleInterpolator aimlessInterpolator = new ModelPredicateProviderRegistry.AngleInterpolator();
 
 				@Override
-				public float call(ItemStack itemStack, @Nullable ClientWorld clientWorldx, @Nullable LivingEntity livingEntity, int i) {
+				public float unclampedCall(ItemStack itemStack, @Nullable ClientWorld clientWorldx, @Nullable LivingEntity livingEntity, int i) {
 					Entity entity = (Entity)(livingEntity != null ? livingEntity : itemStack.getHolder());
 					if (entity == null) {
 						return 0.0F;
@@ -182,29 +182,33 @@ public class ModelPredicateProviderRegistry {
 							double f = this.getAngleToPos(Vec3d.ofCenter(blockPos), entity) / (float) (Math.PI * 2);
 							double g;
 							if (bl) {
-								if (this.value.shouldUpdate(l)) {
-									this.value.update(l, 0.5 - (e - 0.25));
+								if (this.aimedInterpolator.shouldUpdate(l)) {
+									this.aimedInterpolator.update(l, 0.5 - (e - 0.25));
 								}
 
-								g = f + this.value.value;
+								g = f + this.aimedInterpolator.value;
 							} else {
 								g = 0.5 - (e - 0.25 - f);
 							}
 
 							return MathHelper.floorMod((float)g, 1.0F);
 						} else {
-							if (this.speed.shouldUpdate(l)) {
-								this.speed.update(l, Math.random());
+							if (this.aimlessInterpolator.shouldUpdate(l)) {
+								this.aimlessInterpolator.update(l, Math.random());
 							}
 
-							double d = this.speed.value + (double)((float)this.method_32800(i) / 2.1474836E9F);
+							double d = this.aimlessInterpolator.value + (double)((float)this.scatter(i) / 2.1474836E9F);
 							return MathHelper.floorMod((float)d, 1.0F);
 						}
 					}
 				}
 
-				private int method_32800(int i) {
-					return i * 1327217883;
+				/**
+				 * Scatters a seed by integer overflow in multiplication onto the whole
+				 * int domain.
+				 */
+				private int scatter(int seed) {
+					return seed * 1327217883;
 				}
 
 				@Nullable
@@ -237,78 +241,62 @@ public class ModelPredicateProviderRegistry {
 				}
 			}
 		);
-		register(
-			Items.CROSSBOW,
-			new Identifier("pull"),
-			(itemStack, clientWorld, livingEntity, i) -> {
-				if (livingEntity == null) {
-					return 0.0F;
-				} else {
-					return CrossbowItem.isCharged(itemStack)
-						? 0.0F
-						: (float)(itemStack.getMaxUseTime() - livingEntity.getItemUseTimeLeft()) / (float)CrossbowItem.getPullTime(itemStack);
-				}
+		register(Items.CROSSBOW, new Identifier("pull"), (stack, world, entity, seed) -> {
+			if (entity == null) {
+				return 0.0F;
+			} else {
+				return CrossbowItem.isCharged(stack) ? 0.0F : (float)(stack.getMaxUseTime() - entity.getItemUseTimeLeft()) / (float)CrossbowItem.getPullTime(stack);
 			}
-		);
+		});
 		register(
 			Items.CROSSBOW,
 			new Identifier("pulling"),
-			(itemStack, clientWorld, livingEntity, i) -> livingEntity != null
-						&& livingEntity.isUsingItem()
-						&& livingEntity.getActiveItem() == itemStack
-						&& !CrossbowItem.isCharged(itemStack)
-					? 1.0F
-					: 0.0F
+			(stack, world, entity, seed) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack && !CrossbowItem.isCharged(stack) ? 1.0F : 0.0F
 		);
-		register(
-			Items.CROSSBOW,
-			new Identifier("charged"),
-			(itemStack, clientWorld, livingEntity, i) -> livingEntity != null && CrossbowItem.isCharged(itemStack) ? 1.0F : 0.0F
-		);
+		register(Items.CROSSBOW, new Identifier("charged"), (stack, world, entity, seed) -> entity != null && CrossbowItem.isCharged(stack) ? 1.0F : 0.0F);
 		register(
 			Items.CROSSBOW,
 			new Identifier("firework"),
-			(itemStack, clientWorld, livingEntity, i) -> livingEntity != null
-						&& CrossbowItem.isCharged(itemStack)
-						&& CrossbowItem.hasProjectile(itemStack, Items.FIREWORK_ROCKET)
-					? 1.0F
-					: 0.0F
+			(stack, world, entity, seed) -> entity != null && CrossbowItem.isCharged(stack) && CrossbowItem.hasProjectile(stack, Items.FIREWORK_ROCKET) ? 1.0F : 0.0F
 		);
-		register(Items.ELYTRA, new Identifier("broken"), (itemStack, clientWorld, livingEntity, i) -> ElytraItem.isUsable(itemStack) ? 0.0F : 1.0F);
-		register(Items.FISHING_ROD, new Identifier("cast"), (itemStack, clientWorld, livingEntity, i) -> {
-			if (livingEntity == null) {
+		register(Items.ELYTRA, new Identifier("broken"), (stack, world, entity, seed) -> ElytraItem.isUsable(stack) ? 0.0F : 1.0F);
+		register(Items.FISHING_ROD, new Identifier("cast"), (stack, world, entity, seed) -> {
+			if (entity == null) {
 				return 0.0F;
 			} else {
-				boolean bl = livingEntity.getMainHandStack() == itemStack;
-				boolean bl2 = livingEntity.getOffHandStack() == itemStack;
-				if (livingEntity.getMainHandStack().getItem() instanceof FishingRodItem) {
+				boolean bl = entity.getMainHandStack() == stack;
+				boolean bl2 = entity.getOffHandStack() == stack;
+				if (entity.getMainHandStack().getItem() instanceof FishingRodItem) {
 					bl2 = false;
 				}
 
-				return (bl || bl2) && livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).fishHook != null ? 1.0F : 0.0F;
+				return (bl || bl2) && entity instanceof PlayerEntity && ((PlayerEntity)entity).fishHook != null ? 1.0F : 0.0F;
 			}
 		});
 		register(
 			Items.SHIELD,
 			new Identifier("blocking"),
-			(itemStack, clientWorld, livingEntity, i) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
+			(stack, world, entity, seed) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0F : 0.0F
 		);
 		register(
 			Items.TRIDENT,
 			new Identifier("throwing"),
-			(itemStack, clientWorld, livingEntity, i) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
+			(stack, world, entity, seed) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0F : 0.0F
 		);
-		register(Items.LIGHT, new Identifier("level"), (itemStack, clientWorld, livingEntity, i) -> {
-			NbtCompound nbtCompound = itemStack.getSubTag("BlockStateTag");
+		register(Items.LIGHT, new Identifier("level"), (stack, world, entity, seed) -> {
+			NbtCompound nbtCompound = stack.getSubTag("BlockStateTag");
 
 			try {
 				if (nbtCompound != null) {
-					return (float)Integer.parseInt(nbtCompound.getString(LightBlock.LEVEL_15.getName()));
+					NbtElement nbtElement = nbtCompound.get(LightBlock.LEVEL_15.getName());
+					if (nbtElement != null) {
+						return (float)Integer.parseInt(nbtElement.asString()) / 16.0F;
+					}
 				}
 			} catch (NumberFormatException var6) {
 			}
 
-			return 15.0F;
+			return 1.0F;
 		});
 	}
 
@@ -322,11 +310,11 @@ public class ModelPredicateProviderRegistry {
 			return this.lastUpdateTime != time;
 		}
 
-		void update(long time, double d) {
+		void update(long time, double target) {
 			this.lastUpdateTime = time;
-			double e = d - this.value;
-			e = MathHelper.floorMod(e + 0.5, 1.0) - 0.5;
-			this.speed += e * 0.1;
+			double d = target - this.value;
+			d = MathHelper.floorMod(d + 0.5, 1.0) - 0.5;
+			this.speed += d * 0.1;
 			this.speed *= 0.8;
 			this.value = MathHelper.floorMod(this.value + this.speed, 1.0);
 		}

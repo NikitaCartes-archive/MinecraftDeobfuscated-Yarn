@@ -289,7 +289,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.criterion(
 				"killed_skeleton",
 				OnKilledCriterion.Conditions.createPlayerKilledEntity(
-					EntityPredicate.Builder.create().type(EntityType.SKELETON).distance(DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(50.0F))),
+					EntityPredicate.Builder.create().type(EntityType.SKELETON).distance(DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(50.0))),
 					DamageSourcePredicate.Builder.create().projectile(true)
 				)
 			)
@@ -436,7 +436,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 				"bullseye",
 				TargetHitCriterion.Conditions.create(
 					NumberRange.IntRange.exactly(15),
-					EntityPredicate.Extended.ofLegacy(EntityPredicate.Builder.create().distance(DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(30.0F))).build())
+					EntityPredicate.Extended.ofLegacy(EntityPredicate.Builder.create().distance(DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(30.0))).build())
 				)
 			)
 			.build(consumer, "adventure/bullseye");

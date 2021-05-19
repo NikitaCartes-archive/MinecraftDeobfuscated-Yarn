@@ -787,34 +787,34 @@ public abstract class AbstractBlock {
 			private final boolean[] solidSides;
 			protected final boolean isFullCube;
 
-			ShapeCache(BlockState blockState) {
-				Block block = blockState.getBlock();
-				this.fullOpaque = blockState.isOpaqueFullCube(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
-				this.translucent = block.isTranslucent(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
-				this.lightSubtracted = block.getOpacity(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
-				if (!blockState.isOpaque()) {
+			ShapeCache(BlockState state) {
+				Block block = state.getBlock();
+				this.fullOpaque = state.isOpaqueFullCube(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+				this.translucent = block.isTranslucent(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+				this.lightSubtracted = block.getOpacity(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+				if (!state.isOpaque()) {
 					this.extrudedFaces = null;
 				} else {
 					this.extrudedFaces = new VoxelShape[DIRECTIONS.length];
-					VoxelShape voxelShape = block.getCullingShape(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+					VoxelShape voxelShape = block.getCullingShape(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
 
 					for (Direction direction : DIRECTIONS) {
 						this.extrudedFaces[direction.ordinal()] = VoxelShapes.extrudeFace(voxelShape, direction);
 					}
 				}
 
-				this.collisionShape = block.getCollisionShape(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, ShapeContext.absent());
+				this.collisionShape = block.getCollisionShape(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, ShapeContext.absent());
 				this.exceedsCube = Arrays.stream(Direction.Axis.values())
 					.anyMatch(axis -> this.collisionShape.getMin(axis) < 0.0 || this.collisionShape.getMax(axis) > 1.0);
 				this.solidSides = new boolean[DIRECTIONS.length * SHAPE_TYPE_LENGTH];
 
 				for (Direction direction2 : DIRECTIONS) {
 					for (SideShapeType sideShapeType : SideShapeType.values()) {
-						this.solidSides[indexSolidSide(direction2, sideShapeType)] = sideShapeType.matches(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, direction2);
+						this.solidSides[indexSolidSide(direction2, sideShapeType)] = sideShapeType.matches(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, direction2);
 					}
 				}
 
-				this.isFullCube = Block.isShapeFullCube(blockState.getCollisionShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN));
+				this.isFullCube = Block.isShapeFullCube(state.getCollisionShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN));
 			}
 
 			public boolean isSideSolid(Direction direction, SideShapeType shapeType) {

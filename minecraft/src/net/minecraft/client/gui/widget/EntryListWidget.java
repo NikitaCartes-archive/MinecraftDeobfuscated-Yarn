@@ -16,19 +16,21 @@ import net.minecraft.client.gui.AbstractParentElement;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
-public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extends AbstractParentElement implements Drawable {
-	public static final Identifier WHITE_TEXTURE = new Identifier("textures/misc/white.png");
+public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extends AbstractParentElement implements Drawable, Selectable {
 	protected final MinecraftClient client;
 	protected final int itemHeight;
 	private final List<E> children = new EntryListWidget.Entries();
@@ -44,9 +46,12 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	private boolean renderHeader;
 	protected int headerHeight;
 	private boolean scrolling;
+	@Nullable
 	private E selected;
 	private boolean renderBackground = true;
 	private boolean renderHorizontalShadows = true;
+	@Nullable
+	private E field_33780;
 
 	public EntryListWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight) {
 		this.client = client;
@@ -179,6 +184,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+		this.field_33780 = this.isMouseOver((double)mouseX, (double)mouseY) ? this.getEntryAtPosition((double)mouseX, (double)mouseY) : null;
 		if (this.renderBackground) {
 			RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -493,18 +499,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 				}
 
 				int p = this.getRowLeft();
-				entry.render(
-					matrices,
-					j,
-					k,
-					p,
-					o,
-					n,
-					mouseX,
-					mouseY,
-					this.isMouseOver((double)mouseX, (double)mouseY) && Objects.equals(this.getEntryAtPosition((double)mouseX, (double)mouseY), entry),
-					delta
-				);
+				entry.render(matrices, j, k, p, o, n, mouseX, mouseY, Objects.equals(this.field_33780, entry), delta);
 			}
 		}
 	}
@@ -529,6 +524,16 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		return false;
 	}
 
+	@Override
+	public Selectable.SelectionType getType() {
+		if (this.isFocused()) {
+			return Selectable.SelectionType.FOCUSED;
+		} else {
+			return this.field_33780 != null ? Selectable.SelectionType.HOVERED : Selectable.SelectionType.NONE;
+		}
+	}
+
+	@Nullable
 	protected E remove(int index) {
 		E entry = (E)this.children.get(index);
 		return this.removeEntry((E)this.children.get(index)) ? entry : null;
@@ -543,8 +548,23 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		return bl;
 	}
 
+	@Nullable
+	protected E method_37019() {
+		return this.field_33780;
+	}
+
 	void setEntryParentList(EntryListWidget.Entry<E> entry) {
 		entry.parentList = this;
+	}
+
+	protected void method_37017(NarrationMessageBuilder narrationMessageBuilder, E entry) {
+		List<E> list = this.children();
+		if (list.size() > 1) {
+			int i = list.indexOf(entry);
+			if (i != -1) {
+				narrationMessageBuilder.put(NarrationPart.POSITION, new TranslatableText("narrator.position.list", i + 1, list.size()));
+			}
+		}
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -79,11 +79,11 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 		this.networkCompressionThreshold = this.getInt("network-compression-threshold", 256);
 		this.broadcastRconToOps = this.parseBoolean("broadcast-rcon-to-ops", true);
 		this.broadcastConsoleToOps = this.parseBoolean("broadcast-console-to-ops", true);
-		this.maxWorldSize = this.transformedParseInt("max-world-size", integer -> MathHelper.clamp(integer, 1, 29999984), 29999984);
+		this.maxWorldSize = this.transformedParseInt("max-world-size", maxWorldSize -> MathHelper.clamp(maxWorldSize, 1, 29999984), 29999984);
 		this.syncChunkWrites = this.parseBoolean("sync-chunk-writes", true);
 		this.enableJmxMonitoring = this.parseBoolean("enable-jmx-monitoring", false);
 		this.enableStatus = this.parseBoolean("enable-status", true);
-		this.entityBroadcastRangePercentage = this.transformedParseInt("entity-broadcast-range-percentage", integer -> MathHelper.clamp(integer, 10, 1000), 100);
+		this.entityBroadcastRangePercentage = this.transformedParseInt("entity-broadcast-range-percentage", percentage -> MathHelper.clamp(percentage, 10, 1000), 100);
 		this.textFilteringConfig = this.getString("text-filtering-config", "");
 		this.playerIdleTimeout = this.intAccessor("player-idle-timeout", 0);
 		this.whiteList = this.booleanAccessor("white-list", false);

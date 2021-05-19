@@ -18,7 +18,7 @@ public class FatalErrorScreen extends Screen {
 	@Override
 	protected void init() {
 		super.init();
-		this.addButton(new ButtonWidget(this.width / 2 - 100, 140, 200, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(null)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, 140, 200, 20, ScreenTexts.CANCEL, button -> this.client.openScreen(null)));
 	}
 
 	@Override

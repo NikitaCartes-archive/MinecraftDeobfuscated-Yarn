@@ -35,11 +35,11 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandl
 		this.narrow = this.width < 379;
 		this.recipeBook.initialize(this.width, this.height, this.client, this.narrow, this.handler);
 		this.x = this.recipeBook.findLeftEdge(this.narrow, this.width, this.backgroundWidth);
-		this.addButton(new TexturedButtonWidget(this.x + 20, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, buttonWidget -> {
+		this.addDrawableChild(new TexturedButtonWidget(this.x + 20, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, button -> {
 			this.recipeBook.reset(this.narrow);
 			this.recipeBook.toggleOpen();
 			this.x = this.recipeBook.findLeftEdge(this.narrow, this.width, this.backgroundWidth);
-			((TexturedButtonWidget)buttonWidget).setPos(this.x + 20, this.height / 2 - 49);
+			((TexturedButtonWidget)button).setPos(this.x + 20, this.height / 2 - 49);
 		}));
 		this.titleX = (this.backgroundWidth - this.textRenderer.getWidth(this.title)) / 2;
 	}

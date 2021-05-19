@@ -36,9 +36,9 @@ public class LightingProvider implements LightingView {
 	}
 
 	@Override
-	public void addLightSource(BlockPos pos, int i) {
+	public void addLightSource(BlockPos pos, int level) {
 		if (this.blockLightProvider != null) {
-			this.blockLightProvider.addLightSource(pos, i);
+			this.blockLightProvider.addLightSource(pos, level);
 		}
 	}
 
@@ -130,15 +130,15 @@ public class LightingProvider implements LightingView {
 		return Math.max(j, i);
 	}
 
-	public int method_31928() {
+	public int getHeight() {
 		return this.world.countVerticalSections() + 2;
 	}
 
-	public int method_31929() {
+	public int getBottomY() {
 		return this.world.getBottomSectionCoord() - 1;
 	}
 
-	public int method_31930() {
-		return this.method_31929() + this.method_31928();
+	public int getTopY() {
+		return this.getBottomY() + this.getHeight();
 	}
 }

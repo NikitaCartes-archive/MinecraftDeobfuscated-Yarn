@@ -1,6 +1,5 @@
 package net.minecraft.client.gui.screen.option;
 
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -12,7 +11,6 @@ import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.Option;
 import net.minecraft.client.resource.language.LanguageDefinition;
 import net.minecraft.client.resource.language.LanguageManager;
-import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -36,9 +34,9 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 	@Override
 	protected void init() {
 		this.languageSelectionList = new LanguageOptionsScreen.LanguageSelectionListWidget(this.client);
-		this.children.add(this.languageSelectionList);
-		this.addButton(Option.FORCE_UNICODE_FONT.createButton(this.gameOptions, this.width / 2 - 155, this.height - 38, 150));
-		this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 38, 150, 20, ScreenTexts.DONE, button -> {
+		this.addSelectableChild(this.languageSelectionList);
+		this.addDrawableChild(Option.FORCE_UNICODE_FONT.createButton(this.gameOptions, this.width / 2 - 155, this.height - 38, 150));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 38, 150, 20, ScreenTexts.DONE, button -> {
 			LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry languageEntry = this.languageSelectionList.getSelected();
 			if (languageEntry != null && !languageEntry.languageDefinition.getCode().equals(this.languageManager.getLanguage().getCode())) {
 				this.languageManager.setLanguage(languageEntry.languageDefinition);
@@ -90,13 +88,6 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 			return super.getRowWidth() + 50;
 		}
 
-		public void setSelected(@Nullable LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry languageEntry) {
-			super.setSelected(languageEntry);
-			if (languageEntry != null) {
-				NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", languageEntry.languageDefinition).getString());
-			}
-		}
-
 		@Override
 		protected void renderBackground(MatrixStack matrices) {
 			LanguageOptionsScreen.this.renderBackground(matrices);
@@ -141,6 +132,11 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 
 			private void onPressed() {
 				LanguageSelectionListWidget.this.setSelected(this);
+			}
+
+			@Override
+			public Text method_37006() {
+				return new TranslatableText("narrator.select", this.languageDefinition);
 			}
 		}
 	}

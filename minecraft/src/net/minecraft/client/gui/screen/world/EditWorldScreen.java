@@ -66,28 +66,28 @@ public class EditWorldScreen extends Screen {
 	@Override
 	protected void init() {
 		this.client.keyboard.setRepeatEvents(true);
-		ButtonWidget buttonWidget = this.addButton(
-			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 0 + 5, 200, 20, new TranslatableText("selectWorld.edit.resetIcon"), buttonWidgetx -> {
+		ButtonWidget buttonWidget = this.addDrawableChild(
+			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 0 + 5, 200, 20, new TranslatableText("selectWorld.edit.resetIcon"), button -> {
 				FileUtils.deleteQuietly(this.storageSession.getIconFile());
-				buttonWidgetx.active = false;
+				button.active = false;
 			})
 		);
-		this.addButton(
+		this.addDrawableChild(
 			new ButtonWidget(
 				this.width / 2 - 100,
 				this.height / 4 + 24 + 5,
 				200,
 				20,
 				new TranslatableText("selectWorld.edit.openFolder"),
-				buttonWidgetx -> Util.getOperatingSystem().open(this.storageSession.getDirectory(WorldSavePath.ROOT).toFile())
+				button -> Util.getOperatingSystem().open(this.storageSession.getDirectory(WorldSavePath.ROOT).toFile())
 			)
 		);
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 48 + 5, 200, 20, new TranslatableText("selectWorld.edit.backup"), buttonWidgetx -> {
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 48 + 5, 200, 20, new TranslatableText("selectWorld.edit.backup"), button -> {
 			boolean bl = backupLevel(this.storageSession);
 			this.callback.accept(!bl);
 		}));
-		this.addButton(
-			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 72 + 5, 200, 20, new TranslatableText("selectWorld.edit.backupFolder"), buttonWidgetx -> {
+		this.addDrawableChild(
+			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 72 + 5, 200, 20, new TranslatableText("selectWorld.edit.backupFolder"), button -> {
 				LevelStorage levelStorage = this.client.getLevelStorage();
 				Path path = levelStorage.getBackupsDirectory();
 
@@ -100,14 +100,14 @@ public class EditWorldScreen extends Screen {
 				Util.getOperatingSystem().open(path.toFile());
 			})
 		);
-		this.addButton(
+		this.addDrawableChild(
 			new ButtonWidget(
 				this.width / 2 - 100,
 				this.height / 4 + 96 + 5,
 				200,
 				20,
 				new TranslatableText("selectWorld.edit.optimize"),
-				buttonWidgetx -> this.client.openScreen(new BackupPromptScreen(this, (bl, bl2) -> {
+				button -> this.client.openScreen(new BackupPromptScreen(this, (bl, bl2) -> {
 						if (bl) {
 							backupLevel(this.storageSession);
 						}
@@ -116,14 +116,14 @@ public class EditWorldScreen extends Screen {
 					}, new TranslatableText("optimizeWorld.confirm.title"), new TranslatableText("optimizeWorld.confirm.description"), true))
 			)
 		);
-		this.addButton(
+		this.addDrawableChild(
 			new ButtonWidget(
 				this.width / 2 - 100,
 				this.height / 4 + 120 + 5,
 				200,
 				20,
 				new TranslatableText("selectWorld.edit.export_worldgen_settings"),
-				buttonWidgetx -> {
+				button -> {
 					DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
 
 					DataResult<String> dataResult2;
@@ -131,14 +131,14 @@ public class EditWorldScreen extends Screen {
 							.createIntegratedResourceManager(impl, MinecraftClient::loadDataPackSettings, MinecraftClient::createSaveProperties, false, this.storageSession)) {
 						DynamicOps<JsonElement> dynamicOps = RegistryReadingOps.of(JsonOps.INSTANCE, impl);
 						DataResult<JsonElement> dataResult = GeneratorOptions.CODEC.encodeStart(dynamicOps, integratedResourceManager.getSaveProperties().getGeneratorOptions());
-						dataResult2 = dataResult.flatMap(jsonElement -> {
+						dataResult2 = dataResult.flatMap(json -> {
 							Path path = this.storageSession.getDirectory(WorldSavePath.ROOT).resolve("worldgen_settings_export.json");
 
 							try {
 								JsonWriter jsonWriter = GSON.newJsonWriter(Files.newBufferedWriter(path, StandardCharsets.UTF_8));
 
 								try {
-									GSON.toJson(jsonElement, jsonWriter);
+									GSON.toJson(json, jsonWriter);
 								} catch (Throwable var7) {
 									if (jsonWriter != null) {
 										try {
@@ -168,22 +168,22 @@ public class EditWorldScreen extends Screen {
 					Text text2 = new TranslatableText(
 						dataResult2.result().isPresent() ? "selectWorld.edit.export_worldgen_settings.success" : "selectWorld.edit.export_worldgen_settings.failure"
 					);
-					dataResult2.error().ifPresent(partialResult -> LOGGER.error("Error exporting world settings: {}", partialResult));
+					dataResult2.error().ifPresent(result -> LOGGER.error("Error exporting world settings: {}", result));
 					this.client.getToastManager().add(SystemToast.create(this.client, SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER, text2, text));
 				}
 			)
 		);
-		this.saveButton = this.addButton(
-			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 144 + 5, 98, 20, new TranslatableText("selectWorld.edit.save"), buttonWidgetx -> this.commit())
+		this.saveButton = this.addDrawableChild(
+			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 144 + 5, 98, 20, new TranslatableText("selectWorld.edit.save"), button -> this.commit())
 		);
-		this.addButton(new ButtonWidget(this.width / 2 + 2, this.height / 4 + 144 + 5, 98, 20, ScreenTexts.CANCEL, buttonWidgetx -> this.callback.accept(false)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, this.height / 4 + 144 + 5, 98, 20, ScreenTexts.CANCEL, button -> this.callback.accept(false)));
 		buttonWidget.active = this.storageSession.getIconFile().isFile();
 		LevelSummary levelSummary = this.storageSession.getLevelSummary();
 		String string = levelSummary == null ? "" : levelSummary.getDisplayName();
 		this.levelNameTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 38, 200, 20, new TranslatableText("selectWorld.enterName"));
 		this.levelNameTextField.setText(string);
-		this.levelNameTextField.setChangedListener(stringx -> this.saveButton.active = !stringx.trim().isEmpty());
-		this.children.add(this.levelNameTextField);
+		this.levelNameTextField.setChangedListener(levelName -> this.saveButton.active = !levelName.trim().isEmpty());
+		this.addSelectableChild(this.levelNameTextField);
 		this.setInitialFocus(this.levelNameTextField);
 	}
 

@@ -27,7 +27,6 @@ import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.OrderedText;
@@ -75,11 +74,6 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 
 	public void setSelected(@Nullable MultiplayerServerListWidget.Entry entry) {
 		super.setSelected(entry);
-		if (this.getSelected() instanceof MultiplayerServerListWidget.ServerEntry) {
-			NarratorManager.INSTANCE
-				.narrate(new TranslatableText("narrator.select", ((MultiplayerServerListWidget.ServerEntry)this.getSelected()).server.name).getString());
-		}
-
 		this.screen.updateButtonActivationStates();
 	}
 
@@ -174,6 +168,11 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		public LanServerInfo getLanServerEntry() {
 			return this.server;
 		}
+
+		@Override
+		public Text method_37006() {
+			return new TranslatableText("narrator.select", new LiteralText("").append(TITLE_TEXT).append(" ").append(this.server.getMotd()));
+		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -202,6 +201,11 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 				.textRenderer
 				.draw(matrices, string, (float)(this.client.currentScreen.width / 2 - this.client.textRenderer.getWidth(string) / 2), (float)(i + 9), 8421504);
 		}
+
+		@Override
+		public Text method_37006() {
+			return LiteralText.EMPTY;
+		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -216,7 +220,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		private static final int field_32394 = 32;
 		private final MultiplayerScreen screen;
 		private final MinecraftClient client;
-		final ServerInfo server;
+		private final ServerInfo server;
 		private final Identifier iconTextureId;
 		private String iconUri;
 		@Nullable
@@ -468,6 +472,11 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 
 		public ServerInfo getServer() {
 			return this.server;
+		}
+
+		@Override
+		public Text method_37006() {
+			return new TranslatableText("narrator.select", this.server.name);
 		}
 	}
 }

@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.TickableElement;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RealmsWorldOptions;
@@ -22,7 +21,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class RealmsWorldSlotButton extends ButtonWidget implements TickableElement {
+public class RealmsWorldSlotButton extends ButtonWidget {
 	public static final Identifier SLOT_FRAME = new Identifier("realms", "textures/gui/realms/slot_frame.png");
 	public static final Identifier EMPTY_FRAME = new Identifier("realms", "textures/gui/realms/empty_frame.png");
 	public static final Identifier PANORAMA_0 = new Identifier("minecraft", "textures/gui/title/background/panorama_0.png");
@@ -52,8 +51,7 @@ public class RealmsWorldSlotButton extends ButtonWidget implements TickableEleme
 		return this.state;
 	}
 
-	@Override
-	public void tick() {
+	public void method_37007() {
 		this.animTick++;
 		RealmsServer realmsServer = (RealmsServer)this.serverDataProvider.get();
 		if (realmsServer != null) {

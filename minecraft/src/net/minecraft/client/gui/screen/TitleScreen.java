@@ -7,11 +7,13 @@ import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.CubeMapRenderer;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.RotatingCubeMapRenderer;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerWarningScreen;
@@ -22,13 +24,15 @@ import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
-import net.minecraft.client.realms.gui.screen.RealmsBridgeScreen;
+import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
+import net.minecraft.client.realms.gui.screen.RealmsNotificationsScreen;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -44,7 +48,7 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class TitleScreen extends Screen {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final String field_32272 = "Demo_World";
+	private static final String DEMO_WORLD_NAME = "Demo_World";
 	public static final String COPYRIGHT = "Copyright Mojang AB. Do not distribute!";
 	public static final CubeMapRenderer PANORAMA_CUBE_MAP = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
 	private static final Identifier PANORAMA_OVERLAY = new Identifier("textures/gui/title/background/panorama_overlay.png");
@@ -55,7 +59,6 @@ public class TitleScreen extends Screen {
 	private ButtonWidget buttonResetDemo;
 	private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
 	private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
-	private boolean realmsNotificationsInitialized;
 	private Screen realmsNotificationGui;
 	private int copyrightTextWidth;
 	private int copyrightTextX;
@@ -119,7 +122,7 @@ public class TitleScreen extends Screen {
 			this.initWidgetsNormal(j, 24);
 		}
 
-		this.addButton(
+		this.addDrawableChild(
 			new TexturedButtonWidget(
 				this.width / 2 - 124,
 				j + 72 + 12,
@@ -131,22 +134,22 @@ public class TitleScreen extends Screen {
 				ButtonWidget.WIDGETS_TEXTURE,
 				256,
 				256,
-				buttonWidget -> this.client.openScreen(new LanguageOptionsScreen(this, this.client.options, this.client.getLanguageManager())),
+				button -> this.client.openScreen(new LanguageOptionsScreen(this, this.client.options, this.client.getLanguageManager())),
 				new TranslatableText("narrator.button.language")
 			)
 		);
-		this.addButton(
+		this.addDrawableChild(
 			new ButtonWidget(
 				this.width / 2 - 100,
 				j + 72 + 12,
 				98,
 				20,
 				new TranslatableText("menu.options"),
-				buttonWidget -> this.client.openScreen(new OptionsScreen(this, this.client.options))
+				button -> this.client.openScreen(new OptionsScreen(this, this.client.options))
 			)
 		);
-		this.addButton(new ButtonWidget(this.width / 2 + 2, j + 72 + 12, 98, 20, new TranslatableText("menu.quit"), buttonWidget -> this.client.scheduleStop()));
-		this.addButton(
+		this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, j + 72 + 12, 98, 20, new TranslatableText("menu.quit"), button -> this.client.scheduleStop()));
+		this.addDrawableChild(
 			new TexturedButtonWidget(
 				this.width / 2 + 104,
 				j + 72 + 12,
@@ -158,15 +161,13 @@ public class TitleScreen extends Screen {
 				ACCESSIBILITY_ICON_TEXTURE,
 				32,
 				64,
-				buttonWidget -> this.client.openScreen(new AccessibilityOptionsScreen(this, this.client.options)),
+				button -> this.client.openScreen(new AccessibilityOptionsScreen(this, this.client.options)),
 				new TranslatableText("narrator.button.accessibility")
 			)
 		);
 		this.client.setConnectedToRealms(false);
-		if (this.client.options.realmsNotifications && !this.realmsNotificationsInitialized) {
-			RealmsBridgeScreen realmsBridgeScreen = new RealmsBridgeScreen();
-			this.realmsNotificationGui = realmsBridgeScreen.getNotificationScreen(this);
-			this.realmsNotificationsInitialized = true;
+		if (this.client.options.realmsNotifications && this.realmsNotificationGui == null) {
+			this.realmsNotificationGui = new RealmsNotificationsScreen();
 		}
 
 		if (this.areRealmsNotificationsEnabled()) {
@@ -175,36 +176,42 @@ public class TitleScreen extends Screen {
 	}
 
 	private void initWidgetsNormal(int y, int spacingY) {
-		this.addButton(
-			new ButtonWidget(
-				this.width / 2 - 100, y, 200, 20, new TranslatableText("menu.singleplayer"), buttonWidget -> this.client.openScreen(new SelectWorldScreen(this))
-			)
+		this.addDrawableChild(
+			new ButtonWidget(this.width / 2 - 100, y, 200, 20, new TranslatableText("menu.singleplayer"), button -> this.client.openScreen(new SelectWorldScreen(this)))
 		);
 		boolean bl = this.client.isMultiplayerEnabled();
 		ButtonWidget.TooltipSupplier tooltipSupplier = bl
 			? ButtonWidget.EMPTY
-			: (buttonWidget, matrixStack, i, j) -> {
-				if (!buttonWidget.active) {
-					this.renderOrderedTooltip(
-						matrixStack, this.client.textRenderer.wrapLines(new TranslatableText("title.multiplayer.disabled"), Math.max(this.width / 2 - 43, 170)), i, j
-					);
+			: new ButtonWidget.TooltipSupplier() {
+				private final Text MULTIPLAYER_DISABLED_TEXT = new TranslatableText("title.multiplayer.disabled");
+
+				@Override
+				public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
+					if (!buttonWidget.active) {
+						TitleScreen.this.renderOrderedTooltip(
+							matrixStack, TitleScreen.this.client.textRenderer.wrapLines(this.MULTIPLAYER_DISABLED_TEXT, Math.max(TitleScreen.this.width / 2 - 43, 170)), i, j
+						);
+					}
+				}
+
+				@Override
+				public void method_37023(Consumer<Text> consumer) {
+					consumer.accept(this.MULTIPLAYER_DISABLED_TEXT);
 				}
 			};
-		this.addButton(new ButtonWidget(this.width / 2 - 100, y + spacingY * 1, 200, 20, new TranslatableText("menu.multiplayer"), buttonWidget -> {
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, y + spacingY * 1, 200, 20, new TranslatableText("menu.multiplayer"), button -> {
 			Screen screen = (Screen)(this.client.options.skipMultiplayerWarning ? new MultiplayerScreen(this) : new MultiplayerWarningScreen(this));
 			this.client.openScreen(screen);
 		}, tooltipSupplier)).active = bl;
-		this.addButton(
-				new ButtonWidget(
-					this.width / 2 - 100, y + spacingY * 2, 200, 20, new TranslatableText("menu.online"), buttonWidget -> this.switchToRealms(), tooltipSupplier
-				)
+		this.addDrawableChild(
+				new ButtonWidget(this.width / 2 - 100, y + spacingY * 2, 200, 20, new TranslatableText("menu.online"), button -> this.switchToRealms(), tooltipSupplier)
 			)
 			.active = bl;
 	}
 
 	private void initWidgetsDemo(int y, int spacingY) {
 		boolean bl = this.canReadDemoWorldData();
-		this.addButton(new ButtonWidget(this.width / 2 - 100, y, 200, 20, new TranslatableText("menu.playdemo"), buttonWidget -> {
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, y, 200, 20, new TranslatableText("menu.playdemo"), button -> {
 			if (bl) {
 				this.client.startIntegratedServer("Demo_World");
 			} else {
@@ -212,14 +219,14 @@ public class TitleScreen extends Screen {
 				this.client.createWorld("Demo_World", MinecraftServer.DEMO_LEVEL_INFO, impl, GeneratorOptions.createDemo(impl));
 			}
 		}));
-		this.buttonResetDemo = this.addButton(
+		this.buttonResetDemo = this.addDrawableChild(
 			new ButtonWidget(
 				this.width / 2 - 100,
 				y + spacingY * 1,
 				200,
 				20,
 				new TranslatableText("menu.resetdemo"),
-				buttonWidget -> {
+				button -> {
 					LevelStorage levelStorage = this.client.getLevelStorage();
 
 					try (LevelStorage.Session session = levelStorage.createSession("Demo_World")) {
@@ -262,8 +269,7 @@ public class TitleScreen extends Screen {
 	}
 
 	private void switchToRealms() {
-		RealmsBridgeScreen realmsBridgeScreen = new RealmsBridgeScreen();
-		realmsBridgeScreen.switchToRealms(this);
+		this.client.openScreen(new RealmsMainScreen(this));
 	}
 
 	@Override
@@ -290,7 +296,7 @@ public class TitleScreen extends Screen {
 			RenderSystem.setShaderTexture(0, MINECRAFT_TITLE_TEXTURE);
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, g);
 			if (this.isMinceraft) {
-				this.method_29343(j, 30, (integer, integer2) -> {
+				this.drawWithOutline(j, 30, (integer, integer2) -> {
 					this.drawTexture(matrices, integer + 0, integer2, 0, 0, 99, 44);
 					this.drawTexture(matrices, integer + 99, integer2, 129, 0, 27, 44);
 					this.drawTexture(matrices, integer + 99 + 26, integer2, 126, 0, 3, 44);
@@ -298,7 +304,7 @@ public class TitleScreen extends Screen {
 					this.drawTexture(matrices, integer + 155, integer2, 0, 45, 155, 44);
 				});
 			} else {
-				this.method_29343(j, 30, (integer, integer2) -> {
+				this.drawWithOutline(j, 30, (integer, integer2) -> {
 					this.drawTexture(matrices, integer + 0, integer2, 0, 0, 155, 44);
 					this.drawTexture(matrices, integer + 155, integer2, 0, 45, 155, 44);
 				});
@@ -334,8 +340,10 @@ public class TitleScreen extends Screen {
 				fill(matrices, this.copyrightTextX, this.height - 1, this.copyrightTextX + this.copyrightTextWidth, this.height, 16777215 | l);
 			}
 
-			for (ClickableWidget clickableWidget : this.buttons) {
-				clickableWidget.setAlpha(g);
+			for (Element element : this.children()) {
+				if (element instanceof ClickableWidget) {
+					((ClickableWidget)element).setAlpha(g);
+				}
 			}
 
 			super.render(matrices, mouseX, mouseY, delta);

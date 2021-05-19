@@ -49,10 +49,10 @@ public class NetworkUtils {
 	private NetworkUtils() {
 	}
 
-	public static String method_34938(Map<String, Object> map) {
+	public static String makeQueryString(Map<String, Object> query) {
 		StringBuilder stringBuilder = new StringBuilder();
 
-		for (Entry<String, Object> entry : map.entrySet()) {
+		for (Entry<String, Object> entry : query.entrySet()) {
 			if (stringBuilder.length() > 0) {
 				stringBuilder.append('&');
 			}
@@ -77,42 +77,42 @@ public class NetworkUtils {
 		return stringBuilder.toString();
 	}
 
-	public static String method_34937(URL uRL, Map<String, Object> map, boolean bl, @Nullable Proxy proxy) {
-		return method_34936(uRL, method_34938(map), bl, proxy);
+	public static String post(URL url, Map<String, Object> query, boolean ignoreError, @Nullable Proxy proxy) {
+		return post(url, makeQueryString(query), ignoreError, proxy);
 	}
 
-	private static String method_34936(URL uRL, String string, boolean bl, @Nullable Proxy proxy) {
+	private static String post(URL url, String content, boolean ignoreError, @Nullable Proxy proxy) {
 		try {
 			if (proxy == null) {
 				proxy = Proxy.NO_PROXY;
 			}
 
-			HttpURLConnection httpURLConnection = (HttpURLConnection)uRL.openConnection(proxy);
+			HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection(proxy);
 			httpURLConnection.setRequestMethod("POST");
 			httpURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-			httpURLConnection.setRequestProperty("Content-Length", string.getBytes().length + "");
+			httpURLConnection.setRequestProperty("Content-Length", content.getBytes().length + "");
 			httpURLConnection.setRequestProperty("Content-Language", "en-US");
 			httpURLConnection.setUseCaches(false);
 			httpURLConnection.setDoInput(true);
 			httpURLConnection.setDoOutput(true);
 			DataOutputStream dataOutputStream = new DataOutputStream(httpURLConnection.getOutputStream());
-			dataOutputStream.writeBytes(string);
+			dataOutputStream.writeBytes(content);
 			dataOutputStream.flush();
 			dataOutputStream.close();
 			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
 			StringBuilder stringBuilder = new StringBuilder();
 
-			String string2;
-			while ((string2 = bufferedReader.readLine()) != null) {
-				stringBuilder.append(string2);
+			String string;
+			while ((string = bufferedReader.readLine()) != null) {
+				stringBuilder.append(string);
 				stringBuilder.append('\r');
 			}
 
 			bufferedReader.close();
 			return stringBuilder.toString();
 		} catch (Exception var9) {
-			if (!bl) {
-				LOGGER.error("Could not post to {}", uRL, var9);
+			if (!ignoreError) {
+				LOGGER.error("Could not post to {}", url, var9);
 			}
 
 			return "";
@@ -120,7 +120,7 @@ public class NetworkUtils {
 	}
 
 	public static CompletableFuture<?> downloadResourcePack(
-		File file, String string, Map<String, String> map, int i, @Nullable ProgressListener progressListener, Proxy proxy
+		File file, String url, Map<String, String> headers, int maxFileSize, @Nullable ProgressListener progressListener, Proxy proxy
 	) {
 		return CompletableFuture.supplyAsync(() -> {
 			HttpURLConnection httpURLConnection = null;
@@ -133,13 +133,13 @@ public class NetworkUtils {
 
 			try {
 				byte[] bs = new byte[4096];
-				URL uRL = new URL(string);
+				URL uRL = new URL(url);
 				httpURLConnection = (HttpURLConnection)uRL.openConnection(proxy);
 				httpURLConnection.setInstanceFollowRedirects(true);
 				float f = 0.0F;
-				float g = (float)map.entrySet().size();
+				float g = (float)headers.entrySet().size();
 
-				for (Entry<String, String> entry : map.entrySet()) {
+				for (Entry<String, String> entry : headers.entrySet()) {
 					httpURLConnection.setRequestProperty((String)entry.getKey(), (String)entry.getValue());
 					if (progressListener != null) {
 						progressListener.progressStagePercentage((int)(++f / g * 100.0F));
@@ -170,12 +170,12 @@ public class NetworkUtils {
 				}
 
 				outputStream = new DataOutputStream(new FileOutputStream(file));
-				if (i > 0 && g > (float)i) {
+				if (maxFileSize > 0 && g > (float)maxFileSize) {
 					if (progressListener != null) {
 						progressListener.setDone();
 					}
 
-					throw new IOException("Filesize is bigger than maximum allowed (file is " + f + ", limit is " + i + ")");
+					throw new IOException("Filesize is bigger than maximum allowed (file is " + f + ", limit is " + maxFileSize + ")");
 				} else {
 					int k;
 					while ((k = inputStream.read(bs)) >= 0) {
@@ -184,12 +184,12 @@ public class NetworkUtils {
 							progressListener.progressStagePercentage((int)(f / g * 100.0F));
 						}
 
-						if (i > 0 && f > (float)i) {
+						if (maxFileSize > 0 && f > (float)maxFileSize) {
 							if (progressListener != null) {
 								progressListener.setDone();
 							}
 
-							throw new IOException("Filesize was bigger than maximum allowed (got >= " + f + ", limit was " + i + ")");
+							throw new IOException("Filesize was bigger than maximum allowed (got >= " + f + ", limit was " + maxFileSize + ")");
 						}
 
 						if (Thread.interrupted()) {

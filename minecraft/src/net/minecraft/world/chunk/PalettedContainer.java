@@ -47,9 +47,9 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 	}
 
 	public PalettedContainer(
-		Palette<T> palette, IdList<T> idList, Function<NbtCompound, T> elementDeserializer, Function<T, NbtCompound> elementSerializer, T defaultElement
+		Palette<T> fallbackPalette, IdList<T> idList, Function<NbtCompound, T> elementDeserializer, Function<T, NbtCompound> elementSerializer, T defaultElement
 	) {
-		this.fallbackPalette = palette;
+		this.fallbackPalette = fallbackPalette;
 		this.idList = idList;
 		this.elementDeserializer = elementDeserializer;
 		this.elementSerializer = elementSerializer;

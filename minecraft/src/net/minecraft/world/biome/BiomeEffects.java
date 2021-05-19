@@ -47,31 +47,31 @@ public class BiomeEffects {
 	private final Optional<MusicSound> music;
 
 	BiomeEffects(
-		int i,
-		int j,
-		int k,
-		int l,
-		Optional<Integer> optional,
-		Optional<Integer> optional2,
+		int fogColor,
+		int waterColor,
+		int waterFogColor,
+		int skyColor,
+		Optional<Integer> foliageColor,
+		Optional<Integer> grassColor,
 		BiomeEffects.GrassColorModifier grassColorModifier,
-		Optional<BiomeParticleConfig> optional3,
-		Optional<SoundEvent> optional4,
-		Optional<BiomeMoodSound> optional5,
-		Optional<BiomeAdditionsSound> optional6,
-		Optional<MusicSound> optional7
+		Optional<BiomeParticleConfig> particleConfig,
+		Optional<SoundEvent> loopSound,
+		Optional<BiomeMoodSound> moodSound,
+		Optional<BiomeAdditionsSound> additionsSound,
+		Optional<MusicSound> music
 	) {
-		this.fogColor = i;
-		this.waterColor = j;
-		this.waterFogColor = k;
-		this.skyColor = l;
-		this.foliageColor = optional;
-		this.grassColor = optional2;
+		this.fogColor = fogColor;
+		this.waterColor = waterColor;
+		this.waterFogColor = waterFogColor;
+		this.skyColor = skyColor;
+		this.foliageColor = foliageColor;
+		this.grassColor = grassColor;
 		this.grassColorModifier = grassColorModifier;
-		this.particleConfig = optional3;
-		this.loopSound = optional4;
-		this.moodSound = optional5;
-		this.additionsSound = optional6;
-		this.music = optional7;
+		this.particleConfig = particleConfig;
+		this.loopSound = loopSound;
+		this.moodSound = moodSound;
+		this.additionsSound = additionsSound;
+		this.music = music;
 	}
 
 	public int getFogColor() {

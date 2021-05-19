@@ -193,7 +193,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		}
 	}
 
-	private static void addFuel(Map<Item, Integer> map, ItemConvertible item, int fuelTime) {
+	private static void addFuel(Map<Item, Integer> fuelTimes, ItemConvertible item, int fuelTime) {
 		Item item2 = item.asItem();
 		if (isNonFlammableWood(item2)) {
 			if (SharedConstants.isDevelopment) {
@@ -204,7 +204,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 				);
 			}
 		} else {
-			map.put(item2, fuelTime);
+			fuelTimes.put(item2, fuelTime);
 		}
 	}
 

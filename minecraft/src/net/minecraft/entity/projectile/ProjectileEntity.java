@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -12,8 +13,10 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -113,9 +116,9 @@ public abstract class ProjectileEntity extends Entity {
 			)
 			.multiply((double)speed);
 		this.setVelocity(vec3d);
-		float f = MathHelper.sqrt(squaredHorizontalLength(vec3d));
+		double d = Math.sqrt(squaredHorizontalLength(vec3d));
 		this.setYaw((float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI));
-		this.setPitch((float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI));
+		this.setPitch((float)(MathHelper.atan2(vec3d.y, d) * 180.0F / (float)Math.PI));
 		this.prevYaw = this.getYaw();
 		this.prevPitch = this.getPitch();
 	}
@@ -154,8 +157,8 @@ public abstract class ProjectileEntity extends Entity {
 	public void setVelocityClient(double x, double y, double z) {
 		this.setVelocity(x, y, z);
 		if (this.prevPitch == 0.0F && this.prevYaw == 0.0F) {
-			float f = MathHelper.sqrt(x * x + z * z);
-			this.setPitch((float)(MathHelper.atan2(y, (double)f) * 180.0F / (float)Math.PI));
+			double d = Math.sqrt(x * x + z * z);
+			this.setPitch((float)(MathHelper.atan2(y, d) * 180.0F / (float)Math.PI));
 			this.setYaw((float)(MathHelper.atan2(x, z) * 180.0F / (float)Math.PI));
 			this.prevPitch = this.getPitch();
 			this.prevYaw = this.getYaw();
@@ -174,8 +177,8 @@ public abstract class ProjectileEntity extends Entity {
 
 	protected void updateRotation() {
 		Vec3d vec3d = this.getVelocity();
-		float f = MathHelper.sqrt(squaredHorizontalLength(vec3d));
-		this.setPitch(updateRotation(this.prevPitch, (float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI)));
+		double d = Math.sqrt(squaredHorizontalLength(vec3d));
+		this.setPitch(updateRotation(this.prevPitch, (float)(MathHelper.atan2(vec3d.y, d) * 180.0F / (float)Math.PI)));
 		this.setYaw(updateRotation(this.prevYaw, (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI)));
 	}
 
@@ -204,5 +207,11 @@ public abstract class ProjectileEntity extends Entity {
 		if (entity != null) {
 			this.setOwner(entity);
 		}
+	}
+
+	@Override
+	public boolean canModifyAt(World world, BlockPos pos) {
+		Entity entity = this.getOwner();
+		return entity instanceof PlayerEntity ? entity.canModifyAt(world, pos) : entity == null || world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
 	}
 }

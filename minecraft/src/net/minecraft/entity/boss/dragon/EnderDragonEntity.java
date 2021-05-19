@@ -242,7 +242,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 						double k = vec3d2.z - this.getZ();
 						double l = e * e + j * j + k * k;
 						float m = phase.getMaxYAcceleration();
-						double n = (double)MathHelper.sqrt(e * e + k * k);
+						double n = Math.sqrt(e * e + k * k);
 						if (n > 0.0) {
 							j = MathHelper.clamp(j / n, (double)(-m), (double)m);
 						}
@@ -792,20 +792,20 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	public float getChangeInNeckPitch(int segmentOffset, double[] segment1, double[] segment2) {
 		Phase phase = this.phaseManager.getCurrent();
 		PhaseType<? extends Phase> phaseType = phase.getType();
-		double d;
+		double e;
 		if (phaseType == PhaseType.LANDING || phaseType == PhaseType.TAKEOFF) {
 			BlockPos blockPos = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
-			float f = Math.max(MathHelper.sqrt(blockPos.getSquaredDistance(this.getPos(), true)) / 4.0F, 1.0F);
-			d = (double)((float)segmentOffset / f);
+			double d = Math.max(Math.sqrt(blockPos.getSquaredDistance(this.getPos(), true)) / 4.0, 1.0);
+			e = (double)segmentOffset / d;
 		} else if (phase.isSittingOrHovering()) {
-			d = (double)segmentOffset;
+			e = (double)segmentOffset;
 		} else if (segmentOffset == 6) {
-			d = 0.0;
+			e = 0.0;
 		} else {
-			d = segment2[1] - segment1[1];
+			e = segment2[1] - segment1[1];
 		}
 
-		return (float)d;
+		return (float)e;
 	}
 
 	public Vec3d getRotationVectorFromPhase(float tickDelta) {
@@ -890,5 +890,12 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		for (int i = 0; i < enderDragonParts.length; i++) {
 			enderDragonParts[i].setEntityId(i + packet.getId());
 		}
+	}
+
+	@Override
+	public boolean canTarget(LivingEntity target) {
+		return !(target instanceof PlayerEntity)
+			? super.canTarget(target)
+			: !((PlayerEntity)target).getAbilities().invulnerable && !target.isInvulnerable() && target.isPartOfGame();
 	}
 }

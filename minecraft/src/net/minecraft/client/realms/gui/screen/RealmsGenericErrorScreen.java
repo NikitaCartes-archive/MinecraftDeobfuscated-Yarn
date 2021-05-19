@@ -4,9 +4,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.realms.Realms;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -19,16 +19,19 @@ public class RealmsGenericErrorScreen extends RealmsScreen {
 	private Text line2;
 
 	public RealmsGenericErrorScreen(RealmsServiceException realmsServiceException, Screen parent) {
+		super(NarratorManager.EMPTY);
 		this.parent = parent;
 		this.errorMessage(realmsServiceException);
 	}
 
 	public RealmsGenericErrorScreen(Text line2, Screen parent) {
+		super(NarratorManager.EMPTY);
 		this.parent = parent;
 		this.errorMessage(line2);
 	}
 
 	public RealmsGenericErrorScreen(Text line1, Text line2, Screen parent) {
+		super(NarratorManager.EMPTY);
 		this.parent = parent;
 		this.errorMessage(line1, line2);
 	}
@@ -56,8 +59,12 @@ public class RealmsGenericErrorScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		Realms.narrateNow(this.line1.getString() + ": " + this.line2.getString());
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 52, 200, 20, new LiteralText("Ok"), buttonWidget -> this.client.openScreen(this.parent)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 52, 200, 20, new LiteralText("Ok"), button -> this.client.openScreen(this.parent)));
+	}
+
+	@Override
+	public Text getNarratedTitle() {
+		return new LiteralText("").append(this.line1).append(": ").append(this.line2);
 	}
 
 	@Override

@@ -75,7 +75,9 @@ public interface Chunk extends BlockView, StructureHolder {
 
 	Collection<Entry<Heightmap.Type, Heightmap>> getHeightmaps();
 
-	void setHeightmap(Heightmap.Type type, long[] heightmap);
+	default void setHeightmap(Heightmap.Type type, long[] heightmap) {
+		this.getHeightmap(type).setTo(this, type, heightmap);
+	}
 
 	Heightmap getHeightmap(Heightmap.Type type);
 

@@ -183,6 +183,11 @@ public class Brain<E extends LivingEntity> {
 		return ((Optional)this.memories.get(type)).map(Memory::getValue);
 	}
 
+	public <U> long method_36978(MemoryModuleType<U> memoryModuleType) {
+		Optional<? extends Memory<?>> optional = (Optional<? extends Memory<?>>)this.memories.get(memoryModuleType);
+		return (Long)optional.map(Memory::getExpiry).orElse(0L);
+	}
+
 	@Deprecated
 	@Debug
 	public Map<MemoryModuleType<?>, Optional<? extends Memory<?>>> method_35058() {

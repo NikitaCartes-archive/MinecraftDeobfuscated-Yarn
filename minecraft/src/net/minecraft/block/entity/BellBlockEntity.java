@@ -155,12 +155,12 @@ public class BellBlockEntity extends BlockEntity {
 			.forEach(
 				livingEntity -> {
 					float f = 1.0F;
-					float g = MathHelper.sqrt(
+					double d = Math.sqrt(
 						(livingEntity.getX() - (double)pos.getX()) * (livingEntity.getX() - (double)pos.getX())
 							+ (livingEntity.getZ() - (double)pos.getZ()) * (livingEntity.getZ() - (double)pos.getZ())
 					);
-					double d = (double)((float)pos.getX() + 0.5F) + (double)(1.0F / g) * (livingEntity.getX() - (double)pos.getX());
-					double e = (double)((float)pos.getZ() + 0.5F) + (double)(1.0F / g) * (livingEntity.getZ() - (double)pos.getZ());
+					double e = (double)((float)pos.getX() + 0.5F) + 1.0 / d * (livingEntity.getX() - (double)pos.getX());
+					double g = (double)((float)pos.getZ() + 0.5F) + 1.0 / d * (livingEntity.getZ() - (double)pos.getZ());
 					int j = MathHelper.clamp((i - 21) / -2, 3, 15);
 
 					for (int k = 0; k < j; k++) {
@@ -168,7 +168,7 @@ public class BellBlockEntity extends BlockEntity {
 						double h = (double)BackgroundHelper.ColorMixer.getRed(l) / 255.0;
 						double m = (double)BackgroundHelper.ColorMixer.getGreen(l) / 255.0;
 						double n = (double)BackgroundHelper.ColorMixer.getBlue(l) / 255.0;
-						world.addParticle(ParticleTypes.ENTITY_EFFECT, d, (double)((float)pos.getY() + 0.5F), e, h, m, n);
+						world.addParticle(ParticleTypes.ENTITY_EFFECT, e, (double)((float)pos.getY() + 0.5F), g, h, m, n);
 					}
 				}
 			);

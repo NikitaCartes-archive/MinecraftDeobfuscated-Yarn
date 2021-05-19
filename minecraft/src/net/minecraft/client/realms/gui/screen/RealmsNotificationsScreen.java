@@ -9,6 +9,7 @@ import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.gui.RealmsDataFetcher;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -24,6 +25,10 @@ public class RealmsNotificationsScreen extends RealmsScreen {
 	private static boolean trialAvailable;
 	static boolean validClient;
 	private static boolean hasUnreadNews;
+
+	public RealmsNotificationsScreen() {
+		super(NarratorManager.EMPTY);
+	}
 
 	@Override
 	public void init() {

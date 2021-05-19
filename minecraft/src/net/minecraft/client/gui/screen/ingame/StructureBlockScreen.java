@@ -110,83 +110,83 @@ public class StructureBlockScreen extends Screen {
 	@Override
 	protected void init() {
 		this.client.keyboard.setRepeatEvents(true);
-		this.addButton(new ButtonWidget(this.width / 2 - 4 - 150, 210, 150, 20, ScreenTexts.DONE, buttonWidget -> this.done()));
-		this.addButton(new ButtonWidget(this.width / 2 + 4, 210, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.cancel()));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 4 - 150, 210, 150, 20, ScreenTexts.DONE, button -> this.done()));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, 210, 150, 20, ScreenTexts.CANCEL, button -> this.cancel()));
 		this.mirror = this.structureBlock.getMirror();
 		this.rotation = this.structureBlock.getRotation();
 		this.mode = this.structureBlock.getMode();
 		this.ignoreEntities = this.structureBlock.shouldIgnoreEntities();
 		this.showAir = this.structureBlock.shouldShowAir();
 		this.showBoundingBox = this.structureBlock.shouldShowBoundingBox();
-		this.buttonSave = this.addButton(
-			new ButtonWidget(this.width / 2 + 4 + 100, 185, 50, 20, new TranslatableText("structure_block.button.save"), buttonWidget -> {
+		this.buttonSave = this.addDrawableChild(
+			new ButtonWidget(this.width / 2 + 4 + 100, 185, 50, 20, new TranslatableText("structure_block.button.save"), button -> {
 				if (this.structureBlock.getMode() == StructureBlockMode.SAVE) {
 					this.updateStructureBlock(StructureBlockBlockEntity.Action.SAVE_AREA);
 					this.client.openScreen(null);
 				}
 			})
 		);
-		this.buttonLoad = this.addButton(
-			new ButtonWidget(this.width / 2 + 4 + 100, 185, 50, 20, new TranslatableText("structure_block.button.load"), buttonWidget -> {
+		this.buttonLoad = this.addDrawableChild(
+			new ButtonWidget(this.width / 2 + 4 + 100, 185, 50, 20, new TranslatableText("structure_block.button.load"), button -> {
 				if (this.structureBlock.getMode() == StructureBlockMode.LOAD) {
 					this.updateStructureBlock(StructureBlockBlockEntity.Action.LOAD_AREA);
 					this.client.openScreen(null);
 				}
 			})
 		);
-		this.addButton(
+		this.addDrawableChild(
 			CyclingButtonWidget.<StructureBlockMode>builder(structureBlockMode -> new TranslatableText("structure_block.mode." + structureBlockMode.asString()))
 				.values(MODES_EXCEPT_DATA, MODES)
 				.omitKeyText()
 				.initially(this.mode)
-				.build(this.width / 2 - 4 - 150, 185, 50, 20, new LiteralText("MODE"), (cyclingButtonWidget, structureBlockMode) -> {
-					this.structureBlock.setMode(structureBlockMode);
-					this.updateWidgets(structureBlockMode);
+				.build(this.width / 2 - 4 - 150, 185, 50, 20, new LiteralText("MODE"), (button, mode) -> {
+					this.structureBlock.setMode(mode);
+					this.updateWidgets(mode);
 				})
 		);
-		this.buttonDetect = this.addButton(
-			new ButtonWidget(this.width / 2 + 4 + 100, 120, 50, 20, new TranslatableText("structure_block.button.detect_size"), buttonWidget -> {
+		this.buttonDetect = this.addDrawableChild(
+			new ButtonWidget(this.width / 2 + 4 + 100, 120, 50, 20, new TranslatableText("structure_block.button.detect_size"), button -> {
 				if (this.structureBlock.getMode() == StructureBlockMode.SAVE) {
 					this.updateStructureBlock(StructureBlockBlockEntity.Action.SCAN_AREA);
 					this.client.openScreen(null);
 				}
 			})
 		);
-		this.buttonEntities = this.addButton(
+		this.buttonEntities = this.addDrawableChild(
 			CyclingButtonWidget.onOffBuilder(!this.structureBlock.shouldIgnoreEntities())
 				.omitKeyText()
-				.build(this.width / 2 + 4 + 100, 160, 50, 20, INCLUDE_ENTITIES_TEXT, (cyclingButtonWidget, boolean_) -> this.structureBlock.setIgnoreEntities(!boolean_))
+				.build(this.width / 2 + 4 + 100, 160, 50, 20, INCLUDE_ENTITIES_TEXT, (button, includeEntities) -> this.structureBlock.setIgnoreEntities(!includeEntities))
 		);
-		this.buttonMirror = this.addButton(
+		this.buttonMirror = this.addDrawableChild(
 			CyclingButtonWidget.<BlockMirror>builder(BlockMirror::getName)
 				.values(BlockMirror.values())
 				.omitKeyText()
 				.initially(this.mirror)
-				.build(this.width / 2 - 20, 185, 40, 20, new LiteralText("MIRROR"), (cyclingButtonWidget, blockMirror) -> this.structureBlock.setMirror(blockMirror))
+				.build(this.width / 2 - 20, 185, 40, 20, new LiteralText("MIRROR"), (button, mirror) -> this.structureBlock.setMirror(mirror))
 		);
-		this.buttonShowAir = this.addButton(
+		this.buttonShowAir = this.addDrawableChild(
 			CyclingButtonWidget.onOffBuilder(this.structureBlock.shouldShowAir())
 				.omitKeyText()
-				.build(this.width / 2 + 4 + 100, 80, 50, 20, SHOW_AIR_TEXT, (cyclingButtonWidget, boolean_) -> this.structureBlock.setShowAir(boolean_))
+				.build(this.width / 2 + 4 + 100, 80, 50, 20, SHOW_AIR_TEXT, (button, showAir) -> this.structureBlock.setShowAir(showAir))
 		);
-		this.buttonShowBoundingBox = this.addButton(
+		this.buttonShowBoundingBox = this.addDrawableChild(
 			CyclingButtonWidget.onOffBuilder(this.structureBlock.shouldShowBoundingBox())
 				.omitKeyText()
-				.build(this.width / 2 + 4 + 100, 80, 50, 20, SHOW_BOUNDING_BOX_TEXT, (cyclingButtonWidget, boolean_) -> this.structureBlock.setShowBoundingBox(boolean_))
+				.build(this.width / 2 + 4 + 100, 80, 50, 20, SHOW_BOUNDING_BOX_TEXT, (button, showBoundingBox) -> this.structureBlock.setShowBoundingBox(showBoundingBox))
 		);
-		this.buttonRotate0 = this.addButton(new ButtonWidget(this.width / 2 - 1 - 40 - 1 - 40 - 20, 185, 40, 20, new LiteralText("0"), buttonWidget -> {
+		this.buttonRotate0 = this.addDrawableChild(new ButtonWidget(this.width / 2 - 1 - 40 - 1 - 40 - 20, 185, 40, 20, new LiteralText("0"), button -> {
 			this.structureBlock.setRotation(BlockRotation.NONE);
 			this.updateRotationButton();
 		}));
-		this.buttonRotate90 = this.addButton(new ButtonWidget(this.width / 2 - 1 - 40 - 20, 185, 40, 20, new LiteralText("90"), buttonWidget -> {
+		this.buttonRotate90 = this.addDrawableChild(new ButtonWidget(this.width / 2 - 1 - 40 - 20, 185, 40, 20, new LiteralText("90"), button -> {
 			this.structureBlock.setRotation(BlockRotation.CLOCKWISE_90);
 			this.updateRotationButton();
 		}));
-		this.buttonRotate180 = this.addButton(new ButtonWidget(this.width / 2 + 1 + 20, 185, 40, 20, new LiteralText("180"), buttonWidget -> {
+		this.buttonRotate180 = this.addDrawableChild(new ButtonWidget(this.width / 2 + 1 + 20, 185, 40, 20, new LiteralText("180"), button -> {
 			this.structureBlock.setRotation(BlockRotation.CLOCKWISE_180);
 			this.updateRotationButton();
 		}));
-		this.buttonRotate270 = this.addButton(new ButtonWidget(this.width / 2 + 1 + 40 + 1 + 20, 185, 40, 20, new LiteralText("270"), buttonWidget -> {
+		this.buttonRotate270 = this.addDrawableChild(new ButtonWidget(this.width / 2 + 1 + 40 + 1 + 20, 185, 40, 20, new LiteralText("270"), button -> {
 			this.structureBlock.setRotation(BlockRotation.COUNTERCLOCKWISE_90);
 			this.updateRotationButton();
 		}));
@@ -198,45 +198,45 @@ public class StructureBlockScreen extends Screen {
 		};
 		this.inputName.setMaxLength(64);
 		this.inputName.setText(this.structureBlock.getStructureName());
-		this.children.add(this.inputName);
+		this.addSelectableChild(this.inputName);
 		BlockPos blockPos = this.structureBlock.getOffset();
 		this.inputPosX = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 80, 80, 20, new TranslatableText("structure_block.position.x"));
 		this.inputPosX.setMaxLength(15);
 		this.inputPosX.setText(Integer.toString(blockPos.getX()));
-		this.children.add(this.inputPosX);
+		this.addSelectableChild(this.inputPosX);
 		this.inputPosY = new TextFieldWidget(this.textRenderer, this.width / 2 - 72, 80, 80, 20, new TranslatableText("structure_block.position.y"));
 		this.inputPosY.setMaxLength(15);
 		this.inputPosY.setText(Integer.toString(blockPos.getY()));
-		this.children.add(this.inputPosY);
+		this.addSelectableChild(this.inputPosY);
 		this.inputPosZ = new TextFieldWidget(this.textRenderer, this.width / 2 + 8, 80, 80, 20, new TranslatableText("structure_block.position.z"));
 		this.inputPosZ.setMaxLength(15);
 		this.inputPosZ.setText(Integer.toString(blockPos.getZ()));
-		this.children.add(this.inputPosZ);
+		this.addSelectableChild(this.inputPosZ);
 		Vec3i vec3i = this.structureBlock.getSize();
 		this.inputSizeX = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 120, 80, 20, new TranslatableText("structure_block.size.x"));
 		this.inputSizeX.setMaxLength(15);
 		this.inputSizeX.setText(Integer.toString(vec3i.getX()));
-		this.children.add(this.inputSizeX);
+		this.addSelectableChild(this.inputSizeX);
 		this.inputSizeY = new TextFieldWidget(this.textRenderer, this.width / 2 - 72, 120, 80, 20, new TranslatableText("structure_block.size.y"));
 		this.inputSizeY.setMaxLength(15);
 		this.inputSizeY.setText(Integer.toString(vec3i.getY()));
-		this.children.add(this.inputSizeY);
+		this.addSelectableChild(this.inputSizeY);
 		this.inputSizeZ = new TextFieldWidget(this.textRenderer, this.width / 2 + 8, 120, 80, 20, new TranslatableText("structure_block.size.z"));
 		this.inputSizeZ.setMaxLength(15);
 		this.inputSizeZ.setText(Integer.toString(vec3i.getZ()));
-		this.children.add(this.inputSizeZ);
+		this.addSelectableChild(this.inputSizeZ);
 		this.inputIntegrity = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 120, 80, 20, new TranslatableText("structure_block.integrity.integrity"));
 		this.inputIntegrity.setMaxLength(15);
 		this.inputIntegrity.setText(this.decimalFormat.format((double)this.structureBlock.getIntegrity()));
-		this.children.add(this.inputIntegrity);
+		this.addSelectableChild(this.inputIntegrity);
 		this.inputSeed = new TextFieldWidget(this.textRenderer, this.width / 2 - 72, 120, 80, 20, new TranslatableText("structure_block.integrity.seed"));
 		this.inputSeed.setMaxLength(31);
 		this.inputSeed.setText(Long.toString(this.structureBlock.getSeed()));
-		this.children.add(this.inputSeed);
+		this.addSelectableChild(this.inputSeed);
 		this.inputMetadata = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 120, 240, 20, new TranslatableText("structure_block.custom_data"));
 		this.inputMetadata.setMaxLength(128);
 		this.inputMetadata.setText(this.structureBlock.getMetadata());
-		this.children.add(this.inputMetadata);
+		this.addSelectableChild(this.inputMetadata);
 		this.updateRotationButton();
 		this.updateWidgets(this.mode);
 		this.setInitialFocus(this.inputName);

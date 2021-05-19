@@ -365,7 +365,7 @@ public class DefaultBiomeFeatures {
 	}
 
 	public static void addAmethystGeodes(GenerationSettings.Builder builder) {
-		builder.feature(GenerationStep.Feature.UNDERGROUND_STRUCTURES, ConfiguredFeatures.AMETHYST_GEODE);
+		builder.feature(GenerationStep.Feature.LOCAL_MODIFICATIONS, ConfiguredFeatures.AMETHYST_GEODE);
 	}
 
 	public static void addFarmAnimals(SpawnSettings.Builder builder) {

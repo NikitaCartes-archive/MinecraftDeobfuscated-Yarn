@@ -182,8 +182,8 @@ public class ChunkHolder {
 		WorldChunk worldChunk = this.getWorldChunk();
 		if (worldChunk != null) {
 			worldChunk.setShouldSave(true);
-			int i = this.lightingProvider.method_31929();
-			int j = this.lightingProvider.method_31930();
+			int i = this.lightingProvider.getBottomY();
+			int j = this.lightingProvider.getTopY();
 			if (y >= i && y <= j) {
 				int k = y - i;
 				if (lightType == LightType.SKY) {
@@ -459,10 +459,10 @@ public class ChunkHolder {
 		private final CompletableFuture<? extends Either<? extends Chunk, ChunkHolder.Unloaded>> action;
 		private final String actionDesc;
 
-		MultithreadAction(Thread thread, CompletableFuture<? extends Either<? extends Chunk, ChunkHolder.Unloaded>> completableFuture, String string) {
+		MultithreadAction(Thread thread, CompletableFuture<? extends Either<? extends Chunk, ChunkHolder.Unloaded>> action, String actionDesc) {
 			this.thread = thread;
-			this.action = completableFuture;
-			this.actionDesc = string;
+			this.action = action;
+			this.actionDesc = actionDesc;
 		}
 	}
 

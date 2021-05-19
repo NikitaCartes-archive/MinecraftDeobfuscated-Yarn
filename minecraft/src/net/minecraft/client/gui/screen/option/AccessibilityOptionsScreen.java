@@ -28,7 +28,7 @@ public class AccessibilityOptionsScreen extends NarratorOptionsScreen {
 		Option.FOV_EFFECT_SCALE,
 		Option.MONOCHROME_LOGO
 	};
-	private static final String field_32235 = "https://aka.ms/MinecraftJavaAccessibility";
+	private static final String GUIDE_URL = "https://aka.ms/MinecraftJavaAccessibility";
 
 	public AccessibilityOptionsScreen(Screen parent, GameOptions gameOptions) {
 		super(parent, gameOptions, new TranslatableText("options.accessibility.title"), OPTIONS);
@@ -36,7 +36,7 @@ public class AccessibilityOptionsScreen extends NarratorOptionsScreen {
 
 	@Override
 	protected void initFooter() {
-		this.addButton(
+		this.addDrawableChild(
 			new ButtonWidget(
 				this.width / 2 - 155,
 				this.height - 27,
@@ -52,6 +52,6 @@ public class AccessibilityOptionsScreen extends NarratorOptionsScreen {
 					}, "https://aka.ms/MinecraftJavaAccessibility", true))
 			)
 		);
-		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 27, 150, 20, ScreenTexts.DONE, button -> this.client.openScreen(this.parent)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 27, 150, 20, ScreenTexts.DONE, button -> this.client.openScreen(this.parent)));
 	}
 }

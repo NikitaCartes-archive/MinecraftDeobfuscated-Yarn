@@ -16,7 +16,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class PlaySoundCommand {
@@ -137,7 +136,7 @@ public class PlaySoundCommand {
 					continue;
 				}
 
-				double k = (double)MathHelper.sqrt(h);
+				double k = Math.sqrt(h);
 				vec3d = new Vec3d(serverPlayerEntity.getX() + e / k * 2.0, serverPlayerEntity.getY() + f / k * 2.0, serverPlayerEntity.getZ() + g / k * 2.0);
 				j = minVolume;
 			}

@@ -157,22 +157,22 @@ public class SquidEntity extends WaterCreatureEntity {
 			}
 
 			Vec3d vec3d = this.getVelocity();
-			float g = MathHelper.sqrt(squaredHorizontalLength(vec3d));
+			double d = Math.sqrt(squaredHorizontalLength(vec3d));
 			this.bodyYaw = this.bodyYaw + (-((float)MathHelper.atan2(vec3d.x, vec3d.z)) * (180.0F / (float)Math.PI) - this.bodyYaw) * 0.1F;
 			this.setYaw(this.bodyYaw);
 			this.rollAngle = (float)((double)this.rollAngle + Math.PI * (double)this.turningSpeed * 1.5);
-			this.tiltAngle = this.tiltAngle + (-((float)MathHelper.atan2((double)g, vec3d.y)) * (180.0F / (float)Math.PI) - this.tiltAngle) * 0.1F;
+			this.tiltAngle = this.tiltAngle + (-((float)MathHelper.atan2(d, vec3d.y)) * (180.0F / (float)Math.PI) - this.tiltAngle) * 0.1F;
 		} else {
 			this.tentacleAngle = MathHelper.abs(MathHelper.sin(this.thrustTimer)) * (float) Math.PI * 0.25F;
 			if (!this.world.isClient) {
-				double d = this.getVelocity().y;
+				double e = this.getVelocity().y;
 				if (this.hasStatusEffect(StatusEffects.LEVITATION)) {
-					d = 0.05 * (double)(this.getStatusEffect(StatusEffects.LEVITATION).getAmplifier() + 1);
+					e = 0.05 * (double)(this.getStatusEffect(StatusEffects.LEVITATION).getAmplifier() + 1);
 				} else if (!this.hasNoGravity()) {
-					d -= 0.08;
+					e -= 0.08;
 				}
 
-				this.setVelocity(0.0, d * 0.98F, 0.0);
+				this.setVelocity(0.0, e * 0.98F, 0.0);
 			}
 
 			this.tiltAngle = (float)((double)this.tiltAngle + (double)(-90.0F - this.tiltAngle) * 0.02);

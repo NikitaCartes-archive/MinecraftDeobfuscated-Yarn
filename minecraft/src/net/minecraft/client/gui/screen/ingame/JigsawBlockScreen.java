@@ -93,35 +93,35 @@ public class JigsawBlockScreen extends Screen {
 		this.poolField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 20, 300, 20, new TranslatableText("jigsaw_block.pool"));
 		this.poolField.setMaxLength(128);
 		this.poolField.setText(this.jigsaw.getPool().toString());
-		this.poolField.setChangedListener(string -> this.updateDoneButtonState());
-		this.children.add(this.poolField);
+		this.poolField.setChangedListener(pool -> this.updateDoneButtonState());
+		this.addSelectableChild(this.poolField);
 		this.nameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 55, 300, 20, new TranslatableText("jigsaw_block.name"));
 		this.nameField.setMaxLength(128);
 		this.nameField.setText(this.jigsaw.getName().toString());
-		this.nameField.setChangedListener(string -> this.updateDoneButtonState());
-		this.children.add(this.nameField);
+		this.nameField.setChangedListener(name -> this.updateDoneButtonState());
+		this.addSelectableChild(this.nameField);
 		this.targetField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 90, 300, 20, new TranslatableText("jigsaw_block.target"));
 		this.targetField.setMaxLength(128);
 		this.targetField.setText(this.jigsaw.getTarget().toString());
-		this.targetField.setChangedListener(string -> this.updateDoneButtonState());
-		this.children.add(this.targetField);
+		this.targetField.setChangedListener(target -> this.updateDoneButtonState());
+		this.addSelectableChild(this.targetField);
 		this.finalStateField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 125, 300, 20, new TranslatableText("jigsaw_block.final_state"));
 		this.finalStateField.setMaxLength(256);
 		this.finalStateField.setText(this.jigsaw.getFinalState());
-		this.children.add(this.finalStateField);
+		this.addSelectableChild(this.finalStateField);
 		this.joint = this.jigsaw.getJoint();
 		int i = this.textRenderer.getWidth(JOINT_LABEL_TEXT) + 10;
-		this.jointRotationButton = this.addButton(
+		this.jointRotationButton = this.addDrawableChild(
 			CyclingButtonWidget.<JigsawBlockEntity.Joint>builder(JigsawBlockEntity.Joint::asText)
 				.values(JigsawBlockEntity.Joint.values())
 				.initially(this.joint)
 				.omitKeyText()
-				.build(this.width / 2 - 152 + i, 150, 300 - i, 20, JOINT_LABEL_TEXT, (cyclingButtonWidget, joint) -> this.joint = joint)
+				.build(this.width / 2 - 152 + i, 150, 300 - i, 20, JOINT_LABEL_TEXT, (button, joint) -> this.joint = joint)
 		);
 		boolean bl = JigsawBlock.getFacing(this.jigsaw.getCachedState()).getAxis().isVertical();
 		this.jointRotationButton.active = bl;
 		this.jointRotationButton.visible = bl;
-		this.addButton(new SliderWidget(this.width / 2 - 154, 180, 100, 20, LiteralText.EMPTY, 0.0) {
+		this.addDrawableChild(new SliderWidget(this.width / 2 - 154, 180, 100, 20, LiteralText.EMPTY, 0.0) {
 			{
 				this.updateMessage();
 			}
@@ -136,16 +136,16 @@ public class JigsawBlockScreen extends Screen {
 				JigsawBlockScreen.this.generationDepth = MathHelper.floor(MathHelper.clampedLerp(0.0, 7.0, this.value));
 			}
 		});
-		this.addButton(
+		this.addDrawableChild(
 			CyclingButtonWidget.onOffBuilder(this.keepJigsaws)
-				.build(this.width / 2 - 50, 180, 100, 20, new TranslatableText("jigsaw_block.keep_jigsaws"), (cyclingButtonWidget, boolean_) -> this.keepJigsaws = boolean_)
+				.build(this.width / 2 - 50, 180, 100, 20, new TranslatableText("jigsaw_block.keep_jigsaws"), (button, keepJigsaws) -> this.keepJigsaws = keepJigsaws)
 		);
-		this.addButton(new ButtonWidget(this.width / 2 + 54, 180, 100, 20, new TranslatableText("jigsaw_block.generate"), buttonWidget -> {
+		this.addDrawableChild(new ButtonWidget(this.width / 2 + 54, 180, 100, 20, new TranslatableText("jigsaw_block.generate"), button -> {
 			this.onDone();
 			this.generate();
 		}));
-		this.doneButton = this.addButton(new ButtonWidget(this.width / 2 - 4 - 150, 210, 150, 20, ScreenTexts.DONE, buttonWidget -> this.onDone()));
-		this.addButton(new ButtonWidget(this.width / 2 + 4, 210, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.onCancel()));
+		this.doneButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 4 - 150, 210, 150, 20, ScreenTexts.DONE, button -> this.onDone()));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, 210, 150, 20, ScreenTexts.CANCEL, button -> this.onCancel()));
 		this.setInitialFocus(this.poolField);
 		this.updateDoneButtonState();
 	}

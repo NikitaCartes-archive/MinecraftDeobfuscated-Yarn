@@ -2178,8 +2178,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	private void updateLighting(
 		int chunkX, int chunkZ, LightingProvider provider, LightType type, BitSet bitSet, BitSet bitSet2, Iterator<byte[]> iterator, boolean bl
 	) {
-		for (int i = 0; i < provider.method_31928(); i++) {
-			int j = provider.method_31929() + i;
+		for (int i = 0; i < provider.getHeight(); i++) {
+			int j = provider.getBottomY() + i;
 			boolean bl2 = bitSet.get(i);
 			boolean bl3 = bitSet2.get(i);
 			if (bl2 || bl3) {

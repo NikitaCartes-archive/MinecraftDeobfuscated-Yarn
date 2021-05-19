@@ -37,7 +37,6 @@ import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -180,7 +179,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 				double h = entity2.getX() - e;
 				double k = entity2.getEyeY() - f;
 				double l = entity2.getZ() - g;
-				double m = (double)MathHelper.sqrt(h * h + l * l);
+				double m = Math.sqrt(h * h + l * l);
 				float n = (float)(MathHelper.atan2(l, h) * 180.0F / (float)Math.PI) - 90.0F;
 				float o = (float)(-(MathHelper.atan2(k, m) * 180.0F / (float)Math.PI));
 				this.sideHeadPitches[i] = this.getNextAngle(this.sideHeadPitches[i], o, 40.0F);
@@ -267,33 +266,19 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 
 					int j = this.getTrackedEntityId(ix);
 					if (j > 0) {
-						Entity entity = this.world.getEntityById(j);
-						if (entity == null || !entity.isAlive() || this.squaredDistanceTo(entity) > 900.0 || !this.canSee(entity)) {
-							this.setTrackedEntityId(ix, 0);
-						} else if (!EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(entity)) {
-							this.setTrackedEntityId(ix, 0);
-						} else {
-							this.shootSkullAt(ix + 1, (LivingEntity)entity);
+						LivingEntity livingEntity = (LivingEntity)this.world.getEntityById(j);
+						if (livingEntity != null && this.canTarget(livingEntity) && !(this.squaredDistanceTo(livingEntity) > 900.0) && this.canSee(livingEntity)) {
+							this.shootSkullAt(ix + 1, livingEntity);
 							this.skullCooldowns[ix - 1] = this.age + 40 + this.random.nextInt(20);
 							this.chargedSkullCooldowns[ix - 1] = 0;
+						} else {
+							this.setTrackedEntityId(ix, 0);
 						}
 					} else {
 						List<LivingEntity> list = this.world.getTargets(LivingEntity.class, HEAD_TARGET_PREDICATE, this, this.getBoundingBox().expand(20.0, 8.0, 20.0));
-
-						for (int k = 0; k < 10 && !list.isEmpty(); k++) {
-							LivingEntity livingEntity = (LivingEntity)list.get(this.random.nextInt(list.size()));
-							if (livingEntity != this && livingEntity.isAlive() && this.canSee(livingEntity)) {
-								if (livingEntity instanceof PlayerEntity) {
-									if (!((PlayerEntity)livingEntity).getAbilities().invulnerable) {
-										this.setTrackedEntityId(ix, livingEntity.getId());
-									}
-								} else {
-									this.setTrackedEntityId(ix, livingEntity.getId());
-								}
-								break;
-							}
-
-							list.remove(livingEntity);
+						if (!list.isEmpty()) {
+							LivingEntity livingEntity2 = (LivingEntity)list.get(this.random.nextInt(list.size()));
+							this.setTrackedEntityId(ix, livingEntity2.getId());
 						}
 					}
 				}
@@ -310,16 +295,16 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 				if (this.blockBreakingCooldown == 0 && this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 					int ixx = MathHelper.floor(this.getY());
 					int j = MathHelper.floor(this.getX());
-					int l = MathHelper.floor(this.getZ());
+					int k = MathHelper.floor(this.getZ());
 					boolean bl = false;
 
-					for (int m = -1; m <= 1; m++) {
-						for (int n = -1; n <= 1; n++) {
-							for (int o = 0; o <= 3; o++) {
-								int p = j + m;
-								int q = ixx + o;
-								int r = l + n;
-								BlockPos blockPos = new BlockPos(p, q, r);
+					for (int l = -1; l <= 1; l++) {
+						for (int m = -1; m <= 1; m++) {
+							for (int n = 0; n <= 3; n++) {
+								int o = j + l;
+								int p = ixx + n;
+								int q = k + m;
+								BlockPos blockPos = new BlockPos(o, p, q);
 								BlockState blockState = this.world.getBlockState(blockPos);
 								if (canDestroy(blockState)) {
 									bl = this.world.breakBlock(blockPos, true, this) || bl;

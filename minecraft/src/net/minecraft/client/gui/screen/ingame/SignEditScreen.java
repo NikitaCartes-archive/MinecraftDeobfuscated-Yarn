@@ -53,18 +53,13 @@ public class SignEditScreen extends Screen {
 	@Override
 	protected void init() {
 		this.client.keyboard.setRepeatEvents(true);
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120, 200, 20, ScreenTexts.DONE, buttonWidget -> this.finishEditing()));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120, 200, 20, ScreenTexts.DONE, button -> this.finishEditing()));
 		this.sign.setEditable(false);
-		this.selectionManager = new SelectionManager(
-			() -> this.text[this.currentRow],
-			string -> {
-				this.text[this.currentRow] = string;
-				this.sign.setTextOnRow(this.currentRow, new LiteralText(string));
-			},
-			SelectionManager.makeClipboardGetter(this.client),
-			SelectionManager.makeClipboardSetter(this.client),
-			string -> this.client.textRenderer.getWidth(string) <= 90
-		);
+		this.selectionManager = new SelectionManager(() -> this.text[this.currentRow], text -> {
+			this.text[this.currentRow] = text;
+			this.sign.setTextOnRow(this.currentRow, new LiteralText(text));
+		}, SelectionManager.makeClipboardGetter(this.client), SelectionManager.makeClipboardSetter(this.client), text -> this.client.textRenderer.getWidth(text)
+				<= 90);
 		BlockState blockState = this.sign.getCachedState();
 		this.signType = SignBlockEntityRenderer.getSignType(blockState.getBlock());
 		this.model = SignBlockEntityRenderer.createSignModel(this.client.getEntityModelLoader(), this.signType);

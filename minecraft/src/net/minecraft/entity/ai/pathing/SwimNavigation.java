@@ -21,7 +21,7 @@ public class SwimNavigation extends EntityNavigation {
 
 	@Override
 	protected PathNodeNavigator createPathNodeNavigator(int range) {
-		this.canJumpOutOfWater = this.entity.getType() == EntityType.DOLPHIN || this.entity.getType() == EntityType.AXOLOTL;
+		this.canJumpOutOfWater = this.entity.getType() == EntityType.DOLPHIN;
 		this.nodeMaker = new WaterPathNodeMaker(this.canJumpOutOfWater);
 		return new PathNodeNavigator(this.nodeMaker, range);
 	}

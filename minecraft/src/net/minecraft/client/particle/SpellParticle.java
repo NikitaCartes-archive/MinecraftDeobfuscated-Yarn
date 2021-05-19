@@ -3,8 +3,11 @@ package net.minecraft.client.particle;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SpellParticle extends SpriteBillboardParticle {
@@ -27,6 +30,9 @@ public class SpellParticle extends SpriteBillboardParticle {
 		this.maxAge = (int)(8.0 / (Math.random() * 0.8 + 0.2));
 		this.collidesWithWorld = false;
 		this.setSpriteForAge(spriteProvider);
+		if (this.method_37102()) {
+			this.setColorAlpha(0.0F);
+		}
 	}
 
 	@Override
@@ -38,6 +44,20 @@ public class SpellParticle extends SpriteBillboardParticle {
 	public void tick() {
 		super.tick();
 		this.setSpriteForAge(this.spriteProvider);
+		if (this.method_37102()) {
+			this.setColorAlpha(0.0F);
+		} else {
+			this.setColorAlpha(MathHelper.lerp(0.05F, this.colorAlpha, 1.0F));
+		}
+	}
+
+	private boolean method_37102() {
+		MinecraftClient minecraftClient = MinecraftClient.getInstance();
+		ClientPlayerEntity clientPlayerEntity = minecraftClient.player;
+		return clientPlayerEntity != null
+			&& clientPlayerEntity.getEyePos().squaredDistanceTo(this.x, this.y, this.z) <= 9.0
+			&& minecraftClient.options.getPerspective().isFirstPerson()
+			&& clientPlayerEntity.isUsingSpyglass();
 	}
 
 	@Environment(EnvType.CLIENT)

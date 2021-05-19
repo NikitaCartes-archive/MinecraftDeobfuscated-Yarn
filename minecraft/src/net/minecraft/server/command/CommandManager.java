@@ -139,8 +139,8 @@ public class CommandManager {
 
 		this.dispatcher
 			.findAmbiguities(
-				(commandNode, commandNode2, commandNode3, collection) -> LOGGER.warn(
-						"Ambiguity between arguments {} and {} with inputs: {}", this.dispatcher.getPath(commandNode2), this.dispatcher.getPath(commandNode3), collection
+				(parent, child, sibling, inputs) -> LOGGER.warn(
+						"Ambiguity between arguments {} and {} with inputs: {}", this.dispatcher.getPath(child), this.dispatcher.getPath(sibling), inputs
 					)
 			);
 		this.dispatcher.setConsumer((context, success, result) -> context.getSource().onCommandComplete(context, success, result));
@@ -305,7 +305,7 @@ public class CommandManager {
 
 	@FunctionalInterface
 	public interface CommandParser {
-		void parse(StringReader stringReader) throws CommandSyntaxException;
+		void parse(StringReader reader) throws CommandSyntaxException;
 	}
 
 	/**

@@ -214,7 +214,7 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 	}
 
 	@Override
-	public void addLightSource(BlockPos pos, int i) {
+	public void addLightSource(BlockPos pos, int level) {
 	}
 
 	@Override

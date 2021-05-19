@@ -156,7 +156,7 @@ import org.apache.logging.log4j.Logger;
 
 public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerPlayPacketListener {
 	static final Logger LOGGER = LogManager.getLogger();
-	private static final int field_29778 = 15000;
+	private static final int KEEP_ALIVE_INTERVAL = 15000;
 	public final ClientConnection connection;
 	private final MinecraftServer server;
 	public ServerPlayerEntity player;
@@ -323,15 +323,15 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		this.player.updateInput(packet.getSideways(), packet.getForward(), packet.isJumping(), packet.isSneaking());
 	}
 
-	private static boolean validateVehicleMove(double d, double e, double f, float g, float h) {
-		return Double.isNaN(d) || Double.isNaN(e) || Double.isNaN(f) || !Floats.isFinite(h) || !Floats.isFinite(g);
+	private static boolean validateVehicleMove(double x, double y, double z, float yaw, float pitch) {
+		return Double.isNaN(x) || Double.isNaN(y) || Double.isNaN(z) || !Floats.isFinite(pitch) || !Floats.isFinite(yaw);
 	}
 
-	private static double method_34882(double d) {
+	private static double clampHorizontal(double d) {
 		return MathHelper.clamp(d, -3.0E7, 3.0E7);
 	}
 
-	private static double method_34883(double d) {
+	private static double clampVertical(double d) {
 		return MathHelper.clamp(d, -2.0E7, 2.0E7);
 	}
 
@@ -347,9 +347,9 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 				double d = entity.getX();
 				double e = entity.getY();
 				double f = entity.getZ();
-				double g = method_34882(packet.getX());
-				double h = method_34883(packet.getY());
-				double i = method_34882(packet.getZ());
+				double g = clampHorizontal(packet.getX());
+				double h = clampVertical(packet.getY());
+				double i = clampHorizontal(packet.getZ());
 				float j = MathHelper.wrapDegrees(packet.getYaw());
 				float k = MathHelper.wrapDegrees(packet.getPitch());
 				double l = g - this.lastTickRiddenX;
@@ -796,9 +796,9 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 					}
 				} else {
 					this.teleportRequestTick = this.ticks;
-					double d = method_34882(packet.getX(this.player.getX()));
-					double e = method_34883(packet.getY(this.player.getY()));
-					double f = method_34882(packet.getZ(this.player.getZ()));
+					double d = clampHorizontal(packet.getX(this.player.getX()));
+					double e = clampVertical(packet.getY(this.player.getY()));
+					double f = clampHorizontal(packet.getZ(this.player.getZ()));
 					float g = MathHelper.wrapDegrees(packet.getYaw(this.player.getYaw()));
 					float h = MathHelper.wrapDegrees(packet.getPitch(this.player.getPitch()));
 					if (this.player.hasVehicle()) {
@@ -1132,13 +1132,13 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 		if (string.startsWith("/")) {
 			NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-			this.method_31286(TextStream.Message.permitted(string));
+			this.handleMessage(TextStream.Message.permitted(string));
 		} else {
-			this.filterText(string, this::method_31286);
+			this.filterText(string, this::handleMessage);
 		}
 	}
 
-	private void method_31286(TextStream.Message message) {
+	private void handleMessage(TextStream.Message message) {
 		if (this.player.getClientChatVisibility() == ChatVisibility.HIDDEN) {
 			this.sendPacket(new GameMessageS2CPacket(new TranslatableText("chat.disabled.options").formatted(Formatting.RED), MessageType.SYSTEM, Util.NIL_UUID));
 		} else {

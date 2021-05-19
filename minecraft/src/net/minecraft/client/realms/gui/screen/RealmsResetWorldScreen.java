@@ -31,9 +31,6 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 	static final Logger LOGGER = LogManager.getLogger();
 	private final Screen parent;
 	private final RealmsServer serverData;
-	private RealmsLabel titleLabel;
-	private RealmsLabel subtitleLabel;
-	private Text title = new TranslatableText("mco.reset.world.title");
 	private Text subtitle = new TranslatableText("mco.reset.world.warning");
 	private Text buttonTitle = ScreenTexts.CANCEL;
 	private int subtitleColor = 16711680;
@@ -53,18 +50,22 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 	private final Runnable resetCallback;
 	private final Runnable selectFileUploadCallback;
 
-	public RealmsResetWorldScreen(Screen parent, RealmsServer server, Runnable resetCallback, Runnable selectFileUploadCallback) {
+	public RealmsResetWorldScreen(Screen parent, RealmsServer server, Text text, Runnable runnable, Runnable runnable2) {
+		super(text);
 		this.parent = parent;
 		this.serverData = server;
-		this.resetCallback = resetCallback;
-		this.selectFileUploadCallback = selectFileUploadCallback;
+		this.resetCallback = runnable;
+		this.selectFileUploadCallback = runnable2;
+	}
+
+	public RealmsResetWorldScreen(Screen screen, RealmsServer realmsServer, Runnable runnable, Runnable runnable2) {
+		this(screen, realmsServer, new TranslatableText("mco.reset.world.title"), runnable, runnable2);
 	}
 
 	public RealmsResetWorldScreen(
 		Screen parent, RealmsServer server, Text title, Text subtitle, int subtitleColor, Text buttonTitle, Runnable resetCallback, Runnable selectFileUploadCallback
 	) {
-		this(parent, server, resetCallback, selectFileUploadCallback);
-		this.title = title;
+		this(parent, server, title, resetCallback, selectFileUploadCallback);
 		this.subtitle = subtitle;
 		this.subtitleColor = subtitleColor;
 		this.buttonTitle = buttonTitle;
@@ -80,7 +81,7 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.addButton(new ButtonWidget(this.width / 2 - 40, row(14) - 10, 80, 20, this.buttonTitle, buttonWidget -> this.client.openScreen(this.parent)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 40, row(14) - 10, 80, 20, this.buttonTitle, button -> this.client.openScreen(this.parent)));
 		(new Thread("Realms-reset-world-fetcher") {
 			public void run() {
 				RealmsClient realmsClient = RealmsClient.createRealmsClient();
@@ -101,92 +102,89 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 				}
 			}
 		}).start();
-		this.titleLabel = this.addChild(new RealmsLabel(this.title, this.width / 2, 7, 16777215));
-		this.subtitleLabel = this.addChild(new RealmsLabel(this.subtitle, this.width / 2, 22, this.subtitleColor));
-		this.addButton(
+		this.method_37107(new RealmsLabel(this.subtitle, this.width / 2, 22, this.subtitleColor));
+		this.addDrawableChild(
 			new RealmsResetWorldScreen.FrameButton(
 				this.frame(1),
 				row(0) + 10,
 				new TranslatableText("mco.reset.world.generate"),
 				NEW_WORLD_TEXTURE,
-				buttonWidget -> this.client.openScreen(new RealmsResetNormalWorldScreen(this::onResetNormalWorld, this.title))
+				button -> this.client.openScreen(new RealmsResetNormalWorldScreen(this::onResetNormalWorld, this.title))
 			)
 		);
-		this.addButton(
+		this.addDrawableChild(
 			new RealmsResetWorldScreen.FrameButton(
 				this.frame(2),
 				row(0) + 10,
 				new TranslatableText("mco.reset.world.upload"),
 				UPLOAD_TEXTURE,
-				buttonWidget -> {
-					Screen screen = new RealmsSelectFileToUploadScreen(
-						this.serverData.id, this.slot != -1 ? this.slot : this.serverData.activeSlot, this, this.selectFileUploadCallback
-					);
-					this.client.openScreen(screen);
-				}
+				button -> this.client
+						.openScreen(
+							new RealmsSelectFileToUploadScreen(this.serverData.id, this.slot != -1 ? this.slot : this.serverData.activeSlot, this, this.selectFileUploadCallback)
+						)
 			)
 		);
-		this.addButton(
+		this.addDrawableChild(
 			new RealmsResetWorldScreen.FrameButton(
 				this.frame(3),
 				row(0) + 10,
 				new TranslatableText("mco.reset.world.template"),
 				SURVIVAL_SPAWN_TEXTURE,
-				buttonWidget -> {
-					RealmsSelectWorldTemplateScreen realmsSelectWorldTemplateScreen = new RealmsSelectWorldTemplateScreen(
-						this::onSelectWorldTemplate, RealmsServer.WorldType.NORMAL, this.normalWorldTemplates
-					);
-					realmsSelectWorldTemplateScreen.setTitle(new TranslatableText("mco.reset.world.template"));
-					this.client.openScreen(realmsSelectWorldTemplateScreen);
-				}
+				button -> this.client
+						.openScreen(
+							new RealmsSelectWorldTemplateScreen(
+								new TranslatableText("mco.reset.world.template"), this::onSelectWorldTemplate, RealmsServer.WorldType.NORMAL, this.normalWorldTemplates
+							)
+						)
 			)
 		);
-		this.addButton(
+		this.addDrawableChild(
 			new RealmsResetWorldScreen.FrameButton(
 				this.frame(1),
 				row(6) + 20,
 				new TranslatableText("mco.reset.world.adventure"),
 				ADVENTURE_TEXTURE,
-				buttonWidget -> {
-					RealmsSelectWorldTemplateScreen realmsSelectWorldTemplateScreen = new RealmsSelectWorldTemplateScreen(
-						this::onSelectWorldTemplate, RealmsServer.WorldType.ADVENTUREMAP, this.adventureWorldTemplates
-					);
-					realmsSelectWorldTemplateScreen.setTitle(new TranslatableText("mco.reset.world.adventure"));
-					this.client.openScreen(realmsSelectWorldTemplateScreen);
-				}
+				button -> this.client
+						.openScreen(
+							new RealmsSelectWorldTemplateScreen(
+								new TranslatableText("mco.reset.world.adventure"), this::onSelectWorldTemplate, RealmsServer.WorldType.ADVENTUREMAP, this.adventureWorldTemplates
+							)
+						)
 			)
 		);
-		this.addButton(
+		this.addDrawableChild(
 			new RealmsResetWorldScreen.FrameButton(
 				this.frame(2),
 				row(6) + 20,
 				new TranslatableText("mco.reset.world.experience"),
 				EXPERIENCE_TEXTURE,
-				buttonWidget -> {
-					RealmsSelectWorldTemplateScreen realmsSelectWorldTemplateScreen = new RealmsSelectWorldTemplateScreen(
-						this::onSelectWorldTemplate, RealmsServer.WorldType.EXPERIENCE, this.experienceWorldTemplates
-					);
-					realmsSelectWorldTemplateScreen.setTitle(new TranslatableText("mco.reset.world.experience"));
-					this.client.openScreen(realmsSelectWorldTemplateScreen);
-				}
+				button -> this.client
+						.openScreen(
+							new RealmsSelectWorldTemplateScreen(
+								new TranslatableText("mco.reset.world.experience"), this::onSelectWorldTemplate, RealmsServer.WorldType.EXPERIENCE, this.experienceWorldTemplates
+							)
+						)
 			)
 		);
-		this.addButton(
+		this.addDrawableChild(
 			new RealmsResetWorldScreen.FrameButton(
 				this.frame(3),
 				row(6) + 20,
 				new TranslatableText("mco.reset.world.inspiration"),
 				INSPIRATION_TEXTURE,
-				buttonWidget -> {
-					RealmsSelectWorldTemplateScreen realmsSelectWorldTemplateScreen = new RealmsSelectWorldTemplateScreen(
-						this::onSelectWorldTemplate, RealmsServer.WorldType.INSPIRATION, this.inspirationWorldTemplates
-					);
-					realmsSelectWorldTemplateScreen.setTitle(new TranslatableText("mco.reset.world.inspiration"));
-					this.client.openScreen(realmsSelectWorldTemplateScreen);
-				}
+				button -> this.client
+						.openScreen(
+							new RealmsSelectWorldTemplateScreen(
+								new TranslatableText("mco.reset.world.inspiration"), this::onSelectWorldTemplate, RealmsServer.WorldType.INSPIRATION, this.inspirationWorldTemplates
+							)
+						)
 			)
 		);
-		this.narrateLabels();
+	}
+
+	@Override
+	public Text getNarratedTitle() {
+		return ScreenTexts.joinSentences(this.getTitle(), this.narrateLabels());
 	}
 
 	@Override
@@ -211,8 +209,7 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		this.titleLabel.render(this, matrices);
-		this.subtitleLabel.render(this, matrices);
+		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 7, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 

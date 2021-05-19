@@ -52,7 +52,7 @@ import org.apache.logging.log4j.Logger;
 public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	private static final AtomicInteger NEXT_AUTHENTICATOR_THREAD_ID = new AtomicInteger(0);
 	static final Logger LOGGER = LogManager.getLogger();
-	private static final int field_29779 = 600;
+	private static final int TIMEOUT_TICKS = 600;
 	private static final Random RANDOM = new Random();
 	private final byte[] nonce = new byte[4];
 	final MinecraftServer server;

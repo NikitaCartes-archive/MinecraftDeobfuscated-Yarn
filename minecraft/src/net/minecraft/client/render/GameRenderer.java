@@ -892,8 +892,8 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 			if (this.client.getOverlay() != null) {
 				try {
 					this.client.getOverlay().render(matrixStack2, i, j, this.client.getLastFrameDuration());
-				} catch (Throwable var15) {
-					CrashReport crashReport = CrashReport.create(var15, "Rendering overlay");
+				} catch (Throwable var16) {
+					CrashReport crashReport = CrashReport.create(var16, "Rendering overlay");
 					CrashReportSection crashReportSection = crashReport.addElement("Overlay render details");
 					crashReportSection.add("Overlay name", (CrashCallable<String>)(() -> this.client.getOverlay().getClass().getCanonicalName()));
 					throw new CrashException(crashReport);
@@ -901,8 +901,8 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 			} else if (this.client.currentScreen != null) {
 				try {
 					this.client.currentScreen.render(matrixStack2, i, j, this.client.getLastFrameDuration());
-				} catch (Throwable var14) {
-					CrashReport crashReport = CrashReport.create(var14, "Rendering screen");
+				} catch (Throwable var15) {
+					CrashReport crashReport = CrashReport.create(var15, "Rendering screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen render details");
 					crashReportSection.add("Screen name", (CrashCallable<String>)(() -> this.client.currentScreen.getClass().getCanonicalName()));
 					crashReportSection.add(
@@ -921,6 +921,17 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 								this.client.getWindow().getScaleFactor()
 							))
 					);
+					throw new CrashException(crashReport);
+				}
+
+				try {
+					if (this.client.currentScreen != null) {
+						this.client.currentScreen.updateNarrator();
+					}
+				} catch (Throwable var14) {
+					CrashReport crashReport = CrashReport.create(var14, "Narrating screen");
+					CrashReportSection crashReportSection = crashReport.addElement("Screen details");
+					crashReportSection.add("Screen name", (CrashCallable<String>)(() -> this.client.currentScreen.getClass().getCanonicalName()));
 					throw new CrashException(crashReport);
 				}
 			}

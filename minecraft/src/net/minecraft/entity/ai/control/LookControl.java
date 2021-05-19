@@ -57,6 +57,10 @@ public class LookControl implements Control {
 			this.entity.headYaw = this.changeAngle(this.entity.headYaw, this.entity.bodyYaw, 10.0F);
 		}
 
+		this.method_36980();
+	}
+
+	protected void method_36980() {
 		if (!this.entity.getNavigation().isIdle()) {
 			this.entity.headYaw = MathHelper.stepAngleTowards(this.entity.headYaw, this.entity.bodyYaw, (float)this.entity.getBodyYawSpeed());
 		}
@@ -86,7 +90,7 @@ public class LookControl implements Control {
 		double d = this.lookX - this.entity.getX();
 		double e = this.lookY - this.entity.getEyeY();
 		double f = this.lookZ - this.entity.getZ();
-		double g = (double)MathHelper.sqrt(d * d + f * f);
+		double g = Math.sqrt(d * d + f * f);
 		return (float)(-(MathHelper.atan2(e, g) * 180.0F / (float)Math.PI));
 	}
 

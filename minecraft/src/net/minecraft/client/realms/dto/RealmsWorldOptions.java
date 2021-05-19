@@ -13,7 +13,7 @@ public class RealmsWorldOptions extends ValueObject {
 	public final boolean pvp;
 	public final boolean spawnAnimals;
 	public final boolean spawnMonsters;
-	public final boolean spawnNPCs;
+	public final boolean spawnNpcs;
 	public final int spawnProtection;
 	public final boolean commandBlocks;
 	public final boolean forceGameMode;
@@ -42,7 +42,7 @@ public class RealmsWorldOptions extends ValueObject {
 		boolean pvp,
 		boolean spawnAnimals,
 		boolean spawnMonsters,
-		boolean spawnNPCs,
+		boolean spawnNpcs,
 		int spawnProtection,
 		boolean commandBlocks,
 		int difficulty,
@@ -53,7 +53,7 @@ public class RealmsWorldOptions extends ValueObject {
 		this.pvp = pvp;
 		this.spawnAnimals = spawnAnimals;
 		this.spawnMonsters = spawnMonsters;
-		this.spawnNPCs = spawnNPCs;
+		this.spawnNpcs = spawnNpcs;
 		this.spawnProtection = spawnProtection;
 		this.commandBlocks = commandBlocks;
 		this.difficulty = difficulty;
@@ -120,8 +120,8 @@ public class RealmsWorldOptions extends ValueObject {
 			jsonObject.addProperty("spawnMonsters", this.spawnMonsters);
 		}
 
-		if (!this.spawnNPCs) {
-			jsonObject.addProperty("spawnNPCs", this.spawnNPCs);
+		if (!this.spawnNpcs) {
+			jsonObject.addProperty("spawnNPCs", this.spawnNpcs);
 		}
 
 		if (this.spawnProtection != 0) {
@@ -156,7 +156,7 @@ public class RealmsWorldOptions extends ValueObject {
 			this.pvp,
 			this.spawnAnimals,
 			this.spawnMonsters,
-			this.spawnNPCs,
+			this.spawnNpcs,
 			this.spawnProtection,
 			this.commandBlocks,
 			this.difficulty,

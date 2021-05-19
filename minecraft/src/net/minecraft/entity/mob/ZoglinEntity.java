@@ -39,7 +39,6 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -130,15 +129,12 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 	}
 
 	private Optional<? extends LivingEntity> getHoglinTarget() {
-		return ((List)this.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(ImmutableList.of()))
-			.stream()
-			.filter(ZoglinEntity::shouldAttack)
-			.findFirst();
+		return ((List)this.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(ImmutableList.of())).stream().filter(this::shouldAttack).findFirst();
 	}
 
-	private static boolean shouldAttack(LivingEntity entity) {
-		EntityType<?> entityType = entity.getType();
-		return entityType != EntityType.ZOGLIN && entityType != EntityType.CREEPER && EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(entity);
+	private boolean shouldAttack(LivingEntity livingEntity) {
+		EntityType<?> entityType = livingEntity.getType();
+		return entityType != EntityType.ZOGLIN && entityType != EntityType.CREEPER && Sensor.method_36982(this, livingEntity);
 	}
 
 	@Override
@@ -204,7 +200,7 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 			return false;
 		} else if (bl && source.getAttacker() instanceof LivingEntity) {
 			LivingEntity livingEntity = (LivingEntity)source.getAttacker();
-			if (EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(livingEntity) && !LookTargetUtil.isNewTargetTooFar(this, livingEntity, 4.0)) {
+			if (livingEntity.canTakeDamage() && !LookTargetUtil.isNewTargetTooFar(this, livingEntity, 4.0)) {
 				this.setAttackTarget(livingEntity);
 			}
 

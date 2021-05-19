@@ -124,75 +124,75 @@ public class DebugInfoSender {
 	public static void sendBeehiveDebugData(World world, BlockPos pos, BlockState state, BeehiveBlockEntity blockEntity) {
 	}
 
-	private static void method_36158(LivingEntity livingEntity, PacketByteBuf packetByteBuf) {
-		Brain<?> brain = livingEntity.getBrain();
-		long l = livingEntity.world.getTime();
-		if (livingEntity instanceof InventoryOwner) {
-			Inventory inventory = ((InventoryOwner)livingEntity).getInventory();
-			packetByteBuf.writeString(inventory.isEmpty() ? "" : inventory.toString());
+	private static void writeBrain(LivingEntity entity, PacketByteBuf buf) {
+		Brain<?> brain = entity.getBrain();
+		long l = entity.world.getTime();
+		if (entity instanceof InventoryOwner) {
+			Inventory inventory = ((InventoryOwner)entity).getInventory();
+			buf.writeString(inventory.isEmpty() ? "" : inventory.toString());
 		} else {
-			packetByteBuf.writeString("");
+			buf.writeString("");
 		}
 
 		if (brain.hasMemoryModule(MemoryModuleType.PATH)) {
-			packetByteBuf.writeBoolean(true);
+			buf.writeBoolean(true);
 			Path path = (Path)brain.getOptionalMemory(MemoryModuleType.PATH).get();
-			path.toBuffer(packetByteBuf);
+			path.toBuffer(buf);
 		} else {
-			packetByteBuf.writeBoolean(false);
+			buf.writeBoolean(false);
 		}
 
-		if (livingEntity instanceof VillagerEntity villagerEntity) {
+		if (entity instanceof VillagerEntity villagerEntity) {
 			boolean bl = villagerEntity.canSummonGolem(l);
-			packetByteBuf.writeBoolean(bl);
+			buf.writeBoolean(bl);
 		} else {
-			packetByteBuf.writeBoolean(false);
+			buf.writeBoolean(false);
 		}
 
-		packetByteBuf.writeCollection(brain.getPossibleActivities(), (packetByteBufx, activity) -> packetByteBufx.writeString(activity.getId()));
+		buf.writeCollection(brain.getPossibleActivities(), (bufx, activity) -> bufx.writeString(activity.getId()));
 		Set<String> set = (Set<String>)brain.getRunningTasks().stream().map(Task::toString).collect(Collectors.toSet());
-		packetByteBuf.writeCollection(set, PacketByteBuf::writeString);
-		packetByteBuf.writeCollection(method_36157(livingEntity, l), (packetByteBufx, string) -> {
-			String string2 = ChatUtil.truncate(string, 255, true);
-			packetByteBufx.writeString(string2);
+		buf.writeCollection(set, PacketByteBuf::writeString);
+		buf.writeCollection(listMemories(entity, l), (bufx, memory) -> {
+			String string = ChatUtil.truncate(memory, 255, true);
+			bufx.writeString(string);
 		});
-		if (livingEntity instanceof VillagerEntity) {
+		if (entity instanceof VillagerEntity) {
 			Set<BlockPos> set2 = (Set<BlockPos>)Stream.of(MemoryModuleType.JOB_SITE, MemoryModuleType.HOME, MemoryModuleType.MEETING_POINT)
 				.map(brain::getOptionalMemory)
 				.flatMap(Util::stream)
 				.map(GlobalPos::getPos)
 				.collect(Collectors.toSet());
-			packetByteBuf.writeCollection(set2, PacketByteBuf::writeBlockPos);
+			buf.writeCollection(set2, PacketByteBuf::writeBlockPos);
 		} else {
-			packetByteBuf.writeVarInt(0);
+			buf.writeVarInt(0);
 		}
 
-		if (livingEntity instanceof VillagerEntity) {
+		if (entity instanceof VillagerEntity) {
 			Set<BlockPos> set2 = (Set<BlockPos>)Stream.of(MemoryModuleType.POTENTIAL_JOB_SITE)
 				.map(brain::getOptionalMemory)
 				.flatMap(Util::stream)
 				.map(GlobalPos::getPos)
 				.collect(Collectors.toSet());
-			packetByteBuf.writeCollection(set2, PacketByteBuf::writeBlockPos);
+			buf.writeCollection(set2, PacketByteBuf::writeBlockPos);
 		} else {
-			packetByteBuf.writeVarInt(0);
+			buf.writeVarInt(0);
 		}
 
-		if (livingEntity instanceof VillagerEntity) {
-			Map<UUID, Object2IntMap<VillageGossipType>> map = ((VillagerEntity)livingEntity).getGossip().method_35120();
+		if (entity instanceof VillagerEntity) {
+			Map<UUID, Object2IntMap<VillageGossipType>> map = ((VillagerEntity)entity).getGossip().method_35120();
 			List<String> list = Lists.<String>newArrayList();
-			map.forEach((uUID, object2IntMap) -> {
-				String string = NameGenerator.name(uUID);
-				object2IntMap.forEach((villageGossipType, integer) -> list.add(string + ": " + villageGossipType + ": " + integer));
+			map.forEach((uuid, gossips) -> {
+				String string = NameGenerator.name(uuid);
+				gossips.forEach((type, value) -> list.add(string + ": " + type + ": " + value));
 			});
-			packetByteBuf.writeCollection(list, PacketByteBuf::writeString);
+			buf.writeCollection(list, PacketByteBuf::writeString);
 		} else {
-			packetByteBuf.writeVarInt(0);
+			buf.writeVarInt(0);
 		}
 	}
 
-	private static List<String> method_36157(LivingEntity livingEntity, long l) {
-		Map<MemoryModuleType<?>, Optional<? extends Memory<?>>> map = livingEntity.getBrain().method_35058();
+	private static List<String> listMemories(LivingEntity entity, long currentTime) {
+		Map<MemoryModuleType<?>, Optional<? extends Memory<?>>> map = entity.getBrain().method_35058();
 		List<String> list = Lists.<String>newArrayList();
 
 		for (Entry<MemoryModuleType<?>, Optional<? extends Memory<?>>> entry : map.entrySet()) {
@@ -203,12 +203,12 @@ public class DebugInfoSender {
 				Memory<?> memory = (Memory<?>)optional.get();
 				Object object = memory.getValue();
 				if (memoryModuleType == MemoryModuleType.HEARD_BELL_TIME) {
-					long m = l - (Long)object;
-					string = m + " ticks ago";
+					long l = currentTime - (Long)object;
+					string = l + " ticks ago";
 				} else if (memory.isTimed()) {
-					string = method_36156((ServerWorld)livingEntity.world, object) + " (ttl: " + memory.getExpiry() + ")";
+					string = format((ServerWorld)entity.world, object) + " (ttl: " + memory.getExpiry() + ")";
 				} else {
-					string = method_36156((ServerWorld)livingEntity.world, object);
+					string = format((ServerWorld)entity.world, object);
 				}
 			} else {
 				string = "-";
@@ -221,34 +221,34 @@ public class DebugInfoSender {
 		return list;
 	}
 
-	private static String method_36156(ServerWorld serverWorld, @Nullable Object object) {
+	private static String format(ServerWorld world, @Nullable Object object) {
 		if (object == null) {
 			return "-";
 		} else if (object instanceof UUID) {
-			return method_36156(serverWorld, serverWorld.getEntity((UUID)object));
+			return format(world, world.getEntity((UUID)object));
 		} else if (object instanceof LivingEntity) {
 			Entity entity = (Entity)object;
 			return NameGenerator.name(entity);
 		} else if (object instanceof Nameable) {
 			return ((Nameable)object).getName().getString();
 		} else if (object instanceof WalkTarget) {
-			return method_36156(serverWorld, ((WalkTarget)object).getLookTarget());
+			return format(world, ((WalkTarget)object).getLookTarget());
 		} else if (object instanceof EntityLookTarget) {
-			return method_36156(serverWorld, ((EntityLookTarget)object).getEntity());
+			return format(world, ((EntityLookTarget)object).getEntity());
 		} else if (object instanceof GlobalPos) {
-			return method_36156(serverWorld, ((GlobalPos)object).getPos());
+			return format(world, ((GlobalPos)object).getPos());
 		} else if (object instanceof BlockPosLookTarget) {
-			return method_36156(serverWorld, ((BlockPosLookTarget)object).getBlockPos());
+			return format(world, ((BlockPosLookTarget)object).getBlockPos());
 		} else if (object instanceof EntityDamageSource) {
 			Entity entity = ((EntityDamageSource)object).getAttacker();
-			return entity == null ? object.toString() : method_36156(serverWorld, entity);
+			return entity == null ? object.toString() : format(world, entity);
 		} else if (!(object instanceof Collection)) {
 			return object.toString();
 		} else {
 			List<String> list = Lists.<String>newArrayList();
 
 			for (Object object2 : (Iterable)object) {
-				list.add(method_36156(serverWorld, object2));
+				list.add(format(world, object2));
 			}
 
 			return list.toString();

@@ -27,27 +27,40 @@ public class NarratorManager implements ClientChatListener {
 	@Override
 	public void onChatMessage(MessageType messageType, Text message, UUID sender) {
 		NarratorMode narratorMode = getNarratorOption();
-		if (narratorMode != NarratorMode.OFF && this.narrator.active()) {
-			if (narratorMode == NarratorMode.ALL
-				|| narratorMode == NarratorMode.CHAT && messageType == MessageType.CHAT
-				|| narratorMode == NarratorMode.SYSTEM && messageType == MessageType.SYSTEM) {
-				Text text;
-				if (message instanceof TranslatableText && "chat.type.text".equals(((TranslatableText)message).getKey())) {
-					text = new TranslatableText("chat.type.text.narrate", ((TranslatableText)message).getArgs());
-				} else {
-					text = message;
-				}
+		if (narratorMode != NarratorMode.OFF) {
+			if (!this.narrator.active()) {
+				this.debugPrintMessage(message.getString());
+			} else {
+				if (narratorMode == NarratorMode.ALL
+					|| narratorMode == NarratorMode.CHAT && messageType == MessageType.CHAT
+					|| narratorMode == NarratorMode.SYSTEM && messageType == MessageType.SYSTEM) {
+					Text text;
+					if (message instanceof TranslatableText && "chat.type.text".equals(((TranslatableText)message).getKey())) {
+						text = new TranslatableText("chat.type.text.narrate", ((TranslatableText)message).getArgs());
+					} else {
+						text = message;
+					}
 
-				this.narrate(messageType.interruptsNarration(), text.getString());
+					String string = text.getString();
+					this.debugPrintMessage(string);
+					this.narrator.say(string, messageType.interruptsNarration());
+				}
 			}
 		}
 	}
 
+	public void narrate(Text text) {
+		this.narrate(text.getString());
+	}
+
 	public void narrate(String text) {
 		NarratorMode narratorMode = getNarratorOption();
-		if (this.narrator.active() && narratorMode != NarratorMode.OFF && narratorMode != NarratorMode.CHAT && !text.isEmpty()) {
-			this.narrator.clear();
-			this.narrate(true, text);
+		if (narratorMode != NarratorMode.OFF && narratorMode != NarratorMode.CHAT && !text.isEmpty()) {
+			this.debugPrintMessage(text);
+			if (this.narrator.active()) {
+				this.narrator.clear();
+				this.narrator.say(text, true);
+			}
 		}
 	}
 
@@ -55,12 +68,10 @@ public class NarratorManager implements ClientChatListener {
 		return MinecraftClient.getInstance().options.narrator;
 	}
 
-	private void narrate(boolean interrupt, String message) {
+	private void debugPrintMessage(String message) {
 		if (SharedConstants.isDevelopment) {
 			LOGGER.debug("Narrating: {}", message.replaceAll("\n", "\\\\n"));
 		}
-
-		this.narrator.say(message, interrupt);
 	}
 
 	public void addToast(NarratorMode option) {

@@ -5,6 +5,7 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -45,8 +46,8 @@ public interface Bucketable {
 			nbtCompound.putBoolean("NoGravity", entity.hasNoGravity());
 		}
 
-		if (entity.method_36361()) {
-			nbtCompound.putBoolean("Glowing", entity.method_36361());
+		if (entity.isGlowingLocal()) {
+			nbtCompound.putBoolean("Glowing", entity.isGlowingLocal());
 		}
 
 		if (entity.isInvulnerable()) {
@@ -86,18 +87,13 @@ public interface Bucketable {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (itemStack.getItem() == Items.WATER_BUCKET && entity.isAlive()) {
 			entity.playSound(entity.getBucketedSound(), 1.0F, 1.0F);
-			itemStack.decrement(1);
 			ItemStack itemStack2 = entity.getBucketItem();
 			entity.copyDataToStack(itemStack2);
+			ItemStack itemStack3 = ItemUsage.exchangeStack(itemStack, player, itemStack2, false);
+			player.setStackInHand(hand, itemStack3);
 			World world = entity.world;
 			if (!world.isClient) {
 				Criteria.FILLED_BUCKET.trigger((ServerPlayerEntity)player, itemStack2);
-			}
-
-			if (itemStack.isEmpty()) {
-				player.setStackInHand(hand, itemStack2);
-			} else if (!player.getInventory().insertStack(itemStack2)) {
-				player.dropItem(itemStack2, false);
 			}
 
 			entity.discard();

@@ -21,15 +21,15 @@ public class ChatMessages {
 		return MinecraftClient.getInstance().options.chatColors ? message : Formatting.strip(message);
 	}
 
-	public static List<OrderedText> breakRenderedChatMessageLines(StringVisitable stringVisitable, int width, TextRenderer textRenderer) {
+	public static List<OrderedText> breakRenderedChatMessageLines(StringVisitable message, int width, TextRenderer textRenderer) {
 		TextCollector textCollector = new TextCollector();
-		stringVisitable.visit((style, string) -> {
-			textCollector.add(StringVisitable.styled(getRenderedChatMessage(string), style));
+		message.visit((style, messagex) -> {
+			textCollector.add(StringVisitable.styled(getRenderedChatMessage(messagex), style));
 			return Optional.empty();
 		}, Style.EMPTY);
 		List<OrderedText> list = Lists.<OrderedText>newArrayList();
-		textRenderer.getTextHandler().wrapLines(textCollector.getCombined(), width, Style.EMPTY, (stringVisitablex, boolean_) -> {
-			OrderedText orderedText = Language.getInstance().reorder(stringVisitablex);
+		textRenderer.getTextHandler().wrapLines(textCollector.getCombined(), width, Style.EMPTY, (stringVisitable, boolean_) -> {
+			OrderedText orderedText = Language.getInstance().reorder(stringVisitable);
 			list.add(boolean_ ? OrderedText.concat(SPACES, orderedText) : orderedText);
 		});
 		return (List<OrderedText>)(list.isEmpty() ? Lists.<OrderedText>newArrayList(OrderedText.EMPTY) : list);

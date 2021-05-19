@@ -151,22 +151,23 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 				}
 			});
 			valueHolder.values.put(registryKey, DataResult.success(supplier));
-			DataResult<Pair<E, OptionalInt>> dataResult2 = this.entryLoader.load(this.entryOps, key, registryKey, codec);
-			Optional<Pair<E, OptionalInt>> optional = dataResult2.result();
-			if (optional.isPresent()) {
-				Pair<E, OptionalInt> pair = (Pair<E, OptionalInt>)optional.get();
-				registry.replace(pair.getSecond(), registryKey, pair.getFirst(), dataResult2.lifecycle());
-			}
-
-			DataResult<Supplier<E>> dataResult3;
-			if (!optional.isPresent() && registry.get(registryKey) != null) {
-				dataResult3 = DataResult.success(() -> registry.get(registryKey), Lifecycle.stable());
+			Optional<DataResult<Pair<E, OptionalInt>>> optional = this.entryLoader.load(this.entryOps, key, registryKey, codec);
+			DataResult<Supplier<E>> dataResult2;
+			if (!optional.isPresent()) {
+				dataResult2 = DataResult.success(() -> registry.get(registryKey), Lifecycle.stable());
 			} else {
-				dataResult3 = dataResult2.map(pair -> () -> registry.get(registryKey));
+				DataResult<Pair<E, OptionalInt>> dataResult3 = (DataResult<Pair<E, OptionalInt>>)optional.get();
+				Optional<Pair<E, OptionalInt>> optional2 = dataResult3.result();
+				if (optional2.isPresent()) {
+					Pair<E, OptionalInt> pair = (Pair<E, OptionalInt>)optional2.get();
+					registry.replace(pair.getSecond(), registryKey, pair.getFirst(), dataResult3.lifecycle());
+				}
+
+				dataResult2 = dataResult3.map(pairx -> () -> registry.get(registryKey));
 			}
 
-			valueHolder.values.put(registryKey, dataResult3);
-			return dataResult3;
+			valueHolder.values.put(registryKey, dataResult2);
+			return dataResult2;
 		}
 	}
 
@@ -188,7 +189,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 		 */
 		Collection<Identifier> getKnownEntryPaths(RegistryKey<? extends Registry<?>> key);
 
-		<E> DataResult<Pair<E, OptionalInt>> load(
+		<E> Optional<DataResult<Pair<E, OptionalInt>>> load(
 			DynamicOps<JsonElement> dynamicOps, RegistryKey<? extends Registry<E>> registryId, RegistryKey<E> entryId, Decoder<E> decoder
 		);
 
@@ -200,53 +201,56 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 				}
 
 				@Override
-				public <E> DataResult<Pair<E, OptionalInt>> load(
+				public <E> Optional<DataResult<Pair<E, OptionalInt>>> load(
 					DynamicOps<JsonElement> dynamicOps, RegistryKey<? extends Registry<E>> registryId, RegistryKey<E> entryId, Decoder<E> decoder
 				) {
 					Identifier identifier = entryId.getValue();
 					Identifier identifier2 = new Identifier(identifier.getNamespace(), registryId.getValue().getPath() + "/" + identifier.getPath() + ".json");
-
-					try {
-						Resource resource = resourceManager.getResource(identifier2);
-
-						DataResult var11;
+					if (!resourceManager.containsResource(identifier2)) {
+						return Optional.empty();
+					} else {
 						try {
-							Reader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8);
+							Resource resource = resourceManager.getResource(identifier2);
 
+							Optional var11;
 							try {
-								JsonParser jsonParser = new JsonParser();
-								JsonElement jsonElement = jsonParser.parse(reader);
-								var11 = decoder.parse(dynamicOps, jsonElement).map(object -> Pair.of(object, OptionalInt.empty()));
-							} catch (Throwable var14) {
+								Reader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8);
+
 								try {
-									reader.close();
-								} catch (Throwable var13) {
-									var14.addSuppressed(var13);
+									JsonParser jsonParser = new JsonParser();
+									JsonElement jsonElement = jsonParser.parse(reader);
+									var11 = Optional.of(decoder.parse(dynamicOps, jsonElement).map(object -> Pair.of(object, OptionalInt.empty())));
+								} catch (Throwable var14) {
+									try {
+										reader.close();
+									} catch (Throwable var13) {
+										var14.addSuppressed(var13);
+									}
+
+									throw var14;
 								}
 
-								throw var14;
+								reader.close();
+							} catch (Throwable var15) {
+								if (resource != null) {
+									try {
+										resource.close();
+									} catch (Throwable var12) {
+										var15.addSuppressed(var12);
+									}
+								}
+
+								throw var15;
 							}
 
-							reader.close();
-						} catch (Throwable var15) {
 							if (resource != null) {
-								try {
-									resource.close();
-								} catch (Throwable var12) {
-									var15.addSuppressed(var12);
-								}
+								resource.close();
 							}
 
-							throw var15;
+							return var11;
+						} catch (JsonIOException | JsonSyntaxException | IOException var16) {
+							return Optional.of(DataResult.error("Failed to parse " + identifier2 + " file: " + var16.getMessage()));
 						}
-
-						if (resource != null) {
-							resource.close();
-						}
-
-						return var11;
-					} catch (JsonIOException | JsonSyntaxException | IOException var16) {
-						return DataResult.error("Failed to parse " + identifier2 + " file: " + var16.getMessage());
 					}
 				}
 
@@ -284,15 +288,17 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 			}
 
 			@Override
-			public <E> DataResult<Pair<E, OptionalInt>> load(
+			public <E> Optional<DataResult<Pair<E, OptionalInt>>> load(
 				DynamicOps<JsonElement> dynamicOps, RegistryKey<? extends Registry<E>> registryId, RegistryKey<E> entryId, Decoder<E> decoder
 			) {
 				JsonElement jsonElement = (JsonElement)this.values.get(entryId);
 				return jsonElement == null
-					? DataResult.error("Unknown element: " + entryId)
-					: decoder.parse(dynamicOps, jsonElement)
-						.setLifecycle((Lifecycle)this.entryToLifecycle.get(entryId))
-						.map(object -> Pair.of(object, OptionalInt.of(this.entryToRawId.getInt(entryId))));
+					? Optional.of(DataResult.error("Unknown element: " + entryId))
+					: Optional.of(
+						decoder.parse(dynamicOps, jsonElement)
+							.setLifecycle((Lifecycle)this.entryToLifecycle.get(entryId))
+							.map(object -> Pair.of(object, OptionalInt.of(this.entryToRawId.getInt(entryId))))
+					);
 			}
 		}
 	}

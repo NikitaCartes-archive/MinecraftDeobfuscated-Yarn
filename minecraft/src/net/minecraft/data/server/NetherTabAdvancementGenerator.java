@@ -146,7 +146,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				false
 			)
 			.rewards(AdvancementRewards.Builder.experience(100))
-			.criterion("travelled", NetherTravelCriterion.Conditions.distance(DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(7000.0F))))
+			.criterion("travelled", NetherTravelCriterion.Conditions.distance(DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(7000.0))))
 			.build(consumer, "nether/fast_travel");
 		Advancement.Task.create()
 			.parent(advancement2)

@@ -60,12 +60,14 @@ public class TargetPredicate {
 			return false;
 		} else if (!targetEntity.isPartOfGame()) {
 			return false;
-		} else if (this.attackable && !targetEntity.canTakeDamage()) {
-			return false;
 		} else if (this.predicate != null && !this.predicate.test(targetEntity)) {
 			return false;
 		} else {
-			if (baseEntity != null) {
+			if (baseEntity == null) {
+				if (this.attackable && !targetEntity.canTakeDamage()) {
+					return false;
+				}
+			} else {
 				if (this.attackable && (!baseEntity.canTarget(targetEntity) || !baseEntity.canTarget(targetEntity.getType()) || baseEntity.isTeammate(targetEntity))) {
 					return false;
 				}

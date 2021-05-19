@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -11,8 +12,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.hud.BackgroundHelper;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.network.SocialInteractionsManager;
@@ -31,7 +34,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 	private static final int field_32418 = 10;
 	private static final int field_32419 = 150;
 	private final MinecraftClient client;
-	private final List<Element> buttons;
+	private final List<ClickableWidget> buttons;
 	private final UUID uuid;
 	private final String name;
 	private final Supplier<Identifier> skinTexture;
@@ -40,9 +43,11 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 	private ButtonWidget hideButton;
 	@Nullable
 	private ButtonWidget showButton;
-	private final List<OrderedText> hideTooltip;
-	private final List<OrderedText> showTooltip;
-	private float timeCounter;
+	final Text hideText;
+	final Text showText;
+	final List<OrderedText> hideTooltip;
+	final List<OrderedText> showTooltip;
+	float timeCounter;
 	private static final Text HIDDEN_TEXT = new TranslatableText("gui.socialInteractions.status_hidden").formatted(Formatting.ITALIC);
 	private static final Text BLOCKED_TEXT = new TranslatableText("gui.socialInteractions.status_blocked").formatted(Formatting.ITALIC);
 	private static final Text OFFLINE_TEXT = new TranslatableText("gui.socialInteractions.status_offline").formatted(Formatting.ITALIC);
@@ -64,33 +69,83 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 		this.uuid = uuid;
 		this.name = name;
 		this.skinTexture = skinTexture;
-		this.hideTooltip = client.textRenderer.wrapLines(new TranslatableText("gui.socialInteractions.tooltip.hide", name), 150);
-		this.showTooltip = client.textRenderer.wrapLines(new TranslatableText("gui.socialInteractions.tooltip.show", name), 150);
+		this.hideText = new TranslatableText("gui.socialInteractions.tooltip.hide", name);
+		this.showText = new TranslatableText("gui.socialInteractions.tooltip.show", name);
+		this.hideTooltip = client.textRenderer.wrapLines(this.hideText, 150);
+		this.showTooltip = client.textRenderer.wrapLines(this.showText, 150);
 		SocialInteractionsManager socialInteractionsManager = client.getSocialInteractionsManager();
 		if (!client.player.getGameProfile().getId().equals(uuid) && !socialInteractionsManager.isPlayerBlocked(uuid)) {
-			this.hideButton = new TexturedButtonWidget(0, 0, 20, 20, 0, 38, 20, SocialInteractionsScreen.SOCIAL_INTERACTIONS_TEXTURE, 256, 256, buttonWidget -> {
-				socialInteractionsManager.hidePlayer(uuid);
-				this.onButtonClick(true, new TranslatableText("gui.socialInteractions.hidden_in_chat", name));
-			}, (buttonWidget, matrixStack, i, j) -> {
-				this.timeCounter = this.timeCounter + client.getLastFrameDuration();
-				if (this.timeCounter >= 10.0F) {
-					parent.setOnRendered(() -> renderTooltip(parent, matrixStack, this.hideTooltip, i, j));
-				}
-			}, new TranslatableText("gui.socialInteractions.hide")) {
+			this.hideButton = new TexturedButtonWidget(
+				0,
+				0,
+				20,
+				20,
+				0,
+				38,
+				20,
+				SocialInteractionsScreen.SOCIAL_INTERACTIONS_TEXTURE,
+				256,
+				256,
+				button -> {
+					socialInteractionsManager.hidePlayer(uuid);
+					this.onButtonClick(true, new TranslatableText("gui.socialInteractions.hidden_in_chat", name));
+				},
+				new ButtonWidget.TooltipSupplier() {
+					@Override
+					public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
+						SocialInteractionsPlayerListEntry.this.timeCounter = SocialInteractionsPlayerListEntry.this.timeCounter + client.getLastFrameDuration();
+						if (SocialInteractionsPlayerListEntry.this.timeCounter >= 10.0F) {
+							parent.setOnRendered(
+								() -> SocialInteractionsPlayerListEntry.renderTooltip(parent, matrixStack, SocialInteractionsPlayerListEntry.this.hideTooltip, i, j)
+							);
+						}
+					}
+
+					@Override
+					public void method_37023(Consumer<Text> consumer) {
+						consumer.accept(SocialInteractionsPlayerListEntry.this.hideText);
+					}
+				},
+				new TranslatableText("gui.socialInteractions.hide")
+			) {
 				@Override
 				protected MutableText getNarrationMessage() {
 					return SocialInteractionsPlayerListEntry.this.getNarrationMessage(super.getNarrationMessage());
 				}
 			};
-			this.showButton = new TexturedButtonWidget(0, 0, 20, 20, 20, 38, 20, SocialInteractionsScreen.SOCIAL_INTERACTIONS_TEXTURE, 256, 256, buttonWidget -> {
-				socialInteractionsManager.showPlayer(uuid);
-				this.onButtonClick(false, new TranslatableText("gui.socialInteractions.shown_in_chat", name));
-			}, (buttonWidget, matrixStack, i, j) -> {
-				this.timeCounter = this.timeCounter + client.getLastFrameDuration();
-				if (this.timeCounter >= 10.0F) {
-					parent.setOnRendered(() -> renderTooltip(parent, matrixStack, this.showTooltip, i, j));
-				}
-			}, new TranslatableText("gui.socialInteractions.show")) {
+			this.showButton = new TexturedButtonWidget(
+				0,
+				0,
+				20,
+				20,
+				20,
+				38,
+				20,
+				SocialInteractionsScreen.SOCIAL_INTERACTIONS_TEXTURE,
+				256,
+				256,
+				button -> {
+					socialInteractionsManager.showPlayer(uuid);
+					this.onButtonClick(false, new TranslatableText("gui.socialInteractions.shown_in_chat", name));
+				},
+				new ButtonWidget.TooltipSupplier() {
+					@Override
+					public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
+						SocialInteractionsPlayerListEntry.this.timeCounter = SocialInteractionsPlayerListEntry.this.timeCounter + client.getLastFrameDuration();
+						if (SocialInteractionsPlayerListEntry.this.timeCounter >= 10.0F) {
+							parent.setOnRendered(
+								() -> SocialInteractionsPlayerListEntry.renderTooltip(parent, matrixStack, SocialInteractionsPlayerListEntry.this.showTooltip, i, j)
+							);
+						}
+					}
+
+					@Override
+					public void method_37023(Consumer<Text> consumer) {
+						consumer.accept(SocialInteractionsPlayerListEntry.this.showText);
+					}
+				},
+				new TranslatableText("gui.socialInteractions.show")
+			) {
 				@Override
 				protected MutableText getNarrationMessage() {
 					return SocialInteractionsPlayerListEntry.this.getNarrationMessage(super.getNarrationMessage());
@@ -149,6 +204,11 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 		return this.buttons;
 	}
 
+	@Override
+	public List<? extends Selectable> method_37025() {
+		return this.buttons;
+	}
+
 	public String getName() {
 		return this.name;
 	}
@@ -165,7 +225,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 		this.showButton.visible = showButtonVisible;
 		this.hideButton.visible = !showButtonVisible;
 		this.client.inGameHud.getChatHud().addMessage(chatMessage);
-		NarratorManager.INSTANCE.narrate(chatMessage.getString());
+		NarratorManager.INSTANCE.narrate(chatMessage);
 	}
 
 	MutableText getNarrationMessage(MutableText text) {
@@ -191,7 +251,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 		}
 	}
 
-	private static void renderTooltip(SocialInteractionsScreen screen, MatrixStack matrices, List<OrderedText> tooltip, int mouseX, int mouseY) {
+	static void renderTooltip(SocialInteractionsScreen screen, MatrixStack matrices, List<OrderedText> tooltip, int mouseX, int mouseY) {
 		screen.renderOrderedTooltip(matrices, tooltip, mouseX, mouseY);
 		screen.setOnRendered(null);
 	}

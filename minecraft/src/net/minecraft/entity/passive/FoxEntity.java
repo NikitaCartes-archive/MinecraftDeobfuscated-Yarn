@@ -845,7 +845,7 @@ public class FoxEntity extends AnimalEntity {
 				this.timer--;
 				return false;
 			} else {
-				return FoxEntity.this.world.isDay() && this.isAtFavoredLocation() && !this.canCalmDown();
+				return FoxEntity.this.world.isDay() && this.isAtFavoredLocation() && !this.canCalmDown() && !FoxEntity.this.inPowderSnow;
 			}
 		}
 
@@ -935,7 +935,7 @@ public class FoxEntity extends AnimalEntity {
 				Block.dropStack(FoxEntity.this.world, this.targetPos, new ItemStack(Items.SWEET_BERRIES, j));
 			}
 
-			FoxEntity.this.playSound(SoundEvents.ITEM_SWEET_BERRIES_PICK_FROM_BUSH, 1.0F, 1.0F);
+			FoxEntity.this.playSound(SoundEvents.BLOCK_SWEET_BERRY_BUSH_PICK_BERRIES, 1.0F, 1.0F);
 			FoxEntity.this.world.setBlockState(this.targetPos, state.with(SweetBerryBushBlock.AGE, Integer.valueOf(1)), Block.NOTIFY_LISTENERS);
 		}
 

@@ -9,11 +9,11 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.realms.Realms;
 import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.Subscription;
 import net.minecraft.client.realms.exception.RealmsServiceException;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -46,6 +46,7 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 	private static final String field_32127 = "https://aka.ms/ExtendJavaRealms";
 
 	public RealmsSubscriptionInfoScreen(Screen parent, RealmsServer serverData, Screen mainScreen) {
+		super(NarratorManager.EMPTY);
 		this.parent = parent;
 		this.serverData = serverData;
 		this.mainScreen = mainScreen;
@@ -54,18 +55,15 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 	@Override
 	public void init() {
 		this.getSubscription(this.serverData.id);
-		Realms.narrateNow(
-			subscriptionTitle.getString(), subscriptionStartLabelText.getString(), this.startDate, timeLeftLabelText.getString(), this.daysLeft.getString()
-		);
 		this.client.keyboard.setRepeatEvents(true);
-		this.addButton(
+		this.addDrawableChild(
 			new ButtonWidget(
 				this.width / 2 - 100,
 				row(6),
 				200,
 				20,
 				new TranslatableText("mco.configure.world.subscription.extend"),
-				buttonWidget -> {
+				button -> {
 					String string = "https://aka.ms/ExtendJavaRealms?subscriptionId="
 						+ this.serverData.remoteSubscriptionId
 						+ "&profileId="
@@ -75,14 +73,19 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 				}
 			)
 		);
-		this.addButton(new ButtonWidget(this.width / 2 - 100, row(12), 200, 20, ScreenTexts.BACK, buttonWidget -> this.client.openScreen(this.parent)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, row(12), 200, 20, ScreenTexts.BACK, button -> this.client.openScreen(this.parent)));
 		if (this.serverData.expired) {
-			this.addButton(new ButtonWidget(this.width / 2 - 100, row(10), 200, 20, new TranslatableText("mco.configure.world.delete.button"), buttonWidget -> {
+			this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, row(10), 200, 20, new TranslatableText("mco.configure.world.delete.button"), button -> {
 				Text text = new TranslatableText("mco.configure.world.delete.question.line1");
 				Text text2 = new TranslatableText("mco.configure.world.delete.question.line2");
 				this.client.openScreen(new RealmsLongConfirmationScreen(this::method_25271, RealmsLongConfirmationScreen.Type.Warning, text, text2, true));
 			}));
 		}
+	}
+
+	@Override
+	public Text getNarratedTitle() {
+		return ScreenTexts.joinLines(subscriptionTitle, subscriptionStartLabelText, new LiteralText(this.startDate), timeLeftLabelText, this.daysLeft);
 	}
 
 	private void method_25271(boolean bl) {

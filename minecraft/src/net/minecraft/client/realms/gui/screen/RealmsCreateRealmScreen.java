@@ -5,7 +5,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.realms.RealmsLabel;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.task.WorldCreationTask;
 import net.minecraft.client.util.math.MatrixStack;
@@ -22,9 +21,9 @@ public class RealmsCreateRealmScreen extends RealmsScreen {
 	private TextFieldWidget nameBox;
 	private TextFieldWidget descriptionBox;
 	private ButtonWidget createButton;
-	private RealmsLabel createRealmLabel;
 
 	public RealmsCreateRealmScreen(RealmsServer server, RealmsMainScreen parent) {
+		super(new TranslatableText("mco.selectServer.create"));
 		this.server = server;
 		this.parent = parent;
 	}
@@ -43,23 +42,20 @@ public class RealmsCreateRealmScreen extends RealmsScreen {
 	@Override
 	public void init() {
 		this.client.keyboard.setRepeatEvents(true);
-		this.createButton = this.addButton(
-			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 17, 97, 20, new TranslatableText("mco.create.world"), buttonWidget -> this.createWorld())
+		this.createButton = this.addDrawableChild(
+			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 17, 97, 20, new TranslatableText("mco.create.world"), button -> this.createWorld())
 		);
-		this.addButton(
-			new ButtonWidget(this.width / 2 + 5, this.height / 4 + 120 + 17, 95, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent))
+		this.addDrawableChild(
+			new ButtonWidget(this.width / 2 + 5, this.height / 4 + 120 + 17, 95, 20, ScreenTexts.CANCEL, button -> this.client.openScreen(this.parent))
 		);
 		this.createButton.active = false;
 		this.nameBox = new TextFieldWidget(this.client.textRenderer, this.width / 2 - 100, 65, 200, 20, null, new TranslatableText("mco.configure.world.name"));
-		this.addChild(this.nameBox);
+		this.addSelectableChild(this.nameBox);
 		this.setInitialFocus(this.nameBox);
 		this.descriptionBox = new TextFieldWidget(
 			this.client.textRenderer, this.width / 2 - 100, 115, 200, 20, null, new TranslatableText("mco.configure.world.description")
 		);
-		this.addChild(this.descriptionBox);
-		this.createRealmLabel = new RealmsLabel(new TranslatableText("mco.selectServer.create"), this.width / 2, 11, 16777215);
-		this.addChild(this.createRealmLabel);
-		this.narrateLabels();
+		this.addSelectableChild(this.descriptionBox);
 	}
 
 	@Override
@@ -95,7 +91,7 @@ public class RealmsCreateRealmScreen extends RealmsScreen {
 				new TranslatableText("mco.create.world.subtitle"),
 				10526880,
 				new TranslatableText("mco.create.world.skip"),
-				() -> this.client.openScreen(this.parent.newScreen()),
+				() -> this.client.execute(() -> this.client.openScreen(this.parent.newScreen())),
 				() -> this.client.openScreen(this.parent.newScreen())
 			);
 			realmsResetWorldScreen.setResetTitle(new TranslatableText("mco.create.world.reset.title"));
@@ -115,7 +111,7 @@ public class RealmsCreateRealmScreen extends RealmsScreen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		this.createRealmLabel.render(this, matrices);
+		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 11, 16777215);
 		this.textRenderer.draw(matrices, WORLD_NAME_TEXT, (float)(this.width / 2 - 100), 52.0F, 10526880);
 		this.textRenderer.draw(matrices, WORLD_DESCRIPTION_TEXT, (float)(this.width / 2 - 100), 102.0F, 10526880);
 		if (this.nameBox != null) {

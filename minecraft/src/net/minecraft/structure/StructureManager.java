@@ -13,7 +13,7 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.Map;
-import javax.annotation.Nullable;
+import java.util.Optional;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -34,7 +34,7 @@ public class StructureManager {
 	private static final String field_31684 = "structures";
 	private static final String field_31685 = ".nbt";
 	private static final String field_31686 = ".snbt";
-	private final Map<Identifier, Structure> structures = Maps.<Identifier, Structure>newHashMap();
+	private final Map<Identifier, Optional<Structure>> structures = Maps.<Identifier, Optional<Structure>>newConcurrentMap();
 	private final DataFixer dataFixer;
 	private ResourceManager resourceManager;
 	private final Path generatedPath;
@@ -46,20 +46,20 @@ public class StructureManager {
 	}
 
 	public Structure getStructureOrBlank(Identifier id) {
-		Structure structure = this.getStructure(id);
-		if (structure == null) {
-			structure = new Structure();
-			this.structures.put(id, structure);
+		Optional<Structure> optional = this.getStructure(id);
+		if (optional.isPresent()) {
+			return (Structure)optional.get();
+		} else {
+			Structure structure = new Structure();
+			this.structures.put(id, Optional.of(structure));
+			return structure;
 		}
-
-		return structure;
 	}
 
-	@Nullable
-	public Structure getStructure(Identifier id) {
-		return (Structure)this.structures.computeIfAbsent(id, identifier -> {
-			Structure structure = this.loadStructureFromFile(identifier);
-			return structure != null ? structure : this.loadStructureFromResource(identifier);
+	public Optional<Structure> getStructure(Identifier id) {
+		return (Optional<Structure>)this.structures.computeIfAbsent(id, identifier -> {
+			Optional<Structure> optional = this.loadStructureFromFile(identifier);
+			return optional.isPresent() ? optional : this.loadStructureFromResource(identifier);
 		});
 	}
 
@@ -68,16 +68,15 @@ public class StructureManager {
 		this.structures.clear();
 	}
 
-	@Nullable
-	private Structure loadStructureFromResource(Identifier id) {
+	private Optional<Structure> loadStructureFromResource(Identifier id) {
 		Identifier identifier = new Identifier(id.getNamespace(), "structures/" + id.getPath() + ".nbt");
 
 		try {
 			Resource resource = this.resourceManager.getResource(identifier);
 
-			Structure var4;
+			Optional var4;
 			try {
-				var4 = this.readStructure(resource.getInputStream());
+				var4 = Optional.of(this.readStructure(resource.getInputStream()));
 			} catch (Throwable var7) {
 				if (resource != null) {
 					try {
@@ -96,26 +95,25 @@ public class StructureManager {
 
 			return var4;
 		} catch (FileNotFoundException var8) {
-			return null;
+			return Optional.empty();
 		} catch (Throwable var9) {
 			LOGGER.error("Couldn't load structure {}: {}", id, var9.toString());
-			return null;
+			return Optional.empty();
 		}
 	}
 
-	@Nullable
-	private Structure loadStructureFromFile(Identifier id) {
+	private Optional<Structure> loadStructureFromFile(Identifier id) {
 		if (!this.generatedPath.toFile().isDirectory()) {
-			return null;
+			return Optional.empty();
 		} else {
 			Path path = this.getAndCheckStructurePath(id, ".nbt");
 
 			try {
 				InputStream inputStream = new FileInputStream(path.toFile());
 
-				Structure var4;
+				Optional var4;
 				try {
-					var4 = this.readStructure(inputStream);
+					var4 = Optional.of(this.readStructure(inputStream));
 				} catch (Throwable var7) {
 					try {
 						inputStream.close();
@@ -129,10 +127,10 @@ public class StructureManager {
 				inputStream.close();
 				return var4;
 			} catch (FileNotFoundException var8) {
-				return null;
+				return Optional.empty();
 			} catch (IOException var9) {
 				LOGGER.error("Couldn't load structure from {}", path, var9);
-				return null;
+				return Optional.empty();
 			}
 		}
 	}
@@ -152,19 +150,20 @@ public class StructureManager {
 		return structure;
 	}
 
-	public boolean saveStructure(Identifier id) {
-		Structure structure = (Structure)this.structures.get(id);
-		if (structure == null) {
+	public boolean saveStructure(Identifier identifier) {
+		Optional<Structure> optional = (Optional<Structure>)this.structures.get(identifier);
+		if (!optional.isPresent()) {
 			return false;
 		} else {
-			Path path = this.getAndCheckStructurePath(id, ".nbt");
+			Structure structure = (Structure)optional.get();
+			Path path = this.getAndCheckStructurePath(identifier, ".nbt");
 			Path path2 = path.getParent();
 			if (path2 == null) {
 				return false;
 			} else {
 				try {
 					Files.createDirectories(Files.exists(path2, new LinkOption[0]) ? path2.toRealPath() : path2);
-				} catch (IOException var12) {
+				} catch (IOException var13) {
 					LOGGER.error("Failed to create parent directory: {}", path2);
 					return false;
 				}
@@ -176,19 +175,19 @@ public class StructureManager {
 
 					try {
 						NbtIo.writeCompressed(nbtCompound, outputStream);
-					} catch (Throwable var10) {
+					} catch (Throwable var11) {
 						try {
 							outputStream.close();
-						} catch (Throwable var9) {
-							var10.addSuppressed(var9);
+						} catch (Throwable var10) {
+							var11.addSuppressed(var10);
 						}
 
-						throw var10;
+						throw var11;
 					}
 
 					outputStream.close();
 					return true;
-				} catch (Throwable var11) {
+				} catch (Throwable var12) {
 					return false;
 				}
 			}

@@ -55,7 +55,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	}
 
 	@Override
-	public void addLightSource(BlockPos pos, int i) {
+	public void addLightSource(BlockPos pos, int level) {
 		throw (UnsupportedOperationException)Util.throwOrPause(new UnsupportedOperationException("Ran authomatically on a different thread!"));
 	}
 
@@ -75,7 +75,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			super.setRetainData(pos, false);
 			super.setColumnEnabled(pos, false);
 
-			for (int i = this.method_31929(); i < this.method_31930(); i++) {
+			for (int i = this.getBottomY(); i < this.getTopY(); i++) {
 				super.enqueueSectionData(LightType.BLOCK, ChunkSectionPos.from(pos, i), null, true);
 				super.enqueueSectionData(LightType.SKY, ChunkSectionPos.from(pos, i), null, true);
 			}

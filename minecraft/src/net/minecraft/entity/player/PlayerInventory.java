@@ -53,6 +53,8 @@ public class PlayerInventory implements Inventory, Nameable {
 	 * or to indicate no preference when inserting an item into the inventory.
 	 */
 	public static final int NOT_FOUND = -1;
+	public static final int[] ARMOR_SLOTS = new int[]{0, 1, 2, 3};
+	public static final int[] HELMET_SLOTS = new int[]{3};
 	public final DefaultedList<ItemStack> main = DefaultedList.ofSize(36, ItemStack.EMPTY);
 	public final DefaultedList<ItemStack> armor = DefaultedList.ofSize(4, ItemStack.EMPTY);
 	public final DefaultedList<ItemStack> offHand = DefaultedList.ofSize(1, ItemStack.EMPTY);
@@ -528,18 +530,17 @@ public class PlayerInventory implements Inventory, Nameable {
 		return this.armor.get(slot);
 	}
 
-	public void damageArmor(DamageSource damageSource, float amount) {
+	public void damageArmor(DamageSource damageSource, float amount, int[] slots) {
 		if (!(amount <= 0.0F)) {
 			amount /= 4.0F;
 			if (amount < 1.0F) {
 				amount = 1.0F;
 			}
 
-			for (int i = 0; i < this.armor.size(); i++) {
+			for (int i : slots) {
 				ItemStack itemStack = this.armor.get(i);
 				if ((!damageSource.isFire() || !itemStack.getItem().isFireproof()) && itemStack.getItem() instanceof ArmorItem) {
-					int j = i;
-					itemStack.damage((int)amount, this.player, playerEntity -> playerEntity.sendEquipmentBreakStatus(EquipmentSlot.fromTypeIndex(EquipmentSlot.Type.ARMOR, j)));
+					itemStack.damage((int)amount, this.player, player -> player.sendEquipmentBreakStatus(EquipmentSlot.fromTypeIndex(EquipmentSlot.Type.ARMOR, i)));
 				}
 			}
 		}

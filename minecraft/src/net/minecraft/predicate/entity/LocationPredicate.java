@@ -121,32 +121,28 @@ public class LocationPredicate {
 		);
 	}
 
-	public boolean test(ServerWorld world, double x, double y, double z) {
-		return this.test(world, (float)x, (float)y, (float)z);
-	}
-
-	public boolean test(ServerWorld world, float x, float y, float z) {
-		if (!this.x.test(x)) {
+	public boolean test(ServerWorld serverWorld, double d, double e, double f) {
+		if (!this.x.test(d)) {
 			return false;
-		} else if (!this.y.test(y)) {
+		} else if (!this.y.test(e)) {
 			return false;
-		} else if (!this.z.test(z)) {
+		} else if (!this.z.test(f)) {
 			return false;
-		} else if (this.dimension != null && this.dimension != world.getRegistryKey()) {
+		} else if (this.dimension != null && this.dimension != serverWorld.getRegistryKey()) {
 			return false;
 		} else {
-			BlockPos blockPos = new BlockPos((double)x, (double)y, (double)z);
-			boolean bl = world.canSetBlock(blockPos);
-			Optional<RegistryKey<Biome>> optional = world.getRegistryManager().get(Registry.BIOME_KEY).getKey(world.getBiome(blockPos));
+			BlockPos blockPos = new BlockPos(d, e, f);
+			boolean bl = serverWorld.canSetBlock(blockPos);
+			Optional<RegistryKey<Biome>> optional = serverWorld.getRegistryManager().get(Registry.BIOME_KEY).getKey(serverWorld.getBiome(blockPos));
 			if (!optional.isPresent()) {
 				return false;
 			} else if (this.biome == null || bl && this.biome == optional.get()) {
-				if (this.feature == null || bl && world.getStructureAccessor().getStructureAt(blockPos, true, this.feature).hasChildren()) {
-					if (this.smokey == null || bl && this.smokey == CampfireBlock.isLitCampfireInRange(world, blockPos)) {
-						if (!this.light.test(world, blockPos)) {
+				if (this.feature == null || bl && serverWorld.getStructureAccessor().getStructureAt(blockPos, true, this.feature).hasChildren()) {
+					if (this.smokey == null || bl && this.smokey == CampfireBlock.isLitCampfireInRange(serverWorld, blockPos)) {
+						if (!this.light.test(serverWorld, blockPos)) {
 							return false;
 						} else {
-							return !this.block.test(world, blockPos) ? false : this.fluid.test(world, blockPos);
+							return !this.block.test(serverWorld, blockPos) ? false : this.fluid.test(serverWorld, blockPos);
 						}
 					} else {
 						return false;

@@ -229,7 +229,7 @@ public class FlatChunkGeneratorConfig {
 			}
 		}
 
-		this.hasNoTerrain = this.layerBlocks.stream().anyMatch(blockState -> !blockState.isOf(Blocks.AIR));
+		this.hasNoTerrain = this.layerBlocks.stream().allMatch(blockState -> blockState.isOf(Blocks.AIR));
 	}
 
 	public static FlatChunkGeneratorConfig getDefaultConfig(Registry<Biome> biomeRegistry) {

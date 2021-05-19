@@ -81,7 +81,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, this::canDrownedAttackTarget));
 		this.targetSelector.add(3, new FollowTargetGoal(this, MerchantEntity.class, false));
 		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, true));
-		this.targetSelector.add(3, new FollowTargetGoal(this, AxolotlEntity.class, 10, true, false, AxolotlEntity.AXOLOTL_NOT_PLAYING_DEAD));
+		this.targetSelector.add(3, new FollowTargetGoal(this, AxolotlEntity.class, true, false));
 		this.targetSelector.add(5, new FollowTargetGoal(this, TurtleEntity.class, 10, true, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
 	}
 
@@ -243,7 +243,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		double d = target.getX() - this.getX();
 		double e = target.getBodyY(0.3333333333333333) - tridentEntity.getY();
 		double f = target.getZ() - this.getZ();
-		double g = (double)MathHelper.sqrt(d * d + f * f);
+		double g = Math.sqrt(d * d + f * f);
 		tridentEntity.setVelocity(d, e + g * 0.2F, f, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
 		this.playSound(SoundEvents.ENTITY_DROWNED_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
 		this.world.spawnEntity(tridentEntity);
@@ -296,7 +296,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 				double d = this.targetX - this.drowned.getX();
 				double e = this.targetY - this.drowned.getY();
 				double f = this.targetZ - this.drowned.getZ();
-				double g = (double)MathHelper.sqrt(d * d + e * e + f * f);
+				double g = Math.sqrt(d * d + e * e + f * f);
 				e /= g;
 				float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F;
 				this.drowned.setYaw(this.wrapDegrees(this.drowned.getYaw(), h, 90.0F));

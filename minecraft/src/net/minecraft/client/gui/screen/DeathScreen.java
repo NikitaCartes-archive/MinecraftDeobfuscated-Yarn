@@ -1,10 +1,11 @@
 package net.minecraft.client.gui.screen;
 
+import com.google.common.collect.Lists;
+import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
@@ -19,6 +20,7 @@ public class DeathScreen extends Screen {
 	private final Text message;
 	private final boolean isHardcore;
 	private Text scoreText;
+	private final List<ButtonWidget> field_33809 = Lists.<ButtonWidget>newArrayList();
 
 	public DeathScreen(@Nullable Text message, boolean isHardcore) {
 		super(new TranslatableText(isHardcore ? "deathScreen.title.hardcore" : "deathScreen.title"));
@@ -29,49 +31,53 @@ public class DeathScreen extends Screen {
 	@Override
 	protected void init() {
 		this.ticksSinceDeath = 0;
-		this.addButton(
-			new ButtonWidget(
-				this.width / 2 - 100,
-				this.height / 4 + 72,
-				200,
-				20,
-				this.isHardcore ? new TranslatableText("deathScreen.spectate") : new TranslatableText("deathScreen.respawn"),
-				buttonWidgetx -> {
-					this.client.player.requestRespawn();
-					this.client.openScreen(null);
-				}
-			)
-		);
-		ButtonWidget buttonWidget = this.addButton(
-			new ButtonWidget(
-				this.width / 2 - 100,
-				this.height / 4 + 96,
-				200,
-				20,
-				new TranslatableText("deathScreen.titleScreen"),
-				buttonWidgetx -> {
-					if (this.isHardcore) {
-						this.quitLevel();
-					} else {
-						ConfirmScreen confirmScreen = new ConfirmScreen(
-							this::onConfirmQuit,
-							new TranslatableText("deathScreen.quit.confirm"),
-							LiteralText.EMPTY,
-							new TranslatableText("deathScreen.titleScreen"),
-							new TranslatableText("deathScreen.respawn")
-						);
-						this.client.openScreen(confirmScreen);
-						confirmScreen.disableButtons(20);
-					}
-				}
-			)
-		);
-		if (!this.isHardcore && this.client.getSession() == null) {
-			buttonWidget.active = false;
-		}
+		this.field_33809.clear();
+		this.field_33809
+			.add(
+				this.addDrawableChild(
+					new ButtonWidget(
+						this.width / 2 - 100,
+						this.height / 4 + 72,
+						200,
+						20,
+						this.isHardcore ? new TranslatableText("deathScreen.spectate") : new TranslatableText("deathScreen.respawn"),
+						button -> {
+							this.client.player.requestRespawn();
+							this.client.openScreen(null);
+						}
+					)
+				)
+			);
+		this.field_33809
+			.add(
+				this.addDrawableChild(
+					new ButtonWidget(
+						this.width / 2 - 100,
+						this.height / 4 + 96,
+						200,
+						20,
+						new TranslatableText("deathScreen.titleScreen"),
+						button -> {
+							if (this.isHardcore) {
+								this.quitLevel();
+							} else {
+								ConfirmScreen confirmScreen = new ConfirmScreen(
+									this::onConfirmQuit,
+									new TranslatableText("deathScreen.quit.confirm"),
+									LiteralText.EMPTY,
+									new TranslatableText("deathScreen.titleScreen"),
+									new TranslatableText("deathScreen.respawn")
+								);
+								this.client.openScreen(confirmScreen);
+								confirmScreen.disableButtons(20);
+							}
+						}
+					)
+				)
+			);
 
-		for (ClickableWidget clickableWidget : this.buttons) {
-			clickableWidget.active = false;
+		for (ButtonWidget buttonWidget : this.field_33809) {
+			buttonWidget.active = false;
 		}
 
 		this.scoreText = new TranslatableText("deathScreen.score")
@@ -157,8 +163,8 @@ public class DeathScreen extends Screen {
 		super.tick();
 		this.ticksSinceDeath++;
 		if (this.ticksSinceDeath == 20) {
-			for (ClickableWidget clickableWidget : this.buttons) {
-				clickableWidget.active = true;
+			for (ButtonWidget buttonWidget : this.field_33809) {
+				buttonWidget.active = true;
 			}
 		}
 	}

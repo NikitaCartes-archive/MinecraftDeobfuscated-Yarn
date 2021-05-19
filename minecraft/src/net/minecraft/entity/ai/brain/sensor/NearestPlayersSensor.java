@@ -31,7 +31,7 @@ public class NearestPlayersSensor extends Sensor<LivingEntity> {
 		brain.remember(MemoryModuleType.NEAREST_PLAYERS, list);
 		List<PlayerEntity> list2 = (List<PlayerEntity>)list.stream().filter(playerEntity -> testTargetPredicate(entity, playerEntity)).collect(Collectors.toList());
 		brain.remember(MemoryModuleType.NEAREST_VISIBLE_PLAYER, list2.isEmpty() ? null : (PlayerEntity)list2.get(0));
-		Optional<PlayerEntity> optional = list2.stream().filter(EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL).findFirst();
+		Optional<PlayerEntity> optional = list2.stream().filter(playerEntity -> method_36982(entity, playerEntity)).findFirst();
 		brain.remember(MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, optional);
 	}
 }

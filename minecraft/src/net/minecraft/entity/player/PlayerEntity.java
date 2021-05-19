@@ -112,7 +112,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public abstract class PlayerEntity extends LivingEntity {
-	public static final String field_30642 = "OfflinePlayer:";
+	public static final String OFFLINE_PLAYER_UUID_PREFIX = "OfflinePlayer:";
 	public static final int field_30643 = 16;
 	public static final int field_30644 = 20;
 	public static final int field_30645 = 100;
@@ -542,7 +542,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 		this.updateShoulderEntity(this.getShoulderEntityLeft());
 		this.updateShoulderEntity(this.getShoulderEntityRight());
-		if (!this.world.isClient && (this.fallDistance > 0.5F || this.isTouchingWater()) || this.abilities.flying || this.isSleeping()) {
+		if (!this.world.isClient && (this.fallDistance > 0.5F || this.isTouchingWater()) || this.abilities.flying || this.isSleeping() || this.inPowderSnow) {
 			this.dropShoulderEntities();
 		}
 	}
@@ -883,7 +883,12 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	protected void damageArmor(DamageSource source, float amount) {
-		this.inventory.damageArmor(source, amount);
+		this.inventory.damageArmor(source, amount, PlayerInventory.ARMOR_SLOTS);
+	}
+
+	@Override
+	protected void damageHelmet(DamageSource source, float amount) {
+		this.inventory.damageArmor(source, amount, PlayerInventory.HELMET_SLOTS);
 	}
 
 	@Override
@@ -1793,7 +1798,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public boolean addShoulderEntity(NbtCompound entityNbt) {
-		if (this.hasVehicle() || !this.onGround || this.isTouchingWater()) {
+		if (this.hasVehicle() || !this.onGround || this.isTouchingWater() || this.inPowderSnow) {
 			return false;
 		} else if (this.getShoulderEntityLeft().isEmpty()) {
 			this.setShoulderEntityLeft(entityNbt);

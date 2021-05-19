@@ -6,10 +6,8 @@ import com.mojang.datafixers.util.Either;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -17,7 +15,6 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.realms.Realms;
 import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.RealmsObjectSelectionList;
 import net.minecraft.client.realms.dto.RealmsServer;
@@ -48,7 +45,6 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 	private final Consumer<WorldTemplate> callback;
 	RealmsSelectWorldTemplateScreen.WorldTemplateObjectSelectionList templateList;
 	int selectedTemplate = -1;
-	private Text title;
 	private ButtonWidget selectButton;
 	private ButtonWidget trailerButton;
 	private ButtonWidget publisherButton;
@@ -65,26 +61,25 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 	@Nullable
 	List<TextRenderingUtils.Line> noTemplatesMessage;
 
-	public RealmsSelectWorldTemplateScreen(Consumer<WorldTemplate> callback, RealmsServer.WorldType worldType) {
-		this(callback, worldType, null);
+	public RealmsSelectWorldTemplateScreen(Text text, Consumer<WorldTemplate> consumer, RealmsServer.WorldType worldType) {
+		this(text, consumer, worldType, null);
 	}
 
-	public RealmsSelectWorldTemplateScreen(Consumer<WorldTemplate> callback, RealmsServer.WorldType worldType, @Nullable WorldTemplatePaginatedList list) {
-		this.callback = callback;
+	public RealmsSelectWorldTemplateScreen(
+		Text text, Consumer<WorldTemplate> consumer, RealmsServer.WorldType worldType, @Nullable WorldTemplatePaginatedList worldTemplatePaginatedList
+	) {
+		super(text);
+		this.callback = consumer;
 		this.worldType = worldType;
-		if (list == null) {
+		if (worldTemplatePaginatedList == null) {
 			this.templateList = new RealmsSelectWorldTemplateScreen.WorldTemplateObjectSelectionList();
 			this.setPagination(new WorldTemplatePaginatedList(10));
 		} else {
-			this.templateList = new RealmsSelectWorldTemplateScreen.WorldTemplateObjectSelectionList(Lists.<WorldTemplate>newArrayList(list.templates));
-			this.setPagination(list);
+			this.templateList = new RealmsSelectWorldTemplateScreen.WorldTemplateObjectSelectionList(
+				Lists.<WorldTemplate>newArrayList(worldTemplatePaginatedList.templates)
+			);
+			this.setPagination(worldTemplatePaginatedList);
 		}
-
-		this.title = new TranslatableText("mco.template.title");
-	}
-
-	public void setTitle(Text title) {
-		this.title = title;
 	}
 
 	public void setWarning(Text... warning) {
@@ -106,29 +101,37 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 	public void init() {
 		this.client.keyboard.setRepeatEvents(true);
 		this.templateList = new RealmsSelectWorldTemplateScreen.WorldTemplateObjectSelectionList(this.templateList.getValues());
-		this.trailerButton = this.addButton(
-			new ButtonWidget(this.width / 2 - 206, this.height - 32, 100, 20, new TranslatableText("mco.template.button.trailer"), buttonWidgetx -> this.onTrailer())
+		this.trailerButton = this.addDrawableChild(
+			new ButtonWidget(this.width / 2 - 206, this.height - 32, 100, 20, new TranslatableText("mco.template.button.trailer"), button -> this.onTrailer())
 		);
-		this.selectButton = this.addButton(
-			new ButtonWidget(this.width / 2 - 100, this.height - 32, 100, 20, new TranslatableText("mco.template.button.select"), buttonWidgetx -> this.selectTemplate())
+		this.selectButton = this.addDrawableChild(
+			new ButtonWidget(this.width / 2 - 100, this.height - 32, 100, 20, new TranslatableText("mco.template.button.select"), button -> this.selectTemplate())
 		);
 		Text text = this.worldType == RealmsServer.WorldType.MINIGAME ? ScreenTexts.CANCEL : ScreenTexts.BACK;
-		ButtonWidget buttonWidget = new ButtonWidget(this.width / 2 + 6, this.height - 32, 100, 20, text, buttonWidgetx -> this.onClose());
-		this.addButton(buttonWidget);
-		this.publisherButton = this.addButton(
-			new ButtonWidget(this.width / 2 + 112, this.height - 32, 100, 20, new TranslatableText("mco.template.button.publisher"), buttonWidgetx -> this.onPublish())
+		ButtonWidget buttonWidget = new ButtonWidget(this.width / 2 + 6, this.height - 32, 100, 20, text, button -> this.onClose());
+		this.addDrawableChild(buttonWidget);
+		this.publisherButton = this.addDrawableChild(
+			new ButtonWidget(this.width / 2 + 112, this.height - 32, 100, 20, new TranslatableText("mco.template.button.publisher"), button -> this.onPublish())
 		);
 		this.selectButton.active = false;
 		this.trailerButton.visible = false;
 		this.publisherButton.visible = false;
-		this.addChild(this.templateList);
+		this.addSelectableChild(this.templateList);
 		this.focusOn(this.templateList);
-		Stream<Text> stream = Stream.of(this.title);
-		if (this.warning != null) {
-			stream = Stream.concat(Stream.of(this.warning), stream);
+	}
+
+	@Override
+	public Text getNarratedTitle() {
+		List<Text> list = Lists.<Text>newArrayListWithCapacity(2);
+		if (this.title != null) {
+			list.add(this.title);
 		}
 
-		Realms.narrateNow((Iterable<String>)stream.filter(Objects::nonNull).map(Text::getString).collect(Collectors.toList()));
+		if (this.warning != null) {
+			list.addAll(Arrays.asList(this.warning));
+		}
+
+		return ScreenTexts.joinLines(list);
 	}
 
 	void updateButtonStates() {
@@ -375,19 +378,6 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 			return super.mouseClicked(mouseX, mouseY, button);
 		}
 
-		@Override
-		public void setSelected(int index) {
-			this.setSelectedItem(index);
-			if (index != -1) {
-				WorldTemplate worldTemplate = RealmsSelectWorldTemplateScreen.this.templateList.getItem(index);
-				String string = I18n.translate("narrator.select.list.position", index + 1, RealmsSelectWorldTemplateScreen.this.templateList.getEntryCount());
-				String string2 = I18n.translate("mco.template.select.narrate.version", worldTemplate.version);
-				String string3 = I18n.translate("mco.template.select.narrate.authors", worldTemplate.author);
-				String string4 = Realms.joinNarrations(Arrays.asList(worldTemplate.name, string3, worldTemplate.recommendedPlayers, string2, string));
-				Realms.narrateNow(I18n.translate("narrator.select", string4));
-			}
-		}
-
 		public void setSelected(@Nullable RealmsSelectWorldTemplateScreen.WorldTemplateObjectSelectionListEntry worldTemplateObjectSelectionListEntry) {
 			super.setSelected(worldTemplateObjectSelectionListEntry);
 			RealmsSelectWorldTemplateScreen.this.selectedTemplate = this.children().indexOf(worldTemplateObjectSelectionListEntry);
@@ -514,6 +504,17 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 				RealmsSelectWorldTemplateScreen.this.toolTip = RealmsSelectWorldTemplateScreen.TRAILER_TOOLTIP;
 				RealmsSelectWorldTemplateScreen.this.currentLink = string2;
 			}
+		}
+
+		@Override
+		public Text method_37006() {
+			Text text = ScreenTexts.joinLines(
+				new LiteralText(this.mTemplate.name),
+				new TranslatableText("mco.template.select.narrate.authors", this.mTemplate.author),
+				new LiteralText(this.mTemplate.recommendedPlayers),
+				new TranslatableText("mco.template.select.narrate.version", this.mTemplate.version)
+			);
+			return new TranslatableText("narrator.select", text);
 		}
 	}
 }

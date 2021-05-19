@@ -116,8 +116,8 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 	}
 
 	@Override
-	public void addLightSource(BlockPos pos, int i) {
+	public void addLightSource(BlockPos pos, int level) {
 		this.lightStorage.updateAll();
-		this.updateLevel(Long.MAX_VALUE, pos.asLong(), 15 - i, true);
+		this.updateLevel(Long.MAX_VALUE, pos.asLong(), 15 - level, true);
 	}
 }

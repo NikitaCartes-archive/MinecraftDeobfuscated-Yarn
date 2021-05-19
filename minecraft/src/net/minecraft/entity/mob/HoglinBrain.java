@@ -11,6 +11,7 @@ import net.minecraft.entity.ai.Durations;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.task.BreedTask;
 import net.minecraft.entity.ai.brain.task.ConditionalTask;
 import net.minecraft.entity.ai.brain.task.FollowMobTask;
@@ -32,7 +33,6 @@ import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardClosestAdultTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.entity.passive.PassiveEntity;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -202,7 +202,7 @@ public class HoglinBrain {
 
 	private static void targetEnemy(HoglinEntity hoglin, LivingEntity target) {
 		if (!hoglin.getBrain().hasActivity(Activity.AVOID) || target.getType() != EntityType.PIGLIN) {
-			if (EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(target)) {
+			if (Sensor.method_36982(hoglin, target)) {
 				if (target.getType() != EntityType.HOGLIN) {
 					if (!LookTargetUtil.isNewTargetTooFar(hoglin, target, 4.0)) {
 						setAttackTarget(hoglin, target);

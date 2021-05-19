@@ -6,15 +6,18 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class CheckboxWidget extends PressableWidget {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/checkbox.png");
-	private static final int field_32181 = 14737632;
+	private static final int TEXT_COLOR = 14737632;
 	private boolean checked;
 	private final boolean showMessage;
 
@@ -35,6 +38,18 @@ public class CheckboxWidget extends PressableWidget {
 
 	public boolean isChecked() {
 		return this.checked;
+	}
+
+	@Override
+	public void appendNarrations(NarrationMessageBuilder builder) {
+		builder.put(NarrationPart.TITLE, this.getNarrationMessage());
+		if (this.active) {
+			if (this.isFocused()) {
+				builder.put(NarrationPart.USAGE, new TranslatableText("narration.checkbox.usage.focused"));
+			} else {
+				builder.put(NarrationPart.USAGE, new TranslatableText("narration.checkbox.usage.hovered"));
+			}
+		}
 	}
 
 	@Override

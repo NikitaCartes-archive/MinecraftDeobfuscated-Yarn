@@ -68,7 +68,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 		int k = j + 16 + 2;
 
 		for (int l = 0; l < 7; l++) {
-			this.offers[l] = this.addButton(new MerchantScreen.WidgetButtonPage(i + 5, k, l, button -> {
+			this.offers[l] = this.addDrawableChild(new MerchantScreen.WidgetButtonPage(i + 5, k, l, button -> {
 				if (button instanceof MerchantScreen.WidgetButtonPage) {
 					this.selectedIndex = ((MerchantScreen.WidgetButtonPage)button).getIndex() + this.indexStartOffset;
 					this.syncRecipeIndex();

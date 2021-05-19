@@ -11,6 +11,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -211,6 +212,11 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 
 		protected void alignRecipe(Recipe<?> recipe) {
 			this.alignRecipeToGrid(3, 3, -1, recipe, recipe.getIngredients().iterator(), 0);
+		}
+
+		@Override
+		public void appendNarrations(NarrationMessageBuilder builder) {
+			this.method_37021(builder);
 		}
 
 		@Override

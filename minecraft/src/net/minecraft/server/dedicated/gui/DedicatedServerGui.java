@@ -33,8 +33,8 @@ import org.apache.logging.log4j.Logger;
 public class DedicatedServerGui extends JComponent {
 	private static final Font FONT_MONOSPACE = new Font("Monospaced", 0, 12);
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final String field_29666 = "Minecraft server";
-	private static final String field_29667 = "Minecraft server - shutting down!";
+	private static final String TITLE = "Minecraft server";
+	private static final String SHUTTING_DOWN_TITLE = "Minecraft server - shutting down!";
 	private final MinecraftDedicatedServer server;
 	private Thread consoleUpdateThread;
 	private final Collection<Runnable> stopTasks = Lists.<Runnable>newArrayList();
@@ -54,7 +54,7 @@ public class DedicatedServerGui extends JComponent {
 		jFrame.setLocationRelativeTo(null);
 		jFrame.setVisible(true);
 		jFrame.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent windowEvent) {
+			public void windowClosing(WindowEvent event) {
 				if (!dedicatedServerGui.stopped.getAndSet(true)) {
 					jFrame.setTitle("Minecraft server - shutting down!");
 					server.stop(true);
@@ -108,7 +108,7 @@ public class DedicatedServerGui extends JComponent {
 		jTextArea.setEditable(false);
 		jTextArea.setFont(FONT_MONOSPACE);
 		JTextField jTextField = new JTextField();
-		jTextField.addActionListener(actionEvent -> {
+		jTextField.addActionListener(event -> {
 			String string = jTextField.getText().trim();
 			if (!string.isEmpty()) {
 				this.server.enqueueCommand(string, this.server.getCommandSource());
@@ -117,7 +117,7 @@ public class DedicatedServerGui extends JComponent {
 			jTextField.setText("");
 		});
 		jTextArea.addFocusListener(new FocusAdapter() {
-			public void focusGained(FocusEvent focusEvent) {
+			public void focusGained(FocusEvent event) {
 			}
 		});
 		jPanel.add(jScrollPane, "Center");
@@ -148,9 +148,9 @@ public class DedicatedServerGui extends JComponent {
 		this.stopTasks.forEach(Runnable::run);
 	}
 
-	public void appendToConsole(JTextArea textArea, JScrollPane scrollPane, String string) {
+	public void appendToConsole(JTextArea textArea, JScrollPane scrollPane, String message) {
 		if (!SwingUtilities.isEventDispatchThread()) {
-			SwingUtilities.invokeLater(() -> this.appendToConsole(textArea, scrollPane, string));
+			SwingUtilities.invokeLater(() -> this.appendToConsole(textArea, scrollPane, message));
 		} else {
 			Document document = textArea.getDocument();
 			JScrollBar jScrollBar = scrollPane.getVerticalScrollBar();
@@ -160,7 +160,7 @@ public class DedicatedServerGui extends JComponent {
 			}
 
 			try {
-				document.insertString(document.getLength(), string, null);
+				document.insertString(document.getLength(), message, null);
 			} catch (BadLocationException var8) {
 			}
 

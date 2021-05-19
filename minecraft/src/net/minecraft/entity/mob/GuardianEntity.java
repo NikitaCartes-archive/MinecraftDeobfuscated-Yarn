@@ -484,11 +484,7 @@ public class GuardianEntity extends HostileEntity {
 		}
 
 		public boolean test(@Nullable LivingEntity livingEntity) {
-			return (
-					livingEntity instanceof PlayerEntity
-						|| livingEntity instanceof SquidEntity
-						|| livingEntity != null && AxolotlEntity.AXOLOTL_NOT_PLAYING_DEAD.test(livingEntity)
-				)
+			return (livingEntity instanceof PlayerEntity || livingEntity instanceof SquidEntity || livingEntity instanceof AxolotlEntity)
 				&& livingEntity.squaredDistanceTo(this.owner) > 9.0;
 		}
 	}

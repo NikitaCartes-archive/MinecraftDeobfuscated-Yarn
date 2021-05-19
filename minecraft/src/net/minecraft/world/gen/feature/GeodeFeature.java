@@ -5,10 +5,11 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Random;
-import net.minecraft.block.Block;
+import java.util.function.Predicate;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.BuddingAmethystBlock;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -89,6 +90,7 @@ public class GeodeFeature extends Feature<GeodeFeatureConfig> {
 		}
 
 		List<BlockPos> list3 = Lists.<BlockPos>newArrayList();
+		Predicate<BlockState> predicate = notInBlockTagPredicate(geodeFeatureConfig.layerConfig.field_33769);
 
 		for (BlockPos blockPos3 : BlockPos.iterate(blockPos.add(i, i, i), blockPos.add(j, j, j))) {
 			double r = doublePerlinNoiseSampler.sample((double)blockPos3.getX(), (double)blockPos3.getY(), (double)blockPos3.getZ())
@@ -106,48 +108,54 @@ public class GeodeFeature extends Feature<GeodeFeatureConfig> {
 
 			if (!(s < h)) {
 				if (bl && t >= l && s < e) {
-					if (structureWorldAccess.getFluidState(blockPos3).isEmpty()) {
-						structureWorldAccess.setBlockState(blockPos3, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
+					this.setBlockStateIf(structureWorldAccess, blockPos3, Blocks.AIR.getDefaultState(), predicate);
+
+					for (Direction direction : DIRECTIONS) {
+						BlockPos blockPos5 = blockPos3.offset(direction);
+						FluidState fluidState = structureWorldAccess.getFluidState(blockPos5);
+						if (!fluidState.isEmpty()) {
+							structureWorldAccess.getFluidTickScheduler().schedule(blockPos5, fluidState.getFluid(), 0);
+						}
 					}
 				} else if (s >= e) {
-					structureWorldAccess.setBlockState(blockPos3, geodeLayerConfig.fillingProvider.getBlockState(random, blockPos3), Block.NOTIFY_LISTENERS);
+					this.setBlockStateIf(structureWorldAccess, blockPos3, geodeLayerConfig.fillingProvider.getBlockState(random, blockPos3), predicate);
 				} else if (s >= f) {
 					boolean bl2 = (double)random.nextFloat() < geodeFeatureConfig.useAlternateLayer0Chance;
 					if (bl2) {
-						structureWorldAccess.setBlockState(blockPos3, geodeLayerConfig.alternateInnerLayerProvider.getBlockState(random, blockPos3), Block.NOTIFY_LISTENERS);
+						this.setBlockStateIf(structureWorldAccess, blockPos3, geodeLayerConfig.alternateInnerLayerProvider.getBlockState(random, blockPos3), predicate);
 					} else {
-						structureWorldAccess.setBlockState(blockPos3, geodeLayerConfig.innerLayerProvider.getBlockState(random, blockPos3), Block.NOTIFY_LISTENERS);
+						this.setBlockStateIf(structureWorldAccess, blockPos3, geodeLayerConfig.innerLayerProvider.getBlockState(random, blockPos3), predicate);
 					}
 
 					if ((!geodeFeatureConfig.placementsRequireLayer0Alternate || bl2) && (double)random.nextFloat() < geodeFeatureConfig.usePotentialPlacementsChance) {
 						list3.add(blockPos3.toImmutable());
 					}
 				} else if (s >= g) {
-					structureWorldAccess.setBlockState(blockPos3, geodeLayerConfig.middleLayerProvider.getBlockState(random, blockPos3), Block.NOTIFY_LISTENERS);
+					this.setBlockStateIf(structureWorldAccess, blockPos3, geodeLayerConfig.middleLayerProvider.getBlockState(random, blockPos3), predicate);
 				} else if (s >= h) {
-					structureWorldAccess.setBlockState(blockPos3, geodeLayerConfig.outerLayerProvider.getBlockState(random, blockPos3), Block.NOTIFY_LISTENERS);
+					this.setBlockStateIf(structureWorldAccess, blockPos3, geodeLayerConfig.outerLayerProvider.getBlockState(random, blockPos3), predicate);
 				}
 			}
 		}
 
 		List<BlockState> list4 = geodeLayerConfig.innerBlocks;
 
-		for (BlockPos blockPos5 : list3) {
-			BlockState blockState2 = Util.getRandom(list4, random);
+		for (BlockPos blockPos2 : list3) {
+			BlockState blockState = Util.getRandom(list4, random);
 
-			for (Direction direction : DIRECTIONS) {
-				if (blockState2.contains(Properties.FACING)) {
-					blockState2 = blockState2.with(Properties.FACING, direction);
+			for (Direction direction2 : DIRECTIONS) {
+				if (blockState.contains(Properties.FACING)) {
+					blockState = blockState.with(Properties.FACING, direction2);
 				}
 
-				BlockPos blockPos6 = blockPos5.offset(direction);
-				BlockState blockState3 = structureWorldAccess.getBlockState(blockPos6);
-				if (blockState2.contains(Properties.WATERLOGGED)) {
-					blockState2 = blockState2.with(Properties.WATERLOGGED, Boolean.valueOf(blockState3.getFluidState().isStill()));
+				BlockPos blockPos6 = blockPos2.offset(direction2);
+				BlockState blockState2 = structureWorldAccess.getBlockState(blockPos6);
+				if (blockState.contains(Properties.WATERLOGGED)) {
+					blockState = blockState.with(Properties.WATERLOGGED, Boolean.valueOf(blockState2.getFluidState().isStill()));
 				}
 
-				if (BuddingAmethystBlock.canGrowIn(blockState3)) {
-					structureWorldAccess.setBlockState(blockPos6, blockState2, Block.NOTIFY_LISTENERS);
+				if (BuddingAmethystBlock.canGrowIn(blockState2)) {
+					this.setBlockStateIf(structureWorldAccess, blockPos6, blockState, predicate);
 					break;
 				}
 			}

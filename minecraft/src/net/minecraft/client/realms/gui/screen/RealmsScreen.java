@@ -1,15 +1,15 @@
 package net.minecraft.client.realms.gui.screen;
 
+import com.google.common.collect.Lists;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.TickableElement;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.realms.Realms;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.realms.RealmsLabel;
-import net.minecraft.client.util.NarratorManager;
+import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public abstract class RealmsScreen extends Screen {
@@ -43,9 +43,10 @@ public abstract class RealmsScreen extends Screen {
 	protected static final int field_33052 = 8;
 	protected static final int field_33053 = 64;
 	protected static final int field_33054 = 64;
+	private final List<RealmsLabel> field_33848 = Lists.<RealmsLabel>newArrayList();
 
-	public RealmsScreen() {
-		super(NarratorManager.EMPTY);
+	public RealmsScreen(Text text) {
+		super(text);
 	}
 
 	/**
@@ -55,22 +56,12 @@ public abstract class RealmsScreen extends Screen {
 		return 40 + index * 13;
 	}
 
-	@Override
-	public void tick() {
-		for (ClickableWidget clickableWidget : this.buttons) {
-			if (clickableWidget instanceof TickableElement) {
-				((TickableElement)clickableWidget).tick();
-			}
-		}
+	protected RealmsLabel method_37107(RealmsLabel realmsLabel) {
+		this.field_33848.add(realmsLabel);
+		return this.addDrawable(realmsLabel);
 	}
 
-	public void narrateLabels() {
-		List<String> list = (List<String>)this.children
-			.stream()
-			.filter(RealmsLabel.class::isInstance)
-			.map(RealmsLabel.class::cast)
-			.map(RealmsLabel::getText)
-			.collect(Collectors.toList());
-		Realms.narrateNow(list);
+	public Text narrateLabels() {
+		return ScreenTexts.joinLines((Collection<? extends Text>)this.field_33848.stream().map(RealmsLabel::getText).collect(Collectors.toList()));
 	}
 }

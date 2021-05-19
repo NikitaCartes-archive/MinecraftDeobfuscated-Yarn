@@ -72,8 +72,8 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 	private final long seed;
 	private final Optional<Pair<Registry<Biome>, MultiNoiseBiomeSource.Preset>> instance;
 
-	public MultiNoiseBiomeSource(long l, List<Pair<Biome.MixedNoisePoint, Supplier<Biome>>> list) {
-		this(l, list, Optional.empty());
+	public MultiNoiseBiomeSource(long seed, List<Pair<Biome.MixedNoisePoint, Supplier<Biome>>> biomePoints) {
+		this(seed, biomePoints, Optional.empty());
 	}
 
 	MultiNoiseBiomeSource(
@@ -205,10 +205,10 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 		private final Registry<Biome> biomeRegistry;
 		private final long seed;
 
-		Instance(MultiNoiseBiomeSource.Preset preset, Registry<Biome> registry, long l) {
+		Instance(MultiNoiseBiomeSource.Preset preset, Registry<Biome> biomeRegistry, long seed) {
 			this.preset = preset;
-			this.biomeRegistry = registry;
-			this.seed = l;
+			this.biomeRegistry = biomeRegistry;
+			this.seed = seed;
 		}
 
 		public MultiNoiseBiomeSource.Preset getPreset() {
@@ -244,9 +244,9 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 			this.amplitudes = new DoubleArrayList(amplitudes);
 		}
 
-		public NoiseParameters(int i, double... ds) {
-			this.firstOctave = i;
-			this.amplitudes = new DoubleArrayList(ds);
+		public NoiseParameters(int firstOctave, double... amplitudes) {
+			this.firstOctave = firstOctave;
+			this.amplitudes = new DoubleArrayList(amplitudes);
 		}
 
 		public int getFirstOctave() {

@@ -63,16 +63,16 @@ public class GenerationSettings {
 	private final List<ConfiguredFeature<?, ?>> flowerFeatures;
 
 	GenerationSettings(
-		Supplier<ConfiguredSurfaceBuilder<?>> supplier,
-		Map<GenerationStep.Carver, List<Supplier<ConfiguredCarver<?>>>> map,
-		List<List<Supplier<ConfiguredFeature<?, ?>>>> list,
-		List<Supplier<ConfiguredStructureFeature<?, ?>>> list2
+		Supplier<ConfiguredSurfaceBuilder<?>> surfaceBuilder,
+		Map<GenerationStep.Carver, List<Supplier<ConfiguredCarver<?>>>> carvers,
+		List<List<Supplier<ConfiguredFeature<?, ?>>>> features,
+		List<Supplier<ConfiguredStructureFeature<?, ?>>> structureFeatures
 	) {
-		this.surfaceBuilder = supplier;
-		this.carvers = map;
-		this.features = list;
-		this.structureFeatures = list2;
-		this.flowerFeatures = (List<ConfiguredFeature<?, ?>>)list.stream()
+		this.surfaceBuilder = surfaceBuilder;
+		this.carvers = carvers;
+		this.features = features;
+		this.structureFeatures = structureFeatures;
+		this.flowerFeatures = (List<ConfiguredFeature<?, ?>>)features.stream()
 			.flatMap(Collection::stream)
 			.map(Supplier::get)
 			.flatMap(ConfiguredFeature::getDecoratedFeatures)

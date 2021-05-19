@@ -121,7 +121,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 				false
 			)
 			.rewards(AdvancementRewards.Builder.experience(50))
-			.criterion("levitated", LevitationCriterion.Conditions.create(DistancePredicate.y(NumberRange.FloatRange.atLeast(50.0F))))
+			.criterion("levitated", LevitationCriterion.Conditions.create(DistancePredicate.y(NumberRange.FloatRange.atLeast(50.0))))
 			.build(consumer, "end/levitate");
 		Advancement.Task.create()
 			.parent(advancement4)

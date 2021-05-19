@@ -96,7 +96,7 @@ public abstract class PlayerManager {
 	public static final File OPERATORS_FILE = new File("ops.json");
 	public static final File WHITELIST_FILE = new File("whitelist.json");
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final int field_29790 = 600;
+	private static final int LATENCY_UPDATE_INTERVAL = 600;
 	private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
 	private final MinecraftServer server;
 	private final List<ServerPlayerEntity> players = Lists.<ServerPlayerEntity>newArrayList();

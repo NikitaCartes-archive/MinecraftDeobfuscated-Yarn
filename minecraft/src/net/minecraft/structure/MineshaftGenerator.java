@@ -328,11 +328,11 @@ public class MineshaftGenerator {
 		}
 
 		@Override
-		protected boolean addChest(StructureWorldAccess world, BlockBox boundingBox, Random random, int i, int j, int z, Identifier lootTableId) {
-			BlockPos blockPos = this.offsetPos(i, j, z);
+		protected boolean addChest(StructureWorldAccess world, BlockBox boundingBox, Random random, int x, int y, int z, Identifier lootTableId) {
+			BlockPos blockPos = this.offsetPos(x, y, z);
 			if (boundingBox.contains(blockPos) && world.getBlockState(blockPos).isAir() && !world.getBlockState(blockPos.down()).isAir()) {
 				BlockState blockState = Blocks.RAIL.getDefaultState().with(RailBlock.SHAPE, random.nextBoolean() ? RailShape.NORTH_SOUTH : RailShape.EAST_WEST);
-				this.addBlock(world, blockState, i, j, z, boundingBox);
+				this.addBlock(world, blockState, x, y, z, boundingBox);
 				ChestMinecartEntity chestMinecartEntity = new ChestMinecartEntity(
 					world.toServerWorld(), (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5
 				);

@@ -19,6 +19,7 @@ import net.minecraft.block.CarrotsBlock;
 import net.minecraft.block.CaveVines;
 import net.minecraft.block.CocoaBlock;
 import net.minecraft.block.ComposterBlock;
+import net.minecraft.block.ConnectingBlock;
 import net.minecraft.block.CropBlock;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.block.FlowerPotBlock;
@@ -439,6 +440,45 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 
 	private static LootTable.Builder dropsWithShears(ItemConvertible drop) {
 		return LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).conditionally(WITH_SHEARS).with(ItemEntry.builder(drop)));
+	}
+
+	private static LootTable.Builder method_37108(Block block) {
+		return LootTable.builder()
+			.pool(
+				LootPool.builder()
+					.with(
+						(LootPoolEntry.Builder<?>)applyExplosionDecay(
+							block,
+							ItemEntry.builder(block)
+								.conditionally(WITH_SHEARS)
+								.apply(
+									SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F), true)
+										.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.EAST, true)))
+								)
+								.apply(
+									SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F), true)
+										.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.WEST, true)))
+								)
+								.apply(
+									SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F), true)
+										.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.NORTH, true)))
+								)
+								.apply(
+									SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F), true)
+										.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.SOUTH, true)))
+								)
+								.apply(
+									SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F), true)
+										.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.UP, true)))
+								)
+								.apply(
+									SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F), true)
+										.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.DOWN, true)))
+								)
+								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(-1.0F), true))
+						)
+					)
+			);
 	}
 
 	private static LootTable.Builder leavesDrop(Block leaves, Block drop, float... chance) {
@@ -1444,7 +1484,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.NETHER_SPROUTS, BlockLootTableGenerator::dropsWithShears);
 		this.addDrop(Blocks.SEAGRASS, BlockLootTableGenerator::dropsWithShears);
 		this.addDrop(Blocks.VINE, BlockLootTableGenerator::dropsWithShears);
-		this.addDrop(Blocks.GLOW_LICHEN, BlockLootTableGenerator::dropsWithShears);
+		this.addDrop(Blocks.GLOW_LICHEN, BlockLootTableGenerator::method_37108);
 		this.addDrop(Blocks.HANGING_ROOTS, BlockLootTableGenerator::dropsWithShears);
 		this.addDrop(Blocks.SMALL_DRIPLEAF, BlockLootTableGenerator::dropsWithShears);
 		this.addDrop(Blocks.TALL_SEAGRASS, seagrassDrops(Blocks.SEAGRASS));

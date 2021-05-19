@@ -7,6 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.brain.Brain;
@@ -225,9 +226,9 @@ public class GoatEntity extends AnimalEntity {
 
 	@Override
 	public void handleStatus(byte status) {
-		if (status == 58) {
+		if (status == EntityStatuses.PREPARE_RAM) {
 			this.field_33487 = true;
-		} else if (status == 59) {
+		} else if (status == EntityStatuses.FINISH_RAM) {
 			this.field_33487 = false;
 		} else {
 			super.handleStatus(status);

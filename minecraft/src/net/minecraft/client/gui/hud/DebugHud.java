@@ -66,17 +66,17 @@ import net.minecraft.world.chunk.WorldChunk;
 
 @Environment(EnvType.CLIENT)
 public class DebugHud extends DrawableHelper {
-	private static final int field_32187 = 14737632;
+	private static final int TEXT_COLOR = 14737632;
 	private static final int field_32188 = 2;
 	private static final int field_32189 = 2;
 	private static final int field_32190 = 2;
-	private static final Map<Heightmap.Type, String> HEIGHT_MAP_TYPES = Util.make(new EnumMap(Heightmap.Type.class), enumMap -> {
-		enumMap.put(Heightmap.Type.WORLD_SURFACE_WG, "SW");
-		enumMap.put(Heightmap.Type.WORLD_SURFACE, "S");
-		enumMap.put(Heightmap.Type.OCEAN_FLOOR_WG, "OW");
-		enumMap.put(Heightmap.Type.OCEAN_FLOOR, "O");
-		enumMap.put(Heightmap.Type.MOTION_BLOCKING, "M");
-		enumMap.put(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, "ML");
+	private static final Map<Heightmap.Type, String> HEIGHT_MAP_TYPES = Util.make(new EnumMap(Heightmap.Type.class), types -> {
+		types.put(Heightmap.Type.WORLD_SURFACE_WG, "SW");
+		types.put(Heightmap.Type.WORLD_SURFACE, "S");
+		types.put(Heightmap.Type.OCEAN_FLOOR_WG, "OW");
+		types.put(Heightmap.Type.OCEAN_FLOOR, "O");
+		types.put(Heightmap.Type.MOTION_BLOCKING, "M");
+		types.put(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, "ML");
 	});
 	private final MinecraftClient client;
 	private final TextRenderer fontRenderer;

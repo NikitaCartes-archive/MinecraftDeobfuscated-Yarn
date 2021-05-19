@@ -398,8 +398,8 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		double d = target.getX() - this.getX();
 		double e = target.getBodyY(0.3333333333333333) - llamaSpitEntity.getY();
 		double f = target.getZ() - this.getZ();
-		float g = MathHelper.sqrt(d * d + f * f) * 0.2F;
-		llamaSpitEntity.setVelocity(d, e + (double)g, f, 1.5F, 10.0F);
+		double g = Math.sqrt(d * d + f * f) * 0.2F;
+		llamaSpitEntity.setVelocity(d, e + g, f, 1.5F, 10.0F);
 		if (!this.isSilent()) {
 			this.world
 				.playSound(
@@ -509,9 +509,9 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	static class LlamaData extends PassiveEntity.PassiveData {
 		public final int variant;
 
-		LlamaData(int i) {
+		LlamaData(int variant) {
 			super(true);
-			this.variant = i;
+			this.variant = variant;
 		}
 	}
 

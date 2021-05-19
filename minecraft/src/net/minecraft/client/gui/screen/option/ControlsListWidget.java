@@ -8,6 +8,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.option.KeyBinding;
@@ -60,7 +63,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 
 	@Environment(EnvType.CLIENT)
 	public class CategoryEntry extends ControlsListWidget.Entry {
-		private final Text text;
+		final Text text;
 		private final int textWidth;
 
 		public CategoryEntry(Text text) {
@@ -84,6 +87,21 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 		public List<? extends Element> children() {
 			return Collections.emptyList();
 		}
+
+		@Override
+		public List<? extends Selectable> method_37025() {
+			return ImmutableList.of(new Selectable() {
+				@Override
+				public Selectable.SelectionType getType() {
+					return Selectable.SelectionType.HOVERED;
+				}
+
+				@Override
+				public void appendNarrations(NarrationMessageBuilder builder) {
+					builder.put(NarrationPart.TITLE, CategoryEntry.this.text);
+				}
+			});
+		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -97,24 +115,24 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 		private final ButtonWidget editButton;
 		private final ButtonWidget resetButton;
 
-		KeyBindingEntry(KeyBinding keyBinding, Text text) {
-			this.binding = keyBinding;
-			this.bindingName = text;
-			this.editButton = new ButtonWidget(0, 0, 75, 20, text, button -> ControlsListWidget.this.parent.focusedBinding = keyBinding) {
+		KeyBindingEntry(KeyBinding binding, Text bindingName) {
+			this.binding = binding;
+			this.bindingName = bindingName;
+			this.editButton = new ButtonWidget(0, 0, 75, 20, bindingName, button -> ControlsListWidget.this.parent.focusedBinding = binding) {
 				@Override
 				protected MutableText getNarrationMessage() {
-					return keyBinding.isUnbound()
-						? new TranslatableText("narrator.controls.unbound", text)
-						: new TranslatableText("narrator.controls.bound", text, super.getNarrationMessage());
+					return binding.isUnbound()
+						? new TranslatableText("narrator.controls.unbound", bindingName)
+						: new TranslatableText("narrator.controls.bound", bindingName, super.getNarrationMessage());
 				}
 			};
 			this.resetButton = new ButtonWidget(0, 0, 50, 20, new TranslatableText("controls.reset"), button -> {
-				ControlsListWidget.this.client.options.setKeyCode(keyBinding, keyBinding.getDefaultKey());
+				ControlsListWidget.this.client.options.setKeyCode(binding, binding.getDefaultKey());
 				KeyBinding.updateKeysByCode();
 			}) {
 				@Override
 				protected MutableText getNarrationMessage() {
-					return new TranslatableText("narrator.controls.reset", text);
+					return new TranslatableText("narrator.controls.reset", bindingName);
 				}
 			};
 		}
@@ -155,6 +173,11 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 
 		@Override
 		public List<? extends Element> children() {
+			return ImmutableList.of(this.editButton, this.resetButton);
+		}
+
+		@Override
+		public List<? extends Selectable> method_37025() {
 			return ImmutableList.of(this.editButton, this.resetButton);
 		}
 

@@ -220,6 +220,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	public boolean wasOnFire;
 	private float field_26997;
 	private int prevAge;
+	private boolean hasVisualFire;
 
 	public Entity(EntityType<?> type, World world) {
 		this.type = type;
@@ -458,7 +459,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public void setOnFire(boolean onFire) {
-		this.setFlag(ON_FIRE_FLAG_INDEX, onFire);
+		this.setFlag(ON_FIRE_FLAG_INDEX, onFire || this.hasVisualFire);
 	}
 
 	/**
@@ -610,8 +611,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 						e = 0.0;
 					}
 
-					this.horizontalSpeed = (float)((double)this.horizontalSpeed + (double)MathHelper.sqrt(squaredHorizontalLength(vec3d)) * 0.6);
-					this.distanceTraveled = (float)((double)this.distanceTraveled + (double)MathHelper.sqrt(d * d + e * e + f * f) * 0.6);
+					this.horizontalSpeed = this.horizontalSpeed + MathHelper.sqrt(squaredHorizontalLength(vec3d)) * 0.6F;
+					this.distanceTraveled = this.distanceTraveled + MathHelper.sqrt(d * d + e * e + f * f) * 0.6F;
 					if (this.distanceTraveled > this.nextStepSoundDistance && !blockState.isAir()) {
 						this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
 						if (this.isTouchingWater()) {
@@ -644,15 +645,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 					}
 				}
 
-				try {
-					this.checkBlockCollision();
-				} catch (Throwable var19) {
-					CrashReport crashReport = CrashReport.create(var19, "Checking entity block collision");
-					CrashReportSection crashReportSection = crashReport.addElement("Entity being checked for collision");
-					this.populateCrashReport(crashReportSection);
-					throw new CrashException(crashReport);
-				}
-
+				this.tryCheckBlockCollision();
 				float i = this.getVelocityMultiplier();
 				this.setVelocity(this.getVelocity().multiply((double)i, 1.0, (double)i));
 				if (this.world.getStatesInBoxIfLoaded(this.getBoundingBox().contract(1.0E-6)).noneMatch(state -> state.isIn(BlockTags.FIRE) || state.isOf(Blocks.LAVA))
@@ -660,9 +653,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 					this.setFireTicks(-this.getBurningDuration());
 				}
 
-				if ((this.isWet() || this.inPowderSnow) && this.isOnFire()) {
+				if (this.isOnFire() && (this.isWet() || this.inPowderSnow)) {
 					if (this.wasOnFire) {
-						this.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.7F, 1.6F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
+						this.playExtinguishSound();
 					}
 
 					this.setFireTicks(-this.getBurningDuration());
@@ -671,6 +664,21 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				this.world.getProfiler().pop();
 			}
 		}
+	}
+
+	protected void tryCheckBlockCollision() {
+		try {
+			this.checkBlockCollision();
+		} catch (Throwable var4) {
+			CrashReport crashReport = CrashReport.create(var4, "Checking entity block collision");
+			CrashReportSection crashReportSection = crashReport.addElement("Entity being checked for collision");
+			this.populateCrashReport(crashReportSection);
+			throw new CrashException(crashReport);
+		}
+	}
+
+	protected void playExtinguishSound() {
+		this.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.7F, 1.6F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
 	}
 
 	/**
@@ -1332,7 +1340,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				double e = entity.getZ() - this.getZ();
 				double f = MathHelper.absMax(d, e);
 				if (f >= 0.01F) {
-					f = (double)MathHelper.sqrt(f);
+					f = Math.sqrt(f);
 					d /= f;
 					e /= f;
 					double g = 1.0 / f;
@@ -1533,6 +1541,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				nbt.putInt("TicksFrozen", this.getFrozenTicks());
 			}
 
+			if (this.hasVisualFire) {
+				nbt.putBoolean("HasVisualFire", this.hasVisualFire);
+			}
+
 			if (!this.scoreboardTags.isEmpty()) {
 				NbtList nbtList = new NbtList();
 
@@ -1617,6 +1629,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				this.setNoGravity(nbt.getBoolean("NoGravity"));
 				this.setGlowing(nbt.getBoolean("Glowing"));
 				this.setFrozenTicks(nbt.getInt("TicksFrozen"));
+				this.hasVisualFire = nbt.getBoolean("HasVisualFire");
 				if (nbt.contains("Tags", NbtElement.LIST_TYPE)) {
 					this.scoreboardTags.clear();
 					NbtList nbtList4 = nbt.getList("Tags", NbtElement.STRING_TYPE);
@@ -2047,7 +2060,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.setFlag(SWIMMING_FLAG_INDEX, swimming);
 	}
 
-	public final boolean method_36361() {
+	public final boolean isGlowingLocal() {
 		return this.glowing;
 	}
 
@@ -2858,7 +2871,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		double d = target.x - vec3d.x;
 		double e = target.y - vec3d.y;
 		double f = target.z - vec3d.z;
-		double g = (double)MathHelper.sqrt(d * d + f * f);
+		double g = Math.sqrt(d * d + f * f);
 		this.setPitch(MathHelper.wrapDegrees((float)(-(MathHelper.atan2(e, g) * 180.0F / (float)Math.PI))));
 		this.setYaw(MathHelper.wrapDegrees((float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F));
 		this.setHeadYaw(this.getYaw());
@@ -2995,7 +3008,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.blockPos;
 	}
 
-	public BlockState method_36601() {
+	public BlockState getBlockStateAtPos() {
 		return this.world.getBlockState(this.getBlockPos());
 	}
 
@@ -3128,7 +3141,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	public void setYaw(float yaw) {
 		if (!Float.isFinite(yaw)) {
-			throw new IllegalStateException("Invalid entity rotation");
+			throw new IllegalStateException("Invalid entity rotation: " + yaw);
 		} else {
 			this.yaw = yaw;
 		}
@@ -3140,7 +3153,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	public void setPitch(float pitch) {
 		if (!Float.isFinite(pitch)) {
-			throw new IllegalStateException("Invalid entity rotation");
+			throw new IllegalStateException("Invalid entity rotation: " + pitch);
 		} else {
 			this.pitch = pitch;
 		}
@@ -3190,6 +3203,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	@Override
 	public boolean isPlayer() {
 		return false;
+	}
+
+	public boolean canModifyAt(World world, BlockPos pos) {
+		return true;
 	}
 
 	/**

@@ -107,7 +107,7 @@ public class IntegratedServer extends MinecraftServer {
 		}
 
 		if (this.paused) {
-			this.method_36439();
+			this.incrementTotalWorldTimeStat();
 		} else {
 			super.tick(shouldKeepTicking);
 			int i = Math.max(2, this.client.options.viewDistance + -1);
@@ -118,7 +118,7 @@ public class IntegratedServer extends MinecraftServer {
 		}
 	}
 
-	private void method_36439() {
+	private void incrementTotalWorldTimeStat() {
 		for (ServerPlayerEntity serverPlayerEntity : this.getPlayerManager().getPlayerList()) {
 			serverPlayerEntity.incrementStat(Stats.TOTAL_WORLD_TIME);
 		}

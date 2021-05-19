@@ -3,6 +3,7 @@ package net.minecraft.client.gui.widget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
@@ -18,9 +19,10 @@ public class LockButtonWidget extends ButtonWidget {
 
 	@Override
 	protected MutableText getNarrationMessage() {
-		return super.getNarrationMessage()
-			.append(". ")
-			.append(this.isLocked() ? new TranslatableText("narrator.button.difficulty_lock.locked") : new TranslatableText("narrator.button.difficulty_lock.unlocked"));
+		return ScreenTexts.joinSentences(
+			super.getNarrationMessage(),
+			this.isLocked() ? new TranslatableText("narrator.button.difficulty_lock.locked") : new TranslatableText("narrator.button.difficulty_lock.unlocked")
+		);
 	}
 
 	public boolean isLocked() {

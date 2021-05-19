@@ -1,13 +1,9 @@
 package net.minecraft.entity.ai.pathing;
 
-import javax.annotation.Nullable;
-import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.chunk.ChunkCache;
 
@@ -53,190 +49,45 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 
 	@Override
 	public int getSuccessors(PathNode[] successors, PathNode node) {
-		int i = 0;
-		int j = 1;
-		BlockPos blockPos = new BlockPos(node.x, node.y, node.z);
-		double d = this.getFeetY(blockPos);
-		PathNode pathNode = this.getPathNode(node.x, node.y, node.z + 1, 1, d);
-		PathNode pathNode2 = this.getPathNode(node.x - 1, node.y, node.z, 1, d);
-		PathNode pathNode3 = this.getPathNode(node.x + 1, node.y, node.z, 1, d);
-		PathNode pathNode4 = this.getPathNode(node.x, node.y, node.z - 1, 1, d);
-		PathNode pathNode5 = this.getPathNode(node.x, node.y + 1, node.z, 0, d);
-		PathNode pathNode6 = this.getPathNode(node.x, node.y - 1, node.z, 1, d);
-		if (pathNode != null && !pathNode.visited) {
+		int i = super.getSuccessors(successors, node);
+		PathNodeType pathNodeType = this.getNodeType(this.entity, node.x, node.y + 1, node.z);
+		PathNodeType pathNodeType2 = this.getNodeType(this.entity, node.x, node.y, node.z);
+		int j;
+		if (this.entity.getPathfindingPenalty(pathNodeType) >= 0.0F && pathNodeType2 != PathNodeType.STICKY_HONEY) {
+			j = MathHelper.floor(Math.max(1.0F, this.entity.stepHeight));
+		} else {
+			j = 0;
+		}
+
+		double d = this.method_37003(new BlockPos(node.x, node.y, node.z));
+		PathNode pathNode = this.getPathNode(node.x, node.y + 1, node.z, Math.max(0, j - 1), d, Direction.UP, pathNodeType2);
+		PathNode pathNode2 = this.getPathNode(node.x, node.y - 1, node.z, j, d, Direction.DOWN, pathNodeType2);
+		if (this.isValidAdjacentSuccessor(pathNode, node)) {
 			successors[i++] = pathNode;
 		}
 
-		if (pathNode2 != null && !pathNode2.visited) {
+		if (this.isValidAdjacentSuccessor(pathNode2, node) && pathNodeType2 != PathNodeType.TRAPDOOR) {
 			successors[i++] = pathNode2;
 		}
 
-		if (pathNode3 != null && !pathNode3.visited) {
-			successors[i++] = pathNode3;
-		}
-
-		if (pathNode4 != null && !pathNode4.visited) {
-			successors[i++] = pathNode4;
-		}
-
-		if (pathNode5 != null && !pathNode5.visited) {
-			successors[i++] = pathNode5;
-		}
-
-		if (pathNode6 != null && !pathNode6.visited) {
-			successors[i++] = pathNode6;
-		}
-
-		boolean bl = pathNode4 == null || pathNode4.type == PathNodeType.OPEN || pathNode4.penalty != 0.0F;
-		boolean bl2 = pathNode == null || pathNode.type == PathNodeType.OPEN || pathNode.penalty != 0.0F;
-		boolean bl3 = pathNode3 == null || pathNode3.type == PathNodeType.OPEN || pathNode3.penalty != 0.0F;
-		boolean bl4 = pathNode2 == null || pathNode2.type == PathNodeType.OPEN || pathNode2.penalty != 0.0F;
-		if (bl && bl4) {
-			PathNode pathNode7 = this.getPathNode(node.x - 1, node.y, node.z - 1, 1, d);
-			if (pathNode7 != null && !pathNode7.visited) {
-				successors[i++] = pathNode7;
-			}
-		}
-
-		if (bl && bl3) {
-			PathNode pathNode7 = this.getPathNode(node.x + 1, node.y, node.z - 1, 1, d);
-			if (pathNode7 != null && !pathNode7.visited) {
-				successors[i++] = pathNode7;
-			}
-		}
-
-		if (bl2 && bl4) {
-			PathNode pathNode7 = this.getPathNode(node.x - 1, node.y, node.z + 1, 1, d);
-			if (pathNode7 != null && !pathNode7.visited) {
-				successors[i++] = pathNode7;
-			}
-		}
-
-		if (bl2 && bl3) {
-			PathNode pathNode7 = this.getPathNode(node.x + 1, node.y, node.z + 1, 1, d);
-			if (pathNode7 != null && !pathNode7.visited) {
-				successors[i++] = pathNode7;
+		for (int k = 0; k < i; k++) {
+			PathNode pathNode3 = successors[k];
+			if (pathNode3.type == PathNodeType.WATER && this.penaliseDeepWater && pathNode3.y < this.entity.world.getSeaLevel() - 10) {
+				pathNode3.penalty++;
 			}
 		}
 
 		return i;
 	}
 
-	private double getFeetY(BlockPos pos) {
-		if (!this.entity.isTouchingWater()) {
-			BlockPos blockPos = pos.down();
-			VoxelShape voxelShape = this.cachedWorld.getBlockState(blockPos).getCollisionShape(this.cachedWorld, blockPos);
-			return (double)blockPos.getY() + (voxelShape.isEmpty() ? 0.0 : voxelShape.getMax(Direction.Axis.Y));
-		} else {
-			return (double)pos.getY() + 0.5;
-		}
-	}
-
-	@Nullable
-	private PathNode getPathNode(int x, int y, int z, int maxYStep, double prevFeetY) {
-		PathNode pathNode = null;
-		BlockPos blockPos = new BlockPos(x, y, z);
-		double d = this.getFeetY(blockPos);
-		if (d - prevFeetY > 1.125) {
-			return null;
-		} else {
-			PathNodeType pathNodeType = this.getNodeType(
-				this.cachedWorld, x, y, z, this.entity, this.entityBlockXSize, this.entityBlockYSize, this.entityBlockZSize, false, false
-			);
-			float f = this.entity.getPathfindingPenalty(pathNodeType);
-			double e = (double)this.entity.getWidth() / 2.0;
-			if (f >= 0.0F) {
-				pathNode = this.getNode(x, y, z);
-				pathNode.type = pathNodeType;
-				pathNode.penalty = Math.max(pathNode.penalty, f);
-			}
-
-			if (pathNodeType != PathNodeType.WATER && pathNodeType != PathNodeType.WALKABLE) {
-				if (pathNode == null
-					&& maxYStep > 0
-					&& pathNodeType != PathNodeType.FENCE
-					&& pathNodeType != PathNodeType.UNPASSABLE_RAIL
-					&& pathNodeType != PathNodeType.TRAPDOOR
-					&& pathNodeType != PathNodeType.POWDER_SNOW) {
-					pathNode = this.getPathNode(x, y + 1, z, maxYStep - 1, prevFeetY);
-				}
-
-				if (pathNodeType == PathNodeType.OPEN) {
-					Box box = new Box(
-						(double)x - e + 0.5, (double)y + 0.001, (double)z - e + 0.5, (double)x + e + 0.5, (double)((float)y + this.entity.getHeight()), (double)z + e + 0.5
-					);
-					if (!this.entity.world.isSpaceEmpty(this.entity, box)) {
-						return null;
-					}
-
-					PathNodeType pathNodeType2 = this.getNodeType(
-						this.cachedWorld, x, y - 1, z, this.entity, this.entityBlockXSize, this.entityBlockYSize, this.entityBlockZSize, false, false
-					);
-					if (pathNodeType2 == PathNodeType.BLOCKED) {
-						pathNode = this.getNode(x, y, z);
-						pathNode.type = PathNodeType.WALKABLE;
-						pathNode.penalty = Math.max(pathNode.penalty, f);
-						return pathNode;
-					}
-
-					if (pathNodeType2 == PathNodeType.WATER) {
-						pathNode = this.getNode(x, y, z);
-						pathNode.type = PathNodeType.WATER;
-						pathNode.penalty = Math.max(pathNode.penalty, f);
-						return pathNode;
-					}
-
-					int i = 0;
-
-					while (y > this.cachedWorld.getBottomY() && pathNodeType == PathNodeType.OPEN) {
-						y--;
-						if (i++ >= this.entity.getSafeFallDistance()) {
-							return null;
-						}
-
-						pathNodeType = this.getNodeType(this.cachedWorld, x, y, z, this.entity, this.entityBlockXSize, this.entityBlockYSize, this.entityBlockZSize, false, false);
-						f = this.entity.getPathfindingPenalty(pathNodeType);
-						if (pathNodeType != PathNodeType.OPEN && f >= 0.0F) {
-							pathNode = this.getNode(x, y, z);
-							pathNode.type = pathNodeType;
-							pathNode.penalty = Math.max(pathNode.penalty, f);
-							break;
-						}
-
-						if (f < 0.0F) {
-							return null;
-						}
-					}
-				}
-
-				return pathNode;
-			} else {
-				if (this.penaliseDeepWater && y < this.entity.world.getSeaLevel() - 10 && pathNode != null) {
-					pathNode.penalty++;
-				}
-
-				return pathNode;
-			}
-		}
+	@Override
+	protected double method_37003(BlockPos blockPos) {
+		return this.entity.isTouchingWater() ? (double)blockPos.getY() + 0.5 : super.method_37003(blockPos);
 	}
 
 	@Override
-	protected PathNodeType adjustNodeType(BlockView world, boolean canOpenDoors, boolean canEnterOpenDoors, BlockPos pos, PathNodeType type) {
-		if (type == PathNodeType.RAIL
-			&& !(world.getBlockState(pos).getBlock() instanceof AbstractRailBlock)
-			&& !(world.getBlockState(pos.down()).getBlock() instanceof AbstractRailBlock)) {
-			type = PathNodeType.UNPASSABLE_RAIL;
-		}
-
-		if (type == PathNodeType.DOOR_OPEN || type == PathNodeType.DOOR_WOOD_CLOSED || type == PathNodeType.DOOR_IRON_CLOSED) {
-			type = PathNodeType.BLOCKED;
-		}
-
-		if (type == PathNodeType.LEAVES) {
-			type = PathNodeType.BLOCKED;
-		}
-
-		return type;
+	protected boolean method_37004() {
+		return true;
 	}
 
 	@Override
@@ -253,33 +104,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 
 			return PathNodeType.WATER;
 		} else {
-			if (pathNodeType == PathNodeType.OPEN && y >= world.getBottomY() + 1) {
-				mutable.set(x, y, z).move(Direction.DOWN);
-				PathNodeType pathNodeType3 = getCommonNodeType(world, mutable);
-				if (pathNodeType3 != PathNodeType.WALKABLE && pathNodeType3 != PathNodeType.OPEN && pathNodeType3 != PathNodeType.LAVA) {
-					pathNodeType = PathNodeType.WALKABLE;
-				} else {
-					pathNodeType = PathNodeType.OPEN;
-				}
-
-				if (pathNodeType3 == PathNodeType.DAMAGE_FIRE) {
-					pathNodeType = PathNodeType.DAMAGE_FIRE;
-				}
-
-				if (pathNodeType3 == PathNodeType.DAMAGE_CACTUS) {
-					pathNodeType = PathNodeType.DAMAGE_CACTUS;
-				}
-
-				if (pathNodeType3 == PathNodeType.DAMAGE_OTHER) {
-					pathNodeType = PathNodeType.DAMAGE_OTHER;
-				}
-			}
-
-			if (pathNodeType == PathNodeType.WALKABLE) {
-				pathNodeType = getNodeTypeFromNeighbors(world, mutable.set(x, y, z), pathNodeType);
-			}
-
-			return pathNodeType;
+			return getLandNodeType(world, mutable);
 		}
 	}
 }

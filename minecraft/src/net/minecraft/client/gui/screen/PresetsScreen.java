@@ -21,7 +21,6 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
@@ -184,17 +183,17 @@ public class PresetsScreen extends Screen {
 		Registry<Biome> registry = this.parent.parent.moreOptionsDialog.getRegistryManager().get(Registry.BIOME_KEY);
 		this.customPresetField.setText(getGeneratorConfigString(registry, this.parent.getConfig()));
 		this.config = this.parent.getConfig();
-		this.children.add(this.customPresetField);
+		this.addSelectableChild(this.customPresetField);
 		this.listWidget = new PresetsScreen.SuperflatPresetsListWidget();
-		this.children.add(this.listWidget);
-		this.selectPresetButton = this.addButton(
-			new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, new TranslatableText("createWorld.customize.presets.select"), buttonWidget -> {
+		this.addSelectableChild(this.listWidget);
+		this.selectPresetButton = this.addDrawableChild(
+			new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, new TranslatableText("createWorld.customize.presets.select"), button -> {
 				FlatChunkGeneratorConfig flatChunkGeneratorConfig = parsePresetString(registry, this.customPresetField.getText(), this.config);
 				this.parent.setConfig(flatChunkGeneratorConfig);
 				this.client.openScreen(this.parent);
 			})
 		);
-		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, button -> this.client.openScreen(this.parent)));
 		this.updateSelectButton(this.listWidget.getSelected() != null);
 	}
 
@@ -419,23 +418,13 @@ public class PresetsScreen extends Screen {
 		public SuperflatPresetsListWidget() {
 			super(PresetsScreen.this.client, PresetsScreen.this.width, PresetsScreen.this.height, 80, PresetsScreen.this.height - 37, 24);
 
-			for (int i = 0; i < PresetsScreen.PRESETS.size(); i++) {
-				this.addEntry(new PresetsScreen.SuperflatPresetsListWidget.SuperflatPresetEntry());
+			for (PresetsScreen.SuperflatPreset superflatPreset : PresetsScreen.PRESETS) {
+				this.addEntry(new PresetsScreen.SuperflatPresetsListWidget.SuperflatPresetEntry(superflatPreset));
 			}
 		}
 
 		public void setSelected(@Nullable PresetsScreen.SuperflatPresetsListWidget.SuperflatPresetEntry superflatPresetEntry) {
 			super.setSelected(superflatPresetEntry);
-			if (superflatPresetEntry != null) {
-				NarratorManager.INSTANCE
-					.narrate(
-						new TranslatableText(
-								"narrator.select", ((PresetsScreen.SuperflatPreset)PresetsScreen.PRESETS.get(this.children().indexOf(superflatPresetEntry))).getName()
-							)
-							.getString()
-					);
-			}
-
 			PresetsScreen.this.updateSelectButton(superflatPresetEntry != null);
 		}
 
@@ -459,11 +448,16 @@ public class PresetsScreen extends Screen {
 
 		@Environment(EnvType.CLIENT)
 		public class SuperflatPresetEntry extends AlwaysSelectedEntryListWidget.Entry<PresetsScreen.SuperflatPresetsListWidget.SuperflatPresetEntry> {
+			private final PresetsScreen.SuperflatPreset preset;
+
+			public SuperflatPresetEntry(PresetsScreen.SuperflatPreset preset) {
+				this.preset = preset;
+			}
+
 			@Override
 			public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-				PresetsScreen.SuperflatPreset superflatPreset = (PresetsScreen.SuperflatPreset)PresetsScreen.PRESETS.get(index);
-				this.renderIcon(matrices, x, y, superflatPreset.icon);
-				PresetsScreen.this.textRenderer.draw(matrices, superflatPreset.name, (float)(x + 18 + 5), (float)(y + 6), 16777215);
+				this.renderIcon(matrices, x, y, this.preset.icon);
+				PresetsScreen.this.textRenderer.draw(matrices, this.preset.name, (float)(x + 18 + 5), (float)(y + 6), 16777215);
 			}
 
 			@Override
@@ -477,10 +471,8 @@ public class PresetsScreen extends Screen {
 
 			void setPreset() {
 				SuperflatPresetsListWidget.this.setSelected(this);
-				PresetsScreen.SuperflatPreset superflatPreset = (PresetsScreen.SuperflatPreset)PresetsScreen.PRESETS
-					.get(SuperflatPresetsListWidget.this.children().indexOf(this));
 				Registry<Biome> registry = PresetsScreen.this.parent.parent.moreOptionsDialog.getRegistryManager().get(Registry.BIOME_KEY);
-				PresetsScreen.this.config = (FlatChunkGeneratorConfig)superflatPreset.generatorConfigProvider.apply(registry);
+				PresetsScreen.this.config = (FlatChunkGeneratorConfig)this.preset.generatorConfigProvider.apply(registry);
 				PresetsScreen.this.customPresetField.setText(PresetsScreen.getGeneratorConfigString(registry, PresetsScreen.this.config));
 				PresetsScreen.this.customPresetField.setCursorToStart();
 			}
@@ -494,6 +486,11 @@ public class PresetsScreen extends Screen {
 				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 				RenderSystem.setShaderTexture(0, DrawableHelper.STATS_ICON_TEXTURE);
 				DrawableHelper.drawTexture(matrices, x, y, PresetsScreen.this.getZOffset(), 0.0F, 0.0F, 18, 18, 128, 128);
+			}
+
+			@Override
+			public Text method_37006() {
+				return new TranslatableText("narrator.select", this.preset.getName());
 			}
 		}
 	}

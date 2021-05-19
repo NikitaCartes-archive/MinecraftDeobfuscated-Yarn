@@ -110,29 +110,29 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 		}
 	}
 
-	private void updateResult(ItemStack itemStack, ItemStack itemStack2, ItemStack oldResult) {
+	private void updateResult(ItemStack map, ItemStack item, ItemStack oldResult) {
 		this.context.run((world, blockPos) -> {
-			MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, world);
+			MapState mapState = FilledMapItem.getOrCreateMapState(map, world);
 			if (mapState != null) {
 				ItemStack itemStack4;
-				if (itemStack2.isOf(Items.PAPER) && !mapState.locked && mapState.scale < 4) {
-					itemStack4 = itemStack.copy();
+				if (item.isOf(Items.PAPER) && !mapState.locked && mapState.scale < 4) {
+					itemStack4 = map.copy();
 					itemStack4.setCount(1);
 					itemStack4.getOrCreateTag().putInt("map_scale_direction", 1);
 					this.sendContentUpdates();
-				} else if (itemStack2.isOf(Items.GLASS_PANE) && !mapState.locked) {
-					itemStack4 = itemStack.copy();
+				} else if (item.isOf(Items.GLASS_PANE) && !mapState.locked) {
+					itemStack4 = map.copy();
 					itemStack4.setCount(1);
 					itemStack4.getOrCreateTag().putBoolean("map_to_lock", true);
 					this.sendContentUpdates();
 				} else {
-					if (!itemStack2.isOf(Items.MAP)) {
+					if (!item.isOf(Items.MAP)) {
 						this.resultInventory.removeStack(2);
 						this.sendContentUpdates();
 						return;
 					}
 
-					itemStack4 = itemStack.copy();
+					itemStack4 = map.copy();
 					itemStack4.setCount(2);
 					this.sendContentUpdates();
 				}

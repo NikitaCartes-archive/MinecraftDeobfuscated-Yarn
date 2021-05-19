@@ -274,7 +274,7 @@ public class FireworksSparkParticle {
 						double g = (double)j + (this.random.nextDouble() - this.random.nextDouble()) * 0.5;
 						double h = (double)i + (this.random.nextDouble() - this.random.nextDouble()) * 0.5;
 						double l = (double)k + (this.random.nextDouble() - this.random.nextDouble()) * 0.5;
-						double m = (double)MathHelper.sqrt(g * g + h * h + l * l) / size + this.random.nextGaussian() * 0.05;
+						double m = Math.sqrt(g * g + h * h + l * l) / size + this.random.nextGaussian() * 0.05;
 						this.addExplosionParticle(d, e, f, g / m, h / m, l / m, colors, fadeColors, trail, flicker);
 						if (i != -amount && i != amount && j != -amount && j != amount) {
 							k += amount * 2 - 1;

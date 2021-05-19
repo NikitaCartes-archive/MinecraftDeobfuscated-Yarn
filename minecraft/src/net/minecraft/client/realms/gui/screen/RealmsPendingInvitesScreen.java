@@ -12,16 +12,14 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.realms.Realms;
 import net.minecraft.client.realms.RealmsClient;
-import net.minecraft.client.realms.RealmsLabel;
 import net.minecraft.client.realms.RealmsObjectSelectionList;
 import net.minecraft.client.realms.dto.PendingInvite;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.util.RealmsTextureManager;
 import net.minecraft.client.realms.util.RealmsUtil;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -42,12 +40,12 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 	Text toolTip;
 	boolean loaded;
 	RealmsPendingInvitesScreen.PendingInvitationSelectionList pendingInvitationSelectionList;
-	private RealmsLabel titleLabel;
 	int selectedInvite = -1;
 	private ButtonWidget acceptButton;
 	private ButtonWidget rejectButton;
 
 	public RealmsPendingInvitesScreen(Screen parent) {
+		super(new TranslatableText("mco.invites.title"));
 		this.parent = parent;
 	}
 
@@ -73,27 +71,24 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 				}
 			})
 			.start();
-		this.addChild(this.pendingInvitationSelectionList);
-		this.acceptButton = this.addButton(
-			new ButtonWidget(this.width / 2 - 174, this.height - 32, 100, 20, new TranslatableText("mco.invites.button.accept"), buttonWidget -> {
+		this.addSelectableChild(this.pendingInvitationSelectionList);
+		this.acceptButton = this.addDrawableChild(
+			new ButtonWidget(this.width / 2 - 174, this.height - 32, 100, 20, new TranslatableText("mco.invites.button.accept"), button -> {
 				this.accept(this.selectedInvite);
 				this.selectedInvite = -1;
 				this.updateButtonStates();
 			})
 		);
-		this.addButton(
-			new ButtonWidget(this.width / 2 - 50, this.height - 32, 100, 20, ScreenTexts.DONE, buttonWidget -> this.client.openScreen(new RealmsMainScreen(this.parent)))
+		this.addDrawableChild(
+			new ButtonWidget(this.width / 2 - 50, this.height - 32, 100, 20, ScreenTexts.DONE, button -> this.client.openScreen(new RealmsMainScreen(this.parent)))
 		);
-		this.rejectButton = this.addButton(
-			new ButtonWidget(this.width / 2 + 74, this.height - 32, 100, 20, new TranslatableText("mco.invites.button.reject"), buttonWidget -> {
+		this.rejectButton = this.addDrawableChild(
+			new ButtonWidget(this.width / 2 + 74, this.height - 32, 100, 20, new TranslatableText("mco.invites.button.reject"), button -> {
 				this.reject(this.selectedInvite);
 				this.selectedInvite = -1;
 				this.updateButtonStates();
 			})
 		);
-		this.titleLabel = new RealmsLabel(new TranslatableText("mco.invites.title"), this.width / 2, 12, 16777215);
-		this.addChild(this.titleLabel);
-		this.narrateLabels();
 		this.updateButtonStates();
 	}
 
@@ -158,7 +153,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 		this.toolTip = null;
 		this.renderBackground(matrices);
 		this.pendingInvitationSelectionList.render(matrices, mouseX, mouseY, delta);
-		this.titleLabel.render(this, matrices);
+		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 12, 16777215);
 		if (this.toolTip != null) {
 			this.renderMousehoverTooltip(matrices, this.toolTip, mouseX, mouseY);
 		}
@@ -221,17 +216,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 
 		@Override
 		public void setSelected(int index) {
-			this.setSelectedItem(index);
-			if (index != -1) {
-				List<RealmsPendingInvitesScreen.PendingInvitationSelectionListEntry> list = RealmsPendingInvitesScreen.this.pendingInvitationSelectionList.children();
-				PendingInvite pendingInvite = ((RealmsPendingInvitesScreen.PendingInvitationSelectionListEntry)list.get(index)).mPendingInvite;
-				String string = I18n.translate("narrator.select.list.position", index + 1, list.size());
-				String string2 = Realms.joinNarrations(
-					Arrays.asList(pendingInvite.worldName, pendingInvite.worldOwnerName, RealmsUtil.convertToAgePresentation(pendingInvite.date), string)
-				);
-				Realms.narrateNow(I18n.translate("narrator.select", string2));
-			}
-
+			super.setSelected(index);
 			this.selectInviteListItem(index);
 		}
 
@@ -283,6 +268,16 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 				DrawableHelper.drawTexture(matrices, i, j, 32, 32, 8.0F, 8.0F, 8, 8, 64, 64);
 				DrawableHelper.drawTexture(matrices, i, j, 32, 32, 40.0F, 8.0F, 8, 8, 64, 64);
 			});
+		}
+
+		@Override
+		public Text method_37006() {
+			Text text = ScreenTexts.joinLines(
+				new LiteralText(this.mPendingInvite.worldName),
+				new LiteralText(this.mPendingInvite.worldOwnerName),
+				new LiteralText(RealmsUtil.convertToAgePresentation(this.mPendingInvite.date))
+			);
+			return new TranslatableText("narrator.select", text);
 		}
 
 		@Environment(EnvType.CLIENT)

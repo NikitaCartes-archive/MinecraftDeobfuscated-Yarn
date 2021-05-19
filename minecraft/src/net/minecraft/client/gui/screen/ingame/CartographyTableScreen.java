@@ -73,13 +73,15 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 		this.drawMap(matrices, integer, mapState, bl, bl2, bl3, bl4);
 	}
 
-	private void drawMap(MatrixStack matrices, @Nullable Integer integer, @Nullable MapState mapState, boolean bl, boolean bl2, boolean bl3, boolean bl4) {
+	private void drawMap(
+		MatrixStack matrices, @Nullable Integer integer, @Nullable MapState mapState, boolean cloneMode, boolean expandMode, boolean lockMode, boolean cannotExpand
+	) {
 		int i = this.x;
 		int j = this.y;
-		if (bl2 && !bl4) {
+		if (expandMode && !cannotExpand) {
 			this.drawTexture(matrices, i + 67, j + 13, this.backgroundWidth, 66, 66, 66);
 			this.drawMap(matrices, integer, mapState, i + 85, j + 31, 0.226F);
-		} else if (bl) {
+		} else if (cloneMode) {
 			this.drawTexture(matrices, i + 67 + 16, j + 13, this.backgroundWidth, 132, 50, 66);
 			this.drawMap(matrices, integer, mapState, i + 86, j + 16, 0.34F);
 			RenderSystem.setShaderTexture(0, TEXTURE);
@@ -88,7 +90,7 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 			this.drawTexture(matrices, i + 67, j + 13 + 16, this.backgroundWidth, 132, 50, 66);
 			this.drawMap(matrices, integer, mapState, i + 70, j + 32, 0.34F);
 			matrices.pop();
-		} else if (bl3) {
+		} else if (lockMode) {
 			this.drawTexture(matrices, i + 67, j + 13, this.backgroundWidth, 0, 66, 66);
 			this.drawMap(matrices, integer, mapState, i + 71, j + 17, 0.45F);
 			RenderSystem.setShaderTexture(0, TEXTURE);

@@ -115,7 +115,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private final MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> worldGenExecutor;
 	private final MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> mainExecutor;
 	private final WorldGenerationProgressListener worldGenerationProgressListener;
-	private final ChunkStatusChangeListener field_26931;
+	private final ChunkStatusChangeListener chunkStatusChangeListener;
 	private final ThreadedAnvilChunkStorage.TicketManager ticketManager;
 	private final AtomicInteger totalChunksLoadedCount = new AtomicInteger();
 	private final StructureManager structureManager;
@@ -127,7 +127,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	int watchDistance;
 
 	public ThreadedAnvilChunkStorage(
-		ServerWorld serverWorld,
+		ServerWorld world,
 		LevelStorage.Session session,
 		DataFixer dataFixer,
 		StructureManager structureManager,
@@ -137,20 +137,20 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		ChunkGenerator chunkGenerator,
 		WorldGenerationProgressListener worldGenerationProgressListener,
 		ChunkStatusChangeListener chunkStatusChangeListener,
-		Supplier<PersistentStateManager> supplier,
-		int i,
-		boolean bl
+		Supplier<PersistentStateManager> persistentStateManagerFactory,
+		int viewDistance,
+		boolean dsync
 	) {
-		super(new File(session.getWorldDirectory(serverWorld.getRegistryKey()), "region"), dataFixer, bl);
+		super(new File(session.getWorldDirectory(world.getRegistryKey()), "region"), dataFixer, dsync);
 		this.structureManager = structureManager;
-		this.saveDir = session.getWorldDirectory(serverWorld.getRegistryKey());
-		this.world = serverWorld;
+		this.saveDir = session.getWorldDirectory(world.getRegistryKey());
+		this.world = world;
 		this.chunkGenerator = chunkGenerator;
 		this.mainThreadExecutor = mainThreadExecutor;
 		TaskExecutor<Runnable> taskExecutor = TaskExecutor.create(executor, "worldgen");
 		MessageListener<Runnable> messageListener = MessageListener.create("main", mainThreadExecutor::send);
 		this.worldGenerationProgressListener = worldGenerationProgressListener;
-		this.field_26931 = chunkStatusChangeListener;
+		this.chunkStatusChangeListener = chunkStatusChangeListener;
 		TaskExecutor<Runnable> taskExecutor2 = TaskExecutor.create(executor, "light");
 		this.chunkTaskPrioritySystem = new ChunkTaskPrioritySystem(ImmutableList.of(taskExecutor, messageListener, taskExecutor2), executor, Integer.MAX_VALUE);
 		this.worldGenExecutor = this.chunkTaskPrioritySystem.createExecutor(taskExecutor, false);
@@ -159,9 +159,9 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			chunkProvider, this, this.world.getDimension().hasSkyLight(), taskExecutor2, this.chunkTaskPrioritySystem.createExecutor(taskExecutor2, false)
 		);
 		this.ticketManager = new ThreadedAnvilChunkStorage.TicketManager(executor, mainThreadExecutor);
-		this.persistentStateManagerFactory = supplier;
-		this.pointOfInterestStorage = new PointOfInterestStorage(new File(this.saveDir, "poi"), dataFixer, bl, serverWorld);
-		this.setViewDistance(i);
+		this.persistentStateManagerFactory = persistentStateManagerFactory;
+		this.pointOfInterestStorage = new PointOfInterestStorage(new File(this.saveDir, "poi"), dataFixer, dsync, world);
+		this.setViewDistance(viewDistance);
 	}
 
 	private static double getSquaredDistance(ChunkPos pos, Entity entity) {
@@ -187,7 +187,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return getChebyshevDistance(pos, i, j);
 	}
 
-	private static int method_34869(ChunkPos chunkPos, Entity entity) {
+	private static int getChebyshevDistance(ChunkPos chunkPos, Entity entity) {
 		return getChebyshevDistance(chunkPos, ChunkSectionPos.getSectionCoord(entity.getBlockX()), ChunkSectionPos.getSectionCoord(entity.getBlockZ()));
 	}
 
@@ -406,14 +406,14 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		}
 	}
 
-	private void tryUnloadChunk(long pos, ChunkHolder chunkHolder) {
-		CompletableFuture<Chunk> completableFuture = chunkHolder.getSavingFuture();
+	private void tryUnloadChunk(long pos, ChunkHolder holder) {
+		CompletableFuture<Chunk> completableFuture = holder.getSavingFuture();
 		completableFuture.thenAcceptAsync(chunk -> {
-			CompletableFuture<Chunk> completableFuture2 = chunkHolder.getSavingFuture();
+			CompletableFuture<Chunk> completableFuture2 = holder.getSavingFuture();
 			if (completableFuture2 != completableFuture) {
-				this.tryUnloadChunk(pos, chunkHolder);
+				this.tryUnloadChunk(pos, holder);
 			} else {
-				if (this.chunksToUnload.remove(pos, chunkHolder) && chunk != null) {
+				if (this.chunksToUnload.remove(pos, holder) && chunk != null) {
 					if (chunk instanceof WorldChunk) {
 						((WorldChunk)chunk).setLoadedToWorld(false);
 					}
@@ -430,7 +430,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			}
 		}, this.unloadTaskQueue::add).whenComplete((void_, throwable) -> {
 			if (throwable != null) {
-				LOGGER.error("Failed to save chunk {}", chunkHolder.getPos(), throwable);
+				LOGGER.error("Failed to save chunk {}", holder.getPos(), throwable);
 			}
 		});
 	}
@@ -1072,12 +1072,12 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return this.pointOfInterestStorage;
 	}
 
-	public CompletableFuture<Void> enableTickSchedulers(WorldChunk worldChunk) {
-		return this.mainThreadExecutor.submit((Runnable)(() -> worldChunk.enableTickSchedulers(this.world)));
+	public CompletableFuture<Void> enableTickSchedulers(WorldChunk chunk) {
+		return this.mainThreadExecutor.submit((Runnable)(() -> chunk.enableTickSchedulers(this.world)));
 	}
 
 	void method_31414(ChunkPos chunkPos, ChunkHolder.LevelType levelType) {
-		this.field_26931.onChunkStatusChange(chunkPos, levelType);
+		this.chunkStatusChangeListener.onChunkStatusChange(chunkPos, levelType);
 	}
 
 	/**

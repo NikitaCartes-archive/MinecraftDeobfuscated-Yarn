@@ -28,7 +28,7 @@ public abstract class AbstractCandleBlock extends Block {
 	protected abstract Iterable<Vec3d> getParticleOffsets(BlockState state);
 
 	public static boolean isLitCandle(BlockState state) {
-		return state.contains(LIT) && state.isIn(BlockTags.CANDLES) && (Boolean)state.get(LIT);
+		return state.contains(LIT) && (state.isIn(BlockTags.CANDLES) || state.isIn(BlockTags.CANDLE_CAKES)) && (Boolean)state.get(LIT);
 	}
 
 	@Override
@@ -77,8 +77,8 @@ public abstract class AbstractCandleBlock extends Block {
 			((AbstractCandleBlock)state.getBlock())
 				.getParticleOffsets(state)
 				.forEach(
-					vec3d -> world.addParticle(
-							ParticleTypes.SMOKE, (double)pos.getX() + vec3d.getX(), (double)pos.getY() + vec3d.getY(), (double)pos.getZ() + vec3d.getZ(), 0.0, 0.1F, 0.0
+					offset -> world.addParticle(
+							ParticleTypes.SMOKE, (double)pos.getX() + offset.getX(), (double)pos.getY() + offset.getY(), (double)pos.getZ() + offset.getZ(), 0.0, 0.1F, 0.0
 						)
 				);
 		}

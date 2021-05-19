@@ -43,14 +43,14 @@ public class AddServerScreen extends Screen {
 		this.serverNameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 66, 200, 20, new TranslatableText("addServer.enterName"));
 		this.serverNameField.setTextFieldFocused(true);
 		this.serverNameField.setText(this.server.name);
-		this.serverNameField.setChangedListener(string -> this.updateAddButton());
-		this.children.add(this.serverNameField);
+		this.serverNameField.setChangedListener(serverName -> this.updateAddButton());
+		this.addSelectableChild(this.serverNameField);
 		this.addressField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 106, 200, 20, new TranslatableText("addServer.enterIp"));
 		this.addressField.setMaxLength(128);
 		this.addressField.setText(this.server.address);
-		this.addressField.setChangedListener(string -> this.updateAddButton());
-		this.children.add(this.addressField);
-		this.addButton(
+		this.addressField.setChangedListener(address -> this.updateAddButton());
+		this.addSelectableChild(this.addressField);
+		this.addDrawableChild(
 			CyclingButtonWidget.<ServerInfo.ResourcePackPolicy>builder(ServerInfo.ResourcePackPolicy::getName)
 				.values(ServerInfo.ResourcePackPolicy.values())
 				.initially(this.server.getResourcePackPolicy())
@@ -60,13 +60,13 @@ public class AddServerScreen extends Screen {
 					200,
 					20,
 					new TranslatableText("addServer.resourcePack"),
-					(cyclingButtonWidget, resourcePackPolicy) -> this.server.setResourcePackPolicy(resourcePackPolicy)
+					(button, resourcePackPolicy) -> this.server.setResourcePackPolicy(resourcePackPolicy)
 				)
 		);
-		this.addButton = this.addButton(
-			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 18, 200, 20, new TranslatableText("addServer.add"), buttonWidget -> this.addAndClose())
+		this.addButton = this.addDrawableChild(
+			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 18, 200, 20, new TranslatableText("addServer.add"), button -> this.addAndClose())
 		);
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 18, 200, 20, ScreenTexts.CANCEL, buttonWidget -> this.callback.accept(false)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 18, 200, 20, ScreenTexts.CANCEL, button -> this.callback.accept(false)));
 		this.updateAddButton();
 	}
 

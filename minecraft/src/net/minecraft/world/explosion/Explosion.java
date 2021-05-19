@@ -212,12 +212,12 @@ public class Explosion {
 		for (int v = 0; v < list.size(); v++) {
 			Entity entity = (Entity)list.get(v);
 			if (!entity.isImmuneToExplosion()) {
-				double w = (double)(MathHelper.sqrt(entity.squaredDistanceTo(vec3d)) / q);
+				double w = Math.sqrt(entity.squaredDistanceTo(vec3d)) / (double)q;
 				if (w <= 1.0) {
 					double x = entity.getX() - this.x;
 					double y = (entity instanceof TntEntity ? entity.getY() : entity.getEyeY()) - this.y;
 					double z = entity.getZ() - this.z;
-					double aa = (double)MathHelper.sqrt(x * x + y * y + z * z);
+					double aa = Math.sqrt(x * x + y * y + z * z);
 					if (aa != 0.0) {
 						x /= aa;
 						y /= aa;
