@@ -72,7 +72,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 		private final OrderedText displayName;
 		private final MultilineText description;
 		private final OrderedText incompatibleText;
-		private final MultilineText compatibilityNotificationTExt;
+		private final MultilineText compatibilityNotificationText;
 
 		public ResourcePackEntry(MinecraftClient client, PackListWidget widget, Screen screen, ResourcePackOrganizer.Pack pack) {
 			this.client = client;
@@ -80,9 +80,9 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 			this.pack = pack;
 			this.widget = widget;
 			this.displayName = trimTextToWidth(client, pack.getDisplayName());
-			this.description = method_31230(client, pack.getDecoratedDescription());
+			this.description = createMultilineText(client, pack.getDecoratedDescription());
 			this.incompatibleText = trimTextToWidth(client, PackListWidget.INCOMPATIBLE);
-			this.compatibilityNotificationTExt = method_31230(client, pack.getCompatibility().getNotification());
+			this.compatibilityNotificationText = createMultilineText(client, pack.getCompatibility().getNotification());
 		}
 
 		private static OrderedText trimTextToWidth(MinecraftClient client, Text text) {
@@ -97,8 +97,13 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 			}
 		}
 
-		private static MultilineText method_31230(MinecraftClient minecraftClient, Text text) {
-			return MultilineText.create(minecraftClient.textRenderer, text, 157, 2);
+		private static MultilineText createMultilineText(MinecraftClient client, Text text) {
+			return MultilineText.create(client.textRenderer, text, 157, 2);
+		}
+
+		@Override
+		public Text method_37006() {
+			return new TranslatableText("narrator.select", this.pack.getDisplayName());
 		}
 
 		@Override
@@ -124,7 +129,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 				int j = mouseY - y;
 				if (!this.pack.getCompatibility().isCompatible()) {
 					orderedText = this.incompatibleText;
-					multilineText = this.compatibilityNotificationTExt;
+					multilineText = this.compatibilityNotificationText;
 				}
 
 				if (this.pack.canBeEnabled()) {

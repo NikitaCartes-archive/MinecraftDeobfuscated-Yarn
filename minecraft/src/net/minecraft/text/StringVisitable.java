@@ -104,7 +104,7 @@ public interface StringVisitable {
 	 * 
 	 * @param visitables a list of visitables
 	 */
-	static StringVisitable concat(List<StringVisitable> visitables) {
+	static StringVisitable concat(List<? extends StringVisitable> visitables) {
 		return new StringVisitable() {
 			@Override
 			public <T> Optional<T> visit(StringVisitable.Visitor<T> visitor) {

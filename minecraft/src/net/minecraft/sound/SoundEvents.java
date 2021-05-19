@@ -1024,7 +1024,7 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_STRAY_STEP = register("entity.stray.step");
 	public static final SoundEvent BLOCK_SWEET_BERRY_BUSH_BREAK = register("block.sweet_berry_bush.break");
 	public static final SoundEvent BLOCK_SWEET_BERRY_BUSH_PLACE = register("block.sweet_berry_bush.place");
-	public static final SoundEvent ITEM_SWEET_BERRIES_PICK_FROM_BUSH = register("item.sweet_berries.pick_from_bush");
+	public static final SoundEvent BLOCK_SWEET_BERRY_BUSH_PICK_BERRIES = register("block.sweet_berry_bush.pick_berries");
 	public static final SoundEvent ENCHANT_THORNS_HIT = register("enchant.thorns.hit");
 	public static final SoundEvent ENTITY_TNT_PRIMED = register("entity.tnt.primed");
 	public static final SoundEvent ITEM_TOTEM_USE = register("item.totem.use");

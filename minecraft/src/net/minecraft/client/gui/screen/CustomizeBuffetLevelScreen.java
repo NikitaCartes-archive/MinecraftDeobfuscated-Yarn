@@ -9,7 +9,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -48,12 +47,12 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	protected void init() {
 		this.client.keyboard.setRepeatEvents(true);
 		this.biomeSelectionList = new CustomizeBuffetLevelScreen.BuffetBiomesListWidget();
-		this.children.add(this.biomeSelectionList);
-		this.confirmButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, ScreenTexts.DONE, buttonWidget -> {
+		this.addSelectableChild(this.biomeSelectionList);
+		this.confirmButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, ScreenTexts.DONE, button -> {
 			this.onDone.accept(this.biome);
 			this.client.openScreen(this.parent);
 		}));
-		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, button -> this.client.openScreen(this.parent)));
 		this.biomeSelectionList
 			.setSelected(
 				(CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem)this.biomeSelectionList
@@ -105,8 +104,6 @@ public class CustomizeBuffetLevelScreen extends Screen {
 			super.setSelected(buffetBiomeItem);
 			if (buffetBiomeItem != null) {
 				CustomizeBuffetLevelScreen.this.biome = buffetBiomeItem.biome;
-				NarratorManager.INSTANCE
-					.narrate(new TranslatableText("narrator.select", CustomizeBuffetLevelScreen.this.biomeRegistry.getId(buffetBiomeItem.biome)).getString());
 			}
 
 			CustomizeBuffetLevelScreen.this.refreshConfirmButton();
@@ -126,6 +123,11 @@ public class CustomizeBuffetLevelScreen extends Screen {
 				} else {
 					this.text = new LiteralText(identifier.toString());
 				}
+			}
+
+			@Override
+			public Text method_37006() {
+				return new TranslatableText("narrator.select", this.text);
 			}
 
 			@Override

@@ -56,6 +56,10 @@ public class Codecs {
 		return list -> list.isEmpty() ? DataResult.error("List must have contents") : DataResult.success(list);
 	}
 
+	public static <T> Codec<List<T>> method_36973(Codec<List<T>> codec) {
+		return codec.flatXmap(method_36240(), method_36240());
+	}
+
 	/**
 	 * @see com.mojang.serialization.codecs.EitherCodec
 	 */

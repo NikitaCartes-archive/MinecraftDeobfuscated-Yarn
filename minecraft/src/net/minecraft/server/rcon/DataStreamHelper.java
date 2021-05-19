@@ -8,34 +8,34 @@ public class DataStreamHelper {
 	private final ByteArrayOutputStream byteArrayOutputStream;
 	private final DataOutputStream dataOutputStream;
 
-	public DataStreamHelper(int i) {
-		this.byteArrayOutputStream = new ByteArrayOutputStream(i);
+	public DataStreamHelper(int size) {
+		this.byteArrayOutputStream = new ByteArrayOutputStream(size);
 		this.dataOutputStream = new DataOutputStream(this.byteArrayOutputStream);
 	}
 
-	public void write(byte[] bs) throws IOException {
-		this.dataOutputStream.write(bs, 0, bs.length);
+	public void write(byte[] values) throws IOException {
+		this.dataOutputStream.write(values, 0, values.length);
 	}
 
-	public void writeBytes(String string) throws IOException {
-		this.dataOutputStream.writeBytes(string);
+	public void writeBytes(String value) throws IOException {
+		this.dataOutputStream.writeBytes(value);
 		this.dataOutputStream.write(0);
 	}
 
-	public void write(int i) throws IOException {
-		this.dataOutputStream.write(i);
+	public void write(int value) throws IOException {
+		this.dataOutputStream.write(value);
 	}
 
-	public void writeShort(short s) throws IOException {
-		this.dataOutputStream.writeShort(Short.reverseBytes(s));
+	public void writeShort(short value) throws IOException {
+		this.dataOutputStream.writeShort(Short.reverseBytes(value));
 	}
 
-	public void method_34887(int i) throws IOException {
-		this.dataOutputStream.writeInt(Integer.reverseBytes(i));
+	public void writeInt(int value) throws IOException {
+		this.dataOutputStream.writeInt(Integer.reverseBytes(value));
 	}
 
-	public void method_34886(float f) throws IOException {
-		this.dataOutputStream.writeInt(Integer.reverseBytes(Float.floatToIntBits(f)));
+	public void writeFloat(float value) throws IOException {
+		this.dataOutputStream.writeInt(Integer.reverseBytes(Float.floatToIntBits(value)));
 	}
 
 	public byte[] bytes() {

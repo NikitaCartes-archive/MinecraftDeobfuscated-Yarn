@@ -198,7 +198,7 @@ public abstract class FishEntity extends WaterCreatureEntity implements Bucketab
 				double e = this.targetY - this.fish.getY();
 				double g = this.targetZ - this.fish.getZ();
 				if (e != 0.0) {
-					double h = (double)MathHelper.sqrt(d * d + e * e + g * g);
+					double h = Math.sqrt(d * d + e * e + g * g);
 					this.fish.setVelocity(this.fish.getVelocity().add(0.0, (double)this.fish.getMovementSpeed() * (e / h) * 0.1, 0.0));
 				}
 

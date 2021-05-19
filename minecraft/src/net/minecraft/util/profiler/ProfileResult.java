@@ -4,7 +4,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 public interface ProfileResult {
-	char field_29924 = '\u001e';
+	char SPLITTER_CHAR = '\u001e';
 
 	List<ProfilerTiming> getTimings(String parentPath);
 
@@ -26,7 +26,7 @@ public interface ProfileResult {
 		return this.getEndTick() - this.getStartTick();
 	}
 
-	String method_34970();
+	String getRootTimings();
 
 	static String getHumanReadableName(String path) {
 		return path.replace('\u001e', '.');

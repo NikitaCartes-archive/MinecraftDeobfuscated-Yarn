@@ -95,7 +95,14 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 					for(int s = 0; s < 16; ++s) {
 						for(int t = 0; t < 8; ++t) {
 							if (bls[(j * 16 + s) * 8 + t]) {
-								structureWorldAccess.setBlockState(blockPos.add(j, t, s), t >= 4 ? CAVE_AIR : singleStateFeatureConfig.state, Block.NOTIFY_LISTENERS);
+								BlockPos blockPos2 = blockPos.add(j, t, s);
+								boolean bl2 = t >= 4;
+								structureWorldAccess.setBlockState(blockPos2, bl2 ? CAVE_AIR : singleStateFeatureConfig.state, Block.NOTIFY_LISTENERS);
+								if (bl2) {
+									structureWorldAccess.getBlockTickScheduler().schedule(blockPos2, CAVE_AIR.getBlock(), 0);
+									BlockPos blockPos3 = blockPos2.up();
+									this.method_37001(structureWorldAccess, blockPos3, structureWorldAccess.getBlockState(blockPos3));
+								}
 							}
 						}
 					}
@@ -137,6 +144,8 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 								if (bl2 && (u < 4 || random.nextInt(2) != 0) && structureWorldAccess.getBlockState(blockPos.add(s, u, t)).getMaterial().isSolid()) {
 									BlockPos blockPos3 = blockPos.add(s, u, t);
 									structureWorldAccess.setBlockState(blockPos3, blockSource.get(blockPos3), Block.NOTIFY_LISTENERS);
+									BlockPos blockPos4 = blockPos3.up();
+									this.method_37001(structureWorldAccess, blockPos4, structureWorldAccess.getBlockState(blockPos4));
 								}
 							}
 						}
@@ -157,6 +166,12 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 
 				return true;
 			}
+		}
+	}
+
+	private void method_37001(StructureWorldAccess structureWorldAccess, BlockPos blockPos, BlockState blockState) {
+		if (!blockState.isAir()) {
+			structureWorldAccess.getBlockTickScheduler().schedule(blockPos, blockState.getBlock(), 0);
 		}
 	}
 }

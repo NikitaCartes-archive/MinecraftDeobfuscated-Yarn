@@ -9,10 +9,10 @@ public class AxolotlAttackablesSensor extends NearestVisibleLivingEntitySensor {
 
 	@Override
 	protected boolean matches(LivingEntity entity, LivingEntity target) {
-		if (!this.isAlwaysHostileTo(entity, target) && !this.canHunt(entity, target)) {
-			return false;
-		} else {
+		if (Sensor.method_36982(entity, target) && (this.isAlwaysHostileTo(target) || this.canHunt(entity, target))) {
 			return this.isInRange(entity, target) && target.isInsideWaterOrBubbleColumn();
+		} else {
+			return false;
 		}
 	}
 
@@ -20,8 +20,8 @@ public class AxolotlAttackablesSensor extends NearestVisibleLivingEntitySensor {
 		return !axolotl.getBrain().hasMemoryModule(MemoryModuleType.HAS_HUNTING_COOLDOWN) && EntityTypeTags.AXOLOTL_HUNT_TARGETS.contains(target.getType());
 	}
 
-	private boolean isAlwaysHostileTo(LivingEntity axolotl, LivingEntity target) {
-		return EntityTypeTags.AXOLOTL_ALWAYS_HOSTILES.contains(target.getType());
+	private boolean isAlwaysHostileTo(LivingEntity axolotl) {
+		return EntityTypeTags.AXOLOTL_ALWAYS_HOSTILES.contains(axolotl.getType());
 	}
 
 	private boolean isInRange(LivingEntity axolotl, LivingEntity target) {

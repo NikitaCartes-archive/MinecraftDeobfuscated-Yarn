@@ -2111,7 +2111,8 @@ public class ConfiguredFeatures {
 							Blocks.MEDIUM_AMETHYST_BUD.getDefaultState(),
 							Blocks.LARGE_AMETHYST_BUD.getDefaultState(),
 							Blocks.AMETHYST_CLUSTER.getDefaultState()
-						)
+						),
+						BlockTags.FEATURES_CANNOT_REPLACE.getId()
 					),
 					new GeodeLayerThicknessConfig(1.7, 2.2, 3.2, 4.2),
 					new GeodeCrackConfig(0.95, 2.0, 2),
@@ -2129,7 +2130,7 @@ public class ConfiguredFeatures {
 			)
 			.uniformRange(YOffset.aboveBottom(6), YOffset.fixed(46))
 			.spreadHorizontally()
-			.applyChance(30)
+			.applyChance(53)
 	);
 
 	static DataPool.Builder<BlockState> method_35926() {

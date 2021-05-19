@@ -39,9 +39,9 @@ public class DamagePredicate {
 	public boolean test(ServerPlayerEntity player, DamageSource source, float dealt, float taken, boolean blocked) {
 		if (this == ANY) {
 			return true;
-		} else if (!this.dealt.test(dealt)) {
+		} else if (!this.dealt.test((double)dealt)) {
 			return false;
-		} else if (!this.taken.test(taken)) {
+		} else if (!this.taken.test((double)taken)) {
 			return false;
 		} else if (!this.sourceEntity.test(player, source.getAttacker())) {
 			return false;

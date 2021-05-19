@@ -37,7 +37,7 @@ public class StrafePlayerPhase extends AbstractPhase {
 				double e = this.target.getZ();
 				double f = d - this.dragon.getX();
 				double g = e - this.dragon.getZ();
-				double h = (double)MathHelper.sqrt(f * f + g * g);
+				double h = Math.sqrt(f * f + g * g);
 				double i = Math.min(0.4F + h / 80.0 - 1.0, 10.0);
 				this.pathTarget = new Vec3d(d, this.target.getY() + i, e);
 			}
@@ -162,7 +162,7 @@ public class StrafePlayerPhase extends AbstractPhase {
 		int l = this.target.getBlockZ();
 		double d = (double)k - this.dragon.getX();
 		double e = (double)l - this.dragon.getZ();
-		double f = (double)MathHelper.sqrt(d * d + e * e);
+		double f = Math.sqrt(d * d + e * e);
 		double g = Math.min(0.4F + f / 80.0 - 1.0, 10.0);
 		int m = MathHelper.floor(this.target.getY() + g);
 		PathNode pathNode = new PathNode(k, m, l);

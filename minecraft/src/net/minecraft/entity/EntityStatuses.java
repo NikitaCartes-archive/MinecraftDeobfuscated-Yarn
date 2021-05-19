@@ -58,7 +58,7 @@ public class EntityStatuses {
 	public static final byte SWAP_HANDS = 55;
 	public static final byte RESET_WOLF_SHAKE = 56;
 	public static final byte DAMAGE_FROM_FREEZING = 57;
-	public static final byte field_33454 = 58;
-	public static final byte field_33455 = 59;
-	public static final byte field_33691 = 60;
+	public static final byte PREPARE_RAM = 58;
+	public static final byte FINISH_RAM = 59;
+	public static final byte ADD_DEATH_PARTICLES = 60;
 }

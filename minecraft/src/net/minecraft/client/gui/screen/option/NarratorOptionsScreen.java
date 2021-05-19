@@ -33,7 +33,7 @@ public abstract class NarratorOptionsScreen extends GameOptionsScreen {
 	protected void init() {
 		this.buttonList = new ButtonListWidget(this.client, this.width, this.height, 32, this.height - 32, 25);
 		this.buttonList.addAll(this.options);
-		this.children.add(this.buttonList);
+		this.addSelectableChild(this.buttonList);
 		this.initFooter();
 		this.narratorButton = this.buttonList.getButtonFor(Option.NARRATOR);
 		if (this.narratorButton != null) {
@@ -42,7 +42,7 @@ public abstract class NarratorOptionsScreen extends GameOptionsScreen {
 	}
 
 	protected void initFooter() {
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, ScreenTexts.DONE, button -> this.client.openScreen(this.parent)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, ScreenTexts.DONE, button -> this.client.openScreen(this.parent)));
 	}
 
 	@Override

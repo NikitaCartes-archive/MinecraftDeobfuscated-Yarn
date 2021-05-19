@@ -761,6 +761,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 				}
 
 				this.updateLimbs(this, false);
+				this.tryCheckBlockCollision();
 			} else {
 				this.flyingSpeed = 0.02F;
 				super.travel(movementInput);

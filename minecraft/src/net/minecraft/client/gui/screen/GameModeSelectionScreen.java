@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.render.GameRenderer;
@@ -167,13 +168,17 @@ public class GameModeSelectionScreen extends Screen {
 		}
 
 		@Override
+		public void appendNarrations(NarrationMessageBuilder builder) {
+			this.method_37021(builder);
+		}
+
+		@Override
 		public boolean isHovered() {
 			return super.isHovered() || this.selected;
 		}
 
 		public void setSelected(boolean selected) {
 			this.selected = selected;
-			this.narrate();
 		}
 
 		private void drawBackground(MatrixStack matrices, TextureManager textureManager) {

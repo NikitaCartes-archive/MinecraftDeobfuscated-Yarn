@@ -295,7 +295,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 			this.doubleClicking = this.lastClickedSlot == slot && l - this.lastButtonClickTime < 250L && this.lastClickedButton == button;
 			this.cancelNextRelease = false;
 			if (button != 0 && button != GLFW.GLFW_MOUSE_BUTTON_RIGHT && !bl) {
-				this.method_30107(button);
+				this.onMouseClick(button);
 			} else {
 				int i = this.x;
 				int j = this.y;
@@ -368,7 +368,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		}
 	}
 
-	private void method_30107(int button) {
+	private void onMouseClick(int button) {
 		if (this.focusedSlot != null && this.handler.getCursorStack().isEmpty()) {
 			if (this.client.options.keySwapHands.matchesMouse(button)) {
 				this.onMouseClick(this.focusedSlot, this.focusedSlot.id, 40, SlotActionType.SWAP);

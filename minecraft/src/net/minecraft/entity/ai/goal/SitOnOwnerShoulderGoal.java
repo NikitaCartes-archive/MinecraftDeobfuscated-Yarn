@@ -18,7 +18,8 @@ public class SitOnOwnerShoulderGoal extends Goal {
 		boolean bl = serverPlayerEntity != null
 			&& !serverPlayerEntity.isSpectator()
 			&& !serverPlayerEntity.getAbilities().flying
-			&& !serverPlayerEntity.isTouchingWater();
+			&& !serverPlayerEntity.isTouchingWater()
+			&& !serverPlayerEntity.inPowderSnow;
 		return !this.tameable.isSitting() && bl && this.tameable.isReadyToSitOnPlayer();
 	}
 

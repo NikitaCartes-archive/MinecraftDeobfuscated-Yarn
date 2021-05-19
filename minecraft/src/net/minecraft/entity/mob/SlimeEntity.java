@@ -361,12 +361,8 @@ public class SlimeEntity extends MobEntity implements Monster {
 			LivingEntity livingEntity = this.slime.getTarget();
 			if (livingEntity == null) {
 				return false;
-			} else if (!livingEntity.isAlive()) {
-				return false;
 			} else {
-				return livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).getAbilities().invulnerable
-					? false
-					: this.slime.getMoveControl() instanceof SlimeEntity.SlimeMoveControl;
+				return this.slime.canTarget(livingEntity) ? false : this.slime.getMoveControl() instanceof SlimeEntity.SlimeMoveControl;
 			}
 		}
 
@@ -381,9 +377,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 			LivingEntity livingEntity = this.slime.getTarget();
 			if (livingEntity == null) {
 				return false;
-			} else if (!livingEntity.isAlive()) {
-				return false;
-			} else if (livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).getAbilities().invulnerable) {
+			} else if (this.slime.canTarget(livingEntity)) {
 				return false;
 			} else {
 				return --this.ticksLeft > 0;

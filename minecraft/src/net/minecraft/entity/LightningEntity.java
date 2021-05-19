@@ -63,7 +63,7 @@ public class LightningEntity extends Entity {
 	}
 
 	private void powerLightningRod() {
-		BlockPos blockPos = this.method_36607();
+		BlockPos blockPos = this.getAffectedBlockPos();
 		BlockState blockState = this.world.getBlockState(blockPos);
 		if (blockState.isOf(Blocks.LIGHTNING_ROD)) {
 			((LightningRodBlock)blockState.getBlock()).setPowered(blockState, this.world, blockPos);
@@ -104,7 +104,7 @@ public class LightningEntity extends Entity {
 				}
 
 				this.powerLightningRod();
-				cleanOxidization(this.world, this.method_36607());
+				cleanOxidization(this.world, this.getAffectedBlockPos());
 				this.emitGameEvent(GameEvent.LIGHTNING_STRIKE);
 			}
 		}
@@ -142,7 +142,7 @@ public class LightningEntity extends Entity {
 		}
 	}
 
-	private BlockPos method_36607() {
+	private BlockPos getAffectedBlockPos() {
 		Vec3d vec3d = this.getPos();
 		return new BlockPos(vec3d.x, vec3d.y - 1.0E-6, vec3d.z);
 	}

@@ -11,7 +11,7 @@ public class ReplaceBlobsFeatureConfig implements FeatureConfig {
 		instance -> instance.group(
 					BlockState.CODEC.fieldOf("target").forGetter(replaceBlobsFeatureConfig -> replaceBlobsFeatureConfig.target),
 					BlockState.CODEC.fieldOf("state").forGetter(replaceBlobsFeatureConfig -> replaceBlobsFeatureConfig.state),
-					IntProvider.VALUE_CODEC.fieldOf("radius").forGetter(replaceBlobsFeatureConfig -> replaceBlobsFeatureConfig.radius)
+					IntProvider.createValidatingCodec(0, 12).fieldOf("radius").forGetter(replaceBlobsFeatureConfig -> replaceBlobsFeatureConfig.radius)
 				)
 				.apply(instance, ReplaceBlobsFeatureConfig::new)
 	);

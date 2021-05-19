@@ -41,7 +41,7 @@ public abstract class TrackTargetGoal extends Goal {
 
 		if (livingEntity == null) {
 			return false;
-		} else if (!livingEntity.isAlive()) {
+		} else if (!livingEntity.canTakeDamage()) {
 			return false;
 		} else {
 			AbstractTeam abstractTeam = this.mob.getScoreboardTeam();
@@ -61,12 +61,8 @@ public abstract class TrackTargetGoal extends Goal {
 						}
 					}
 
-					if (!livingEntity.canTakeDamage()) {
-						return false;
-					} else {
-						this.mob.setTarget(livingEntity);
-						return true;
-					}
+					this.mob.setTarget(livingEntity);
+					return true;
 				}
 			}
 		}

@@ -301,7 +301,7 @@ public class ServerCommandSource implements CommandSource {
 		double d = position.x - vec3d.x;
 		double e = position.y - vec3d.y;
 		double f = position.z - vec3d.z;
-		double g = (double)MathHelper.sqrt(d * d + f * f);
+		double g = Math.sqrt(d * d + f * f);
 		float h = MathHelper.wrapDegrees((float)(-(MathHelper.atan2(e, g) * 180.0F / (float)Math.PI)));
 		float i = MathHelper.wrapDegrees((float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F);
 		return this.withRotation(new Vec2f(h, i));

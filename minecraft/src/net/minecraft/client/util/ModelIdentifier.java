@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class ModelIdentifier extends Identifier {
 	@VisibleForTesting
-	static final char field_32990 = '#';
+	static final char SEPARATOR = '#';
 	private final String variant;
 
 	protected ModelIdentifier(String[] strings) {

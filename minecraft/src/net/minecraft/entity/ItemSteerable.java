@@ -44,6 +44,7 @@ public interface ItemSteerable {
 					entity.setVelocity(Vec3d.ZERO);
 				}
 
+				entity.tryCheckBlockCollision();
 				return true;
 			} else {
 				entity.stepHeight = 0.5F;

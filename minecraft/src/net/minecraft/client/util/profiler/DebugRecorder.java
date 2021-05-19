@@ -203,7 +203,7 @@ public class DebugRecorder implements Recorder {
 		});
 	}
 
-	public static void method_35762(Consumer<Path> consumer) {
-		globalPathConsumer = consumer;
+	public static void setGlobalPathConsumer(Consumer<Path> globalPathConsumer) {
+		DebugRecorder.globalPathConsumer = globalPathConsumer;
 	}
 }

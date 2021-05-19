@@ -41,7 +41,7 @@ public class AquaticMoveControl extends MoveControl {
 				float i = (float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
 				if (this.entity.isTouchingWater()) {
 					this.entity.setMovementSpeed(i * this.speedInWater);
-					float j = -((float)(MathHelper.atan2(e, (double)MathHelper.sqrt(d * d + f * f)) * 180.0F / (float)Math.PI));
+					float j = -((float)(MathHelper.atan2(e, Math.sqrt(d * d + f * f)) * 180.0F / (float)Math.PI));
 					j = MathHelper.clamp(MathHelper.wrapDegrees(j), (float)(-this.pitchChange), (float)this.pitchChange);
 					this.entity.setPitch(this.wrapDegrees(this.entity.getPitch(), j, 5.0F));
 					float k = MathHelper.cos(this.entity.getPitch() * (float) (Math.PI / 180.0));

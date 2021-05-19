@@ -120,6 +120,7 @@ public final class BlockTags {
 	public static final Tag.Identified<Block> NEEDS_DIAMOND_TOOL = register("needs_diamond_tool");
 	public static final Tag.Identified<Block> NEEDS_IRON_TOOL = register("needs_iron_tool");
 	public static final Tag.Identified<Block> NEEDS_STONE_TOOL = register("needs_stone_tool");
+	public static final Tag.Identified<Block> FEATURES_CANNOT_REPLACE = register("features_cannot_replace");
 
 	private BlockTags() {
 	}

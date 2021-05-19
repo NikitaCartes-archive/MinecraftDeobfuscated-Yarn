@@ -38,8 +38,8 @@ public interface RegistryWorldView extends EntityView, WorldView, ModifiableTest
 	}
 
 	@Override
-	default BlockPos getTopPosition(Heightmap.Type type, BlockPos blockPos) {
-		return WorldView.super.getTopPosition(type, blockPos);
+	default BlockPos getTopPosition(Heightmap.Type heightmap, BlockPos pos) {
+		return WorldView.super.getTopPosition(heightmap, pos);
 	}
 
 	DynamicRegistryManager getRegistryManager();

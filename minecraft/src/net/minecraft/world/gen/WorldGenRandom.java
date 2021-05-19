@@ -1,7 +1,7 @@
 package net.minecraft.world.gen;
 
 public interface WorldGenRandom {
-	void setSeed(long l);
+	void setSeed(long seed);
 
 	int nextInt();
 

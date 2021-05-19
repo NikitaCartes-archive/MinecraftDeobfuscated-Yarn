@@ -95,7 +95,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 		);
 		this.setVelocity(vec3d);
 		this.setYaw((float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI));
-		this.setPitch((float)(MathHelper.atan2(vec3d.y, (double)MathHelper.sqrt(squaredHorizontalLength(vec3d))) * 180.0F / (float)Math.PI));
+		this.setPitch((float)(MathHelper.atan2(vec3d.y, Math.sqrt(squaredHorizontalLength(vec3d))) * 180.0F / (float)Math.PI));
 		this.prevYaw = this.getYaw();
 		this.prevPitch = this.getPitch();
 	}

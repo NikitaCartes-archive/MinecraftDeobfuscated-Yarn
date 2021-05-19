@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.brain.Brain;
@@ -97,7 +98,7 @@ public class PrepareRamTask<E extends PathAwareEntity> extends Task<E> {
 	protected void finishRunning(ServerWorld serverWorld, E pathAwareEntity, long l) {
 		Brain<?> brain = pathAwareEntity.getBrain();
 		if (!brain.hasMemoryModule(MemoryModuleType.RAM_TARGET)) {
-			serverWorld.sendEntityStatus(pathAwareEntity, (byte)59);
+			serverWorld.sendEntityStatus(pathAwareEntity, EntityStatuses.FINISH_RAM);
 			brain.remember(MemoryModuleType.RAM_COOLDOWN_TICKS, this.cooldownFactory.applyAsInt(pathAwareEntity));
 		}
 	}
@@ -112,13 +113,13 @@ public class PrepareRamTask<E extends PathAwareEntity> extends Task<E> {
 			pathAwareEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(((PrepareRamTask.Ram)this.ram.get()).getEntity(), true));
 			boolean bl = !((PrepareRamTask.Ram)this.ram.get()).getEntity().getBlockPos().equals(((PrepareRamTask.Ram)this.ram.get()).getEnd());
 			if (bl) {
-				serverWorld.sendEntityStatus(pathAwareEntity, (byte)59);
+				serverWorld.sendEntityStatus(pathAwareEntity, EntityStatuses.FINISH_RAM);
 				pathAwareEntity.getNavigation().stop();
 				this.findRam(pathAwareEntity, ((PrepareRamTask.Ram)this.ram.get()).entity);
 			} else {
 				BlockPos blockPos = pathAwareEntity.getBlockPos();
 				if (blockPos.equals(((PrepareRamTask.Ram)this.ram.get()).getStart())) {
-					serverWorld.sendEntityStatus(pathAwareEntity, (byte)58);
+					serverWorld.sendEntityStatus(pathAwareEntity, EntityStatuses.PREPARE_RAM);
 					if (!this.prepareStartTime.isPresent()) {
 						this.prepareStartTime = Optional.of(l);
 					}

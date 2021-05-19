@@ -30,7 +30,6 @@ import net.minecraft.structure.StructureStart;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
-import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.dynamic.RegistryElementCodec;
@@ -114,9 +113,9 @@ public final class Biome {
 	Biome(
 		Biome.Weather weather,
 		Biome.Category category,
-		float f,
-		float g,
-		BiomeEffects biomeEffects,
+		float depth,
+		float scale,
+		BiomeEffects effects,
 		GenerationSettings generationSettings,
 		SpawnSettings spawnSettings
 	) {
@@ -124,9 +123,9 @@ public final class Biome {
 		this.generationSettings = generationSettings;
 		this.spawnSettings = spawnSettings;
 		this.category = category;
-		this.depth = f;
-		this.scale = g;
-		this.effects = biomeEffects;
+		this.depth = depth;
+		this.scale = scale;
+		this.effects = effects;
 	}
 
 	public int getSkyColor() {
@@ -226,6 +225,8 @@ public final class Biome {
 		StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, ChunkRegion region, long populationSeed, ChunkRandom random, BlockPos origin
 	) {
 		List<List<Supplier<ConfiguredFeature<?, ?>>>> list = this.generationSettings.getFeatures();
+		Registry<ConfiguredFeature<?, ?>> registry = region.getRegistryManager().get(Registry.CONFIGURED_FEATURE_KEY);
+		Registry<StructureFeature<?>> registry2 = region.getRegistryManager().get(Registry.STRUCTURE_FEATURE_KEY);
 		int i = GenerationStep.Feature.values().length;
 
 		for(int j = 0; j < i; ++j) {
@@ -237,21 +238,21 @@ public final class Biome {
 					int m = ChunkSectionPos.getSectionCoord(origin.getZ());
 					int n = ChunkSectionPos.getBlockCoord(l);
 					int o = ChunkSectionPos.getBlockCoord(m);
+					Supplier<String> supplier = () -> (String)registry2.getKey(structureFeature).map(Object::toString).orElseGet(structureFeature::toString);
 
 					try {
 						int p = region.getBottomY() + 1;
 						int q = region.getTopY() - 1;
+						region.method_36972(supplier);
 						structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(origin), structureFeature)
 							.forEach(
 								structureStart -> structureStart.generateStructure(
 										region, structureAccessor, chunkGenerator, random, new BlockBox(n, p, o, n + 15, q, o + 15), new ChunkPos(l, m)
 									)
 							);
-					} catch (Exception var21) {
-						CrashReport crashReport = CrashReport.create(var21, "Feature placement");
-						crashReport.addElement("Feature")
-							.add("Id", Registry.STRUCTURE_FEATURE.getId(structureFeature))
-							.add("Description", (CrashCallable<String>)(() -> structureFeature.toString()));
+					} catch (Exception var24) {
+						CrashReport crashReport = CrashReport.create(var24, "Feature placement");
+						crashReport.addElement("Feature").add("Description", supplier::get);
 						throw new CrashException(crashReport);
 					}
 
@@ -260,18 +261,17 @@ public final class Biome {
 			}
 
 			if (list.size() > j) {
-				for(Supplier<ConfiguredFeature<?, ?>> supplier : (List)list.get(j)) {
-					ConfiguredFeature<?, ?> configuredFeature = (ConfiguredFeature)supplier.get();
+				for(Supplier<ConfiguredFeature<?, ?>> supplier2 : (List)list.get(j)) {
+					ConfiguredFeature<?, ?> configuredFeature = (ConfiguredFeature)supplier2.get();
+					Supplier<String> supplier3 = () -> (String)registry.getKey(configuredFeature).map(Object::toString).orElseGet(configuredFeature::toString);
 					random.setDecoratorSeed(populationSeed, k, j);
 
 					try {
+						region.method_36972(supplier3);
 						configuredFeature.generate(region, chunkGenerator, random, origin);
-					} catch (Exception var22) {
-						CrashReport crashReport2 = CrashReport.create(var22, "Feature placement");
-						crashReport2.addElement("Feature")
-							.add("Id", Registry.FEATURE.getId(configuredFeature.feature))
-							.add("Config", configuredFeature.config)
-							.add("Description", (CrashCallable<String>)(() -> configuredFeature.feature.toString()));
+					} catch (Exception var25) {
+						CrashReport crashReport2 = CrashReport.create(var25, "Feature placement");
+						crashReport2.addElement("Feature").add("Description", supplier3::get);
 						throw new CrashException(crashReport2);
 					}
 
@@ -279,6 +279,8 @@ public final class Biome {
 				}
 			}
 		}
+
+		region.method_36972(null);
 	}
 
 	public int getFogColor() {

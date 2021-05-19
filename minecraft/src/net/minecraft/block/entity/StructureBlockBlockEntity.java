@@ -362,14 +362,14 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		if (this.mode == StructureBlockMode.LOAD && this.structureName != null) {
 			StructureManager structureManager = world.getStructureManager();
 
-			Structure structure;
+			Optional<Structure> optional;
 			try {
-				structure = structureManager.getStructure(this.structureName);
+				optional = structureManager.getStructure(this.structureName);
 			} catch (InvalidIdentifierException var6) {
 				return false;
 			}
 
-			return structure == null ? false : this.place(world, bl, structure);
+			return !optional.isPresent() ? false : this.place(world, bl, (Structure)optional.get());
 		} else {
 			return false;
 		}
@@ -423,7 +423,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 			StructureManager structureManager = serverWorld.getStructureManager();
 
 			try {
-				return structureManager.getStructure(this.structureName) != null;
+				return structureManager.getStructure(this.structureName).isPresent();
 			} catch (InvalidIdentifierException var4) {
 				return false;
 			}

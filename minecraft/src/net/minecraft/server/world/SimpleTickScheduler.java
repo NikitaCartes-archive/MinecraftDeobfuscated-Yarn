@@ -96,11 +96,11 @@ public class SimpleTickScheduler<T> implements TickScheduler<T> {
 		public final int delay;
 		public final TickPriority priority;
 
-		Tick(T object, BlockPos blockPos, int i, TickPriority tickPriority) {
+		Tick(T object, BlockPos pos, int delay, TickPriority priority) {
 			this.object = object;
-			this.pos = blockPos;
-			this.delay = i;
-			this.priority = tickPriority;
+			this.pos = pos;
+			this.delay = delay;
+			this.priority = priority;
 		}
 
 		public String toString() {

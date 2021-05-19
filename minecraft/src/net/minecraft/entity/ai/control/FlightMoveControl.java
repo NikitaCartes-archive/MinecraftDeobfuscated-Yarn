@@ -39,7 +39,7 @@ public class FlightMoveControl extends MoveControl {
 			}
 
 			this.entity.setMovementSpeed(i);
-			double j = (double)MathHelper.sqrt(d * d + f * f);
+			double j = Math.sqrt(d * d + f * f);
 			float k = (float)(-(MathHelper.atan2(e, j) * 180.0F / (float)Math.PI));
 			this.entity.setPitch(this.wrapDegrees(this.entity.getPitch(), k, (float)this.maxPitchChange));
 			this.entity.setUpwardSpeed(e > 0.0 ? i : -i);

@@ -37,7 +37,10 @@ public class PufferfishEntity extends FishEntity {
 			return entity.getType() == EntityType.AXOLOTL || entity.getGroup() != EntityGroup.AQUATIC;
 		}
 	};
-	static final TargetPredicate field_33692 = TargetPredicate.createNonAttackable().ignoreDistanceScalingFactor().visibleOnly().setPredicate(BLOW_UP_FILTER);
+	static final TargetPredicate BLOW_UP_TARGET_PREDICATE = TargetPredicate.createNonAttackable()
+		.ignoreDistanceScalingFactor()
+		.visibleOnly()
+		.setPredicate(BLOW_UP_FILTER);
 	public static final int NOT_PUFFED = 0;
 	public static final int SEMI_PUFFED = 1;
 	public static final int FULLY_PUFFED = 2;
@@ -127,7 +130,7 @@ public class PufferfishEntity extends FishEntity {
 		super.tickMovement();
 		if (this.isAlive() && this.getPuffState() > 0) {
 			for(MobEntity mobEntity : this.world
-				.getEntitiesByClass(MobEntity.class, this.getBoundingBox().expand(0.3), mobEntityx -> field_33692.test(this, mobEntityx))) {
+				.getEntitiesByClass(MobEntity.class, this.getBoundingBox().expand(0.3), entity -> BLOW_UP_TARGET_PREDICATE.test(this, entity))) {
 				if (mobEntity.isAlive()) {
 					this.sting(mobEntity);
 				}
@@ -205,7 +208,9 @@ public class PufferfishEntity extends FishEntity {
 			List<LivingEntity> list = this.pufferfish
 				.world
 				.getEntitiesByClass(
-					LivingEntity.class, this.pufferfish.getBoundingBox().expand(2.0), livingEntity -> PufferfishEntity.field_33692.test(this.pufferfish, livingEntity)
+					LivingEntity.class,
+					this.pufferfish.getBoundingBox().expand(2.0),
+					livingEntity -> PufferfishEntity.BLOW_UP_TARGET_PREDICATE.test(this.pufferfish, livingEntity)
 				);
 			return !list.isEmpty();
 		}

@@ -284,11 +284,6 @@ public class ProtoChunk implements Chunk {
 	}
 
 	@Override
-	public void setHeightmap(Heightmap.Type type, long[] heightmap) {
-		this.getHeightmap(type).setTo(heightmap);
-	}
-
-	@Override
 	public Heightmap getHeightmap(Heightmap.Type type) {
 		return (Heightmap)this.heightmaps.computeIfAbsent(type, typex -> new Heightmap(this, typex));
 	}

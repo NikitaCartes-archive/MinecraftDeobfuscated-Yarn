@@ -14,7 +14,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.collection.ReusableStream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
@@ -65,11 +64,11 @@ public abstract class Particle {
 		this.velocityX = velocityX + (Math.random() * 2.0 - 1.0) * 0.4F;
 		this.velocityY = velocityY + (Math.random() * 2.0 - 1.0) * 0.4F;
 		this.velocityZ = velocityZ + (Math.random() * 2.0 - 1.0) * 0.4F;
-		float f = (float)(Math.random() + Math.random() + 1.0) * 0.15F;
-		float g = MathHelper.sqrt(this.velocityX * this.velocityX + this.velocityY * this.velocityY + this.velocityZ * this.velocityZ);
-		this.velocityX = this.velocityX / (double)g * (double)f * 0.4F;
-		this.velocityY = this.velocityY / (double)g * (double)f * 0.4F + 0.1F;
-		this.velocityZ = this.velocityZ / (double)g * (double)f * 0.4F;
+		double d = (Math.random() + Math.random() + 1.0) * 0.15F;
+		double e = Math.sqrt(this.velocityX * this.velocityX + this.velocityY * this.velocityY + this.velocityZ * this.velocityZ);
+		this.velocityX = this.velocityX / e * d * 0.4F;
+		this.velocityY = this.velocityY / e * d * 0.4F + 0.1F;
+		this.velocityZ = this.velocityZ / e * d * 0.4F;
 	}
 
 	public Particle move(float speed) {

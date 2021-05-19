@@ -19,7 +19,7 @@ import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class SubtitlesHud extends DrawableHelper implements SoundInstanceListener {
-	private static final long field_32214 = 3000L;
+	private static final long REMOVE_DELAY = 3000L;
 	private final MinecraftClient client;
 	private final List<SubtitlesHud.SubtitleEntry> entries = Lists.<SubtitlesHud.SubtitleEntry>newArrayList();
 	private boolean enabled;
@@ -124,7 +124,7 @@ public class SubtitlesHud extends DrawableHelper implements SoundInstanceListene
 	}
 
 	@Environment(EnvType.CLIENT)
-	public class SubtitleEntry {
+	public static class SubtitleEntry {
 		private final Text text;
 		private long time;
 		private Vec3d pos;

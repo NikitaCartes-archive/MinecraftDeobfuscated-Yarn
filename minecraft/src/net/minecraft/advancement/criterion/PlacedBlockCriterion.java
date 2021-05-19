@@ -81,7 +81,7 @@ public class PlacedBlockCriterion extends AbstractCriterion<PlacedBlockCriterion
 				return false;
 			} else if (!this.state.test(state)) {
 				return false;
-			} else if (!this.location.test(world, (float)pos.getX(), (float)pos.getY(), (float)pos.getZ())) {
+			} else if (!this.location.test(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ())) {
 				return false;
 			} else {
 				return this.item.test(stack);

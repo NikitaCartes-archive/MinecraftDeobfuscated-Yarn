@@ -23,7 +23,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Position;
 
 @Environment(EnvType.CLIENT)
@@ -279,9 +278,9 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	private String getPositionString(BeeDebugRenderer.Bee bee, BlockPos pos) {
-		float f = MathHelper.sqrt(pos.getSquaredDistance(bee.position.getX(), bee.position.getY(), bee.position.getZ(), true));
-		double d = (double)Math.round(f * 10.0F) / 10.0;
-		return pos.toShortString() + " (dist " + d + ")";
+		double d = Math.sqrt(pos.getSquaredDistance(bee.position.getX(), bee.position.getY(), bee.position.getZ(), true));
+		double e = (double)Math.round(d * 10.0) / 10.0;
+		return pos.toShortString() + " (dist " + e + ")";
 	}
 
 	private boolean isTargeted(BeeDebugRenderer.Bee bee) {

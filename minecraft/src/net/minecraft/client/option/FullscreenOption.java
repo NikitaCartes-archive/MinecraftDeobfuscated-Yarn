@@ -24,7 +24,7 @@ public class FullscreenOption extends DoubleOption {
 			-1.0,
 			monitor != null ? (double)(monitor.getVideoModeCount() - 1) : -1.0,
 			1.0F,
-			gameOptions -> {
+			options -> {
 				if (monitor == null) {
 					return -1.0;
 				} else {
@@ -32,23 +32,23 @@ public class FullscreenOption extends DoubleOption {
 					return (Double)optional.map(videoMode -> (double)monitor.findClosestVideoModeIndex(videoMode)).orElse(-1.0);
 				}
 			},
-			(gameOptions, double_) -> {
+			(options, newValue) -> {
 				if (monitor != null) {
-					if (double_ == -1.0) {
+					if (newValue == -1.0) {
 						window.setVideoMode(Optional.empty());
 					} else {
-						window.setVideoMode(Optional.of(monitor.getVideoMode(double_.intValue())));
+						window.setVideoMode(Optional.of(monitor.getVideoMode(newValue.intValue())));
 					}
 				}
 			},
-			(gameOptions, doubleOption) -> {
+			(options, option) -> {
 				if (monitor == null) {
 					return new TranslatableText("options.fullscreen.unavailable");
 				} else {
-					double d = doubleOption.get(gameOptions);
+					double d = option.get(options);
 					return d == -1.0
-						? doubleOption.getGenericLabel(new TranslatableText("options.fullscreen.current"))
-						: doubleOption.getGenericLabel(new LiteralText(monitor.getVideoMode((int)d).toString()));
+						? option.getGenericLabel(new TranslatableText("options.fullscreen.current"))
+						: option.getGenericLabel(new LiteralText(monitor.getVideoMode((int)d).toString()));
 				}
 			}
 		);

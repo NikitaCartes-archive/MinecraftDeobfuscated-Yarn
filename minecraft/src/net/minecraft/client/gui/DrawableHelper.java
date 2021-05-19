@@ -155,19 +155,22 @@ public abstract class DrawableHelper {
 		textRenderer.drawWithShadow(matrices, text, (float)x, (float)y, color);
 	}
 
-	public void method_29343(int i, int j, BiConsumer<Integer, Integer> biConsumer) {
+	/**
+	 * @param renderAction the action to render both the content and the outline, taking x and y positions as input
+	 */
+	public void drawWithOutline(int x, int y, BiConsumer<Integer, Integer> renderAction) {
 		RenderSystem.blendFuncSeparate(
 			GlStateManager.SrcFactor.ZERO,
 			GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA,
 			GlStateManager.SrcFactor.SRC_ALPHA,
 			GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA
 		);
-		biConsumer.accept(i + 1, j);
-		biConsumer.accept(i - 1, j);
-		biConsumer.accept(i, j + 1);
-		biConsumer.accept(i, j - 1);
+		renderAction.accept(x + 1, y);
+		renderAction.accept(x - 1, y);
+		renderAction.accept(x, y + 1);
+		renderAction.accept(x, y - 1);
 		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-		biConsumer.accept(i, j);
+		renderAction.accept(x, y);
 	}
 
 	public static void drawSprite(MatrixStack matrices, int x, int y, int z, int width, int height, Sprite sprite) {

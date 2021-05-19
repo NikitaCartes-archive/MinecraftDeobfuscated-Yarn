@@ -41,7 +41,7 @@ public class EmptyProfileResult implements ProfileResult {
 	}
 
 	@Override
-	public String method_34970() {
+	public String getRootTimings() {
 		return "";
 	}
 }

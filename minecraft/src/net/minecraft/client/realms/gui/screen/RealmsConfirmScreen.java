@@ -5,6 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
@@ -15,6 +16,7 @@ public class RealmsConfirmScreen extends RealmsScreen {
 	private final Text title2;
 
 	public RealmsConfirmScreen(BooleanConsumer booleanConsumer, Text title1, Text title2) {
+		super(NarratorManager.EMPTY);
 		this.field_22692 = booleanConsumer;
 		this.title1 = title1;
 		this.title2 = title2;
@@ -22,8 +24,8 @@ public class RealmsConfirmScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.addButton(new ButtonWidget(this.width / 2 - 105, row(9), 100, 20, ScreenTexts.YES, buttonWidget -> this.field_22692.accept(true)));
-		this.addButton(new ButtonWidget(this.width / 2 + 5, row(9), 100, 20, ScreenTexts.NO, buttonWidget -> this.field_22692.accept(false)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 105, row(9), 100, 20, ScreenTexts.YES, button -> this.field_22692.accept(true)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, row(9), 100, 20, ScreenTexts.NO, button -> this.field_22692.accept(false)));
 	}
 
 	@Override

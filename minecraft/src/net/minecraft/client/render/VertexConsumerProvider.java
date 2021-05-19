@@ -59,6 +59,17 @@ public interface VertexConsumerProvider {
 			return (BufferBuilder)this.layerBuffers.getOrDefault(layer, this.fallbackBuffer);
 		}
 
+		public void method_37104() {
+			if (this.currentLayer.isPresent()) {
+				RenderLayer renderLayer = (RenderLayer)this.currentLayer.get();
+				if (!this.layerBuffers.containsKey(renderLayer)) {
+					this.draw(renderLayer);
+				}
+
+				this.currentLayer = Optional.empty();
+			}
+		}
+
 		public void draw() {
 			this.currentLayer.ifPresent(renderLayerx -> {
 				VertexConsumer vertexConsumer = this.getBuffer(renderLayerx);

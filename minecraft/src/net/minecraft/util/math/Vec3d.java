@@ -121,7 +121,7 @@ public class Vec3d implements Position {
 	 * @return the normalized vector of this vector
 	 */
 	public Vec3d normalize() {
-		double d = (double)MathHelper.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+		double d = Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
 		return d < 1.0E-4 ? ZERO : new Vec3d(this.x / d, this.y / d, this.z / d);
 	}
 
@@ -195,7 +195,7 @@ public class Vec3d implements Position {
 		double d = vec.x - this.x;
 		double e = vec.y - this.y;
 		double f = vec.z - this.z;
-		return (double)MathHelper.sqrt(d * d + e * e + f * f);
+		return Math.sqrt(d * d + e * e + f * f);
 	}
 
 	/**
@@ -277,7 +277,7 @@ public class Vec3d implements Position {
 	 * @see #lengthSquared()
 	 */
 	public double length() {
-		return (double)MathHelper.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+		return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
 	}
 
 	/**

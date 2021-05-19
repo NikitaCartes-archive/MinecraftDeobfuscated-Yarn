@@ -12,6 +12,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConfirmChatLinkScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.network.PlayerListEntry;
@@ -40,7 +41,7 @@ public class SocialInteractionsScreen extends Screen {
 	private static final Text EMPTY_HIDDEN_TEXT = new TranslatableText("gui.socialInteractions.empty_hidden").formatted(Formatting.GRAY);
 	private static final Text EMPTY_BLOCKED_TEXT = new TranslatableText("gui.socialInteractions.empty_blocked").formatted(Formatting.GRAY);
 	private static final Text BLOCKING_TEXT = new TranslatableText("gui.socialInteractions.blocking_hint");
-	private static final String field_32423 = "https://aka.ms/javablocking";
+	private static final String BLOCKING_URL = "https://aka.ms/javablocking";
 	private static final int field_32424 = 8;
 	private static final int field_32425 = 16;
 	private static final int field_32426 = 236;
@@ -88,8 +89,8 @@ public class SocialInteractionsScreen extends Screen {
 	}
 
 	@Override
-	public String getNarrationMessage() {
-		return super.getNarrationMessage() + ". " + this.serverLabel.getString();
+	public Text getNarratedTitle() {
+		return (Text)(this.serverLabel != null ? ScreenTexts.joinSentences(super.getNarratedTitle(), this.serverLabel) : super.getNarratedTitle());
 	}
 
 	@Override
@@ -113,14 +114,14 @@ public class SocialInteractionsScreen extends Screen {
 		int l = this.textRenderer.getWidth(BLOCKING_TEXT) + 40;
 		int m = 64 + 16 * this.method_31360();
 		int n = (this.width - l) / 2;
-		this.allTabButton = this.addButton(new ButtonWidget(j, 45, i, 20, ALL_TAB_TITLE, buttonWidget -> this.setCurrentTab(SocialInteractionsScreen.Tab.ALL)));
-		this.hiddenTabButton = this.addButton(
-			new ButtonWidget((j + k - i) / 2 + 1, 45, i, 20, HIDDEN_TAB_TITLE, buttonWidget -> this.setCurrentTab(SocialInteractionsScreen.Tab.HIDDEN))
+		this.allTabButton = this.addDrawableChild(new ButtonWidget(j, 45, i, 20, ALL_TAB_TITLE, button -> this.setCurrentTab(SocialInteractionsScreen.Tab.ALL)));
+		this.hiddenTabButton = this.addDrawableChild(
+			new ButtonWidget((j + k - i) / 2 + 1, 45, i, 20, HIDDEN_TAB_TITLE, button -> this.setCurrentTab(SocialInteractionsScreen.Tab.HIDDEN))
 		);
-		this.blockedTabButton = this.addButton(
-			new ButtonWidget(k - i + 1, 45, i, 20, BLOCKED_TAB_TITLE, buttonWidget -> this.setCurrentTab(SocialInteractionsScreen.Tab.BLOCKED))
+		this.blockedTabButton = this.addDrawableChild(
+			new ButtonWidget(k - i + 1, 45, i, 20, BLOCKED_TAB_TITLE, button -> this.setCurrentTab(SocialInteractionsScreen.Tab.BLOCKED))
 		);
-		this.blockingButton = this.addButton(new ButtonWidget(n, m, l, 20, BLOCKING_TEXT, buttonWidget -> this.client.openScreen(new ConfirmChatLinkScreen(bl -> {
+		this.blockingButton = this.addDrawableChild(new ButtonWidget(n, m, l, 20, BLOCKING_TEXT, button -> this.client.openScreen(new ConfirmChatLinkScreen(bl -> {
 				if (bl) {
 					Util.getOperatingSystem().open("https://aka.ms/javablocking");
 				}
@@ -142,8 +143,8 @@ public class SocialInteractionsScreen extends Screen {
 		this.searchBox.setEditableColor(16777215);
 		this.searchBox.setText(string);
 		this.searchBox.setChangedListener(this::onSearchChange);
-		this.children.add(this.searchBox);
-		this.children.add(this.playerList);
+		this.addSelectableChild(this.searchBox);
+		this.addSelectableChild(this.playerList);
 		this.initialized = true;
 		this.setCurrentTab(this.currentTab);
 	}
@@ -178,12 +179,12 @@ public class SocialInteractionsScreen extends Screen {
 		};
 		this.playerList.update(collection, this.playerList.getScrollAmount());
 		if (!this.searchBox.getText().isEmpty() && this.playerList.isEmpty() && !this.searchBox.isFocused()) {
-			NarratorManager.INSTANCE.narrate(EMPTY_SEARCH_TEXT.getString());
+			NarratorManager.INSTANCE.narrate(EMPTY_SEARCH_TEXT);
 		} else if (collection.isEmpty()) {
 			if (currentTab == SocialInteractionsScreen.Tab.HIDDEN) {
-				NarratorManager.INSTANCE.narrate(EMPTY_HIDDEN_TEXT.getString());
+				NarratorManager.INSTANCE.narrate(EMPTY_HIDDEN_TEXT);
 			} else if (currentTab == SocialInteractionsScreen.Tab.BLOCKED) {
-				NarratorManager.INSTANCE.narrate(EMPTY_BLOCKED_TEXT.getString());
+				NarratorManager.INSTANCE.narrate(EMPTY_BLOCKED_TEXT);
 			}
 		}
 	}

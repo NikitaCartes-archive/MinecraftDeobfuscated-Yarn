@@ -169,7 +169,7 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 		double h = e - this.getX();
 		double j = f - this.getY();
 		double k = g - this.getZ();
-		double l = (double)MathHelper.sqrt(h * h + j * j + k * k);
+		double l = Math.sqrt(h * h + j * j + k * k);
 		if (l == 0.0) {
 			this.targetX = 0.0;
 			this.targetY = 0.0;

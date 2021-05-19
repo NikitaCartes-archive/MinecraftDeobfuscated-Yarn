@@ -12,7 +12,6 @@ import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -31,7 +30,7 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 		this(type, world);
 		this.refreshPositionAndAngles(x, y, z, this.getYaw(), this.getPitch());
 		this.refreshPosition();
-		double d = (double)MathHelper.sqrt(directionX * directionX + directionY * directionY + directionZ * directionZ);
+		double d = Math.sqrt(directionX * directionX + directionY * directionY + directionZ * directionZ);
 		if (d != 0.0) {
 			this.powerX = directionX / d * 0.1;
 			this.powerY = directionY / d * 0.1;
@@ -196,7 +195,7 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 		double d = packet.getVelocityX();
 		double e = packet.getVelocityY();
 		double f = packet.getVelocityZ();
-		double g = (double)MathHelper.sqrt(d * d + e * e + f * f);
+		double g = Math.sqrt(d * d + e * e + f * f);
 		if (g != 0.0) {
 			this.powerX = d / g * 0.1;
 			this.powerY = e / g * 0.1;

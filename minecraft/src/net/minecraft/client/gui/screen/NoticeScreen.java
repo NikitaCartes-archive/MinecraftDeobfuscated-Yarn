@@ -28,7 +28,7 @@ public class NoticeScreen extends Screen {
 	@Override
 	protected void init() {
 		super.init();
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, this.buttonText, buttonWidget -> this.actionHandler.run()));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, this.buttonText, button -> this.actionHandler.run()));
 		this.noticeLines = MultilineText.create(this.textRenderer, this.notice, this.width - 50);
 	}
 

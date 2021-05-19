@@ -5,11 +5,11 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class GlException extends RuntimeException {
-	public GlException(String string) {
-		super(string);
+	public GlException(String message) {
+		super(message);
 	}
 
-	public GlException(String string, Throwable throwable) {
-		super(string, throwable);
+	public GlException(String message, Throwable cause) {
+		super(message, cause);
 	}
 }

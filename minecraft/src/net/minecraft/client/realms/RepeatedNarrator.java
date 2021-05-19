@@ -6,9 +6,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.network.MessageType;
-import net.minecraft.text.LiteralText;
-import net.minecraft.util.Util;
+import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class RepeatedNarrator {
@@ -19,25 +17,25 @@ public class RepeatedNarrator {
 		this.permitsPerSecond = 1000.0F / (float)duration.toMillis();
 	}
 
-	public void narrate(String message) {
+	public void narrate(Text text) {
 		RepeatedNarrator.Parameters parameters = (RepeatedNarrator.Parameters)this.params
 			.updateAndGet(
-				parametersx -> parametersx != null && message.equals(parametersx.message)
+				parametersx -> parametersx != null && text.equals(parametersx.message)
 						? parametersx
-						: new RepeatedNarrator.Parameters(message, RateLimiter.create((double)this.permitsPerSecond))
+						: new RepeatedNarrator.Parameters(text, RateLimiter.create((double)this.permitsPerSecond))
 			);
 		if (parameters.rateLimiter.tryAcquire(1)) {
-			NarratorManager.INSTANCE.onChatMessage(MessageType.SYSTEM, new LiteralText(message), Util.NIL_UUID);
+			NarratorManager.INSTANCE.narrate(text);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	static class Parameters {
-		final String message;
+		final Text message;
 		final RateLimiter rateLimiter;
 
-		Parameters(String message, RateLimiter rateLimiter) {
-			this.message = message;
+		Parameters(Text text, RateLimiter rateLimiter) {
+			this.message = text;
 			this.rateLimiter = rateLimiter;
 		}
 	}

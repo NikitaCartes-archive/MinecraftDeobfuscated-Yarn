@@ -15,10 +15,8 @@ public class QueueingWorldGenerationProgressListener implements WorldGenerationP
 		this.queue = TaskExecutor.create(executor, "progressListener");
 	}
 
-	public static QueueingWorldGenerationProgressListener method_34228(WorldGenerationProgressListener worldGenerationProgressListener, Executor executor) {
-		QueueingWorldGenerationProgressListener queueingWorldGenerationProgressListener = new QueueingWorldGenerationProgressListener(
-			worldGenerationProgressListener, executor
-		);
+	public static QueueingWorldGenerationProgressListener create(WorldGenerationProgressListener progressListener, Executor executor) {
+		QueueingWorldGenerationProgressListener queueingWorldGenerationProgressListener = new QueueingWorldGenerationProgressListener(progressListener, executor);
 		queueingWorldGenerationProgressListener.start();
 		return queueingWorldGenerationProgressListener;
 	}

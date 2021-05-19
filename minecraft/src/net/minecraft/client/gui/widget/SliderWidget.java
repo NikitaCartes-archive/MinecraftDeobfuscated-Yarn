@@ -4,6 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
@@ -29,6 +31,18 @@ public abstract class SliderWidget extends ClickableWidget {
 	@Override
 	protected MutableText getNarrationMessage() {
 		return new TranslatableText("gui.narrate.slider", this.getMessage());
+	}
+
+	@Override
+	public void appendNarrations(NarrationMessageBuilder builder) {
+		builder.put(NarrationPart.TITLE, this.getNarrationMessage());
+		if (this.active) {
+			if (this.isFocused()) {
+				builder.put(NarrationPart.USAGE, new TranslatableText("narration.slider.usage.focused"));
+			} else {
+				builder.put(NarrationPart.USAGE, new TranslatableText("narration.slider.usage.hovered"));
+			}
+		}
 	}
 
 	@Override

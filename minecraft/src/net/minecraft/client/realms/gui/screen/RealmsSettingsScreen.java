@@ -5,7 +5,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.realms.RealmsLabel;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -22,9 +21,9 @@ public class RealmsSettingsScreen extends RealmsScreen {
 	private ButtonWidget doneButton;
 	private TextFieldWidget descEdit;
 	private TextFieldWidget nameEdit;
-	private RealmsLabel titleLabel;
 
 	public RealmsSettingsScreen(RealmsConfigureWorldScreen parent, RealmsServer serverData) {
+		super(new TranslatableText("mco.configure.world.settings.title"));
 		this.parent = parent;
 		this.serverData = serverData;
 	}
@@ -40,12 +39,12 @@ public class RealmsSettingsScreen extends RealmsScreen {
 	public void init() {
 		this.client.keyboard.setRepeatEvents(true);
 		int i = this.width / 2 - 106;
-		this.doneButton = this.addButton(
-			new ButtonWidget(i - 2, row(12), 106, 20, new TranslatableText("mco.configure.world.buttons.done"), buttonWidgetx -> this.save())
+		this.doneButton = this.addDrawableChild(
+			new ButtonWidget(i - 2, row(12), 106, 20, new TranslatableText("mco.configure.world.buttons.done"), button -> this.save())
 		);
-		this.addButton(new ButtonWidget(this.width / 2 + 2, row(12), 106, 20, ScreenTexts.CANCEL, buttonWidgetx -> this.client.openScreen(this.parent)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, row(12), 106, 20, ScreenTexts.CANCEL, button -> this.client.openScreen(this.parent)));
 		String string = this.serverData.state == RealmsServer.State.OPEN ? "mco.configure.world.buttons.close" : "mco.configure.world.buttons.open";
-		ButtonWidget buttonWidget = new ButtonWidget(this.width / 2 - 53, row(0), 106, 20, new TranslatableText(string), buttonWidgetx -> {
+		ButtonWidget buttonWidget = new ButtonWidget(this.width / 2 - 53, row(0), 106, 20, new TranslatableText(string), button -> {
 			if (this.serverData.state == RealmsServer.State.OPEN) {
 				Text text = new TranslatableText("mco.configure.world.close.question.line1");
 				Text text2 = new TranslatableText("mco.configure.world.close.question.line2");
@@ -60,18 +59,16 @@ public class RealmsSettingsScreen extends RealmsScreen {
 				this.parent.openTheWorld(false, this);
 			}
 		});
-		this.addButton(buttonWidget);
+		this.addDrawableChild(buttonWidget);
 		this.nameEdit = new TextFieldWidget(this.client.textRenderer, i, row(4), 212, 20, null, new TranslatableText("mco.configure.world.name"));
 		this.nameEdit.setMaxLength(32);
 		this.nameEdit.setText(this.serverData.getName());
-		this.addChild(this.nameEdit);
+		this.addSelectableChild(this.nameEdit);
 		this.focusOn(this.nameEdit);
 		this.descEdit = new TextFieldWidget(this.client.textRenderer, i, row(8), 212, 20, null, new TranslatableText("mco.configure.world.description"));
 		this.descEdit.setMaxLength(32);
 		this.descEdit.setText(this.serverData.getDescription());
-		this.addChild(this.descEdit);
-		this.titleLabel = this.addChild(new RealmsLabel(new TranslatableText("mco.configure.world.settings.title"), this.width / 2, 17, 16777215));
-		this.narrateLabels();
+		this.addSelectableChild(this.descEdit);
 	}
 
 	@Override
@@ -92,7 +89,7 @@ public class RealmsSettingsScreen extends RealmsScreen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		this.titleLabel.render(this, matrices);
+		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 17, 16777215);
 		this.textRenderer.draw(matrices, WORLD_NAME_TEXT, (float)(this.width / 2 - 106), (float)row(3), 10526880);
 		this.textRenderer.draw(matrices, WORLD_DESCRIPTION_TEXT, (float)(this.width / 2 - 106), (float)row(7), 10526880);
 		this.nameEdit.render(matrices, mouseX, mouseY, delta);

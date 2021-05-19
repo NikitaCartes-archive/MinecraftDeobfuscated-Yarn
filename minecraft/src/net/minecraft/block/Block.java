@@ -8,12 +8,14 @@ import it.unimi.dsi.fastutil.objects.Object2ByteLinkedOpenHashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -43,6 +45,7 @@ import net.minecraft.util.collection.IdList;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
@@ -358,12 +361,31 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	}
 
 	public static void dropStack(World world, BlockPos pos, ItemStack stack) {
+		float f = EntityType.ITEM.getHeight() / 2.0F;
+		double d = (double)((float)pos.getX() + 0.5F) + MathHelper.nextDouble(world.random, -0.25, 0.25);
+		double e = (double)((float)pos.getY() + 0.5F) + MathHelper.nextDouble(world.random, -0.25, 0.25) - (double)f;
+		double g = (double)((float)pos.getZ() + 0.5F) + MathHelper.nextDouble(world.random, -0.25, 0.25);
+		dropStack(world, () -> new ItemEntity(world, d, e, g, stack), stack);
+	}
+
+	public static void dropStack(World world, BlockPos pos, Direction direction, ItemStack stack) {
+		int i = direction.getOffsetX();
+		int j = direction.getOffsetY();
+		int k = direction.getOffsetZ();
+		float f = EntityType.ITEM.getWidth() / 2.0F;
+		float g = EntityType.ITEM.getHeight() / 2.0F;
+		double d = (double)((float)pos.getX() + 0.5F) + (i == 0 ? MathHelper.nextDouble(world.random, -0.25, 0.25) : (double)((float)i * (0.5F + f)));
+		double e = (double)((float)pos.getY() + 0.5F) + (j == 0 ? MathHelper.nextDouble(world.random, -0.25, 0.25) : (double)((float)j * (0.5F + g))) - (double)g;
+		double h = (double)((float)pos.getZ() + 0.5F) + (k == 0 ? MathHelper.nextDouble(world.random, -0.25, 0.25) : (double)((float)k * (0.5F + f)));
+		double l = i == 0 ? MathHelper.nextDouble(world.random, -0.1, 0.1) : (double)i * 0.1;
+		double m = j == 0 ? MathHelper.nextDouble(world.random, 0.0, 0.1) : (double)j * 0.1 + 0.1;
+		double n = k == 0 ? MathHelper.nextDouble(world.random, -0.1, 0.1) : (double)k * 0.1;
+		dropStack(world, () -> new ItemEntity(world, d, e, h, stack, l, m, n), stack);
+	}
+
+	private static void dropStack(World world, Supplier<ItemEntity> itemEntitySupplier, ItemStack stack) {
 		if (!world.isClient && !stack.isEmpty() && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
-			float f = 0.5F;
-			double d = (double)(world.random.nextFloat() * 0.5F) + 0.25;
-			double e = (double)(world.random.nextFloat() * 0.5F) + 0.25;
-			double g = (double)(world.random.nextFloat() * 0.5F) + 0.25;
-			ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX() + d, (double)pos.getY() + e, (double)pos.getZ() + g, stack);
+			ItemEntity itemEntity = (ItemEntity)itemEntitySupplier.get();
 			itemEntity.setToDefaultPickupDelay();
 			world.spawnEntity(itemEntity);
 		}

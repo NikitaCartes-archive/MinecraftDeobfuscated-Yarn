@@ -20,7 +20,6 @@ import net.minecraft.structure.processor.StructureProcessor;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -38,7 +37,6 @@ public class StructurePool {
 					Codec.mapPair(StructurePoolElement.CODEC.fieldOf("element"), Codec.INT.fieldOf("weight"))
 						.codec()
 						.listOf()
-						.promotePartial(Util.addPrefix("Pool element: ", LOGGER::error))
 						.fieldOf("elements")
 						.forGetter(structurePool -> structurePool.elementCounts)
 				)

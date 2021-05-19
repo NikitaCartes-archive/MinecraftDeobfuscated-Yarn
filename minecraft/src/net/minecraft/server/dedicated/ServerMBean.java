@@ -122,11 +122,11 @@ public final class ServerMBean implements DynamicMBean {
 		private final String description;
 		private final Class<?> type;
 
-		Entry(String string, Supplier<Object> supplier, String string2, Class<?> class_) {
-			this.name = string;
-			this.getter = supplier;
-			this.description = string2;
-			this.type = class_;
+		Entry(String name, Supplier<Object> getter, String description, Class<?> type) {
+			this.name = name;
+			this.getter = getter;
+			this.description = description;
+			this.type = type;
 		}
 
 		private MBeanAttributeInfo createInfo() {

@@ -1,7 +1,6 @@
 package net.minecraft.client.gui.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -9,17 +8,18 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundManager;
-import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -28,21 +28,17 @@ import net.minecraft.util.math.MathHelper;
  * and narrated when the widget is selected.
  */
 @Environment(EnvType.CLIENT)
-public abstract class ClickableWidget extends DrawableHelper implements Drawable, Element {
+public abstract class ClickableWidget extends DrawableHelper implements Drawable, Element, Selectable {
 	public static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
-	private static final int UNFOCUSED_NARRATION_DELAY = 750;
-	private static final int FOCUSED_NARRATION_DELAY = 200;
 	protected int width;
 	protected int height;
 	public int x;
 	public int y;
 	private Text message;
-	private boolean wasHovered;
 	protected boolean hovered;
 	public boolean active = true;
 	public boolean visible = true;
 	protected float alpha = 1.0F;
-	protected long nextNarration = Long.MAX_VALUE;
 	private boolean focused;
 
 	public ClickableWidget(int x, int y, int width, int height, Text message) {
@@ -72,34 +68,7 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if (this.visible) {
 			this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
-			if (this.wasHovered != this.isHovered()) {
-				if (this.isHovered()) {
-					if (this.focused) {
-						this.queueNarration(FOCUSED_NARRATION_DELAY);
-					} else {
-						this.queueNarration(UNFOCUSED_NARRATION_DELAY);
-					}
-				} else {
-					this.nextNarration = Long.MAX_VALUE;
-				}
-			}
-
-			if (this.visible) {
-				this.renderButton(matrices, mouseX, mouseY, delta);
-			}
-
-			this.narrate();
-			this.wasHovered = this.isHovered();
-		}
-	}
-
-	protected void narrate() {
-		if (this.active && this.isHovered() && Util.getMeasuringTimeMs() > this.nextNarration) {
-			String string = this.getNarrationMessage().getString();
-			if (!string.isEmpty()) {
-				NarratorManager.INSTANCE.narrate(string);
-				this.nextNarration = Long.MAX_VALUE;
-			}
+			this.renderButton(matrices, mouseX, mouseY, delta);
 		}
 	}
 
@@ -241,15 +210,7 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 	}
 
 	public void setMessage(Text message) {
-		if (!Objects.equals(message.getString(), this.message.getString())) {
-			this.queueNarration(250);
-		}
-
 		this.message = message;
-	}
-
-	public void queueNarration(int delay) {
-		this.nextNarration = Util.getMeasuringTimeMs() + (long)delay;
 	}
 
 	public Text getMessage() {
@@ -262,5 +223,25 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 
 	protected void setFocused(boolean focused) {
 		this.focused = focused;
+	}
+
+	@Override
+	public Selectable.SelectionType getType() {
+		if (this.focused) {
+			return Selectable.SelectionType.FOCUSED;
+		} else {
+			return this.hovered ? Selectable.SelectionType.HOVERED : Selectable.SelectionType.NONE;
+		}
+	}
+
+	protected void method_37021(NarrationMessageBuilder narrationMessageBuilder) {
+		narrationMessageBuilder.put(NarrationPart.TITLE, this.getNarrationMessage());
+		if (this.active) {
+			if (this.isFocused()) {
+				narrationMessageBuilder.put(NarrationPart.USAGE, new TranslatableText("narration.button.usage.focused"));
+			} else {
+				narrationMessageBuilder.put(NarrationPart.USAGE, new TranslatableText("narration.button.usage.hovered"));
+			}
+		}
 	}
 }

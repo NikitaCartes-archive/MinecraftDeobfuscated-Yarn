@@ -37,7 +37,7 @@ import org.apache.logging.log4j.Logger;
 public class UpgradeData {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final UpgradeData NO_UPGRADE_DATA = new UpgradeData(EmptyBlockView.INSTANCE);
-	private static final String field_31412 = "Indices";
+	private static final String INDICES_KEY = "Indices";
 	private static final EightWayDirection[] EIGHT_WAYS = EightWayDirection.values();
 	private final EnumSet<EightWayDirection> sidesToUpgrade = EnumSet.noneOf(EightWayDirection.class);
 	private final int[][] centerIndicesToUpgrade;

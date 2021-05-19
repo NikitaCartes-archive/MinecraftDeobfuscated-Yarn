@@ -225,8 +225,8 @@ public class ChorusFlowerBlock extends Block {
 
 	@Override
 	public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
-		if (projectile.getType().isIn(EntityTypeTags.IMPACT_PROJECTILES)) {
-			BlockPos blockPos = hit.getBlockPos();
+		BlockPos blockPos = hit.getBlockPos();
+		if (!world.isClient && projectile.canModifyAt(world, blockPos) && projectile.getType().isIn(EntityTypeTags.IMPACT_PROJECTILES)) {
 			world.breakBlock(blockPos, true, projectile);
 		}
 	}

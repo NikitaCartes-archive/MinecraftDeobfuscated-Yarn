@@ -100,7 +100,7 @@ public class EntitySelectorOptions {
 			putOption("distance", entitySelectorReader -> {
 				int i = entitySelectorReader.getReader().getCursor();
 				NumberRange.FloatRange floatRange = NumberRange.FloatRange.parse(entitySelectorReader.getReader());
-				if ((floatRange.getMin() == null || !(floatRange.getMin() < 0.0F)) && (floatRange.getMax() == null || !(floatRange.getMax() < 0.0F))) {
+				if ((floatRange.getMin() == null || !(floatRange.getMin() < 0.0)) && (floatRange.getMax() == null || !(floatRange.getMax() < 0.0))) {
 					entitySelectorReader.setDistance(floatRange);
 					entitySelectorReader.setLocalWorldOnly();
 				} else {

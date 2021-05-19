@@ -2,10 +2,12 @@ package net.minecraft.client.gui.screen.recipebook;
 
 import com.google.common.collect.Lists;
 import java.util.List;
+import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.recipe.Recipe;
@@ -48,14 +50,14 @@ public class RecipeBookResults {
 		this.prevPageButton.setTextureUV(1, 208, 13, 18, RecipeBookWidget.TEXTURE);
 	}
 
-	public void setGui(RecipeBookWidget recipeBookWidget) {
-		this.recipeDisplayListeners.remove(recipeBookWidget);
-		this.recipeDisplayListeners.add(recipeBookWidget);
+	public void setGui(RecipeBookWidget widget) {
+		this.recipeDisplayListeners.remove(widget);
+		this.recipeDisplayListeners.add(widget);
 	}
 
-	public void setResults(List<RecipeResultCollection> list, boolean resetCurrentPage) {
-		this.resultCollections = list;
-		this.pageCount = (int)Math.ceil((double)list.size() / 20.0);
+	public void setResults(List<RecipeResultCollection> resultCollections, boolean resetCurrentPage) {
+		this.resultCollections = resultCollections;
+		this.pageCount = (int)Math.ceil((double)resultCollections.size() / 20.0);
 		if (this.pageCount <= this.currentPage || resetCurrentPage) {
 			this.currentPage = 0;
 		}
@@ -106,9 +108,9 @@ public class RecipeBookResults {
 		this.alternatesWidget.render(matrices, k, l, f);
 	}
 
-	public void drawTooltip(MatrixStack matrices, int i, int j) {
+	public void drawTooltip(MatrixStack matrices, int x, int y) {
 		if (this.client.currentScreen != null && this.hoveredResultButton != null && !this.alternatesWidget.isVisible()) {
-			this.client.currentScreen.renderTooltip(matrices, this.hoveredResultButton.getTooltip(this.client.currentScreen), i, j);
+			this.client.currentScreen.renderTooltip(matrices, this.hoveredResultButton.getTooltip(this.client.currentScreen), x, y);
 		}
 	}
 
@@ -185,5 +187,11 @@ public class RecipeBookResults {
 
 	public RecipeBook getRecipeBook() {
 		return this.recipeBook;
+	}
+
+	protected void method_37083(Consumer<ClickableWidget> consumer) {
+		consumer.accept(this.nextPageButton);
+		consumer.accept(this.prevPageButton);
+		this.resultButtons.forEach(consumer);
 	}
 }

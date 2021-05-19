@@ -22,7 +22,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ServerRecipeBook extends RecipeBook {
-	public static final String field_29820 = "recipeBook";
+	public static final String RECIPE_BOOK_KEY = "recipeBook";
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	public int unlockRecipes(Collection<Recipe<?>> recipes, ServerPlayerEntity player) {
