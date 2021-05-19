@@ -20,8 +20,8 @@ import net.minecraft.util.Util;
 public class DemoScreen
 extends Screen {
     private static final Identifier DEMO_BG = new Identifier("textures/gui/demo_background.png");
-    private MultilineText field_26538 = MultilineText.EMPTY;
-    private MultilineText field_26539 = MultilineText.EMPTY;
+    private MultilineText movementText = MultilineText.EMPTY;
+    private MultilineText fullWrappedText = MultilineText.EMPTY;
 
     public DemoScreen() {
         super(new TranslatableText("demo.help.title"));
@@ -30,17 +30,17 @@ extends Screen {
     @Override
     protected void init() {
         int i = -16;
-        this.addButton(new ButtonWidget(this.width / 2 - 116, this.height / 2 + 62 + -16, 114, 20, new TranslatableText("demo.help.buy"), buttonWidget -> {
-            buttonWidget.active = false;
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 116, this.height / 2 + 62 + -16, 114, 20, new TranslatableText("demo.help.buy"), button -> {
+            button.active = false;
             Util.getOperatingSystem().open("http://www.minecraft.net/store?source=demo");
         }));
-        this.addButton(new ButtonWidget(this.width / 2 + 2, this.height / 2 + 62 + -16, 114, 20, new TranslatableText("demo.help.later"), buttonWidget -> {
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, this.height / 2 + 62 + -16, 114, 20, new TranslatableText("demo.help.later"), button -> {
             this.client.openScreen(null);
             this.client.mouse.lockCursor();
         }));
         GameOptions gameOptions = this.client.options;
-        this.field_26538 = MultilineText.create(this.textRenderer, new TranslatableText("demo.help.movementShort", gameOptions.keyForward.getBoundKeyLocalizedText(), gameOptions.keyLeft.getBoundKeyLocalizedText(), gameOptions.keyBack.getBoundKeyLocalizedText(), gameOptions.keyRight.getBoundKeyLocalizedText()), new TranslatableText("demo.help.movementMouse"), new TranslatableText("demo.help.jump", gameOptions.keyJump.getBoundKeyLocalizedText()), new TranslatableText("demo.help.inventory", gameOptions.keyInventory.getBoundKeyLocalizedText()));
-        this.field_26539 = MultilineText.create(this.textRenderer, (StringVisitable)new TranslatableText("demo.help.fullWrapped"), 218);
+        this.movementText = MultilineText.create(this.textRenderer, new TranslatableText("demo.help.movementShort", gameOptions.keyForward.getBoundKeyLocalizedText(), gameOptions.keyLeft.getBoundKeyLocalizedText(), gameOptions.keyBack.getBoundKeyLocalizedText(), gameOptions.keyRight.getBoundKeyLocalizedText()), new TranslatableText("demo.help.movementMouse"), new TranslatableText("demo.help.jump", gameOptions.keyJump.getBoundKeyLocalizedText()), new TranslatableText("demo.help.inventory", gameOptions.keyInventory.getBoundKeyLocalizedText()));
+        this.fullWrappedText = MultilineText.create(this.textRenderer, (StringVisitable)new TranslatableText("demo.help.fullWrapped"), 218);
     }
 
     @Override
@@ -59,8 +59,8 @@ extends Screen {
         int i = (this.width - 248) / 2 + 10;
         int j = (this.height - 166) / 2 + 8;
         this.textRenderer.draw(matrices, this.title, (float)i, (float)j, 0x1F1F1F);
-        j = this.field_26538.draw(matrices, i, j + 12, 12, 0x4F4F4F);
-        this.field_26539.draw(matrices, i, j + 20, this.textRenderer.fontHeight, 0x1F1F1F);
+        j = this.movementText.draw(matrices, i, j + 12, 12, 0x4F4F4F);
+        this.fullWrappedText.draw(matrices, i, j + 20, this.textRenderer.fontHeight, 0x1F1F1F);
         super.render(matrices, mouseX, mouseY, delta);
     }
 }

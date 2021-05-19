@@ -25,28 +25,21 @@ extends RealmsScreen {
     private final boolean outdated;
 
     public RealmsClientOutdatedScreen(Screen parent, boolean outdated) {
+        super(outdated ? OUTDATED_TITLE : INCOMPATIBLE_TITLE);
         this.parent = parent;
         this.outdated = outdated;
     }
 
     @Override
     public void init() {
-        this.addButton(new ButtonWidget(this.width / 2 - 100, RealmsClientOutdatedScreen.row(12), 200, 20, ScreenTexts.BACK, buttonWidget -> this.client.openScreen(this.parent)));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, RealmsClientOutdatedScreen.row(12), 200, 20, ScreenTexts.BACK, button -> this.client.openScreen(this.parent)));
     }
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        Text[] texts;
-        Text text;
         this.renderBackground(matrices);
-        if (this.outdated) {
-            text = INCOMPATIBLE_TITLE;
-            texts = INCOMPATIBLE_LINES;
-        } else {
-            text = OUTDATED_TITLE;
-            texts = OUTDATED_LINES;
-        }
-        RealmsClientOutdatedScreen.drawCenteredText(matrices, this.textRenderer, text, this.width / 2, RealmsClientOutdatedScreen.row(3), 0xFF0000);
+        RealmsClientOutdatedScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, RealmsClientOutdatedScreen.row(3), 0xFF0000);
+        Text[] texts = this.outdated ? INCOMPATIBLE_LINES : OUTDATED_LINES;
         for (int i = 0; i < texts.length; ++i) {
             RealmsClientOutdatedScreen.drawCenteredText(matrices, this.textRenderer, texts[i], this.width / 2, RealmsClientOutdatedScreen.row(5) + i * 12, 0xFFFFFF);
         }

@@ -134,6 +134,7 @@ extends ForwardingDynamicOps<T> {
      * <p>This logic is used by both {@code decodeOrId} and {@code loadToRegistry}.
      */
     private <E> DataResult<Supplier<E>> readSupplier(RegistryKey<? extends Registry<E>> key, MutableRegistry<E> registry, Codec<E> codec, Identifier elementId) {
+        DataResult<Supplier<E>> dataResult2;
         RegistryKey registryKey = RegistryKey.of(key, elementId);
         ValueHolder<E> valueHolder = this.getValueHolder(key);
         DataResult dataResult = valueHolder.values.get(registryKey);
@@ -148,15 +149,20 @@ extends ForwardingDynamicOps<T> {
             return object;
         });
         valueHolder.values.put(registryKey, DataResult.success(supplier));
-        DataResult<Pair<Supplier, OptionalInt>> dataResult2 = this.entryLoader.load(this.entryOps, key, registryKey, codec);
-        Optional optional = dataResult2.result();
-        if (optional.isPresent()) {
-            Pair pair2 = optional.get();
-            registry.replace(pair2.getSecond(), registryKey, pair2.getFirst(), dataResult2.lifecycle());
+        Optional optional = this.entryLoader.load(this.entryOps, key, registryKey, codec);
+        if (!optional.isPresent()) {
+            dataResult2 = DataResult.success(() -> registry.get(registryKey), Lifecycle.stable());
+        } else {
+            DataResult<Pair<Supplier, OptionalInt>> dataResult3 = optional.get();
+            Optional optional2 = dataResult3.result();
+            if (optional2.isPresent()) {
+                Pair pair2 = optional2.get();
+                registry.replace(pair2.getSecond(), registryKey, pair2.getFirst(), dataResult3.lifecycle());
+            }
+            dataResult2 = dataResult3.map(pair -> () -> registry.get(registryKey));
         }
-        DataResult<Supplier<Object>> dataResult3 = !optional.isPresent() && registry.get(registryKey) != null ? DataResult.success(() -> registry.get(registryKey), Lifecycle.stable()) : dataResult2.map(pair -> () -> registry.get(registryKey));
-        valueHolder.values.put(registryKey, dataResult3);
-        return dataResult3;
+        valueHolder.values.put(registryKey, dataResult2);
+        return dataResult2;
     }
 
     private <E> ValueHolder<E> getValueHolder(RegistryKey<? extends Registry<E>> registryRef) {
@@ -170,7 +176,7 @@ extends ForwardingDynamicOps<T> {
     public static interface EntryLoader {
         public Collection<Identifier> getKnownEntryPaths(RegistryKey<? extends Registry<?>> var1);
 
-        public <E> DataResult<Pair<E, OptionalInt>> load(DynamicOps<JsonElement> var1, RegistryKey<? extends Registry<E>> var2, RegistryKey<E> var3, Decoder<E> var4);
+        public <E> Optional<DataResult<Pair<E, OptionalInt>>> load(DynamicOps<JsonElement> var1, RegistryKey<? extends Registry<E>> var2, RegistryKey<E> var3, Decoder<E> var4);
 
         public static EntryLoader resourceBacked(final ResourceManager resourceManager) {
             return new EntryLoader(){
@@ -184,19 +190,22 @@ extends ForwardingDynamicOps<T> {
                  * Enabled aggressive exception aggregation
                  */
                 @Override
-                public <E> DataResult<Pair<E, OptionalInt>> load(DynamicOps<JsonElement> dynamicOps, RegistryKey<? extends Registry<E>> registryId, RegistryKey<E> entryId, Decoder<E> decoder) {
+                public <E> Optional<DataResult<Pair<E, OptionalInt>>> load(DynamicOps<JsonElement> dynamicOps, RegistryKey<? extends Registry<E>> registryId, RegistryKey<E> entryId, Decoder<E> decoder) {
                     Identifier identifier = entryId.getValue();
                     Identifier identifier2 = new Identifier(identifier.getNamespace(), registryId.getValue().getPath() + "/" + identifier.getPath() + RegistryOps.JSON_FILE_EXTENSION);
+                    if (!resourceManager.containsResource(identifier2)) {
+                        return Optional.empty();
+                    }
                     try (Resource resource = resourceManager.getResource(identifier2);){
-                        DataResult<Pair<E, OptionalInt>> dataResult;
+                        Optional<DataResult<Pair<E, OptionalInt>>> optional;
                         try (InputStreamReader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8);){
                             JsonParser jsonParser = new JsonParser();
                             JsonElement jsonElement = jsonParser.parse(reader);
-                            dataResult = decoder.parse(dynamicOps, jsonElement).map(object -> Pair.of(object, OptionalInt.empty()));
+                            optional = Optional.of(decoder.parse(dynamicOps, jsonElement).map(object -> Pair.of(object, OptionalInt.empty())));
                         }
-                        return dataResult;
+                        return optional;
                     } catch (JsonIOException | JsonSyntaxException | IOException exception) {
-                        return DataResult.error("Failed to parse " + identifier2 + " file: " + exception.getMessage());
+                        return Optional.of(DataResult.error("Failed to parse " + identifier2 + " file: " + exception.getMessage()));
                     }
                 }
 
@@ -230,12 +239,12 @@ extends ForwardingDynamicOps<T> {
             }
 
             @Override
-            public <E> DataResult<Pair<E, OptionalInt>> load(DynamicOps<JsonElement> dynamicOps, RegistryKey<? extends Registry<E>> registryId, RegistryKey<E> entryId, Decoder<E> decoder) {
+            public <E> Optional<DataResult<Pair<E, OptionalInt>>> load(DynamicOps<JsonElement> dynamicOps, RegistryKey<? extends Registry<E>> registryId, RegistryKey<E> entryId, Decoder<E> decoder) {
                 JsonElement jsonElement = this.values.get(entryId);
                 if (jsonElement == null) {
-                    return DataResult.error("Unknown element: " + entryId);
+                    return Optional.of(DataResult.error("Unknown element: " + entryId));
                 }
-                return decoder.parse(dynamicOps, jsonElement).setLifecycle(this.entryToLifecycle.get(entryId)).map(object -> Pair.of(object, OptionalInt.of(this.entryToRawId.getInt(entryId))));
+                return Optional.of(decoder.parse(dynamicOps, jsonElement).setLifecycle(this.entryToLifecycle.get(entryId)).map(object -> Pair.of(object, OptionalInt.of(this.entryToRawId.getInt(entryId)))));
             }
         }
     }

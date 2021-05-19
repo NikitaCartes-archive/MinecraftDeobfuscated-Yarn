@@ -87,7 +87,7 @@ implements ClientPlayerTickable {
                 double g = d - this.player.getX();
                 double h = e - this.player.getEyeY();
                 double k = f - this.player.getZ();
-                double l = MathHelper.sqrt(g * g + h * h + k * k);
+                double l = Math.sqrt(g * g + h * h + k * k);
                 double m = l + biomeMoodSound.getExtraDistance();
                 PositionedSoundInstance positionedSoundInstance = PositionedSoundInstance.ambient(biomeMoodSound.getSound(), this.player.getX() + g / l * m, this.player.getEyeY() + h / l * m, this.player.getZ() + k / l * m);
                 this.soundManager.play(positionedSoundInstance);

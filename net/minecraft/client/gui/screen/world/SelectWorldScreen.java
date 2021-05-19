@@ -60,16 +60,16 @@ extends Screen {
     protected void init() {
         this.client.keyboard.setRepeatEvents(true);
         this.searchBox = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 22, 200, 20, this.searchBox, new TranslatableText("selectWorld.search"));
-        this.searchBox.setChangedListener(string -> this.levelList.filter(() -> string, false));
+        this.searchBox.setChangedListener(search -> this.levelList.filter(() -> search, false));
         this.levelList = new WorldListWidget(this, this.client, this.width, this.height, 48, this.height - 64, 36, () -> this.searchBox.getText(), this.levelList);
-        this.children.add(this.searchBox);
-        this.children.add(this.levelList);
-        this.selectButton = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 52, 150, 20, new TranslatableText("selectWorld.select"), buttonWidget -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::play)));
-        this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 52, 150, 20, new TranslatableText("selectWorld.create"), buttonWidget -> this.client.openScreen(CreateWorldScreen.create(this))));
-        this.editButton = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 28, 72, 20, new TranslatableText("selectWorld.edit"), buttonWidget -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::edit)));
-        this.deleteButton = this.addButton(new ButtonWidget(this.width / 2 - 76, this.height - 28, 72, 20, new TranslatableText("selectWorld.delete"), buttonWidget -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::deleteIfConfirmed)));
-        this.recreateButton = this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 28, 72, 20, new TranslatableText("selectWorld.recreate"), buttonWidget -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::recreate)));
-        this.addButton(new ButtonWidget(this.width / 2 + 82, this.height - 28, 72, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));
+        this.addSelectableChild(this.searchBox);
+        this.addSelectableChild(this.levelList);
+        this.selectButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 154, this.height - 52, 150, 20, new TranslatableText("selectWorld.select"), button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::play)));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height - 52, 150, 20, new TranslatableText("selectWorld.create"), button -> this.client.openScreen(CreateWorldScreen.create(this))));
+        this.editButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 154, this.height - 28, 72, 20, new TranslatableText("selectWorld.edit"), button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::edit)));
+        this.deleteButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 76, this.height - 28, 72, 20, new TranslatableText("selectWorld.delete"), button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::deleteIfConfirmed)));
+        this.recreateButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height - 28, 72, 20, new TranslatableText("selectWorld.recreate"), button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::recreate)));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 82, this.height - 28, 72, 20, ScreenTexts.CANCEL, button -> this.client.openScreen(this.parent)));
         this.worldSelected(false);
         this.setInitialFocus(this.searchBox);
     }
@@ -122,7 +122,7 @@ extends Screen {
         }
     }
 
-    private /* synthetic */ void method_35739(ButtonWidget buttonWidget) {
+    private /* synthetic */ void method_35739(ButtonWidget button) {
         try {
             WorldListWidget.Entry entry;
             String string = "DEBUG world";

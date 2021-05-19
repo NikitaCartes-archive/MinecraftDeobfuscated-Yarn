@@ -22,7 +22,7 @@ extends ChatScreen {
     @Override
     protected void init() {
         super.init();
-        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 40, 200, 20, new TranslatableText("multiplayer.stopSleeping"), buttonWidget -> this.stopSleeping()));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 40, 200, 20, new TranslatableText("multiplayer.stopSleeping"), button -> this.stopSleeping()));
     }
 
     @Override

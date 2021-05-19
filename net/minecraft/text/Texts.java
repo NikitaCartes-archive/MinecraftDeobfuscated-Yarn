@@ -94,15 +94,19 @@ public class Texts {
         return Texts.join(list, transformer);
     }
 
-    public static <T> Text join(Collection<T> elements, Function<T, Text> transformer) {
+    public static <T> Text join(Collection<? extends T> elements, Function<T, Text> transformer) {
         return Texts.join(elements, GRAY_DEFAULT_SEPARATOR_TEXT, transformer);
     }
 
-    public static <T> MutableText join(Collection<T> elements, Optional<? extends Text> separator, Function<T, Text> transformer) {
+    public static <T> MutableText join(Collection<? extends T> elements, Optional<? extends Text> separator, Function<T, Text> transformer) {
         return Texts.join(elements, DataFixUtils.orElse(separator, GRAY_DEFAULT_SEPARATOR_TEXT), transformer);
     }
 
-    public static <T> MutableText join(Collection<T> elements, Text separator, Function<T, Text> transformer) {
+    public static Text join(Collection<? extends Text> texts, Text separator) {
+        return Texts.join(texts, separator, Function.identity());
+    }
+
+    public static <T> MutableText join(Collection<? extends T> elements, Text separator, Function<T, Text> transformer) {
         if (elements.isEmpty()) {
             return new LiteralText("");
         }

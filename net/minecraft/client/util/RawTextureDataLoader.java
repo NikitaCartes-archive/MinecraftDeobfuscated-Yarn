@@ -14,8 +14,8 @@ import net.minecraft.util.Identifier;
 @Environment(value=EnvType.CLIENT)
 public class RawTextureDataLoader {
     @Deprecated
-    public static int[] loadRawTextureData(ResourceManager resourceManager, Identifier identifier) throws IOException {
-        try (Resource resource = resourceManager.getResource(identifier);){
+    public static int[] loadRawTextureData(ResourceManager resourceManager, Identifier id) throws IOException {
+        try (Resource resource = resourceManager.getResource(id);){
             NativeImage nativeImage = NativeImage.read(resource.getInputStream());
             try {
                 int[] nArray = nativeImage.makePixelArray();

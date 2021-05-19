@@ -21,13 +21,11 @@ import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
-import net.minecraft.client.gui.screen.TickableElement;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.realms.KeyCombo;
 import net.minecraft.client.realms.Ping;
-import net.minecraft.client.realms.Realms;
 import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.RealmsObjectSelectionList;
 import net.minecraft.client.realms.dto.PingResult;
@@ -50,7 +48,7 @@ import net.minecraft.client.realms.task.RealmsGetServerDetailsTask;
 import net.minecraft.client.realms.util.RealmsPersistence;
 import net.minecraft.client.realms.util.RealmsTextureManager;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.text.LiteralText;
@@ -107,6 +105,8 @@ extends RealmsScreen {
     private static final Text CONFIGURE_TEXT = new TranslatableText("mco.selectServer.configure");
     private static final Text INFO_TEXT = new TranslatableText("mco.selectServer.info");
     private static final Text NEWS_TEXT = new TranslatableText("mco.news");
+    static final Text field_33776 = new TranslatableText("gui.narrate.button", UNINITIALIZED_TEXT);
+    static final Text field_33774 = ScreenTexts.joinLines(TRIAL_MESSAGE_LINES);
     private static List<Identifier> IMAGES = ImmutableList.of();
     static final RealmsDataFetcher realmsDataFetcher = new RealmsDataFetcher(MinecraftClient.getInstance(), RealmsClient.createRealmsClient());
     static boolean overrideConfigure;
@@ -120,6 +120,7 @@ extends RealmsScreen {
     private boolean dontSetConnectedToRealms;
     final Screen lastScreen;
     volatile RealmSelectionList realmSelectionList;
+    private boolean field_33775;
     long selectedServerId = -1L;
     ButtonWidget playButton;
     private ButtonWidget backButton;
@@ -147,13 +148,15 @@ extends RealmsScreen {
     private MultilineText field_26466 = MultilineText.EMPTY;
     HoverState hoverState;
     private ButtonWidget showPopupButton;
-    private ButtonWidget pendingInvitesButton;
+    @Nullable
+    private PendingInvitesButton pendingInvitesButton;
     private ButtonWidget newsButton;
     private ButtonWidget createTrialButton;
     private ButtonWidget buyARealmButton;
     private ButtonWidget closeButton;
 
     public RealmsMainScreen(Screen screen) {
+        super(NarratorManager.EMPTY);
         this.lastScreen = screen;
         this.rateLimiter = RateLimiter.create(0.01666666753590107);
     }
@@ -227,7 +230,8 @@ extends RealmsScreen {
         if (lastScrollYPosition != -1) {
             this.realmSelectionList.setScrollAmount(lastScrollYPosition);
         }
-        this.addChild(this.realmSelectionList);
+        this.addSelectableChild(this.realmSelectionList);
+        this.field_33775 = true;
         this.focusOn(this.realmSelectionList);
         this.field_26466 = MultilineText.create(this.textRenderer, (StringVisitable)POPUP_TEXT, 100);
     }
@@ -237,33 +241,33 @@ extends RealmsScreen {
     }
 
     public void addButtons() {
-        this.leaveButton = this.addButton(new ButtonWidget(this.width / 2 - 202, this.height - 32, 90, 20, new TranslatableText("mco.selectServer.leave"), buttonWidget -> this.leaveClicked(this.findServer(this.selectedServerId))));
-        this.configureButton = this.addButton(new ButtonWidget(this.width / 2 - 190, this.height - 32, 90, 20, new TranslatableText("mco.selectServer.configure"), buttonWidget -> this.configureClicked(this.findServer(this.selectedServerId))));
-        this.playButton = this.addButton(new ButtonWidget(this.width / 2 - 93, this.height - 32, 90, 20, new TranslatableText("mco.selectServer.play"), buttonWidget -> {
+        this.leaveButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 202, this.height - 32, 90, 20, new TranslatableText("mco.selectServer.leave"), button -> this.leaveClicked(this.findServer(this.selectedServerId))));
+        this.configureButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 190, this.height - 32, 90, 20, new TranslatableText("mco.selectServer.configure"), button -> this.configureClicked(this.findServer(this.selectedServerId))));
+        this.playButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 93, this.height - 32, 90, 20, new TranslatableText("mco.selectServer.play"), button -> {
             RealmsServer realmsServer = this.findServer(this.selectedServerId);
             if (realmsServer == null) {
                 return;
             }
             this.play(realmsServer, this);
         }));
-        this.backButton = this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 32, 90, 20, ScreenTexts.BACK, buttonWidget -> {
+        this.backButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height - 32, 90, 20, ScreenTexts.BACK, button -> {
             if (!this.justClosedPopup) {
                 this.client.openScreen(this.lastScreen);
             }
         }));
-        this.renewButton = this.addButton(new ButtonWidget(this.width / 2 + 100, this.height - 32, 90, 20, new TranslatableText("mco.selectServer.expiredRenew"), buttonWidget -> this.onRenew()));
-        this.pendingInvitesButton = this.addButton(new PendingInvitesButton());
-        this.newsButton = this.addButton(new NewsButton());
-        this.showPopupButton = this.addButton(new ShowPopupButton());
-        this.closeButton = this.addButton(new CloseButton());
-        this.createTrialButton = this.addButton(new ButtonWidget(this.width / 2 + 52, this.popupY0() + 137 - 20, 98, 20, new TranslatableText("mco.selectServer.trial"), buttonWidget -> {
+        this.renewButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 100, this.height - 32, 90, 20, new TranslatableText("mco.selectServer.expiredRenew"), button -> this.onRenew()));
+        this.pendingInvitesButton = this.addDrawableChild(new PendingInvitesButton());
+        this.newsButton = this.addDrawableChild(new NewsButton());
+        this.showPopupButton = this.addDrawableChild(new ShowPopupButton());
+        this.closeButton = this.addDrawableChild(new CloseButton());
+        this.createTrialButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 52, this.popupY0() + 137 - 20, 98, 20, new TranslatableText("mco.selectServer.trial"), button -> {
             if (!this.trialsAvailable || this.createdTrial) {
                 return;
             }
             Util.getOperatingSystem().open("https://aka.ms/startjavarealmstrial");
             this.client.openScreen(this.lastScreen);
         }));
-        this.buyARealmButton = this.addButton(new ButtonWidget(this.width / 2 + 52, this.popupY0() + 160 - 20, 98, 20, new TranslatableText("mco.selectServer.buy"), buttonWidget -> Util.getOperatingSystem().open("https://aka.ms/BuyJavaRealms")));
+        this.buyARealmButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 52, this.popupY0() + 160 - 20, 98, 20, new TranslatableText("mco.selectServer.buy"), button -> Util.getOperatingSystem().open("https://aka.ms/BuyJavaRealms")));
         RealmsServer realmsServer = this.findServer(this.selectedServerId);
         this.updateButtonStates(realmsServer);
     }
@@ -310,6 +314,9 @@ extends RealmsScreen {
     @Override
     public void tick() {
         super.tick();
+        if (this.pendingInvitesButton != null) {
+            this.pendingInvitesButton.method_37005();
+        }
         this.justClosedPopup = false;
         ++this.animTick;
         --this.clicks;
@@ -353,7 +360,7 @@ extends RealmsScreen {
         if (realmsDataFetcher.isFetchedSinceLastTry(RealmsDataFetcher.Task.PENDING_INVITE)) {
             this.numberOfPendingInvites = realmsDataFetcher.getPendingInvitesCount();
             if (this.numberOfPendingInvites > 0 && this.rateLimiter.tryAcquire(1)) {
-                Realms.narrateNow(I18n.translate("mco.configure.world.invite.narration", this.numberOfPendingInvites));
+                NarratorManager.INSTANCE.narrate(new TranslatableText("mco.configure.world.invite.narration", this.numberOfPendingInvites));
             }
         }
         if (realmsDataFetcher.isFetchedSinceLastTry(RealmsDataFetcher.Task.TRIAL_AVAILABLE) && !this.createdTrial) {
@@ -656,8 +663,9 @@ extends RealmsScreen {
         } else {
             if (this.showingPopup) {
                 this.updateButtonStates(null);
-                if (!this.children.contains(this.realmSelectionList)) {
-                    this.children.add(this.realmSelectionList);
+                if (!this.field_33775) {
+                    this.addSelectableChild(this.realmSelectionList);
+                    this.field_33775 = true;
                 }
                 RealmsServer realmsServer = this.findServer(this.selectedServerId);
                 this.playButton.active = this.shouldPlayButtonBeActive(realmsServer);
@@ -711,15 +719,15 @@ extends RealmsScreen {
         int i = this.popupX0();
         int j = this.popupY0();
         if (!this.showingPopup) {
-            RealmSelectionList element;
             this.carouselIndex = 0;
             this.carouselTick = 0;
             this.hasSwitchedCarouselImage = true;
             this.updateButtonStates(null);
-            if (this.children.contains(this.realmSelectionList) && !this.children.remove(element = this.realmSelectionList)) {
-                LOGGER.error("Unable to remove widget: {}", (Object)element);
+            if (this.field_33775) {
+                this.remove(this.realmSelectionList);
+                this.field_33775 = false;
             }
-            Realms.narrateNow(POPUP_TEXT.getString());
+            NarratorManager.INSTANCE.narrate(POPUP_TEXT);
         }
         if (this.hasFetchedServers) {
             this.showingPopup = true;
@@ -1132,17 +1140,10 @@ extends RealmsScreen {
         public void setSelected(@Nullable Entry entry) {
             super.setSelected(entry);
             int i = this.children().indexOf(entry);
-            if (this.field_25723 && i == 0) {
-                Realms.narrateNow(I18n.translate("mco.trial.message.line1", new Object[0]), I18n.translate("mco.trial.message.line2", new Object[0]));
-            } else if (!this.field_25723 || i > 0) {
+            if (!this.field_25723 || i > 0) {
                 RealmsServer realmsServer = RealmsMainScreen.this.realmsServers.get(i - (this.field_25723 ? 1 : 0));
                 RealmsMainScreen.this.selectedServerId = realmsServer.id;
                 RealmsMainScreen.this.updateButtonStates(realmsServer);
-                if (realmsServer.state == RealmsServer.State.UNINITIALIZED) {
-                    Realms.narrateNow(I18n.translate("mco.selectServer.uninitialized", new Object[0]) + I18n.translate("mco.gui.button", new Object[0]));
-                } else {
-                    Realms.narrateNow(I18n.translate("narrator.select", realmsServer.name));
-                }
             }
         }
 
@@ -1197,14 +1198,12 @@ extends RealmsScreen {
 
     @Environment(value=EnvType.CLIENT)
     class PendingInvitesButton
-    extends ButtonWidget
-    implements TickableElement {
+    extends ButtonWidget {
         public PendingInvitesButton() {
             super(RealmsMainScreen.this.width / 2 + 47, 6, 22, 22, LiteralText.EMPTY, RealmsMainScreen.this::method_24985);
         }
 
-        @Override
-        public void tick() {
+        public void method_37005() {
             this.setMessage(RealmsMainScreen.this.numberOfPendingInvites == 0 ? NO_PENDING_TEXT : PENDING_TEXT);
         }
 
@@ -1218,7 +1217,7 @@ extends RealmsScreen {
     class NewsButton
     extends ButtonWidget {
         public NewsButton() {
-            super(RealmsMainScreen.this.width - 62, 6, 20, 20, new TranslatableText("mco.news"), buttonWidget -> {
+            super(RealmsMainScreen.this.width - 62, 6, 20, 20, new TranslatableText("mco.news"), button -> {
                 if (realmsMainScreen.newsLink == null) {
                     return;
                 }
@@ -1242,7 +1241,7 @@ extends RealmsScreen {
     class ShowPopupButton
     extends ButtonWidget {
         public ShowPopupButton() {
-            super(RealmsMainScreen.this.width - 37, 6, 20, 20, new TranslatableText("mco.selectServer.info"), buttonWidget -> {
+            super(RealmsMainScreen.this.width - 37, 6, 20, 20, new TranslatableText("mco.selectServer.info"), button -> {
                 realmsMainScreen.popupOpenedByUser = !realmsMainScreen.popupOpenedByUser;
             });
         }
@@ -1257,7 +1256,7 @@ extends RealmsScreen {
     class CloseButton
     extends ButtonWidget {
         public CloseButton() {
-            super(RealmsMainScreen.this.popupX0() + 4, RealmsMainScreen.this.popupY0() + 4, 12, 12, new TranslatableText("mco.selectServer.close"), buttonWidget -> RealmsMainScreen.this.onClosePopup());
+            super(RealmsMainScreen.this.popupX0() + 4, RealmsMainScreen.this.popupY0() + 4, 12, 12, new TranslatableText("mco.selectServer.close"), button -> RealmsMainScreen.this.onClosePopup());
         }
 
         @Override
@@ -1304,6 +1303,11 @@ extends RealmsScreen {
                 DrawableHelper.drawCenteredText(matrixStack, RealmsMainScreen.this.textRenderer, text, RealmsMainScreen.this.width / 2, i + j, k);
                 j += 10;
             }
+        }
+
+        @Override
+        public Text method_37006() {
+            return field_33774;
         }
     }
 
@@ -1429,6 +1433,14 @@ extends RealmsScreen {
                 DrawableHelper.drawTexture(matrixStack, i - 36, j, 32, 32, 8.0f, 8.0f, 8, 8, 64, 64);
                 DrawableHelper.drawTexture(matrixStack, i - 36, j, 32, 32, 40.0f, 8.0f, 8, 8, 64, 64);
             });
+        }
+
+        @Override
+        public Text method_37006() {
+            if (this.mServerData.state == RealmsServer.State.UNINITIALIZED) {
+                return field_33776;
+            }
+            return new TranslatableText("narrator.select", this.mServerData.name);
         }
     }
 

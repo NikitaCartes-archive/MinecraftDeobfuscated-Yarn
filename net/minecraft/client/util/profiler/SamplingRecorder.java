@@ -26,11 +26,11 @@ public class SamplingRecorder {
     @Nullable
     private final ValueConsumer writeAction;
 
-    <T> SamplingRecorder(Metric metric, DoubleSupplier doubleSupplier, @Nullable Runnable runnable, @Nullable ValueConsumer valueConsumer) {
+    <T> SamplingRecorder(Metric metric, DoubleSupplier timeGetter, @Nullable Runnable startAction, @Nullable ValueConsumer writeAction) {
         this.metric = metric;
-        this.startAction = runnable;
-        this.timeGetter = doubleSupplier;
-        this.writeAction = valueConsumer;
+        this.startAction = startAction;
+        this.timeGetter = timeGetter;
+        this.writeAction = writeAction;
         this.buffer = new PacketByteBuf(Unpooled.directBuffer());
         this.active = true;
     }

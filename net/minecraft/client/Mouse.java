@@ -83,14 +83,16 @@ public class Mouse {
             } else {
                 double d = this.x * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth();
                 double e = this.y * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight();
+                Screen screen = this.client.currentScreen;
                 if (bl) {
+                    screen.applyMousePressScrollNarratorDelay();
                     Screen.wrapScreenError(() -> {
-                        bls[0] = this.client.currentScreen.mouseClicked(d, e, i);
-                    }, "mouseClicked event handler", this.client.currentScreen.getClass().getCanonicalName());
+                        bls[0] = screen.mouseClicked(d, e, i);
+                    }, "mouseClicked event handler", screen.getClass().getCanonicalName());
                 } else {
                     Screen.wrapScreenError(() -> {
-                        bls[0] = this.client.currentScreen.mouseReleased(d, e, i);
-                    }, "mouseReleased event handler", this.client.currentScreen.getClass().getCanonicalName());
+                        bls[0] = screen.mouseReleased(d, e, i);
+                    }, "mouseReleased event handler", screen.getClass().getCanonicalName());
                 }
             }
         }
@@ -128,6 +130,7 @@ public class Mouse {
                     double e = this.x * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth();
                     double f = this.y * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight();
                     this.client.currentScreen.mouseScrolled(e, f, d);
+                    this.client.currentScreen.applyMousePressScrollNarratorDelay();
                 } else if (this.client.player != null) {
                     if (this.eventDeltaWheel != 0.0 && Math.signum(d) != Math.signum(this.eventDeltaWheel)) {
                         this.eventDeltaWheel = 0.0;
@@ -170,7 +173,7 @@ public class Mouse {
     }
 
     private void onCursorPos(long window, double x, double y) {
-        Screen element;
+        Screen screen;
         if (window != MinecraftClient.getInstance().getWindow().getHandle()) {
             return;
         }
@@ -179,15 +182,16 @@ public class Mouse {
             this.y = y;
             this.hasResolutionChanged = false;
         }
-        if ((element = this.client.currentScreen) != null && this.client.getOverlay() == null) {
+        if ((screen = this.client.currentScreen) != null && this.client.getOverlay() == null) {
             double d = x * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth();
             double e = y * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight();
-            Screen.wrapScreenError(() -> element.mouseMoved(d, e), "mouseMoved event handler", element.getClass().getCanonicalName());
+            Screen.wrapScreenError(() -> screen.mouseMoved(d, e), "mouseMoved event handler", screen.getClass().getCanonicalName());
             if (this.activeButton != -1 && this.glfwTime > 0.0) {
                 double f = (x - this.x) * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth();
                 double g = (y - this.y) * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight();
-                Screen.wrapScreenError(() -> element.mouseDragged(d, e, this.activeButton, f, g), "mouseDragged event handler", element.getClass().getCanonicalName());
+                Screen.wrapScreenError(() -> screen.mouseDragged(d, e, this.activeButton, f, g), "mouseDragged event handler", screen.getClass().getCanonicalName());
             }
+            screen.applyMouseMoveNarratorDelay();
         }
         this.client.getProfiler().push("mouse");
         if (this.isCursorLocked() && this.client.isWindowFocused()) {

@@ -10,9 +10,7 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.realms.Realms;
 import net.minecraft.client.realms.RealmsClient;
-import net.minecraft.client.realms.RealmsLabel;
 import net.minecraft.client.realms.RealmsObjectSelectionList;
 import net.minecraft.client.realms.dto.Ops;
 import net.minecraft.client.realms.dto.PlayerInfo;
@@ -28,7 +26,6 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -64,10 +61,10 @@ extends RealmsScreen {
     private String selectedInvited;
     int player = -1;
     private boolean stateChanged;
-    private RealmsLabel titleLabel;
     PlayerOperation operation = PlayerOperation.NONE;
 
     public RealmsPlayerScreen(RealmsConfigureWorldScreen parent, RealmsServer serverData) {
+        super(new TranslatableText("mco.configure.world.players.title"));
         this.parent = parent;
         this.serverData = serverData;
     }
@@ -80,22 +77,20 @@ extends RealmsScreen {
         this.client.keyboard.setRepeatEvents(true);
         this.invitedObjectSelectionList = new InvitedObjectSelectionList();
         this.invitedObjectSelectionList.setLeftPos(this.column1_x);
-        this.addChild(this.invitedObjectSelectionList);
+        this.addSelectableChild(this.invitedObjectSelectionList);
         for (PlayerInfo playerInfo : this.serverData.players) {
             this.invitedObjectSelectionList.addEntry(playerInfo);
         }
-        this.addButton(new ButtonWidget(this.column2_x, RealmsPlayerScreen.row(1), this.column_width + 10, 20, new TranslatableText("mco.configure.world.buttons.invite"), buttonWidget -> this.client.openScreen(new RealmsInviteScreen(this.parent, this, this.serverData))));
-        this.removeButton = this.addButton(new ButtonWidget(this.column2_x, RealmsPlayerScreen.row(7), this.column_width + 10, 20, new TranslatableText("mco.configure.world.invites.remove.tooltip"), buttonWidget -> this.uninvite(this.player)));
-        this.opdeopButton = this.addButton(new ButtonWidget(this.column2_x, RealmsPlayerScreen.row(9), this.column_width + 10, 20, new TranslatableText("mco.configure.world.invites.ops.tooltip"), buttonWidget -> {
+        this.addDrawableChild(new ButtonWidget(this.column2_x, RealmsPlayerScreen.row(1), this.column_width + 10, 20, new TranslatableText("mco.configure.world.buttons.invite"), button -> this.client.openScreen(new RealmsInviteScreen(this.parent, this, this.serverData))));
+        this.removeButton = this.addDrawableChild(new ButtonWidget(this.column2_x, RealmsPlayerScreen.row(7), this.column_width + 10, 20, new TranslatableText("mco.configure.world.invites.remove.tooltip"), button -> this.uninvite(this.player)));
+        this.opdeopButton = this.addDrawableChild(new ButtonWidget(this.column2_x, RealmsPlayerScreen.row(9), this.column_width + 10, 20, new TranslatableText("mco.configure.world.invites.ops.tooltip"), button -> {
             if (this.serverData.players.get(this.player).isOperator()) {
                 this.deop(this.player);
             } else {
                 this.op(this.player);
             }
         }));
-        this.addButton(new ButtonWidget(this.column2_x + this.column_width / 2 + 2, RealmsPlayerScreen.row(12), this.column_width / 2 + 10 - 2, 20, ScreenTexts.BACK, buttonWidget -> this.backButtonClicked()));
-        this.titleLabel = this.addChild(new RealmsLabel(new TranslatableText("mco.configure.world.players.title"), this.width / 2, 17, 0xFFFFFF));
-        this.narrateLabels();
+        this.addDrawableChild(new ButtonWidget(this.column2_x + this.column_width / 2 + 2, RealmsPlayerScreen.row(12), this.column_width / 2 + 10 - 2, 20, ScreenTexts.BACK, button -> this.backButtonClicked()));
         this.updateButtonStates();
     }
 
@@ -195,6 +190,7 @@ extends RealmsScreen {
         if (this.invitedObjectSelectionList != null) {
             this.invitedObjectSelectionList.render(matrices, mouseX, mouseY, delta);
         }
+        RealmsPlayerScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 17, 0xFFFFFF);
         int i = RealmsPlayerScreen.row(12) + 20;
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
@@ -208,7 +204,6 @@ extends RealmsScreen {
         bufferBuilder.vertex(this.width, i, 0.0).texture((float)this.width / 32.0f, 0.0f).color(64, 64, 64, 255).next();
         bufferBuilder.vertex(0.0, i, 0.0).texture(0.0f, 0.0f).color(64, 64, 64, 255).next();
         tessellator.draw();
-        this.titleLabel.render(this, matrices);
         if (this.serverData != null && this.serverData.players != null) {
             this.textRenderer.draw(matrices, new LiteralText("").append(INVITED_TEXT).append(" (").append(Integer.toString(this.serverData.players.size())).append(")"), (float)this.column1_x, (float)RealmsPlayerScreen.row(0), 0xA0A0A0);
         } else {
@@ -331,10 +326,7 @@ extends RealmsScreen {
 
         @Override
         public void setSelected(int index) {
-            this.setSelectedItem(index);
-            if (index != -1) {
-                Realms.narrateNow(I18n.translate("narrator.select", RealmsPlayerScreen.this.serverData.players.get(index).getName()));
-            }
+            super.setSelected(index);
             this.selectInviteListItem(index);
         }
 
@@ -394,6 +386,11 @@ extends RealmsScreen {
                 DrawableHelper.drawTexture(matrices, RealmsPlayerScreen.this.column1_x + 2 + 2, y + 1, 8, 8, 8.0f, 8.0f, 8, 8, 64, 64);
                 DrawableHelper.drawTexture(matrices, RealmsPlayerScreen.this.column1_x + 2 + 2, y + 1, 8, 8, 40.0f, 8.0f, 8, 8, 64, 64);
             });
+        }
+
+        @Override
+        public Text method_37006() {
+            return new TranslatableText("narrator.select", this.playerInfo.getName());
         }
     }
 }

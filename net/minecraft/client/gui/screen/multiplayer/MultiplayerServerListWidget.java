@@ -30,7 +30,6 @@ import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.OrderedText;
@@ -79,9 +78,6 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     @Override
     public void setSelected(@Nullable Entry entry) {
         super.setSelected(entry);
-        if (this.getSelected() instanceof ServerEntry) {
-            NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", ((ServerEntry)this.getSelected()).server.name).getString());
-        }
         this.screen.updateButtonActivationStates();
     }
 
@@ -143,6 +139,11 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             };
             this.client.textRenderer.draw(matrices, string, (float)(this.client.currentScreen.width / 2 - this.client.textRenderer.getWidth(string) / 2), (float)(i + this.client.textRenderer.fontHeight), 0x808080);
         }
+
+        @Override
+        public Text method_37006() {
+            return LiteralText.EMPTY;
+        }
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -163,7 +164,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         private static final int field_32394 = 32;
         private final MultiplayerScreen screen;
         private final MinecraftClient client;
-        final ServerInfo server;
+        private final ServerInfo server;
         private final Identifier iconTextureId;
         private String iconUri;
         @Nullable
@@ -385,6 +386,11 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         public ServerInfo getServer() {
             return this.server;
         }
+
+        @Override
+        public Text method_37006() {
+            return new TranslatableText("narrator.select", this.server.name);
+        }
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -427,6 +433,11 @@ extends AlwaysSelectedEntryListWidget<Entry> {
 
         public LanServerInfo getLanServerEntry() {
             return this.server;
+        }
+
+        @Override
+        public Text method_37006() {
+            return new TranslatableText("narrator.select", new LiteralText("").append(TITLE_TEXT).append(" ").append(this.server.getMotd()));
         }
     }
 }

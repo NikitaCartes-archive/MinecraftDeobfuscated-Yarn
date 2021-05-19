@@ -3,7 +3,9 @@
  */
 package net.minecraft.client.realms.gui.screen;
 
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
@@ -77,8 +79,10 @@ extends RealmsScreen {
     private boolean stateChanged;
     private int animTick;
     private int clicks;
+    private final List<RealmsWorldSlotButton> field_33777 = Lists.newArrayList();
 
     public RealmsConfigureWorldScreen(RealmsMainScreen parent, long serverId) {
+        super(CONFIGURE_REALM_TITLE);
         this.parent = parent;
         this.serverId = serverId;
     }
@@ -91,21 +95,18 @@ extends RealmsScreen {
         this.left_x = this.width / 2 - 187;
         this.right_x = this.width / 2 + 190;
         this.client.keyboard.setRepeatEvents(true);
-        this.playersButton = this.addButton(new ButtonWidget(this.buttonCenter(0, 3), RealmsConfigureWorldScreen.row(0), 100, 20, new TranslatableText("mco.configure.world.buttons.players"), buttonWidget -> this.client.openScreen(new RealmsPlayerScreen(this, this.server))));
-        this.settingsButton = this.addButton(new ButtonWidget(this.buttonCenter(1, 3), RealmsConfigureWorldScreen.row(0), 100, 20, new TranslatableText("mco.configure.world.buttons.settings"), buttonWidget -> this.client.openScreen(new RealmsSettingsScreen(this, this.server.clone()))));
-        this.subscriptionButton = this.addButton(new ButtonWidget(this.buttonCenter(2, 3), RealmsConfigureWorldScreen.row(0), 100, 20, new TranslatableText("mco.configure.world.buttons.subscription"), buttonWidget -> this.client.openScreen(new RealmsSubscriptionInfoScreen(this, this.server.clone(), this.parent))));
+        this.playersButton = this.addDrawableChild(new ButtonWidget(this.buttonCenter(0, 3), RealmsConfigureWorldScreen.row(0), 100, 20, new TranslatableText("mco.configure.world.buttons.players"), button -> this.client.openScreen(new RealmsPlayerScreen(this, this.server))));
+        this.settingsButton = this.addDrawableChild(new ButtonWidget(this.buttonCenter(1, 3), RealmsConfigureWorldScreen.row(0), 100, 20, new TranslatableText("mco.configure.world.buttons.settings"), button -> this.client.openScreen(new RealmsSettingsScreen(this, this.server.clone()))));
+        this.subscriptionButton = this.addDrawableChild(new ButtonWidget(this.buttonCenter(2, 3), RealmsConfigureWorldScreen.row(0), 100, 20, new TranslatableText("mco.configure.world.buttons.subscription"), button -> this.client.openScreen(new RealmsSubscriptionInfoScreen(this, this.server.clone(), this.parent))));
+        this.field_33777.clear();
         for (int i = 1; i < 5; ++i) {
-            this.addSlotButton(i);
+            this.field_33777.add(this.addSlotButton(i));
         }
-        this.switchMinigameButton = this.addButton(new ButtonWidget(this.buttonLeft(0), RealmsConfigureWorldScreen.row(13) - 5, 100, 20, new TranslatableText("mco.configure.world.buttons.switchminigame"), buttonWidget -> {
-            RealmsSelectWorldTemplateScreen realmsSelectWorldTemplateScreen = new RealmsSelectWorldTemplateScreen(this::method_32484, RealmsServer.WorldType.MINIGAME);
-            realmsSelectWorldTemplateScreen.setTitle(new TranslatableText("mco.template.title.minigame"));
-            this.client.openScreen(realmsSelectWorldTemplateScreen);
-        }));
-        this.optionsButton = this.addButton(new ButtonWidget(this.buttonLeft(0), RealmsConfigureWorldScreen.row(13) - 5, 90, 20, new TranslatableText("mco.configure.world.buttons.options"), buttonWidget -> this.client.openScreen(new RealmsSlotOptionsScreen(this, this.server.slots.get(this.server.activeSlot).clone(), this.server.worldType, this.server.activeSlot))));
-        this.backupButton = this.addButton(new ButtonWidget(this.buttonLeft(1), RealmsConfigureWorldScreen.row(13) - 5, 90, 20, new TranslatableText("mco.configure.world.backup"), buttonWidget -> this.client.openScreen(new RealmsBackupScreen(this, this.server.clone(), this.server.activeSlot))));
-        this.resetWorldButton = this.addButton(new ButtonWidget(this.buttonLeft(2), RealmsConfigureWorldScreen.row(13) - 5, 90, 20, new TranslatableText("mco.configure.world.buttons.resetworld"), buttonWidget -> this.client.openScreen(new RealmsResetWorldScreen(this, this.server.clone(), () -> this.client.openScreen(this.getNewScreen()), () -> this.client.openScreen(this.getNewScreen())))));
-        this.addButton(new ButtonWidget(this.right_x - 80 + 8, RealmsConfigureWorldScreen.row(13) - 5, 70, 20, ScreenTexts.BACK, buttonWidget -> this.backButtonClicked()));
+        this.switchMinigameButton = this.addDrawableChild(new ButtonWidget(this.buttonLeft(0), RealmsConfigureWorldScreen.row(13) - 5, 100, 20, new TranslatableText("mco.configure.world.buttons.switchminigame"), button -> this.client.openScreen(new RealmsSelectWorldTemplateScreen(new TranslatableText("mco.template.title.minigame"), this::method_32484, RealmsServer.WorldType.MINIGAME))));
+        this.optionsButton = this.addDrawableChild(new ButtonWidget(this.buttonLeft(0), RealmsConfigureWorldScreen.row(13) - 5, 90, 20, new TranslatableText("mco.configure.world.buttons.options"), button -> this.client.openScreen(new RealmsSlotOptionsScreen(this, this.server.slots.get(this.server.activeSlot).clone(), this.server.worldType, this.server.activeSlot))));
+        this.backupButton = this.addDrawableChild(new ButtonWidget(this.buttonLeft(1), RealmsConfigureWorldScreen.row(13) - 5, 90, 20, new TranslatableText("mco.configure.world.backup"), button -> this.client.openScreen(new RealmsBackupScreen(this, this.server.clone(), this.server.activeSlot))));
+        this.resetWorldButton = this.addDrawableChild(new ButtonWidget(this.buttonLeft(2), RealmsConfigureWorldScreen.row(13) - 5, 90, 20, new TranslatableText("mco.configure.world.buttons.resetworld"), button -> this.client.openScreen(new RealmsResetWorldScreen(this, this.server.clone(), () -> this.client.execute(() -> this.client.openScreen(this.getNewScreen())), () -> this.client.openScreen(this.getNewScreen())))));
+        this.addDrawableChild(new ButtonWidget(this.right_x - 80 + 8, RealmsConfigureWorldScreen.row(13) - 5, 70, 20, ScreenTexts.BACK, button -> this.backButtonClicked()));
         this.backupButton.active = true;
         if (this.server == null) {
             this.hideMinigameButtons();
@@ -123,13 +124,13 @@ extends RealmsScreen {
         }
     }
 
-    private void addSlotButton(int slotIndex) {
+    private RealmsWorldSlotButton addSlotButton(int slotIndex) {
         int i = this.frame(slotIndex);
         int j = RealmsConfigureWorldScreen.row(5) + 5;
         RealmsWorldSlotButton realmsWorldSlotButton = new RealmsWorldSlotButton(i, j, 80, 80, () -> this.server, text -> {
             this.toolTip = text;
-        }, slotIndex, buttonWidget -> {
-            RealmsWorldSlotButton.State state = ((RealmsWorldSlotButton)buttonWidget).getState();
+        }, slotIndex, button -> {
+            RealmsWorldSlotButton.State state = ((RealmsWorldSlotButton)button).getState();
             if (state != null) {
                 switch (state.action) {
                     case NOTHING: {
@@ -157,7 +158,7 @@ extends RealmsScreen {
                 }
             }
         });
-        this.addButton(realmsWorldSlotButton);
+        return this.addDrawableChild(realmsWorldSlotButton);
     }
 
     private int buttonLeft(int i) {
@@ -176,6 +177,7 @@ extends RealmsScreen {
         if (this.clicks < 0) {
             this.clicks = 0;
         }
+        this.field_33777.forEach(RealmsWorldSlotButton::method_37007);
     }
 
     @Override
@@ -185,14 +187,14 @@ extends RealmsScreen {
         RealmsConfigureWorldScreen.drawCenteredText(matrices, this.textRenderer, WORLDS_TITLE, this.width / 2, RealmsConfigureWorldScreen.row(4), 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
         if (this.server == null) {
-            RealmsConfigureWorldScreen.drawCenteredText(matrices, this.textRenderer, CONFIGURE_REALM_TITLE, this.width / 2, 17, 0xFFFFFF);
+            RealmsConfigureWorldScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 17, 0xFFFFFF);
             return;
         }
         String string = this.server.getName();
         int i = this.textRenderer.getWidth(string);
         int j = this.server.state == RealmsServer.State.CLOSED ? 0xA0A0A0 : 0x7FFF7F;
-        int k = this.textRenderer.getWidth(CONFIGURE_REALM_TITLE);
-        RealmsConfigureWorldScreen.drawCenteredText(matrices, this.textRenderer, CONFIGURE_REALM_TITLE, this.width / 2, 12, 0xFFFFFF);
+        int k = this.textRenderer.getWidth(this.title);
+        RealmsConfigureWorldScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 12, 0xFFFFFF);
         RealmsConfigureWorldScreen.drawCenteredText(matrices, this.textRenderer, string, this.width / 2, 24, j);
         int l = Math.min(this.buttonCenter(2, 3) + 80 - 11, this.width / 2 + i / 2 + k / 2 + 10);
         this.drawServerStatus(matrices, l, 7, mouseX, mouseY);
@@ -267,8 +269,7 @@ extends RealmsScreen {
     }
 
     private void switchToMinigame() {
-        RealmsSelectWorldTemplateScreen realmsSelectWorldTemplateScreen = new RealmsSelectWorldTemplateScreen(this::method_32484, RealmsServer.WorldType.MINIGAME);
-        realmsSelectWorldTemplateScreen.setTitle(new TranslatableText("mco.template.title.minigame"));
+        RealmsSelectWorldTemplateScreen realmsSelectWorldTemplateScreen = new RealmsSelectWorldTemplateScreen(new TranslatableText("mco.template.title.minigame"), this::method_32484, RealmsServer.WorldType.MINIGAME);
         realmsSelectWorldTemplateScreen.setWarning(new TranslatableText("mco.minigame.world.info.line1"), new TranslatableText("mco.minigame.world.info.line2"));
         this.client.openScreen(realmsSelectWorldTemplateScreen);
     }
@@ -278,7 +279,7 @@ extends RealmsScreen {
         TranslatableText text2 = new TranslatableText("mco.configure.world.slot.switch.question.line2");
         this.client.openScreen(new RealmsLongConfirmationScreen(bl -> {
             if (bl) {
-                this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.parent, new SwitchSlotTask(realmsServer.id, selectedSlot, () -> this.client.openScreen(this.getNewScreen()))));
+                this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.parent, new SwitchSlotTask(realmsServer.id, selectedSlot, () -> this.client.execute(() -> this.client.openScreen(this.getNewScreen())))));
             } else {
                 this.client.openScreen(this);
             }
@@ -290,7 +291,7 @@ extends RealmsScreen {
         TranslatableText text2 = new TranslatableText("mco.configure.world.slot.switch.question.line2");
         this.client.openScreen(new RealmsLongConfirmationScreen(bl -> {
             if (bl) {
-                RealmsResetWorldScreen realmsResetWorldScreen = new RealmsResetWorldScreen(this, serverData, new TranslatableText("mco.configure.world.switch.slot"), new TranslatableText("mco.configure.world.switch.slot.subtitle"), 0xA0A0A0, ScreenTexts.CANCEL, () -> this.client.openScreen(this.getNewScreen()), () -> this.client.openScreen(this.getNewScreen()));
+                RealmsResetWorldScreen realmsResetWorldScreen = new RealmsResetWorldScreen(this, serverData, new TranslatableText("mco.configure.world.switch.slot"), new TranslatableText("mco.configure.world.switch.slot.subtitle"), 0xA0A0A0, ScreenTexts.CANCEL, () -> this.client.execute(() -> this.client.openScreen(this.getNewScreen())), () -> this.client.openScreen(this.getNewScreen()));
                 realmsResetWorldScreen.setSlot(selectedSlot);
                 realmsResetWorldScreen.setResetTitle(new TranslatableText("mco.create.world.reset.title"));
                 this.client.openScreen(realmsResetWorldScreen);
@@ -377,13 +378,12 @@ extends RealmsScreen {
 
     private void removeButton(ButtonWidget button) {
         button.visible = false;
-        this.children.remove(button);
-        this.buttons.remove(button);
+        this.remove(button);
     }
 
     private void addButton(ButtonWidget button) {
         button.visible = true;
-        this.addButton(button);
+        this.addDrawableChild(button);
     }
 
     private void hideMinigameButtons() {

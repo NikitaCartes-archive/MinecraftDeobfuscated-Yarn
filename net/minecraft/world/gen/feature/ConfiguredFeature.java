@@ -4,12 +4,15 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -60,6 +63,10 @@ implements Decoratable<ConfiguredFeature<?, ?>> {
 
     public Stream<ConfiguredFeature<?, ?>> getDecoratedFeatures() {
         return Stream.concat(Stream.of(this), this.config.getDecoratedFeatures());
+    }
+
+    public String toString() {
+        return BuiltinRegistries.CONFIGURED_FEATURE.getKey(this).map(Objects::toString).orElseGet(() -> CODEC.encodeStart(JsonOps.INSTANCE, this).toString());
     }
 
     @Override

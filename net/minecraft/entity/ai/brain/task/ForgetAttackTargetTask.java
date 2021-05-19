@@ -12,7 +12,6 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 
 public class ForgetAttackTargetTask<E extends MobEntity>
@@ -55,10 +54,6 @@ extends Task<E> {
             return;
         }
         if (this.isAttackTargetInAnotherWorld(mobEntity)) {
-            this.forgetAttackTarget(mobEntity);
-            return;
-        }
-        if (!EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(this.getAttackTarget(mobEntity))) {
             this.forgetAttackTarget(mobEntity);
             return;
         }

@@ -94,9 +94,9 @@ public class ModelOverrideList {
         @Nullable
         final BakedModel model;
 
-        BakedOverride(InlinedCondition[] inlinedConditions, @Nullable BakedModel bakedModel) {
-            this.conditions = inlinedConditions;
-            this.model = bakedModel;
+        BakedOverride(InlinedCondition[] conditions, @Nullable BakedModel model) {
+            this.conditions = conditions;
+            this.model = model;
         }
 
         boolean test(float[] values) {
@@ -114,9 +114,9 @@ public class ModelOverrideList {
         public final int index;
         public final float threshold;
 
-        InlinedCondition(int i, float f) {
-            this.index = i;
-            this.threshold = f;
+        InlinedCondition(int index, float threshold) {
+            this.index = index;
+            this.threshold = threshold;
         }
     }
 }

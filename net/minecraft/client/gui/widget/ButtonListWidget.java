@@ -12,6 +12,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.option.GameOptions;
@@ -54,7 +55,7 @@ extends ElementListWidget<ButtonEntry> {
     @Nullable
     public ClickableWidget getButtonFor(Option option) {
         for (ButtonEntry buttonEntry : this.children()) {
-            ClickableWidget clickableWidget = buttonEntry.field_27983.get(option);
+            ClickableWidget clickableWidget = buttonEntry.optionsToButtons.get(option);
             if (clickableWidget == null) continue;
             return clickableWidget;
         }
@@ -74,12 +75,12 @@ extends ElementListWidget<ButtonEntry> {
     @Environment(value=EnvType.CLIENT)
     protected static class ButtonEntry
     extends ElementListWidget.Entry<ButtonEntry> {
-        final Map<Option, ClickableWidget> field_27983;
+        final Map<Option, ClickableWidget> optionsToButtons;
         final List<ClickableWidget> buttons;
 
-        private ButtonEntry(Map<Option, ClickableWidget> map) {
-            this.field_27983 = map;
-            this.buttons = ImmutableList.copyOf(map.values());
+        private ButtonEntry(Map<Option, ClickableWidget> optionsToButtons) {
+            this.optionsToButtons = optionsToButtons;
+            this.buttons = ImmutableList.copyOf(optionsToButtons.values());
         }
 
         public static ButtonEntry create(GameOptions options, int width, Option option) {
@@ -104,6 +105,11 @@ extends ElementListWidget<ButtonEntry> {
 
         @Override
         public List<? extends Element> children() {
+            return this.buttons;
+        }
+
+        @Override
+        public List<? extends Selectable> method_37025() {
             return this.buttons;
         }
     }

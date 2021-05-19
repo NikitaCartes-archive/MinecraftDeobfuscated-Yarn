@@ -111,7 +111,7 @@ public interface StringVisitable {
      * 
      * @param visitables a list of visitables
      */
-    public static StringVisitable concat(final List<StringVisitable> visitables) {
+    public static StringVisitable concat(final List<? extends StringVisitable> visitables) {
         return new StringVisitable(){
 
             @Override

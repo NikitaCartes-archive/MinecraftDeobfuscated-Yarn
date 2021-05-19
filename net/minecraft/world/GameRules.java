@@ -257,11 +257,11 @@ public class GameRules {
         final BiConsumer<MinecraftServer, T> changeCallback;
         private final Acceptor<T> ruleAcceptor;
 
-        Type(Supplier<ArgumentType<?>> supplier, Function<Type<T>, T> function, BiConsumer<MinecraftServer, T> biConsumer, Acceptor<T> acceptor) {
-            this.argumentType = supplier;
-            this.ruleFactory = function;
-            this.changeCallback = biConsumer;
-            this.ruleAcceptor = acceptor;
+        Type(Supplier<ArgumentType<?>> argumentType, Function<Type<T>, T> ruleFactory, BiConsumer<MinecraftServer, T> changeCallback, Acceptor<T> ruleAcceptor) {
+            this.argumentType = argumentType;
+            this.ruleFactory = ruleFactory;
+            this.changeCallback = changeCallback;
+            this.ruleAcceptor = ruleAcceptor;
         }
 
         public RequiredArgumentBuilder<ServerCommandSource, ?> argument(String name) {

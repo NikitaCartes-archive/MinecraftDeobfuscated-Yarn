@@ -56,7 +56,6 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.WorldGenRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -92,14 +91,14 @@ public final class Biome {
         return long2FloatLinkedOpenHashMap;
     }));
 
-    Biome(Weather weather, Category category, float f, float g, BiomeEffects biomeEffects, GenerationSettings generationSettings, SpawnSettings spawnSettings) {
+    Biome(Weather weather, Category category, float depth, float scale, BiomeEffects effects, GenerationSettings generationSettings, SpawnSettings spawnSettings) {
         this.weather = weather;
         this.generationSettings = generationSettings;
         this.spawnSettings = spawnSettings;
         this.category = category;
-        this.depth = f;
-        this.scale = g;
-        this.effects = biomeEffects;
+        this.depth = depth;
+        this.scale = scale;
+        this.effects = effects;
     }
 
     public int getSkyColor() {
@@ -185,6 +184,8 @@ public final class Biome {
 
     public void generateFeatureStep(StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, ChunkRegion region, long populationSeed, ChunkRandom random, BlockPos origin) {
         List<List<Supplier<ConfiguredFeature<?, ?>>>> list = this.generationSettings.getFeatures();
+        Registry<ConfiguredFeature<?, ?>> registry = region.getRegistryManager().get(Registry.CONFIGURED_FEATURE_KEY);
+        Registry<StructureFeature<?>> registry2 = region.getRegistryManager().get(Registry.STRUCTURE_FEATURE_KEY);
         int i = GenerationStep.Feature.values().length;
         for (int j = 0; j < i; ++j) {
             int k = 0;
@@ -196,32 +197,37 @@ public final class Biome {
                     int m = ChunkSectionPos.getSectionCoord(origin.getZ());
                     int n = ChunkSectionPos.getBlockCoord(l);
                     int o = ChunkSectionPos.getBlockCoord(m);
+                    Supplier<String> supplier = () -> registry2.getKey(structureFeature).map(Object::toString).orElseGet(structureFeature::toString);
                     try {
                         int p = region.getBottomY() + 1;
                         int q = region.getTopY() - 1;
+                        region.method_36972(supplier);
                         structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(origin), structureFeature).forEach(structureStart -> structureStart.generateStructure(region, structureAccessor, chunkGenerator, random, new BlockBox(n, p, o, n + 15, q, o + 15), new ChunkPos(l, m)));
                     } catch (Exception exception) {
                         CrashReport crashReport = CrashReport.create(exception, "Feature placement");
-                        crashReport.addElement("Feature").add("Id", Registry.STRUCTURE_FEATURE.getId(structureFeature)).add("Description", () -> structureFeature.toString());
+                        crashReport.addElement("Feature").add("Description", supplier::get);
                         throw new CrashException(crashReport);
                     }
                     ++k;
                 }
             }
             if (list.size() <= j) continue;
-            for (Supplier<ConfiguredFeature<?, ?>> supplier : list.get(j)) {
-                ConfiguredFeature<?, ?> configuredFeature = supplier.get();
+            for (Supplier<ConfiguredFeature<?, ?>> supplier2 : list.get(j)) {
+                ConfiguredFeature<?, ?> configuredFeature = supplier2.get();
+                Supplier<String> supplier3 = () -> registry.getKey(configuredFeature).map(Object::toString).orElseGet(configuredFeature::toString);
                 random.setDecoratorSeed(populationSeed, k, j);
                 try {
+                    region.method_36972(supplier3);
                     configuredFeature.generate(region, chunkGenerator, random, origin);
                 } catch (Exception exception2) {
                     CrashReport crashReport2 = CrashReport.create(exception2, "Feature placement");
-                    crashReport2.addElement("Feature").add("Id", Registry.FEATURE.getId((Feature<?>)configuredFeature.feature)).add("Config", configuredFeature.config).add("Description", () -> configuredFeature.feature.toString());
+                    crashReport2.addElement("Feature").add("Description", supplier3::get);
                     throw new CrashException(crashReport2);
                 }
                 ++k;
             }
         }
+        region.method_36972(null);
     }
 
     public int getFogColor() {

@@ -192,7 +192,7 @@ extends PlayerEntity {
     private boolean spawnPointSet;
     private float spawnAngle;
     private final TextStream textStream;
-    private boolean filterText = true;
+    private boolean filterText;
     private final ScreenHandlerSyncHandler screenHandlerSyncHandler = new ScreenHandlerSyncHandler(){
 
         @Override
@@ -499,8 +499,8 @@ extends PlayerEntity {
         }
     }
 
-    private void updateScores(ScoreboardCriterion criterion, int score) {
-        this.getScoreboard().forEachScore(criterion, this.getEntityName(), scoreboardPlayerScore -> scoreboardPlayerScore.setScore(score));
+    private void updateScores(ScoreboardCriterion criterion, int score2) {
+        this.getScoreboard().forEachScore(criterion, this.getEntityName(), score -> score.setScore(score2));
     }
 
     @Override
@@ -578,11 +578,11 @@ extends PlayerEntity {
         Criteria.PLAYER_KILLED_ENTITY.trigger(this, killer, damageSource);
     }
 
-    private void updateScoreboardScore(String playerName, String team, ScoreboardCriterion[] scoreboardCriterions) {
+    private void updateScoreboardScore(String playerName, String team, ScoreboardCriterion[] criterions) {
         int i;
         Team team2 = this.getScoreboard().getPlayerTeam(team);
-        if (team2 != null && (i = team2.getColor().getColorIndex()) >= 0 && i < scoreboardCriterions.length) {
-            this.getScoreboard().forEachScore(scoreboardCriterions[i], playerName, ScoreboardPlayerScore::incrementScore);
+        if (team2 != null && (i = team2.getColor().getColorIndex()) >= 0 && i < criterions.length) {
+            this.getScoreboard().forEachScore(criterions[i], playerName, ScoreboardPlayerScore::incrementScore);
         }
     }
 
@@ -1346,11 +1346,11 @@ extends PlayerEntity {
         return this.spawnPointSet;
     }
 
-    public void setSpawnPoint(RegistryKey<World> dimension, @Nullable BlockPos pos, float angle, boolean spawnPointSet, boolean bl) {
+    public void setSpawnPoint(RegistryKey<World> dimension, @Nullable BlockPos pos, float angle, boolean spawnPointSet, boolean sendMessage) {
         if (pos != null) {
-            boolean bl2;
-            boolean bl3 = bl2 = pos.equals(this.spawnPointPosition) && dimension.equals(this.spawnPointDimension);
-            if (bl && !bl2) {
+            boolean bl;
+            boolean bl2 = bl = pos.equals(this.spawnPointPosition) && dimension.equals(this.spawnPointDimension);
+            if (sendMessage && !bl) {
                 this.sendSystemMessage(new TranslatableText("block.minecraft.set_spawn"), Util.NIL_UUID);
             }
             this.spawnPointPosition = pos;
@@ -1481,6 +1481,11 @@ extends PlayerEntity {
             return false;
         }
         return this.filterText || player.filterText;
+    }
+
+    @Override
+    public boolean canModifyAt(World world, BlockPos pos) {
+        return super.canModifyAt(world, pos) && world.canPlayerModifyAt(this, pos);
     }
 }
 

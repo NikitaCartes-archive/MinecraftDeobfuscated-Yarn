@@ -20,28 +20,28 @@ public class GlAllocationUtils {
         return ByteBuffer.allocateDirect(size).order(ByteOrder.nativeOrder());
     }
 
-    public static ShortBuffer method_35614(int i) {
-        return GlAllocationUtils.allocateByteBuffer(i << 1).asShortBuffer();
+    public static ShortBuffer allocateShortBuffer(int size) {
+        return GlAllocationUtils.allocateByteBuffer(size << 1).asShortBuffer();
     }
 
-    public static CharBuffer method_35615(int i) {
-        return GlAllocationUtils.allocateByteBuffer(i << 1).asCharBuffer();
+    public static CharBuffer allocateCharBuffer(int size) {
+        return GlAllocationUtils.allocateByteBuffer(size << 1).asCharBuffer();
     }
 
-    public static IntBuffer method_35616(int i) {
-        return GlAllocationUtils.allocateByteBuffer(i << 2).asIntBuffer();
+    public static IntBuffer allocateIntBuffer(int size) {
+        return GlAllocationUtils.allocateByteBuffer(size << 2).asIntBuffer();
     }
 
-    public static LongBuffer method_35617(int i) {
-        return GlAllocationUtils.allocateByteBuffer(i << 3).asLongBuffer();
+    public static LongBuffer allocateLongBuffer(int size) {
+        return GlAllocationUtils.allocateByteBuffer(size << 3).asLongBuffer();
     }
 
-    public static FloatBuffer method_35618(int i) {
-        return GlAllocationUtils.allocateByteBuffer(i << 2).asFloatBuffer();
+    public static FloatBuffer allocateFloatBuffer(int size) {
+        return GlAllocationUtils.allocateByteBuffer(size << 2).asFloatBuffer();
     }
 
-    public static DoubleBuffer method_35619(int i) {
-        return GlAllocationUtils.allocateByteBuffer(i << 3).asDoubleBuffer();
+    public static DoubleBuffer allocateDoubleBuffer(int size) {
+        return GlAllocationUtils.allocateByteBuffer(size << 3).asDoubleBuffer();
     }
 }
 

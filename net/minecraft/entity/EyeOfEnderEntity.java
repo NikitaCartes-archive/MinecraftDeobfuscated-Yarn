@@ -86,10 +86,10 @@ implements FlyingItemEntity {
         int i = pos.getY();
         double e = pos.getZ();
         double f = d - this.getX();
-        float h = MathHelper.sqrt(f * f + (g = e - this.getZ()) * g);
-        if (h > 12.0f) {
-            this.targetX = this.getX() + f / (double)h * 12.0;
-            this.targetZ = this.getZ() + g / (double)h * 12.0;
+        double h = Math.sqrt(f * f + (g = e - this.getZ()) * g);
+        if (h > 12.0) {
+            this.targetX = this.getX() + f / h * 12.0;
+            this.targetZ = this.getZ() + g / h * 12.0;
             this.targetY = this.getY() + 8.0;
         } else {
             this.targetX = d;
@@ -104,9 +104,9 @@ implements FlyingItemEntity {
     public void setVelocityClient(double x, double y, double z) {
         this.setVelocity(x, y, z);
         if (this.prevPitch == 0.0f && this.prevYaw == 0.0f) {
-            float f = MathHelper.sqrt(x * x + z * z);
+            double d = Math.sqrt(x * x + z * z);
             this.setYaw((float)(MathHelper.atan2(x, z) * 57.2957763671875));
-            this.setPitch((float)(MathHelper.atan2(y, f) * 57.2957763671875));
+            this.setPitch((float)(MathHelper.atan2(y, d) * 57.2957763671875));
             this.prevYaw = this.getYaw();
             this.prevPitch = this.getPitch();
         }
@@ -119,7 +119,7 @@ implements FlyingItemEntity {
         double d = this.getX() + vec3d.x;
         double e = this.getY() + vec3d.y;
         double f = this.getZ() + vec3d.z;
-        float g = MathHelper.sqrt(EyeOfEnderEntity.squaredHorizontalLength(vec3d));
+        double g = Math.sqrt(EyeOfEnderEntity.squaredHorizontalLength(vec3d));
         this.setPitch(ProjectileEntity.updateRotation(this.prevPitch, (float)(MathHelper.atan2(vec3d.y, g) * 57.2957763671875)));
         this.setYaw(ProjectileEntity.updateRotation(this.prevYaw, (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875)));
         if (!this.world.isClient) {
@@ -127,7 +127,7 @@ implements FlyingItemEntity {
             double i = this.targetZ - f;
             float j = (float)Math.sqrt(h * h + i * i);
             float k = (float)MathHelper.atan2(i, h);
-            double l = MathHelper.lerp(0.0025, (double)g, (double)j);
+            double l = MathHelper.lerp(0.0025, g, (double)j);
             double m = vec3d.y;
             if (j < 1.0f) {
                 l *= 0.8;

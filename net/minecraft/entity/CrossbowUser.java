@@ -12,7 +12,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
@@ -42,7 +41,7 @@ extends RangedAttackMob {
         ProjectileEntity entity2 = projectile;
         double d = target.getX() - entity.getX();
         double e = target.getZ() - entity.getZ();
-        double f = MathHelper.sqrt(d * d + e * e);
+        double f = Math.sqrt(d * d + e * e);
         double g = target.getBodyY(0.3333333333333333) - entity2.getY() + f * (double)0.2f;
         Vec3f vec3f = this.getProjectileLaunchVelocity(entity, new Vec3d(d, g, e), multishotSpray);
         projectile.setVelocity(vec3f.getX(), vec3f.getY(), vec3f.getZ(), speed, 14 - entity.world.getDifficulty().getId() * 4);

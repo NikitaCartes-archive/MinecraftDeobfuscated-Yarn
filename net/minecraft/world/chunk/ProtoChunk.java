@@ -265,11 +265,6 @@ implements Chunk {
     }
 
     @Override
-    public void setHeightmap(Heightmap.Type type, long[] heightmap) {
-        this.getHeightmap(type).setTo(heightmap);
-    }
-
-    @Override
     public Heightmap getHeightmap(Heightmap.Type type2) {
         return this.heightmaps.computeIfAbsent(type2, type -> new Heightmap(this, (Heightmap.Type)type));
     }

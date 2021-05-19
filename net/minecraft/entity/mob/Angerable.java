@@ -11,7 +11,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
@@ -82,7 +81,7 @@ public interface Angerable {
     }
 
     default public boolean shouldAngerAt(LivingEntity entity) {
-        if (!EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(entity)) {
+        if (!entity.canTakeDamage()) {
             return false;
         }
         if (entity.getType() == EntityType.PLAYER && this.isUniversallyAngry(entity.world)) {

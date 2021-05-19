@@ -15,11 +15,15 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalLong;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -137,7 +141,7 @@ extends Screen {
     @Override
     public void tick() {
         this.levelNameField.tick();
-        this.moreOptionsDialog.tick();
+        this.moreOptionsDialog.tickSeedTextField();
     }
 
     @Override
@@ -147,38 +151,38 @@ extends Screen {
 
             @Override
             protected MutableText getNarrationMessage() {
-                return super.getNarrationMessage().append(". ").append(new TranslatableText("selectWorld.resultFolder")).append(" ").append(CreateWorldScreen.this.saveDirectoryName);
+                return ScreenTexts.joinSentences(super.getNarrationMessage(), new TranslatableText("selectWorld.resultFolder")).append(" ").append(CreateWorldScreen.this.saveDirectoryName);
             }
         };
         this.levelNameField.setText(this.levelName);
-        this.levelNameField.setChangedListener(string -> {
-            this.levelName = string;
+        this.levelNameField.setChangedListener(levelName -> {
+            this.levelName = levelName;
             this.createLevelButton.active = !this.levelNameField.getText().isEmpty();
             this.updateSaveFolderName();
         });
-        this.children.add(this.levelNameField);
+        this.addSelectableChild(this.levelNameField);
         int i = this.width / 2 - 155;
         int j = this.width / 2 + 5;
-        this.gameModeSwitchButton = this.addButton(CyclingButtonWidget.builder(Mode::asText).values((Mode[])new Mode[]{Mode.SURVIVAL, Mode.HARDCORE, Mode.CREATIVE}).initially(this.currentMode).narration(cyclingButtonWidget -> ClickableWidget.getNarrationMessage(cyclingButtonWidget.getMessage()).append(". ").append(this.firstGameModeDescriptionLine).append(" ").append(this.secondGameModeDescriptionLine)).build(i, 100, 150, 20, GAME_MODE_TEXT, (cyclingButtonWidget, mode) -> this.tweakDefaultsTo((Mode)((Object)mode))));
-        this.difficultyButton = this.addButton(CyclingButtonWidget.builder(Difficulty::getTranslatableName).values((Difficulty[])Difficulty.values()).initially(this.getDifficulty()).build(j, 100, 150, 20, new TranslatableText("options.difficulty"), (cyclingButtonWidget, difficulty) -> {
+        this.gameModeSwitchButton = this.addDrawableChild((Element & Drawable)CyclingButtonWidget.builder(Mode::asText).values((Mode[])new Mode[]{Mode.SURVIVAL, Mode.HARDCORE, Mode.CREATIVE}).initially(this.currentMode).narration(button -> ClickableWidget.getNarrationMessage(button.getMessage()).append(ScreenTexts.SENTENCE_SEPARATOR).append(this.firstGameModeDescriptionLine).append(" ").append(this.secondGameModeDescriptionLine)).build(i, 100, 150, 20, GAME_MODE_TEXT, (button, mode) -> this.tweakDefaultsTo((Mode)((Object)mode))));
+        this.difficultyButton = this.addDrawableChild((Element & Drawable)CyclingButtonWidget.builder(Difficulty::getTranslatableName).values((Difficulty[])Difficulty.values()).initially(this.getDifficulty()).build(j, 100, 150, 20, new TranslatableText("options.difficulty"), (button, difficulty) -> {
             this.currentDifficulty = difficulty;
         }));
-        this.enableCheatsButton = this.addButton(CyclingButtonWidget.onOffBuilder(this.cheatsEnabled && !this.hardcore).narration(cyclingButtonWidget -> cyclingButtonWidget.getGenericNarrationMessage().append(". ").append(new TranslatableText("selectWorld.allowCommands.info"))).build(i, 151, 150, 20, new TranslatableText("selectWorld.allowCommands"), (cyclingButtonWidget, boolean_) -> {
+        this.enableCheatsButton = this.addDrawableChild((Element & Drawable)CyclingButtonWidget.onOffBuilder(this.cheatsEnabled && !this.hardcore).narration(button -> ScreenTexts.joinSentences(button.getGenericNarrationMessage(), new TranslatableText("selectWorld.allowCommands.info"))).build(i, 151, 150, 20, new TranslatableText("selectWorld.allowCommands"), (button, cheatsEnabled) -> {
             this.tweakedCheats = true;
-            this.cheatsEnabled = boolean_;
+            this.cheatsEnabled = cheatsEnabled;
         }));
-        this.dataPacksButton = this.addButton(new ButtonWidget(j, 151, 150, 20, new TranslatableText("selectWorld.dataPacks"), button -> this.openPackScreen()));
-        this.gameRulesButton = this.addButton(new ButtonWidget(i, 185, 150, 20, new TranslatableText("selectWorld.gameRules"), button -> this.client.openScreen(new EditGameRulesScreen(this.gameRules.copy(), optional -> {
+        this.dataPacksButton = this.addDrawableChild(new ButtonWidget(j, 151, 150, 20, new TranslatableText("selectWorld.dataPacks"), button -> this.openPackScreen()));
+        this.gameRulesButton = this.addDrawableChild(new ButtonWidget(i, 185, 150, 20, new TranslatableText("selectWorld.gameRules"), button -> this.client.openScreen(new EditGameRulesScreen(this.gameRules.copy(), optional -> {
             this.client.openScreen(this);
             optional.ifPresent(gameRules -> {
                 this.gameRules = gameRules;
             });
         }))));
         this.moreOptionsDialog.init(this, this.client, this.textRenderer);
-        this.moreOptionsButton = this.addButton(new ButtonWidget(j, 185, 150, 20, new TranslatableText("selectWorld.moreWorldOptions"), buttonWidget -> this.toggleMoreOptions()));
-        this.createLevelButton = this.addButton(new ButtonWidget(i, this.height - 28, 150, 20, new TranslatableText("selectWorld.create"), buttonWidget -> this.createLevel()));
+        this.moreOptionsButton = this.addDrawableChild(new ButtonWidget(j, 185, 150, 20, new TranslatableText("selectWorld.moreWorldOptions"), button -> this.toggleMoreOptions()));
+        this.createLevelButton = this.addDrawableChild(new ButtonWidget(i, this.height - 28, 150, 20, new TranslatableText("selectWorld.create"), button -> this.createLevel()));
         this.createLevelButton.active = !this.levelName.isEmpty();
-        this.addButton(new ButtonWidget(j, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.onCloseScreen()));
+        this.addDrawableChild(new ButtonWidget(j, this.height - 28, 150, 20, ScreenTexts.CANCEL, button -> this.onCloseScreen()));
         this.setMoreOptionsOpen();
         this.setInitialFocus(this.levelNameField);
         this.tweakDefaultsTo(this.currentMode);
@@ -351,13 +355,13 @@ extends Screen {
     }
 
     @Override
-    protected <T extends Element> T addChild(T child) {
-        return super.addChild(child);
+    protected <T extends Element & Selectable> T addSelectableChild(T child) {
+        return super.addSelectableChild(child);
     }
 
     @Override
-    protected <T extends ClickableWidget> T addButton(T button) {
-        return super.addButton(button);
+    protected <T extends Element & Drawable> T addDrawableChild(T drawableElement) {
+        return super.addDrawableChild(drawableElement);
     }
 
     @Nullable
@@ -375,22 +379,26 @@ extends Screen {
     }
 
     private void openPackScreen() {
-        Pair<File, ResourcePackManager> pair = this.method_30296();
+        Pair<File, ResourcePackManager> pair = this.getScannedPack();
         if (pair != null) {
             this.client.openScreen(new PackScreen(this, pair.getSecond(), this::applyDataPacks, pair.getFirst(), new TranslatableText("dataPack.title")));
         }
     }
 
-    private void applyDataPacks(ResourcePackManager resourcePackManager) {
-        ImmutableList<String> list = ImmutableList.copyOf(resourcePackManager.getEnabledNames());
-        List list2 = resourcePackManager.getNames().stream().filter(string -> !list.contains(string)).collect(ImmutableList.toImmutableList());
+    private void applyDataPacks(ResourcePackManager dataPackManager) {
+        ImmutableList<String> list = ImmutableList.copyOf(dataPackManager.getEnabledNames());
+        List list2 = dataPackManager.getNames().stream().filter(name -> !list.contains(name)).collect(ImmutableList.toImmutableList());
         DataPackSettings dataPackSettings = new DataPackSettings(list, list2);
         if (list.equals(this.dataPackSettings.getEnabled())) {
             this.dataPackSettings = dataPackSettings;
             return;
         }
         this.client.send(() -> this.client.openScreen(new SaveLevelScreen(new TranslatableText("dataPack.validation.working"))));
-        ServerResourceManager.reload(resourcePackManager.createResourcePacks(), this.moreOptionsDialog.getRegistryManager(), CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getMainWorkerExecutor(), this.client).handle((serverResourceManager, throwable) -> {
+        ((CompletableFuture)ServerResourceManager.reload(dataPackManager.createResourcePacks(), this.moreOptionsDialog.getRegistryManager(), CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getMainWorkerExecutor(), this.client).thenAcceptAsync(serverResourceManager -> {
+            this.dataPackSettings = dataPackSettings;
+            this.moreOptionsDialog.loadDatapacks((ServerResourceManager)serverResourceManager);
+            serverResourceManager.close();
+        }, (Executor)this.client)).handle((void_, throwable) -> {
             if (throwable != null) {
                 LOGGER.warn("Failed to validate datapack", (Throwable)throwable);
                 this.client.send(() -> this.client.openScreen(new ConfirmScreen(bl -> {
@@ -402,12 +410,7 @@ extends Screen {
                     }
                 }, new TranslatableText("dataPack.validation.failed"), LiteralText.EMPTY, new TranslatableText("dataPack.validation.back"), new TranslatableText("dataPack.validation.reset"))));
             } else {
-                this.client.send(() -> {
-                    this.dataPackSettings = dataPackSettings;
-                    this.moreOptionsDialog.loadDatapacks((ServerResourceManager)serverResourceManager);
-                    serverResourceManager.close();
-                    this.client.openScreen(this);
-                });
+                this.client.send(() -> this.client.openScreen(this));
             }
             return null;
         });
@@ -443,9 +446,9 @@ extends Screen {
         if (this.dataPackTempDir != null) {
             try (LevelStorage.Session session = this.client.getLevelStorage().createSession(this.saveDirectoryName);
                  Stream<Path> stream = Files.walk(this.dataPackTempDir, new FileVisitOption[0]);){
-                Path path3 = session.getDirectory(WorldSavePath.DATAPACKS);
-                Files.createDirectories(path3, new FileAttribute[0]);
-                stream.filter(path -> !path.equals(this.dataPackTempDir)).forEach(path2 -> CreateWorldScreen.copyDataPack(this.dataPackTempDir, path3, path2));
+                Path path2 = session.getDirectory(WorldSavePath.DATAPACKS);
+                Files.createDirectories(path2, new FileAttribute[0]);
+                stream.filter(path -> !path.equals(this.dataPackTempDir)).forEach(path -> CreateWorldScreen.copyDataPack(this.dataPackTempDir, path2, path));
             } catch (IOException | WorldCreationException exception) {
                 LOGGER.warn("Failed to copy datapacks to world {}", (Object)this.saveDirectoryName, (Object)exception);
                 SystemToast.addPackCopyFailure(this.client, this.saveDirectoryName);
@@ -457,32 +460,32 @@ extends Screen {
     }
 
     @Nullable
-    public static Path method_29685(Path path, MinecraftClient minecraftClient) {
+    public static Path copyDataPack(Path srcFolder, MinecraftClient client) {
         MutableObject mutableObject = new MutableObject();
-        try (Stream<Path> stream = Files.walk(path, new FileVisitOption[0]);){
-            stream.filter(path2 -> !path2.equals(path)).forEach(path2 -> {
-                Path path3 = (Path)mutableObject.getValue();
-                if (path3 == null) {
+        try (Stream<Path> stream = Files.walk(srcFolder, new FileVisitOption[0]);){
+            stream.filter(dataPackFile -> !dataPackFile.equals(srcFolder)).forEach(dataPackFile -> {
+                Path path2 = (Path)mutableObject.getValue();
+                if (path2 == null) {
                     try {
-                        path3 = Files.createTempDirectory(TEMP_DIR_PREFIX, new FileAttribute[0]);
+                        path2 = Files.createTempDirectory(TEMP_DIR_PREFIX, new FileAttribute[0]);
                     } catch (IOException iOException) {
                         LOGGER.warn("Failed to create temporary dir");
                         throw new WorldCreationException(iOException);
                     }
-                    mutableObject.setValue(path3);
+                    mutableObject.setValue(path2);
                 }
-                CreateWorldScreen.copyDataPack(path, path3, path2);
+                CreateWorldScreen.copyDataPack(srcFolder, path2, dataPackFile);
             });
         } catch (IOException | WorldCreationException exception) {
-            LOGGER.warn("Failed to copy datapacks from world {}", (Object)path, (Object)exception);
-            SystemToast.addPackCopyFailure(minecraftClient, path.toString());
+            LOGGER.warn("Failed to copy datapacks from world {}", (Object)srcFolder, (Object)exception);
+            SystemToast.addPackCopyFailure(client, srcFolder.toString());
             return null;
         }
         return (Path)mutableObject.getValue();
     }
 
     @Nullable
-    private Pair<File, ResourcePackManager> method_30296() {
+    private Pair<File, ResourcePackManager> getScannedPack() {
         Path path = this.getDataPackTempDir();
         if (path != null) {
             File file = path.toFile();

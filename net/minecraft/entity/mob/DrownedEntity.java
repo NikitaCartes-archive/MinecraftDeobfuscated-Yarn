@@ -90,7 +90,7 @@ implements RangedAttackMob {
         this.targetSelector.add(2, new FollowTargetGoal<PlayerEntity>(this, PlayerEntity.class, 10, true, false, this::canDrownedAttackTarget));
         this.targetSelector.add(3, new FollowTargetGoal<MerchantEntity>((MobEntity)this, MerchantEntity.class, false));
         this.targetSelector.add(3, new FollowTargetGoal<IronGolemEntity>((MobEntity)this, IronGolemEntity.class, true));
-        this.targetSelector.add(3, new FollowTargetGoal<AxolotlEntity>(this, AxolotlEntity.class, 10, true, false, AxolotlEntity.AXOLOTL_NOT_PLAYING_DEAD));
+        this.targetSelector.add(3, new FollowTargetGoal<AxolotlEntity>(this, AxolotlEntity.class, true, false));
         this.targetSelector.add(5, new FollowTargetGoal<TurtleEntity>(this, TurtleEntity.class, 10, true, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
     }
 
@@ -258,7 +258,7 @@ implements RangedAttackMob {
         double d = target.getX() - this.getX();
         double e = target.getBodyY(0.3333333333333333) - tridentEntity.getY();
         double f = target.getZ() - this.getZ();
-        double g = MathHelper.sqrt(d * d + f * f);
+        double g = Math.sqrt(d * d + f * f);
         tridentEntity.setVelocity(d, e + g * (double)0.2f, f, 1.6f, 14 - this.world.getDifficulty().getId() * 4);
         this.playSound(SoundEvents.ENTITY_DROWNED_SHOOT, 1.0f, 1.0f / (this.getRandom().nextFloat() * 0.4f + 0.8f));
         this.world.spawnEntity(tridentEntity);
@@ -291,7 +291,7 @@ implements RangedAttackMob {
                 double d = this.targetX - this.drowned.getX();
                 double e = this.targetY - this.drowned.getY();
                 double f = this.targetZ - this.drowned.getZ();
-                double g = MathHelper.sqrt(d * d + e * e + f * f);
+                double g = Math.sqrt(d * d + e * e + f * f);
                 e /= g;
                 float h = (float)(MathHelper.atan2(f, d) * 57.2957763671875) - 90.0f;
                 this.drowned.setYaw(this.wrapDegrees(this.drowned.getYaw(), h, 90.0f));

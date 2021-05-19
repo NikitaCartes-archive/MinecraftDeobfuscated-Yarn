@@ -97,8 +97,8 @@ public class PngFile {
     extends Reader {
         private final SeekableByteChannel channel;
 
-        SeekableChannelReader(SeekableByteChannel seekableByteChannel) {
-            this.channel = seekableByteChannel;
+        SeekableChannelReader(SeekableByteChannel channel) {
+            this.channel = channel;
         }
 
         @Override
@@ -126,15 +126,15 @@ public class PngFile {
     @Environment(value=EnvType.CLIENT)
     static class ChannelReader
     extends Reader {
-        private static final int field_32035 = 128;
+        private static final int BUFFER_SIZE = 128;
         private final ReadableByteChannel channel;
         private long buffer = MemoryUtil.nmemAlloc(128L);
         private int bufferSize = 128;
         private int bufferPosition;
         private int readPosition;
 
-        ChannelReader(ReadableByteChannel readableByteChannel) {
-            this.channel = readableByteChannel;
+        ChannelReader(ReadableByteChannel channel) {
+            this.channel = channel;
         }
 
         /*

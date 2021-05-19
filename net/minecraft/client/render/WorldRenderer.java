@@ -77,7 +77,6 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
-import net.minecraft.client.render.entity.feature.SheepWoolFeatureRenderer;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
@@ -1009,11 +1008,11 @@ AutoCloseable {
             }
             this.renderEntity(entity, d, e, f, tickDelta, matrices, vertexConsumerProvider);
         }
+        immediate.method_37104();
         this.checkEmpty(matrices);
         immediate.draw(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE));
         immediate.draw(RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE));
         immediate.draw(RenderLayer.getEntityCutoutNoCull(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE));
-        immediate.draw(RenderLayer.getEntityCutoutNoCull(SheepWoolFeatureRenderer.SKIN));
         immediate.draw(RenderLayer.getEntitySmoothCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE));
         profiler.swap("blockentities");
         for (ChunkInfo chunkInfo : this.visibleChunks) {

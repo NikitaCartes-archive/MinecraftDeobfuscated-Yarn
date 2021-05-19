@@ -65,13 +65,14 @@ public class TargetPredicate {
         if (!targetEntity.isPartOfGame()) {
             return false;
         }
-        if (this.attackable && !targetEntity.canTakeDamage()) {
-            return false;
-        }
         if (this.predicate != null && !this.predicate.test(targetEntity)) {
             return false;
         }
-        if (baseEntity != null) {
+        if (baseEntity == null) {
+            if (this.attackable && !targetEntity.canTakeDamage()) {
+                return false;
+            }
+        } else {
             if (this.attackable && (!baseEntity.canTarget(targetEntity) || !baseEntity.canTarget(targetEntity.getType()) || baseEntity.isTeammate(targetEntity))) {
                 return false;
             }

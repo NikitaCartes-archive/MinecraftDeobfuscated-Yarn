@@ -86,7 +86,7 @@ public class EntitySelectorOptions {
         EntitySelectorOptions.putOption("distance", entitySelectorReader -> {
             int i = entitySelectorReader.getReader().getCursor();
             NumberRange.FloatRange floatRange = NumberRange.FloatRange.parse(entitySelectorReader.getReader());
-            if (floatRange.getMin() != null && ((Float)floatRange.getMin()).floatValue() < 0.0f || floatRange.getMax() != null && ((Float)floatRange.getMax()).floatValue() < 0.0f) {
+            if (floatRange.getMin() != null && (Double)floatRange.getMin() < 0.0 || floatRange.getMax() != null && (Double)floatRange.getMax() < 0.0) {
                 entitySelectorReader.getReader().setCursor(i);
                 throw NEGATIVE_DISTANCE_EXCEPTION.createWithContext(entitySelectorReader.getReader());
             }

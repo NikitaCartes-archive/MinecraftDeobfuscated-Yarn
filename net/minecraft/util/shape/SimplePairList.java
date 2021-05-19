@@ -16,10 +16,10 @@ implements PairList {
     private final int[] maxValues;
     private final int field_27347;
 
-    public SimplePairList(DoubleList first, DoubleList doubleList, boolean includeFirstOnly, boolean includeSecondOnly) {
+    public SimplePairList(DoubleList first, DoubleList second, boolean includeFirstOnly, boolean includeSecondOnly) {
         double d = Double.NaN;
         int i = first.size();
-        int j = doubleList.size();
+        int j = second.size();
         int k = i + j;
         this.valueIndices = new double[k];
         this.minValues = new int[k];
@@ -36,7 +36,7 @@ implements PairList {
             boolean bl3 = m >= i;
             boolean bl6 = bl4 = n >= j;
             if (bl3 && bl4) break;
-            boolean bl7 = bl5 = !bl3 && (bl4 || first.getDouble(m) < doubleList.getDouble(n) + 1.0E-7);
+            boolean bl7 = bl5 = !bl3 && (bl4 || first.getDouble(m) < second.getDouble(n) + 1.0E-7);
             if (bl5) {
                 ++m;
                 if (bl && (n == 0 || bl4)) {
@@ -48,7 +48,7 @@ implements PairList {
             }
             int o = m - 1;
             int p = n - 1;
-            double d2 = e = bl5 ? first.getDouble(o) : doubleList.getDouble(p);
+            double d2 = e = bl5 ? first.getDouble(o) : second.getDouble(p);
             if (!(d >= e - 1.0E-7)) {
                 this.minValues[l] = o;
                 this.maxValues[l] = p;

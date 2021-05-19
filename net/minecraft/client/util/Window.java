@@ -353,9 +353,9 @@ implements AutoCloseable {
         this.fullscreen = !this.fullscreen;
     }
 
-    public void method_36813(int i, int j) {
-        this.windowedWidth = i;
-        this.windowedHeight = j;
+    public void setWindowedSize(int width, int height) {
+        this.windowedWidth = width;
+        this.windowedHeight = height;
         this.fullscreen = false;
         this.updateWindowRegion();
     }

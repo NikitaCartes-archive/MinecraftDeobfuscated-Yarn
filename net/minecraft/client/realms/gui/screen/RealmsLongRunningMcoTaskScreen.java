@@ -3,18 +3,18 @@
  */
 package net.minecraft.client.realms.gui.screen;
 
-import com.google.common.collect.Sets;
-import java.util.HashSet;
+import java.time.Duration;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.realms.Realms;
+import net.minecraft.client.realms.RepeatedNarrator;
 import net.minecraft.client.realms.exception.RealmsDefaultUncaughtExceptionHandler;
 import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.realms.task.LongRunningTask;
 import net.minecraft.client.realms.util.Errable;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -27,6 +27,7 @@ import org.lwjgl.glfw.GLFW;
 public class RealmsLongRunningMcoTaskScreen
 extends RealmsScreen
 implements Errable {
+    private static final RepeatedNarrator field_33779 = new RepeatedNarrator(Duration.ofSeconds(5L));
     private static final Logger LOGGER = LogManager.getLogger();
     private final Screen parent;
     private volatile Text title = LiteralText.EMPTY;
@@ -36,9 +37,11 @@ implements Errable {
     private int animTicks;
     private final LongRunningTask task;
     private final int buttonLength = 212;
+    private ButtonWidget field_33778;
     public static final String[] symbols = new String[]{"\u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583", "_ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584", "_ _ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585", "_ _ _ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586", "_ _ _ _ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587", "_ _ _ _ _ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588", "_ _ _ _ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587", "_ _ _ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586", "_ _ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585", "_ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584", "\u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583", "\u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _", "\u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _ _", "\u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _ _ _", "\u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _ _ _ _", "\u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _ _ _ _ _", "\u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _ _ _ _", "\u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _ _ _", "\u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _ _", "\u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _"};
 
     public RealmsLongRunningMcoTaskScreen(Screen parent, LongRunningTask task) {
+        super(NarratorManager.EMPTY);
         this.parent = parent;
         this.task = task;
         task.setScreen(this);
@@ -50,7 +53,7 @@ implements Errable {
     @Override
     public void tick() {
         super.tick();
-        Realms.narrateRepeatedly(this.title.getString());
+        field_33779.narrate(this.title);
         ++this.animTicks;
         this.task.tick();
     }
@@ -67,7 +70,7 @@ implements Errable {
     @Override
     public void init() {
         this.task.init();
-        this.addButton(new ButtonWidget(this.width / 2 - 106, RealmsLongRunningMcoTaskScreen.row(12), 212, 20, ScreenTexts.CANCEL, buttonWidget -> this.cancelOrBackButtonClicked()));
+        this.field_33778 = this.addDrawableChild(new ButtonWidget(this.width / 2 - 106, RealmsLongRunningMcoTaskScreen.row(12), 212, 20, ScreenTexts.CANCEL, button -> this.cancelOrBackButtonClicked()));
     }
 
     private void cancelOrBackButtonClicked() {
@@ -92,15 +95,11 @@ implements Errable {
     @Override
     public void error(Text errorMessage) {
         this.errorMessage = errorMessage;
-        Realms.narrateNow(errorMessage.getString());
-        this.onError();
-        this.addButton(new ButtonWidget(this.width / 2 - 106, this.height / 4 + 120 + 12, 200, 20, ScreenTexts.BACK, buttonWidget -> this.cancelOrBackButtonClicked()));
-    }
-
-    private void onError() {
-        HashSet set = Sets.newHashSet(this.buttons);
-        this.children.removeIf(set::contains);
-        this.buttons.clear();
+        NarratorManager.INSTANCE.narrate(errorMessage);
+        this.client.execute(() -> {
+            this.remove(this.field_33778);
+            this.field_33778 = this.addDrawableChild(new ButtonWidget(this.width / 2 - 106, this.height / 4 + 120 + 12, 200, 20, ScreenTexts.BACK, button -> this.cancelOrBackButtonClicked()));
+        });
     }
 
     public void setTitle(Text title) {

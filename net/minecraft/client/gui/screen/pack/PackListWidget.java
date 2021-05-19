@@ -79,7 +79,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
         private final OrderedText displayName;
         private final MultilineText description;
         private final OrderedText incompatibleText;
-        private final MultilineText compatibilityNotificationTExt;
+        private final MultilineText compatibilityNotificationText;
 
         public ResourcePackEntry(MinecraftClient client, PackListWidget widget, Screen screen, ResourcePackOrganizer.Pack pack) {
             this.client = client;
@@ -87,9 +87,9 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
             this.pack = pack;
             this.widget = widget;
             this.displayName = ResourcePackEntry.trimTextToWidth(client, pack.getDisplayName());
-            this.description = ResourcePackEntry.method_31230(client, pack.getDecoratedDescription());
+            this.description = ResourcePackEntry.createMultilineText(client, pack.getDecoratedDescription());
             this.incompatibleText = ResourcePackEntry.trimTextToWidth(client, INCOMPATIBLE);
-            this.compatibilityNotificationTExt = ResourcePackEntry.method_31230(client, pack.getCompatibility().getNotification());
+            this.compatibilityNotificationText = ResourcePackEntry.createMultilineText(client, pack.getCompatibility().getNotification());
         }
 
         private static OrderedText trimTextToWidth(MinecraftClient client, Text text) {
@@ -101,8 +101,13 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
             return text.asOrderedText();
         }
 
-        private static MultilineText method_31230(MinecraftClient minecraftClient, Text text) {
-            return MultilineText.create(minecraftClient.textRenderer, (StringVisitable)text, 157, 2);
+        private static MultilineText createMultilineText(MinecraftClient client, Text text) {
+            return MultilineText.create(client.textRenderer, (StringVisitable)text, 157, 2);
+        }
+
+        @Override
+        public Text method_37006() {
+            return new TranslatableText("narrator.select", this.pack.getDisplayName());
         }
 
         @Override
@@ -127,7 +132,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
                 int j = mouseY - y;
                 if (!this.pack.getCompatibility().isCompatible()) {
                     orderedText = this.incompatibleText;
-                    multilineText = this.compatibilityNotificationTExt;
+                    multilineText = this.compatibilityNotificationText;
                 }
                 if (this.pack.canBeEnabled()) {
                     if (i < 32) {

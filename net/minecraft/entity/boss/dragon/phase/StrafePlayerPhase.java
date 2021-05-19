@@ -47,7 +47,7 @@ extends AbstractPhase {
             e = this.target.getZ();
             double f = d - this.dragon.getX();
             double g = e - this.dragon.getZ();
-            h = MathHelper.sqrt(f * f + g * g);
+            h = Math.sqrt(f * f + g * g);
             double i = Math.min((double)0.4f + h / 80.0 - 1.0, 10.0);
             this.pathTarget = new Vec3d(d, this.target.getY() + i, e);
         }
@@ -148,7 +148,7 @@ extends AbstractPhase {
         int l = this.target.getBlockZ();
         double d = (double)k - this.dragon.getX();
         double e = (double)l - this.dragon.getZ();
-        double f = MathHelper.sqrt(d * d + e * e);
+        double f = Math.sqrt(d * d + e * e);
         double g = Math.min((double)0.4f + f / 80.0 - 1.0, 10.0);
         int m = MathHelper.floor(this.target.getY() + g);
         PathNode pathNode = new PathNode(k, m, l);

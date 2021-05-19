@@ -11,11 +11,14 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.client.util.OrderableTooltip;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,17 +38,17 @@ implements OrderableTooltip {
     private final TooltipFactory<T> tooltipFactory;
     private final boolean optionTextOmitted;
 
-    CyclingButtonWidget(int i, int j, int k, int l, Text text, Text text2, int m, T object, Values<T> values, Function<T, Text> function, Function<CyclingButtonWidget<T>, MutableText> function2, UpdateCallback<T> updateCallback, TooltipFactory<T> tooltipFactory, boolean bl) {
-        super(i, j, k, l, text);
-        this.optionText = text2;
-        this.index = m;
-        this.value = object;
+    CyclingButtonWidget(int x, int y, int width, int height, Text message, Text optionText, int index, T value, Values<T> values, Function<T, Text> valueToText, Function<CyclingButtonWidget<T>, MutableText> narrationMessageFactory, UpdateCallback<T> callback, TooltipFactory<T> tooltipFactory, boolean optionTextOmitted) {
+        super(x, y, width, height, message);
+        this.optionText = optionText;
+        this.index = index;
+        this.value = value;
         this.values = values;
-        this.valueToText = function;
-        this.narrationMessageFactory = function2;
-        this.callback = updateCallback;
+        this.valueToText = valueToText;
+        this.narrationMessageFactory = narrationMessageFactory;
+        this.callback = callback;
         this.tooltipFactory = tooltipFactory;
-        this.optionTextOmitted = bl;
+        this.optionTextOmitted = optionTextOmitted;
     }
 
     @Override
@@ -63,6 +66,11 @@ implements OrderableTooltip {
         T object = list.get(this.index);
         this.internalSetValue(object);
         this.callback.onValueChange(this, object);
+    }
+
+    private T getValue(int offset) {
+        List<T> list = this.values.getCurrent();
+        return list.get(MathHelper.floorMod(this.index + offset, list.size()));
     }
 
     @Override
@@ -85,9 +93,13 @@ implements OrderableTooltip {
     }
 
     private void internalSetValue(T value) {
-        MutableText text = this.optionTextOmitted ? this.valueToText.apply(value) : this.composeGenericOptionText(value);
+        Text text = this.composeText(value);
         this.setMessage(text);
         this.value = value;
+    }
+
+    private Text composeText(T value) {
+        return this.optionTextOmitted ? this.valueToText.apply(value) : this.composeGenericOptionText(value);
     }
 
     private MutableText composeGenericOptionText(T value) {
@@ -101,6 +113,20 @@ implements OrderableTooltip {
     @Override
     protected MutableText getNarrationMessage() {
         return this.narrationMessageFactory.apply(this);
+    }
+
+    @Override
+    public void appendNarrations(NarrationMessageBuilder builder) {
+        builder.put(NarrationPart.TITLE, (Text)this.getNarrationMessage());
+        if (this.active) {
+            T object = this.getValue(1);
+            Text text = this.composeText(object);
+            if (this.isFocused()) {
+                builder.put(NarrationPart.USAGE, (Text)new TranslatableText("narration.cycle_button.usage.focused", text));
+            } else {
+                builder.put(NarrationPart.USAGE, (Text)new TranslatableText("narration.cycle_button.usage.hovered", text));
+            }
+        }
     }
 
     /**
@@ -268,8 +294,8 @@ implements OrderableTooltip {
             return this;
         }
 
-        public CyclingButtonWidget<T> method_35723(int i, int j, int k, int l, Text text) {
-            return this.build(i, j, k, l, text, (cyclingButtonWidget, object) -> {});
+        public CyclingButtonWidget<T> build(int x, int y, int width, int height, Text optionText) {
+            return this.build(x, y, width, height, optionText, (button, value) -> {});
         }
 
         public CyclingButtonWidget<T> build(int x, int y, int width, int height, Text optionText, UpdateCallback<T> callback) {

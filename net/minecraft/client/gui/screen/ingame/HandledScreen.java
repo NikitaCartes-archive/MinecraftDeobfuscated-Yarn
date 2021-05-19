@@ -339,7 +339,7 @@ implements ScreenHandlerProvider<T> {
                 }
             }
         } else {
-            this.method_30107(button);
+            this.onMouseClick(button);
         }
         this.lastClickedSlot = slot;
         this.lastButtonClickTime = l;
@@ -347,7 +347,7 @@ implements ScreenHandlerProvider<T> {
         return true;
     }
 
-    private void method_30107(int button) {
+    private void onMouseClick(int button) {
         if (this.focusedSlot != null && ((ScreenHandler)this.handler).getCursorStack().isEmpty()) {
             if (this.client.options.keySwapHands.matchesMouse(button)) {
                 this.onMouseClick(this.focusedSlot, this.focusedSlot.id, 40, SlotActionType.SWAP);

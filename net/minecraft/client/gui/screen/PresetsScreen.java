@@ -27,7 +27,6 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
@@ -179,15 +178,15 @@ extends Screen {
         Registry<Biome> registry = this.parent.parent.moreOptionsDialog.getRegistryManager().get(Registry.BIOME_KEY);
         this.customPresetField.setText(PresetsScreen.getGeneratorConfigString(registry, this.parent.getConfig()));
         this.config = this.parent.getConfig();
-        this.children.add(this.customPresetField);
+        this.addSelectableChild(this.customPresetField);
         this.listWidget = new SuperflatPresetsListWidget();
-        this.children.add(this.listWidget);
-        this.selectPresetButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, new TranslatableText("createWorld.customize.presets.select"), buttonWidget -> {
+        this.addSelectableChild(this.listWidget);
+        this.selectPresetButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, new TranslatableText("createWorld.customize.presets.select"), button -> {
             FlatChunkGeneratorConfig flatChunkGeneratorConfig = PresetsScreen.parsePresetString(registry, this.customPresetField.getText(), this.config);
             this.parent.setConfig(flatChunkGeneratorConfig);
             this.client.openScreen(this.parent);
         }));
-        this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, button -> this.client.openScreen(this.parent)));
         this.updateSelectButton(this.listWidget.getSelected() != null);
     }
 
@@ -277,17 +276,14 @@ extends Screen {
     extends AlwaysSelectedEntryListWidget<SuperflatPresetEntry> {
         public SuperflatPresetsListWidget() {
             super(PresetsScreen.this.client, PresetsScreen.this.width, PresetsScreen.this.height, 80, PresetsScreen.this.height - 37, 24);
-            for (int i = 0; i < PRESETS.size(); ++i) {
-                this.addEntry(new SuperflatPresetEntry());
+            for (SuperflatPreset superflatPreset : PRESETS) {
+                this.addEntry(new SuperflatPresetEntry(superflatPreset));
             }
         }
 
         @Override
         public void setSelected(@Nullable SuperflatPresetEntry superflatPresetEntry) {
             super.setSelected(superflatPresetEntry);
-            if (superflatPresetEntry != null) {
-                NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", PRESETS.get(this.children().indexOf(superflatPresetEntry)).getName()).getString());
-            }
             PresetsScreen.this.updateSelectButton(superflatPresetEntry != null);
         }
 
@@ -310,11 +306,16 @@ extends Screen {
         @Environment(value=EnvType.CLIENT)
         public class SuperflatPresetEntry
         extends AlwaysSelectedEntryListWidget.Entry<SuperflatPresetEntry> {
+            private final SuperflatPreset preset;
+
+            public SuperflatPresetEntry(SuperflatPreset preset) {
+                this.preset = preset;
+            }
+
             @Override
             public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-                SuperflatPreset superflatPreset = PRESETS.get(index);
-                this.renderIcon(matrices, x, y, superflatPreset.icon);
-                PresetsScreen.this.textRenderer.draw(matrices, superflatPreset.name, (float)(x + 18 + 5), (float)(y + 6), 0xFFFFFF);
+                this.renderIcon(matrices, x, y, this.preset.icon);
+                PresetsScreen.this.textRenderer.draw(matrices, this.preset.name, (float)(x + 18 + 5), (float)(y + 6), 0xFFFFFF);
             }
 
             @Override
@@ -327,9 +328,8 @@ extends Screen {
 
             void setPreset() {
                 SuperflatPresetsListWidget.this.setSelected(this);
-                SuperflatPreset superflatPreset = PRESETS.get(SuperflatPresetsListWidget.this.children().indexOf(this));
                 Registry<Biome> registry = PresetsScreen.this.parent.parent.moreOptionsDialog.getRegistryManager().get(Registry.BIOME_KEY);
-                PresetsScreen.this.config = superflatPreset.generatorConfigProvider.apply(registry);
+                PresetsScreen.this.config = this.preset.generatorConfigProvider.apply(registry);
                 PresetsScreen.this.customPresetField.setText(PresetsScreen.getGeneratorConfigString(registry, PresetsScreen.this.config));
                 PresetsScreen.this.customPresetField.setCursorToStart();
             }
@@ -343,6 +343,11 @@ extends Screen {
                 RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
                 RenderSystem.setShaderTexture(0, DrawableHelper.STATS_ICON_TEXTURE);
                 DrawableHelper.drawTexture(matrices, x, y, PresetsScreen.this.getZOffset(), 0.0f, 0.0f, 18, 18, 128, 128);
+            }
+
+            @Override
+            public Text method_37006() {
+                return new TranslatableText("narrator.select", this.preset.getName());
             }
         }
     }

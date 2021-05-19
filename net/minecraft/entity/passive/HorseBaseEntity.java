@@ -704,6 +704,7 @@ Saddleable {
             this.setInAir(false);
         }
         this.updateLimbs(this, false);
+        this.tryCheckBlockCollision();
     }
 
     protected void playJumpSound() {

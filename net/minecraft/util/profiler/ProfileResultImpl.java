@@ -203,7 +203,7 @@ implements ProfileResult {
     }
 
     @Override
-    public String method_34970() {
+    public String getRootTimings() {
         StringBuilder stringBuilder = new StringBuilder();
         this.appendTiming(0, "root", stringBuilder);
         return stringBuilder.toString();

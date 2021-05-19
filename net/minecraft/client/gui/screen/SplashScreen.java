@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.gui.screen;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.io.InputStream;
@@ -93,30 +94,35 @@ extends Overlay {
             SplashScreen.fill(matrices, 0, 0, i, j, SplashScreen.withAlpha(BRAND_ARGB.getAsInt(), k));
             h = MathHelper.clamp(g, 0.0f, 1.0f);
         } else {
-            SplashScreen.fill(matrices, 0, 0, i, j, BRAND_ARGB.getAsInt());
+            k = BRAND_ARGB.getAsInt();
+            float m = (float)(k >> 16 & 0xFF) / 255.0f;
+            float n = (float)(k >> 8 & 0xFF) / 255.0f;
+            float o = (float)(k & 0xFF) / 255.0f;
+            GlStateManager._clearColor(m, n, o, 1.0f);
+            GlStateManager._clear(16384, MinecraftClient.IS_SYSTEM_MAC);
             h = 1.0f;
         }
         k = (int)((double)this.client.getWindow().getScaledWidth() * 0.5);
-        int m = (int)((double)this.client.getWindow().getScaledHeight() * 0.5);
+        int p = (int)((double)this.client.getWindow().getScaledHeight() * 0.5);
         double d = Math.min((double)this.client.getWindow().getScaledWidth() * 0.75, (double)this.client.getWindow().getScaledHeight()) * 0.25;
-        int n = (int)(d * 0.5);
+        int q = (int)(d * 0.5);
         double e = d * 4.0;
-        int o = (int)(e * 0.5);
+        int r = (int)(e * 0.5);
         RenderSystem.setShaderTexture(0, LOGO);
         RenderSystem.enableBlend();
         RenderSystem.blendEquation(32774);
         RenderSystem.blendFunc(770, 1);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, h);
-        SplashScreen.drawTexture(matrices, k - o, m - n, o, (int)d, -0.0625f, 0.0f, 120, 60, 120, 120);
-        SplashScreen.drawTexture(matrices, k, m - n, o, (int)d, 0.0625f, 60.0f, 120, 60, 120, 120);
+        SplashScreen.drawTexture(matrices, k - r, p - q, r, (int)d, -0.0625f, 0.0f, 120, 60, 120, 120);
+        SplashScreen.drawTexture(matrices, k, p - q, r, (int)d, 0.0625f, 60.0f, 120, 60, 120, 120);
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableBlend();
-        int p = (int)((double)this.client.getWindow().getScaledHeight() * 0.8325);
-        float q = this.reload.getProgress();
-        this.progress = MathHelper.clamp(this.progress * 0.95f + q * 0.050000012f, 0.0f, 1.0f);
+        int s = (int)((double)this.client.getWindow().getScaledHeight() * 0.8325);
+        float t = this.reload.getProgress();
+        this.progress = MathHelper.clamp(this.progress * 0.95f + t * 0.050000012f, 0.0f, 1.0f);
         if (f < 1.0f) {
-            this.renderProgressBar(matrices, i / 2 - o, p - 5, i / 2 + o, p + 5, 1.0f - MathHelper.clamp(f, 0.0f, 1.0f));
+            this.renderProgressBar(matrices, i / 2 - r, s - 5, i / 2 + r, s + 5, 1.0f - MathHelper.clamp(f, 0.0f, 1.0f));
         }
         if (f >= 2.0f) {
             this.client.setOverlay(null);
@@ -135,15 +141,15 @@ extends Overlay {
         }
     }
 
-    private void renderProgressBar(MatrixStack matrices, int x1, int y1, int x2, int y2, float opacity) {
-        int i = MathHelper.ceil((float)(x2 - x1 - 2) * this.progress);
-        int j = Math.round(opacity * 255.0f);
-        int k = BackgroundHelper.ColorMixer.getArgb(j, 255, 255, 255);
-        SplashScreen.fill(matrices, x1 + 1, y1, x2 - 1, y1 + 1, k);
-        SplashScreen.fill(matrices, x1 + 1, y2, x2 - 1, y2 - 1, k);
-        SplashScreen.fill(matrices, x1, y1, x1 + 1, y2, k);
-        SplashScreen.fill(matrices, x2, y1, x2 - 1, y2, k);
-        SplashScreen.fill(matrices, x1 + 2, y1 + 2, x1 + i, y2 - 2, k);
+    private void renderProgressBar(MatrixStack matrices, int i, int j, int k, int l, float opacity) {
+        int m = MathHelper.ceil((float)(k - i - 2) * this.progress);
+        int n = Math.round(opacity * 255.0f);
+        int o = BackgroundHelper.ColorMixer.getArgb(n, 255, 255, 255);
+        SplashScreen.fill(matrices, i + 2, j + 2, i + m, l - 2, o);
+        SplashScreen.fill(matrices, i + 1, j, k - 1, j + 1, o);
+        SplashScreen.fill(matrices, i + 1, l, k - 1, l - 1, o);
+        SplashScreen.fill(matrices, i, j, i + 1, l, o);
+        SplashScreen.fill(matrices, k, j, k - 1, l, o);
     }
 
     @Override

@@ -126,8 +126,9 @@ Waterloggable {
 
     @Override
     public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
-        if (projectile instanceof TridentEntity && projectile.getVelocity().length() > 0.6) {
-            world.breakBlock(hit.getBlockPos(), true);
+        BlockPos blockPos = hit.getBlockPos();
+        if (!world.isClient && projectile.canModifyAt(world, blockPos) && projectile instanceof TridentEntity && projectile.getVelocity().length() > 0.6) {
+            world.breakBlock(blockPos, true);
         }
     }
 

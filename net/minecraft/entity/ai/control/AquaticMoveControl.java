@@ -52,7 +52,7 @@ extends MoveControl {
         float i = (float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
         if (this.entity.isTouchingWater()) {
             this.entity.setMovementSpeed(i * this.speedInWater);
-            float j = -((float)(MathHelper.atan2(e, MathHelper.sqrt(d * d + f * f)) * 57.2957763671875));
+            float j = -((float)(MathHelper.atan2(e, Math.sqrt(d * d + f * f)) * 57.2957763671875));
             j = MathHelper.clamp(MathHelper.wrapDegrees(j), (float)(-this.pitchChange), (float)this.pitchChange);
             this.entity.setPitch(this.wrapDegrees(this.entity.getPitch(), j, 5.0f));
             float k = MathHelper.cos(this.entity.getPitch() * ((float)Math.PI / 180));

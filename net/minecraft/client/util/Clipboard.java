@@ -30,12 +30,12 @@ public class Clipboard {
         return string;
     }
 
-    private static void setClipboard(long l, ByteBuffer byteBuffer, byte[] bs) {
-        byteBuffer.clear();
-        byteBuffer.put(bs);
-        byteBuffer.put((byte)0);
-        byteBuffer.flip();
-        GLFW.glfwSetClipboardString(l, byteBuffer);
+    private static void setClipboard(long window, ByteBuffer clipboardBuffer, byte[] content) {
+        clipboardBuffer.clear();
+        clipboardBuffer.put(content);
+        clipboardBuffer.put((byte)0);
+        clipboardBuffer.flip();
+        GLFW.glfwSetClipboardString(window, clipboardBuffer);
     }
 
     /*

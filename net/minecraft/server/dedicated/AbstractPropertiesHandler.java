@@ -104,8 +104,8 @@ public abstract class AbstractPropertiesHandler<T extends AbstractPropertiesHand
     }
 
     protected <V> V get(String key, Function<String, V> parser, UnaryOperator<V> parsedTransformer, Function<V, String> stringifier, V fallback) {
-        return (V)this.get(key, string -> {
-            Object object = parser.apply((String)string);
+        return (V)this.get(key, value -> {
+            Object object = parser.apply((String)value);
             return object != null ? parsedTransformer.apply(object) : null;
         }, stringifier, fallback);
     }
@@ -174,10 +174,10 @@ public abstract class AbstractPropertiesHandler<T extends AbstractPropertiesHand
         private final V value;
         private final Function<V, String> stringifier;
 
-        PropertyAccessor(String string, V object, Function<V, String> function) {
-            this.key = string;
-            this.value = object;
-            this.stringifier = function;
+        PropertyAccessor(String key, V value, Function<V, String> stringifier) {
+            this.key = key;
+            this.value = value;
+            this.stringifier = stringifier;
         }
 
         @Override
@@ -185,9 +185,9 @@ public abstract class AbstractPropertiesHandler<T extends AbstractPropertiesHand
             return this.value;
         }
 
-        public T set(DynamicRegistryManager registryManager, V object) {
+        public T set(DynamicRegistryManager registryManager, V value) {
             Properties properties = AbstractPropertiesHandler.this.copyProperties();
-            properties.put(this.key, this.stringifier.apply(object));
+            properties.put(this.key, this.stringifier.apply(value));
             return AbstractPropertiesHandler.this.create(registryManager, properties);
         }
     }

@@ -145,6 +145,7 @@ import net.minecraft.block.PlayerSkullBlock;
 import net.minecraft.block.PointedDripstoneBlock;
 import net.minecraft.block.PotatoesBlock;
 import net.minecraft.block.PowderSnowBlock;
+import net.minecraft.block.PowderSnowCauldronBlock;
 import net.minecraft.block.PoweredRailBlock;
 import net.minecraft.block.PressurePlateBlock;
 import net.minecraft.block.PumpkinBlock;
@@ -524,7 +525,7 @@ public class Blocks {
     public static final Block CAULDRON = Blocks.register("cauldron", new CauldronBlock(AbstractBlock.Settings.of(Material.METAL, MapColor.STONE_GRAY).requiresTool().strength(2.0f).nonOpaque()));
     public static final Block WATER_CAULDRON = Blocks.register("water_cauldron", new LeveledCauldronBlock(AbstractBlock.Settings.copy(CAULDRON), LeveledCauldronBlock.RAIN_PREDICATE, CauldronBehavior.WATER_CAULDRON_BEHAVIOR));
     public static final Block LAVA_CAULDRON = Blocks.register("lava_cauldron", new LavaCauldronBlock(AbstractBlock.Settings.copy(CAULDRON).luminance(state -> 15)));
-    public static final Block POWDER_SNOW_CAULDRON = Blocks.register("powder_snow_cauldron", new LeveledCauldronBlock(AbstractBlock.Settings.copy(CAULDRON), LeveledCauldronBlock.SNOW_PREDICATE, CauldronBehavior.POWDER_SNOW_CAULDRON_BEHAVIOR));
+    public static final Block POWDER_SNOW_CAULDRON = Blocks.register("powder_snow_cauldron", new PowderSnowCauldronBlock(AbstractBlock.Settings.copy(CAULDRON), LeveledCauldronBlock.SNOW_PREDICATE, CauldronBehavior.POWDER_SNOW_CAULDRON_BEHAVIOR));
     public static final Block END_PORTAL = Blocks.register("end_portal", new EndPortalBlock(AbstractBlock.Settings.of(Material.PORTAL, MapColor.BLACK).noCollision().luminance(state -> 15).strength(-1.0f, 3600000.0f).dropsNothing()));
     public static final Block END_PORTAL_FRAME = Blocks.register("end_portal_frame", new EndPortalFrameBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.GREEN).sounds(BlockSoundGroup.GLASS).luminance(state -> 1).strength(-1.0f, 3600000.0f).dropsNothing()));
     public static final Block END_STONE = Blocks.register("end_stone", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.PALE_YELLOW).requiresTool().strength(3.0f, 9.0f)));

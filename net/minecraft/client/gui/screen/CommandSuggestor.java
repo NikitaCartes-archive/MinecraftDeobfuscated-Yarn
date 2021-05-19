@@ -35,7 +35,6 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Rect2i;
@@ -70,8 +69,11 @@ public class CommandSuggestor {
     private final List<OrderedText> messages = Lists.newArrayList();
     private int x;
     private int width;
+    @Nullable
     private ParseResults<CommandSource> parse;
+    @Nullable
     private CompletableFuture<Suggestions> pendingSuggestions;
+    @Nullable
     SuggestionWindow window;
     private boolean windowActive;
     boolean completingSuggestions;
@@ -457,7 +459,7 @@ public class CommandSuggestor {
             }
             Suggestion suggestion = this.suggestions.get(this.selection);
             CommandSuggestor.this.textField.setSuggestion(CommandSuggestor.getSuggestionSuffix(CommandSuggestor.this.textField.getText(), suggestion.apply(this.typedText)));
-            if (NarratorManager.INSTANCE.isActive() && this.lastNarrationIndex != this.selection) {
+            if (this.lastNarrationIndex != this.selection) {
                 NarratorManager.INSTANCE.narrate(this.getNarration());
             }
         }
@@ -474,14 +476,14 @@ public class CommandSuggestor {
             this.completed = true;
         }
 
-        String getNarration() {
+        Text getNarration() {
             this.lastNarrationIndex = this.selection;
             Suggestion suggestion = this.suggestions.get(this.selection);
             Message message = suggestion.getTooltip();
             if (message != null) {
-                return I18n.translate("narration.suggestion.tooltip", this.selection + 1, this.suggestions.size(), suggestion.getText(), message.getString());
+                return new TranslatableText("narration.suggestion.tooltip", this.selection + 1, this.suggestions.size(), suggestion.getText(), message);
             }
-            return I18n.translate("narration.suggestion", this.selection + 1, this.suggestions.size(), suggestion.getText());
+            return new TranslatableText("narration.suggestion", this.selection + 1, this.suggestions.size(), suggestion.getText());
         }
 
         public void discard() {

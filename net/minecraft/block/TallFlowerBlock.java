@@ -39,7 +39,7 @@ implements Fertilizable {
 
     @Override
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-        TallFlowerBlock.dropStack(world, pos, new ItemStack(this));
+        TallFlowerBlock.dropStack((World)world, pos, new ItemStack(this));
     }
 }
 

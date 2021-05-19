@@ -80,6 +80,9 @@ extends AnimalEntity {
     public TurtleEntity(EntityType<? extends TurtleEntity> entityType, World world) {
         super((EntityType<? extends AnimalEntity>)entityType, world);
         this.setPathfindingPenalty(PathNodeType.WATER, 0.0f);
+        this.setPathfindingPenalty(PathNodeType.DOOR_IRON_CLOSED, -1.0f);
+        this.setPathfindingPenalty(PathNodeType.DOOR_WOOD_CLOSED, -1.0f);
+        this.setPathfindingPenalty(PathNodeType.DOOR_OPEN, -1.0f);
         this.moveControl = new TurtleMoveControl(this);
         this.stepHeight = 1.0f;
     }
@@ -378,7 +381,7 @@ extends AnimalEntity {
             double d = this.targetX - this.turtle.getX();
             double e = this.targetY - this.turtle.getY();
             double f = this.targetZ - this.turtle.getZ();
-            double g = MathHelper.sqrt(d * d + e * e + f * f);
+            double g = Math.sqrt(d * d + e * e + f * f);
             e /= g;
             float h = (float)(MathHelper.atan2(f, d) * 57.2957763671875) - 90.0f;
             this.turtle.setYaw(this.wrapDegrees(this.turtle.getYaw(), h, 90.0f));
@@ -705,6 +708,8 @@ extends AnimalEntity {
         @Override
         protected PathNodeNavigator createPathNodeNavigator(int range) {
             this.nodeMaker = new AmphibiousPathNodeMaker(true);
+            this.nodeMaker.setCanOpenDoors(false);
+            this.nodeMaker.setCanEnterOpenDoors(false);
             return new PathNodeNavigator(this.nodeMaker, range);
         }
 

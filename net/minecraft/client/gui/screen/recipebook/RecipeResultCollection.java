@@ -24,16 +24,16 @@ public class RecipeResultCollection {
     private final Set<Recipe<?>> fittingRecipes = Sets.newHashSet();
     private final Set<Recipe<?>> unlockedRecipes = Sets.newHashSet();
 
-    public RecipeResultCollection(List<Recipe<?>> list) {
-        this.recipes = ImmutableList.copyOf(list);
-        this.singleOutput = list.size() <= 1 ? true : RecipeResultCollection.shouldHaveSingleOutput(list);
+    public RecipeResultCollection(List<Recipe<?>> recipes) {
+        this.recipes = ImmutableList.copyOf(recipes);
+        this.singleOutput = recipes.size() <= 1 ? true : RecipeResultCollection.shouldHaveSingleOutput(recipes);
     }
 
-    private static boolean shouldHaveSingleOutput(List<Recipe<?>> list) {
-        int i = list.size();
-        ItemStack itemStack = list.get(0).getOutput();
+    private static boolean shouldHaveSingleOutput(List<Recipe<?>> recipes) {
+        int i = recipes.size();
+        ItemStack itemStack = recipes.get(0).getOutput();
         for (int j = 1; j < i; ++j) {
-            ItemStack itemStack2 = list.get(j).getOutput();
+            ItemStack itemStack2 = recipes.get(j).getOutput();
             if (ItemStack.areItemsEqualIgnoreDamage(itemStack, itemStack2) && ItemStack.areTagsEqual(itemStack, itemStack2)) continue;
             return false;
         }

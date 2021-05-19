@@ -18,7 +18,7 @@ extends ValueObject {
     public final boolean pvp;
     public final boolean spawnAnimals;
     public final boolean spawnMonsters;
-    public final boolean spawnNPCs;
+    public final boolean spawnNpcs;
     public final int spawnProtection;
     public final boolean commandBlocks;
     public final boolean forceGameMode;
@@ -43,11 +43,11 @@ extends ValueObject {
     private static final long field_32110 = -1L;
     private static final String DEFAULT_WORLD_TEMPLATE_IMAGE = null;
 
-    public RealmsWorldOptions(boolean pvp, boolean spawnAnimals, boolean spawnMonsters, boolean spawnNPCs, int spawnProtection, boolean commandBlocks, int difficulty, int gameMode, boolean forceGameMode, @Nullable String slotName) {
+    public RealmsWorldOptions(boolean pvp, boolean spawnAnimals, boolean spawnMonsters, boolean spawnNpcs, int spawnProtection, boolean commandBlocks, int difficulty, int gameMode, boolean forceGameMode, @Nullable String slotName) {
         this.pvp = pvp;
         this.spawnAnimals = spawnAnimals;
         this.spawnMonsters = spawnMonsters;
-        this.spawnNPCs = spawnNPCs;
+        this.spawnNpcs = spawnNpcs;
         this.spawnProtection = spawnProtection;
         this.commandBlocks = commandBlocks;
         this.difficulty = difficulty;
@@ -102,8 +102,8 @@ extends ValueObject {
         if (!this.spawnMonsters) {
             jsonObject.addProperty("spawnMonsters", this.spawnMonsters);
         }
-        if (!this.spawnNPCs) {
-            jsonObject.addProperty("spawnNPCs", this.spawnNPCs);
+        if (!this.spawnNpcs) {
+            jsonObject.addProperty("spawnNPCs", this.spawnNpcs);
         }
         if (this.spawnProtection != 0) {
             jsonObject.addProperty("spawnProtection", this.spawnProtection);
@@ -127,7 +127,7 @@ extends ValueObject {
     }
 
     public RealmsWorldOptions clone() {
-        return new RealmsWorldOptions(this.pvp, this.spawnAnimals, this.spawnMonsters, this.spawnNPCs, this.spawnProtection, this.commandBlocks, this.difficulty, this.gameMode, this.forceGameMode, this.slotName);
+        return new RealmsWorldOptions(this.pvp, this.spawnAnimals, this.spawnMonsters, this.spawnNpcs, this.spawnProtection, this.commandBlocks, this.difficulty, this.gameMode, this.forceGameMode, this.slotName);
     }
 
     public /* synthetic */ Object clone() throws CloneNotSupportedException {

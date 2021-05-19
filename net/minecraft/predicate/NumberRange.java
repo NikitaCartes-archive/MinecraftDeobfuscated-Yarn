@@ -146,50 +146,50 @@ public abstract class NumberRange<T extends Number> {
     }
 
     public static class FloatRange
-    extends NumberRange<Float> {
+    extends NumberRange<Double> {
         public static final FloatRange ANY = new FloatRange(null, null);
         private final Double squaredMin;
         private final Double squaredMax;
 
-        private static FloatRange create(StringReader reader, @Nullable Float min, @Nullable Float max) throws CommandSyntaxException {
-            if (min != null && max != null && min.floatValue() > max.floatValue()) {
+        private static FloatRange create(StringReader reader, @Nullable Double double_, @Nullable Double double2) throws CommandSyntaxException {
+            if (double_ != null && double2 != null && double_ > double2) {
                 throw EXCEPTION_SWAPPED.createWithContext(reader);
             }
-            return new FloatRange(min, max);
+            return new FloatRange(double_, double2);
         }
 
         @Nullable
-        private static Double square(@Nullable Float value) {
-            return value == null ? null : Double.valueOf(value.doubleValue() * value.doubleValue());
+        private static Double square(@Nullable Double double_) {
+            return double_ == null ? null : Double.valueOf(double_ * double_);
         }
 
-        private FloatRange(@Nullable Float min, @Nullable Float max) {
-            super(min, max);
-            this.squaredMin = FloatRange.square(min);
-            this.squaredMax = FloatRange.square(max);
+        private FloatRange(@Nullable Double double_, @Nullable Double double2) {
+            super(double_, double2);
+            this.squaredMin = FloatRange.square(double_);
+            this.squaredMax = FloatRange.square(double2);
         }
 
-        public static FloatRange exactly(float value) {
-            return new FloatRange(Float.valueOf(value), Float.valueOf(value));
+        public static FloatRange exactly(double d) {
+            return new FloatRange(d, d);
         }
 
-        public static FloatRange between(float min, float max) {
-            return new FloatRange(Float.valueOf(min), Float.valueOf(max));
+        public static FloatRange between(double d, double e) {
+            return new FloatRange(d, e);
         }
 
-        public static FloatRange atLeast(float value) {
-            return new FloatRange(Float.valueOf(value), null);
+        public static FloatRange atLeast(double d) {
+            return new FloatRange(d, null);
         }
 
-        public static FloatRange atMost(float value) {
-            return new FloatRange(null, Float.valueOf(value));
+        public static FloatRange atMost(double d) {
+            return new FloatRange(null, d);
         }
 
-        public boolean test(float value) {
-            if (this.min != null && ((Float)this.min).floatValue() > value) {
+        public boolean test(double d) {
+            if (this.min != null && (Double)this.min > d) {
                 return false;
             }
-            return this.max == null || !(((Float)this.max).floatValue() < value);
+            return this.max == null || !((Double)this.max < d);
         }
 
         public boolean testSqrt(double value) {
@@ -200,15 +200,15 @@ public abstract class NumberRange<T extends Number> {
         }
 
         public static FloatRange fromJson(@Nullable JsonElement element) {
-            return FloatRange.fromJson(element, ANY, JsonHelper::asFloat, FloatRange::new);
+            return FloatRange.fromJson(element, ANY, JsonHelper::asDouble, FloatRange::new);
         }
 
         public static FloatRange parse(StringReader reader) throws CommandSyntaxException {
-            return FloatRange.parse(reader, float_ -> float_);
+            return FloatRange.parse(reader, double_ -> double_);
         }
 
-        public static FloatRange parse(StringReader reader, Function<Float, Float> mapper) throws CommandSyntaxException {
-            return FloatRange.parse(reader, FloatRange::create, Float::parseFloat, CommandSyntaxException.BUILT_IN_EXCEPTIONS::readerInvalidFloat, mapper);
+        public static FloatRange parse(StringReader reader, Function<Double, Double> mapper) throws CommandSyntaxException {
+            return FloatRange.parse(reader, FloatRange::create, Double::parseDouble, CommandSyntaxException.BUILT_IN_EXCEPTIONS::readerInvalidDouble, mapper);
         }
     }
 

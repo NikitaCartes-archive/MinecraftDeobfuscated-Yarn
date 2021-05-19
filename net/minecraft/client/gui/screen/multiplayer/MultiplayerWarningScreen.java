@@ -39,21 +39,21 @@ extends Screen {
         super.init();
         this.lines = MultilineText.create(this.textRenderer, (StringVisitable)MESSAGE, this.width - 50);
         int i = (this.lines.count() + 1) * this.textRenderer.fontHeight * 2;
-        this.addButton(new ButtonWidget(this.width / 2 - 155, 100 + i, 150, 20, ScreenTexts.PROCEED, buttonWidget -> {
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, 100 + i, 150, 20, ScreenTexts.PROCEED, button -> {
             if (this.checkbox.isChecked()) {
                 this.client.options.skipMultiplayerWarning = true;
                 this.client.options.write();
             }
             this.client.openScreen(new MultiplayerScreen(this.parent));
         }));
-        this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, 100 + i, 150, 20, ScreenTexts.BACK, buttonWidget -> this.client.openScreen(this.parent)));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155 + 160, 100 + i, 150, 20, ScreenTexts.BACK, button -> this.client.openScreen(this.parent)));
         this.checkbox = new CheckboxWidget(this.width / 2 - 155 + 80, 76 + i, 150, 20, CHECK_MESSAGE, false);
-        this.addButton(this.checkbox);
+        this.addDrawableChild(this.checkbox);
     }
 
     @Override
-    public String getNarrationMessage() {
-        return PROCEED_TEXT.getString();
+    public Text getNarratedTitle() {
+        return PROCEED_TEXT;
     }
 
     @Override

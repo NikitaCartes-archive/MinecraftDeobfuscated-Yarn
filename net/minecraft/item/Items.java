@@ -352,7 +352,7 @@ public class Items {
     public static final Item PURPUR_BLOCK = Items.register(Blocks.PURPUR_BLOCK, ItemGroup.BUILDING_BLOCKS);
     public static final Item PURPUR_PILLAR = Items.register(Blocks.PURPUR_PILLAR, ItemGroup.BUILDING_BLOCKS);
     public static final Item PURPUR_STAIRS = Items.register(Blocks.PURPUR_STAIRS, ItemGroup.BUILDING_BLOCKS);
-    public static final Item SPAWNER = Items.register(Blocks.SPAWNER);
+    public static final Item SPAWNER = Items.register(new BlockItem(Blocks.SPAWNER, new Item.Settings().rarity(Rarity.EPIC)));
     public static final Item OAK_STAIRS = Items.register(Blocks.OAK_STAIRS, ItemGroup.BUILDING_BLOCKS);
     public static final Item CHEST = Items.register(Blocks.CHEST, ItemGroup.DECORATIONS);
     public static final Item CRAFTING_TABLE = Items.register(Blocks.CRAFTING_TABLE, ItemGroup.DECORATIONS);
@@ -481,8 +481,8 @@ public class Items {
     public static final Item GREEN_TERRACOTTA = Items.register(Blocks.GREEN_TERRACOTTA, ItemGroup.BUILDING_BLOCKS);
     public static final Item RED_TERRACOTTA = Items.register(Blocks.RED_TERRACOTTA, ItemGroup.BUILDING_BLOCKS);
     public static final Item BLACK_TERRACOTTA = Items.register(Blocks.BLACK_TERRACOTTA, ItemGroup.BUILDING_BLOCKS);
-    public static final Item BARRIER = Items.register(Blocks.BARRIER);
-    public static final Item LIGHT = Items.register(Blocks.LIGHT);
+    public static final Item BARRIER = Items.register(new BlockItem(Blocks.BARRIER, new Item.Settings().rarity(Rarity.EPIC)));
+    public static final Item LIGHT = Items.register(new BlockItem(Blocks.LIGHT, new Item.Settings().rarity(Rarity.EPIC)));
     public static final Item HAY_BLOCK = Items.register(Blocks.HAY_BLOCK, ItemGroup.BUILDING_BLOCKS);
     public static final Item WHITE_CARPET = Items.register(Blocks.WHITE_CARPET, ItemGroup.DECORATIONS);
     public static final Item ORANGE_CARPET = Items.register(Blocks.ORANGE_CARPET, ItemGroup.DECORATIONS);
@@ -561,7 +561,7 @@ public class Items {
     public static final Item WARPED_WART_BLOCK = Items.register(Blocks.WARPED_WART_BLOCK, ItemGroup.BUILDING_BLOCKS);
     public static final Item RED_NETHER_BRICKS = Items.register(Blocks.RED_NETHER_BRICKS, ItemGroup.BUILDING_BLOCKS);
     public static final Item BONE_BLOCK = Items.register(Blocks.BONE_BLOCK, ItemGroup.BUILDING_BLOCKS);
-    public static final Item STRUCTURE_VOID = Items.register(Blocks.STRUCTURE_VOID);
+    public static final Item STRUCTURE_VOID = Items.register(new BlockItem(Blocks.STRUCTURE_VOID, new Item.Settings().rarity(Rarity.EPIC)));
     public static final Item SHULKER_BOX = Items.register(new BlockItem(Blocks.SHULKER_BOX, new Item.Settings().maxCount(1).group(ItemGroup.DECORATIONS)));
     public static final Item WHITE_SHULKER_BOX = Items.register(new BlockItem(Blocks.WHITE_SHULKER_BOX, new Item.Settings().maxCount(1).group(ItemGroup.DECORATIONS)));
     public static final Item ORANGE_SHULKER_BOX = Items.register(new BlockItem(Blocks.ORANGE_SHULKER_BOX, new Item.Settings().maxCount(1).group(ItemGroup.DECORATIONS)));
@@ -1079,7 +1079,7 @@ public class Items {
     public static final Item LEATHER_HORSE_ARMOR = Items.register("leather_horse_armor", (Item)new DyeableHorseArmorItem(3, "leather", new Item.Settings().maxCount(1).group(ItemGroup.MISC)));
     public static final Item LEAD = Items.register("lead", (Item)new LeadItem(new Item.Settings().group(ItemGroup.TOOLS)));
     public static final Item NAME_TAG = Items.register("name_tag", (Item)new NameTagItem(new Item.Settings().group(ItemGroup.TOOLS)));
-    public static final Item COMMAND_BLOCK_MINECART = Items.register("command_block_minecart", (Item)new MinecartItem(AbstractMinecartEntity.Type.COMMAND_BLOCK, new Item.Settings().maxCount(1)));
+    public static final Item COMMAND_BLOCK_MINECART = Items.register("command_block_minecart", (Item)new MinecartItem(AbstractMinecartEntity.Type.COMMAND_BLOCK, new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
     public static final Item MUTTON = Items.register("mutton", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.MUTTON)));
     public static final Item COOKED_MUTTON = Items.register("cooked_mutton", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.COOKED_MUTTON)));
     public static final Item WHITE_BANNER = Items.register("white_banner", (Item)new BannerItem(Blocks.WHITE_BANNER, Blocks.WHITE_WALL_BANNER, new Item.Settings().maxCount(16).group(ItemGroup.DECORATIONS)));
@@ -1119,8 +1119,8 @@ public class Items {
     public static final Item TOTEM_OF_UNDYING = Items.register("totem_of_undying", new Item(new Item.Settings().maxCount(1).group(ItemGroup.COMBAT).rarity(Rarity.UNCOMMON)));
     public static final Item SHULKER_SHELL = Items.register("shulker_shell", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item IRON_NUGGET = Items.register("iron_nugget", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
-    public static final Item KNOWLEDGE_BOOK = Items.register("knowledge_book", (Item)new KnowledgeBookItem(new Item.Settings().maxCount(1)));
-    public static final Item DEBUG_STICK = Items.register("debug_stick", (Item)new DebugStickItem(new Item.Settings().maxCount(1)));
+    public static final Item KNOWLEDGE_BOOK = Items.register("knowledge_book", (Item)new KnowledgeBookItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
+    public static final Item DEBUG_STICK = Items.register("debug_stick", (Item)new DebugStickItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
     public static final Item MUSIC_DISC_13 = Items.register("music_disc_13", (Item)new MusicDiscItem(1, SoundEvents.MUSIC_DISC_13, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE)));
     public static final Item MUSIC_DISC_CAT = Items.register("music_disc_cat", (Item)new MusicDiscItem(2, SoundEvents.MUSIC_DISC_CAT, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE)));
     public static final Item MUSIC_DISC_BLOCKS = Items.register("music_disc_blocks", (Item)new MusicDiscItem(3, SoundEvents.MUSIC_DISC_BLOCKS, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE)));

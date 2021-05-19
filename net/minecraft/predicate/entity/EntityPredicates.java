@@ -7,12 +7,10 @@ import com.google.common.base.Predicates;
 import java.util.function.Predicate;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.AbstractTeam;
-import net.minecraft.world.Difficulty;
 import org.jetbrains.annotations.Nullable;
 
 public final class EntityPredicates {
@@ -56,7 +54,6 @@ public final class EntityPredicates {
      */
     public static final Predicate<Entity> VALID_INVENTORIES = entity -> entity instanceof Inventory && entity.isAlive();
     public static final Predicate<Entity> EXCEPT_CREATIVE_OR_SPECTATOR = entity -> !(entity instanceof PlayerEntity) || !entity.isSpectator() && !((PlayerEntity)entity).isCreative();
-    public static final Predicate<Entity> EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL = entity -> (!(entity instanceof PlayerEntity) || !entity.isSpectator() && !((PlayerEntity)entity).isCreative() && entity.world.getDifficulty() != Difficulty.PEACEFUL) && (!(entity instanceof AxolotlEntity) || !((AxolotlEntity)entity).isPlayingDead());
     public static final Predicate<Entity> EXCEPT_SPECTATOR = entity -> !entity.isSpectator();
 
     private EntityPredicates() {

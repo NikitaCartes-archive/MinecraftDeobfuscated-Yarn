@@ -56,7 +56,7 @@ implements AutoCloseable {
     }
 
     @Override
-    public void addLightSource(BlockPos pos, int i) {
+    public void addLightSource(BlockPos pos, int level) {
         throw Util.throwOrPause(new UnsupportedOperationException("Ran authomatically on a different thread!"));
     }
 
@@ -71,7 +71,7 @@ implements AutoCloseable {
             int i;
             super.setRetainData(pos, false);
             super.setColumnEnabled(pos, false);
-            for (i = this.method_31929(); i < this.method_31930(); ++i) {
+            for (i = this.getBottomY(); i < this.getTopY(); ++i) {
                 super.enqueueSectionData(LightType.BLOCK, ChunkSectionPos.from(pos, i), null, true);
                 super.enqueueSectionData(LightType.SKY, ChunkSectionPos.from(pos, i), null, true);
             }

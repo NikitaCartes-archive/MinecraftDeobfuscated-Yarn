@@ -79,7 +79,9 @@ StructureHolder {
 
     public Collection<Map.Entry<Heightmap.Type, Heightmap>> getHeightmaps();
 
-    public void setHeightmap(Heightmap.Type var1, long[] var2);
+    default public void setHeightmap(Heightmap.Type type, long[] heightmap) {
+        this.getHeightmap(type).setTo(this, type, heightmap);
+    }
 
     public Heightmap getHeightmap(Heightmap.Type var1);
 

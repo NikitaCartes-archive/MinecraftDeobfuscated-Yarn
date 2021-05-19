@@ -184,8 +184,8 @@ public class SpreadPlayersCommand {
             this.z /= d;
         }
 
-        float absolute() {
-            return MathHelper.sqrt(this.x * this.x + this.z * this.z);
+        double absolute() {
+            return Math.sqrt(this.x * this.x + this.z * this.z);
         }
 
         public void subtract(Pile other) {

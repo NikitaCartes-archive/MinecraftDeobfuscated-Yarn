@@ -33,9 +33,9 @@ implements FlyingItemEntity {
         super(entityType, livingEntity, d, e, f, world);
     }
 
-    public void setItem(ItemStack stack) {
-        if (!stack.isOf(Items.FIRE_CHARGE) || stack.hasTag()) {
-            this.getDataTracker().set(ITEM, Util.make(stack.copy(), itemStack -> itemStack.setCount(1)));
+    public void setItem(ItemStack stack2) {
+        if (!stack2.isOf(Items.FIRE_CHARGE) || stack2.hasTag()) {
+            this.getDataTracker().set(ITEM, Util.make(stack2.copy(), stack -> stack.setCount(1)));
         }
     }
 

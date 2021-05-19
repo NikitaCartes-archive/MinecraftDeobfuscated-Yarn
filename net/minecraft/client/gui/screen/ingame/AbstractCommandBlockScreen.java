@@ -50,10 +50,10 @@ extends Screen {
     @Override
     protected void init() {
         this.client.keyboard.setRepeatEvents(true);
-        this.doneButton = this.addButton(new ButtonWidget(this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20, ScreenTexts.DONE, buttonWidget -> this.commitAndClose()));
-        this.cancelButton = this.addButton(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.onClose()));
+        this.doneButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20, ScreenTexts.DONE, button -> this.commitAndClose()));
+        this.cancelButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20, ScreenTexts.CANCEL, button -> this.onClose()));
         boolean bl = this.getCommandExecutor().isTrackingOutput();
-        this.toggleTrackingOutputButton = this.addButton(CyclingButtonWidget.onOffBuilder(new LiteralText("O"), new LiteralText("X")).initially(bl).omitKeyText().build(this.width / 2 + 150 - 20, this.getTrackOutputButtonHeight(), 20, 20, new TranslatableText("advMode.trackOutput"), (button, trackOutput) -> {
+        this.toggleTrackingOutputButton = this.addDrawableChild(CyclingButtonWidget.onOffBuilder(new LiteralText("O"), new LiteralText("X")).initially(bl).omitKeyText().build(this.width / 2 + 150 - 20, this.getTrackOutputButtonHeight(), 20, 20, new TranslatableText("advMode.trackOutput"), (button, trackOutput) -> {
             CommandBlockExecutor commandBlockExecutor = this.getCommandExecutor();
             commandBlockExecutor.setTrackingOutput((boolean)trackOutput);
             this.setPreviousOutputText((boolean)trackOutput);
@@ -67,12 +67,12 @@ extends Screen {
         };
         this.consoleCommandTextField.setMaxLength(32500);
         this.consoleCommandTextField.setChangedListener(this::onCommandChanged);
-        this.children.add(this.consoleCommandTextField);
+        this.addSelectableChild(this.consoleCommandTextField);
         this.previousOutputTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 150, this.getTrackOutputButtonHeight(), 276, 20, new TranslatableText("advMode.previousOutput"));
         this.previousOutputTextField.setMaxLength(32500);
         this.previousOutputTextField.setEditable(false);
         this.previousOutputTextField.setText("-");
-        this.children.add(this.previousOutputTextField);
+        this.addSelectableChild(this.previousOutputTextField);
         this.setInitialFocus(this.consoleCommandTextField);
         this.consoleCommandTextField.setTextFieldFocused(true);
         this.commandSuggestor = new CommandSuggestor(this.client, this, this.consoleCommandTextField, this.textRenderer, true, true, 0, 7, false, Integer.MIN_VALUE);

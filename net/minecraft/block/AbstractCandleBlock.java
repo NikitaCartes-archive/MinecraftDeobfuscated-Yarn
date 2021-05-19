@@ -36,7 +36,7 @@ extends Block {
     protected abstract Iterable<Vec3d> getParticleOffsets(BlockState var1);
 
     public static boolean isLitCandle(BlockState state) {
-        return state.contains(LIT) && state.isIn(BlockTags.CANDLES) && state.get(LIT) != false;
+        return state.contains(LIT) && (state.isIn(BlockTags.CANDLES) || state.isIn(BlockTags.CANDLE_CAKES)) && state.get(LIT) != false;
     }
 
     @Override
@@ -72,7 +72,7 @@ extends Block {
     public static void extinguish(@Nullable PlayerEntity player, BlockState state, WorldAccess world, BlockPos pos) {
         AbstractCandleBlock.setLit(world, state, pos, false);
         if (state.getBlock() instanceof AbstractCandleBlock) {
-            ((AbstractCandleBlock)state.getBlock()).getParticleOffsets(state).forEach(vec3d -> world.addParticle(ParticleTypes.SMOKE, (double)pos.getX() + vec3d.getX(), (double)pos.getY() + vec3d.getY(), (double)pos.getZ() + vec3d.getZ(), 0.0, 0.1f, 0.0));
+            ((AbstractCandleBlock)state.getBlock()).getParticleOffsets(state).forEach(offset -> world.addParticle(ParticleTypes.SMOKE, (double)pos.getX() + offset.getX(), (double)pos.getY() + offset.getY(), (double)pos.getZ() + offset.getZ(), 0.0, 0.1f, 0.0));
         }
         world.playSound(null, pos, SoundEvents.BLOCK_CANDLE_EXTINGUISH, SoundCategory.BLOCKS, 1.0f, 1.0f);
         world.emitGameEvent((Entity)player, GameEvent.BLOCK_CHANGE, pos);

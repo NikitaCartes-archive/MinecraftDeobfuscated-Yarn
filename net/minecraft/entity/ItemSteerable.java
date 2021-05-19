@@ -51,6 +51,7 @@ public interface ItemSteerable {
             entity.updateLimbs(entity, false);
             entity.setVelocity(Vec3d.ZERO);
         }
+        entity.tryCheckBlockCollision();
         return true;
     }
 }

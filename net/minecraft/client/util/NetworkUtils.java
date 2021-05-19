@@ -40,9 +40,9 @@ public class NetworkUtils {
     private NetworkUtils() {
     }
 
-    public static String method_34938(Map<String, Object> map) {
+    public static String makeQueryString(Map<String, Object> query) {
         StringBuilder stringBuilder = new StringBuilder();
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
+        for (Map.Entry<String, Object> entry : query.entrySet()) {
             if (stringBuilder.length() > 0) {
                 stringBuilder.append('&');
             }
@@ -62,45 +62,45 @@ public class NetworkUtils {
         return stringBuilder.toString();
     }
 
-    public static String method_34937(URL uRL, Map<String, Object> map, boolean bl, @Nullable Proxy proxy) {
-        return NetworkUtils.method_34936(uRL, NetworkUtils.method_34938(map), bl, proxy);
+    public static String post(URL url, Map<String, Object> query, boolean ignoreError, @Nullable Proxy proxy) {
+        return NetworkUtils.post(url, NetworkUtils.makeQueryString(query), ignoreError, proxy);
     }
 
-    private static String method_34936(URL uRL, String string, boolean bl, @Nullable Proxy proxy) {
+    private static String post(URL url, String content, boolean ignoreError, @Nullable Proxy proxy) {
         try {
-            String string2;
+            String string;
             if (proxy == null) {
                 proxy = Proxy.NO_PROXY;
             }
-            HttpURLConnection httpURLConnection = (HttpURLConnection)uRL.openConnection(proxy);
+            HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection(proxy);
             httpURLConnection.setRequestMethod("POST");
             httpURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            httpURLConnection.setRequestProperty("Content-Length", "" + string.getBytes().length);
+            httpURLConnection.setRequestProperty("Content-Length", "" + content.getBytes().length);
             httpURLConnection.setRequestProperty("Content-Language", "en-US");
             httpURLConnection.setUseCaches(false);
             httpURLConnection.setDoInput(true);
             httpURLConnection.setDoOutput(true);
             DataOutputStream dataOutputStream = new DataOutputStream(httpURLConnection.getOutputStream());
-            dataOutputStream.writeBytes(string);
+            dataOutputStream.writeBytes(content);
             dataOutputStream.flush();
             dataOutputStream.close();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
             StringBuilder stringBuilder = new StringBuilder();
-            while ((string2 = bufferedReader.readLine()) != null) {
-                stringBuilder.append(string2);
+            while ((string = bufferedReader.readLine()) != null) {
+                stringBuilder.append(string);
                 stringBuilder.append('\r');
             }
             bufferedReader.close();
             return stringBuilder.toString();
         } catch (Exception exception) {
-            if (!bl) {
-                LOGGER.error("Could not post to {}", (Object)uRL, (Object)exception);
+            if (!ignoreError) {
+                LOGGER.error("Could not post to {}", (Object)url, (Object)exception);
             }
             return "";
         }
     }
 
-    public static CompletableFuture<?> downloadResourcePack(File file, String string, Map<String, String> map, int i, @Nullable ProgressListener progressListener, Proxy proxy) {
+    public static CompletableFuture<?> downloadResourcePack(File file, String url, Map<String, String> headers, int maxFileSize, @Nullable ProgressListener progressListener, Proxy proxy) {
         return CompletableFuture.supplyAsync(() -> {
             /*
              * This method has failed to decompile.  When submitting a bug report, please provide this stack trace, and (if you hold appropriate legal rights) the relevant class file.

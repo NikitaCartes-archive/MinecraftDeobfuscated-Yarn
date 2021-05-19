@@ -27,7 +27,6 @@ import net.minecraft.client.render.debug.PathfindingDebugRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3i;
 import org.jetbrains.annotations.Nullable;
@@ -271,9 +270,9 @@ implements DebugRenderer.Renderer {
     }
 
     private String getPositionString(Bee bee, BlockPos pos) {
-        float f = MathHelper.sqrt(pos.getSquaredDistance(bee.position.getX(), bee.position.getY(), bee.position.getZ(), true));
-        double d = (double)Math.round(f * 10.0f) / 10.0;
-        return pos.toShortString() + " (dist " + d + ")";
+        double d = Math.sqrt(pos.getSquaredDistance(bee.position.getX(), bee.position.getY(), bee.position.getZ(), true));
+        double e = (double)Math.round(d * 10.0) / 10.0;
+        return pos.toShortString() + " (dist " + e + ")";
     }
 
     private boolean isTargeted(Bee bee) {

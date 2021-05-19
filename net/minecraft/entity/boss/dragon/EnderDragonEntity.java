@@ -230,7 +230,7 @@ implements Monster {
                 k = vec3d2.z - this.getZ();
                 double l = e * e + j * j + k * k;
                 float m = phase.getMaxYAcceleration();
-                double n = MathHelper.sqrt(e * e + k * k);
+                double n = Math.sqrt(e * e + k * k);
                 if (n > 0.0) {
                     j = MathHelper.clamp(j / n, (double)(-m), (double)m);
                 }
@@ -701,17 +701,17 @@ implements Monster {
     }
 
     public float getChangeInNeckPitch(int segmentOffset, double[] segment1, double[] segment2) {
-        double d;
+        double e;
         Phase phase = this.phaseManager.getCurrent();
         PhaseType<? extends Phase> phaseType = phase.getType();
         if (phaseType == PhaseType.LANDING || phaseType == PhaseType.TAKEOFF) {
             BlockPos blockPos = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
-            float f = Math.max(MathHelper.sqrt(blockPos.getSquaredDistance(this.getPos(), true)) / 4.0f, 1.0f);
-            d = (float)segmentOffset / f;
+            double d = Math.max(Math.sqrt(blockPos.getSquaredDistance(this.getPos(), true)) / 4.0, 1.0);
+            e = (double)segmentOffset / d;
         } else {
-            d = phase.isSittingOrHovering() ? (double)segmentOffset : (segmentOffset == 6 ? 0.0 : segment2[1] - segment1[1]);
+            e = phase.isSittingOrHovering() ? (double)segmentOffset : (segmentOffset == 6 ? 0.0 : segment2[1] - segment1[1]);
         }
-        return (float)d;
+        return (float)e;
     }
 
     public Vec3d getRotationVectorFromPhase(float tickDelta) {
@@ -786,6 +786,14 @@ implements Monster {
         for (int i = 0; i < enderDragonParts.length; ++i) {
             enderDragonParts[i].setEntityId(i + packet.getId());
         }
+    }
+
+    @Override
+    public boolean canTarget(LivingEntity target) {
+        if (target instanceof PlayerEntity) {
+            return !((PlayerEntity)target).getAbilities().invulnerable && !target.isInvulnerable() && target.isPartOfGame();
+        }
+        return super.canTarget(target);
     }
 }
 

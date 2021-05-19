@@ -235,6 +235,7 @@ CommandOutput {
     public boolean wasOnFire;
     private float field_26997;
     private int prevAge;
+    private boolean hasVisualFire;
 
     public Entity(EntityType<?> type, World world) {
         this.type = type;
@@ -473,7 +474,7 @@ CommandOutput {
     }
 
     public void setOnFire(boolean onFire) {
-        this.setFlag(ON_FIRE_FLAG_INDEX, onFire);
+        this.setFlag(ON_FIRE_FLAG_INDEX, onFire || this.hasVisualFire);
     }
 
     /**
@@ -615,8 +616,8 @@ CommandOutput {
             if (!blockState.isIn(BlockTags.CLIMBABLE) && !blockState.isOf(Blocks.POWDER_SNOW)) {
                 e = 0.0;
             }
-            this.horizontalSpeed = (float)((double)this.horizontalSpeed + (double)MathHelper.sqrt(Entity.squaredHorizontalLength(vec3d)) * 0.6);
-            this.distanceTraveled = (float)((double)this.distanceTraveled + (double)MathHelper.sqrt(d * d + e * e + f * f) * 0.6);
+            this.horizontalSpeed += MathHelper.sqrt(Entity.squaredHorizontalLength(vec3d)) * 0.6f;
+            this.distanceTraveled += MathHelper.sqrt(d * d + e * e + f * f) * 0.6f;
             if (this.distanceTraveled > this.nextStepSoundDistance && !blockState.isAir()) {
                 this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
                 if (this.isTouchingWater()) {
@@ -645,6 +646,22 @@ CommandOutput {
                 this.addAirTravelEffects();
             }
         }
+        this.tryCheckBlockCollision();
+        float i = this.getVelocityMultiplier();
+        this.setVelocity(this.getVelocity().multiply(i, 1.0, i));
+        if (this.world.getStatesInBoxIfLoaded(this.getBoundingBox().contract(1.0E-6)).noneMatch(state -> state.isIn(BlockTags.FIRE) || state.isOf(Blocks.LAVA)) && this.fireTicks <= 0) {
+            this.setFireTicks(-this.getBurningDuration());
+        }
+        if (this.isOnFire() && (this.isWet() || this.inPowderSnow)) {
+            if (this.wasOnFire) {
+                this.playExtinguishSound();
+            }
+            this.setFireTicks(-this.getBurningDuration());
+        }
+        this.world.getProfiler().pop();
+    }
+
+    protected void tryCheckBlockCollision() {
         try {
             this.checkBlockCollision();
         } catch (Throwable throwable) {
@@ -653,18 +670,10 @@ CommandOutput {
             this.populateCrashReport(crashReportSection);
             throw new CrashException(crashReport);
         }
-        float i = this.getVelocityMultiplier();
-        this.setVelocity(this.getVelocity().multiply(i, 1.0, i));
-        if (this.world.getStatesInBoxIfLoaded(this.getBoundingBox().contract(1.0E-6)).noneMatch(state -> state.isIn(BlockTags.FIRE) || state.isOf(Blocks.LAVA)) && this.fireTicks <= 0) {
-            this.setFireTicks(-this.getBurningDuration());
-        }
-        if ((this.isWet() || this.inPowderSnow) && this.isOnFire()) {
-            if (this.wasOnFire) {
-                this.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.7f, 1.6f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
-            }
-            this.setFireTicks(-this.getBurningDuration());
-        }
-        this.world.getProfiler().pop();
+    }
+
+    protected void playExtinguishSound() {
+        this.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.7f, 1.6f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
     }
 
     /**
@@ -1275,7 +1284,7 @@ CommandOutput {
         double d = entity.getX() - this.getX();
         double f = MathHelper.absMax(d, e = entity.getZ() - this.getZ());
         if (f >= (double)0.01f) {
-            f = MathHelper.sqrt(f);
+            f = Math.sqrt(f);
             d /= f;
             e /= f;
             double g = 1.0 / f;
@@ -1465,6 +1474,9 @@ CommandOutput {
             if ((i = this.getFrozenTicks()) > 0) {
                 nbt.putInt("TicksFrozen", this.getFrozenTicks());
             }
+            if (this.hasVisualFire) {
+                nbt.putBoolean("HasVisualFire", this.hasVisualFire);
+            }
             if (!this.scoreboardTags.isEmpty()) {
                 nbtList = new NbtList();
                 for (String string : this.scoreboardTags) {
@@ -1541,6 +1553,7 @@ CommandOutput {
             this.setNoGravity(nbt.getBoolean("NoGravity"));
             this.setGlowing(nbt.getBoolean("Glowing"));
             this.setFrozenTicks(nbt.getInt("TicksFrozen"));
+            this.hasVisualFire = nbt.getBoolean("HasVisualFire");
             if (nbt.contains("Tags", 9)) {
                 this.scoreboardTags.clear();
                 NbtList nbtList4 = nbt.getList("Tags", 8);
@@ -1952,7 +1965,7 @@ CommandOutput {
         this.setFlag(SWIMMING_FLAG_INDEX, swimming);
     }
 
-    public final boolean method_36361() {
+    public final boolean isGlowingLocal() {
         return this.glowing;
     }
 
@@ -2705,7 +2718,7 @@ CommandOutput {
         double d = target.x - vec3d.x;
         double e = target.y - vec3d.y;
         double f = target.z - vec3d.z;
-        double g = MathHelper.sqrt(d * d + f * f);
+        double g = Math.sqrt(d * d + f * f);
         this.setPitch(MathHelper.wrapDegrees((float)(-(MathHelper.atan2(e, g) * 57.2957763671875))));
         this.setYaw(MathHelper.wrapDegrees((float)(MathHelper.atan2(f, d) * 57.2957763671875) - 90.0f));
         this.setHeadYaw(this.getYaw());
@@ -2830,7 +2843,7 @@ CommandOutput {
         return this.blockPos;
     }
 
-    public BlockState method_36601() {
+    public BlockState getBlockStateAtPos() {
         return this.world.getBlockState(this.getBlockPos());
     }
 
@@ -2962,7 +2975,7 @@ CommandOutput {
 
     public void setYaw(float yaw) {
         if (!Float.isFinite(yaw)) {
-            throw new IllegalStateException("Invalid entity rotation");
+            throw new IllegalStateException("Invalid entity rotation: " + yaw);
         }
         this.yaw = yaw;
     }
@@ -2973,7 +2986,7 @@ CommandOutput {
 
     public void setPitch(float pitch) {
         if (!Float.isFinite(pitch)) {
-            throw new IllegalStateException("Invalid entity rotation");
+            throw new IllegalStateException("Invalid entity rotation: " + pitch);
         }
         this.pitch = pitch;
     }
@@ -3022,6 +3035,10 @@ CommandOutput {
     @Override
     public boolean isPlayer() {
         return false;
+    }
+
+    public boolean canModifyAt(World world, BlockPos pos) {
+        return true;
     }
 
     public static enum RemovalReason {

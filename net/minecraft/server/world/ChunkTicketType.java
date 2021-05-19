@@ -40,8 +40,8 @@ public class ChunkTicketType<T> {
     /**
      * Creates a new ticket type that does not expire.
      */
-    public static <T> ChunkTicketType<T> create(String name, Comparator<T> comparator) {
-        return new ChunkTicketType<T>(name, comparator, 0L);
+    public static <T> ChunkTicketType<T> create(String name, Comparator<T> argumentComparator) {
+        return new ChunkTicketType<T>(name, argumentComparator, 0L);
     }
 
     /**
@@ -49,13 +49,13 @@ public class ChunkTicketType<T> {
      * 
      * @param expiryTicks the expiry time in ticks, does not expire if 0
      */
-    public static <T> ChunkTicketType<T> create(String name, Comparator<T> comparator, int expiryTicks) {
-        return new ChunkTicketType<T>(name, comparator, expiryTicks);
+    public static <T> ChunkTicketType<T> create(String name, Comparator<T> argumentComparator, int expiryTicks) {
+        return new ChunkTicketType<T>(name, argumentComparator, expiryTicks);
     }
 
-    protected ChunkTicketType(String name, Comparator<T> comparator, long expiryTicks) {
+    protected ChunkTicketType(String name, Comparator<T> argumentComparator, long expiryTicks) {
         this.name = name;
-        this.argumentComparator = comparator;
+        this.argumentComparator = argumentComparator;
         this.expiryTicks = expiryTicks;
     }
 

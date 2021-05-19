@@ -70,17 +70,17 @@ extends Screen {
             this.serverListWidget = new MultiplayerServerListWidget(this, this.client, this.width, this.height, 32, this.height - 64, 36);
             this.serverListWidget.setServers(this.serverList);
         }
-        this.children.add(this.serverListWidget);
-        this.buttonJoin = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 52, 100, 20, new TranslatableText("selectServer.select"), buttonWidget -> this.connect()));
-        this.addButton(new ButtonWidget(this.width / 2 - 50, this.height - 52, 100, 20, new TranslatableText("selectServer.direct"), buttonWidget -> {
+        this.addSelectableChild(this.serverListWidget);
+        this.buttonJoin = this.addDrawableChild(new ButtonWidget(this.width / 2 - 154, this.height - 52, 100, 20, new TranslatableText("selectServer.select"), button -> this.connect()));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 50, this.height - 52, 100, 20, new TranslatableText("selectServer.direct"), button -> {
             this.selectedEntry = new ServerInfo(I18n.translate("selectServer.defaultName", new Object[0]), "", false);
             this.client.openScreen(new DirectConnectScreen(this, this::directConnect, this.selectedEntry));
         }));
-        this.addButton(new ButtonWidget(this.width / 2 + 4 + 50, this.height - 52, 100, 20, new TranslatableText("selectServer.add"), buttonWidget -> {
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 4 + 50, this.height - 52, 100, 20, new TranslatableText("selectServer.add"), button -> {
             this.selectedEntry = new ServerInfo(I18n.translate("selectServer.defaultName", new Object[0]), "", false);
             this.client.openScreen(new AddServerScreen(this, this::addEntry, this.selectedEntry));
         }));
-        this.buttonEdit = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 28, 70, 20, new TranslatableText("selectServer.edit"), buttonWidget -> {
+        this.buttonEdit = this.addDrawableChild(new ButtonWidget(this.width / 2 - 154, this.height - 28, 70, 20, new TranslatableText("selectServer.edit"), button -> {
             MultiplayerServerListWidget.Entry entry = (MultiplayerServerListWidget.Entry)this.serverListWidget.getSelected();
             if (entry instanceof MultiplayerServerListWidget.ServerEntry) {
                 ServerInfo serverInfo = ((MultiplayerServerListWidget.ServerEntry)entry).getServer();
@@ -89,7 +89,7 @@ extends Screen {
                 this.client.openScreen(new AddServerScreen(this, this::editEntry, this.selectedEntry));
             }
         }));
-        this.buttonDelete = this.addButton(new ButtonWidget(this.width / 2 - 74, this.height - 28, 70, 20, new TranslatableText("selectServer.delete"), buttonWidget -> {
+        this.buttonDelete = this.addDrawableChild(new ButtonWidget(this.width / 2 - 74, this.height - 28, 70, 20, new TranslatableText("selectServer.delete"), button -> {
             String string;
             MultiplayerServerListWidget.Entry entry = (MultiplayerServerListWidget.Entry)this.serverListWidget.getSelected();
             if (entry instanceof MultiplayerServerListWidget.ServerEntry && (string = ((MultiplayerServerListWidget.ServerEntry)entry).getServer().name) != null) {
@@ -100,8 +100,8 @@ extends Screen {
                 this.client.openScreen(new ConfirmScreen(this::removeEntry, text, text2, text3, text4));
             }
         }));
-        this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 28, 70, 20, new TranslatableText("selectServer.refresh"), buttonWidget -> this.refresh()));
-        this.addButton(new ButtonWidget(this.width / 2 + 4 + 76, this.height - 28, 75, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height - 28, 70, 20, new TranslatableText("selectServer.refresh"), button -> this.refresh()));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 4 + 76, this.height - 28, 75, 20, ScreenTexts.CANCEL, button -> this.client.openScreen(this.parent)));
         this.updateButtonActivationStates();
     }
 

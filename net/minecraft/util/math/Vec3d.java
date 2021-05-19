@@ -131,7 +131,7 @@ implements Position {
      * @return the normalized vector of this vector
      */
     public Vec3d normalize() {
-        double d = MathHelper.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+        double d = Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
         if (d < 1.0E-4) {
             return ZERO;
         }
@@ -208,7 +208,7 @@ implements Position {
         double d = vec.x - this.x;
         double e = vec.y - this.y;
         double f = vec.z - this.z;
-        return MathHelper.sqrt(d * d + e * e + f * f);
+        return Math.sqrt(d * d + e * e + f * f);
     }
 
     /**
@@ -290,7 +290,7 @@ implements Position {
      * @see #lengthSquared()
      */
     public double length() {
-        return MathHelper.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+        return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
     }
 
     /**

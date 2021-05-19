@@ -208,7 +208,7 @@ implements ChunkLightingView {
     }
 
     @Override
-    public void addLightSource(BlockPos pos, int i) {
+    public void addLightSource(BlockPos pos, int level) {
     }
 
     @Override

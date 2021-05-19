@@ -38,7 +38,6 @@ import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.decoration.LeashKnotEntity;
 import net.minecraft.entity.mob.MobVisibilityCache;
 import net.minecraft.entity.mob.Monster;
-import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
@@ -706,7 +705,7 @@ extends LivingEntity {
         } else {
             f = (targetEntity.getBoundingBox().minY + targetEntity.getBoundingBox().maxY) / 2.0 - this.getEyeY();
         }
-        double g = MathHelper.sqrt(d * d + e * e);
+        double g = Math.sqrt(d * d + e * e);
         float h = (float)(MathHelper.atan2(e, d) * 57.2957763671875) - 90.0f;
         float i = (float)(-(MathHelper.atan2(f, g) * 57.2957763671875));
         this.setPitch(this.changeAngle(this.getPitch(), i, maxPitchChange));
@@ -1252,17 +1251,6 @@ extends LivingEntity {
 
     public double squaredAttackRange(LivingEntity target) {
         return this.getWidth() * 2.0f * (this.getWidth() * 2.0f) + target.getWidth();
-    }
-
-    @Override
-    public boolean canTarget(LivingEntity target) {
-        if (target.getType() == EntityType.PLAYER && ((PlayerEntity)target).getAbilities().invulnerable) {
-            return false;
-        }
-        if (target.getType() == EntityType.AXOLOTL && ((AxolotlEntity)target).isPlayingDead()) {
-            return false;
-        }
-        return super.canTarget(target);
     }
 
     @Override

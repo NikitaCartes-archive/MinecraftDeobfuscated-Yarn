@@ -72,8 +72,10 @@ Waterloggable {
 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-        Direction direction = state.get(FACING);
-        world.setBlockState(pos.up(), (BlockState)((BlockState)((BlockState)this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER)).with(WATERLOGGED, world.isWater(pos.up()))).with(FACING, direction), Block.NOTIFY_ALL);
+        if (!world.isClient()) {
+            Direction direction = state.get(FACING);
+            world.setBlockState(pos.up(), (BlockState)((BlockState)((BlockState)this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER)).with(WATERLOGGED, world.isWater(pos.up()))).with(FACING, direction), Block.NOTIFY_ALL);
+        }
     }
 
     @Override

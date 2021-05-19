@@ -48,7 +48,9 @@ extends DrawableHelper {
     public static final int field_32213 = 79;
     private final MinecraftClient client;
     private final InGameHud inGameHud;
+    @Nullable
     private Text footer;
+    @Nullable
     private Text header;
     private long showTime;
     private boolean visible;
@@ -188,8 +190,8 @@ extends DrawableHelper {
         this.setZOffset(this.getZOffset() - 100);
     }
 
-    private void renderScoreboardObjective(ScoreboardObjective objective, int i, String string, int j, int k, PlayerListEntry entry, MatrixStack matrices) {
-        int l = objective.getScoreboard().getPlayerScore(string, objective).getScore();
+    private void renderScoreboardObjective(ScoreboardObjective objective, int i, String player, int j, int k, PlayerListEntry entry, MatrixStack matrices) {
+        int l = objective.getScoreboard().getPlayerScore(player, objective).getScore();
         if (objective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
             boolean bl;
             RenderSystem.setShaderTexture(0, GUI_ICONS_TEXTURE);
@@ -239,16 +241,16 @@ extends DrawableHelper {
                 } else {
                     float f = MathHelper.clamp((float)l / 20.0f, 0.0f, 1.0f);
                     int r = (int)((1.0f - f) * 255.0f) << 16 | (int)(f * 255.0f) << 8;
-                    String string2 = "" + (float)l / 2.0f;
-                    if (k - this.client.textRenderer.getWidth(string2 + "hp") >= j) {
-                        string2 = string2 + "hp";
+                    String string = "" + (float)l / 2.0f;
+                    if (k - this.client.textRenderer.getWidth(string + "hp") >= j) {
+                        string = string + "hp";
                     }
-                    this.client.textRenderer.drawWithShadow(matrices, string2, (float)((k + j) / 2 - this.client.textRenderer.getWidth(string2) / 2), (float)i, r);
+                    this.client.textRenderer.drawWithShadow(matrices, string, (float)((k + j) / 2 - this.client.textRenderer.getWidth(string) / 2), (float)i, r);
                 }
             }
         } else {
-            String string3 = "" + Formatting.YELLOW + l;
-            this.client.textRenderer.drawWithShadow(matrices, string3, (float)(k - this.client.textRenderer.getWidth(string3)), (float)i, 0xFFFFFF);
+            String string2 = "" + Formatting.YELLOW + l;
+            this.client.textRenderer.drawWithShadow(matrices, string2, (float)(k - this.client.textRenderer.getWidth(string2)), (float)i, 0xFFFFFF);
         }
     }
 
@@ -279,8 +281,8 @@ extends DrawableHelper {
         }
 
         @Override
-        public /* synthetic */ int compare(Object object, Object object2) {
-            return this.compare((PlayerListEntry)object, (PlayerListEntry)object2);
+        public /* synthetic */ int compare(Object a, Object b) {
+            return this.compare((PlayerListEntry)a, (PlayerListEntry)b);
         }
     }
 }

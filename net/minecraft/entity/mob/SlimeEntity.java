@@ -436,10 +436,7 @@ implements Monster {
             if (livingEntity == null) {
                 return false;
             }
-            if (!livingEntity.isAlive()) {
-                return false;
-            }
-            if (livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).getAbilities().invulnerable) {
+            if (this.slime.canTarget(livingEntity)) {
                 return false;
             }
             return this.slime.getMoveControl() instanceof SlimeMoveControl;
@@ -457,10 +454,7 @@ implements Monster {
             if (livingEntity == null) {
                 return false;
             }
-            if (!livingEntity.isAlive()) {
-                return false;
-            }
-            if (livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).getAbilities().invulnerable) {
+            if (this.slime.canTarget(livingEntity)) {
                 return false;
             }
             return --this.ticksLeft > 0;

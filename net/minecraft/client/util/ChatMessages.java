@@ -26,10 +26,10 @@ public class ChatMessages {
         return MinecraftClient.getInstance().options.chatColors ? message : Formatting.strip(message);
     }
 
-    public static List<OrderedText> breakRenderedChatMessageLines(StringVisitable stringVisitable2, int width, TextRenderer textRenderer) {
+    public static List<OrderedText> breakRenderedChatMessageLines(StringVisitable message2, int width, TextRenderer textRenderer) {
         TextCollector textCollector = new TextCollector();
-        stringVisitable2.visit((style, string) -> {
-            textCollector.add(StringVisitable.styled(ChatMessages.getRenderedChatMessage(string), style));
+        message2.visit((style, message) -> {
+            textCollector.add(StringVisitable.styled(ChatMessages.getRenderedChatMessage(message), style));
             return Optional.empty();
         }, Style.EMPTY);
         ArrayList<OrderedText> list = Lists.newArrayList();

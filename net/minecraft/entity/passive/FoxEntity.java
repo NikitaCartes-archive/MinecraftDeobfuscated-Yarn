@@ -1016,7 +1016,7 @@ extends AnimalEntity {
                 --this.timer;
                 return false;
             }
-            return FoxEntity.this.world.isDay() && this.isAtFavoredLocation() && !this.canCalmDown();
+            return FoxEntity.this.world.isDay() && this.isAtFavoredLocation() && !this.canCalmDown() && !FoxEntity.this.inPowderSnow;
         }
 
         @Override
@@ -1157,7 +1157,7 @@ extends AnimalEntity {
             if (j > 0) {
                 Block.dropStack(FoxEntity.this.world, this.targetPos, new ItemStack(Items.SWEET_BERRIES, j));
             }
-            FoxEntity.this.playSound(SoundEvents.ITEM_SWEET_BERRIES_PICK_FROM_BUSH, 1.0f, 1.0f);
+            FoxEntity.this.playSound(SoundEvents.BLOCK_SWEET_BERRY_BUSH_PICK_BERRIES, 1.0f, 1.0f);
             FoxEntity.this.world.setBlockState(this.targetPos, (BlockState)state.with(SweetBerryBushBlock.AGE, 1), Block.NOTIFY_LISTENERS);
         }
 

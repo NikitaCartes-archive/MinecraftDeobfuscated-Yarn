@@ -28,7 +28,6 @@ import net.minecraft.entity.projectile.SmallFireballEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
@@ -215,12 +214,12 @@ extends HostileEntity {
                         this.blaze.setFireActive(false);
                     }
                     if (this.fireballsFired > 1) {
-                        float h = MathHelper.sqrt(MathHelper.sqrt(d)) * 0.5f;
+                        double h = Math.sqrt(Math.sqrt(d)) * 0.5;
                         if (!this.blaze.isSilent()) {
                             this.blaze.world.syncWorldEvent(null, WorldEvents.BLAZE_SHOOTS, this.blaze.getBlockPos(), 0);
                         }
                         for (int i = 0; i < 1; ++i) {
-                            SmallFireballEntity smallFireballEntity = new SmallFireballEntity(this.blaze.world, this.blaze, e + this.blaze.getRandom().nextGaussian() * (double)h, f, g + this.blaze.getRandom().nextGaussian() * (double)h);
+                            SmallFireballEntity smallFireballEntity = new SmallFireballEntity(this.blaze.world, this.blaze, e + this.blaze.getRandom().nextGaussian() * h, f, g + this.blaze.getRandom().nextGaussian() * h);
                             smallFireballEntity.setPosition(smallFireballEntity.getX(), this.blaze.getBodyY(0.5) + 0.5, smallFireballEntity.getZ());
                             this.blaze.world.spawnEntity(smallFireballEntity);
                         }

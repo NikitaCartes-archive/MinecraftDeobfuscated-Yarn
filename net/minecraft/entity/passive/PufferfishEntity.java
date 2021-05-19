@@ -41,7 +41,7 @@ extends FishEntity {
         }
         return entity.getType() == EntityType.AXOLOTL || entity.getGroup() != EntityGroup.AQUATIC;
     };
-    static final TargetPredicate field_33692 = TargetPredicate.createNonAttackable().ignoreDistanceScalingFactor().visibleOnly().setPredicate(BLOW_UP_FILTER);
+    static final TargetPredicate BLOW_UP_TARGET_PREDICATE = TargetPredicate.createNonAttackable().ignoreDistanceScalingFactor().visibleOnly().setPredicate(BLOW_UP_FILTER);
     public static final int NOT_PUFFED = 0;
     public static final int SEMI_PUFFED = 1;
     public static final int FULLY_PUFFED = 2;
@@ -126,10 +126,10 @@ extends FishEntity {
     public void tickMovement() {
         super.tickMovement();
         if (this.isAlive() && this.getPuffState() > 0) {
-            List<MobEntity> list = this.world.getEntitiesByClass(MobEntity.class, this.getBoundingBox().expand(0.3), mobEntity -> field_33692.test(this, (LivingEntity)mobEntity));
-            for (MobEntity mobEntity2 : list) {
-                if (!mobEntity2.isAlive()) continue;
-                this.sting(mobEntity2);
+            List<MobEntity> list = this.world.getEntitiesByClass(MobEntity.class, this.getBoundingBox().expand(0.3), entity -> BLOW_UP_TARGET_PREDICATE.test(this, (LivingEntity)entity));
+            for (MobEntity mobEntity : list) {
+                if (!mobEntity.isAlive()) continue;
+                this.sting(mobEntity);
             }
         }
     }
@@ -200,7 +200,7 @@ extends FishEntity {
 
         @Override
         public boolean canStart() {
-            List<LivingEntity> list = this.pufferfish.world.getEntitiesByClass(LivingEntity.class, this.pufferfish.getBoundingBox().expand(2.0), livingEntity -> field_33692.test(this.pufferfish, (LivingEntity)livingEntity));
+            List<LivingEntity> list = this.pufferfish.world.getEntitiesByClass(LivingEntity.class, this.pufferfish.getBoundingBox().expand(2.0), livingEntity -> BLOW_UP_TARGET_PREDICATE.test(this.pufferfish, (LivingEntity)livingEntity));
             return !list.isEmpty();
         }
 

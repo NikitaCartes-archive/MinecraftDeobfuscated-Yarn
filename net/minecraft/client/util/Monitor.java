@@ -21,8 +21,8 @@ public final class Monitor {
     private int x;
     private int y;
 
-    public Monitor(long l) {
-        this.handle = l;
+    public Monitor(long handle) {
+        this.handle = handle;
         this.videoModes = Lists.newArrayList();
         this.populateVideoModes();
     }
@@ -46,13 +46,13 @@ public final class Monitor {
         this.currentVideoMode = new VideoMode(gLFWVidMode);
     }
 
-    public VideoMode findClosestVideoMode(Optional<VideoMode> optional) {
+    public VideoMode findClosestVideoMode(Optional<VideoMode> videoMode) {
         RenderSystem.assertThread(RenderSystem::isInInitPhase);
-        if (optional.isPresent()) {
-            VideoMode videoMode = optional.get();
-            for (VideoMode videoMode2 : this.videoModes) {
-                if (!videoMode2.equals(videoMode)) continue;
-                return videoMode2;
+        if (videoMode.isPresent()) {
+            VideoMode videoMode2 = videoMode.get();
+            for (VideoMode videoMode3 : this.videoModes) {
+                if (!videoMode3.equals(videoMode2)) continue;
+                return videoMode3;
             }
         }
         return this.getCurrentVideoMode();
@@ -75,8 +75,8 @@ public final class Monitor {
         return this.y;
     }
 
-    public VideoMode getVideoMode(int i) {
-        return this.videoModes.get(i);
+    public VideoMode getVideoMode(int index) {
+        return this.videoModes.get(index);
     }
 
     public int getVideoModeCount() {

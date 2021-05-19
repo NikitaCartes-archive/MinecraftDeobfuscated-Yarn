@@ -8,7 +8,7 @@ import java.util.List;
 import net.minecraft.util.profiler.ProfilerTiming;
 
 public interface ProfileResult {
-    public static final char field_29924 = '\u001e';
+    public static final char SPLITTER_CHAR = '\u001e';
 
     public List<ProfilerTiming> getTimings(String var1);
 
@@ -30,7 +30,7 @@ public interface ProfileResult {
         return this.getEndTick() - this.getStartTick();
     }
 
-    public String method_34970();
+    public String getRootTimings();
 
     public static String getHumanReadableName(String path) {
         return path.replace('\u001e', '.');

@@ -16,12 +16,15 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookGhostSlots;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookResults;
 import net.minecraft.client.gui.screen.recipebook.RecipeDisplayListener;
 import net.minecraft.client.gui.screen.recipebook.RecipeGroupButtonWidget;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
 import net.minecraft.client.recipebook.ClientRecipeBook;
@@ -52,6 +55,7 @@ public class RecipeBookWidget
 extends DrawableHelper
 implements Drawable,
 Element,
+Selectable,
 RecipeDisplayListener,
 RecipeGridAligner<Ingredient> {
     protected static final Identifier TEXTURE = new Identifier("textures/gui/recipe_book.png");
@@ -117,7 +121,7 @@ RecipeGridAligner<Ingredient> {
             this.tabButtons.add(new RecipeGroupButtonWidget(recipeBookGroup));
         }
         if (this.currentTab != null) {
-            this.currentTab = this.tabButtons.stream().filter(recipeGroupButtonWidget -> recipeGroupButtonWidget.getCategory().equals((Object)this.currentTab.getCategory())).findFirst().orElse(null);
+            this.currentTab = this.tabButtons.stream().filter(button -> button.getCategory().equals((Object)this.currentTab.getCategory())).findFirst().orElse(null);
         }
         if (this.currentTab == null) {
             this.currentTab = this.tabButtons.get(0);
@@ -179,17 +183,17 @@ RecipeGridAligner<Ingredient> {
 
     private void refreshResults(boolean resetCurrentPage) {
         List<RecipeResultCollection> list = this.recipeBook.getResultsForGroup(this.currentTab.getCategory());
-        list.forEach(recipeResultCollection -> recipeResultCollection.computeCraftables(this.recipeFinder, this.craftingScreenHandler.getCraftingWidth(), this.craftingScreenHandler.getCraftingHeight(), this.recipeBook));
+        list.forEach(resultCollection -> resultCollection.computeCraftables(this.recipeFinder, this.craftingScreenHandler.getCraftingWidth(), this.craftingScreenHandler.getCraftingHeight(), this.recipeBook));
         ArrayList<RecipeResultCollection> list2 = Lists.newArrayList(list);
-        list2.removeIf(recipeResultCollection -> !recipeResultCollection.isInitialized());
-        list2.removeIf(recipeResultCollection -> !recipeResultCollection.hasFittingRecipes());
+        list2.removeIf(resultCollection -> !resultCollection.isInitialized());
+        list2.removeIf(resultCollection -> !resultCollection.hasFittingRecipes());
         String string = this.searchField.getText();
         if (!string.isEmpty()) {
             ObjectLinkedOpenHashSet objectSet = new ObjectLinkedOpenHashSet(this.client.getSearchableContainer(SearchManager.RECIPE_OUTPUT).findAll(string.toLowerCase(Locale.ROOT)));
             list2.removeIf(recipeResultCollection -> !objectSet.contains(recipeResultCollection));
         }
         if (this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)) {
-            list2.removeIf(recipeResultCollection -> !recipeResultCollection.hasCraftableRecipes());
+            list2.removeIf(resultCollection -> !resultCollection.hasCraftableRecipes());
         }
         this.recipesArea.setResults(list2, resetCurrentPage);
     }
@@ -419,8 +423,8 @@ RecipeGridAligner<Ingredient> {
         }
     }
 
-    private void triggerPirateSpeakEasterEgg(String string) {
-        if ("excitedze".equals(string)) {
+    private void triggerPirateSpeakEasterEgg(String search) {
+        if ("excitedze".equals(search)) {
             LanguageManager languageManager = this.client.getLanguageManager();
             LanguageDefinition languageDefinition = languageManager.getLanguage("en_pt");
             if (languageManager.getLanguage().compareTo(languageDefinition) == 0) {
@@ -473,6 +477,24 @@ RecipeGridAligner<Ingredient> {
             boolean bl = this.recipeBook.getOptions().isGuiOpen(recipeBookCategory);
             boolean bl2 = this.recipeBook.getOptions().isFilteringCraftable(recipeBookCategory);
             this.client.getNetworkHandler().sendPacket(new RecipeCategoryOptionsC2SPacket(recipeBookCategory, bl, bl2));
+        }
+    }
+
+    @Override
+    public Selectable.SelectionType getType() {
+        return this.open ? Selectable.SelectionType.HOVERED : Selectable.SelectionType.NONE;
+    }
+
+    @Override
+    public void appendNarrations(NarrationMessageBuilder builder) {
+        ArrayList<ClickableWidget> list = Lists.newArrayList();
+        this.recipesArea.method_37083(list::add);
+        list.add(this.searchField);
+        list.add(this.toggleCraftableButton);
+        list.addAll(this.tabButtons);
+        Screen.SelectedElementNarrationData selectedElementNarrationData = Screen.findSelectedElementData(list, null);
+        if (selectedElementNarrationData != null) {
+            selectedElementNarrationData.selectable.appendNarrations(builder.nextMessage());
         }
     }
 }

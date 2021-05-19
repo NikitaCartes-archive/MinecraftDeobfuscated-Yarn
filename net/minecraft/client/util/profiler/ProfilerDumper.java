@@ -38,9 +38,9 @@ import org.apache.logging.log4j.Logger;
 @Environment(value=EnvType.CLIENT)
 public class ProfilerDumper {
     public static final Path DEBUG_PROFILING_DIRECTORY = Paths.get("debug/profiling", new String[0]);
-    public static final String field_32677 = "metrics";
-    public static final String field_32678 = "deviations";
-    public static final String field_32679 = "profiling.txt";
+    public static final String METRICS_DIRECTORY = "metrics";
+    public static final String DEVIATIONS_DIRECTORY = "deviations";
+    public static final String FILE_NAME = "profiling.txt";
     private static final Logger LOGGER = LogManager.getLogger();
     public static final FileSystemProvider FILE_SYSTEM_PROVIDER = FileSystemProvider.installedProviders().stream().filter(fileSystemProvider -> fileSystemProvider.getScheme().equalsIgnoreCase("jar")).findFirst().orElseThrow(() -> new IllegalStateException("No jar file system provider found"));
 
@@ -54,12 +54,12 @@ public class ProfilerDumper {
         try (FileSystem fileSystem = FILE_SYSTEM_PROVIDER.newFileSystem(path, ImmutableMap.of("create", "true"));){
             Files.createDirectories(DEBUG_PROFILING_DIRECTORY, new FileAttribute[0]);
             Path path2 = fileSystem.getPath("/", new String[0]);
-            Path path3 = path2.resolve(field_32677);
+            Path path3 = path2.resolve(METRICS_DIRECTORY);
             for (Category category : categories) {
                 this.writeCategory(category, path3);
             }
             if (!deviations.isEmpty()) {
-                this.writeSamples(deviations, path2.resolve(field_32678));
+                this.writeSamples(deviations, path2.resolve(DEVIATIONS_DIRECTORY));
             }
             this.save(timeTracker, path2);
         } catch (IOException iOException2) {
@@ -114,7 +114,7 @@ public class ProfilerDumper {
     }
 
     private void save(TickTimeTracker timeTracker, Path directory) {
-        timeTracker.getResult().save(directory.resolve(field_32679));
+        timeTracker.getResult().save(directory.resolve(FILE_NAME));
     }
 
     private Path compressAndSave(Path filePath) {

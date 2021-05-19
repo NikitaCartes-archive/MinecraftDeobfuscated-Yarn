@@ -129,7 +129,7 @@ extends Screen {
 
     @Override
     protected void init() {
-        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, ScreenTexts.CANCEL, button -> {
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, ScreenTexts.CANCEL, button -> {
             this.connectingCancelled = true;
             if (this.connection != null) {
                 this.connection.disconnect(new TranslatableText("connect.aborted"));
@@ -144,7 +144,7 @@ extends Screen {
         long l = Util.getMeasuringTimeMs();
         if (l - this.narratorTimer > 2000L) {
             this.narratorTimer = l;
-            NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.joining").getString());
+            NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.joining"));
         }
         ConnectScreen.drawCenteredText(matrices, this.textRenderer, this.status, this.width / 2, this.height / 2 - 50, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);

@@ -7,6 +7,7 @@ import java.util.UUID;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -14,8 +15,10 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
@@ -102,9 +105,9 @@ extends Entity {
     public void setVelocity(double x, double y, double z, float speed, float divergence) {
         Vec3d vec3d = new Vec3d(x, y, z).normalize().add(this.random.nextGaussian() * (double)0.0075f * (double)divergence, this.random.nextGaussian() * (double)0.0075f * (double)divergence, this.random.nextGaussian() * (double)0.0075f * (double)divergence).multiply(speed);
         this.setVelocity(vec3d);
-        float f = MathHelper.sqrt(ProjectileEntity.squaredHorizontalLength(vec3d));
+        double d = Math.sqrt(ProjectileEntity.squaredHorizontalLength(vec3d));
         this.setYaw((float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875));
-        this.setPitch((float)(MathHelper.atan2(vec3d.y, f) * 57.2957763671875));
+        this.setPitch((float)(MathHelper.atan2(vec3d.y, d) * 57.2957763671875));
         this.prevYaw = this.getYaw();
         this.prevPitch = this.getPitch();
     }
@@ -142,8 +145,8 @@ extends Entity {
     public void setVelocityClient(double x, double y, double z) {
         this.setVelocity(x, y, z);
         if (this.prevPitch == 0.0f && this.prevYaw == 0.0f) {
-            float f = MathHelper.sqrt(x * x + z * z);
-            this.setPitch((float)(MathHelper.atan2(y, f) * 57.2957763671875));
+            double d = Math.sqrt(x * x + z * z);
+            this.setPitch((float)(MathHelper.atan2(y, d) * 57.2957763671875));
             this.setYaw((float)(MathHelper.atan2(x, z) * 57.2957763671875));
             this.prevPitch = this.getPitch();
             this.prevYaw = this.getYaw();
@@ -161,8 +164,8 @@ extends Entity {
 
     protected void updateRotation() {
         Vec3d vec3d = this.getVelocity();
-        float f = MathHelper.sqrt(ProjectileEntity.squaredHorizontalLength(vec3d));
-        this.setPitch(ProjectileEntity.updateRotation(this.prevPitch, (float)(MathHelper.atan2(vec3d.y, f) * 57.2957763671875)));
+        double d = Math.sqrt(ProjectileEntity.squaredHorizontalLength(vec3d));
+        this.setPitch(ProjectileEntity.updateRotation(this.prevPitch, (float)(MathHelper.atan2(vec3d.y, d) * 57.2957763671875)));
         this.setYaw(ProjectileEntity.updateRotation(this.prevYaw, (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875)));
     }
 
@@ -189,6 +192,15 @@ extends Entity {
         if (entity != null) {
             this.setOwner(entity);
         }
+    }
+
+    @Override
+    public boolean canModifyAt(World world, BlockPos pos) {
+        Entity entity = this.getOwner();
+        if (entity instanceof PlayerEntity) {
+            return entity.canModifyAt(world, pos);
+        }
+        return entity == null || world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
     }
 }
 

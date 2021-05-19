@@ -52,8 +52,8 @@ implements PaletteResizeListener<T> {
         this.writeLock.release();
     }
 
-    public PalettedContainer(Palette<T> palette, IdList<T> idList, Function<NbtCompound, T> elementDeserializer, Function<T, NbtCompound> elementSerializer, T defaultElement) {
-        this.fallbackPalette = palette;
+    public PalettedContainer(Palette<T> fallbackPalette, IdList<T> idList, Function<NbtCompound, T> elementDeserializer, Function<T, NbtCompound> elementSerializer, T defaultElement) {
+        this.fallbackPalette = fallbackPalette;
         this.idList = idList;
         this.elementDeserializer = elementDeserializer;
         this.elementSerializer = elementSerializer;

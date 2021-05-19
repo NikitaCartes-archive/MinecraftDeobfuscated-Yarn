@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
@@ -72,29 +73,39 @@ implements StructureWorldAccess {
     private final ChunkPos lowerCorner;
     private final ChunkPos upperCorner;
     private final StructureAccessor structureAccessor;
+    private final ChunkStatus field_33754;
+    private final int field_33755;
+    @Nullable
+    private Supplier<String> field_33756;
 
-    public ChunkRegion(ServerWorld world, List<Chunk> chunks) {
-        int i = MathHelper.floor(Math.sqrt(chunks.size()));
-        if (i * i != chunks.size()) {
+    public ChunkRegion(ServerWorld world, List<Chunk> list, ChunkStatus chunkStatus, int i) {
+        this.field_33754 = chunkStatus;
+        this.field_33755 = i;
+        int j = MathHelper.floor(Math.sqrt(list.size()));
+        if (j * j != list.size()) {
             throw Util.throwOrPause(new IllegalStateException("Cache size is not a square."));
         }
-        ChunkPos chunkPos = chunks.get(chunks.size() / 2).getPos();
-        this.chunks = chunks;
+        ChunkPos chunkPos = list.get(list.size() / 2).getPos();
+        this.chunks = list;
         this.centerPos = chunkPos;
-        this.width = i;
+        this.width = j;
         this.world = world;
         this.seed = world.getSeed();
         this.levelProperties = world.getLevelProperties();
         this.random = world.getRandom();
         this.dimension = world.getDimension();
         this.biomeAccess = new BiomeAccess(this, BiomeAccess.hashSeed(this.seed), world.getDimension().getBiomeAccessType());
-        this.lowerCorner = chunks.get(0).getPos();
-        this.upperCorner = chunks.get(chunks.size() - 1).getPos();
+        this.lowerCorner = list.get(0).getPos();
+        this.upperCorner = list.get(list.size() - 1).getPos();
         this.structureAccessor = world.getStructureAccessor().forRegion(this);
     }
 
     public ChunkPos getCenterPos() {
         return this.centerPos;
+    }
+
+    public void method_36972(@Nullable Supplier<String> supplier) {
+        this.field_33756 = supplier;
     }
 
     @Override
@@ -218,9 +229,16 @@ implements StructureWorldAccess {
 
     @Override
     public boolean setBlockState(BlockPos pos, BlockState state, int flags, int maxUpdateDepth) {
-        Chunk chunk = this.getChunk(pos);
-        BlockState blockState = chunk.setBlockState(pos, state, false);
-        if (blockState != null) {
+        Chunk chunk;
+        BlockState blockState;
+        int i = ChunkSectionPos.getSectionCoord(pos.getX());
+        int j = ChunkSectionPos.getSectionCoord(pos.getZ());
+        int k = Math.abs(this.centerPos.x - i);
+        int l = Math.abs(this.centerPos.z - j);
+        if (k > this.field_33755 || l > this.field_33755) {
+            Util.error("Detected setBlock in a far chunk [" + i + ", " + j + "], status: " + this.field_33754 + (String)(this.field_33756 == null ? "" : ", currently generating: " + this.field_33756.get()));
+        }
+        if ((blockState = (chunk = this.getChunk(i, j)).setBlockState(pos, state, false)) != null) {
             this.world.onBlockChanged(pos, blockState, state);
         }
         if (state.hasBlockEntity()) {

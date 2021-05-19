@@ -60,6 +60,10 @@ implements Control {
         } else {
             this.entity.headYaw = this.changeAngle(this.entity.headYaw, this.entity.bodyYaw, 10.0f);
         }
+        this.method_36980();
+    }
+
+    protected void method_36980() {
         if (!this.entity.getNavigation().isIdle()) {
             this.entity.headYaw = MathHelper.stepAngleTowards(this.entity.headYaw, this.entity.bodyYaw, this.entity.getBodyYawSpeed());
         }
@@ -89,7 +93,7 @@ implements Control {
         double d = this.lookX - this.entity.getX();
         double e = this.lookY - this.entity.getEyeY();
         double f = this.lookZ - this.entity.getZ();
-        double g = MathHelper.sqrt(d * d + f * f);
+        double g = Math.sqrt(d * d + f * f);
         return (float)(-(MathHelper.atan2(e, g) * 57.2957763671875));
     }
 

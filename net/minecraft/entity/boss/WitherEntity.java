@@ -41,7 +41,6 @@ import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -182,7 +181,7 @@ RangedAttackMob {
                 double h = entity2.getX() - e;
                 double k = entity2.getEyeY() - f;
                 double l = entity2.getZ() - g;
-                double m = MathHelper.sqrt(h * h + l * l);
+                double m = Math.sqrt(h * h + l * l);
                 float n = (float)(MathHelper.atan2(l, h) * 57.2957763671875) - 90.0f;
                 float o = (float)(-(MathHelper.atan2(k, m) * 57.2957763671875));
                 this.sideHeadPitches[i] = this.getNextAngle(this.sideHeadPitches[i], o, 40.0f);
@@ -228,7 +227,7 @@ RangedAttackMob {
             return;
         }
         super.mobTick();
-        block0: for (i = 1; i < 3; ++i) {
+        for (i = 1; i < 3; ++i) {
             if (this.age < this.skullCooldowns[i - 1]) continue;
             this.skullCooldowns[i - 1] = this.age + 10 + this.random.nextInt(10);
             if (this.world.getDifficulty() == Difficulty.NORMAL || this.world.getDifficulty() == Difficulty.HARD) {
@@ -246,34 +245,20 @@ RangedAttackMob {
                 }
             }
             if ((j = this.getTrackedEntityId(i)) > 0) {
-                Entity entity = this.world.getEntityById(j);
-                if (entity == null || !entity.isAlive() || this.squaredDistanceTo(entity) > 900.0 || !this.canSee(entity)) {
+                LivingEntity livingEntity = (LivingEntity)this.world.getEntityById(j);
+                if (livingEntity == null || !this.canTarget(livingEntity) || this.squaredDistanceTo(livingEntity) > 900.0 || !this.canSee(livingEntity)) {
                     this.setTrackedEntityId(i, 0);
                     continue;
                 }
-                if (!EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(entity)) {
-                    this.setTrackedEntityId(i, 0);
-                    continue;
-                }
-                this.shootSkullAt(i + 1, (LivingEntity)entity);
+                this.shootSkullAt(i + 1, livingEntity);
                 this.skullCooldowns[i - 1] = this.age + 40 + this.random.nextInt(20);
                 this.chargedSkullCooldowns[i - 1] = 0;
                 continue;
             }
             List<LivingEntity> list = this.world.getTargets(LivingEntity.class, HEAD_TARGET_PREDICATE, this, this.getBoundingBox().expand(20.0, 8.0, 20.0));
-            for (int k = 0; k < 10 && !list.isEmpty(); ++k) {
-                LivingEntity livingEntity = list.get(this.random.nextInt(list.size()));
-                if (livingEntity != this && livingEntity.isAlive() && this.canSee(livingEntity)) {
-                    if (livingEntity instanceof PlayerEntity) {
-                        if (((PlayerEntity)livingEntity).getAbilities().invulnerable) continue block0;
-                        this.setTrackedEntityId(i, livingEntity.getId());
-                        continue block0;
-                    }
-                    this.setTrackedEntityId(i, livingEntity.getId());
-                    continue block0;
-                }
-                list.remove(livingEntity);
-            }
+            if (list.isEmpty()) continue;
+            LivingEntity livingEntity2 = list.get(this.random.nextInt(list.size()));
+            this.setTrackedEntityId(i, livingEntity2.getId());
         }
         if (this.getTarget() != null) {
             this.setTrackedEntityId(0, this.getTarget().getId());
@@ -285,15 +270,15 @@ RangedAttackMob {
             if (this.blockBreakingCooldown == 0 && this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
                 i = MathHelper.floor(this.getY());
                 j = MathHelper.floor(this.getX());
-                int l = MathHelper.floor(this.getZ());
+                int k = MathHelper.floor(this.getZ());
                 boolean bl = false;
-                for (int m = -1; m <= 1; ++m) {
-                    for (int n = -1; n <= 1; ++n) {
-                        for (int o = 0; o <= 3; ++o) {
-                            int p = j + m;
-                            int q = i + o;
-                            int r = l + n;
-                            BlockPos blockPos = new BlockPos(p, q, r);
+                for (int l = -1; l <= 1; ++l) {
+                    for (int m = -1; m <= 1; ++m) {
+                        for (int n = 0; n <= 3; ++n) {
+                            int o = j + l;
+                            int p = i + n;
+                            int q = k + m;
+                            BlockPos blockPos = new BlockPos(o, p, q);
                             BlockState blockState = this.world.getBlockState(blockPos);
                             if (!WitherEntity.canDestroy(blockState)) continue;
                             bl = this.world.breakBlock(blockPos, true, this) || bl;

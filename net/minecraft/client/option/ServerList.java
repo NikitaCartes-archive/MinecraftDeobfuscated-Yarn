@@ -62,8 +62,8 @@ public class ServerList {
         }
     }
 
-    public ServerInfo get(int i) {
-        return this.servers.get(i);
+    public ServerInfo get(int index) {
+        return this.servers.get(index);
     }
 
     public void remove(ServerInfo serverInfo) {

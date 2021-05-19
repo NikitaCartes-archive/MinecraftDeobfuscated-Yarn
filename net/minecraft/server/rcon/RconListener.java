@@ -34,7 +34,7 @@ extends RconBase {
     }
 
     private void removeStoppedClients() {
-        this.clients.removeIf(rconClient -> !rconClient.isRunning());
+        this.clients.removeIf(client -> !client.isRunning());
     }
 
     @Override

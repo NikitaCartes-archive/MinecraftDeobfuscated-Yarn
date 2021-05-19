@@ -381,7 +381,7 @@ public class Util {
         return runnable;
     }
 
-    public static final void error(String message) {
+    public static void error(String message) {
         LOGGER.error(message);
         if (SharedConstants.isDevelopment) {
             Util.pause();

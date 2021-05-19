@@ -13,7 +13,7 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class ReplaceBlobsFeatureConfig
 implements FeatureConfig {
-    public static final Codec<ReplaceBlobsFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockState.CODEC.fieldOf("target")).forGetter(replaceBlobsFeatureConfig -> replaceBlobsFeatureConfig.target), ((MapCodec)BlockState.CODEC.fieldOf("state")).forGetter(replaceBlobsFeatureConfig -> replaceBlobsFeatureConfig.state), ((MapCodec)IntProvider.VALUE_CODEC.fieldOf("radius")).forGetter(replaceBlobsFeatureConfig -> replaceBlobsFeatureConfig.radius)).apply((Applicative<ReplaceBlobsFeatureConfig, ?>)instance, ReplaceBlobsFeatureConfig::new));
+    public static final Codec<ReplaceBlobsFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockState.CODEC.fieldOf("target")).forGetter(replaceBlobsFeatureConfig -> replaceBlobsFeatureConfig.target), ((MapCodec)BlockState.CODEC.fieldOf("state")).forGetter(replaceBlobsFeatureConfig -> replaceBlobsFeatureConfig.state), ((MapCodec)IntProvider.createValidatingCodec(0, 12).fieldOf("radius")).forGetter(replaceBlobsFeatureConfig -> replaceBlobsFeatureConfig.radius)).apply((Applicative<ReplaceBlobsFeatureConfig, ?>)instance, ReplaceBlobsFeatureConfig::new));
     public final BlockState target;
     public final BlockState state;
     private final IntProvider radius;

@@ -11,6 +11,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookResults;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -134,6 +136,17 @@ extends ClickableWidget {
             list.add(MORE_RECIPES_TEXT);
         }
         return list;
+    }
+
+    @Override
+    public void appendNarrations(NarrationMessageBuilder builder) {
+        ItemStack itemStack = this.getResults().get(this.currentResultIndex).getOutput();
+        builder.put(NarrationPart.TITLE, (Text)new TranslatableText("narration.recipe", itemStack.getName()));
+        if (this.results.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
+            builder.put(NarrationPart.USAGE, new TranslatableText("narration.button.usage.hovered"), new TranslatableText("narration.recipe.usage.more"));
+        } else {
+            builder.put(NarrationPart.USAGE, (Text)new TranslatableText("narration.button.usage.hovered"));
+        }
     }
 
     @Override

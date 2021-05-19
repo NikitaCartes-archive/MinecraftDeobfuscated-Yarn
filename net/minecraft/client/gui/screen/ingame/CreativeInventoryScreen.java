@@ -62,8 +62,8 @@ import org.lwjgl.glfw.GLFW;
 public class CreativeInventoryScreen
 extends AbstractInventoryScreen<CreativeScreenHandler> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/creative_inventory/tabs.png");
-    private static final String field_32335 = "textures/gui/container/creative_inventory/tab_";
-    private static final String field_32336 = "CustomCreativeLock";
+    private static final String TAB_TEXTURE_PREFIX = "textures/gui/container/creative_inventory/tab_";
+    private static final String CUSTOM_CREATIVE_LOCK_KEY = "CustomCreativeLock";
     private static final int field_32337 = 5;
     private static final int field_32338 = 9;
     private static final int field_32339 = 28;
@@ -72,7 +72,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
     private static final int field_32342 = 15;
     static final SimpleInventory INVENTORY = new SimpleInventory(45);
     private static final Text DELETE_ITEM_SLOT_TEXT = new TranslatableText("inventory.binSlot");
-    private static final int field_32343 = 0xFFFFFF;
+    private static final int WHITE = 0xFFFFFF;
     private static int selectedTab = ItemGroup.BUILDING_BLOCKS.getIndex();
     private float scrollPosition;
     private boolean scrolling;
@@ -247,7 +247,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
             this.searchBox.setDrawsBackground(false);
             this.searchBox.setVisible(false);
             this.searchBox.setEditableColor(0xFFFFFF);
-            this.children.add(this.searchBox);
+            this.addSelectableChild(this.searchBox);
             int i = selectedTab;
             selectedTab = -1;
             this.setSelectedTab(ItemGroup.GROUPS[i]);
@@ -355,18 +355,18 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         ((CreativeScreenHandler)this.handler).scrollItems(0.0f);
     }
 
-    private void searchForTags(String string) {
+    private void searchForTags(String id2) {
         Predicate<Identifier> predicate;
-        int i = string.indexOf(58);
+        int i = id2.indexOf(58);
         if (i == -1) {
-            predicate = identifier -> identifier.getPath().contains(string);
+            predicate = id -> id.getPath().contains(id2);
         } else {
-            String string2 = string.substring(0, i).trim();
-            String string3 = string.substring(i + 1).trim();
-            predicate = identifier -> identifier.getNamespace().contains(string2) && identifier.getPath().contains(string3);
+            String string = id2.substring(0, i).trim();
+            String string2 = id2.substring(i + 1).trim();
+            predicate = id -> id.getNamespace().contains(string) && id.getPath().contains(string2);
         }
         TagGroup<Item> tagGroup = ItemTags.getTagGroup();
-        tagGroup.getTagIds().stream().filter(predicate).forEach(identifier -> this.searchResultTags.put((Identifier)identifier, tagGroup.getTag((Identifier)identifier)));
+        tagGroup.getTagIds().stream().filter(predicate).forEach(id -> this.searchResultTags.put((Identifier)id, tagGroup.getTag((Identifier)id)));
     }
 
     @Override
@@ -429,7 +429,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
                     for (k = 0; k < 9; ++k) {
                         if (k == j) {
                             ItemStack itemStack = new ItemStack(Items.PAPER);
-                            itemStack.getOrCreateSubTag(field_32336);
+                            itemStack.getOrCreateSubTag(CUSTOM_CREATIVE_LOCK_KEY);
                             Text text = this.client.options.keysHotbar[j].getBoundKeyLocalizedText();
                             Text text2 = this.client.options.keySaveToolbarActivator.getBoundKeyLocalizedText();
                             itemStack.setCustomName(new TranslatableText("inventory.hotbarInfo", text2, text));
@@ -574,9 +574,9 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
                     break;
                 }
             }
-            this.searchResultTags.forEach((identifier, tag) -> {
+            this.searchResultTags.forEach((id, tag) -> {
                 if (stack.isIn((Tag<Item>)tag)) {
-                    list2.add(1, new LiteralText("#" + identifier).formatted(Formatting.DARK_PURPLE));
+                    list2.add(1, new LiteralText("#" + id).formatted(Formatting.DARK_PURPLE));
                 }
             });
             if (itemGroup != null) {
@@ -599,7 +599,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
             this.renderTabIcon(matrices, itemGroup2);
         }
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, new Identifier(field_32335 + itemGroup.getTexture()));
+        RenderSystem.setShaderTexture(0, new Identifier(TAB_TEXTURE_PREFIX + itemGroup.getTexture()));
         this.drawTexture(matrices, this.x, this.y, 0, 0, this.backgroundWidth, this.backgroundHeight);
         this.searchBox.render(matrices, mouseX, mouseY, delta);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -630,18 +630,18 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         return mouseX >= (double)j && mouseX <= (double)(j + 28) && mouseY >= (double)k && mouseY <= (double)(k + 32);
     }
 
-    protected boolean renderTabTooltipIfHovered(MatrixStack matrices, ItemGroup group, int i, int j) {
-        int k = group.getColumn();
-        int l = 28 * k;
-        int m = 0;
+    protected boolean renderTabTooltipIfHovered(MatrixStack matrices, ItemGroup group, int mouseX, int mouseY) {
+        int i = group.getColumn();
+        int j = 28 * i;
+        int k = 0;
         if (group.isSpecial()) {
-            l = this.backgroundWidth - 28 * (6 - k) + 2;
-        } else if (k > 0) {
-            l += k;
+            j = this.backgroundWidth - 28 * (6 - i) + 2;
+        } else if (i > 0) {
+            j += i;
         }
-        m = group.isTopRow() ? (m -= 32) : (m += this.backgroundHeight);
-        if (this.isPointWithinBounds(l + 3, m + 3, 23, 27, i, j)) {
-            this.renderTooltip(matrices, group.getTranslationKey(), i, j);
+        k = group.isTopRow() ? (k -= 32) : (k += this.backgroundHeight);
+        if (this.isPointWithinBounds(j + 3, k + 3, 23, 27, mouseX, mouseY)) {
+            this.renderTooltip(matrices, group.getTranslationKey(), mouseX, mouseY);
             return true;
         }
         return false;
@@ -866,7 +866,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         @Override
         public boolean canTakeItems(PlayerEntity playerEntity) {
             if (super.canTakeItems(playerEntity) && this.hasStack()) {
-                return this.getStack().getSubTag(CreativeInventoryScreen.field_32336) == null;
+                return this.getStack().getSubTag(CreativeInventoryScreen.CUSTOM_CREATIVE_LOCK_KEY) == null;
             }
             return !this.hasStack();
         }

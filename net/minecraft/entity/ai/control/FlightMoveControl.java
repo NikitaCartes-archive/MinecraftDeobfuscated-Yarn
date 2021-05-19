@@ -37,7 +37,7 @@ extends MoveControl {
             this.entity.setYaw(this.wrapDegrees(this.entity.getYaw(), h, 90.0f));
             float i = this.entity.isOnGround() ? (float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)) : (float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_FLYING_SPEED));
             this.entity.setMovementSpeed(i);
-            double j = MathHelper.sqrt(d * d + f * f);
+            double j = Math.sqrt(d * d + f * f);
             float k = (float)(-(MathHelper.atan2(e, j) * 57.2957763671875));
             this.entity.setPitch(this.wrapDegrees(this.entity.getPitch(), k, this.maxPitchChange));
             this.entity.setUpwardSpeed(e > 0.0 ? i : -i);

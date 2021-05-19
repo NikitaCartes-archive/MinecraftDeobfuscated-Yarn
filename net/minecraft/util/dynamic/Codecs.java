@@ -67,6 +67,10 @@ public class Codecs {
         };
     }
 
+    public static <T> Codec<List<T>> method_36973(Codec<List<T>> codec) {
+        return codec.flatXmap(Codecs.method_36240(), Codecs.method_36240());
+    }
+
     static final class Xor<F, S>
     implements Codec<Either<F, S>> {
         private final Codec<F> first;

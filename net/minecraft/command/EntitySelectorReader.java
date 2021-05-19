@@ -117,8 +117,8 @@ public class EntitySelectorReader {
         if (this.dx != null || this.dy != null || this.dz != null) {
             box = this.createBox(this.dx == null ? 0.0 : this.dx, this.dy == null ? 0.0 : this.dy, this.dz == null ? 0.0 : this.dz);
         } else if (this.distance.getMax() != null) {
-            float f = ((Float)this.distance.getMax()).floatValue();
-            box = new Box(-f, -f, -f, f + 1.0f, f + 1.0f, f + 1.0f);
+            double d = (Double)this.distance.getMax();
+            box = new Box(-d, -d, -d, d + 1.0, d + 1.0, d + 1.0);
         } else {
             box = null;
         }

@@ -124,7 +124,7 @@ public final class Material {
      */
     public static final Material EGG = new Builder(MapColor.DARK_GREEN).destroyedByPiston().build();
     public static final Material CAKE = new Builder(MapColor.CLEAR).destroyedByPiston().build();
-    public static final Material AMETHYST = new Builder(MapColor.PURPLE).lightPassesThrough().build();
+    public static final Material AMETHYST = new Builder(MapColor.PURPLE).build();
     public static final Material POWDER_SNOW = new Builder(MapColor.WHITE).notSolid().allowsMovement().build();
     private final MapColor color;
     private final PistonBehavior pistonBehavior;

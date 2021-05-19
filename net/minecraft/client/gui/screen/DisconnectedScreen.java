@@ -21,8 +21,8 @@ extends Screen {
     private final Screen parent;
     private int reasonHeight;
 
-    public DisconnectedScreen(Screen parent, Text text, Text reason) {
-        super(text);
+    public DisconnectedScreen(Screen parent, Text title, Text reason) {
+        super(title);
         this.parent = parent;
         this.reason = reason;
     }
@@ -36,7 +36,7 @@ extends Screen {
     protected void init() {
         this.reasonFormatted = MultilineText.create(this.textRenderer, (StringVisitable)this.reason, this.width - 50);
         this.reasonHeight = this.reasonFormatted.count() * this.textRenderer.fontHeight;
-        this.addButton(new ButtonWidget(this.width / 2 - 100, Math.min(this.height / 2 + this.reasonHeight / 2 + this.textRenderer.fontHeight, this.height - 30), 200, 20, new TranslatableText("gui.toMenu"), buttonWidget -> this.client.openScreen(this.parent)));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, Math.min(this.height / 2 + this.reasonHeight / 2 + this.textRenderer.fontHeight, this.height - 30), 200, 20, new TranslatableText("gui.toMenu"), button -> this.client.openScreen(this.parent)));
     }
 
     @Override

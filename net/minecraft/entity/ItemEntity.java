@@ -55,18 +55,18 @@ extends Entity {
 
     public ItemEntity(EntityType<? extends ItemEntity> entityType, World world) {
         super(entityType, world);
-        this.uniqueOffset = (float)(Math.random() * Math.PI * 2.0);
-    }
-
-    public ItemEntity(World world, double x, double y, double z) {
-        this((EntityType<? extends ItemEntity>)EntityType.ITEM, world);
-        this.setPosition(x, y, z);
+        this.uniqueOffset = this.random.nextFloat() * (float)Math.PI * 2.0f;
         this.setYaw(this.random.nextFloat() * 360.0f);
-        this.setVelocity(this.random.nextDouble() * 0.2 - 0.1, 0.2, this.random.nextDouble() * 0.2 - 0.1);
     }
 
     public ItemEntity(World world, double x, double y, double z, ItemStack stack) {
-        this(world, x, y, z);
+        this(world, x, y, z, stack, world.random.nextDouble() * 0.2 - 0.1, 0.2, world.random.nextDouble() * 0.2 - 0.1);
+    }
+
+    public ItemEntity(World world, double x, double y, double z, ItemStack stack, double velocityX, double velocityY, double velocityZ) {
+        this((EntityType<? extends ItemEntity>)EntityType.ITEM, world);
+        this.setPosition(x, y, z);
+        this.setVelocity(velocityX, velocityY, velocityZ);
         this.setStack(stack);
     }
 
@@ -452,7 +452,7 @@ extends Entity {
         return this.pickupDelay > 0;
     }
 
-    public void method_35190() {
+    public void setNeverDespawn() {
         this.itemAge = Short.MIN_VALUE;
     }
 

@@ -46,7 +46,7 @@ extends Goal {
         if (livingEntity == null) {
             return false;
         }
-        if (!livingEntity.isAlive()) {
+        if (!livingEntity.canTakeDamage()) {
             return false;
         }
         AbstractTeam abstractTeam = this.mob.getScoreboardTeam();
@@ -64,9 +64,6 @@ extends Goal {
             } else if (++this.timeWithoutVisibility > this.maxTimeWithoutVisibility) {
                 return false;
             }
-        }
-        if (!livingEntity.canTakeDamage()) {
-            return false;
         }
         this.mob.setTarget(livingEntity);
         return true;

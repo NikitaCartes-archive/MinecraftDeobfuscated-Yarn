@@ -21,8 +21,8 @@ extends Screen {
 
     @Override
     protected void init() {
-        this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 4 + 120 + 12, 150, 20, new TranslatableText("gui.toTitle"), buttonWidget -> this.client.openScreen(new TitleScreen())));
-        this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height / 4 + 120 + 12, 150, 20, new TranslatableText("menu.quit"), buttonWidget -> this.client.scheduleStop()));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height / 4 + 120 + 12, 150, 20, new TranslatableText("gui.toTitle"), button -> this.client.openScreen(new TitleScreen())));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155 + 160, this.height / 4 + 120 + 12, 150, 20, new TranslatableText("menu.quit"), button -> this.client.scheduleStop()));
     }
 
     @Override

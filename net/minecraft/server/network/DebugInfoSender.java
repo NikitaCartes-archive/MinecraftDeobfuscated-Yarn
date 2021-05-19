@@ -130,63 +130,63 @@ public class DebugInfoSender {
     public static void sendBeehiveDebugData(World world, BlockPos pos, BlockState state, BeehiveBlockEntity blockEntity) {
     }
 
-    private static void method_36158(LivingEntity livingEntity, PacketByteBuf packetByteBuf2) {
-        Brain<Path> brain = livingEntity.getBrain();
-        long l = livingEntity.world.getTime();
-        if (livingEntity instanceof InventoryOwner) {
-            Inventory inventory = ((InventoryOwner)((Object)livingEntity)).getInventory();
-            packetByteBuf2.writeString(inventory.isEmpty() ? "" : inventory.toString());
+    private static void writeBrain(LivingEntity entity, PacketByteBuf buf2) {
+        Brain<Path> brain = entity.getBrain();
+        long l = entity.world.getTime();
+        if (entity instanceof InventoryOwner) {
+            Inventory inventory = ((InventoryOwner)((Object)entity)).getInventory();
+            buf2.writeString(inventory.isEmpty() ? "" : inventory.toString());
         } else {
-            packetByteBuf2.writeString("");
+            buf2.writeString("");
         }
         if (brain.hasMemoryModule(MemoryModuleType.PATH)) {
-            packetByteBuf2.writeBoolean(true);
+            buf2.writeBoolean(true);
             Path path = brain.getOptionalMemory(MemoryModuleType.PATH).get();
-            path.toBuffer(packetByteBuf2);
+            path.toBuffer(buf2);
         } else {
-            packetByteBuf2.writeBoolean(false);
+            buf2.writeBoolean(false);
         }
-        if (livingEntity instanceof VillagerEntity) {
-            VillagerEntity villagerEntity = (VillagerEntity)livingEntity;
+        if (entity instanceof VillagerEntity) {
+            VillagerEntity villagerEntity = (VillagerEntity)entity;
             boolean bl = villagerEntity.canSummonGolem(l);
-            packetByteBuf2.writeBoolean(bl);
+            buf2.writeBoolean(bl);
         } else {
-            packetByteBuf2.writeBoolean(false);
+            buf2.writeBoolean(false);
         }
-        packetByteBuf2.writeCollection(brain.getPossibleActivities(), (packetByteBuf, activity) -> packetByteBuf.writeString(activity.getId()));
+        buf2.writeCollection(brain.getPossibleActivities(), (buf, activity) -> buf.writeString(activity.getId()));
         Set set = brain.getRunningTasks().stream().map(Task::toString).collect(Collectors.toSet());
-        packetByteBuf2.writeCollection(set, PacketByteBuf::writeString);
-        packetByteBuf2.writeCollection(DebugInfoSender.method_36157(livingEntity, l), (packetByteBuf, string) -> {
-            String string2 = ChatUtil.truncate(string, 255, true);
-            packetByteBuf.writeString(string2);
+        buf2.writeCollection(set, PacketByteBuf::writeString);
+        buf2.writeCollection(DebugInfoSender.listMemories(entity, l), (buf, memory) -> {
+            String string = ChatUtil.truncate(memory, 255, true);
+            buf.writeString(string);
         });
-        if (livingEntity instanceof VillagerEntity) {
+        if (entity instanceof VillagerEntity) {
             Set set2 = Stream.of(MemoryModuleType.JOB_SITE, MemoryModuleType.HOME, MemoryModuleType.MEETING_POINT).map(brain::getOptionalMemory).flatMap(Util::stream).map(GlobalPos::getPos).collect(Collectors.toSet());
-            packetByteBuf2.writeCollection(set2, PacketByteBuf::writeBlockPos);
+            buf2.writeCollection(set2, PacketByteBuf::writeBlockPos);
         } else {
-            packetByteBuf2.writeVarInt(0);
+            buf2.writeVarInt(0);
         }
-        if (livingEntity instanceof VillagerEntity) {
+        if (entity instanceof VillagerEntity) {
             Set set2 = Stream.of(MemoryModuleType.POTENTIAL_JOB_SITE).map(brain::getOptionalMemory).flatMap(Util::stream).map(GlobalPos::getPos).collect(Collectors.toSet());
-            packetByteBuf2.writeCollection(set2, PacketByteBuf::writeBlockPos);
+            buf2.writeCollection(set2, PacketByteBuf::writeBlockPos);
         } else {
-            packetByteBuf2.writeVarInt(0);
+            buf2.writeVarInt(0);
         }
-        if (livingEntity instanceof VillagerEntity) {
-            Map<UUID, Object2IntMap<VillageGossipType>> map = ((VillagerEntity)livingEntity).getGossip().method_35120();
+        if (entity instanceof VillagerEntity) {
+            Map<UUID, Object2IntMap<VillageGossipType>> map = ((VillagerEntity)entity).getGossip().method_35120();
             ArrayList list = Lists.newArrayList();
-            map.forEach((uUID, object2IntMap) -> {
-                String string = NameGenerator.name(uUID);
-                object2IntMap.forEach((villageGossipType, integer) -> list.add(string + ": " + villageGossipType + ": " + integer));
+            map.forEach((uuid, gossips) -> {
+                String string = NameGenerator.name(uuid);
+                gossips.forEach((type, value) -> list.add(string + ": " + type + ": " + value));
             });
-            packetByteBuf2.writeCollection(list, PacketByteBuf::writeString);
+            buf2.writeCollection(list, PacketByteBuf::writeString);
         } else {
-            packetByteBuf2.writeVarInt(0);
+            buf2.writeVarInt(0);
         }
     }
 
-    private static List<String> method_36157(LivingEntity livingEntity, long l) {
-        Map<MemoryModuleType<?>, Optional<Memory<?>>> map = livingEntity.getBrain().method_35058();
+    private static List<String> listMemories(LivingEntity entity, long currentTime) {
+        Map<MemoryModuleType<?>, Optional<Memory<?>>> map = entity.getBrain().method_35058();
         ArrayList<String> list = Lists.newArrayList();
         for (Map.Entry<MemoryModuleType<?>, Optional<Memory<?>>> entry : map.entrySet()) {
             Object string;
@@ -196,10 +196,10 @@ public class DebugInfoSender {
                 Memory<?> memory = optional.get();
                 Object object = memory.getValue();
                 if (memoryModuleType == MemoryModuleType.HEARD_BELL_TIME) {
-                    long m = l - (Long)object;
-                    string = m + " ticks ago";
+                    long l = currentTime - (Long)object;
+                    string = l + " ticks ago";
                 } else {
-                    string = memory.isTimed() ? DebugInfoSender.method_36156((ServerWorld)livingEntity.world, object) + " (ttl: " + memory.getExpiry() + ")" : DebugInfoSender.method_36156((ServerWorld)livingEntity.world, object);
+                    string = memory.isTimed() ? DebugInfoSender.format((ServerWorld)entity.world, object) + " (ttl: " + memory.getExpiry() + ")" : DebugInfoSender.format((ServerWorld)entity.world, object);
                 }
             } else {
                 string = "-";
@@ -210,12 +210,12 @@ public class DebugInfoSender {
         return list;
     }
 
-    private static String method_36156(ServerWorld serverWorld, @Nullable Object object) {
+    private static String format(ServerWorld world, @Nullable Object object) {
         if (object == null) {
             return "-";
         }
         if (object instanceof UUID) {
-            return DebugInfoSender.method_36156(serverWorld, serverWorld.getEntity((UUID)object));
+            return DebugInfoSender.format(world, world.getEntity((UUID)object));
         }
         if (object instanceof LivingEntity) {
             Entity entity = (Entity)object;
@@ -225,25 +225,25 @@ public class DebugInfoSender {
             return ((Nameable)object).getName().getString();
         }
         if (object instanceof WalkTarget) {
-            return DebugInfoSender.method_36156(serverWorld, ((WalkTarget)object).getLookTarget());
+            return DebugInfoSender.format(world, ((WalkTarget)object).getLookTarget());
         }
         if (object instanceof EntityLookTarget) {
-            return DebugInfoSender.method_36156(serverWorld, ((EntityLookTarget)object).getEntity());
+            return DebugInfoSender.format(world, ((EntityLookTarget)object).getEntity());
         }
         if (object instanceof GlobalPos) {
-            return DebugInfoSender.method_36156(serverWorld, ((GlobalPos)object).getPos());
+            return DebugInfoSender.format(world, ((GlobalPos)object).getPos());
         }
         if (object instanceof BlockPosLookTarget) {
-            return DebugInfoSender.method_36156(serverWorld, ((BlockPosLookTarget)object).getBlockPos());
+            return DebugInfoSender.format(world, ((BlockPosLookTarget)object).getBlockPos());
         }
         if (object instanceof EntityDamageSource) {
             Entity entity = ((EntityDamageSource)object).getAttacker();
-            return entity == null ? object.toString() : DebugInfoSender.method_36156(serverWorld, entity);
+            return entity == null ? object.toString() : DebugInfoSender.format(world, entity);
         }
         if (object instanceof Collection) {
             ArrayList<String> list = Lists.newArrayList();
             for (Object object2 : (Iterable)object) {
-                list.add(DebugInfoSender.method_36156(serverWorld, object2));
+                list.add(DebugInfoSender.format(world, object2));
             }
             return ((Object)list).toString();
         }
@@ -257,21 +257,21 @@ public class DebugInfoSender {
         }
     }
 
-    private static /* synthetic */ void method_36163(PacketByteBuf packetByteBuf, Raid raid) {
-        packetByteBuf.writeBlockPos(raid.getCenter());
+    private static /* synthetic */ void method_36163(PacketByteBuf buf, Raid raid) {
+        buf.writeBlockPos(raid.getCenter());
     }
 
-    private static /* synthetic */ void method_36162(PacketByteBuf packetByteBuf, PrioritizedGoal prioritizedGoal) {
-        packetByteBuf.writeInt(prioritizedGoal.getPriority());
-        packetByteBuf.writeBoolean(prioritizedGoal.isRunning());
-        packetByteBuf.writeString(prioritizedGoal.getGoal().getClass().getSimpleName());
+    private static /* synthetic */ void method_36162(PacketByteBuf buf, PrioritizedGoal goal) {
+        buf.writeInt(goal.getPriority());
+        buf.writeBoolean(goal.isRunning());
+        buf.writeString(goal.getGoal().getClass().getSimpleName());
     }
 
-    private static /* synthetic */ void method_36155(ServerWorld serverWorld, PointOfInterest pointOfInterest) {
-        DebugInfoSender.sendPoiAddition(serverWorld, pointOfInterest.getPos());
+    private static /* synthetic */ void method_36155(ServerWorld world, PointOfInterest poi) {
+        DebugInfoSender.sendPoiAddition(world, poi.getPos());
     }
 
-    private static /* synthetic */ boolean method_36159(PointOfInterestType pointOfInterestType) {
+    private static /* synthetic */ boolean method_36159(PointOfInterestType poiType) {
         return true;
     }
 }

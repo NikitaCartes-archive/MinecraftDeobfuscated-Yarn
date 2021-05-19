@@ -71,20 +71,20 @@ extends HandledScreen<T> {
         this.drawStatusEffectDescriptions(matrices, i, j, iterable);
     }
 
-    private void drawStatusEffectBackgrounds(MatrixStack matrices, int i, int j, Iterable<StatusEffectInstance> iterable) {
+    private void drawStatusEffectBackgrounds(MatrixStack matrices, int i, int j, Iterable<StatusEffectInstance> statusEffects) {
         RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
         int k = this.y;
-        for (StatusEffectInstance statusEffectInstance : iterable) {
+        for (StatusEffectInstance statusEffectInstance : statusEffects) {
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             this.drawTexture(matrices, i, k, 0, 166, 140, 32);
             k += j;
         }
     }
 
-    private void drawStatusEffectSprites(MatrixStack matrices, int i, int j, Iterable<StatusEffectInstance> iterable) {
+    private void drawStatusEffectSprites(MatrixStack matrices, int i, int j, Iterable<StatusEffectInstance> statusEffects) {
         StatusEffectSpriteManager statusEffectSpriteManager = this.client.getStatusEffectSpriteManager();
         int k = this.y;
-        for (StatusEffectInstance statusEffectInstance : iterable) {
+        for (StatusEffectInstance statusEffectInstance : statusEffects) {
             StatusEffect statusEffect = statusEffectInstance.getEffectType();
             Sprite sprite = statusEffectSpriteManager.getSprite(statusEffect);
             RenderSystem.setShaderTexture(0, sprite.getAtlas().getId());
@@ -93,9 +93,9 @@ extends HandledScreen<T> {
         }
     }
 
-    private void drawStatusEffectDescriptions(MatrixStack matrices, int i, int j, Iterable<StatusEffectInstance> iterable) {
+    private void drawStatusEffectDescriptions(MatrixStack matrices, int i, int j, Iterable<StatusEffectInstance> statusEffects) {
         int k = this.y;
-        for (StatusEffectInstance statusEffectInstance : iterable) {
+        for (StatusEffectInstance statusEffectInstance : statusEffects) {
             Object string = I18n.translate(statusEffectInstance.getEffectType().getTranslationKey(), new Object[0]);
             if (statusEffectInstance.getAmplifier() >= 1 && statusEffectInstance.getAmplifier() <= 9) {
                 string = (String)string + " " + I18n.translate("enchantment.level." + (statusEffectInstance.getAmplifier() + 1), new Object[0]);

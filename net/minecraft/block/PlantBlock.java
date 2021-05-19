@@ -3,11 +3,13 @@
  */
 package net.minecraft.block;
 
+import java.util.Random;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.ai.pathing.NavigationType;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -50,6 +52,13 @@ extends Block {
             return true;
         }
         return super.canPathfindThrough(state, world, pos, type);
+    }
+
+    @Override
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        if (!this.canPlaceAt(state, world, pos)) {
+            world.breakBlock(pos, true);
+        }
     }
 }
 

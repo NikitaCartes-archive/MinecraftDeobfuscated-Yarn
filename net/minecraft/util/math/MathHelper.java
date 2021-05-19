@@ -803,7 +803,7 @@ public class MathHelper {
     }
 
     public static double magnitude(int x, double y, int z) {
-        return MathHelper.sqrt((double)(x * x) + y * y + (double)(z * z));
+        return Math.sqrt((double)(x * x) + y * y + (double)(z * z));
     }
 
     static {

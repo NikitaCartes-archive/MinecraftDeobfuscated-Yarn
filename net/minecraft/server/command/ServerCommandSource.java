@@ -169,7 +169,7 @@ implements CommandSource {
         double d = position.x - vec3d.x;
         double e = position.y - vec3d.y;
         double f = position.z - vec3d.z;
-        double g = MathHelper.sqrt(d * d + f * f);
+        double g = Math.sqrt(d * d + f * f);
         float h = MathHelper.wrapDegrees((float)(-(MathHelper.atan2(e, g) * 57.2957763671875)));
         float i = MathHelper.wrapDegrees((float)(MathHelper.atan2(f, d) * 57.2957763671875) - 90.0f);
         return this.withRotation(new Vec2f(h, i));

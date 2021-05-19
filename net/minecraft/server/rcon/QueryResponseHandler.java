@@ -28,9 +28,9 @@ import org.jetbrains.annotations.Nullable;
 public class QueryResponseHandler
 extends RconBase {
     private static final Logger field_23963 = LogManager.getLogger();
-    private static final String field_29795 = "SMP";
-    private static final String field_29796 = "MINECRAFT";
-    private static final long field_29797 = 30000L;
+    private static final String GAME_TYPE = "SMP";
+    private static final String GAME_ID = "MINECRAFT";
+    private static final long CLEAN_UP_THRESHOLD = 30000L;
     private static final long field_29798 = 5000L;
     private long lastQueryTime;
     private final int queryPort;
@@ -87,8 +87,8 @@ extends RconBase {
         return queryResponseHandler;
     }
 
-    private void reply(byte[] buf, DatagramPacket datagramPacket) throws IOException {
-        this.socket.send(new DatagramPacket(buf, buf.length, datagramPacket.getSocketAddress()));
+    private void reply(byte[] buf, DatagramPacket packet) throws IOException {
+        this.socket.send(new DatagramPacket(buf, buf.length, packet.getSocketAddress()));
     }
 
     private boolean handle(DatagramPacket packet) throws IOException {
@@ -121,7 +121,7 @@ extends RconBase {
                 dataStreamHelper.write(0);
                 dataStreamHelper.write(this.getMessageBytes(packet.getSocketAddress()));
                 dataStreamHelper.writeBytes(this.motd);
-                dataStreamHelper.writeBytes(field_29795);
+                dataStreamHelper.writeBytes(GAME_TYPE);
                 dataStreamHelper.writeBytes(this.levelName);
                 dataStreamHelper.writeBytes(Integer.toString(this.server.getCurrentPlayerCount()));
                 dataStreamHelper.writeBytes(Integer.toString(this.maxPlayerCount));
@@ -156,9 +156,9 @@ extends RconBase {
         this.data.writeBytes("hostname");
         this.data.writeBytes(this.motd);
         this.data.writeBytes("gametype");
-        this.data.writeBytes(field_29795);
+        this.data.writeBytes(GAME_TYPE);
         this.data.writeBytes("game_id");
-        this.data.writeBytes(field_29796);
+        this.data.writeBytes(GAME_ID);
         this.data.writeBytes("version");
         this.data.writeBytes(this.server.getVersion());
         this.data.writeBytes("plugins");
@@ -184,23 +184,23 @@ extends RconBase {
         return this.data.bytes();
     }
 
-    private byte[] getMessageBytes(SocketAddress socketAddress) {
-        return this.queries.get(socketAddress).getMessageBytes();
+    private byte[] getMessageBytes(SocketAddress address) {
+        return this.queries.get(address).getMessageBytes();
     }
 
-    private Boolean isValidQuery(DatagramPacket datagramPacket) {
-        SocketAddress socketAddress = datagramPacket.getSocketAddress();
+    private Boolean isValidQuery(DatagramPacket packet) {
+        SocketAddress socketAddress = packet.getSocketAddress();
         if (!this.queries.containsKey(socketAddress)) {
             return false;
         }
-        byte[] bs = datagramPacket.getData();
-        return this.queries.get(socketAddress).getId() == BufferHelper.getIntBE(bs, 7, datagramPacket.getLength());
+        byte[] bs = packet.getData();
+        return this.queries.get(socketAddress).getId() == BufferHelper.getIntBE(bs, 7, packet.getLength());
     }
 
-    private void createQuery(DatagramPacket datagramPacket) throws IOException {
-        Query query = new Query(datagramPacket);
-        this.queries.put(datagramPacket.getSocketAddress(), query);
-        this.reply(query.getReplyBuf(), datagramPacket);
+    private void createQuery(DatagramPacket packet) throws IOException {
+        Query query = new Query(packet);
+        this.queries.put(packet.getSocketAddress(), query);
+        this.reply(query.getReplyBuf(), packet);
     }
 
     private void cleanUp() {
@@ -279,8 +279,8 @@ extends RconBase {
         private final byte[] replyBuf;
         private final String message;
 
-        public Query(DatagramPacket datagramPacket) {
-            byte[] bs = datagramPacket.getData();
+        public Query(DatagramPacket packet) {
+            byte[] bs = packet.getData();
             this.messageBytes = new byte[4];
             this.messageBytes[0] = bs[3];
             this.messageBytes[1] = bs[4];
@@ -307,7 +307,7 @@ extends RconBase {
             return this.messageBytes;
         }
 
-        public String method_34888() {
+        public String getMessage() {
             return this.message;
         }
     }

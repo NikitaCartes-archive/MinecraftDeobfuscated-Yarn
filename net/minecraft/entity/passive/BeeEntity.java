@@ -1179,8 +1179,8 @@ Flutterer {
                         bl = true;
                         intProperty = SweetBerryBushBlock.AGE;
                     }
-                } else if (blockState.isOf(Blocks.CAVE_VINES)) {
-                    ((Fertilizable)((Object)Blocks.CAVE_VINES)).grow((ServerWorld)BeeEntity.this.world, BeeEntity.this.random, blockPos, blockState);
+                } else if (blockState.isOf(Blocks.CAVE_VINES) || blockState.isOf(Blocks.CAVE_VINES_PLANT)) {
+                    ((Fertilizable)((Object)blockState.getBlock())).grow((ServerWorld)BeeEntity.this.world, BeeEntity.this.random, blockPos, blockState);
                 }
                 if (!bl) continue;
                 BeeEntity.this.world.syncWorldEvent(WorldEvents.PLANT_FERTILIZED, blockPos, 0);

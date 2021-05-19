@@ -86,7 +86,7 @@ extends MinecraftServer {
             profiler.pop();
         }
         if (this.paused) {
-            this.method_36439();
+            this.incrementTotalWorldTimeStat();
             return;
         }
         super.tick(shouldKeepTicking);
@@ -97,7 +97,7 @@ extends MinecraftServer {
         }
     }
 
-    private void method_36439() {
+    private void incrementTotalWorldTimeStat() {
         for (ServerPlayerEntity serverPlayerEntity : this.getPlayerManager().getPlayerList()) {
             serverPlayerEntity.incrementStat(Stats.TOTAL_WORLD_TIME);
         }

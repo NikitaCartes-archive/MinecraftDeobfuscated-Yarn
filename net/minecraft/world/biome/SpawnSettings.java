@@ -37,11 +37,11 @@ public class SpawnSettings {
     private final Map<EntityType<?>, SpawnDensity> spawnCosts;
     private final boolean playerSpawnFriendly;
 
-    SpawnSettings(float f, Map<SpawnGroup, Pool<SpawnEntry>> map, Map<EntityType<?>, SpawnDensity> map2, boolean bl) {
-        this.creatureSpawnProbability = f;
-        this.spawners = ImmutableMap.copyOf(map);
-        this.spawnCosts = ImmutableMap.copyOf(map2);
-        this.playerSpawnFriendly = bl;
+    SpawnSettings(float creatureSpawnProbability, Map<SpawnGroup, Pool<SpawnEntry>> spawners, Map<EntityType<?>, SpawnDensity> spawnCosts, boolean playerSpawnFriendly) {
+        this.creatureSpawnProbability = creatureSpawnProbability;
+        this.spawners = ImmutableMap.copyOf(spawners);
+        this.spawnCosts = ImmutableMap.copyOf(spawnCosts);
+        this.playerSpawnFriendly = playerSpawnFriendly;
     }
 
     public Pool<SpawnEntry> getSpawnEntries(SpawnGroup spawnGroup) {
@@ -66,9 +66,9 @@ public class SpawnSettings {
         private final double gravityLimit;
         private final double mass;
 
-        SpawnDensity(double d, double e) {
-            this.gravityLimit = d;
-            this.mass = e;
+        SpawnDensity(double gravityLimit, double mass) {
+            this.gravityLimit = gravityLimit;
+            this.mass = mass;
         }
 
         public double getGravityLimit() {

@@ -49,7 +49,7 @@ extends Screen {
         this.chatField.setDrawsBackground(false);
         this.chatField.setText(this.originalChatText);
         this.chatField.setChangedListener(this::onChatFieldUpdate);
-        this.children.add(this.chatField);
+        this.addSelectableChild(this.chatField);
         this.commandSuggestor = new CommandSuggestor(this.client, this, this.chatField, this.textRenderer, false, false, 1, 10, true, -805306368);
         this.commandSuggestor.refresh();
         this.setInitialFocus(this.chatField);

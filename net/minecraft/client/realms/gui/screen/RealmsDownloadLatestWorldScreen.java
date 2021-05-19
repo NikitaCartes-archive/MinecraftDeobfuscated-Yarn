@@ -11,14 +11,12 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.FileDownload;
-import net.minecraft.client.realms.Realms;
 import net.minecraft.client.realms.SizeUnit;
 import net.minecraft.client.realms.dto.WorldDownload;
 import net.minecraft.client.realms.gui.screen.RealmsLongConfirmationScreen;
@@ -28,6 +26,7 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -66,6 +65,7 @@ extends RealmsScreen {
     private final BooleanConsumer field_22693;
 
     public RealmsDownloadLatestWorldScreen(Screen parent, WorldDownload worldDownload, String worldName, BooleanConsumer booleanConsumer) {
+        super(NarratorManager.EMPTY);
         this.field_22693 = booleanConsumer;
         this.parent = parent;
         this.worldName = worldName;
@@ -78,7 +78,7 @@ extends RealmsScreen {
     @Override
     public void init() {
         this.client.keyboard.setRepeatEvents(true);
-        this.field_22694 = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 42, 200, 20, ScreenTexts.CANCEL, buttonWidget -> {
+        this.field_22694 = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 42, 200, 20, ScreenTexts.CANCEL, button -> {
             this.cancelled = true;
             this.backButtonClicked();
         }));
@@ -112,19 +112,23 @@ extends RealmsScreen {
         super.tick();
         ++this.animTick;
         if (this.status != null && this.narrationRateLimiter.tryAcquire(1)) {
-            ArrayList<Text> list = Lists.newArrayList();
-            list.add(this.downloadTitle);
-            list.add(this.status);
-            if (this.progress != null) {
-                list.add(new LiteralText(this.progress + "%"));
-                list.add(new LiteralText(SizeUnit.getUserFriendlyString(this.bytesPerSecond) + "/s"));
-            }
-            if (this.field_20494 != null) {
-                list.add(this.field_20494);
-            }
-            String string = list.stream().map(Text::getString).collect(Collectors.joining("\n"));
-            Realms.narrateNow(string);
+            Text text = this.method_37012();
+            NarratorManager.INSTANCE.narrate(text);
         }
+    }
+
+    private Text method_37012() {
+        ArrayList<Text> list = Lists.newArrayList();
+        list.add(this.downloadTitle);
+        list.add(this.status);
+        if (this.progress != null) {
+            list.add(new LiteralText(this.progress + "%"));
+            list.add(new LiteralText(SizeUnit.getUserFriendlyString(this.bytesPerSecond) + "/s"));
+        }
+        if (this.field_20494 != null) {
+            list.add(this.field_20494);
+        }
+        return ScreenTexts.joinLines(list);
     }
 
     @Override

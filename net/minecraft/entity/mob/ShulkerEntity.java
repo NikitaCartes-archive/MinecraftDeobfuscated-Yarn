@@ -18,6 +18,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.control.BodyControl;
+import net.minecraft.entity.ai.control.LookControl;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
@@ -43,11 +44,14 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -70,6 +74,10 @@ implements Monster {
     private static final int field_30491 = 8;
     private static final int field_30492 = 5;
     private static final float field_30493 = 0.05f;
+    static final Vec3f field_33765 = Util.make(() -> {
+        Vec3i vec3i = Direction.SOUTH.getVector();
+        return new Vec3f(vec3i.getX(), vec3i.getY(), vec3i.getZ());
+    });
     private float prevOpenProgress;
     private float openProgress;
     @Nullable
@@ -80,11 +88,12 @@ implements Monster {
     public ShulkerEntity(EntityType<? extends ShulkerEntity> entityType, World world) {
         super((EntityType<? extends GolemEntity>)entityType, world);
         this.experiencePoints = 5;
+        this.lookControl = new class_6376(this);
     }
 
     @Override
     protected void initGoals() {
-        this.goalSelector.add(1, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
+        this.goalSelector.add(1, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f, 0.02f, true));
         this.goalSelector.add(4, new ShootBulletGoal());
         this.goalSelector.add(7, new PeekGoal());
         this.goalSelector.add(8, new LookAroundGoal(this));
@@ -515,6 +524,39 @@ implements Monster {
             return null;
         }
         return DyeColor.byId(b);
+    }
+
+    class class_6376
+    extends LookControl {
+        public class_6376(MobEntity mobEntity) {
+            super(mobEntity);
+        }
+
+        @Override
+        protected void method_36980() {
+        }
+
+        @Override
+        protected float getTargetYaw() {
+            Direction direction = ShulkerEntity.this.getAttachedFace().getOpposite();
+            Vec3f vec3f = field_33765.copy();
+            vec3f.rotate(direction.getRotationQuaternion());
+            Vec3i vec3i = direction.getVector();
+            Vec3f vec3f2 = new Vec3f(vec3i.getX(), vec3i.getY(), vec3i.getZ());
+            vec3f2.cross(vec3f);
+            double d = this.lookX - this.entity.getX();
+            double e = this.lookY - this.entity.getEyeY();
+            double f = this.lookZ - this.entity.getZ();
+            Vec3f vec3f3 = new Vec3f((float)d, (float)e, (float)f);
+            float g = vec3f2.dot(vec3f3);
+            float h = vec3f.dot(vec3f3);
+            return (float)(MathHelper.atan2(-g, h) * 57.2957763671875);
+        }
+
+        @Override
+        protected float getTargetPitch() {
+            return 0.0f;
+        }
     }
 
     class ShootBulletGoal

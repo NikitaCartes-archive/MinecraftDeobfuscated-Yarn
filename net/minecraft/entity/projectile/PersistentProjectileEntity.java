@@ -134,9 +134,9 @@ extends ProjectileEntity {
         boolean bl = this.isNoClip();
         Vec3d vec3d = this.getVelocity();
         if (this.prevPitch == 0.0f && this.prevYaw == 0.0f) {
-            float f = MathHelper.sqrt(PersistentProjectileEntity.squaredHorizontalLength(vec3d));
+            double d = Math.sqrt(PersistentProjectileEntity.squaredHorizontalLength(vec3d));
             this.setYaw((float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875));
-            this.setPitch((float)(MathHelper.atan2(vec3d.y, f) * 57.2957763671875));
+            this.setPitch((float)(MathHelper.atan2(vec3d.y, d) * 57.2957763671875));
             this.prevYaw = this.getYaw();
             this.prevPitch = this.getPitch();
         }
@@ -190,24 +190,24 @@ extends ProjectileEntity {
             hitResult = null;
         }
         vec3d = this.getVelocity();
-        double d = vec3d.x;
-        double e = vec3d.y;
+        double e = vec3d.x;
+        double f = vec3d.y;
         double g = vec3d.z;
         if (this.isCritical()) {
             for (int i = 0; i < 4; ++i) {
-                this.world.addParticle(ParticleTypes.CRIT, this.getX() + d * (double)i / 4.0, this.getY() + e * (double)i / 4.0, this.getZ() + g * (double)i / 4.0, -d, -e + 0.2, -g);
+                this.world.addParticle(ParticleTypes.CRIT, this.getX() + e * (double)i / 4.0, this.getY() + f * (double)i / 4.0, this.getZ() + g * (double)i / 4.0, -e, -f + 0.2, -g);
             }
         }
-        double h = this.getX() + d;
-        double j = this.getY() + e;
+        double h = this.getX() + e;
+        double j = this.getY() + f;
         double k = this.getZ() + g;
-        float l = MathHelper.sqrt(PersistentProjectileEntity.squaredHorizontalLength(vec3d));
+        double l = Math.sqrt(PersistentProjectileEntity.squaredHorizontalLength(vec3d));
         if (bl) {
-            this.setYaw((float)(MathHelper.atan2(-d, -g) * 57.2957763671875));
+            this.setYaw((float)(MathHelper.atan2(-e, -g) * 57.2957763671875));
         } else {
-            this.setYaw((float)(MathHelper.atan2(d, g) * 57.2957763671875));
+            this.setYaw((float)(MathHelper.atan2(e, g) * 57.2957763671875));
         }
-        this.setPitch((float)(MathHelper.atan2(e, l) * 57.2957763671875));
+        this.setPitch((float)(MathHelper.atan2(f, l) * 57.2957763671875));
         this.setPitch(PersistentProjectileEntity.updateRotation(this.prevPitch, this.getPitch()));
         this.setYaw(PersistentProjectileEntity.updateRotation(this.prevYaw, this.getYaw()));
         float m = 0.99f;
@@ -215,7 +215,7 @@ extends ProjectileEntity {
         if (this.isTouchingWater()) {
             for (int o = 0; o < 4; ++o) {
                 float p = 0.25f;
-                this.world.addParticle(ParticleTypes.BUBBLE, h - d * 0.25, j - e * 0.25, k - g * 0.25, d, e, g);
+                this.world.addParticle(ParticleTypes.BUBBLE, h - e * 0.25, j - f * 0.25, k - g * 0.25, e, f, g);
             }
             m = this.getDragInWater();
         }

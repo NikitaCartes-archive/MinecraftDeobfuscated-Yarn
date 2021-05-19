@@ -41,7 +41,7 @@ implements Packet<ClientPlayPacketListener> {
         this.filledBlockLightMask = new BitSet();
         this.skyLightUpdates = Lists.newArrayList();
         this.blockLightUpdates = Lists.newArrayList();
-        for (int i = 0; i < lightProvider.method_31928(); ++i) {
+        for (int i = 0; i < lightProvider.getHeight(); ++i) {
             if (bitSet == null || bitSet.get(i)) {
                 LightUpdateS2CPacket.method_33138(chunkPos, lightProvider, LightType.SKY, i, this.skyLightMask, this.filledSkyLightMask, this.skyLightUpdates);
             }
@@ -51,7 +51,7 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     private static void method_33138(ChunkPos chunkPos, LightingProvider lightProvider, LightType lightType, int i, BitSet bitSet, BitSet bitSet2, List<byte[]> list) {
-        ChunkNibbleArray chunkNibbleArray = lightProvider.get(lightType).getLightSection(ChunkSectionPos.from(chunkPos, lightProvider.method_31929() + i));
+        ChunkNibbleArray chunkNibbleArray = lightProvider.get(lightType).getLightSection(ChunkSectionPos.from(chunkPos, lightProvider.getBottomY() + i));
         if (chunkNibbleArray != null) {
             if (chunkNibbleArray.isUninitialized()) {
                 bitSet2.set(i);

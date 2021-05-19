@@ -73,7 +73,7 @@ extends HandledScreen<MerchantScreenHandler> {
         int j = (this.height - this.backgroundHeight) / 2;
         int k = j + 16 + 2;
         for (int l = 0; l < 7; ++l) {
-            this.offers[l] = this.addButton(new WidgetButtonPage(i + 5, k, l, button -> {
+            this.offers[l] = this.addDrawableChild(new WidgetButtonPage(i + 5, k, l, button -> {
                 if (button instanceof WidgetButtonPage) {
                     this.selectedIndex = ((WidgetButtonPage)button).getIndex() + this.indexStartOffset;
                     this.syncRecipeIndex();

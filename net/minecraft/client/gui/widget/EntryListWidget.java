@@ -18,13 +18,17 @@ import net.minecraft.client.gui.AbstractParentElement;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
@@ -32,8 +36,8 @@ import org.lwjgl.glfw.GLFW;
 @Environment(value=EnvType.CLIENT)
 public abstract class EntryListWidget<E extends Entry<E>>
 extends AbstractParentElement
-implements Drawable {
-    public static final Identifier WHITE_TEXTURE = new Identifier("textures/misc/white.png");
+implements Drawable,
+Selectable {
     protected final MinecraftClient client;
     protected final int itemHeight;
     private final List<E> children = new Entries();
@@ -49,9 +53,12 @@ implements Drawable {
     private boolean renderHeader;
     protected int headerHeight;
     private boolean scrolling;
+    @Nullable
     private E selected;
     private boolean renderBackground = true;
     private boolean renderHorizontalShadows = true;
+    @Nullable
+    private E field_33780;
 
     public EntryListWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight) {
         this.client = client;
@@ -187,6 +194,8 @@ implements Drawable {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+        this.field_33780 = this.isMouseOver(mouseX, mouseY) ? this.getEntryAtPosition(mouseX, mouseY) : null;
+        Object v0 = this.field_33780;
         if (this.renderBackground) {
             RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -460,7 +469,7 @@ implements Drawable {
                 RenderSystem.enableTexture();
             }
             p = this.getRowLeft();
-            ((Entry)entry).render(matrices, j, k, p, o, n, mouseX, mouseY, this.isMouseOver(mouseX, mouseY) && Objects.equals(this.getEntryAtPosition(mouseX, mouseY), entry), delta);
+            ((Entry)entry).render(matrices, j, k, p, o, n, mouseX, mouseY, Objects.equals(this.field_33780, entry), delta);
         }
     }
 
@@ -484,6 +493,18 @@ implements Drawable {
         return false;
     }
 
+    @Override
+    public Selectable.SelectionType getType() {
+        if (this.isFocused()) {
+            return Selectable.SelectionType.FOCUSED;
+        }
+        if (this.field_33780 != null) {
+            return Selectable.SelectionType.HOVERED;
+        }
+        return Selectable.SelectionType.NONE;
+    }
+
+    @Nullable
     protected E remove(int index) {
         Entry entry = (Entry)this.children.get(index);
         if (this.removeEntry((Entry)this.children.get(index))) {
@@ -500,8 +521,21 @@ implements Drawable {
         return bl;
     }
 
+    @Nullable
+    protected E method_37019() {
+        return this.field_33780;
+    }
+
     void setEntryParentList(Entry<E> entry) {
         entry.parentList = this;
+    }
+
+    protected void method_37017(NarrationMessageBuilder narrationMessageBuilder, E entry) {
+        int i;
+        List<E> list = this.children();
+        if (list.size() > 1 && (i = list.indexOf(entry)) != -1) {
+            narrationMessageBuilder.put(NarrationPart.POSITION, (Text)new TranslatableText("narrator.position.list", i + 1, list.size()));
+        }
     }
 
     @Override

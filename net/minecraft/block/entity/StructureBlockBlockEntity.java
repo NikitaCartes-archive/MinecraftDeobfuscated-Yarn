@@ -344,20 +344,20 @@ extends BlockEntity {
     }
 
     public boolean loadStructure(ServerWorld world, boolean bl) {
-        Structure structure;
+        Optional<Structure> optional;
         if (this.mode != StructureBlockMode.LOAD || this.structureName == null) {
             return false;
         }
         StructureManager structureManager = world.getStructureManager();
         try {
-            structure = structureManager.getStructure(this.structureName);
+            optional = structureManager.getStructure(this.structureName);
         } catch (InvalidIdentifierException invalidIdentifierException) {
             return false;
         }
-        if (structure == null) {
+        if (!optional.isPresent()) {
             return false;
         }
-        return this.place(world, bl, structure);
+        return this.place(world, bl, optional.get());
     }
 
     public boolean place(ServerWorld world, boolean bl, Structure structure) {
@@ -401,7 +401,7 @@ extends BlockEntity {
         ServerWorld serverWorld = (ServerWorld)this.world;
         StructureManager structureManager = serverWorld.getStructureManager();
         try {
-            return structureManager.getStructure(this.structureName) != null;
+            return structureManager.getStructure(this.structureName).isPresent();
         } catch (InvalidIdentifierException invalidIdentifierException) {
             return false;
         }

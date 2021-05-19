@@ -28,7 +28,7 @@ import net.minecraft.world.GameMode;
 public class TeleportSpectatorMenu
 implements SpectatorMenuCommandGroup,
 SpectatorMenuCommand {
-    private static final Ordering<PlayerListEntry> ORDERING = Ordering.from((playerListEntry, playerListEntry2) -> ComparisonChain.start().compare(playerListEntry.getProfile().getId(), playerListEntry2.getProfile().getId()).result());
+    private static final Ordering<PlayerListEntry> ORDERING = Ordering.from((a, b) -> ComparisonChain.start().compare(a.getProfile().getId(), b.getProfile().getId()).result());
     private static final Text TELEPORT_TEXT = new TranslatableText("spectatorMenu.teleport");
     private static final Text PROMPT_TEXT = new TranslatableText("spectatorMenu.teleport.prompt");
     private final List<SpectatorMenuCommand> elements = Lists.newArrayList();

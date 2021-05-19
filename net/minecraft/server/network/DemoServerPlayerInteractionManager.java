@@ -19,8 +19,8 @@ import net.minecraft.world.World;
 
 public class DemoServerPlayerInteractionManager
 extends ServerPlayerInteractionManager {
-    public static final int field_29762 = 5;
-    public static final int field_29763 = 120500;
+    public static final int DEMO_DAYS = 5;
+    public static final int DEMO_TIME = 120500;
     private boolean sentHelp;
     private boolean demoEnded;
     private int reminderTicks;

@@ -57,14 +57,14 @@ extends Screen {
     static final Logger LOGGER = LogManager.getLogger();
     private static final int field_32395 = 200;
     private static final Text DROP_INFO = new TranslatableText("pack.dropInfo").formatted(Formatting.GRAY);
-    private static final Text FOLDER_INFO = new TranslatableText("pack.folderInfo");
+    static final Text FOLDER_INFO = new TranslatableText("pack.folderInfo");
     private static final int field_32396 = 20;
     private static final Identifier UNKNOWN_PACK = new Identifier("textures/misc/unknown_pack.png");
     private final ResourcePackOrganizer organizer;
     private final Screen parent;
     @Nullable
     private DirectoryWatcher directoryWatcher;
-    private long field_25788;
+    private long refreshTimeout;
     private PackListWidget availablePackList;
     private PackListWidget selectedPackList;
     private final File file;
@@ -99,14 +99,25 @@ extends Screen {
 
     @Override
     protected void init() {
-        this.doneButton = this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 48, 150, 20, ScreenTexts.DONE, buttonWidget -> this.onClose()));
-        this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 48, 150, 20, new TranslatableText("pack.openFolder"), buttonWidget -> Util.getOperatingSystem().open(this.file), (buttonWidget, matrixStack, i, j) -> this.renderTooltip(matrixStack, FOLDER_INFO, i, j)));
+        this.doneButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height - 48, 150, 20, ScreenTexts.DONE, button -> this.onClose()));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 154, this.height - 48, 150, 20, new TranslatableText("pack.openFolder"), button -> Util.getOperatingSystem().open(this.file), new ButtonWidget.TooltipSupplier(){
+
+            @Override
+            public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
+                PackScreen.this.renderTooltip(matrixStack, FOLDER_INFO, i, j);
+            }
+
+            @Override
+            public void method_37023(Consumer<Text> consumer) {
+                consumer.accept(FOLDER_INFO);
+            }
+        }));
         this.availablePackList = new PackListWidget(this.client, 200, this.height, new TranslatableText("pack.available.title"));
         this.availablePackList.setLeftPos(this.width / 2 - 4 - 200);
-        this.children.add(this.availablePackList);
+        this.addSelectableChild(this.availablePackList);
         this.selectedPackList = new PackListWidget(this.client, 200, this.height, new TranslatableText("pack.selected.title"));
         this.selectedPackList.setLeftPos(this.width / 2 + 4);
-        this.children.add(this.selectedPackList);
+        this.addSelectableChild(this.selectedPackList);
         this.refresh();
     }
 
@@ -115,14 +126,14 @@ extends Screen {
         if (this.directoryWatcher != null) {
             try {
                 if (this.directoryWatcher.pollForChange()) {
-                    this.field_25788 = 20L;
+                    this.refreshTimeout = 20L;
                 }
             } catch (IOException iOException) {
                 LOGGER.warn("Failed to poll for directory {} changes, stopping", (Object)this.file);
                 this.closeDirectoryWatcher();
             }
         }
-        if (this.field_25788 > 0L && --this.field_25788 == 0L) {
+        if (this.refreshTimeout > 0L && --this.refreshTimeout == 0L) {
             this.refresh();
         }
     }
@@ -141,7 +152,7 @@ extends Screen {
     private void refresh() {
         this.organizer.refresh();
         this.updatePackLists();
-        this.field_25788 = 0L;
+        this.refreshTimeout = 0L;
         this.iconTextures.clear();
     }
 
@@ -236,7 +247,7 @@ extends Screen {
     }
 
     private Identifier getPackIconTexture(ResourcePackProfile resourcePackProfile) {
-        return this.iconTextures.computeIfAbsent(resourcePackProfile.getName(), string -> this.loadPackIcon(this.client.getTextureManager(), resourcePackProfile));
+        return this.iconTextures.computeIfAbsent(resourcePackProfile.getName(), profileName -> this.loadPackIcon(this.client.getTextureManager(), resourcePackProfile));
     }
 
     @Environment(value=EnvType.CLIENT)

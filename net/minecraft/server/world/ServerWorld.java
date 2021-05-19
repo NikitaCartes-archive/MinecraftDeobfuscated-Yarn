@@ -463,14 +463,14 @@ implements StructureWorldAccess {
         profiler.pop();
     }
 
-    private Optional<BlockPos> method_31418(BlockPos blockPos2) {
-        Optional<BlockPos> optional = this.getPointOfInterestStorage().method_34712(pointOfInterestType -> pointOfInterestType == PointOfInterestType.LIGHTNING_ROD, blockPos -> blockPos.getY() == this.toServerWorld().getTopY(Heightmap.Type.WORLD_SURFACE, blockPos.getX(), blockPos.getZ()) - 1, blockPos2, 128, PointOfInterestStorage.OccupationStatus.ANY);
-        return optional.map(blockPos -> blockPos.up(1));
+    private Optional<BlockPos> getLightningRodPos(BlockPos pos2) {
+        Optional<BlockPos> optional = this.getPointOfInterestStorage().method_34712(poiType -> poiType == PointOfInterestType.LIGHTNING_ROD, pos -> pos.getY() == this.toServerWorld().getTopY(Heightmap.Type.WORLD_SURFACE, pos.getX(), pos.getZ()) - 1, pos2, 128, PointOfInterestStorage.OccupationStatus.ANY);
+        return optional.map(pos -> pos.up(1));
     }
 
     protected BlockPos getSurface(BlockPos pos) {
         BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos);
-        Optional<BlockPos> optional = this.method_31418(blockPos);
+        Optional<BlockPos> optional = this.getLightningRodPos(blockPos);
         if (optional.isPresent()) {
             return optional.get();
         }

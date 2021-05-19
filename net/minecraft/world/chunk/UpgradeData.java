@@ -43,7 +43,7 @@ import org.apache.logging.log4j.Logger;
 public class UpgradeData {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final UpgradeData NO_UPGRADE_DATA = new UpgradeData(EmptyBlockView.INSTANCE);
-    private static final String field_31412 = "Indices";
+    private static final String INDICES_KEY = "Indices";
     private static final EightWayDirection[] EIGHT_WAYS = EightWayDirection.values();
     private final EnumSet<EightWayDirection> sidesToUpgrade = EnumSet.noneOf(EightWayDirection.class);
     private final int[][] centerIndicesToUpgrade;
@@ -56,8 +56,8 @@ public class UpgradeData {
 
     public UpgradeData(NbtCompound nbt, HeightLimitView world) {
         this(world);
-        if (nbt.contains(field_31412, 10)) {
-            NbtCompound nbtCompound = nbt.getCompound(field_31412);
+        if (nbt.contains(INDICES_KEY, 10)) {
+            NbtCompound nbtCompound = nbt.getCompound(INDICES_KEY);
             for (int i = 0; i < this.centerIndicesToUpgrade.length; ++i) {
                 String string = String.valueOf(i);
                 if (!nbtCompound.contains(string, 11)) continue;
@@ -169,7 +169,7 @@ public class UpgradeData {
             nbtCompound2.putIntArray(string, this.centerIndicesToUpgrade[i]);
         }
         if (!nbtCompound2.isEmpty()) {
-            nbtCompound.put(field_31412, nbtCompound2);
+            nbtCompound.put(INDICES_KEY, nbtCompound2);
         }
         i = 0;
         for (EightWayDirection eightWayDirection : this.sidesToUpgrade) {

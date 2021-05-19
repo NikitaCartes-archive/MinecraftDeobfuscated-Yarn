@@ -24,7 +24,6 @@ import net.minecraft.client.resource.VideoWarningManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.OrderedText;
-import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -59,8 +58,8 @@ extends GameOptionsScreen {
         this.list.addSingleOptionEntry(new FullscreenOption(this.client.getWindow()));
         this.list.addSingleOptionEntry(Option.BIOME_BLEND_RADIUS);
         this.list.addAll(OPTIONS);
-        this.children.add(this.list);
-        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, ScreenTexts.DONE, button -> {
+        this.addSelectableChild(this.list);
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, ScreenTexts.DONE, button -> {
             this.client.options.write();
             this.client.getWindow().applyVideoMode();
             this.client.openScreen(this.parent);
@@ -86,7 +85,7 @@ extends GameOptionsScreen {
             if (this.warningManager.shouldWarn()) {
                 String string3;
                 String string2;
-                ArrayList<StringVisitable> list = Lists.newArrayList(GRAPHICS_WARNING_MESSAGE_TEXT, NEWLINE_TEXT);
+                ArrayList<Text> list = Lists.newArrayList(GRAPHICS_WARNING_MESSAGE_TEXT, NEWLINE_TEXT);
                 String string = this.warningManager.getRendererWarning();
                 if (string != null) {
                     list.add(NEWLINE_TEXT);

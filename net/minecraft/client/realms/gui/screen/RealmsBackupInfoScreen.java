@@ -19,6 +19,7 @@ import net.minecraft.client.realms.gui.screen.RealmsSlotOptionsScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(value=EnvType.CLIENT)
@@ -30,6 +31,7 @@ extends RealmsScreen {
     private BackupInfoList backupInfoList;
 
     public RealmsBackupInfoScreen(Screen parent, Backup backup) {
+        super(new LiteralText("Changes from last backup"));
         this.parent = parent;
         this.backup = backup;
     }
@@ -41,9 +43,9 @@ extends RealmsScreen {
     @Override
     public void init() {
         this.client.keyboard.setRepeatEvents(true);
-        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 24, 200, 20, ScreenTexts.BACK, buttonWidget -> this.client.openScreen(this.parent)));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 24, 200, 20, ScreenTexts.BACK, button -> this.client.openScreen(this.parent)));
         this.backupInfoList = new BackupInfoList(this.client);
-        this.addChild(this.backupInfoList);
+        this.addSelectableChild(this.backupInfoList);
         this.focusOn(this.backupInfoList);
     }
 
@@ -64,8 +66,8 @@ extends RealmsScreen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        RealmsBackupInfoScreen.drawCenteredText(matrices, this.textRenderer, "Changes from last backup", this.width / 2, 10, 0xFFFFFF);
         this.backupInfoList.render(matrices, mouseX, mouseY, delta);
+        RealmsBackupInfoScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 10, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
     }
 
@@ -124,6 +126,11 @@ extends RealmsScreen {
             TextRenderer textRenderer = ((RealmsBackupInfoScreen)RealmsBackupInfoScreen.this).client.textRenderer;
             DrawableHelper.drawStringWithShadow(matrices, textRenderer, this.key, x, y, 0xA0A0A0);
             DrawableHelper.drawTextWithShadow(matrices, textRenderer, RealmsBackupInfoScreen.this.checkForSpecificMetadata(this.key, this.value), x, y + 12, 0xFFFFFF);
+        }
+
+        @Override
+        public Text method_37006() {
+            return new TranslatableText("narrator.select", this.key + " " + this.value);
         }
     }
 }

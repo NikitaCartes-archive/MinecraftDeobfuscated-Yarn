@@ -67,7 +67,7 @@ extends Entity {
     }
 
     private void powerLightningRod() {
-        BlockPos blockPos = this.method_36607();
+        BlockPos blockPos = this.getAffectedBlockPos();
         BlockState blockState = this.world.getBlockState(blockPos);
         if (blockState.isOf(Blocks.LIGHTNING_ROD)) {
             ((LightningRodBlock)blockState.getBlock()).setPowered(blockState, this.world, blockPos);
@@ -87,7 +87,7 @@ extends Entity {
                     this.spawnFire(4);
                 }
                 this.powerLightningRod();
-                LightningEntity.cleanOxidization(this.world, this.method_36607());
+                LightningEntity.cleanOxidization(this.world, this.getAffectedBlockPos());
                 this.emitGameEvent(GameEvent.LIGHTNING_STRIKE);
             }
         }
@@ -118,7 +118,7 @@ extends Entity {
         }
     }
 
-    private BlockPos method_36607() {
+    private BlockPos getAffectedBlockPos() {
         Vec3d vec3d = this.getPos();
         return new BlockPos(vec3d.x, vec3d.y - 1.0E-6, vec3d.z);
     }

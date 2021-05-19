@@ -4,13 +4,15 @@
 package net.minecraft.entity.passive;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
 import com.mojang.serialization.Dynamic;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.function.Predicate;
+import net.minecraft.entity.AngledModelEntity;
 import net.minecraft.entity.Bucketable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -45,7 +47,6 @@ import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.AxolotlBrain;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BucketItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -59,6 +60,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -67,9 +69,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class AxolotlEntity
 extends AnimalEntity
-implements Bucketable {
+implements AngledModelEntity,
+Bucketable {
     public static final int PLAY_DEAD_TICKS = 200;
-    public static final Predicate<LivingEntity> AXOLOTL_NOT_PLAYING_DEAD = entity -> entity.getType() == EntityType.AXOLOTL && !((AxolotlEntity)entity).isPlayingDead();
     protected static final ImmutableList<? extends SensorType<? extends Sensor<? super AxolotlEntity>>> SENSORS = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_ADULT, SensorType.HURT_BY, SensorType.AXOLOTL_ATTACKABLES, SensorType.AXOLOTL_TEMPTATIONS);
     protected static final ImmutableList<? extends MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(MemoryModuleType.BREED_TARGET, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.LOOK_TARGET, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.PATH, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleType.NEAREST_VISIBLE_ADULT, new MemoryModuleType[]{MemoryModuleType.HURT_BY_ENTITY, MemoryModuleType.PLAY_DEAD_TICKS, MemoryModuleType.NEAREST_ATTACKABLE, MemoryModuleType.TEMPTING_PLAYER, MemoryModuleType.TEMPTATION_COOLDOWN_TICKS, MemoryModuleType.IS_TEMPTED, MemoryModuleType.HAS_HUNTING_COOLDOWN});
     private static final TrackedData<Integer> VARIANT = DataTracker.registerData(AxolotlEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -80,6 +82,7 @@ implements Bucketable {
     private static final int MAX_AIR = 6000;
     public static final String VARIANT_KEY = "Variant";
     private static final int field_33485 = 1800;
+    private final Map<String, Vec3f> modelAngles = Maps.newHashMap();
     private static final int BUFF_DURATION = 100;
 
     public AxolotlEntity(EntityType<? extends AxolotlEntity> entityType, World world) {
@@ -88,6 +91,11 @@ implements Bucketable {
         this.moveControl = new AxolotlMoveControl(this);
         this.lookControl = new AxolotlLookControl(this, 20);
         this.stepHeight = 1.0f;
+    }
+
+    @Override
+    public Map<String, Vec3f> getModelAngles() {
+        return this.modelAngles;
     }
 
     @Override
@@ -223,11 +231,6 @@ implements Bucketable {
     }
 
     @Override
-    public double getAttackDistanceScalingFactor(@Nullable Entity entity) {
-        return this.isPlayingDead() ? 0.0 : super.getAttackDistanceScalingFactor(entity);
-    }
-
-    @Override
     @Nullable
     public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         AxolotlEntity axolotlEntity = EntityType.AXOLOTL.create(world);
@@ -289,7 +292,7 @@ implements Bucketable {
     @Override
     public boolean damage(DamageSource source, float amount) {
         float f = this.getHealth();
-        if (!this.world.isClient && !this.isAiDisabled() && this.world.random.nextInt(3) == 0 && ((float)this.world.random.nextInt(3) < amount || f / this.getMaxHealth() < 0.5f) && amount < f && source != DamageSource.DRYOUT && !this.isPlayingDead()) {
+        if (!(this.world.isClient || this.isAiDisabled() || this.world.random.nextInt(3) != 0 || !((float)this.world.random.nextInt(3) < amount) && !(f / this.getMaxHealth() < 0.5f) || !(amount < f) || !this.isTouchingWater() || source.getAttacker() == null && source.getSource() == null || this.isPlayingDead())) {
             this.brain.remember(MemoryModuleType.PLAY_DEAD_TICKS, 200);
         }
         return super.damage(source, amount);
@@ -321,6 +324,10 @@ implements Bucketable {
         NbtCompound nbtCompound = stack.getOrCreateTag();
         nbtCompound.putInt(VARIANT_KEY, this.getVariant().getId());
         nbtCompound.putInt("Age", this.getBreedingAge());
+        Brain<AxolotlEntity> brain = this.getBrain();
+        if (brain.hasMemoryModule(MemoryModuleType.HAS_HUNTING_COOLDOWN)) {
+            nbtCompound.putLong("HuntingCooldown", brain.method_36978(MemoryModuleType.HAS_HUNTING_COOLDOWN));
+        }
     }
 
     @Override
@@ -329,6 +336,9 @@ implements Bucketable {
         this.setVariant(Variant.VARIANTS[nbt.getInt(VARIANT_KEY)]);
         if (nbt.contains("Age")) {
             this.setBreedingAge(nbt.getInt("Age"));
+        }
+        if (nbt.contains("HuntingCooldown")) {
+            this.getBrain().remember(MemoryModuleType.HAS_HUNTING_COOLDOWN, true, nbt.getLong("HuntingCooldown"));
         }
     }
 
@@ -437,7 +447,7 @@ implements Bucketable {
     @Override
     protected void eat(PlayerEntity player, Hand hand, ItemStack stack) {
         if (stack.isOf(Items.TROPICAL_FISH_BUCKET)) {
-            player.setStackInHand(hand, BucketItem.getEmptiedStack(stack, player));
+            player.setStackInHand(hand, new ItemStack(Items.WATER_BUCKET));
         } else {
             super.eat(player, hand, stack);
         }

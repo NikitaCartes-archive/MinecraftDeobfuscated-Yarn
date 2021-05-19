@@ -119,7 +119,7 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class PlayerEntity
 extends LivingEntity {
-    public static final String field_30642 = "OfflinePlayer:";
+    public static final String OFFLINE_PLAYER_UUID_PREFIX = "OfflinePlayer:";
     public static final int field_30643 = 16;
     public static final int field_30644 = 20;
     public static final int field_30645 = 100;
@@ -476,7 +476,7 @@ extends LivingEntity {
         }
         this.updateShoulderEntity(this.getShoulderEntityLeft());
         this.updateShoulderEntity(this.getShoulderEntityRight());
-        if (!this.world.isClient && (this.fallDistance > 0.5f || this.isTouchingWater()) || this.abilities.flying || this.isSleeping()) {
+        if (!this.world.isClient && (this.fallDistance > 0.5f || this.isTouchingWater()) || this.abilities.flying || this.isSleeping() || this.inPowderSnow) {
             this.dropShoulderEntities();
         }
     }
@@ -781,7 +781,12 @@ extends LivingEntity {
 
     @Override
     protected void damageArmor(DamageSource source, float amount) {
-        this.inventory.damageArmor(source, amount);
+        this.inventory.damageArmor(source, amount, PlayerInventory.ARMOR_SLOTS);
+    }
+
+    @Override
+    protected void damageHelmet(DamageSource source, float amount) {
+        this.inventory.damageArmor(source, amount, PlayerInventory.HELMET_SLOTS);
     }
 
     @Override
@@ -1628,7 +1633,7 @@ extends LivingEntity {
     }
 
     public boolean addShoulderEntity(NbtCompound entityNbt) {
-        if (this.hasVehicle() || !this.onGround || this.isTouchingWater()) {
+        if (this.hasVehicle() || !this.onGround || this.isTouchingWater() || this.inPowderSnow) {
             return false;
         }
         if (this.getShoulderEntityLeft().isEmpty()) {
@@ -1740,7 +1745,7 @@ extends LivingEntity {
     }
 
     public static UUID getOfflinePlayerUuid(String nickname) {
-        return UUID.nameUUIDFromBytes((field_30642 + nickname).getBytes(StandardCharsets.UTF_8));
+        return UUID.nameUUIDFromBytes((OFFLINE_PLAYER_UUID_PREFIX + nickname).getBytes(StandardCharsets.UTF_8));
     }
 
     public boolean isPartVisible(PlayerModelPart modelPart) {

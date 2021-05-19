@@ -19,6 +19,7 @@ import net.minecraft.entity.ai.FuzzyTargeting;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.task.AdmireItemTask;
 import net.minecraft.entity.ai.brain.task.AdmireItemTimeLimitTask;
 import net.minecraft.entity.ai.brain.task.AttackTask;
@@ -68,7 +69,6 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -391,7 +391,7 @@ public class PiglinBrain {
             return Optional.empty();
         }
         Optional<LivingEntity> optional = LookTargetUtil.getEntity(piglin, MemoryModuleType.ANGRY_AT);
-        if (optional.isPresent() && PiglinBrain.shouldAttack(optional.get())) {
+        if (optional.isPresent() && Sensor.method_36982(piglin, optional.get())) {
             return optional;
         }
         if (brain.hasMemoryModule(MemoryModuleType.UNIVERSAL_ANGER) && (optional2 = brain.getOptionalMemory(MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER)).isPresent()) {
@@ -402,7 +402,7 @@ public class PiglinBrain {
             return optional2;
         }
         Optional<PlayerEntity> optional3 = brain.getOptionalMemory(MemoryModuleType.NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD);
-        if (optional3.isPresent() && PiglinBrain.shouldAttack(optional3.get())) {
+        if (optional3.isPresent() && Sensor.method_36982(piglin, optional3.get())) {
             return optional3;
         }
         return Optional.empty();
@@ -456,7 +456,7 @@ public class PiglinBrain {
         });
         if (piglin.isBaby()) {
             brain.remember(MemoryModuleType.AVOID_TARGET, attacker, 100L);
-            if (PiglinBrain.shouldAttack(attacker)) {
+            if (Sensor.method_36982(piglin, attacker)) {
                 PiglinBrain.angerAtCloserTargets(piglin, attacker);
             }
             return;
@@ -473,7 +473,7 @@ public class PiglinBrain {
         if (piglin.getBrain().hasActivity(Activity.AVOID)) {
             return;
         }
-        if (!PiglinBrain.shouldAttack(target)) {
+        if (!Sensor.method_36982(piglin, target)) {
             return;
         }
         if (LookTargetUtil.isNewTargetTooFar(piglin, target, 4.0)) {
@@ -574,7 +574,7 @@ public class PiglinBrain {
     }
 
     protected static void becomeAngryWith(AbstractPiglinEntity piglin, LivingEntity target) {
-        if (!PiglinBrain.shouldAttack(target)) {
+        if (!Sensor.method_36982(piglin, target)) {
             return;
         }
         piglin.getBrain().forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
@@ -712,10 +712,6 @@ public class PiglinBrain {
 
     private static boolean isFood(ItemStack stack) {
         return stack.isIn(ItemTags.PIGLIN_FOOD);
-    }
-
-    private static boolean shouldAttack(LivingEntity target) {
-        return EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(target);
     }
 
     private static boolean hasSoulFireNearby(PiglinEntity piglin) {

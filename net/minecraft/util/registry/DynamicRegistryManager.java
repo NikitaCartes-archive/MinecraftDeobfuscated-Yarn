@@ -4,6 +4,7 @@
 package net.minecraft.util.registry;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.JsonParseException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
@@ -172,7 +173,9 @@ public abstract class DynamicRegistryManager {
         RegistryKey<Registry<E>> registryKey = info.getRegistry();
         SimpleRegistry simpleRegistry = (SimpleRegistry)dynamicRegistryManager.getMutable(registryKey);
         DataResult<SimpleRegistry<E>> dataResult = ops.loadToRegistry(simpleRegistry, info.getRegistry(), info.getEntryCodec());
-        dataResult.error().ifPresent(partialResult -> LOGGER.error("Error loading registry data: {}", (Object)partialResult.message()));
+        dataResult.error().ifPresent(partialResult -> {
+            throw new JsonParseException("Error loading registry data: " + partialResult.message());
+        });
     }
 
     static final class Info<E> {

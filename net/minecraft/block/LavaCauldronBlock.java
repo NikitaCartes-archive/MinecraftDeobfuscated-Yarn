@@ -36,7 +36,7 @@ extends AbstractCauldronBlock {
 
     @Override
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-        return 1;
+        return 3;
     }
 }
 

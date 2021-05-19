@@ -13,7 +13,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -54,12 +53,12 @@ extends Screen {
     protected void init() {
         this.client.keyboard.setRepeatEvents(true);
         this.biomeSelectionList = new BuffetBiomesListWidget();
-        this.children.add(this.biomeSelectionList);
-        this.confirmButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, ScreenTexts.DONE, buttonWidget -> {
+        this.addSelectableChild(this.biomeSelectionList);
+        this.confirmButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, ScreenTexts.DONE, button -> {
             this.onDone.accept(this.biome);
             this.client.openScreen(this.parent);
         }));
-        this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, button -> this.client.openScreen(this.parent)));
         this.biomeSelectionList.setSelected((BuffetBiomesListWidget.BuffetBiomeItem)this.biomeSelectionList.children().stream().filter(buffetBiomeItem -> Objects.equals(buffetBiomeItem.biome, this.biome)).findFirst().orElse(null));
     }
 
@@ -94,7 +93,6 @@ extends Screen {
             super.setSelected(buffetBiomeItem);
             if (buffetBiomeItem != null) {
                 CustomizeBuffetLevelScreen.this.biome = buffetBiomeItem.biome;
-                NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", CustomizeBuffetLevelScreen.this.biomeRegistry.getId(buffetBiomeItem.biome)).getString());
             }
             CustomizeBuffetLevelScreen.this.refreshConfirmButton();
         }
@@ -110,6 +108,11 @@ extends Screen {
                 Identifier identifier = CustomizeBuffetLevelScreen.this.biomeRegistry.getId(biome);
                 String string = "biome." + identifier.getNamespace() + "." + identifier.getPath();
                 this.text = Language.getInstance().hasTranslation(string) ? new TranslatableText(string) : new LiteralText(identifier.toString());
+            }
+
+            @Override
+            public Text method_37006() {
+                return new TranslatableText("narrator.select", this.text);
             }
 
             @Override

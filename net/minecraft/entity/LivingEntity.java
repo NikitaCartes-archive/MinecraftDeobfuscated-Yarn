@@ -126,6 +126,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.PortalUtil;
 import net.minecraft.world.RaycastContext;
@@ -378,6 +379,9 @@ extends Entity {
             }
         }
         if (this.isAlive() && (this.isWet() || this.inPowderSnow)) {
+            if (!this.world.isClient && this.wasOnFire) {
+                this.playExtinguishSound();
+            }
             this.extinguish();
         }
         if (this.hurtTime > 0) {
@@ -799,7 +803,7 @@ extends Entity {
     }
 
     public boolean canTarget(LivingEntity target) {
-        return true;
+        return target.canTakeDamage();
     }
 
     public boolean isTarget(LivingEntity entity, TargetPredicate predicate) {
@@ -807,7 +811,7 @@ extends Entity {
     }
 
     public boolean canTakeDamage() {
-        return !this.isInvulnerable() && this.isPartOfGame();
+        return !this.isInvulnerable() && this.world.getDifficulty() != Difficulty.PEACEFUL && this.isPartOfGame();
     }
 
     public boolean isPartOfGame() {
@@ -993,10 +997,6 @@ extends Entity {
         }
         this.despawnCounter = 0;
         float f = amount;
-        if (source.isFallingBlock() && !this.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
-            this.getEquippedStack(EquipmentSlot.HEAD).damage((int)(amount * 4.0f + this.random.nextFloat() * amount * 2.0f), this, player -> player.sendEquipmentBreakStatus(EquipmentSlot.HEAD));
-            amount *= 0.75f;
-        }
         boolean bl = false;
         float g = 0.0f;
         if (amount > 0.0f && this.blockedByShield(source)) {
@@ -1023,6 +1023,10 @@ extends Entity {
             this.timeUntilRegen = 20;
             this.applyDamage(source, amount);
             this.hurtTime = this.maxHurtTime = 10;
+        }
+        if (source.isFallingBlock() && !this.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
+            this.damageHelmet(source, amount);
+            amount *= 0.75f;
         }
         this.knockbackVelocity = 0.0f;
         Entity entity2 = source.getAttacker();
@@ -1328,7 +1332,7 @@ extends Entity {
             return false;
         }
         BlockPos blockPos = this.getBlockPos();
-        BlockState blockState = this.method_36601();
+        BlockState blockState = this.getBlockStateAtPos();
         if (blockState.isIn(BlockTags.CLIMBABLE)) {
             this.climbingPos = Optional.of(blockPos);
             return true;
@@ -1394,6 +1398,9 @@ extends Entity {
     }
 
     protected void damageArmor(DamageSource source, float amount) {
+    }
+
+    protected void damageHelmet(DamageSource source, float amount) {
     }
 
     protected void damageShield(float amount) {
@@ -1615,7 +1622,7 @@ extends Entity {
                 break;
             }
             case 60: {
-                this.method_36549();
+                this.addDeathParticles();
                 break;
             }
             default: {
@@ -1624,7 +1631,7 @@ extends Entity {
         }
     }
 
-    private void method_36549() {
+    private void addDeathParticles() {
         for (int i = 0; i < 20; ++i) {
             double d = this.random.nextGaussian() * 0.02;
             double e = this.random.nextGaussian() * 0.02;
@@ -1975,7 +1982,7 @@ extends Entity {
         this.setVelocity(this.applyClimbingSpeed(this.getVelocity()));
         this.move(MovementType.SELF, this.getVelocity());
         Vec3d vec3d2 = this.getVelocity();
-        if ((this.horizontalCollision || this.jumping) && (this.isClimbing() || this.method_36601().isOf(Blocks.POWDER_SNOW) && PowderSnowBlock.canWalkOnPowderSnow(this))) {
+        if ((this.horizontalCollision || this.jumping) && (this.isClimbing() || this.getBlockStateAtPos().isOf(Blocks.POWDER_SNOW) && PowderSnowBlock.canWalkOnPowderSnow(this))) {
             vec3d2 = new Vec3d(vec3d2.x, 0.2, vec3d2.z);
         }
         return vec3d2;
@@ -1996,7 +2003,7 @@ extends Entity {
             double d = MathHelper.clamp(motion.x, (double)-0.15f, (double)0.15f);
             double e = MathHelper.clamp(motion.z, (double)-0.15f, (double)0.15f);
             double g = Math.max(motion.y, (double)-0.15f);
-            if (g < 0.0 && !this.method_36601().isOf(Blocks.SCAFFOLDING) && this.isHoldingOntoLadder() && this instanceof PlayerEntity) {
+            if (g < 0.0 && !this.getBlockStateAtPos().isOf(Blocks.SCAFFOLDING) && this.isHoldingOntoLadder() && this instanceof PlayerEntity) {
                 g = 0.0;
             }
             motion = new Vec3d(d, g, e);
@@ -2117,7 +2124,7 @@ extends Entity {
     }
 
     private void method_30128() {
-        Map<EquipmentSlot, ItemStack> map = this.method_30129();
+        Map<EquipmentSlot, ItemStack> map = this.getEquipment();
         if (map != null) {
             this.swapHandStacks(map);
             if (!map.isEmpty()) {
@@ -2127,7 +2134,7 @@ extends Entity {
     }
 
     @Nullable
-    private Map<EquipmentSlot, ItemStack> method_30129() {
+    private Map<EquipmentSlot, ItemStack> getEquipment() {
         EnumMap<EquipmentSlot, ItemStack> map = null;
         block4: for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
             ItemStack itemStack;

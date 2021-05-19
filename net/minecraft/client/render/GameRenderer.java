@@ -860,6 +860,16 @@ AutoCloseable {
                 crashReportSection.add("Screen size", () -> String.format(Locale.ROOT, "Scaled: (%d, %d). Absolute: (%d, %d). Scale factor of %f", this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight(), this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight(), this.client.getWindow().getScaleFactor()));
                 throw new CrashException(crashReport);
             }
+            try {
+                if (this.client.currentScreen != null) {
+                    this.client.currentScreen.updateNarrator();
+                }
+            } catch (Throwable throwable) {
+                CrashReport crashReport = CrashReport.create(throwable, "Narrating screen");
+                CrashReportSection crashReportSection = crashReport.addElement("Screen details");
+                crashReportSection.add("Screen name", () -> this.client.currentScreen.getClass().getCanonicalName());
+                throw new CrashException(crashReport);
+            }
         }
     }
 

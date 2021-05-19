@@ -597,7 +597,7 @@ WindowEventHandler {
             if (GlDebug.method_36479()) {
                 stringBuilder.append("\n\nReported GL debug messages:\n").append(String.join((CharSequence)"\n", GlDebug.method_36478()));
             }
-            this.window.method_36813(this.framebuffer.textureWidth, this.framebuffer.textureHeight);
+            this.window.setWindowedSize(this.framebuffer.textureWidth, this.framebuffer.textureHeight);
             TinyFileDialogs.tinyfd_messageBox("Minecraft", stringBuilder.toString(), "ok", "error", false);
         } else if (this.options.fullscreen && !this.window.isFullscreen()) {
             this.window.toggleFullscreen();
@@ -891,6 +891,9 @@ WindowEventHandler {
      * Otherwise the currently open screen will be closed.
      */
     public void openScreen(@Nullable Screen screen) {
+        if (SharedConstants.isDevelopment && Thread.currentThread() != this.thread) {
+            LOGGER.error("setScreen called from non-game thread");
+        }
         if (this.currentScreen != null) {
             this.currentScreen.removed();
         }
@@ -910,7 +913,6 @@ WindowEventHandler {
             KeyBinding.unpressAll();
             screen.init(this, this.window.getScaledWidth(), this.window.getScaledHeight());
             this.skipGameRender = false;
-            NarratorManager.INSTANCE.narrate(screen.getNarrationMessage());
         } else {
             this.soundManager.resumeAll();
             this.mouse.lockCursor();
@@ -1553,7 +1555,7 @@ WindowEventHandler {
         while (this.options.keySocialInteractions.wasPressed()) {
             if (!this.isConnectedToServer()) {
                 this.player.sendMessage(SOCIAL_INTERACTIONS_NOT_AVAILABLE, true);
-                NarratorManager.INSTANCE.narrate(SOCIAL_INTERACTIONS_NOT_AVAILABLE.getString());
+                NarratorManager.INSTANCE.narrate(SOCIAL_INTERACTIONS_NOT_AVAILABLE);
                 continue;
             }
             if (this.socialInteractionsToast != null) {
@@ -1698,7 +1700,7 @@ WindowEventHandler {
             this.server = MinecraftServer.startServer(serverThread -> new IntegratedServer((Thread)serverThread, this, registryTracker, session, integratedResourceManager.getResourcePackManager(), integratedResourceManager.getServerResourceManager(), saveProperties, minecraftSessionService, gameProfileRepository, userCache, i -> {
                 WorldGenerationProgressTracker worldGenerationProgressTracker = new WorldGenerationProgressTracker(i + 0);
                 this.worldGenProgressTracker.set(worldGenerationProgressTracker);
-                return QueueingWorldGenerationProgressListener.method_34228(worldGenerationProgressTracker, this.renderTaskQueue::add);
+                return QueueingWorldGenerationProgressListener.create(worldGenerationProgressTracker, this.renderTaskQueue::add);
             }));
             this.integratedServerRunning = true;
         } catch (Throwable throwable) {
@@ -2562,7 +2564,7 @@ WindowEventHandler {
     }
 
     public boolean shouldFilterText() {
-        return true;
+        return false;
     }
 
     static {

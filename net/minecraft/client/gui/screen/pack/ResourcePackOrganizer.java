@@ -28,7 +28,7 @@ public class ResourcePackOrganizer {
     final Runnable updateCallback;
     private final Consumer<ResourcePackManager> applier;
 
-    public ResourcePackOrganizer(Runnable updateCallback, Function<ResourcePackProfile, Identifier> function, ResourcePackManager resourcePackManager, Consumer<ResourcePackManager> consumer) {
+    public ResourcePackOrganizer(Runnable updateCallback, Function<ResourcePackProfile, Identifier> function, ResourcePackManager resourcePackManager, Consumer<ResourcePackManager> applier) {
         this.updateCallback = updateCallback;
         this.field_25785 = function;
         this.resourcePackManager = resourcePackManager;
@@ -36,15 +36,15 @@ public class ResourcePackOrganizer {
         Collections.reverse(this.enabledPacks);
         this.disabledPacks = Lists.newArrayList(resourcePackManager.getProfiles());
         this.disabledPacks.removeAll(this.enabledPacks);
-        this.applier = consumer;
+        this.applier = applier;
     }
 
     public Stream<Pack> getDisabledPacks() {
-        return this.disabledPacks.stream().map(resourcePackProfile -> new DisabledPack((ResourcePackProfile)resourcePackProfile));
+        return this.disabledPacks.stream().map(pack -> new DisabledPack((ResourcePackProfile)pack));
     }
 
     public Stream<Pack> getEnabledPacks() {
-        return this.enabledPacks.stream().map(resourcePackProfile -> new EnabledPack((ResourcePackProfile)resourcePackProfile));
+        return this.enabledPacks.stream().map(pack -> new EnabledPack((ResourcePackProfile)pack));
     }
 
     public void apply() {

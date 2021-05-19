@@ -146,16 +146,16 @@ extends BlockEntity {
         int i = (int)hearingEntities.stream().filter(livingEntity -> pos.isWithinDistance(livingEntity.getPos(), 48.0)).count();
         hearingEntities.stream().filter(livingEntity -> BellBlockEntity.isRaiderEntity(pos, livingEntity)).forEach(livingEntity -> {
             float f = 1.0f;
-            float g = MathHelper.sqrt((livingEntity.getX() - (double)pos.getX()) * (livingEntity.getX() - (double)pos.getX()) + (livingEntity.getZ() - (double)pos.getZ()) * (livingEntity.getZ() - (double)pos.getZ()));
-            double d = (double)((float)pos.getX() + 0.5f) + (double)(1.0f / g) * (livingEntity.getX() - (double)pos.getX());
-            double e = (double)((float)pos.getZ() + 0.5f) + (double)(1.0f / g) * (livingEntity.getZ() - (double)pos.getZ());
+            double d = Math.sqrt((livingEntity.getX() - (double)pos.getX()) * (livingEntity.getX() - (double)pos.getX()) + (livingEntity.getZ() - (double)pos.getZ()) * (livingEntity.getZ() - (double)pos.getZ()));
+            double e = (double)((float)pos.getX() + 0.5f) + 1.0 / d * (livingEntity.getX() - (double)pos.getX());
+            double g = (double)((float)pos.getZ() + 0.5f) + 1.0 / d * (livingEntity.getZ() - (double)pos.getZ());
             int j = MathHelper.clamp((i - 21) / -2, 3, 15);
             for (int k = 0; k < j; ++k) {
                 int l = mutableInt.addAndGet(5);
                 double h = (double)BackgroundHelper.ColorMixer.getRed(l) / 255.0;
                 double m = (double)BackgroundHelper.ColorMixer.getGreen(l) / 255.0;
                 double n = (double)BackgroundHelper.ColorMixer.getBlue(l) / 255.0;
-                world.addParticle(ParticleTypes.ENTITY_EFFECT, d, (float)pos.getY() + 0.5f, e, h, m, n);
+                world.addParticle(ParticleTypes.ENTITY_EFFECT, e, (float)pos.getY() + 0.5f, g, h, m, n);
             }
         });
     }

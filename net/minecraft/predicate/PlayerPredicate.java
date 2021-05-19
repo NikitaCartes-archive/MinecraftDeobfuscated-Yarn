@@ -252,7 +252,7 @@ public class PlayerPredicate {
     public static class Builder {
         private NumberRange.IntRange experienceLevel = NumberRange.IntRange.ANY;
         @Nullable
-        private GameMode gamemode;
+        private GameMode gameMode;
         private final Map<Stat<?>, NumberRange.IntRange> stats = Maps.newHashMap();
         private final Object2BooleanMap<Identifier> recipes = new Object2BooleanOpenHashMap<Identifier>();
         private final Map<Identifier, AdvancementPredicate> advancements = Maps.newHashMap();
@@ -276,8 +276,8 @@ public class PlayerPredicate {
             return this;
         }
 
-        public Builder gameMode(GameMode gamemode) {
-            this.gamemode = gamemode;
+        public Builder gameMode(GameMode gameMode) {
+            this.gameMode = gameMode;
             return this;
         }
 
@@ -292,7 +292,7 @@ public class PlayerPredicate {
         }
 
         public PlayerPredicate build() {
-            return new PlayerPredicate(this.experienceLevel, this.gamemode, this.stats, this.recipes, this.advancements);
+            return new PlayerPredicate(this.experienceLevel, this.gameMode, this.stats, this.recipes, this.advancements);
         }
     }
 }

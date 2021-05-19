@@ -69,45 +69,41 @@ public class LocationPredicate {
         return new LocationPredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, null, feature, null, null, LightPredicate.ANY, BlockPredicate.ANY, FluidPredicate.ANY);
     }
 
-    public boolean test(ServerWorld world, double x, double y, double z) {
-        return this.test(world, (float)x, (float)y, (float)z);
-    }
-
-    public boolean test(ServerWorld world, float x, float y, float z) {
-        if (!this.x.test(x)) {
+    public boolean test(ServerWorld serverWorld, double d, double e, double f) {
+        if (!this.x.test(d)) {
             return false;
         }
-        if (!this.y.test(y)) {
+        if (!this.y.test(e)) {
             return false;
         }
-        if (!this.z.test(z)) {
+        if (!this.z.test(f)) {
             return false;
         }
-        if (this.dimension != null && this.dimension != world.getRegistryKey()) {
+        if (this.dimension != null && this.dimension != serverWorld.getRegistryKey()) {
             return false;
         }
-        BlockPos blockPos = new BlockPos(x, y, z);
-        boolean bl = world.canSetBlock(blockPos);
-        Optional<RegistryKey<Biome>> optional = world.getRegistryManager().get(Registry.BIOME_KEY).getKey(world.getBiome(blockPos));
+        BlockPos blockPos = new BlockPos(d, e, f);
+        boolean bl = serverWorld.canSetBlock(blockPos);
+        Optional<RegistryKey<Biome>> optional = serverWorld.getRegistryManager().get(Registry.BIOME_KEY).getKey(serverWorld.getBiome(blockPos));
         if (!optional.isPresent()) {
             return false;
         }
         if (!(this.biome == null || bl && this.biome == optional.get())) {
             return false;
         }
-        if (!(this.feature == null || bl && world.getStructureAccessor().getStructureAt(blockPos, true, this.feature).hasChildren())) {
+        if (!(this.feature == null || bl && serverWorld.getStructureAccessor().getStructureAt(blockPos, true, this.feature).hasChildren())) {
             return false;
         }
-        if (!(this.smokey == null || bl && this.smokey == CampfireBlock.isLitCampfireInRange(world, blockPos))) {
+        if (!(this.smokey == null || bl && this.smokey == CampfireBlock.isLitCampfireInRange(serverWorld, blockPos))) {
             return false;
         }
-        if (!this.light.test(world, blockPos)) {
+        if (!this.light.test(serverWorld, blockPos)) {
             return false;
         }
-        if (!this.block.test(world, blockPos)) {
+        if (!this.block.test(serverWorld, blockPos)) {
             return false;
         }
-        return this.fluid.test(world, blockPos);
+        return this.fluid.test(serverWorld, blockPos);
     }
 
     public JsonElement toJson() {

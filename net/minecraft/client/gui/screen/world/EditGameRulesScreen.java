@@ -19,9 +19,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -58,9 +62,9 @@ extends Screen {
         this.client.keyboard.setRepeatEvents(true);
         super.init();
         this.ruleListWidget = new RuleListWidget(this.gameRules);
-        this.children.add(this.ruleListWidget);
-        this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 29, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.ruleSaver.accept(Optional.empty())));
-        this.doneButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 29, 150, 20, ScreenTexts.DONE, buttonWidget -> this.ruleSaver.accept(Optional.of(this.gameRules))));
+        this.addSelectableChild(this.ruleListWidget);
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 29, 150, 20, ScreenTexts.CANCEL, button -> this.ruleSaver.accept(Optional.empty())));
+        this.doneButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 29, 150, 20, ScreenTexts.DONE, button -> this.ruleSaver.accept(Optional.of(this.gameRules))));
     }
 
     @Override
@@ -150,9 +154,9 @@ extends Screen {
 
         @Override
         public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            AbstractRuleWidget abstractRuleWidget;
             super.render(matrices, mouseX, mouseY, delta);
-            if (this.isMouseOver(mouseX, mouseY) && (abstractRuleWidget = (AbstractRuleWidget)this.getEntryAtPosition(mouseX, mouseY)) != null) {
+            AbstractRuleWidget abstractRuleWidget = (AbstractRuleWidget)this.method_37019();
+            if (abstractRuleWidget != null) {
                 EditGameRulesScreen.this.setTooltipDescription(abstractRuleWidget.description);
             }
         }
@@ -167,8 +171,8 @@ extends Screen {
             super(description, name);
             this.valueWidget = new TextFieldWidget(((EditGameRulesScreen)EditGameRulesScreen.this).client.textRenderer, 10, 5, 42, 20, name.shallowCopy().append("\n").append(ruleName).append("\n"));
             this.valueWidget.setText(Integer.toString(rule.get()));
-            this.valueWidget.setChangedListener(string -> {
-                if (rule.validate((String)string)) {
+            this.valueWidget.setChangedListener(value -> {
+                if (rule.validate((String)value)) {
                     this.valueWidget.setEditableColor(0xE0E0E0);
                     EditGameRulesScreen.this.markValid(this);
                 } else {
@@ -193,9 +197,9 @@ extends Screen {
     extends NamedRuleWidget {
         private final CyclingButtonWidget<Boolean> toggleButton;
 
-        public BooleanRuleWidget(Text name, List<OrderedText> description, String ruleName, GameRules.BooleanRule booleanRule) {
+        public BooleanRuleWidget(Text name, List<OrderedText> description, String ruleName, GameRules.BooleanRule rule) {
             super(description, name);
-            this.toggleButton = CyclingButtonWidget.onOffBuilder(booleanRule.get()).omitKeyText().narration(cyclingButtonWidget -> cyclingButtonWidget.getGenericNarrationMessage().append("\n").append(ruleName)).build(10, 5, 44, 20, name, (cyclingButtonWidget, boolean_) -> booleanRule.set((boolean)boolean_, null));
+            this.toggleButton = CyclingButtonWidget.onOffBuilder(rule.get()).omitKeyText().narration(button -> button.getGenericNarrationMessage().append("\n").append(ruleName)).build(10, 5, 44, 20, name, (button, value) -> rule.set((boolean)value, null));
             this.children.add(this.toggleButton);
         }
 
@@ -212,7 +216,7 @@ extends Screen {
     public abstract class NamedRuleWidget
     extends AbstractRuleWidget {
         private final List<OrderedText> name;
-        protected final List<Element> children;
+        protected final List<ClickableWidget> children;
 
         public NamedRuleWidget(List<OrderedText> description, Text name) {
             super(description);
@@ -222,6 +226,11 @@ extends Screen {
 
         @Override
         public List<? extends Element> children() {
+            return this.children;
+        }
+
+        @Override
+        public List<? extends Selectable> method_37025() {
             return this.children;
         }
 
@@ -244,7 +253,7 @@ extends Screen {
     @Environment(value=EnvType.CLIENT)
     public class RuleCategoryWidget
     extends AbstractRuleWidget {
-        private final Text name;
+        final Text name;
 
         public RuleCategoryWidget(Text text) {
             super(null);
@@ -259,6 +268,22 @@ extends Screen {
         @Override
         public List<? extends Element> children() {
             return ImmutableList.of();
+        }
+
+        @Override
+        public List<? extends Selectable> method_37025() {
+            return ImmutableList.of(new Selectable(){
+
+                @Override
+                public Selectable.SelectionType getType() {
+                    return Selectable.SelectionType.HOVERED;
+                }
+
+                @Override
+                public void appendNarrations(NarrationMessageBuilder builder) {
+                    builder.put(NarrationPart.TITLE, RuleCategoryWidget.this.name);
+                }
+            });
         }
     }
 

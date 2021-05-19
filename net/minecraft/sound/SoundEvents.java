@@ -1028,7 +1028,7 @@ public class SoundEvents {
     public static final SoundEvent ENTITY_STRAY_STEP = SoundEvents.register("entity.stray.step");
     public static final SoundEvent BLOCK_SWEET_BERRY_BUSH_BREAK = SoundEvents.register("block.sweet_berry_bush.break");
     public static final SoundEvent BLOCK_SWEET_BERRY_BUSH_PLACE = SoundEvents.register("block.sweet_berry_bush.place");
-    public static final SoundEvent ITEM_SWEET_BERRIES_PICK_FROM_BUSH = SoundEvents.register("item.sweet_berries.pick_from_bush");
+    public static final SoundEvent BLOCK_SWEET_BERRY_BUSH_PICK_BERRIES = SoundEvents.register("block.sweet_berry_bush.pick_berries");
     public static final SoundEvent ENCHANT_THORNS_HIT = SoundEvents.register("enchant.thorns.hit");
     public static final SoundEvent ENTITY_TNT_PRIMED = SoundEvents.register("entity.tnt.primed");
     public static final SoundEvent ITEM_TOTEM_USE = SoundEvents.register("item.totem.use");

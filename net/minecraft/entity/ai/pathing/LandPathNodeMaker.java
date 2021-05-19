@@ -128,7 +128,7 @@ extends PathNodeMaker {
         if (this.entity.getPathfindingPenalty(pathNodeType) >= 0.0f && pathNodeType2 != PathNodeType.STICKY_HONEY) {
             j = MathHelper.floor(Math.max(1.0f, this.entity.stepHeight));
         }
-        if (this.isValidAdjacentSuccessor(pathNode = this.getPathNode(node.x, node.y, node.z + 1, j, d = LandPathNodeMaker.getFeetY(this.cachedWorld, new BlockPos(node.x, node.y, node.z)), Direction.SOUTH, pathNodeType2), node)) {
+        if (this.isValidAdjacentSuccessor(pathNode = this.getPathNode(node.x, node.y, node.z + 1, j, d = this.method_37003(new BlockPos(node.x, node.y, node.z)), Direction.SOUTH, pathNodeType2), node)) {
             successors[i++] = pathNode;
         }
         if (this.isValidAdjacentSuccessor(pathNode2 = this.getPathNode(node.x - 1, node.y, node.z, j, d, Direction.WEST, pathNodeType2), node)) {
@@ -155,11 +155,11 @@ extends PathNodeMaker {
         return i;
     }
 
-    private boolean isValidAdjacentSuccessor(PathNode node, PathNode successor1) {
+    protected boolean isValidAdjacentSuccessor(@Nullable PathNode node, PathNode successor1) {
         return node != null && !node.visited && (node.penalty >= 0.0f || successor1.penalty < 0.0f);
     }
 
-    private boolean isValidDiagonalSuccessor(PathNode xNode, @Nullable PathNode zNode, @Nullable PathNode xDiagNode, @Nullable PathNode zDiagNode) {
+    protected boolean isValidDiagonalSuccessor(PathNode xNode, @Nullable PathNode zNode, @Nullable PathNode xDiagNode, @Nullable PathNode zDiagNode) {
         if (zDiagNode == null || xDiagNode == null || zNode == null) {
             return false;
         }
@@ -188,20 +188,28 @@ extends PathNodeMaker {
         return true;
     }
 
+    protected double method_37003(BlockPos blockPos) {
+        return LandPathNodeMaker.getFeetY(this.cachedWorld, blockPos);
+    }
+
     public static double getFeetY(BlockView world, BlockPos pos) {
         BlockPos blockPos = pos.down();
         VoxelShape voxelShape = world.getBlockState(blockPos).getCollisionShape(world, blockPos);
         return (double)blockPos.getY() + (voxelShape.isEmpty() ? 0.0 : voxelShape.getMax(Direction.Axis.Y));
     }
 
+    protected boolean method_37004() {
+        return false;
+    }
+
     @Nullable
-    private PathNode getPathNode(int x, int y, int z, int maxYStep, double prevFeetY, Direction direction, PathNodeType nodeType) {
+    protected PathNode getPathNode(int x, int y, int z, int maxYStep, double prevFeetY, Direction direction, PathNodeType nodeType) {
         double h;
         double g;
         Box box;
         PathNode pathNode = null;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        double d = LandPathNodeMaker.getFeetY(this.cachedWorld, mutable.set(x, y, z));
+        double d = this.method_37003(mutable.set(x, y, z));
         if (d - prevFeetY > 1.125) {
             return null;
         }
@@ -216,13 +224,13 @@ extends PathNodeMaker {
         if (nodeType == PathNodeType.FENCE && pathNode != null && pathNode.penalty >= 0.0f && !this.isBlocked(pathNode)) {
             pathNode = null;
         }
-        if (pathNodeType == PathNodeType.WALKABLE) {
+        if (pathNodeType == PathNodeType.WALKABLE || this.method_37004() && pathNodeType == PathNodeType.WATER) {
             return pathNode;
         }
         if ((pathNode == null || pathNode.penalty < 0.0f) && maxYStep > 0 && pathNodeType != PathNodeType.FENCE && pathNodeType != PathNodeType.UNPASSABLE_RAIL && pathNodeType != PathNodeType.TRAPDOOR && pathNodeType != PathNodeType.POWDER_SNOW && (pathNode = this.getPathNode(x, y + 1, z, maxYStep - 1, prevFeetY, direction, nodeType)) != null && (pathNode.type == PathNodeType.OPEN || pathNode.type == PathNodeType.WALKABLE) && this.entity.getWidth() < 1.0f && this.checkBoxCollision(box = new Box((g = (double)(x - direction.getOffsetX()) + 0.5) - e, LandPathNodeMaker.getFeetY(this.cachedWorld, mutable.set(g, (double)(y + 1), h = (double)(z - direction.getOffsetZ()) + 0.5)) + 0.001, h - e, g + e, (double)this.entity.getHeight() + LandPathNodeMaker.getFeetY(this.cachedWorld, mutable.set((double)pathNode.x, (double)pathNode.y, (double)pathNode.z)) - 0.002, h + e))) {
             pathNode = null;
         }
-        if (pathNodeType == PathNodeType.WATER && !this.canSwim()) {
+        if (!this.method_37004() && pathNodeType == PathNodeType.WATER && !this.canSwim()) {
             if (this.getNodeType(this.entity, x, y - 1, z) != PathNodeType.WATER) {
                 return pathNode;
             }
@@ -349,7 +357,7 @@ extends PathNodeMaker {
         return this.getNodeType(entity, pos.getX(), pos.getY(), pos.getZ());
     }
 
-    private PathNodeType getNodeType(MobEntity entity, int x, int y, int z) {
+    protected PathNodeType getNodeType(MobEntity entity, int x, int y, int z) {
         return this.nodeTypes.computeIfAbsent(BlockPos.asLong(x, y, z), l -> this.getNodeType(this.cachedWorld, x, y, z, entity, this.entityBlockXSize, this.entityBlockYSize, this.entityBlockZSize, this.canOpenDoors(), this.canEnterOpenDoors()));
     }
 
@@ -419,7 +427,7 @@ extends PathNodeMaker {
         if (blockState.isAir()) {
             return PathNodeType.OPEN;
         }
-        if (blockState.isIn(BlockTags.TRAPDOORS) || blockState.isOf(Blocks.LILY_PAD)) {
+        if (blockState.isIn(BlockTags.TRAPDOORS) || blockState.isOf(Blocks.LILY_PAD) || blockState.isOf(Blocks.BIG_DRIPLEAF)) {
             return PathNodeType.TRAPDOOR;
         }
         if (blockState.isOf(Blocks.POWDER_SNOW)) {
@@ -438,9 +446,6 @@ extends PathNodeMaker {
             return PathNodeType.COCOA;
         }
         FluidState fluidState = world.getFluidState(pos);
-        if (fluidState.isIn(FluidTags.WATER)) {
-            return PathNodeType.WATER;
-        }
         if (fluidState.isIn(FluidTags.LAVA)) {
             return PathNodeType.LAVA;
         }
@@ -467,6 +472,9 @@ extends PathNodeMaker {
         }
         if (!blockState.canPathfindThrough(world, pos, NavigationType.LAND)) {
             return PathNodeType.BLOCKED;
+        }
+        if (fluidState.isIn(FluidTags.WATER)) {
+            return PathNodeType.WATER;
         }
         return PathNodeType.OPEN;
     }

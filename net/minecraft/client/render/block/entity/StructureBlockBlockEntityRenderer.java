@@ -98,21 +98,24 @@ implements BlockEntityRenderer<StructureBlockBlockEntity> {
             WorldRenderer.drawBox(matrixStack, vertexConsumer, m, g, n, o, h, p, 0.9f, 0.9f, 0.9f, 1.0f, 0.5f, 0.5f, 0.5f);
         }
         if (structureBlockBlockEntity.getMode() == StructureBlockMode.SAVE && structureBlockBlockEntity.shouldShowAir()) {
-            this.renderInvisibleBlocks(structureBlockBlockEntity, vertexConsumer, blockPos, true, matrixStack);
-            this.renderInvisibleBlocks(structureBlockBlockEntity, vertexConsumer, blockPos, false, matrixStack);
+            this.renderInvisibleBlocks(structureBlockBlockEntity, vertexConsumer, blockPos, matrixStack);
         }
     }
 
-    private void renderInvisibleBlocks(StructureBlockBlockEntity entity, VertexConsumer vertices, BlockPos pos, boolean bl, MatrixStack matrices) {
+    private void renderInvisibleBlocks(StructureBlockBlockEntity entity, VertexConsumer vertices, BlockPos pos, MatrixStack matrixStack) {
         World blockView = entity.getWorld();
         BlockPos blockPos = entity.getPos();
         BlockPos blockPos2 = blockPos.add(pos);
         for (BlockPos blockPos3 : BlockPos.iterate(blockPos2, blockPos2.add(entity.getSize()).add(-1, -1, -1))) {
+            boolean bl5;
             BlockState blockState = blockView.getBlockState(blockPos3);
-            boolean bl2 = blockState.isAir();
-            boolean bl3 = blockState.isOf(Blocks.STRUCTURE_VOID);
-            if (!bl2 && !bl3) continue;
-            float f = bl2 ? 0.05f : 0.0f;
+            boolean bl = blockState.isAir();
+            boolean bl2 = blockState.isOf(Blocks.STRUCTURE_VOID);
+            boolean bl3 = blockState.isOf(Blocks.BARRIER);
+            boolean bl4 = blockState.isOf(Blocks.LIGHT);
+            boolean bl6 = bl5 = bl2 || bl3 || bl4;
+            if (!bl && !bl5) continue;
+            float f = bl ? 0.05f : 0.0f;
             double d = (float)(blockPos3.getX() - blockPos.getX()) + 0.45f - f;
             double e = (float)(blockPos3.getY() - blockPos.getY()) + 0.45f - f;
             double g = (float)(blockPos3.getZ() - blockPos.getZ()) + 0.45f - f;
@@ -120,14 +123,19 @@ implements BlockEntityRenderer<StructureBlockBlockEntity> {
             double i = (float)(blockPos3.getY() - blockPos.getY()) + 0.55f + f;
             double j = (float)(blockPos3.getZ() - blockPos.getZ()) + 0.55f + f;
             if (bl) {
-                WorldRenderer.drawBox(matrices, vertices, d, e, g, h, i, j, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f);
+                WorldRenderer.drawBox(matrixStack, vertices, d, e, g, h, i, j, 0.5f, 0.5f, 1.0f, 1.0f, 0.5f, 0.5f, 1.0f);
                 continue;
             }
             if (bl2) {
-                WorldRenderer.drawBox(matrices, vertices, d, e, g, h, i, j, 0.5f, 0.5f, 1.0f, 1.0f, 0.5f, 0.5f, 1.0f);
+                WorldRenderer.drawBox(matrixStack, vertices, d, e, g, h, i, j, 1.0f, 0.75f, 0.75f, 1.0f, 1.0f, 0.75f, 0.75f);
                 continue;
             }
-            WorldRenderer.drawBox(matrices, vertices, d, e, g, h, i, j, 1.0f, 0.25f, 0.25f, 1.0f, 1.0f, 0.25f, 0.25f);
+            if (bl3) {
+                WorldRenderer.drawBox(matrixStack, vertices, d, e, g, h, i, j, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f);
+                continue;
+            }
+            if (!bl4) continue;
+            WorldRenderer.drawBox(matrixStack, vertices, d, e, g, h, i, j, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f);
         }
     }
 

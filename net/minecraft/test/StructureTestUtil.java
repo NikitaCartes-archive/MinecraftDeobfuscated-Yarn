@@ -227,9 +227,9 @@ public class StructureTestUtil {
 
     private static Structure createStructure(String structureId, ServerWorld world) {
         StructureManager structureManager = world.getStructureManager();
-        Structure structure = structureManager.getStructure(new Identifier(structureId));
-        if (structure != null) {
-            return structure;
+        Optional<Structure> optional = structureManager.getStructure(new Identifier(structureId));
+        if (optional.isPresent()) {
+            return optional.get();
         }
         String string = structureId + ".snbt";
         Path path = Paths.get(testStructuresDirectoryName, string);

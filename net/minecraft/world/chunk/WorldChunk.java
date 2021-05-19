@@ -161,7 +161,7 @@ implements Chunk {
         this.setStructureReferences(protoChunk.getStructureReferences());
         for (Map.Entry<Heightmap.Type, Heightmap> entry : protoChunk.getHeightmaps()) {
             if (!ChunkStatus.FULL.getHeightmapTypes().contains(entry.getKey())) continue;
-            this.getHeightmap(entry.getKey()).setTo(entry.getValue().asLongArray());
+            this.setHeightmap(entry.getKey(), entry.getValue().asLongArray());
         }
         this.setLightOn(protoChunk.isLightOn());
         this.shouldSave = true;
@@ -303,11 +303,6 @@ implements Chunk {
     }
 
     @Override
-    public void setHeightmap(Heightmap.Type type, long[] heightmap) {
-        this.heightmaps.get(type).setTo(heightmap);
-    }
-
-    @Override
     public int sampleHeightmap(Heightmap.Type type, int x, int z) {
         return this.heightmaps.get(type).get(x & 0xF, z & 0xF) - 1;
     }
@@ -418,13 +413,13 @@ implements Chunk {
     public void removeBlockEntity(BlockPos pos) {
         BlockEntity blockEntity;
         if (this.canTickBlockEntities() && (blockEntity = this.blockEntities.remove(pos)) != null) {
-            this.method_32918(blockEntity);
+            this.removeGameEventListener(blockEntity);
             blockEntity.markRemoved();
         }
         this.removeBlockEntityTicker(pos);
     }
 
-    private <T extends BlockEntity> void method_32918(T blockEntity) {
+    private <T extends BlockEntity> void removeGameEventListener(T blockEntity) {
         GameEventListener gameEventListener;
         if (this.world.isClient) {
             return;
@@ -440,8 +435,8 @@ implements Chunk {
         }
     }
 
-    private void removeBlockEntityTicker(BlockPos blockPos) {
-        WrappedBlockEntityTickInvoker wrappedBlockEntityTickInvoker = this.blockEntityTickers.remove(blockPos);
+    private void removeBlockEntityTicker(BlockPos pos) {
+        WrappedBlockEntityTickInvoker wrappedBlockEntityTickInvoker = this.blockEntityTickers.remove(pos);
         if (wrappedBlockEntityTickInvoker != null) {
             wrappedBlockEntityTickInvoker.setWrapped(EMPTY_BLOCK_ENTITY_TICKER);
         }
@@ -833,10 +828,10 @@ implements Chunk {
         private boolean hasWarned;
         final /* synthetic */ WorldChunk worldChunk;
 
-        DirectBlockEntityTickInvoker(T blockEntity, BlockEntityTicker<T> blockEntityTicker) {
+        DirectBlockEntityTickInvoker(T blockEntity, BlockEntityTicker<T> ticker) {
             this.worldChunk = worldChunk;
             this.blockEntity = blockEntity;
-            this.ticker = blockEntityTicker;
+            this.ticker = ticker;
         }
 
         @Override

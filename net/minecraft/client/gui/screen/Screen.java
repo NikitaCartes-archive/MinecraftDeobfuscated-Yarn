@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -23,10 +24,12 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.AbstractParentElement;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.ConfirmChatLinkScreen;
-import net.minecraft.client.gui.screen.TickableElement;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.screen.narration.NarrationPart;
+import net.minecraft.client.gui.screen.narration.ScreenNarrator;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.item.TooltipData;
 import net.minecraft.client.render.BufferBuilder;
@@ -38,6 +41,7 @@ import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.ClickEvent;
@@ -45,6 +49,7 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -58,22 +63,33 @@ import org.lwjgl.glfw.GLFW;
 @Environment(value=EnvType.CLIENT)
 public abstract class Screen
 extends AbstractParentElement
-implements TickableElement,
-Drawable {
+implements Drawable {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Set<String> ALLOWED_PROTOCOLS = Sets.newHashSet("http", "https");
     private static final int field_32270 = 2;
+    private static final Text SCREEN_USAGE_TEXT = new TranslatableText("narrator.screen.usage");
     protected final Text title;
-    protected final List<Element> children = Lists.newArrayList();
+    private final List<Element> children = Lists.newArrayList();
+    private final List<Selectable> selectables = Lists.newArrayList();
     @Nullable
     protected MinecraftClient client;
     protected ItemRenderer itemRenderer;
     public int width;
     public int height;
-    protected final List<ClickableWidget> buttons = Lists.newArrayList();
+    private final List<Drawable> drawables = Lists.newArrayList();
     public boolean passEvents;
     protected TextRenderer textRenderer;
     private URI clickedLink;
+    private static final long SCREEN_INIT_NARRATION_DELAY;
+    private static final long NARRATOR_MODE_CHANGE_DELAY;
+    private static final long field_33819 = 750L;
+    private static final long field_33820 = 200L;
+    private static final long field_33821 = 200L;
+    private final ScreenNarrator narrator = new ScreenNarrator();
+    private long elementNarrationStartTime = Long.MIN_VALUE;
+    private long screenNarrationStartTime = Long.MAX_VALUE;
+    @Nullable
+    private Selectable selected;
 
     protected Screen(Text title) {
         this.title = title;
@@ -83,14 +99,14 @@ Drawable {
         return this.title;
     }
 
-    public String getNarrationMessage() {
-        return this.getTitle().getString();
+    public Text getNarratedTitle() {
+        return this.getTitle();
     }
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        for (int i = 0; i < this.buttons.size(); ++i) {
-            this.buttons.get(i).render(matrices, mouseX, mouseY, delta);
+        for (Drawable drawable : this.drawables) {
+            drawable.render(matrices, mouseX, mouseY, delta);
         }
     }
 
@@ -122,34 +138,45 @@ Drawable {
         this.client.openScreen(null);
     }
 
-    /**
-     * Adds a button to this screen.
-     * This method should be preferred over {@link Screen#addChild(Element)} since buttons are automatically rendered when added to a screen.
-     */
-    protected <T extends ClickableWidget> T addButton(T button) {
-        this.buttons.add(button);
-        return this.addChild(button);
+    protected <T extends Element & Drawable> T addDrawableChild(T drawableElement) {
+        this.drawables.add(drawableElement);
+        return this.addSelectableChild(drawableElement);
     }
 
-    /**
-     * Adds a child element to this screen.
-     * If the child element is an {@link net.minecraft.client.gui.widget.AbstractButtonWidget}, you should use {@link Screen#addButton(AbstractButtonWidget)} instead.
-     * 
-     * <p>Adding a child element to a screen does not guarantee the widget is rendered or ticked.
-     * @see net.minecraft.client.gui.screen.Screen#addButton(AbstractButtonWidget)
-     */
-    protected <T extends Element> T addChild(T child) {
+    protected <T extends Drawable> T addDrawable(T drawable) {
+        this.drawables.add(drawable);
+        return drawable;
+    }
+
+    protected <T extends Element & Selectable> T addSelectableChild(T child) {
         this.children.add(child);
+        this.selectables.add(child);
         return child;
+    }
+
+    protected void remove(Element child) {
+        if (child instanceof Drawable) {
+            this.drawables.remove((Drawable)((Object)child));
+        }
+        if (child instanceof Selectable) {
+            this.selectables.remove((Selectable)((Object)child));
+        }
+        this.children.remove(child);
+    }
+
+    protected void clearChildren() {
+        this.drawables.clear();
+        this.children.clear();
+        this.selectables.clear();
     }
 
     protected void renderTooltip(MatrixStack matrices, ItemStack stack, int x, int y) {
         this.renderTooltip(matrices, this.getTooltipFromItem(stack), stack.getTooltipData(), x, y);
     }
 
-    public void renderTooltip(MatrixStack matrices, List<Text> lines, Optional<TooltipData> data, int x, int y) {
+    public void renderTooltip(MatrixStack matrices, List<Text> lines, Optional<TooltipData> data2, int x, int y) {
         List<TooltipComponent> list = lines.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toList());
-        data.ifPresent(tooltipData -> list.add(1, TooltipComponent.of(tooltipData)));
+        data2.ifPresent(data -> list.add(1, TooltipComponent.of(data)));
         this.renderTooltipFromComponents(matrices, list, x, y);
     }
 
@@ -331,16 +358,17 @@ Drawable {
         this.client.player.sendChatMessage(message);
     }
 
-    public void init(MinecraftClient client, int width, int height) {
+    public final void init(MinecraftClient client, int width, int height) {
         this.client = client;
         this.itemRenderer = client.getItemRenderer();
         this.textRenderer = client.textRenderer;
         this.width = width;
         this.height = height;
-        this.buttons.clear();
-        this.children.clear();
+        this.clearChildren();
         this.setFocused(null);
         this.init();
+        this.narrateScreenIfNarrationEnabled(false);
+        this.setElementNarrationDelay(SCREEN_INIT_NARRATION_DELAY);
     }
 
     @Override
@@ -356,7 +384,6 @@ Drawable {
     protected void init() {
     }
 
-    @Override
     public void tick() {
     }
 
@@ -489,6 +516,119 @@ Drawable {
     }
 
     public void filesDragged(List<Path> paths) {
+    }
+
+    private void setScreenNarrationDelay(long delayMs, boolean restartElementNarration) {
+        this.screenNarrationStartTime = Util.getMeasuringTimeMs() + delayMs;
+        if (restartElementNarration) {
+            this.elementNarrationStartTime = Long.MIN_VALUE;
+        }
+    }
+
+    private void setElementNarrationDelay(long delayMs) {
+        this.elementNarrationStartTime = Util.getMeasuringTimeMs() + delayMs;
+    }
+
+    public void applyMouseMoveNarratorDelay() {
+        this.setScreenNarrationDelay(750L, false);
+    }
+
+    public void applyMousePressScrollNarratorDelay() {
+        this.setScreenNarrationDelay(200L, true);
+    }
+
+    public void applyKeyPressNarratorDelay() {
+        this.setScreenNarrationDelay(200L, true);
+    }
+
+    private boolean isNarratorActive() {
+        return NarratorManager.INSTANCE.isActive();
+    }
+
+    public void updateNarrator() {
+        long l;
+        if (this.isNarratorActive() && (l = Util.getMeasuringTimeMs()) > this.screenNarrationStartTime && l > this.elementNarrationStartTime) {
+            this.narrateScreen(true);
+            this.screenNarrationStartTime = Long.MAX_VALUE;
+        }
+    }
+
+    protected void narrateScreenIfNarrationEnabled(boolean useTranslationsCache) {
+        if (this.isNarratorActive()) {
+            this.narrateScreen(useTranslationsCache);
+        }
+    }
+
+    private void narrateScreen(boolean useTranslationsCache) {
+        this.narrator.buildNarrations(this::addScreenNarrations);
+        String string = this.narrator.buildNarratorText(!useTranslationsCache);
+        if (!string.isEmpty()) {
+            NarratorManager.INSTANCE.narrate(string);
+        }
+    }
+
+    private void addScreenNarrations(NarrationMessageBuilder builder) {
+        builder.put(NarrationPart.TITLE, this.getNarratedTitle());
+        builder.put(NarrationPart.USAGE, SCREEN_USAGE_TEXT);
+        this.addElementNarrations(builder);
+    }
+
+    protected void addElementNarrations(NarrationMessageBuilder builder) {
+        SelectedElementNarrationData selectedElementNarrationData = Screen.findSelectedElementData(this.selectables, this.selected);
+        if (selectedElementNarrationData != null) {
+            if (selectedElementNarrationData.selectType.isFocused()) {
+                this.selected = selectedElementNarrationData.selectable;
+            }
+            if (this.selectables.size() > 1) {
+                builder.put(NarrationPart.POSITION, (Text)new TranslatableText("narrator.position.screen", selectedElementNarrationData.index + 1, this.selectables.size()));
+                if (selectedElementNarrationData.selectType == Selectable.SelectionType.FOCUSED) {
+                    builder.put(NarrationPart.USAGE, (Text)new TranslatableText("narration.component_list.usage"));
+                }
+            }
+            selectedElementNarrationData.selectable.appendNarrations(builder.nextMessage());
+        }
+    }
+
+    @Nullable
+    public static SelectedElementNarrationData findSelectedElementData(List<? extends Selectable> selectables, @Nullable Selectable selectable) {
+        SelectedElementNarrationData selectedElementNarrationData = null;
+        SelectedElementNarrationData selectedElementNarrationData2 = null;
+        int j = selectables.size();
+        for (int i = 0; i < j; ++i) {
+            Selectable selectable2 = selectables.get(i);
+            Selectable.SelectionType selectionType = selectable2.getType();
+            if (selectionType.isFocused()) {
+                if (selectable2 == selectable) {
+                    selectedElementNarrationData2 = new SelectedElementNarrationData(selectable2, i, selectionType);
+                    continue;
+                }
+                return new SelectedElementNarrationData(selectable2, i, selectionType);
+            }
+            if (selectionType.compareTo(selectedElementNarrationData != null ? selectedElementNarrationData.selectType : Selectable.SelectionType.NONE) <= 0) continue;
+            selectedElementNarrationData = new SelectedElementNarrationData(selectable2, i, selectionType);
+        }
+        return selectedElementNarrationData != null ? selectedElementNarrationData : selectedElementNarrationData2;
+    }
+
+    public void applyNarratorModeChangeDelay() {
+        this.setScreenNarrationDelay(NARRATOR_MODE_CHANGE_DELAY, false);
+    }
+
+    static {
+        NARRATOR_MODE_CHANGE_DELAY = SCREEN_INIT_NARRATION_DELAY = TimeUnit.SECONDS.toMillis(2L);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static class SelectedElementNarrationData {
+        public final Selectable selectable;
+        public final int index;
+        public final Selectable.SelectionType selectType;
+
+        public SelectedElementNarrationData(Selectable selectable, int index, Selectable.SelectionType selectType) {
+            this.selectable = selectable;
+            this.index = index;
+            this.selectType = selectType;
+        }
     }
 }
 

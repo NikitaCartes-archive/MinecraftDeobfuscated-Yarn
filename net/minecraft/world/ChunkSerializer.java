@@ -204,7 +204,7 @@ public class ChunkSerializer {
         NbtList nbtList = new NbtList();
         ServerLightingProvider lightingProvider = world.getChunkManager().getLightingProvider();
         boolean bl = chunk.isLightOn();
-        for (int i = lightingProvider.method_31929(); i < lightingProvider.method_31930(); ++i) {
+        for (int i = lightingProvider.getBottomY(); i < lightingProvider.getTopY(); ++i) {
             int j = i;
             ChunkSection chunkSection2 = Arrays.stream(chunkSections).filter(chunkSection -> chunkSection != null && ChunkSectionPos.getSectionCoord(chunkSection.getYOffset()) == j).findFirst().orElse(WorldChunk.EMPTY_SECTION);
             ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.BLOCK).getLightSection(ChunkSectionPos.from(chunkPos, j));

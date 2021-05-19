@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class HoldingPatternPhase
 extends AbstractPhase {
-    private static final TargetPredicate PLAYERS_IN_RANGE_PREDICATE = TargetPredicate.createAttackable().setBaseMaxDistance(64.0);
+    private static final TargetPredicate PLAYERS_IN_RANGE_PREDICATE = TargetPredicate.createAttackable().visibleOnly();
     private Path path;
     private Vec3d pathTarget;
     private boolean shouldFindNewPath;
@@ -64,11 +64,11 @@ extends AbstractPhase {
                 return;
             }
             double d = 64.0;
-            PlayerEntity playerEntity = this.dragon.world.getClosestPlayer(PLAYERS_IN_RANGE_PREDICATE, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+            PlayerEntity playerEntity = this.dragon.world.getClosestPlayer(PLAYERS_IN_RANGE_PREDICATE, this.dragon, (double)blockPos.getX(), (double)blockPos.getY(), blockPos.getZ());
             if (playerEntity != null) {
                 d = blockPos.getSquaredDistance(playerEntity.getPos(), true) / 512.0;
             }
-            if (!(playerEntity == null || playerEntity.getAbilities().invulnerable || this.dragon.getRandom().nextInt(MathHelper.abs((int)d) + 2) != 0 && this.dragon.getRandom().nextInt(i + 2) != 0)) {
+            if (playerEntity != null && (this.dragon.getRandom().nextInt(MathHelper.abs((int)d) + 2) == 0 || this.dragon.getRandom().nextInt(i + 2) == 0)) {
                 this.strafePlayer(playerEntity);
                 return;
             }
@@ -116,7 +116,7 @@ extends AbstractPhase {
 
     @Override
     public void crystalDestroyed(EndCrystalEntity crystal, BlockPos pos, DamageSource source, @Nullable PlayerEntity player) {
-        if (player != null && !player.getAbilities().invulnerable) {
+        if (player != null && this.dragon.canTarget(player)) {
             this.strafePlayer(player);
         }
     }

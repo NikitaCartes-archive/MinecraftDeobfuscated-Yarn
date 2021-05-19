@@ -95,7 +95,7 @@ extends DrawableHelper {
     private static final Identifier SPYGLASS_SCOPE = new Identifier("textures/misc/spyglass_scope.png");
     private static final Identifier POWDER_SNOW_OUTLINE = new Identifier("textures/misc/powder_snow_outline.png");
     private static final Text DEMO_EXPIRED_MESSAGE = new TranslatableText("demo.demoExpired");
-    private static final int field_32167 = 0xFFFFFF;
+    private static final int WHITE = 0xFFFFFF;
     private static final float field_32168 = 5.0f;
     private static final int field_32169 = 10;
     private static final int field_32170 = 10;

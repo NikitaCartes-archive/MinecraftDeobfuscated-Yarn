@@ -3,8 +3,11 @@
  */
 package net.minecraft.client.gui.widget;
 
+import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -44,9 +47,18 @@ extends PressableWidget {
         this.tooltipSupplier.onTooltip(this, matrices, mouseX, mouseY);
     }
 
+    @Override
+    public void appendNarrations(NarrationMessageBuilder builder) {
+        this.method_37021(builder);
+        this.tooltipSupplier.method_37023(text -> builder.put(NarrationPart.HINT, (Text)text));
+    }
+
     @Environment(value=EnvType.CLIENT)
     public static interface TooltipSupplier {
         public void onTooltip(ButtonWidget var1, MatrixStack var2, int var3, int var4);
+
+        default public void method_37023(Consumer<Text> consumer) {
+        }
     }
 
     @Environment(value=EnvType.CLIENT)

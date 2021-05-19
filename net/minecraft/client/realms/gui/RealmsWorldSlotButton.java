@@ -10,7 +10,6 @@ import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.TickableElement;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RealmsWorldOptions;
@@ -27,8 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class RealmsWorldSlotButton
-extends ButtonWidget
-implements TickableElement {
+extends ButtonWidget {
     public static final Identifier SLOT_FRAME = new Identifier("realms", "textures/gui/realms/slot_frame.png");
     public static final Identifier EMPTY_FRAME = new Identifier("realms", "textures/gui/realms/empty_frame.png");
     public static final Identifier PANORAMA_0 = new Identifier("minecraft", "textures/gui/title/background/panorama_0.png");
@@ -56,8 +54,7 @@ implements TickableElement {
         return this.state;
     }
 
-    @Override
-    public void tick() {
+    public void method_37007() {
         boolean bl3;
         String string2;
         long l;

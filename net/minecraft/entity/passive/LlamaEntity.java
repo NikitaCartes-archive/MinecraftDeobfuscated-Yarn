@@ -390,8 +390,8 @@ implements RangedAttackMob {
         double d = target.getX() - this.getX();
         double e = target.getBodyY(0.3333333333333333) - llamaSpitEntity.getY();
         double f = target.getZ() - this.getZ();
-        float g = MathHelper.sqrt(d * d + f * f) * 0.2f;
-        llamaSpitEntity.setVelocity(d, e + (double)g, f, 1.5f, 10.0f);
+        double g = Math.sqrt(d * d + f * f) * (double)0.2f;
+        llamaSpitEntity.setVelocity(d, e + g, f, 1.5f, 10.0f);
         if (!this.isSilent()) {
             this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_LLAMA_SPIT, this.getSoundCategory(), 1.0f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
         }
@@ -513,9 +513,9 @@ implements RangedAttackMob {
     extends PassiveEntity.PassiveData {
         public final int variant;
 
-        LlamaData(int i) {
+        LlamaData(int variant) {
             super(true);
-            this.variant = i;
+            this.variant = variant;
         }
     }
 }

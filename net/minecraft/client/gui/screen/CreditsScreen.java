@@ -42,7 +42,7 @@ extends Screen {
     private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
     private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
     private static final Identifier VIGNETTE_TEXTURE = new Identifier("textures/misc/vignette.png");
-    private static final String field_32273 = "[C]";
+    private static final String CENTERED_LINE_PREFIX = "[C]";
     private static final String OBFUSCATION_PLACEHOLDER = "" + Formatting.WHITE + Formatting.OBFUSCATED + Formatting.GREEN + Formatting.AQUA;
     private final boolean endCredits;
     private final Runnable finishAction;
@@ -124,7 +124,7 @@ extends Screen {
             while ((string4 = bufferedReader.readLine()) != null) {
                 boolean bl;
                 string4 = string4.replaceAll("PLAYERNAME", this.client.getSession().getUsername());
-                if ((string4 = string4.replaceAll("\t", "    ")).startsWith(field_32273)) {
+                if ((string4 = string4.replaceAll("\t", "    ")).startsWith(CENTERED_LINE_PREFIX)) {
                     string4 = string4.substring(3);
                     bl = true;
                 } else {
@@ -191,7 +191,7 @@ extends Screen {
         RenderSystem.setShaderTexture(0, MINECRAFT_TITLE_TEXTURE);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.enableBlend();
-        this.method_29343(j, k, (integer, integer2) -> {
+        this.drawWithOutline(j, k, (integer, integer2) -> {
             this.drawTexture(matrices, integer + 0, (int)integer2, 0, 0, 155, 44);
             this.drawTexture(matrices, integer + 155, (int)integer2, 0, 45, 155, 44);
         });
