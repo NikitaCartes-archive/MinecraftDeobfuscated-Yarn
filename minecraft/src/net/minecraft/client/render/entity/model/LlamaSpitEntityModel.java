@@ -10,8 +10,26 @@ import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.entity.Entity;
 
+/**
+ * Represents the model of llama-spit-like entity.
+ * 
+ * <div class="fabric">
+ * <table border=1>
+ * <caption>Model parts of this model</caption>
+ * <tr>
+ *   <th>Part Name</th><th>Parent</th><th>Corresponding Field</th>
+ * </tr>
+ * <tr>
+ *   <td>{@value #MAIN}</td><td>{@linkplain #root Root part}</td><td></td>
+ * </tr>
+ * </table>
+ * </div>
+ */
 @Environment(EnvType.CLIENT)
 public class LlamaSpitEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
+	/**
+	 * The key of the main model part, whose value is {@value}.
+	 */
 	private static final String MAIN = "main";
 	private final ModelPart root;
 

@@ -14,6 +14,33 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
+/**
+ * Represents the model of a thrown trident.
+ * 
+ * <div class="fabric">
+ * <table border=1>
+ * <caption>Model parts of this model</caption>
+ * <tr>
+ *   <th>Part Name</th><th>Parent</th><th>Corresponding Field</th>
+ * </tr>
+ * <tr>
+ *   <td>{@code pole}</td><td>{@linkplain #root Root part}</td><td></td>
+ * </tr>
+ * <tr>
+ *   <td>{@code base}</td><td>{@code pole}</td><td></td>
+ * </tr>
+ * <tr>
+ *   <td>{@code left_spike}</td><td>{@code pole}</td><td></td>
+ * </tr>
+ * <tr>
+ *   <td>{@code middle_spike}</td><td>{@code pole}</td><td></td>
+ * </tr>
+ * <tr>
+ *   <td>{@code right_spike}</td><td>{@code pole}</td><td></td>
+ * </tr>
+ * </table>
+ * </div>
+ */
 @Environment(EnvType.CLIENT)
 public class TridentEntityModel extends Model {
 	public static final Identifier TEXTURE = new Identifier("textures/entity/trident.png");

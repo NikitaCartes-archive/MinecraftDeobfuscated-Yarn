@@ -12,6 +12,45 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.util.math.MathHelper;
 
+/**
+ * Represents the model of a villager resembling entity.
+ * 
+ * <div class="fabric">
+ * <table border=1>
+ * <caption>Model parts of this model</caption>
+ * <tr>
+ *   <th>Part Name</th><th>Parent</th><th>Corresponding Field</th>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#HEAD}</td><td>{@linkplain #root Root part}</td><td>{@link #head}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#HAT}</td><td>{@value EntityModelPartNames#HEAD}</td><td>{@link #hat}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#HAT_RIM}</td><td>{@value EntityModelPartNames#HAT}</td><td>{@link #hatRim}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#NOSE}</td><td>{@value EntityModelPartNames#HEAD}</td><td>{@link #nose}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#BODY}</td><td>{@linkplain #root Root part}</td><td></td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#JACKET}</td><td>{@value EntityModelPartNames#BODY}</td><td></td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#ARMS}</td><td>{@linkplain #root Root part}</td><td></td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#RIGHT_LEG}</td><td>{@linkplain #root Root part}</td><td>{@link #rightLeg}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#LEFT_LEG}</td><td>{@linkplain #root Root part}</td><td>{@link #leftLeg}</td>
+ * </tr>
+ * </table>
+ * </div>
+ */
 @Environment(EnvType.CLIENT)
 public class VillagerResemblingModel<T extends Entity> extends SinglePartEntityModel<T> implements ModelWithHead, ModelWithHat {
 	private final ModelPart root;

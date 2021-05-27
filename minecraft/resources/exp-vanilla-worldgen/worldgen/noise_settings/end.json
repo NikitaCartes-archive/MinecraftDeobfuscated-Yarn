@@ -14,37 +14,42 @@
   "sea_level": 0,
   "structures": {
     "structures": {
-      "minecraft:swamp_hut": {
-        "spacing": 32,
-        "separation": 8,
-        "salt": 14357620
-      },
-      "minecraft:endcity": {
-        "spacing": 20,
-        "separation": 11,
-        "salt": 10387313
-      },
-      "minecraft:ruined_portal": {
-        "spacing": 40,
-        "separation": 15,
-        "salt": 34222645
-      },
-      "minecraft:bastion_remnant": {
-        "spacing": 27,
-        "separation": 4,
-        "salt": 30084232
+      "minecraft:nether_fossil": {
+        "spacing": 2,
+        "separation": 1,
+        "salt": 14357921
       },
       "minecraft:igloo": {
         "spacing": 32,
         "separation": 8,
         "salt": 14357618
       },
-      "minecraft:jungle_pyramid": {
+      "minecraft:buried_treasure": {
+        "spacing": 1,
+        "separation": 0,
+        "salt": 0
+      },
+      "minecraft:bastion_remnant": {
+        "spacing": 27,
+        "separation": 4,
+        "salt": 30084232
+      },
+      "minecraft:shipwreck": {
+        "spacing": 24,
+        "separation": 4,
+        "salt": 165745295
+      },
+      "minecraft:ruined_portal": {
+        "spacing": 40,
+        "separation": 15,
+        "salt": 34222645
+      },
+      "minecraft:desert_pyramid": {
         "spacing": 32,
         "separation": 8,
-        "salt": 14357619
+        "salt": 14357617
       },
-      "minecraft:mineshaft": {
+      "minecraft:stronghold": {
         "spacing": 1,
         "separation": 0,
         "salt": 0
@@ -54,15 +59,20 @@
         "separation": 8,
         "salt": 14357621
       },
-      "minecraft:stronghold": {
-        "spacing": 1,
-        "separation": 0,
-        "salt": 0
+      "minecraft:monument": {
+        "spacing": 32,
+        "separation": 5,
+        "salt": 10387313
       },
-      "minecraft:buried_treasure": {
-        "spacing": 1,
-        "separation": 0,
-        "salt": 0
+      "minecraft:mansion": {
+        "spacing": 80,
+        "separation": 20,
+        "salt": 10387319
+      },
+      "minecraft:swamp_hut": {
+        "spacing": 32,
+        "separation": 8,
+        "salt": 14357620
       },
       "minecraft:village": {
         "spacing": 32,
@@ -74,35 +84,25 @@
         "separation": 4,
         "salt": 30084232
       },
+      "minecraft:mineshaft": {
+        "spacing": 1,
+        "separation": 0,
+        "salt": 0
+      },
+      "minecraft:endcity": {
+        "spacing": 20,
+        "separation": 11,
+        "salt": 10387313
+      },
       "minecraft:pillager_outpost": {
         "spacing": 32,
         "separation": 8,
         "salt": 165745296
       },
-      "minecraft:mansion": {
-        "spacing": 80,
-        "separation": 20,
-        "salt": 10387319
-      },
-      "minecraft:desert_pyramid": {
+      "minecraft:jungle_pyramid": {
         "spacing": 32,
         "separation": 8,
-        "salt": 14357617
-      },
-      "minecraft:monument": {
-        "spacing": 32,
-        "separation": 5,
-        "salt": 10387313
-      },
-      "minecraft:nether_fossil": {
-        "spacing": 2,
-        "separation": 1,
-        "salt": 14357921
-      },
-      "minecraft:shipwreck": {
-        "spacing": 24,
-        "separation": 4,
-        "salt": 165745295
+        "salt": 14357619
       }
     }
   },

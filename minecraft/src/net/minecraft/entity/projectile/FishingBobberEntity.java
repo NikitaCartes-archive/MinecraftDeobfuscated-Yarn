@@ -95,7 +95,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 		);
 		this.setVelocity(vec3d);
 		this.setYaw((float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI));
-		this.setPitch((float)(MathHelper.atan2(vec3d.y, Math.sqrt(squaredHorizontalLength(vec3d))) * 180.0F / (float)Math.PI));
+		this.setPitch((float)(MathHelper.atan2(vec3d.y, vec3d.method_37267()) * 180.0F / (float)Math.PI));
 		this.prevYaw = this.getYaw();
 		this.prevPitch = this.getPitch();
 	}
@@ -176,11 +176,11 @@ public class FishingBobberEntity extends ProjectileEntity {
 			} else {
 				if (this.state == FishingBobberEntity.State.HOOKED_IN_ENTITY) {
 					if (this.hookedEntity != null) {
-						if (this.hookedEntity.isRemoved()) {
-							this.hookedEntity = null;
-							this.state = FishingBobberEntity.State.FLYING;
-						} else {
+						if (!this.hookedEntity.isRemoved() && this.hookedEntity.world.getRegistryKey() == this.world.getRegistryKey()) {
 							this.setPosition(this.hookedEntity.getX(), this.hookedEntity.getBodyY(0.8), this.hookedEntity.getZ());
+						} else {
+							this.updateHookedEntityId(null);
+							this.state = FishingBobberEntity.State.FLYING;
 						}
 					}
 
@@ -269,9 +269,9 @@ public class FishingBobberEntity extends ProjectileEntity {
 		this.setVelocity(this.getVelocity().normalize().multiply(blockHitResult.squaredDistanceTo(this)));
 	}
 
-	private void updateHookedEntityId(Entity entity) {
+	private void updateHookedEntityId(@Nullable Entity entity) {
 		this.hookedEntity = entity;
-		this.getDataTracker().set(HOOK_ENTITY_ID, entity.getId() + 1);
+		this.getDataTracker().set(HOOK_ENTITY_ID, entity == null ? 0 : entity.getId() + 1);
 	}
 
 	private void tickFishingLogic(BlockPos pos) {
@@ -417,7 +417,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 
 	public int use(ItemStack usedItem) {
 		PlayerEntity playerEntity = this.getPlayerOwner();
-		if (!this.world.isClient && playerEntity != null) {
+		if (!this.world.isClient && playerEntity != null && !this.removeIfInvalid(playerEntity)) {
 			int i = 0;
 			if (this.hookedEntity != null) {
 				this.pullHookedEntity(this.hookedEntity);

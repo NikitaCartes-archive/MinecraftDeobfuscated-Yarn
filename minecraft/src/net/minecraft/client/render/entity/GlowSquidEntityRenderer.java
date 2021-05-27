@@ -21,7 +21,7 @@ public class GlowSquidEntityRenderer extends SquidEntityRenderer<GlowSquidEntity
 	}
 
 	protected int getBlockLight(GlowSquidEntity glowSquidEntity, BlockPos blockPos) {
-		int i = (int)MathHelper.clampedLerp(0.0, 15.0, (double)(1.0F - (float)glowSquidEntity.getDarkTicksRemaining() / 10.0F));
+		int i = (int)MathHelper.method_37166(0.0F, 15.0F, 1.0F - (float)glowSquidEntity.getDarkTicksRemaining() / 10.0F);
 		return i == 15 ? 15 : Math.max(i, super.getBlockLight(glowSquidEntity, blockPos));
 	}
 }

@@ -1161,22 +1161,22 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	protected void onStatusEffectApplied(StatusEffectInstance effect) {
-		super.onStatusEffectApplied(effect);
+	protected void onStatusEffectApplied(StatusEffectInstance effect, @Nullable Entity entity) {
+		super.onStatusEffectApplied(effect, entity);
 		this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getId(), effect));
 		if (effect.getEffectType() == StatusEffects.LEVITATION) {
 			this.levitationStartTick = this.age;
 			this.levitationStartPos = this.getPos();
 		}
 
-		Criteria.EFFECTS_CHANGED.trigger(this);
+		Criteria.EFFECTS_CHANGED.trigger(this, entity);
 	}
 
 	@Override
-	protected void onStatusEffectUpgraded(StatusEffectInstance effect, boolean reapplyEffect) {
-		super.onStatusEffectUpgraded(effect, reapplyEffect);
+	protected void onStatusEffectUpgraded(StatusEffectInstance effect, boolean reapplyEffect, @Nullable Entity entity) {
+		super.onStatusEffectUpgraded(effect, reapplyEffect, entity);
 		this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getId(), effect));
-		Criteria.EFFECTS_CHANGED.trigger(this);
+		Criteria.EFFECTS_CHANGED.trigger(this, entity);
 	}
 
 	@Override
@@ -1187,7 +1187,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			this.levitationStartPos = null;
 		}
 
-		Criteria.EFFECTS_CHANGED.trigger(this);
+		Criteria.EFFECTS_CHANGED.trigger(this, null);
 	}
 
 	@Override
@@ -1594,5 +1594,11 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Override
 	public boolean canModifyAt(World world, BlockPos pos) {
 		return super.canModifyAt(world, pos) && world.canPlayerModifyAt(this, pos);
+	}
+
+	@Override
+	protected void method_37119(ItemStack itemStack) {
+		Criteria.USING_ITEM.test(this, itemStack);
+		super.method_37119(itemStack);
 	}
 }

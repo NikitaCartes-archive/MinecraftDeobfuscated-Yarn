@@ -9,9 +9,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
-import net.minecraft.client.util.profiler.Metric;
-import net.minecraft.client.util.profiler.MetricSampler;
 import net.minecraft.client.util.profiler.SamplingChannel;
+import net.minecraft.client.util.profiler.SamplingRecorder;
 import net.minecraft.util.profiler.MetricSamplerSupplier;
 import net.minecraft.util.profiler.MetricSuppliers;
 import org.apache.logging.log4j.LogManager;
@@ -141,7 +140,7 @@ public abstract class ThreadExecutor<R extends Runnable> implements MetricSample
 	}
 
 	@Override
-	public List<MetricSampler> getSamplers() {
-		return ImmutableList.of(new MetricSampler(new Metric(this.name + "-tasks-pending"), this::getTaskCount, SamplingChannel.EVENT_LOOP));
+	public List<SamplingRecorder> getSamplers() {
+		return ImmutableList.of(SamplingRecorder.create(this.name + "-pending-tasks", SamplingChannel.EVENT_LOOPS, this::getTaskCount));
 	}
 }

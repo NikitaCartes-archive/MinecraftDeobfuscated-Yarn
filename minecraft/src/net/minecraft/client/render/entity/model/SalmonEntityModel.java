@@ -13,7 +13,13 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SalmonEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
+	/**
+	 * The key of the body front model part, whose value is {@value}.
+	 */
 	private static final String BODY_FRONT = "body_front";
+	/**
+	 * The key of the body back model part, whose value is {@value}.
+	 */
 	private static final String BODY_BACK = "body_back";
 	private final ModelPart root;
 	private final ModelPart tail;

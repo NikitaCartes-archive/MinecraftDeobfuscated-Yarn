@@ -1,13 +1,11 @@
 package net.minecraft.entity.boss.dragon.phase;
 
 import javax.annotation.Nullable;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public abstract class AbstractPhase implements Phase {
@@ -60,7 +58,7 @@ public abstract class AbstractPhase implements Phase {
 
 	@Override
 	public float getYawAcceleration() {
-		float f = MathHelper.sqrt(Entity.squaredHorizontalLength(this.dragon.getVelocity())) + 1.0F;
+		float f = (float)this.dragon.getVelocity().method_37267() + 1.0F;
 		float g = Math.min(f, 40.0F);
 		return 0.7F / g / f;
 	}

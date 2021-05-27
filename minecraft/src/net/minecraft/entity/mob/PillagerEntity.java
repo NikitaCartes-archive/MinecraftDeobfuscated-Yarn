@@ -35,9 +35,9 @@ import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.raid.RaiderEntity;
-import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.inventory.StackReference;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -257,9 +257,9 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Inven
 	}
 
 	@Override
-	public CommandItemSlot getCommandItemSlot(int mappedIndex) {
+	public StackReference getStackReference(int mappedIndex) {
 		int i = mappedIndex - 300;
-		return i >= 0 && i < this.inventory.size() ? CommandItemSlot.of(this.inventory, i) : super.getCommandItemSlot(mappedIndex);
+		return i >= 0 && i < this.inventory.size() ? StackReference.of(this.inventory, i) : super.getStackReference(mappedIndex);
 	}
 
 	@Override

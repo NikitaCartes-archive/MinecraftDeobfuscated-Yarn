@@ -18,8 +18,8 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -217,9 +217,9 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 	}
 
 	@Override
-	public CommandItemSlot getCommandItemSlot(int mappedIndex) {
+	public StackReference getStackReference(int mappedIndex) {
 		int i = mappedIndex - 300;
-		return i >= 0 && i < this.inventory.size() ? CommandItemSlot.of(this.inventory, i) : super.getCommandItemSlot(mappedIndex);
+		return i >= 0 && i < this.inventory.size() ? StackReference.of(this.inventory, i) : super.getStackReference(mappedIndex);
 	}
 
 	@Override

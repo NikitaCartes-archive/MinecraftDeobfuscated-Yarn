@@ -13,6 +13,24 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.block.entity.SkullBlockEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 
+/**
+ * Represents the model of a skull.
+ * 
+ * <div class="fabric">
+ * <table border=1>
+ * <caption>Model parts of this model</caption>
+ * <tr>
+ *   <th>Part Name</th><th>Parent</th><th>Corresponding Field</th>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#HEAD}</td><td>{@linkplain #root Root part}</td><td>{@link #head}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#HAT} (note: may not exist)</td><td>{@value EntityModelPartNames#HEAD}</td><td></td>
+ * </tr>
+ * </table>
+ * </div>
+ */
 @Environment(EnvType.CLIENT)
 public class SkullEntityModel extends SkullBlockEntityModel {
 	private final ModelPart root;

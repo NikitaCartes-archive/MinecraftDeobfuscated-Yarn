@@ -13,7 +13,13 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class PhantomEntityModel<T extends PhantomEntity> extends SinglePartEntityModel<T> {
+	/**
+	 * The key of the tail base model part, whose value is {@value}.
+	 */
 	private static final String TAIL_BASE = "tail_base";
+	/**
+	 * The key of the tail tip model part, whose value is {@value}.
+	 */
 	private static final String TAIL_TIP = "tail_tip";
 	private final ModelPart root;
 	private final ModelPart leftWingBase;

@@ -192,8 +192,7 @@ public final class SpawnHelper {
 		} else if (world.getSpawnPos().isWithinDistance(new Vec3d((double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5), 24.0)) {
 			return false;
 		} else {
-			ChunkPos chunkPos = new ChunkPos(pos);
-			return Objects.equals(chunkPos, chunk.getPos()) || world.getChunkManager().shouldTickChunk(chunkPos);
+			return Objects.equals(new ChunkPos(pos), chunk.getPos()) || world.method_37118(pos);
 		}
 	}
 

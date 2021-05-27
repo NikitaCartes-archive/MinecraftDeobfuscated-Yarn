@@ -11,6 +11,9 @@ import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 
+/**
+ * Represents the armor model of an {@linkplain ArmorStandEntity}.
+ */
 @Environment(EnvType.CLIENT)
 public class ArmorStandArmorEntityModel extends BipedEntityModel<ArmorStandEntity> {
 	public ArmorStandArmorEntityModel(ModelPart modelPart) {

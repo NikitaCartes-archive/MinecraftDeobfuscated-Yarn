@@ -936,7 +936,7 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 			}
 
 			public int characteristics() {
-				return 1297;
+				return Spliterator.ORDERED | Spliterator.DISTINCT | Spliterator.NONNULL | Spliterator.IMMUTABLE;
 			}
 		}, false);
 	}

@@ -290,7 +290,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 	}
 
 	@Override
-	protected void playStepSound(BlockPos pos, BlockState state) {
+	protected void playStepSound(BlockPos pos, BlockState blockState) {
 		this.playSound(SoundEvents.ENTITY_SHEEP_STEP, 0.15F, 1.0F);
 	}
 

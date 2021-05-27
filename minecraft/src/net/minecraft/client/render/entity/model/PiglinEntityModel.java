@@ -15,6 +15,66 @@ import net.minecraft.entity.mob.PiglinActivity;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.util.math.MathHelper;
 
+/**
+ * Represents the model of a piglin-like entity.
+ * 
+ * <div class="fabric">
+ * <table border=1>
+ * <caption>Model parts of this model</caption>
+ * <tr>
+ *   <th>Part Name</th><th>Parent</th><th>Corresponding Field</th>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#HAT} (note: is by default empty)</td><td>Root part</td><td>{@link #hat}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#HEAD}</td><td>Root part</td><td>{@link #head}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#BODY}</td><td>Root part</td><td>{@link #body}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#RIGHT_ARM}</td><td>Root part</td><td>{@link #rightArm}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#LEFT_ARM}</td><td>Root part</td><td>{@link #leftArm}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#RIGHT_LEG}</td><td>Root part</td><td>{@link #rightLeg}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#LEFT_LEG}</td><td>Root part</td><td>{@link #leftLeg}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #EAR}</td><td>Root part</td><td>{@link #ear}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #CLOAK}</td><td>Root part</td><td>{@link #cloak}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #LEFT_SLEEVE}</td><td>Root part</td><td>{@link #leftSleeve}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #RIGHT_SLEEVE}</td><td>Root part</td><td>{@link #rightSleeve}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #LEFT_PANTS}</td><td>Root part</td><td>{@link #leftPants}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #RIGHT_PANTS}</td><td>Root part</td><td>{@link #rightPants}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#JACKET}</td><td>Root part</td><td>{@link #jacket}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#LEFT_EAR}</td><td>{@value EntityModelPartNames#HEAD}</td><td>{@link #leftEar}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#RIGHT_EAR}</td><td>{@value EntityModelPartNames#HEAD}</td><td>{@link #rightEar}</td>
+ * </tr>
+ * </table>
+ * </div>
+ */
 @Environment(EnvType.CLIENT)
 public class PiglinEntityModel<T extends MobEntity> extends PlayerEntityModel<T> {
 	public final ModelPart rightEar = this.head.getChild(EntityModelPartNames.RIGHT_EAR);

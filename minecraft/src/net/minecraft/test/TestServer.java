@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
+import net.minecraft.class_6396;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.ResourcePackManager;
@@ -162,6 +163,12 @@ public class TestServer extends MinecraftServer {
 
 			LOGGER.info("====================================================");
 		}
+	}
+
+	@Override
+	public class_6396 populateCrashReport(class_6396 arg) {
+		arg.method_37122("Type", "Game test server");
+		return arg;
 	}
 
 	@Override

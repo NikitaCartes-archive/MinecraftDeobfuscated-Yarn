@@ -1,5 +1,6 @@
 package net.minecraft.advancement.criterion;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonObject;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
@@ -52,7 +53,7 @@ public class ConsumeItemCriterion extends AbstractCriterion<ConsumeItemCriterion
 				EntityPredicate.Extended.EMPTY,
 				new ItemPredicate(
 					null,
-					item.asItem(),
+					ImmutableSet.of(item.asItem()),
 					NumberRange.IntRange.ANY,
 					NumberRange.IntRange.ANY,
 					EnchantmentPredicate.ARRAY_OF_ANY,

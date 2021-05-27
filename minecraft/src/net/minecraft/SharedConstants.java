@@ -12,15 +12,15 @@ public class SharedConstants {
 	@Deprecated
 	public static final boolean field_29709 = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 2715;
+	public static final int WORLD_VERSION = 2716;
 	@Deprecated
-	public static final String VERSION_NAME = "21w20a";
+	public static final String VERSION_NAME = "1.17-pre1";
 	@Deprecated
 	public static final String RELEASE_TARGET = "1.17";
 	@Deprecated
 	public static final int field_29735 = 755;
 	@Deprecated
-	public static final int field_29736 = 28;
+	public static final int field_29736 = 29;
 	public static final int SNBT_TOO_OLD_THRESHOLD = 2678;
 	private static final int field_29708 = 30;
 	@Deprecated
@@ -36,6 +36,7 @@ public class SharedConstants {
 	public static final boolean field_29743 = false;
 	public static final boolean field_29744 = false;
 	public static final boolean field_29745 = false;
+	public static final boolean field_33851 = false;
 	public static final boolean field_29746 = false;
 	public static final boolean field_29747 = false;
 	public static final boolean field_33557 = false;
@@ -104,13 +105,13 @@ public class SharedConstants {
 	 */
 	public static boolean useChoiceTypeRegistrations = true;
 	public static boolean isDevelopment;
-	public static final int field_29729 = 16;
-	public static final int field_29730 = 256;
+	public static final int CHUNK_WIDTH = 16;
+	public static final int DEFAULT_WORLD_HEIGHT = 256;
 	public static final int COMMAND_MAX_LENGTH = 32500;
 	public static final char[] INVALID_CHARS_LEVEL_NAME = new char[]{'/', '\n', '\r', '\t', '\u0000', '\f', '`', '?', '*', '\\', '<', '>', '|', '"', ':'};
-	public static final int field_29702 = 20;
-	public static final int field_29703 = 1200;
-	public static final int field_29704 = 24000;
+	public static final int TICKS_PER_SECOND = 20;
+	public static final int TICKS_PER_MINUTE = 1200;
+	public static final int TICKS_PER_IN_GAME_DAY = 24000;
 	public static final float field_29705 = 1365.3334F;
 	public static final float field_29706 = 0.87890625F;
 	public static final float field_29707 = 17.578125F;
@@ -156,7 +157,7 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 1073741852;
+		return 1073741853;
 	}
 
 	static {

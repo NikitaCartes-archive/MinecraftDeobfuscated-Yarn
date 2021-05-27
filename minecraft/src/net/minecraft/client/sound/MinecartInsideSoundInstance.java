@@ -2,7 +2,6 @@ package net.minecraft.client.sound;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.sound.SoundCategory;
@@ -48,9 +47,9 @@ public class MinecartInsideSoundInstance extends MovingSoundInstance {
 		} else if (this.underwater != this.player.isSubmergedInWater()) {
 			this.volume = 0.0F;
 		} else {
-			float f = MathHelper.sqrt(Entity.squaredHorizontalLength(this.minecart.getVelocity()));
-			if ((double)f >= 0.01) {
-				this.volume = 0.0F + MathHelper.clamp(f, 0.0F, 1.0F) * 0.75F;
+			float f = (float)this.minecart.getVelocity().method_37267();
+			if (f >= 0.01F) {
+				this.volume = MathHelper.method_37166(0.0F, 0.75F, f);
 			} else {
 				this.volume = 0.0F;
 			}

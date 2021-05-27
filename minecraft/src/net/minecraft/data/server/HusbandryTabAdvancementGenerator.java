@@ -1,5 +1,6 @@
 package net.minecraft.data.server;
 
+import com.google.common.collect.BiMap;
 import java.util.function.Consumer;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
@@ -8,16 +9,19 @@ import net.minecraft.advancement.CriterionMerger;
 import net.minecraft.advancement.criterion.BeeNestDestroyedCriterion;
 import net.minecraft.advancement.criterion.BredAnimalsCriterion;
 import net.minecraft.advancement.criterion.ConsumeItemCriterion;
+import net.minecraft.advancement.criterion.EffectsChangedCriterion;
 import net.minecraft.advancement.criterion.FilledBucketCriterion;
 import net.minecraft.advancement.criterion.FishingRodHookedCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.advancement.criterion.ItemUsedOnBlockCriterion;
 import net.minecraft.advancement.criterion.PlacedBlockCriterion;
+import net.minecraft.advancement.criterion.StartedRidingCriterion;
 import net.minecraft.advancement.criterion.TameAnimalCriterion;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.CatEntity;
+import net.minecraft.item.HoneycombItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.BlockPredicate;
@@ -97,6 +101,9 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 		Items.SWEET_BERRIES,
 		Items.HONEY_BOTTLE,
 		Items.GLOW_BERRIES
+	};
+	private static final Item[] field_33964 = new Item[]{
+		Items.WOODEN_AXE, Items.GOLDEN_AXE, Items.STONE_AXE, Items.IRON_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE
 	};
 
 	public void accept(Consumer<Advancement> consumer) {
@@ -218,7 +225,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 				false
 			)
 			.build(consumer, "husbandry/fishy_business");
-		this.requireListedFishBucketsFilled(Advancement.Task.create())
+		Advancement advancement6 = this.requireListedFishBucketsFilled(Advancement.Task.create())
 			.parent(advancement5)
 			.criteriaMerger(CriterionMerger.OR)
 			.display(
@@ -232,6 +239,38 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 				false
 			)
 			.build(consumer, "husbandry/tactical_fishing");
+		Advancement advancement7 = Advancement.Task.create()
+			.parent(advancement6)
+			.criteriaMerger(CriterionMerger.OR)
+			.criterion(
+				Registry.ITEM.getId(Items.AXOLOTL_BUCKET).getPath(),
+				FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().item(Items.AXOLOTL_BUCKET).build())
+			)
+			.display(
+				Items.AXOLOTL_BUCKET,
+				new TranslatableText("advancements.husbandry.axolotl_in_a_bucket.title"),
+				new TranslatableText("advancements.husbandry.axolotl_in_a_bucket.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.build(consumer, "husbandry/axolotl_in_a_bucket");
+		Advancement.Task.create()
+			.parent(advancement7)
+			.criterion("kill_axolotl_target", EffectsChangedCriterion.Conditions.method_37224(EntityPredicate.Builder.create().type(EntityType.AXOLOTL).build()))
+			.display(
+				Items.TROPICAL_FISH_BUCKET,
+				new TranslatableText("advancements.husbandry.kill_axolotl_target.title"),
+				new TranslatableText("advancements.husbandry.kill_axolotl_target.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.build(consumer, "husbandry/kill_axolotl_target");
 		this.requireAllCatsTamed(Advancement.Task.create())
 			.parent(advancement4)
 			.display(
@@ -246,7 +285,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.rewards(AdvancementRewards.Builder.experience(50))
 			.build(consumer, "husbandry/complete_catalogue");
-		Advancement.Task.create()
+		Advancement advancement8 = Advancement.Task.create()
 			.parent(advancement)
 			.criterion(
 				"safely_harvest_honey",
@@ -266,6 +305,48 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 				false
 			)
 			.build(consumer, "husbandry/safely_harvest_honey");
+		Advancement advancement9 = Advancement.Task.create()
+			.parent(advancement8)
+			.display(
+				Items.HONEYCOMB,
+				new TranslatableText("advancements.husbandry.wax_on.title"),
+				new TranslatableText("advancements.husbandry.wax_on.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion(
+				"wax_on",
+				ItemUsedOnBlockCriterion.Conditions.create(
+					LocationPredicate.Builder.create()
+						.block(BlockPredicate.Builder.create().method_37214(((BiMap)HoneycombItem.UNWAXED_TO_WAXED_BLOCKS.get()).keySet()).build()),
+					ItemPredicate.Builder.create().item(Items.HONEYCOMB)
+				)
+			)
+			.build(consumer, "husbandry/wax_on");
+		Advancement.Task.create()
+			.parent(advancement9)
+			.display(
+				Items.STONE_AXE,
+				new TranslatableText("advancements.husbandry.wax_off.title"),
+				new TranslatableText("advancements.husbandry.wax_off.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion(
+				"wax_off",
+				ItemUsedOnBlockCriterion.Conditions.create(
+					LocationPredicate.Builder.create()
+						.block(BlockPredicate.Builder.create().method_37214(((BiMap)HoneycombItem.WAXED_TO_UNWAXED_BLOCKS.get()).keySet()).build()),
+					ItemPredicate.Builder.create().item(field_33964)
+				)
+			)
+			.build(consumer, "husbandry/wax_off");
 		Advancement.Task.create()
 			.parent(advancement)
 			.criterion(
@@ -287,6 +368,46 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 				false
 			)
 			.build(consumer, "husbandry/silk_touch_nest");
+		Advancement.Task.create()
+			.parent(advancement)
+			.display(
+				Items.OAK_BOAT,
+				new TranslatableText("advancements.husbandry.ride_a_boat_with_a_goat.title"),
+				new TranslatableText("advancements.husbandry.ride_a_boat_with_a_goat.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion(
+				"ride_a_boat_with_a_goat",
+				StartedRidingCriterion.Conditions.create(
+					EntityPredicate.Builder.create()
+						.vehicle(EntityPredicate.Builder.create().type(EntityType.BOAT).method_37229(EntityPredicate.Builder.create().type(EntityType.GOAT).build()).build())
+				)
+			)
+			.build(consumer, "husbandry/ride_a_boat_with_a_goat");
+		Advancement.Task.create()
+			.parent(advancement)
+			.display(
+				Items.GLOW_INK_SAC,
+				new TranslatableText("advancements.husbandry.make_a_sign_glow.title"),
+				new TranslatableText("advancements.husbandry.make_a_sign_glow.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion(
+				"make_a_sign_glow",
+				ItemUsedOnBlockCriterion.Conditions.create(
+					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().tag(BlockTags.SIGNS).build()),
+					ItemPredicate.Builder.create().item(Items.GLOW_INK_SAC)
+				)
+			)
+			.build(consumer, "husbandry/make_a_sign_glow");
 	}
 
 	private Advancement.Task requireFoodItemsEaten(Advancement.Task task) {

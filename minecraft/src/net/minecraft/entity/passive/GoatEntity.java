@@ -122,7 +122,7 @@ public class GoatEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void playStepSound(BlockPos pos, BlockState state) {
+	protected void playStepSound(BlockPos pos, BlockState blockState) {
 		this.playSound(SoundEvents.ENTITY_GOAT_STEP, 0.15F, 1.0F);
 	}
 

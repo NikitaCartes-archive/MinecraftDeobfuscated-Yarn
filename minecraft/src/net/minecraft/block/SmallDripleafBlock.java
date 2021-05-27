@@ -135,4 +135,14 @@ public class SmallDripleafBlock extends TallPlantBlock implements Fertilizable, 
 	public BlockState mirror(BlockState state, BlockMirror mirror) {
 		return state.rotate(mirror.getRotation(state.get(FACING)));
 	}
+
+	@Override
+	public AbstractBlock.OffsetType getOffsetType() {
+		return AbstractBlock.OffsetType.XYZ;
+	}
+
+	@Override
+	public float method_37247() {
+		return 0.1F;
+	}
 }

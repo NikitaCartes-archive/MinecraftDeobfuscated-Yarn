@@ -14,11 +14,65 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.RabbitEntity;
 import net.minecraft.util.math.MathHelper;
 
+/**
+ * Represents the model of a {@linkplain RabbitEntity}.
+ * 
+ * <div class="fabric">
+ * <table border=1>
+ * <caption>Model parts of this model</caption>
+ * <tr>
+ *   <th>Part Name</th><th>Parent</th><th>Corresponding Field</th>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#LEFT_HIND_FOOT}</td><td>Root part</td><td>{@link #leftHindLeg}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#RIGHT_HIND_FOOT}</td><td>Root part</td><td>{@link #rightHindLeg}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #LEFT_HAUNCH}</td><td>Root part</td><td>{@link #leftHaunch}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #RIGHT_HAUNCH}</td><td>Root part</td><td>{@link #rightHaunch}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#BODY}</td><td>Root part</td><td>{@link #body}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#LEFT_FRONT_LEG}</td><td>Root part</td><td>{@link #leftFrontLeg}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#RIGHT_FRONT_LEG}</td><td>Root part</td><td>{@link #rightFrontLeg}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#HEAD}</td><td>Root part</td><td>{@link #head}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#RIGHT_EAR}</td><td>Root part</td><td>{@link #rightEar}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#LEFT_EAR}</td><td>Root part</td><td>{@link #leftEar}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#TAIL}</td><td>Root part</td><td>{@link #tail}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#NOSE}</td><td>Root part</td><td>{@link #nose}</td>
+ * </tr>
+ * </table>
+ * </div>
+ */
 @Environment(EnvType.CLIENT)
 public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 	private static final float field_32542 = 50.0F;
 	private static final float field_32543 = -40.0F;
+	/**
+	 * The key of the left haunch model part, whose value is {@value}.
+	 */
 	private static final String LEFT_HAUNCH = "left_haunch";
+	/**
+	 * The key of the right haunch model part, whose value is {@value}.
+	 */
 	private static final String RIGHT_HAUNCH = "right_haunch";
 	private final ModelPart leftHindLeg;
 	private final ModelPart rightHindLeg;

@@ -46,7 +46,7 @@ public class TutorialToast implements Toast {
 
 		if (this.hasProgressBar) {
 			DrawableHelper.fill(matrices, 3, 28, 157, 29, -1);
-			float f = (float)MathHelper.clampedLerp((double)this.lastProgress, (double)this.progress, (double)((float)(startTime - this.lastTime) / 100.0F));
+			float f = MathHelper.method_37166(this.lastProgress, this.progress, (float)(startTime - this.lastTime) / 100.0F);
 			int i;
 			if (this.progress >= this.lastProgress) {
 				i = -16755456;

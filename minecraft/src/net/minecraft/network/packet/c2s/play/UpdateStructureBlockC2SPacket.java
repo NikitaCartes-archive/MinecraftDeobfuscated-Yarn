@@ -73,7 +73,7 @@ public class UpdateStructureBlockC2SPacket implements Packet<ServerPlayPacketLis
 		this.size = new Vec3i(MathHelper.clamp(buf.readByte(), 0, 48), MathHelper.clamp(buf.readByte(), 0, 48), MathHelper.clamp(buf.readByte(), 0, 48));
 		this.mirror = buf.readEnumConstant(BlockMirror.class);
 		this.rotation = buf.readEnumConstant(BlockRotation.class);
-		this.metadata = buf.readString(12);
+		this.metadata = buf.readString(128);
 		this.integrity = MathHelper.clamp(buf.readFloat(), 0.0F, 1.0F);
 		this.seed = buf.readVarLong();
 		int k = buf.readByte();

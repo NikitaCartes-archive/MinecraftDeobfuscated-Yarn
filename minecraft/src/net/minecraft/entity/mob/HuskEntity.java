@@ -55,7 +55,7 @@ public class HuskEntity extends ZombieEntity {
 		boolean bl = super.tryAttack(target);
 		if (bl && this.getMainHandStack().isEmpty() && target instanceof LivingEntity) {
 			float f = this.world.getLocalDifficulty(this.getBlockPos()).getLocalDifficulty();
-			((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.HUNGER, 140 * (int)f));
+			((LivingEntity)target).method_37222(new StatusEffectInstance(StatusEffects.HUNGER, 140 * (int)f), this);
 		}
 
 		return bl;

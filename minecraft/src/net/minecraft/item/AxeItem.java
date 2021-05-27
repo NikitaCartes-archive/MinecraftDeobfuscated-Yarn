@@ -4,12 +4,14 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import java.util.Map;
 import java.util.Optional;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Oxidizable;
 import net.minecraft.block.PillarBlock;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
@@ -53,6 +55,7 @@ public class AxeItem extends MiningToolItem {
 		Optional<BlockState> optional2 = Oxidizable.getDecreasedOxidationState(blockState);
 		Optional<BlockState> optional3 = Optional.ofNullable((Block)((BiMap)HoneycombItem.WAXED_TO_UNWAXED_BLOCKS.get()).get(blockState.getBlock()))
 			.map(block -> block.getStateWithProperties(blockState));
+		ItemStack itemStack = context.getStack();
 		Optional<BlockState> optional4 = Optional.empty();
 		if (optional.isPresent()) {
 			world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
@@ -68,9 +71,13 @@ public class AxeItem extends MiningToolItem {
 		}
 
 		if (optional4.isPresent()) {
+			if (playerEntity instanceof ServerPlayerEntity) {
+				Criteria.ITEM_USED_ON_BLOCK.test((ServerPlayerEntity)playerEntity, blockPos, itemStack);
+			}
+
 			world.setBlockState(blockPos, (BlockState)optional4.get(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
 			if (playerEntity != null) {
-				context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
+				itemStack.damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
 			}
 
 			return ActionResult.success(world.isClient);

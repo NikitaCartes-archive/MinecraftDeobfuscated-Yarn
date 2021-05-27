@@ -127,7 +127,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		boolean bl = this.isNoClip();
 		Vec3d vec3d = this.getVelocity();
 		if (this.prevPitch == 0.0F && this.prevYaw == 0.0F) {
-			double d = Math.sqrt(squaredHorizontalLength(vec3d));
+			double d = vec3d.method_37267();
 			this.setYaw((float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI));
 			this.setPitch((float)(MathHelper.atan2(vec3d.y, d) * 180.0F / (float)Math.PI));
 			this.prevYaw = this.getYaw();
@@ -218,7 +218,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			double h = this.getX() + e;
 			double j = this.getY() + f;
 			double k = this.getZ() + g;
-			double l = Math.sqrt(squaredHorizontalLength(vec3d));
+			double l = vec3d.method_37267();
 			if (bl) {
 				this.setYaw((float)(MathHelper.atan2(-e, -g) * 180.0F / (float)Math.PI));
 			} else {

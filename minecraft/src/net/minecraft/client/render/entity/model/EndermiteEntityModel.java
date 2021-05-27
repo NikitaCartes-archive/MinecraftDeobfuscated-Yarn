@@ -11,6 +11,30 @@ import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
+/**
+ * Represents the model of an endermite-like entity.
+ * 
+ * <div class="fabric">
+ * <table border=1>
+ * <caption>Model parts of this model</caption>
+ * <tr>
+ *   <th>Part Name</th><th>Parent</th><th>Corresponding Field</th>
+ * </tr>
+ * <tr>
+ *   <td>{@code segment0}</td><td>{@linkplain #root Root part}</td><td>{@link #bodySegments bodySegments[0]}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@code segment1}</td><td>{@linkplain #root Root part}</td><td>{@link #bodySegments bodySegments[1]}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@code segment2}</td><td>{@linkplain #root Root part}</td><td>{@link #bodySegments bodySegments[2]}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@code segment3}</td><td>{@linkplain #root Root part}</td><td>{@link #bodySegments bodySegments[3]}</td>
+ * </tr>
+ * </table>
+ * </div>
+ */
 @Environment(EnvType.CLIENT)
 public class EndermiteEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
 	private static final int BODY_SEGMENTS_COUNT = 4;

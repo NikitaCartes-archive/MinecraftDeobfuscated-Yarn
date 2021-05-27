@@ -14,8 +14,17 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class WolfEntityModel<T extends WolfEntity> extends TintableAnimalModel<T> {
+	/**
+	 * The key of the real head model part, whose value is {@value}.
+	 */
 	private static final String REAL_HEAD = "real_head";
+	/**
+	 * The key of the upper body model part, whose value is {@value}.
+	 */
 	private static final String UPPER_BODY = "upper_body";
+	/**
+	 * The key of the real tail model part, whose value is {@value}.
+	 */
 	private static final String REAL_TAIL = "real_tail";
 	/**
 	 * The main bone used to animate the head. Contains {@link #realHead} as one of its children.

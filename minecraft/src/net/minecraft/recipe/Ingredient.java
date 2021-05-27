@@ -155,7 +155,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 		if (json.has("item") && json.has("tag")) {
 			throw new JsonParseException("An ingredient entry is either a tag or an item, not both");
 		} else if (json.has("item")) {
-			Item item = ShapedRecipe.getItemStack(json);
+			Item item = ShapedRecipe.getItem(json);
 			return new Ingredient.StackEntry(new ItemStack(item));
 		} else if (json.has("tag")) {
 			Identifier identifier = new Identifier(JsonHelper.getString(json, "tag"));

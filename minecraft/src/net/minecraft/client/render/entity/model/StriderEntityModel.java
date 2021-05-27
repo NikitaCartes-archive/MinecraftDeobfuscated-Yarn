@@ -13,11 +13,29 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class StriderEntityModel<T extends StriderEntity> extends SinglePartEntityModel<T> {
+	/**
+	 * The key of the right bottom bristle model part, whose value is {@value}.
+	 */
 	private static final String RIGHT_BOTTOM_BRISTLE = "right_bottom_bristle";
+	/**
+	 * The key of the right middle bristle model part, whose value is {@value}.
+	 */
 	private static final String RIGHT_MIDDLE_BRISTLE = "right_middle_bristle";
+	/**
+	 * The key of the right top bristle model part, whose value is {@value}.
+	 */
 	private static final String RIGHT_TOP_BRISTLE = "right_top_bristle";
+	/**
+	 * The key of the left top bristle model part, whose value is {@value}.
+	 */
 	private static final String LEFT_TOP_BRISTLE = "left_top_bristle";
+	/**
+	 * The key of the left middle bristle model part, whose value is {@value}.
+	 */
 	private static final String LEFT_MIDDLE_BRISTLE = "left_middle_bristle";
+	/**
+	 * The key of the left bottom bristle model part, whose value is {@value}.
+	 */
 	private static final String LEFT_BOTTOM_BRISTLE = "left_bottom_bristle";
 	private final ModelPart root;
 	private final ModelPart rightLeg;

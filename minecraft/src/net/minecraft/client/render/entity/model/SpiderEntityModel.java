@@ -13,11 +13,29 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SpiderEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
+	/**
+	 * The key of the first model part of the body, whose value is {@value}.
+	 */
 	private static final String BODY0 = "body0";
+	/**
+	 * The key of the second model part of the body, whose value is {@value}.
+	 */
 	private static final String BODY1 = "body1";
+	/**
+	 * The key of the right middle front leg model part, whose value is {@value}.
+	 */
 	private static final String RIGHT_MIDDLE_FRONT_LEG = "right_middle_front_leg";
+	/**
+	 * The key of the left middle front leg model part, whose value is {@value}.
+	 */
 	private static final String LEFT_MIDDLE_FRONT_LEG = "left_middle_front_leg";
+	/**
+	 * The key of the right middle hind leg model part, whose value is {@value}.
+	 */
 	private static final String RIGHT_MIDDLE_HIND_LEG = "right_middle_hind_leg";
+	/**
+	 * The key of the left middle hind leg model part, whose value is {@value}.
+	 */
 	private static final String LEFT_MIDDLE_HIND_LEG = "left_middle_hind_leg";
 	private final ModelPart root;
 	private final ModelPart head;

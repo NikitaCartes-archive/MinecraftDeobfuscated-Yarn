@@ -14,7 +14,9 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 
 /**
- * Stores all required tags of a given type, so they can be updated to point to the new tag instances on datapack reload
+ * Stores all required tags of a given type, so they can be updated to point to the new tag instances on datapack reload.
+ * 
+ * <p>The propagation of data pack reload is done by {@link RequiredTagListRegistry}.
  */
 public class RequiredTagList<T> {
 	private final RegistryKey<? extends Registry<T>> registryKey;
@@ -59,6 +61,9 @@ public class RequiredTagList<T> {
 		return Sets.<Identifier>difference(set, immutableSet);
 	}
 
+	/**
+	 * {@return the registry key representing the type of object in this list}
+	 */
 	public RegistryKey<? extends Registry<T>> getRegistryKey() {
 		return this.registryKey;
 	}

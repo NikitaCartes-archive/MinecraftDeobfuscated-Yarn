@@ -49,10 +49,6 @@ public class MathHelper {
 		return (float)Math.sqrt((double)value);
 	}
 
-	public static float sqrt(double value) {
-		return (float)Math.sqrt(value);
-	}
-
 	public static int floor(float value) {
 		int i = (int)value;
 		return value < (float)i ? i - 1 : i;
@@ -139,6 +135,14 @@ public class MathHelper {
 			return start;
 		} else {
 			return delta > 1.0 ? end : lerp(delta, start, end);
+		}
+	}
+
+	public static float method_37166(float f, float g, float h) {
+		if (h < 0.0F) {
+			return f;
+		} else {
+			return h > 1.0F ? g : lerp(h, f, g);
 		}
 	}
 

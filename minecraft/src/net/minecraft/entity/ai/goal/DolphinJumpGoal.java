@@ -1,6 +1,5 @@
 package net.minecraft.entity.ai.goal;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.DolphinEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.sound.SoundEvents;
@@ -91,7 +90,7 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 		if (vec3d.y * vec3d.y < 0.03F && this.dolphin.getPitch() != 0.0F) {
 			this.dolphin.setPitch(MathHelper.lerpAngle(this.dolphin.getPitch(), 0.0F, 0.2F));
 		} else if (vec3d.length() > 1.0E-5F) {
-			double d = Math.sqrt(Entity.squaredHorizontalLength(vec3d));
+			double d = vec3d.method_37267();
 			double e = Math.atan2(-vec3d.y, d) * 180.0F / (float)Math.PI;
 			this.dolphin.setPitch((float)e);
 		}

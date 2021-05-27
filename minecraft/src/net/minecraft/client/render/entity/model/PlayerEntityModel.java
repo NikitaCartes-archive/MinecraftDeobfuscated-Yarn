@@ -19,13 +19,85 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Arm;
 
+/**
+ * Represents the model of a player-like entity.
+ * 
+ * <div class="fabric">
+ * <table border=1>
+ * <caption>Model parts of this model</caption>
+ * <tr>
+ *   <th>Part Name</th><th>Parent</th><th>Corresponding Field</th>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#HAT}</td><td>Root part</td><td>{@link #hat}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#HEAD}</td><td>Root part</td><td>{@link #head}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#BODY}</td><td>Root part</td><td>{@link #body}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#RIGHT_ARM}</td><td>Root part</td><td>{@link #rightArm}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#LEFT_ARM}</td><td>Root part</td><td>{@link #leftArm}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#RIGHT_LEG}</td><td>Root part</td><td>{@link #rightLeg}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#LEFT_LEG}</td><td>Root part</td><td>{@link #leftLeg}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #EAR}</td><td>Root part</td><td>{@link #ear}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #CLOAK}</td><td>Root part</td><td>{@link #cloak}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #LEFT_SLEEVE}</td><td>Root part</td><td>{@link #leftSleeve}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #RIGHT_SLEEVE}</td><td>Root part</td><td>{@link #rightSleeve}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #LEFT_PANTS}</td><td>Root part</td><td>{@link #leftPants}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #RIGHT_PANTS}</td><td>Root part</td><td>{@link #rightPants}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#JACKET}</td><td>Root part</td><td>{@link #jacket}</td>
+ * </tr>
+ * </table>
+ * </div>
+ */
 @Environment(EnvType.CLIENT)
 public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<T> {
+	/**
+	 * The key of the ear model part, whose value is {@value}.
+	 */
 	private static final String EAR = "ear";
+	/**
+	 * The key of the cloak model part, whose value is {@value}.
+	 */
 	private static final String CLOAK = "cloak";
+	/**
+	 * The key of the left sleeve model part, whose value is {@value}.
+	 */
 	private static final String LEFT_SLEEVE = "left_sleeve";
+	/**
+	 * The key of the right sleeve model part, whose value is {@value}.
+	 */
 	private static final String RIGHT_SLEEVE = "right_sleeve";
+	/**
+	 * The key of the left pants model part, whose value is {@value}.
+	 */
 	private static final String LEFT_PANTS = "left_pants";
+	/**
+	 * The key of the right pants model part, whose value is {@value}.
+	 */
 	private static final String RIGHT_PANTS = "right_pants";
 	/**
 	 * All the parts. Used when picking a part to render stuck arrows.

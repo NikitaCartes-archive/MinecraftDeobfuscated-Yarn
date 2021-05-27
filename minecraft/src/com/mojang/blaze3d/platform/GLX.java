@@ -25,7 +25,7 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWErrorCallbackI;
 import org.lwjgl.glfw.GLFWVidMode;
 import oshi.SystemInfo;
-import oshi.hardware.Processor;
+import oshi.hardware.CentralProcessor;
 
 @Environment(EnvType.CLIENT)
 @DeobfuscateClass
@@ -93,8 +93,8 @@ public class GLX {
 		RenderSystem.assertThread(RenderSystem::isInInitPhase);
 
 		try {
-			Processor[] processors = new SystemInfo().getHardware().getProcessors();
-			cpuInfo = String.format("%dx %s", processors.length, processors[0]).replaceAll("\\s+", " ");
+			CentralProcessor centralProcessor = new SystemInfo().getHardware().getProcessor();
+			cpuInfo = String.format("%dx %s", centralProcessor.getLogicalProcessorCount(), centralProcessor.getProcessorIdentifier().getName()).replaceAll("\\s+", " ");
 		} catch (Throwable var3) {
 		}
 

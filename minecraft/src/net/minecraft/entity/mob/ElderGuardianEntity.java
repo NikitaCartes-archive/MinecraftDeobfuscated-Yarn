@@ -78,7 +78,7 @@ public class ElderGuardianEntity extends GuardianEntity {
 						.sendPacket(
 							new GameStateChangeS2CPacket(GameStateChangeS2CPacket.ELDER_GUARDIAN_EFFECT, this.isSilent() ? GameStateChangeS2CPacket.DEMO_OPEN_SCREEN : 1.0F)
 						);
-					serverPlayerEntity.addStatusEffect(new StatusEffectInstance(statusEffect, 6000, 2));
+					serverPlayerEntity.method_37222(new StatusEffectInstance(statusEffect, 6000, 2), this);
 				}
 			}
 		}

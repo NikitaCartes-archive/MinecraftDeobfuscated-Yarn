@@ -12,13 +12,57 @@ import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.entity.AngledModelEntity;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
 
+/**
+ * Represents the model of an {@linkplain AxolotlEntity}.
+ * 
+ * <div class="fabric">
+ * <table border=1>
+ * <caption>Model parts of this model</caption>
+ * <tr>
+ *   <th>Part Name</th><th>Parent</th><th>Corresponding Field</th>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#BODY}</td><td>Root part</td><td>{@link #body}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#HEAD}</td><td>{@value EntityModelPartNames#BODY}</td><td>{@link #head}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#TOP_GILLS}</td><td>{@value EntityModelPartNames#HEAD}</td><td>{@link #topGills}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#LEFT_GILLS}</td><td>{@value EntityModelPartNames#HEAD}</td><td>{@link #leftGills}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#RIGHT_GILLS}</td><td>{@value EntityModelPartNames#HEAD}</td><td>{@link #rightGills}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#RIGHT_HIND_LEG}</td><td>{@value EntityModelPartNames#BODY}</td><td>{@link #rightHindLeg}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#LEFT_HIND_LEG}</td><td>{@value EntityModelPartNames#BODY}</td><td>{@link #leftHindLeg}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#RIGHT_FRONT_LEG}</td><td>{@value EntityModelPartNames#BODY}</td><td>{@link #rightFrontLeg}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#LEFT_FRONT_LEG}</td><td>{@value EntityModelPartNames#BODY}</td><td>{@link #leftFrontLeg}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#TAIL}</td><td>{@value EntityModelPartNames#BODY}</td><td>{@link #tail}</td>
+ * </tr>
+ * </table>
+ * </div>
+ */
 @Environment(EnvType.CLIENT)
 public class AxolotlEntityModel<T extends AxolotlEntity & AngledModelEntity> extends AnimalModel<T> {
+	/**
+	 * Represents the pitch value {@value} used for the legs of the axolotl when it is moving in water.
+	 */
 	public static final float MOVING_IN_WATER_LEG_PITCH = 1.8849558F;
 	private final ModelPart tail;
 	private final ModelPart leftHindLeg;
@@ -91,9 +135,9 @@ public class AxolotlEntityModel<T extends AxolotlEntity & AngledModelEntity> ext
 		this.resetAngles(axolotlEntity, i, j);
 		if (axolotlEntity.isPlayingDead()) {
 			this.setPlayingDeadAngles(i);
-			this.updateAnglesMap(axolotlEntity);
+			this.updateAnglesCache(axolotlEntity);
 		} else {
-			boolean bl = Entity.squaredHorizontalLength(axolotlEntity.getVelocity()) > 1.0E-7
+			boolean bl = axolotlEntity.getVelocity().method_37268() > 1.0E-7
 				|| axolotlEntity.getPitch() != axolotlEntity.prevPitch
 				|| axolotlEntity.getYaw() != axolotlEntity.prevYaw
 				|| axolotlEntity.lastRenderX != axolotlEntity.getX()
@@ -105,7 +149,7 @@ public class AxolotlEntityModel<T extends AxolotlEntity & AngledModelEntity> ext
 					this.setStandingInWaterAngles(h);
 				}
 
-				this.updateAnglesMap(axolotlEntity);
+				this.updateAnglesCache(axolotlEntity);
 			} else {
 				if (axolotlEntity.isOnGround()) {
 					if (bl) {
@@ -115,12 +159,12 @@ public class AxolotlEntityModel<T extends AxolotlEntity & AngledModelEntity> ext
 					}
 				}
 
-				this.updateAnglesMap(axolotlEntity);
+				this.updateAnglesCache(axolotlEntity);
 			}
 		}
 	}
 
-	private void updateAnglesMap(T axolotl) {
+	private void updateAnglesCache(T axolotl) {
 		Map<String, Vec3f> map = axolotl.getModelAngles();
 		map.put("body", this.getAngles(this.body));
 		map.put("head", this.getAngles(this.head));
@@ -145,13 +189,13 @@ public class AxolotlEntityModel<T extends AxolotlEntity & AngledModelEntity> ext
 	/**
 	 * Resets the angles of the axolotl model.
 	 */
-	private void resetAngles(T axolotlEntity, float f, float g) {
+	private void resetAngles(T axolotl, float headYaw, float headPitch) {
 		this.body.pivotX = 0.0F;
 		this.head.pivotY = 0.0F;
 		this.body.pivotY = 20.0F;
-		Map<String, Vec3f> map = axolotlEntity.getModelAngles();
+		Map<String, Vec3f> map = axolotl.getModelAngles();
 		if (map.isEmpty()) {
-			this.body.setAngles(g * (float) (Math.PI / 180.0), f * (float) (Math.PI / 180.0), 0.0F);
+			this.body.setAngles(headPitch * (float) (Math.PI / 180.0), headYaw * (float) (Math.PI / 180.0), 0.0F);
 			this.head.setAngles(0.0F, 0.0F, 0.0F);
 			this.leftHindLeg.setAngles(0.0F, 0.0F, 0.0F);
 			this.rightHindLeg.setAngles(0.0F, 0.0F, 0.0F);
@@ -183,49 +227,49 @@ public class AxolotlEntityModel<T extends AxolotlEntity & AngledModelEntity> ext
 		return MathHelper.lerpAngleDegrees(delta, start, end);
 	}
 
-	private void setAngle(ModelPart part, float pitch, float yaw, float roll) {
+	private void setAngles(ModelPart part, float pitch, float yaw, float roll) {
 		part.setAngles(this.lerpAngleDegrees(part.pitch, pitch), this.lerpAngleDegrees(part.yaw, yaw), this.lerpAngleDegrees(part.roll, roll));
 	}
 
-	private void setStandingOnGroundAngles(float animationProgress, float f) {
-		float g = animationProgress * 0.09F;
-		float h = MathHelper.sin(g);
-		float i = MathHelper.cos(g);
-		float j = h * h - 2.0F * h;
-		float k = i * i - 3.0F * h;
-		this.head.pitch = this.lerpAngleDegrees(this.head.pitch, -0.09F * j);
+	private void setStandingOnGroundAngles(float animationProgress, float headYaw) {
+		float f = animationProgress * 0.09F;
+		float g = MathHelper.sin(f);
+		float h = MathHelper.cos(f);
+		float i = g * g - 2.0F * g;
+		float j = h * h - 3.0F * g;
+		this.head.pitch = this.lerpAngleDegrees(this.head.pitch, -0.09F * i);
 		this.head.yaw = this.lerpAngleDegrees(this.head.yaw, 0.0F);
 		this.head.roll = this.lerpAngleDegrees(this.head.roll, -0.2F);
-		this.tail.yaw = this.lerpAngleDegrees(this.tail.yaw, -0.1F + 0.1F * j);
-		this.topGills.pitch = this.lerpAngleDegrees(this.topGills.pitch, 0.6F + 0.05F * k);
+		this.tail.yaw = this.lerpAngleDegrees(this.tail.yaw, -0.1F + 0.1F * i);
+		this.topGills.pitch = this.lerpAngleDegrees(this.topGills.pitch, 0.6F + 0.05F * j);
 		this.leftGills.yaw = this.lerpAngleDegrees(this.leftGills.yaw, -this.topGills.pitch);
 		this.rightGills.yaw = this.lerpAngleDegrees(this.rightGills.yaw, -this.leftGills.yaw);
-		this.setAngle(this.leftHindLeg, 1.1F, 1.0F, 0.0F);
-		this.setAngle(this.leftFrontLeg, 0.8F, 2.3F, -0.5F);
+		this.setAngles(this.leftHindLeg, 1.1F, 1.0F, 0.0F);
+		this.setAngles(this.leftFrontLeg, 0.8F, 2.3F, -0.5F);
 		this.copyLegAngles();
 		this.body.pitch = this.lerpAngleDegress(0.2F, this.body.pitch, 0.0F);
-		this.body.yaw = this.lerpAngleDegrees(this.body.yaw, f * (float) (Math.PI / 180.0));
+		this.body.yaw = this.lerpAngleDegrees(this.body.yaw, headYaw * (float) (Math.PI / 180.0));
 		this.body.roll = this.lerpAngleDegrees(this.body.roll, 0.0F);
 	}
 
-	private void setMovingOnGroundAngles(float animationProgress, float f) {
-		float g = animationProgress * 0.11F;
-		float h = MathHelper.cos(g);
-		float i = (h * h - 2.0F * h) / 5.0F;
-		float j = 0.7F * h;
+	private void setMovingOnGroundAngles(float animationProgress, float headYaw) {
+		float f = animationProgress * 0.11F;
+		float g = MathHelper.cos(f);
+		float h = (g * g - 2.0F * g) / 5.0F;
+		float i = 0.7F * g;
 		this.head.pitch = this.lerpAngleDegrees(this.head.pitch, 0.0F);
-		this.head.yaw = this.lerpAngleDegrees(this.head.yaw, 0.09F * h);
+		this.head.yaw = this.lerpAngleDegrees(this.head.yaw, 0.09F * g);
 		this.head.roll = this.lerpAngleDegrees(this.head.roll, 0.0F);
 		this.tail.yaw = this.lerpAngleDegrees(this.tail.yaw, this.head.yaw);
-		this.topGills.pitch = this.lerpAngleDegrees(this.topGills.pitch, 0.6F - 0.08F * (h * h + 2.0F * MathHelper.sin(g)));
+		this.topGills.pitch = this.lerpAngleDegrees(this.topGills.pitch, 0.6F - 0.08F * (g * g + 2.0F * MathHelper.sin(f)));
 		this.leftGills.yaw = this.lerpAngleDegrees(this.leftGills.yaw, -this.topGills.pitch);
 		this.rightGills.yaw = this.lerpAngleDegrees(this.rightGills.yaw, -this.leftGills.yaw);
-		this.setAngle(this.leftHindLeg, 0.9424779F, 1.5F - i, -0.1F);
-		this.setAngle(this.leftFrontLeg, 1.0995574F, (float) (Math.PI / 2) - j, 0.0F);
-		this.setAngle(this.rightHindLeg, this.leftHindLeg.pitch, -1.0F - i, 0.0F);
-		this.setAngle(this.rightFrontLeg, this.leftFrontLeg.pitch, (float) (-Math.PI / 2) - j, 0.0F);
+		this.setAngles(this.leftHindLeg, 0.9424779F, 1.5F - h, -0.1F);
+		this.setAngles(this.leftFrontLeg, 1.0995574F, (float) (Math.PI / 2) - i, 0.0F);
+		this.setAngles(this.rightHindLeg, this.leftHindLeg.pitch, -1.0F - h, 0.0F);
+		this.setAngles(this.rightFrontLeg, this.leftFrontLeg.pitch, (float) (-Math.PI / 2) - i, 0.0F);
 		this.body.pitch = this.lerpAngleDegress(0.2F, this.body.pitch, 0.0F);
-		this.body.yaw = this.lerpAngleDegrees(this.body.yaw, f * (float) (Math.PI / 180.0));
+		this.body.yaw = this.lerpAngleDegrees(this.body.yaw, headYaw * (float) (Math.PI / 180.0));
 		this.body.roll = this.lerpAngleDegrees(this.body.roll, 0.0F);
 	}
 
@@ -239,8 +283,8 @@ public class AxolotlEntityModel<T extends AxolotlEntity & AngledModelEntity> ext
 		this.topGills.pitch = this.lerpAngleDegrees(this.topGills.pitch, 0.2F * g);
 		this.leftGills.yaw = this.lerpAngleDegrees(this.leftGills.yaw, -0.3F * g - 0.19F);
 		this.rightGills.yaw = this.lerpAngleDegrees(this.rightGills.yaw, -this.leftGills.yaw);
-		this.setAngle(this.leftHindLeg, (float) (Math.PI * 3.0 / 4.0) - g * 0.11F, 0.47123894F, 1.7278761F);
-		this.setAngle(this.leftFrontLeg, (float) (Math.PI / 4) - g * 0.2F, 2.042035F, 0.0F);
+		this.setAngles(this.leftHindLeg, (float) (Math.PI * 3.0 / 4.0) - g * 0.11F, 0.47123894F, 1.7278761F);
+		this.setAngles(this.leftFrontLeg, (float) (Math.PI / 4) - g * 0.2F, 2.042035F, 0.0F);
 		this.copyLegAngles();
 		this.tail.yaw = this.lerpAngleDegrees(this.tail.yaw, 0.5F * g);
 		this.head.yaw = this.lerpAngleDegrees(this.head.yaw, 0.0F);
@@ -259,34 +303,34 @@ public class AxolotlEntityModel<T extends AxolotlEntity & AngledModelEntity> ext
 		this.leftGills.yaw = this.lerpAngleDegrees(this.leftGills.yaw, 0.3F * g + 0.9F);
 		this.rightGills.yaw = this.lerpAngleDegrees(this.rightGills.yaw, -this.leftGills.yaw);
 		this.tail.yaw = this.lerpAngleDegrees(this.tail.yaw, 0.3F * MathHelper.cos(f * 0.9F));
-		this.setAngle(this.leftHindLeg, 1.8849558F, -0.4F * g, (float) (Math.PI / 2));
-		this.setAngle(this.leftFrontLeg, 1.8849558F, -0.2F * h - 0.1F, (float) (Math.PI / 2));
+		this.setAngles(this.leftHindLeg, 1.8849558F, -0.4F * g, (float) (Math.PI / 2));
+		this.setAngles(this.leftFrontLeg, 1.8849558F, -0.2F * h - 0.1F, (float) (Math.PI / 2));
 		this.copyLegAngles();
 		this.head.yaw = this.lerpAngleDegrees(this.head.yaw, 0.0F);
 		this.head.roll = this.lerpAngleDegrees(this.head.roll, 0.0F);
 	}
 
-	private void setPlayingDeadAngles(float f) {
-		this.setAngle(this.leftHindLeg, 1.4137167F, 1.0995574F, (float) (Math.PI / 4));
-		this.setAngle(this.leftFrontLeg, (float) (Math.PI / 4), 2.042035F, 0.0F);
+	private void setPlayingDeadAngles(float headYaw) {
+		this.setAngles(this.leftHindLeg, 1.4137167F, 1.0995574F, (float) (Math.PI / 4));
+		this.setAngles(this.leftFrontLeg, (float) (Math.PI / 4), 2.042035F, 0.0F);
 		this.body.pitch = this.lerpAngleDegrees(this.body.pitch, -0.15F);
 		this.body.roll = this.lerpAngleDegrees(this.body.roll, 0.35F);
 		this.copyLegAngles();
-		this.body.yaw = this.lerpAngleDegrees(this.body.yaw, f * (float) (Math.PI / 180.0));
+		this.body.yaw = this.lerpAngleDegrees(this.body.yaw, headYaw * (float) (Math.PI / 180.0));
 		this.head.pitch = this.lerpAngleDegrees(this.head.pitch, 0.0F);
 		this.head.yaw = this.lerpAngleDegrees(this.head.yaw, 0.0F);
 		this.head.roll = this.lerpAngleDegrees(this.head.roll, 0.0F);
 		this.tail.yaw = this.lerpAngleDegrees(this.tail.yaw, 0.0F);
-		this.setAngle(this.topGills, 0.0F, 0.0F, 0.0F);
-		this.setAngle(this.leftGills, 0.0F, 0.0F, 0.0F);
-		this.setAngle(this.rightGills, 0.0F, 0.0F, 0.0F);
+		this.setAngles(this.topGills, 0.0F, 0.0F, 0.0F);
+		this.setAngles(this.leftGills, 0.0F, 0.0F, 0.0F);
+		this.setAngles(this.rightGills, 0.0F, 0.0F, 0.0F);
 	}
 
 	/**
 	 * Copies and mirrors the left leg angles to the right leg angles.
 	 */
 	private void copyLegAngles() {
-		this.setAngle(this.rightHindLeg, this.leftHindLeg.pitch, -this.leftHindLeg.yaw, -this.leftHindLeg.roll);
-		this.setAngle(this.rightFrontLeg, this.leftFrontLeg.pitch, -this.leftFrontLeg.yaw, -this.leftFrontLeg.roll);
+		this.setAngles(this.rightHindLeg, this.leftHindLeg.pitch, -this.leftHindLeg.yaw, -this.leftHindLeg.roll);
+		this.setAngles(this.rightFrontLeg, this.leftFrontLeg.pitch, -this.leftFrontLeg.yaw, -this.leftFrontLeg.roll);
 	}
 }

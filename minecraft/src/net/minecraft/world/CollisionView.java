@@ -37,19 +37,19 @@ public interface CollisionView extends BlockView {
 	}
 
 	default boolean isSpaceEmpty(Box box) {
-		return this.isSpaceEmpty(null, box, entity -> true);
+		return this.isSpaceEmpty(null, box, e -> true);
 	}
 
 	default boolean isSpaceEmpty(Entity entity) {
-		return this.isSpaceEmpty(entity, entity.getBoundingBox(), entityx -> true);
+		return this.isSpaceEmpty(entity, entity.getBoundingBox(), e -> true);
 	}
 
 	default boolean isSpaceEmpty(Entity entity, Box box) {
-		return this.isSpaceEmpty(entity, box, entityx -> true);
+		return this.isSpaceEmpty(entity, box, e -> true);
 	}
 
-	default boolean isSpaceEmpty(@Nullable Entity entity, Box box, Predicate<Entity> predicate) {
-		return this.getCollisions(entity, box, predicate).allMatch(VoxelShape::isEmpty);
+	default boolean isSpaceEmpty(@Nullable Entity entity, Box box, Predicate<Entity> filter) {
+		return this.getCollisions(entity, box, filter).allMatch(VoxelShape::isEmpty);
 	}
 
 	Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Predicate<Entity> predicate);
@@ -62,26 +62,26 @@ public interface CollisionView extends BlockView {
 		return StreamSupport.stream(new BlockCollisionSpliterator(this, entity, box), false);
 	}
 
-	default boolean isBlockSpaceEmpty(@Nullable Entity entity, Box box, BiPredicate<BlockState, BlockPos> biPredicate) {
-		return !this.getBlockCollisions(entity, box, biPredicate).allMatch(VoxelShape::isEmpty);
+	default boolean hasBlockCollision(@Nullable Entity entity, Box box, BiPredicate<BlockState, BlockPos> predicate) {
+		return !this.getBlockCollisions(entity, box, predicate).allMatch(VoxelShape::isEmpty);
 	}
 
-	default Stream<VoxelShape> getBlockCollisions(@Nullable Entity entity, Box box, BiPredicate<BlockState, BlockPos> biPredicate) {
-		return StreamSupport.stream(new BlockCollisionSpliterator(this, entity, box, biPredicate), false);
+	default Stream<VoxelShape> getBlockCollisions(@Nullable Entity entity, Box box, BiPredicate<BlockState, BlockPos> predicate) {
+		return StreamSupport.stream(new BlockCollisionSpliterator(this, entity, box, predicate), false);
 	}
 
-	default Optional<Vec3d> method_33594(@Nullable Entity entity, VoxelShape voxelShape, Vec3d vec3d, double d, double e, double f) {
-		if (voxelShape.isEmpty()) {
+	default Optional<Vec3d> findClosestCollision(@Nullable Entity entity, VoxelShape shape, Vec3d target, double x, double y, double z) {
+		if (shape.isEmpty()) {
 			return Optional.empty();
 		} else {
-			Box box = voxelShape.getBoundingBox().expand(d, e, f);
-			VoxelShape voxelShape2 = (VoxelShape)this.getBlockCollisions(entity, box)
-				.flatMap(voxelShapex -> voxelShapex.getBoundingBoxes().stream())
-				.map(boxx -> boxx.expand(d / 2.0, e / 2.0, f / 2.0))
+			Box box = shape.getBoundingBox().expand(x, y, z);
+			VoxelShape voxelShape = (VoxelShape)this.getBlockCollisions(entity, box)
+				.flatMap(collision -> collision.getBoundingBoxes().stream())
+				.map(boxx -> boxx.expand(x / 2.0, y / 2.0, z / 2.0))
 				.map(VoxelShapes::cuboid)
 				.reduce(VoxelShapes.empty(), VoxelShapes::union);
-			VoxelShape voxelShape3 = VoxelShapes.combineAndSimplify(voxelShape, voxelShape2, BooleanBiFunction.ONLY_FIRST);
-			return voxelShape3.method_33661(vec3d);
+			VoxelShape voxelShape2 = VoxelShapes.combineAndSimplify(shape, voxelShape, BooleanBiFunction.ONLY_FIRST);
+			return voxelShape2.getClosestPointTo(target);
 		}
 	}
 }

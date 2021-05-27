@@ -48,7 +48,7 @@ public class SittingScanningPhase extends AbstractSittingPhase {
 						MathHelper.wrapDegrees(180.0 - MathHelper.atan2(d, e) * 180.0F / (float)Math.PI - (double)this.dragon.getYaw()), -100.0, 100.0
 					);
 					this.dragon.yawAcceleration *= 0.8F;
-					float i = MathHelper.sqrt(d * d + e * e) + 1.0F;
+					float i = (float)Math.sqrt(d * d + e * e) + 1.0F;
 					float j = i;
 					if (i > 40.0F) {
 						i = 40.0F;

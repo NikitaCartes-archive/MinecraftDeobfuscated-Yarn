@@ -78,7 +78,7 @@ public class SubtitlesHud extends DrawableHelper implements SoundInstanceListene
 				int n = m / 2;
 				float f = 1.0F;
 				int o = this.client.textRenderer.getWidth(text);
-				int p = MathHelper.floor(MathHelper.clampedLerp(255.0, 75.0, (double)((float)(Util.getMeasuringTimeMs() - subtitleEntry.getTime()) / 3000.0F)));
+				int p = MathHelper.floor(MathHelper.method_37166(255.0F, 75.0F, (float)(Util.getMeasuringTimeMs() - subtitleEntry.getTime()) / 3000.0F));
 				int q = p << 16 | p << 8 | p;
 				matrices.push();
 				matrices.translate(

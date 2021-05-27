@@ -4,11 +4,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
@@ -16,14 +18,15 @@ import org.lwjgl.glfw.GLFW;
 @Environment(EnvType.CLIENT)
 public class ChatScreen extends Screen {
 	public static final int field_32237 = 7;
+	private static final Text field_33953 = new TranslatableText("chat_screen.usage");
 	private String chatLastMessage = "";
 	private int messageHistorySize = -1;
 	protected TextFieldWidget chatField;
-	private String originalChatText = "";
+	private final String originalChatText;
 	CommandSuggestor commandSuggestor;
 
 	public ChatScreen(String originalChatText) {
-		super(NarratorManager.EMPTY);
+		super(new TranslatableText("chat_screen.title"));
 		this.originalChatText = originalChatText;
 	}
 
@@ -200,5 +203,15 @@ public class ChatScreen extends Screen {
 
 	private void setText(String text) {
 		this.chatField.setText(text);
+	}
+
+	@Override
+	protected void addScreenNarrations(NarrationMessageBuilder builder) {
+		builder.put(NarrationPart.TITLE, this.getTitle());
+		builder.put(NarrationPart.USAGE, field_33953);
+		String string = this.chatField.getText();
+		if (!string.isEmpty()) {
+			builder.nextMessage().put(NarrationPart.TITLE, new TranslatableText("chat_screen.message", string));
+		}
 	}
 }

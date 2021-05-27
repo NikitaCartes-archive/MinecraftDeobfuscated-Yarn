@@ -1,5 +1,6 @@
 package net.minecraft.entity.projectile;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.UUID;
@@ -281,7 +282,7 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 		if (bl) {
 			this.dealDamage(livingEntity, entity);
 			if (entity instanceof LivingEntity) {
-				((LivingEntity)entity).addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 200));
+				((LivingEntity)entity).method_37222(new StatusEffectInstance(StatusEffects.LEVITATION, 200), MoreObjects.firstNonNull(entity2, this));
 			}
 		}
 	}

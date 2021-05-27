@@ -159,16 +159,19 @@ public abstract class VoxelShape {
 		}
 	}
 
-	public Optional<Vec3d> method_33661(Vec3d vec3d) {
+	/**
+	 * {@return the closest point in the shape to {@code target}}
+	 */
+	public Optional<Vec3d> getClosestPointTo(Vec3d target) {
 		if (this.isEmpty()) {
 			return Optional.empty();
 		} else {
 			Vec3d[] vec3ds = new Vec3d[1];
 			this.forEachBox((d, e, f, g, h, i) -> {
-				double j = MathHelper.clamp(vec3d.getX(), d, g);
-				double k = MathHelper.clamp(vec3d.getY(), e, h);
-				double l = MathHelper.clamp(vec3d.getZ(), f, i);
-				if (vec3ds[0] == null || vec3d.squaredDistanceTo(j, k, l) < vec3d.squaredDistanceTo(vec3ds[0])) {
+				double j = MathHelper.clamp(target.getX(), d, g);
+				double k = MathHelper.clamp(target.getY(), e, h);
+				double l = MathHelper.clamp(target.getZ(), f, i);
+				if (vec3ds[0] == null || target.squaredDistanceTo(j, k, l) < target.squaredDistanceTo(vec3ds[0])) {
 					vec3ds[0] = new Vec3d(j, k, l);
 				}
 			});

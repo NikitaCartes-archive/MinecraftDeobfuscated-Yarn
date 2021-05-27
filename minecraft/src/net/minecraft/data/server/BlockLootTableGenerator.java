@@ -1123,6 +1123,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addPottedPlantDrop(Blocks.POTTED_WARPED_FUNGUS);
 		this.addPottedPlantDrop(Blocks.POTTED_CRIMSON_ROOTS);
 		this.addPottedPlantDrop(Blocks.POTTED_WARPED_ROOTS);
+		this.addPottedPlantDrop(Blocks.POTTED_AZALEA_BUSH);
+		this.addPottedPlantDrop(Blocks.POTTED_FLOWERING_AZALEA_BUSH);
 		this.addDrop(Blocks.ACACIA_SLAB, BlockLootTableGenerator::slabDrops);
 		this.addDrop(Blocks.BIRCH_SLAB, BlockLootTableGenerator::slabDrops);
 		this.addDrop(Blocks.BRICK_SLAB, BlockLootTableGenerator::slabDrops);

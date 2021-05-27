@@ -10,14 +10,12 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.HeightLimitView;
 
 public class CrashReportSection {
-	private final CrashReport report;
 	private final String title;
 	private final List<CrashReportSection.Element> elements = Lists.<CrashReportSection.Element>newArrayList();
 	private StackTraceElement[] stackTrace = new StackTraceElement[0];
 
-	public CrashReportSection(CrashReport report, String title) {
-		this.report = report;
-		this.title = title;
+	public CrashReportSection(String string) {
+		this.title = string;
 	}
 
 	public static String createPositionString(HeightLimitView world, double x, double y, double z) {

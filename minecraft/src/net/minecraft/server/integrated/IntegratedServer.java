@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_6396;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourcePackManager;
@@ -24,9 +25,7 @@ import net.minecraft.server.WorldGenerationProgressListenerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.UserCache;
-import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.snooper.Snooper;
@@ -160,14 +159,12 @@ public class IntegratedServer extends MinecraftServer {
 	}
 
 	@Override
-	public void populateCrashReport(CrashReportSection section) {
-		super.populateCrashReport(section);
-		section.add("Type", "Integrated Server (map_client.txt)");
-		section.add(
-			"Is Modded",
-			(CrashCallable<String>)(() -> (String)this.getModdedStatusMessage()
-					.orElse("Probably not. Jar signature remains and both client + server brands are untouched."))
+	public class_6396 populateCrashReport(class_6396 arg) {
+		arg.method_37122("Type", "Integrated Server (map_client.txt)");
+		arg.method_37123(
+			"Is Modded", () -> (String)this.getModdedStatusMessage().orElse("Probably not. Jar signature remains and both client + server brands are untouched.")
 		);
+		return arg;
 	}
 
 	@Override

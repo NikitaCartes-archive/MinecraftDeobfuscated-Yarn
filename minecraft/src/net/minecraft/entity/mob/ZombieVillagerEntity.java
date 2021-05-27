@@ -207,7 +207,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 			ItemStack itemStack = this.getEquippedStack(equipmentSlot);
 			if (!itemStack.isEmpty()) {
 				if (EnchantmentHelper.hasBindingCurse(itemStack)) {
-					villagerEntity.getCommandItemSlot(equipmentSlot.getEntitySlotId() + 300).set(itemStack);
+					villagerEntity.getStackReference(equipmentSlot.getEntitySlotId() + 300).set(itemStack);
 				} else {
 					double d = (double)this.getDropChance(equipmentSlot);
 					if (d > 1.0) {

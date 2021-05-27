@@ -32,7 +32,9 @@ public class Schema102 extends Schema {
 							"CanDestroy",
 							DSL.list(TypeReferences.BLOCK_NAME.in(schema)),
 							"CanPlaceOn",
-							DSL.list(TypeReferences.BLOCK_NAME.in(schema))
+							DSL.list(TypeReferences.BLOCK_NAME.in(schema)),
+							"Items",
+							DSL.list(TypeReferences.ITEM_STACK.in(schema))
 						)
 					),
 					Schema99.field_5747,

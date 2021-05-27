@@ -174,7 +174,7 @@ public abstract class FishEntity extends WaterCreatureEntity implements Bucketab
 	}
 
 	@Override
-	protected void playStepSound(BlockPos pos, BlockState state) {
+	protected void playStepSound(BlockPos pos, BlockState blockState) {
 	}
 
 	static class FishMoveControl extends MoveControl {

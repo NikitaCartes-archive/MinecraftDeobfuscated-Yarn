@@ -2,10 +2,8 @@ package net.minecraft.entity.boss.dragon.phase;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.feature.EndPortalFeature;
@@ -55,7 +53,7 @@ public class LandingPhase extends AbstractPhase {
 
 	@Override
 	public float getYawAcceleration() {
-		float f = MathHelper.sqrt(Entity.squaredHorizontalLength(this.dragon.getVelocity())) + 1.0F;
+		float f = (float)this.dragon.getVelocity().method_37267() + 1.0F;
 		float g = Math.min(f, 40.0F);
 		return g / f;
 	}

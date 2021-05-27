@@ -926,8 +926,8 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		}
 
 		@Override
-		public boolean doDrawHoveringEffect() {
-			return this.slot.doDrawHoveringEffect();
+		public boolean isEnabled() {
+			return this.slot.isEnabled();
 		}
 
 		@Override

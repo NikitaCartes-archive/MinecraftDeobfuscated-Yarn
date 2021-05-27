@@ -39,6 +39,7 @@ public class JigsawBlockScreen extends Screen {
 	private boolean keepJigsaws = true;
 	private CyclingButtonWidget<JigsawBlockEntity.Joint> jointRotationButton;
 	private ButtonWidget doneButton;
+	private ButtonWidget field_33958;
 	private JigsawBlockEntity.Joint joint;
 
 	public JigsawBlockScreen(JigsawBlockEntity jigsaw) {
@@ -140,7 +141,7 @@ public class JigsawBlockScreen extends Screen {
 			CyclingButtonWidget.onOffBuilder(this.keepJigsaws)
 				.build(this.width / 2 - 50, 180, 100, 20, new TranslatableText("jigsaw_block.keep_jigsaws"), (button, keepJigsaws) -> this.keepJigsaws = keepJigsaws)
 		);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 + 54, 180, 100, 20, new TranslatableText("jigsaw_block.generate"), button -> {
+		this.field_33958 = this.addDrawableChild(new ButtonWidget(this.width / 2 + 54, 180, 100, 20, new TranslatableText("jigsaw_block.generate"), button -> {
 			this.onDone();
 			this.generate();
 		}));
@@ -151,9 +152,9 @@ public class JigsawBlockScreen extends Screen {
 	}
 
 	private void updateDoneButtonState() {
-		this.doneButton.active = Identifier.isValid(this.nameField.getText())
-			&& Identifier.isValid(this.targetField.getText())
-			&& Identifier.isValid(this.poolField.getText());
+		boolean bl = Identifier.isValid(this.nameField.getText()) && Identifier.isValid(this.targetField.getText()) && Identifier.isValid(this.poolField.getText());
+		this.doneButton.active = bl;
+		this.field_33958.active = bl;
 	}
 
 	@Override

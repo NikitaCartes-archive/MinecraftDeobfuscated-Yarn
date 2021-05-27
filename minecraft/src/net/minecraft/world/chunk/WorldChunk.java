@@ -419,7 +419,13 @@ public class WorldChunk implements Chunk {
 	}
 
 	boolean canTickBlockEntity(BlockPos pos) {
-		return (this.world.isClient() || this.getLevelType().isAfter(ChunkHolder.LevelType.TICKING)) && this.world.getWorldBorder().contains(pos);
+		if (!this.world.getWorldBorder().contains(pos)) {
+			return false;
+		} else if (!(this.world instanceof ServerWorld)) {
+			return true;
+		} else {
+			return this.getLevelType().isAfter(ChunkHolder.LevelType.TICKING) && ((ServerWorld)this.world).method_37116(ChunkPos.method_37232(pos));
+		}
 	}
 
 	@Override
